@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -733,7 +734,7 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_CODE_SIZE:
         if( !CompFlags.quiet_mode ) {
             CGetMsg( msgtxt, PHRASE_CODE_SIZE );
-            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_int)parm );
+            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_uint)parm );
             NoteMsg( msgbuf );
         }
         break;
@@ -749,7 +750,7 @@ void FEMessage( int class, CGPOINTER parm )
         break;
     case MSG_BAD_PARM_REGISTER:
         /* this will be issued after a call to CGInitCall or CGProcDecl */
-        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_int)parm );
+        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
@@ -775,7 +776,7 @@ void FEMessage( int class, CGPOINTER parm )
         }
         break;
     case MSG_BACK_END_ERROR:
-        CErr2( ERR_BACK_END_ERROR, (int)(pointer_int)parm );
+        CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (CGSYM_HANDLE)parm ) );

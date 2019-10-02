@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ extern  unsigned_16             TypeIdx;      // uint ???
 extern  byte                    OptForSize;
 extern  bool                    HaveLiveInfo;
 extern  bool                    HaveDominatorInfo;
-extern  pointer_int             FrlSize;
+extern  pointer_uint            FrlSize;
 extern  bool                    HaveCurrBlock;
 extern  proc_def                *CurrProc;
 extern  type_length             TypeClassSize[];

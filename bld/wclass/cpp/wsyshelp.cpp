@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,11 +146,11 @@ bool WEXPORT WSystemHelp::sysHelpId( gui_hlp_id help_id )
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         return( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTEXT, (char *)_chmfile, (char *)(pointer_int)help_id ) );
+                         GUI_HELP_CONTEXT, (char *)_chmfile, (char *)(pointer_uint)help_id ) );
     }
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTEXT, (char *)_library, (char *)(pointer_int)help_id ) );
+                         GUI_HELP_CONTEXT, (char *)_library, (char *)(pointer_uint)help_id ) );
 }
 
 const char * WEXPORT WSystemHelp::getHelpFile( void )

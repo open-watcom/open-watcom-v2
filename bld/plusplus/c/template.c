@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,11 +59,11 @@
 #define BLOCK_TEMPLATE_MEMBER   32
 #define BLOCK_FN_TEMPLATE       16
 
-#define TemplateClassInfoPCHRead()      TemplateClassInfoMapIndex( (TEMPLATE_INFO *)(pointer_int)PCHReadCVIndex() )
-#define TemplateFunctionInfoPCHRead()   TemplateFunctionInfoMapIndex( (FN_TEMPLATE *)(pointer_int)PCHReadCVIndex() )
+#define TemplateClassInfoPCHRead()      TemplateClassInfoMapIndex( (TEMPLATE_INFO *)(pointer_uint)PCHReadCVIndex() )
+#define TemplateFunctionInfoPCHRead()   TemplateFunctionInfoMapIndex( (FN_TEMPLATE *)(pointer_uint)PCHReadCVIndex() )
 
-#define TemplateClassInfoPCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)TemplateClassInfoGetIndex(x) )
-#define TemplateFunctionInfoPCHWrite(x) PCHWriteCVIndex( (cv_index)(pointer_int)TemplateFunctionInfoGetIndex(x) )
+#define TemplateClassInfoPCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_uint)TemplateClassInfoGetIndex(x) )
+#define TemplateFunctionInfoPCHWrite(x) PCHWriteCVIndex( (cv_index)(pointer_uint)TemplateFunctionInfoGetIndex(x) )
 
 static carve_t carveTEMPLATE_INFO;
 static carve_t carveCLASS_INST;

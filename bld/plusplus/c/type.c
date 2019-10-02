@@ -7879,10 +7879,10 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
 
                 // using SYMC_NULL here is a bit dirty...
                 if( ( sym->id == SYMC_NULL ) && ( sym->u.sval == 0 ) ) {
-                    sym->u.sval = (target_int)(pointer_int)(*b_top)->u.id.name;
+                    sym->u.sval = (target_int)(pointer_uint)(*b_top)->u.id.name;
                 }
 
-                if( ( sym->id != SYMC_NULL ) || ( sym->u.sval != (target_int)(pointer_int)(*b_top)->u.id.name ) ) {
+                if( ( sym->id != SYMC_NULL ) || ( sym->u.sval != (target_int)(pointer_uint)(*b_top)->u.id.name ) ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );

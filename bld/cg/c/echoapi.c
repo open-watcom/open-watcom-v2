@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +234,7 @@ void EchoAPI              // EchoAPI ROUTINE
                 ++text;
                 switch( *text ) {
                   case 'B' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, back_handle ), "bh" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, back_handle ), "bh" );
                     break;
                   }
                   case 'c' : {
@@ -243,7 +243,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'C' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, call_handle ), "ch" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, call_handle ), "ch" );
                     break;
                   }
                   case 'i' : {
@@ -253,7 +253,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'L' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, label_handle ), "lh" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, label_handle ), "lh" );
                     break;
                   }
                   case 'o' : {
@@ -276,26 +276,26 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'n' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, cg_name ), "cg" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, cg_name ), "cg" );
                     break;
                   }
                   case 'P' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, patch_handle ), "ph" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, patch_handle ), "ph" );
                     break;
                   }
                   case 's' : {
                     cg_sym_handle handle = va_arg( args, cg_sym_handle );
                     EchoAPIString( FEName( handle ) );
-                    sprintf( buffer, "[%x]", (int)(pointer_int)handle );
+                    sprintf( buffer, "[%x]", (int)(pointer_uint)handle );
                     EchoAPIString( buffer );
                     break;
                   }
                   case 'S' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, sel_handle ), "sh" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, sel_handle ), "sh" );
                     break;
                   }
                   case 'T' : {
-                    EchoAPIHandle( (int)(pointer_int)va_arg( args, temp_handle ), "th" );
+                    EchoAPIHandle( (int)(pointer_uint)va_arg( args, temp_handle ), "th" );
                     break;
                   }
                   case 't' : {

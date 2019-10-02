@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     }
     control_info.style = control_style;
     control_info.id = _id;
-    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)_id );
+    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_uint)_id );
     parent->addChild( this );
     GUIAddControl( &control_info, NULL, NULL );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@
 #define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_special )
 #define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
-#define NOCHAIN                 ((CHAIN *)(pointer_int)-1)
+#define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 
 #define SKIP_BEG_MARK(s)        if(*s==':')++s
 

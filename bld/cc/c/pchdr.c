@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +64,8 @@ extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 #define PCH_VERSION_HOST ( ( 128L << 16 ) | PCH_VERSION )
 #endif
 
-#define PCHGetUInt(p)           ((unsigned)(pointer_int)(p))
-#define PCHSetUInt(v)           ((void *)(pointer_int)((unsigned)(v)))
+#define PCHGetUInt(p)           ((unsigned)(pointer_uint)(p))
+#define PCHSetUInt(v)           ((void *)(pointer_uint)((unsigned)(v)))
 
 #define PCHWriteVar(m)          PCHWriteUnalign(&(m),sizeof(m))
 
@@ -1402,8 +1403,8 @@ static char *FixupSymbols( char *p, unsigned symbol_count )
         symptr->seginfo = TextSegArray[PCHGetUInt( symptr->seginfo )];
         PCH_SymArray[handle] = symptr;
     }
-    for( handle = 0; handle < (unsigned)(pointer_int)SpecialSyms; ++handle ) {
-        SymGet( &sym, (SYM_HANDLE)(pointer_int)handle );  // Redo special syms
+    for( handle = 0; handle < (unsigned)(pointer_uint)SpecialSyms; ++handle ) {
+        SymGet( &sym, (SYM_HANDLE)(pointer_uint)handle );  // Redo special syms
         symptr = PCH_SymArray[handle];
         *symptr = sym;
     }

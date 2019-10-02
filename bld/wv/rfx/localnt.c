@@ -274,7 +274,7 @@ error_handle LocalFindFirst( const char *pattern, rfx_find *info, unsigned info_
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( StashErrCode( -1, OP_LOCAL ) );
     }
-    DTARFX_HANDLE_OF( info ) = (pointer_int)h;
+    DTARFX_HANDLE_OF( info ) = (pointer_uint)h;
     DTARFX_ATTRIB_OF( info ) = nt_attrib;
     makeDTARFX( info, &ffd );
     return( 0 );

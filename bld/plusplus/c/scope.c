@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +71,8 @@
 #define _IsBlockScope( s )      ((s)->id == SCOPE_BLOCK)
 #define _IsFileScope( s )       ((s)->id == SCOPE_FILE)
 
-#define NameSpacePCHRead()      NameSpaceMapIndex( (NAME_SPACE *)(pointer_int)PCHReadCVIndex() )
-#define NameSpacePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)NameSpaceGetIndex(x) )
+#define NameSpacePCHRead()      NameSpaceMapIndex( (NAME_SPACE *)(pointer_uint)PCHReadCVIndex() )
+#define NameSpacePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_uint)NameSpaceGetIndex(x) )
 
 static int hashTableSizeIndex[SCOPE_MAX] = {
     #define SCOPE_DEF(a,b) b
@@ -7515,7 +7516,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
     }
     save_next = s->next;
     if( s == s->next ) {
-        s->next = (SYMBOL)(pointer_int)d->index;
+        s->next = (SYMBOL)(pointer_uint)d->index;
     } else {
         s->next = SymbolGetIndex( save_next );
     }
@@ -7800,7 +7801,7 @@ static void readSymbols( void )
     for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
         sym = CarveInitElement( &data, i );
         PCHReadVar( *sym );
-        if( i == (cv_index)(pointer_int)sym->next ) {
+        if( i == (cv_index)(pointer_uint)sym->next ) {
             // most symbols are not overloaded
             sym->next = sym;
         } else {

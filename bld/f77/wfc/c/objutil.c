@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,7 @@ void    AlignEven( void ) {
 
 // Align ObjPtr on an even boundary.
 
-    if( (int)(pointer_int)ObjPtr & 0x0001 ) {
+    if( (int)(pointer_uint)ObjPtr & 0x0001 ) {
         OutByte( 0 );
     }
 }

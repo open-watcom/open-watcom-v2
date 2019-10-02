@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +120,7 @@ typedef struct section_info {
     info_block          *mod_info;
     info_block          *addr_info;
     info_block          *gbl;
-    pointer_int         **dmnd_link;
+    pointer_uint        **dmnd_link;
     word                mod_base_idx;
     word                sect_id;
 } section_info;

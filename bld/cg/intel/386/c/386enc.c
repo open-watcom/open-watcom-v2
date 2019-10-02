@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -633,7 +633,7 @@ static void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;
-    DoLblRef( *data, (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST );
+    DoLblRef( *data, (segment_id)(pointer_uint)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST );
     _Emit;
     DoRTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, true );
 }
@@ -653,7 +653,7 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         if( bck == NULL )
             return;
         data_lbl = bck->lbl;
-        data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+        data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, P5_PROF_SEG );
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
@@ -726,7 +726,7 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
 /*********************************************************************************/
 {
     segment_id      old_segid;
-    segment_id      data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    segment_id      data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, P5_PROF_SEG );
 
     old_segid = SetOP( data_segid );
     TellOptimizerByPassed();
@@ -916,7 +916,7 @@ void StartBlockProfiling( block *blk )
         return;
     if( _IsntTargetModel( STATEMENT_COUNTING ) )
         return;
-    data_segid = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, P5_PROF_SEG );
     if( blk->label == NULL )
         return;
     TellKeepLabel( blk->label );

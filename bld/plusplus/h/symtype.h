@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,17 @@
 
 #include "cgdefs.h"
 
-#define SymbolPCHRead()         SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() )
-#define SymbolPCHWrite(x)       PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex(x) )
+#define SymbolPCHRead()         SymbolMapIndex( (SYMBOL)(pointer_uint)PCHReadCVIndex() )
+#define SymbolPCHWrite(x)       PCHWriteCVIndex( (cv_index)(pointer_uint)SymbolGetIndex(x) )
 
-#define SymbolNamePCHRead()     SymbolNameMapIndex( (SYMBOL_NAME)(pointer_int)PCHReadCVIndex() )
-#define SymbolNamePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)SymbolNameGetIndex(x) )
+#define SymbolNamePCHRead()     SymbolNameMapIndex( (SYMBOL_NAME)(pointer_uint)PCHReadCVIndex() )
+#define SymbolNamePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_uint)SymbolNameGetIndex(x) )
 
-#define ScopePCHRead()          ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() )
-#define ScopePCHWrite(x)        PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex(x) )
+#define ScopePCHRead()          ScopeMapIndex( (SCOPE)(pointer_uint)PCHReadCVIndex() )
+#define ScopePCHWrite(x)        PCHWriteCVIndex( (cv_index)(pointer_uint)ScopeGetIndex(x) )
 
-#define TypePCHRead()           TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() )
-#define TypePCHWrite(x)         PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex(x) )
+#define TypePCHRead()           TypeMapIndex( (TYPE)(pointer_uint)PCHReadCVIndex() )
+#define TypePCHWrite(x)         PCHWriteCVIndex( (cv_index)(pointer_uint)TypeGetIndex(x) )
 
 typedef struct cdopt_cache CDOPT_CACHE;
 typedef struct friend_list FRIEND;
@@ -460,12 +461,12 @@ PCH_struct friend_list {
     } u;
 };
 
-#define FriendIsSymbol( friend )        (((pointer_int)(friend)->u.type & 1)==0)
-#define FriendIsType( friend )          (((pointer_int)(friend)->u.type & 1)!=0)
+#define FriendIsSymbol( friend )        (((pointer_uint)(friend)->u.type & 1)==0)
+#define FriendIsType( friend )          (((pointer_uint)(friend)->u.type & 1)!=0)
 #define FriendGetSymbol( friend )       (friend)->u.sym
-#define FriendGetType( friend )         (TYPE)((pointer_int)(friend)->u.type & ~1)
+#define FriendGetType( friend )         (TYPE)((pointer_uint)(friend)->u.type & ~1)
 #define FriendSetSymbol( friend, sym )  (friend)->u.sym = sym
-#define FriendSetType( friend, type )   (friend)->u.type = (TYPE)((pointer_int)type | 1)
+#define FriendSetType( friend, type )   (friend)->u.type = (TYPE)((pointer_uint)type | 1)
 
 struct reloc_list {
     RELOC_LIST *next;

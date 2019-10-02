@@ -449,7 +449,7 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     case OP_EXIST:
         return( stricmp( (char *)a->u.left, (char *)b->u.left ) == 0 );
     case OP_VAR:
-        return( (vhandle)(pointer_int)a->u.left == (vhandle)(pointer_int)b->u.left );
+        return( (vhandle)(pointer_uint)a->u.left == (vhandle)(pointer_uint)b->u.left );
         break;
     case OP_TRUE:
     case OP_FALSE:
@@ -572,7 +572,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         VbufFree( &tmp );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
+        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left, is_minimal );
         break;
     case OP_TRUE:
         value = !is_minimal;
@@ -628,7 +628,7 @@ static void PropagateValue( tree_node *tree, bool value )
         break;
     case OP_VAR:
         if( value ) {
-            var_handle = (vhandle)(pointer_int)tree->u.left;
+            var_handle = (vhandle)(pointer_uint)tree->u.left;
             if( VarGetAutoSetCond( var_handle ) != NULL ) {
                 if( !VarIsRestrictedFalse( var_handle ) ) {
                     SetBoolVariableByHandle( PreviousInstall, true );

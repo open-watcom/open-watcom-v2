@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,8 +96,8 @@ mod_dbg_info *ModPointer( imp_image_handle *iih, imp_mod_handle imh )
  */
 static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dword num_links, dword first_link )
 {
-    pointer_int         **lnk_tbl;
-    pointer_int         *lnk;
+    pointer_uint        **lnk_tbl;
+    pointer_uint        *lnk;
     mod_table           *tbl;
     unsigned            num;
     dword               count;
@@ -104,14 +105,14 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
     demand_kind         dk;
     mod_dbg_info        *mod;
     unsigned            tbl_entries;
-    pointer_int         end = 0;
+    pointer_uint        end = 0;
     info_block          *blk;
 #if defined( _M_X64 )
     unsigned            j;
 #endif
 
     tbl_entries = ( ( num_links + ( MAX_LINK_ENTRIES - 1 ) ) / MAX_LINK_ENTRIES ) + 1;
-    lnk_tbl = DCAlloc( tbl_entries * sizeof( pointer_int * ) );
+    lnk_tbl = DCAlloc( tbl_entries * sizeof( pointer_uint * ) );
     if( lnk_tbl == NULL ) {
         DCStatus( DS_ERR | DS_NO_MEM );
         return( DS_ERR | DS_NO_MEM );
@@ -124,7 +125,7 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
     for( count = num_links; count > 0; count -= num ) {
         if( num > count )
             num = count;
-        lnk = DCAlloc( num * sizeof( pointer_int ) );
+        lnk = DCAlloc( num * sizeof( pointer_uint ) );
         if( lnk == NULL ) {
             DCStatus( DS_ERR | DS_NO_MEM );
             return( DS_ERR | DS_NO_MEM );
@@ -166,7 +167,7 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
                 } else {
                     if( mod->di[dk].u.entries != 0 ) {
                         mod->di[dk].info_off =
-                        ( mod->di[dk].info_off - first_link ) / sizeof( pointer_int );
+                        ( mod->di[dk].info_off - first_link ) / sizeof( pointer_uint );
                     }
                 }
             }
@@ -200,8 +201,8 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
     dword               last_link;
     demand_kind         dk;
     unsigned            num;
-    pointer_int         *lnk;
-    pointer_int         **lnk_tbl;
+    pointer_uint        *lnk;
+    pointer_uint        **lnk_tbl;
     unsigned long       off;
     dip_status          ds;
 
@@ -236,7 +237,7 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
                         if( first_link > num_links ) {
                             first_link = num_links;
                         }
-                        num_links += mod->di[dk].u.entries * sizeof( pointer_int );
+                        num_links += mod->di[dk].u.entries * sizeof( pointer_uint );
                         if( last_link < num_links ) {
                             last_link = num_links;
                         }
@@ -251,7 +252,7 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
             DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( DS_ERR | DS_FSEEK_FAILED );
         }
-        num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
+        num_links = (last_link - first_link) / sizeof( pointer_uint ) + 2;
     }
     ds = AllocLinkTable( iih, inf, num_links, first_link );
     if( ds != DS_OK )
@@ -302,9 +303,9 @@ void SetModBase( imp_image_handle *iih )
 
 void ModInfoFini( section_info *inf )
 {
-    info_block  *blk;
-    pointer_int **lnk_tbl;
-    pointer_int *lnk;
+    info_block      *blk;
+    pointer_uint    **lnk_tbl;
+    pointer_uint    *lnk;
 
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         DCFree( blk->link );

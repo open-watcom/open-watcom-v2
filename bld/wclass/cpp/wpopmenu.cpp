@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ WEXPORT WPopupMenu::WPopupMenu( const char *text )
     setOwner( NULL );
     setText( text );
     setMenuId( WWindow::_idMaster++ );
-    WWindow::_popupIdMap.setThis( this, (WHANDLE)(pointer_int)menuId() );
+    WWindow::_popupIdMap.setThis( this, (WHANDLE)(pointer_uint)menuId() );
 }
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 
 #define PRODUCTION_BUFFER_SIZE  (1024*8)
 
-#define SrcFilePCHRead()    SrcFileMapIndex( (SRCFILE)(pointer_int)PCHReadCVIndex() )
-#define SrcFilePCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_int)SrcFileGetIndex(x) )
+#define SrcFilePCHRead()    SrcFileMapIndex( (SRCFILE)(pointer_uint)PCHReadCVIndex() )
+#define SrcFilePCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_uint)SrcFileGetIndex(x) )
 
 typedef enum {
     SFO_SOURCE_FILE,

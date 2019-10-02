@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,22 +43,22 @@
 WINEXPORT BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 msglist ExceptionMsgs[] = {
-    EXCEPTION_ACCESS_VIOLATION,         (char *)(pointer_int)STR_ACCESS_VIOLATION,
-    EXCEPTION_BREAKPOINT,               (char *)(pointer_int)STR_NADA,
-    EXCEPTION_DATATYPE_MISALIGNMENT,    (char *)(pointer_int)STR_DATA_MISALIGNMENT,
-    EXCEPTION_SINGLE_STEP,              (char *)(pointer_int)STR_NADA,
-    EXCEPTION_ARRAY_BOUNDS_EXCEEDED,    (char *)(pointer_int)STR_ARRAY_BNDS_EXCEEDED,
-    EXCEPTION_FLT_DENORMAL_OPERAND,     (char *)(pointer_int)STR_DENORMAL_FLOAT,
-    EXCEPTION_FLT_DIVIDE_BY_ZERO,       (char *)(pointer_int)STR_FLT_DIV_BY_ZERO,
-    EXCEPTION_FLT_INEXACT_RESULT,       (char *)(pointer_int)STR_FLT_INEXACT_RESULT,
-    EXCEPTION_FLT_INVALID_OPERATION,    (char *)(pointer_int)STR_FLT_INV_OP,
-    EXCEPTION_FLT_OVERFLOW,             (char *)(pointer_int)STR_FLT_PT_OVERFLOW,
-    EXCEPTION_FLT_STACK_CHECK,          (char *)(pointer_int)STR_FLT_STACK_CHECK,
-    EXCEPTION_FLT_UNDERFLOW,            (char *)(pointer_int)STR_FLT_UNDERFLOW,
-    EXCEPTION_INT_DIVIDE_BY_ZERO,       (char *)(pointer_int)STR_INT_DIV_BY_ZERO,
-    EXCEPTION_INT_OVERFLOW,             (char *)(pointer_int)STR_INT_OVERFLOW,
-    EXCEPTION_PRIV_INSTRUCTION,         (char *)(pointer_int)STR_INV_INSTRUCTION,
-    STATUS_NONCONTINUABLE_EXCEPTION,    (char *)(pointer_int)STR_NADA,
+    EXCEPTION_ACCESS_VIOLATION,         (char *)(pointer_uint)STR_ACCESS_VIOLATION,
+    EXCEPTION_BREAKPOINT,               (char *)(pointer_uint)STR_NADA,
+    EXCEPTION_DATATYPE_MISALIGNMENT,    (char *)(pointer_uint)STR_DATA_MISALIGNMENT,
+    EXCEPTION_SINGLE_STEP,              (char *)(pointer_uint)STR_NADA,
+    EXCEPTION_ARRAY_BOUNDS_EXCEEDED,    (char *)(pointer_uint)STR_ARRAY_BNDS_EXCEEDED,
+    EXCEPTION_FLT_DENORMAL_OPERAND,     (char *)(pointer_uint)STR_DENORMAL_FLOAT,
+    EXCEPTION_FLT_DIVIDE_BY_ZERO,       (char *)(pointer_uint)STR_FLT_DIV_BY_ZERO,
+    EXCEPTION_FLT_INEXACT_RESULT,       (char *)(pointer_uint)STR_FLT_INEXACT_RESULT,
+    EXCEPTION_FLT_INVALID_OPERATION,    (char *)(pointer_uint)STR_FLT_INV_OP,
+    EXCEPTION_FLT_OVERFLOW,             (char *)(pointer_uint)STR_FLT_PT_OVERFLOW,
+    EXCEPTION_FLT_STACK_CHECK,          (char *)(pointer_uint)STR_FLT_STACK_CHECK,
+    EXCEPTION_FLT_UNDERFLOW,            (char *)(pointer_uint)STR_FLT_UNDERFLOW,
+    EXCEPTION_INT_DIVIDE_BY_ZERO,       (char *)(pointer_uint)STR_INT_DIV_BY_ZERO,
+    EXCEPTION_INT_OVERFLOW,             (char *)(pointer_uint)STR_INT_OVERFLOW,
+    EXCEPTION_PRIV_INSTRUCTION,         (char *)(pointer_uint)STR_INV_INSTRUCTION,
+    STATUS_NONCONTINUABLE_EXCEPTION,    (char *)(pointer_uint)STR_NADA,
     0,                                  NULL
 };
 

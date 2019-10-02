@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -934,7 +935,7 @@ void ProcFile( FILE *fp, bool is_intel )
         } else {
             /* something bailed out... */
             if( raw_dump ) {
-                Output( INDENT "Error at offset %x" CRLF, (unsigned_32)(pointer_int)RecOffset );
+                Output( INDENT "Error at offset %x" CRLF, (unsigned_32)(pointer_uint)RecOffset );
             } else if( !EndRec() ) {
                 Output( INDENT "Remainder of record follows:" CRLF );
                 OutputData( (unsigned_32)RecOffset(), 0L );

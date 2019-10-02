@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -403,7 +404,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         break;
     case PT_DUP_EXPR :
         text = stxpcpy( buffer, "dup[" );
-        text = stxcpy( text, (unsigned)(pointer_int)pnode->u.subtree[0] );
+        text = stxcpy( text, (unsigned)(pointer_uint)pnode->u.subtree[0] );
         stxpcpy( text, "]" );
         type_add = printTypes;
         break;
@@ -563,7 +564,7 @@ static void printSubtree(       // PRINT A SUBTREE
         print_locn = false;
         bptr = stxpcpy( buffer, "dup[" );
     }
-    bptr = stxcpy( bptr, (unsigned)(pointer_int)subtree->root );
+    bptr = stxcpy( bptr, (unsigned)(pointer_uint)subtree->root );
     if( print_locn ) {
         PTreeExtractLocn( subtree->root, &locn );
         if( NULL != locn.src_file ) {

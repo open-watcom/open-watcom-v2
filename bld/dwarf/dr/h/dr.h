@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,8 +93,8 @@ typedef enum {
     DR_VIRTUALITY_VIRTUAL = 1
 } dr_virtuality;
 
-#define DRMEM_HDL_VOID  ((drmem_hdl)(pointer_int)-1)        /* special handle denoting void type */
-#define DRMEM_HDL_NULL  ((drmem_hdl)(pointer_int)0)
+#define DRMEM_HDL_VOID  ((drmem_hdl)(pointer_uint)-1)       /* special handle denoting void type */
+#define DRMEM_HDL_NULL  ((drmem_hdl)(pointer_uint)0)
 
 #if defined( USE_VIRTMEM )
 typedef unsigned long   drmem_hdl;

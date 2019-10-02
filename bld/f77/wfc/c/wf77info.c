@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1231,7 +1231,7 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
-        return( (const char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
+        return( (const char *)(pointer_uint)GetParmsSize( (sym_id)sym ) );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -1381,9 +1381,9 @@ void    FEMessage( int msg, pointer x ) {
         break;
     case MSG_CODE_SIZE :
 #if _CPU == 8086
-        CodeSize = (unsigned short)(pointer_int)x;
+        CodeSize = (unsigned short)(pointer_uint)x;
 #else
-        CodeSize = (unsigned long)(pointer_int)x;
+        CodeSize = (unsigned long)(pointer_uint)x;
 #endif
         break;
     case MSG_DATA_SIZE :
@@ -1418,7 +1418,7 @@ void    FEMessage( int msg, pointer x ) {
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
     case MSG_BACK_END_ERROR :
-        Error( CP_BACK_END_ERROR, (int)(pointer_int)x );
+        Error( CP_BACK_END_ERROR, (int)(pointer_uint)x );
         break;
     case MSG_BAD_SAVE :
         Error( CP_BAD_SAVE, AuxName( x, name ) );
@@ -1919,53 +1919,53 @@ pointer FEAuxInfo( pointer req_handle, int request )
         return( (pointer)&((aux_info *)req_handle)->streturn );
 #endif
     case NEXT_IMPORT :
-        switch( (int)(pointer_int)req_handle ) {
+        switch( (int)(pointer_uint)req_handle ) {
         case 0:
             if( CGFlags & CG_HAS_PROGRAM )
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)(pointer_uint)1 );
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
             if( CGOpts & CGOPT_BD )
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)(pointer_uint)1 );
 #endif
             /* fall through */
         case 1:
 #if _CPU == 386 || _CPU == 8086
             if(( CGFlags & CG_FP_MODEL_80x87 )
               && ( CGFlags & CG_USED_80x87 ))
-                return( (pointer)(pointer_int)2 );
+                return( (pointer)(pointer_uint)2 );
             /* fall through */
         case 2:
 #if _CPU == 386
             if( CPUOpts & CPUOPT_FPI )
-                return( (pointer)(pointer_int)3 );
+                return( (pointer)(pointer_uint)3 );
             /* fall through */
         case 3:
             if( CGOpts & CGOPT_BW )
-                return( (pointer)(pointer_int)4 );
+                return( (pointer)(pointer_uint)4 );
             /* fall through */
         case 4:
 #endif
 #endif
-            return( (pointer)(pointer_int)5 );
+            return( (pointer)(pointer_uint)5 );
         case 5:
-            return( (pointer)(pointer_int)6 );
+            return( (pointer)(pointer_uint)6 );
         case 6:
             if( Options & OPT_UNIT_6_CC )
-                return( (pointer)(pointer_int)7 );
+                return( (pointer)(pointer_uint)7 );
             /* fall through */
         case 7:
             if( Options & OPT_LF_WITH_FF )
-                return( (pointer)(pointer_int)8 );
+                return( (pointer)(pointer_uint)8 );
             /* fall through */
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
             if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
-                return( (pointer)(pointer_int)9 );
+                return( (pointer)(pointer_uint)9 );
             /* fall through */
         case 9:
 #endif
             if( Options & OPT_COMMA_SEP )
-                return( (pointer)(pointer_int)10 );
+                return( (pointer)(pointer_uint)10 );
             /* fall through */
         default:
             break;
@@ -1982,12 +1982,12 @@ pointer FEAuxInfo( pointer req_handle, int request )
             if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
               && ( flags & SY_EXTERNAL )
               && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 )) {
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)(pointer_uint)1 );
             }
         }
         return( NULL );
     case IMPORT_NAME :
-        switch( (int)(pointer_int)req_handle ) {
+        switch( (int)(pointer_uint)req_handle ) {
         case 1:
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
             if( CGOpts & CGOPT_BD )
@@ -2060,7 +2060,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
     case FREE_SEGMENT :
         return( NULL );
     case REVISION_NUMBER :
-        return( (pointer)(pointer_int)II_REVISION );
+        return( (pointer)(pointer_uint)II_REVISION );
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
@@ -2070,8 +2070,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
             for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
                 idx++;
             }
-            if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.segid )
-              && ( (segment_id)(pointer_int)req_handle <= sym->u.ns.si.cb.segid + idx )) {
+            if(( (segment_id)(pointer_uint)req_handle >= sym->u.ns.si.cb.segid )
+              && ( (segment_id)(pointer_uint)req_handle <= sym->u.ns.si.cb.segid + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, true );
                 return( &MangleSymBuff );
             }
@@ -2090,13 +2090,13 @@ pointer FEAuxInfo( pointer req_handle, int request )
         // return the number of floating-point registers
         // that are NOT used as cache
         if( CPUOpts & CPUOPT_FPR )
-            return( (pointer)(pointer_int)4 );
-        return( (pointer)(pointer_int)8 );
+            return( (pointer)(pointer_uint)4 );
+        return( (pointer)(pointer_uint)8 );
     case CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );
 #endif
     case TEMP_LOC_NAME :
-        return( (pointer)(pointer_int)TEMP_LOC_QUIT );
+        return( (pointer)(pointer_uint)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL :
         return( NULL );
     case NEXT_DEPENDENCY :

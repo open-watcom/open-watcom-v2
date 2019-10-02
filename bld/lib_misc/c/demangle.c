@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +122,7 @@
 
 typedef void *(*realloc_fn_t)( void *, size_t );
 
-typedef void (*outfunPtr)(void **, dm_pts, pointer_int, char const *);
+typedef void (*outfunPtr)(void **, dm_pts, pointer_uint, char const *);
 
 #define MAX_REPLICATE   10
 
@@ -512,7 +513,7 @@ static void unforceSuppression( output_desc *data )
     }
 }
 
-static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char const *ptr )
+static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char const *ptr )
 {
     output_desc *data = *((output_desc **)cookie);
     size_t      idx = (size_t)value;

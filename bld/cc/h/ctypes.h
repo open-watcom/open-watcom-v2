@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,8 +179,8 @@ typedef struct  string_literal {
     char                *literal;       /* actual literal string */
 } STRING_LITERAL, *STR_HANDLE;
 
-#define SYM_INVALID     ((SYM_HANDLE)(pointer_int)-1)    // invalid symbol; never a real sym
-#define SYM_NULL        ((SYM_HANDLE)(pointer_int)0)
+#define SYM_INVALID     ((SYM_HANDLE)(pointer_uint)-1)  // invalid symbol; never a real sym
+#define SYM_NULL        ((SYM_HANDLE)(pointer_uint)0)
 
 typedef struct array_info {
     target_size         dimension;

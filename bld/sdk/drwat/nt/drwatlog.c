@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,9 +86,9 @@ static msglist ProcessorNames[] = {
 };
 
 msglist Actions[] = {
-    INT_CHAIN_TO_NEXT,          (char *)(pointer_int)STR_FAULT_PASSED_ON,
-    INT_TERMINATE,              (char *)(pointer_int)STR_PROCESS_TERMINATED,
-    INT_RESTART,                (char *)(pointer_int)STR_INSTR_RESTARTED,
+    INT_CHAIN_TO_NEXT,          (char *)(pointer_uint)STR_FAULT_PASSED_ON,
+    INT_TERMINATE,              (char *)(pointer_uint)STR_PROCESS_TERMINATED,
+    INT_RESTART,                (char *)(pointer_uint)STR_INSTR_RESTARTED,
     0,                          NULL
 };
 

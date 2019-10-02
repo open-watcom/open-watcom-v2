@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,7 +462,7 @@ void CarveInsertFree( carve_t cv, void *data )
 void *CarveMapIndex( carve_t cv, void *aindex )
 /*********************************************/
 {
-    unsigned    index = (unsigned)(pointer_int)aindex;
+    unsigned    index = (unsigned)(pointer_uint)aindex;
     blk_t *     block;
     blk_t **    block_map;
     unsigned    block_index;

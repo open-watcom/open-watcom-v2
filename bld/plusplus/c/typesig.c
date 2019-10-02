@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 #include "initdefs.h"
 
 
-#define TypeSigPCHRead()    TypeSigMapIndex( (TYPE_SIG *)(pointer_int)PCHReadCVIndex() )
-#define TypeSigPCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_int)TypeSigGetIndex(x) )
+#define TypeSigPCHRead()    TypeSigMapIndex( (TYPE_SIG *)(pointer_uint)PCHReadCVIndex() )
+#define TypeSigPCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_uint)TypeSigGetIndex(x) )
 
 //************* temporary ****************
 

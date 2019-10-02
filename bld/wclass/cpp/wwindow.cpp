@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,19 +94,19 @@ bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
     case GUI_CLICKED:
         {
             GUI_GETID( parm, id );
-            WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
+            WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_uint)id );
             if( menu != NULL ) {
                 menu->picked();
                 return( true );
             }
             // a popup menu with no menu items will generate GUI_CLICKED
             // - simulate a GUI_INITMENUPOPUP
-            WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_uint)id );
             if( pop != NULL ) {
                 pop->popup();
                 return( true );
             }
-            WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
+            WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_uint)id );
             if( tool != NULL ) {
                 tool->picked();
                 return( true );
@@ -218,7 +219,7 @@ bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
     case GUI_INITMENUPOPUP:
         {
             GUI_GETID( parm, id );
-            WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_uint)id );
             pop->popup();
             return( true );
         }
@@ -1072,7 +1073,7 @@ bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState )
 WControl * WWindow::getControl( WControlId id )
 /*********************************************/
 {
-    return( (WControl *)_idMap.findThis( (WHANDLE)(pointer_int)id ) );
+    return( (WControl *)_idMap.findThis( (WHANDLE)(pointer_uint)id ) );
 }
 
 

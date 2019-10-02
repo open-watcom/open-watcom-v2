@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,8 +182,8 @@ static void patDump( patricia *tree, unsigned indent ) {
     for( i = 0; i < indent; i++ ) {
         printf( "\t" );
     }
-    printf( "%lx (%d,'%s',l=%lx,r=%lx)\n", (unsigned long)(pointer_int)tree, tree->bit, tree->text,
-            (unsigned long)(pointer_int)tree->left, (unsigned long)(pointer_int)tree->right );
+    printf( "%lx (%d,'%s',l=%lx,r=%lx)\n", (unsigned long)(pointer_uint)tree, tree->bit, tree->text,
+            (unsigned long)(pointer_uint)tree->left, (unsigned long)(pointer_uint)tree->right );
     child = tree->right;
     if( child != NULL && child->bit > tree->bit ) {
         patDump( child, indent + 1 );

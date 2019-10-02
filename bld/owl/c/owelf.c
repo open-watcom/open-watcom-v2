@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -415,7 +416,7 @@ static void emitSectionData( owl_file_handle file ) {
             next_reloc = reloc_buffer;
             for( reloc = curr->first_reloc; reloc != NULL; reloc = reloc->next ) {
                 emitReloc( curr, reloc, next_reloc );
-                next_reloc = (Elf32_Rela *)( (unsigned)(pointer_int)next_reloc + reloc_entry_size );
+                next_reloc = (Elf32_Rela *)( (unsigned)(pointer_uint)next_reloc + reloc_entry_size );
             }
         } else {
             reloc_buffer = NULL;

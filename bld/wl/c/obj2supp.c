@@ -336,7 +336,7 @@ static void MapFramePtr( frame_spec *frame, void **targ )
         *targ = CarveGetIndex( CarveSegData, *targ );
         break;
     case FIX_FRAME_GRP:
-        *targ = (void *)(pointer_int)frame->u.group->num;
+        *targ = (void *)(pointer_uint)frame->u.group->num;
         break;
     case FIX_FRAME_EXT:
         *targ = CarveGetIndex( CarveSymbol, *targ );
@@ -352,7 +352,7 @@ static void MapTargetPtr( target_spec *target, void **targ )
         *targ = CarveGetIndex( CarveSegData, *targ );
         break;
     case FIX_TARGET_GRP:
-        *targ = (void *)(pointer_int)target->u.group->num;
+        *targ = (void *)(pointer_uint)target->u.group->num;
         break;
     case FIX_TARGET_EXT:
         *targ = CarveGetIndex( CarveSymbol, *targ );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@ typedef enum {
     SET_FUNCTION
 } stack_op;
 
-#define OP2HDL(x)   ((drmem_hdl)(pointer_int)(x))
-#define HDL2OP(x)   ((stack_op)(pointer_int)(x))
+#define OP2HDL(x)   ((drmem_hdl)(pointer_uint)(x))
+#define HDL2OP(x)   ((stack_op)(pointer_uint)(x))
 
 #define DWRContextOP(x,y)       HDL2OP(DWRContext(x,y))
 #define DWRContextPushOP(x,y)   DWRContextPush(x,OP2HDL(y))

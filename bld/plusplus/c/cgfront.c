@@ -55,8 +55,8 @@
 
 #define CS_LABEL_BLOCK  4       // number of CS labels to allocate at a time
 
-#define CGFilePCHRead()     CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() )
-#define CGFilePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex(x) )
+#define CGFilePCHRead()     CGFileMapIndex( (CGFILE *)(pointer_uint)PCHReadCVIndex() )
+#define CGFilePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_uint)CGFileGetIndex(x) )
 
 static CGFILE *dataCGFILE;      // file for data
 static CGFILE *codeCGFILE;      // file for code

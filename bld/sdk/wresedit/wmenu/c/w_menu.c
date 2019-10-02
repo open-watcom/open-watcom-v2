@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -652,7 +653,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
                 return( FALSE );
             }
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
-                             (UINT)(pointer_int)entry->preview_popup,
+                             (UINT)(pointer_uint)entry->preview_popup,
                              entry->item->Item.Popup.ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,

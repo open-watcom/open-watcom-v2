@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #ifndef _REWRITE_H
 #define _REWRITE_H
 
-#define RewritePCHRead()        RewriteMapIndex( (REWRITE *)(pointer_int)PCHReadCVIndex() )
-#define RewritePCHWrite(x)      PCHWriteCVIndex( (cv_index)(pointer_int)RewriteGetIndex(x) )
+#define RewritePCHRead()        RewriteMapIndex( (REWRITE *)(pointer_uint)PCHReadCVIndex() )
+#define RewritePCHWrite(x)      PCHWriteCVIndex( (cv_index)(pointer_uint)RewriteGetIndex(x) )
 
 typedef struct rewrite_tokens   REWRITE_TOKENS;
 typedef struct srcfile_handle   SRCFILE_HANDLE;

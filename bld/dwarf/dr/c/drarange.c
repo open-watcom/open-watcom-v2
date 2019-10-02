@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +57,8 @@ void DRWalkARange( DRARNGWLK callback, void *data )
     drmem_hdl           pos;
     drmem_hdl           finish;
     uint_32             tuple_size;
-    pointer_int         aligned_addr;
-    pointer_int         addr;
+    pointer_uint        aligned_addr;
+    pointer_uint        addr;
     bool                wat_producer;
     bool                zero_padding = true;
 
@@ -88,7 +89,7 @@ void DRWalkARange( DRARNGWLK callback, void *data )
          * no alignment padding was used.
          */
         wat_producer = ( DWRCurrNode->wat_producer_ver > VER_NONE ) || ( tuple_size == 10 );
-        addr = (pointer_int)pos;
+        addr = (pointer_uint)pos;
         aligned_addr = (addr + tuple_size - 1) & ~(tuple_size - 1);
         if( aligned_addr != addr ) {
             /* try reading the padding; if it's nonzero, assume it's not there */

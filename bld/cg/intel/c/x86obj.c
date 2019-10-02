@@ -388,7 +388,7 @@ static  void    SegmentClass( index_rec *rec )
 {
     char        *class_name;
 
-    class_name = FEAuxInfo( (pointer)(pointer_int)rec->segid, CLASS_NAME );
+    class_name = FEAuxInfo( (pointer)(pointer_uint)rec->segid, CLASS_NAME );
     if( class_name != NULL ) {
         rec->cidx = GetNameIdx( class_name, "", true );
     }
@@ -2012,8 +2012,8 @@ void    ObjFini( void )
     FiniAbsPatches();
     EndModule();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_int)CodeSize );
-    FEMessage( MSG_DATA_SIZE, (pointer)(pointer_int)DataSize );
+    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_uint)CodeSize );
+    FEMessage( MSG_DATA_SIZE, (pointer)(pointer_uint)DataSize );
 }
 
 
@@ -2817,7 +2817,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
         def_idx = GenImport( def_resolve, false );
         EjectImports();
         cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-        type = (import_type)(pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
+        type = (import_type)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
         switch( type ) {
         case IMPORT_IS_LAZY:
             OutShort( LAZY_EXTRN_COMMENT, cmt );

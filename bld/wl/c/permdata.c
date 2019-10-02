@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -474,13 +475,13 @@ static void PrepStartValue( inc_file_header *hdr )
 /************************************************/
 {
     if( StartInfo.mod != NULL && !StartInfo.user_specd ) {
-        hdr->startmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, StartInfo.mod );
+        hdr->startmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, StartInfo.mod );
         if( StartInfo.type == START_IS_SDATA ) {
             hdr->flags |= INC_FLAG_START_SEG;
-            hdr->startidx = (cv_index)(pointer_int)CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
+            hdr->startidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
         } else {
             DbgAssert( StartInfo.type == START_IS_SYM );
-            hdr->startidx = (cv_index)(pointer_int)CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
+            hdr->startidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
         }
         hdr->startoff = StartInfo.off;
     } else {
@@ -571,9 +572,9 @@ void WritePermData( void )
     hdr.strtabsize = strsize;
     QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
     memcpy( hdr.signature, INC_FILE_SIG, INC_FILE_SIG_SIZE );
-    hdr.rootmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, Root->mods );
-    hdr.headsymidx = (cv_index)(pointer_int)CarveGetIndex( CarveSymbol, HeadSym );
-    hdr.libmodidx = (cv_index)(pointer_int)CarveGetIndex( CarveModEntry, LibModules );
+    hdr.rootmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, Root->mods );
+    hdr.headsymidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSymbol, HeadSym );
+    hdr.libmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, LibModules );
     hdr.linkstate = (unsigned_32)( LinkState & ~LS_CLEAR_ON_INC );
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
@@ -836,13 +837,13 @@ static void ReadStartInfo( inc_file_header *hdr )
 {
     if( hdr->startmodidx != 0 ) {
         StartInfo.from_inc = true;
-        StartInfo.mod = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->startmodidx);
+        StartInfo.mod = CarveMapIndex( CarveModEntry, (void *)(pointer_uint)hdr->startmodidx);
         if( hdr->flags & INC_FLAG_START_SEG ) {
             StartInfo.type = START_IS_SDATA;
-            StartInfo.targ.sdata = CarveMapIndex( CarveSegData, (void *)(pointer_int)hdr->startidx );
+            StartInfo.targ.sdata = CarveMapIndex( CarveSegData, (void *)(pointer_uint)hdr->startidx );
         } else {
             StartInfo.type = START_IS_SYM;
-            StartInfo.targ.sym = CarveMapIndex( CarveSymbol, (void *)(pointer_int)hdr->startidx );
+            StartInfo.targ.sym = CarveMapIndex( CarveSymbol, (void *)(pointer_uint)hdr->startidx );
         }
         StartInfo.off = hdr->startoff;
     }
@@ -914,9 +915,9 @@ void ReadPermData( void )
     CarveWalkAll( CarveModEntry, RebuildModEntry, &info );
     CarveWalkAll( CarveSegData, RebuildSegData, &info );
     CarveWalkAll( CarveSymbol, RebuildSymbol, &info );
-    Root->mods = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->rootmodidx );
-    HeadSym = CarveMapIndex( CarveSymbol, (void *)(pointer_int)hdr->headsymidx );
-    LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->libmodidx );
+    Root->mods = CarveMapIndex( CarveModEntry, (void *)(pointer_uint)hdr->rootmodidx );
+    HeadSym = CarveMapIndex( CarveSymbol, (void *)(pointer_uint)hdr->headsymidx );
+    LibModules = CarveMapIndex( CarveModEntry, (void *)(pointer_uint)hdr->libmodidx );
     LinkState = (stateflag)hdr->linkstate | LS_GOT_PREV_STRUCTS | (LinkState & LS_CLEAR_ON_INC);
     ReadStartInfo( hdr );
     _LnkFree( info.buffer );

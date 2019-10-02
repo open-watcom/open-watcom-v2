@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "madcli.h"
 
 msglist MADMsgs[] = {
-    #define pick( r, e, j ) MAD_##r,(char *)(pointer_int)r,
+    #define pick( r, e, j ) MAD_##r,(char *)(pointer_uint)r,
     #include "mad.str"
     #undef pick
     0 , NULL

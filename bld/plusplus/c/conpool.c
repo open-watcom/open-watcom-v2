@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,8 @@
 #include "floatsup.h"
 
 
-#define ConstantPoolPCHRead()   ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() )
-#define ConstantPoolPCHWrite(x) PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex(x) );
+#define ConstantPoolPCHRead()   ConstantPoolMapIndex( (POOL_CON *)(pointer_uint)PCHReadCVIndex() )
+#define ConstantPoolPCHWrite(x) PCHWriteCVIndex( (cv_index)(pointer_uint)ConstantPoolGetIndex(x) );
 
 static carve_t carvePOOL_CON;   // - carving info. -- floating point
 static POOL_CON *pool_float;    // - floating pool

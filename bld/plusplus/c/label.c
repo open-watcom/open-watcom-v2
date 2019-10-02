@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +41,8 @@
 #include "initdefs.h"
 #include "pcheader.h"
 
-#define labelBlockPCHRead(x)    labelBlockMapIndex( x, (void *)(pointer_int)PCHReadCVIndex() )
-#define labelBlockPCHWrite(x,y) PCHWriteCVIndex( (cv_index)(pointer_int)labelBlockGetIndex(x,y) );
+#define labelBlockPCHRead(x)    labelBlockMapIndex( x, (void *)(pointer_uint)PCHReadCVIndex() )
+#define labelBlockPCHWrite(x,y) PCHWriteCVIndex( (cv_index)(pointer_uint)labelBlockGetIndex(x,y) );
 
 typedef struct blk_init BLK_INIT;
 struct blk_init {                       // BLK_INIT -- describes blocks for init. dcls
