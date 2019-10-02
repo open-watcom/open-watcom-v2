@@ -301,6 +301,7 @@ int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
     setmode( STDOUT_FILENO, O_TEXT );
     return( retcode );
 }
+
 #else
 
 DLL_CMD *OSFindDLL( char const *cmd_name )
