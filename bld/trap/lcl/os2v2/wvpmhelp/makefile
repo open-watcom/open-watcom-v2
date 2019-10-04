@@ -28,26 +28,26 @@ w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
 tmplnk = tmp.lnk
 
 wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
-    @%write  $(tmplnk) name $^@ sys os2v2 dll
-    @%append $(tmplnk) debug all op symf
-    @%append $(tmplnk) option map
-    @%append $(tmplnk) file pmhook.obj
-    @%append $(tmplnk) library os2386.lib
-    @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
+    @%write  $^&.lnk name $^@ sys os2v2 dll
+    @%append $^&.lnk debug all op symf
+    @%append $^&.lnk option map
+    @%append $^&.lnk file pmhook.obj
+    @%append $^&.lnk library os2386.lib
+    @%append $^&.lnk export SendMsgHookProc.1,SetHmqDebugee.2
     @%make echo_link
-    $(linker) @$(tmplnk)
+    $(linker) @$^&.lnk
 
 wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
-    @%write  $(tmplnk) name $^@ system os2v2 pm
-    @%append $(tmplnk) debug all op symf
-    @%append $(tmplnk) option map
-    @%append $(tmplnk) import WinLockInput PMMERGE.5225
-    @%append $(tmplnk) import WinThreadAssocQueue PMMERGE.5398
-    @%append $(tmplnk) file pmhelp.obj
-    @%append $(tmplnk) option modname=wdpmhelp
-    @%append $(tmplnk) option description $(description)
+    @%write  $^&.lnk name $^@ system os2v2 pm
+    @%append $^&.lnk debug all op symf
+    @%append $^&.lnk option map
+    @%append $^&.lnk import WinLockInput PMMERGE.5225
+    @%append $^&.lnk import WinThreadAssocQueue PMMERGE.5398
+    @%append $^&.lnk file pmhelp.obj
+    @%append $^&.lnk option modname=wdpmhelp
+    @%append $^&.lnk option description $(description)
     @%make echo_link
-    $(linker) @$(tmplnk)
+    $(linker) @$^&.lnk
     @%make bind_res
 
 .c: ../c
