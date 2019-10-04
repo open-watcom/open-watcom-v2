@@ -45,8 +45,8 @@ full_export = 1
 !endif
 
 !ifdef full_export
-# remove reference to run-time code &
-alias_symbols_nt = alias __DLLstart_='_LibMain@12' &
+# remove reference to run-time code
+alias_symbols_nt = alias __DLLstart_='_LibMain@12'
 !endif
 
 !ifneq release 0
