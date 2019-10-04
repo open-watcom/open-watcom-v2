@@ -288,6 +288,7 @@ void DlgCmd( void )
                 TRAPENTRY_PTR_NAME( InterruptProgram ) = TRAPENTRY_PTR_CAST( InterruptProgram )GetProcAddress( hmod, (LPSTR)5 );
                 if( TRAPENTRY_PTR_NAME( InterruptProgram ) != NULL ) {
                     TRAPENTRY_PTR_NAME( InterruptProgram )();
+                }
                 CloseHandle( hmod );
             }
             // break the task
