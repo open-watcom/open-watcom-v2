@@ -51,6 +51,8 @@ bool OptDelim( char ch )
 
 bool ProcSysOption( const char *start, unsigned len, int pass )
 {
+    /* unused parameters */ (void)start; (void)len; (void)pass;
+
     return( false );
 }
 

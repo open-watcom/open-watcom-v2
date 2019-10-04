@@ -68,6 +68,11 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 #ifdef __AXP__
     DWORD       curr_err;
 #endif
+
+#ifndef __AXP__
+    /* unused parameters */ (void)pass;
+#endif
+
     switch( Lookup( SysOptNameTab, start, len ) ) {
     case OPT_POPUPS:
         _SwitchOn( SW_DETACHABLE_WINDOWS );
