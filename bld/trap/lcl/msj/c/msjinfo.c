@@ -42,16 +42,16 @@ void TRAPENTRY InfoFunction( HWND hwnd )
     DebuggerWindow = hwnd;
 }
 
-void InterruptProgram( void )
-/***************************/
+void TRAPENTRY InterruptProgram( void )
+/*************************************/
 {
     DoInterrupt();
 }
 
-bool Terminate( void )
-/********************/
+bool TRAPENTRY Terminate( void )
+/******************************/
 {
     EndProc();
     SignalDeath();
-    return TRUE;
+    return( true );
 }

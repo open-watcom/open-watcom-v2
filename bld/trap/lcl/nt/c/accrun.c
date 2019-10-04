@@ -45,6 +45,9 @@ typedef enum {
     T_ON_NEXT
 }   set_t;
 
+extern TRAPENTRY_FUNC( InterruptProgram );
+extern TRAPENTRY_FUNC( Terminate );
+
 /*
  * setATBit - control if we are tracing
  */
@@ -125,7 +128,7 @@ static void setTBitInAllThreads( set_t set )
     }
 }
 
-void InterruptProgram( void )
+void TRAPENTRY InterruptProgram( void )
 {
     setTBitInAllThreads( T_ON_CURR );
     // a trick to make app execute long enough to hit a breakpoint
@@ -133,7 +136,7 @@ void InterruptProgram( void )
     PendingProgramInterrupt = TRUE;
 }
 
-bool Terminate( void )
+bool TRAPENTRY Terminate( void )
 {
     HANDLE  hp;
 

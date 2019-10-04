@@ -46,6 +46,9 @@ typedef enum {
     CTL_CONTINUE
 }   ctl_request;
 
+extern TRAPENTRY_FUNC( InterruptProgram );
+extern TRAPENTRY_FUNC( Terminate );
+
 static struct {
     // control overhead
     ctl_request request;

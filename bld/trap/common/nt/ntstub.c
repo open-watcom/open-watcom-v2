@@ -35,8 +35,19 @@
 
 
 extern TRAPENTRY_FUNC( InfoFunction );
+extern TRAPENTRY_FUNC( InterruptProgram );
+extern TRAPENTRY_FUNC( Terminate );
 
 void TRAPENTRY InfoFunction( HWND hwnd )
 {
-    hwnd = hwnd;
+    /* unused parameters */ (void)hwnd;
+}
+
+void TRAPENTRY InterruptProgram( void )
+{
+}
+
+bool TRAPENTRY Terminate( void )
+{
+    return( false );
 }

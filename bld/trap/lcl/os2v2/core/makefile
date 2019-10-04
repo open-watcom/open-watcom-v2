@@ -13,6 +13,7 @@ target_os  = os2v2
 srv     = lcl
 name    = core
 which   = TRAP
+core_only = 1
 
 extra_cppflags = -DELFCORE
 extra_cflags = -bd

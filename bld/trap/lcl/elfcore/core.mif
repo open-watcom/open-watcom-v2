@@ -1,0 +1,8 @@
+srv     = lcl
+name    = elf
+which   = TRAP
+core_only = 1
+
+extra_cppflags = -DELFCORE
+
+inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"

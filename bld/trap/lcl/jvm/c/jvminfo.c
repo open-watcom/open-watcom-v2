@@ -40,7 +40,12 @@ void TRAPENTRY InfoFunction( HWND hwnd )
     DebuggerHwnd = hwnd;
 }
 
-void InterruptProgram( void )
+void TRAPENTRY InterruptProgram( void )
 {
     //nyi: we can do this somehow - I know we can!
+}
+
+bool TRAPENTRY Terminate( void )
+{
+    return( false );
 }

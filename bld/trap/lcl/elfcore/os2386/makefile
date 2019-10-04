@@ -8,11 +8,6 @@ host_os  = os2
 target_cpu = x86
 target_os  = os2v2
 
-srv     = lcl
-name    = elf
-which   = TRAP
-
-extra_cppflags = -DELFCORE
 extra_cflags = -bd
 
 extra_objs = &
@@ -23,7 +18,6 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"
-
+!include ../core.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

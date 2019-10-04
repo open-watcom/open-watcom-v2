@@ -161,7 +161,7 @@ struct msg_list {
     char        msg[1]; /* variable size */
 };
 
-typedef unsigned		myconditions;
+typedef unsigned        myconditions;
 
 #if !defined( WOW ) || defined( MD_x64 )
 typedef void            IMAGE_NOTE;
@@ -202,8 +202,6 @@ extern void             AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
 extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
-extern void             InterruptProgram( void );
-extern bool             Terminate( void );
 
 /* misc.c */
 extern BOOL             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
