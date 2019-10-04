@@ -16,10 +16,10 @@ sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 sys_axp_nt    = sys ntaxp
 
-trap_ext_os2_i86     = cli1.exe
-trap_ext_qnx_i86     = cli.qnx
-trap_ext_qnx_386     = cli.qnx
-trap_ext_win_i86     = cliw.exe
+trap_ext_os2_i86 = cli1.exe
+trap_ext_qnx_i86 = cli.qnx
+trap_ext_qnx_386 = cli.qnx
+trap_ext_win_i86 = cliw.exe
 
 !ifdef trap_ext_$(host_os)_$(host_cpu)
 trap_basename = $(xname)
@@ -46,57 +46,45 @@ full_export = 1
 
 !ifdef full_export
 # remove reference to run-time code &
-alias_symbols = alias __DLLstart_='_LibMain@12' &
+alias_symbols_nt = alias __DLLstart_='_LibMain@12' &
 !endif
 
 !ifneq release 0
 dllbase = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
 !endif
 
+export_common_intel = export TrapInit_.1, TrapFini_.2, TrapRequest_.3
+export_common_risc = export TrapInit.1, TrapFini.2, TrapRequest.3
+!ifdef full_export
+export_full_os2 = export TellHandles_.4,TellHardMode_.5
+export_full_nt_intel = export InfoFunction_.4, InterruptProgram_.5, Terminate_.6
+export_full_nt_risc = export InfoFunction.4, InterruptProgram.5, Terminate.6
+!endif
+
 sys_x86_os2  = sys os2 dll initinstance &
-            export TrapInit_.1, TrapFini_.2, TrapRequest_.3 &
-!ifdef full_export
-            export TellHandles_.4,TellHardMode_.5 &
-!endif
-            op modname=$^& &
-            option description $(description)
+    $(export_common_intel) $(export_full_os2) &
+    op modname=$^& &
+    option description $(description)
+
 sys_x86_os2v2  = sys os2v2 dll initinstance terminstance &
-            export TrapInit_.1, TrapFini_.2, TrapRequest_.3 &
-!ifdef full_export
-            export TellHandles_.4,TellHardMode_.5 &
-!endif
-            lib os2386.lib &
-            op modname=$^& &
-            option description $(description)
+    $(export_common_intel) $(export_full_os2) &
+    lib os2386.lib &
+    op modname=$^& &
+    option description $(description)
+
 sys_x86_win  = sys windows_dll &
-            export WEP.1 RESIDENT &
-            export TRAPINIT.2 &
-            export TRAPFINI.3 &
-            export TRAPREQUEST.4 &
-            export INPUTHOOK.5 &
-            export INFOFUNCTION.6 &
-            export HARDMODECHECK.7 &
-            export GETHWNDFUNC.8 &
-            export SETHARDMODE.12 &
-            export UNLOCKINPUT.13 &
-            op modname=$^& &
-#            option rwr &
-            option description $(description)
-sys_x86_nt   = sys nt_dll initinstance opt dosseg &
-            export TrapInit_.1, TrapFini_.2, TrapRequest_.3 &
-!ifdef full_export
-            export InfoFunction_.4, InterruptProgram_.5, Terminate_.6 &
-!endif
-            $(alias_symbols) &
-            op modname=$^& &
-            option description $(description) &
-	        $(dllbase)
+    export WEP.1 RESIDENT &
+    export TRAPINIT.2, TRAPFINI.3, TRAPREQUEST.4, INPUTHOOK.5, INFOFUNCTION.6 &
+    export HARDMODECHECK.7, GETHWNDFUNC.8, SETHARDMODE.12, UNLOCKINPUT.13 &
+    op modname=$^& &
+    option description $(description)
+#    option rwr
 
 sys_x86_dos  = sys dos
 
 sys_x86_rdos = sys rdos_dll &
-            export TrapInit_, TrapFini_, TrapRequest_ &
-            $(dllbase)
+    export TrapInit_, TrapFini_, TrapRequest_ &
+    $(dllbase)
 
 sys_x86_qnx  = sys pharlap_qnx disable 1014, 1023
 
@@ -104,34 +92,32 @@ sys_x86_qnx  = sys pharlap_qnx disable 1014, 1023
 # this under Linux already. Eventually it should be an ELF shared library.
 
 sys_x86_linux = sys pe_linux dll opt dosseg &
-            export TrapLoad_.1 &
-            option description $(description)
+    export TrapLoad_.1 &
+    option description $(description)
+
+sys_x86_nt   = sys nt_dll initinstance opt dosseg &
+    $(export_common_intel) $(export_full_nt_intel) &
+    $(alias_symbols_nt) &
+    op modname=$^& &
+    option description $(description) &
+    $(dllbase)
 
 sys_axp_nt   = sys ntaxp_dll initinstance &
-            export TrapInit.1, TrapFini.2, TrapRequest.3 &
-!ifdef full_export
-            export InfoFunction.4, InterruptProgram.5, Terminate.6 &
-!endif
-            option description $(description) &
-            op modname=$^&
+    $(export_common_risc) $(export_full_nt_risc) &
+    option description $(description) &
+    op modname=$^&
 
 sys_ppc_nt   = sys ntppc_dll initinstance &
-            export TrapInit.1, TrapFini.2, TrapRequest.3 &
-!ifdef full_export
-            export InfoFunction.4, InterruptProgram.5, Terminate.6 &
-!endif
-            option description $(description) &
-            op modname=$^&
+    $(export_common_risc) $(export_full_nt_risc) &
+    option description $(description) &
+    op modname=$^&
 
 sys_jvm_nt   = sys nt_dll initinstance opt dosseg &
-            export TrapInit_.1, TrapFini_.2, TrapRequest_.3 &
-!ifdef full_export
-            export InfoFunction_.4, InterruptProgram_.5, Terminate_.6 &
-!endif
-            $(alias_symbols) &
-            op modname=$^& &
-            option description $(description) &
-	        $(dllbase)
+    $(export_common_intel) $(export_full_nt_intel) &
+    $(alias_symbols_nt) &
+    op modname=$^& &
+    option description $(description) &
+    $(dllbase)
 
 trap_ext_nt          = .dll
 trap_ext_os2_os2     = .dll
@@ -153,7 +139,6 @@ target = $(trap_basename).trp
 target = $(trap_basename)$(ext_lib_shared)
 !endif
 !endif
-
 
 TRAP_common_objs = $(os_prefix)strt.obj
 !ifeq srv par
