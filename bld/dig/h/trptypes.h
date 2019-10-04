@@ -154,20 +154,22 @@ typedef const trap_requests *trap_load_func( const trap_callbacks *client );
  */
 #if defined( __OS2__ )
   #if defined( _M_I86 )
-#define TRAPENTRY_FUNC_TellHandles(x)   void TRAPENTRY x (void __far *,void __far *)
+    #define TRAPENTRY_FUNC_TellHandles(x)   void TRAPENTRY x (void __far *,void __far *)
   #else
-#define TRAPENTRY_FUNC_TellHandles(x)   void TRAPENTRY x (HAB, HWND)
+    #define TRAPENTRY_FUNC_TellHandles(x)   void TRAPENTRY x (HAB, HWND)
   #endif
-#define TRAPENTRY_FUNC_TellHardMode(x)  char TRAPENTRY x (char)
+    #define TRAPENTRY_FUNC_TellHardMode(x)  char TRAPENTRY x (char)
 #elif defined( __NT__ )
-#define TRAPENTRY_FUNC_InfoFunction(x)  void TRAPENTRY x (HWND)
+    #define TRAPENTRY_FUNC_InfoFunction(x)  void TRAPENTRY x (HWND)
+    #define TRAPENTRY_FUNC_InterruptProgram(x)  void TRAPENTRY x (void)
+    #define TRAPENTRY_FUNC_Terminate(x)     bool TRAPENTRY x (void)
 #elif defined( __WINDOWS__ )
-#define TRAPENTRY_FUNC_InfoFunction(x)  void TRAPENTRY x (HWND)
-#define TRAPENTRY_FUNC_GetHwndFunc(x)   HWND TRAPENTRY x (void)
-#define TRAPENTRY_FUNC_InputHook(x)     void TRAPENTRY x (event_hook_fn *)
-#define TRAPENTRY_FUNC_HardModeCheck(x) bool TRAPENTRY x (void)
-#define TRAPENTRY_FUNC_SetHardMode(x)   void TRAPENTRY x (bool)
-#define TRAPENTRY_FUNC_UnLockInput(x)   void TRAPENTRY x (void)
+    #define TRAPENTRY_FUNC_InfoFunction(x)  void TRAPENTRY x (HWND)
+    #define TRAPENTRY_FUNC_GetHwndFunc(x)   HWND TRAPENTRY x (void)
+    #define TRAPENTRY_FUNC_InputHook(x)     void TRAPENTRY x (event_hook_fn *)
+    #define TRAPENTRY_FUNC_HardModeCheck(x) bool TRAPENTRY x (void)
+    #define TRAPENTRY_FUNC_SetHardMode(x)   void TRAPENTRY x (bool)
+    #define TRAPENTRY_FUNC_UnLockInput(x)   void TRAPENTRY x (void)
 #endif
 
 #endif
