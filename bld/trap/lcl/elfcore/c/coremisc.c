@@ -198,7 +198,7 @@ trap_retval ReqFile_write( void )
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
