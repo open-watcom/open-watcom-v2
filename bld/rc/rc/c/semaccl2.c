@@ -41,11 +41,16 @@
 static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, FILE *fp )
 /**************************************************************************/
 {
-    if( RESWRITE( fp, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
+    bool                error;
+
+    error = ResWriteUint16( currentry->Flags, fp );
+    if( !error ) {
+        error = ResWriteUint16( currentry->Ascii, fp );
     }
-    return( false );
+    if( !error ) {
+        error = ResWriteUint16( currentry->Id, fp );
+    }
+    return( error );
 }
 
 #define CTRL_EVENT  0x8000
@@ -203,7 +208,7 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
         error = ResWriteUint16( codepage, fp );
     }
     for( currentry = acctable->head; currentry != NULL && !error; currentry = currentry->next ) {
-        ResOS2WriteAccelEntry( &currentry->entry, fp );
+        error = ResOS2WriteAccelEntry( &currentry->entry, fp );
     }
     return( error );
 }

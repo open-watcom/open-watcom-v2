@@ -63,12 +63,19 @@ struct MenuItem {
 static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, FILE *fp )
 /********************************************************************/
 {
-    if( RESWRITE( fp, currhead, sizeof( MenuHeaderOS2 ) ) != sizeof( MenuHeaderOS2 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
+    bool        error;
+
+    error = ResWriteUint32( currhead->Size, fp );
+    if( !error ) {
+        error = ResWriteUint16( currhead->Codepage, fp );
     }
+    if( !error ) {
+        error = ResWriteUint16( currhead->Class, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( currhead->NumItems, fp );
+    }
+    return( error );
 }
 
 static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
@@ -173,7 +180,7 @@ static size_t SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, unsigned *count )
     size_t          size;
     unsigned        dummycount;
 
-    size = sizeof( MenuHeaderOS2 );
+    size = MenuHeaderOS2_FILESIZE;
 
     if( submenu == NULL ) {
         return( size );

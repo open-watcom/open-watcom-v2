@@ -219,12 +219,14 @@
     #define _Packed
 #endif
 
-typedef _Packed struct MenuHeaderOS2 {
+typedef struct MenuHeaderOS2 {
     uint_32 Size;
     uint_16 Codepage;
     uint_16 Class;
     uint_16 NumItems;
 } MenuHeaderOS2;
+
+#define MenuHeaderOS2_FILESIZE  (sizeof( uint_32 ) + 3 * sizeof( uint_16 ))
 
 typedef struct MenuItemOS2 {
     uint_16 ItemStyle;
@@ -260,13 +262,13 @@ typedef _Packed struct DialogTemplateItemOS2 {
     uint_16 offCtlData;
 } DialogTemplateItemOS2;
 
-typedef _Packed struct AccelTableEntryOS2 {
+typedef struct AccelTableEntryOS2 {
     uint_16     Flags;
     uint_16     Ascii;
     uint_16     Id;
 } AccelTableEntryOS2;
 
-typedef _Packed struct HelpTableEntryOS2 {
+typedef struct HelpTableEntryOS2 {
     uint_16     WindowId;
     uint_16     SubtableId;
     uint_16     Dummy;
