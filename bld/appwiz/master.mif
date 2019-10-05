@@ -39,4 +39,4 @@ rcstr.gh : ../h/appwiz.msg
 
 appwiz.res : ../h/appwiz.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@
+    $(rc) $(bldver_cppflags) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@

@@ -17,4 +17,4 @@ dlldbg.exe : dlldbg.obj dlldbg.res $(__MAKEFILES__)
 
 dlldbg.res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) $[@ -fo=$@
+    $(rc) $(bldver_cppflags) $(rc_flags) $[@ -fo=$@

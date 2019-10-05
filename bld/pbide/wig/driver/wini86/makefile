@@ -35,7 +35,7 @@ $(dlnk) : makefile
         @for %i in ($(dobj)) do @%append $(dlnk) file obj\%i
 
 driver.res : driver.rc driver.dlg
-        $(rc) $(rc_flags) driver.rc -fo=$^@
+        $(rc) $(bldver_cppflags) $(rc_flags) driver.rc -fo=$^@
 
 driver.obj : driver.c
         wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj

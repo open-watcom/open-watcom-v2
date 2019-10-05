@@ -48,4 +48,4 @@ $(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
 
 $(proj_name).res : $(proj_name).rc $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@
+    $(rc) $(bldver_cppflags) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

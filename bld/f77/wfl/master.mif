@@ -65,4 +65,4 @@ jerrmsg.grc:  ../../../h/error.msg
 
 wresui.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $[@ -fo=$^@ -I"$(comp_cfg_dir)/h"
+    $(rc_aui) $(bldver_cppflags) -I. -I.. -I"../../h" -I"../../../h" $[@ -fo=$^@ -I"$(comp_cfg_dir)/h"

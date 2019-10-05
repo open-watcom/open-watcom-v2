@@ -111,7 +111,7 @@ rcmsg.gh: wrmsg.gh $(__MAKEFILES__)
 
 wrmsg.gh: ../res/master.msg $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
+    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
 
 $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
     @%make echo_yacc
@@ -120,4 +120,4 @@ $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/r
 
 $(name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(bldver_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@

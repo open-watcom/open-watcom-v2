@@ -634,7 +634,7 @@ rc_cpp_mps      = -D__MIPS__
 rc_cpp_ppc      = -D__PPC__
 rc_cpp_x64      = -D_M_X64
 
-rc_cppflags     = $(bldver_cppflags) $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
+rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
 rc_flags_all    = -xb -r
 

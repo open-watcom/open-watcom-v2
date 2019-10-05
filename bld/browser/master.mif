@@ -149,9 +149,9 @@ $(wbrw_h_$(host_os)): $(doc_path_$(host_os)) .ALWAYS
 !ifeq host_os os2
 $(name).res : wbrwpm.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
+    $(rc) $(bldver_cppflags) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
 !else
 $(name).res : wbrw.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
+    $(rc) $(bldver_cppflags) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
 !endif

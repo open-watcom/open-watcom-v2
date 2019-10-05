@@ -61,16 +61,16 @@ rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
 
 app.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(bldver_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(bldver_cppflags) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    $(rc_aui) $(bldver_cppflags) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
 wresuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    $(rc_aui) $(bldver_cppflags) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@

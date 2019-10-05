@@ -61,8 +61,8 @@ extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
 wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rc) $(bldver_cppflags) $(rc_flags) $(inc_path) $[@ -fo=$@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@

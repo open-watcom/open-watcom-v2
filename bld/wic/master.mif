@@ -57,7 +57,7 @@ $(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__
 
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$^@
+    $(rc_aui) $(bldver_cppflags) $[@ -fo=$^@
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice

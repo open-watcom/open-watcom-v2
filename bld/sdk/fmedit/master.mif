@@ -84,4 +84,4 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(bldver_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@

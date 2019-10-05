@@ -105,4 +105,4 @@ uistr.gh : uistrmsg.gh
 
 uistrmsg.gh : ../res/commonui.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../h" -o$^@ $[@
+    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I"../h" -o$^@ $[@
