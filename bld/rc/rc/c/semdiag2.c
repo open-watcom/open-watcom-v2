@@ -723,8 +723,8 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
             SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
         }
         RESFREE( tmpl );
-        SemOS2FreeDiagCtrlList( ctrls );
     }
+    SemOS2FreeDiagCtrlList( ctrls );
 
 } /* SemOS2WriteDialogTemplate */
 
