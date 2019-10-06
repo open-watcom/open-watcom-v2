@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +109,7 @@ void *AddHTableElem( pHTable table, void *elem )
         table->stats.longestChainLen = chainLen;
 #ifdef _INT_DEBUG
         if( chainLen > 20 ) {
-            LPrint( "Hash Warning: max chain len = %d getting long!\n" );
+            LPrint( "Hash Warning: max chain len = %d getting long!" );
         }
 #endif
     }

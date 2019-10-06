@@ -68,9 +68,9 @@ static bool         CacheRelease( void );
 
 static void PrintLine( void *bogus, const char *buff, unsigned len )
 {
-    bogus = bogus;      /* to avoid a warning */
-    len = len;
-    WriteStdOut( (void *)buff );
+    /* unused parameters */ (void)bogus; (void)len;
+
+    WriteStdOutWithNL( (void *)buff );
 }
 #endif
 

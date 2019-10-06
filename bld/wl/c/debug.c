@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ void LPrint( const char *str, ... )
     va_start( arglist, str );
     len = DoFmtStr( buff, 200, str, &arglist );
     va_end( arglist );
-    WriteStdOut( buff );
+    WriteStdOutWithNL( buff );
 }
 
 //---------------------------------------------------------------
@@ -146,12 +147,11 @@ void Trec( const char *str, ... )
         char    buf[100];
         int     i, j;
 
-        FmtStr( buf, 100, "Trec break! Count=%d. Trace history:\n", TrecCount );
-        WriteStdOut( buf );
+        FmtStr( buf, 100, "Trec break! Count=%d. Trace history:", TrecCount );
+        WriteStdOutWithNL( buf );
         for( i = currBuff, j = 0; j < max; j++, i = ( i + 1 ) % max ) {
             if( buff[i] != NULL ) {
-                WriteStdOut( buff[i] );
-                WriteStdOutNL();
+                WriteStdOutWithNL( buff[i] );
             }
         }
         LnkFatal( "trec sucess of failure" );
@@ -203,9 +203,8 @@ static void OneLineDumpByte( const unsigned char *p, int size )
         }
         buf[len++] = isprint( p[i] ) ? p[i] : '.';
     }
-    buf[len++] = '\n';
     buf[len] = 0;
-    WriteStdOut( buf );
+    WriteStdOutWithNL( buf );
 }
 
 static void OneLineDumpDWord( const unsigned_32 *p, int byte_size )
@@ -223,9 +222,8 @@ static void OneLineDumpDWord( const unsigned_32 *p, int byte_size )
             break;
         }
     }
-    buf[len++] = '\n';
     buf[len] = 0;
-    WriteStdOut( buf );
+    WriteStdOutWithNL( buf );
 }
 
 void PrintMemDump( const void *p, unsigned long size, DbgDumpType type )

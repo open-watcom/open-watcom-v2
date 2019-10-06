@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -572,13 +572,6 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static void WriteMsg( const char *msg_buffer )
-/********************************************/
-{
-    WriteStdOut( msg_buffer );
-    WriteStdOutNL();
-}
-
 static void PressKey( void )
 /**************************/
 {
@@ -609,7 +602,7 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
         if( previous_null ) {
             if( msg_buffer[0] != '\0' ) {
                 PressKey();
-                WriteMsg( msg_buffer );
+                WriteStdOutWithNL( msg_buffer );
                 previous_null = 0;
             } else {
                 break;
@@ -617,7 +610,7 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
         } else if( msg_buffer[0] == '\0' ) {
             previous_null = 1;
         } else {
-            WriteMsg( msg_buffer );
+            WriteStdOutWithNL( msg_buffer );
         }
     }
 }

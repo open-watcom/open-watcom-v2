@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 extern void     WriteStdOut( const char * );
+extern void     WriteStdOutWithNL( const char * );
 extern void     WriteStdOutNL( void );
 extern void     WriteStdOutInfo( const char *, unsigned, const char * );
 extern char     *GetEnvString( char * );
