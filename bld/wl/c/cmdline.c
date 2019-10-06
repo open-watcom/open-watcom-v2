@@ -85,7 +85,7 @@ static bool             ProcNTHelp( void );
 static bool             ProcZdosHelp( void );
 static bool             ProcRdosHelp( void );
 static bool             ProcRawHelp( void );
-static void             WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt );
+static void             WriteHelp( int first_msg, int last_msg, bool prompt );
 
 static  parse_entry   FormatHelp[] = {
     "Dos",          ProcDosHelp,            MK_ALL,     0,
@@ -588,27 +588,28 @@ static void PressKey( void )
     }
 }
 
-static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
-/***********************************************************************/
+static void WriteHelp( int first_msg, int last_msg, bool prompt )
+/***************************************************************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         previous_null = 0;
+    bool        previous_null;
+    int         msg;
 
     if( prompt ) {
         PressKey();
     }
-    for( ; first_ln <= last_ln; first_ln++ ) {
-        Msg_Get( (int) first_ln, msg_buffer );
-        if( previous_null ) {
-            if( msg_buffer[0] != '\0' ) {
-                PressKey();
-                WriteStdOutWithNL( msg_buffer );
-                previous_null = 0;
-            } else {
+    previous_null = false;
+    for( msg = first_msg; msg <= last_msg; msg++ ) {
+        Msg_Get( msg, msg_buffer );
+        if( msg_buffer[0] == '\0' ) {
+            if( previous_null ) {
                 break;
             }
-        } else if( msg_buffer[0] == '\0' ) {
-            previous_null = 1;
+            previous_null = true;
+        } else if( previous_null ) {
+            PressKey();
+            WriteStdOutWithNL( msg_buffer );
+            previous_null = false;
         } else {
             WriteStdOutWithNL( msg_buffer );
         }
