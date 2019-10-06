@@ -9,7 +9,7 @@ on:
     branch:
       - master
     paths:
-      - '.github/workflows/*'
+      - '.github/workflows/wikidocs.yml'
       - 'docs/*'
       - 'bld/cg/doc/*'
       - 'bld/dwarf/dw/doc/*'
