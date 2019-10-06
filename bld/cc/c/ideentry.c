@@ -54,25 +54,29 @@ static   IDECBHdl       IdeHdl;      // - handle for this instantiation
 static   IDECallBacks   *IdeCbs;       // - call backs into IDE
 //static   IDEInitInfo   Info;
 
-extern void ConsMsg( char const  *line ) {
+void ConsMsg( char const  *line )
 // C compiler call back to do a  console print to stdout
-
+{
     IDEFN( PrintMessage )( IdeHdl, line );
     // we are ignoring return for now
 }
 
-extern void ConBlip( void ) {
+void ConBlip( void )
 // C compiler do a blip to console
+{
+    IDEFN( PrintWithCRLF )( IdeHdl, "." );
+    // we are ignoring return for now
 }
 
-extern bool ConTTY( void ) {
+bool ConTTY( void )
 // C compiler do a blip to console
+{
     return( GlobalCompFlags.ide_console_output );
 }
 
-extern void ConsErrMsg( cmsg_info  *cinfo ) {
+void ConsErrMsg( cmsg_info  *cinfo )
 // C compiler call back to do a  console print to stderr
-
+{
     IDEMsgInfo  info;
     IDEMsgSeverity severity;
 
@@ -101,9 +105,9 @@ extern void ConsErrMsg( cmsg_info  *cinfo ) {
     // we are ignoring return for now
 }
 
-extern void ConsErrMsgVerbatim( char const  *line ) {
+void ConsErrMsgVerbatim( char const  *line )
 // C compiler call back to a console print to stderr
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_ERROR, line );
@@ -111,9 +115,9 @@ extern void ConsErrMsgVerbatim( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void BannerMsg( char const  *line ) {
+void BannerMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
@@ -121,9 +125,9 @@ extern void BannerMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void DebugMsg( char const  *line ) {
+void DebugMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
@@ -131,9 +135,9 @@ extern void DebugMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void NoteMsg( char const  *line ) {
+void NoteMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
@@ -141,8 +145,9 @@ extern void NoteMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern const char *FEGetEnv( char const *name ) {
+const char *FEGetEnv( char const *name )
 // get enviorment variable
+{
     const char *ret;
 
     ret = NULL;
@@ -155,15 +160,18 @@ extern const char *FEGetEnv( char const *name ) {
 }
 
 static   jmp_buf *FatalEnv;
-extern void MyExit( int ret ) {
+
+void MyExit( int ret )
+{
     longjmp( *FatalEnv, ret );
 }
 
 // IDE INTERFACE
 
 
-unsigned IDEAPI IDEGetVersion ( void ) {
- // GET IDE VERSION
+unsigned IDEAPI IDEGetVersion ( void )
+// GET IDE VERSION
+{
     return IDE_CUR_DLL_VER;
 }
 

@@ -272,6 +272,7 @@ static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *msg )
 
     fputs( msg, errout );
     fputc( '\n', errout );
+    fflush( errout );
     return( false );
 }
 

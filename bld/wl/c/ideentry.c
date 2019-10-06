@@ -103,7 +103,7 @@ void WriteStdOut( const char *str )
 {
     CheckBreak();
     if( IdeCbs != NULL ) {
-        IDEFN( PrintMessage )( IdeHdl, str );
+        IDEFN( PrintWithCRLF )( IdeHdl, str );
     }
 }
 
@@ -112,7 +112,7 @@ void WriteStdOutWithNL( const char *str )
 {
     CheckBreak();
     if( IdeCbs != NULL ) {
-        IDEFN( PrintWithCRLF )( IdeHdl, str );
+        IDEFN( PrintMessage )( IdeHdl, str );
     }
 }
 
@@ -120,7 +120,7 @@ void WriteStdOutNL( void )
 /************************/
 {
     if( IdeCbs != NULL ) {
-        IDEFN( PrintWithCRLF )( IdeHdl, "" );
+        IDEFN( PrintMessage )( IdeHdl, "" );
     }
 }
 

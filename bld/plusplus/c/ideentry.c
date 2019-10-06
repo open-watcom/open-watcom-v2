@@ -204,8 +204,7 @@ void IDEAPI IDEFiniDLL   // DLL COMPLETION
 {
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "FiniDLL -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "FiniDLL -- handle mismatch" );
 }
 
 static void fillInputOutput( char *input, char *output )
@@ -260,8 +259,7 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "RunYourSelf -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
     dllinfo.cmd_line = (char*)opts;
@@ -284,8 +282,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
 
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "RunYourSelf -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
     dllinfo.argc = argc;
@@ -316,8 +313,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     , char const* msg )         // - message
 {
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.idehdl
-             , "ProvideHelp -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "ProvideHelp -- handle mismatch" );
     msg = msg;
     return( true );
 }
@@ -523,8 +519,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
     NUMBER_STR number;          // - used for number scanning
 
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.idehdl
-             , "ParseMessage -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "ParseMessage -- handle mismatch" );
     scan_info.scan = msg;
     scan_info.tgt = err->filename;
     scan_info.left = sizeof( err->filename ) - 1;
@@ -566,8 +561,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "PassInitInfo -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
         return( true );
     }

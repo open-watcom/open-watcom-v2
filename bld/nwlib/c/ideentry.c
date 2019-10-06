@@ -133,11 +133,7 @@ void FatalResError( char *msg )
     IDEMsgInfo          msg_info;
 
     if( IdeCbs != NULL ) {
-        msg_info.severity = IDEMSGSEV_ERROR;
-        msg_info.flags = 0;
-        msg_info.helpfile = NULL;
-        msg_info.helpid = 0;
-        msg_info.msg = msg;
+        IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
         IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
     longjmp( Env, 1 );
@@ -201,9 +197,12 @@ void Message( char *buff, ... )
 
 static void ConsoleMessage( const char *msg )
 {
-    static IDEMsgInfo   msg_info = { IDEMSGSEV_BANNER, 0, NULL, 0, NULL };
-    msg_info.msg = msg;
-    IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
+    IDEMsgInfo          msg_info;
+
+    if( IdeCbs != NULL ) {
+        IdeMsgInit( &msg_info, IDEMSGSEV_BANNER, msg );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
+    }
 }
 
 static bool Wait_for_return( void )
