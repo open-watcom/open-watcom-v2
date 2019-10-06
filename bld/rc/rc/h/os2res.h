@@ -212,13 +212,6 @@
 #define OS2_ACCEL_SYSCOMMAND  0x0100
 #define OS2_ACCEL_HELP        0x0200
 
-/* Hack to get the bootstrap wrc building with gcc; note that the _Packed
- * keyword is probably not necessary for most of these structs.
- */
-#if defined( __GNUC__ ) || defined( __SUNPRO_C ) || defined( _MSC_VER )
-    #define _Packed
-#endif
-
 typedef struct MenuHeaderOS2 {
     uint_32 Size;
     uint_16 Codepage;
@@ -235,7 +228,7 @@ typedef struct MenuItemOS2 {
     char    *ItemText;
 } MenuItemOS2;
 
-typedef _Packed struct DialogHeaderOS2 {
+typedef struct DialogHeaderOS2 {
     uint_16 Size;
     uint_16 Type;
     uint_16 Codepage;
@@ -245,7 +238,10 @@ typedef _Packed struct DialogHeaderOS2 {
     uint_16 OffsetPresParams;
 } DialogHeaderOS2;
 
-typedef _Packed struct DialogTemplateItemOS2 {
+#define DialogHeaderOS2_FILESIZE    (7 * sizeof( uint_16 ))
+
+#include "pushpck1.h"
+typedef struct DialogTemplateItemOS2 {
     uint_16 fsItemStatus;
     uint_16 cChildren;
     uint_16 cchClassName;
@@ -261,6 +257,7 @@ typedef _Packed struct DialogTemplateItemOS2 {
     uint_16 offPresParams;
     uint_16 offCtlData;
 } DialogTemplateItemOS2;
+#include "poppck.h"
 
 typedef struct AccelTableEntryOS2 {
     uint_16     Flags;
