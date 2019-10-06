@@ -129,10 +129,10 @@ static int sysdepDLLLoad( IDEDRV *inf )
 #define SIZE 32
     unsigned char   badfile[SIZE];
 
-    return (int)DosLoadModule( (PSZ)badfile
+    return( (int)DosLoadModule( (PSZ)badfile
                              , sizeof( badfile )
                              , (PSZ)inf->dll_name
-                             , (DLL_HANDLE *)&inf->dll_handle );
+                             , (DLL_HANDLE *)&inf->dll_handle ) );
 }
 
 static int sysdepDLLUnload( IDEDRV *inf )
@@ -241,16 +241,16 @@ typedef int (*USER_DLL_FUN_ARGV)( int, char ** );
 
 #ifndef CHAIN_CALLBACK
 
-static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *msg )
+static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *message )
 {
     /* unused parameters */ (void)hdl;
 
 #ifndef NDEBUG
     fputs( "stubPrintMsgFn called!\n", errout );
-    fputs( msg, errout );
+    fputs( message, errout );
     fputc( '\n', errout );
 #else
-    /* unused parameters */ (void)msg;
+    /* unused parameters */ (void)message;
 #endif
     return( false );
 }
@@ -266,11 +266,11 @@ static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 #define printProgressIndex      NULL
 #endif
 
-static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *msg )
+static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *message )
 {
     /* unused parameters */ (void)hdl;
 
-    fputs( msg, errout );
+    fputs( message, errout );
     fputc( '\n', errout );
     fflush( errout );
     return( false );
@@ -774,7 +774,7 @@ int IdeDrvStopRunning           // SIGNAL A BREAK
 #endif
 
 
-static char const *msgs[] =
+static char const *messages[] =
 {
 #define _IDEDRV(e,m) m
 __IDEDRV
@@ -785,16 +785,16 @@ __IDEDRV
 int IdeDrvPrintError            // UNLOAD THE DLL
     ( IDEDRV *inf )             // - driver control information
 {
-    char const  *msg;
+    char const  *message;
     int         retcode = inf->drv_status;
 
     if( retcode != IDEDRV_SUCCESS ) {
         if( retcode <= 0 || retcode >= IDEDRV_ERR_MAXIMUM ) {
-            msg = "impossible error";
+            message = "impossible error";
         } else {
-            msg = msgs[ retcode ];
+            message = messages[ retcode ];
         }
-        fprintf( errout, "ERROR with dll: %s\n    %s", inf->dll_name, msg );
+        fprintf( errout, "ERROR with dll: %s\n    %s", inf->dll_name, message );
         if( inf->dll_status != 0 ) {
             fprintf( errout, "    return code: %d", inf->dll_status );
         }
