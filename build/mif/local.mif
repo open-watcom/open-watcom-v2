@@ -1,13 +1,3 @@
-# global definition which tool is quiet
-cc         += -zq
-cl         += -zq
-cxx        += -zq
-as         += -q
-linker     += op q
-librarian  += -q
-rc         += -q
-rcaui      += -q
-
 # enable to switch to causeway extender
 !ifdef $(proj_name)_causeway
 clflags_dos_386 = -l=causeway
@@ -143,14 +133,14 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __INTEL_TOOLS__
-bcc  = icl -nologo -c
-bcxx = icl -nologo -c
-bcl  = $(noecho)icl -nologo
+bcc  = icl -nologo -c $(bldver_cppflags)
+bcxx = icl -nologo -c $(bldver_cppflags)
+bcl  = $(noecho)icl -nologo $(bldver_cppflags)
 blib = $(noecho)xilib -nologo
 !else
-bcc  = cl -nologo -c
-bcxx = cl -nologo -c
-bcl  = $(noecho)cl -nologo
+bcc  = cl -nologo -c $(bldver_cppflags)
+bcxx = cl -nologo -c $(bldver_cppflags)
+bcl  = $(noecho)cl -nologo $(bldver_cppflags)
 blib = $(noecho)lib -nologo
 !endif
 
@@ -173,7 +163,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(bldver_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
@@ -197,13 +187,13 @@ bld_libflags = -out:$^@
 # standard settings
 ############################
 !ifdef __INTEL_TOOLS__
-cc  = $(noecho)icl -nologo -c
-cxx = $(noecho)icl -nologo -c
-cl  = $(noecho)icl -nologo
+cc  = $(noecho)icl -nologo -c $(bldver_cppflags)
+cxx = $(noecho)icl -nologo -c $(bldver_cppflags)
+cl  = $(noecho)icl -nologo $(bldver_cppflags)
 !else
-cc   = $(noecho)cl -nologo -c
-cxx  = $(noecho)cl -nologo -c
-cl   = $(noecho)cl -nologo
+cc   = $(noecho)cl -nologo -c $(bldver_cppflags)
+cxx  = $(noecho)cl -nologo -c $(bldver_cppflags)
+cl   = $(noecho)cl -nologo $(bldver_cppflags)
 !endif
 
 cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
@@ -391,13 +381,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 # bld settings
 ############################
 !ifdef __CLANG_TOOLS__
-bcc  = clang -pipe -c
-bcxx = clang++ -pipe -c
-bcl  = $(noecho)clang -pipe
+bcc  = clang -pipe -c $(bldver_cppflags)
+bcxx = clang++ -pipe -c $(bldver_cppflags)
+bcl  = $(noecho)clang -pipe $(bldver_cppflags)
 !else
-bcc  = gcc -pipe -c
-bcxx = g++ -pipe -c
-bcl  = $(noecho)gcc -pipe
+bcc  = gcc -pipe -c $(bldver_cppflags)
+bcxx = g++ -pipe -c $(bldver_cppflags)
+bcl  = $(noecho)gcc -pipe $(bldver_cppflags)
 !endif
 
 bld_cl_extra_objs_gen =
@@ -420,7 +410,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(bldver_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
@@ -465,13 +455,13 @@ bld_libflags = crs $^@
 # standard settings
 ############################
 !ifdef __CLANG_TOOLS__
-cc   = $(noecho)clang -pipe -c
-cxx  = $(noecho)clang++ -pipe -c
-cl   = $(noecho)clang -pipe
+cc   = $(noecho)clang -pipe -c $(bldver_cppflags)
+cxx  = $(noecho)clang++ -pipe -c $(bldver_cppflags)
+cl   = $(noecho)clang -pipe $(bldver_cppflags)
 !else
-cc   = $(noecho)gcc -pipe -c
-cxx  = $(noecho)g++ -pipe -c
-cl   = $(noecho)gcc -pipe
+cc   = $(noecho)gcc -pipe -c $(bldver_cppflags)
+cxx  = $(noecho)g++ -pipe -c $(bldver_cppflags)
+cl   = $(noecho)gcc -pipe $(bldver_cppflags)
 !endif
 
 cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)

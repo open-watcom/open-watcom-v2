@@ -90,8 +90,8 @@ samp2.$(exe_ext) : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFIL
 
 !ifeq sys_windowed 1
 sample.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc) $(bldver_cppflags) $(rc_flags) -DWINRC $(rcopt) $[@ -fo=$^@
+        $(rc) $(rc_flags) -DWINRC $(rcopt) $[@ -fo=$^@
 !else
 wresui.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc_aui) $(bldver_cppflags) $(rcopt) $[@ -fo=$^@
+        $(rc_aui) $(rcopt) $[@ -fo=$^@
 !endif

@@ -403,27 +403,27 @@ rcfiles = &
 
 $(name).res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 $(name)j.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 !else
 
 $(name).res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 !endif
 
 $(resfile_dll) : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wresui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
 ####################
 .EXTENSIONS: .str
@@ -438,15 +438,15 @@ wresui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .aut
 
 litdefm.tmp : menu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 litdefs1.tmp : wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
 litdefs2.tmp : wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $^@
@@ -477,4 +477,4 @@ bind_res_dll : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res dll $@
 !endif
-    $(rc) -k $(resfile_dll) $^@
+    $(rc_bnd) $(resfile_dll) $^@

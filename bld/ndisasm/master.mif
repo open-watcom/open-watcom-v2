@@ -99,7 +99,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
 
 wresui.res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) $[@ -I"../stand/h" -I"../stand" -fo=$@
+    $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
 msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk

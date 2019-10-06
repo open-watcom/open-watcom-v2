@@ -100,7 +100,7 @@ $(name)e.exe : $(eobjs) $(lnk) $(name)e.res $(__MAKEFILES__)
 
 $(name).res $(name)e.res : ../$(name).rc
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
 
 $(lnk) : makefile
     $(noecho)%create $(lnk)

@@ -126,11 +126,11 @@ $(proj_name).exe : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $
 
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wresui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
+    $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

@@ -168,7 +168,7 @@ $(dllname).dll : rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_
 
 wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) -I"$(wrc_dir)/h" $[@ -fo=$^@
+    $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
 
 rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -176,7 +176,7 @@ rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

@@ -63,8 +63,8 @@ rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/ddespy.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 $(name).res : ../res/$(name).rc .AUTODEPEND $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$^@

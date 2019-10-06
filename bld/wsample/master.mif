@@ -210,8 +210,8 @@ nversion.tmp: ./mknver.exe $(__MAKEFILES__)
 
 $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$^@
+    $(rc_aui) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$^@
 
 wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) $[@ -fo=$^@
+    $(rc_aui) $[@ -fo=$^@

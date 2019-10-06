@@ -27,9 +27,6 @@ ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 
 w32bind_objs = w32bind.obj
 
-#extra_cpp_flags = $(bldver_cppflags)
-#extra_a_flags = $(bldver_cppflags)
-
 !ifdef bootstrap
 
 all : w32bind.exe .SYMBOLIC

@@ -54,7 +54,7 @@ msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
 wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) $[@ -fo=$@
+    $(rc_aui) $[@ -fo=$@
 
 wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk

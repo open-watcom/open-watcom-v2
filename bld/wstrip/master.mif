@@ -63,12 +63,12 @@ msg.gh : wstrip.gh $(__MAKEFILES__)
 
 incltext.gh : ../incltext.h ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -I.. -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -I.. -o$^@ $[@
 
 wstrip.gh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) -ad $(inc_dirs) $[@ -fo=$^@
+    $(rc_aui) -ad $(inc_dirs) $[@ -fo=$^@

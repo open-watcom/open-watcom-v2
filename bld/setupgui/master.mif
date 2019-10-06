@@ -240,27 +240,27 @@ nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)
 
 wresui.res : setupui.rc $(dep_res1) $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(bldver_cppflags) $(gui_inc_dirs) $[@ -fo=$^@
+    $(rc_aui) $(gui_inc_dirs) $[@ -fo=$^@
 
 csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(bldver_cppflags) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@

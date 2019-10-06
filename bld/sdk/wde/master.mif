@@ -125,7 +125,7 @@ rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(bldver_cppflags) $(rc_aui_flags) -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
