@@ -50,14 +50,14 @@
 !inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject wasaxp
 !inject wbrw             html  htmlhelp  nt  os2           win
-!inject wccerrs     dos  html  htmlhelp  nt  os2           win
+!inject wccerrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
 !inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject wddoc                                                  wikihtml wikipdf
 !inject wfcerrs     dos  html  htmlhelp  nt  os2           win
 !inject wjcerrs
 !inject wlnkerrs         html  htmlhelp  nt                win
 !inject wpidoc
-!inject wpperrs     dos  html  htmlhelp  nt  os2           win
+!inject wpperrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
 !inject wprof       dos  html  htmlhelp  nt  os2           win
 !inject wrcerrs          html  htmlhelp  nt                win
 !inject zoom             html  htmlhelp  nt                win
