@@ -63,9 +63,11 @@ static int          WPMemOpened = 0;
 static void WPMemPrintLine( void *parm, const char *buff, size_t len )
 /********************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buff, 1, len, WPMemFP );
+    if( WPMemFP != NULL ) {
+        fprintf( WPMemFP, "%s\n", buff );
+    }
 }
 #if 0
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
@@ -130,6 +132,7 @@ void GUIMemClose( void )
     _trmem_close( WPMemHandle );
     if( WPMemFP != stderr ) {
         fclose( WPMemFP );
+        WPMemFP = NULL;
     }
 #endif
 }

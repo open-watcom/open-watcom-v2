@@ -84,17 +84,16 @@ STATIC FILE         *trkfile = NULL;
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h; (void)size;
+
     if( trkfile == NULL ) {
         trkfile = fopen( "mem.trk", "w" );
     }
     if( trkfile != NULL ) {
-        fwrite( buf, 1, size, trkfile );
-        fwrite( "\n", 1, 1, trkfile );
+        fprintf( trkfile, "%s\n", buf );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
-        fwrite( buf, 1, size, stdout );
-        fwrite( "\n", 1, 1, stdout );
+        fprintf( stdout, "%s\n", buf );
     }
 }
 

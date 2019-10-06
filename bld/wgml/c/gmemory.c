@@ -46,15 +46,11 @@
     /*  Memory tracker output function                                     */
     /***********************************************************************/
 
-    static void prt( void *fhandle, const char *buff, size_t len )
+    static void printline( void *fhandle, const char *buff, size_t len )
     {
-        size_t i;
+        /* unused parameters */ (void)fhandle; (void)len;
 
-        fhandle = fhandle;
-        for( i = 0; i < len; ++i ) {
-    //      fputc( *buff++, stderr );
-            fputc( *buff++, stdout );   // use stdout for now (easier redirection)
-        }
+        fprintf( stdout, "%s\n", buff );    // use stdout for now (easier redirection)
     }
 
 #endif
@@ -68,7 +64,7 @@
 void mem_init( void )
 {
 #ifdef TRMEM
-    handle = _trmem_open( &malloc, &free, &realloc, NULL, NULL, &prt,
+    handle = _trmem_open( malloc, free, realloc, NULL, NULL, printline,
                           _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                           _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                           _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
@@ -76,7 +72,7 @@ void mem_init( void )
 }
 
 /***************************************************************************/
-/*  display current memory usage                                      */
+/*  display current memory usage                                           */
 /***************************************************************************/
 
 void mem_prt_curr_usage( void )
@@ -87,7 +83,7 @@ void mem_prt_curr_usage( void )
 }
 
 /***************************************************************************/
-/*  display peak memory usage                                      */
+/*  display peak memory usage                                              */
 /***************************************************************************/
 
 unsigned long mem_get_peak_usage( void )

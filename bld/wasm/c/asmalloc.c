@@ -48,12 +48,13 @@
 static _trmem_hdl   memHandle;
 static FILE         *memFile;       /* file handle we'll write() to */
 
-static void memLine( void *file, const char *buf, size_t size )
+static void memPrintLine( void *file, const char *buf, size_t len )
 {
-    fwrite( "***", 1, 3, stderr );
-    fwrite( buf, 1, size, stderr );
+    /* unused parameters */ (void)file; (void)len;
+
+    fprintf( stderr, "***%s\n", buf );
     if( memFile != NULL ) {
-        fwrite( buf, 1, size, memFile );
+        fprintf( memFile, "%s\n", buf );
     }
 }
 #endif
@@ -62,7 +63,7 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memLine,
+    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine,
         _TRMEM_ALLOC_SIZE_0 |
         _TRMEM_FREE_NULL |
         _TRMEM_OUT_OF_MEMORY |
@@ -82,6 +83,7 @@ void MemFini( void )
         _trmem_close( memHandle );
         if( memFile != NULL ) {
             fclose( memFile );
+            memFile = NULL;
         }
         memHandle = NULL;
     }

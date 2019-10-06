@@ -59,9 +59,11 @@ static bool GUIMemOpened = false;
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buff, 1, len, GUIMemFP );
+    if( GUIMemFP != NULL ) {
+        fprintf( GUIMemFP, "%s\n", buff );
+    }
 }
 #if 0
 static void UIMemPrintLine( void *parm, const char *buff, size_t len )
@@ -134,6 +136,7 @@ void GUIMemClose( void )
     _trmem_close( GUIMemHandle );
     if( GUIMemFP != stderr ) {
         fclose( GUIMemFP );
+        GUIMemFP = NULL;
     }
 #endif
 }

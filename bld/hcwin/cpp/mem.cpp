@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +52,9 @@ static Memory bogus;    // just need to get the ctors called
 
 void PrintLine( void *parm, const char *buf, size_t len )
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buf, 1, len, stdout );
+    fprintf( stdout, "%s\n", buf );
 }
 
 //

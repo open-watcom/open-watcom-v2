@@ -46,9 +46,9 @@ static _trmem_hdl   TRMemHandle;
 extern void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buff, 1, len, stderr );
+    fprintf( stderr, "%s\n", buff );
 }
 #endif
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -334,8 +334,6 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
         }
     }
     va_end( args );
-    *ptr++ = '\r';
-    *ptr++ = '\n';
     *ptr = '\0';
     hdl->prt_line( hdl->prt_parm, buff, ptr - buff );
 }
