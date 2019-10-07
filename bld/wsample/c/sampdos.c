@@ -131,7 +131,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     pblock              parms;
     overlay_record_t    FAR_PTR *ovl_struct;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)full_args;
 
     InstallDOSIntercepts();
     StartTimer();

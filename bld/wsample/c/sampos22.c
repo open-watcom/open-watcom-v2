@@ -495,7 +495,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     ULONG       rc;
     char        *cmd_tail;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     MaxThread = 0;
     GrowArrays( 1 );

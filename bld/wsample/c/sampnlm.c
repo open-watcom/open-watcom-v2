@@ -160,6 +160,8 @@ static volatile unsigned nModeSwitched = 0;
 
 static void ModeSwitched( LONG dummy )
 {
+    /* unused parameters */ (void)dummy;
+
     nModeSwitched++;
 }
 
@@ -167,6 +169,8 @@ static void WakeMeUp( LONG dummy )
 {
     static bool                     Already = false;
     struct LoadDefinitionStructure  *loaded;
+
+    /* unused parameters */ (void)dummy;
 
     if( Already )
         return;
@@ -248,6 +252,8 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
 static void SaveOutSamples( void *dummy )
 {
+    /* unused parameters */ (void)dummy;
+
     StopAndSave();
     AES.AProcessToCall = NULL;
 }

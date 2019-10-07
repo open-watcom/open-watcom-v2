@@ -158,7 +158,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     short       initial_cs;
     int         len;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     SampleIndex = 0;
     CurrTick  = 0L;

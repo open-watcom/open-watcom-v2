@@ -535,9 +535,12 @@ int main( int argc, char **argv )
     char        *eoc;
     int         cmdlen;
 
-#if !defined( __WINDOWS__ ) && !defined( __WATCOMC__ )
+#if defined( __WINDOWS__ )
+#elif !defined( __WATCOMC__ )
     _argv = argv;
     _argc = argc;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     SysInit();

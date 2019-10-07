@@ -33,7 +33,6 @@
 #ifndef __WINDOWS_INCLUDED__
 #define __WINDOWS_INCLUDED__
 
-#include "wdebug.h"
 #include "segmem.h"
 #include "mythelp.h"
 #include "di386cli.h"
@@ -62,53 +61,44 @@ typedef struct {
 } samp_save;
 
 /*
- * globals
+ * globals (in sampwin.c)
  */
-extern volatile WORD        __near WaitForFirst;
-extern volatile WORD        __near IsSecondOK;
-extern HWND                 __near MainWindowHandle;
-extern HWND                 __near OutputWindow;
-extern HANDLE               InstanceHandle,PrevInstance;
-extern samp_save __far      * __near SampSave;
-extern WORD                 SleepTime;
-extern DWORD                TotalTime;
-extern HINSTANCE            SampledProg;
-extern interrupt_struct     __near IntData;
-extern seg_offset           CommonAddr;
-extern HANDLE               WaitForInt3;
-extern HANDLE               WaitForInt1;
+extern volatile WORD    __near WaitForFirst;
+extern volatile WORD    __near IsSecondOK;
+extern seg_offset       CommonAddr;
+extern samp_save        __far * __near SampSave;
 
 /* somewhere in the common part of the sampler */
-extern int                  sample_main( char __far * );
-extern int                  MessageLoop( void );
+extern int          sample_main( char __far * );
+extern int          MessageLoop( void );
 
-extern void FAR_PTR         *alloc( int );
+extern void FAR_PTR *alloc( int );
 
 /* getidata.c */
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
+extern int          GetIData( HINSTANCE inst, void __near *data, unsigned int size );
 
 /* inth.asm */
-void FAR PASCAL IntHandler( void );
+extern void         FAR PASCAL IntHandler( void );
 
 /* libload.c */
-void HandleLibLoad( int type, HANDLE hmod );
+extern void         HandleLibLoad( int type, HANDLE hmod );
 
 /* notify.c */
-BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data );
-void HandleNotify( WORD wparam, DWORD lparam );
+extern BOOL         __export FAR PASCAL NotifyHandler( WORD id, DWORD data );
+extern void         HandleNotify( WORD wparam, DWORD lparam );
 
 /* sampwin.c */
-void FlushSamples( WORD );
-void CloseShop( void );
-DWORD WinGetCurrTick( void );
+extern void         FlushSamples( WORD );
+extern void         CloseShop( void );
+extern DWORD        WinGetCurrTick( void );
 
 /* winmain.c */
-char *ResName( char * );
+extern char         *ResName( char * );
 
 /* winopts.c */
-extern bool GetFileName( HINSTANCE, int, char * );
+extern bool         GetFileName( HINSTANCE, int, char * );
 
 /* fault.c */
-extern WORD __cdecl FAR FaultHandler( fault_frame ff );
+extern WORD         __cdecl FAR FaultHandler( fault_frame ff );
 
 #endif

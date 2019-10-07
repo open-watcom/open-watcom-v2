@@ -405,7 +405,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             GetIData( previnst, (void __near *)&WaitForFirst, sizeof( WaitForFirst ) );
             MessageLoop();
         } while( WaitForFirst );
-        GetIData( previnst, (void __near *)&Samples, sizeof( Samples ) );
+        GetIData( previnst, &Samples, sizeof( Samples ) );
         GetIData( previnst, &SharedMemory, sizeof( SharedMemory ) );
         KillTimer( MainWindowHandle, TIMER_ID );
         SetTimer( MainWindowHandle, TIMER_ID, 4500, 0L); /* 4.5 seconds */

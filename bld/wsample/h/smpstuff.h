@@ -96,6 +96,9 @@ typedef struct {
     char                SampName[256];
     bool                ShopClosed;
 } shared_data;
+
+#include "wdebug.h"
+
 #endif
 
 #include "sampglob.h"
