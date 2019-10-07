@@ -35,6 +35,7 @@
 !inject exv.obj      d16         nt nta ntp         o16 o32                     l32 lpc lmp rdu
 !inject exvrdu.obj									    rdu
 !inject exve.obj     d16
+!inject exvelnx.obj                                                             l32 lpc lmp
 !inject exveos2.obj				    o16 o32
 !inject exveqnx.obj					    q16 q32
 !inject exvewnt.obj              nt nta ntp

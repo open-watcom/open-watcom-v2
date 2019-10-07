@@ -19,7 +19,6 @@
 !inject close.obj                                                                       l32 lpc lmp
 !inject dup.obj                                                                         l32 lpc lmp
 !inject dup2.obj                                                                        l32 lpc lmp
-!inject execve.obj                                                                      l32 lpc lmp
 !inject fchmod.obj                                                                      l32 lpc lmp
 !inject fchown.obj                                                                      l32 lpc lmp
 !inject fcntl.obj                                                                       l32 lpc lmp
