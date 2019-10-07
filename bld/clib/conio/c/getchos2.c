@@ -68,7 +68,7 @@ _WCRTLINK int getch( void )
     }
 #endif
 #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( osmode_REALMODE() ) {
         return( _dos( DOS_GET_CHAR_NO_ECHO_CHECK ) );
     }
 #endif

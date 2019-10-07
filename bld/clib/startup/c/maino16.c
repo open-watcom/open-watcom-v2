@@ -200,7 +200,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
 //      // this needs to be done before the InitRtns
 //      extern  void    __grow_iomode(int);
 
-//      if( _RWD_osmode == OS2_MODE ) {
+//      if( osmode_PROTMODE() ) {
 //          __grow_iomode( 100 );
 //      }
 //  }

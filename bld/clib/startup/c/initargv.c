@@ -176,7 +176,7 @@ static void *__F_NAME( _getargv, _wgetargv )(
 
 #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
   #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( osmode_REALMODE() ) {
         cmdline = ncmd = lib_nmalloc( size );
         if( ncmd == NULL ) {
             cmdline = lib_malloc( size );

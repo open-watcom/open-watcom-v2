@@ -89,7 +89,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
   #elif defined( __WARP__ )
     use_cmd = 1;
   #elif defined( __OS2_286__ )
-    use_cmd = ( _RWD_osmode != DOS_MODE );
+    use_cmd = osmode_PROTMODE();
   #else
     use_cmd = 0;
   #endif

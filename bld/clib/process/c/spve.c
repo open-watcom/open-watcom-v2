@@ -190,7 +190,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 
 #if defined( _M_I86 )
  #if defined( __OS2__ )
-    prot_mode286 = ( _RWD_osmode != DOS_MODE );
+    prot_mode286 = osmode_PROTMODE();
     if( mode == OLD_P_OVERLAY ) {
         rc = execve(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
@@ -258,7 +258,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     _RWD_Save8087( &_87save );
 #endif
 #if defined( __DOS_086__ )
-    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( osmode_PROTMODE() ) {           /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
 
         if( _dos_allocmem( envsize_paras, &segment ) != 0 ) {
@@ -375,7 +375,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     LIB_FREE( np );
     lib_free( _envptr );
 #if defined( __DOS_086__ )
-    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( osmode_PROTMODE() ) {           /* if protect-mode e.g. DOS/16M */
         _dos_freemem( envseg );
     }
 #endif

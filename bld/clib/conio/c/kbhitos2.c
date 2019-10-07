@@ -63,7 +63,7 @@ _WCRTLINK int kbhit( void )
     }
 #endif
 #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( osmode_REALMODE() ) {
         return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
     KbdPeek( &info, 0 );

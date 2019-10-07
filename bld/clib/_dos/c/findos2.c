@@ -74,7 +74,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 /******************************************************/
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {
+    if( osmode_PROTMODE() ) {
 #endif
         APIRET      rc;
         FF_BUFFER   dir_buff;
@@ -114,7 +114,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 /*****************************************************/
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
+    if( osmode_PROTMODE() ) {           /* protected mode */
 #endif
         APIRET  rc;
 
@@ -152,7 +152,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
     APIRET      rc;
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
+    if( osmode_PROTMODE() ) {           /* protected mode */
 #endif
         if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
             rc = DosFindClose( DTAXXX_HANDLE_OF( buf->reserved ) );

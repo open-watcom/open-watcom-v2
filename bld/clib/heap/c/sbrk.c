@@ -140,7 +140,7 @@ _WCRTLINK void_nptr __brk( unsigned brk_value )
         num_of_paras = PARAS_IN_64K;
     }
     /* try setting the block of memory */
-    if( _RWD_osmode == DOS_MODE ) {
+    if( osmode_REALMODE() ) {
         num_of_paras += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
         segm = _RWD_psp;
     }

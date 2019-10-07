@@ -158,6 +158,8 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
 #if defined( _M_I86 )
     #define _RWD_HShift         _HShift
     #define _RWD_osmode         _osmode
+    #define osmode_REALMODE()   (_RWD_osmode == 0)
+    #define osmode_PROTMODE()   (_RWD_osmode)
 #endif
 #if !defined( __NETWARE__ )
     #define _RWD_osmajor        _osmajor

@@ -90,8 +90,7 @@ static APIRET __find_close( DIR_TYPE *dirp )
 /******************************************/
 {
 #ifdef _M_I86
-    if( _RWD_osmode == OS2_MODE ) {
-        /* protected mode */
+    if( osmode_PROTMODE() ) {               /* protected mode */
 #endif
         if( DTAXXX_HANDLE_OF( dirp->d_dta ) ) {
             return( DosFindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) );
@@ -158,7 +157,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
 #endif
 
 #ifdef _M_I86
-    if( _RWD_osmode == OS2_MODE )       /* protected mode */
+    if( osmode_PROTMODE() )             /* protected mode */
 #endif
     {
         FF_BUFFER       dir_buff;
@@ -265,7 +264,7 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
         dirp->d_first = _DIR_NOTFIRST;
     } else {
 #ifdef _M_I86
-        if( _RWD_osmode == OS2_MODE )           /* protected mode */
+        if( osmode_PROTMODE() )                 /* protected mode */
 #endif
         {
             APIRET          rc;
