@@ -39,21 +39,19 @@
 #include "cover16.h"
 
 
-typedef long (FAR PASCAL *FPROC)();
-
-FPROC DLL_1;
-FPROC DLL_2;
+long (FAR PASCAL * DLL_1)(long,long,long);
+long (FAR PASCAL * DLL_2)(long,long);
 
 long FAR PASCAL __export Function1( long var1,
                                      long var2,
                                      long var3 )
 {
-    return( (long) DLL_1( var1, var2, var3 ) );
+    return( DLL_1( var1, var2, var3 ) );
 }
 
 long FAR PASCAL __export Function2( long var1, long var2 )
 {
-    return( (long) DLL_2( var1, var2 ) );
+    return( DLL_2( var1, var2 ) );
 }
 
 #pragma off (unreferenced);
@@ -70,7 +68,7 @@ extern BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment, WORD wHe
                     "COVER16", MB_OK | MB_ICONEXCLAMATION );
         return( FALSE );
     }
-    DLL_1 = (FPROC) GetProcAddress( hlib, "DLL1" );
-    DLL_2 = (FPROC) GetProcAddress( hlib, "DLL2" );
+    DLL_1 = (long(FAR PASCAL *)(long,long,long))GetProcAddress( hlib, "DLL1" );
+    DLL_2 = (long(FAR PASCAL *)(long,long))GetProcAddress( hlib, "DLL2" );
     return( TRUE );
 }
