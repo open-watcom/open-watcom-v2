@@ -322,23 +322,27 @@ static var_type getEnvironVarType( const VBUF *env_var )
 {
     var_type        vt;
 
+#ifdef __UNIX__
+    /* unused parameters */ (void)env_var;
+#endif
+
     vt = VAR_SETENV_ASSIGN;
 #ifndef __UNIX__
-#ifndef __OS2__
+  #ifndef __OS2__
     if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
-#endif
+  #endif
         // OS/2
         if( VbufCompStr( env_var, "LIBPATH", true ) == 0 ) {
             vt = VAR_ASSIGN;
         }
-#ifndef __OS2__
+  #ifndef __OS2__
     } else {
         // DOS, WINDOWS, NT
         if( VbufCompStr( env_var, "PATH", true ) == 0 ) {
             vt = VAR_CMD;
         }
     }
-#endif
+  #endif
 #endif
     return( vt );
 }

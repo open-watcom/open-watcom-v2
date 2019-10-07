@@ -45,6 +45,8 @@ char    *get_pu_file_name( char *buf, size_t buf_size, int n )
 {
     char    filename[] = "sysusr00" GML_EXT;
 
+    /* unused parameters */ (void)buf_size;
+
     filename[7] = '0' + n;
     strcpy( buf, filename );
     return( token_buf );

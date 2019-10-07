@@ -79,7 +79,10 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
 /*  A spreadsheet is heartily recommended for crunching the data!          */
 /***************************************************************************/
 
-#if 0
+#if 1
+    /* unused parameters */ (void)line; (void)delta0; (void)rem; (void)cnt; (void)lm;
+
+#else
     text_chars  *   tleft;              // first text_char to justify
     text_chars  *   tn;
     text_chars  *   tw;

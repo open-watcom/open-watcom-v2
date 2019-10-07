@@ -537,7 +537,11 @@ static int GetDriveInfo( char drive, bool removable )
 #else
     drive_info  *info;
     int         drive_num;
+#endif
 
+#if defined( __UNIX__ )
+    /* unused parameters */ (void)drive; (void)removable;
+#else
     drive_num = GetDriveNum( drive );
     info = &Drives[drive_num];
     if( (info->cluster_size == 0 || removable /* recheck - could have been replaced */) ) {
@@ -759,6 +763,8 @@ unsigned GetClusterSize( char drive )
 /***********************************/
 {
 #if defined( __UNIX__ )
+    /* unused parameters */ (void)drive;
+
     return( 1 );
 #else
     if( drive == '\0' )
@@ -1232,6 +1238,10 @@ bool CheckDrive( bool issue_message )
 #ifdef UNC_SUPPORT
     VBUF                UNC_root1;
     VBUF                UNC_root2;
+#endif
+
+#if defined( UNC_SUPPORT ) || defined( __UNIX__ )
+    /* unused parameters */ (void)issue_message;
 #endif
 
     if( !SimCalcTargetSpaceNeeded() )
