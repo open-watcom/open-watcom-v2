@@ -493,8 +493,8 @@ static bool PreprocessInputFile( void )
 {
     unsigned    flags;
     char        rcdefine[13];
-    char      **cppargs;
-    char       *p;
+    char        **cppargs;
+    char        *p;
     int         rc;
 
     flags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
@@ -520,18 +520,15 @@ static bool PreprocessInputFile( void )
             PP_Define( rcdefine );
         }
     }
-    cppargs = CmdLineParms.CPPArgs;
-    if( cppargs != NULL ) {
-        for( ++cppargs; (p = *cppargs) != NULL; ++cppargs ) {
+    if( CmdLineParms.CPPArgs != NULL ) {
+        for( cppargs = CmdLineParms.CPPArgs; (p = *cppargs) != NULL; ++cppargs ) {
             for( ; *p != '\0'; ++p ) {
                 if( *p == '=' ) {
                     *p = ' ';
                     break;
                 }
             }
-            p = *cppargs;
-            PP_Define( p + 2 );         // skip over -d
-            RESFREE( p );
+            PP_Define( *cppargs + 2 );         // skip over -d
         }
     }
     return( false );                    // indicate no error

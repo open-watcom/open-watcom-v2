@@ -54,17 +54,12 @@ void RcAddCPPArg( char * newarg )
     char    **arg;
     char    **cppargs;
 
-    cppargs = CmdLineParms.CPPArgs;
-
     if( CmdLineParms.CPPArgs == NULL ) {
-        /* 3 is 1 for the command, 1 for newarg, 1 for NULL */
-        numargs = 3;
+        /* 2 is 1 for newarg, 1 for NULL */
+        numargs = 2;
         cppargs = RcMemMalloc( numargs * sizeof( char * ) );
-        /* cppargs[0] is reserved for the name of the command so set it */
-        /* to the null string for now */
-        cppargs[0] = "";
     } else {
-        arg = CmdLineParms.CPPArgs;
+        arg = cppargs = CmdLineParms.CPPArgs;
         while( *arg != NULL ) {
             arg++;
         }
@@ -72,7 +67,6 @@ void RcAddCPPArg( char * newarg )
         numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
         cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
     }
-
     cppargs[numargs - 2] = RcMemMalloc( strlen( newarg ) + 1 );
     strcpy( cppargs[numargs - 2], newarg );
     cppargs[numargs - 1] = NULL;
@@ -1038,9 +1032,14 @@ void ScanParamShutdown( void )
 {
     ExtraRes            *tmpres;
     FRStrings           *strings;
+    char                **cppargs;
 
     if( CmdLineParms.CPPArgs != NULL ) {
+        for( cppargs = CmdLineParms.CPPArgs; *cppargs != NULL; ++cppargs ) {
+            RcMemFree( *cppargs );
+        }
         RcMemFree( CmdLineParms.CPPArgs );
+        CmdLineParms.CPPArgs = NULL;
     }
     PP_IncludePathFini();
     while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
