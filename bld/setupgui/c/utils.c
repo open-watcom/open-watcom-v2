@@ -189,16 +189,20 @@ bool ModifyStartup( bool uninstall )
 
 //        if( !uninstall ) {
 #if defined( __NT__ )
-#ifdef __AXP__
+  #ifdef __AXP__
         ret = ModifyConfiguration( uninstall );
-#else
+  #else
         if( GetVariableBoolVal( "IsWin95" ) ) {
             ret = ModifyAutoExec( uninstall );
         } else {
             ret = ModifyConfiguration( uninstall );
         }
-#endif
+  #endif
 #elif defined( __UNIX__ )
+  #if !defined( GUI_IS_GUI )
+    /* unused parameters */ (void)uninstall;
+  #endif
+
 //        ret = ModifyAutoExec( uninstall );
 #else
         ret = ModifyAutoExec( uninstall );
@@ -213,6 +217,8 @@ bool ModifyAssociations( bool uninstall )
 #ifdef __NT__
     return( ModifyRegAssoc( uninstall ) );
 #else
+    /* unused parameters */ (void)uninstall;
+
     return( true );
 #endif
 }
@@ -223,6 +229,8 @@ bool ModifyUninstall( bool uninstall )
 #ifdef __NT__
     return( AddToUninstallList( uninstall ) );
 #else
+    /* unused parameters */ (void)uninstall;
+
     return( true );
 #endif
 }

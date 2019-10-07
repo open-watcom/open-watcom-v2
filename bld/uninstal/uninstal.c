@@ -113,6 +113,8 @@ static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
  */
 static INT_PTR CALLBACK ProgressDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam;
+
     return( FALSE );
 
 } /* ProgressDlgProc */
@@ -135,6 +137,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     HANDLE          hFindFile;
     LPITEMIDLIST    pidlPrograms;
     char            szProgramsPath[MAX_PATH];
+
+    /* unused parameters */ (void)hPrevInstance; (void)lpCmdLine; (void)nCmdShow;
 
     /*
      * Load the title for message boxes.
