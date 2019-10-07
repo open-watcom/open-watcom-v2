@@ -44,7 +44,6 @@
 #include <commdlg.h>
 #endif
 #include "getfile.h"
-#include "walloca.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
@@ -226,7 +225,8 @@ static void addFileToList( HWND hwnd, char *fname )
     checkRemoveButton( hwnd );
 }
 
-static void addCurrentFile( HWND hwnd  ) {
+static void addCurrentFile( HWND hwnd  )
+{
     char        *fname;
     int          len;
     HWND         ctl;
@@ -234,15 +234,20 @@ static void addCurrentFile( HWND hwnd  ) {
 
     ctl = GetDlgItem( hwnd, FOD_FILENAME );
     len = GetWindowTextLength( ctl );
-    if( len == 0 ) return;
-    fname = (char *)alloca( len + 1 );
-    GetWindowText( ctl, fname, len + 1 );
-    if( fname[strlen( fname ) - 1] == '\\' ) return;
-    stat( fname, &buf );
-    if( S_ISDIR( buf.st_mode ) ) return;
-    if( strpbrk( fname, "?*" ) != NULL ) return;
-    addFileToList( hwnd, fname );
-    SetWindowText( ctl, "" );
+    if( len > 0 ) {
+        fname = new char [len + 1];
+        GetWindowText( ctl, fname, len + 1 );
+        if( fname[strlen( fname ) - 1] != '\\' ) {
+            stat( fname, &buf );
+            if( !S_ISDIR( buf.st_mode ) ) {
+                if( strpbrk( fname, "?*" ) == NULL ) {
+                    addFileToList( hwnd, fname );
+                    SetWindowText( ctl, "" );
+                }
+            }
+        }
+        delete[] fname;
+    }
 }
 
 #ifdef __NT__
@@ -329,7 +334,8 @@ static void addAllFiles95( HWND hwnd )
 }
 #endif
 
-void GetResults( HWND hwnd ) {
+void GetResults( HWND hwnd )
+{
     char                *buf;
     int                 cnt;
     int                 i;
@@ -340,7 +346,7 @@ void GetResults( HWND hwnd ) {
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
     len = getMaxItemLen( lb );
-    buf = (char *)alloca( (size_t)( len + 1 ) );
+    buf = new char [len + 1];
     *info->result = "";
     cnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0 );
     for( i = 0; i < cnt; i++ ) {
@@ -348,9 +354,11 @@ void GetResults( HWND hwnd ) {
         info->result->concat( buf );
         info->result->concat( " " );
     }
+    delete[] buf;
 }
 
-void initFileList( HWND hwnd ) {
+void initFileList( HWND hwnd )
+{
     HWND                lb;
     GetFilesInfo        *info;
 
