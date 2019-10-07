@@ -58,14 +58,14 @@ static MONITOR ui_data = {
 void UIAPI win_uisetmono( void )
 {
     ui_data.colour = M_MONO;
-    ui_data.screen.origin = MK_FP( _B000h, 0 );
+    ui_data.screen.origin = _MK_FP( _B000h, 0 );
     VIDPort = VIDMONOINDXREG;
 }
 
 void UIAPI win_uisetcolor( int clr )
 {
     ui_data.colour = clr;
-    ui_data.screen.origin = MK_FP( _B800h, 0 );
+    ui_data.screen.origin = _MK_FP( _B800h, 0 );
     VIDPort = VIDCOLORINDXREG;
 }
 
@@ -88,7 +88,7 @@ bool intern initbios( void )
     if( initmonitor() ) {
         UIData->desqview = false;
         UIData->f10menus = true;
-        UIData->screen.origin = MK_FP( ( UIData->colour == M_MONO ) ? _B000h : _B800h, 0 );
+        UIData->screen.origin = _MK_FP( ( UIData->colour == M_MONO ) ? _B000h : _B800h, 0 );
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();

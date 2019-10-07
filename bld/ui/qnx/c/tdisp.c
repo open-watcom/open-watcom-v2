@@ -801,21 +801,21 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         if( scrn == NULL ) {
             seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
-        scrn = MK_FP( seg, 0 );
+        scrn = _MK_FP( seg, 0 );
         if( shadow == NULL ) {
             seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( shadow ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( shadow ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 ) {
-            qnx_segment_free( FP_SEG( scrn ) );
+            qnx_segment_free( _FP_SEG( scrn ) );
             return( false );
         }
-        shadow = MK_FP( seg, 0 );
+        shadow = _MK_FP( seg, 0 );
 #else
         scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL )

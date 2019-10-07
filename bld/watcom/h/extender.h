@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@
 #define _IsRationalZeroBase()    ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_ZEROBASE )
 #define _IsFlashTek()            ( _Extender == DOSX_PHAR_V3 && __X32VM != 0 )
 
-#define EXTENDER_RM2PM( s, o )  MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
+#define EXTENDER_RM2PM( s, o )  _MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
 
 extern  char            _Extender;
 extern  char            _ExtenderSubtype;

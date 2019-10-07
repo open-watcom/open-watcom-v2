@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,8 +170,8 @@ static bool mouse_installed( void )
     char            __far *intrtn;
 
     /* get mouse driver interrupt vector */
-    vector = MK_FP( 0, BIOS_MOUSE * 4 );
-    intrtn = MK_FP( vector[1], vector[0] );
+    vector = _MK_FP( 0, BIOS_MOUSE * 4 );
+    intrtn = _MK_FP( vector[1], vector[0] );
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }
 
@@ -236,7 +236,7 @@ static void OS2_initmouse( init_mode install )
             __LINFOSEG          __far *linfo;
 
             DosGetInfoSeg( &gbl, &lcl );
-            linfo = MK_FP( lcl, 0 );
+            linfo = _MK_FP( lcl, 0 );
             if( linfo->typeProcess != _PT_FULLSCREEN ) {
                 uimouseforceoff();      /* let PM draw the mouse cursor */
             }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,11 +109,11 @@ static bool setupscrnbuff( void )
         if( scrn == NULL ) {
             seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
-        scrn = MK_FP( seg, 0 );
+        scrn = _MK_FP( seg, 0 );
 #else
         scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL ) {

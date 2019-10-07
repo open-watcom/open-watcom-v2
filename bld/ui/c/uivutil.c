@@ -50,7 +50,7 @@ bool intern isscreen( BUFFER * bptr )
 #if defined( HAVE_FAR )
     // Short cut when using far pointers. Just check segment:
 
-    return( FP_SEG( bptr->origin ) == FP_SEG( UIData->screen.origin ) );
+    return( _FP_SEG( bptr->origin ) == _FP_SEG( UIData->screen.origin ) );
 
 #else
     // No far pointers. Check range:

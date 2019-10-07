@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,20 +134,20 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
 
         memset( &regs, 0, sizeof( regs ) );
         regs.h.ah = 0xfe;
-        regs.x.edi = FP_OFF( vbuff );
-        regs.w.es = FP_SEG( vbuff );
+        regs.x.edi = _FP_OFF( vbuff );
+        regs.w.es = _FP_SEG( vbuff );
         intr( BIOS_VIDEO, &regs );
-        if( FP_OFF( vbuff ) != regs.x.edi ) {
-            /* we use FP_OFF since old_selector==0x34 and new_selector==0x37 */
-            vbuff = MK_FP( regs.w.es, regs.x.edi );
+        if( _FP_OFF( vbuff ) != regs.x.edi ) {
+            /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
+            vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
     } else if( _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0xfe00;                /* get video buffer addr */
-        dblock.es = FP_OFF( vbuff ) >> 4;
-        dblock.edi = (FP_OFF( vbuff ) & 0x0f);
+        dblock.es = _FP_OFF( vbuff ) >> 4;
+        dblock.edi = (_FP_OFF( vbuff ) & 0x0f);
         DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
         vbuff = RealModeDataPtr( dblock.es, dblock.edi );
     }
@@ -367,20 +367,20 @@ static void desqview_update( unsigned short offset, unsigned short count )
         memset( &regs, 0, sizeof( regs ) );
         pblock.int_num = BIOS_VIDEO;        /* VIDEO call */
         pblock.real_eax = 0xff00;           /* update from v-screen */
-        pblock.real_es = FP_OFF( UIData->screen.origin ) >> 4;
-        regs.x.edi = (FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        pblock.real_es = _FP_OFF( UIData->screen.origin ) >> 4;
+        regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
         regs.w.cx = count;
         regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-        regs.x.edx = FP_OFF( &pblock );     /* DS:EDX -> parameter block */
-        regs.w.ds = FP_SEG( &pblock );
+        regs.x.edx = _FP_OFF( &pblock );    /* DS:EDX -> parameter block */
+        regs.w.ds = _FP_SEG( &pblock );
         intr( 0x21, &regs );
     } else if( _IsRational() ) {
         rm_call_struct  dblock;
 
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0xff00;                /* update from v-screen */
-        dblock.es = FP_OFF( UIData->screen.origin ) >> 4;
-        dblock.edi = (FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        dblock.es = _FP_OFF( UIData->screen.origin ) >> 4;
+        dblock.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
         dblock.ecx = count;
         DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
     }

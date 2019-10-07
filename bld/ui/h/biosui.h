@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@
 #define BIOS_POINT_HEIGHT       0x85    /* byte */
 
 #ifdef _M_I86
-#define RealModeDataPtr( s, o ) MK_FP((s),(o))
+#define RealModeDataPtr( s, o ) _MK_FP((s),(o))
 #else
 #define RealModeDataPtr( s, o ) EXTENDER_RM2PM( s, o )
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ void UIAPI uifarfree( LP_VOID ptr )
      * since the memory should have been allocated by uifaralloc() above,
      * this is safe because we synthesized the segment part to begin with.
      */
-    uifree( (void *)FP_OFF( ptr ) );
+    uifree( (void *)_FP_OFF( ptr ) );
 #else
     uifree( (void *)ptr );
 #endif
