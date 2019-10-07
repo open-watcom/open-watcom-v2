@@ -483,7 +483,7 @@ int EDITAPI EDITShowWindow( int nCmdShow )
 
 
 int EDITAPI EDITDisconnect( void )
-/*****************************************/
+/********************************/
 {
     session     *sess;
 
@@ -501,6 +501,8 @@ int EDITAPI EDITDisconnect( void )
 unsigned _System LibMain( unsigned hModule, unsigned ulReason )
 /*************************************************************/
 {
+    /* unused parameters */ (void)hModule;
+
     if( ulReason ) {
         // Terminating
         FreeSessions();
