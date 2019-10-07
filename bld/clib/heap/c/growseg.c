@@ -92,7 +92,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
         return( 0 );
 #elif defined(__OS2__) || defined(__WINDOWS__)
     if( num_of_paras > PARAS_IN_64K ) {
-        if( osmode_PROTMODE() ) {           /* protected-mode */
+        if( _osmode_PROTMODE() ) {          /* protected-mode */
             return( 0 );
         } else {
             num_of_paras = PARAS_IN_64K;

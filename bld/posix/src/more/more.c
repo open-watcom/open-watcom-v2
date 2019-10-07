@@ -40,6 +40,9 @@
 #include "argvrx.h"
 #include "console.h"
 
+
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
+
 char *OptEnvVar = "more";
 static const char *usageMsg[] = {
     "Usage: more [-?cftX] [+<n>] [-n<lines>] [-p<prompt>] [files]",
@@ -105,7 +108,7 @@ static int getChar( void )
     return( GetRawChar() );
 #else
 #if defined( __OS2__ ) && defined( _M_I86 )
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return GetRawChar();
     }
 #endif

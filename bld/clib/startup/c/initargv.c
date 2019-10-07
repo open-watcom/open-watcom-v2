@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +177,7 @@ static void *__F_NAME( _getargv, _wgetargv )(
 
 #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
   #if defined(__OS2_286__)
-    if( osmode_REALMODE() ) {
+    if( _osmode_REALMODE() ) {
         cmdline = ncmd = lib_nmalloc( size );
         if( ncmd == NULL ) {
             cmdline = lib_malloc( size );

@@ -37,6 +37,9 @@
 #include "biosui.h"
 
 
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
+#define _osmode_PROTMODE()  (_osmode == OS2_MODE)
+
 #define MOUSE_SCALE     8
 
 /* Process Type codes (local information segment typeProcess field)           */
@@ -122,7 +125,7 @@ void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUS
 /********************************************************************************************/
 {
 #ifdef _M_I86
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         struct  mouse_data state;
 
         MouseDrvCallRetState( 3, &state );
@@ -152,7 +155,7 @@ void uimousespeed( unsigned speed )
         speed = 1;
     }
 #ifdef _M_I86
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         MouseDrvCall3( 0x0F, speed, speed * 2, 0, 0 );
         UIData->mouse_speed = speed;
     }
@@ -263,7 +266,7 @@ bool UIAPI initmouse( init_mode install )
 {
     MouseInstalled = false;
 #ifdef _M_I86
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         DOS_initmouse( install );
     } else {
 #endif
@@ -281,7 +284,7 @@ void UIAPI finimouse( void )
     if( MouseInstalled ) {
         uioffmouse();
 #ifdef _M_I86
-        if( _osmode == OS2_MODE ) {
+        if( _osmode_PROTMODE() ) {
 #endif
             MouClose( MouHandle );
 #ifdef _M_I86
@@ -293,7 +296,7 @@ void UIAPI finimouse( void )
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
 #ifdef _M_I86
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         MouseRow = row;
         MouseCol = col;
         MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );

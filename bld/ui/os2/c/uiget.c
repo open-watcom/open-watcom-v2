@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,9 @@
 #endif
 
 
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
+#define _osmode_PROTMODE()  (_osmode == OS2_MODE)
+
 MOUSETIME UIAPI uiclock( void )
 /*****************************
  * this routine get time in platform dependant units,
@@ -49,7 +52,7 @@ MOUSETIME UIAPI uiclock( void )
  */
 {
 #ifdef _M_I86
-    if( _osmode == DOS_MODE )
+    if( _osmode_REALMODE() )
         /* ticks count in BIOS area */
         return( BIOSData( BIOS_SYSTEM_CLOCK, unsigned long ) );
 #endif
@@ -63,7 +66,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  */
 {
 #ifdef _M_I86
-    if( _osmode == DOS_MODE )
+    if( _osmode_REALMODE() )
         /* convert milliseconds to ticks */
         return( ( milli * 18L ) / 1000L );
 #endif
@@ -111,7 +114,7 @@ ui_event UIAPI uieventsource( bool update )
         }
         /* give the system a chance to run something else */
 #ifdef _M_I86
-        if( _osmode == OS2_MODE ) {
+        if( _osmode_PROTMODE() ) {
 #endif
             DosSleep( 1 );
 #ifdef _M_I86

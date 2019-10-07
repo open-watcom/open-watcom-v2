@@ -104,7 +104,7 @@ _WCRTLINK void _nheapgrow( void )
     }
     max_paras = PARAS_IN_64K;
   #else     /* __DOS__ */
-    if( osmode_PROTMODE() ) {
+    if( _osmode_PROTMODE() ) {
         max_paras = PARAS_IN_64K;
     } else {
         max_paras = TinyMaxSet( _RWD_psp );

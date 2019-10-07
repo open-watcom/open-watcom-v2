@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,8 @@
 
 #include "clibext.h"
 
+
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
 typedef enum {
     DRIVE_NONE,
@@ -143,7 +146,7 @@ static drive_type doGetDriveType( int drv )
     int         rc;
 
 #ifdef _M_I86
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return( dosDoGetDriveType( drv ) );
     } else {
 #endif

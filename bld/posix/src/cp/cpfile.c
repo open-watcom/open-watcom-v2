@@ -59,6 +59,8 @@
 #include "filerx.h"
 
 
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
+
 #if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
 #pragma aux DosGetFullPath = \
@@ -97,7 +99,7 @@ extern int _inline_strcmp( char *, char * );
  */
 static int osSameFile( char *dest, char *src )
 {
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return( dosSameFile( dest, src ) );
     }
     src = src;
