@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,7 +170,7 @@ static void _WCI86FAR *Alloc( unsigned short size )
 {
 #if defined( _M_I86 )
   #if defined( __QNX__ )
-    return( MK_FP( qnx_segment_alloc( size ), 0 ) );
+    return( _MK_FP( qnx_segment_alloc( size ), 0 ) );
   #else
     tiny_ret_t          rc;
 
@@ -177,7 +178,7 @@ static void _WCI86FAR *Alloc( unsigned short size )
     if( TINY_ERROR( rc ) ) {
         return( NULL );
     } else {
-        return( MK_FP( TINY_INFO( rc ), 0 ) );
+        return( _MK_FP( TINY_INFO( rc ), 0 ) );
     }
   #endif
 #else
@@ -191,9 +192,9 @@ static void Free( void _WCI86FAR *p )
 {
 #if defined( _M_I86 )
   #if defined( __QNX__ )
-    qnx_segment_free( FP_SEG( p ) );
+    qnx_segment_free( _FP_SEG( p ) );
   #else
-    TinyFreeBlock( FP_SEG( p ) );
+    TinyFreeBlock( _FP_SEG( p ) );
   #endif
 #else
     free( p );

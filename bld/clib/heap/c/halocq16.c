@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,7 @@ _WCRTLINK void_hptr (halloc)( long n, size_t size )
     seg = qnx_segment_huge( amount );
     if( seg == -1 )
         seg = 0;
-    return( (void_hptr)MK_FP( seg , 0 ) );
+    return( (void_hptr)_MK_FP( seg , 0 ) );
 }
 
 _WCRTLINK void (hfree)( void_hptr cstg )
@@ -77,7 +78,7 @@ _WCRTLINK void (hfree)( void_hptr cstg )
 
     if( cstg != NULL ) {
         incr = 1 << _HShift;
-        seg = FP_SEG( cstg );
+        seg = _FP_SEG( cstg );
         for( ;; ) {
             if( qnx_segment_info( 0, _my_pid, seg, &info ) != seg )
                 break;

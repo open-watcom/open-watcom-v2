@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ _WCRTLINK int _bgetcmd( char *buffer, int len )
     char        *p;
     char _WCFAR *cmd;
 
-    cmd    = MK_FP( _RWD_psp, 0x0080 );
+    cmd    = _MK_FP( _RWD_psp, 0x0080 );
     cmdlen = *cmd++;
 
     while( (cmdlen > 0) && (*cmd == ' ' || *cmd == '\t') ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +107,7 @@ __segment __AllocSeg( unsigned int amount )
             GlobalFree( hmem );
             return( _NULLSEG );
         }
-        seg = FP_SEG( px );
+        seg = _FP_SEG( px );
     }
 #else   /* __DOS__ */
     rc = TinyAllocBlock( num_of_paras );

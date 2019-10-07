@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -531,7 +532,7 @@ static short _SuperVGAInit( short mode )
 #if defined( _M_I86 ) || !defined(__QNX__)
     _SetVGAPage = _VGAPageFunc[ adapter - 1 ];
 #else
-    _SetVGAPage = MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
+    _SetVGAPage = _MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
 #endif
 
     //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis
@@ -673,7 +674,7 @@ static void _Setup100( short x, short y, grcolor colour )
     unsigned int        pixel_offset;
 
     pixel_offset = y * _CurrState->stride + ( x >> 3 );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
+    _Screen.mem = _MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
     _Screen.mask = ( 0x80 >> _Screen.bit_pos ) << 8;
@@ -695,7 +696,7 @@ static void _Setup128( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
     _Screen.mask = ( 0x80 >> _Screen.bit_pos ) << 8;
     _Screen.colour = colour;
@@ -717,7 +718,7 @@ static void _Setup640( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in byte
     _Screen.colour = colour;
 }
@@ -737,7 +738,7 @@ static void _Setup800( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in byte
     _Screen.colour = colour;
 }
@@ -758,7 +759,7 @@ static void _Setup1024( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }
@@ -779,7 +780,7 @@ static void _SetupVESA( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }
@@ -802,7 +803,7 @@ static void _Setup1280( short x, short y, grcolor colour )
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     ( *_SetVGAPage )( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
+    _Screen.mem = _MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }

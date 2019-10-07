@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ _WCRTLINK void_fptr _fexpand( void_fptr cstg, size_t req_size )
     __segment   seg;
     void_nptr   tmp;
 
-    seg = FP_SEG( cstg );
+    seg = _FP_SEG( cstg );
     if( seg == _DGroup() ) {
         tmp = _nexpand( FAR2NEAR( void, cstg ), req_size );
         if( tmp == NULL ) {

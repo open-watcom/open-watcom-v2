@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,11 @@
 #if defined(__BIG_DATA__)
 _WCRTLINK size_t _msize( void *cstg )
 {
-    return( GET_BLK_SIZE( (freelist *)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist *)( _FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }
 #endif
 
 _WCRTLINK size_t _fmsize( void_fptr cstg )
 {
-    return( GET_BLK_SIZE( (freelist_fptr)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist_fptr)( _FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }

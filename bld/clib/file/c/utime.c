@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,8 +153,8 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
         reg_set.x.dx = alias & 0xffff;
         sregs.ds = alias >> 16;
   #else
-        reg_set.w.dx = FP_OFF( fname );
-        sregs.ds = FP_SEG( fname );
+        reg_set.w.dx = _FP_OFF( fname );
+        sregs.ds = _FP_SEG( fname );
   #endif
         sregs.es = sregs.ds;                        /* for DOS/16M */
         reg_set.h.ah = DOS_OPEN;

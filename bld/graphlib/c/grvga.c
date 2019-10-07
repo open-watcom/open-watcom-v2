@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ static void _Setup17( short x, short y, grcolor colour )
     char                rotate;
 
     pixel_offset = y * 80 + ( x >> 3 );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
+    _Screen.mem = _MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;        // position of pixel in byte
     rotate = _Screen.bit_pos + 1;
@@ -93,7 +94,7 @@ static void _Setup19( short x, short y, grcolor colour )
     unsigned int        pixel_offset;
 
     pixel_offset = y * 320 + x;
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
+    _Screen.mem = _MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in byte
     _Screen.colour = colour;

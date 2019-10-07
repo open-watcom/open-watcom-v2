@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,8 +143,8 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     size = _RoundUp( plot_len + minor_len + major_len + MAXLEN );
 
 #if defined( __QNX__ )
-    stack = MK_FP( _CompileBuf, 0 );
-    line = MK_FP( _CompileSeg, 0 );     // shadow seg which is executable
+    stack = _MK_FP( _CompileBuf, 0 );
+    line = _MK_FP( _CompileSeg, 0 );    // shadow seg which is executable
 #else
     if( _stackavail() - size > 0x100 ) {
         stack = __alloca( size );
@@ -152,7 +153,7 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
         return;         /* not enough memory to proceed */
     }
   #if defined( _M_I86 )
-    line = MK_FP( _StackSeg, FP_OFF( stack ) );
+    line = _MK_FP( _StackSeg, _FP_OFF( stack ) );
   #else
     line = (line_fn *)stack;
   #endif
@@ -187,8 +188,8 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     OutByte( 0x56 );
     OutByte( 0xFE );
 #endif
-    movedata( FP_SEG( plot ), FP_OFF( plot ),       /* copy plot routine    */
-              FP_SEG( stack ), FP_OFF( stack ), plot_len );
+    movedata( _FP_SEG( plot ), _FP_OFF( plot ),     /* copy plot routine    */
+              _FP_SEG( stack ), _FP_OFF( stack ), plot_len );
     stack += plot_len;
 #if defined( _M_I86 ) && defined( VERSION2 )
     OutByte( 0x5A );                    /* pop         dx       */
@@ -197,8 +198,8 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     OutByte( 0x4A );                    /* dec         dx       */
     OutByte( 0x7C );                    /* jl          short L3 */
     OutByte( major_len + minor_len + 8 + 2 * sizeof( int ) );
-    movedata( FP_SEG( majorfn ), FP_OFF( majorfn ), /* copy major function  */
-              FP_SEG( stack ), FP_OFF( stack ), major_len );
+    movedata( _FP_SEG( majorfn ), _FP_OFF( majorfn ), /* copy major function  */
+              _FP_SEG( stack ), _FP_OFF( stack ), major_len );
     stack += major_len;
     OutByte( 0x81 );                    /*  sub        si, minordif    */
     OutByte( 0xEE );
@@ -208,8 +209,8 @@ void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
     OutByte( 0x81 );                    /*  add        si, majordif    */
     OutByte( 0xC6 );
     OutInt( majordif );
-    movedata( FP_SEG( minorfn ), FP_OFF( minorfn ), /* copy minor function  */
-              FP_SEG( stack ), FP_OFF( stack ), minor_len );
+    movedata( _FP_SEG( minorfn ), _FP_OFF( minorfn ), /* copy minor function  */
+              _FP_SEG( stack ), _FP_OFF( stack ), minor_len );
     stack += minor_len;
     OutByte( 0xEB );                    /*  jmp        short L1 */
     OutByte( L1_label - stack - 1 );

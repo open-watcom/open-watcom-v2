@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,8 +121,8 @@ short _SysMonType( void )
             return( ( alternate_type << 8 ) + active_type );
         }
     }
-//  p = MK_FP( ID_SEG, ID_OFF );                        /* get machine ID   */
-//  if( *p == ID_PCJR ) {                               /* PCjr detected    */
+//  p = _MK_FP( ID_SEG, ID_OFF );               /* get machine ID   */
+//  if( *p == ID_PCJR ) {                       /* PCjr detected    */
 //      return( MT_JRCGA );
 //  } else {
         return( DCCEmulate() );                 /* emulate a DCC function   */

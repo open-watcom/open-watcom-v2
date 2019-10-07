@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,8 +124,8 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
         ( *setup )( x1, y1, 0 );
   #if defined( _M_I86 )
         // check whether the entire row will fit in the buffer
-        new_off = FP_OFF( pic ) + line_len - 1;
-        if( new_off < FP_OFF( pic ) ) {
+        new_off = _FP_OFF( pic ) + line_len - 1;
+        if( new_off < _FP_OFF( pic ) ) {
             if( tmp == NULL ) {     // may have been already allocated
                 if( _stackavail() - line_len > 0x100 ) {
                     tmp = __alloca( _RoundUp( line_len ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ void __CommonTerm( void )
         if( _heapwalk( &hinfo ) != _HEAPOK )
             break;
         if( hinfo._useflag ) {
-            moffs = (void _WCNEAR *)FP_OFF( hinfo._pentry );
+            moffs = (void _WCNEAR *)_FP_OFF( hinfo._pentry );
             free( (char *)moffs + sizeof( void * ) );
         }
     }

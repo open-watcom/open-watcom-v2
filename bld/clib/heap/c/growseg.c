@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +144,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
         BHEAP( seg )->numfree++;
         pfree = pnew;
     }
-    pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
+    pfree->len = new_heaplen - _FP_OFF( pfree ) - TAG_SIZE * 2;
     if( BHEAP( seg )->largest_blk < pfree->len )
         BHEAP( seg )->largest_blk = pfree->len;
     SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );

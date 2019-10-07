@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,10 +119,10 @@ static int dump_heaps( void )
     hinfo._pentry = NULL;
     heap_status = _heapwalk( &hinfo );
     if( heap_status == _HEAPOK ) {
-        prev_seg = FP_SEG( hinfo._pentry );
+        prev_seg = _FP_SEG( hinfo._pentry );
     }
     while( heap_status == _HEAPOK ) {
-        if( prev_seg != FP_SEG( hinfo._pentry )) {
+        if( prev_seg != _FP_SEG( hinfo._pentry )) {
             printf( "segment: %x\n", prev_seg );
             memset( &usage[last_row][last_col], ' ',
                     &usage[ROWS][0] - &usage[last_row][last_col] );
@@ -132,7 +133,7 @@ static int dump_heaps( void )
             free_size = 0;
             old_size = 0;
             largest_free_size = 0;
-            prev_seg = FP_SEG( hinfo._pentry );
+            prev_seg = _FP_SEG( hinfo._pentry );
         }
         /* we don't want to count the last free block */
         free_size += old_size;

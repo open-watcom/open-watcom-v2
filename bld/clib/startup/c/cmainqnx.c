@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,7 +233,7 @@ static void setup_slib( void )
     __MAGIC.free = &_s_free;
     __MAGIC.getenv = &_s_getenv;
     __MAGIC.sptrs[1] = &_s_EFG_printf;
-    __MAGIC.dgroup = FP_SEG( &_STACKLOW );
+    __MAGIC.dgroup = _FP_SEG( &_STACKLOW );
 }
 
 void _CMain( free, n, cmd, stk_bot, pid )

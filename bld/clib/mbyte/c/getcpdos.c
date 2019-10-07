@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,8 +103,8 @@ unsigned short dos_get_code_page( void )
     regs.w.bx = 0xFFFF;                         /* global code page */
     regs.w.cx = 7;                              /* buffer size */
     regs.w.dx = 0xFFFF;                         /* current country */
-    regs.w.di = FP_OFF( (void __far *)buf );    /* buffer offset */
-    sregs.es = FP_SEG( (void __far *)buf );     /* buffer segment */
+    regs.w.di = _FP_OFF( (void __far *)buf );   /* buffer offset */
+    sregs.es = _FP_SEG( (void __far *)buf );    /* buffer segment */
     sregs.ds = 0;                               /* in protected mode (dos16m) DS must be initialized */
     intdosx( &regs, &regs, &sregs );            /* call DOS */
     if( regs.w.cflag )
@@ -185,8 +185,8 @@ unsigned short dos_get_code_page( void )
         r.x.edi = 0;                        /* buffer offset */
         pblock.int_num = 0x21;              /* DOS call */
         r.x.eax = 0x2511;                   /* issue real-mode interrupt */
-        r.x.edx = FP_OFF( &pblock );        /* DS:EDX -> parameter block */
-        sregs.ds = FP_SEG( &pblock );
+        r.x.edx = _FP_OFF( &pblock );       /* DS:EDX -> parameter block */
+        sregs.ds = _FP_SEG( &pblock );
         intdosx( &r, &r, &sregs );
         if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
             codepage = *(unsigned short __far *)EXTENDER_RM2PM( real_seg, 5 );

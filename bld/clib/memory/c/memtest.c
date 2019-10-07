@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,8 +204,8 @@ void TestCopyF( void )
     _fmemcpy( bufA, bufB, strlen(bufB)+1 );     /* copy to bufA */
     VERIFY( !_fstrcmp(bufA, bufB) );            /* ensure copied ok */
 
-    movedata( FP_SEG(bufA), FP_OFF(bufA),       /* copy data */
-              FP_SEG(testStr), FP_OFF(testStr),
+    movedata( _FP_SEG(bufA), _FP_OFF(bufA),     /* copy data */
+              _FP_SEG(testStr), _FP_OFF(testStr),
               _fstrlen(testStr) );
     VERIFY( !_fmemcmp(bufA, testStr, _fstrlen(testStr)) );
 }

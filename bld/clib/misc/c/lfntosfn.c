@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 _WCRTLINK int _islfn( const char *path )
 {
     const char *buff;
-    
+
     buff = strrchr( path, '\\' );
     if( buff == NULL ) {
         buff = path;
@@ -62,10 +63,10 @@ _WCRTLINK char *_lfntosfn( const char *orgname, char *shortname )
     r.w.ax = 0x7160;              /* LFN Truename, CL = 1 */
     r.h.cl = 1;
     r.h.ch = 0;
-    s.ds   = FP_SEG( orgname   ); /* LFN path goes in DS:SI */
-    r.w.si = FP_OFF( orgname   );
-    s.es   = FP_SEG( shortname ); /* Buffer for short name goes in ES:DI */
-    r.w.di = FP_OFF( shortname );
+    s.ds   = _FP_SEG( orgname   ); /* LFN path goes in DS:SI */
+    r.w.si = _FP_OFF( orgname   );
+    s.es   = _FP_SEG( shortname ); /* Buffer for short name goes in ES:DI */
+    r.w.di = _FP_OFF( shortname );
 
     intdosx( &r, &r, &s );        /* Let's call the interrupt */
 

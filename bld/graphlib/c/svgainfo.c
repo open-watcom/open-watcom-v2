@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,20 +123,20 @@ short _SuperVGAType( void )
     }
 
 //  test for Paradise
-    if( _fmemcmp( MK_FP( _RomSeg, _RomOff + 0x007d ), "VGA=", 4 ) == 0 ) {
+    if( _fmemcmp( _MK_FP( _RomSeg, _RomOff + 0x007d ), "VGA=", 4 ) == 0 ) {
         return( _SV_PARADISE );
     }
-    if( _fmemcmp( MK_FP( _RomSeg, _RomOff + 0x007d ), "(c)", 3 ) == 0 ) {
+    if( _fmemcmp( _MK_FP( _RomSeg, _RomOff + 0x007d ), "(c)", 3 ) == 0 ) {
         return( _SV_PARADISE );
     }
 
 //  test for ATI Wonder
-    if( _fmemcmp( MK_FP( _RomSeg, _RomOff + 0x0031 ), "761295520", 9 ) == 0 ) {
+    if( _fmemcmp( _MK_FP( _RomSeg, _RomOff + 0x0031 ), "761295520", 9 ) == 0 ) {
         return( _SV_ATI );
     }
 
 //  test for Oak Technologies
-    s = MK_FP( _RomSeg, _RomOff + 0 );
+    s = _MK_FP( _RomSeg, _RomOff + 0 );
     for( len = 512; len > 0; len -= p - s, s = p + 1 ) {
         p = _fmemchr( s, 'O', len );
         if( p == NULL ) break;
@@ -145,7 +146,7 @@ short _SuperVGAType( void )
     }
 
 //  test for Trident
-    s = MK_FP( _RomSeg, _RomOff + 0 );
+    s = _MK_FP( _RomSeg, _RomOff + 0 );
     for( len = 512; len > 0; len -= p - s, s = p + 1 ) {
         p = _fmemchr( s, 'T', len );
         if( p == NULL ) break;
@@ -156,7 +157,7 @@ short _SuperVGAType( void )
 
 #if 0
 //  test for Diamond Viper
-    s = MK_FP( _RomSeg, _RomOff + 0 );
+    s = _MK_FP( _RomSeg, _RomOff + 0 );
     for( len = 512; len > 0; len -= p - s, s = p + 1 ) {
         p = _fmemchr( s, 'D', len );
         if( p == NULL ) break;
@@ -180,13 +181,13 @@ short _SuperVGAType( void )
 #endif
 
 //  test for Genoa
-    p = MK_FP( _RomSeg, _RomOff + 0x0037 );
+    p = _MK_FP( _RomSeg, _RomOff + 0x0037 );
     val = *(short __far *)p;
 #if defined( __QNX__ )
     seg_len = LoadSegLimit( _RomSeg );
     if( _RomOff + val <= seg_len - 3 ) {
 #endif
-    p = MK_FP( _RomSeg, _RomOff + val );
+    p = _MK_FP( _RomSeg, _RomOff + val );
     if( p[ 0 ] == 0x77 && p[ 1 ] == 0x11 && p[ 2 ] == 0x99 && p[ 3 ] == 0x66 ) {
         return( _SV_GENOA );
     }

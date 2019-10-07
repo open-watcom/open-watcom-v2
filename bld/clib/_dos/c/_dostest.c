@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +176,7 @@ void TestMemoryOperations( void )
     #if defined(__NT__) || (defined(__OS2__) && (defined(__386__)||defined(__PPC__)))
     cptr = (char *) segment;
     #else
-    cptr = (char __far *) MK_FP(segment,0);
+    cptr = (char __far *)_MK_FP( segment, 0 );
     #endif
     for( ctr = 0; ctr < NUM_PARA * SIZE_PARA; ctr += SIZE_PARA ) {
         cptr[ctr] = '#';

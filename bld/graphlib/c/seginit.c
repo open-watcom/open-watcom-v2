@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,9 +70,9 @@ static char __far *qnx_mmap_physical( long addr, unsigned long len, unsigned per
     sel = qnx_segment_overlay_flags( addr, len, perms | _PMF_INUSE );
     if( (short)sel == -1 ) {
         _ErrorStatus = _GRERROR;
-        return( MK_FP( -1, -1 ) );
+        return( _MK_FP( -1, -1 ) );
     } else {
-        return( MK_FP( sel, 0 ) );
+        return( _MK_FP( sel, 0 ) );
     }
 }
 
@@ -82,7 +83,7 @@ void _InitSegments( void )
 {
     char __far          *adr;
 
-    _StackSeg = FP_SEG( &adr );         // point to stack segment
+    _StackSeg = _FP_SEG( &adr );        // point to stack segment
     _BiosSeg = 0x40;
     _BiosOff = 0;
     _MonoSeg = 0x28;
@@ -91,12 +92,12 @@ void _InitSegments( void )
     _CgaOff  = 0;
 
     adr = qnx_mmap_physical( 0x0a0000L, 0x10000L, _PMF_DATA_RW );
-    _EgaSeg = FP_SEG( adr );
-    _EgaOff = FP_OFF( adr );
+    _EgaSeg = _FP_SEG( adr );
+    _EgaOff = _FP_OFF( adr );
 
     adr = qnx_mmap_physical( 0x0c0000L, 0x10000L, _PMF_DATA_RW );
-    _RomSeg = FP_SEG( adr );
-    _RomOff = FP_OFF( adr );
+    _RomSeg = _FP_SEG( adr );
+    _RomOff = _FP_OFF( adr );
 
     _CompileBuf = qnx_segment_alloc( 2048 );
     _CompileSeg = qnx_segment_put( 0, _CompileBuf, _PMF_CODE_RX | _PMF_INUSE );
@@ -165,7 +166,7 @@ void _InitSegments( void )
     DosGetBIOSSeg( &_BiosSeg );
     _BiosOff = 0;
     _RomOff = 0;
-    DosCreateCSAlias( FP_SEG( &i ), &_StackSeg );
+    DosCreateCSAlias( _FP_SEG( &i ), &_StackSeg );
 }
 
 
@@ -200,10 +201,10 @@ void _InitSegments( void )
     dbcs_pair           *p;
     dbcs_pair __far     *s;
 
-    _StackSeg = FP_SEG( &seg );         // point to stack segment
+    _StackSeg = _FP_SEG( &seg );        // point to stack segment
 #if !defined( _M_I86 )
     if( _IsRational() || _IsCodeBuilder() ) {
-        seg = FP_SEG( &_BiosSeg );
+        seg = _FP_SEG( &_BiosSeg );
     } else if( _IsFlashTek() ) {        // FlashTek
         seg = __x386_zero_base_selector;
     } else {

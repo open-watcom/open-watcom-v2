@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@
 #define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelist ), HEAP_ROUND_SIZE )
 
 #if defined( _M_IX86 )
- #define _DGroup()          FP_SEG((&__nheapbeg))
+ #define _DGroup()          _FP_SEG((&__nheapbeg))
 #else
  #define _DGroup()          0
 #endif

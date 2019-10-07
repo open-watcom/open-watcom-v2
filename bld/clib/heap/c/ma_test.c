@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,9 +87,9 @@
             free( (void *) ptr_int );                                   \
             free( (void *) ptr_double );                                \
         } else if( type == TYPE_NEAR ) {                                \
-            _nfree( (void __near *) FP_OFF( ptr_char ) );               \
-            _nfree( (void __near *) FP_OFF( ptr_int ) );                \
-            _nfree( (void __near *) FP_OFF( ptr_double ) );             \
+            _nfree( (void __near *)_FP_OFF( ptr_char ) );               \
+            _nfree( (void __near *)_FP_OFF( ptr_int ) );                \
+            _nfree( (void __near *)_FP_OFF( ptr_double ) );             \
         } else if( type == TYPE_FAR ) {                                 \
             _ffree( (void __far *) ptr_char );                          \
             _ffree( (void __far *) ptr_int );                           \

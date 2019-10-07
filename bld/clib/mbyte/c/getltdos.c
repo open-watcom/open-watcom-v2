@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,8 +112,8 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
         pblock.real_eax.x = 0x6300;             /* get DBCS vector table */
         pblock.int_num = 0x21;                  /* DOS call */
         regs.x.eax = 0x2511;                    /* issue real-mode interrupt */
-        regs.x.edx = FP_OFF( &pblock );         /* DS:EDX -> parameter block */
-        sregs.ds = FP_SEG( &pblock );
+        regs.x.edx = _FP_OFF( &pblock );        /* DS:EDX -> parameter block */
+        sregs.ds = _FP_SEG( &pblock );
         intdosx( &regs, &regs, &sregs );
         if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
             if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */

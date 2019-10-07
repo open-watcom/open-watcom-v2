@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,12 +133,12 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 #if defined( __DOS_086__ )
     /* align DOS 16-bit environment pointer to para boundary */
   #if defined(__SMALL_DATA__)
-    p = (char *)__ROUND_UP_SIZE_PARA( FP_OFF( p ) );
+    p = (char *)__ROUND_UP_SIZE_PARA( _FP_OFF( p ) );
   #else     /* __LARGE_DATA__ */
-    p = MK_FP( FP_SEG( p ), __ROUND_UP_SIZE_PARA( FP_OFF( p ) ) );
+    p = _MK_FP( _FP_SEG( p ), __ROUND_UP_SIZE_PARA( _FP_OFF( p ) ) );
   #endif
     /* normalize DOS 16-bit aligned environment pointer to segment */
-    *envseg = FP_SEG( p ) + __ROUND_DOWN_SIZE_TO_PARA( FP_OFF( p ) );
+    *envseg = _FP_SEG( p ) + __ROUND_DOWN_SIZE_TO_PARA( _FP_OFF( p ) );
     /* correct environment length (subtract aditional pointer alignment space) */
     length -= 15;
 #else
