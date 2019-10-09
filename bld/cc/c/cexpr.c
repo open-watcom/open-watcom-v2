@@ -511,6 +511,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
     type_modifiers      decl_flags;
     target_uint         value;
     SYM_ENTRY           sym;
+    segment_id          segid;
 
     if( tree->op.opr == OPR_ERROR )
         return( tree );
@@ -538,7 +539,6 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             }
             tree->u.expr_type = typ;
         } else {
-
             decl_flags = FlagOps( tree->op.flags );
             if( tree->op.opr == OPR_PUSHADDR ) {
                 SymGet( &sym, tree->op.u2.sym_handle );
@@ -552,7 +552,15 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                 CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
             }
             tree = ExprNode( NULL, OPR_ADDROF, tree );
-            tree->u.expr_type = PtrNode( typ->object, decl_flags, SEG_DATA );
+            segid = SEG_DATA;
+            if( sym.attribs.stg_class == SC_AUTO ) {
+                segid = SEG_STACK;
+                CompFlags.addr_of_auto_taken = true;
+                if( TargetSwitches & FLOATING_SS ) {
+                    decl_flags |= FLAG_FAR;
+                }
+            }
+            tree->u.expr_type = PtrNode( typ->object, decl_flags, segid );
         }
     } else if( typ->decl_type == TYPE_FUNCTION ) {
 
