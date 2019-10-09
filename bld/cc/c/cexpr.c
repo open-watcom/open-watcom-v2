@@ -557,7 +557,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                 segid = SEG_STACK;
                 CompFlags.addr_of_auto_taken = true;
                 if( TargetSwitches & FLOATING_SS ) {
-                    decl_flags |= FLAG_FAR;
+                    decl_flags = (decl_flags & ~FLAG_NEAR) | FLAG_FAR;
                 }
             }
             tree->u.expr_type = PtrNode( typ->object, decl_flags, segid );
