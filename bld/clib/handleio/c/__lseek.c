@@ -138,7 +138,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
 
 _WCRTLINK long __lseek( int handle, long offset, int origin )
 {
-    long            pos;
+    unsigned long       pos;
 
     __handle_check( handle, -1 );
 
@@ -146,7 +146,7 @@ _WCRTLINK long __lseek( int handle, long offset, int origin )
     {
         APIRET          rc;
 
-        rc = DosChgFilePtr( handle, offset, origin, (PULONG)&pos );
+        rc = DosChgFilePtr( handle, offset, origin, &pos );
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }

@@ -33,7 +33,7 @@
 #include "variety.h"
 #include "_process.h"
 
-execveaddr_type  __Exec_addr = 0;
+execveaddr_type  __Exec_addr = NULL;
 
 execveaddr_type __execaddr( void )
 {

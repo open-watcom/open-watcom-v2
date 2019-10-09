@@ -34,10 +34,10 @@
 #include <float.h>
 #include "rtdata.h"
 
-typedef unsigned short __based(__segname("_STACK"))     *cwp;
+typedef unsigned short __based(__segname("_STACK"))     *stk_ptr;
 
-extern  void    __fstcw( cwp cw );
-extern  void    __fldcw( cwp cw );
+extern  void    __fstcw( stk_ptr cw );
+extern  void    __fldcw( stk_ptr cw );
 
 #if defined(__WINDOWS__) && !defined(__WINDOWS_386__)
 
@@ -68,13 +68,13 @@ extern unsigned char __dos87real;
 extern unsigned short __dos87emucall;
 #pragma aux __dos87emucall "*";
 
-void _WCI86NEAR __dos_emu_fldcw( cwp );
+void _WCI86NEAR __dos_emu_fldcw( stk_ptr );
 #pragma aux __dos_emu_fldcw "*" = \
         "mov    ax,3" \
         "call   __dos87emucall" \
     __parm [__bx]
 
-void _WCI86NEAR __dos_emu_fstcw( cwp );
+void _WCI86NEAR __dos_emu_fstcw( stk_ptr );
 #pragma aux __dos_emu_fstcw "*" = \
         "mov    ax,4" \
         "call   __dos87emucall" \
