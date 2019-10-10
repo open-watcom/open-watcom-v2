@@ -85,7 +85,7 @@ enum {
 #define MAX_HEX_DIGITS  16
 
 #if !(defined(_LONG_DOUBLE_) || defined(__WIDECHAR__))
-void __ZBuf2LD( buf_arg buf, ld_arg ld )
+void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
 {
     int         i;
     int         n;
@@ -115,7 +115,7 @@ void __ZBuf2LD( buf_arg buf, ld_arg ld )
 }
 #endif
 
-static void __ZXBuf2LD( char *buf, ld_arg ld, int *exponent )
+static void __ZXBuf2LD( char *buf, ld_stk_ptr ld, int *exponent )
 {
     int         i;
     int         n;
@@ -439,7 +439,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     long_double         ld;
     flt_flags           flags;
     CHAR_TYPE           buffer[ MAX_SIG_DIG + 1 ];
-    buf_arg             tmpbuf;
+    buf_stk_ptr         tmpbuf;
     int                 rc, neg = 0;
 
     cur_ptr = bufptr;

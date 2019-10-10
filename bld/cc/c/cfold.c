@@ -675,7 +675,7 @@ void MakeBinaryFloat( TREEPTR opnd )
 }
 
 
-static int FltCmp( ld_arg ld1, ld_arg ld2 )
+static int FltCmp( ld_stk_ptr ld1, ld_stk_ptr ld2 )
 {
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );

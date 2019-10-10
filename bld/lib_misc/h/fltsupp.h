@@ -53,7 +53,7 @@ extern "C" {
     typedef FAR_STRING  _type_EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB *specs );
 // CPPLIB
   #ifdef _LONG_DOUBLE_
-    typedef void        _type_EFG_cnvd2ld( dbl_arg, ld_arg );
+    typedef void        _type_EFG_cnvd2ld( dbl_stk_ptr, ld_stk_ptr );
   #endif
     typedef int         _type_EFG_cnvd2f( double *src, float *tgt );
     typedef void        _type_EFG_cvtld( long_double *, CVT_INFO *, char * );
