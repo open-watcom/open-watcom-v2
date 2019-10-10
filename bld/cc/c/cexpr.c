@@ -529,7 +529,6 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             return( ErrorNode( tree ) );
         }
     } else if( typ->decl_type == TYPE_ARRAY ) {
-
         if( tree->op.opr == OPR_PUSHSTRING ) {
             if( typ->object->decl_type == TYPE_USHORT ) {
                 typ = PtrNode( typ->object, FLAG_NONE, SEG_DATA );
@@ -539,6 +538,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             }
             tree->u.expr_type = typ;
         } else {
+            segid = SEG_DATA;
             decl_flags = FlagOps( tree->op.flags );
             if( tree->op.opr == OPR_PUSHADDR ) {
                 SymGet( &sym, tree->op.u2.sym_handle );
@@ -547,14 +547,15 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                 if( symb_flags != sym.flags ) {
                     SymReplace( &sym, tree->op.u2.sym_handle );
                 }
+                if( sym.attribs.stg_class == SC_AUTO ) {
+                    segid = SEG_STACK;
+                }
             }
             if( IsCallValue( tree ) ) {
                 CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
             }
             tree = ExprNode( NULL, OPR_ADDROF, tree );
-            segid = SEG_DATA;
-            if( sym.attribs.stg_class == SC_AUTO ) {
-                segid = SEG_STACK;
+            if( segid == SEG_STACK ) {
                 CompFlags.addr_of_auto_taken = true;
                 if( TargetSwitches & FLOATING_SS ) {
                     decl_flags = (decl_flags & ~FLAG_NEAR) | FLAG_FAR;
