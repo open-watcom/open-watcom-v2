@@ -69,7 +69,7 @@
 #endif
 
 #if defined( __DOS_086__ )
-    #define SPVE_NEAR   __near      //__based( __segname( "_STACK" ) )
+    #define SPVE_NEAR   __based( __segname( "_STACK" ) )
     #define ENV_ARG     unsigned
     #define ENVPARM     envseg
 #else

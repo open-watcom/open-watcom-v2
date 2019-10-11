@@ -136,9 +136,3 @@ spve_postopts       =-os
 spveqnx_postopts    =-os
 spvpe_postopts      =-os
 spvpeqnx_postopts   =-os
-
-# WORKAROUND: Suspicious far pointer handling for PharLap
-sigsy_postopts = -wcd310
-
-# WORKAROUND: alloca() does not return a stack based but rather far pointer
-spve_postopts  = -wcd310
