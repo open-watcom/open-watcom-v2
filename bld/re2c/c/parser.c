@@ -38,9 +38,10 @@
 #include <string.h>
 #include "globals.h"
 #include "parser.h"
-int yyparse();
-int yylex();
-void yyerror( char * );
+
+static int      yyparse( void );
+//static int      yylex( void );
+//static void     yyerror( char * );
 
 static uint accept;
 static RegExp *spec;
@@ -214,12 +215,12 @@ YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
 #line 119 "parser.y"
 
-void yyerror( char *s )
+static void yyerror( char *s )
 {
     Scanner_fatal( in, s );
 }
 
-int yylex()
+static int yylex( void )
 {
     return Scanner_scan( in );
 }
@@ -278,8 +279,8 @@ void parse( FILE *i, FILE *o )
 #define YYABORT goto yyabort
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
-int
-yyparse()
+
+static int yyparse( void )
 {
     register int yym, yyn, yystate;
 #if YYDEBUG

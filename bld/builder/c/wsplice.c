@@ -255,7 +255,8 @@ static void *GetMem( size_t size )
     return( block );
 }
 
-static SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
+static SEGSTK *PushSegStack( void )
+// PUSH THE SEGMENT STACK
 {
     SEGSTK      *stk;           // - new stack entry
 

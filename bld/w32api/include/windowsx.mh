@@ -669,6 +669,7 @@
 
 :keep WINDOWSX_DEFINES
 :include windowsx.sp
+:remove WINDOWSX_DEFINES
 
 /* Functions implemented as macros */
 #define GetInstanceModule( x )      (HMODULE)(x)

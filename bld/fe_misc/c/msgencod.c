@@ -1118,7 +1118,7 @@ static void doDumpWORD( MSGWORD *w, void *d )
 }
 #endif
 
-static void compressMsgs()
+static void compressMsgs( void )
 {
     splitIntoWords();
     sortByRefs();

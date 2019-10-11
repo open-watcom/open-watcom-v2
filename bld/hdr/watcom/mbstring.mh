@@ -83,6 +83,9 @@ _WCRTLINK extern unsigned int _mbsnextc( const unsigned char *__s );
 ::
 _WCRTLINK extern unsigned char *_mbstok_r( unsigned char *__s, const unsigned char *__delim, unsigned char **__p );
 
+:segment BITS16
+:include far2.sp
+
 /* Far versions */
 
 _WCRTLINK extern unsigned char _WCFAR *_fmbscpy( unsigned char _WCFAR *__s1, const unsigned char _WCFAR *__s2 );
@@ -141,6 +144,9 @@ _WCRTLINK extern int           _fmblen( const char _WCFAR *__ch, size_t __n );
 _WCRTLINK extern unsigned char _WCFAR *_fmbvtop( unsigned int __ch, unsigned char _WCFAR *__addr );
 _WCRTLINK extern unsigned int  _fmbsnextc( const unsigned char _WCFAR *__s );
 
+:include farepi.sp
+
+:endsegment
 ::
 :: End of extension section
 ::
