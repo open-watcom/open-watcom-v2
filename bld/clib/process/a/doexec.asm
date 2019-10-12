@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  doexec implementation for 16-bit DOS
+;* Description:  doexec implementation for DOS
+;*               (16-bit code only)
 ;*
 ;*****************************************************************************
 
@@ -153,7 +154,8 @@ comend:
 fake    endp
 
 ;
-;       void _doexec( path, cmdline, exe, exess, exesp, execs, exeip )
+;       void _doexec( char_stk_ptr path, char_stk_ptr cmdline, int exe,
+;               unsigned exess, unsigned exesp, unsigned execs, unsigned exeip )
 ;
         public  __doexec
 __doexec proc    far

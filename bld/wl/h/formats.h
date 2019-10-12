@@ -85,12 +85,12 @@ typedef enum {          // there is a corresp. table in MSG.C
 // linker specific phar lap data
 
 struct fmt_dos_data {
-    boolbit     distribute      : 1;
-    boolbit     noindirect      : 1;
-    boolbit     dynamic         : 1;
-    boolbit     ovl_short       : 1;
-    boolbit     pad_sections    : 1;
-    boolbit     full_mz_hdr     : 1;
+    boolbit         distribute      : 1;
+    boolbit         noindirect      : 1;
+    boolbit         dynamic         : 1;
+    boolbit         ovl_short       : 1;
+    boolbit         pad_sections    : 1;
+    boolbit         full_mz_hdr     : 1;
 };
 
 struct fmt_phar_data {
