@@ -37,6 +37,8 @@
 ;               wasm libentry.asm -bt=WINDOWS -ml -0r
 ;
 
+        name    libentry
+
 include langenv.inc
 include xinit.inc
 

@@ -31,6 +31,8 @@
 
         .286p
 
+        name    d16msels
+
 DGROUP  group   _DATA
 
 _TEXT   SEGMENT PARA PUBLIC 'CODE'
