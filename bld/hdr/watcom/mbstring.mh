@@ -250,12 +250,16 @@ typedef unsigned int    DBCODE;     /* äøéöÉRÅ[Éh (2-byte code) */
  * prototypes used by LIFEBOAT code
  **/
 _WCRTLINK extern unsigned char *_mbgetcode( unsigned char *, unsigned int *);
-_WCRTLINK extern unsigned char _WCFAR *_fmbgetcode( unsigned char _WCFAR *, unsigned int *);
 _WCRTLINK extern unsigned char *_mbputchar( unsigned char *, unsigned int );
-_WCRTLINK extern unsigned char _WCFAR *_fmbputchar( unsigned char _WCFAR *, unsigned int );
 _WCRTLINK extern int           _mbsbtype( const unsigned char *, int );
-_WCRTLINK extern int           _fmbsbtype( const unsigned char _WCFAR *, int );
 _WCRTLINK extern int           _mbbtype( unsigned char, int );
+:segment BITS16
+:include far1.sp
+_WCRTLINK extern unsigned char _WCFAR *_fmbgetcode( unsigned char _WCFAR *, unsigned int *);
+_WCRTLINK extern unsigned char _WCFAR *_fmbputchar( unsigned char _WCFAR *, unsigned int );
+_WCRTLINK extern int           _fmbsbtype( const unsigned char _WCFAR *, int );
+:include farepi.sp
+:endsegment
 
 /**
  * distinguish and translate Japanese DBCS
