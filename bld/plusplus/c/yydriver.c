@@ -121,19 +121,19 @@ struct parse_stack {
     REWRITE             *template_record_tokens;
     VSTK_CTL            angle_stack;
     char                *expect;
-    bool                no_super_tokens             : 1;
-    bool                use_saved_tokens            : 1;
-    bool                favour_reduce               : 1;
-    bool                favour_shift                : 1;
-    bool                look_ahead_stack            : 1;
-    bool                look_ahead_active           : 1;
-    bool                template_decl               : 1;
-    bool                template_class_inst_defer   : 1;
-    bool                special_colon_colon         : 1;
-    bool                special_gt_gt               : 1;
-    bool                special_typename            : 1;
-    bool                template_extern             : 1;
-    bool                template_instantiate        : 1;
+    boolbit             no_super_tokens             : 1;
+    boolbit             use_saved_tokens            : 1;
+    boolbit             favour_reduce               : 1;
+    boolbit             favour_shift                : 1;
+    boolbit             look_ahead_stack            : 1;
+    boolbit             look_ahead_active           : 1;
+    boolbit             template_decl               : 1;
+    boolbit             template_class_inst_defer   : 1;
+    boolbit             special_colon_colon         : 1;
+    boolbit             special_gt_gt               : 1;
+    boolbit             special_typename            : 1;
+    boolbit             template_extern             : 1;
+    boolbit             template_instantiate        : 1;
 };
 
 typedef struct {

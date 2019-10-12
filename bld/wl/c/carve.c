@@ -42,7 +42,7 @@
 struct blk {
     blk_t       *next;
     unsigned    index;
-    bool        modified    : 1;
+    boolbit     modified    : 1;
     char        data[1];
 };
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,8 @@ typedef struct {
     mod_entry           *mod;
     targ_addr           addr;
     start_type          type;
-    bool                user_specd  : 1;
-    bool                from_inc    : 1;
+    boolbit             user_specd  : 1;
+    boolbit             from_inc    : 1;
 } startinfo;
 
 extern seg_leader       *StackSegPtr;

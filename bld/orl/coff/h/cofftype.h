@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,8 +128,8 @@ ORL_STRUCT( coff_sec_handle ) {
         struct coff_normal_assoc_struct     normal;
         struct coff_reloc_assoc_struct      reloc;
     } assoc;
-    bool                name_alloced    : 1;
-    bool                relocs_done     : 1;
+    boolbit             name_alloced    : 1;
+    boolbit             relocs_done     : 1;
 };
 
 ORL_STRUCT( coff_symbol_handle ) {
@@ -138,8 +139,8 @@ ORL_STRUCT( coff_symbol_handle ) {
     orl_symbol_type     type;
     coff_symbol ORLUNALIGNED *symbol;
     char                *name;
-    bool                name_alloced    : 1;
-    bool                has_bf          : 1;
+    boolbit             name_alloced    : 1;
+    boolbit             has_bf          : 1;
 };
 
 typedef struct pe_header_struct pe_header;

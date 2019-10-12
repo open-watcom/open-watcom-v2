@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +50,9 @@ typedef struct font {
     UINT        avg_width;
     UINT        max_width;
     UINT        space_width;
-    bool        used            : 1;
-    bool        fixed           : 1;
-//    bool        isFunnyItalic   : 1; ?
+    boolbit     used            : 1;
+    boolbit     fixed           : 1;
+//    boolbit     isFunnyItalic   : 1; ?
 } font;
 
 LOGFONT Helvetica6 = {

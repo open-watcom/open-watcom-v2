@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,10 @@
   #if !defined( __bool_true_false_are_defined )
     #if defined( __WATCOMC__ ) && __WATCOMC__ > 1290 || __STDC_VERSION__ >= 199901L && defined( __UNIX__ )
         #include <stdbool.h>
+        typedef bool        boolbit;
     #else
         #define bool        unsigned char
+        typedef bool        boolbit;
         #define true        1
         #define false       0
         #define __bool_true_false_are_defined 1

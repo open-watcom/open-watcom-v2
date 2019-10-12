@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +49,15 @@ typedef struct vfieldedit {
     ATTR        exit;               /* used when cursor leaves current field   */
     char        _FARD *buffer;      /* buffer of characters being editted      */
                                     /*                           SET  RESET    */
-    bool        oktomodify   :1;    /* user can edit buffer      app   app     */
-    bool        hidden       :1;    /* echo only cursor on XXX   app   app     */
-    bool        delpending   :1;    /* rubout key entered field  ui    ui      */
-    bool        fieldpending :1;    /* a field was just entered  ui    ui      */
-    bool        dirty        :1;    /* altered buffer contents   ui    app     */
-    bool        update       :1;    /* new buffer or contents    app   ui      */
-    bool        cursor       :1;    /* cursor changed            app   ui      */
-    bool        cancel       :1;    /* cancel field change       app   ui      */
-    bool        reset        :1;    /* changed field list or     app   ui      */
+    boolbit     oktomodify   :1;    /* user can edit buffer      app   app     */
+    boolbit     hidden       :1;    /* echo only cursor on XXX   app   app     */
+    boolbit     delpending   :1;    /* rubout key entered field  ui    ui      */
+    boolbit     fieldpending :1;    /* a field was just entered  ui    ui      */
+    boolbit     dirty        :1;    /* altered buffer contents   ui    app     */
+    boolbit     update       :1;    /* new buffer or contents    app   ui      */
+    boolbit     cursor       :1;    /* cursor changed            app   ui      */
+    boolbit     cancel       :1;    /* cancel field change       app   ui      */
+    boolbit     reset        :1;    /* changed field list or     app   ui      */
                                     /* first time through                      */
 } VFIELDEDIT;
 

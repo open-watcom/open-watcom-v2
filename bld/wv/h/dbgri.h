@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +35,10 @@ typedef struct {
     location_list       ll;
     dig_type_info       ti;
     unsigned            ref_size        : 3;
-    bool                ref_far         : 1;
-    bool                rl_passed_in    : 1;
-    bool                scb             : 1;
-    bool                want_base_type  : 1;
+    boolbit             ref_far         : 1;
+    boolbit             rl_passed_in    : 1;
+    boolbit             scb             : 1;
+    boolbit             want_base_type  : 1;
 } return_info;
 
 extern void     InitReturnInfo( sym_handle *, return_info * );

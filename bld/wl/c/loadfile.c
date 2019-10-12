@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,15 +84,15 @@ typedef struct {
     size_t      bufsize;
     char        *module_name;
     size_t      module_name_len;
-    bool        didone  : 1;
+    boolbit     didone  : 1;
 } implibinfo;
 
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
     group_entry *lastgrp;       // used only for copy classes
-    bool        repos   : 1;
-    bool        copy    : 1;
+    boolbit     repos   : 1;
+    boolbit     copy    : 1;
 } grpwriteinfo;
 
 typedef void *writebuffer_fn(void *, const void *, size_t);

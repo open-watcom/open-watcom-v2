@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,11 +74,11 @@ typedef struct {
     FILE            *ifile;
     FILE            *ofile;
     struct {
-        bool        be_ext      : 1;    // option 'x'
-        bool        be_quiet    : 1;    // option 'q'
-        bool        disp_h      : 1;    // option 'h'
-        bool        disp_r      : 1;    // option 'r'
-        bool        have_l      : 1;    // option 'l'
+        boolbit     be_ext      : 1;    // option 'x'
+        boolbit     be_quiet    : 1;    // option 'q'
+        boolbit     disp_h      : 1;    // option 'h'
+        boolbit     disp_r      : 1;    // option 'r'
+        boolbit     have_l      : 1;    // option 'l'
         unsigned_16 lseg;               // arg to 'l'
     }               opt;
     char            iname[_MAX_PATH];

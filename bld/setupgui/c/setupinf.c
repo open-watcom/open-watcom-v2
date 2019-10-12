@@ -100,12 +100,12 @@ typedef struct a_file_info {
     unsigned long       disk_date;
     unsigned long       size;
     unsigned long       date;
-    bool                in_old_dir  : 1;
-    bool                in_new_dir  : 1;
-    bool                read_only   : 1;
-    bool                is_nlm      : 1;
-    bool                is_dll      : 1;
-    bool                executable  : 1;
+    boolbit             in_old_dir  : 1;
+    boolbit             in_new_dir  : 1;
+    boolbit             read_only   : 1;
+    boolbit             is_nlm      : 1;
+    boolbit             is_dll      : 1;
+    boolbit             executable  : 1;
 } a_file_info;
 
 typedef enum {
@@ -215,7 +215,7 @@ static struct dir_info {
     int                 parent;
     int                 num_files;
     int                 num_existing;
-    bool                used            : 1;
+    boolbit             used            : 1;
 } *DirInfo = NULL;
 
 
@@ -224,8 +224,8 @@ static struct target_info {
     disk_ssize          space_needed;
     int                 num_files;
     char                *temp_disk;
-    bool                supplemental    : 1;
-    bool                needs_update    : 1;
+    boolbit             supplemental    : 1;
+    boolbit             needs_update    : 1;
 } *TargetInfo = NULL;
 
 static struct label_info {
@@ -259,10 +259,10 @@ static struct file_info {
         file_cond_info  *p;
         int             i;
     } condition;
-    bool                add             : 1;
-    bool                remove          : 1;
-    bool                supplemental    : 1;
-    bool                core_component  : 1;
+    boolbit             add             : 1;
+    boolbit             remove          : 1;
+    boolbit             supplemental    : 1;
+    boolbit             core_component  : 1;
 } *FileInfo = NULL;
 
 static struct pm_info {
@@ -272,8 +272,8 @@ static struct pm_info {
     char                *iconfile;
     int                 iconindex;
     char                *condition;
-    bool                group           : 1;
-    bool                shadow          : 1;
+    boolbit             group           : 1;
+    boolbit             shadow          : 1;
 } *PMInfo = NULL;
 
 static struct profile_info {

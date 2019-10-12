@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,8 +77,8 @@ static const char   *OptParm;
 
 #define __isdigit(c)    ((c) >= '0' && (c) <= '9')
 
-#define PEGGED( r ) bool    peg_##r##s_used : 1; \
-                    bool    peg_##r##s_on   : 1
+#define PEGGED( r ) boolbit     peg_##r##s_used : 1; \
+                    boolbit     peg_##r##s_on   : 1
 
 static struct
 {
@@ -132,7 +133,7 @@ static struct
     PEGGED( e );
     PEGGED( f );
     PEGGED( g );
-    bool    nd_used : 1;
+    boolbit     nd_used : 1;
 } SwData;
 
 // local variables

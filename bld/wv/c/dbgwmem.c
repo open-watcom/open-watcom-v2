@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ typedef struct mem_backout {
     unsigned            curr_offset;
     unsigned            total_size;
     char                *follow;
-    bool                has_current : 1;
+    boolbit             has_current : 1;
 } mem_backout;
 
 typedef struct mem_window {
@@ -109,8 +109,8 @@ typedef struct mem_window {
     wnd_piece       cursor_piece;
     wnd_piece       shadow_piece;
     mad_type_handle init_mth;      //MAD: what if active MAD changes?
-    bool            file    : 1;
-    bool            stack   : 1;
+    boolbit         file    : 1;
+    boolbit         stack   : 1;
 } mem_window;
 
 extern bool     DlgDataAddrFormat( char *, void *, void (*fmt)(void *,char *));

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,10 +63,10 @@
 #endif
 
 static struct {
-    bool                end_of_file     : 1;    /* EOF was reached */
-    bool                end_of_segment  : 1;    /* EOS was reached */
-    bool                is_32_bit       : 1;    /* 386/486 application */
-    bool                segment_split   : 1;    /* cached seg isnt continuous */
+    boolbit             end_of_file     : 1;    /* EOF was reached */
+    boolbit             end_of_segment  : 1;    /* EOS was reached */
+    boolbit             is_32_bit       : 1;    /* 386/486 application */
+    boolbit             segment_split   : 1;    /* cached seg isnt continuous */
 } exeFlags;
 
 static uint_16          cacheSegment;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,12 +58,12 @@ struct location_context {
     type_handle         *th;
     sym_handle          *sh;
     unsigned            use;
-    bool                have_frame              : 1;
-    bool                have_stack              : 1;
-    bool                have_object             : 1;
-    bool                maybe_have_frame        : 1;
-    bool                maybe_have_object       : 1;
-    bool                up_stack_level          : 1;
+    boolbit             have_frame              : 1;
+    boolbit             have_stack              : 1;
+    boolbit             have_object             : 1;
+    boolbit             maybe_have_frame        : 1;
+    boolbit             maybe_have_object       : 1;
+    boolbit             up_stack_level          : 1;
 };
 
 typedef struct sym_list {
@@ -82,8 +83,8 @@ struct image_entry {
     mod_handle          dip_handle;
     void                (*mapper)( image_entry *, addr_ptr *, addr_off *, addr_off * );
     address             def_addr_space;
-    bool                nofree           : 1;
-    bool                deferred_symbols : 1;
+    boolbit             nofree           : 1;
+    boolbit             deferred_symbols : 1;
     char                image_name[1];          /* variable sized */
 };
 

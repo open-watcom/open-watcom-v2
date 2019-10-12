@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +163,7 @@ static void CUnknown( void )
 static void CInclude( void )
 {
     struct {
-        bool    in_macro    : 1;
+        boolbit     in_macro    : 1;
     } flags;
 
     auto char   buf[_MAX_PATH];

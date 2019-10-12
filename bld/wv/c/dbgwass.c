@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,10 +113,10 @@ typedef struct {
     gui_menu_struct *popup;
     mad_type_handle def_addr;
     unsigned        addr_len;
-    bool            track           : 1;
-    bool            toggled_break   : 1;
-    bool            source          : 1;
-    bool            hex             : 1;
+    boolbit         track           : 1;
+    boolbit         toggled_break   : 1;
+    boolbit         source          : 1;
+    boolbit         hex             : 1;
 } asm_window;
 
 static  void    AsmResize( a_window wnd );

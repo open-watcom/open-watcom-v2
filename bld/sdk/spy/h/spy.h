@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,13 +139,13 @@ typedef enum {
 typedef struct {
     const char      *str;
     UINT            id;
-    bool            watch   : 1;
-    bool            stopon  : 1;
+    boolbit         watch   : 1;
+    boolbit         stopon  : 1;
 } filter;
 
 typedef struct {
-    bool            watch   : 1;
-    bool            stopon  : 1;
+    boolbit         watch   : 1;
+    boolbit         stopon  : 1;
     UINT            id;
     char            *str;
     MsgClass        type;
@@ -165,10 +165,10 @@ typedef struct {
     int             ypos;
     int             last_xpos;
     int             last_ypos;
-    bool            minimized       : 1;
-    bool            on_top          : 1;
-    bool            show_hints      : 1;
-    bool            show_toolbar    : 1;
+    boolbit         minimized       : 1;
+    boolbit         on_top          : 1;
+    boolbit         show_hints      : 1;
+    boolbit         show_toolbar    : 1;
 } WndConfigInfo;
 
 typedef struct {

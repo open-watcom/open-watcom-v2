@@ -625,16 +625,16 @@ typedef struct monitor {
     unsigned short  old_shift;          /* status of shift keys             */
     unsigned char   mouse_xscale;       /* factor to divide mouse x posn    */
     unsigned char   mouse_yscale;       /* factor to divide mouse y posn    */
-    bool            no_snow       :1;   /* snow check flag                  */
-    bool            cursor_on     :1;   /* cursor on flag                   */
-    bool            desqview      :1;   /* desqview present flag            */
-    bool            f10menus      :1;   /* F10 active for menus             */
-    bool            busy_wait     :1;   /* SINK, MOUSE_HOLD or NO_EVENT     */
-    bool            mouse_swapped :1;   /* mouse swap flag                  */
-    bool            no_idle_int   :1;   /* disable idle interrupt           */
-    bool            no_refresh    :1;   /* disable refresh on EV_NO_EVENT   */
-    bool            no_graphics   :1;   /* disable character mapping        */
-    bool            dbcs          :1;   /* double-byte character set        */
+    boolbit         no_snow       :1;   /* snow check flag                  */
+    boolbit         cursor_on     :1;   /* cursor on flag                   */
+    boolbit         desqview      :1;   /* desqview present flag            */
+    boolbit         f10menus      :1;   /* F10 active for menus             */
+    boolbit         busy_wait     :1;   /* SINK, MOUSE_HOLD or NO_EVENT     */
+    boolbit         mouse_swapped :1;   /* mouse swap flag                  */
+    boolbit         no_idle_int   :1;   /* disable idle interrupt           */
+    boolbit         no_refresh    :1;   /* disable refresh on EV_NO_EVENT   */
+    boolbit         no_graphics   :1;   /* disable character mapping        */
+    boolbit         dbcs          :1;   /* double-byte character set        */
 } MONITOR;
 
 enum {

@@ -426,11 +426,11 @@ static int doCCompile(          // COMPILE C++ PROGRAM
 static void initCompFlags( void )
 {
     struct {
-        bool    ignore_environment      : 1;
-        bool    ignore_current_dir      : 1;
-        bool    ide_cmd_line_has_files  : 1;
-        bool    ide_console_output      : 1;
-        bool    dll_active              : 1;
+        boolbit     ignore_environment      : 1;
+        boolbit     ignore_current_dir      : 1;
+        boolbit     ide_cmd_line_has_files  : 1;
+        boolbit     ide_console_output      : 1;
+        boolbit     dll_active              : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;

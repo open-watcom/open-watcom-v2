@@ -115,7 +115,7 @@ struct target {
 typedef struct name NAME;
 struct name {
     NAME        *next;
-    bool        is_timestamp : 1;
+    boolbit     is_timestamp : 1;
     char        name[1];
 };
 
@@ -133,8 +133,8 @@ struct chain {
     char        *Usage[LANG_MAX];
     size_t      clen;
     size_t      len;
-    bool        usage_used : 1;
-    bool        code_used  : 1;
+    boolbit     usage_used : 1;
+    boolbit     code_used  : 1;
     char        name[1];
 };
 
@@ -154,22 +154,22 @@ struct option {
     unsigned    number_default;
     unsigned    target;
     unsigned    ntarget;
-    bool        default_specified : 1;
-    bool        is_simple         : 1;
-    bool        is_immediate      : 1;
-    bool        is_code           : 1;
-    bool        is_internal       : 1;
-    bool        is_multiple       : 1;
-    bool        is_number         : 1;
-    bool        is_id             : 1;
-    bool        is_char           : 1;
-    bool        is_file           : 1;
-    bool        is_optional       : 1;
-    bool        is_path           : 1;
-    bool        is_special        : 1;
-    bool        is_prefix         : 1;
-    bool        is_timestamp      : 1;
-    bool        is_negate         : 1;
+    boolbit     default_specified : 1;
+    boolbit     is_simple         : 1;
+    boolbit     is_immediate      : 1;
+    boolbit     is_code           : 1;
+    boolbit     is_internal       : 1;
+    boolbit     is_multiple       : 1;
+    boolbit     is_number         : 1;
+    boolbit     is_id             : 1;
+    boolbit     is_char           : 1;
+    boolbit     is_file           : 1;
+    boolbit     is_optional       : 1;
+    boolbit     is_path           : 1;
+    boolbit     is_special        : 1;
+    boolbit     is_prefix         : 1;
+    boolbit     is_timestamp      : 1;
+    boolbit     is_negate         : 1;
     CHAIN       *chain;
     size_t      slen;
     char        *sname;
@@ -182,10 +182,10 @@ struct codeseq {
     CODESEQ     *children;
     OPTION      *option;
     char        c;
-    bool        sensitive  : 1;
-    bool        accept     : 1;
-    bool        chain      : 1;
-    bool        chain_root : 1;
+    boolbit     sensitive  : 1;
+    boolbit     accept     : 1;
+    boolbit     chain      : 1;
+    boolbit     chain_root : 1;
 };
 
 static unsigned     line;
@@ -282,11 +282,11 @@ static const char *usageMsg[] = {
 };
 
 static struct {
-    bool        international   : 1;
-    bool        quiet           : 1;
-    bool        no_equal        : 1;
-    bool        alternate_equal : 1;
-    bool        zero_term       : 1;
+    boolbit     international   : 1;
+    boolbit     quiet           : 1;
+    boolbit     no_equal        : 1;
+    boolbit     alternate_equal : 1;
+    boolbit     zero_term       : 1;
     unsigned    lang;
 } optFlag;
 
@@ -1467,7 +1467,7 @@ static void startParserH( void )
             if( o->synonym == NULL ) {
                 makeFieldName( o->name, tokbuff );
                 if( o->enumerate == NULL ) {
-                    fprintf( ofp, "    bool         %s : 1;\n", tokbuff );
+                    fprintf( ofp, "    boolbit      %s : 1;\n", tokbuff );
                 }
             }
         }
@@ -1650,7 +1650,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
     NAME *e;
     OPTION *o;
     struct {
-        bool     close_value_if : 1;
+        boolbit     close_value_if : 1;
     } flag;
 
     o = c->option;

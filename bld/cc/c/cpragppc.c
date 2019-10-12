@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +41,8 @@ static  int             AsmFuncNum;
 static  aux_info        AuxInfo;
 
 //static struct {
-//    bool    f_returns   : 1;
-//    bool    f_streturn  : 1;
+//    boolbit     f_returns   : 1;
+//    boolbit     f_streturn  : 1;
 //} AuxInfoFlg;
 
 
@@ -269,12 +270,12 @@ void PragAux( void )
 /******************/
 {
     struct {
-        bool    f_export    : 1;
-        bool    f_parm      : 1;
-        bool    f_value     : 1;
-        bool    f_modify    : 1;
-        bool    f_frame     : 1;
-        bool    uses_auto   : 1;
+        boolbit     f_export    : 1;
+        boolbit     f_parm      : 1;
+        boolbit     f_value     : 1;
+        boolbit     f_modify    : 1;
+        boolbit     f_frame     : 1;
+        boolbit     uses_auto   : 1;
     } have;
 
     InitAuxInfo();

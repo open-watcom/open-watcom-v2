@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,10 +48,10 @@ static  hw_reg_set      STOSBParms[] = {
 #endif
 
 static struct {
-    bool    f_near          : 1;
-    bool    f_routine_pops  : 1;
-    bool    f_caller_return : 1;
-    bool    f_8087_returns  : 1;
+    boolbit     f_near          : 1;
+    boolbit     f_routine_pops  : 1;
+    boolbit     f_caller_return : 1;
+    boolbit     f_8087_returns  : 1;
 } AuxInfoFlg;
 
 static void pragmaAuxInfoInit( void )
@@ -736,11 +737,11 @@ static void GetParmInfo( void )
 /****************************/
 {
     struct {
-        bool    f_pop       : 1;
-        bool    f_reverse   : 1;
-        bool    f_loadds    : 1;
-        bool    f_nomemory  : 1;
-        bool    f_list      : 1;
+        boolbit     f_pop       : 1;
+        boolbit     f_reverse   : 1;
+        boolbit     f_loadds    : 1;
+        boolbit     f_nomemory  : 1;
+        boolbit     f_list      : 1;
     } have;
 
     have.f_pop = false;
@@ -779,10 +780,10 @@ static void GetSTRetInfo( void )
 /*****************************/
 {
     struct {
-        bool    f_float     : 1;
-        bool    f_struct    : 1;
-        bool    f_allocs    : 1;
-        bool    f_list      : 1;
+        boolbit     f_float     : 1;
+        boolbit     f_struct    : 1;
+        boolbit     f_allocs    : 1;
+        boolbit     f_list      : 1;
     } have;
 
     have.f_float = false;
@@ -818,9 +819,9 @@ static void GetRetInfo( void )
 /***************************/
 {
     struct {
-        bool    f_no8087    : 1;
-        bool    f_list      : 1;
-        bool    f_struct    : 1;
+        boolbit     f_no8087    : 1;
+        boolbit     f_list      : 1;
+        boolbit     f_struct    : 1;
     } have;
 
     have.f_no8087 = false;
@@ -851,9 +852,9 @@ static void GetSaveInfo( void )
 /****************************/
 {
     struct {
-        bool    f_exact     : 1;
-        bool    f_nomemory  : 1;
-        bool    f_list      : 1;
+        boolbit     f_exact     : 1;
+        boolbit     f_nomemory  : 1;
+        boolbit     f_list      : 1;
     } have;
 
     have.f_exact = false;
@@ -879,15 +880,15 @@ void PragAux( void )
 /******************/
 {
     struct {
-        bool    f_call      : 1;
-        bool    f_loadds    : 1;
-        bool    f_rdosdev   : 1;
-        bool    f_export    : 1;
-        bool    f_parm      : 1;
-        bool    f_value     : 1;
-        bool    f_modify    : 1;
-        bool    f_frame     : 1;
-        bool    uses_auto   : 1;
+        boolbit     f_call      : 1;
+        boolbit     f_loadds    : 1;
+        boolbit     f_rdosdev   : 1;
+        boolbit     f_export    : 1;
+        boolbit     f_parm      : 1;
+        boolbit     f_value     : 1;
+        boolbit     f_modify    : 1;
+        boolbit     f_frame     : 1;
+        boolbit     uses_auto   : 1;
     } have;
 
     InitAuxInfo();

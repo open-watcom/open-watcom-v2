@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,10 +71,10 @@ typedef struct memdata {
     HWND            parent;                 /* parent of this window */
     HWND            dialog;                 /* handle of mem info wnd */
     unsigned char   bytesdisp;
-    bool            isdpmi :1;              /* is this a dpmi item */
-    bool            maximized :1;           /* is window maximized */
-    bool            autopos :1;             /* is memory info window auto positioned */
-    bool            curwnd :1;              /* was the single window flag set
+    boolbit         isdpmi      :1;         /* is this a dpmi item */
+    boolbit         maximized   :1;         /* is window maximized */
+    boolbit         autopos     :1;         /* is memory info window auto positioned */
+    boolbit         curwnd      :1;         /* was the single window flag set
                                                when this window was created */
 } MemWndInfo;
 
@@ -95,11 +95,11 @@ typedef struct memconfig {
     char        *appname;               /* name of calling application */
     MultWnd     allowmult;              /* what to do when the user tries to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
-    bool        init :1;                /* for internal use only */
-    bool        maximized :1;           /* is mem window maximized */
-    bool        disp_info :1;           /* display memory info by default */
-    bool        autopos_info :1;        /* keep the memory info window adjacent to the memory display window */
-    bool        forget_pos :1;          /* don't update the position and size of the memory display window */
+    boolbit     init            :1;     /* for internal use only */
+    boolbit     maximized       :1;     /* is mem window maximized */
+    boolbit     disp_info       :1;     /* display memory info by default */
+    boolbit     autopos_info    :1;     /* keep the memory info window adjacent to the memory display window */
+    boolbit     forget_pos      :1;     /* don't update the position and size of the memory display window */
 } MemWndConfig;
 
 

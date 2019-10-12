@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,10 +75,10 @@ typedef struct {
     char        *this;
     place       where;
     method      how;
-    bool        thumb       : 1;
-    bool        locked      : 1;
-    bool        quoted      : 1;    /* set true if token parsed as a quoted string*/
-    bool        skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
+    boolbit     thumb       : 1;
+    boolbit     locked      : 1;
+    boolbit     quoted      : 1;    /* set true if token parsed as a quoted string*/
+    boolbit     skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
     unsigned_16 line;
 } tok;
 

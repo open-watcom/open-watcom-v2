@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,9 +67,9 @@ typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
     gui_ord             max_name;
-    bool                is_global     : 1;
-    bool                toggled_break : 1;
-    bool                d2_only       : 1;
+    boolbit             is_global     : 1;
+    boolbit             toggled_break : 1;
+    boolbit             d2_only       : 1;
 } func_window;
 
 static gui_menu_struct FuncMenu[] = {

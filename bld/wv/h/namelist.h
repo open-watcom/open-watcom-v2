@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ typedef struct {
     void                **skip;
     int                 sort_size;
     walk_find           type;
-    bool                d2_only : 1;
+    boolbit             d2_only : 1;
 } name_list;
 
 #define SNT_QUALIFIED   SNT_LAST

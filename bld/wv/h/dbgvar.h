@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +127,7 @@ typedef struct scope_state {
     var_node            *v;                     // the variable nodes
     long                scope_timestamp;        // LRU timestamp used for garbage collection
     void                *wnd_data;              // window can save stuff here
-    bool                unmapped        : 1;    // is this scope unmapped (are we in the process of restarting the program)
+    boolbit             unmapped        : 1;    // is this scope unmapped (are we in the process of restarting the program)
 } scope_state;
 
 typedef struct {
@@ -136,10 +137,10 @@ typedef struct {
     scope_state         *s;                     // the current scope for this window
 //  var_type_bits       hide;
     int                 name_end_row;
-    bool                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
-    bool                exprsp_cache_is_error   : 1;    // was the last thing the expression processor gave us an error?
-    bool                mem_lock                : 1;    // don't garbage collect from this window. We're using it's data structures
-    bool                members                 : 1;    // show members without this->?
+    boolbit             ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
+    boolbit             exprsp_cache_is_error   : 1;    // was the last thing the expression processor gave us an error?
+    boolbit             mem_lock                : 1;    // don't garbage collect from this window. We're using it's data structures
+    boolbit             members                 : 1;    // show members without this->?
 } var_info;
 
 #define VAR_NO_ROW -1
@@ -160,12 +161,12 @@ typedef struct type_display {
     struct type_display         *alias;             // pointer to a list of same types
     var_display_bits            display;            // how to display this field
     var_type_bits               hide;               // what to hide
-    bool                        autoexpand  : 1;    // automatically expand this type?
-    bool                        on_top      : 1;    // show as the unexpanded value
-    bool                        has_top     : 1;    // has a subfields to show as unexpanded value
-    bool                        is_struct   : 1;    // is this field a struct
-    bool                        is_field    : 1;    // is this field a struct
-    bool                        dirty       : 1;    // is this field dirty
+    boolbit                     autoexpand  : 1;    // automatically expand this type?
+    boolbit                     on_top      : 1;    // show as the unexpanded value
+    boolbit                     has_top     : 1;    // has a subfields to show as unexpanded value
+    boolbit                     is_struct   : 1;    // is this field a struct
+    boolbit                     is_field    : 1;    // is this field a struct
+    boolbit                     dirty       : 1;    // is this field dirty
     char                        name[1];            // MUST BE LAST FIELD
 } type_display;
 

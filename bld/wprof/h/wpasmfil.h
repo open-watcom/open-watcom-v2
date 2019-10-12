@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ typedef struct asm_info {
 } asm_info;
 
 typedef struct wp_asmline {
-    bool                        source_line : 1;
+    boolbit                     source_line : 1;
     union {
         asm_info                asm_line;
         src_info                src;

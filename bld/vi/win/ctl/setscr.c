@@ -47,10 +47,10 @@ WINEXPORT INT_PTR CALLBACK SetScrDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam,
 
 typedef struct {
     int         PageLinesExposed;
-    bool        JumpyScroll         : 1;
-    bool        LineBased           : 1;
-    bool        SavePosition        : 1;
-    bool        AutoMessageClear    : 1;
+    boolbit     JumpyScroll         : 1;
+    boolbit     LineBased           : 1;
+    boolbit     SavePosition        : 1;
+    boolbit     AutoMessageClear    : 1;
     char        FileEndString[FILEENDSTRINGWIDTH];
 } dlg_data;
 

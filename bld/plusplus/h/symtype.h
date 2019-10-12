@@ -178,20 +178,20 @@ struct decl_spec {
     ms_declspec_t       ms_declspec;                // __declspec( <id> ) modifiers
 
     int                                     : 0;
-    bool                type_defined        : 1;    // a type was defined
-    bool                type_declared       : 1;    // a type was declared
-    bool                ctor_name           : 1;    // decl-spec can be a ctor-name
-    bool                is_default          : 1;    // no decl-spec has been specified
-    bool                diagnosed           : 1;    // use of decl-spec diagnosed
-    bool                decl_checked        : 1;    // type checked (& built) already
-    bool                type_elaborated     : 1;    // "class C" or "enum E"
-    bool                nameless_allowed    : 1;    // nameless declaration is allowed
+    boolbit             type_defined        : 1;    // a type was defined
+    boolbit             type_declared       : 1;    // a type was declared
+    boolbit             ctor_name           : 1;    // decl-spec can be a ctor-name
+    boolbit             is_default          : 1;    // no decl-spec has been specified
+    boolbit             diagnosed           : 1;    // use of decl-spec diagnosed
+    boolbit             decl_checked        : 1;    // type checked (& built) already
+    boolbit             type_elaborated     : 1;    // "class C" or "enum E"
+    boolbit             nameless_allowed    : 1;    // nameless declaration is allowed
 
-    bool                generic             : 1;    // <class T, ... templare type arg
-    bool                class_instantiation : 1;    // C<X,x> instantiation
-    bool                no_more_linkage     : 1;    // no more extern "?" allowed
-    bool                arg_declspec        : 1;    // decl-specs for an argument
-    bool                class_idiom         : 1;    // "class C;" idiom used
+    boolbit             generic             : 1;    // <class T, ... templare type arg
+    boolbit             class_instantiation : 1;    // C<X,x> instantiation
+    boolbit             no_more_linkage     : 1;    // no more extern "?" allowed
+    boolbit             arg_declspec        : 1;    // decl-specs for an argument
+    boolbit             class_idiom         : 1;    // "class C;" idiom used
 
     int                                     : 0;
 };
@@ -214,14 +214,14 @@ PCH_struct decl_info {
     REWRITE             *defarg_rewrite;            // storage for default argument
     NAME                name;                       // name of symbol (NULLable)
     TOKEN_LOCN          init_locn;                  // location of '(' for inits
-    bool                sym_used            : 1;    // don't free 'sym'
-    bool                friend_fn           : 1;    // symbol is a friend function
-    bool                fn_defn             : 1;    // function is being defined
-    bool                template_member     : 1;    // declaring a template member
-    bool                has_dspec           : 1;    // has decl-specifiers (set by DeclFunction)
-    bool                has_defarg          : 1;    // has default argument
-    bool                explicit_parms      : 1;    // explicit parms in declarator
-    bool                free                : 1;    // used for precompiled headers
+    boolbit             sym_used            : 1;    // don't free 'sym'
+    boolbit             friend_fn           : 1;    // symbol is a friend function
+    boolbit             fn_defn             : 1;    // function is being defined
+    boolbit             template_member     : 1;    // declaring a template member
+    boolbit             has_dspec           : 1;    // has decl-specifiers (set by DeclFunction)
+    boolbit             has_defarg          : 1;    // has default argument
+    boolbit             explicit_parms      : 1;    // explicit parms in declarator
+    boolbit             free                : 1;    // used for precompiled headers
 };
 
 // types dealing with representing types
@@ -556,69 +556,69 @@ typedef PCH_struct {
     uint_16         index;          // class unique ordering index
     uint_8          max_align;      // maximum alignment of fields
 
-    int                             : 0;
+    int                                         : 0;
 
-    bool    defined                 : 1;    // class is defined fully
-    bool    opened                  : 1;    // class defn has been started
-    bool    unnamed                 : 1;    // cannot have ctors, dtors, etc.
-    bool    corrupted               : 1;    // errors occurred during declaration!
-    bool    abstract                : 1;    // contains pure virtual functions
-    bool    abstract_OK             : 1;    // abstract flag is set properly
-    bool    anonymous               : 1;    // class is an anonymous union/struct
-    bool    has_def_opeq            : 1;    // has an explicit default operator=
+    boolbit         defined                     : 1;    // class is defined fully
+    boolbit         opened                      : 1;    // class defn has been started
+    boolbit         unnamed                     : 1;    // cannot have ctors, dtors, etc.
+    boolbit         corrupted                   : 1;    // errors occurred during declaration!
+    boolbit         abstract                    : 1;    // contains pure virtual functions
+    boolbit         abstract_OK                 : 1;    // abstract flag is set properly
+    boolbit         anonymous                   : 1;    // class is an anonymous union/struct
+    boolbit         has_def_opeq                : 1;    // has an explicit default operator=
 
-    bool    has_ctor                : 1;    // has an explicit constructor
-    bool    has_dtor                : 1;    // has an explicit dtor
-    bool    has_pure                : 1;    // has an explicit pure fn
-    bool    has_vfptr               : 1;    // has a vfptr field
-    bool    has_vbptr               : 1;    // has a vbptr field
-    bool    has_data                : 1;    // contains non-static data members
-    bool    has_vfn                 : 1;    // contains virtual functions
-    bool    has_vcdtor              : 1;    // contains an explicit ctor/dtor in
-                                            // the presence of virtual functions
+    boolbit         has_ctor                    : 1;    // has an explicit constructor
+    boolbit         has_dtor                    : 1;    // has an explicit dtor
+    boolbit         has_pure                    : 1;    // has an explicit pure fn
+    boolbit         has_vfptr                   : 1;    // has a vfptr field
+    boolbit         has_vbptr                   : 1;    // has a vbptr field
+    boolbit         has_data                    : 1;    // contains non-static data members
+    boolbit         has_vfn                     : 1;    // contains virtual functions
+    boolbit         has_vcdtor                  : 1;    // contains an explicit ctor/dtor in
+                                                        // the presence of virtual functions
 
-    bool    ctor_defined            : 1;    // default ctor defined
-    bool    copy_defined            : 1;    // default copy ctor defined
-    bool    dtor_defined            : 1;    // default dtor defined
-    bool    assign_defined          : 1;    // default assignment defined
-    bool    ctor_gen                : 1;    // default ctor generated
-    bool    copy_gen                : 1;    // default copy ctor generated
-    bool    dtor_gen                : 1;    // default dtor generated
-    bool    assign_gen              : 1;    // default assign generated
+    boolbit         ctor_defined                : 1;    // default ctor defined
+    boolbit         copy_defined                : 1;    // default copy ctor defined
+    boolbit         dtor_defined                : 1;    // default dtor defined
+    boolbit         assign_defined              : 1;    // default assignment defined
+    boolbit         ctor_gen                    : 1;    // default ctor generated
+    boolbit         copy_gen                    : 1;    // default copy ctor generated
+    boolbit         dtor_gen                    : 1;    // default dtor generated
+    boolbit         assign_gen                  : 1;    // default assign generated
 
-    bool    ctor_user_code          : 1;    // ctor has user code
-    bool    copy_user_code          : 1;    // copy has user code
-    bool    dtor_user_code          : 1;    // dtor has user code
-    bool    assign_user_code        : 1;    // assign has user code
-    bool    ctor_user_code_checked  : 1;    // ctor_user_code was checked
-    bool    copy_user_code_checked  : 1;    // copy_user_code was checked
-    bool    dtor_user_code_checked  : 1;    // dtor_user_code was checked
-    bool    assign_user_code_checked : 1;   // assign_user_code was checked
+    boolbit         ctor_user_code              : 1;    // ctor has user code
+    boolbit         copy_user_code              : 1;    // copy has user code
+    boolbit         dtor_user_code              : 1;    // dtor has user code
+    boolbit         assign_user_code            : 1;    // assign has user code
+    boolbit         ctor_user_code_checked      : 1;    // ctor_user_code was checked
+    boolbit         copy_user_code_checked      : 1;    // copy_user_code was checked
+    boolbit         dtor_user_code_checked      : 1;    // dtor_user_code was checked
+    boolbit         assign_user_code_checked    : 1;   // assign_user_code was checked
 
-    bool    needs_ctor              : 1;    // must be constructed
-    bool    needs_dtor              : 1;    // must be destructed
-    bool    needs_vdtor             : 1;    // must have a virtual destructor
-    bool    needs_assign            : 1;    // must be assigned with op=
-    bool    const_copy              : 1;    // copy ctor takes const C &
-    bool    const_assign            : 1;    // assignment takes const C &
-    bool    const_ref               : 1;    // contains a const or reference member
-    bool    zero_array              : 1;    // contains a zero sized array as last member
+    boolbit         needs_ctor                  : 1;    // must be constructed
+    boolbit         needs_dtor                  : 1;    // must be destructed
+    boolbit         needs_vdtor                 : 1;    // must have a virtual destructor
+    boolbit         needs_assign                : 1;    // must be assigned with op=
+    boolbit         const_copy                  : 1;    // copy ctor takes const C &
+    boolbit         const_assign                : 1;    // assignment takes const C &
+    boolbit         const_ref                   : 1;    // contains a const or reference member
+    boolbit         zero_array                  : 1;    // contains a zero sized array as last member
 
-    bool    free                    : 1;    // used for precompiled headers
-    bool    lattice                 : 1;    // more than one direct ref to a vbase
-    bool    passed_ref              : 1;    // class value is passed as a reference
-    bool    has_def_ctor            : 1;    // has an explicit default constructor
-    bool    vftable_done            : 1;    // vftable has been collected already
-    bool    vbtable_done            : 1;    // vbtable has been collected already
-    bool    has_udc                 : 1;    // has a user-defined conversion declared
-    bool    common                  : 1;    // used when searching for common bases
+    boolbit         free                        : 1;    // used for precompiled headers
+    boolbit         lattice                     : 1;    // more than one direct ref to a vbase
+    boolbit         passed_ref                  : 1;    // class value is passed as a reference
+    boolbit         has_def_ctor                : 1;    // has an explicit default constructor
+    boolbit         vftable_done                : 1;    // vftable has been collected already
+    boolbit         vbtable_done                : 1;    // vbtable has been collected already
+    boolbit         has_udc                     : 1;    // has a user-defined conversion declared
+    boolbit         common                      : 1;    // used when searching for common bases
 
-    bool    has_comp_info           : 1;    // has compiler generated info inside
-    bool    has_mutable             : 1;    // has a mutable data member
-    bool    empty                   : 1;    // class has zero size
-    bool    has_fn                  : 1;    // has any member function
+    boolbit         has_comp_info               : 1;    // has compiler generated info inside
+    boolbit         has_mutable                 : 1;    // has a mutable data member
+    boolbit         empty                       : 1;    // class has zero size
+    boolbit         has_fn                      : 1;    // has any member function
 
-    int                             : 0;
+    int                                         : 0;
 } CLASSINFO;
 
 // kludge alert:
@@ -868,9 +868,9 @@ PCH_struct name_space {
     union {
         unsigned flags;
         struct {
-          bool          global_fs   : 1;    // - global filescope
-          bool          free        : 1;    // - used for PCH
-          bool          unnamed     : 1;    // - unnamed namespace
+          boolbit       global_fs   : 1;    // - global filescope
+          boolbit       free        : 1;    // - used for PCH
+          boolbit       unnamed     : 1;    // - unnamed namespace
         } s;
     } u;
 };
@@ -920,16 +920,16 @@ PCH_struct scope {
     union {
         unsigned        flags;
         struct {
-            bool        keep        : 1;    // - indicates scope contains info
-            bool        dtor_reqd   : 1;    // - SCOPE_BLK -- need to dtor
-            bool        dtor_naked  : 1;    // - SCOPE_BLK -- has naked dtor syms
-            bool        try_catch   : 1;    // - SCOPE_BLK -- try/catch block
-            bool        arg_check   : 1;    // - check decls against arg scope
-            bool        cg_stab     : 1;    // - generate for scope
-            bool        in_unnamed  : 1;    // - enclosed in an unnamed namespace
-            bool        colour      : 1;    // - using in common enclosing algorithm
-            bool        fn_template : 1;    // - SCOPE_TEMPLATE_PARM -- function
-            bool        dirty       : 1;    // - a symbol has been added
+            boolbit     keep        : 1;    // - indicates scope contains info
+            boolbit     dtor_reqd   : 1;    // - SCOPE_BLK -- need to dtor
+            boolbit     dtor_naked  : 1;    // - SCOPE_BLK -- has naked dtor syms
+            boolbit     try_catch   : 1;    // - SCOPE_BLK -- try/catch block
+            boolbit     arg_check   : 1;    // - check decls against arg scope
+            boolbit     cg_stab     : 1;    // - generate for scope
+            boolbit     in_unnamed  : 1;    // - enclosed in an unnamed namespace
+            boolbit     colour      : 1;    // - using in common enclosing algorithm
+            boolbit     fn_template : 1;    // - SCOPE_TEMPLATE_PARM -- function
+            boolbit     dirty       : 1;    // - a symbol has been added
         } s;
     } u;
     scope_type_t        id;                 // - type of scope
@@ -987,17 +987,17 @@ struct search_result {                          // * means private to SCOPE.C
     target_offset_t     vf_offset;              // - offset of vftable pointer
     TOKEN_LOCN          errlocn;                // * location for errors
     inherit_flag        perm;                   // * access permission
-    bool                simple          : 1;    // - name is in a FILE or BLOCK scope
-    bool                non_virtual     : 1;    // - use delta offset to find scope
+    boolbit             simple          : 1;    // - name is in a FILE or BLOCK scope
+    boolbit             non_virtual     : 1;    // - use delta offset to find scope
                                                 // - only valid for lexical lookup
-    bool                use_this        : 1;    // - may use "this" to access
-    bool                no_this         : 1;    // - cannot use "this" to access
-    bool                ambiguous       : 1;    // * name was ambiguously found
-    bool                mixed_static    : 1;    // * ovload; if non-static, it's ambig!
-    bool                cant_be_auto    : 1;    // * nested function refs an auto
-    bool                protected_OK    : 1;    // * protected SYMBOL access is OK
-    bool                ignore_access   : 1;    // * don't report access errors
-    bool                lookup_error    : 1;    // * general lookup error detected
+    boolbit             use_this        : 1;    // - may use "this" to access
+    boolbit             no_this         : 1;    // - cannot use "this" to access
+    boolbit             ambiguous       : 1;    // * name was ambiguously found
+    boolbit             mixed_static    : 1;    // * ovload; if non-static, it's ambig!
+    boolbit             cant_be_auto    : 1;    // * nested function refs an auto
+    boolbit             protected_OK    : 1;    // * protected SYMBOL access is OK
+    boolbit             ignore_access   : 1;    // * don't report access errors
+    boolbit             lookup_error    : 1;    // * general lookup error detected
     int                                 : 0;
 };
 
@@ -1017,7 +1017,7 @@ struct class_table {
     target_offset_t     delta;                  /* delta table ptr goes in */
     target_offset_t     exact_delta;            /* exact delta table ptr goes in */
     vindex              count;                  /* number of things def'd */
-    bool                ctor_disp       : 1;    /* apply ctor-disp adjustment */
+    boolbit             ctor_disp       : 1;    /* apply ctor-disp adjustment */
 };
 
 struct class_vbtable {
@@ -1055,20 +1055,20 @@ struct thunk_action {
     THUNK_CAST          in;                         // step 3
     SYMBOL              override;                   // step 4
     THUNK_CAST          out;                        // step 5
-    bool                ctor_disp           : 1;    // control for step 2
-    bool                input_virtual       : 1;    // control for step 3
-    bool                output_virtual      : 1;    // control for step 5
-    bool                non_empty           : 1;    // thunk is necessary
-    bool                last_entry          : 1;    // last entry in vftable
-    bool                possible_ambiguity  : 1;    // vftable entry may be ambiguous
+    boolbit             ctor_disp           : 1;    // control for step 2
+    boolbit             input_virtual       : 1;    // control for step 3
+    boolbit             output_virtual      : 1;    // control for step 5
+    boolbit             non_empty           : 1;    // thunk is necessary
+    boolbit             last_entry          : 1;    // last entry in vftable
+    boolbit             possible_ambiguity  : 1;    // vftable entry may be ambiguous
     int                                     : 0;
 };
 
 struct class_vftable {
     CLASS_TABLE         h;                      /* header */
     unsigned            amt_left;               /* # of vfns left to go */
-    bool                ambiguities     : 1;    /* has potentially ambiguous entries */
-    bool                corrupted       : 1;    /* definitely has bad entries */
+    boolbit             ambiguities     : 1;    /* has potentially ambiguous entries */
+    boolbit             corrupted       : 1;    /* definitely has bad entries */
     int                                 : 0;
     THUNK_ACTION        data[1];                /* terminated if last_entry is true */
 };
@@ -1131,12 +1131,12 @@ struct member_ptr_cast {                        /* I - input, O - output, * - pr
     vindex              single_test;            /* O: single idx val that needs mapping */
     vindex              vb_index;               /* O: new value for 'index' */
     SYMBOL              mapping;                /* O: unsigned array to map indices */
-    bool                safe            : 1;    /* I: casting from 'base' to 'derived' */
-    bool                init_conv       : 1;    /* I: convert from found base to final base */
-    bool                delta_reqd      : 1;    /* O: true if delta adjustment is req'd */
-    bool                mapping_reqd    : 1;    /* O: true is index mapping req'd */
-    bool                test_reqd       : 1;    /* O: true if index == 0 test is req'd */
-    bool                single_mapping  : 1;    /* O: only one index value needs mapping */
+    boolbit             safe            : 1;    /* I: casting from 'base' to 'derived' */
+    boolbit             init_conv       : 1;    /* I: convert from found base to final base */
+    boolbit             delta_reqd      : 1;    /* O: true if delta adjustment is req'd */
+    boolbit             mapping_reqd    : 1;    /* O: true is index mapping req'd */
+    boolbit             test_reqd       : 1;    /* O: true if index == 0 test is req'd */
+    boolbit             single_mapping  : 1;    /* O: only one index value needs mapping */
 };
 
 /*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 
 
 typedef struct dlg_window_set {
-    bool            cancel : 1;
+    boolbit         cancel : 1;
 } dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )

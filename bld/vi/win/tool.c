@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,8 @@ typedef struct tool_item {
     const char          *name;
     const char          *help;
     const char          *tooltip;
-    bool                is_blank    : 1;
-    bool                dont_save   : 1;
+    boolbit             is_blank    : 1;
+    boolbit             dont_save   : 1;
     char                cmd[1];
 } tool_item;
 

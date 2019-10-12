@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ typedef struct {
     offset_range        range;
     unsigned_32         prevaddr;
     unsigned_16         seg;
-    bool                needsort    : 1;
+    boolbit             needsort    : 1;
 } cvlineinfo;
 
 // split codeview up into a number of different "sections" to keep track

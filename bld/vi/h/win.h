@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,11 +83,11 @@ typedef struct window {
     int             vert_scroll_pos;
     short           bordercol;
     window_id       id;
-    bool            isswapped           : 1;
-    bool            has_border          : 1;
-    bool            has_gadgets         : 1;
-    bool            min_slot            : 1;
-    bool            has_scroll_gadgets  : 1;
+    boolbit         isswapped           : 1;
+    boolbit         has_border          : 1;
+    boolbit         has_gadgets         : 1;
+    boolbit         min_slot            : 1;
+    boolbit         has_scroll_gadgets  : 1;
     signed char     accessed;
     signed char     overcnt[1];
 } window;

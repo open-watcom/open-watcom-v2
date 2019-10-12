@@ -150,11 +150,11 @@ typedef struct output_desc {
     size_t          scope_len;
     int             suppress_output;
     unsigned        scope_index;
-    bool            ctdt_pending : 1;
-    bool            cv_pending : 1;
-    bool            scope_name : 1;
-    bool            base_name : 1;
-    bool            dllimport : 1;
+    boolbit         ctdt_pending    : 1;
+    boolbit         cv_pending      : 1;
+    boolbit         scope_name      : 1;
+    boolbit         base_name       : 1;
+    boolbit         dllimport       : 1;
 } output_desc;
 
 // the simple demangler uses these to output & count chars in the output buffer
@@ -166,7 +166,7 @@ typedef struct output_desc {
 typedef struct state_desc {
     size_t          prefix;
     size_t          suffix;
-    bool            right : 1;
+    boolbit         right : 1;
 } state_desc;
 
 #ifdef _M_I86

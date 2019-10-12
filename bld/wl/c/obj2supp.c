@@ -78,10 +78,10 @@ typedef struct {
     targ_addr       tgt_addr;
     fix_type        type;
     fix_fpp_type    fpp_type;
-    bool            additive    : 1;
-    bool            done        : 1;
-    bool            imported    : 1;
-    bool            os2_selfrel : 1;
+    boolbit         additive    : 1;
+    boolbit         done        : 1;
+    boolbit         imported    : 1;
+    boolbit         os2_selfrel : 1;
 } fix_relo_data;
 
 typedef struct {
@@ -114,8 +114,8 @@ typedef struct {
     unsigned        rel_size;       /* actual size of reloc item */
     unsigned        fix_size;       /* size of field being fixed up */
     offset          fix_off;        /* start addr of field being fixed */
-    bool            isfloat     : 1;
-    bool            isqnxlinear : 1;
+    boolbit         isfloat     : 1;
+    boolbit         isqnxlinear : 1;
     reloc_item      item;
 } base_reloc;
 

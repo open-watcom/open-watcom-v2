@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,9 +344,9 @@ typedef struct group_entry {
         unsigned        miscflags;      // OS/2
         segment         dos_segment;    // DOS/16M: DOS segment value
     } u;
-    bool                isfree      : 1;
-    bool                isautogrp   : 1;
-    bool                isdup       : 1;
+    boolbit             isfree      : 1;
+    boolbit             isautogrp   : 1;
+    boolbit             isdup       : 1;
     unsigned            num;
 } group_entry;
 
@@ -481,22 +482,22 @@ typedef struct segdata {
     unsigned            combine    : 2; // how to combine segment with others
     unsigned            alloc      : 2; // comdat: where to allocate segment.
 
-    bool                is32bit    : 1; // true if segment is 32 bits
-    bool                iscode     : 1; // true if a code segment.
-    bool                isabs      : 1; // true if this is an absolute segment.
-    bool                iscdat     : 1; // true if this is a comdat
-    bool                isuninit   : 1; // true if seg is uninitialized
-    bool                isidata    : 1; // true if segment is .idata (ORL only)
-    bool                ispdata    : 1; // true if segment is .pdata
-    bool                isreldata  : 1; // true if segment is .reldata
-    bool                visited    : 1; // dce: true if visited in graph search.
-    bool                isrefd     : 1; // dce: true if this module is referenced.
-    bool                isdead     : 1; // dce: true if segdata or segdef killed.
-    bool                isdefd     : 1; // segdata has been defined
-    bool                isfree     : 1; // segdata is free (used in carver stuff)
-    bool                isprepd    : 1; // has been prepped for inc linking
-    bool                canfarcall : 1; // OK to do far call optimization here
-    bool                hascdatsym : 1; // true if comdat and has a symbol defd
+    boolbit             is32bit    : 1; // true if segment is 32 bits
+    boolbit             iscode     : 1; // true if a code segment.
+    boolbit             isabs      : 1; // true if this is an absolute segment.
+    boolbit             iscdat     : 1; // true if this is a comdat
+    boolbit             isuninit   : 1; // true if seg is uninitialized
+    boolbit             isidata    : 1; // true if segment is .idata (ORL only)
+    boolbit             ispdata    : 1; // true if segment is .pdata
+    boolbit             isreldata  : 1; // true if segment is .reldata
+    boolbit             visited    : 1; // dce: true if visited in graph search.
+    boolbit             isrefd     : 1; // dce: true if this module is referenced.
+    boolbit             isdead     : 1; // dce: true if segdata or segdef killed.
+    boolbit             isdefd     : 1; // segdata has been defined
+    boolbit             isfree     : 1; // segdata is free (used in carver stuff)
+    boolbit             isprepd    : 1; // has been prepped for inc linking
+    boolbit             canfarcall : 1; // OK to do far call optimization here
+    boolbit             hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
 typedef struct {
@@ -518,8 +519,8 @@ typedef struct {
         name_strtab     entname;
         ordinal_t       ordinal;
     } u;
-    bool                isordinal   : 1;
-    bool                isfree      : 1;
+    boolbit             isordinal   : 1;
+    boolbit             isfree      : 1;
     symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
 
@@ -581,16 +582,16 @@ typedef struct order_class {
     char                *SrcName;
     targ_addr           Base;
     ORDER_SEGMENT       *SegList;
-    bool                FixedAddr   : 1;
-    bool                NoEmit      : 1;
-    bool                Copy        : 1;
+    boolbit             FixedAddr   : 1;
+    boolbit             NoEmit      : 1;
+    boolbit             Copy        : 1;
 } order_class;
 
 typedef struct order_segment {
     ORDER_SEGMENT       *NextSeg;
     char                *Name;
     targ_addr           Base;
-    bool                FixedAddr   : 1;
-    bool                NoEmit      : 1;
+    boolbit             FixedAddr   : 1;
+    boolbit             NoEmit      : 1;
 } order_segment;
 

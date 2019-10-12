@@ -61,12 +61,12 @@ typedef struct {
     int                 extlen;
     char                *path;
     int                 pathlen;
-    bool                case_ignore     : 1;
-    bool                use_regexp      : 1;
-    bool                search_forward  : 1;
-    bool                search_wrap     : 1;
-    bool                prompt          : 1;
-    bool                selection       : 1;
+    boolbit             case_ignore     : 1;
+    boolbit             use_regexp      : 1;
+    boolbit             search_forward  : 1;
+    boolbit             search_wrap     : 1;
+    boolbit             prompt          : 1;
+    boolbit             selection       : 1;
 } fancy_find;
 
 typedef struct {
@@ -77,10 +77,10 @@ typedef struct {
 
 typedef struct {
     vi_key              *data;
-    bool                inuse           : 1;
-    bool                is_base         : 1;
-    bool                was_inuse       : 1;
-    bool                no_input_window : 1;
+    boolbit             inuse           : 1;
+    boolbit             is_base         : 1;
+    boolbit             was_inuse       : 1;
+    boolbit             no_input_window : 1;
 } key_map;
 
 /* command structure */
@@ -227,19 +227,19 @@ typedef struct fcb {
     } xblock;                               // address of fcb in extended memory
 #endif
     short       byte_cnt;                   // number of bytes in lines
-    bool        swapped             : 1;    // fcb is swapped
-    bool        in_memory           : 1;    // fcb is in memory
-    bool        on_display          : 1;    // lines in fcb are displayed
-    bool        non_swappable       : 1;    // fcb is not swappable
-    bool        dead                : 1;    // fcb is dead (obsolete)
-    bool        was_on_display      : 1;    // fcb was on display (used to save
+    boolbit     swapped             : 1;    // fcb is swapped
+    boolbit     in_memory           : 1;    // fcb is in memory
+    boolbit     on_display          : 1;    // lines in fcb are displayed
+    boolbit     non_swappable       : 1;    // fcb is not swappable
+    boolbit     dead                : 1;    // fcb is dead (obsolete)
+    boolbit     was_on_display      : 1;    // fcb was on display (used to save
                                             // display state when switching files)
-    bool        in_extended_memory  : 1;    // fcb is in extended memory
-    bool        in_xms_memory       : 1;    // fcb is in XMS memory
-    bool        in_ems_memory       : 1;    // fcb is in EMS memory
-    bool        nullfcb             : 1;    // fcb is a special one that has no
+    boolbit     in_extended_memory  : 1;    // fcb is in extended memory
+    boolbit     in_xms_memory       : 1;    // fcb is in XMS memory
+    boolbit     in_ems_memory       : 1;    // fcb is in EMS memory
+    boolbit     nullfcb             : 1;    // fcb is a special one that has no
                                             // lines associated with it
-    bool        globalmatch         : 1;    // a global command matched at least
+    boolbit     globalmatch         : 1;    // a global command matched at least
                                             // one line in this fcb
 } fcb;
 #define FCB_SIZE sizeof( fcb )
@@ -300,15 +300,15 @@ typedef struct range {
  */
     i_mark              hi_start;
     i_mark              hi_end;
-    bool                highlight   : 1;
-    bool                line_based  : 1;
+    boolbit             highlight   : 1;
+    boolbit             line_based  : 1;
 /*
  * Double ACK! Some times we need to treat a range differently depending
  * on whether an operator or a move is using it. This tells us if we should
  * include the last character or not (compare "d/foo" to "/foo"). Puke.
  */
-    bool                fix_range   : 1;
-    bool                selected    : 1;
+    boolbit             fix_range   : 1;
+    boolbit             selected    : 1;
 } range;
 
 typedef vi_rc (*insert_rtn)( void );
@@ -413,9 +413,9 @@ typedef struct select_rgn {
     i_mark              start;
     i_mark              end;
     int                 start_col_v;
-    bool                selected    : 1;
-    bool                lines       : 1;
-    bool                dragging    : 1;
+    boolbit             selected    : 1;
+    boolbit             lines       : 1;
+    boolbit             dragging    : 1;
 } select_rgn;
 
 /*
@@ -444,45 +444,45 @@ typedef struct fs_info {
 } fs_info;
 
 typedef struct ss_flags_c {
-    bool                inCComment        : 1;
-    bool                inCPPComment      : 1;
-    bool                inString          : 1;
-    bool                inPreprocessor    : 1;
-    bool                inErrorDir        : 1;
-    bool                inIfDir           : 1;
-    bool                inPragmaDir       : 1;
-    bool                inDeclspec        : 1;
-    bool                inDeclspec2       : 1;
+    boolbit             inCComment        : 1;
+    boolbit             inCPPComment      : 1;
+    boolbit             inString          : 1;
+    boolbit             inPreprocessor    : 1;
+    boolbit             inErrorDir        : 1;
+    boolbit             inIfDir           : 1;
+    boolbit             inPragmaDir       : 1;
+    boolbit             inDeclspec        : 1;
+    boolbit             inDeclspec2       : 1;
 } ss_flags_c;
 
 typedef struct ss_flags_f {
-    bool                inString          : 1;
+    boolbit             inString          : 1;
 } ss_flags_f;
 
 typedef struct ss_flags_h {
-    bool                inHTMLComment     : 1;
-    bool                inHTMLKeyword     : 1;
-    bool                inAltHTMLKeyword  : 1;
-    bool                inString          : 1;
+    boolbit             inHTMLComment     : 1;
+    boolbit             inHTMLKeyword     : 1;
+    boolbit             inAltHTMLKeyword  : 1;
+    boolbit             inString          : 1;
 } ss_flags_h;
 
 typedef struct ss_flags_g {
-    bool                inGMLComment      : 1;
-    bool                inGMLKeyword      : 1;
-    bool                inAltGMLKeyword   : 1;
-    bool                inString          : 1;
+    boolbit             inGMLComment      : 1;
+    boolbit             inGMLKeyword      : 1;
+    boolbit             inAltGMLKeyword   : 1;
+    boolbit             inString          : 1;
 } ss_flags_g;
 
 typedef struct ss_flags_m {
-    bool                inPreproc         : 1;
-    bool                inInlineFile      : 1;
-    bool                inMacro           : 1;
+    boolbit             inPreproc         : 1;
+    boolbit             inInlineFile      : 1;
+    boolbit             inMacro           : 1;
 } ss_flags_m;
 
 typedef struct ss_flags_p {
-    bool                inString          : 1;
-    bool                beforeRegExp      : 1;
-    bool                doubleRegExp      : 1;
+    boolbit             inString          : 1;
+    boolbit             beforeRegExp      : 1;
+    boolbit             doubleRegExp      : 1;
 } ss_flags_p;
 
 typedef union ss_flags {
@@ -538,9 +538,9 @@ typedef struct dc_line {
     size_t              textlen;
     ss_flags            flags;
     // Windows & text mode
-    bool                display : 1;    // line needs to be redisplayed
+    boolbit             display : 1;    // line needs to be redisplayed
     // Windows only
-    bool                valid   : 1;    // cache reflects what is on screen
+    boolbit             valid   : 1;    // cache reflects what is on screen
 } dc_line;
 
 /*
@@ -559,8 +559,8 @@ typedef struct info {
     mark                *MarkList;
     int                 VirtualColumnDesired;
     select_rgn          SelRgn;
-    bool                IsColumnRegion      : 1;
-    bool                linenumflag         : 1;
+    boolbit             IsColumnRegion      : 1;
+    boolbit             linenumflag         : 1;
     window_id           linenum_current_window_id;
     window_id           current_window_id;
     vi_ushort           DuplicateID;
@@ -622,8 +622,8 @@ typedef struct {
     vi_key              event;              // event that caused a return
     list_linenum        cln;                // current line to display
     window_id           event_wid;          // alternate window to accept events in (like the options window after fgrep...)
-    bool                show_lineno : 1;    // show lines in top-right corner
-    bool                is_menu     : 1;    // is a menu we are showing
+    boolbit             show_lineno : 1;    // show lines in top-right corner
+    boolbit             is_menu     : 1;    // is a menu we are showing
 } selectitem;
 
 typedef vi_rc checkres_fn( const char *, char *, int * );
@@ -645,9 +645,9 @@ typedef struct {
     vi_key              event;                  // event that caused a return
     list_linenum        cln;                    // current line to display
     window_id           event_wid;              // alternate window to accept events in (like the options window after fgrep...)
-    bool                show_lineno        : 1; // show lines in top-right corner
-    bool                is_menu            : 1; // select list is a menu
-    bool                has_scroll_gadgets : 1; // list has scroll gadgets
+    boolbit             show_lineno        : 1; // show lines in top-right corner
+    boolbit             is_menu            : 1; // select list is a menu
+    boolbit             has_scroll_gadgets : 1; // list has scroll gadgets
 } selflinedata;
 
 /*
@@ -684,13 +684,13 @@ typedef struct {
     /*
      * set booleans are here
      */
-    #define PICK(a,b,c,d,e)     bool c :1;
+    #define PICK(a,b,c,d,e)     boolbit     c : 1;
     #include "setb.h"
     #undef PICK
     /*
      * internal booleans are here
      */
-    #define PICK(a,b)           bool a :1;
+    #define PICK(a,b)           boolbit     a : 1;
     #include "setbi.h"
     #undef PICK
 } eflags;               // don't forget to give default in globals.c

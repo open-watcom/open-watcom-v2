@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +64,11 @@ typedef struct {
     unsigned_32         column;
     unsigned_16         segment;
     unsigned_16         col;
-    bool                is_stmt         : 1;
-    bool                is_32           : 1;
-    bool                has_seg         : 1;
-    bool                basic_block     : 1;
-    bool                end_sequence    : 1;
+    boolbit             is_stmt         : 1;
+    boolbit             is_32           : 1;
+    boolbit             has_seg         : 1;
+    boolbit             basic_block     : 1;
+    boolbit             end_sequence    : 1;
 } line_state_info;
 
 typedef struct symrecinfo {

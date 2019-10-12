@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,8 @@ typedef struct {
     gui_ord         last_width;             // how wide were we last resize?
     gui_ord         name_end;               // the length of the longest name
     var_type        vtype;                  // type of window : locals, expression, etc
-    bool            initialized     : 1;    // is it just opened
-    bool            show_whole_expr : 1;    // show foo->bar versus just .bar
+    boolbit         initialized     : 1;    // is it just opened
+    boolbit         show_whole_expr : 1;    // show foo->bar versus just .bar
 } var_window;
 
 typedef struct {

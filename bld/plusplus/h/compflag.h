@@ -41,53 +41,53 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 
-    bool    float_used                      : 1;
-    bool    stats_printed                   : 1;
-    bool    low_on_memory_printed           : 1;
-    bool    external_defn_found             : 1;
-    bool    scanning_c_comment              : 1;    // scanning ANSI style (/**/) comment
-    bool    srcfile_compiled                : 1;    // source file has been compiled
-    bool    errfile_opened                  : 1;    // error file has been opened
-    bool    errfile_written                 : 1;    // something has been written
-    bool    main_has_parms                  : 1;    /* on if "main" has parm(s) */
-    bool    pgm_used_8087                   : 1;    /* on => 8087 ins. generated */
-    bool    banner_printed                  : 1;    /* on => banner printed      */
-    bool    cppi_segment_used               : 1;    /* C++ initializer segment */
-    bool    rescan_buffer_done              : 1;    /* ## re-scan buffer used up */
-    bool    has_winmain                     : 1;    // WinMain() is defined
-    bool    has_libmain                     : 1;    // LibMain() is defined
-    bool    has_dllmain                     : 1;    // DllMain() is defined
-    bool    has_main                        : 1;    // main() is defined
-    bool    has_longjmp                     : 1;    // has longjmp reference
-    bool    extern_C_defn_found             : 1;    // something was declared as "C"
-    bool    inline_intrinsics               : 1;    // inline intrinsic fns
-    bool    scanning_cpp_comment            : 1;    // scanning a C++ style comment
-    bool    pragma_library                  : 1;    // on => behave as if main seen
-    bool    parsing_finished                : 1;    // program has been completely parsed
-    bool    genned_static_dtor              : 1;    // genned DTOR of static var.
-    bool    inline_fun_reg                  : 1;    // inline func. registration gen'ed
-    bool    fatal_error                     : 1;    // fatal error has occured
-    bool    codegen_active                  : 1;    // code generator is active
-    bool    dt_method_pragma                : 1;    // pragma destruct encountered
-    bool    dll_subsequent                  : 1;    // DLL called second time thru
-    bool    dll_active                      : 1;    // DLL version of compiler
-    bool    compile_failed                  : 1;    // compilation failed
-    bool    cmdline_error                   : 1;    // error in cmd line
-    bool    watch_for_pcheader              : 1;    // watch for first #include
-    bool    pch_debug_info_write            : 1;    // writing dbg info into PCH
-    bool    pch_debug_info_read             : 1;    // reading dbg info from PCH
-    bool    batch_file_primary              : 1;    // batch file found: primary scan
-    bool    batch_file_processing           : 1;    // processing the batch file
-    bool    batch_file_eof                  : 1;    // EOF on the batch file
-    bool    batch_file_continue             : 1;    // continue on errors
-    bool    in_pragma                       : 1;    // scanning in a #pragma
-    bool    ide_cmd_line_has_files          : 1;    // ide command line ok as is
-    bool    ide_console_output              : 1;    // ide doing output to console
-    bool    use_macro_tokens                : 1;    // macro expansion is token source
-    bool    log_note_msgs                   : 1;    // on ==> NOTE_MSGs to error file
-    bool    has_wide_char_main              : 1;    // has wide char version of "main" fn
-    bool    vfun_reference_done             : 1;    // extrf: -zv record generated
-    bool    namespace_checks_done           : 1;    // namespace ref/def checks done
+    boolbit     float_used                      : 1;
+    boolbit     stats_printed                   : 1;
+    boolbit     low_on_memory_printed           : 1;
+    boolbit     external_defn_found             : 1;
+    boolbit     scanning_c_comment              : 1;    // scanning ANSI style (/**/) comment
+    boolbit     srcfile_compiled                : 1;    // source file has been compiled
+    boolbit     errfile_opened                  : 1;    // error file has been opened
+    boolbit     errfile_written                 : 1;    // something has been written
+    boolbit     main_has_parms                  : 1;    /* on if "main" has parm(s) */
+    boolbit     pgm_used_8087                   : 1;    /* on => 8087 ins. generated */
+    boolbit     banner_printed                  : 1;    /* on => banner printed      */
+    boolbit     cppi_segment_used               : 1;    /* C++ initializer segment */
+    boolbit     rescan_buffer_done              : 1;    /* ## re-scan buffer used up */
+    boolbit     has_winmain                     : 1;    // WinMain() is defined
+    boolbit     has_libmain                     : 1;    // LibMain() is defined
+    boolbit     has_dllmain                     : 1;    // DllMain() is defined
+    boolbit     has_main                        : 1;    // main() is defined
+    boolbit     has_longjmp                     : 1;    // has longjmp reference
+    boolbit     extern_C_defn_found             : 1;    // something was declared as "C"
+    boolbit     inline_intrinsics               : 1;    // inline intrinsic fns
+    boolbit     scanning_cpp_comment            : 1;    // scanning a C++ style comment
+    boolbit     pragma_library                  : 1;    // on => behave as if main seen
+    boolbit     parsing_finished                : 1;    // program has been completely parsed
+    boolbit     genned_static_dtor              : 1;    // genned DTOR of static var.
+    boolbit     inline_fun_reg                  : 1;    // inline func. registration gen'ed
+    boolbit     fatal_error                     : 1;    // fatal error has occured
+    boolbit     codegen_active                  : 1;    // code generator is active
+    boolbit     dt_method_pragma                : 1;    // pragma destruct encountered
+    boolbit     dll_subsequent                  : 1;    // DLL called second time thru
+    boolbit     dll_active                      : 1;    // DLL version of compiler
+    boolbit     compile_failed                  : 1;    // compilation failed
+    boolbit     cmdline_error                   : 1;    // error in cmd line
+    boolbit     watch_for_pcheader              : 1;    // watch for first #include
+    boolbit     pch_debug_info_write            : 1;    // writing dbg info into PCH
+    boolbit     pch_debug_info_read             : 1;    // reading dbg info from PCH
+    boolbit     batch_file_primary              : 1;    // batch file found: primary scan
+    boolbit     batch_file_processing           : 1;    // processing the batch file
+    boolbit     batch_file_eof                  : 1;    // EOF on the batch file
+    boolbit     batch_file_continue             : 1;    // continue on errors
+    boolbit     in_pragma                       : 1;    // scanning in a #pragma
+    boolbit     ide_cmd_line_has_files          : 1;    // ide command line ok as is
+    boolbit     ide_console_output              : 1;    // ide doing output to console
+    boolbit     use_macro_tokens                : 1;    // macro expansion is token source
+    boolbit     log_note_msgs                   : 1;    // on ==> NOTE_MSGs to error file
+    boolbit     has_wide_char_main              : 1;    // has wide char version of "main" fn
+    boolbit     vfun_reference_done             : 1;    // extrf: -zv record generated
+    boolbit     namespace_checks_done           : 1;    // namespace ref/def checks done
 
 /*****************************************************************************
 //                                                                          //
@@ -101,7 +101,7 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 
-    bool    extra_stats_wanted              : 1;
+    boolbit     extra_stats_wanted              : 1;
 
 /*****************************************************************************
 //                                                                          //
@@ -109,92 +109,92 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 
-    bool    signed_char                     : 1;
-    bool    check_syntax                    : 1;
-    bool    extensions_enabled              : 1;
-    bool    inline_functions                : 1;    // inline user def'd 'inline' fns
-    bool    dump_prototypes                 : 1;    // output prototypes into .DEF file
-    bool    use_base_types                  : 1;    // use base types in .DEF protos
-    bool    quiet_mode                      : 1;
-    bool    keep_comments                   : 1;    // wcpp - output comments
-    bool    emit_library_names              : 1;    // on => put LIB name in obj
-    bool    comments_wanted                 : 1;    // on => comments wanted
-    bool    undefine_all_macros             : 1;    // on => -u all macros
-    bool    cpp_line_wanted                 : 1;    // wcpp - emit #line
-    bool    cpp_ignore_line                 : 1;    /* wcpp - ignore #line */
-    bool    cpp_output                      : 1;    // WCC doing CPP output
-    bool    cpp_output_to_file              : 1;    // WCC doing CPP output to?.i
-    bool    cpp_output_requested            : 1;
-    bool    no_debug_type_names             : 1;
-    bool    emit_names                      : 1;
-    bool    warnings_cause_bad_exit         : 1;
-    bool    use_unicode                     : 1;
-    bool    unique_functions                : 1;
-    bool    jis_to_unicode                  : 1;
-    bool    emit_dependencies               : 1;
-    bool    emit_targimp_symbols            : 1;    // Insert target specific import symbols
-    bool    emit_browser_info               : 1;
-    bool    excs_enabled                    : 1;    // exceptions enabled
-    bool    rtti_enabled                    : 1;    // RTTI enabled
-    bool    extended_defines                : 1;    // -d swallows many tokens
-    bool    virtual_stripping               : 1;    // enable virtual stripping
-    bool    returns_promoted                : 1;    // promote arg,return to int
-    bool    all_debug_type_names            : 1;
-    bool    fhw_switch_used                 : 1;
-    bool    fhr_switch_used                 : 1;
-    bool    modifier_bind_compatibility     : 1; // bind modifiers into generic types
-    bool    prototype_instantiate           : 1;    // instantiate fn prototypes if possible
-    bool    encrypt_preproc_output          : 1;    // try to encrypt compiler output
-    bool    check_truncated_fnames          : 1;    // if can't find file, check 8.3
-    bool    make_enums_an_int               : 1;    // don't overly optimize enum storage
-    bool    use_pcheaders                   : 1;    // pre-compiled headers are active
-    bool    no_pch_warnings                 : 1;    // don't explain PCH activity
-    bool    pch_debug_info_opt              : 1;    // optimize dbg info in PCH
-    bool    pch_min_check                   : 1;    // assume PCH header files haven't changed
-    bool    bd_switch_used                  : 1;
-    bool    bm_switch_used                  : 1;
-    bool    bw_switch_used                  : 1;
-    bool    ee_switch_used                  : 1;
-    bool    ep_switch_used                  : 1;
-    bool    eq_switch_used                  : 1;
-    bool    ew_switch_used                  : 1;
-    bool    op_switch_used                  : 1;
-    bool    br_switch_used                  : 1;
-    bool    rw_registration                 : 1;    // RW-centric function registration
-    bool    original_enum_setting           : 1;    // original -ei setting
-    bool    ignore_environment              : 1;    // don't process WPP* and INCLUDE
-    bool    ignore_current_dir              : 1;    // ignore current dir for include files
-    bool    progress_messages               : 1;    // output msgs as compile progresses
-    bool    no_error_sym_injection          : 1;    // don't insert error symbols
-    bool    error_use_full                  : 1;    // use full path names in error msgs
-    bool    vc_alloca_parm                  : 1;    // allow alloca to occur in parms
-    bool    emit_all_default_libs           : 1;    // emit default libs in .OBJ file
-    bool    bc_switch_used                  : 1;    // building a console app
-    bool    bg_switch_used                  : 1;    // building a GUI app
-    bool    optbr_v                         : 1;    // browse: variables
-    bool    optbr_f                         : 1;    // browse: functions
-    bool    optbr_t                         : 1;    // browse: types
-    bool    optbr_m                         : 1;    // browse: data members
-    bool    optbr_p                         : 1;    // browse: preprocessor macros
-    bool    static_inline_fns               : 1;    // emit inline fns in normal code seg
-    bool    fhwe_switch_used                : 1;    // display but don't treat as errors
-    bool    warn_about_padding              : 1;    // warn when padding is added
-    bool    overload_13332                  : 1;    // implement WP 13.3.3.2 better
-    bool    line_comments                   : 1;    // output // #line instead of #line
-    bool    dont_align_segs                 : 1;    // bug fix: don't align segments
-    bool    fixed_name_mangling             : 1;    // bug fix: name mangling
-    bool    plain_char_promotion            : 1;    // char -> int rvalue promotion warning
-    bool    obfuscate_typesig_names         : 1;    // mangle type sig names
-    bool    dont_autogen_ext_inc            : 1;    // don't convert #include <string> to <string.h> or <string.hpp>
-    bool    dont_autogen_ext_src            : 1;
-    bool    use_old_for_scope               : 1;
-    bool    no_alternative_tokens           : 1;    // disable alternative tokens
-    bool    enable_std0x                    : 1;    // enable some C++0x features
-    bool    generate_auto_depend            : 1;
-    bool    ignore_fnf                      : 1;
-    bool    cpp_ignore_env                  : 1;    // ignore include path env vars
-    bool    ignore_default_dirs             : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
-    bool    non_iso_compliant_names_enabled : 1;    // enable all compiler non-ISO compliant names (macros, symbols, etc.)
+    boolbit     signed_char                     : 1;
+    boolbit     check_syntax                    : 1;
+    boolbit     extensions_enabled              : 1;
+    boolbit     inline_functions                : 1;    // inline user def'd 'inline' fns
+    boolbit     dump_prototypes                 : 1;    // output prototypes into .DEF file
+    boolbit     use_base_types                  : 1;    // use base types in .DEF protos
+    boolbit     quiet_mode                      : 1;
+    boolbit     keep_comments                   : 1;    // wcpp - output comments
+    boolbit     emit_library_names              : 1;    // on => put LIB name in obj
+    boolbit     comments_wanted                 : 1;    // on => comments wanted
+    boolbit     undefine_all_macros             : 1;    // on => -u all macros
+    boolbit     cpp_line_wanted                 : 1;    // wcpp - emit #line
+    boolbit     cpp_ignore_line                 : 1;    /* wcpp - ignore #line */
+    boolbit     cpp_output                      : 1;    // WCC doing CPP output
+    boolbit     cpp_output_to_file              : 1;    // WCC doing CPP output to?.i
+    boolbit     cpp_output_requested            : 1;
+    boolbit     no_debug_type_names             : 1;
+    boolbit     emit_names                      : 1;
+    boolbit     warnings_cause_bad_exit         : 1;
+    boolbit     use_unicode                     : 1;
+    boolbit     unique_functions                : 1;
+    boolbit     jis_to_unicode                  : 1;
+    boolbit     emit_dependencies               : 1;
+    boolbit     emit_targimp_symbols            : 1;    // Insert target specific import symbols
+    boolbit     emit_browser_info               : 1;
+    boolbit     excs_enabled                    : 1;    // exceptions enabled
+    boolbit     rtti_enabled                    : 1;    // RTTI enabled
+    boolbit     extended_defines                : 1;    // -d swallows many tokens
+    boolbit     virtual_stripping               : 1;    // enable virtual stripping
+    boolbit     returns_promoted                : 1;    // promote arg,return to int
+    boolbit     all_debug_type_names            : 1;
+    boolbit     fhw_switch_used                 : 1;
+    boolbit     fhr_switch_used                 : 1;
+    boolbit     modifier_bind_compatibility     : 1; // bind modifiers into generic types
+    boolbit     prototype_instantiate           : 1;    // instantiate fn prototypes if possible
+    boolbit     encrypt_preproc_output          : 1;    // try to encrypt compiler output
+    boolbit     check_truncated_fnames          : 1;    // if can't find file, check 8.3
+    boolbit     make_enums_an_int               : 1;    // don't overly optimize enum storage
+    boolbit     use_pcheaders                   : 1;    // pre-compiled headers are active
+    boolbit     no_pch_warnings                 : 1;    // don't explain PCH activity
+    boolbit     pch_debug_info_opt              : 1;    // optimize dbg info in PCH
+    boolbit     pch_min_check                   : 1;    // assume PCH header files haven't changed
+    boolbit     bd_switch_used                  : 1;
+    boolbit     bm_switch_used                  : 1;
+    boolbit     bw_switch_used                  : 1;
+    boolbit     ee_switch_used                  : 1;
+    boolbit     ep_switch_used                  : 1;
+    boolbit     eq_switch_used                  : 1;
+    boolbit     ew_switch_used                  : 1;
+    boolbit     op_switch_used                  : 1;
+    boolbit     br_switch_used                  : 1;
+    boolbit     rw_registration                 : 1;    // RW-centric function registration
+    boolbit     original_enum_setting           : 1;    // original -ei setting
+    boolbit     ignore_environment              : 1;    // don't process WPP* and INCLUDE
+    boolbit     ignore_current_dir              : 1;    // ignore current dir for include files
+    boolbit     progress_messages               : 1;    // output msgs as compile progresses
+    boolbit     no_error_sym_injection          : 1;    // don't insert error symbols
+    boolbit     error_use_full                  : 1;    // use full path names in error msgs
+    boolbit     vc_alloca_parm                  : 1;    // allow alloca to occur in parms
+    boolbit     emit_all_default_libs           : 1;    // emit default libs in .OBJ file
+    boolbit     bc_switch_used                  : 1;    // building a console app
+    boolbit     bg_switch_used                  : 1;    // building a GUI app
+    boolbit     optbr_v                         : 1;    // browse: variables
+    boolbit     optbr_f                         : 1;    // browse: functions
+    boolbit     optbr_t                         : 1;    // browse: types
+    boolbit     optbr_m                         : 1;    // browse: data members
+    boolbit     optbr_p                         : 1;    // browse: preprocessor macros
+    boolbit     static_inline_fns               : 1;    // emit inline fns in normal code seg
+    boolbit     fhwe_switch_used                : 1;    // display but don't treat as errors
+    boolbit     warn_about_padding              : 1;    // warn when padding is added
+    boolbit     overload_13332                  : 1;    // implement WP 13.3.3.2 better
+    boolbit     line_comments                   : 1;    // output // #line instead of #line
+    boolbit     dont_align_segs                 : 1;    // bug fix: don't align segments
+    boolbit     fixed_name_mangling             : 1;    // bug fix: name mangling
+    boolbit     plain_char_promotion            : 1;    // char -> int rvalue promotion warning
+    boolbit     obfuscate_typesig_names         : 1;    // mangle type sig names
+    boolbit     dont_autogen_ext_inc            : 1;    // don't convert #include <string> to <string.h> or <string.hpp>
+    boolbit     dont_autogen_ext_src            : 1;
+    boolbit     use_old_for_scope               : 1;
+    boolbit     no_alternative_tokens           : 1;    // disable alternative tokens
+    boolbit     enable_std0x                    : 1;    // enable some C++0x features
+    boolbit     generate_auto_depend            : 1;
+    boolbit     ignore_fnf                      : 1;
+    boolbit     cpp_ignore_env                  : 1;    // ignore include path env vars
+    boolbit     ignore_default_dirs             : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
+    boolbit     non_iso_compliant_names_enabled : 1;    // enable all compiler non-ISO compliant names (macros, symbols, etc.)
 
 /*****************************************************************************
 //                                                                          //
@@ -202,21 +202,21 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 
-    bool    register_conventions            : 1;    // on for -3r, off for -3s
-    bool    strings_in_code_segment         : 1;    // on => put strings in CODE
-    bool    save_restore_segregs            : 1;    // save/restore segment regs
-    bool    target_multi_thread             : 1;    // multiple execution threads
-    bool    use_stdcall_at_number           : 1;    // mangle __stdcall names as "_*@n"
-    bool    fs_registration                 : 1;    // using fs for function registration
-    bool    sg_switch_used                  : 1;
-    bool    st_switch_used                  : 1;
-    bool    zc_switch_used                  : 1;
-    bool    zm_switch_used                  : 1;
-    bool    zmf_switch_used                 : 1;
-    bool    zo_switch_used                  : 1;
-    bool    zu_switch_used                  : 1;
-    bool    zx_switch_used                  : 1;
-    bool    mfi_switch_used                 : 1;    // flat model interrupts (ss stays same)
+    boolbit     register_conventions            : 1;    // on for -3r, off for -3s
+    boolbit     strings_in_code_segment         : 1;    // on => put strings in CODE
+    boolbit     save_restore_segregs            : 1;    // save/restore segment regs
+    boolbit     target_multi_thread             : 1;    // multiple execution threads
+    boolbit     use_stdcall_at_number           : 1;    // mangle __stdcall names as "_*@n"
+    boolbit     fs_registration                 : 1;    // using fs for function registration
+    boolbit     sg_switch_used                  : 1;
+    boolbit     st_switch_used                  : 1;
+    boolbit     zc_switch_used                  : 1;
+    boolbit     zm_switch_used                  : 1;
+    boolbit     zmf_switch_used                 : 1;
+    boolbit     zo_switch_used                  : 1;
+    boolbit     zu_switch_used                  : 1;
+    boolbit     zx_switch_used                  : 1;
+    boolbit     mfi_switch_used                 : 1;    // flat model interrupts (ss stays same)
 
 } COMP_FLAGS;
 

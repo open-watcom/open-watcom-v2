@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,11 @@ typedef struct veditline {
     char      _FARD *buffer;        /* buffer of characters editted     */
     unsigned        index;          /* cursor position in buffer        */
     ATTR            attr;           /* attribute for output to vscreen  */
-    bool            dirty       :1; /* boolean: user changed buffer     */
-    bool            update      :1; /* boolean: application has changed */
-    bool            auto_clear  :1; /* clear contents when user types   */
-    bool            invisible   :1; /* characters are invisible         */
-    bool            marking     :1; /* boolean: are we marking?         */
+    boolbit         dirty       :1; /* boolean: user changed buffer     */
+    boolbit         update      :1; /* boolean: application has changed */
+    boolbit         auto_clear  :1; /* clear contents when user types   */
+    boolbit         invisible   :1; /* characters are invisible         */
+    boolbit         marking     :1; /* boolean: are we marking?         */
     unsigned        mark_anchor;    /* marking anchor position          */
     ATTR            mark_attr;      /* marking attribute                */
 } VEDITLINE;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,12 +85,12 @@ typedef enum {          // there is a corresp. table in MSG.C
 // linker specific phar lap data
 
 struct fmt_dos_data {
-    bool        distribute      : 1;
-    bool        noindirect      : 1;
-    bool        dynamic         : 1;
-    bool        ovl_short       : 1;
-    bool        pad_sections    : 1;
-    bool        full_mz_hdr     : 1;
+    boolbit     distribute      : 1;
+    boolbit     noindirect      : 1;
+    boolbit     dynamic         : 1;
+    boolbit     ovl_short       : 1;
+    boolbit     pad_sections    : 1;
+    boolbit     full_mz_hdr     : 1;
 };
 
 struct fmt_phar_data {
@@ -114,13 +115,13 @@ struct fmt_os2_data {
     unsigned_32         heapsize;
     unsigned            segment_shift;
     unsigned            flags;            // in LOADOS2.H
-    bool                chk_seg_relocs : 1;
-    bool                toggle_relocs  : 1;
-    bool                gen_int_relocs : 1;
-    bool                gen_rel_relocs : 1;
-    bool                is_private_dll : 1;
-    bool                no_stub        : 1;
-    bool                mixed1632      : 1;
+    boolbit             chk_seg_relocs : 1;
+    boolbit             toggle_relocs  : 1;
+    boolbit             gen_int_relocs : 1;
+    boolbit             gen_rel_relocs : 1;
+    boolbit             is_private_dll : 1;
+    boolbit             no_stub        : 1;
+    boolbit             mixed1632      : 1;
 };
 
 // linker specific PE data
@@ -138,13 +139,13 @@ struct fmt_pe_data {
     unsigned_8          linkmajor;  /*  link major version  */
     unsigned_8          linkminor;  /*  link minor version  */
     unsigned_16         signature;
-    bool                sub_specd           : 1;
-    bool                no_stdcall          : 1;
-    bool                osv_specd           : 1;    /* OS version specified? */
-    bool                lnk_specd           : 1;    /* Link version specified */
-    bool                checksumfile        : 1;    /* Create checksum for file? */
-    bool                largeaddressaware   : 1;
-    bool                nolargeaddressaware : 1;
+    boolbit             sub_specd           : 1;
+    boolbit             no_stdcall          : 1;
+    boolbit             osv_specd           : 1;    /* OS version specified? */
+    boolbit             lnk_specd           : 1;    /* Link version specified */
+    boolbit             checksumfile        : 1;    /* Create checksum for file? */
+    boolbit             largeaddressaware   : 1;
+    boolbit             nolargeaddressaware : 1;
 };
 
 // structures used in processing DOS/16M load files.
@@ -200,9 +201,9 @@ struct fmt_qnx_data {
     unsigned_32             heapsize;
     unsigned                flags;
     unsigned                priv_level;
-    bool                    gen_seg_relocs      : 1;
-    bool                    gen_linear_relocs   : 1;
-    bool                    seen_mismatch       : 1;
+    boolbit                 gen_seg_relocs      : 1;
+    boolbit                 gen_linear_relocs   : 1;
+    boolbit                 seen_mismatch       : 1;
 };
 
 // linker specific ELF data
@@ -213,7 +214,7 @@ struct fmt_elf_data {
     unsigned_32         extrasects;
     unsigned_8          abitype;        // EI_OSABI contents
     unsigned_8          abiversion;     // EI_ABIVERSION contents
-    bool                exportallsyms : 1;
+    boolbit             exportallsyms : 1;
 };
 
 // linker specific RDOS device driver data
@@ -261,15 +262,15 @@ struct fmt_data {
     unsigned        HexSegShift;// shift to convert Intel Hex record segments to address
     unsigned_32     output_offset;
     char            FillChar;
-    bool            dll             : 1;
-    bool            ver_specified   : 1;
-    bool            make_implib     : 1;
-    bool            make_impfile    : 1;
-    bool            res_name_only   : 1;
-    bool            toc_initialized : 1;
-    bool            output_raw      : 1;
-    bool            output_hex      : 1;
-    bool            output_hshift   : 1;    // Hexout uses HexSegShift (else uses SegShift)
-    bool            output_start    : 1;    // If Hexout should provide a start record
-    bool            raw_hex_output  : 1;
+    boolbit         dll             : 1;
+    boolbit         ver_specified   : 1;
+    boolbit         make_implib     : 1;
+    boolbit         make_impfile    : 1;
+    boolbit         res_name_only   : 1;
+    boolbit         toc_initialized : 1;
+    boolbit         output_raw      : 1;
+    boolbit         output_hex      : 1;
+    boolbit         output_hshift   : 1;    // Hexout uses HexSegShift (else uses SegShift)
+    boolbit         output_start    : 1;    // If Hexout should provide a start record
+    boolbit         raw_hex_output  : 1;
 };

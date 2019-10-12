@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ typedef struct ovl_entry {
     uint_16                 start_para;
     addr_seg                base_para;
     off_t                   disk_addr;
-    bool                    separate_overlay : 1;
+    boolbit                 separate_overlay : 1;
 } ovl_entry;
 
 typedef struct overlay_data {
@@ -75,7 +75,7 @@ typedef struct overlay_data {
     clicks_t                tick;
     section_id              section;
     address                 req_addr;
-    bool                    overlay_return : 1;
+    boolbit                 overlay_return : 1;
 } overlay_data;
 
 typedef struct map_to_actual {
@@ -100,9 +100,9 @@ typedef struct mark_data {
 } mark_data;
 
 typedef struct asmsrc_state {
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
 } asmsrc_state;
 
 typedef struct rtn_info {
@@ -110,13 +110,13 @@ typedef struct rtn_info {
     clicks_t                tick_count;
     clicks_t                first_tick_index;
     clicks_t                last_tick_index;
-    bool                    unknown_routine     : 1;
-    bool                    gather_routine      : 1;
-    bool                    ignore_unknown_rtn  : 1;
-    bool                    ignore_gather       : 1;
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
+    boolbit                 unknown_routine     : 1;
+    boolbit                 gather_routine      : 1;
+    boolbit                 ignore_unknown_rtn  : 1;
+    boolbit                 ignore_gather       : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
     char                    name[1];
 } rtn_info;
 
@@ -128,16 +128,16 @@ typedef struct file_info {
     int                     rtn_count;
     int                     number_gathered;
     int                     sort_type;
-    bool                    unknown_file        : 1;
-    bool                    gather_file         : 1;
-    bool                    ignore_unknown_file : 1;
-    bool                    ignore_unknown_rtn  : 1;
-    bool                    ignore_gather       : 1;
-    bool                    gather_active       : 1;
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
-    bool                    sort_needed         : 1;
+    boolbit                 unknown_file        : 1;
+    boolbit                 gather_file         : 1;
+    boolbit                 ignore_unknown_file : 1;
+    boolbit                 ignore_unknown_rtn  : 1;
+    boolbit                 ignore_gather       : 1;
+    boolbit                 gather_active       : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
+    boolbit                 sort_needed         : 1;
     char                    name[1];
 } file_info;
 
@@ -150,16 +150,16 @@ typedef struct mod_info {
     int                     file_count;
     int                     number_gathered;
     int                     sort_type;
-    bool                    unknown_module      : 1;
-    bool                    gather_module       : 1;
-    bool                    ignore_unknown_mod  : 1;
-    bool                    ignore_unknown_file : 1;
-    bool                    ignore_gather       : 1;
-    bool                    gather_active       : 1;
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
-    bool                    sort_needed         : 1;
+    boolbit                 unknown_module      : 1;
+    boolbit                 gather_module       : 1;
+    boolbit                 ignore_unknown_mod  : 1;
+    boolbit                 ignore_unknown_file : 1;
+    boolbit                 ignore_gather       : 1;
+    boolbit                 gather_active       : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
+    boolbit                 sort_needed         : 1;
     char                    name[1];
 } mod_info;
 
@@ -180,20 +180,20 @@ typedef struct image_info {
     int                     map_count;
     int                     number_gathered;
     int                     sort_type;
-    bool                    main_load           : 1;
-    bool                    sym_deleted         : 1;
-    bool                    unknown_image       : 1;
-    bool                    ignore_unknown_image: 1;
-    bool                    ignore_unknown_mod  : 1;
-    bool                    gather_image        : 1;
-    bool                    gather_active       : 1;
-    bool                    ignore_gather       : 1;
-    bool                    exe_not_found       : 1;
-    bool                    exe_changed         : 1;
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
-    bool                    sort_needed         : 1;
+    boolbit                 main_load           : 1;
+    boolbit                 sym_deleted         : 1;
+    boolbit                 unknown_image       : 1;
+    boolbit                 ignore_unknown_image: 1;
+    boolbit                 ignore_unknown_mod  : 1;
+    boolbit                 gather_image        : 1;
+    boolbit                 gather_active       : 1;
+    boolbit                 ignore_gather       : 1;
+    boolbit                 exe_not_found       : 1;
+    boolbit                 exe_changed         : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
+    boolbit                 sort_needed         : 1;
 } image_info;
 
 
@@ -249,15 +249,15 @@ typedef struct sio_data {
     asmsrc_state            asm_src_info;
     samp_header             header;
     system_config           config;
-    bool                    massaged_mapped     : 1;
-    bool                    ignore_unknown_image: 1;
-    bool                    gather_active       : 1;
-    bool                    bar_max             : 1;
-    bool                    abs_bar             : 1;
-    bool                    rel_bar             : 1;
-    bool                    abs_on_screen       : 1;
-    bool                    rel_on_screen       : 1;
-    bool                    sort_needed         : 1;
+    boolbit                 massaged_mapped     : 1;
+    boolbit                 ignore_unknown_image: 1;
+    boolbit                 gather_active       : 1;
+    boolbit                 bar_max             : 1;
+    boolbit                 abs_bar             : 1;
+    boolbit                 rel_bar             : 1;
+    boolbit                 abs_on_screen       : 1;
+    boolbit                 rel_on_screen       : 1;
+    boolbit                 sort_needed         : 1;
 } sio_data;
 
 #define MAX_RAW_BUCKET_INDEX    (SHRT_MAX/sizeof(address))

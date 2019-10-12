@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,10 +43,10 @@ typedef struct RawDataItem {
         uint_32 Num;
     } Item;
     size_t      StrLen;
-    bool        IsString  :1;
-    bool        LongItem  :1;
-    bool        TmpStr    :1;
-    bool        WriteNull :1;
+    boolbit     IsString  :1;
+    boolbit     LongItem  :1;
+    boolbit     TmpStr    :1;
+    boolbit     WriteNull :1;
 } RawDataItem;
 
 typedef struct DataElemList {

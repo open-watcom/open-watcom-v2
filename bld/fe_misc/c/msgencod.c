@@ -175,15 +175,15 @@ struct wordref {
 #define LINE_SIZE       (512)
 
 static struct {
-    bool    international           : 1;    // - dump internationalized data
-    bool    quiet                   : 1;    // - quiet mode
-    bool    gen_pick                : 1;    // - generate pick macros unstead of #defines
-    bool    grouped                 : 1;    // - groups detected
-    bool    have_msg                : 1;    // - have first message
-    bool    gen_gpick               : 1;    // - generate generalized pick macros and tables
-    bool    ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
-    bool    warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
-    bool    no_warn                 : 1;    // - don't print warning messages
+    boolbit     international           : 1;    // - dump internationalized data
+    boolbit     quiet                   : 1;    // - quiet mode
+    boolbit     gen_pick                : 1;    // - generate pick macros unstead of #defines
+    boolbit     grouped                 : 1;    // - groups detected
+    boolbit     have_msg                : 1;    // - have first message
+    boolbit     gen_gpick               : 1;    // - generate generalized pick macros and tables
+    boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
+    boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
+    boolbit     no_warn                 : 1;    // - don't print warning messages
 } flags;
 
 typedef enum {
@@ -195,7 +195,7 @@ typedef enum {
 static struct {
     unsigned    line;
     err_type    kind;
-    bool        active : 1;
+    boolbit     active : 1;
 } examples;
 
 static char *ifname;

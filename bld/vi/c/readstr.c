@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ typedef struct input_buffer {
     size_t          left_column;
     int             line;
     type_style      style;
-    bool            overstrike  : 1;
+    boolbit         overstrike  : 1;
 } input_buffer;
 
 /*

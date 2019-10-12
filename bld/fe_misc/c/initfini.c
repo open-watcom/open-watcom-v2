@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +123,7 @@ static void splitFini( INITFINI *d );
 #define EXIT_BEG( name )                    \
 struct EXIT_POINT_NAME( name ) {            \
     EXIT_POINT      *previous;              \
-    bool            subsequent :1;          \
+    boolbit         subsequent  :1;         \
     INITFINI        *registered[ 0
 #define EXIT_REG( name )          +1
 #define SPLIT_INIT( name, fini )  +1

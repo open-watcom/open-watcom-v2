@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +50,8 @@ typedef struct vtab {
     a_tab_field     *curr;                                  /* current VFIELD */
     a_tab_field     *first;                                 /* first VFIELD */
     ORD             home;                                   /* home column for tab algorithm */
-    bool            wrap    :1;                             /* wrap cursor top to bottom */
-    bool            enter   :1;                             /* grab enter event as CR */
+    boolbit         wrap    :1;                             /* wrap cursor top to bottom */
+    boolbit         enter   :1;                             /* grab enter event as CR */
 } VTAB;
 
 extern ui_event     uitabfilter( ui_event, VTAB * );
