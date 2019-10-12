@@ -16,12 +16,12 @@
 !inject gtpidos2.obj                                o16 o32
 !inject gtpidw32.obj                                                    w32
 !inject gtpidwnt.obj             nt nta ntp
-!inject gtpidrd.obj                                                                         rdu rdk
+!inject gtpidrdu.obj                                                                        rdu rdk
 !inject isatt.obj    d16 d32                                        w16 w32 osi
 !inject isattos2.obj                                o16 o32
 !inject isattwnt.obj             nt nta ntp
 !inject isattlnx.obj                                                            l32 lpc lmp
-!inject isattrd.obj                                                                         rdu rdk
+!inject isattrdu.obj                                                                        rdu rdk
 !inject _putenv.obj  d16 d32     nt nta ntp         o16 o32 q16     w16 w32     l32 lpc lmp rdu rdk
 !inject putenv.obj   d16 d32     nt nta ntp         o16 o32 q16     w16 w32     l32 lpc lmp rdu rdk
 !inject searchen.obj d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk

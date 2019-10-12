@@ -8,11 +8,11 @@
 !inject accss.obj    d16 d32                                        w16 w32 osi
 !inject accssos2.obj                                o16 o32
 !inject accsswnt.obj             nt nta ntp
-!inject accssrd.obj                                                                         rdu rdk
+!inject accssrdu.obj                                                                        rdu rdk
 !inject chmod.obj    d16 d32                                        w16 w32 osi
 !inject chmodos2.obj                                o16 o32
 !inject chmodwnt.obj             nt nta ntp
-!inject chmodrd.obj                                                                         rdu rdk
+!inject chmodrdu.obj                                                                        rdu rdk
 !inject findclos.obj d16 d32 dpm nt nta ntp         o16 o32         w16 w32 osi             rdu
 !inject findfirs.obj d16 d32 dpm nt nta ntp         o16 o32         w16 w32 osi             rdu
 !inject findnext.obj d16 d32 dpm nt nta ntp         o16 o32         w16 w32 osi             rdu
@@ -21,15 +21,15 @@
 !inject mktemp.obj   d16 d32     nt nta ntp         o16 o32         w16 w32 osi
 !inject ntdosdt.obj              nt nta ntp
 !inject remove.obj   d16 d32     nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-!inject remrd.obj                                                                           rdu rdk
+!inject remrdu.obj                                                                          rdu rdk
 !inject renam.obj    d16 d32                                        w16 w32 osi
 !inject renamos2.obj                                o16 o32
 !inject renamwnt.obj             nt nta ntp
-!inject renamrd.obj                                                                         rdu rdk
+!inject renamrdu.obj                                                                        rdu rdk
 !inject stat.obj     d16 d32                                        w16 w32 osi
 !inject statos2.obj                                 o16 o32
 !inject statwnt.obj              nt nta ntp
-!inject statrd.obj                                                                          rdu rdk
+!inject statrdu.obj                                                                         rdu rdk
 !inject tempnam.obj  d16 d32     nt nta ntp         o16 o32         w16 w32 osi
 !inject timet2ft.obj             nt nta ntp
 !inject tmpnm.obj    d16 d32     nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
@@ -59,7 +59,7 @@
 !inject utimeos2.obj                                o16 o32
 !inject utimeosi.obj                                                        osi
 !inject utimewnt.obj             nt nta ntp
-!inject utimerd.obj                                                                         rdu rdk
+!inject utimerdu.obj                                                                        rdu rdk
 !inject utempnam.obj d16 d32     nt nta ntp         o16 o32         w16 w32 osi
 !inject utmpnm.obj   d16 d32     nt nta ntp         o16 o32         w16 w32
 !inject utmpnm_s.obj d16 d32     nt nta ntp         o16 o32         w16 w32

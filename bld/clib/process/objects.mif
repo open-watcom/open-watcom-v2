@@ -10,7 +10,7 @@
 !inject delay.obj    d16 d32					    w16
 !inject delaylnx.obj								l32 lpc lmp
 !inject delayos2.obj				    o16 o32
-!inject delayrd.obj									    rdu rdk
+!inject delayrdu.obj                                                                        rdu rdk
 !inject delayw32.obj							w32
 !inject delaywnt.obj             nt nta ntp
 !inject doexec.obj   d16
@@ -64,7 +64,7 @@
 !inject sleeplnx.obj								l32 lpc lmp
 !inject sleepos2.obj				    o16 o32
 !inject sleepwnt.obj             nt nta ntp
-!inject sleeprd.obj									    rdu rdk
+!inject sleeprdu.obj                                                                        rdu rdk
 !inject spawn086.obj d16
 !inject spawn386.obj     d32
 !inject spl.obj      d16 d32     nt nta ntp         o16 o32                                 rdu

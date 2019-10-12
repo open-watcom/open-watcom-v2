@@ -29,6 +29,7 @@
 !inject fmsize.obj   d16                            o16     q16     w16
 !inject frealloc.obj d16                            o16     q16     w16
 !inject freect.obj   d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
+!inject freerdk.obj                                                                             rdk
 !inject freeseg.obj  d16                            o16     q16     w16
 !inject grownear.obj d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject growseg.obj  d16                            o16     q16     w16
@@ -41,6 +42,7 @@
 !inject heapmin.obj  d16                            o16     q16     w16
 !inject heapset.obj  d16                            o16     q16     w16
 !inject heapwalk.obj d16                            o16     q16     w16
+!inject mallordk.obj                                                                            rdk
 !inject mem.obj      d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject memavl.obj   d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
 !inject memmax.obj   d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
@@ -59,8 +61,6 @@
 !inject nmsize.obj   d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nrealloc.obj d16 d32     nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject qallflgs.obj                                        q16 q32
-!inject rdfree.obj                                                                              rdk
-!inject rdmalloc.obj                                                                            rdk
 !inject sbrk.obj     d16 d32                                        w16 w32 osi
 !inject sbrklnx.obj                                                             l32 lpc lmp
 !inject sbrkos2.obj                                 o16 o32
