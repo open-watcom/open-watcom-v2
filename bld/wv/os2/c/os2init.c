@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,8 @@ static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;
 
-    sig_arg = sig_arg;
+    /* unused parameters */ (void)sig_arg;
+
     BrkPending = true;
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }

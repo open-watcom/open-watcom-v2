@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,9 +75,9 @@ unsigned SysWrite( int handle, const void FAR_PTR *buff, unsigned len )
 
 unsigned long SysSeek( int handle, unsigned long loc )
 {
-    unsigned long   new_loc;
+    uint_32     new_loc;
 
-    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, (u32_stk_ptr)&new_loc ) ) )
+    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, &new_loc ) ) )
         return( -1UL );
     return( new_loc );
 }
