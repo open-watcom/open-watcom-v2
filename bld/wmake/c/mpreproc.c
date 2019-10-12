@@ -120,9 +120,9 @@ STATIC MTOKEN_TYPE  currentToken;   // Contains information for current token
  * invariant( if( curNest.skip2endif ) then curNest.skip )
  */
 struct nestIf {
-    BIT skip2endif : 1;
-    BIT skip : 1;
-    BIT elseFound : 1;
+    BIT     skip2endif  : 1;
+    BIT     skip        : 1;
+    BIT     elseFound   : 1;
 };
 
 #define MAX_NEST    32                  // maximum depth of if nesting
