@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  DOS Ctrl-Break, critical error and FPE hooking and handling.
+* Description:  Ctrl-Break, critical error and FPE hooking and handling.
+*                   (DOS and Windows 3.x code)
 *
 ****************************************************************************/
 

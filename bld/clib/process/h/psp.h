@@ -36,31 +36,32 @@
 #include "fcb.h"
 
 typedef unsigned char   _byte;
+typedef _byte           _WCFAR *handle_tab_ptr;
 
 #pragma pack(__push,1);
-typedef struct a_psp {  /* DOS 3.X Program Segment Prefix */
-    _byte       exit[2];                /* Contains INT 20h */
-    unsigned    maxpara;                /* Top of memory */
-    _byte       res1[1];
-    _byte       opcode;                 /* Long call to DOS */
-    unsigned    avail;                  /* # bytes in segment */
-    unsigned    segment;
-    void        _WCFAR *terminate;      /* Terminate address */
-    void        _WCFAR *ctrl_break;     /* Ctrl-break exit address */
-    void        _WCFAR *crit_error;     /* Critical error exit address */
-    unsigned    parent_psp;             /* undocumented */
-    _byte       sft_indices[20];        /* undocumented */
-    unsigned    envp;                   /* Segment address of environment */
-    void        _WCFAR *savstk;         /* undocumented */
-    unsigned    num_handles;            /* undocumented */
-    _byte       _WCFAR *handle_table;   /* undocumented */
-    _byte       res3[8];
-    _byte       doscall[2];             /* DOS call */
-    _byte       res4[10];
-    an_fcb      fcb1;                   /* unopened standard FCB1 */
-    an_fcb      fcb2;                   /* unopened standard FCB2 */
-    _byte       fcbx[4];
-    char        cmdline[128];           /* Command parameters */
+typedef struct a_psp {                      /* DOS 3.X Program Segment Prefix */
+    _byte           exit[2];                /* Contains INT 20h */
+    unsigned        maxpara;                /* Top of memory */
+    _byte           res1[1];
+    _byte           opcode;                 /* Long call to DOS */
+    unsigned        avail;                  /* # bytes in segment */
+    unsigned        segment;
+    void            _WCFAR *terminate;      /* Terminate address */
+    void            _WCFAR *ctrl_break;     /* Ctrl-break exit address */
+    void            _WCFAR *crit_error;     /* Critical error exit address */
+    unsigned        parent_psp;             /* undocumented */
+    _byte           sft_indices[20];        /* undocumented */
+    unsigned        envp;                   /* Segment address of environment */
+    void            _WCFAR *savstk;         /* undocumented */
+    unsigned        num_handles;            /* undocumented */
+    handle_tab_ptr  handle_table;           /* undocumented */
+    _byte           res3[8];
+    _byte           doscall[2];             /* DOS call */
+    _byte           res4[10];
+    an_fcb          fcb1;                   /* unopened standard FCB1 */
+    an_fcb          fcb2;                   /* unopened standard FCB2 */
+    _byte           fcbx[4];
+    char            cmdline[128];           /* Command parameters */
 } a_psp;
 #pragma pack(__pop);
 
