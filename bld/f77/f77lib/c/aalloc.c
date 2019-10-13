@@ -51,54 +51,38 @@
 #define STAT_ALREADY_ALLOC      2
 #define STAT_NOT_ALLOCATED      3
 
-#if defined( _M_I86 )
-  #if defined( __MEDIUM__ )
-    #define __extended_ptype __far
-  #else
-    #define __extended_ptype
-  #endif
-#else
-    #define __extended_ptype __far
-#endif
+#define FAR2NEAR(f)  ((void *)(pointer_uint)(f))
 
+static unsigned_16 *getFlagsPtr( void **arr, unsigned_16 flags )
+//==============================================================
+{
+    if( flags & ALLOC_STRING )
+        return( (unsigned_16 *)( (string *)arr + 1 ) );
+    if( flags & ALLOC_EXTENDED )
+        return( (unsigned_16 *)((void __far **)arr + 1 ) );
+    return( (unsigned_16 *)( arr + 1 ) );
+}
 
-static void turnOffFlags( void **arr, unsigned_16 flags, unsigned_16 mask ) {
-//===========================================================================
-
-    if( flags & ALLOC_STRING ) {
-        *((unsigned_16 *)((string *)arr + 1 )) &= ~mask;
-    } else {
-        if( flags & ALLOC_EXTENDED ) {
-            *((unsigned_16 *)((void __far * *)arr + 1 )) &= ~mask;
-        } else {
-            *((unsigned_16 *)(arr + 1)) &= ~mask;
-        }
-    }
+static void turnOffFlags( void **arr, unsigned_16 flags, unsigned_16 mask )
+//=========================================================================
+{
+    *getFlagsPtr( arr, flags ) &= ~mask;
 }
 
 
-static void turnOnFlags( void **arr, unsigned_16 flags, unsigned_16 mask ) {
-//==========================================================================
-
-    if( flags & ALLOC_STRING ) {
-        *((unsigned_16 *)((string *)arr + 1 )) |= mask;
-    } else {
-        if( flags & ALLOC_EXTENDED ) {
-            *((unsigned_16 *)((void __far * *)arr + 1 )) |= mask;
-        } else {
-            *((unsigned_16 *)(arr + 1 )) |= mask;
-        }
-    }
+static void turnOnFlags( void **arr, unsigned_16 flags, unsigned_16 mask )
+//========================================================================
+{
+    *getFlagsPtr( arr, flags ) |= mask;
 }
 
 
-static  bool    Allocated( void **arr, unsigned_16 flags ) {
-//==========================================================
-
+static  bool    Allocated( void **arr, unsigned_16 flags )
+//========================================================
 // Determine allocation status of array.
-
+{
     if( flags & ALLOC_EXTENDED ) {
-        return( (*(void __extended_ptype **)arr) != NULL );
+        return( *(void __far **)arr != NULL );
     } else {
         return( *arr != NULL );
     }
@@ -261,7 +245,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
   #endif
 #else
                 if( alloc_flags & ALLOC_EXTENDED ) {
-                    free( (void *)(*(void __far **)item) );
+                    free( FAR2NEAR( *(void __far **)item ) );
                 } else {
                     free( *item );
                 }
