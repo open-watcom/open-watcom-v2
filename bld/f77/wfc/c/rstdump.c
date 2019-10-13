@@ -118,8 +118,7 @@ static  bool    CkInCommon( sym_id sym ) {
             if( (eq_ext->ec_flags & EQUIV_SET_ALLOC) == 0 ) {
                 if( ForceStatic(sym->u.ns.flags) || (Options & OPT_AUTOMATIC) == 0 ) {
                     if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
-                        AllocGlobal( eq_ext->high - eq_ext->low,
-                             (eq_ext->ec_flags & MEMBER_INITIALIZED) != 0 );
+                        AllocGlobal( eq_ext->high - eq_ext->low, (eq_ext->ec_flags & MEMBER_INITIALIZED) != 0 );
                         eq_ext->ec_flags |= EQUIV_SET_ALLOC;
                     }
                 }
@@ -183,8 +182,7 @@ static  bool    DumpVariable( sym_id sym ) {
                 } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
                     if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
                         if( sym->u.ns.xt.record->size > DataThreshold ) {
-                            AllocGlobal( sym->u.ns.xt.record->size,
-                                         (flags & SY_DATA_INIT) != 0 );
+                            AllocGlobal( sym->u.ns.xt.record->size, (flags & SY_DATA_INIT) != 0 );
                         }
                     }
                 }
@@ -203,8 +201,7 @@ static  bool    DumpVariable( sym_id sym ) {
                     global_item = CkInCommon( sym );
                 } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
                     if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
-                        AllocGlobal( sym->u.ns.xt.size,
-                            (flags & SY_DATA_INIT) != 0 );
+                        AllocGlobal( sym->u.ns.xt.size, (flags & SY_DATA_INIT) != 0 );
                     }
                 }
             }
