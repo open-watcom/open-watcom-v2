@@ -72,8 +72,6 @@ def_fpu_flags_dos_i86 = -fpc
 
 extra_c_flags = -zm -s
 
-extra_c_flags_language = -wcd=202
-
 inc_dirs = -I"../inc"
 
 .c : ../src
