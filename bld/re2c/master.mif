@@ -19,7 +19,6 @@ objs = &
     substr.obj
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_scanner = -wcd=118
 extra_c_flags_parser = -pil
 !endif
 
