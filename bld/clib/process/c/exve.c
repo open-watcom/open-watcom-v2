@@ -76,9 +76,9 @@ typedef struct a_blk {
 
 typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 
-#define _blkptr( seg )  ((a_blk    __far *)_MK_FP( seg, 0 ))
-#define _mcbptr( seg )  ((a_memblk __far *)_MK_FP( seg - 1, 0 ))
-#define _pspptr( seg )  ((a_psp    __far *)_MK_FP( seg, 0 ))
+#define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
+#define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
+#define _pspptr( seg )  ((a_psp    _WCFAR *)((long)(seg)<<16))
 
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 
@@ -99,7 +99,7 @@ extern void         __init_execve( void );
 
 extern unsigned     __exec_para;
 
-static void dosexpand( __segment block )
+static void dosexpand( unsigned block )
 {
     unsigned num_of_paras;
 
@@ -107,10 +107,10 @@ static void dosexpand( __segment block )
     TinySetBlock( num_of_paras, block );
 }
 
-static __segment dosalloc( unsigned num_of_paras )
+static unsigned dosalloc( unsigned num_of_paras )
 {
     tiny_ret_t  rc;
-    __segment   block;
+    unsigned    block;
 
     rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) ) {
@@ -121,7 +121,7 @@ static __segment dosalloc( unsigned num_of_paras )
     return( block );
 }
 
-static __segment doscalve( __segment block, unsigned req_paras )
+static unsigned doscalve( unsigned block, unsigned req_paras )
 {
     unsigned    block_num_of_paras;
 
@@ -142,11 +142,11 @@ static void resetints( void )
 
 static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
-    __segment           p;
-    __segment           q;
-    __segment           free;
-    __segment           dosseg;
-    __segment           envseg;
+    unsigned            p;
+    unsigned            q;
+    unsigned            free;
+    unsigned            dosseg;
+    unsigned            envseg;
 
     dosseg = envseg = _NULLSEG;
     for( free = _NULLSEG; (p = dosalloc( 1 )) != _NULLSEG; free = p ) {
