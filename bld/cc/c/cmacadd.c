@@ -165,10 +165,12 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
             if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagMacro( old_mentry );
             }
-            CErr2p( ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+            CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
             if( !MacroIsSpecial( old_mentry ) ) {
                 SetDiagPop();
             }
+            *lnk = old_mentry->next_macro;
+            old_mentry = NULL;
         }
     }
     if( old_mentry == NULL ) {  //add new entry

@@ -496,6 +496,14 @@ int foo( void )
     return( 7 / 0 );
 }
 :eerrbad.
+:MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
+:MSGTXT. Definition of macro '%s' not identical to previous definition
+:MSGJTXT. マクロ'%s'の定義が前の定義と一致しません
+.np
+If a macro is defined more than once, the definitions must be identical.
+If you want to redefine a macro to have a different definition, you must
+.id #undef
+it before you can define it with a new definition.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2
@@ -1521,14 +1529,6 @@ The compiler has detected a statement such as
 etc., which must be inside a function.
 You either have too many closing braces "}" or you are missing an
 opening brace "{" earlier in the function.
-:MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
-:MSGTXT. Definition of macro '%s' not identical to previous definition
-:MSGJTXT. マクロ'%s'の定義が前の定義と一致しません
-.np
-If a macro is defined more than once, the definitions must be identical.
-If you want to redefine a macro to have a different definition, you must
-.id #undef
-it before you can define it with a new definition.
 :MSGSYM. ERR_CANT_UNDEF_THESE_NAMES
 :MSGTXT. Cannot #undef '%s'
 :MSGJTXT. '%s'は#undefできません
