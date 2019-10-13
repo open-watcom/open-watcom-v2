@@ -485,7 +485,7 @@ inserted.
 :MSGSYM. ERR_DIV_BY_ZERO
 :MSGTXT. Divisor for modulo or division operation is zero
 :MSGJTXT. Divisor for modulo or division operation is zero
-:WARNING. 2
+:WARNING. 1
 .np
 The right operand of a division or modulo operation is zero. The result
 of this operation is undefined and you should rewrite the offending code
@@ -499,6 +499,7 @@ int foo( void )
 :MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
 :MSGTXT. Definition of macro '%s' not identical to previous definition
 :MSGJTXT. マクロ'%s'の定義が前の定義と一致しません
+:WARNING. 1
 .np
 If a macro is defined more than once, the definitions must be identical.
 If you want to redefine a macro to have a different definition, you must
@@ -571,7 +572,7 @@ for the previous comment.
 :MSGSYM. ERR_UNUSED_2
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
-:WARNING. 2
+:WARNING. 3
 unused message
 :MSGSYM. ERR_USEFUL_SIDE_EFFECT
 :MSGTXT. Expression is only useful for its side effects
@@ -676,7 +677,7 @@ void bar( void )
 :MSGSYM. ERR_CAST_POINTER_TRUNCATION
 :MSGTXT. Pointer truncated during cast
 :MSGJTXT. ポインタは切り詰められました
-:WARNING. 1
+:WARNING. 3
 .np
 A far pointer is being cast to a near pointer, losing segment information
 in the process.
@@ -696,7 +697,7 @@ char __near *foo( char __far *fs )
 :MSGSYM. ERR_PLAIN_CHAR_SUBSCRIPT
 :MSGTXT. Array subscript is of type plain char
 :MSGJTXT. jNeedTranslation
-:WARNING. 3
+:WARNING. 4
 .np
 Array subscript expression is of plain char type. Such expression may be
 interpreted as either signed or unsigned, depending on compiler settings.
@@ -1529,6 +1530,10 @@ The compiler has detected a statement such as
 etc., which must be inside a function.
 You either have too many closing braces "}" or you are missing an
 opening brace "{" earlier in the function.
+:MSGSYM. ERR_UNUSED_3
+:MSGTXT. not used
+:MSGJTXT. このメッセージは使用されません
+unused message
 :MSGSYM. ERR_CANT_UNDEF_THESE_NAMES
 :MSGTXT. Cannot #undef '%s'
 :MSGJTXT. '%s'は#undefできません
@@ -1777,7 +1782,7 @@ An error was encountered trying to read information from the work file.
 :MSGJTXT. ワーク・ファイルのシーク・エラー：エラーコード = %d
 .np
 An error was encountered trying to seek to a position in the work file.
-:MSGSYM. ERR_UNUSED_3
+:MSGSYM. ERR_UNUSED_4
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
 unused message

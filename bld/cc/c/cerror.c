@@ -239,8 +239,6 @@ static void CErr( int parmno, int msgnum, ... )
     va_list     args1;
     cmsg_info   info;
 
-    if( CompFlags.cpp_output )
-        return;
     info.class = CMSG_ERRO;
     va_start( args1, msgnum );
     if( ErrLimit == -1 || ErrCount < ErrLimit ) {
@@ -294,8 +292,6 @@ static void CWarn( int parmno, int level, int msgnum, ... )
     va_list     args1;
     cmsg_info   info;
 
-    if( CompFlags.cpp_output )
-        return;
     if( ! MsgDisabled( msgnum ) ) {
         if( level <= WngLevel ) {
             info.class = CMSG_WARN;
@@ -335,8 +331,6 @@ void CInfoMsg( int msgnum, ... )
     va_list     args1;
     cmsg_info   info;
 
-    if( CompFlags.cpp_output )
-        return;
     if( MsgDisabled( msgnum ) )
         return;
     info.class = CMSG_INFO;
