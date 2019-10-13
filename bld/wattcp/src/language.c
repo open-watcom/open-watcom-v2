@@ -160,6 +160,8 @@ extern FILE *yyin, *yyout;
 typedef unsigned int yy_size_t;
 
 
+#if defined(USE_LANGUAGE)
+
 struct yy_buffer_state
 	{
 	FILE *yy_input_file;
@@ -447,8 +449,6 @@ char *yytext;
 #include "sock_ini.h"
 #include "misc.h"
 #include "crc.h"
-
-#if defined(USE_LANGUAGE)
 
 #if defined(TEST_PROG)
   #include <conio.h>
