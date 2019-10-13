@@ -32,10 +32,6 @@
 #ifndef _ERROUT_H_INCLUDED
 #define _ERROUT_H_INCLUDED
 
-#if defined( __UNIX__ )
-    #define errout  stderr
-#else
-    #define errout  stdout
-#endif
+#define errout  stderr
 
 #endif
