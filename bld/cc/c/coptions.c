@@ -2276,10 +2276,6 @@ void GenCOptions( char **cmdline )
      * because Windows and OS/2 API headers use it
      */
     EnableDisableMessage( 0, ERR_OBSOLETE_FUNC_DECL );
-    /* Warnings about calling functions with non-prototype declaration */
-    /* Disabled at least until source tree is cleaned up. */
-    EnableDisableMessage( 0, ERR_NONPROTO_FUNC_CALLED );
-    EnableDisableMessage( 0, ERR_NONPROTO_FUNC_CALLED_INDIRECT );
     /* Warning about pointer truncation during cast is disabled by
      * default because it would cause too many build breaks right now
      * by correctly diagnosing broken code.
