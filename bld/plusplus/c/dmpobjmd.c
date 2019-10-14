@@ -50,33 +50,23 @@ typedef struct                  // DUMP INFORMATION
 } DUMP_INFO;
 
 
-static DUMP_INFO* bufferRewind(   // INITIALIZE BUFFER
-    DUMP_INFO* di )             // - dump information
-{
-    VbufRewind( &di->buffer );
-    return( di );
-}
-
-
-static DUMP_INFO* bufferChr(    // CONCATENATE CHAR TO BUFFER
+static void bufferChr(          // CONCATENATE CHAR TO BUFFER
     DUMP_INFO* di,              // - dump information
     char chr )                  // - to be concatenated
 {
     VbufConcChr( &di->buffer, chr );
-    return( di );
 }
 
 
-static DUMP_INFO* bufferStr(    // CONCATENATE STRING TO BUFFER
+static void bufferStr(          // CONCATENATE STRING TO BUFFER
     DUMP_INFO* di,              // - dump information
     const char *str )           // - to be concatenated
 {
     VbufConcStr( &di->buffer, str );
-    return( di );
 }
 
 
-static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
+static void bufferNmb(          // CONCATENATE NUMBER TO BUFFER
     DUMP_INFO* di,              // - dump information
     unsigned numb )             // - to be concatenated
 {
@@ -88,31 +78,14 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
         sprintf( buf, "0x%X", numb );
         VbufConcStr( &di->buffer, buf );
     }
-    return( di );
 }
 
 
-static DUMP_INFO* bufferInit(   // INITIALIZE BUFFER (NON-TITLE LINE)
+static void bufferInit(         // INITIALIZE BUFFER (NON-TITLE LINE)
     DUMP_INFO* di )             // - dump information
 {
-    di = bufferRewind( di );
-    di = bufferStr( di, "    " );
-    return( di );
-}
-
-
-static void vbufWrite(          // WRITE A VBUFFER
-    VBUF* vbuf )                // - the VBUF to be written
-{
-    MsgDisplayLine( VbufString( vbuf ) );
-}
-
-
-static DUMP_INFO* bufferWrite(  // WRITE A BUFFER
-    DUMP_INFO* di )             // - dump information
-{
-    vbufWrite( &di->buffer );
-    return( di );
+    VbufRewind( &di->buffer );
+    bufferStr( di, "    " );
 }
 
 
@@ -120,48 +93,45 @@ static void dumpDirect( BASE_CLASS*, void * );
 static void dumpVirtual( BASE_CLASS*, void * );
 
 
-static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
+static void dumpTitle(          // DUMP A TITLE LINE
     DUMP_INFO *di,              // - dump information
     const char *title,          // - title line
     const char *class_name )    // - name of class
 {
-    di = bufferRewind( di );
-    di = bufferChr( di, '\n' );
-    di = bufferStr( di, title );
-    di = bufferChr( di, ' ' );
-    di = bufferStr( di, class_name );
-    di = bufferWrite( di );
-    return( di );
+    VbufRewind( &di->buffer );
+    bufferChr( di, '\n' );
+    bufferStr( di, title );
+    bufferChr( di, ' ' );
+    bufferStr( di, class_name );
+    MsgDisplayLineVbuf( &di->buffer );
 }
 
 
-static DUMP_INFO* dumpOffset(   // DUMP OFFSET LINE
+static void dumpOffset(         // DUMP OFFSET LINE
     DUMP_INFO* di )             // - dump information
 {
-    di = bufferInit( di );
-    di = bufferStr( di, "offset of class: " );
-    di = bufferNmb( di, di->offset );
-    di = bufferWrite( di );
-    return( di );
+    bufferInit( di );
+    bufferStr( di, "offset of class: " );
+    bufferNmb( di, di->offset );
+    MsgDisplayLineVbuf( &di->buffer );
 }
 
 
-static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
+static void dumpParentage(      // DUMP PARENTAGE
     DUMP_INFO* di )             // - dump information
 {
     char **daughter;            // - daughter class
 
     VstkIterBeg( &di->stack, daughter ) {
-        di = bufferInit( di );
-        di = bufferStr( di, "base of: " );
-        di = bufferStr( di, *daughter );
-        di = bufferWrite( di );
+        bufferInit( di );
+        bufferStr( di, "base of: " );
+        bufferStr( di, *daughter );
+        MsgDisplayLineVbuf( &di->buffer );
     }
-    return( di );
 }
 
 
-static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
+static void dumpBitMemb(        // DUMP A BITFIELD MEMBER
     DUMP_INFO *di,              // - dump information
     const char *kind,           // - kind of field
     const char *name,           // - field name
@@ -169,38 +139,36 @@ static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
     target_size_t start,        // - field start
     target_size_t size )        // - field size
 {
-    di = bufferInit( di );
-    di = bufferStr( di, kind );
-    di = bufferChr( di, ' ' );
-    di = bufferStr( di, name );
-    di = bufferStr( di, ", offset = " );
-    di = bufferNmb( di, offset );
-    di = bufferStr( di, ", bit offset =" );
-    di = bufferNmb( di, start );
-    di = bufferStr( di, ", bit width =" );
-    di = bufferNmb( di, size );
-    di = bufferWrite( di );
-    return( di );
+    bufferInit( di );
+    bufferStr( di, kind );
+    bufferChr( di, ' ' );
+    bufferStr( di, name );
+    bufferStr( di, ", offset = " );
+    bufferNmb( di, offset );
+    bufferStr( di, ", bit offset =" );
+    bufferNmb( di, start );
+    bufferStr( di, ", bit width =" );
+    bufferNmb( di, size );
+    MsgDisplayLineVbuf( &di->buffer );
 }
 
 
-static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
+static void dumpDataMemb(       // DUMP A DATA MEMBER
     DUMP_INFO *di,              // - dump information
     const char *kind,           // - kind of field
     const char *name,           // - field name
     target_offset_t offset,     // - field offset
     target_size_t size )        // - field size
 {
-    di = bufferInit( di );
-    di = bufferStr( di, kind );
-    di = bufferChr( di, ' ' );
-    di = bufferStr( di, name );
-    di = bufferStr( di, ", offset = " );
-    di = bufferNmb( di, offset );
-    di = bufferStr( di, ", size = " );
-    di = bufferNmb( di, size );
-    di = bufferWrite( di );
-    return( di );
+    bufferInit( di );
+    bufferStr( di, kind );
+    bufferChr( di, ' ' );
+    bufferStr( di, name );
+    bufferStr( di, ", offset = " );
+    bufferNmb( di, offset );
+    bufferStr( di, ", size = " );
+    bufferNmb( di, size );
+    MsgDisplayLineVbuf( &di->buffer );
 }
 
 
@@ -217,23 +185,30 @@ static void dumpMember(         // DUMP A MEMBER
     name = memb->name->name;
     type = TypedefModifierRemove( memb->sym_type );
     if( type->id == TYP_BITFIELD ) {
-        di = dumpBitMemb( di
-                        , "bit member:"
-                        , NameStr( name )
-                        , offset
-                        , type->u.b.field_start
-                        , type->u.b.field_width );
+        dumpBitMemb( di
+                    , "bit member:"
+                    , NameStr( name )
+                    , offset
+                    , type->u.b.field_start
+                    , type->u.b.field_width );
     } else {
-        di = dumpDataMemb( di
-                         , "member:"
-                         , NameStr( name )
-                         , offset
-                         , CgMemorySize( type ) );
+        dumpDataMemb( di
+                    , "member:"
+                    , NameStr( name )
+                    , offset
+                    , CgMemorySize( type ) );
     }
 }
 
+static void dumpSize( DUMP_INFO* di, bool embed, unsigned size )
+{
+    bufferInit( di );
+    bufferStr( di, ( embed ) ? "embedded size: " : "size: " );
+    bufferNmb( di, size );
+    MsgDisplayLineVbuf( &di->buffer );
+}
 
-static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
+static void dumpStruct(         // DUMP A STRUCTURE
     TYPE type,                  // - structure type
     DUMP_INFO* di,              // - dump information
     char* title,                // - title for dump
@@ -248,33 +223,27 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     info = type->u.c.info;
     parent = VstkPush( &di->stack );
     *parent = info->name;
-    di = dumpTitle( di, title, NameStr( info->name ) );
+    dumpTitle( di, title, NameStr( info->name ) );
     if( type != di->original ) {
-        di = bufferInit( di );
-        di = bufferStr( di, "embedded size: " );
-        di = bufferNmb( di, info->vsize );
-        di = bufferWrite( di );
-        di = dumpOffset( di );
-        di = dumpParentage( di );
+        dumpSize( di, true, info->vsize );
+        dumpOffset( di );
+        dumpParentage( di );
     } else {
-        di = bufferInit( di );
-        di = bufferStr( di, "size: " );
-        di = bufferNmb( di, info->size );
-        di = bufferWrite( di );
+        dumpSize( di, false, info->size );
     }
     if( info->has_vbptr ) {
-        di = dumpDataMemb( di
-                         , "[virtual"
-                         , "base pointer]"
-                         , info->vb_offset + di->offset
-                         , CgMemorySize( TypePtrToVoid() ) );
+        dumpDataMemb( di
+                    , "[virtual"
+                    , "base pointer]"
+                    , info->vb_offset + di->offset
+                    , CgMemorySize( TypePtrToVoid() ) );
     }
     if( info->has_vfptr ) {
-        di = dumpDataMemb( di
-                         , "[virtual"
-                         , "functions pointer]"
-                         , info->vf_offset + di->offset
-                         , CgMemorySize( TypePtrToVoid() ) );
+        dumpDataMemb( di
+                    , "[virtual"
+                    , "functions pointer]"
+                    , info->vf_offset + di->offset
+                    , CgMemorySize( TypePtrToVoid() ) );
     }
     ScopeWalkDataMembers( type->u.c.scope, dumpMember, di );
     if( type == di->original ) {
@@ -282,7 +251,6 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     }
     ScopeWalkDirectBases( type->u.c.scope, dumpDirect, di );
     VstkPop( &di->stack );
-    return( di );
 }
 
 
@@ -292,7 +260,7 @@ static void dumpBase(           // DUMP BASE
     char* title )               // - title
 {
     di->offset += base->delta;
-    di = dumpStruct( base->type, di, title, DS_BASE );
+    dumpStruct( base->type, di, title, DS_BASE );
     di->offset -= base->delta;
 }
 
@@ -400,7 +368,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     }
     VbufConcStr( &buffer, ", base type is " );
     VbufConcStr( &buffer, name );
-    vbufWrite( &buffer );
+    MsgDisplayLineVbuf( &buffer );
     mask = CgMemorySize( base );
     if( mask == sizeof( unsigned ) ) {
         mask = -1;
@@ -424,7 +392,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
             sprintf( buf, " /0x%X", val );
             VbufConcStr( &buffer, buf );
         }
-        vbufWrite( &buffer );
+        MsgDisplayLineVbuf( &buffer );
     }
     VbufFree( &buffer );
     CompFlags.log_note_msgs = false;

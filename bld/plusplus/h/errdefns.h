@@ -168,6 +168,9 @@ void MsgDisplayBanner           // DISPLAY A BANNER LINE
 void MsgDisplayLine             // DISPLAY A BARE LINE
     ( const char* line )        // - the line
 ;
+void MsgDisplayLineVbuf         // DISPLAY A VBUF AS BARE LINE
+    ( VBUF *vbuf )              // - the VBUF
+;
 void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     ( char* seg                 // - the line segments
     , ... )

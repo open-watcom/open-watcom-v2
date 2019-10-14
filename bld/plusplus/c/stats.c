@@ -102,7 +102,7 @@ static void statsPrint(         // PRINT STATISTICS
         }
         intPrint( &buffer, "warning", ", ", WngCount );
         intPrint( &buffer, "error", "", ErrCount );
-        MsgDisplayLine( VbufString( &buffer ) );
+        MsgDisplayLineVbuf( &buffer );
         CompFlags.stats_printed = true;
         VbufFree( &buffer );
     }
@@ -636,7 +636,7 @@ static void extraRptTable(      // PRINT A TABLE
                 sprintf( buf, fmt, row[c] );
                 VbufConcStr( &buffer, buf );
             }
-            MsgDisplayLine( VbufString( &buffer ) );
+            MsgDisplayLineVbuf( &buffer );
         }
         MsgDisplayLine( "" );
         VbufFree( &buffer );

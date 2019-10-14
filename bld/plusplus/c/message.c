@@ -432,6 +432,13 @@ void MsgDisplayLine             // DISPLAY A BARE LINE
 }
 
 
+void MsgDisplayLineVbuf         // DISPLAY A VBUF AS BARE LINE
+    ( VBUF *vbuf )              // - the VBUF
+{
+    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( vbuf ), NULL );
+}
+
+
 void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     ( char* seg                 // - the line segments
     , ... )
