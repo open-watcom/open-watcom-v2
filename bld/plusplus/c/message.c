@@ -150,8 +150,8 @@ static void fmt_inf_hdr         // FORMAT THE INFORMATION HDR
 
 
 static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
-    ( char const *hdr_str             // - header name
-    , char const *sw_val )            // - switch
+    ( char const *hdr_str       // - header name
+    , char const *sw_val )      // - switch
 {
     CompFlags.log_note_msgs = true;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
@@ -162,7 +162,7 @@ static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
 }
 
 static void fmt_inf_hdr_sym     // FORMAT THE INFORMATION HDR, WITH SYMBOL
-    ( char const *hdr_str             // - header name
+    ( char const *hdr_str       // - header name
     , SYMBOL sym )              // - symbol in question
 {
     CompFlags.log_note_msgs = true;
@@ -389,17 +389,14 @@ void MsgDisplay                 // DISPLAY A MESSAGE
         msg_locn = NULL;
         break;
     }
-    ideDisplay( severity
-              , msgnum
-              , VbufString( &buffer )
-              , msg_locn );
+    ideDisplay( severity, msgnum, VbufString( &buffer ), msg_locn );
+    VbufFree( &buffer );
     if( context_changed && !CompFlags.ew_switch_used
      && ( severity == IDEMSGSEV_ERROR || severity == IDEMSGSEV_WARNING )
      && ( context == CTX_PREINCL || context == CTX_SOURCE || context == CTX_FORCED_INCS )
       ) {
         build_file_nesting();
     }
-    VbufFree( &buffer );
     --reserveDepth;
     if( NULL != sym ) {
         notes_locn = sym->locn->tl;
@@ -432,8 +429,8 @@ void MsgDisplayLine             // DISPLAY A BARE LINE
 }
 
 
-void MsgDisplayLineVbuf         // DISPLAY A VBUF AS BARE LINE
-    ( VBUF *vbuf )              // - the VBUF
+void MsgDisplayLineVbuf         // DISPLAY A BARE LINE, FROM VBUF
+    ( VBUF* vbuf )              // - the VBUF
 {
     ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( vbuf ), NULL );
 }
@@ -452,14 +449,14 @@ void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     for( str = seg; str != NULL; str = va_arg( args, char* ) ) {
         VbufConcStr( &buffer, str );
     }
-    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( &buffer ), NULL );
+    MsgDisplayLineVbuf( &buffer );
     va_end( args );
     VbufFree( &buffer );
 }
 
 
 void MsgDisplayBanner           // DISPLAY A BANNER LINE
-    ( const char *line )              // - the line
+    ( const char *line )        // - the line
 {
     ideDisplay( IDEMSGSEV_BANNER, 0, line, NULL );
 }
