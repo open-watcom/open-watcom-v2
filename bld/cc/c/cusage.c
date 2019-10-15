@@ -68,14 +68,14 @@ void CCusage( void )
         ++count;
     }
 #endif
-    if( ConTTY() && count ) {
+    if( GlobalCompFlags.ide_console_output && count ) {
         ConsMsg( "" );
         ++count;
     }
     p = UsageText();
     page_text = p;
     while( *(p = nextUsage( p )) != '\0' ) {
-        if( ConTTY() ) {
+        if( GlobalCompFlags.ide_console_output ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return( page_text ) )
                     break;

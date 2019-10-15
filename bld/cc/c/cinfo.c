@@ -722,20 +722,28 @@ void FEMessage( int class, CGPOINTER parm )
         }
         break;
     case MSG_BLIP:
-        if( !CompFlags.quiet_mode ) {
-            ConBlip();
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                ConBlip();
+            }
         }
         break;
     case MSG_INFO:
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
-        NoteMsg( parm );
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                NoteMsg( parm );
+            }
+        }
         break;
     case MSG_CODE_SIZE:
-        if( !CompFlags.quiet_mode ) {
-            CGetMsg( msgtxt, PHRASE_CODE_SIZE );
-            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_uint)parm );
-            NoteMsg( msgbuf );
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                CGetMsg( msgtxt, PHRASE_CODE_SIZE );
+                sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_uint)parm );
+                NoteMsg( msgbuf );
+            }
         }
         break;
     case MSG_DATA_SIZE:

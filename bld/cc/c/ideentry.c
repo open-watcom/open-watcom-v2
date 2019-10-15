@@ -68,12 +68,6 @@ void ConBlip( void )
     // we are ignoring return for now
 }
 
-bool ConTTY( void )
-// C compiler do a blip to console
-{
-    return( GlobalCompFlags.ide_console_output );
-}
-
 void ConsErrMsg( cmsg_info  *cinfo )
 // C compiler call back to do a  console print to stderr
 {

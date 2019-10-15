@@ -620,7 +620,6 @@ extern void         BannerMsg( char const  *line );
 extern void         DebugMsg( char const  *line );
 extern void         NoteMsg( char const  *line );
 extern void         ConBlip( void );
-extern bool         ConTTY( void );
 extern void         MyExit( int ret );
 
 /* cmac1.c */

@@ -1386,7 +1386,7 @@ static void Set_ZQ( void )          { CompFlags.quiet_mode = true; }
 static void Set_ZS( void )          { CompFlags.check_syntax = true; }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_EQ( void )          { CompFlags.no_conmsg = true; }
+static void Set_EQ( void )          { CompFlags.eq_switch_used = true; }
 
 static void Set_ZFW( void )
 {

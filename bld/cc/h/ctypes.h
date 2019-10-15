@@ -569,7 +569,7 @@ typedef struct comp_flags {
     boolbit cpp_ignore_line                     : 1;    /* wcpp - ignore #line */
 
     boolbit generate_prototypes                 : 1;    /* generate prototypes  */
-    boolbit no_conmsg                           : 1;    /* don't write wng &err to console */
+    boolbit eq_switch_used                      : 1;    /* don't write wng &err to console */
     boolbit bss_segment_used                    : 1;
     boolbit zu_switch_used                      : 1;
     boolbit extended_defines                    : 1;
