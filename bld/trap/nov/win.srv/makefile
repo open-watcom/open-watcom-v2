@@ -11,6 +11,6 @@ gui = 1
 remote_link = 1
 
 extra_objs = novdos.obj
-extra_flags_novdos = -zu-pcl-fo=.i
+extra_flags_novdos = -zu
 
 !include $(trap_dir)/master.mif
