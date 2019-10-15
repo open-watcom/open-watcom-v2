@@ -189,7 +189,7 @@ static void OutMsg( cmsg_info  *info )
 
     if( ErrFile == NULL )
         OpenErrFile();
-    if( !CompFlags.no_conmsg )
+    if( !CompFlags.eq_switch_used )
         ConsErrMsg( info );
     if( ErrFile != NULL ) {
         FmtCMsg( pre, info );
