@@ -2269,7 +2269,6 @@ static void Define_Memory_Model( void )
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
-    EnableDisableMessage( 0, ERR_PARM_NOT_REFERENCED );
     /* Add precision warning but disabled by default */
     EnableDisableMessage( 0, ERR_LOSE_PRECISION );
     /* Warning about non-prototype declarations is disabled by default
