@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +65,8 @@ static int const GroupBase[grp_index_max] = {
     #undef GRP_DEF
 };
 
-static msgtype const MsgType[] = {
-    #define MSG_DEF( name, group, kind, level, group_index )  msgtype_##kind,
+static msg_type const MsgType[] = {
+    #define MSG_DEF( name, group, kind, level, group_index )  MSG_TYPE_##kind,
     MSG_DEFS
     #undef MSG_DEF
 };
@@ -135,10 +136,10 @@ char const *CGetMsgPrefix( msg_codes msgcode )
     return( value );
 }
 
-msgtype CGetMsgType( msg_codes msgcode )
+msg_type CGetMsgType( msg_codes msgcode )
 {
     int              msgnum;
-    msgtype          kind;
+    msg_type         kind;
     enum grp_index   index;
 
     index = GetGrpIndex( msgcode );

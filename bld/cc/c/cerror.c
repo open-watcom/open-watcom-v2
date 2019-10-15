@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -384,22 +385,22 @@ void CSuicide( void )
 //doesn't work in general as phases are used in both errror and warnings
 static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
 {
-    msgtype     kind;
+    msg_type    kind;
     cmsg_class  class;
 
     kind = CGetMsgType( msgnum );
     switch( kind ) {
-    case msgtype_ERROR:
-    case msgtype_ANSIERR:
+    case MSG_TYPE_ERROR:
+    case MSG_TYPE_ANSIERR:
         class = CMSG_ERRO;
         break;
-    case msgtype_WARNING:
-    case msgtype_ANSIWARN:
+    case MSG_TYPE_WARNING:
+    case MSG_TYPE_ANSIWARN:
         class = CMSG_WARN;
         break;
-    case msgtype_INFO:
-    case msgtype_ANSI:
-    case msgtype_STYLE:
+    case MSG_TYPE_INFO:
+    case MSG_TYPE_ANSI:
+    case MSG_TYPE_STYLE:
         class = CMSG_INFO;
         break;
     }

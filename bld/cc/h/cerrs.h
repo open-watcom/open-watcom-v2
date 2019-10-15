@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,26 +32,29 @@
 
 
 #include "msgattr.gh"
-enum warning_codes {
-#define warn(code,level) code = level,
- #include "cwngs.h"
- #undef warn
-};
-enum group_levels {
-#define GRP_DEF( name,prefix,num,index,eindex ) name##_level = num,
-    GRP_DEFS
-#undef GRP_DEF
-};
 #include  "msgdefs.gh"
+
+enum warning_codes {
+    #define warn(code,level) code = level,
+    #include "cwngs.h"
+    #undef warn
+};
+
+enum group_levels {
+    #define GRP_DEF( name,prefix,num,index,eindex ) name##_level = num,
+        GRP_DEFS
+    #undef GRP_DEF
+};
+
 typedef enum msg_codes {
-#define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
-    MSG_DEFS
-#undef MSG_DEF
+    #define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
+        MSG_DEFS
+    #undef MSG_DEF
     MESSAGE_COUNT
-}msg_codes;
-typedef enum msgtype{
-#define MSGTYPES_DEF( name )   msgtype_##name,
-    MSGTYPES_DEFS
-#undef MSGTYPES_DEF
-    msgtype_err
-}msgtype;
+} msg_codes;
+
+typedef enum msg_type {
+    #define MSGTYPES_DEF( name )   MSG_TYPE_##name,
+        MSGTYPES_DEFS
+    #undef MSGTYPES_DEF
+} msg_type;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -690,7 +691,7 @@ extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
-extern msgtype      CGetMsgType( msg_codes msgcode );
+extern msg_type     CGetMsgType( msg_codes msgcode );
 extern char const   *CGetMsgPrefix( msg_codes msgcode );
 
 /* cname */
