@@ -94,8 +94,11 @@ void OpenErrFile( void )
 
 static bool MsgDisabled( msg_codes msgnum )
 {
+    int     msg_index;
+
     if( MsgFlags != NULL ) {
-        if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
+        msg_index = GetMsgIndex( msgnum );
+        if( MsgFlags[msg_index >> 3]  &  (1 << (msg_index & 7)) ) {
             return( true );
         }
     }
@@ -145,21 +148,21 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
 
 static char const *MsgClassPhrase( cmsg_class class )
 {
-    msg_codes       msgcode = PHRASE_ERROR;     // just for init.
+    msg_codes       msgnum = PHRASE_ERROR;     // just for init.
     char const      *phrase;
 
     switch( class ) {
     case CMSG_INFO:
-        msgcode = PHRASE_NOTE;
+        msgnum = PHRASE_NOTE;
         break;
     case CMSG_WARN:
-        msgcode = PHRASE_WARNING;
+        msgnum = PHRASE_WARNING;
         break;
     case CMSG_ERRO:
-        msgcode = PHRASE_ERROR;
+        msgnum = PHRASE_ERROR;
         break;
     }
-    phrase = CGetMsgStr( msgcode );
+    phrase = CGetMsgStr( msgnum );
     return( phrase );
 }
 
@@ -201,7 +204,7 @@ static void OutMsg( cmsg_info  *info )
     }
 }
 
-static void PrintType( msg_codes msgcode, TYPEPTR typ )
+static void PrintType( msg_codes msgnum, TYPEPTR typ )
 {
     char    *text;
 
@@ -209,7 +212,7 @@ static void PrintType( msg_codes msgcode, TYPEPTR typ )
         return;
 
     text = DiagGetTypeName( typ );
-    CInfoMsg( msgcode, text );
+    CInfoMsg( msgnum, text );
     CMemFree( text );
 }
 

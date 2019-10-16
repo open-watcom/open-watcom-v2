@@ -34,6 +34,13 @@
 #include "msgattr.gh"
 #include  "msgdefs.gh"
 
+enum {
+    #define MSG_DEF( name, group, kind, level, group_index ) DUMMY_##name,
+        MSG_DEFS
+    #undef MSG_DEF
+    MESSAGE_COUNT
+};
+
 enum warning_codes {
     #define warn(code,level) code = level,
     #include "cwngs.h"
@@ -50,7 +57,6 @@ typedef enum msg_codes {
     #define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
         MSG_DEFS
     #undef MSG_DEF
-    MESSAGE_COUNT
 } msg_codes;
 
 typedef enum msg_type {

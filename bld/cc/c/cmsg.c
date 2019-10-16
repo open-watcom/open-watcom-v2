@@ -121,14 +121,14 @@ char const *UsageText(void)      // GET INTERNATIONAL USAGE TEXT
     return( usage_text );
 }
 
-static enum grp_index  GetGrpIndex( msg_codes msgcode )
+static enum grp_index  GetGrpIndex( msg_codes msgnum )
 {
     enum grp_index   index;
 
     index = grp_index_max;
     while( index-- > 0 ) {
-        if( msgcode >= LevelIndex[index] ) {
-            if( msgcode < LevelIndexEnd[index] )
+        if( msgnum >= LevelIndex[index] ) {
+            if( msgnum < LevelIndexEnd[index] )
                 return( index );
             break;
         }
@@ -136,54 +136,56 @@ static enum grp_index  GetGrpIndex( msg_codes msgcode )
     return( grp_index_err );
 }
 
-int GetMsgIndex( msg_codes msgcode )
+int GetMsgIndex( msg_codes msgnum )
 {
     enum grp_index   index;
 
-    index = GetGrpIndex( msgcode );
+    index = GetGrpIndex( msgnum );
     if( index == grp_index_err )
         return( -1 );
-    return( msgcode - LevelIndex[index] + GroupBase[index] );
+    return( msgnum - LevelIndex[index] + GroupBase[index] );
 }
 
-char const *CGetMsgPrefix( msg_codes msgcode )
+char const *CGetMsgPrefix( msg_codes msgnum )
 {
     enum grp_index  index;
 
-    index = GetGrpIndex( msgcode );
+    index = GetGrpIndex( msgnum );
     if( index == grp_index_err )
         return( "" );
     return( MsgPrefix[index] );
 }
 
-msg_type CGetMsgType( msg_codes msgcode )
+msg_type CGetMsgType( msg_codes msgnum )
 {
     int              msg_index;
     msg_type         kind;
 
-    msg_index = GetMsgIndex( msgcode );
+    msg_index = GetMsgIndex( msgnum );
     kind = MsgType[msg_index];
     return( kind );
 }
 
-char const *CGetMsgStr( msg_codes msgcode )
+char const *CGetMsgStr( msg_codes msgnum )
 {
     char const      *p;
     int             msg_index;
 
-    msg_index = GetMsgIndex( msgcode );
+    msg_index = GetMsgIndex( msgnum );
     p = NULL;
-    if( internationalData == NULL ) {
-        p = EMsgArray[msg_index];
-    } else if( msg_index < internationalData->errors_count ) {
-        p = internationalData->errors_text[msg_index];
+    if( msg_index >= 0 ) {
+        if( internationalData == NULL ) {
+            p = EMsgArray[msg_index];
+        } else if( msg_index < internationalData->errors_count ) {
+            p = internationalData->errors_text[msg_index];
+        }
     }
     return( p );
 }
 
-void CGetMsg( char *msgbuf, msg_codes msgcode )
+void CGetMsg( char *msgbuf, msg_codes msgnum )
 {
-    char const *p = CGetMsgStr( msgcode );
+    char const *p = CGetMsgStr( msgnum );
     while( (*msgbuf++ = *p++) != '\0' )
         /* empty */;
 }

@@ -686,13 +686,13 @@ extern void         InitModInfo(void);
 extern void         MiscMacroDefs(void);
 
 /* cmsg.c */
-extern char const   *CGetMsgStr( msg_codes msgcode );
+extern char const   *CGetMsgStr( msg_codes msgnum );
 extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
-extern msg_type     CGetMsgType( msg_codes msgcode );
-extern char const   *CGetMsgPrefix( msg_codes msgcode );
+extern msg_type     CGetMsgType( msg_codes msgnum );
+extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern int          GetMsgIndex( msg_codes msgnum );
 
 /* cname */
