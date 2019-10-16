@@ -507,20 +507,20 @@ extern void         EnumInit(void);
 extern void         FreeEnums(void);
 
 /* cerror.c */
-extern void         CErr1(int msgnum);
-extern void         CErr2(int msgnum,int);
-extern void         CErr2p(int msgnum,const char *);
-extern void         CErr3p(int msgnum,const char *,const char *);
-extern void         CErr4p(int msgnum,const char *,const char *,const char *);
-extern void         CErrP1(int parmno,int msgnum);
+extern void         CErr1(msg_codes msgnum);
+extern void         CErr2(msg_codes msgnum,int);
+extern void         CErr2p(msg_codes msgnum,const char *);
+extern void         CErr3p(msg_codes msgnum,const char *,const char *);
+extern void         CErr4p(msg_codes msgnum,const char *,const char *,const char *);
+extern void         CErrP1(int parmno,msg_codes msgnum);
 extern void         SetErrLoc(source_loc *);
 extern void         InitErrLoc(void);
-extern void         CWarn1(int level,int msgnum);
-extern void         CWarn2(int level,int msgnum,int);
-extern void         CWarn2p(int level,int msgnum,const char *);
-extern void         CWarnP1(int parmno,int level,int msgnum);
-extern void         PCHNote( int msgnum, ... );
-extern void         CInfoMsg(int,...);
+extern void         CWarn1(int level,msg_codes msgnum);
+extern void         CWarn2(int level,msg_codes msgnum,int);
+extern void         CWarn2p(int level,msg_codes msgnum,const char *);
+extern void         CWarnP1(int parmno,int level,msg_codes msgnum);
+extern void         PCHNote( msg_codes msgnum, ... );
+extern void         CInfoMsg(msg_codes msgnum,...);
 extern void         CSuicide(void);
 extern void         OpenErrFile(void);
 extern void         FmtCMsg( char *buff, cmsg_info *info );
@@ -686,13 +686,14 @@ extern void         InitModInfo(void);
 extern void         MiscMacroDefs(void);
 
 /* cmsg.c */
-extern char const   *CGetMsgStr(  msg_codes msgcode );
+extern char const   *CGetMsgStr( msg_codes msgcode );
 extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
 extern msg_type     CGetMsgType( msg_codes msgcode );
 extern char const   *CGetMsgPrefix( msg_codes msgcode );
+extern int          GetMsgIndex( msg_codes msgnum );
 
 /* cname */
 extern int          NameCmp(const void *,const void *,size_t);
@@ -728,7 +729,7 @@ extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
 extern void         SetCurrInfo(const char *);
 extern void         XferPragInfo(const char*,const char*);
-extern void         EnableDisableMessage(int,unsigned);
+extern void         EnableDisableMessage(bool enable,msg_codes msgnum);
 extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );

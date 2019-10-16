@@ -899,21 +899,24 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-void EnableDisableMessage( int enable, unsigned msg_num )
-/*******************************************************/
+void EnableDisableMessage( bool enable, msg_codes msgnum )
+/********************************************************/
 {
     unsigned char       mask;
+    int                 msg_index;
+    int                 index;
 
-    if( msg_num < MESSAGE_COUNT ) {
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index >= 0 ) {
         if( MsgFlags == NULL ) {
             MsgFlags = CMemAlloc( ( MESSAGE_COUNT + 7 ) / 8 );
         }
-        mask = 1 << ( msg_num & 7 );
-        msg_num = msg_num >> 3;
+        mask = 1 << ( msg_index & 7 );
+        index = msg_index >> 3;
         if( enable ) {
-            MsgFlags[msg_num] &= ~mask;
+            MsgFlags[index] &= ~mask;
         } else {
-            MsgFlags[msg_num] |= mask;
+            MsgFlags[index] |= mask;
         }
     }
 }

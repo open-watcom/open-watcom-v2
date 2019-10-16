@@ -45,6 +45,7 @@ static char const  * const EMsgArray[] = {
 
 //Enumerate groups
 enum grp_index {
+    grp_index_err = -1,
     #define GRP_DEF( name,prefix,num,index,eindex ) grp_index_##name,
     GRP_DEFS
     #undef GRP_DEF
@@ -54,6 +55,13 @@ enum grp_index {
 //msg  index base
 static int const LevelIndex[grp_index_max] = {
     #define GRP_DEF( name,prefix,num,index,eindex )  num,
+    GRP_DEFS
+    #undef GRP_DEF
+};
+
+//msg  index end
+static int const LevelIndexEnd[grp_index_max] = {
+    #define GRP_DEF( name,prefix,num,index,eindex )  num + eindex - index,
     GRP_DEFS
     #undef GRP_DEF
 };
@@ -118,52 +126,57 @@ static enum grp_index  GetGrpIndex( msg_codes msgcode )
     enum grp_index   index;
 
     index = grp_index_max;
-    while( --index > 0 ) {
+    while( index-- > 0 ) {
         if( msgcode >= LevelIndex[index] ) {
+            if( msgcode < LevelIndexEnd[index] )
+                return( index );
             break;
         }
     }
-    return( index );
+    return( grp_index_err );
+}
+
+int GetMsgIndex( msg_codes msgcode )
+{
+    enum grp_index   index;
+
+    index = GetGrpIndex( msgcode );
+    if( index == grp_index_err )
+        return( -1 );
+    return( msgcode - LevelIndex[index] + GroupBase[index] );
 }
 
 char const *CGetMsgPrefix( msg_codes msgcode )
 {
-    enum grp_index   index;
-    char   const    *value;
+    enum grp_index  index;
 
     index = GetGrpIndex( msgcode );
-    value = MsgPrefix[index];
-    return( value );
+    if( index == grp_index_err )
+        return( "" );
+    return( MsgPrefix[index] );
 }
 
 msg_type CGetMsgType( msg_codes msgcode )
 {
-    int              msgnum;
+    int              msg_index;
     msg_type         kind;
-    enum grp_index   index;
 
-    index = GetGrpIndex( msgcode );
-    msgnum = msgcode - LevelIndex[index] + GroupBase[index];
-    kind = MsgType[msgnum];
+    msg_index = GetMsgIndex( msgcode );
+    kind = MsgType[msg_index];
     return( kind );
 }
 
-char const *CGetMsgStr(  msg_codes msgcode )
+char const *CGetMsgStr( msg_codes msgcode )
 {
     char const      *p;
-    int             msgnum;
-    enum grp_index  index;
+    int             msg_index;
 
-    index = GetGrpIndex( msgcode );
-    msgnum = msgcode - LevelIndex[index] + GroupBase[index];
-    if( internationalData != NULL ) {
-        if( msgnum < internationalData->errors_count ) {
-            p = internationalData->errors_text[msgnum];
-        } else {
-            p = NULL;   // this might be a bug, but otherwise its random.
-        }
-    } else {
-        p = EMsgArray[msgnum];
+    msg_index = GetMsgIndex( msgcode );
+    p = NULL;
+    if( internationalData == NULL ) {
+        p = EMsgArray[msg_index];
+    } else if( msg_index < internationalData->errors_count ) {
+        p = internationalData->errors_text[msg_index];
     }
     return( p );
 }

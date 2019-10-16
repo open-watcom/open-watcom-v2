@@ -92,7 +92,7 @@ void OpenErrFile( void )
     }
 }
 
-static bool MsgDisabled( int msgnum )
+static bool MsgDisabled( msg_codes msgnum )
 {
     if( MsgFlags != NULL ) {
         if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
@@ -201,7 +201,7 @@ static void OutMsg( cmsg_info  *info )
     }
 }
 
-static void PrintType( int msg, TYPEPTR typ )
+static void PrintType( msg_codes msgcode, TYPEPTR typ )
 {
     char    *text;
 
@@ -209,7 +209,7 @@ static void PrintType( int msg, TYPEPTR typ )
         return;
 
     text = DiagGetTypeName( typ );
-    CInfoMsg( msg, text );
+    CInfoMsg( msgcode, text );
     CMemFree( text );
 }
 
@@ -235,7 +235,7 @@ static void PrintPostNotes( void )
 }
 
 // Output error message
-static void CErr( int parmno, int msgnum, ... )
+static void CErr( int parmno, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
@@ -256,39 +256,39 @@ static void CErr( int parmno, int msgnum, ... )
     }
 }
 
-void CErr1( int msgnum )
+void CErr1( msg_codes msgnum )
 {
     CErr( 0, msgnum );
 }
 
-void CErr2( int msgnum, int p1 )
+void CErr2( msg_codes msgnum, int p1 )
 {
     CErr( 0, msgnum, p1 );
 }
 
-void CErr2p( int msgnum, const char *p1 )
+void CErr2p( msg_codes msgnum, const char *p1 )
 {
     CErr( 0, msgnum, p1 );
 }
 
-void CErr3p( int msgnum, const char *p1, const char *p2 )
+void CErr3p( msg_codes msgnum, const char *p1, const char *p2 )
 {
     CErr( 0, msgnum, p1, p2 );
 }
 
-void CErr4p( int msgnum, const char *p1, const char *p2, const char *p3 )
+void CErr4p( msg_codes msgnum, const char *p1, const char *p2, const char *p3 )
 {
     CErr( 0, msgnum, p1, p2, p3 );
 }
 
-void CErrP1( int parmno, int msgnum )
+void CErrP1( int parmno, msg_codes msgnum )
 {
     CErr( parmno, msgnum );
 }
 
 
 // Out warning message
-static void CWarn( int parmno, int level, int msgnum, ... )
+static void CWarn( int parmno, int level, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
@@ -306,28 +306,28 @@ static void CWarn( int parmno, int level, int msgnum, ... )
     }
 }
 
-void CWarn1( int level, int msgnum )
+void CWarn1( int level, msg_codes msgnum )
 {
     CWarn( 0, level, msgnum );
 }
 
-void CWarn2( int level, int msgnum, int p1 )
+void CWarn2( int level, msg_codes msgnum, int p1 )
 {
     CWarn( 0, level, msgnum, p1 );
 }
 
-void CWarn2p( int level, int msgnum, const char *p1 )
+void CWarn2p( int level, msg_codes msgnum, const char *p1 )
 {
     CWarn( 0, level, msgnum, p1 );
 }
 
-void CWarnP1( int parmno, int level, int msgnum )
+void CWarnP1( int parmno, int level, msg_codes msgnum )
 {
     CWarn( parmno, level, msgnum );
 }
 
 
-void CInfoMsg( int msgnum, ... )
+void CInfoMsg( msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
@@ -343,7 +343,7 @@ void CInfoMsg( int msgnum, ... )
 
 
 // Output pre-compiled header Note
-void PCHNote( int msgnum, ... )
+void PCHNote( msg_codes msgnum, ... )
 {
     va_list     args1;
     char        msgbuf[MAX_MSG_LEN];
