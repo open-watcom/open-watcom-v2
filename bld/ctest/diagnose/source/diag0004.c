@@ -2,7 +2,7 @@
  * and 'comparison equivalent to unsigned == 0' warnings.
  */
 
-int main( int argc, char **argv )
+int main( int argc )
 {
     int                     ret;
     unsigned char           uc;

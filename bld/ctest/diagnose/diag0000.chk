@@ -100,27 +100,27 @@ source\diag0006.c(39): Note! I2004: target conversion type is 'int (__watcall *)
 source\diag0006.c(40): Error! E1010: Type mismatch
 source\diag0006.c(40): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
 source\diag0006.c(40): Note! I2004: target conversion type is 'int (__watcall *)(int __p1)'
-source\diag0007.c(37): Error! E1186: Storage class of 'for' statement declaration not register or auto
-source\diag0007.c(38): Error! E1186: Storage class of 'for' statement declaration not register or auto
 source\diag0007.c(39): Error! E1186: Storage class of 'for' statement declaration not register or auto
-source\diag0007.c(40): Error! E1187: No type specified in declaration
-source\diag0007.c(41): Error! E1188: Symbol 'j' declared in 'for' statement must be object
-source\diag0007.c(45): Error! E1189: Unexpected declaration
+source\diag0007.c(40): Error! E1186: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(41): Error! E1186: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(42): Error! E1187: No type specified in declaration
+source\diag0007.c(43): Error! E1188: Symbol 'j' declared in 'for' statement must be object
 source\diag0007.c(47): Error! E1189: Unexpected declaration
-source\diag0007.c(55): Error! E1189: Unexpected declaration
-source\diag0007.c(55): Error! E1009: Expecting 'while' but found 'unsigned'
-source\diag0007.c(55): Error! E1009: Expecting '(' but found 'u'
-source\diag0007.c(55): Error! E1063: Missing operand
-source\diag0007.c(55): Error! E1009: Expecting ')' but found ';'
-source\diag0007.c(61): Error! E1189: Unexpected declaration
-source\diag0007.c(69): Error! E1189: Unexpected declaration
-source\diag0007.c(45): Warning! W202: Symbol 'j' has been defined, but not referenced
-source\diag0007.c(61): Warning! W202: Symbol 'i' has been defined, but not referenced
-source\diag0007.c(52): Warning! W202: Symbol 'g' has been defined, but not referenced
-source\diag0007.c(47): Warning! W202: Symbol 'f' has been defined, but not referenced
-source\diag0007.c(58): Warning! W202: Symbol 'uu' has been defined, but not referenced
-source\diag0007.c(71): Error! E1018: Label 'la_bel' not defined in function
-source\diag0007.c(72): Error! E1099: Statement must be inside function. Probable cause: missing {
+source\diag0007.c(49): Error! E1189: Unexpected declaration
+source\diag0007.c(57): Error! E1189: Unexpected declaration
+source\diag0007.c(57): Error! E1009: Expecting 'while' but found 'unsigned'
+source\diag0007.c(57): Error! E1009: Expecting '(' but found 'u'
+source\diag0007.c(57): Error! E1063: Missing operand
+source\diag0007.c(57): Error! E1009: Expecting ')' but found ';'
+source\diag0007.c(63): Error! E1189: Unexpected declaration
+source\diag0007.c(71): Error! E1189: Unexpected declaration
+source\diag0007.c(47): Warning! W202: Symbol 'j' has been defined, but not referenced
+source\diag0007.c(63): Warning! W202: Symbol 'i' has been defined, but not referenced
+source\diag0007.c(54): Warning! W202: Symbol 'g' has been defined, but not referenced
+source\diag0007.c(49): Warning! W202: Symbol 'f' has been defined, but not referenced
+source\diag0007.c(60): Warning! W202: Symbol 'uu' has been defined, but not referenced
+source\diag0007.c(73): Error! E1018: Label 'la_bel' not defined in function
+source\diag0007.c(74): Error! E1099: Statement must be inside function. Probable cause: missing {
 source\diag0008.c(2): Warning! W140: Definition of macro '__DATE__' not identical to previous definition
 source\diag0008.c(3): Warning! W140: Definition of macro '__FILE__' not identical to previous definition
 source\diag0008.c(4): Warning! W140: Definition of macro '__LINE__' not identical to previous definition
@@ -155,19 +155,19 @@ source\diag0010.c(9): Error! E1069: String literal not terminated before end of 
 source\diag0010.c(11): Error! E1054: Expression must be constant
 source\diag0010.c(11): Error! E1009: Expecting ';' but found 'int'
 source\diag0011.c(6): Error! E1069: String literal not terminated before end of line
-source\diag0012.c(43): Warning! W112: Pointer truncated
-source\diag0012.c(43): Note! I2003: source conversion type is 'void __far *'
-source\diag0012.c(43): Note! I2004: target conversion type is 'struct HMENU__ __near const *'
-source\diag0012.c(52): Warning! W112: Parameter 1: Pointer truncated
-source\diag0012.c(52): Note! I2003: source conversion type is 'void __far *'
-source\diag0012.c(52): Note! I2004: target conversion type is 'struct HMENU__ __near const **'
-source\diag0012.c(52): Note! I2002: 'foo' defined in: source\diag0012.c(26)
-source\diag0012.c(54): Warning! W113: Pointer type mismatch
-source\diag0012.c(54): Note! I2003: source conversion type is 'int (*)[2]'
-source\diag0012.c(54): Note! I2004: target conversion type is 'int (*)[3]'
-source\diag0012.c(57): Warning! W113: Pointer type mismatch
-source\diag0012.c(57): Note! I2003: source conversion type is 'int (*)[2][3]'
-source\diag0012.c(57): Note! I2004: target conversion type is 'int (*)[3][3]'
+source\diag0012.c(44): Warning! W112: Pointer truncated
+source\diag0012.c(44): Note! I2003: source conversion type is 'void __far *'
+source\diag0012.c(44): Note! I2004: target conversion type is 'struct HMENU__ __near const *'
+source\diag0012.c(53): Warning! W112: Parameter 1: Pointer truncated
+source\diag0012.c(53): Note! I2003: source conversion type is 'void __far *'
+source\diag0012.c(53): Note! I2004: target conversion type is 'struct HMENU__ __near const **'
+source\diag0012.c(53): Note! I2002: 'foo' defined in: source\diag0012.c(26)
+source\diag0012.c(55): Warning! W113: Pointer type mismatch
+source\diag0012.c(55): Note! I2003: source conversion type is 'int (*)[2]'
+source\diag0012.c(55): Note! I2004: target conversion type is 'int (*)[3]'
+source\diag0012.c(58): Warning! W113: Pointer type mismatch
+source\diag0012.c(58): Note! I2003: source conversion type is 'int (*)[2][3]'
+source\diag0012.c(58): Note! I2004: target conversion type is 'int (*)[3][3]'
 source\diag0013.c(12): Error! E1034: Symbol 'foo' already defined
 source\diag0014.c(13): Warning! W107: Missing return value for function 'fn1'
 source\diag0014.c(17): Warning! W107: Missing return value for function 'fn2'
@@ -257,8 +257,8 @@ source\diag0019.c(19): Warning! W124: Comparison result always 0
 source\diag0019.c(25): Warning! W126: Constant must be zero for pointer compare
 source\diag0020.c(4): Error! E1040: Field width too large
 source\diag0020.c(9): Error! E1040: Field width too large
-source\diag0021.c(12): Error! E1089: Missing ) for expansion of 'VERIFY' macro
-source\diag0021.c(12): Error! E1077: Missing '}'
+source\diag0021.c(14): Error! E1089: Missing ) for expansion of 'VERIFY' macro
+source\diag0021.c(14): Error! E1077: Missing '}'
 source\diag0022.c(17): Warning! W102: Type mismatch (warning)
 source\diag0022.c(17): Note! I2003: source conversion type is '_Bool'
 source\diag0022.c(17): Note! I2004: target conversion type is 'char *'
@@ -303,3 +303,5 @@ source\diag0101.c(15): Note! I2002: 'f2' defined in: source\diag0101.c(2)
 source\diag0101.c(18): Error! E1151: Parameter count does not agree with previous definition
 source\diag0101.c(20): Error! E1151: Parameter count does not agree with previous definition
 source\diag0101.c(21): Error! E1151: Parameter count does not agree with previous definition
+source\diag0102.c(4): Warning! W303: Parameter 'argv' has been defined, but not referenced
+source\diag0102.c(4): Warning! W303: Parameter 'argc' has been defined, but not referenced
