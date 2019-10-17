@@ -137,10 +137,10 @@ static a_hot_spot       hotSpots[] = {
 #define SEARCH_HOT_SPOT         2
 
 static VFIELD hotSpotFields[] = {
-    {{0}, FLD_HOT, &hotSpots[0] },
-    {{0}, FLD_HOT, &hotSpots[2] },
-    {{0}, FLD_HOT, &hotSpots[1] },
-    {{0}, FLD_VOID,NULL }
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[0] },
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[2] },
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[1] },
+    {{0, 0, 0, 0}, FLD_NONE,NULL }
 };
 
 static ui_event keyShift[] = {

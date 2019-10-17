@@ -69,7 +69,7 @@ static VFIELD helpSearchDialog[] = {
     {{3,    4,          8,      40},    FLD_LISTBOX,    &listBox},
     {{1,    (ORD)-1,    1,      11},    FLD_HOT,        &searchButtons[0]},
     {{3,    (ORD)-1,    1,      11},    FLD_HOT,        &searchButtons[1]},
-    {{12,   0,          0,      0},     FLD_VOID,       NULL}
+    {{12,   0,          0,      0},     FLD_NONE,       NULL}
 };
 
 static VFIELD   *editVField = &helpSearchDialog[0];

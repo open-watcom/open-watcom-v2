@@ -41,7 +41,7 @@ static char     *message;
 VFIELD helpMsgBox[] = {
     {{1,       4,      1,      49},    FLD_TEXT,       &message},
     {{3,       20,     1,      11},    FLD_HOT,        &okButton[0]},
-    {{5,       0,      0,      0},     FLD_VOID,       NULL}
+    {{5,       0,      0,      0},     FLD_NONE,       NULL}
 };
 
 void ShowMsgBox( char *caption, char *msg )
