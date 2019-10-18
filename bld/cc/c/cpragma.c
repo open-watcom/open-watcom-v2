@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1119,7 +1120,7 @@ static void pragDataSeg( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
-        segid = SEG_UNKNOWN;
+        segid = SEG_NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );

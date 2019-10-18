@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -428,7 +429,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
     info->naked = false;
-    info->segid = SEG_UNKNOWN;
+    info->segid = SEG_NULL;
     bmask = 0;
     flags = FLAG_NONE;
     packed = false;
@@ -1253,7 +1254,7 @@ static void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
     info->naked = false;
-    info->segid = SEG_UNKNOWN;
+    info->segid = SEG_NULL;
     info->typ = GetType( data_type );
 }
 

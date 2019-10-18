@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ static void EmitDQuad( DATA_QUAD *dq )
     target_size         amount;
     auto SYM_ENTRY      sym;
 
-    static segment_id   segid = SEG_UNKNOWN;
+    static segment_id   segid = SEG_NULL;
     static target_size  size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {

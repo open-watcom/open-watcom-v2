@@ -76,8 +76,8 @@ static seg_name Predefined_Segs[] = {
 static user_seg     *userSegments;
 static segment_id   userSegId;
 
-static segment_id   import_segid      = SEG_UNKNOWN;    /* next segment # for import sym */
-static segment_id   import_near_segid = SEG_UNKNOWN;    /* data seg # for -nd option */
+static segment_id   import_segid      = SEG_NULL;       /* next segment # for import sym */
+static segment_id   import_near_segid = SEG_NULL;       /* data seg # for -nd option */
 
 void AssignSeg( SYMPTR sym )
 {
@@ -85,10 +85,10 @@ void AssignSeg( SYMPTR sym )
     if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */
-        sym->u.var.segid = SEG_UNKNOWN;
+        sym->u.var.segid = SEG_NULL;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
-            if( sym->u.var.segid == SEG_UNKNOWN ) {
+            if( sym->u.var.segid == SEG_NULL ) {
                 SetSegment( sym );
             }
             if( sym->u.var.segid == SEG_DATA ) {
@@ -99,7 +99,7 @@ void AssignSeg( SYMPTR sym )
         }
     } else if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         sym->u.var.segid = import_segid--;
-    } else if( (import_near_segid != SEG_UNKNOWN) && (sym->mods & FLAG_NEAR) ) {  // imported and near
+    } else if( (import_near_segid != SEG_NULL) && (sym->mods & FLAG_NEAR) ) {  // imported and near
         sym->u.var.segid = import_near_segid;
     }
 }
@@ -543,7 +543,7 @@ SYM_HANDLE SegSymHandle( segment_id segid )
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->segid == segid ) {
             if( useg->sym_handle == SYM_NULL ) {
-                useg->sym_handle = SegSymbol( useg->name, SEG_UNKNOWN );
+                useg->sym_handle = SegSymbol( useg->name, SEG_NULL );
             }
             return( useg->sym_handle );
         }
@@ -849,7 +849,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
                     }
                 }
             }
-        } else if( sym->u.var.segid != SEG_UNKNOWN ) {
+        } else if( sym->u.var.segid != SEG_NULL ) {
             segid = sym->u.var.segid;
         } else if( attr & FE_GLOBAL ) {
             segid = SEG_DATA;
@@ -1006,7 +1006,7 @@ void ImportNearSegIdInit( void )
 
 void ImportSegIdInit( void )
 {
-    if( import_near_segid != SEG_UNKNOWN ) {
+    if( import_near_segid != SEG_NULL ) {
         import_segid = import_near_segid - 1;
     } else {
         import_segid = -1;

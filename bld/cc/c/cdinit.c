@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1243,7 +1244,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
         typ->u.array->unspecified_dim = true;
         typ->u.array->dimension = 0;    /* Reset back to 0 */
     }
-    if( sym->u.var.segid == SEG_UNKNOWN ) {
+    if( sym->u.var.segid == SEG_NULL ) {
         SetFarHuge( sym, false );
         SetSegment( sym );
         SetSegAlign( sym );
@@ -1407,7 +1408,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         if( CharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segid == SEG_UNKNOWN ) {
+            if( sym2.u.var.segid == SEG_NULL ) {
                 SetFarHuge( &sym2, false );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
@@ -1420,7 +1421,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         } else if( WCharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segid == SEG_UNKNOWN ) {
+            if( sym2.u.var.segid == SEG_NULL ) {
                 SetFarHuge( &sym2, false );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );

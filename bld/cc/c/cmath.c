@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -682,7 +683,7 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
             if( typ2_flags & FLAG_BASED ) {
 #endif
                 op2 = BasedPtrNode( typ2, op2 );
-//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_NULL ), true );
             }
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
@@ -1575,7 +1576,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
                     break;
                 /* NYI: This could be smarter and check other based types. */
                 default:
-                    new_segid = SEG_UNKNOWN;
+                    new_segid = SEG_NULL;
                 }
             } else if( IsFuncPtr( newtyp ) ) {
                 new_segid = SEG_CODE;
@@ -1591,7 +1592,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
                     break;
                 /* NYI: This could be smarter and check other based types. */
                 default:
-                    old_segid = SEG_UNKNOWN;
+                    old_segid = SEG_NULL;
                 }
             } else {
                 old_segid = oldtyp->u.p.segid;

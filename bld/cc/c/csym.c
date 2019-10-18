@@ -162,7 +162,7 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segid )
     sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
-    if( segid != SEG_UNKNOWN ) {
+    if( segid != SEG_NULL ) {
         SetSegSymHandle( handle, segid );
     }
     return( handle );
