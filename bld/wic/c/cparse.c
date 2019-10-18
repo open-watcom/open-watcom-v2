@@ -43,7 +43,6 @@
 #define __SMALL__ 0            // To avoid warnings in MKS yacc
 #endif
 
-//#pragma disable_message(118)
 #define Y_EOF   300
 #define Y_EXCLAMATION   301
 #define Y_NE    302

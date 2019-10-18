@@ -45,9 +45,6 @@
 #include "parse.h"
 #include "cmdlnprs.h"
 
-#ifdef __WATCOMC__
-#pragma disable_message (202);
-#endif
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -126,7 +123,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
                 filename = CmdScanFileName();
                 AddFile( TYPE_DEFAULT_FILE, filename );
                 FreeMem( filename );
-            }                
+            }
         } else {                                /* input file */
             UngetCharContext();
             filename = CmdScanFileName();
