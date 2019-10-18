@@ -92,7 +92,7 @@ $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf
@@ -112,7 +112,7 @@ $(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf

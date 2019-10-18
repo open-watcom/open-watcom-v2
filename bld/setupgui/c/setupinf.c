@@ -1559,6 +1559,7 @@ static bool ProcLine( char *line, pass_type pass )
 {
     char                *next;
     int                 num;
+    VBUF                buff;
 
     // Remove leading and trailing white-space.
     line = StripBlanks( line );
@@ -1747,11 +1748,14 @@ static bool ProcLine( char *line, pass_type pass )
                 GUIMemFree( SetupInfo.pm_group_name );
                 SetupInfo.pm_group_name = NULL;
             }
-            SetupInfo.pm_group_name = GUIStrDup( line, NULL );
+            VbufInit( &buff );
+            ReplaceVars( &buff, line );
+            SetupInfo.pm_group_name = GUIStrDup( VbufString( &buff ), NULL );
+            VbufFree( &buff );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
-            AllPMGroups[num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[num].group_name = GUIStrDup( SetupInfo.pm_group_name, NULL );
             AllPMGroups[num].group_file = GUIStrDup( SetupInfo.pm_group_file, NULL );
             if( SetupInfo.pm_group_iconfile != NULL ) {
                 GUIMemFree( SetupInfo.pm_group_iconfile );
@@ -1791,7 +1795,6 @@ static bool ProcLine( char *line, pass_type pass )
             int         num_files;
             a_file_info *file;
             char        *p;
-            VBUF        fext;
 
             num = SetupInfo.files.num;
             if( !BumpArray( &SetupInfo.files ) )
@@ -1815,16 +1818,16 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].supplemental = false;
             FileInfo[num].core_component = false;
             FileInfo[num].num_files = num_files;
-            VbufInit( &fext );
+            VbufInit( &buff );
             file = FileInfo[num].files;
             for( ; num_files-- > 0; ) {
                 line = next; next = NextToken( line, ',' );
                 p = NextToken( line, '!' );
                 VbufInit( &file->name );
                 VbufConcStr( &file->name, line );
-                VbufSplitpath( &file->name, NULL, NULL, NULL, &fext );
-                file->is_nlm = VbufCompStr( &fext, ".nlm", true ) == 0;
-                file->is_dll = VbufCompStr( &fext, ".dll", true ) == 0;
+                VbufSplitpath( &file->name, NULL, NULL, NULL, &buff );
+                file->is_nlm = VbufCompStr( &buff, ".nlm", true ) == 0;
+                file->is_dll = VbufCompStr( &buff, ".dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
                 file->size = GET36( line ) * 512UL;
                 if( p != NULL && *p != '\0' && *p != '!' ) {
@@ -1855,7 +1858,7 @@ static bool ProcLine( char *line, pass_type pass )
                 }
                 file++;
             }
-            VbufFree( &fext );
+            VbufFree( &buff );
             line = next; next = NextToken( line, ',' );
             FileInfo[num].dir_index = GET36( line ) - 1;
             line = next; next = NextToken( line, ',' );
@@ -1925,9 +1928,12 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        PMInfo[num].desc = GUIStrDup( line, NULL );
+        VbufInit( &buff );
+        ReplaceVars( &buff, line );
+        PMInfo[num].desc = GUIStrDup( VbufString( &buff ), NULL );
+        VbufFree( &buff );
         if( PMInfo[num].group ) {
-            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = GUIStrDup( PMInfo[num].desc, NULL );
             AllPMGroups[SetupInfo.all_pm_groups.num].group_file = GUIStrDup( PMInfo[num].parameters, NULL );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
                 return( false );

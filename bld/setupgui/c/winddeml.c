@@ -104,7 +104,7 @@ static bool ddeDeleteGroup( DWORD ddeinst, HCONV hconv, const VBUF *group )
 
     // send "[DeleteGroup(%s)]"
     VbufInit( &buff );
-    VbufConcStr( &buff, "[CreateGroup(" );
+    VbufConcStr( &buff, "[DeleteGroup(" );
     VbufConcVbuf( &buff, group );
     VbufConcStr( &buff, ")]" );
     ok = ddeSendCommand( ddeinst, hconv, &buff );
