@@ -46,6 +46,8 @@ static const char *const rgMsgs[4] =
 
 int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
+    /* unused parameters */ (void)hdll; (void)reserved;
+
     switch( reason ) {
     case DLL_PROCESS_ATTACH:
         printf( rgMsgs[0] );
@@ -82,6 +84,9 @@ void QA_func1( void );
 void exe_threadfunc( void *private_data )
 {
     static int counter = 0;
+
+    /* unused parameters */ (void)private_data;
+
     ++counter;
 
     printf( ".exe threadfunc entered %2d times.\n", counter );

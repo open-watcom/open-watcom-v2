@@ -759,12 +759,16 @@ int main( int argc, char *argv[] )
 {
 #ifdef __SW_BW
     FILE *my_stdout;
+
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
         exit( -1 );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
 

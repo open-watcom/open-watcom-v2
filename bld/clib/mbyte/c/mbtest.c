@@ -94,14 +94,17 @@ void main( int argc, char *argv[] )
     int                 exitcode;
 
     /*** Initialize ***/
-    #ifdef __SW_BW
-        FILE *          my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
+#ifdef __SW_BW
+    FILE *          my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
+
     strcpy( ProgramName, strlwr(argv[0]) );     /* store executable filename */
     if( _setmbcp( 932 ) != 0 ) {
         printf( "Cannot initialize code page.\n\n" );

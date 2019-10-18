@@ -95,6 +95,8 @@ int floatcmp_s( void const *_a, void const *_b, void *context )
     float   *a = (float *)_a;
     float   *b = (float *)_b;
 
+    /* unused parameters */ (void)context;
+
     if( *a == *b ) {
         return 0;
     } else if( *a < *b ) {
@@ -110,6 +112,8 @@ int longintcmp_s( void const *_a, void const *_b, void *context )
     unsigned long   *a = (unsigned long *)_a;
     unsigned long   *b = (unsigned long *)_b;
 
+    /* unused parameters */ (void)context;
+
     if( (*a) == (*b) ) {
         return 0;
     } else if( (*a) < (*b) ) {
@@ -122,6 +126,11 @@ int longintcmp_s( void const *_a, void const *_b, void *context )
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifndef DEBUG_MSG
+    /* unused parameters */ (void)msg;
+#endif
+    /* unused parameters */ (void)ptr; (void)error;
+
 #ifdef DEBUG_MSG
     fprintf( stderr, "Runtime-constraint in %s", msg );
 #endif
@@ -241,6 +250,8 @@ int main( int argc, char *argv[] )
         exit( -1 );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */

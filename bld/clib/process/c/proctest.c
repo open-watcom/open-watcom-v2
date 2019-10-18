@@ -55,6 +55,8 @@ int main( int argc, char **argv )
 {
     FILE                *my_stdout;
 
+    /* unused parameters */ (void)argc;
+
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {

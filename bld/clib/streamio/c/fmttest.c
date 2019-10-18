@@ -373,6 +373,9 @@ int main( int argc, char *argv[] )
         exit( -1 );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
 

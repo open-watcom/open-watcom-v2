@@ -59,8 +59,8 @@
 
 unsigned int warnings, failures, tests;
 
-void Status_Print( )
-/*******************/
+void Status_Print( void )
+/***********************/
 {
     /* Print the number of warnings/failures. */
 
@@ -102,15 +102,15 @@ int longintcmp( void const *_a, void const *_b )
 /*** Test Routines ***/
 
 
-int test_qsort_fl_arr( )
-/**********************/
+int test_qsort_fl_arr( void )
+/***************************/
 {
     float  test[ QSORT_SIZE ];
     int    i;
 
     srand( 0 );
     for( i = 0; i < QSORT_SIZE; i++ ) {   /* Create test data */
-        test[i] = rand( );
+        test[i] = rand();
     }
 
     qsort( test, QSORT_SIZE, sizeof( float ), floatcmp ); /* Sort the data */
@@ -126,16 +126,16 @@ int test_qsort_fl_arr( )
     return 1;
 }
 
-int test_qsort( )
-/***************/
+int test_qsort( void )
+/********************/
 {
-    test_qsort_fl_arr( );
+    test_qsort_fl_arr();
 
     return 1;
 }
 
-int test_bsearch( )
-/*****************/
+int test_bsearch( void )
+/**********************/
 {
     int i;
     unsigned long int list[ LIST_SIZE ], cur;
@@ -161,8 +161,8 @@ int test_bsearch( )
     return 1;
 }
 
-int test_lfind_lsearch( )
-/***********************/
+int test_lfind_lsearch( void )
+/****************************/
 {
     int i;
     unsigned num;
@@ -207,24 +207,27 @@ int test_lfind_lsearch( )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
+#ifdef __SW_BW
+    FILE *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
 
     /****  Start of Tests  ****/
 
-    test_bsearch( );
-    test_lfind_lsearch( );
-    test_qsort( );
+    test_bsearch();
+    test_lfind_lsearch();
+    test_qsort();
 
     /****  End of Tests  ****/
 
-    //Status_Print( );
+    //Status_Print();
 
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     #ifdef __SW_BW

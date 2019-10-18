@@ -262,6 +262,8 @@ void CheckResults( struct CtypeBits *s1, struct CtypeBits *s2, int count )
 {
     int i;
 
+    /* unused parameters */ (void)count;
+
     far_data++; // set ds outside DGROUP
 
     for( i = 0; i < TEST_ARRAY_SIZE; i++ ) {
@@ -370,6 +372,9 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     far_data++; // set ds outside DGROUP
 
     /*** Initialize ***/

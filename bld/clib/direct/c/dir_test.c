@@ -114,17 +114,20 @@ void main( int argc, char *argv[] )
     unsigned            checkbits = 0;
     unsigned            save_checkbits;
 
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = __F_NAME(freopen,_wfreopen)( STRING( "tmp.log" ), STRING( "a" ), stdout );
-        VERIFY( my_stdout != NULL );
-    #endif
+#ifdef __SW_BW
+    FILE *my_stdout;
+
+    my_stdout = __F_NAME(freopen,_wfreopen)( STRING( "tmp.log" ), STRING( "a" ), stdout );
+    VERIFY( my_stdout != NULL );
+#endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Convert multi-byte name to wide char name ***/
-    #ifdef MBYTE_NAMES
-        mbstowcs( TmpDir, "_TMP\x90\x92\x90\x90", 9 );
-        mbstowcs( TmpFilePrefix, "TMP_\x90\x90\x90\x92", 9 );
-    #endif
+#ifdef MBYTE_NAMES
+    mbstowcs( TmpDir, "_TMP\x90\x92\x90\x90", 9 );
+    mbstowcs( TmpFilePrefix, "TMP_\x90\x90\x90\x92", 9 );
+#endif
 
     VERIFY( ( cwd = __F_NAME(getcwd,_wgetcwd)( NULL, 0 ) ) != NULL );
     VERIFY( __F_NAME(getcwd,_wgetcwd)( buffer, 256 ) != NULL );

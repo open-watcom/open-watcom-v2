@@ -270,6 +270,7 @@ int main( int argc, char *argv[] )
         exit( -1 );
     }
 #endif
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );
     if( (argc == 2) && (strcmp( argv[1], "-i" ) == 0) )
@@ -318,6 +319,9 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 #ifdef __SW_BW
     fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );

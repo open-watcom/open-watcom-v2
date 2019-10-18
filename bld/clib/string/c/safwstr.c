@@ -61,6 +61,11 @@ int     NumViolations = 0;  /* runtime-constraint violation counter */
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifndef DEBUG_MSG
+    /* unused parameters */ (void)msg;
+#endif
+    /* unused parameters */ (void)ptr; (void)error;
+
 #ifdef DEBUG_MSG
     fprintf( stderr, "Runtime-constraint in %s", msg );
 #endif
@@ -422,12 +427,16 @@ int main( int argc, char *argv[] )
 {
 #ifdef __SW_BW
     FILE *my_stdout;
+
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
         exit( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
 
