@@ -41,8 +41,6 @@ typedef struct {
 } class_factory;
 typedef class_factory   *LPMYCLASSFACTORY;
 
-#pragma disable_message( 202 )
-
 static DWORD    cfID;
 
 /*
