@@ -130,7 +130,8 @@ void WInfiniteList::load( int contextIdx ) {
 
         myContext = (Context *)_context[contextIdx];
 
-        if( myContext->isLoaded() ) return; //don't need to re-load
+        if( myContext->isLoaded() )
+            return;     //don't need to re-load
 
         newList = new WVList;
         prevCtxt = myContext->getContext();
@@ -228,7 +229,8 @@ bool WInfiniteList::paint() {
     for( int i = _top; i < maxRows; i += 1 ) {
         str = getString( i );
 
-        if( str == NULL ) break;
+        if( str == NULL )
+            break;
 
         WString name( str );
 
@@ -252,7 +254,8 @@ bool WInfiniteList::mouseMove( int x, int y, WMouseKeyFlags ) {
         int         row = getRow( WPoint( x, y ) );
         int         oldSel = _selected;
 
-        if( row < 0 ) row = 0;
+        if( row < 0 )
+            row = 0;
         if( row > getRows() - 1 ) {
             row = getRows() - 1;
         }
@@ -361,7 +364,8 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
         switch( key ) {
         case WKeyPageup:
             _selected -= nRows - 1;
-            if( _selected < 0 ) _selected = 0;
+            if( _selected < 0 )
+                _selected = 0;
 
             if( oldSel != _selected ) {
                 invalidateRow( oldSel - _top );
@@ -387,7 +391,8 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
 
         case WKeyUp:
             _selected -= 1;
-            if( _selected < 0 ) _selected = 0;
+            if( _selected < 0 )
+                _selected = 0;
 
             scrollToSelected();
             changed();

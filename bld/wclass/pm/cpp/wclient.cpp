@@ -120,9 +120,10 @@ WString * WEXPORT WClient::sendMsg( const char *msg, WClientFlags ) {
 
     DDESTRUCT   *dde;
 
-    if( !_connected ) return( NULL );
-    dde = WDDEObject::makeDDEObject( _serverWindow, msg, 0, DDEFMT_TEXT, NULL, 0 );
-    WinDdePostMsg( _serverWindow, _clientWindow, WM_DDE_REQUEST, dde, DDEPM_RETRY );
+    if( _connected ) {
+        dde = WDDEObject::makeDDEObject( _serverWindow, msg, 0, DDEFMT_TEXT, NULL, 0 );
+        WinDdePostMsg( _serverWindow, _clientWindow, WM_DDE_REQUEST, dde, DDEPM_RETRY );
+    }
     return( NULL );
 }
 

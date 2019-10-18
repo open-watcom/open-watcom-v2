@@ -38,7 +38,7 @@
 WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx )
     : WDialog( parent )
     , _idx( idx )
-    , _textArray( NULL ) 
+    , _textArray( NULL )
     , _title( NULL )
     , _height( 0 )
     , _width( 0 )
@@ -88,7 +88,8 @@ void WAbout::initialize() {
     if( _textArray ) {
         for( int i=0; _textArray[i]; i++ ) {
             int w = getTextExtentX( _textArray[i] );
-            if( _width < w ) _width = w;
+            if( _width < w )
+                _width = w;
             _height += getTextExtentY( _textArray[i] );
             _text.add( new WString( _textArray[i] ) );
         }
@@ -96,7 +97,8 @@ void WAbout::initialize() {
 
     WPoint hotSize;
     _hotSpot->hotSpotSize( _idx, hotSize );
-    if( _width < hotSize.x() ) _width = hotSize.x();
+    if( _width < hotSize.x() )
+        _width = hotSize.x();
     _height += hotSize.y();
 
     static const char ok[] = { "OK" };

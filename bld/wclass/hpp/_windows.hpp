@@ -46,20 +46,4 @@ typedef gui_res_id      WResourceId;
 
 typedef gui_ctl_id      WControlId;
 
-/*
-#if defined( __NT__ )
- #if defined( __AXP__ )
-  #pragma library (guintaxp)
- #else
-  #pragma library (guintf)
- #endif
-#elif defined( __WINDOWS__ )
-  #pragma library (guiwinl)
-#elif defined( __OS2__ )
-  #pragma library (guipmf)
-#elif defined( __DOS__ )
-  #pragma library (guidosf)
-  #pragma library (uilibf)
-#endif
-*/
 #endif

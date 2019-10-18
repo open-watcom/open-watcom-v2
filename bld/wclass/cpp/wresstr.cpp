@@ -69,10 +69,11 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, WResourceId format_id
     const char *    parm;
     size_t          src = 0;
     size_t          dest = 0;
-    bool            done = false;
+    bool            done;
 
-    len = len;
-    while( !done ) {
+    /* unused parameters */ (void)len;
+
+    for( done = false; !done; ) {
         assert( dest < len );
 
         switch( fmts[src] ) {

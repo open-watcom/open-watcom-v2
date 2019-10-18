@@ -54,12 +54,10 @@ char    *build_exec_env( char **env )
     if( env == NULL ) {
         return( NULL );
     }
-    s = env;
     // figure out how much memory we need
     len = 0;
-    while( *s != NULL ) {
+    for( s = env; *s != NULL; s++ ) {
         len += strlen( *s ) + 1;
-        ++s;
     }
     ++len;  // for terminating NUL
     env_copy = (char *)malloc( len );
@@ -67,11 +65,9 @@ char    *build_exec_env( char **env )
         return( NULL );
     }
     // copy the environment strings
-    s = env;
     d = env_copy;
-    while( *s != NULL ) {
+    for( s = env; *s != NULL; s++ ) {
         d = strcpy( d, *s ) + strlen( *s ) + 1;
-        ++s;
     }
     *d = '\0';  // terminate array
     return( env_copy );
@@ -141,7 +137,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             args.insertAt( 1, new WString( WINOS2_PARM ) );
         } else {
             rc = DosGetInfoBlocks( &ptib, &ppib );
-            if( rc != 0 ) return( -1 );
+            if( rc != 0 )
+                return( -1 );
             app_type &= FAPPTYP_EXETYPE;
             if( (app_type == FAPPTYP_WINDOWCOMPAT) ||
                 (app_type == FAPPTYP_NOTWINDOWCOMPAT) ) {
@@ -209,7 +206,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         if( exec_env != NULL ) {
             free( exec_env );
         }
-        if( rc != 0 ) return( -1 );
+        if( rc != 0 )
+            return( -1 );
         return( returncodes.codeTerminate );    // process id of child
     } else { // pgm_starter == PGM_DOSSTARTSESSION
         switch( state ) {
@@ -260,7 +258,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         sd.ObjectBuffer = NULL;
         sd.ObjectBuffLen = 0;
         rc = DosStartSession( &sd, &session, &pid );
-        if( rc != 0 && rc != ERROR_SMG_START_IN_BACKGROUND ) return( -1 );
+        if( rc != 0 && rc != ERROR_SMG_START_IN_BACKGROUND )
+            return( -1 );
         return( pid );
     }
 }

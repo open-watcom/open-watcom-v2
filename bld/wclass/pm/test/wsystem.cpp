@@ -73,7 +73,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     sess_type = SSF_TYPE_DEFAULT;
     rc = DosQueryAppType( (char const *)pgm, &app_type );
     printf( "DosQueryAppType returned %d\n", rc );
-    if( rc != 0 ) return( -1 );
+    if( rc != 0 )
+        return( -1 );
     if( typ == WWinTypeDefault ) {
         if( app_type & FAPPTYP_DOS ) {
             pgm_starter = PGM_DOSSTARTSESSION;
@@ -85,7 +86,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             args.insertAt( 1, new WString( WINOS2_PARM ) );
         } else {
             rc = DosGetInfoBlocks( &ptib, &ppib );
-            if( rc != 0 ) return( -1 );
+            if( rc != 0 )
+                return( -1 );
             app_type &= FAPPTYP_EXETYPE;
             if( (app_type == FAPPTYP_WINDOWCOMPAT) ||
                 (app_type == FAPPTYP_NOTWINDOWCOMPAT) ) {
@@ -146,7 +148,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         }
         rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)NULL,
                          &returncodes, (char *)(const char *)fn );
-        if( rc != 0 ) return( -1 );
+        if( rc != 0 )
+            return( -1 );
         return( returncodes.codeTerminate );    // process id of child
     } else { // pgm_starter == PGM_DOSSTARTSESSION
         switch( state ) {
@@ -197,7 +200,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         sd.ObjectBuffer = NULL;
         sd.ObjectBuffLen = 0;
         rc = DosStartSession( &sd, &session, &pid );
-        if( rc != 0 && rc != ERROR_SMG_START_IN_BACKGROUND ) return( -1 );
+        if( rc != 0 && rc != ERROR_SMG_START_IN_BACKGROUND )
+            return( -1 );
         return( pid );
     }
 }

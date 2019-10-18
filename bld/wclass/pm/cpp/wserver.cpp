@@ -134,7 +134,8 @@ void WServer::addClient( HWND client ) {
 
     if( _numClients >= _maxClients ) {
         HWND *new_client_list = new HWND[_maxClients + CLIENT_BLOCK];
-        if( new_client_list == NULL ) return;
+        if( new_client_list == NULL )
+            return;
         for( int i = 0; i < _numClients; ++i ) {
             new_client_list[i] = _clientList[i];
         }

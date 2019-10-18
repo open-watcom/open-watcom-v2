@@ -532,7 +532,8 @@ WWindow* WWindow::switchChild( WWindow* currChild, bool forward )
         } else {
             index = (index + icount - 1) % icount;
         }
-        if( index == startIndex ) return( currChild );
+        if( index == startIndex )
+            return( currChild );
 
         WWindow* w = (WWindow *)_children[index];
 
@@ -1029,10 +1030,15 @@ void WWindow::autoPosition( WRect& cRect )
     } else {
         cRect.h( _autosize.h() );
     }
-    if( cRect.h() < 0 ) cRect.h( 0 );
-    if( cRect.w() < 0 ) cRect.w( 0 );
-    if( cRect.x() < 0 ) cRect.x( 0 );
-    if( cRect.y() < 0 ) cRect.y( 0 );
+    if( cRect.h() < 0 )
+        cRect.h( 0 );
+    if( cRect.w() < 0 )
+        cRect.w( 0 );
+    if( cRect.x() < 0 )
+        cRect.x( 0 );
+    if( cRect.y() < 0 ) {
+        cRect.y( 0 );
+    }
 }
 
 void WEXPORT WWindow::autosize()

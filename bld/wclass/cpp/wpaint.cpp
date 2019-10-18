@@ -41,7 +41,8 @@ void WEXPORT WWindow::fillRect( const WRect &r, Color colour ) {
 
     gui_rect    rr;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     rr.x = r.x();
     rr.y = r.y();
     rr.width = r.w();
@@ -55,7 +56,8 @@ void WEXPORT WWindow::fillRect( const WRect &r, WPaintAttr attr ) {
 
     gui_rect    rr;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     rr.x = r.x();
     rr.y = r.y();
     rr.width = r.w();
@@ -69,7 +71,8 @@ void WEXPORT WWindow::drawRect( const WRect &r, Color colour ) {
 
     gui_rect    rr;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     rr.x = r.x();
     rr.y = r.y();
     rr.width = r.w();
@@ -83,7 +86,8 @@ void WEXPORT WWindow::drawRect( const WRect &r, WPaintAttr attr ) {
 
     gui_rect    rr;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     rr.x = r.x();
     rr.y = r.y();
     rr.width = r.w();
@@ -100,7 +104,8 @@ void WEXPORT WWindow::drawLine( const WPoint &start, const WPoint &end,
     gui_point   p;
     gui_point   q;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     p.x = start.x();
     p.y = start.y();
     q.x = end.x();
@@ -117,7 +122,8 @@ void WEXPORT WWindow::drawLine( const WPoint &start, const WPoint &end,
     gui_point   p;
     gui_point   q;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     p.x = start.x();
     p.y = start.y();
     q.x = end.x();
@@ -145,7 +151,8 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str, size_t len, Co
 
     gui_coord   pos;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     pos.x = p.x();
     pos.y = p.y();
     GUIDrawTextPosRGB( handle(), (char *)str, len, &pos, fg, bg );
@@ -164,7 +171,8 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str, size_t len, WP
 
     gui_coord   pos;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     pos.x = p.x();
     pos.y = p.y();
     GUIDrawTextPos( handle(), (char *)str, len, &pos, attr );
@@ -181,7 +189,8 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str, WPaintAttr att
 void WEXPORT WWindow::drawText( int row, int indent, const char *str, size_t len, Color fg, Color bg ) {
 /******************************************************************************************************/
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     GUIDrawTextRGB( handle(), (char *)str, len, row, indent, fg, bg );
 }
 
@@ -197,7 +206,8 @@ void WEXPORT WWindow::drawText( int row, int indent, const char *str, size_t len
                                 WPaintAttr attr ) {
 /*************************************************/
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     GUIDrawText( handle(), (char *)str, len, row, indent, attr );
 }
 
@@ -243,7 +253,8 @@ void WEXPORT WWindow::drawTextExtent( int row, int offset,
                                       Color fg, Color bg, int extent ) {
 /**********************************************************************/
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     GUIDrawTextExtentRGB( handle(), (char *)str, len, row, offset,
                           fg, bg, extent );
 }
@@ -264,7 +275,8 @@ void WEXPORT WWindow::drawTextExtent( const WPoint &p,
 
     gui_coord   pos;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     pos.x = p.x();
     pos.y = p.y();
     GUIDrawTextExtentPosRGB( handle(), (char *)str, len, &pos, fg, bg, extent );
@@ -285,7 +297,8 @@ void WEXPORT WWindow::drawTextExtent( int row, int offset,
                                       WPaintAttr attr, int extent ) {
 /*******************************************************************/
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     GUIDrawTextExtent( handle(), (char *)str, len, row, offset, attr, extent );
 }
 
@@ -305,7 +318,8 @@ void WEXPORT WWindow::drawTextExtent( const WPoint &p,
 
     gui_coord   pos;
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     pos.x = p.x();
     pos.y = p.y();
     GUIDrawTextExtentPos( handle(), (char *)str, len, &pos, attr, extent );
@@ -383,7 +397,8 @@ void WEXPORT WWindow::getPaintRect( WRect &r ) {
 void WEXPORT WWindow::drawHotSpot( int hot_spot, int row, int offset ) {
 /**********************************************************************/
 
-    if( !isPainting() ) return;
+    if( !isPainting() )
+        return;
     GUIDrawHotSpot( handle(), hot_spot, row, offset, GUI_BACKGROUND );
 }
 
