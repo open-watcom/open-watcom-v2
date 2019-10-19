@@ -183,7 +183,6 @@ void InitGlobalVars( void )
     B_Bool                  = 0;
 
     OptSize                 = 0;        /* 100 => make pgm small as possible */
-    MsgFlags                = NULL;     /* Bit mask of disabled messages */
     MacSegList              = NULL;     /* pointer to list of macro segments */
     LoopDepth               = 0;        /* current nesting of loop constructs */
     HeadLibs                = NULL;     /* list of library search records */

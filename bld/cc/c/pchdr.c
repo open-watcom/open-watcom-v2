@@ -45,7 +45,7 @@ extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (('H'<<24)|('C'<<16)|('P'<<8)|'W')     /* 'WPCH' */
-#define PCH_VERSION     0x0126
+#define PCH_VERSION     0x0127
 #if defined(_M_I86)
 #define PCH_VERSION_HOST ( ( 1L << 16 ) | PCH_VERSION )
 #elif defined(_M_IX86)
@@ -142,7 +142,7 @@ typedef struct pheader {
     unsigned        symbol_count;
     unsigned        specialsyms_count;
     unsigned        cwd_len;        // length of current working directory
-    unsigned        msgflags_len;   // length of MsgFlags array
+    unsigned        msglevel_len;   // length of msg_level array
     unsigned        cpp_ignore_env;
     unsigned        ignore_default_dirs;
 } pheader;
@@ -307,7 +307,7 @@ static void OutPutHeader( void )
     pch.symbol_count      = SymGetNumSyms();
     pch.specialsyms_count = SymGetNumSpecialSyms();
     pch.cwd_len           = PH_cwd_len;
-    pch.msgflags_len      = MESSAGE_COUNT;
+    pch.msglevel_len      = sizeof( msg_level );
     pch.cpp_ignore_env    = CompFlags.cpp_ignore_env;
     pch.ignore_default_dirs = CompFlags.ignore_default_dirs;
 
@@ -408,15 +408,13 @@ static void OutPutAliases( void )
     }
 }
 
-static void OutPutMsgFlags( void )
+static void OutPutMsgLevels( void )
 {
     bool        rc;
 
-    if( MsgFlags != NULL ) {
-        rc = PCHWrite( MsgFlags, ( MESSAGE_COUNT + 7 ) / 8 );
-        if( rc ) {
-            longjmp( PH_jmpbuf, rc );
-        }
+    rc = PCHWrite( msg_level, sizeof( msg_level ) );
+    if( rc ) {
+        longjmp( PH_jmpbuf, rc );
     }
 }
 
@@ -965,7 +963,7 @@ static void OutPutEverything( void )
 #endif
     OutPutSymHashTable();
     OutPutSymbols();
-    OutPutMsgFlags();
+    OutPutMsgLevels();
     OutPutMacros();
 }
 
@@ -1629,16 +1627,10 @@ static char *FixupPragmaInfo( char *p, unsigned pragma_count, unsigned entry_cou
 }
 #endif
 
-static char *FixupMsgFlags( char *p, unsigned len )
+static char *FixupMsgLevels( char *p, unsigned len )
 {
-    if( len != 0 ) {
-        if( MsgFlags != NULL ) {
-            CMemFree( MsgFlags );
-        }
-        MsgFlags = (unsigned char *)p;
-        len = ( len + 7 ) / 8;
-        p += PCHAlign( len );
-    }
+    memcpy( msg_level, p, len );
+    p += PCHAlign( len );
     return( p );
 }
 
@@ -1666,7 +1658,7 @@ static bool ValidHeader( pheader *pch )
       && (pch->size_of_int == TARGET_INT)
       && (pch->specialsyms_count == SymGetNumSpecialSyms())
       && (pch->pack_amount == PackAmount)
-      && (pch->msgflags_len == MESSAGE_COUNT) ) {
+      && (pch->msglevel_len == sizeof( msg_level )) ) {
         return( true );
     }
     return( false );                // indicate unusable pre-compiled header
@@ -1695,7 +1687,7 @@ static int FixupDataStructures( char *p, pheader *pch )
 #endif
     p = FixupSymHashTable( p, pch->symhash_count );
     p = FixupSymbols( p, pch->symbol_count );
-    p = FixupMsgFlags( p, pch->msgflags_len );
+    p = FixupMsgLevels( p, pch->msglevel_len );
 
     PCH_MaxSymHandle = pch->symbol_count;
     SetNextSymHandle( pch->symbol_count - 1 );

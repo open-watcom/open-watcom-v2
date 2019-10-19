@@ -74,3 +74,11 @@ typedef enum msg_type {
         MSGTYPES_DEFS
     #undef MSGTYPES_DEF
 } msg_type;
+
+typedef struct msg_info {
+    unsigned    type        : 4;
+    unsigned    level       : 4;
+    unsigned    enabled     : 1;
+} msg_info;
+
+extern msg_info     msg_level[MESSAGE_COUNT];

@@ -900,26 +900,143 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
+static bool warnLevelValidate( int *level )
+/*****************************************/
+/* VALIDATE WARNING LEVEL, returns true ==> good level */
+{
+    bool ok;
+
+    ok = true;
+    if( *level < WLEVEL_MIN ) {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        *level = WLEVEL_MIN;
+        ok = false;
+    } else if( *level > WLEVEL_MAX ) {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        *level = WLEVEL_MAX;
+        ok = false;
+    }
+    return( ok );
+}
+
+static void change_msg_level( int level, int msg_index )
+/******************************************************/
+{
+    msg_level[msg_index].level = level;
+    if( level < WLEVEL_MAX ) {
+        if( !msg_level[msg_index].enabled ) {
+            /* enable message */
+            msg_level[msg_index].enabled = true;
+        }
+    } else {
+        if( msg_level[msg_index].enabled ) {
+            /* disable message */
+            msg_level[msg_index].enabled = false;
+        }
+    }
+}
+
+static void warnChangeLevel( int level, msg_codes msgnum )
+/********************************************************/
+/* CHANGE WARNING LEVEL FOR A MESSAGE */
+{
+    int msg_index;
+
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        change_msg_level( level, msg_index );
+        break;
+    }
+}
+
+static void warnChangeLevels( int level )
+/***************************************/
+/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
+{
+    int     msg_index;          // - index for number
+
+    if( warnLevelValidate( &level ) ) {
+        for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
+            switch( msg_level[msg_index].type ) {
+            case MSG_TYPE_WARNING :
+            case MSG_TYPE_ANSI :
+            case MSG_TYPE_ANSIWARN :
+                change_msg_level( level, msg_index );
+                break;
+            }
+        }
+    }
+}
+
 void EnableDisableMessage( int level, msg_codes msgnum )
 /******************************************************/
 {
-    unsigned char       mask;
     int                 msg_index;
-    int                 index;
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index >= 0 ) {
-        if( MsgFlags == NULL ) {
-            MsgFlags = CMemAlloc( ( MESSAGE_COUNT + 7 ) / 8 );
-        }
-        mask = 1 << ( msg_index & 7 );
-        index = msg_index >> 3;
-        if( level == WLEVEL_DISABLE ) {
-            MsgFlags[index] |= mask;
+        msg_level[msg_index].enabled = ( level != WLEVEL_DISABLE );
+    }
+}
+
+/*
+ * forms: #pragma warning # level   (change message # to have level "level)
+ *      : #pragma warning * level   (change all messages to have level "level)
+ *
+ *   "level" must be digit (0-5)
+ *   "level==0" implies warning will be treated as an error
+ */
+static bool pragWarning( void )
+/*****************************/
+/* PROCESS #PRAGMA WARNING */
+{
+    unsigned msgnum;            // - message number
+    int level;                  // - new level
+    bool change_all;            // - true ==> change all levels
+    bool ignore;
+
+    ignore = false;
+    PPCTL_ENABLE_MACROS();
+    NextToken();
+    if( CurToken == T_TIMES ) {
+        msgnum = 0;
+        change_all = true;
+    } else if( CurToken == T_CONSTANT ) {
+        msgnum = Constant;
+        change_all = false;
+    } else {
+        // ignore; MS or other vendor's #pragma
+        ignore = true;
+    }
+    if( !ignore ) {
+        NextToken();
+        if( CurToken == T_CONSTANT ) {
+            level = Constant;
+            NextToken();
+            if( change_all ) {
+                warnChangeLevels( level );
+            } else {
+                warnChangeLevel( level, msgnum );
+            }
         } else {
-            MsgFlags[index] &= ~mask;
+            CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+            NextToken();
         }
     }
+    PPCTL_DISABLE_MACROS();
+    return( ignore );
 }
 
 /* forms:
@@ -1503,6 +1620,12 @@ void CPragma( void )
             pragCodeSeg();
         } else if( pragmaNameRecog( "data_seg" ) ) {
             pragDataSeg();
+        } else if( pragmaNameRecog( "warning" ) ) {
+            if( pragWarning() ) {
+                /* ignore #pragma warning */
+                /* skip rest of line */
+                check_end = false;
+            }
         } else if( pragmaNameRecog( "disable_message" ) ) {
             pragEnableDisableMessage( WLEVEL_DISABLE );
         } else if( pragmaNameRecog( "enable_message" ) ) {

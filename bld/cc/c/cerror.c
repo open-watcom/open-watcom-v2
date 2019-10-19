@@ -65,19 +65,18 @@ typedef struct ErrPostList
     } u;
 } ErrPostList;
 
+msg_info            msg_level[MESSAGE_COUNT] = {
+    #define MSG_DEF( name, group, kind, level, group_index ) { MSG_TYPE_##kind, level, true },
+        MSG_DEFS
+    #undef MSG_DEF
+};
+
 static ErrPostList  *PostList;
 static unsigned     error_line = 0;
 static char         *error_fname = NULL;
 
-#if 0
-static char const WngLvls[] = {
-#define warn(code,level) level,
-#include "cwngs.h"
-#undef warn
-};
-#endif
-
 void OpenErrFile( void )
+/**********************/
 {
     char        *name;
 
@@ -92,17 +91,38 @@ void OpenErrFile( void )
     }
 }
 
-static bool MsgDisabled( msg_codes msgnum )
+static bool okToPrintMsg( msg_codes msgnum, int *plevel )
+/*******************************************************/
+/* See if OK to print message */
 {
+    bool    ok;
+    int     level;
     int     msg_index;
 
-    if( MsgFlags != NULL ) {
-        msg_index = GetMsgIndex( msgnum );
-        if( MsgFlags[msg_index >> 3]  &  (1 << (msg_index & 7)) ) {
-            return( true );
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 )
+        return( false );
+    ok = msg_level[msg_index].enabled;
+    level = msg_level[msg_index].level;
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_INFO :
+        level = WLEVEL_NOTE;
+        break;
+    case MSG_TYPE_ANSIERR :
+    case MSG_TYPE_ANSIWARN :
+        ok = !CompFlags.extensions_enabled;
+        break;
+    case MSG_TYPE_ANSI :
+        if( !CompFlags.extensions_enabled ) {
+            level = WLEVEL_ERROR;
         }
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ERROR :
+        break;
     }
-    return( false );
+    *plevel = level;
+    return( ok );
 }
 
 // fill cmsg_info struct
@@ -291,12 +311,15 @@ void CErrP1( int parmno, msg_codes msgnum )
 
 
 // Out warning message
-static void CWarn( int parmno, int level, msg_codes msgnum, ... )
+static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
+    int         level;
 
-    if( ! MsgDisabled( msgnum ) ) {
+    /* unused parameters */ (void)levelx;
+
+    if( okToPrintMsg( msgnum, &level ) ) {
         if( level <= WngLevel ) {
             info.class = CMSG_WARN;
             va_start( args1, msgnum );
@@ -334,14 +357,17 @@ void CInfoMsg( msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
+    int         level;
 
-    if( MsgDisabled( msgnum ) )
-        return;
-    info.class = CMSG_INFO;
-    va_start( args1, msgnum );
-    CMsgInfo( &info, 0, msgnum, args1 );
-    OutMsg( &info );
-    va_end( args1 );
+    if( okToPrintMsg( msgnum, &level ) ) {
+        if( level <= WngLevel ) {
+            info.class = CMSG_INFO;
+            va_start( args1, msgnum );
+            CMsgInfo( &info, 0, msgnum, args1 );
+            OutMsg( &info );
+            va_end( args1 );
+        }
+    }
 }
 
 

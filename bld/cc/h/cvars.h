@@ -254,8 +254,6 @@ global int          OptSize;            /* 100 => make pgm small as possible */
 global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
 
-global unsigned char *MsgFlags;         /* Bit mask of disabled messages */
-
 global struct macro_seg_list {
     struct macro_seg_list *next;
     MACADDR_T             macro_seg;
