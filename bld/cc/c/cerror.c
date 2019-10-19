@@ -45,8 +45,7 @@ typedef enum {
     POSTLIST_TWOTYPES_2  /* type mismatch between two types ( first/second ) - print them */
 } postlist_type;
 
-typedef struct ErrPostList
-{
+typedef struct ErrPostList {
     struct ErrPostList  *next;
     postlist_type       type;
 

@@ -32,7 +32,7 @@
 
 
 #include "msgattr.gh"
-#include  "msgdefs.gh"
+#include "msgdefs.gh"
 
 
 #define WLEVEL_MIN      0
