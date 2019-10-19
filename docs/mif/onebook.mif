@@ -58,7 +58,7 @@ wine_hc_batch=winehc.bat
 hc_nt = $(%OWWIN95HC:$(to_os_path))
 hc_hh = $(%OWHHC:$(to_os_path))
 hc_chmcmd = $(%OWCHMCMD)
-hc_pdf = ps2pdf12 
+hc_pdf = ps2pdf12
 
 hcdos   = hcdos
 whc     = bwhc
@@ -292,7 +292,7 @@ $(hbook).chm : $(hbook).htm $(hbook).h
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-    $(hc_pdf) -r600 $[@ $(hbook).pdf
+    !$(hc_pdf) -r600 $[@ $(hbook).pdf
 
 ####################################################
 #
