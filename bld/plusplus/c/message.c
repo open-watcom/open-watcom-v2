@@ -69,12 +69,12 @@ static unsigned reserveDepth;
 static unsigned internalErrCount;
 static unsigned suppressCount;
 
-static FILE *err_file;              // ERROR FILE
-static TOKEN_LOCN err_locn;         // error location
-static TOKEN_LOCN notes_locn;       // notes location
-static unsigned char* orig_err_levs;// original error levels
-static bool errLimitExceeded;       // have exceeded error limit
-static IntlData *internationalData; // translated messages
+static FILE *err_file;                  // ERROR FILE
+static TOKEN_LOCN err_locn;             // error location
+static TOKEN_LOCN notes_locn;           // notes location
+static unsigned char* orig_msg_level;   // original message levels
+static bool errLimitExceeded;           // have exceeded error limit
+static IntlData *internationalData;     // translated messages
 
 static SUICIDE_CALLBACK *suicideCallbacks;
 
@@ -834,9 +834,9 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
     MSG_NUM msgnum )            // - message number
 {
     DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
-    if( NULL == orig_err_levs ) {
-        orig_err_levs = CMemAlloc( sizeof( msg_level ) );
-        memcpy( orig_err_levs, msg_level, sizeof( msg_level ) );
+    if( NULL == orig_msg_level ) {
+        orig_msg_level = CMemAlloc( sizeof( msg_level ) );
+        memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
     }
     msg_level[msgnum] = ( msg_level[msgnum] & 0xF0 ) + level;
 }
@@ -997,7 +997,7 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
     err_file = NULL;
     err_locn.src_file = NULL;
     suicideCallbacks = NULL;
-    orig_err_levs = NULL;
+    orig_msg_level = NULL;
     reserveSize = RESERVE_MAX;
     reserveMem = CMemAlloc( reserveSize );
     CMemRegisterCleanup( reserveRelease );
@@ -1017,9 +1017,9 @@ static void errFileFini(        // CLOSE ERROR FILE
     }
     CMemFree( ErrorFileName );
     CMemFreePtr( &reserveMem );
-    if( NULL != orig_err_levs ) {
-        memcpy( msg_level, orig_err_levs, sizeof( msg_level ) );
-        CMemFreePtr( &orig_err_levs );
+    if( NULL != orig_msg_level ) {
+        memcpy( msg_level, orig_msg_level, sizeof( msg_level ) );
+        CMemFreePtr( &orig_msg_level );
     }
     FreeInternationalData( internationalData );
 }
@@ -1036,8 +1036,8 @@ pch_status PCHReadErrWarnData( void )
     unsigned char   *stop;
 
     PCHReadVar( tmp_buff );
-    if( NULL != orig_err_levs ) {
-        orig_levels = orig_err_levs;
+    if( NULL != orig_msg_level ) {
+        orig_levels = orig_msg_level;
     } else {
         orig_levels = msg_level;
     }
