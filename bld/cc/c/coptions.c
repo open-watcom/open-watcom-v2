@@ -195,7 +195,7 @@ static void SetTargName( const char *name, size_t len )
     SwData.sys_name = CMemAlloc( len + 1 ); /* for NULLCHAR */
     p = SwData.sys_name;
     while( len != 0 ) {
-        *p++ = toupper( *(unsigned char *)name++ );
+        *p++ = (char)toupper( *(unsigned char *)name++ );
         --len;
     }
     *p++ = '\0';
@@ -1271,10 +1271,10 @@ static void Set_V( void )           { CompFlags.generate_prototypes = true; }
 static void Set_WE( void )          { CompFlags.warnings_cause_bad_exit = true; }
 static void Set_WO( void )          { CompFlags.using_overlays = true; }
 static void Set_WPX( void )         { Check_global_prototype = true; }
-static void Set_WX( void )          { WngLevel = 4; }
-static void SetWarningLevel( void ) { WngLevel = OptValue; }
-static void Set_WCD( void )         { EnableDisableMessage( 0, OptValue ); }
-static void Set_WCE( void )         { EnableDisableMessage( 1, OptValue ); }
+static void Set_WX( void )          { WngLevel = WLEVEL_WX; }
+static void SetWarningLevel( void ) { WngLevel = OptValue; if( WngLevel > WLEVEL_MAX ) WngLevel = WLEVEL_MAX; }
+static void Set_WCD( void )         { EnableDisableMessage( WLEVEL_DISABLE, OptValue ); }
+static void Set_WCE( void )         { EnableDisableMessage( WLEVEL_ENABLE, OptValue ); }
 
 #if _CPU == 386
 static void Set_XGV( void )         { TargetSwitches |= INDEXED_GLOBALS; }
@@ -1843,7 +1843,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
     char        c;
 
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
-        c = tolower( *(unsigned char *)p );
+        c = (char)tolower( *(unsigned char *)p );
         if( c == *opt ) {
             OptValue = op_table[i].value;
             j = 1;
@@ -1915,7 +1915,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                         ++j;
                     }
                 } else {
-                    c = tolower( (unsigned char)p[j] );
+                    c = (char)tolower( (unsigned char)p[j] );
                     if( *opt != c ) {
                         if( *opt < 'A' || *opt > 'Z' )
                             break;
@@ -2270,16 +2270,16 @@ void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
     /* Add precision warning but disabled by default */
-    EnableDisableMessage( 0, ERR_LOSE_PRECISION );
+    EnableDisableMessage( WLEVEL_DISABLE, ERR_LOSE_PRECISION );
     /* Warning about non-prototype declarations is disabled by default
      * because Windows and OS/2 API headers use it
      */
-    EnableDisableMessage( 0, ERR_OBSOLETE_FUNC_DECL );
+    EnableDisableMessage( WLEVEL_DISABLE, ERR_OBSOLETE_FUNC_DECL );
     /* Warning about pointer truncation during cast is disabled by
      * default because it would cause too many build breaks right now
      * by correctly diagnosing broken code.
      */
-    EnableDisableMessage( 0, ERR_CAST_POINTER_TRUNCATION );
+    EnableDisableMessage( WLEVEL_DISABLE, ERR_CAST_POINTER_TRUNCATION );
     InitModInfo();
     InitCPUModInfo();
 #if _CPU == 386

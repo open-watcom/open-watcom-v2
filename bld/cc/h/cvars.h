@@ -729,7 +729,7 @@ extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
 extern void         SetCurrInfo(const char *);
 extern void         XferPragInfo(const char*,const char*);
-extern void         EnableDisableMessage(bool enable,msg_codes msgnum);
+extern void         EnableDisableMessage(int level,msg_codes msgnum);
 extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );

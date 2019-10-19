@@ -301,7 +301,7 @@ void InitModInfo( void )
     DependForceSlash = 0;
     ModuleName = NULL;
     ErrLimit = 20;
-    WngLevel = 1;
+    WngLevel = WLEVEL_DEFAULT;
 #if _CPU == 8086
     PackAmount = TARGET_INT;     /* pack structs on word boundaries */
 #elif _CPU == 386

@@ -900,8 +900,8 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-void EnableDisableMessage( bool enable, msg_codes msgnum )
-/********************************************************/
+void EnableDisableMessage( int level, msg_codes msgnum )
+/******************************************************/
 {
     unsigned char       mask;
     int                 msg_index;
@@ -914,10 +914,10 @@ void EnableDisableMessage( bool enable, msg_codes msgnum )
         }
         mask = 1 << ( msg_index & 7 );
         index = msg_index >> 3;
-        if( enable ) {
-            MsgFlags[index] &= ~mask;
-        } else {
+        if( level == WLEVEL_DISABLE ) {
             MsgFlags[index] |= mask;
+        } else {
+            MsgFlags[index] &= ~mask;
         }
     }
 }
@@ -929,15 +929,15 @@ void EnableDisableMessage( bool enable, msg_codes msgnum )
  *
  * disable/enable display of selected message number
  */
-static void pragEnableDisableMessage( int enable )
-/************************************************/
+static void pragEnableDisableMessage( int level )
+/***********************************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         while( CurToken == T_CONSTANT ) {
-            EnableDisableMessage( enable, Constant );
+            EnableDisableMessage( level, Constant );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1504,9 +1504,9 @@ void CPragma( void )
         } else if( pragmaNameRecog( "data_seg" ) ) {
             pragDataSeg();
         } else if( pragmaNameRecog( "disable_message" ) ) {
-            pragEnableDisableMessage( 0 );
+            pragEnableDisableMessage( WLEVEL_DISABLE );
         } else if( pragmaNameRecog( "enable_message" ) ) {
-            pragEnableDisableMessage( 1 );
+            pragEnableDisableMessage( WLEVEL_ENABLE );
         } else if( pragmaNameRecog( "message" ) ) {
             pragMessage();
         } else if( pragmaNameRecog( "intrinsic" ) ) {
