@@ -34,7 +34,7 @@
 #ifdef _EXENOV_H
 // this is the portion of the nlm_header which is of a fixed size.
 typedef struct {
-    char            signature[ sizeof( NLM_SIGNATURE ) - 1 ];
+    char            signature[ NLM_SIGNATURE_LENGTH ];
     unsigned_32     version;
     char            moduleName[14];     // 1st character is a length byte.
     unsigned_32     codeImageOffset;

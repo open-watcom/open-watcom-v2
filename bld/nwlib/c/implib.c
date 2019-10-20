@@ -308,7 +308,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
 
     LibSeek( io, 0x00, SEEK_SET );
     LibRead( io, &nlm, sizeof( nlm ) );
-    if( memcmp( nlm.signature, NLM_SIGNATURE, sizeof( nlm.signature ) ) != 0 ) {
+    if( memcmp( nlm.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) != 0 ) {
         return( false );
     }
     LibSeek( io, offsetof( nlm_header, moduleName ) , SEEK_SET );
