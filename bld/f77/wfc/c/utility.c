@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +104,7 @@ char    *MkNodeStr( itnode *itptr ) {
 
 // Put a NULLCHAR at the end of the "opnd" string of an itnode.
 
-    int         opnd_size;
+    uint        opnd_size;
     char        *str;
 
     opnd_size = itptr->opnd_size;
@@ -128,7 +129,7 @@ bool    CmpNode2Str( itnode *itptr, char *str ) {
 
 // Compare the "opnd" field of an itnode to a string.
 
-    int         str_len;
+    uint        str_len;
 
     str_len = strlen( str );
     if( itptr->opnd_size != str_len )

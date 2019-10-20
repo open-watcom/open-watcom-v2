@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ static bool             Errfile_Written = false;
 static FILE             *ErrFile = NULL;
 
 static void             AsmSuicide( void );
-static void             PutMsg( FILE *fp, char *prefix, int msgnum, va_list args );
-static void             PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 );
+static void             PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args );
+static void             PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2 );
 
-void AsmError( int msgnum )
-/*************************/
+void AsmError( unsigned msgnum )
+/******************************/
 {
     AsmErr( msgnum );
 }
@@ -67,7 +68,8 @@ void DoDebugMsg( const char *format, ... )
 /****************************************/
 {
     va_list args;
-    if( !Options.int_debug ) return;
+    if( !Options.int_debug )
+        return;
 
     va_start( args, format );
     vprintf( format, args );
@@ -75,8 +77,8 @@ void DoDebugMsg( const char *format, ... )
 }
 #endif
 
-void _AsmNote( int level, int msgnum, ... )
-/*****************************************/
+void _AsmNote( int level, unsigned msgnum, ... )
+/**********************************************/
 {
     va_list args1, args2;
 
@@ -90,8 +92,8 @@ void _AsmNote( int level, int msgnum, ... )
     }
 }
 
-void AsmNote( int level, int msgnum, ... )
-/****************************************/
+void AsmNote( int level, unsigned msgnum, ... )
+/*********************************************/
 {
     va_list args1, args2;
 
@@ -106,8 +108,8 @@ void AsmNote( int level, int msgnum, ... )
     }
 }
 
-void AsmErr( int msgnum, ... )
-/****************************/
+void AsmErr( unsigned msgnum, ... )
+/*********************************/
 {
     va_list args1, args2;
 
@@ -130,8 +132,8 @@ void AsmErr( int msgnum, ... )
     }
 }
 
-void AsmWarn( int level, int msgnum, ... )
-/****************************************/
+void AsmWarn( int level, unsigned msgnum, ... )
+/*********************************************/
 {
     va_list args1, args2;
 
@@ -154,8 +156,8 @@ void AsmWarn( int level, int msgnum, ... )
     }
 }
 
-static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
-/***************************************************************************/
+static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2 )
+/**********************************************p*********************************/
 // print standard WASM messages, no WOMP
 {
     PrintBanner();
@@ -169,8 +171,8 @@ static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
     }
 }
 
-void PrtMsg( int msgnum, ... )
-/****************************/
+void PrtMsg( unsigned msgnum, ... )
+/*********************************/
 // print messages from WOMP !!!
 {
     va_list args1;
@@ -220,8 +222,8 @@ void OpenLstFile( void )
     }
 }
 
-static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
-/********************************************************************/
+static void PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args )
+/*************************************************************************/
 {
     const FNAME     *fname;
     char            msgbuf[MAX_MESSAGE_SIZE];
@@ -233,7 +235,7 @@ static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
                 fprintf( fp, "%s(%lu): ", fname->name, LineNumber );
             }
         }
-        fprintf( fp, "%s %c%03d: ", prefix, *prefix, msgnum );
+        fprintf( fp, "%s %c%03u: ", prefix, *prefix, msgnum );
         // CGetMsg( msgbuf, msgnum );
         MsgGet( msgnum, msgbuf );
         vfprintf( fp, msgbuf, args );

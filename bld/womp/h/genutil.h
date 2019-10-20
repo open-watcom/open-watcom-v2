@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,13 @@
 
 
 #ifndef GENUTIL_H
+#define GENUTIL_H
+
 #include <stddef.h>
 
 #include "wpmsg.h"
 
-#define GENUTIL_H   1
-#define WRN         0x8000
+#define WRN     0x8000
 
 extern void Fatal( unsigned msg, ... );
 #if defined( __WATCOMC__ ) && !defined( __AXP__ )
