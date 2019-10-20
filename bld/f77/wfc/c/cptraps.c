@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include <signal.h>
 #include <float.h>
-//#include "xfflags.h"
 #include "errcod.h"
 #include "ferror.h"
 #if defined( __OSI__ )
