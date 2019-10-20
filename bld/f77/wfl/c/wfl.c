@@ -164,14 +164,14 @@ static  char    *Word;                  // one parameter
 static  char    *CmpOpts[MAX_CMD];      // list of compiler options from Cmd
 static  char    PathBuffer[_MAX_PATH];  // path for compiler or linker executable file
 static  FILE    *Fp;                    // file pointer for TempFile
-static  char    *LinkName;              // name for TempFile if /fd specified
+static  char    *LinkName = NULL;       // name for TempFile if /fd specified
 static  list    *ObjList;               // linked list of object filenames
 static  list    *FileList;              // list of filenames from Cmd
 static  list    *LibList;               // list of libraries from Cmd
 static  char    SwitchChars[3];         // valid switch characters
 static  char    ExeName[_MAX_PATH];     // name of executable
-static  char    *ObjName;               // object file name pattern
-static  char    *SystemName;            // system name
+static  char    *ObjName = NULL;        // object file name pattern
+static  char    *SystemName = NULL;     // system name
 static  int     DebugFlag;              // debugging flag
 
 /* forward declarations */
@@ -320,7 +320,9 @@ int     main( int argc, char *argv[] ) {
                 if( stricmp( LinkName, TEMPFILE ) != 0 ) {
                     remove( LinkName );
                     rename( TEMPFILE, LinkName );
+                    free( LinkName );
                 }
+                LinkName = NULL;
             } else {
                 remove( TEMPFILE );
             }
@@ -742,6 +744,8 @@ static  int     CompLink( void ) {
     if( Flags.link_for_sys ) {
         fputs( "system ", Fp );
         Fputnl( SystemName, Fp );
+        free( SystemName );
+        SystemName = NULL;
     } else {
 #if defined( __QNX__ )
         Fputnl( "system qnx", Fp );
@@ -913,6 +917,8 @@ static  void    AddName( char *name, FILE *link_fp ) {
         }
         _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
+        free( ObjName );
+        ObjName = NULL;
     }
     fputs( name, link_fp );
     Fputnl( "'", link_fp );
