@@ -322,7 +322,7 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header *header, unsigned_32 file
     if( FmtData.u.nov.sharednlm != NULL ) {
         handle = QOpenR( FmtData.u.nov.sharednlm );
         QRead( handle, TokBuff, sizeof( fixed_header ), FmtData.u.nov.sharednlm );
-        if( memcmp( TokBuff, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) != 0 ) {
+        if( memcmp( TokBuff, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) != 0 ) {
             LnkMsg( WRN+MSG_INV_SHARED_NLM_FILE, "s", FmtData.u.nov.sharednlm );
         } else {
             sharehdr = (fixed_header *)TokBuff;
@@ -595,7 +595,7 @@ void FiniNovellLoadFile( void )
     nov_header.debugInfoOffset = file_size;
     file_size += WriteNovDBI( &nov_header );
     DBIWrite();
-    memcpy( nov_header.signature, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) );
+    memcpy( nov_header.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH );
     nov_header.version = NLM_VERSION;
     nov_header.moduleName[0] = (char)len;
     memcpy( nov_header.moduleName + 1, module_name, len );
