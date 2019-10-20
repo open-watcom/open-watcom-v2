@@ -79,17 +79,19 @@ typedef void            (*fsig_func)( intstar4 );
 #if defined( __WINDOWS_386__ )
 
 #elif defined( __OS2_286__ ) || defined( __DOS__ ) || defined( __WINDOWS__ )
-  extern byte           IntOverFlow;
          void           (* __UserIOvFlHandler)(intstar4) = { (fsig_func)SIG_DFL };
-  extern byte           IntDivBy0;
          void           (* __UserIDivZHandler)(intstar4) = { (fsig_func)SIG_DFL };
+
+  static byte           IntOverFlow = { 0x04 };
+  static byte           IntDivBy0 = { 0x00 };
   static void           (_handler *ISave)(void);
   static void           (_handler *ZSave)(void);
 #endif
 
 #if defined( __DOS__ )
-  extern byte           BreakVector;
          void           (* __UserBreakHandler)(intstar4) = { (fsig_func)SIG_DFL };
+
+  static byte           BreakVector = { 0x1b };
   static void           (_handler *CBSave)(void);
  #if defined( __386__ )
   static unsigned long  CBRealSave;

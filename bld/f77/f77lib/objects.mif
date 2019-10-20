@@ -206,7 +206,6 @@ dep_rt += &
 #===============================================================================
 
 dep_both += &
-    btraps.obj &
     intarith.obj &
     posback.obj &
     poscc.obj &

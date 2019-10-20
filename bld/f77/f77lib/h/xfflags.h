@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,6 @@
 *
 ****************************************************************************/
 
-
-// NOTE: Be sure to keep this file up to date with "lg86\rt\asm\xfflags.inc".
-
-// The following are for the load'n go compiler.
-// Keep this list uptodate with the list in "lg86\rt\c\limiterr.c".
 
 #define XF_ERR_MASK             0x000f  // mask off the error type
 #define XF_GET_ERR( __xf )      ( (__xf) & XF_ERR_MASK )

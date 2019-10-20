@@ -268,7 +268,6 @@ comroot += &
     posseek.obj
 
 comovl1 += &
-    btraps.obj &
     intarith.obj &
     sdfile.obj
 
