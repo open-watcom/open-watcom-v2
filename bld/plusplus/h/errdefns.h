@@ -181,6 +181,10 @@ void RegisterSuicideCallback(   // REGISTER A FUNCTION TO BE CALLED BEFORE CSuic
 void SetErrLoc(                 // SET ERROR LOCATION
     TOKEN_LOCN *locn )          // - error location
 ;
+void WarnEnableDisable(         // ENABLE/DISABLE A MESSAGE
+    int level,                  // - disable/enable level
+    MSG_NUM msgnum )            // - message number
+;
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
     int level,                  // - new level
     MSG_NUM msgnum )            // - message number

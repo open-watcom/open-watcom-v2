@@ -446,14 +446,14 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     bool ignore;
 
     ignore = false;
+    change_all = false;
+    msgnum = 0;
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( CurToken == T_TIMES ) {
-        msgnum = 0;
         change_all = true;
     } else if( CurToken == T_CONSTANT ) {
         msgnum = U32Fetch( Constant64 );
-        change_all = false;
     } else {
         // ignore; MS or other vendor's #pragma
         ignore = true;
@@ -500,7 +500,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
 
         // Enable message by setting its level to the lowest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( WLEVEL_ENABLE, msgnum );
+            WarnEnableDisable( WLEVEL_ENABLE, msgnum );
         }
 
         if( CurToken != T_COMMA ) {
@@ -535,7 +535,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 
         // Disable message by setting its level to the highest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( WLEVEL_DISABLE, msgnum );
+            WarnEnableDisable( WLEVEL_DISABLE, msgnum );
         }
 
         if( CurToken != T_COMMA ) {

@@ -1149,6 +1149,12 @@ static void writeMsgH( void )
             outputNum( o_msgh, m->index );
             fputc( '\n', o_msgh );
         }
+        fputs(
+            "\ntypedef struct msg_level_info {\n"
+            "    unsigned    type : 4;\n"
+            "    unsigned    level : 4;\n"
+            "    unsigned    enabled : 1;\n"
+            "} msg_level_info;\n", o_msgh );
     } else {
         fputs( "#define MSG_DEFS \\\n", o_msgh );
         for( m = messageSyms; m != NULL; m = m->next ) {
@@ -1481,17 +1487,17 @@ static void writeLevH( void )
     ALL_MSG_TYPES
 #undef def_msg_type
     fprintf( o_levh, "} MSG_TYPE;\n" );
-    outputTableName( o_levh, "unsigned char MSG_CONST", "msg_level" );
+    outputTableName( o_levh, "msg_level_info MSG_CONST", "msg_level" );
     for( m = messageSyms; m != NULL; m = m->next ) {
-        fputc( '(', o_levh );
+        fputc( '{', o_levh );
         fputc( ' ', o_levh );
         fputs( msgTypeNames[m->mtype], o_levh );
         if( m->level == 0 ) {
-            fputs( " << 4 ), /* ", o_levh );
+            fputs( ", 0, true }, /* ", o_levh );
         } else {
-            fputs( " << 4 ) | ", o_levh );
+            fputs( ", ", o_levh );
             outputNum( o_levh, m->level );
-            fputs( ", /* ", o_levh );
+            fputs( ", true }, /* ", o_levh );
         }
         fputs( m->name, o_levh );
         fputs( " */\n", o_levh );
@@ -1530,7 +1536,7 @@ static void dumpInternational( void )
     FILE *fp;
     unsigned lang;
     unsigned len;
-    int dump_warning;
+    bool dump_warning;
     auto char err_fname[16];
     auto LocaleErrors errors_header;
 
@@ -1546,9 +1552,9 @@ static void dumpInternational( void )
         errors_header.number = messageCounter;
         fwrite( &errors_header, offsetof( LocaleErrors, data ), 1, fp );
         if( langTextCount[lang] > ( messageCounter / 2 ) ) {
-            dump_warning = 1;
+            dump_warning = true;
         } else {
-            dump_warning = 0;
+            dump_warning = false;
         }
         for( m = messageSyms; m != NULL; m = m->next ) {
             text = m->lang_txt[lang];

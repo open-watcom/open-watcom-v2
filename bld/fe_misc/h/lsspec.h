@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,7 @@ typedef struct _LocaleItem {
 // Errors
 typedef struct LocaleErrors {
     _LocaleItem header;
-    int_32      number;
+    uint_32     number;
     char        data[1];        // <byte-strlen> <text> ... <0>
 } LocaleErrors;
 

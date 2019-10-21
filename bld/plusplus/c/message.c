@@ -72,7 +72,7 @@ static unsigned suppressCount;
 static FILE *err_file;                  // ERROR FILE
 static TOKEN_LOCN err_locn;             // error location
 static TOKEN_LOCN notes_locn;           // notes location
-static unsigned char* orig_msg_level;   // original message levels
+static msg_level_info* orig_msg_level;  // original message levels
 static bool errLimitExceeded;           // have exceeded error limit
 static IntlData *internationalData;     // translated messages
 
@@ -594,18 +594,18 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     ( MSG_NUM msgnum            // - message number
     , int *plevel )             // - addr[ level ]
 {
-    bool print_err;
+    bool ok;
     int level;
 
-    print_err = true;
-    level = msg_level[msgnum] & 0x0F;
-    switch( msg_level[msgnum] >> 4 ) {
+    ok = msg_level[msgnum].enabled;
+    level = msg_level[msgnum].level;
+    switch( msg_level[msgnum].type ) {
     case MSG_TYPE_INFO :
         level = WLEVEL_NOTE;
         break;
     case MSG_TYPE_ANSIERR :
     case MSG_TYPE_ANSIWARN :
-        print_err = !CompFlags.extensions_enabled;
+        ok = !CompFlags.extensions_enabled;
         break;
     case MSG_TYPE_ANSI :
         if( !CompFlags.extensions_enabled ) {
@@ -617,7 +617,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
     }
     *plevel = level;
-    return( print_err );
+    return( ok );
 }
 
 bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
@@ -639,7 +639,7 @@ static msg_status_t doError(    // ISSUE ERROR
     msg_status_t retn;              // - message status
     int level;                      // - warning level of message
     struct {
-        unsigned print_err  : 1;    // - true ==> print the message
+        unsigned print_msg  : 1;    // - true ==> print the message
         unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
@@ -651,10 +651,10 @@ static msg_status_t doError(    // ISSUE ERROR
     retn = MS_NULL;
     if( ! errLimitExceeded ) {
         flag.too_many = true;
-        flag.print_err = okToPrintMsg( msgnum, &level );
+        flag.print_msg = okToPrintMsg( msgnum, &level );
         if( suppressCount > 0 ) {
             /* suppressed message */
-            if( flag.print_err && ( level == WLEVEL_ERROR ) ) {
+            if( flag.print_msg && ( level == WLEVEL_ERROR ) ) {
                 internalErrCount++;
             }
             return( MS_NULL );
@@ -669,13 +669,13 @@ static msg_status_t doError(    // ISSUE ERROR
             flag.too_many = false;
         } else if( ErrCount == ErrLimit ) {
             /* have hit the limit */
-            if( !flag.print_err || level != WLEVEL_ERROR ) {
+            if( !flag.print_msg || level != WLEVEL_ERROR ) {
                 /* this message isn't an error; it's a warning or info */
                 flag.too_many = false;
             }
         }
         if( ! flag.too_many ) {
-            if( flag.print_err && ( level <= WngLevel ) ) {
+            if( flag.print_msg && ( level <= WngLevel ) ) {
                 prtMsg( level, msgnum, args, warn_inc );
                 retn |= MS_PRINTED;
             }
@@ -838,7 +838,44 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
         orig_msg_level = CMemAlloc( sizeof( msg_level ) );
         memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
     }
-    msg_level[msgnum] = ( msg_level[msgnum] & 0xF0 ) + level;
+    msg_level[msgnum].level = level;
+    if( level < WLEVEL_MAX ) {
+        if( !msg_level[msgnum].enabled ) {
+            /* enable message */
+            msg_level[msgnum].enabled = true;
+        }
+    } else {
+        if( msg_level[msgnum].enabled ) {
+            /* disable message */
+            msg_level[msgnum].enabled = false;
+        }
+    }
+}
+
+void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
+    int level,              // - new level
+    MSG_NUM msgnum )        // - message number
+{
+    if( msgnum >= ARRAY_SIZE( msg_level ) ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msgnum].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        if( NULL == orig_msg_level ) {
+            orig_msg_level = CMemAlloc( sizeof( msg_level ) );
+            memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
+        }
+        msg_level[msgnum].enabled = ( level != WLEVEL_DISABLE );
+        break;
+    }
 }
 
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
@@ -849,7 +886,7 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
-    switch( msg_level[msgnum] >> 4 ) {
+    switch( msg_level[msgnum].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
@@ -866,17 +903,15 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
 void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
     int level )                 // - new level
 {
-    MSG_NUM index;              // - index for number
+    MSG_NUM msgnum;             // - index for number
 
     if( warnLevelValidate( level ) ) {
-        for( index = 0
-           ; index < ARRAY_SIZE( msg_level )
-           ; ++ index ) {
-            switch( msg_level[index] >> 4 ) {
+        for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
+            switch( msg_level[msgnum].type ) {
             case MSG_TYPE_WARNING :
             case MSG_TYPE_ANSI :
             case MSG_TYPE_ANSIWARN :
-                changeLevel( level, index );
+                changeLevel( level, msgnum );
                 break;
             }
         }
@@ -1029,11 +1064,9 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    unsigned char   tmp_buff[sizeof( msg_level )];
-    unsigned char   *orig_levels;
-    unsigned char   *p;
-    unsigned char   *o;
-    unsigned char   *stop;
+    msg_level_info  tmp_buff[ARRAY_SIZE( msg_level )];
+    msg_level_info  *orig_levels;
+    MSG_NUM         msgnum;
 
     PCHReadVar( tmp_buff );
     if( NULL != orig_msg_level ) {
@@ -1041,11 +1074,10 @@ pch_status PCHReadErrWarnData( void )
     } else {
         orig_levels = msg_level;
     }
-    stop = &tmp_buff[sizeof( msg_level )];
-    for( p = tmp_buff, o = orig_levels; p < stop; ++p, ++o ) {
-        if( *p != *o ) {
+    for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
+        if( memcmp( &tmp_buff[msgnum], &orig_levels[msgnum], sizeof( *orig_levels ) ) ) {
             // reflect a change from the header file into current levels
-            changeLevel( *p & 0x0f, p - tmp_buff );
+            changeLevel( tmp_buff[msgnum].level, msgnum );
         }
     }
     return( PCHCB_OK );

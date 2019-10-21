@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +70,7 @@ static int (*codeDispatch[])( IntlData *, _LocaleItem * ) = {
 static int doErrors( IntlData *data, _LocaleItem *item )
 {
     LocaleErrors *errors_item = (LocaleErrors*)item;
-    int count;
+    unsigned count;
     int skip;
     char *p;
     char **init;
