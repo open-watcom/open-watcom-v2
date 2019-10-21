@@ -64,7 +64,7 @@ typedef struct ErrPostList {
     } u;
 } ErrPostList;
 
-msg_info            msg_level[MESSAGE_COUNT] = {
+msg_level_info      msg_level[MESSAGE_COUNT] = {
     #define MSG_DEF( name, group, kind, level, group_index ) { MSG_TYPE_##kind, level, true },
         MSG_DEFS
     #undef MSG_DEF

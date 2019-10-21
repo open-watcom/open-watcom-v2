@@ -980,14 +980,27 @@ static void warnChangeLevels( int level )
     }
 }
 
-void EnableDisableMessage( int level, msg_codes msgnum )
-/******************************************************/
+void WarnEnableDisable( int level, msg_codes msgnum )
+/***************************************************/
 {
     int                 msg_index;
 
     msg_index = GetMsgIndex( msgnum );
-    if( msg_index >= 0 ) {
+    if( msg_index < 0 ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
         msg_level[msg_index].enabled = ( level != WLEVEL_DISABLE );
+        break;
     }
 }
 
@@ -1054,7 +1067,7 @@ static void pragEnableDisableMessage( int level )
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         while( CurToken == T_CONSTANT ) {
-            EnableDisableMessage( level, Constant );
+            WarnEnableDisable( level, Constant );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
