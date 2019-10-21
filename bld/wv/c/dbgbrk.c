@@ -1428,6 +1428,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
     image_name = NULL;
     mod_name = NULL;
     sym_name = NULL;
+    loc = NilAddr;
     while( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( PointNameTab );
