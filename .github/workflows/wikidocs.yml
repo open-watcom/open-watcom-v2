@@ -71,11 +71,12 @@ jobs:
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN=%OWROOT%\ci\ntx64
-          set OWDOSBOXPATH=%OWCIBIN%
-          set OWGHOSTSCRIPTPATH=%OWCIBIN%
-          set OWWIN95HC=%OWCIBIN%\hcrtf.exe
-          set OWHHC=%OWCIBIN%\hhc.exe
+          set OWCIBIN32=%OWROOT%\ci\nt386
+          set OWCIBIN64=%OWROOT%\ci\ntx64
+          set OWDOSBOXPATH=%OWCIBIN32%
+          set OWGHOSTSCRIPTPATH=%OWCIBIN64%
+          set OWWIN95HC=%OWCIBIN32%\hcrtf.exe
+          set OWHHC=%OWCIBIN32%\hhc.exe
           call %OWROOT%\cmnvars.bat
           REM Build Wiki Documentation
           cd %OWSRCDIR%
@@ -114,11 +115,12 @@ jobs:
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
-          set OWCIBIN=%OWROOT%\ci\ntx64
-          set OWDOSBOXPATH=%OWCIBIN%
-          set OWGHOSTSCRIPTPATH=%OWCIBIN%
-          set OWWIN95HC=%OWCIBIN%\hcrtf.exe
-          set OWHHC=%OWCIBIN%\hhc.exe
+          set OWCIBIN32=%OWROOT%\ci\nt386
+          set OWCIBIN64=%OWROOT%\ci\ntx64
+          set OWDOSBOXPATH=%OWCIBIN32%
+          set OWGHOSTSCRIPTPATH=%OWCIBIN64%
+          set OWWIN95HC=%OWCIBIN32%\hcrtf.exe
+          set OWHHC=%OWCIBIN32%\hhc.exe
           call %OWROOT%\cmnvars.bat
           REM Build Wiki Documentation
           cd %OWSRCDIR%
