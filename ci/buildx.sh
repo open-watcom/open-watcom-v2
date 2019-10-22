@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Script to build the Open Watcom tools on Travis
+# Script to build the Open Watcom tools on Azure Pipelines
 # using the host platform's native C/C++ compiler.
 #
 # Expects 

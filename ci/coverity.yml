@@ -72,7 +72,7 @@ jobs:
           --form email=malak.jiri@gmail.com
           --form file=@$(owcoverity.results.archive)
           --form version=$(owsha)
-          --form description="Open Watcom V2 Travis CI build"
+          --form description="Open Watcom V2 Azure Pipelines CI build"
           https://scan.coverity.com/builds)
         displayName: "Upload Coverity data"
       - task: PublishPipelineArtifact@1
