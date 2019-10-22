@@ -11,14 +11,14 @@ REM ...
 REM ...
 REM setup DOSBOX
 REM ...
-set OWDOSBOXPATH=%OWCIBIN%
+set OWDOSBOXPATH=%OWCIBIN32%
 set OWDOSBOX=dosbox.exe
 REM ...
 REM setup Help Compilers
 REM ...
-set OWGHOSTSCRIPTPATH=%OWCIBIN%
-set OWWIN95HC=%OWCIBIN%\hcrtf.exe
-set OWHHC=%OWCIBIN%\hhc.exe
+set OWGHOSTSCRIPTPATH=%OWCIBIN64%
+set OWWIN95HC=%OWCIBIN32%\hcrtf.exe
+set OWHHC=%OWCIBIN32%\hhc.exe
 REM ...
 call %OWROOT%\cmnvars.bat
 REM ...
@@ -61,7 +61,7 @@ REM    set RC=!ERRORLEVEL!
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
-    regsvr32 -s %OWCIBIN%\itcc.dll
+    regsvr32 -s %OWCIBIN32%\itcc.dll
     builder docs %OWDOCTARGET%
     set RC=!ERRORLEVEL!
 )
