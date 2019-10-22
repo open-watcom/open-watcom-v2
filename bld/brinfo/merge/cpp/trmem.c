@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,6 @@ struct _trmem_internal {
 #endif
 };
 
-//#pragma warning 579 9;  // shut up pointer truncated warning
 static void setSize( entry_ptr p, size_t size )
 {
     p->size = size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p;
@@ -151,7 +150,6 @@ static size_t getSize( entry_ptr p )
 {
     return( p->size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p );
 }
-//#pragma warning 579 4;  // reenable pointer truncated warning.
 
 static char *stpcpy( char *dest, const char *src )
 {
@@ -185,16 +183,13 @@ static char * formFarPtr( char *ptr, void far *data )
     ptr = formHex( ptr, FP_SEG(data), 2 );
     *ptr = ':';
     ptr++;
-//#pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
     return formHex( ptr, FP_OFF(data), sizeof( void near * ) );
-//#pragma warning 579 4;  // reenable pointer truncated warning
 }
 #endif
 
 static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 {
 #ifdef __WINDOWS__
-//#pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
     GLOBALENTRY     entry;
 
     if( hdl->use_code_seg_num ) {
@@ -206,7 +201,6 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
             }
         }
     }
-//#pragma warning 579 4;  // reenable pointer truncated warning
 #else
     hdl = hdl;
 #endif

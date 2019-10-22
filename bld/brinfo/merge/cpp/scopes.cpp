@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +51,9 @@ extern  Browser *               CurrBrowser;
 
 // Silence the compiler warning about taking the "sizeof" a
 // class with virtual functions...
-#pragma warning 549 9
+#pragma disable_message( 549 )
 static Pool ScopeRec::_scopePool( ScopePool, sizeof(ScopeRec), 0x40 );
-#pragma warning 549 3
+#pragma enable_message( 549 )
 
 
 ScopeTable::ScopeTable()

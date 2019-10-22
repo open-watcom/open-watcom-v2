@@ -704,8 +704,7 @@ bool WEXPORT WFileName::addPath( const char *path )
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8
-#pragma warning 657 9
+#pragma disable_message( 657 )
 #endif
 
 WEXPORT WFileName::~WFileName()

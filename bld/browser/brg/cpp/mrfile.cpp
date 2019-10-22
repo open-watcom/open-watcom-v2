@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -462,8 +463,7 @@ uint_32 MergeFile::readForm( dr_section sect, uint_32& off, uint_32 form,
 
 
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8
-#pragma warning 657 9
+#pragma disable_message( 657 )
 
 MergeFile::~MergeFile()
 //---------------------
