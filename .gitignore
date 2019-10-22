@@ -85,6 +85,7 @@
 !/bld/
 !/build/
 !/ci/
+!/ci/nt386/*
 !/ci/ntx64/*
 !/contrib/
 !/distrib/
