@@ -43,10 +43,13 @@ const char * const AboutMessage[] = {
     banner2a( 1987 ),
     banner3,
     banner3a,
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef D32_NAME
     "",
     D32_NAME " " D32_VERSION,
     D32_COPYRIGHT,
+#endif
 #endif
 #ifdef INTERNAL
     "",
@@ -75,6 +78,8 @@ const char * const AboutMessage[] = {
 int FingMessageSize = WHOLE_SIZE;
 int AboutSize = WHOLE_SIZE - BOLT_SIZE;
 
+/* NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef __DOS__
 const char DOS4GOPTIONS[] =
         "[dos4g-global]\n"
@@ -82,6 +87,7 @@ const char DOS4GOPTIONS[] =
         "[dos4g-kernel]\n"
         "StartupBanner=FALSE\n"
 ;
+#endif
 #endif
 
 void InitAboutMessage( void )

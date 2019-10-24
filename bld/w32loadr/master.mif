@@ -2,7 +2,8 @@ proj_name = w32loadr
 
 w32loadr_autodepends = .autodepend
 
-additional_cleanup = mkdginfo.bat
+# NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
+#additional_cleanup = mkdginfo.bat
 
 !include cproj.mif
 !include defrule.mif
@@ -115,9 +116,10 @@ d4grun.obj : loader.c $(__MAKEFILES__) #../loader.h dginfo.gh
 cwsrun.obj : loader.c $(__MAKEFILES__) #../loader.h
   $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 
-dginfo.gh : $(rsi_root)/bin/dos4g.exe
-  @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
-  -mkdginfo
+# NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
+#dginfo.gh : $(rsi_root)/bin/dos4g.exe
+#  @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
+#  -mkdginfo
 
 dpmi.exe : $(dpmi_objs) $(__MAKEFILES__)
     @%make echo_link

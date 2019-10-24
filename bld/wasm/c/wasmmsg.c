@@ -72,8 +72,11 @@ static const char *FingerMsg[] = {
     banner2a( 1992 ),
     banner3,
     banner3a,
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef D32_NAME
     "DOS4/G Run-Time " D32_VERSION " " D32_COPYRIGHT,
+#endif
 #endif
     0
 };

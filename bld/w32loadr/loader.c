@@ -931,6 +931,8 @@ void main( void ) {}
  #include "dpmi.h"
 #endif
 
+/* NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef __DOS4G
  #include "dginfo.gh"
 char DOS4GOPTIONS[] =
@@ -939,6 +941,7 @@ char DOS4GOPTIONS[] =
         "[dos4g-kernel]\n"
         "StartupBanner=FALSE\n"
 ;
+#endif
 #endif
 
 extern  char    *_LpCmdLine;
@@ -1085,11 +1088,16 @@ int main( void )
     rc = Init32BitTask( pgm );
     if( rc == LOADER_SUCCESS ) {
         parms.breakflagaddr = &BreakFlag;
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
     #ifdef __DOS4G
         parms.copyright = D32_SHORT_NAME " Version " D32_VERSION " " D32_COPYRIGHT;
     #else
         parms.copyright = NULL;
     #endif
+#else
+        parms.copyright = NULL;
+#endif
         parms.max_handle = 0;
         rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end, __fInt21, &parms );
     }

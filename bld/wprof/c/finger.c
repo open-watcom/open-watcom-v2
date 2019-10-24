@@ -44,15 +44,20 @@ char *AboutMessage[] = {
     "",
     banner3,
     banner3a,
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef D32_NAME
     "",
     D32_NAME " " D32_VERSION,
     D32_COPYRIGHT,
 #endif
+#endif
 };
 
 int AboutSize = ArraySize( AboutMessage );
 
+/* NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef __DOS__
 char DOS4GOPTIONS[] =
         "[dos4g-global]\n"
@@ -60,4 +65,5 @@ char DOS4GOPTIONS[] =
         "[dos4g-kernel]\n"
         "StartupBanner=FALSE\n"
 ;
+#endif
 #endif
