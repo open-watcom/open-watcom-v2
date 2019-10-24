@@ -919,7 +919,7 @@ static void set_out_file_attr( void )
 
             /* Use default if rec_spec is missing. */
 
-            size_t len = 1 + strlen( "t:132" );
+            len = 1 + strlen( "t:132" );
             out_file_attr = mem_alloc( len );
             strcpy( out_file_attr, "t:132" );
         }
