@@ -23,6 +23,7 @@ jobs:
     - name: OW Repo clone
       uses: actions/checkout@v1
     - name: Build Bootstrap Tools
+      shell: cmd
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
@@ -61,6 +62,7 @@ jobs:
     - name: OW Repo clone
       uses: actions/checkout@v1
     - name: Create Build Tools subdirectory
+      shell: cmd
       run: mkdir build\binbuild
     - name: Load Build Tools Artifact
       uses: actions/download-artifact@master
@@ -68,6 +70,7 @@ jobs:
         name: boot
         path: build\binbuild
     - name: Build Wiki Documentation
+      shell: cmd
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
@@ -105,6 +108,7 @@ jobs:
     - name: OW Repo clone
       uses: actions/checkout@v1
     - name: Create Build Tools subdirectory
+      shell: cmd
       run: mkdir build\binbuild
     - name: Load Build Tools Artifact
       uses: actions/download-artifact@master
@@ -112,6 +116,7 @@ jobs:
         name: boot
         path: build\binbuild
     - name: Build Wiki Documentation
+      shell: cmd
       run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
@@ -145,16 +150,19 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Setup Git User
+      shell: cmd
       run: |
         git config --global user.email "openwatcomazure@gmail.com"
         git config --global user.name "Open Watcom Azure"
     - name: Wiki Repo clone
+      shell: cmd
       run: |
         git clone -v --depth=1 --branch=master https://%OWGHTOKEN%@github.com/%OWWIKIPROJ%.git .
       env:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
     - name: Create docs subdirectory
+      shell: cmd
       run: if not exist docs\* mkdir docs
     - name: Load Html Documentation Artifact
       uses: actions/download-artifact@master
@@ -162,6 +170,7 @@ jobs:
         name: wikihtml
         path: artifact
     - name: Copy artifact to docs subdirectory
+      shell: cmd
       run: copy /Y artifact\*.* docs\
     - name: Load PDF Documentation Artifact
       uses: actions/download-artifact@master
@@ -169,12 +178,15 @@ jobs:
         name: wikipdf
         path: artifact
     - name: Copy artifact to docs subdirectory
+      shell: cmd
       run: copy /Y artifact\*.* docs\
     - name: Delete artifact subdirectory
+      shell: cmd
       run: |
         del /F /Q artifact\*.*
         rmdir artifact
     - name: Wiki Repo Update
+      shell: cmd
       run: |
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
