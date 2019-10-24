@@ -1157,7 +1157,7 @@ void ob_graphic( graphic_element * in_el )
         buffout.current = ps_size;
         ob_flush();
 
-        memset( buffout.text, buffout.length, '\0' );
+        memset( buffout.text, '\0', buffout.length );
         ps_size = sprintf( buffout.text, "%d %d %d %d %d %d %d graphhead",
                   in_el->cur_left, in_el->y_address, in_el->width, in_el->depth,
                   in_el->xoff, -1 * (in_el->depth + in_el->yoff), in_el->scale );
