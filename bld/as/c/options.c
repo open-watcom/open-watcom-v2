@@ -87,9 +87,9 @@ static bool optionsPredefine( const char *str ) {
     return( true );
 }
 
-extern void OptionsPPDefine( void ) {
-//***********************************
-
+void OptionsPPDefine( void )
+//**************************
+{
     unsigned    idx = 0;
     char        *str;
 
@@ -101,9 +101,9 @@ extern void OptionsPPDefine( void ) {
     }
 }
 
-extern void OptionsFini( void ) {
-//*******************************
-
+void OptionsFini( void )
+//**********************
+{
     unsigned    idx = 0;
     char        *str;
 
@@ -116,9 +116,9 @@ extern void OptionsFini( void ) {
     PP_IncludePathFini();
 }
 
-extern bool OptionsInit( int argc, char **argv ) {
-//************************************************
-
+bool OptionsInit( int argc, char **argv )
+//***************************************
+{
     char        *s;
 
     PP_IncludePathInit();

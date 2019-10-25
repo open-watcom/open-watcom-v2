@@ -132,18 +132,18 @@ static void symFree( sym_handle sym ) {
     MemFree( sym );
 }
 
-extern void SymInit( void ) {
-//***********************
+void SymInit( void )
+//******************
 // Init routine for Symbol Table library
-
+{
 }
 
-extern sym_handle SymLookup( const char *sym_name ) {
-//***************************************************
+sym_handle SymLookup( const char *sym_name )
+//******************************************
 // Return a handle for a symbol with the given name, or
 // NULL if we don't have anything which matches
 // move to front would probably be useful here
-
+{
     sym_handle  sym;
 
     sym = hashTable[ symHash( sym_name ) ];
@@ -155,11 +155,11 @@ extern sym_handle SymLookup( const char *sym_name ) {
     return( sym );
 }
 
-extern sym_handle SymAdd( const char *sym_name, sym_class class ) {
-//*****************************************************************
+sym_handle SymAdd( const char *sym_name, sym_class class )
+//********************************************************
 // Add a symbol with the given name and class to our symbol table.
 // Other symbol attrs will have to be added individually.
-
+{
     sym_handle  sym;
     sym_handle  *bucket;
 
@@ -177,102 +177,102 @@ extern sym_handle SymAdd( const char *sym_name, sym_class class ) {
 }
 
 #ifndef _STANDALONE_
-extern bool SymLocationKnown( sym_handle sym ) {
-//**********************************************
+bool SymLocationKnown( sym_handle sym )
+//*************************************
 // Return true if we know where a given label is
 // going to be located.
-
+{
     assert( sym->class == SYM_LABEL );
     return( sym->flags & SF_LOC_KNOWN );
 }
 
-extern sym_handle SymSetLocation( sym_handle sym, sym_location loc ) {
-//********************************************************************
+sym_handle SymSetLocation( sym_handle sym, sym_location loc )
+//***********************************************************
 // Mark the symbol given as residing at location x. The sym_handle is
 // returned, as a matter of convenience.
-
+{
     assert( sym->class == SYM_LABEL );
     sym->u.location = loc;
     sym->flags |= SF_LOC_KNOWN;
     return( sym );
 }
 
-extern sym_location SymGetLocation( sym_handle sym ) {
-//****************************************************
+sym_location SymGetLocation( sym_handle sym )
+//*******************************************
 // Return the location for a symbol - yes, this does return a
 // struct - forgive me
-
+{
     assert( sym->class == SYM_LABEL );
     return( sym->u.location );
 }
 #endif
 
 #ifdef _STANDALONE_
-extern bool SymIsSectionSymbol( sym_handle sym ) {
-//************************************************
-
+bool SymIsSectionSymbol( sym_handle sym )
+//***************************************
+{
     return( sym->flags & SF_SECTION );
 }
 
-extern void SymSetSection( sym_handle sym ) {
-//*******************************************
+void SymSetSection( sym_handle sym )
+//**********************************
 // Set the section flag and so SymIsSectionSymbol will know if the symbol is
 // a valid section symbol.
-
+{
     sym->flags |= SF_SECTION;
 }
 #endif
 
-extern sym_handle SymSetLink( sym_handle sym, sym_link link ) {
-//*************************************************************
+sym_handle SymSetLink( sym_handle sym, sym_link link )
+//****************************************************
 // set the link field of the symbol - either the instruction or directive
 // pointer for instructions and directives respectively
-
+{
     assert( sym->class == SYM_INSTRUCTION || sym->class == SYM_DIRECTIVE );
     sym->u.link = link;
     return( sym );
 }
 
-extern sym_link SymGetLink( sym_handle sym ) {
-//********************************************
+sym_link SymGetLink( sym_handle sym )
+//***********************************
 // return the link field of the symbol - used for
 // remembering symbol specific info for instructions and directives.
-
+{
     assert( sym->class == SYM_INSTRUCTION || sym->class == SYM_DIRECTIVE );
     return( sym->u.link );
 }
 
-extern sym_class SymClass( sym_handle sym ) {
-//*******************************************
-
+sym_class SymClass( sym_handle sym )
+//**********************************
+{
     return( sym->class );
 }
 
-extern sym_linkage SymGetLinkage( sym_handle sym ) {
-//**************************************************
-
+sym_linkage SymGetLinkage( sym_handle sym )
+//*****************************************
+{
     assert( sym->class == SYM_LABEL );
     return( sym->linkage );
 }
 
-extern sym_handle SymSetLinkage( sym_handle sym, sym_linkage linkage ) {
-//**********************************************************************
-
+sym_handle SymSetLinkage( sym_handle sym, sym_linkage linkage )
+//*************************************************************
+{
     assert( sym->class == SYM_LABEL );
     sym->linkage = linkage;
     return( sym );
 }
 
-extern char *SymName( sym_handle sym ) {
-//**************************************
-
+char *SymName( sym_handle sym )
+//*****************************
+{
     return( sym->name );
 }
 
 #ifdef _STANDALONE_
-extern sym_obj_hdl SymObjHandle( sym_handle sym ) {
-//*************************************************
-
+sym_obj_hdl SymObjHandle( sym_handle sym )
+//****************************************
+{
     assert( sym->class == SYM_LABEL );
     if( sym->obj_hdl == NULL ) {
         sym->obj_hdl = ObjSymbolInit( sym->name );
@@ -281,9 +281,9 @@ extern sym_obj_hdl SymObjHandle( sym_handle sym ) {
 }
 #endif
 
-extern void SymStackReloc( bool is_high, sym_handle sym, sym_section section, sym_offset offset, bool named ) {
-//*************************************************************************************************************
-
+void SymStackReloc( bool is_high, sym_handle sym, sym_section section, sym_offset offset, bool named )
+//****************************************************************************************************
+{
     sym_reloc           reloc;
     sym_reloc           *curr;
     sym_reloc_hdls      *hdls_ptr;
@@ -311,9 +311,9 @@ extern void SymStackReloc( bool is_high, sym_handle sym, sym_section section, sy
     *curr = reloc;
 }
 
-extern void SymDestroyReloc( sym_handle sym, sym_reloc reloc ) {
-//**************************************************************
-
+void SymDestroyReloc( sym_handle sym, sym_reloc reloc )
+//*****************************************************
+{
     assert( sym->class == SYM_LABEL );
     assert( reloc );
     if( reloc->prev != NULL ) {
@@ -338,9 +338,9 @@ extern void SymDestroyReloc( sym_handle sym, sym_reloc reloc ) {
     MemFree( reloc );
 }
 
-extern sym_reloc SymMatchReloc( bool is_high, sym_handle sym, sym_section section ) {
-//***********************************************************************************
-
+sym_reloc SymMatchReloc( bool is_high, sym_handle sym, sym_section section )
+//**************************************************************************
+{
     sym_reloc           curr;
 
     assert( sym->class == SYM_LABEL );
@@ -352,12 +352,12 @@ extern sym_reloc SymMatchReloc( bool is_high, sym_handle sym, sym_section sectio
     return( curr );
 }
 
-extern sym_reloc SymGetReloc( bool is_high, sym_handle *get_hdl ) {
-//*****************************************************************
+sym_reloc SymGetReloc( bool is_high, sym_handle *get_hdl )
+//********************************************************
 // This function returns a sym_reloc from the list of handle with relocs if one
 // is available, and returns NULL otherwise. Caller should call SymDestroyReloc
 // to free the reloc after its use.
-
+{
     sym_reloc_hdl_list  lhdl;
 
     if( is_high ) {     // getting a high reloc
@@ -376,10 +376,10 @@ extern sym_reloc SymGetReloc( bool is_high, sym_handle *get_hdl ) {
 }
 
 #ifdef AS_DEBUG_DUMP
-extern bool SymRelocIsClean( bool is_clean ) {
-//********************************************
+bool SymRelocIsClean( bool is_clean )
+//***********************************
 // Just a debug tool to see whether I've cleaned up.
-
+{
     static bool isClean = false;
     bool        prev;
 
@@ -389,10 +389,10 @@ extern bool SymRelocIsClean( bool is_clean ) {
 }
 #endif
 
-extern void SymFini( void ) {
-//*********************
+void SymFini( void )
+//******************
 // Fini routine for Symbol Table library
-
+{
     sym_handle  sym;
     sym_handle  next;
     int         i;
@@ -436,9 +436,9 @@ extern void SymFini( void ) {
 
 static char classChar[] = { 'I', 'D', 'L' };
 
-extern void DumpSymbol( sym_handle sym ) {
-//****************************************
-
+void DumpSymbol( sym_handle sym )
+//*******************************
+{
     printf( "%s(addr=%x; next=%x; class = %c; ", sym->name, sym, sym->next, classChar[ sym->class ] );
     if( sym->class == SYM_LABEL ) {
         printf( "location = %x:%x )", sym->u.location.section, sym->u.location.offset );
@@ -447,9 +447,9 @@ extern void DumpSymbol( sym_handle sym ) {
     }
 }
 
-extern void DumpSymbolTable( void ) {
-//*****************************
-
+void DumpSymbolTable( void )
+//**************************
+{
     int         i;
     sym_handle  curr;
 

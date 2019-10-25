@@ -497,9 +497,10 @@ void ObjFini( void ) {
     SectionFini();
 }
 
-extern sym_obj_hdl ObjSymbolInit( char *name ) {
-//**********************************************
+sym_obj_hdl ObjSymbolInit( char *name )
+//*************************************
 // Called by the symbol table routines to create and destroy the label name
 // handles
+{
     return( OWLSymbolInit( OwlFile, name ) );
 }

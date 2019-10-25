@@ -64,11 +64,11 @@ typedef struct {
 static numeric_label_list numericLabels[10];    // 0: - 9:
 static uint_32 numLabelCounts[10] = { 0 };  // to keep track of their parity
 
-extern sym_handle AsNumLabelSymLookup( int_32 *label_num ) {
-//**********************************************************
+sym_handle AsNumLabelSymLookup( int_32 *label_num )
+//*************************************************
 // Look/Cook up symbol handles for both forward and backward references for
 // each label_num.
-
+{
     sym_handle  sym;
     char        *sym_name;
 
@@ -84,15 +84,15 @@ extern sym_handle AsNumLabelSymLookup( int_32 *label_num ) {
     return( SymAdd( sym_name, SYM_LABEL ) );
 }
 
-extern char *AsNumLabelMakeName( int_32 num ) {
-//*********************************************
+char *AsNumLabelMakeName( int_32 num )
+//************************************
 // Make a name for this unnamed label (must be an impossible identifier)
 // Use it to match h^ and l^ relocs.
 // For each label number, there are 2 possible labels that a reloc
 // can refer to (forward and backward). So two unique symbols are needed for
 // each labelnums. Their roles interchange as new labels are emitted.
 // (Since forward ref becomes backward ref once a new label is generated)
-
+{
     static char buffer[12];
 
     num = abs( num );
@@ -100,10 +100,10 @@ extern char *AsNumLabelMakeName( int_32 num ) {
     return( buffer );
 }
 
-extern int_32 AsNumLabelGetNum( const char *name ) {
-//**************************************************
+int_32 AsNumLabelGetNum( const char *name )
+//*****************************************
 // The inverse function of AsNumLabelMakeName()
-
+{
     char        *ptr;
     int_32      ret;
 
@@ -146,9 +146,9 @@ static void doEmitNumericLabel( uint_32 label_num, owl_section_handle section, o
     label_list->next_refs = NULL;
 }
 
-extern void AsNumLabelEmit( uint_32 label_num, owl_section_handle section, owl_offset offset, owl_sym_type type ) {
-//*****************************************************************************************************************
-
+void AsNumLabelEmit( uint_32 label_num, owl_section_handle section, owl_offset offset, owl_sym_type type )
+//********************************************************************************************************
+{
     // These symbols are used for matching l^ & h^ garbage.
     sym_handle          new_fw_sym;     // forward
     char                *new_fw_name;
@@ -190,9 +190,9 @@ extern void AsNumLabelEmit( uint_32 label_num, owl_section_handle section, owl_o
     numLabelCounts[ label_num - 1 ]++;
 }
 
-extern void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 label_ref, owl_reloc_type type ) {
-//*******************************************************************************************************************
-
+void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 label_ref, owl_reloc_type type )
+//**********************************************************************************************************
+{
     numeric_label_list          *label_list;
     numlab_reloc                *reloc;
 
@@ -219,10 +219,10 @@ extern void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_
     }
 }
 
-extern void AsNumLabelFini( void ) {
-//**********************************
+void AsNumLabelFini( void )
+//*************************
 // Emit all the relocs and free all data structures
-
+{
     int                 ctr;
     numeric_label_list  *label_list;
     numlab              *label;

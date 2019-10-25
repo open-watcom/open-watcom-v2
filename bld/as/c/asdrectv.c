@@ -971,8 +971,8 @@ static void dirFree( directive_t *directive )
 }
 
 
-extern void DirInit( void )
-//*************************
+void DirInit( void )
+//******************
 {
     dir_table   *curr;
     sym_handle  sym;
@@ -992,8 +992,8 @@ extern void DirInit( void )
 }
 
 
-extern void DirSetNextScanState( sym_handle sym )
-//*************************************************
+void DirSetNextScanState( sym_handle sym )
+//****************************************
 // Call this to set up what to scan for the next token.
 // Necessary because some directives take the whole line as a token.
 {
@@ -1006,8 +1006,8 @@ extern void DirSetNextScanState( sym_handle sym )
 }
 
 
-extern bool DirGetNextScanState( void )
-//*************************************
+bool DirGetNextScanState( void )
+//******************************
 // Call this to check what to scan for the next token.
 // Returns true if we want the whole line as a token next.
 // Necessary because some directives take the whole line as a token.
@@ -1020,8 +1020,8 @@ extern bool DirGetNextScanState( void )
 }
 
 
-extern directive_t *DirCreate( sym_handle sym )
-//*********************************************
+directive_t *DirCreate( sym_handle sym )
+//**************************************
 {
     lastDirective = dirAlloc();
     lastDirective->dir_sym = sym;
@@ -1032,8 +1032,8 @@ extern directive_t *DirCreate( sym_handle sym )
 }
 
 
-extern void DirAddOperand( directive_t *dir, dir_operand *dirop )
-//***************************************************************
+void DirAddOperand( directive_t *dir, dir_operand *dirop )
+//********************************************************
 {
     if( dirop == NULL )
         return;
@@ -1047,8 +1047,8 @@ extern void DirAddOperand( directive_t *dir, dir_operand *dirop )
 }
 
 
-extern void DirDestroy( directive_t *directive )
-//**********************************************
+void DirDestroy( directive_t *directive )
+//***************************************
 {
     dir_operand *dirop, *dirop_next;
 
@@ -1064,8 +1064,8 @@ extern void DirDestroy( directive_t *directive )
 }
 
 
-extern bool DirParse( directive_t *directive )
-//********************************************
+bool DirParse( directive_t *directive )
+//*************************************
 {
     dir_table   *table_entry;
 
@@ -1079,8 +1079,8 @@ extern bool DirParse( directive_t *directive )
 }
 
 
-extern void DirFini( void )
-//*************************
+void DirFini( void )
+//******************
 {
     DirDestroy( lastDirective );
 }

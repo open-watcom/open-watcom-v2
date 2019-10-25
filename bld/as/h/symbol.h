@@ -125,6 +125,7 @@ extern void             AsSymFini( void );
 
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 extern void             DumpSymbolTable( void );
+extern void             DumpSymbol( sym_handle sym );
 #endif
 
 #define SymInit                         AsSymInit

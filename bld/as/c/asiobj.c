@@ -283,36 +283,36 @@ static void doStackLabel( sym_handle sym ) {
     labelList = new_label;
 }
 
-extern void ObjInit( void ) {
-//***************************
-
+void ObjInit( void )
+//******************
+{
     CurrAlignment = 0;  // alignment disabled
     // Here we add a label marking the beginning of the code stream.
     // Relocs to this label can be done by ObjEmitMetaReloc().
     doStackLabel( SymAdd( ASMCODESTART, SYM_LABEL ) );
 }
 
-extern void ObjSetLocation( owl_offset offset ) {
-//***********************************************
-
+void ObjSetLocation( owl_offset offset )
+//**************************************
+{
     assert( AsmLastAddress > offset );
     AsmCodeAddress = offset;
 }
 
-extern bool ObjEmitMetaReloc( owl_reloc_type type, bool align ) {
-//***************************************************************
+bool ObjEmitMetaReloc( owl_reloc_type type, bool align )
+//******************************************************
 // Emit a reloc to the beginning of code.
 // Must be a relative reloc. If not, false is returned.
-
+{
     if( !IS_RELOC_RELATIVE( type ) )
         return( false );
     ObjEmitReloc( ASMCODESTART, type, align, true );
     return( true );
 }
 
-extern void ObjEmitRelocAddend( owl_reloc_type type, uint_32 addend ) {
-//*********************************************************************
-
+void ObjEmitRelocAddend( owl_reloc_type type, uint_32 addend )
+//************************************************************
+{
     uint_32     bit_mask;
     uint_32     *pdata;
 
@@ -336,9 +336,9 @@ static bool findLabel( label_list labels, char *label_name ) {
     return( false );
 }
 
-extern bool ObjLabelDefined( sym_handle sym ) {
-//*********************************************
-
+bool ObjLabelDefined( sym_handle sym )
+//************************************
+{
     enum sym_state      state;
     char                *sym_name;
 
@@ -371,10 +371,10 @@ static void doStackNumericLabel( uint_32 label_num ) {
     labelList = new_label;
 }
 
-extern void ObjEmitLabel( sym_handle sym ) {
-//******************************************
+void ObjEmitLabel( sym_handle sym )
+//*********************************
 // Stacks up the label in the list for ObjEmitData to emit
-
+{
     if( ObjLabelDefined( sym ) ) {
         Error( SYM_ALREADY_DEFINED, SymName( sym ) );
         return;
@@ -382,15 +382,15 @@ extern void ObjEmitLabel( sym_handle sym ) {
     doStackLabel( sym );
 }
 
-extern void ObjEmitNumericLabel( uint_32 label_num ) {
-//****************************************************
-
+void ObjEmitNumericLabel( uint_32 label_num )
+//*******************************************
+{
     doStackNumericLabel( label_num );
 }
 
-extern void ObjFlushLabels( void ) {
-//**********************************
-
+void ObjFlushLabels( void )
+//*************************
+{
     label_list  curr_label, next_label;
 
     curr_label = labelList;
@@ -402,10 +402,10 @@ extern void ObjFlushLabels( void ) {
     }
 }
 
-extern void ObjEmitData( void *buffer, int size, bool align ) {
-//*************************************************************
+void ObjEmitData( void *buffer, int size, bool align )
+//****************************************************
 // Aligns to proper address, emits all pending labels, then emits the data
-
+{
     if( align ) {
         (void)ObjAlign( CurrAlignment );
     }
@@ -413,16 +413,16 @@ extern void ObjEmitData( void *buffer, int size, bool align ) {
     doEmitData( buffer, size );
 }
 
-extern void ObjDirectEmitData( void *buffer, int size ) {
-//*******************************************************
-
+void ObjDirectEmitData( void *buffer, int size )
+//**********************************************
+{
     doEmitData( buffer, size );
 }
 
-extern void ObjNopPad( uint_8 count ) {
-//*************************************
+void ObjNopPad( uint_8 count )
+//****************************
 // Emits count no-ops
-
+{
     uint_32     nop_opcode = INS_NOP;
 
     while( count-- > 0 ) {
@@ -430,10 +430,10 @@ extern void ObjNopPad( uint_8 count ) {
     }
 }
 
-extern void ObjNullPad( uint_8 count ) {
-//**************************************
+void ObjNullPad( uint_8 count )
+//*****************************
 // Emits count bytes of zeros
-
+{
     char        byte = 0;
 
     while( count-- > 0 ) {
@@ -441,11 +441,11 @@ extern void ObjNullPad( uint_8 count ) {
     }
 }
 
-extern owl_offset ObjAlign( uint_8 alignment ) {
-//**********************************************
+owl_offset ObjAlign( uint_8 alignment )
+//*************************************
 // Aligns the offset to 2^alignment boundary. Returns the offset for
 // convenience.
-
+{
     owl_offset  offset;
 
     offset = tellOffset();
@@ -460,24 +460,24 @@ extern owl_offset ObjAlign( uint_8 alignment ) {
 }
 
 #if 0
-extern owl_offset ObjTellOffset( void ) {
-//***************************************
-
+owl_offset ObjTellOffset( void )
+//******************************
+{
     return( tellOffset() );
 }
 #endif
 
-extern void ObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym ) {
-//******************************************************************************************************
-
+void ObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym )
+//*********************************************************************************************
+{
     doEmitReloc( offset, target, type, named_sym );
 }
 
-extern void ObjEmitReloc( void *target, owl_reloc_type type, bool align, bool named_sym ) {
-//*****************************************************************************************
+void ObjEmitReloc( void *target, owl_reloc_type type, bool align, bool named_sym )
+//********************************************************************************
 // Should be called before emitting the data that has the reloc.
 // (named_sym == true) iff the target is a named label
-
+{
     owl_offset          offset;
 
     if( align ) { // If data is aligned, we should also align this reloc offset!
@@ -523,13 +523,13 @@ extern void ObjEmitReloc( void *target, owl_reloc_type type, bool align, bool na
 #endif
 }
 
-extern void ObjRelocsFini( void ) {
-//*********************************
+void ObjRelocsFini( void )
+//************************
 // After all lines have been parsed, we need to check whether there're any
 // unmatched relocs still hanging around. If there're unmatched h^relocs,
 // we issue an error. If there're unmatched l^relocs, we should be able
 // to emit them.
-
+{
     sym_reloc   reloc;
     sym_handle  sym;
     int_32      numlabel_ref;
@@ -564,9 +564,9 @@ extern void ObjRelocsFini( void ) {
     resolveRelativeRelocs();
 }
 
-extern void ObjFini( void ) {
-//********************
-
+void ObjFini( void )
+//******************
+{
     ObjFlushLabels();       // In case there're still pending labels
     ObjRelocsFini();
     AsmCodeAddress = AsmLastAddress;    // points to end of code

@@ -71,9 +71,9 @@ static bool dirOpGetNumber( dir_operand *dirop, expr_tree *expr ) {
     return( status );
 }
 
-extern dir_operand *DirOpLine( const char *string ) {
-//***************************************************
-
+dir_operand *DirOpLine( const char *string )
+//******************************************
+{
     dir_operand *dirop;
 
     dirop = dirOpAlloc();
@@ -83,9 +83,9 @@ extern dir_operand *DirOpLine( const char *string ) {
     return( dirop );
 }
 
-extern dir_operand *DirOpString( const char *string ) {
-//*****************************************************
-
+dir_operand *DirOpString( const char *string )
+//********************************************
+{
     dir_operand *dirop;
 
     dirop = dirOpAlloc();
@@ -95,9 +95,9 @@ extern dir_operand *DirOpString( const char *string ) {
     return( dirop );
 }
 
-extern dir_operand *DirOpNumber( expr_tree *expr ) {
+dir_operand *DirOpNumber( expr_tree *expr )
 //**************************************************
-
+{
     dir_operand *dirop;
 
     assert( expr != NULL );
@@ -139,21 +139,21 @@ static dir_operand *doDirOpSymbol( asm_reloc_type rtype, void *target, expr_tree
     return( dirop );
 }
 
-extern dir_operand *DirOpIdentifier( asm_reloc_type rtype, sym_handle symbol, expr_tree *expr, int sign ) {
-//*********************************************************************************************************
-
+dir_operand *DirOpIdentifier( asm_reloc_type rtype, sym_handle symbol, expr_tree *expr, int sign )
+//************************************************************************************************
+{
     return( doDirOpSymbol( rtype, symbol, expr, sign, true ) );
 }
 
-extern dir_operand *DirOpNumLabelRef( asm_reloc_type rtype, int_32 label_ref, expr_tree *expr, int sign ) {
-//*********************************************************************************************************
-
+dir_operand *DirOpNumLabelRef( asm_reloc_type rtype, int_32 label_ref, expr_tree *expr, int sign )
+//************************************************************************************************
+{
     return( doDirOpSymbol( rtype, &label_ref, expr, sign, false ) );
 }
 
-extern dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat ) {
-//***********************************************************************
-
+dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat )
+//**************************************************************
+{
     dir_operand *dirop, *tmp;
 
     assert( number != NULL && repeat != NULL );
@@ -191,10 +191,11 @@ extern dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat ) {
     return( dirop );
 }
 
-extern void DirOpDestroy( dir_operand *dirop ) {
-//**********************************************
-
-    if( !dirop ) return;
+void DirOpDestroy( dir_operand *dirop )
+//*************************************
+{
+    if( !dirop )
+        return;
     if( dirop->type == DIROP_LINE || dirop->type == DIROP_STRING ) {
         MemFree( STRING_CONTENT( dirop ) );
     }

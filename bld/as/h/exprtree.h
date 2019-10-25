@@ -104,6 +104,9 @@ extern expr_tree        *AsETBinary( et_class, expr_tree *left, expr_tree *right
 extern expr_tree        *AsETUnary( et_class, expr_tree *child );
 extern expr_tree        *AsETBurn( expr_tree *tree );
 extern void             AsETFree( expr_tree *tree );
+#if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
+extern void             ETDump( expr_tree *tree );
+#endif
 
 #define ETReloc                 AsETReloc
 #define ETNumLabelReloc         AsETNumLabelReloc

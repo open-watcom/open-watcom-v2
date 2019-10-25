@@ -64,8 +64,8 @@ char *AsRegName( reg r ) {
 
 #endif
 
-extern uint RegCrfToBI( reg r ) {
-
+uint RegCrfToBI( reg r )
+{
     assert( RegClass( r ) == RC_CRF );
     return( RegIndex( r ) << 2 );
 }
