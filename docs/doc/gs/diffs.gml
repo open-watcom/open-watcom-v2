@@ -22,7 +22,38 @@ recompile your application.
 Following is a list of changes made in &product 2.0:
 .begbull
 .bull
-OW tools were ported to 64-bit host platform (Linux and Windows)
+OW tools ported to 64-bit host platform (Linux and Windows)
+.bull
+OW installer for 64-bit host platform (Linux and Windows)
+.endbull 
+.np
+C compiler changes:
+.begbull
+.bull
+pragma "warning" was added
+.bull
+new option was added to supress predefined macros non-conforming 
+ISO standard naming convention (without leading underscore)
+.endbull 
+.np
+C++ compiler changes:
+.begbull
+.bull
+fix pragmas "enable_message" and "disable_message" to not change warning level
+.endbull 
+.np
+Linker changes:
+.begbull
+.bull
+added support for 64-bit COFF objects and 64-bit PE executable
+.bull
+default stack size for Windows NT was changed to 1 MB for better
+compatibility with Microsoft linker
+.np
+C run-time library changes:
+.begbull
+.bull
+POSIX threads implementation was added for Linux target
 .endbull 
 .*
 .*
