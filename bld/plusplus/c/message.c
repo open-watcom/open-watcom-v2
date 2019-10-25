@@ -1066,7 +1066,7 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    msg_level_info  tmp_buff[ARRAY_SIZE( msg_level )];
+    msg_level_info  pch_levels[ARRAY_SIZE( msg_level )];
     msg_level_info  *orig_levels;
     msg_level_info  *pch_levels;
     MSG_NUM         msgnum;
@@ -1077,12 +1077,11 @@ pch_status PCHReadErrWarnData( void )
     } else {
         orig_levels = msg_level;
     }
-    pch_levels = tmp_buff;
     for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
-        if( memcmp( pch_levels, orig_levels, sizeof( *orig_levels ) ) ) {
+        if( memcmp( pch_levels + msgnum, orig_levels + msgnum, sizeof( *orig_levels ) ) ) {
             // reflect a change from the header file into current levels
-            changeLevel( pch_levels->level, msgnum );
-            changeStatus( pch_levels->enabled, msgnum );
+            changeLevel( pch_levels[msgnum].level, msgnum );
+            changeStatus( pch_levels[msgnum].enabled, msgnum );
         }
     }
     return( PCHCB_OK );
