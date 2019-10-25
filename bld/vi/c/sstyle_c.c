@@ -250,15 +250,6 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     flags.inDeclspec2 = false;
 }
 
-static void getWhiteSpace( ss_block *ss_new, char *start )
-{
-    char    *end = start + 1;
-
-    SKIP_SPACES( end );
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = end - start;
-}
-
 static void getText( ss_block *ss_new, char *start )
 {
     char    *end = start + 1;
@@ -405,12 +396,6 @@ static void getChar( ss_block *ss_new, char *start, int skip )
     }
     flags.inDeclspec = false;
     flags.inDeclspec2 = false;
-}
-
-static void getBeyondText( ss_block *ss_new )
-{
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = BEYOND_TEXT;
 }
 
 static void getInvalidChar( ss_block *ss_new )
@@ -677,7 +662,7 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             flags.inPreprocessor = false;
             flags.inCPPComment = false;
         }
-        getBeyondText( ss_new );
+        SSGetBeyondText( ss_new );
         return;
     }
 
@@ -703,7 +688,7 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
     }
 
     if( isspace( start[0] ) ) {
-        getWhiteSpace( ss_new, start );
+        SSGetWhiteSpace( ss_new, start );
         return;
     }
 

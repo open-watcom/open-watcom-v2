@@ -220,15 +220,15 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
  */
 vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, const char *text, type_style *ts, int start_col )
 {
-    ss_block    ss;
+    ss_block    ss[1];
 
     SEType[SE_UNUSED].foreground = ts->foreground;
     SEType[SE_UNUSED].background = ts->background;
     SEType[SE_UNUSED].font = FONT_DEFAULT;
-    ss.type = SE_UNUSED;
-    ss.end = BEYOND_TEXT;
+    ss[0].type = SE_UNUSED;
+    ss[0].end = BEYOND_TEXT;
 
-    return( displayLineInWindowGeneric( wid, c_line_no, text, start_col, &ss ) );
+    return( displayLineInWindowGeneric( wid, c_line_no, text, start_col, ss ) );
 }
 
 /*
@@ -588,15 +588,15 @@ vi_rc SetCharInWindowWithColor( window_id wid, windim line, windim col, char tex
  */
 vi_rc DisplayLineInWindow( window_id wid, int c_line_no, const char *text )
 {
-    ss_block    ss;
+    ss_block    ss[1];
     window      *w;
 
     w = WINDOW_FROM_ID( wid );
     SEType[SE_UNUSED].foreground = w->text_color;
     SEType[SE_UNUSED].background = w->background_color;
     SEType[SE_UNUSED].font = FONT_DEFAULT;
-    ss.type = SE_UNUSED;
-    ss.end = BEYOND_TEXT;
-    return( displayLineInWindowGeneric( wid, c_line_no, text, 0, &ss ) );
+    ss[0].type = SE_UNUSED;
+    ss[0].end = BEYOND_TEXT;
+    return( displayLineInWindowGeneric( wid, c_line_no, text, 0, ss ) );
 
 } /* DisplayLineInWindow */

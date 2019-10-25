@@ -248,14 +248,21 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
-            char edpath[FILENAME_MAX];
+            char    *edpath;
+            size_t  len;
 
-            sprintf( edpath, "%s%c%s", watcom, FILE_SEP, "eddat" );
-
-            if( setenv( "EDPATH", edpath, 0 ) != 0 ) {
-                /*
-                 * Bail out silently on error, as we will get error message later on.
-                 */
+            len = strlen( watcom );
+            edpath = malloc( len + 7 );
+            if( edpath != NULL ) {
+                strcpy( edpath, watcom );
+                edpath[len++] = FILE_SEP;
+                strcpy( edpath + len, "eddat" );
+                if( setenv( "EDPATH", edpath, 0 ) != 0 ) {
+                    /*
+                     * Bail out silently on error, as we will get error message later on.
+                     */
+                }
+                free( edpath );
             }
         }
     }

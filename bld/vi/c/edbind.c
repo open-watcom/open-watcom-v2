@@ -226,7 +226,7 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
 /*
  * GetFromEnv - get file name from environment
  */
-static void GetFromEnv( char *what, char *path )
+static void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
     if( path[0] != '\0' ) {
@@ -239,7 +239,7 @@ static void GetFromEnv( char *what, char *path )
 /*
  * GetFromEnvAndOpen - search env and fopen a file
  */
-static FILE *GetFromEnvAndOpen( char *inpath )
+static FILE *GetFromEnvAndOpen( const char *inpath )
 {
     char tmppath[_MAX_PATH];
 
