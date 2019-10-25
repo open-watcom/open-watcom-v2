@@ -87,8 +87,8 @@ bool IsTmpFile( const char *name )
     return( false );
 }
 
-extern void TmpCtlInitStatics( void )
-/***********************************/
+void TmpCtlInitStatics( void )
+/****************************/
 {
     numTmpNames = 0;
     memset( (void *)tmpFileNames, 0, sizeof( tmpFileNames ) );

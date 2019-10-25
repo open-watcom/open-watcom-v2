@@ -118,8 +118,8 @@ static int compareOS2ResTypeId( const void * _entry1, const void * _entry2 )
 } /* compareOS2ResTypeId */
 
 
-extern RcStatus InitOS2ResTable( int *err_code )
-/**********************************************/
+RcStatus InitOS2ResTable( int *err_code )
+/***************************************/
 {
     OS2ResTable         *res;
     WResDir             dir;
@@ -150,12 +150,12 @@ extern RcStatus InitOS2ResTable( int *err_code )
 } /* InitOS2ResTable */
 
 
+uint_32 ComputeOS2ResSegCount( WResDir dir )
+/******************************************/
 /* Compute the number of resource segments in an OS/2 NE module. Each
  * resource gets its own segment and resources > 64K will be split into
  * as many segments as necessary.
  */
-extern uint_32 ComputeOS2ResSegCount( WResDir dir )
-/*************************************************/
 {
     uint_32         length;
     WResDirWindow   wind;
@@ -320,12 +320,12 @@ RcStatus CopyOS2Resources( void )
 } /* CopyOS2Resources */
 
 
+RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
+/***********************************************************************/
 /*
  * WriteOS2ResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
-/******************************************************************************/
 {
     RcStatus                    ret;
     uint_16                     res_type;

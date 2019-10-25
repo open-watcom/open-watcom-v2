@@ -74,7 +74,8 @@ static RcStatus readSegTable( FILE *fp, uint_32 offset, SegTable * seg )
 
 } /* readSegTable */
 
-extern RcStatus AllocAndReadWINSegTables( int *err_code )
+RcStatus AllocAndReadWINSegTables( int *err_code )
+/************************************************/
 {
     RcStatus            ret;
     FILE                *old_fp;
@@ -111,7 +112,8 @@ extern RcStatus AllocAndReadWINSegTables( int *err_code )
 } /* AllocAndReadWINSegTables */
 
 
-extern RcStatus AllocAndReadOS2SegTables( int *err_code )
+RcStatus AllocAndReadOS2SegTables( int *err_code )
+/************************************************/
 {
     RcStatus            ret;
     FILE                *old_fp;
@@ -164,7 +166,8 @@ extern RcStatus AllocAndReadOS2SegTables( int *err_code )
 /* in order to get that structure */
 #define OS_RELOC_ITEM_SIZE      8
 
-extern uint_32 ComputeSegmentSize( FILE *fp, SegTable * segs, int shift_count )
+uint_32 ComputeSegmentSize( FILE *fp, SegTable * segs, int shift_count )
+/**********************************************************************/
 {
     segment_record  *currseg;
     segment_record  *afterlast;
@@ -326,8 +329,8 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 } /* copyOneSegment */
 
 
-extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/********************************************************************************/
+CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/*************************************************************************/
 /* Note: sect2 must be either 1 (do section 2) or 0 (do section 1) */
 /* CopyWINSegments should be called twice, once with sect2 false, and once with */
 /* it true. The values of sect2mask and sect2bits should be the same for both */
@@ -394,8 +397,8 @@ extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2
 
 } /* CopyWINSegments */
 
-extern CpSegRc CopyOS2Segments( void )
-/*************************************
+CpSegRc CopyOS2Segments( void )
+/******************************
  * Akin to CopyWINSegments() only much, much simpler - just copies all segments
  * without messing with them in any way. Only called once. Won't copy
  * resource segments.

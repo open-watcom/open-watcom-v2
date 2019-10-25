@@ -169,8 +169,8 @@ bool WriteDependencyRes( void )
     return( false );
 }
 
-extern void AutoDepInitStatics( void )
-/************************************/
+void AutoDepInitStatics( void )
+/*****************************/
 {
     depList = NULL;
 }

@@ -40,13 +40,6 @@
 #include "errprt.h"
 #endif
 
-#define NUM_HEAPS 4
-const unsigned  BlocksPerHeap[] = { 2048, 2048, 2048, 1024 };
-const unsigned  HeapSizes[] =     {   16,   32,   64, 1024 }; /* Ascending order */
-HeapHandle      *Heaps[NUM_HEAPS];
-
-#define BIGLIST_ID         0x3F  /* NUM_HEAPS <= Some sentinel < 0xFF */
-
 typedef unsigned char   HeapIndex;
 
 // Need a long instead of a char for Alpha to work,
@@ -55,9 +48,9 @@ typedef unsigned char   HeapIndex;
 // In fact, the RCMEM_DEBUG version is not working for AXP.     KH 5/17/95
 typedef struct HeapId {
 #if defined( __AXP__ )
-    long        id;
-#else    
-    HeapIndex   id;
+    long                id;
+#else
+    HeapIndex           id;
 #endif
 } HeapId;
 
@@ -66,7 +59,16 @@ typedef struct BigMemList {
     size_t              size;
 } BigMemList;
 
-BigMemList       *BigList;
+static const unsigned   BlocksPerHeap[] = { 2048, 2048, 2048, 1024 };
+static const unsigned   HeapSizes[] =     {   16,   32,   64, 1024 }; /* Ascending order */
+
+#define NUM_HEAPS       4
+
+static HeapHandle       *Heaps[NUM_HEAPS];
+
+#define BIGLIST_ID      0x3F  /* NUM_HEAPS <= Some sentinel < 0xFF */
+
+static BigMemList       *BigList;
 
 static HeapIndex RCMemGetHeapIndex( size_t size )
 /***********************************************/
@@ -121,8 +123,8 @@ static void FreeBigListNode( void *mem, bool freemem )
     }
 }
 
-extern void RCMemLayer1Init( void )
-/*********************************/
+void RCMemLayer1Init( void )
+/**************************/
 {
     HeapIndex   i;
 
@@ -132,8 +134,8 @@ extern void RCMemLayer1Init( void )
     BigList = NULL;
 }
 
-extern void *RCMemLayer1Malloc( size_t size )
-/*******************************************/
+void *RCMemLayer1Malloc( size_t size )
+/************************************/
 {
     unsigned char   *mem;
     BigMemList      *memptr;
@@ -177,8 +179,8 @@ extern void *RCMemLayer1Malloc( size_t size )
     return( mem );
 }
 
-extern void RCMemLayer1Free( void *mem )
-/**************************************/
+void RCMemLayer1Free( void *mem )
+/*******************************/
 {
     char           *blockptr;
     HeapId         *heapid;
@@ -197,8 +199,8 @@ extern void RCMemLayer1Free( void *mem )
     }
 }
 
-extern void RCMemLayer1ShutDown( void )
-/*************************************/
+void RCMemLayer1ShutDown( void )
+/******************************/
 {
     BigMemList      *curnode;
     BigMemList      *nextnode;
@@ -218,8 +220,8 @@ extern void RCMemLayer1ShutDown( void )
     }
 }
 
-extern void *RCMemLayer1Realloc( void *mem, size_t size )
-/*******************************************************/
+void *RCMemLayer1Realloc( void *mem, size_t size )
+/************************************************/
 {
     char            *blockptr;
     BigMemList      *newbigptr;

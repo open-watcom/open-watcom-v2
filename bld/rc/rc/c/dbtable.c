@@ -193,8 +193,8 @@ void FreeCharTable( void )
     }
 }
 
-extern void DbtableInitStatics( void )
-/************************************/
+void DbtableInitStatics( void )
+/*****************************/
 {
     memset( &charInfo, 0, sizeof( DBCharInfo ) );
 }

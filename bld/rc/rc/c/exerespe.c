@@ -683,8 +683,8 @@ static void FreePEResDir( PEResDir * dir )
 }
 
 #ifndef INSIDE_WLINK
-extern bool RcPadFile( FILE *fp, size_t pad )
-/*******************************************/
+bool RcPadFile( FILE *fp, size_t pad )
+/************************************/
 {
     char        zero = 0;
 

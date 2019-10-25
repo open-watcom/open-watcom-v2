@@ -152,8 +152,8 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     RcMsgFprintf( &errinfo, "%s\n", errBuffer );
 }
 
-extern void RcWarning( unsigned errornum, ... )
-/*********************************************/
+void RcWarning( unsigned errornum, ... )
+/**************************************/
 {
     va_list             arglist;
 
@@ -180,8 +180,8 @@ void RcError( unsigned errornum, ... )
     va_end( arglist );
 }
 
-extern void RcFatalError( unsigned int errornum, ... )
-/****************************************************/
+void RcFatalError( unsigned int errornum, ... )
+/*********************************************/
 {
     va_list             arglist;
 
@@ -206,8 +206,8 @@ extern void RcFatalError( unsigned int errornum, ... )
 }
 
 #if !defined( WRDLL )
-extern void ErrorInitStatics( void )
-/**********************************/
+void ErrorInitStatics( void )
+/***************************/
 {
     memset( rcStrBuf, 0, sizeof( rcStrBuf ) );
     memset( errBuffer, 0, sizeof( errBuffer ) );
