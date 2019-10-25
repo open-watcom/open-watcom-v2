@@ -1403,7 +1403,7 @@ void CloseFiles( void )
 }
 
 
-int FrontEnd( char **cmdline )
+bool FrontEnd( char **cmdline )
 {
 #if defined(__WATCOMC__) && defined( _M_IX86 )
     /* set to 0 in case 8087 is present */
@@ -1423,5 +1423,5 @@ int FrontEnd( char **cmdline )
     FiniMsg();
     CMemFini();
     GlobalCompFlags.cc_first_use = false;
-    return( ErrCount );
+    return( ErrCount != 0 );
 }

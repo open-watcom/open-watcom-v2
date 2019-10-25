@@ -231,7 +231,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         fputs( buffer, err_file );
         fputc( '\n', err_file );
     }
-    return( 0 );
+    return( false );
 }
 
 

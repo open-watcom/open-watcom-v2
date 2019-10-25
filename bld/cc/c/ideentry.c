@@ -191,7 +191,7 @@ IDEBool IDEAPI IDEInitDLL
     HeapFreeHi = 0;
 #endif
     FrontEndInit( true );
-    return false;
+    return( false );
 }
 
 void IDEAPI IDEFreeHeap( void ) {
@@ -301,7 +301,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     char        infile[_MAX_PATH];      // - input file name
     char        outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char        *argv[4];
-    int         ret;
+    IDEBool     ret;
 
     /* unused parameters */ (void)hdl;
 
@@ -312,8 +312,9 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     argv[0] = (char *)opts;
     argv[1] = NULL;
     getFrontEndArgv( argv + 1, infile, outfile );
-    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
+    if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
+        ret = true;
     } else {
         ret = FrontEnd( argv );
     }
@@ -323,7 +324,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
 #ifdef __OS2__
    _heapmin();
 #endif
-    return( ret != 0 );
+    return( ret );
 }
 
 #ifdef __UNIX__
@@ -361,7 +362,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     char                infile[_MAX_PATH];      // - input file name
     char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char                **argv;
-    int                 ret;
+    IDEBool             ret;
 
     /* unused parameters */ (void)hdl;
 
@@ -370,8 +371,9 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     FatalEnv = &env;
     /* allocate and initialize argv array */
     argv = init_argv( args, argc, infile, outfile );
-    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
+    if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
+        ret = true;
     } else {
         ret = FrontEnd( argv );
     }
@@ -379,7 +381,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
 #if HEAP_CHK  == 1
     heap_check();
 #endif
-    return( ret != 0 );
+    return( ret );
 }
 #endif
 
