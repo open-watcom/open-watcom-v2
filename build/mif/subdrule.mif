@@ -1,9 +1,9 @@
 .c{$+$(__subdir__)$-}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
     @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp{$+$(__subdir__)$-}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
     @%make echo_cxx
-    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@

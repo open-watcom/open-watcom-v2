@@ -4,6 +4,12 @@ proj_name = womp
 womp_autodepends = .autodepend
 !endif
 
+!ifeq release 0
+!ifndef wmake_trmem
+wmake_trmem = 1
+!endif
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -50,15 +56,18 @@ objs =              &
     wat2can1.obj    &
     wpmsg.obj
 
-!ifeq release 0
-!ifndef wmake_trmem
-wmake_trmem = 1
-!endif
+!ifeq wmake_trmem 1
+objs += trmem.obj
 !endif
 
 !ifeq wmake_trmem 1
-objs += trmem.obj
-extra_c_flags_memory += -dTRACK -of+
+extra_cpp_flags_memory += -dTRACK
+!endif
+
+!ifdef __WATCOM_TOOLS__
+! ifeq wmake_trmem 1
+extra_c_flags_memory += -of+
+! endif
 !endif
 
 $(proj_name).exe : wmpmsg.gh wresui.res $(objs) $(__MAKEFILES__)
