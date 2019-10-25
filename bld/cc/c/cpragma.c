@@ -900,8 +900,8 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static bool warnLevelValidate( int level )
-/****************************************/
+static bool warnLevelValidate( unsigned level )
+/*********************************************/
 /* VALIDATE WARNING LEVEL, returns true ==> good level */
 {
     bool ok;
@@ -1019,19 +1019,19 @@ static bool pragWarning( void )
 /* PROCESS #PRAGMA WARNING */
 {
     unsigned msgnum;            // - message number
-    int level;                  // - new level
+    unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
 
     ignore = false;
+    change_all = false;
+    msgnum = 0;
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( CurToken == T_TIMES ) {
-        msgnum = 0;
         change_all = true;
     } else if( CurToken == T_CONSTANT ) {
         msgnum = Constant;
-        change_all = false;
     } else {
         // ignore; MS or other vendor's #pragma
         ignore = true;

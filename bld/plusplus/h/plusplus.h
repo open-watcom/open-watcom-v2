@@ -250,14 +250,14 @@ typedef enum {
 #include "compflag.h"
 #include "errdefns.h"
 
-#define LINE_NO_MAX  0xFFFFFFFF     // MAXIMUM LINE NO.
-#define BRINF_SYMBOL ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
+#define LINE_NO_MAX     0xFFFFFFFF      // MAXIMUM LINE NO.
+#define BRINF_SYMBOL    ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
 
-                                    // COMMON DATA
-global int          WngLevel;       // - warning severity level
-global unsigned     TargetSystem;   // - target system
-global COMP_FLAGS   CompFlags;      // - compiler flags
-global void         *Environment;   // - var for Suicide()
+                                        // COMMON DATA
+global int              WngLevel;       // - warning severity level
+global unsigned         TargetSystem;   // - target system
+global COMP_FLAGS       CompFlags;      // - compiler flags
+global void             *Environment;   // - var for Suicide()
 
-global error_state_t    ErrLimit;   // - error limit
+global error_state_t    ErrLimit;       // - error limit
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
