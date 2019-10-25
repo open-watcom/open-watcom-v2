@@ -1068,10 +1068,9 @@ pch_status PCHReadErrWarnData( void )
 {
     msg_level_info  pch_levels[ARRAY_SIZE( msg_level )];
     msg_level_info  *orig_levels;
-    msg_level_info  *pch_levels;
     MSG_NUM         msgnum;
 
-    PCHReadVar( tmp_buff );
+    PCHReadVar( pch_levels );
     if( NULL != orig_msg_level ) {
         orig_levels = orig_msg_level;
     } else {
