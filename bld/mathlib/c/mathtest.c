@@ -39,7 +39,7 @@
  #include <signal.h>
 #endif
 
-#define ENABLE_COMPLEX          1 
+#define ENABLE_COMPLEX          1
 #define ENABLE_TRIG             1
 #define ENABLE_CLASSIFICATION   1
 #define ENABLE_FP               1
@@ -53,15 +53,15 @@
 
 #ifdef FIRSTHALF
 #undef ENABLE_EXP
-#undef ENABLE_CBRT 
+#undef ENABLE_CBRT
 #undef ENABLE_UTILITIES
 #undef ENABLE_REMAINDER
-#undef ENABLE_ROUNDING 
+#undef ENABLE_ROUNDING
 #endif
 
 #ifdef SECONDHALF
 #undef ENABLE_COMPLEX
-#undef ENABLE_TRIG 
+#undef ENABLE_TRIG
 #undef ENABLE_CLASSIFICATION
 #undef ENABLE_FP
 #undef ENABLE_GAMMA
@@ -80,17 +80,21 @@
 #endif
 
 #ifdef TINY_MEMORY
-void print_fail(int line) { printf("FAIL: line %d\n", line); }
+void print_fail(int line) { printf("FAIL: line %d\n", line); failure = 1; }
 #define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
 #else
-#define VERIFY(expr)    if(!(expr)) \
-                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
+#define VERIFY(expr)    if(!(expr)) { \
+                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
+                             failure = 1; \
+                        }
 #endif
 
 
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
 #define SQRTPI  1.7724538509055160273
+
+int             failure = 0;
 
 #ifdef __FPI__
 volatile int    sig_count = 0;
@@ -131,7 +135,7 @@ int matherr( struct _exception *err )
 int CompDbl( double n1, double n2 )
 {
     double  num;
-    
+
     if( MYABS( n1 ) < 0.000001 && MYABS( n2 ) < 0.000001 ) return( TRUE );
     if( n1 == 0.0 || n2 == 0.0 ) {
         return( FALSE );
@@ -380,8 +384,9 @@ void test_fp_classification( void )
 void test_fp_gamma( void )
 {
 #ifdef ENABLE_GAMMA
-int s;
 #if __STDC_VERSION__ >= 199901L
+    int s;
+
     printf( "Testing C99 Gamma functions...\n" );
 
     /* tgamma first */
@@ -393,7 +398,7 @@ int s;
     VERIFY( isnan(tgamma( NAN )) );
     VERIFY( tgamma( INFINITY ) == INFINITY );
     VERIFY( isnan(tgamma( -INFINITY )) );
-    
+
     /* lgamma testing */
     VERIFY( CompDbl( lgamma( 1.0 ), 0.0 ) );
     VERIFY( signgam > 0 );
@@ -404,7 +409,7 @@ int s;
     VERIFY( isnan(lgamma( NAN )) );
     VERIFY( lgamma( INFINITY )  == INFINITY );
     VERIFY( lgamma( -INFINITY ) == INFINITY );
-    
+
     /* lgamma_r testing */
     VERIFY( CompDbl( lgamma_r( 1.0, &s ), 0.0 ) );
     VERIFY( s > 0 );
@@ -429,7 +434,7 @@ void test_fp_erf( void )
     VERIFY( CompDbl( erf( 2.0 ), 0.9953223 ) );
     VERIFY( CompDbl( erf( -1.0 ), -0.8427008 ) );
     VERIFY( CompDbl( erf( -2.0 ), -0.9953223 ) );
-    
+
     VERIFY( CompDbl( erfc( 0.0 ), 1.0 ) );
     VERIFY( CompDbl( erfc( 1.0 ), 0.1572992 ) );
     VERIFY( CompDbl( erfc( 2.0 ), 0.0046777 ) );
@@ -450,7 +455,7 @@ void test_fp_cbrt( void )
     VERIFY( CompDbl( cbrt( 0.0 ), 0.0 ) );
     VERIFY( CompDbl( cbrt( 27.0 ), 3.0 ) );
     VERIFY( CompDbl( cbrt( -27.0 ), -3.0 ) );
-    
+
     VERIFY( isnan(cbrt( NAN )) );
     VERIFY( cbrt( INFINITY ) == INFINITY );
     VERIFY( cbrt( -INFINITY ) == -INFINITY );
@@ -477,14 +482,14 @@ void test_fp_exp( void )
     VERIFY( CompDbl( log1p( 0.02 ), 0.019803 ) );
     VERIFY( CompDbl( log1p( 0.03 ), 0.029559 ) );
     VERIFY( CompDbl( log1p( 0.10 ), 0.095310 ) );
-    
+
     /* logb/ilogb tests */
     VERIFY( logb( 0.0 ) == -INFINITY );
     VERIFY( CompDbl( logb( 1024.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1025.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1.0/1024.0 ), -10.0 ) );
     VERIFY( CompDbl( logb( -1025.0 ), 10.0 ) );
-    
+
     VERIFY( ilogb( 0.0 ) == FP_ILOGB0 );
     VERIFY( ilogb( NAN ) == FP_ILOGBNAN );
     VERIFY( ilogb( 1024.0 ) == 10 );
@@ -499,7 +504,7 @@ void test_fp_exp( void )
 
 void test_fp_utilities( void )
 {
-#ifdef ENABLE_UTILITES
+#ifdef ENABLE_UTILITIES
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 miscellaneous functions...\n" );
 
@@ -507,42 +512,42 @@ void test_fp_utilities( void )
     VERIFY( CompDbl( copysign( -2.0, -1.0), -2.0 ) );
     VERIFY( CompDbl( copysign( 2.0, -1.0), -2.0 ) );
     VERIFY( CompDbl( copysign( 2.0, 1.0), 2.0 ) );
-    
+
     VERIFY( CompDbl( fmax( 2.0, 1.0), 2.0 ) );
     VERIFY( CompDbl( fmax( -2.0, -1.0), -1.0 ) );
     VERIFY( CompDbl( fmin( 2.0, 1.0), 1.0 ) );
     VERIFY( CompDbl( fmin( -2.0, -1.0), -2.0 ) );
-    
+
     VERIFY( CompDbl( fma( 2.0, 3.0, 4.0), 10.0 ) );
     VERIFY( CompDbl( fma( 2.0, 3.0, -4.0), 2.0 ) );
     VERIFY( CompDbl( fma( -2.0, 3.0, 4.0), -2.0 ) );
     VERIFY( CompDbl( fma( -2.0, -3.0, 4.0), 10.0 ) );
-    
+
     VERIFY( CompDbl( fdim( 3.0, 2.0), 1.0 ) );
     VERIFY( CompDbl( fdim( 2.0, 3.0), 0.0 ) );
-    
+
     VERIFY( CompDbl( nextafter( 1.0, 2.0), 1.0+1.0E-16 ) );
     VERIFY( CompDbl( nextafter( 1.0, 0.0), 1.0-1.0E-16 ) );
-    
+
     VERIFY( CompDbl( scalbn( 1.0, 3.0), 8.0 ) );
     VERIFY( CompDbl( scalbn( 4.0, 3.0), 32.0 ) );
 #endif
 #else
     printf( "Skipping C99 miscellaneous functions.\n" );
-#endif /* ENABLE_UTILITES */
+#endif /* ENABLE_UTILITIES */
 }
 
 void test_fp_remainder( void )
 {
 #ifdef ENABLE_REMAINDER
 #if __STDC_VERSION__ >= 199901L
-int quo;
+    int quo;
 
     printf( "Testing C99 remainder functions...\n" );
 
     VERIFY( CompDbl( remainder( 2.01, 1.0 ), 0.01 ) );
     VERIFY( CompDbl( remainder( 4.99, 2.0 ), 0.99 ) );
-    
+
     VERIFY( CompDbl( remquo( 88888.0, 3.0, &quo ), 1.0 ) );
     VERIFY( (quo & 7) == 5 ); /* Last three bits are guaranteed by std */
 
@@ -557,12 +562,12 @@ void test_fp_rounding( void )
 #ifdef ENABLE_ROUNDING
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 rounding functions...\n" );
-    
+
     VERIFY( CompDbl( trunc( -2.01), -2.0 ) );
     VERIFY( CompDbl( trunc( 2.01), 2.0 ) );
     VERIFY( CompDbl( trunc( -2.9), -2.0 ) );
     VERIFY( CompDbl( trunc( 2.9), 2.0 ) );
-    
+
     fesetround(FE_TONEAREST);
     VERIFY( CompDbl( rint( 2.9), 3.0 ) );
     VERIFY( CompDbl( rint( 3.1), 3.0 ) );
@@ -572,7 +577,7 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
-    
+
     VERIFY( lrint( 2.9 ) == (long)3 );
     VERIFY( lrint( 3.1 ) == (long)3 );
     VERIFY( lrint( -3.1 ) == (long)(-3) );
@@ -591,7 +596,7 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -4.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
-    
+
     VERIFY( lrint( 2.9 ) == (long)2 );
     VERIFY( lrint( 3.1 ) == (long)3 );
     VERIFY( lrint( -3.1 ) == (long)(-4) );
@@ -671,5 +676,5 @@ int main( void )
 
     printf( "Tests completed.\n" );
 
-    return( 0 );
+    return( failure );
 }

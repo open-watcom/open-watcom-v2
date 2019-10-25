@@ -282,6 +282,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/mathtest/builder.ctl ]
 
 [ BLOCK <1> relclean passclean ]
 #===============================

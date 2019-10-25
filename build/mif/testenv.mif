@@ -151,11 +151,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef arch
 !  ifdef wasmtest_name
 !    ifdef %WASMTEST_ARCH
-!      define arch $+$(%PLUSTEST_ARCH)$-
+!      define arch $+$(%WASMTEST_ARCH)$-
 !    endif
 !  else ifdef ctest_name
-!    ifdef %PLUSTEST_ARCH
-!      define arch $+$(%PLUSTEST_ARCH)$-
+!    ifdef %CTEST_ARCH
+!      define arch $+$(%CTEST_ARCH)$-
 !    endif
 !  else ifdef ftest_name
 !    ifdef %FTEST_ARCH
@@ -228,10 +228,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_386
 !      define targ_env_386 $+$(%PLUSTEST_TARG_ENV_386)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_TARG_ENV_386
-!      define targ_env_386 $+$(%MATHTEST_TARG_ENV_386)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_TARG_ENV_386
+#!      define targ_env_386 $+$(%MATHTEST_TARG_ENV_386)$-
+#!    endif
 !  endif
 !endif
 !ifndef targ_env_386
@@ -268,10 +268,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_I86
 !      define targ_env_i86 $+$(%PLUSTEST_TARG_ENV_I86)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_TARG_ENV_I86
-!      define targ_env_i86 $+$(%MATHTEST_TARG_ENV_I86)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_TARG_ENV_I86
+#!      define targ_env_i86 $+$(%MATHTEST_TARG_ENV_I86)$-
+#!    endif
 !  endif
 !endif
 !ifndef targ_env_i86
@@ -301,10 +301,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_AXP
 !      define targ_env_axp $+$(%PLUSTEST_TARG_ENV_AXP)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_TARG_ENV_AXP
-!      define targ_env_axp $+$(%MATHTEST_TARG_ENV_AXP)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_TARG_ENV_AXP
+#!      define targ_env_axp $+$(%MATHTEST_TARG_ENV_AXP)$-
+#!    endif
 !  endif
 !endif
 !ifndef targ_env_axp
@@ -334,10 +334,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_PPC
 !      define targ_env_ppc $+$(%PLUSTEST_TARG_ENV_PPC)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_TARG_ENV_PPC
-!      define targ_env_ppc $+$(%MATHTEST_TARG_ENV_PPC)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_TARG_ENV_PPC
+#!      define targ_env_ppc $+$(%MATHTEST_TARG_ENV_PPC)$-
+#!    endif
 !  endif
 !endif
 !ifndef targ_env_ppc
@@ -364,10 +364,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_MPS
 !      define targ_env_mps $+$(%PLUSTEST_TARG_ENV_MPS)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_TARG_ENV_MPS
-!      define targ_env_mps $+$(%MATHTEST_TARG_ENV_MPS)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_TARG_ENV_MPS
+#!      define targ_env_mps $+$(%MATHTEST_TARG_ENV_MPS)$-
+#!    endif
 !  endif
 !endif
 !ifndef targ_env_mps
@@ -817,8 +817,8 @@ bld_extra_defines = -DINLINETEST
 !    loaddll $(comp_wfc_$(arch)) $(dll_wfc_$(arch))
 !  else ifdef plustest_name
 !    loaddll $(comp_wpp_$(arch)) $(dll_wpp_$(arch))
-!  else ifdef mathtest_name
-!    loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
+#!  else ifdef mathtest_name
+#!    loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 !  endif
 !endif
 
@@ -870,10 +870,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_LINKER
 !      define linker $+$(%PLUSTEST_LINKER)$-
 !    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_LINKER
-!      define linker $+$(%MATHTEST_LINKER)$-
-!    endif
+#!  else ifdef mathtest_name
+#!    ifdef %MATHTEST_LINKER
+#!      define linker $+$(%MATHTEST_LINKER)$-
+#!    endif
 !  endif
 !endif
 !ifndef linker

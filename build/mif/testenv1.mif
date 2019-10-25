@@ -40,7 +40,7 @@
 !  else ifdef mathtest_name
 !    ifdef %MATHTEST_LOG_FILE
 !      define log_file $+$(%MATHTEST_LOG_FILE)$-
-!    else ifdef %PLUSTEST_NAME
+!    else ifdef %MATHTEST_NAME
 !      define log_file $(mathtest_dir)/$+$(%MATHTEST_NAME)$-.log
 !    else
 !      define log_file $(mathtest_dir)/$(mathtest_name).log
@@ -58,6 +58,8 @@
 
 !ifdef clibtest_name
 sav_file = $(clibtest_name).sav
+!else ifdef mathtest_name
+sav_file = $(mathtest_name).sav
 !else
 sav_file = s$(arch)_$(alt_error).sav
 !endif
@@ -83,6 +85,11 @@ start : .SYMBOLIC .EXPLICIT
     @echo TEST $(clibtest_name)
 ! endif
     $(noecho)%append $(log_file) TEST $(clibtest_name)
+!else ifdef mathtest_name
+! ifeq verbose 0
+    @echo TEST $(mathtest_name)
+! endif
+    $(noecho)%append $(log_file) TEST $(mathtest_name)
 !else
 ! ifeq verbose 0
     @echo TEST $(arch)/$(alt_error)
