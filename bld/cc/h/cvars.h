@@ -204,6 +204,8 @@ global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook *
 global int          Toggles;            /* global toggle flags */
 global unsigned     ErrLimit;
 
+#define ERRLIMIT_NOMAX  ((unsigned)-1)
+
 global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
 

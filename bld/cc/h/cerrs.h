@@ -35,11 +35,10 @@
 #include "msgdefs.gh"
 
 
-#define WLEVEL_MIN      0
 #define WLEVEL_MAX      5
 #define WLEVEL_ERROR    0
 #define WLEVEL_DEFAULT  1
-#define WLEVEL_WX       4
+#define WLEVEL_WX       (WLEVEL_MAX - 1)
 #define WLEVEL_ENABLE   1
 #define WLEVEL_DISABLE  15
 #define WLEVEL_NOTE     -1

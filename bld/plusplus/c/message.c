@@ -819,7 +819,7 @@ static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
 {
     bool ok;                    // - return: true ==> good level
 
-    if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
+    if( level > WLEVEL_MAX ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
         ok = false;
     } else {

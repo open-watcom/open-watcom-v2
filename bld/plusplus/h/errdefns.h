@@ -55,11 +55,10 @@ typedef enum {
     MS_NULL             = 0x00
 } msg_status_t;
 
-#define WLEVEL_MIN      0
 #define WLEVEL_MAX      10
 #define WLEVEL_ERROR    0
 #define WLEVEL_DEFAULT  1
-#define WLEVEL_WX       9
+#define WLEVEL_WX       (WLEVEL_MAX - 1)
 #define WLEVEL_ENABLE   1
 #define WLEVEL_DISABLE  15
 #define WLEVEL_NOTE     -1

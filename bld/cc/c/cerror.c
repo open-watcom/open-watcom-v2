@@ -264,7 +264,7 @@ static void CErr( int parmno, msg_codes msgnum, ... )
 
     info.class = CMSG_ERRO;
     va_start( args1, msgnum );
-    if( ErrLimit == -1 || ErrCount < ErrLimit ) {
+    if( ErrLimit == ERRLIMIT_NOMAX || ErrCount < ErrLimit ) {
         CMsgInfo( &info, parmno, msgnum, args1 );
         OutMsg( &info );
         ++ErrCount;

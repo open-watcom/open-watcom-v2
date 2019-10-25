@@ -907,11 +907,7 @@ static bool warnLevelValidate( int *level )
     bool ok;
 
     ok = true;
-    if( *level < WLEVEL_MIN ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        *level = WLEVEL_MIN;
-        ok = false;
-    } else if( *level > WLEVEL_MAX ) {
+    if( *level > WLEVEL_MAX ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
         *level = WLEVEL_MAX;
         ok = false;
