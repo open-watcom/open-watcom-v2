@@ -60,11 +60,13 @@ extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 !else
 extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
 !endif
+
+extra_cpp_flags_trmemcpp = -DTRACKER
     
 extra_cxx_flags     = -xs-ew
 
 extra_c_flags_trmem    = -I"$(trmem_dir)"
-extra_c_flags_trmemcpp = -I"$(trmem_dir)" -DTRACKER $(brmem_flags)
+extra_c_flags_trmemcpp = -I"$(trmem_dir)" $(brmem_flags)
 extra_c_flags_dbrmem   = $(brmem_flags) -I"$(trmem_dir)"
 
 # linker

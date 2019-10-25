@@ -41,10 +41,10 @@ extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 
 extra_cpp_flags_nt = -DNOUSE3D
 
+extra_cpp_flags_mem = -DWANT_MSGS
+
 extra_c_flags_i86 = -zW -zu -3
 extra_c_flags_axp =
-
-extra_c_flags_mem = -DWANT_MSGS
 
 
 # lflags stuff

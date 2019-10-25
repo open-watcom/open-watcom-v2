@@ -55,18 +55,30 @@ inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/
 
 # cflags stuff
 ###############
+!ifeq fmt dll
+extra_cpp_flags_wininit  = -DDLL32
+extra_cpp_flags_libmain  = -DDLL32
+extra_cpp_flags_windpmi  = -DDLL32
+extra_cpp_flags_clib     = -DDLL32
+extra_cpp_flags_fints    = -DDLL32
+extra_cpp_flags_windata  = -DDLL32
+extra_cpp_flags_winstubs = -DDLL32
+extra_cpp_flags_bitmap   = -DDLL32
+extra_cpp_flags_toolhelp = -DDLL32
+!endif
+
 extra_c_flags = -s
 extra_c_flags_i86 = -3
 !ifeq fmt dll
-extra_c_flags_wininit  = -DDLL32 -zu
-extra_c_flags_libmain  = -DDLL32 -zu
-extra_c_flags_windpmi  = -DDLL32 -zu
-extra_c_flags_clib     = -DDLL32 -zu
-extra_c_flags_fints    = -DDLL32 -zu
-extra_c_flags_windata  = -DDLL32 -zu
-extra_c_flags_winstubs = -DDLL32 -zu
-extra_c_flags_bitmap   = -DDLL32 -zu
-extra_c_flags_toolhelp = -DDLL32 -zu
+extra_c_flags_wininit  = -zu
+extra_c_flags_libmain  = -zu
+extra_c_flags_windpmi  = -zu
+extra_c_flags_clib     = -zu
+extra_c_flags_fints    = -zu
+extra_c_flags_windata  = -zu
+extra_c_flags_winstubs = -zu
+extra_c_flags_bitmap   = -zu
+extra_c_flags_toolhelp = -zu
 !endif
 
 # aflags stuff

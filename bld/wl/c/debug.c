@@ -121,11 +121,9 @@ static void TrecFailCondition( void )
 // set TrecHit here if failure detected:
 // Here you may put any condition you like
 {
-#ifdef TRMEM
     if( !ValidateMem() ) {
         TrecHit = true;
     }
-#endif
 }
 
 void Trec( const char *str, ... )

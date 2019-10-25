@@ -90,10 +90,11 @@ extra_cpp_flags += -DINCL_MSGTEXT
 extra_cpp_flags += -DIDE_PGM
 !endif
 
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE
-extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 ###################
 # linker flags .EXE

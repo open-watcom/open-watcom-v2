@@ -70,6 +70,8 @@ extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 extra_cpp_flags += -DUSE_VIRTMEM
 !endif
 
+extra_cpp_flags_regexp = -DALLOC=WBRAlloc
+
 extra_c_flags_i86 = -zc -zm
 !ifdef DBG
 extra_c_flags_i86 += -zw
@@ -83,7 +85,7 @@ extra_cxx_flags += -db
 !endif
 
 extra_c_flags_trmem = -I"$(trmem_dir)"
-extra_c_flags_regexp = -I"$(posix_dir)/h" -DALLOC=WBRAlloc -fi="../h/brmem.h"
+extra_c_flags_regexp = -I"$(posix_dir)/h" -fi="../h/brmem.h"
 extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
 !ifneq host_os axp
 brmem_flags = -of+
@@ -131,7 +133,7 @@ $(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cp
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 dbrmem.obj : brmem.cpp
 

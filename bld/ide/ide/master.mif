@@ -55,8 +55,11 @@ extra_cpp_flags = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 
 !ifeq host_os win
-extra_c_flags_link  = -DSERVER
+extra_cpp_flags_link  = -DSERVER
+!endif
+
 !ifdef __WATCOM_TOOLS__
+!ifeq host_os win
 extra_c_flags_link  += -3
 !endif
 !endif

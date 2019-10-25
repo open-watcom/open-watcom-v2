@@ -44,8 +44,9 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_c_flags_genmsomf = -DMSG_WOMP_BASE=200
-extra_c_flags_fixup = -DMSG_WOMP_BASE=200
+extra_cpp_flags_genmsomf = -DMSG_WOMP_BASE=200
+extra_cpp_flags_fixup = -DMSG_WOMP_BASE=200
+
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 

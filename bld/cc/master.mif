@@ -69,24 +69,28 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags += -D_CGDLL
 !endif
 
+extra_cpp_flags_cmsg     = -D__msg_file_prefix=$(intname)
+!ifeq cc_dll 1
+! ifeq host_os dos
+extra_cpp_flags_ideentry = -DCAUSEWAY
+! endif
+!else
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+!endif
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+
+
 extra_c_flags_386 = -3r
 
-!ifndef bootstrap
-!ifeq release 1
+!ifdef __WATCOM_TOOLS__
+! ifndef bootstrap
+!  ifeq release 1
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
-!endif
-!endif
-extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
-!ifeq cc_dll 1
-!ifeq host_os dos
-extra_c_flags_ideentry = -DCAUSEWAY
-!endif
-!else
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE
+!  endif
+! endif
 !endif
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 #
 # WLINK .EXE options

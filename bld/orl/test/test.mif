@@ -2,27 +2,27 @@ proj_name = objread
 
 objread_autodepends = .autodepend
 
+objread_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
 
 .c: $(orl_dir)/test/c;$(trmem_dir)
 .h: $(orl_dir)/test/h;$(trmem_dir)
 
-inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h" -I"$(trmem_dir)"
+inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h"
 
-!ifeq release 0
-extra_c_flags_test      = -DTRMEM -of+
-extra_c_flags_trmemcvr  = -DTRMEM -of+
-extra_c_flags_trmem     = -DTRMEM -of+
-!endif
+extra_cpp_flags_test      = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_trmemcvr  = $(trmem_cpp_cover_cflags)
 
-objs = test.obj trmemcvr.obj
-!ifeq release 0
-objs += trmem.obj
-!endif
+extra_c_flags_test        = $(trmem_cover_cflags)
+extra_c_flags_trmemcvr    = $(trmem_cover_cflags)
+
+objs = test.obj trmemcvr.obj $(trmem_objs)
 
 libs = $(orl_lib)
 

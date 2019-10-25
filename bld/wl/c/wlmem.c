@@ -215,13 +215,17 @@ void *LnkRealloc( void *src, size_t size )
     return( dest );
 }
 
-#ifdef TRMEM
 int ValidateMem( void )
 /*********************/
 {
+#ifdef TRMEM
     return( _trmem_validate_all( TrHdl ) );
+#else
+    return( true );
+#endif
 }
 
+#ifdef TRMEM
 void PrintAllMem( void )
 /**********************/
 {

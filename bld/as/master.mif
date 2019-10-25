@@ -100,10 +100,7 @@ as_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu))$- $(as_stand_objs)
 _subdir_ =
 asi_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu))$- $(as_inline_objs)
 
-asi_test_objs = asitest.obj trmemcvr.obj
-!ifeq release 0
-asi_test_objs += trmem.obj
-!endif
+asi_test_objs = asitest.obj $(trmem_objs) $(trmemcvr_objs)
 
 # cflags
 #########
@@ -112,8 +109,9 @@ extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags = $(extra_cppflags_$(target_cpu))
 !ifeq release 0
-extra_cpp_flags += -DTRMEM -DYYDEBUG -DAS_DEBUG_DUMP
+extra_cpp_flags += -DYYDEBUG -DAS_DEBUG_DUMP
 !endif
+extra_cpp_flags += $(trmem_cpp_cover_cflags)
 
 extra_c_flags = -fh
 

@@ -52,7 +52,8 @@ wgrep_objs   = wgrep.obj $(bld_cl_extra_objs_gen)
 
 extra_cpp_flags = -DSTANDALONE_RX
 
-extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
+extra_cpp_flags_genverrc = -D_VERSION=$(bld_ver)
+
 extra_c_flags_utils = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 

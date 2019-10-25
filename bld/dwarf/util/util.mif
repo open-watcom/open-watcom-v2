@@ -11,9 +11,14 @@
 inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)" -I"../h"
 
 !ifeq release 0
+extra_cpp_flags_trmemcvr  = -dTRMEM
+extra_cpp_flags_trmem     = -dTRMEM
+!endif
+
+!ifeq release 0
 extra_c_flags_test      = -of+
-extra_c_flags_trmemcvr  = -dTRMEM -of+
-extra_c_flags_trmem     = -dTRMEM -of+
+extra_c_flags_trmemcvr  = -of+
+extra_c_flags_trmem     = -of+
 !endif
 
 dwdump_objs = dwdump.obj testdump.obj trmemcvr.obj
