@@ -202,8 +202,8 @@ global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
 global int          Toggles;            /* global toggle flags */
-global unsigned     ErrLimit;
 
+global unsigned     ErrLimit;
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
 
 global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
@@ -729,7 +729,7 @@ extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
 extern void         SetCurrInfo(const char *);
 extern void         XferPragInfo(const char*,const char*);
-extern void         WarnEnableDisable(int level,msg_codes msgnum);
+extern void         WarnEnableDisable(bool enabled,msg_codes msgnum);
 extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );

@@ -658,7 +658,7 @@ static msg_status_t doError(    // ISSUE ERROR
                 internalErrCount++;
             }
             return( MS_NULL );
-        } else if( ErrLimit == -1 ) {
+        } else if( ErrLimit == ERRLIMIT_NOMAX ) {
             /* unlimited messages */
             flag.too_many = false;
         } else if( ErrCount < ErrLimit ) {
@@ -814,46 +814,57 @@ bool CErrOccurred(
     return( false );
 }
 
-static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
-    int level )                 // - level to be validated
+static void save_msg_levels( void )
 {
-    bool ok;                    // - return: true ==> good level
-
-    if( level > WLEVEL_MAX ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    } else {
-        ok = true;
-    }
-    return( ok );
-}
-
-
-static void changeLevel(        // EFFECT A LEVEL CHANGE
-    int level,                  // - new level
-    MSG_NUM msgnum )            // - message number
-{
-    DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
     if( NULL == orig_msg_level ) {
         orig_msg_level = CMemAlloc( sizeof( msg_level ) );
         memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
     }
-    msg_level[msgnum].level = level;
-    if( level < WLEVEL_MAX ) {
-        if( !msg_level[msgnum].enabled ) {
-            /* enable message */
-            msg_level[msgnum].enabled = true;
-        }
-    } else {
-        if( msg_level[msgnum].enabled ) {
-            /* disable message */
-            msg_level[msgnum].enabled = false;
+}
+
+static void restore_msg_levels( void )
+{
+    if( NULL != orig_msg_level ) {
+        memcpy( msg_level, orig_msg_level, sizeof( msg_level ) );
+        CMemFreePtr( &orig_msg_level );
+    }
+}
+
+static void changeLevel(        // EFFECT A LEVEL CHANGE
+    unsigned level,             // - new level
+    MSG_NUM msgnum )            // - message number
+{
+    DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
+    if( msg_level[msgnum].level != level ) {
+        save_msg_levels();
+        msg_level[msgnum].level = level;
+        if( level < WLEVEL_MAX ) {
+            if( !msg_level[msgnum].enabled ) {
+                /* enable message */
+                msg_level[msgnum].enabled = true;
+            }
+        } else {
+            if( msg_level[msgnum].enabled ) {
+                /* disable message */
+                msg_level[msgnum].enabled = false;
+            }
         }
     }
 }
 
+static void changeStatus(       // EFFECT A STATUS CHANGE
+    bool enabled,               // - new status
+    MSG_NUM msgnum )            // - message number
+{
+    DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
+    if( msg_level[msgnum].enabled != enabled ) {
+        save_msg_levels();
+        msg_level[msgnum].enabled = enabled;
+    }
+}
+
 void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
-    int level,              // - new level
+    bool enabled,           // - new status
     MSG_NUM msgnum )        // - message number
 {
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
@@ -869,17 +880,13 @@ void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :
-        if( NULL == orig_msg_level ) {
-            orig_msg_level = CMemAlloc( sizeof( msg_level ) );
-            memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
-        }
-        msg_level[msgnum].enabled = ( level != WLEVEL_DISABLE );
+        changeStatus( enabled, msgnum );
         break;
     }
 }
 
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
-    int level,                  // - new level
+    unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 {
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
@@ -901,19 +908,17 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
 }
 
 void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
-    int level )                 // - new level
+    unsigned level )            // - new level
 {
     MSG_NUM msgnum;             // - index for number
 
-    if( warnLevelValidate( level ) ) {
-        for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
-            switch( msg_level[msgnum].type ) {
-            case MSG_TYPE_WARNING :
-            case MSG_TYPE_ANSI :
-            case MSG_TYPE_ANSIWARN :
-                changeLevel( level, msgnum );
-                break;
-            }
+    for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
+        switch( msg_level[msgnum].type ) {
+        case MSG_TYPE_WARNING :
+        case MSG_TYPE_ANSI :
+        case MSG_TYPE_ANSIWARN :
+            changeLevel( level, msgnum );
+            break;
         }
     }
 }
@@ -1052,10 +1057,7 @@ static void errFileFini(        // CLOSE ERROR FILE
     }
     CMemFree( ErrorFileName );
     CMemFreePtr( &reserveMem );
-    if( NULL != orig_msg_level ) {
-        memcpy( msg_level, orig_msg_level, sizeof( msg_level ) );
-        CMemFreePtr( &orig_msg_level );
-    }
+    restore_msg_levels();
     FreeInternationalData( internationalData );
 }
 
@@ -1066,6 +1068,7 @@ pch_status PCHReadErrWarnData( void )
 {
     msg_level_info  tmp_buff[ARRAY_SIZE( msg_level )];
     msg_level_info  *orig_levels;
+    msg_level_info  *pch_levels;
     MSG_NUM         msgnum;
 
     PCHReadVar( tmp_buff );
@@ -1074,10 +1077,12 @@ pch_status PCHReadErrWarnData( void )
     } else {
         orig_levels = msg_level;
     }
+    pch_levels = tmp_buff;
     for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
-        if( memcmp( &tmp_buff[msgnum], &orig_levels[msgnum], sizeof( *orig_levels ) ) ) {
+        if( memcmp( pch_levels, orig_levels, sizeof( *orig_levels ) ) ) {
             // reflect a change from the header file into current levels
-            changeLevel( tmp_buff[msgnum].level, msgnum );
+            changeLevel( pch_levels->level, msgnum );
+            changeStatus( pch_levels->enabled, msgnum );
         }
     }
     return( PCHCB_OK );

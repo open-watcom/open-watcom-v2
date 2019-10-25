@@ -431,6 +431,21 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 }
 
 
+static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
+    unsigned level )            // - level to be validated
+{
+    bool ok;                    // - return: true ==> good level
+
+    if( level > WLEVEL_MAX ) {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        ok = false;
+    } else {
+        ok = true;
+    }
+    return( ok );
+}
+
+
 // forms: #pragma warning # level   (change message # to have level "level)
 //      : #pragma warning * level   (change all messages to have level "level)
 //
@@ -441,7 +456,7 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     void )
 {
     unsigned msgnum;            // - message number
-    int level;                  // - new level
+    unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
 
@@ -463,10 +478,12 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
         if( CurToken == T_CONSTANT ) {
             level = U32Fetch( Constant64 );
             NextToken();
-            if( change_all ) {
-                WarnChangeLevels( level );
-            } else {
-                WarnChangeLevel( level, msgnum );
+            if( warnLevelValidate( level ) ) {
+                if( change_all ) {
+                    WarnChangeLevels( level );
+                } else {
+                    WarnChangeLevel( level, msgnum );
+                }
             }
         } else {
             CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
@@ -500,7 +517,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
 
         // Enable message by setting its level to the lowest possible value.
         if( !error_occurred ) {
-            WarnEnableDisable( WLEVEL_ENABLE, msgnum );
+            WarnEnableDisable( true, msgnum );
         }
 
         if( CurToken != T_COMMA ) {
@@ -535,7 +552,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 
         // Disable message by setting its level to the highest possible value.
         if( !error_occurred ) {
-            WarnEnableDisable( WLEVEL_DISABLE, msgnum );
+            WarnEnableDisable( false, msgnum );
         }
 
         if( CurToken != T_COMMA ) {

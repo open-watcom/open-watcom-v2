@@ -1273,8 +1273,8 @@ static void Set_WO( void )          { CompFlags.using_overlays = true; }
 static void Set_WPX( void )         { Check_global_prototype = true; }
 static void Set_WX( void )          { WngLevel = WLEVEL_WX; }
 static void SetWarningLevel( void ) { WngLevel = OptValue; if( WngLevel > WLEVEL_MAX ) WngLevel = WLEVEL_MAX; }
-static void Set_WCD( void )         { WarnEnableDisable( WLEVEL_DISABLE, OptValue ); }
-static void Set_WCE( void )         { WarnEnableDisable( WLEVEL_ENABLE, OptValue ); }
+static void Set_WCD( void )         { WarnEnableDisable( false, OptValue ); }
+static void Set_WCE( void )         { WarnEnableDisable( true, OptValue ); }
 
 #if _CPU == 386
 static void Set_XGV( void )         { TargetSwitches |= INDEXED_GLOBALS; }
@@ -2270,16 +2270,16 @@ void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
     /* Add precision warning but disabled by default */
-    WarnEnableDisable( WLEVEL_DISABLE, ERR_LOSE_PRECISION );
+    WarnEnableDisable( false, ERR_LOSE_PRECISION );
     /* Warning about non-prototype declarations is disabled by default
      * because Windows and OS/2 API headers use it
      */
-    WarnEnableDisable( WLEVEL_DISABLE, ERR_OBSOLETE_FUNC_DECL );
+    WarnEnableDisable( false, ERR_OBSOLETE_FUNC_DECL );
     /* Warning about pointer truncation during cast is disabled by
      * default because it would cause too many build breaks right now
      * by correctly diagnosing broken code.
      */
-    WarnEnableDisable( WLEVEL_DISABLE, ERR_CAST_POINTER_TRUNCATION );
+    WarnEnableDisable( false, ERR_CAST_POINTER_TRUNCATION );
     InitModInfo();
     InitCPUModInfo();
 #if _CPU == 386

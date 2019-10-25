@@ -311,7 +311,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     MsgDisplayLineArgs( "Compiling: ", WholeFName, NULL );
                 }
             }
-            if( 0 < ErrCount ) {
+            if( ErrCount != 0 ) {
                 CompFlags.cmdline_error = true;
             }
             PTypeCheckInit();       /* must come after command line parsing */
@@ -473,7 +473,7 @@ static int front_end(           // FRONT-END PROCESSING
 #endif
         CompInfo.exit_jmpbuf = exit_jmpbuf;
         CtxSetCurrContext( CTX_INIT );
-//printf( "ErrLimit = %d\n", ErrLimit );
+//printf( "ErrLimit = %u\n", ErrLimit );
         ExitPointAcquire( cpp );
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );

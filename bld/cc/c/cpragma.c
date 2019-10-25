@@ -900,86 +900,52 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static bool warnLevelValidate( int *level )
-/*****************************************/
+static bool warnLevelValidate( int level )
+/****************************************/
 /* VALIDATE WARNING LEVEL, returns true ==> good level */
 {
     bool ok;
 
     ok = true;
-    if( *level > WLEVEL_MAX ) {
+    if( level > WLEVEL_MAX ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        *level = WLEVEL_MAX;
         ok = false;
     }
     return( ok );
 }
 
-static void change_msg_level( int level, int msg_index )
+static void changeLevel( unsigned level, int msg_index )
 /******************************************************/
 {
-    msg_level[msg_index].level = level;
-    if( level < WLEVEL_MAX ) {
-        if( !msg_level[msg_index].enabled ) {
-            /* enable message */
-            msg_level[msg_index].enabled = true;
-        }
-    } else {
-        if( msg_level[msg_index].enabled ) {
-            /* disable message */
-            msg_level[msg_index].enabled = false;
-        }
-    }
-}
-
-static void warnChangeLevel( int level, msg_codes msgnum )
-/********************************************************/
-/* CHANGE WARNING LEVEL FOR A MESSAGE */
-{
-    int msg_index;
-
-    msg_index = GetMsgIndex( msgnum );
-    if( msg_index < 0 ) {
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
-        return;
-    }
-    switch( msg_level[msg_index].type ) {
-    case MSG_TYPE_ERROR :
-    case MSG_TYPE_INFO :
-    case MSG_TYPE_ANSIERR :
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
-        break;
-    case MSG_TYPE_WARNING :
-    case MSG_TYPE_ANSI :
-    case MSG_TYPE_ANSIWARN :
-        change_msg_level( level, msg_index );
-        break;
-    }
-}
-
-static void warnChangeLevels( int level )
-/***************************************/
-/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
-{
-    int     msg_index;          // - index for number
-
-    if( warnLevelValidate( &level ) ) {
-        for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
-            switch( msg_level[msg_index].type ) {
-            case MSG_TYPE_WARNING :
-            case MSG_TYPE_ANSI :
-            case MSG_TYPE_ANSIWARN :
-                change_msg_level( level, msg_index );
-                break;
+    if( msg_level[msg_index].level != level ) {
+        msg_level[msg_index].level = level;
+        if( level < WLEVEL_MAX ) {
+            if( !msg_level[msg_index].enabled ) {
+                /* enable message */
+                msg_level[msg_index].enabled = true;
+            }
+        } else {
+            if( msg_level[msg_index].enabled ) {
+                /* disable message */
+                msg_level[msg_index].enabled = false;
             }
         }
     }
 }
 
-void WarnEnableDisable( int level, msg_codes msgnum )
-/***************************************************/
+static void changeStatus( bool enabled, int msg_index )
+/*****************************************************/
 {
-    int                 msg_index;
+    if( msg_level[msg_index].enabled != enabled ) {
+        msg_level[msg_index].enabled = enabled;
+    }
+}
+
+static void warnChangeLevel( unsigned level, msg_codes msgnum )
+/*************************************************************/
+/* CHANGE WARNING LEVEL FOR A MESSAGE */
+{
+    int     msg_index;
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index < 0 ) {
@@ -995,7 +961,48 @@ void WarnEnableDisable( int level, msg_codes msgnum )
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
     case MSG_TYPE_ANSIWARN :
-        msg_level[msg_index].enabled = ( level != WLEVEL_DISABLE );
+        changeLevel( level, msg_index );
+        break;
+    }
+}
+
+static void warnChangeLevels( unsigned level )
+/********************************************/
+/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
+{
+    int     msg_index;          // - index for number
+
+    for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
+        switch( msg_level[msg_index].type ) {
+        case MSG_TYPE_WARNING :
+        case MSG_TYPE_ANSI :
+        case MSG_TYPE_ANSIWARN :
+            changeLevel( level, msg_index );
+            break;
+        }
+    }
+}
+
+void WarnEnableDisable( bool enabled, msg_codes msgnum )
+/******************************************************/
+{
+    int     msg_index;
+
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        changeStatus( enabled, msg_index );
         break;
     }
 }
@@ -1034,10 +1041,12 @@ static bool pragWarning( void )
         if( CurToken == T_CONSTANT ) {
             level = Constant;
             NextToken();
-            if( change_all ) {
-                warnChangeLevels( level );
-            } else {
-                warnChangeLevel( level, msgnum );
+            if( warnLevelValidate( level ) ) {
+                if( change_all ) {
+                    warnChangeLevels( level );
+                } else {
+                    warnChangeLevel( level, msgnum );
+                }
             }
         } else {
             CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
@@ -1055,15 +1064,15 @@ static bool pragWarning( void )
  *
  * disable/enable display of selected message number
  */
-static void pragEnableDisableMessage( int level )
-/***********************************************/
+static void pragEnableDisableMessage( bool enabled )
+/**************************************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         while( CurToken == T_CONSTANT ) {
-            WarnEnableDisable( level, Constant );
+            WarnEnableDisable( enabled, Constant );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1636,9 +1645,9 @@ void CPragma( void )
                 check_end = false;
             }
         } else if( pragmaNameRecog( "disable_message" ) ) {
-            pragEnableDisableMessage( WLEVEL_DISABLE );
+            pragEnableDisableMessage( false );
         } else if( pragmaNameRecog( "enable_message" ) ) {
-            pragEnableDisableMessage( WLEVEL_ENABLE );
+            pragEnableDisableMessage( true );
         } else if( pragmaNameRecog( "message" ) ) {
             pragMessage();
         } else if( pragmaNameRecog( "intrinsic" ) ) {

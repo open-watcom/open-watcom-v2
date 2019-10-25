@@ -1064,13 +1064,13 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->wcd ) {
         OPT_NUMBER *n;
         for( n = data->wcd_value; n != NULL; n = n->next ) {
-            WarnChangeLevel( WLEVEL_DISABLE, n->number );
+            WarnEnableDisable( false, n->number );
         }
     }
     if( data->wce ) {
         OPT_NUMBER *n;
         for( n = data->wce_value; n != NULL; n = n->next ) {
-            WarnChangeLevel( WLEVEL_ENABLE, n->number );
+            WarnEnableDisable( true, n->number );
         }
     }
     if( data->we ) {

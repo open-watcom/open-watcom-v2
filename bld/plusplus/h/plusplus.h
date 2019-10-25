@@ -258,4 +258,6 @@ global int          WngLevel;       // - warning severity level
 global unsigned     TargetSystem;   // - target system
 global COMP_FLAGS   CompFlags;      // - compiler flags
 global void         *Environment;   // - var for Suicide()
-global int          ErrLimit;       // - error limit
+
+global error_state_t    ErrLimit;   // - error limit
+#define ERRLIMIT_NOMAX  ((unsigned)-1)

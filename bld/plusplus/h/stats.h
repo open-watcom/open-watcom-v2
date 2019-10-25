@@ -44,9 +44,9 @@
                                 // DATA
 global unsigned SrcLineCount;   // - # of lines in primary source file
 global unsigned IncLineCount;   // - # of lines in all included files
-global unsigned ErrCount;       // - total # of errors encountered
 global unsigned WngCount;       // - total # of warnings encountered
 
+global error_state_t ErrCount;  // - total # of errors encountered
 
 #ifdef XTRA_RPT
 

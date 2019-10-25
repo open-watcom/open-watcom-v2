@@ -181,15 +181,15 @@ void SetErrLoc(                 // SET ERROR LOCATION
     TOKEN_LOCN *locn )          // - error location
 ;
 void WarnEnableDisable(         // ENABLE/DISABLE A MESSAGE
-    int level,                  // - disable/enable level
+    bool enabled,               // - new status
     MSG_NUM msgnum )            // - message number
 ;
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
-    int level,                  // - new level
+    unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 ;
 void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
-    int level )                 // - new level
+    unsigned level )            // - new level
 ;
 void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
     SYMBOL fn )                 // - function
