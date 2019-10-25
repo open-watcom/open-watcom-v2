@@ -49,6 +49,7 @@ added support for 64-bit COFF objects and 64-bit PE executable
 .bull
 default stack size for Windows NT was changed to 1 MB for better
 compatibility with Microsoft linker
+.endbull 
 .np
 C run-time library changes:
 .begbull
