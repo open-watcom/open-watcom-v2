@@ -38,6 +38,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 void *  WBRAlloc( size_t );
 void    WBRFree( void * );
 void *  WBRRealloc( void *, size_t );
@@ -45,4 +46,5 @@ void *  WBRRealloc( void *, size_t );
 #ifdef __cplusplus
 };
 #endif
+
 #endif

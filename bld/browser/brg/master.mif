@@ -1,14 +1,18 @@
 proj_name = merge
 name = wbrg
+
 merge_autodepends = .autodepend
+
+merge_trmem = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 !include osi.mif
 
 .c: ../cpp;$(trmem_dir)
-.cpp: ../cpp;$(browse_dir)/cpp;$(trmem_dir)
+.cpp: ../cpp;$(browse_dir)/cpp
 
 objs = &
     blip.obj     &
@@ -41,18 +45,9 @@ objs = &
 !ifndef NDEBUG
 objs += debuglog.obj
 !endif
-
-!ifeq merge_trmem 1
-objs += dbrmem.obj trmem.obj trmemcpp.obj
-!else
-objs += brmem.obj
-!endif
+objs += brmem.obj $(trmem_objs)
 
 inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
-
-!ifneq host_cpu axp
-brmem_flags = -of+
-!endif
 
 extra_cpp_flags     = -DSTANDALONE_RX=1 -DSTANDALONE_MERGER
 !ifndef NDEBUG
@@ -61,13 +56,14 @@ extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
 !endif
 
-extra_cpp_flags_trmemcpp = -DTRACKER
-    
+!ifdef trmem_cpp_cover_cflags
+extra_cpp_flags_brmem = -DTRACKER
+!endif
+
 extra_cxx_flags     = -xs-ew
 
-extra_c_flags_trmem    = -I"$(trmem_dir)"
-extra_c_flags_trmemcpp = -I"$(trmem_dir)" $(brmem_flags)
-extra_c_flags_dbrmem   = $(brmem_flags) -I"$(trmem_dir)"
+extra_c_flags_trmem  = $(trmem_cflags)
+extra_c_flags_brmem  = $(trmem_cover_cflags)
 
 # linker
 extra_l_flags        = op stack=16k
