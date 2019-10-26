@@ -26,12 +26,11 @@ additional_cleanup = *.u *.int *.gc y.out ytab.* *.mbr $(dll_subdir)/*.mbr
 !include dllrule.mif
 !include deftarg.mif
 !include osi.mif
+!include trmem.mif
 
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif
 !include $(wasm_dir)/client.mif
-
-!include trmem.mif
 
 !include ../../ppobjs.mif
 
@@ -49,9 +48,6 @@ pre_obj_deps = &
 pre_obj_deps += wpp$(target_cpu)01.int
 
 inc_dirs = -I. -I.. -I"../../h"
-!ifeq plusplus_trmem 1
-inc_dirs += -I"$(trmem_dir)"
-!endif
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
 inc_dirs += $(dwarfw_inc_dirs)
@@ -80,12 +76,7 @@ extra_cpp_flags_initfini = -DSPLIT_REQD
 extra_cpp_flags_ideentry = -Dwpp_dll
 extra_cpp_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dllname)
 !endif
-!ifeq plusplus_trmem 1
-extra_cpp_flags_memmgr_axp = -DTRACKER
-extra_cpp_flags_memmgr_ppc = -DTRACKER
-extra_cpp_flags_memmgr_386 = -DTRACKER
-extra_cpp_flags_memmgr = $(extra_cpp_flags_memmgr_$(host_cpu))
-!endif
+extra_cpp_flags_memmgr = $(trmem_cpp_flags)
 
 extra_c_flags =
 !ifeq release 0
@@ -126,13 +117,8 @@ extra_c_flags_pcheader = $(extra_c_flags_pcheader_$(host_cpu))
 extra_c_flags_srcfile_386 = -4r
 extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
 ! endif
-! ifeq plusplus_trmem 1
-!  ifndef bootstrap
-extra_c_flags_memmgr_386 += -of+
-!  endif
-extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))
-! endif
 !endif
+extra_c_flags_memmgr   = $(trmem_cover_cflags)
 
 #
 # wlink .EXE options

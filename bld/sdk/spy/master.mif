@@ -11,11 +11,10 @@ sys_windowed = 1
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
-
-!include trmem.mif
 
 .EXTENSIONS: .res .rc
 

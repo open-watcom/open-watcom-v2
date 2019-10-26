@@ -16,16 +16,17 @@ additional_cleanup = *.u
 !include defrule.mif
 !include deftarg.mif
 !include osi.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
 !include ../dis.mif
 
-!include wres.mif
-!include trmem.mif
-
 libs = $(orl_lib) $(wres_lib)
 
 extra_cpp_flags = -D__DISASM__
+
+extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
@@ -43,28 +44,29 @@ inc_dirs += -I"$(comp_cfg_dir)/h"
 .rc : $(disasm_dir)/stand/h
 .msg : $(disasm_dir)/stand
 
-stand_objs      = args.obj &
-                buffer.obj &
-                disdwarf.obj &
-                externs.obj &
-                formasm.obj &
-                fini.obj &
-                groups.obj &
-                identsec.obj &
-                init.obj &
-                hashtabl.obj &
-                labproc.obj &
-                main.obj &
-                memfuncs.obj &
-                msg.obj &
-                pass1.obj &
-                pass2.obj &
-                pdata.obj &
-                print.obj &
-                publics.obj &
-                srcmix.obj &
-                refproc.obj &
-                cmdlhelp.obj
+stand_objs = &
+    args.obj &
+    buffer.obj &
+    disdwarf.obj &
+    externs.obj &
+    formasm.obj &
+    fini.obj &
+    groups.obj &
+    identsec.obj &
+    init.obj &
+    hashtabl.obj &
+    labproc.obj &
+    main.obj &
+    memfuncs.obj &
+    msg.obj &
+    pass1.obj &
+    pass2.obj &
+    pdata.obj &
+    print.obj &
+    publics.obj &
+    srcmix.obj &
+    refproc.obj &
+    cmdlhelp.obj
 
 objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
 

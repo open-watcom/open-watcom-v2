@@ -19,8 +19,8 @@ dwarfutil_trmem = 1
 
 inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"../h"
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_dwdump   = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_dwdump   = $(trmem_cpp_flags)
 
 extra_c_flags_trmemcvr  = $(trmem_cover_cflags)
 extra_c_flags_trmem     = $(trmem_cflags)

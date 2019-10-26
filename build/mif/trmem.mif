@@ -1,6 +1,6 @@
 !ifeq $(proj_name)_trmem 1
 !ifeq release 0
-trmem_cpp_cover_cflags = -DTRMEM
+trmem_cpp_flags = -DTRMEM
 !endif
 !endif
 trmem_cflags = -I"$(trmem_dir)"

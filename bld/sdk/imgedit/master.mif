@@ -12,13 +12,12 @@ memory_model_i86 = l
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
-
-!include wres.mif
-!include trmem.mif
 
 .JUST_ENOUGH
 

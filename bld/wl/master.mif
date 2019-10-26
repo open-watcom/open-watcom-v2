@@ -5,6 +5,10 @@
 
 proj_name = wlink
 
+!ifndef wlink_autodepends
+wlink_autodepends = .AUTODEPEND
+!endif
+
 wlink_trmem = 1
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
@@ -15,10 +19,6 @@ dllname     = bwlinkd
 !else
 exename     = wlink
 dllname     = wlinkd
-!endif
-
-!ifndef wlink_autodepends
-wlink_autodepends = .AUTODEPEND
 !endif
 
 additional_cleanup = usage.u
@@ -34,13 +34,11 @@ suppress_zc = 1
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
-
-!include wres.mif
-
-!include trmem.mif
 
 !include ../wlobjs.mif
 
@@ -69,10 +67,10 @@ extra_cpp_flags_rcstr       = -DINSIDE_WLINK
 extra_cpp_flags_exerespe    = -DINSIDE_WLINK
 extra_cpp_flags_sharedio    = -DINSIDE_WLINK
 extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
-extra_cpp_flags_wlmem	    = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_wlmem	    = $(trmem_cpp_flags)
 
 extra_c_flags_trmem         = $(trmem_cflags)
-extra_c_flags_wlmem	    = $(trmem_cover_cflags)
+extra_c_flags_wlmem	        = $(trmem_cover_cflags)
 
 #####################
 # linker .EXE options

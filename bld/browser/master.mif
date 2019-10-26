@@ -70,9 +70,7 @@ extra_cpp_flags += -DUSE_VIRTMEM
 !endif
 
 extra_cpp_flags_regexp = -DALLOC=WBRAlloc
-!ifdef trmem_cpp_cover_cflags
-extra_cpp_flags_brmem = -DTRACKER
-!endif
+extra_cpp_flags_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
 !ifdef gen_browse_file

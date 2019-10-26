@@ -28,7 +28,6 @@ fpu_flags_qnx_386 = -fpc
 !include defrule.mif
 !include deftarg.mif
 !include osi.mif
-
 !include wres.mif
 !include trmem.mif
 
@@ -45,10 +44,11 @@ extra_cpp_flags += -DDEBUG_OUT
 !endif
 
 extra_cpp_flags_genmsomf = -DMSG_WOMP_BASE=200
-extra_cpp_flags_fixup = -DMSG_WOMP_BASE=200
+extra_cpp_flags_fixup    = -DMSG_WOMP_BASE=200
+extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
 
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
 
 #lflags stuff
 #########
@@ -65,46 +65,45 @@ extra_l_flags_linux = option stack=12k
 .c : ../c;$(womp_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
 objs = $(extra_objs_$(host_os)_$(host_cpu)) &
-    main.obj            &
-    write.obj           &
-    fatal.obj           &
-    womputil.obj        &
-    direct.obj          &
-    posndir.obj         &
-    asmeval.obj         &
-    asmalloc.obj        &
-    asmmsg.obj          &
-    wasmmsg.obj         &
-    macro.obj           &
-    condasm.obj         &
-    breakout.obj        &
-    asmstruc.obj        &
-    asmexpnd.obj        &
-    mangle.obj          &
-    for.obj             &
-    objio.obj           &
-    carve.obj           &
-    genmsomf.obj        &
-    objrec.obj          &
-    queue.obj           &
-    fixup.obj           &
-    lifix.obj           &
-    asmins.obj          &
-    asmscan.obj         &
-    asmline.obj         &
-    asmsym.obj          &
-    tbyte.obj           &
-    asmlabel.obj        &
-    asmfixup.obj        &
-    asmmatch.obj        &
-    asmdata.obj         &
-    asmjump.obj         &
-    autodept.obj        &
-    dostimet.obj        &
-    queues.obj          &
-    pathlist.obj
-
-objs += $(trmem_objs)
+    main.obj &
+    write.obj &
+    fatal.obj &
+    womputil.obj &
+    direct.obj &
+    posndir.obj &
+    asmeval.obj &
+    asmalloc.obj &
+    asmmsg.obj &
+    wasmmsg.obj &
+    macro.obj &
+    condasm.obj &
+    breakout.obj &
+    asmstruc.obj &
+    asmexpnd.obj &
+    mangle.obj &
+    for.obj &
+    objio.obj &
+    carve.obj &
+    genmsomf.obj &
+    objrec.obj &
+    queue.obj &
+    fixup.obj &
+    lifix.obj &
+    asmins.obj &
+    asmscan.obj &
+    asmline.obj &
+    asmsym.obj &
+    tbyte.obj &
+    asmlabel.obj &
+    asmfixup.obj &
+    asmmatch.obj &
+    asmdata.obj &
+    asmjump.obj &
+    autodept.obj &
+    dostimet.obj &
+    queues.obj &
+    pathlist.obj &
+    $(trmem_objs)
 
 depend_objs = $(extra_link_res_$(host_os)) asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
 

@@ -4,17 +4,13 @@ proj_name = womp
 womp_autodepends = .autodepend
 !endif
 
-!ifeq release 0
-!ifndef wmake_trmem
-wmake_trmem = 1
-!endif
-!endif
+womp_trmem = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
 !include wres.mif
+!include trmem.mif
 
 inc_dirs = -I. -I"$(womp_dir)/h"
 
@@ -54,21 +50,13 @@ objs =              &
     segment.obj     &
     wat2can0.obj    &
     wat2can1.obj    &
-    wpmsg.obj
+    wpmsg.obj	    &
+    $(trmem_objs)
 
-!ifeq wmake_trmem 1
-objs += trmem.obj
-!endif
+extra_cpp_flags_memory = $(trmem_cpp_flags)
 
-!ifeq wmake_trmem 1
-extra_cpp_flags_memory += -dTRACK
-!endif
-
-!ifdef __WATCOM_TOOLS__
-! ifeq wmake_trmem 1
-extra_c_flags_memory += -of+
-! endif
-!endif
+extra_c_flags_memory = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 
 $(proj_name).exe : wmpmsg.gh wresui.res $(objs) $(__MAKEFILES__)
     @%make echo_link

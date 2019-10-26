@@ -8,9 +8,9 @@ name = $(proj_name)
 wv_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup = *.u *.gdl
-
 wv_trmem = 1
+
+additional_cleanup = *.u *.gdl
 
 !ifeq sys_windowed 1
 !ifeq host_os os2
@@ -21,6 +21,8 @@ os2pm = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
@@ -33,10 +35,6 @@ os2pm = 1
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
-
-!include wres.mif
-
-!include trmem.mif
 
 !include $(wv_dir)/wvobjs.mif
 
@@ -77,6 +75,8 @@ extra_cpp_flags += -DGUI_IS_GUI -DUI_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
+
+extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
 extra_c_flags = -s
 

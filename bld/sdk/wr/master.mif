@@ -19,14 +19,13 @@ win_yacc_file   = $(win_yacc_prefix)tab
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 .EXTENSIONS: .msg .res .rc
 
 !include $(commonui_dir)/client.mif
 !include $(cpp_dir)/client.mif
-
-!include wres.mif
-!include trmem.mif
 
 cpp_objs = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 
@@ -52,13 +51,14 @@ msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 
 extra_cpp_flags   = -DWRDLL
 
+extra_cpp_flags_wrmem = $(trmem_cpp_flags)
+
 extra_c_flags     = -s
 
 extra_c_flags_win = -zu-zw-zc
 
 # wr objects
 extra_c_flags_wrmem = $(trmem_cover_cflags)
-
 extra_c_flags_trmem = $(trmem_cflags)
 
 .c:   ../c;$(trmem_dir);$(cpp_c_dirs);$(wrc_dir)/c;$(watcom_dir)/c

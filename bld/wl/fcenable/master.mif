@@ -9,14 +9,13 @@ memory_model_i86 = s
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
 !include trmem.mif
 
 objs  = &
-fcenable.obj &
-mem.obj &
-records.obj &
-$(trmem_objs)
+    fcenable.obj &
+    mem.obj &
+    records.obj &
+    $(trmem_objs)
 
 !ifeq host_os os2
 objs += spawn.obj
@@ -24,11 +23,13 @@ objs += spawn.obj
 
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"../h" -I"$(trmem_dir)"
+inc_dirs = -I"../h"
 inc_dirs_os2 = -I"$(clib_dir)/process/h"
 
-extra_c_flags_mem      = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
+extra_cpp_flags_mem	= $(trmem_cpp_flags)
+
+extra_c_flags_mem   = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 
 fcenable.exe : $(objs) $(__MAKEFILES__)
     @%make echo_link

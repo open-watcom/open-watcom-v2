@@ -9,24 +9,25 @@ memory_model_i86 = c
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
 !include trmem.mif
 
 objs = &
-fileio.obj &
-keyword.obj &
-mem.obj &
-ms2wlink.obj &
-parsems.obj &
-utils.obj &
-$(trmem_objs)
+    fileio.obj &
+    keyword.obj &
+    mem.obj &
+    ms2wlink.obj &
+    parsems.obj &
+    utils.obj &
+    $(trmem_objs)
 
 .c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h"
 
-extra_c_flags_mem      = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
+extra_cpp_flags_mem = $(trmem_cpp_flags)
+
+extra_c_flags_mem   = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 
 extra_l_flags_os2 = op stack=8k
 

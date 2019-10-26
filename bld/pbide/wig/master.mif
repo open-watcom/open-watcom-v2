@@ -2,6 +2,8 @@ proj_name = wig
 
 wig_autodepends = .AUTODEPEND
 
+wig_trmem = 1
+
 !ifeq sys_dll 1
 xname = pbide.dll
 !else
@@ -15,27 +17,26 @@ suppress_zc = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
-objs += keywords.obj &
-        scanner.obj &
-        pbmem.obj &
-        hashtab.obj &
-        srusuprt.obj &
-        gen_cpp.obj &
-        options.obj &
-        list.obj &
-        filelist.obj &
-        wig.obj
+objs += &
+    keywords.obj &
+    scanner.obj &
+    pbmem.obj &
+    hashtab.obj &
+    srusuprt.obj &
+    gen_cpp.obj &
+    options.obj &
+    list.obj &
+    filelist.obj &
+    wig.obj &
+    $(trmemcvr_objs) $(trmem_objs)
 
-!ifeq release 0
-objs += trmemcvr.obj trmem.obj
-!endif
+.h : ../h;
+.c : ../c;$(trmem_dir)
+.y : ../c
 
-.h      : ../h;
-.c      : ../c;$(trmem_dir)
-.y      : ../c
-
-inc_dirs = -I. -I"../h" -I"$(trmem_dir)"
+inc_dirs = -I. -I"../h"
 
 lnk = wig.lnk
 
@@ -43,19 +44,19 @@ extra_cpp_flags =
 !ifeq sys_dll 1
 extra_cpp_flags += -D__DLL__
 !endif
-!ifeq release 0
-extra_cpp_flags += -DTRMEM
-!endif
+extra_cpp_flags_pbmem    = $(trmem_cpp_flags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags =
-!ifeq release 0
-extra_c_flags += -of+
-!endif
 !ifeq sys_dll 1
 extra_c_flags_win = -zw -zu
 !else
 extra_c_flags_win = -zW
 !endif
+
+extra_c_flags_pbmem    = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
 

@@ -112,9 +112,9 @@ extra_cpp_flags = $(extra_cppflags_$(target_cpu))
 !ifeq release 0
 extra_cpp_flags += -DYYDEBUG -DAS_DEBUG_DUMP
 !endif
-extra_cpp_flags_asitest = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_asmem = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_trmemcvr = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_asitest = $(trmem_cpp_flags)
+extra_cpp_flags_asmem = $(trmem_cpp_flags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags = -fh
 

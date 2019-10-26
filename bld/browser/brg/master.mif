@@ -56,9 +56,7 @@ extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
 !endif
 
-!ifdef trmem_cpp_cover_cflags
-extra_cpp_flags_brmem = -DTRACKER
-!endif
+extra_cpp_flags_brmem = $(trmem_cpp_flags)
 
 extra_cxx_flags     = -xs-ew
 

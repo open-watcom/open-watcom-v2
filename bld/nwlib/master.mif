@@ -5,6 +5,8 @@ proj_name       = wlib
 wlib_autodepends = .AUTODEPEND
 !endif
 
+wlib_trmem = 1
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -15,16 +17,13 @@ exename     = wlib
 dllname     = wlibd
 !endif
 
-!ifeq release 0
-wlib_trmem = 1
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
 !include osi.mif
 !include dllbase.mif
+!include trmem.mif
 
 !ifdef bootstrap
 !include $(orl_dir)/orlobjs.mif
@@ -32,8 +31,6 @@ wlib_trmem = 1
 !include wres.mif
 !include $(orl_dir)/client.mif
 !endif
-
-!include trmem.mif
 
 ##########
 # objects
@@ -92,6 +89,7 @@ extra_cpp_flags += -DIDE_PGM
 
 extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)

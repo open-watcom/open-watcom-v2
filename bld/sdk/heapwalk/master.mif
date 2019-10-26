@@ -12,11 +12,10 @@ sys_windowed=1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif
-
-!include trmem.mif
 
 extra_cpp_flags_ldstr = -dSPECIAL_STRING_LOADING
 

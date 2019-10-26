@@ -30,8 +30,9 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 !include deftarg.mif
 !include osi.mif
 !include trmem.mif
-!include $(cpp_dir)/client.mif
 !include wres.mif
+
+!include $(cpp_dir)/client.mif
 
 .EXTENSIONS : .y .key .gh .res .rc
 
@@ -104,7 +105,7 @@ misc_objs = &
     950.uni &
     kanji.uni
 
-!ifdef trmem_cpp_cover_cflags
+!ifdef trmem_cpp_flags
 rc_template = $(common_objs) $(trmem_objs)
 !else
 rc_template = $(common_objs) $(_subdir_)rcalloc1.obj $(_subdir_)rcalloc0.obj
@@ -133,8 +134,8 @@ extra_cpp_flags   += -DINCL_MSGTEXT
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
-!ifdef trmem_cpp_cover_cflags
-extra_cpp_flags_rcmem    = -DRC_USE_TRMEM $(trmem_cpp_cover_cflags)
+!ifdef trmem_cpp_flags
+extra_cpp_flags_rcmem    = -DRC_USE_TRMEM $(trmem_cpp_flags)
 !endif
 !ifeq release 0
 extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG

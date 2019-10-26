@@ -18,13 +18,12 @@ target_exe  = $(exename_$(target_cpu))
 !include defrule.mif
 !include deftarg.mif
 !include osi.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif
 !include $(wasm_dir)/client.mif
-
-!include wres.mif
-!include trmem.mif
 
 !include ../../files.mif
 
@@ -38,12 +37,11 @@ extra_cpp_flags = -D_USE_RESOURCES_
 extra_cpp_flags += -D_CGDLL
 !endif
 
-extra_cpp_flags_fmemmgr = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_trmem = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_trmemcvr = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_fmemmgr = $(trmem_cpp_flags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags_fmemmgr = $(trmem_cflags)
-extra_c_flags_trmem = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 .h: ..;../../h;../../../h

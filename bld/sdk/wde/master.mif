@@ -18,27 +18,25 @@ memory_model_i86 = l
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-!include wres.mif
-!include trmem.mif
-
 extra_cpp_flags   = -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_cpp_flags_trmem = $(trmem_cpp_cover_cflags)
-extra_cpp_flags_trmemcvr = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags     = -s -fh
 
 extra_c_flags_win = -zw-zc
 
-extra_c_flags_trmem = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 !ifdef __WATCOM_TOOLS__

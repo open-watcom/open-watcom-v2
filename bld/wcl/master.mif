@@ -4,28 +4,27 @@ proj_name = wcl
 wcl_autodepends = .AUTODEPEND
 !endif
 
+wcl_trmem = 1
+
 owcc_specs = specs.owc
 !ifdef bootstrap
 name       = b$(name)
 owcc_specs = b$(owcc_specs)
 !endif
 
-wcl_trmem = 1
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
 !include trmem.mif
 
+objs = clcommon.obj $(trmem_objs)
 !ifdef target_cpu
-objs = clcommon.obj wcl.obj
+objs += wcl.obj
 !else
-objs = clcommon.obj owcc.obj getopt.obj quit.obj
+objs += owcc.obj getopt.obj quit.obj
 !endif
-objs += $(trmem_objs)
 
-extra_deps_ = owcchelp.gh $(owcc_specs)
+extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
 extra_c_flags += -s
 
@@ -34,6 +33,8 @@ extra_c_flags_getopt   = -I"$(posix_dir)/h"
 extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
+
+extra_deps_ = owcchelp.gh $(owcc_specs)
 
 inc_dirs = -I. -I.. -I"../../h"
 

@@ -14,15 +14,14 @@ additional_cleanup = *.i *.rex setup.inf
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
-
-!include wres.mif
-!include trmem.mif
 
 # systems where manifest file resource must be added to .EXE
 manifest_nt_386 = ntmanif.res
@@ -33,23 +32,23 @@ manifest_nt_386 = ntmanif.res
 # objects
 ##########
 objs = &
-    setup.obj       &
-    setupfil.obj    &
-    setupinf.obj    &
-    guistats.obj    &
-    dlggen.obj      &
-    guiutils.obj    &
-    guictrl.obj     &
-    genvbl.obj      &
-    dynarray.obj    &
-    gendlg.obj      &
-    hash.obj        &
-    nlmver.obj      &
-    strvbuf.obj     &
+    setup.obj &
+    setupfil.obj &
+    setupinf.obj &
+    guistats.obj &
+    dlggen.obj &
+    guiutils.obj &
+    guictrl.obj &
+    genvbl.obj &
+    dynarray.obj &
+    gendlg.obj &
+    hash.obj &
+    nlmver.obj &
+    strvbuf.obj &
     utils.obj
 
 mem_objs = &
-    setupmem.obj     &
+    setupmem.obj &
     $(trmem_objs)
 
 #                     i_dos i_linux i_nt i_os2 i_win i_osx
@@ -127,14 +126,15 @@ extra_cpp_flags += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
+# memory tracker routines
+extra_cpp_flags_setupmem = $(trmem_cpp_flags)
+
 extra_c_flags = -s
 
 extra_c_flags_i86 = -zc
 
 # memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags)
-
-# memory tracker cover routines
+extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_setupmem = $(trmem_cover_cflags)
 
 # lflags
@@ -174,7 +174,7 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
 inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
-inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
+inc_dirs += -I"$(libzip_dir)/lib"
 
 # explicit rules
 ##################
