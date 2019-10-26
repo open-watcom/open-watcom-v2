@@ -1,30 +1,31 @@
+proj_name = dwarfutil
+
+!ifndef dwarfutil_autodepends
+dwarfutil_autodepends = .AUTODEPEND
+!endif
+
+dwarfutil_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
 
 .c: ../c;$(trmem_dir)
-.h: ../h;$(trmem_dir)
+.h: ../h
 
-inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)" -I"../h"
+inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"../h"
 
-!ifeq release 0
-extra_cpp_flags_trmemcvr  = -dTRMEM
-extra_cpp_flags_trmem     = -dTRMEM
-!endif
+extra_cpp_flags_trmemcvr = $(trmem_cpp_cover_cflags)
+extra_cpp_flags_dwdump   = $(trmem_cpp_cover_cflags)
 
-!ifeq release 0
-extra_c_flags_test      = -of+
-extra_c_flags_trmemcvr  = -of+
-extra_c_flags_trmem     = -of+
-!endif
+extra_c_flags_trmemcvr  = $(trmem_cover_cflags)
+extra_c_flags_trmem     = $(trmem_cflags)
 
-dwdump_objs = dwdump.obj testdump.obj trmemcvr.obj
-!ifeq release 0
-dwdump_objs +=  trmem.obj
-!endif
+dwdump_objs = dwdump.obj testdump.obj trmemcvr.obj $(trmem_objs)
 testcli_objs = testcli.obj testtest.obj testdump.obj
 
 all: dwdump.exe testcli.exe .symbolic
