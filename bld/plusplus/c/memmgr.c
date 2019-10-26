@@ -42,7 +42,7 @@
 #include "pragdefn.h"
 #include "codegen.h"
 
-#ifdef TRACKER
+#ifdef TRMEM
     #include "trmem.h"
 #endif
 
@@ -70,7 +70,7 @@ static PERMPTR permList;
 static void *deferredFreeList;
 #endif
 
-#ifdef TRACKER
+#ifdef TRMEM
 
 static _trmem_hdl   trackerHdl;
 
@@ -156,7 +156,7 @@ void *CMemAlloc( size_t size )
     return( p );
 }
 
-#ifdef TRACKER
+#ifdef TRMEM
     #define _doFree( p )    _trmem_free( p, _trmem_guess_who(), trackerHdl );
 #else
   #ifdef USE_CG_MEMMGT
@@ -274,7 +274,7 @@ static void cmemInit(           // INITIALIZATION
 {
     /* unused parameters */ (void)defn;
 
-#ifdef TRACKER
+#ifdef TRMEM
     {
         unsigned trmem_flags;
 
@@ -304,7 +304,7 @@ static void cmemFini(           // COMPLETION
 #ifndef NDEBUG
     RingFree( &deferredFreeList );
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
  #ifndef NDEBUG
     if( PragDbgToggle.dump_memory ) {
         _trmem_prt_list( trackerHdl );
