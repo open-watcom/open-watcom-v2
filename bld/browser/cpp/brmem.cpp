@@ -41,7 +41,7 @@
 #include "brmem.h"
 #include "debuglog.h"
 
-#ifdef TRACKER
+#ifdef TRMEM
 
 #include "trmem.h"
 
@@ -76,13 +76,13 @@ void PrintLine( void *parm, const char *buf, size_t len )
     bogus._numMessages++;
 }
 
-#endif  // TRACKER
+#endif  // TRMEM
 
 void *operator new( size_t size )
 //-------------------------------
 {
     void *p;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
@@ -91,7 +91,7 @@ void *operator new( size_t size )
 #ifndef STANDALONE_MERGER
     for(;;) {
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
@@ -117,7 +117,7 @@ void * WBRAlloc( size_t size )
 // calling functions when the memory tracker is in.
 {
     void *p;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
@@ -126,7 +126,7 @@ void * WBRAlloc( size_t size )
 #ifndef STANDALONE_MERGER
     for(;;) {
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
@@ -149,7 +149,7 @@ void * WBRRealloc( void * p, size_t size )
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
@@ -158,7 +158,7 @@ void * WBRRealloc( void * p, size_t size )
 #ifndef STANDALONE_MERGER
     for(;;) {
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
         p = _trmem_realloc( p, size, caller, TrHdl );
 #else
         p = realloc( p, size );
@@ -181,7 +181,7 @@ void WBRFree( void *p )
 {
     if( p == NULL )
         return;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
@@ -230,14 +230,14 @@ void operator delete( void *p )
 {
     if( p == NULL )
         return;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
 }
 
-#ifdef TRACKER
+#ifdef TRMEM
 
 static void GetOffset()
 //-------------------------
@@ -278,4 +278,4 @@ Memory::~Memory()
     }
 }
 
-#endif // TRACKER
+#endif // TRMEM
