@@ -31,7 +31,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "wio.h"
 #include "helpmem.h"
 #ifdef TRMEM
     #include "trmemcvr.h"
@@ -39,13 +38,7 @@
 
 
 #ifdef TRMEM
-
-#define malloc      TRMemAlloc
-#define free        TRMemFree
-#define realloc     TRMemRealloc
-
-static FILE         *memFP = NULL;
-
+static FILE     *memFP = NULL;
 #endif
 
 void HelpMemOpen( void )
@@ -73,15 +66,27 @@ void HelpMemClose( void )
 
 HELPMEM void *HelpMemAlloc( size_t size )
 {
+#ifdef TRMEM
+    return( TRMemAlloc( size ) );
+#else
     return( malloc( size ) );
+#endif
 }
 
 HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
+#ifdef TRMEM
+    return( TRMemRealloc( ptr, size ) );
+#else
     return( realloc( ptr, size ) );
+#endif
 }
 
 HELPMEM void HelpMemFree( void *ptr )
 {
+#ifdef TRMEM
+    TRMemFree( ptr );
+#else
     free( ptr );
+#endif
 }
