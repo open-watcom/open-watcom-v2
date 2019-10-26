@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -497,7 +498,7 @@ void DumpInsTableEntry( ins_table *table_entry )
     printf( "\n\tSymbol entries: " );
     symbol = table_entry->symbols;
     while( symbol != NULL ) {
-        printf( " %x", symbol );
+        printf( " %x", (unsigned)(pointer_uint)symbol );
         symbol = symbol->next;
     }
     printf( "\n" );

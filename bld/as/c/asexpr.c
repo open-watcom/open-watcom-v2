@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -485,7 +486,7 @@ static void doDump( expr_tree *tree, int level ) {
         break;
     case ET_RELOCATABLE:
         outIndent( level );
-        printf( "%s(%lx,%s,%ld)\n", nodeNames[ tree->type ], RELOC_SYMBOL( tree ), relocString[RELOC_TYPE( tree )], RELOC_DISP( tree ) );
+        printf( "%s(%lx,%s,%ld)\n", nodeNames[ tree->type ], (unsigned long)(pointer_uint)RELOC_SYMBOL( tree ), relocString[RELOC_TYPE( tree )], RELOC_DISP( tree ) );
         break;
     case ET_NOT:
     case ET_UNARY_MINUS:

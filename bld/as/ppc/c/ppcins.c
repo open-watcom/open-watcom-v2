@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,28 +462,28 @@ static void addInstructionSymbol( ins_flags flags, ins_table *table_entry ) {
     SymSetLink( sym, (void *)entry );
 }
 
-static void enumBits( uint_32 mask, uint_32 remaining, void (*func)( ins_flags, ins_table * ), void *parm ) {
-//******************************************************************************************************
-
+static void enumBits( uint_32 mask, uint_32 remaining, void (*func)( ins_flags, ins_table * ), void *parm )
+//*********************************************************************************************************
+{
     uint_32     low_bit;
 
     if( remaining == 0 ) {
         func( mask, parm );
         return;
     }
-    low_bit = remaining & -remaining;
+    low_bit = (int_32)remaining & -(int_32)remaining;
     remaining ^= low_bit;
     enumBits( mask,             remaining, func, parm );
     enumBits( mask | low_bit,   remaining, func, parm );
 }
 
-static void bitSetCover( uint_32 subset, void (*func)( ins_flags set, ins_table *parm ), void *parm ) {
-//************************************************************************************************
+static void bitSetCover( uint_32 subset, void (*func)( ins_flags set, ins_table *parm ), void *parm )
+//***************************************************************************************************
 // This is a little different - when this routine is called with a set of bits, it guarantees
 // that the function passed in will be called exactly once for each subset of those bits,
 // including 0 and the bit-set itself. It is recursive and can recurse up to n-levels deep,
 // where n is the number of bits on in the subset.
-
+{
     enumBits( 0, subset, func, parm );
 }
 
@@ -522,7 +523,7 @@ void DumpInsTableEntry( ins_table *table_entry )
     printf( "\n\tSymbol entries: " );
     symbol = table_entry->symbols;
     while( symbol != NULL ) {
-        printf( " %x", symbol );
+        printf( " %x", (unsigned)(pointer_uint)symbol );
         symbol = symbol->next;
     }
     printf( "\n" );

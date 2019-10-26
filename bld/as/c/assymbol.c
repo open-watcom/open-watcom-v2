@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -439,11 +440,11 @@ static char classChar[] = { 'I', 'D', 'L' };
 void DumpSymbol( sym_handle sym )
 //*******************************
 {
-    printf( "%s(addr=%x; next=%x; class = %c; ", sym->name, sym, sym->next, classChar[ sym->class ] );
+    printf( "%s(addr=%x; next=%x; class = %c; ", sym->name, (unsigned)(pointer_uint)sym, (unsigned)(pointer_uint)sym->next, classChar[ sym->class ] );
     if( sym->class == SYM_LABEL ) {
-        printf( "location = %x:%x )", sym->u.location.section, sym->u.location.offset );
+        printf( "location = %x:%x )", (unsigned)(pointer_uint)sym->u.location.section, sym->u.location.offset );
     } else {
-        printf( "link = %x )", sym->u.link );
+        printf( "link = %x )", (unsigned)(pointer_uint)sym->u.link );
     }
 }
 
