@@ -105,7 +105,7 @@ misc_objs = &
     950.uni &
     kanji.uni
 
-!ifdef trmem_cpp_flags
+!ifdef trmem_objs
 rc_template = $(common_objs) $(trmem_objs)
 !else
 rc_template = $(common_objs) $(_subdir_)rcalloc1.obj $(_subdir_)rcalloc0.obj
@@ -134,10 +134,10 @@ extra_cpp_flags   += -DINCL_MSGTEXT
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
-!ifdef trmem_cpp_flags
-extra_cpp_flags_rcmem    = -DRC_USE_TRMEM $(trmem_cpp_flags)
-!endif
-!ifeq release 0
+extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
+!ifdef trmem_objs
+extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
+!else ifeq release 0
 extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
 extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
 !endif
