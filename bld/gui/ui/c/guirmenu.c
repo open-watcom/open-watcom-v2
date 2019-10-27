@@ -234,10 +234,8 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
     bool                ok;
 
     menu = NULL;
-
     num_items = WCountMenuChildren( rmenu );
     ok = ( num_items > 0 );
-
     if( ok ) {
         menu = GUIMemAlloc( num_items * sizeof( gui_menu_struct ) );
         if( menu == NULL ) {
@@ -281,7 +279,6 @@ bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_items *menus )
     rmenu = NULL;
 
     ok = ( menus != NULL );
-
     if( ok ) {
         ok = GUISeekMenuTemplate( menu_id );
     }
