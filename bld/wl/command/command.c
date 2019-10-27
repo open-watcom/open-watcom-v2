@@ -288,7 +288,6 @@ static void ProcessInfo( void )
 /*****************************/
 /* the "mainline" routine, protected from suiciding things */
 {
-    char *      fname;
     f_handle    file;
     sysblock *  sys;
 
@@ -296,9 +295,7 @@ static void ProcessInfo( void )
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME, NULL );
     if( file != NIL_FHANDLE ) {
-        _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
-        memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
-        SetCommandFile( file, fname );
+        SetCommandFile( file, INIT_FILE_NAME );
         ParseDirectives();
         Burn();   /* clean up everything but the system list */
         FreeLinkStruct();

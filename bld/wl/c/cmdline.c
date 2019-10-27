@@ -212,7 +212,7 @@ void DoCmdFile( char *fname )
     } else if( *fname == '-' || *fname == '/' ) {
 #endif
         if( *(fname + 1) == '?' ) {
-            Token.next = fname + 2;     // skip /?
+            Token.next = fname + 2;     // skip -? or /?
             Help();
         }
     }
@@ -221,8 +221,11 @@ void DoCmdFile( char *fname )
         Token.where = ENDOFLINE;
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
     }
+    file = NIL_FHANDLE;
     namelnk = GetEnvString( INIT_FILE_ENV );
-    file = ( namelnk != NULL ) ? FindPath( namelnk, NULL ) : NIL_FHANDLE;
+    if( namelnk != NULL ) {
+        file = FindPath( namelnk, NULL );
+    }
     if( file == NIL_FHANDLE ) {
         namelnk = INIT_FILE_NAME;
         file = FindPath( namelnk, NULL );
@@ -908,7 +911,7 @@ void ExecSystem( const char *name )
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
         _LnkFree( sys->name );
-        sys->name = ChkStrDup( "" );
+        sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
             if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
@@ -922,7 +925,7 @@ void ExecSystem( const char *name )
 }
 
 static void CleanSystemList( bool burn )
-/***************************************/
+/**************************************/
 /* clean up the list of system blocks */
 {
     sysblock    **sysown;
