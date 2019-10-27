@@ -33,8 +33,6 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "trmemcvr.h"
-
 #define RESOPEN         res_open
 #define RESCLOSE        res_close
 #define RESWRITE        res_write

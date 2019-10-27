@@ -2,6 +2,8 @@ proj_name = res2res
 
 res2res_autodepends = .AUTODEPEND
 
+res2res_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -19,13 +21,16 @@ objs = &
     m2wres.obj &
     param.obj &
     res2res.obj &
-    w2mres.obj & 
+    w2mres.obj &
     trmemcvr.obj $(trmem_objs)
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
+extra_c_flags_layer0   = $(trmem_cflags)
+extra_c_flags_res2res  = $(trmem_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_w2mres   = $(trmem_cflags)
 
 libs = $(wres_lib)
 
