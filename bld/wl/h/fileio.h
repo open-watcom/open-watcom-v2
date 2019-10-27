@@ -80,7 +80,7 @@ extern bool             QReadStr( f_handle, char *, size_t, const char * );
 extern bool             QIsDevice( f_handle );
 extern f_handle         QObjOpen( const char * );
 extern f_handle         TempFileOpen( const char * );
-extern bool             QSysHelp( char ** );
+extern bool             QSysHelp( const char ** );
 extern bool             QModTime( const char *, time_t * );
 extern time_t           QFModTime( int );
 extern int              WaitForKey( void );

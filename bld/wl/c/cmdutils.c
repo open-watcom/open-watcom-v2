@@ -400,8 +400,8 @@ char *totext( void )
     return( tostring() );
 }
 
-static int ParseNumber( char *str, int radix )
-/********************************************/
+static unsigned ParseNumber( char *str, int radix, int *shift )
+/*************************************************************/
 /* read a (possibly hexadecimal) number */
 {
     bool        isdig;
@@ -431,8 +431,8 @@ static int ParseNumber( char *str, int radix )
         size++;
         str++;
     }
-    *Token.next = (char)value;
-    return( size );
+    *shift += size;
+    return( value );
 }
 
 static void MapEscapeChar( void )
@@ -442,33 +442,34 @@ static void MapEscapeChar( void )
 {
     char        *str;
     int         shift;
+    char        c;
 
     shift = 2;
     str = Token.next + 1;
     switch( *str ) {
     case 'a':
-        *Token.next = '\a';
+        c = '\a';
         break;
     case 'b':
-        *Token.next = '\b';
+        c = '\b';
         break;
     case 'f':
-        *Token.next = '\f';
+        c = '\f';
         break;
     case 'n':
-        *Token.next = '\n';
+        c = '\n';
         break;
     case 'r':
-        *Token.next = '\r';
+        c = '\r';
         break;
     case 't':
-        *Token.next = '\t';
+        c = '\t';
         break;
     case 'v':
-        *Token.next = '\v';
+        c = '\v';
         break;
-    case 'x':
-        shift += ParseNumber( ++str, 16 );
+    case 'x':   /* '\x' */
+        c = (char)ParseNumber( ++str, 16, &shift );
         break;
     case '0':
     case '1':
@@ -480,12 +481,13 @@ static void MapEscapeChar( void )
     case '7':
     case '8':
     case '9':
-        shift += ParseNumber( str, 8 ) - 1;
+        c = (char)ParseNumber( str, 8, &shift );
         break;
     default:
-        *Token.next = *str;
+        c = *str;
         break;
     }
+    *Token.next = c;
     str = Token.next + shift;
     memmove( Token.next + 1, str, strlen( str ) + 1 );
 }

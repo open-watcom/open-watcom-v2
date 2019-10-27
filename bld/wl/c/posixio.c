@@ -385,21 +385,23 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
-/*****************************/
+bool QSysHelp( const char **cmd_ptr )
+/***********************************/
 {
-#if defined( _M_I86 ) && defined( __QNX__ )
+#if defined( __QNX__ ) && defined( _M_I86 )
 //    extern  struct _proc_spawn *__cmd;
     char    *p;
 
-    cmd_ptr = cmd_ptr;
+    /* unused parameters */ (void)cmd_ptr;
+
     p = __cmd->data;
-    while( *p ) ++p; /* skip over executable name */
+    while( *p != '\0' )
+        ++p; /* skip over executable name */
     return( p[1] == '?' );
 #else
     /* unused parameters */ (void)cmd_ptr;
 
-    return false;
+    return( false );
 #endif
 }
 

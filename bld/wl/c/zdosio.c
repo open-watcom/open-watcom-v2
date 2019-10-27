@@ -341,9 +341,11 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, MODE_READ_ONLY ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
+bool QSysHelp( const char **cmd_ptr )
+/***********************************/
 {
-    cmd_ptr = cmd_ptr;
+    /* unused parameters */ (void)cmd_ptr;
+
     return( false );
 }
 

@@ -202,7 +202,7 @@ void DoCmdFile( char *fname )
     while( *fname == ' ' ) {
         fname++;
     }
-    if( QSysHelp( &Token.next ) ) {
+    if( QSysHelp( (const char **)&Token.next ) ) {
         Help();
     }
     if( *fname == '?' ) {
