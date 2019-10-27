@@ -213,9 +213,13 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
     if( hdl->use_code_seg_num ) {
         MEMSET( &entry, 0, sizeof( GLOBALENTRY ) );
         entry.dwSize = sizeof( GLOBALENTRY );
-        if( GlobalEntryHandle( &entry, (HGLOBAL) GlobalHandle( FP_SEG( who ) ) ) ) {
+        if( GlobalEntryHandle( &entry, (HGLOBAL)GlobalHandle( FP_SEG( who ) ) ) ) {
             if( entry.wType == GT_CODE ) {
-                who = (_trmem_who) MK_FP( entry.wData, FP_OFF( who ) );
+#ifdef _M_I86
+                who = (_trmem_who)MK_FP( entry.wData, FP_OFF( who ) );
+#else
+                who = (_trmem_who)(unsigned long long)MK_FP( entry.wData, FP_OFF( who ) );
+#endif
             }
         }
     }
