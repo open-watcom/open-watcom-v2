@@ -31,8 +31,8 @@
 
 
 #include "vi.h"
-#include "const.h"
 #include "myprtf.h"
+
 
 void Lead( char c, int num, char *buff )
 // With "c", to "num" bytes, put leading bytes in "buff"

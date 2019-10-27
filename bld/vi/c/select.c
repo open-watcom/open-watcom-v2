@@ -94,10 +94,16 @@ vi_rc SelectItem( selectitem *si )
     /*
      * get selected line
      */
-    memset( &sfd, 0, sizeof( sfd ) );
+    sfd.is_menu = si->is_menu;
+    sfd.show_lineno = si->show_lineno;
+    sfd.has_scroll_gadgets = false;
     sfd.f = cfile;
+    sfd.vals = NULL;
+    sfd.valoff = 0;
     sfd.wi = si->wi;
+    sfd.sl = 0;
     sfd.title = si->title;
+    sfd.checkres = NULL;
     sfd.allowrl = si->allowrl;
     sfd.hi_list = si->hi_list;
     sfd.show_lineno = si->show_lineno;
@@ -105,7 +111,6 @@ vi_rc SelectItem( selectitem *si )
     sfd.event = si->event;
     sfd.cln = si->cln;
     sfd.event_wid = si->event_wid;
-    sfd.is_menu = si->is_menu;
     rc = SelectLineInFile( &sfd );
     si->event = sfd.event;
     if( rc == ERR_NO_ERR ) {
@@ -152,15 +157,22 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         /*
          * go get selected line
          */
-        memset( &sfd, 0, sizeof( sfd ) );
+        sfd.is_menu = false;
+        sfd.show_lineno = false;
+        sfd.has_scroll_gadgets = false;
         sfd.f = cfile;
-        sfd.wi = wi;
-        sfd.title = title;
-        sfd.checkres = updatertn;
-        sfd.cln = 1;
-        sfd.event_wid = NO_WINDOW;
         sfd.vals = vals;
         sfd.valoff = valoff;
+        sfd.wi= wi;
+        sfd.sl = 0;
+        sfd.title = title;
+        sfd.checkres = updatertn;
+        sfd.allowrl = NULL;
+        sfd.hi_list = NULL;
+        sfd.retevents = NULL;
+        sfd.event = VI_KEY( DUMMY );
+        sfd.cln = 1;
+        sfd.event_wid = NO_WINDOW;
         rc = SelectLineInFile( &sfd );
         if( rc != ERR_NO_ERR ) {
             break;

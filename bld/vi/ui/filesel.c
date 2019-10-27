@@ -108,11 +108,20 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
         /*
          * go get selected line
          */
-        memset( &sfd, 0, sizeof( sfd ) );
-        sfd.f = cfile;
-        sfd.wi = &dirw_info;
-        sfd.title = CurrentDirectory;
+        sfd.is_menu = false;
         sfd.show_lineno = true;
+        sfd.has_scroll_gadgets = false;
+        sfd.f = cfile;
+        sfd.vals = NULL;
+        sfd.valoff = 0;
+        sfd.wi = &dirw_info;
+        sfd.sl = 0;
+        sfd.title = CurrentDirectory;
+        sfd.checkres = NULL;
+        sfd.allowrl = NULL;
+        sfd.hi_list = NULL;
+        sfd.retevents = NULL;
+        sfd.event = VI_KEY( DUMMY );
         sfd.cln = 1;
         sfd.event_wid = NO_WINDOW;
         rc = SelectLineInFile( &sfd );
@@ -448,7 +457,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 {
     list_linenum    i;
     int             winflag;
-    int             leftcol = 0;
+    int             leftcol;
     int             key2;
     bool            done;
     bool            redraw;
@@ -502,6 +511,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
          * now, allow free scrolling and selection
          */
         lln = 1;
+        leftcol = 0;
         redraw = true;
         drawbord = false;
         done = false;
