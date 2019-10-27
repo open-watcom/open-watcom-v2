@@ -191,6 +191,7 @@ void DoCmdFile( char *fname )
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
         NewCommandSource( NULL, NULL, COMMANDLINE );
+        fname = Token.next;
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
     }
