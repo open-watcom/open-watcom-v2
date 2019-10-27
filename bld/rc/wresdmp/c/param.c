@@ -34,13 +34,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "global.h"
 #include "param.h"
 #include "types.h"
 #include "swchar.h"
 #include "wresdefn.h"
+#include "trmemcvr.h"
 
 
 static int CheckPredefType( const char * restype )

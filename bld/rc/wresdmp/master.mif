@@ -30,10 +30,15 @@ objs = &
     wresdmp.obj &
     trmemcvr.obj $(trmem_objs)
 
-extra_cpp_cflags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
-extra_c_cflags_trmem    = $(trmem_cflags)
-extra_c_cflags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_dmpdiag  = $(trmem_cflags)
+extra_c_flags_dmpstr   = $(trmem_cflags)
+extra_c_flags_layer0   = $(trmem_cflags)
+extra_c_flags_param    = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_wresdmp  = $(trmem_cflags)
 
 libs = $(wres_lib)
 

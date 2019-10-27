@@ -32,14 +32,15 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "types.h"
 #include "global.h"
 #include "param.h"
 #include "cmpfiles.h"
+#include "trmemcvr.h"
 
-static char * HelpText[] = {
+
+static const char * const HelpText[] = {
     "Usages: %s {options} filename1 filename2",
     "Options: (-option is also accepted)",
     "/?   - print this help message",

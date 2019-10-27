@@ -27,6 +27,9 @@ objs = &
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
+extra_c_flags_cmpres   = $(trmem_cflags)
+extra_c_flags_layer0   = $(trmem_cflags)
+extra_c_flags_rescmp   = $(trmem_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 

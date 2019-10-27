@@ -37,7 +37,8 @@
 #include "param.h"
 #include "global.h"
 
-static char * HelpText[] = {
+
+static const char * const HelpText[] = {
     "Usage: %s {options} filename",
 #ifndef __UNIX__
     "Options: (/option is also accepted)",

@@ -35,6 +35,7 @@
 #include "dmpdiag.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
+#include "trmemcvr.h"
 
 #include "clibext.h"
 
