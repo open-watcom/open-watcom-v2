@@ -974,7 +974,7 @@ sysblock *FindSysBlock( const char *name )
     sysblock    *sys;
 
     for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-        if( stricmp( sys->name, name ) == 0 ) {
+        if( sys->name != NULL && stricmp( sys->name, name ) == 0 ) {
             return( sys );
         }
     }
@@ -992,7 +992,7 @@ static sysblock *FindSystemBlock( const char *name )
     if( tmpblk == NULL ) {
         len = strlen( name );
         for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-            if( strnicmp( sys->name, name, len ) == 0 ) {
+            if( sys->name != NULL && strnicmp( sys->name, name, len ) == 0 ) {
                 if( tmpblk == NULL ) {
                     tmpblk = sys;
                 } else {
@@ -1039,11 +1039,13 @@ bool ProcSystem( void )
                 prev = &((*prev)->next);
             }
             *prev = sys->next;
-            _LnkFree( sys->name );
+            if( sys->name != NULL ) {
+                _LnkFree( sys->name );
+            }
             _LnkFree( sys );
         } else {
             RestoreParser();
-            NewCommandSource( sysname, sys->commands, SYSTEM );
+            NewCommandSource( sys->name, sys->commands, SYSTEM );
         }
     }
     _LnkFree( sysname );
@@ -1079,7 +1081,11 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     sys = (sysblock *)copyptr;
     WriteStringTable( &strtab, CopyBlocks, &copyptr );
     FiniStringTable( &strtab );
-    sys->name = ChkStrDup( name );
+    if( name != NULL ) {
+        sys->name = ChkStrDup( name );
+    } else {
+        sys->name = NULL;
+    }
     LinkList( hdr, sys );
 }
 
@@ -1097,7 +1103,7 @@ bool ProcSysBegin( void )
     sysname = tostring();
     sys = FindSysBlock( sysname );
     if( sys != NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sysname );
+        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
         while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
             Token.thumb = false;
             RestoreParser();
@@ -1120,7 +1126,7 @@ bool ProcStartLink( void )
 /*******************************/
 /* save up list of commands to process later */
 {
-    GetCommandBlock( &LinkCommands, "", EndLinkOpt );
+    GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
     return( true );
 }
 

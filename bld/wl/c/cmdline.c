@@ -314,7 +314,8 @@ char *GetNextLink( void )
     char        *cmd;
 
     cmd = NULL;
-    _LnkFree( PrevCommand );
+    if( PrevCommand != NULL )
+        _LnkFree( PrevCommand );
     if( LinkCommands != NULL ) {
         PrevCommand = LinkCommands;
         LinkCommands = LinkCommands->next;
@@ -922,23 +923,24 @@ void ExecSystem( const char *name )
     }
 }
 
-static void CleanSystemList( bool check )
+static void CleanSystemList( bool burn )
 /***************************************/
 /* clean up the list of system blocks */
 {
-    sysblock    **sys;
-    sysblock    *next;
+    sysblock    **sysown;
+    sysblock    *sys;
     char        *name;
 
-    for( sys = &SysBlocks; *sys != NULL; ) {
-        name = (*sys)->name;
-        if( !check || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4) != 0 ) {
-            next = (*sys)->next;
-            _LnkFree( name );
-            _LnkFree( *sys );
-            *sys = next;
+    for( sysown = &SysBlocks; (sys = *sysown) != NULL; ) {
+        name = sys->name;
+        if( burn || name == NULL || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4 ) != 0 ) {
+            *sysown = sys->next;
+            if( name != NULL ) {
+                _LnkFree( name );
+            }
+            _LnkFree( sys );
         } else {
-            sys = &(*sys)->next;
+            sysown = &(sys->next);
         }
     }
 }
@@ -947,14 +949,14 @@ void PruneSystemList( void )
 /*********************************/
 /* delete all system blocks except for the "286" and "386" records */
 {
-    CleanSystemList( true );
+    CleanSystemList( false );
 }
 
 void BurnSystemList( void )
 /********************************/
 /* delete everything in the system list */
 {
-    CleanSystemList( false );
+    CleanSystemList( true );
 }
 
 bool ProcImport( void )

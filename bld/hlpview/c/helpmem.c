@@ -32,9 +32,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helpmem.h"
-#ifdef TRMEM
-    #include "trmemcvr.h"
-#endif
+#include "trmemcvr.h"
 
 
 #ifdef TRMEM
