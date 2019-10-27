@@ -634,17 +634,18 @@ static void ExpandEnvVariable( void )
     if( env == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_ENV_NOT_FOUND, "s", envname );
     } else {
-        envlen = strlen( env );
         if( !IS_WHITESPACE( Token.next ) ) {
             MakeToken( TOK_INCLUDE_DOT, SEP_SPACE );
+            envlen = strlen( env );
             _ChkAlloc( buff, envlen + Token.len + 1);
             memcpy( buff, env, envlen );
             memcpy( buff + envlen, Token.this, Token.len );
             buff[Token.len + envlen] = '\0';
+            NewCommandSource( envname, buff, ENVIRONMENT );
+            _LnkFree( buff );
         } else {
-            buff = ChkToString( env, envlen );
+            NewCommandSource( envname, env, ENVIRONMENT );
         }
-        NewCommandSource( envname, buff, ENVIRONMENT );
     }
     _LnkFree( envname );
 }
@@ -704,7 +705,6 @@ static void StartNewFile( void )
 {
     char        *fname;
     const char  *envstring;
-    char        *buff;
     f_handle    file;
 
     fname = FileName( Token.this, Token.len, E_COMMAND, false );
@@ -714,8 +714,7 @@ static void StartNewFile( void )
         fname = tostring();
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
-            buff = ChkStrDup( envstring );
-            NewCommandSource( fname, buff, ENVIRONMENT );
+            NewCommandSource( fname, envstring, ENVIRONMENT );
         } else {
             LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
             _LnkFree( fname );
@@ -951,8 +950,8 @@ bool GetToken( sep_type req, tokcontrol ctrl )
     return( GetTokenEx( req, ctrl, NULL, NULL ) );
 }
 
-void NewCommandSource( const char *name, char *buff, method how )
-/***************************************************************/
+void NewCommandSource( const char *name, const char *buff, method how )
+/*********************************************************************/
 /* start reading from a new command source, and save the old one */
 {
     cmdfilelist     *newfile;
@@ -979,13 +978,23 @@ void NewCommandSource( const char *name, char *buff, method how )
     } else {
         newfile->name = NULL;
     }
-    newfile->token.buff = buff;     /* make sure token is freed */
-    newfile->token.how = how;       /* but only if it needs to be */
-    Token.buff = buff;
-    Token.next = Token.buff;
+    newfile->token.how = how;
+    if( how == NONBUFFERED ) {
+        /* have to have at least this size */
+        _ChkAlloc( newfile->token.buff, MAX_REC + 1 );
+    } else if( buff != NULL ) {
+        newfile->token.buff = ChkStrDup( buff );
+    } else if( how == COMMANDLINE ) {
+        _ChkAlloc( newfile->token.buff, (10 * 1024) );  // arbitrarily large buffer that won't
+        GetCmdLine( newfile->token.buff );
+    } else {
+        newfile->token.buff = NULL;
+    }
+    Token.how = newfile->token.how;
+    Token.buff = newfile->token.buff;
+    Token.next = newfile->token.buff;
     Token.where = MIDST;
     Token.line = 1;
-    Token.how = how;
     Token.thumb = false;
     Token.locked = false;
     Token.quoted = false;
@@ -1014,11 +1023,11 @@ void SetCommandFile( f_handle file, const char *fname )
                 size = 0;
             buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
+            _LnkFree( buff );
         }
     }
     if( buff == NULL ) {  // if couldn't buffer for some reason.
-        _ChkAlloc( buff, MAX_REC + 1 ); // have to have at least this much RAM
-        NewCommandSource( fname, buff, NONBUFFERED );
+        NewCommandSource( fname, NULL, NONBUFFERED );
         Token.where = ENDOFLINE;
         Token.line++;
     }
@@ -1078,23 +1087,10 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     return( ptr );
 }
 
-static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
+static void deleteCmdFile( cmdfilelist *cmdfile )
 {
     f_handle    file;
 
-    switch( cmdfile->token.how ) {
-    case SYSTEM:
-        break;
-    case ENVIRONMENT:
-        if( burn )
-            break;
-        /* fall through */
-    default:
-        if( cmdfile->token.buff != NULL ) {
-            _LnkFree( cmdfile->token.buff );
-        }
-        break;
-    }
     file = cmdfile->file;
     if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
         QClose( file, cmdfile->name );
@@ -1104,6 +1100,9 @@ static void deleteCmdFile( cmdfilelist *cmdfile, bool burn )
     }
     if( cmdfile->name != NULL ) {
         _LnkFree( cmdfile->name );
+    }
+    if( cmdfile->token.buff != NULL ) {
+        _LnkFree( cmdfile->token.buff );
     }
     _LnkFree( cmdfile );
 }
@@ -1126,7 +1125,7 @@ void RestoreCmdLine( void )
         CmdFile->next->prev = CmdFile;
     }
     // delete removed cmdfile
-    deleteCmdFile( temp, false );
+    deleteCmdFile( temp );
     // restore old state
     memcpy( &Token, &CmdFile->token, sizeof( tok ) );
 }
@@ -1142,7 +1141,7 @@ void BurnUtils( void )
     }
     while( (temp = CmdFile) != NULL ) {
         CmdFile = CmdFile->prev;
-        deleteCmdFile( temp, true );
+        deleteCmdFile( temp );
     }
     // so error message stuff reports right name
     Token.how = BUFFERED;

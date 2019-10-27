@@ -295,29 +295,29 @@ static void ProcessInfo( void )
     Root = NewSection();
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME, NULL );
-    if( file == NIL_FHANDLE )
-        return;   /* NO WLINK.LNK */
-    _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
-    memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
-    SetCommandFile( file, fname );
-    ParseDirectives();
-    Burn();   /* clean up everything but the system list */
-    FreeLinkStruct();
-    for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-        LnkMsg( WRN+MSG_INTERNAL, "s", sys->name );
-        SetUpCommands();
-        NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
-        sys->name = NULL;   /* see note 1 at end of function */
+    if( file != NIL_FHANDLE ) {
+        _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
+        memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
+        SetCommandFile( file, fname );
         ParseDirectives();
-        Burn();
+        Burn();   /* clean up everything but the system list */
         FreeLinkStruct();
+        for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
+            LnkMsg( WRN+MSG_INTERNAL, "s", sys->name );
+            SetUpCommands();
+            NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
+            if( sys->name != NULL ) {
+                _LnkFree( sys->name );
+                sys->name = NULL;
+            }
+            ParseDirectives();
+            Burn();
+            FreeLinkStruct();
+        }
+        BurnSystemList();
     }
-    BurnSystemList();
     _LnkFree( Root );
 }
-/* NOTE for above function. This needs to be done, since the name will
- * automatically be freed by the linker's command parser. To save the name,
- * pass an allocated copy of it to NewCommandSource */
 
 void main( int argc, char * argv[] )
 /**********************************/

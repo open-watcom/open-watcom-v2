@@ -190,9 +190,7 @@ void DoCmdFile( char *fname )
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
-        _ChkAlloc( fname, (10 * 1024) );    // arbitrarily large buffer that won't
-        GetCmdLine( fname );                // be overflowed
-        NewCommandSource( NULL, fname, COMMANDLINE );
+        NewCommandSource( NULL, NULL, COMMANDLINE );
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
     }
@@ -391,8 +389,8 @@ static void DoCmdParse( void )
     }
 }
 
-int DoBuffCmdParse( char *cmd )
-/*****************************/
+int DoBuffCmdParse( const char *cmd )
+/***********************************/
 {
     NewCommandSource( NULL, cmd, COMMANDLINE );
     return( Spawn( DoCmdParse ) );

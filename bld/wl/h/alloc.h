@@ -50,11 +50,11 @@ extern void     ReleasePass1( void );
 #define _ChkAlloc( dest, size )         dest = ChkLAlloc( size )
 #define _LnkAlloc( dest, size )         dest = LAlloc( size )
 #define _TryAlloc( dest, size )         dest = TryAlloc( size )
-#define _PermAlloc( dest, size )        dest = PermAlloc( size );
-#define _LnkRealloc( dest, src, size )  dest = LnkRealloc( src, size );
+#define _PermAlloc( dest, size )        dest = PermAlloc( size )
+#define _LnkRealloc( dest, src, size )  dest = LnkRealloc( src, size )
 #define _LnkFree( ptr )                 LFree( ptr )
 #define _PermFree( ptr )                /* nothing to do */
-#define _Pass1Alloc( dest, size )       dest = Pass1Alloc( size );
+#define _Pass1Alloc( dest, size )       dest = Pass1Alloc( size )
 
 extern int      ValidateMem( void );    // just for debugging
 

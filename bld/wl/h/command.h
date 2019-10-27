@@ -208,7 +208,7 @@ extern char             *totext( void );
 extern bool             GetToken( sep_type, tokcontrol );
 extern bool             GetTokenEx( sep_type, tokcontrol ,cmdfilelist *, bool * );
 extern void             RestoreParser( void );
-extern void             NewCommandSource( const char *, char *, method );
+extern void             NewCommandSource( const char *, const char *, method );
 extern void             SetCommandFile( f_handle, const char * );
 extern void             EatWhite( void );
 extern char             *FileName( const char *, size_t, file_defext, bool );
