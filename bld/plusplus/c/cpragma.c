@@ -1035,7 +1035,7 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
 //
 // #pragma break
 //
-static void pragBreak()
+static void pragBreak( void )
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
