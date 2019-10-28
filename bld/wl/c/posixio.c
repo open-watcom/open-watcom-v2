@@ -385,26 +385,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-bool QSysHelp( const char **cmd_ptr )
-/***********************************/
-{
-#if defined( __QNX__ ) && defined( _M_I86 )
-//    extern  struct _proc_spawn *__cmd;
-    char    *p;
-
-    /* unused parameters */ (void)cmd_ptr;
-
-    p = __cmd->data;
-    while( *p != '\0' )
-        ++p; /* skip over executable name */
-    return( p[1] == '?' );
-#else
-    /* unused parameters */ (void)cmd_ptr;
-
-    return( false );
-#endif
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -442,12 +422,6 @@ int WaitForKey( void )
         result = '\0';
     tcsetattr( 0, TCSANOW, &old );
     return( result );
-}
-
-void GetCmdLine( char *buff )
-/***************************/
-{
-    getcmd( buff );
 }
 
 void TrapBreak( int sig_num )

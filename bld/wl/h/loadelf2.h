@@ -41,37 +41,37 @@ typedef struct {
     unsigned   sh_size;
     stringtable secstrtab;
     struct {
-        int        secstr;  // Index of strings section for section names
-        int        grpbase; // Index base for Groups in section
-        int        grpnum;  // Number of groups
-        int        relbase; // Index base for relocation sections
-        int        relnum;  // number of relocations
-        int        symstr;  // Index of symbol's string table
-        int        symtab;  // Index of symbol table
-        int        symhash; // Index of symbol hash table
-        int        dbgbegin;// Index of first debug section
-        int        dbgnum;  // Number of debug sections
+        unsigned   secstr;  // Index of strings section for section names
+        unsigned   grpbase; // Index base for Groups in section
+        unsigned   grpnum;  // Number of groups
+        unsigned   relbase; // Index base for relocation sections
+        unsigned   relnum;  // number of relocations
+        unsigned   symstr;  // Index of symbol's string table
+        unsigned   symtab;  // Index of symbol table
+        unsigned   symhash; // Index of symbol hash table
+        unsigned   dbgbegin;// Index of first debug section
+        unsigned   dbgnum;  // Number of debug sections
     } i;  // Indexes into sh
     unsigned_32 curr_off;
 } ElfHdr;
 
 typedef struct {
     symbol **   table;
-    int         maxElems;          // Size of table
-    int         numElems;          // number of elements
+    unsigned    maxElems;          // Size of table
+    unsigned    numElems;          // number of elements
     stringtable *strtab;
     Elf32_Word  *buckets;
-    int         numBuckets;
+    unsigned    numBuckets;
     Elf32_Word  *chains;
 } ElfSymTable;
 
-extern ElfSymTable *    CreateElfSymTable( int maxElems, stringtable *strtab );
+extern ElfSymTable *    CreateElfSymTable( unsigned maxElems, stringtable *strtab );
 extern void             AddSymElfSymTable( ElfSymTable *tab, symbol *sym );
-extern int              FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym );
+extern unsigned         FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym );
 extern void             WriteElfSymTable( ElfSymTable *tab,
                                           ElfHdr *hdr,
-                                          int hashidx,
-                                          int symtabidx,
-                                          int strtabidx );
+                                          unsigned hashidx,
+                                          unsigned symtabidx,
+                                          unsigned strtabidx );
 extern void             ZapElfSymTable( ElfSymTable *tab);
 extern size_t           AddSecName( ElfHdr *hdr, const char *name );

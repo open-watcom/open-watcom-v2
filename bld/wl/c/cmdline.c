@@ -178,6 +178,31 @@ static void ResetCmdFile( void )
     DBIFlag = 0;        /*  default is only global information */
 }
 
+static bool sysHelp( const char **cmdl )
+{
+    const char  *p;
+    bool        help;
+
+    help = false;
+    p = *cmdl;
+    while( *p == ' ' ) {
+        p++;
+    }
+    if( p[0] == '?' ) {
+        p++;          // skip question mark.
+#if defined( __UNIX__ )
+    } else if( p[0] == '-' && p[1] == '?' ) {
+#else
+    } else if( ( p[0] == '-' || p[0] == '/' ) && p[1] == '?' ) {
+#endif
+        p += 2;       // skip -? or /?
+    } else {
+        help = false;
+    }
+    *cmdl = p;
+    return( help );
+}
+
 void DoCmdFile( char *fname )
 /***************************/
 /* start parsing the command */
@@ -187,37 +212,23 @@ void DoCmdFile( char *fname )
     size_t      namelen;
     file_defext extension;
     const char  *namelnk;
+    const char  *p;
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
         NewCommandSource( NULL, NULL, COMMANDLINE );
-        fname = Token.next;
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
     }
     if( IsStdOutConsole() ) {
         CmdFlags |= CF_TO_STDOUT;
     }
-    while( *fname == ' ' ) {
-        fname++;
-    }
-    if( QSysHelp( (const char **)&Token.next ) ) {
+    p = Token.next;
+    if( sysHelp( (const char **)&p ) ) {
+        Token.next = p;         // skip '?' or '-?' or '/?'
         Help();
     }
-    if( *fname == '?' ) {
-        Token.next = fname + 1;       // skip question mark.
-        Help();
-#if defined( __UNIX__ )
-    } else if( *fname == '-' ) {
-#else
-    } else if( *fname == '-' || *fname == '/' ) {
-#endif
-        if( *(fname + 1) == '?' ) {
-            Token.next = fname + 2;     // skip -? or /?
-            Help();
-        }
-    }
-    if( *fname == '\0' ) {       // go into interactive mode.
+    if( *p == '\0' ) {          // go into interactive mode.
         Token.how = INTERACTIVE;
         Token.where = ENDOFLINE;
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );

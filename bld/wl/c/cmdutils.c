@@ -406,14 +406,14 @@ static unsigned ParseNumber( char *str, int radix, int *shift )
 {
     bool        isdig;
     bool        isvalid;
-    char        ch;
+    int         ch;
     int         size;
     unsigned    value;
 
     size = 0;
     value = 0;
     for( ;; ) {
-        ch = tolower( *str );
+        ch = tolower( *(unsigned char *)str );
         isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
             isvalid = isdig && !(ch == '8' || ch == '9');
@@ -950,6 +950,20 @@ bool GetToken( sep_type req, tokcontrol ctrl )
     return( GetTokenEx( req, ctrl, NULL, NULL ) );
 }
 
+static char *getCmdLine( void )
+/*****************************/
+{
+    int     len;
+    char    *cmdline;
+
+    len = _bgetcmd( NULL, 0 ) + 1;
+    _ChkAlloc( cmdline, len );
+    if( cmdline != NULL ) {
+        _bgetcmd( cmdline, len );
+    }
+    return( cmdline );
+}
+
 void NewCommandSource( const char *name, const char *buff, method how )
 /*********************************************************************/
 /* start reading from a new command source, and save the old one */
@@ -985,8 +999,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
     } else if( buff != NULL ) {
         newfile->token.buff = ChkStrDup( buff );
     } else if( how == COMMANDLINE ) {
-        _ChkAlloc( newfile->token.buff, (10 * 1024) );  // arbitrarily large buffer that won't
-        GetCmdLine( newfile->token.buff );
+        newfile->token.buff = getCmdLine();
     } else {
         newfile->token.buff = NULL;
     }

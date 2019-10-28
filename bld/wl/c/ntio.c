@@ -410,14 +410,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-bool QSysHelp( const char **cmd_ptr )
-/***********************************/
-{
-    /* unused parameters */ (void)cmd_ptr;
-
-    return( false );
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -442,10 +434,4 @@ int WaitForKey( void )
 /********************/
 {
     return( getch() );
-}
-
-void GetCmdLine( char *buff )
-/***************************/
-{
-    getcmd( buff );
 }
