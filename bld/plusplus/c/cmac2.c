@@ -348,7 +348,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
-                if( HasVarArgs( mflags ) && parm_index == ( parm_count - 1 ) ) {
+                if( HasVarArgs( mflags ) && ( parm_index + 1 ) == parm_count ) {
                     CurToken = T_MACRO_VAR_PARM;
                 } else {
                     CurToken = T_MACRO_PARM;

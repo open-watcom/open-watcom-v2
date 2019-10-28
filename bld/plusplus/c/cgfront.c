@@ -419,7 +419,7 @@ void CgFrontDataPtr(            // EMIT (code,ptr) TO DATA SEGMENT
 static void cgSetupSegment(     // SET UP DATA SEGMENT, EMIT INSTRUCTION
     unsigned seg_number )       // - segment number
 {
-    if( seg_number != ins_def_seg.value.ivalue ) {
+    if( seg_number != ins_def_seg.value.uvalue ) {
         ins_def_seg.value.uvalue = seg_number;
         cgEmitData( &ins_def_seg );
     }

@@ -100,7 +100,7 @@ static int  pchFile;
 #else
 #define IO_BUFFER_SIZE  65536
 #endif
-static int      amountLeft;
+static unsigned amountLeft;
 static char     *ioBuffer;
 static char     *bufferCursor;
 //static char     *bufferEnd;

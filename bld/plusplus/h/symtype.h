@@ -1503,7 +1503,7 @@ extern DECL_SPEC *CheckTypeSpecifier( DECL_SPEC * );
 extern void CheckUniqueType( TYPE );
 extern TYPE CheckDupType( TYPE );
 extern PTREE ProcessBitfieldId( PTREE );
-extern TYPE CheckBitfieldType( DECL_SPEC *, target_long );
+extern TYPE CheckBitfieldType( DECL_SPEC *, target_size_t );
 extern void PTypeCheckInit( void );
 extern TYPE MakeArrayType( target_size_t );
 extern TYPE MakeExpandableType( type_id );

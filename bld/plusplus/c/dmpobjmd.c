@@ -371,7 +371,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     MsgDisplayLineVbuf( &buffer );
     mask = CgMemorySize( base );
     if( mask == sizeof( unsigned ) ) {
-        mask = -1;
+        mask = ~0U;
     } else {
         mask = ( 1 << ( mask * 8 ) ) - 1;
     }

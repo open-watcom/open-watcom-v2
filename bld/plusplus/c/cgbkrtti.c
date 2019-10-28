@@ -85,17 +85,17 @@ static void doRttiGen( RTTI_CLASS *r )
         DbgAssert( vfptr->offset == offset );
         DbgAssert( r->offset > offset );
         delta_to_descriptor = r->offset - vfptr->offset;
-        DbgAssert(( delta_to_descriptor & RA_RUNTIME ) == 0 );
-        DgOffset( delta_to_descriptor | ( vfptr->control & RA_RUNTIME ) );
+        DbgAssert( (delta_to_descriptor & RA_RUNTIME) == 0 );
+        DgOffset( delta_to_descriptor | (vfptr->control & RA_RUNTIME) );
         DgOffset( vfptr->delta );
         DbgStmt( offset += RttiAdjustSize() );
     } RingIterEnd( vfptr )
     /* class descriptor */
     dropTypeidRef( class_type );
     if( nleaps == 1 ) {
-        DgOffset( -1 );
+        DgOffset( ~0U );
     } else {
-        DbgAssert( class_type->u.c.info->vb_offset != (target_offset_t) -1 );
+        DbgAssert( class_type->u.c.info->vb_offset != (target_offset_t)-1 );
         DgOffset( class_type->u.c.info->vb_offset );
     }
     /* first leap indicates whether host class has virtual bases */

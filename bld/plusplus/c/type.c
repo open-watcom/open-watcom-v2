@@ -1104,7 +1104,7 @@ TYPE CheckDupType( TYPE newtype )
             ExtraRptTabIncr( ctr_type_ids, id, 0 );
             ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
             if( id == TYP_FUNCTION ) {
-                unsigned num_args = newtype->u.f.args->num_args;
+                num_args = newtype->u.f.args->num_args;
                 if( num_args < ARGS_MAX ) {
                     ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
                 } else {
@@ -1554,7 +1554,7 @@ static TYPE* dumpTypeRing(      // DUMP A TYPE RING
     TYPE* ring,
     DUMP_STATS *stats )
 {
-    int length = 0;
+    unsigned length = 0;
     TYPE curr;
 
     ++ stats->chains;
@@ -4894,8 +4894,8 @@ TYPE Integral64Type             // GET 64-BIT TYPE IF POSSIBLE
     ( 1 << TYP_ULONG64 )
 
 
-TYPE CheckBitfieldType( DECL_SPEC *dspec, target_long width )
-/***********************************************************/
+TYPE CheckBitfieldType( DECL_SPEC *dspec, target_size_t width )
+/*************************************************************/
 {
     TYPE base_type;
     TYPE i64_type;
@@ -4924,7 +4924,7 @@ TYPE CheckBitfieldType( DECL_SPEC *dspec, target_long width )
         i64_type = base_type;
         TypeStripTdModEnumChar( i64_type );
         if( TypeIdMasked( i64_type, MASK_TYPE_INT64 ) ) {
-            if( width > (TARGET_LONG*TARGET_BITS_CHAR) ) {
+            if( width > ( TARGET_LONG * TARGET_BITS_CHAR ) ) {
                 CErr1( ERR_64BIT_BITFIELD );
             } else {
                 if( SignedIntType( i64_type ) ) {

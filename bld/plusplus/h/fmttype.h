@@ -56,7 +56,7 @@ typedef enum {
 } FMT_CONTROL;
 extern FMT_CONTROL FormatTypeDefault;
 
-extern void FormatFunctionType( TYPE, VBUF *, VBUF *, int, FMT_CONTROL );
+extern void FormatFunctionType( TYPE, VBUF *, VBUF *, unsigned, FMT_CONTROL );
 extern void FormatType( TYPE, VBUF *, VBUF * );
 extern void FormatTypeModFlags( type_flag, VBUF * );
 extern const char *FormatErrorType( TYPE );
