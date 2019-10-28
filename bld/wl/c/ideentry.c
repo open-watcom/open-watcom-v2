@@ -80,8 +80,8 @@ static IDEMsgSeverity SeverityMap[] = {
 };
 
 #if defined( DLLS_IMPLEMENTED )
-bool ExecDLLPgm( char *pname, char *cmdline )
-/********************************************/
+bool ExecDLLPgm( const char *pname, const char *cmdline )
+/*******************************************************/
 // return true if an error
 {
     IDEDRV              inf;
@@ -145,8 +145,8 @@ void WriteStdOutInfo( const char *str, unsigned level, const char *symbol )
     }
 }
 
-char * GetEnvString( char *envname )
-/*****************************************/
+char * GetEnvString( const char *envname )
+/****************************************/
 {
     char *retval;
 

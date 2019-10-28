@@ -87,12 +87,10 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 
     wildcrd = false;
     if( ctrl & TOK_IS_FILENAME ) {
-        for( p = Token.this; ; ++p ) {      // check if wildcard
+        for( p = Token.this; *p != '\0'; ++p ) {      // check if wildcard
             /* end of parm: NULLCHAR or blank */
             if( *p == '\'' )
                 break;     // don't wildcard a quoted string.
-            if( *p == '\0' )
-                break;
             if( *p == ' ' )
                 break;
             if( *p == '?' || *p == '*' ) {
@@ -110,10 +108,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         dir = opendir( start );
         if( dir != NULL ) {
             _splitpath( start, drive, directory, NULL, NULL );
-            for( ;; ) {
-                dirent = readdir( dir );
-                if( dirent == NULL )
-                    break;
+            while( (dirent = readdir( dir )) != NULL ) {
                 if( dirent->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR) )
                     continue;
                 _splitpath( dirent->d_name, NULL, NULL, name, extin );
@@ -291,21 +286,21 @@ ord_state getatoi( unsigned_16 *pnt )
 ord_state getatol( unsigned_32 *pnt )
 /***********************************/
 {
-    const char      *p;
-    size_t          len;
-    unsigned long   value;
-    unsigned        radix;
-    bool            isvalid;
-    bool            isdig;
-    bool            gotdigit;
-    char            ch;
+    const unsigned char     *p;
+    size_t                  len;
+    unsigned long           value;
+    unsigned                radix;
+    bool                    isvalid;
+    bool                    isdig;
+    bool                    gotdigit;
+    int                     ch;
 
     len = Token.len;
     if( len == 0 )
         return( ST_NOT_ORDINAL );
-    p = Token.this;
+    p = (const unsigned char *)Token.this;
     gotdigit = false;
-    value = 0ul;
+    value = 0;
     radix = 10;
     if( len >= 2 && *p == '0' ) {
         --len;
@@ -317,12 +312,12 @@ ord_state getatol( unsigned_32 *pnt )
         }
     }
     for( ; len != 0; --len ) {
-        ch = (char)tolower( (unsigned char)*p++ );
-        if( ch == 'k' ) {         // constant of the form 64k
+        ch = tolower( *p++ );
+        if( ch == 'k' ) {               // constant of the form 64k
             if( len > 1 || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
             } else {
-                value <<= 10;        // value = value * 1024;
+                value <<= 10;           // value = value * 1024;
             }
         } else if( ch == 'm' ) {        // constant of the form 64M
             if( len > 1 || !gotdigit ) {
@@ -416,7 +411,7 @@ static unsigned ParseNumber( char *str, int radix, int *shift )
         ch = tolower( *(unsigned char *)str );
         isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
-            isvalid = isdig && !(ch == '8' || ch == '9');
+            isvalid = ( isdig && ch != '8' && ch != '9' );
         } else {
             isvalid = ( isxdigit( ch ) != 0 );
         }
@@ -492,8 +487,8 @@ static void MapEscapeChar( void )
     memmove( Token.next + 1, str, strlen( str ) + 1 );
 }
 
-static unsigned MapDoubleByteChar( unsigned char c )
-/**************************************************/
+static unsigned MapDoubleByteChar( int c )
+/****************************************/
 /* if the double byte character support is on, check if the current character
  * is a double byte character skip it */
 {
@@ -523,7 +518,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 /**********************************************************/
 {
     bool        quit;
-    char        hmm;
+    int         hmm;
     size_t      len;
     bool        forcematch;
     bool        hitmatch;
@@ -541,12 +536,12 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
     if( *Token.next == '\\' && separator == SEP_QUOTE && (ctrl & TOK_IS_FILENAME) == 0 ) {
         MapEscapeChar();        /* get escape chars starting in 1st pos. */
     }
-    hmm = *Token.next;
-    len += MapDoubleByteChar( (unsigned char)hmm );
+    hmm = *(unsigned char *)Token.next;
+    len += MapDoubleByteChar( hmm );
     hitmatch = false;
     for( ;; ) {
         len++;
-        hmm = *++Token.next;
+        hmm = *(unsigned char *)++Token.next;
         switch( hmm ) {
         case '\'':
             if( separator == SEP_QUOTE ) {
@@ -603,7 +598,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             quit = true;
             break;
         default:
-            len += MapDoubleByteChar( (unsigned char)hmm );
+            len += MapDoubleByteChar( hmm );
         }
         if( quit ) {
             break;
