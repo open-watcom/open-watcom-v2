@@ -71,8 +71,8 @@ typedef enum {
 typedef struct {
     char        *buff;
     size_t      len;
-    char        *next;
-    char        *this;
+    const char  *next;
+    const char  *this;
     place       where;
     method      how;
     boolbit     thumb       : 1;

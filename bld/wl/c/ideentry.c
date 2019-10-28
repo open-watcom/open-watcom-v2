@@ -243,7 +243,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
 {
     /* unused parameters */ (void)hdl;
 
-    LinkMainLine( (char *) opts );
+    LinkMainLine( opts );
     *fatalerr = (LinkState & LS_LINK_ERROR) != 0;
     return( *fatalerr );
 }

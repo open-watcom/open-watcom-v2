@@ -117,40 +117,43 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
 */
 static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
 {
-    char *parse;
+    const char  *parse;
 
-    if( (NULL == (parse = Token.next)) || ('\0' == *parse) )
+    if( ( Token.next == NULL ) || ( *Token.next == '\0' ) )
         return( false );
 
-    while( ('\0' != *parse) && IS_WHITESPACE( parse ) )
-        parse++;
+    for( parse = Token.next; *parse != '\0'; parse++ ) {
+        if( !IS_WHITESPACE( parse ) ) {
+            break;
+        }
+    }
 
-    if( '\0' == *parse )
+    if( *parse == '\0' )
         return( false );
 
-    if( ',' == *parse )
+    if( *parse == ',' )
         return( false );
 
     /*
     //  skip cr-lf
     */
-    if( ('\n' == *parse) || ('\r' == *parse) )
+    if( ( *parse == '\n' ) || ( *parse == '\r' ) )
         parse++;
-    if( ('\n' == *parse) || ('\r' == *parse) )
+    if( ( *parse == '\n' ) || ( *parse == '\r' ) )
         parse++;
 
     /*
     //  always skip to the next token if the next available token is not a comma
     //  this will allow individual tokens without commas which isn't a big deal
     */
-    if( ('\0' != *parse) && (',' != *parse) ) {
+    if( ( *parse != '\0' ) && ( *parse != ',' ) ) {
         /*
         //  If the next token is __not__ a comma then we need to check that it is not a directive
         //  before allowing the skip!
         */
         if( CheckDirectives ) {
             size_t      len = 0;
-            char        *t;
+            const char  *t;
 
             for( t = parse; !IS_WHITESPACE(t); ++t ) {
                 len++;

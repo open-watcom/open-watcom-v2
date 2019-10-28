@@ -199,7 +199,7 @@ static bool sysHelp( void )
     } else {
         help = false;
     }
-    Token.next = (char *)p;
+    Token.next = p;
     return( help );
 }
 
@@ -340,7 +340,7 @@ void Syntax( void )
     if( Token.this == NULL ) {
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
     } else {
-        Token.this[Token.len] = '\0';
+        ((char *)Token.this)[Token.len] = '\0';
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
     }
 }

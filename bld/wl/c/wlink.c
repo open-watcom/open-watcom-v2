@@ -102,7 +102,7 @@ extern char     *_edata;
 extern char     *_end;
 #endif
 
-static char     *ArgSave;
+static const char   *ArgSave;
 
 // Not sure what this is for - doesn't seem to be referenced
 //extern int              __nheapblk;
@@ -114,8 +114,8 @@ static void LinkMeBaby( void )
     DoLink( ArgSave );
 }
 
-void LinkMainLine( char *cmds )
-/************************************/
+void LinkMainLine( const char *cmds )
+/***********************************/
 {
     for(;;) {
         ArgSave = cmds;         // bogus way to pass args to spawn

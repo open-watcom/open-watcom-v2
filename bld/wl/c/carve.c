@@ -144,10 +144,12 @@ void CarveVerifyAllGone( carve_t cv, const char *node_name )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         compare = block->data + cv->blk_top;
         do {
-            compare = (char *)compare - cv->elm_size;
+            compare -= cv->elm_size;
             /* verify every block has been freed */
             for( check = cv->free_list; check != NULL; check = check->next_free ) {
-                if( compare == (char *)check ) break;
+                if( compare == (char *)check ) {
+                    break;
+                }
             }
             if( check == NULL ) {
                 if( ! some_unfreed ) {
@@ -274,11 +276,16 @@ static void CarveDebugFree( carve_t cv, void *elm )
 #endif
         esize = cv->elm_size;
         for(;;) {
-            if( compare == start ) break;
+            if( compare == start )
+                break;
             compare = compare - esize;
-            if( elm == compare ) break;
+            if( elm == compare ) {
+                break;
+            }
         }
-        if( elm == compare ) break;
+        if( elm == compare ) {
+            break;
+        }
     }
     if( block == NULL ) {
         LnkFatal( "carve: freed object was never allocated" );

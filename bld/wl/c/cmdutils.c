@@ -76,7 +76,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
     //opendir - readdir wildcarding not supported here.
     return( rtn() );
 #else
-    char                *p;
+    const char          *p;
     char                *start;
     DIR                 *dir;
     struct dirent       *dirent;
@@ -289,33 +289,33 @@ ord_state getatoi( unsigned_16 *pnt )
 ord_state getatol( unsigned_32 *pnt )
 /***********************************/
 {
-    const unsigned char     *p;
-    size_t                  len;
-    unsigned long           value;
-    unsigned                radix;
-    bool                    isvalid;
-    bool                    isdig;
-    bool                    gotdigit;
-    int                     ch;
+    const char          *p;
+    size_t              len;
+    unsigned long       value;
+    unsigned            radix;
+    bool                isvalid;
+    bool                isdig;
+    bool                gotdigit;
+    int                 ch;
 
     len = Token.len;
     if( len == 0 )
         return( ST_NOT_ORDINAL );
-    p = (const unsigned char *)Token.this;
+    p = Token.this;
     gotdigit = false;
     value = 0;
     radix = 10;
     if( len >= 2 && *p == '0' ) {
         --len;
         ++p;
-        if( tolower( *p ) == 'x' ) {
+        if( tolower( *(unsigned char *)p ) == 'x' ) {
             radix = 16;
             ++p;
             --len;
         }
     }
     for( ; len != 0; --len ) {
-        ch = tolower( *p++ );
+        ch = tolower( *(unsigned char *)p++ );
         if( ch == 'k' ) {               // constant of the form 64k
             if( len > 1 || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
@@ -398,8 +398,8 @@ char *totext( void )
     return( tostring() );
 }
 
-static unsigned ParseNumber( char *str, int radix, int *shift )
-/*************************************************************/
+static unsigned ParseNumber( const char *str, int radix, int *shift )
+/*******************************************************************/
 /* read a (possibly hexadecimal) number */
 {
     bool        isdig;
@@ -438,13 +438,13 @@ static void MapEscapeChar( void )
 /* turn the current character located at Token.next into a possibly unprintable
  * character using C escape codes */
 {
-    char        *str;
-    int         shift;
-    char        c;
+    const char      *str;
+    int             shift;
+    int             c;
 
     shift = 2;
     str = Token.next + 1;
-    switch( *str ) {
+    switch( *(unsigned char *)str ) {
     case 'a':
         c = '\a';
         break;
@@ -467,7 +467,7 @@ static void MapEscapeChar( void )
         c = '\v';
         break;
     case 'x':   /* '\x' */
-        c = (char)ParseNumber( ++str, 16, &shift );
+        c = (unsigned char)ParseNumber( ++str, 16, &shift );
         break;
     case '0':
     case '1':
@@ -479,15 +479,15 @@ static void MapEscapeChar( void )
     case '7':
     case '8':
     case '9':
-        c = (char)ParseNumber( str, 8, &shift );
+        c = (unsigned char)ParseNumber( str, 8, &shift );
         break;
     default:
         c = *str;
         break;
     }
-    *Token.next = c;
+    *(char *)Token.next = c;
     str = Token.next + shift;
-    memmove( Token.next + 1, str, strlen( str ) + 1 );
+    memmove( (char *)Token.next + 1, str, strlen( str ) + 1 );
 }
 
 static unsigned MapDoubleByteChar( int c )

@@ -571,7 +571,7 @@ bool ProcPath( void )
 {
     path_entry      *new_path;
     char            *p;
-    char            *end;
+    const char      *end;
 
     if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );

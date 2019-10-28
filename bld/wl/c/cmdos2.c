@@ -343,7 +343,8 @@ bool ProcProtMode( void )
 bool ProcOldLibrary( void )
 /********************************/
 {
-    if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) ) return( false );
+    if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) )
+        return( false );
     FmtData.u.os2.old_lib_name = FileName( Token.this, Token.len, E_DLL, false );
     return( true );
 }
@@ -354,7 +355,8 @@ bool ProcOS2HeapSize( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
@@ -1226,7 +1228,7 @@ static unsigned_32 ProcGenericVersion( VersBlock *pVers, unsigned_32 major_limit
     */
     retval = getatol( &value );
     if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
-        value  = tolower( *Token.this ) - 'a' + 1;
+        value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
     } else if( retval == ST_NOT_ORDINAL ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
         return( state );

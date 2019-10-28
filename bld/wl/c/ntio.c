@@ -74,7 +74,7 @@ void CheckBreak( void )
     }
 #else
     if( CaughtBreak ) {
-        CaughtBreak = false;        /* prevent recursion */
+        CaughtBreak = false;                  /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
 #endif
