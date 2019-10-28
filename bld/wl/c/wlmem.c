@@ -36,9 +36,7 @@
 #if defined( __WATCOMC__ )
     #include <malloc.h>     /* necessary for __(n/f)memneed */
 #endif
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "trmem.h"
 #include "linkstd.h"
 #include "msg.h"
 #include "wlnkmsg.h"
@@ -66,7 +64,7 @@ static bool         CacheRelease( void );
 
 #ifdef TRMEM
 
-static void PrintLine( void *bogus, const char *buff, unsigned len )
+static void PrintLine( void *bogus, const char *buff, size_t len )
 {
     /* unused parameters */ (void)bogus; (void)len;
 

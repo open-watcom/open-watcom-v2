@@ -90,7 +90,7 @@ static void     DoDefaultSystem( void );
 static void     FindLibPaths( void );
 static void     ResetMisc( void );
 static void     ResetSubSystems( void );
-static void     DoLink( char * );
+static void     DoLink( const char * );
 static void     CleanSubSystems( void );
 
 #ifdef _INT_DEBUG
@@ -211,8 +211,8 @@ void FiniSubSystems( void )
     LnkMemFini();
 }
 
-static void DoLink( char *cmdline )
-/**********************************/
+static void DoLink( const char *cmdline )
+/***************************************/
 // cmdline is only used when we are running under watfor.
 {
 #ifndef __OSI__

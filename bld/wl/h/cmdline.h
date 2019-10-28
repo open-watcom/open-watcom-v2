@@ -43,7 +43,7 @@ extern bool             ProcIntDbg( void );
 extern void             InitCmdFile( void );
 extern void             SetSegMask(void);
 extern char             *GetNextLink( void );
-extern void             DoCmdFile( char * );
+extern void             DoCmdFile( const char * );
 extern void             Syntax( void );
 extern void             FreePaths( void );
 extern void             Burn( void );

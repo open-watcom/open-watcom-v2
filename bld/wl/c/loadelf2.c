@@ -190,9 +190,9 @@ static void SetElfSym( ElfHdr *hdr, Elf32_Sym *elfsym, symbol *sym )
 
 }
 
-void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
-                                int symtabidx, int strtabidx )
-/***********************************************************************/
+void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, unsigned hashidx,
+                                unsigned symtabidx, unsigned strtabidx )
+/**********************************************************************/
 {
     unsigned    i;
     size_t      len;

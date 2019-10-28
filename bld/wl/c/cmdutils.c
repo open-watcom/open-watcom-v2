@@ -33,7 +33,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #if !defined( __UNIX__ )
-#include <direct.h>
+    #include <direct.h>
+#endif
+#if defined( __WATCOMC__ )
+    #include <process.h>
 #endif
 #include "wio.h"
 #include "walloca.h"
