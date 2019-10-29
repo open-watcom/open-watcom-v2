@@ -60,15 +60,22 @@ t_runwntaxp = wnt_axp$(ext) #wntw_axp$(ext)
 t_runlnx    = lnx_3r$(ext) lnx_3s$(ext)
 t_runrdos   = rdos_3r$(ext) rdos_3s$(ext) rdosdev_3r$(ext)
 
-t_dos       = $(t_rundos) $(t_runcw) $(t_rund4g) #$(t_runpls) $(t_runx32)
-t_win       = $(t_dos) $(t_runw16) $(t_runw386)
+!ifeq arch i86
+t_dos       = $(t_rundos)
+t_win       = $(t_dos) $(t_runw16)
+t_nt386     = $(t_win)
+t_os2       = $(t_dos) $(t_runos2)
+!else
+t_dos       = $(t_runcw) $(t_rund4g) #$(t_runpls) $(t_runx32)
+t_win       = $(t_dos) $(t_runw386)
 t_nt386     = $(t_win) $(t_runwnt)
 t_ntaxp     = $(t_runwntaxp)
 t_ntx64     = $(t_runwnt)
-t_os2       = $(t_dos) $(t_runos2) $(t_runos3)
+t_os2       = $(t_dos) $(t_runos3)
 t_linux386  = $(t_runlnx)
 t_linuxx64  = $(t_runlnx)
 t_rdos      = $(t_runrdos)
+!endif
 
 !ifdef srcfile
 
@@ -91,11 +98,6 @@ run_tests = $+$(r_$(bld_os))$-
 ext=
 
 !endif
-
-test_flags = -wx -we -oaxt -zq -za99
-test_flags_i86 = -hd -fpc
-test_flags_386 = -hd -fpc
-test_flags_axp = -hc
 
 !include tools.mif
 !include testenv1.mif
