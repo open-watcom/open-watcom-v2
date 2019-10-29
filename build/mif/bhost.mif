@@ -33,7 +33,7 @@ bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-fo=.obj
 !ifeq release 0
 bld_gen_cflags  += -d2
 !else
-bld_gen_cflags  += -ox
+bld_gen_cflags  += -s-ox
 !endif
 !ifdef bldnewowtools
 bld_gen_cflags  += -xx-zam

@@ -206,7 +206,11 @@ cldebug_fmt = -hd
 mode_libflags =
 !ifeq release 1
 mode_cppflags = -DNDEBUG
+!ifndef $(proj_name)_checkstack
+mode_cflags   = -s-oaxt -d1 $(cdebug_fmt)
+!else
 mode_cflags   = -oaxt -d1 $(cdebug_fmt)
+!endif
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
 mode_clflags  = $(cldebug_fmt) -d1
@@ -402,9 +406,10 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-c_flags          =$(watcom_common_cflags)
 !ifdef newowtools
-c_flags          +=-za99
+c_flags          =$(watcom_common_cflags)-za99
+!else
+c_flags          =$(watcom_common_cflags)
 !endif
 
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
