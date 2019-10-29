@@ -43,13 +43,14 @@
 
 /* Test macros */
 
-#define VERIFY( exp )   if( !(exp) ) {                                      \
-                           printf( "%s: ***FAILURE*** at line %d of %s.\n", \
-                                   ProgramName, __LINE__,                   \
-                                   strlwr( __FILE__ ) );                    \
-                           NumErrors++;                                     \
-                           exit( -1 );                                      \
-                       }
+#define VERIFY( exp ) \
+    if( !(exp) ) {                                       \
+        printf( "%s: ***FAILURE*** at line %d of %s.\n", \
+                ProgramName, __LINE__,                   \
+                strlwr( __FILE__ ) );                    \
+        NumErrors++;                                     \
+        exit( EXIT_FAILURE );                            \
+    }
 
 char    ProgramName[FILENAME_MAX];      /* executable filename */
 int     NumErrors = 0;                  /* number of errors */
@@ -432,7 +433,7 @@ int main( int argc, char *argv[] )
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        exit( -1 );
+        return( EXIT_FAILURE );
     }
 #endif
 
@@ -457,14 +458,20 @@ int main( int argc, char *argv[] )
     /*** Print a pass/fail message and quit ***/
     if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-        return( EXIT_FAILURE );
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 #ifdef __SW_BW
-    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    }
     fclose( my_stdout );
     _dwShutDown();
 #endif
 
-    return( 0 );
+    if( NumErrors != 0 )
+        return( EXIT_FAILURE );
+    return( EXIT_SUCCESS );
 }

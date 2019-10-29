@@ -43,32 +43,36 @@
 #define NUM_FILES       50
 #ifdef __SW_BW
     #include <wdefwin.h>
-    #define VERIFY( expr ) if( !(expr) ) {                                  \
-                              printf( "***FAILURE*** Condition failed:" );  \
-                              printf( " %s, line %u.\n", #expr, __LINE__ ); \
-                              printf( "Abnormal termination.\n" );          \
-                              exit( -1 );                                   \
-                           }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                     \
+            printf( "***FAILURE*** Condition failed:" );    \
+            printf( " %s, line %u.\n", #expr, __LINE__ );   \
+            printf( "Abnormal termination.\n" );            \
+            exit( EXIT_FAILURE );                           \
+        }
 #else
-    #define VERIFY( expr ) if( !(expr) ) {                                  \
-                              printf( "***FAILURE*** Condition failed:" );  \
-                              printf( " %s, line %u.\n", #expr, __LINE__ ); \
-                              exit( -1 );                                   \
-                           }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                     \
+            printf( "***FAILURE*** Condition failed:" );    \
+            printf( " %s, line %u.\n", #expr, __LINE__ );   \
+            exit( EXIT_FAILURE );                           \
+        }
 #endif
-#define EXPECT( expr )  if( !(expr) ) {                                     \
-                          printf( "*WARNING* Condition failed:" );          \
-                          printf( " %s, line %u.\n", #expr, __LINE__ );     \
-                          ++warnings;                                       \
-                        }
+#define EXPECT( expr ) \
+    if( !(expr) ) {                                     \
+        printf( "*WARNING* Condition failed:" );        \
+        printf( " %s, line %u.\n", #expr, __LINE__ );   \
+        ++warnings;                                     \
+    }
 
-#define VERIFYS( exp )   if( !(exp) ) {                                      \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            NumErrors++;                                    \
-                            exit( -1 );                                     \
-                        }
+#define VERIFYS( exp ) \
+    if( !(exp) ) {                                          \
+        printf( "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__,                      \
+                strlwr(__FILE__) );                         \
+        NumErrors++;                                        \
+        exit( EXIT_FAILURE );                               \
+    }
 
 
 char    ProgramName[128];   /* executable filename */
@@ -92,7 +96,7 @@ void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 
 unsigned warnings = 0;
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     char filename[NUM_FILES][L_tmpnam_s];
     FILE *fp;
@@ -102,15 +106,16 @@ void main( int argc, char *argv[] )
 
     int     violations = NumViolations;
 
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
-    argc=argc;
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( EXIT_FAILURE );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
@@ -155,7 +160,7 @@ void main( int argc, char *argv[] )
         if( ( fp = fopen( filename[ctr], "w" ) ) == NULL ) {
             fprintf( stderr, "Internal: fopen() failed\n" );
             perror( filename[ctr] );
-            exit( -1 );
+            return( EXIT_FAILURE );
         }
         fclose( fp );
     }
@@ -188,17 +193,22 @@ void main( int argc, char *argv[] )
 #endif
     VERIFY( utime( filename[1], NULL ) == 0 );
     VERIFY( remove( filename[1] ) == 0 );
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     if( warnings ) {
-        printf( "Total number of warning(s) = %d.\n", warnings );
-        exit( -1 );
+        printf( "%s: total number of warning(s) = %d.\n", strlwr( argv[0] ), warnings );
+    } else {
+        printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     }
-    #ifdef __SW_BW
-    {
+#ifdef __SW_BW
+    if( warnings ) {
+        fprintf( stderr, "%s: total number of warning(s) = %d.\n", strlwr( argv[0] ), warnings );
+    } else {
         fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
     }
-    #endif
-    exit( 0 );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+
+    if( warnings )
+        return( EXIT_FAILURE );
+    return( EXIT_SUCCESS );
 }

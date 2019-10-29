@@ -40,19 +40,23 @@
 
 /* Test macros */
 
-#define VERIFY( expr ) ++tests; if( !(expr) ) {             \
-                      printf( "***FAILURE*** Condition failed.\n" );  \
-                      printf( "   %s, line %u.\n", #expr, __LINE__ ); \
-                          ++failures;                                   \
-                      exit( -1 );                                     \
-                }
+#define VERIFY( expr ) \
+    ++tests;                                            \
+    if( !(expr) ) {                                     \
+        printf( "***FAILURE*** Condition failed.\n" );  \
+        printf( "   %s, line %u.\n", #expr, __LINE__ ); \
+        ++failures;                                     \
+        exit( EXIT_FAILURE );                           \
+    }
 
-#define EXPECT( expr ) ++tests; if( !(expr) ) {             \
-                      printf( "***WARNING*** Condition failed.\n" );  \
-                      printf( "   %s, line %u.\n", #expr, __LINE__ ); \
-                      ++warnings;                                   \
-                      exit( -1 );                                     \
-                }
+#define EXPECT( expr ) \
+    ++tests;                                            \
+    if( !(expr) ) {                                     \
+        printf( "***WARNING*** Condition failed.\n" );  \
+        printf( "   %s, line %u.\n", #expr, __LINE__ ); \
+        ++warnings;                                     \
+        exit( EXIT_FAILURE );                           \
+    }
 
 #define QSORT_SIZE 300
 #define LIST_SIZE 200
@@ -213,7 +217,7 @@ int main( int argc, char *argv[] )
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        exit( -1 );
+        return( EXIT_FAILURE );
     }
 #endif
 
@@ -230,12 +234,10 @@ int main( int argc, char *argv[] )
     //Status_Print();
 
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
-    {
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
-    }
-    #endif
-    return( 0 );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+    return( EXIT_SUCCESS );
 }

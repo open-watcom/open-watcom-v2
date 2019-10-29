@@ -88,21 +88,23 @@
 
 #define NUM_OPEN        5
 #ifdef __SW_BW
- #define VERIFY( expr ) if( !(expr) ) {                                     \
-                          printf( "FAIL: %s, line %u\n", #expr, __LINE__ ); \
-                          printf( "Note: make sure "TMPDIRNAME" is removed\n" );\
-                          printf( "Abnormal termination.\n" );              \
-                          exit( 100 );                                      \
-                        }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                             \
+            printf( "FAIL: %s, line %u\n", #expr, __LINE__ );       \
+            printf( "Note: make sure "TMPDIRNAME" is removed\n" );  \
+            printf( "Abnormal termination.\n" );                    \
+            exit( 100 );                                            \
+        }
 #else
- #define VERIFY( expr ) if( !(expr) ) {                                     \
-                          printf( "FAIL: %s, line %u\n", #expr, __LINE__ ); \
-                          printf( "Note: make sure "TMPDIRNAME" is removed\n" );\
-                          abort();                                          \
-                        }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                             \
+            printf( "FAIL: %s, line %u\n", #expr, __LINE__ );       \
+            printf( "Note: make sure "TMPDIRNAME" is removed\n" );  \
+            abort();                                                \
+        }
 #endif
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     CHAR_TYPE           *cwd;
     CHAR_TYPE           buffer[256], buffer2[256];
@@ -269,6 +271,6 @@ void main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    exit( 0 );
+    return( EXIT_SUCCESS );
 }
 

@@ -88,7 +88,7 @@ void dispStr( char * string ) // Used to display messages to console.
     #endif
 }
 
-void main( void )
+int main( void )
 {
     int errFlag[NUMFUNC];
     char *funcName[] = { "cgets()",
@@ -286,4 +286,5 @@ void main( void )
     } else {
         dispStr( "All the functions seem to pass the test!\r\n" );
     }
+    return( EXIT_SUCCESS );
 }

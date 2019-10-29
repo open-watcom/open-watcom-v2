@@ -560,10 +560,8 @@ void TestAddendum( void )
 ***** Program entry point.
 ****/
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
-    int             exitcode;
-
     /*** Initialize ***/
 #ifdef __SW_BW
     FILE            *my_stdout;
@@ -597,24 +595,22 @@ void main( int argc, char *argv[] )
 
 
     /*** Print a pass/fail message and quit ***/
-    if( NumErrors == 0 ) {
-        printf( "%s: SUCCESS.\n", ProgramName );
-#ifdef __SW_BW
-        fprintf( stderr, "%s: SUCCESS.\n", ProgramName );
-#endif
-        exitcode = EXIT_SUCCESS;
-    } else {
+    if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-#ifdef __SW_BW
-        fprintf( stderr, "%s: FAILURE (%d errors).\n",
-                 ProgramName, NumErrors );
-#endif
-        exitcode = EXIT_FAILURE;
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-
 #ifdef __SW_BW
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    }
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    exit( exitcode );
+
+    if( NumErrors != 0 )
+        exit( EXIT_FAILURE );
+    exit( EXIT_SUCCESS );
 }

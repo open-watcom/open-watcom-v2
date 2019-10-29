@@ -80,13 +80,21 @@
 #endif
 
 #ifdef TINY_MEMORY
-void print_fail(int line) { printf("FAIL: line %d\n", line); failure = 1; }
-#define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
+    void print_fail(int line) { printf("FAIL: line %d\n", line); failure = 1; }
+    #define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
+#elif defined( __SW_BW )
+    #include <wdefwin.h>
+    #define VERIFY(expr) \
+        if(!(expr)) { \
+            printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
+            failure = 1; \
+        }
 #else
-#define VERIFY(expr)    if(!(expr)) { \
-                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
-                             failure = 1; \
-                        }
+    #define VERIFY(expr) \
+        if(!(expr)) { \
+            printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
+            failure = 1; \
+        }
 #endif
 
 
@@ -657,8 +665,19 @@ void test_fp_rounding( void )
 #endif /* ENABLE_ROUNDING */
 }
 
-int main( void )
+int main( int argc, char *argv[] )
 {
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
+
     /* Enable Watcom-style math error handling */
     math_errhandling = MATH_ERRWATCOM | MATH_ERREXCEPT;
 
@@ -674,7 +693,15 @@ int main( void )
     test_fp_remainder();
     test_fp_rounding();
 
-    printf( "Tests completed.\n" );
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
+
+#ifdef __SW_BW
+    {
+        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+        fclose( my_stdout );
+        _dwShutDown();
+    }
+#endif
 
     return( failure );
 }
