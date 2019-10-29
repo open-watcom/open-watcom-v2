@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Signal handling for DOS and Windows 3.x.
+* Description:  Signal handling for DOS and Windows 3.x (16 and 32-bit).
 *
 ****************************************************************************/
 
