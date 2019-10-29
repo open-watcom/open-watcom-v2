@@ -4,15 +4,6 @@ clflags_dos_386 = -l=causeway
 lflags_dos_386  = sys causeway
 !endif
 
-!ifndef __NTAXP__
-
-!ifeq host_cpu axp
-cc_386      += $(bld_incs)
-cxx_386     += $(bld_incs)
-!endif
-
-!endif
-
 # bootstrap overrides
 ######################
 
