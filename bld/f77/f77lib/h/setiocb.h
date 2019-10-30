@@ -29,13 +29,4 @@
 ****************************************************************************/
 
 
-#if 0
-// In order to avoid hitting every runtime file we do this before prototyping
-#if !defined( SetIOCB )
-  #if !defined( _M_IX86 ) && defined( __RT__ )
-    #define SetIOCB     __RT_SetIOCB
-  #endif
-#endif
-#endif
-
 extern void     SetIOCB( void );

@@ -35,7 +35,12 @@
       #pragma aux FWINMAIN "*";
     #endif
 
-  #if defined( __386__ )
+  #if defined( _M_I86 )
+    #pragma aux rt_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux co_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux va_rtn "RT@*" __parm __caller [];
+    #pragma aux (rt_rtn) flt_rt_rtn;
+  #else
     #pragma aux rt_rtn "RT@*" __parm __routine [__eax __ebx __ecx __edx __8087];
     #pragma aux co_rtn "RT@*" __parm __routine [__eax __ebx __ecx __edx __8087];
     #pragma aux va_rtn "RT@*" __parm __caller [];
@@ -57,11 +62,6 @@
     #else
       #pragma aux (rt_rtn) flt_rt_rtn;
     #endif
-  #else
-    #pragma aux rt_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
-    #pragma aux co_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
-    #pragma aux va_rtn "RT@*" __parm __caller [];
-    #pragma aux (rt_rtn) flt_rt_rtn;
   #endif
 
   #pragma aux (rt_rtn) PowII;
