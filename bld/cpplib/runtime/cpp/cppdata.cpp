@@ -49,7 +49,7 @@ extern "C" {
     _WPRTLINK unsigned      _wint_thread_data_offset;
 #endif
 
-#if defined( __SW_BM ) && defined( __386__ )
+#if defined( __SW_BM ) && !defined( _M_I86 )
     AXI( CPPLIB( multi_thread_init ), INIT_PRIORITY_THREAD )
 #endif
 
