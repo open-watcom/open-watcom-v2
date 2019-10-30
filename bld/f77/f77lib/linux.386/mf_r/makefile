@@ -4,4 +4,5 @@ system     = linux
 model      = mf
 convention = register
 linkage    = static
+mthreaded  = 1
 !include ../../master.mif
