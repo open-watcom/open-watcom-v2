@@ -20,7 +20,9 @@ libsubdir_suffix = _mt
 !else
 libsubdir_suffix = $(libsubdir_$(convention))
 !ifdef mthreaded
+!ifeq proj_name cpplib
 libsubdir_suffix +=mt
+!endif
 !endif
 !ifdef profile
 libsubdir_suffix +=p
