@@ -73,8 +73,6 @@ extra_cpp_flags_i86 =-DSHORT_OFF
 extra_cpp_flags_i86 =-DSHORT_OFF
 !endif
 
-extra_c_flags =  -s
-
 extra_c_flags_dos_rsi = -zu
 extra_c_flags_dos     = $(extra_c_flags_dos_$(target))
 extra_c_flags_win     = -zu -zw -orlt

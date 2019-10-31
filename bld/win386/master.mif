@@ -67,7 +67,6 @@ extra_cpp_flags_bitmap   = -DDLL32
 extra_cpp_flags_toolhelp = -DDLL32
 !endif
 
-extra_c_flags = -s
 extra_c_flags_i86 = -3
 !ifeq fmt dll
 extra_c_flags_wininit  = -zu

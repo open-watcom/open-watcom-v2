@@ -36,8 +36,6 @@ extra_cpp_flags     = -DWRESEDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 
-extra_c_flags     = -s
-
 extra_c_flags_win = -zu-zw-zc
 
 # preprocessor objects

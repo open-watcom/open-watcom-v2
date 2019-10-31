@@ -19,7 +19,7 @@ sys_windowed=1
 
 extra_cpp_flags_ldstr = -dSPECIAL_STRING_LOADING
 
-extra_c_flags_i86   = -s-zu-zW
+extra_c_flags_i86   = -zu-zW
 
 extra_c_flags_heapwalk = -3
 extra_c_flags_segmem2  = -3

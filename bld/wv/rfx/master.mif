@@ -23,8 +23,6 @@ extra_cpp_flags = -DBUILD_RFX
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
-extra_c_flags = -s
-
 objs = rfx.obj        &
        rfxacc.obj     &
        remmisc.obj    &

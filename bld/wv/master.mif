@@ -78,8 +78,6 @@ extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
-extra_c_flags = -s
-
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"
 !ifeq sys_windowed 1

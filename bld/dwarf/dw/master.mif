@@ -41,8 +41,6 @@ dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
     $(librarian) $(libflags) $(objs)
 !endif
 
-extra_c_flags = -s
-
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldcl
     $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)

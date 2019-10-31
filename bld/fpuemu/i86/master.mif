@@ -40,7 +40,6 @@ extra_a_flags_emustub =
 
 extra_cpp_flags_qnx = -DQNX$(cpu_size)
 
-extra_c_flags = -s
 extra_c_flags_dos = -zl -zls
 extra_c_flags_os2 = -zl -zls
 extra_c_flags_win = -zl -zls

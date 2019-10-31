@@ -196,7 +196,7 @@ extra_cpp_flags_386 = -D_CGRAPH=
 extra_cpp_flags_386 += -D__STACK
 !endif
 
-extra_c_flags = -os -s -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
+extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
 
 extra_c_flags_i86 = -nt=GRAPH_TEXT
 extra_c_flags_386_ms_dos = -r

@@ -52,8 +52,6 @@ inc_dirs = -I"../h"
 extra_cpp_flags = -DUSE_VIRTMEM
 !endif
 
-extra_c_flags = -s
-
 extra_c_flags_i86 = -zc -zu
 extra_c_flags_386 = -zc
 extra_c_flags_win = -zW

@@ -37,7 +37,7 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_cpp_flags_spydll = -DSPYDLL
 
-extra_c_flags     = -s -fh
+extra_c_flags     = -fh
 extra_c_flags_i86 = -zu -2 -zW
 extra_c_flags_386 = -4
 !ifdef __WATCOM_TOOLS__

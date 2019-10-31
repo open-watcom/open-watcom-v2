@@ -129,8 +129,6 @@ extra_cpp_flags_os2 = -D__OS2_PM__
 # memory tracker routines
 extra_cpp_flags_setupmem = $(trmem_cpp_flags)
 
-extra_c_flags = -s
-
 extra_c_flags_i86 = -zc
 
 # memory tracker routines

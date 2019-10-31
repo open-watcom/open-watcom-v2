@@ -32,7 +32,7 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
-extra_c_flags     = -s -fh
+extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 

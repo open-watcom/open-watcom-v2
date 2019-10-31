@@ -26,8 +26,6 @@ objs += owcc.obj getopt.obj quit.obj
 
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
-extra_c_flags += -s
-
 extra_c_flags_owcc     = -I"$(posix_dir)/h"
 extra_c_flags_getopt   = -I"$(posix_dir)/h"
 extra_c_flags_quit     = -I"$(posix_dir)/h"

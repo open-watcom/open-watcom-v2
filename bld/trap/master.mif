@@ -164,7 +164,7 @@ extra_cpp_flags_nov += -DDEBUG_ME
 extra_cpp_flags_nov += -D__NETWARE_LIBC__
 !endif
 
-extra_c_flags += -s $(extra_cflags)
+extra_c_flags += $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif

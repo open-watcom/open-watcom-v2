@@ -70,7 +70,7 @@ objs = asmpkt.obj   asmpkt4.obj   &
 
 def_fpu_flags_dos_i86 = -fpc
 
-extra_c_flags = -zm -s
+extra_c_flags = -zm
 
 inc_dirs = -I"../inc"
 

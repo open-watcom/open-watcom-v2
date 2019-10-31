@@ -50,7 +50,6 @@ extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
-extra_c_flags = -s
 extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 

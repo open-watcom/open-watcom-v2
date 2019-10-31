@@ -53,8 +53,6 @@ extra_cpp_flags = -D__DIP__ $(extra_cppflags)
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
-extra_c_flags   = -s
-
 extra_c_flags_i86 = -zc -zu
 
 !ifdef __WATCOM_TOOLS__

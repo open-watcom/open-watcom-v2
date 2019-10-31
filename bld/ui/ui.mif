@@ -25,7 +25,7 @@ extra_cpp_flags_nov = -D_NETWARE_CLIB
 extra_cpp_flags_uialloc = $(trmem_cpp_flags)
 
 !ifeq release 1
-extra_c_flags = -os-s
+extra_c_flags = -os
 !endif
 
 extra_c_flags_nov     = -ot -4s

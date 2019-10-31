@@ -30,7 +30,7 @@ _subdir_ =
 dosobjs = $+ $(cmdfiles) $- cmdio.obj
 os2objs = $+ $(cmdfiles) $-
 
-extra_c_flags_dos = -DDOS -oas -s
+extra_c_flags_dos = -DDOS -oas
 extra_c_flags_os2 = -oxs
 
 extra_a_flags = -D_MODEL=_SMALL

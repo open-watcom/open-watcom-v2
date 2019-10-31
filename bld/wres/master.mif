@@ -20,8 +20,6 @@ memory_model_386 = $(model)
 !include $(wres_dir)/wrobjs.mif
 objs = $(wres_core_objs) $(wres_more_objs)
 
-extra_c_flags = -s
-
 !ifeq convention stack
 extra_c_flags_386 = -3s
 !else

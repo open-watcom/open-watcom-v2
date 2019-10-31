@@ -53,8 +53,6 @@ extra_cpp_flags   = -DWRDLL
 
 extra_cpp_flags_wrmem = $(trmem_cpp_flags)
 
-extra_c_flags     = -s
-
 extra_c_flags_win = -zu-zw-zc
 
 # wr objects

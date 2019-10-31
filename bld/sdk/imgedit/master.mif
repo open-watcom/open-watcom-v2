@@ -52,7 +52,7 @@ extra_cpp_flags = -D_WPI_TEST_
 
 extra_cpp_flags_os2 = -D__OS2_PM__
 
-extra_c_flags = -s -fh
+extra_c_flags = -fh
 
 extra_c_flags_win = -zc
 
