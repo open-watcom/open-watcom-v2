@@ -4,6 +4,7 @@ model=ms
 system=nw_libc
 convention=stack
 linkage=static
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
 !include ../../../deps.mif

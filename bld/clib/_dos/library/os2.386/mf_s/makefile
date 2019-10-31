@@ -4,5 +4,6 @@ model=mf
 system=os2
 convention=stack
 linkage=dynamic
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif

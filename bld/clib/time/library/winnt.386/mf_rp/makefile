@@ -5,6 +5,8 @@ system=winnt
 convention=register
 linkage=dynamic
 profile=1
+mthreaded=1
+
 clib_rtdll=1
 
 !include $(clib_dir)/mklib.mif

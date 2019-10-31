@@ -49,49 +49,63 @@ _WCRTLINK void *_expand( void *cstg, size_t amount )
 _WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 {
     size_t  growth_size;
-#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
-#else
-    struct {
-        unsigned expanded : 1;
-    }       flags;
-    int     retval;
-#endif
 
     _AccessNHeap();
-#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
-  #if defined( _M_I86 )
+#if defined( _M_I86 )
+  #if defined( __WINDOWS__ )
     if( __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
-  #else
-    if( __HeapManager_expand( cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
-  #endif
         cstg = NULL;
     }
-#else
-    flags.expanded = 0;
-    for( ;; ) {
-  #if defined( _M_I86 )
-        retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
   #else
-        retval = __HeapManager_expand( cstg, req_size, &growth_size );
-  #endif
-        if( retval == __HM_SUCCESS ) {
-            break;
-        }
-    #if defined( __DOS_EXT__ )
-        if( retval == __HM_FAIL || _IsRationalZeroBase() || _IsCodeBuilder() ) {
-    #else
-        if( retval == __HM_FAIL ) {
-    #endif
-            cstg = NULL;
-            break;
-        }
-        if( retval == __HM_TRYGROW ) {
-            if( flags.expanded || __ExpandDGROUP( growth_size ) == 0 ) {
+    {
+        int         retval;
+        unsigned    expanded = 0;
+
+        for( ;; ) {
+            retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
+            if( retval == __HM_SUCCESS ) {
+                break;
+            }
+            if( retval == __HM_FAIL ) {
                 cstg = NULL;
                 break;
             }
-            flags.expanded = 1;
+            if( retval == __HM_TRYGROW ) {
+                if( expanded || __ExpandDGROUP( growth_size ) == 0 ) {
+                    cstg = NULL;
+                    break;
+                }
+                expanded = 1;
+            }
         }
+    }
+  #endif
+#elif defined( __DOS_EXT__ )
+    {
+        int         retval;
+        unsigned    expanded = 0;
+
+        for( ;; ) {
+            retval = __HeapManager_expand( cstg, req_size, &growth_size );
+            if( retval == __HM_SUCCESS ) {
+                break;
+            }
+            if( retval == __HM_FAIL || _IsRationalZeroBase() || _IsCodeBuilder() ) {
+                cstg = NULL;
+                break;
+            }
+            if( retval == __HM_TRYGROW ) {
+                if( expanded || __ExpandDGROUP( growth_size ) == 0 ) {
+                    cstg = NULL;
+                    break;
+                }
+                expanded = 1;
+            }
+        }
+    }
+#else
+    if( __HeapManager_expand( cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
+        cstg = NULL;
     }
 #endif
     _ReleaseNHeap();

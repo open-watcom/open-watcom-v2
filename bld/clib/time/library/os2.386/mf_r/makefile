@@ -4,6 +4,7 @@ model=mf
 system=os2
 convention=register
 linkage=dynamic
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
 !include ../../../deps.mif

@@ -4,5 +4,6 @@ model=ms
 system=nw_clib
 linkage=static
 convention=stack
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
