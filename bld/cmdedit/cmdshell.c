@@ -111,7 +111,7 @@ static void WriteCh( int ch )
     }
 }
 
-static char ReadCh()
+static char ReadCh( void )
 {
 /*
     Buffered read of the output from CMD.EXE.

@@ -30,9 +30,8 @@ _subdir_ =
 dosobjs = $+ $(cmdfiles) $- cmdio.obj
 os2objs = $+ $(cmdfiles) $-
 
-# don't use stack checking for TSR program
-extra_c_flags = -s
-extra_c_flags_dos = -oas -DDOS
+# don't use stack checking for TSR program (DOS)
+extra_c_flags_dos = -s-oas -DDOS
 extra_c_flags_os2 = -oxs
 
 extra_a_flags = -D_MODEL=_SMALL
