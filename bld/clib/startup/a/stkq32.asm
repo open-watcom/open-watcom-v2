@@ -75,8 +75,8 @@ hextab  db      "0123456789ABCDEF"
         push    eax
         mov     eax,8[esp]
         _guess                          ; guess: no overflow
-          cmp   eax,esp                 ; - quit if user asking for too much
-          _quif ae                      ; - . . .
+          cmp   eax,esp                 ; - check if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
 ifdef __MT__
@@ -85,24 +85,22 @@ ifdef __MT__
           call  __GetThreadPtr          ; - get thread data address
           mov   esi,eax                 ; - ...
           pop   eax                     ; - restore new ESP value
-          cmp   eax,[esi]               ; - quit if too much
+          cmp   eax,[esi]               ; - check if too much
           pop   esi                     ; - restore registers
 else
-          cmp   eax,_STACKLOW           ; - quit if too much
+          cmp   eax,_STACKLOW           ; - check if too much
 endif
-          _quif be                      ; - . . .
+        _quif be                        ; quit if too much
           pop   eax                     ; - restore EAX
           ret   4                       ; - return
         _endguess                       ; endguess
 
-        endproc __CHK
+        pop     eax                     ; throw away saved eax value
 
 ;* modified stack overflow code to print the return address of the
 ;* caller.
 
 __STKOVERFLOW:
-
-        pop     eax                     ; throw away saved eax value
         pop     eax                     ; get return addr
         xor     edx,edx
         mov     dx,cs
@@ -139,26 +137,28 @@ __STKOVERFLOW:
         push    ss
         pop     ds
 ifdef __STACK__
-        push    1
-        push    ebp
+        push    1                       ; exit code
+        push    ebp                     ; the error message
 else
-        mov     eax,ebp
-        mov     edx,1
+        mov     eax,ebp                 ; the error message
+        mov     edx,1                   ; exit code
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
 
+        endproc __CHK
+
 _putw proc near
         mov     edx,ebx                 ; save value
         mov     cl,12                   ; setup shift count
-_lup:
-        mov     ebx,edx                 ; get value
-        shr     ebx,cl                  ; put in bottom 4 bits.
-        and     ebx,0fh
-        mov     al,cs:hextab[ebx]
-        stosb
-        sub     cl,4
-        jns     _lup
+        _loop
+          mov   ebx,edx                 ; get value
+          shr   ebx,cl                  ; put in bottom 4 bits.
+          and   ebx,0fh
+          mov   al,cs:hextab[ebx]
+          stosb
+          sub   cl,4
+        _loopif ns
         ret
 _putw   endp
 

@@ -85,11 +85,11 @@ enddata
 
 __STKOVERFLOW:
 ifdef __STACK__
-        push    1
-        push    offset msg
+        push    1                       ; exit code
+        push    offset msg              ; the error message
 else
-        mov     eax,offset msg
-        mov     edx,1
+        mov     eax,offset msg          ; the error message
+        mov     edx,1                   ; exit code
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
