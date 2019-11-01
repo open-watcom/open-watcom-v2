@@ -18,7 +18,7 @@ wdpmhelp_autodepends = .AUTODEPEND
 
 description = 'Open Watcom Debugger PM Helper'
 
-extra_c_flags = -s -fpc
+extra_c_flags = -fpc
 
 inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
