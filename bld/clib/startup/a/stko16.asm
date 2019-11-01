@@ -61,37 +61,37 @@ dgroupp dw      DGROUP
 
         defpe   __STK
         _guess                          ; guess: no overflow
-        cmp     ax,sp                   ; - quit if user asking for too much
-        _quif   ae                      ; - . . .
-        sub     ax,sp                   ; - calculate new low point
-        neg     ax                      ; - calc what new SP would be
+          cmp     ax,sp                 ; - check if user asking for too much
+        _quif   ae                      ; quit if user asking for too much
+          sub     ax,sp                 ; - calculate new low point
+          neg     ax                    ; - calc what new SP would be
 ifdef __MT__
-        push    ds                      ; - save registers
-        push    si                      ; - ...
-        mov     ds,cs:dgroupp           ; - . . .
-        lds     si,_threadid            ; - get thread id
-        mov     si,[si]                 ; - ...
-        shl     si,1                    ; - turn into index
-        shl     si,1                    ; - ...
-        mov     ds,cs:dgroupp           ; - . . .
-        add     si,__ThreadData         ; - get pointer to thread data
-        mov     ds,__ThreadData+2       ; - ...
-        lds     si,[si]                 ; - ...
-        cmp     ax,[si]                 ; - quit if too much
-        pop     si                      ; - restore registers
-        pop     ds                      ; - ...
+          push    ds                    ; - save registers
+          push    si                    ; - ...
+          mov     ds,cs:dgroupp         ; - . . .
+          lds     si,_threadid          ; - get thread id
+          mov     si,[si]               ; - ...
+          shl     si,1                  ; - turn into index
+          shl     si,1                  ; - ...
+          mov     ds,cs:dgroupp         ; - . . .
+          add     si,__ThreadData       ; - get pointer to thread data
+          mov     ds,__ThreadData+2     ; - ...
+          lds     si,[si]               ; - ...
+          cmp     ax,[si]               ; - check if too much
+          pop     si                    ; - restore registers
+          pop     ds                    ; - ...
 else
     if _MODEL and (_BIG_DATA or _HUGE_DATA)
-        push    ds                      ; - save ds
-        mov     ds,cs:dgroupp           ; - load ds from DGROUP
+          push    ds                    ; - save ds
+          mov     ds,cs:dgroupp         ; - load ds from DGROUP
     endif
-        cmp     ax,ds:_STACKLOW         ; - quit if too much
+          cmp     ax,ds:_STACKLOW       ; - check if too much
     if _MODEL and (_BIG_DATA or _HUGE_DATA)
-        pop     ds                      ; - restore ds
+          pop     ds                    ; - restore ds
     endif
 endif
-        _quif   be                      ; - . . .
-        ret                             ; - return
+        _quif   be                      ; quit if too much
+          ret                           ; - return
         _endguess                       ; endguess
 
 __STKOVERFLOW:

@@ -54,9 +54,10 @@ _init_stk endp
 
         defpe   __STK
         _guess                          ; guess: no overflow
-          cmp   ax,sp                   ; - quit if user asking for too much
-          _quif ae                      ; - . . .
+          cmp   ax,sp                   ; - check if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub   ax,sp                   ; - calculate new low point
+          neg   ax                      ; - calc what new SP would be
 if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
           push  ds                      ; - save DS
           push  ax                      ; - save AX
@@ -64,7 +65,6 @@ if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
           mov   ds,ax                   ; - . . .
           pop   ax                      ; - restore AX
 endif
-          neg   ax                      ; - calc what new SP would be
           cmp   ax,_STACKLOW            ; - if too much
           _if   be                      ; - then
 
@@ -73,12 +73,11 @@ endif
 
             mov   ax,ss                 ; - - get ss
             cmp   ax,SS_seg             ; - - see if SS has been changed
-            je    __STKOVERFLOW         ; - - stack overflow if same
           _endif                        ; - endif
-
 if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
           pop   ds                      ; - restore DS
 endif
+        _quif e                         ; quit if too much
           ret                           ; - return
         _endguess                       ; endguess
 
