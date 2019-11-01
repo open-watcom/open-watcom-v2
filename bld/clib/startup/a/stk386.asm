@@ -55,7 +55,6 @@ enddata
         ret                             ; return
         endproc _init_stk
 
-
         defpe   __CHK
         xchg    eax,4[esp]
         call    __STK
@@ -63,33 +62,26 @@ enddata
         ret     4
         endproc __CHK
 
-
         defpe   __GRO
         ret     4
         endproc __GRO
 
-
         defpe   __STK
         _guess                          ; guess: no overflow
-          cmp   eax,esp                 ; - quit if user asking for too much
-          _quif ae                      ; - . . .
+          cmp   eax,esp                 ; - check if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
-          cmp   eax,_STACKLOW           ; - quit if too much
-          _quif be                      ; - . . .
-          ret                           ; - return
-        _endguess                       ; endguess
-
+          cmp   eax,_STACKLOW           ; - check if too much
+          _if be                        ; - if too much
 ;       We could have reached this point because we are in an interrupt
 ;       routine with different SS:ESP values from our DGROUP.
-
-        _guess                          ; guess: SS != DS       07-nov-89
-          mov   ax,ss                   ; - get ss
-          cmp   ax,SS_seg               ; - see if SS has been changed
-          _quif e                       ; - quit if same
-          ret                           ; - return (running with a different stack)
+            mov   ax,ss                 ; - - get ss
+            cmp   ax,SS_seg             ; - - see if SS has been changed
+          _endif                        ; - endif
+        _quif e                         ; quit if too much
+          ret                           ; - return
         _endguess                       ; endguess
-
 
 __STKOVERFLOW:
 ifdef __STACK__
