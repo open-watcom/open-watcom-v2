@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,37 +31,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "cmdedit.h"
-#include <process.h>
-#include <dos.h>
 
-#ifdef __DOS__
-    char __far * __far AliasList;
-#else
-    char __far *AliasList;
-#endif
 
-int main( void )
+void SetCurPosWithScroll( int row, int col )
 {
-    LENGTH      l;
-    USHORT      row,col;
-    USHORT      written;
-    static char buff[LINE_WIDTH];
+    /* unused parameters */ (void)col;
 
-    getcmd( buff );
-    InitRetrieve( buff );
-    for( ;; ) {
-        VioGetCurPos( &row, &col, 0 );
-        VioWrtCharStr( "hello>", 6, row, col, 0 );
-        VioSetCurPos( row, col+6, 0 );
-        l.input = LINE_WIDTH;
-        StringIn( &buff, &l, 1, 5 );
-        if( l.output == 1 && buff[0] == 'q' )
-            break;
-        DosWrite( 1, "\r\n", 2, &written );
-        DosWrite( 1, buff, l.output, &written );
-        DosWrite( 1, "\r\n", 2, &written );
-    }
-    return( 0 );
+    VioSetCurPos( row, 0, 0 );
 }

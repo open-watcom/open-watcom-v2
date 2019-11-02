@@ -72,7 +72,7 @@ char __far *InitAlias( char __far * inname )
     USHORT          action;
     char            __far *endname;
     static char     noalias = 0;
-#ifndef DOS
+#ifdef __OS2__
     static char     AliasArea[2048]; /* The DLL seems to need static memory */
 #endif
 
@@ -93,7 +93,10 @@ char __far *InitAlias( char __far * inname )
         DosChgFilePtr( hdl, 0L, 2, &ppos );
         pos = ppos;
         DosChgFilePtr( hdl, 0L, 0, &ppos );
-#ifdef DOS
+#ifdef __OS2__
+        AliasList = AliasArea;
+        AliasSize = 2047;
+#else
         {
             static int alias_seg;
 
@@ -101,9 +104,6 @@ char __far *InitAlias( char __far * inname )
             AliasList = (char __far *)MK_FP( alias_seg, 0 );
             AliasSize = pos + ALIAS_SLACK;
         }
-#else
-        AliasList = AliasArea;
-        AliasSize = 2047;
 #endif
         DosRead( hdl, AliasList, pos, &read );
         if( pos > 0 && AliasList[pos - 1] != '\n' ) {

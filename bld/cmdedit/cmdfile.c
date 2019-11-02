@@ -125,7 +125,7 @@ static int FileIgnore( DIRINFO PASPTR *dir, int fattr )
         return( 1 );
     name = dir->achName;
     if( PathCurr != NULL ) {
-#ifdef DOS
+#ifdef __DOS__
         envname = ".COM.EXE.BAT";
 #else
         envname = ".COM.EXE.CMD.BAT";
@@ -144,7 +144,7 @@ static int FileIgnore( DIRINFO PASPTR *dir, int fattr )
     }
     while( !_null( *name ) && *name != '.' )
         ++name;
-#ifndef DOS
+#ifdef __OS2__
     if( *name == '.' ) {
         /* consider: a.b.c   .c is the extension */
         name += _fstrlen( name ) - 1;
@@ -195,7 +195,7 @@ static int FindNext( DIRINFO PASPTR *dir, int fattr )
 void NextFile( void )
 /*******************/
 {
-#ifdef DOS
+#ifdef __DOS__
     int                 dot;
 #endif
     USHORT              hdl;
@@ -226,14 +226,14 @@ void NextFile( void )
 recurse:
             path = 0;
             i = Cursor - 1;
-#ifdef DOS
+#ifdef __DOS__
             dot = FALSE;
 #endif
             in_quote = FALSE;
             for( ;; ) {
                 if( Line[i] == '/' || Line[i] == '\\' )
                     path = 1;
-#ifdef DOS
+#ifdef __DOS__
                 if( path == 0 && Line[i] == '.' )
                     dot = TRUE;
 #endif
@@ -270,7 +270,7 @@ recurse:
                     goto done;
                 } else {
                     RestoreLine();
-#ifdef DOS
+#ifdef __DOS__
                     dot = FALSE;
 #endif
                     word = PathBuff;
@@ -292,7 +292,7 @@ recurse:
             c3 = Line[Cursor+3];
             Line[Cursor] = '*';
 
-#ifdef DOS
+#ifdef __DOS__
             if( !dot ) {
                 Line[Cursor + 1] = '.';
                 Line[Cursor + 2] = '*';

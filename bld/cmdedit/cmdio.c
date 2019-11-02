@@ -33,7 +33,7 @@
 #include <string.h>
 
 
-#ifdef DOS
+#ifdef __DOS__
 
 static char buff[MAX_FNAME];
 

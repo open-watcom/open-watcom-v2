@@ -101,7 +101,7 @@ void __near InitRetrieve( char __far *inname )
     while( *inname == ' ' )
         ++inname;
     InitSave( inname );
-#ifndef DOS
+#ifdef __OS2__
     {
         USHORT action;
         DosOpen( "kbd$", &KbdHandle, &action, 0, 0, 1, 0x20, 0 );
@@ -111,7 +111,7 @@ void __near InitRetrieve( char __far *inname )
     BuffOne = FALSE;
     More = 0;
     LineSaved = FALSE;
-#ifdef DOS
+#ifdef __DOS__
     DosFreeEnv();
 #endif
 }
@@ -516,19 +516,6 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
 
         VioGetCurPos( &Row, &dummy, 0 );
     }
-#ifndef __CMDSHELL__
-    VioSetCurPos( Row, 0, 0 );
-#else
-    if( VioSetCurPos( Row+1, 0, 0 ) != 0 ) {
-        static char buffer[2];
-        static USHORT length;
-
-        length = 2;
-        VioReadCellStr( &buffer, &length, Row, StartCol+Cursor-Base, 0 );
-        buffer[0] = ' ';
-        VioScrollUp( 0, 0, -1, -1, 1, (PBYTE)&buffer, 0 );
-        VioSetCurPos( Row, 0, 0 );
-    }
-#endif
+    SetCurPosWithScroll( Row, StartCol + Cursor - Base );
     return( 0 );
 }
