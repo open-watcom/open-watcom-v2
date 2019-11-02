@@ -32,7 +32,7 @@
 #include "asmglob.h"
 #include <ctype.h>
 #if defined( __WATCOMC__ ) && defined( DEBUG_OUT )
-	#include <malloc.h>
+    #include <malloc.h>
 #endif
 #include "asmalloc.h"
 #include "directiv.h"
@@ -317,7 +317,7 @@ static bool AddPredefinedConstant( char *name, const_info *info )
     } else if( dir->sym.state == SYM_UNDEFINED ) {
         dir_change( dir, TAB_CONST );
     } else if( dir->sym.state != SYM_CONST ) {
-        AsmError( LABEL_ALREADY_DEFINED );
+        AsmErr( LABEL_ALREADY_DEFINED, dir->sym.name );
         return( RC_ERROR );
     }
     if( !dir->e.constinfo->predef ) {
