@@ -29,14 +29,14 @@ bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-fo=.obj
-!ifeq release 0
-bld_gen_cflags  += -d2
-!else
-bld_gen_cflags  += -s-ox
-!endif
 !ifdef bldnewowtools
-bld_gen_cflags  += -xx-zam
+bld_new_cflags  = -xx-zam
+!endif
+
+!ifeq release 0
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-d2$(bld_new_cflags)-fo=.obj
+!else
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations
@@ -66,6 +66,7 @@ wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
 yacc            = $(noecho)yacc
+tr              = $(noecho)tr
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

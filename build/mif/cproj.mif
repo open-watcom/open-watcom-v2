@@ -207,9 +207,9 @@ mode_libflags =
 !ifeq release 1
 mode_cppflags = -DNDEBUG
 !ifndef $(proj_name)_checkstack
-mode_cflags   = -s-oaxt -d1 $(cdebug_fmt)
+mode_cflags   = -s$(dft_oflags) -d1 $(cdebug_fmt)
 !else
-mode_cflags   = -oaxt -d1 $(cdebug_fmt)
+mode_cflags   = $(dft_oflags) -d1 $(cdebug_fmt)
 !endif
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
