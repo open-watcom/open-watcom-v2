@@ -4,6 +4,7 @@ cmdedit_autodepends = .AUTODEPEND
 
 additional_cleanup_subdir =
 
+# overwrite default compilers optimization options
 dft_oflags =
 
 suppress_bd = 1
@@ -66,8 +67,10 @@ all: cmdedit.exe
 cmdobjs = dosstart.obj $(dosobjs)
 
 cmdedit.exe: $(cmdobjs) $(__MAKEFILES__)
-    @%write $^&.lnk debug all system dos name cmdedit lib clibs
-    @%append $^&.lnk option map, dosseg, symfile disable 2030, 2028
+    @%write $^&.lnk name $@
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib clibs
+    @%append $^&.lnk option dosseg disable 2030, 2028
     @for %i in ($(cmdobjs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) @$^&.lnk
@@ -78,8 +81,9 @@ cmdedit.exe: $(cmdobjs) $(__MAKEFILES__)
 tstobjs = dcmdedit.obj $(dosobjs)
 
 dcmdedit.exe: $(tstobjs) $(__MAKEFILES__)
-    @%write $^&.lnk system dos debug all name dcmdedit
-    @%append $^&.lnk option map, dosseg
+    @%write $^&.lnk name $@
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk option dosseg
     @for %i in ($(tstobjs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) @$^&.lnk
@@ -98,10 +102,12 @@ all: os2edit.dll os2edit.exe os22edit.exe
 cmd2objs = cmdstart.obj $(os2zuobjs)
 
 os2edit.dll: $(cmd2objs) $(__MAKEFILES__)
-    @%write $^&d.lnk name os2edit lib clibs
-    @%append $^&d.lnk system os2_dll initinstance option manyautodata
-    @%append $^&d.lnk option map=$^&d, symfile=$^&dd, dosseg, newfiles
+    @%write $^&d.lnk name $@
+    @%append $^&d.lnk $(lflags_dll) initinstance
+    @%append $^&d.lnk option map=os2editd.map, symfile=os2editd.sym
+    @%append $^&d.lnk option manyautodata, dosseg, newfiles
     @%append $^&d.lnk export OS2EDIT_
+    @%append $^&d.lnk library clibs.lib
     @for %i in ($(cmd2objs)) do @%append $^&d.lnk file %i
     @%make echo_link
     $(linker) @$^&d.lnk
@@ -112,8 +118,9 @@ os2edit.dll: $(cmd2objs) $(__MAKEFILES__)
 ts2objs = dcmdedit.obj noshell.obj $(os2objs)
 
 dos2edit.exe: $(ts2objs) $(__MAKEFILES__)
-    @%write $^&.lnk debug all name dos2edit system os2 pmc
-    @%append $^&.lnk option map, dosseg, newfiles
+    @%write $^&.lnk name $@
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk option dosseg, newfiles
     @for %i in ($(ts2objs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) @$^&.lnk
@@ -124,8 +131,9 @@ dos2edit.exe: $(ts2objs) $(__MAKEFILES__)
 cmdshellobjs = cmdshell.obj $(os2objs)
 
 cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
-    @%write $^&.lnk debug all name cmdshell system os2 pmc
-    @%append $^&.lnk option map, dosseg
+    @%write $^&.lnk name $@
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk option dosseg
     @for %i in ($(cmdshellobjs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) @$^&.lnk
@@ -135,12 +143,12 @@ cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
 #
 os2edit.exe: os2edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file $[@
+    $(linker) name $@ $(lflags) file $[@
 #
 # OS22EDIT.EXE
 #
 os22edit.exe: os22edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file $[@
+    $(linker) name $@ $(lflags) file $[@
 
 !endif
