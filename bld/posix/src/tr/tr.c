@@ -113,7 +113,7 @@ static unsigned char expandChar( char **str ) {
     case '5':
     case '6':
     case '7':   return( (unsigned char)strtol( *str, str, 8 ) );
-    case 'x':   return( (unsigned char)strtol( *str + 1, str, 16 ) );
+    case 'x':   return( (unsigned char)strtol( *str, str, 16 ) );
     default:    return( ch );
     }
 }
