@@ -62,7 +62,7 @@ dgroupp dw      DGROUP
         defpe   __STK
         _guess                          ; guess: no overflow
           cmp     ax,sp                 ; - check if user asking for too much
-        _quif   ae                      ; quit if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub     ax,sp                 ; - calculate new low point
           neg     ax                    ; - calc what new SP would be
 ifdef __MT__
@@ -90,7 +90,7 @@ else
           pop     ds                    ; - restore ds
     endif
 endif
-        _quif   be                      ; quit if too much
+        _quif be                        ; quit if too much
           ret                           ; - return
         _endguess                       ; endguess
 

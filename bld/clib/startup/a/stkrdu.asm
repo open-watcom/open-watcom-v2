@@ -68,7 +68,7 @@ msg     db      "Stack Overflow!", 0
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
           cmp   eax,fs:[08h]            ; - compare with stack bottom in TIB
-        _quif   be                      ; quit if too much
+        _quif be                        ; quit if too much
           call  __GRO                   ; - grow stack allocation if necessary
           ret                           ; - return
         _endguess                       ; endguess

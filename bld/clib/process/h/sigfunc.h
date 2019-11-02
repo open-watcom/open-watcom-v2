@@ -38,7 +38,7 @@ typedef void (*__sigfpe_func)( int, int );
     #pragma aux (__outside_CLIB) __sigfpe_func;
 #endif
 
-#if defined( __NT__ ) || defined( __OS2_386__ ) || defined( __RDOS__ )
+#if defined( __NT__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __RDOS__ )
 _WCRTLINK extern int __sigfpe_handler( int );
 #else
 _WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );

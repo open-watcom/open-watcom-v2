@@ -80,7 +80,7 @@ enddata
             cmp   ax,SS_seg             ; - - see if SS has been changed
           _endif                        ; - endif
         _quif e                         ; quit if too much
-          ret                           ; - return
+          ret                           ; - return (running with a different stack)
         _endguess                       ; endguess
 
 __STKOVERFLOW:

@@ -66,11 +66,9 @@ if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
           pop   ax                      ; - restore AX
 endif
           cmp   ax,_STACKLOW            ; - if too much
-          _if   be                      ; - then
-
+          _if be                        ; - then
 ;       We could have reached this point because we are in an interrupt
 ;       routine or DLL with different SS:SP values from our DGROUP.
-
             mov   ax,ss                 ; - - get ss
             cmp   ax,SS_seg             ; - - see if SS has been changed
           _endif                        ; - endif

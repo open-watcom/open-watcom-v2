@@ -84,7 +84,7 @@ ifdef __MT__
 else
           cmp   eax,_STACKLOW           ; - check if too much
 endif
-        _quif   be                      ; quit if too much
+        _quif be                        ; quit if too much
           call  __GRO                   ; - grow stack allocation if necessary
           ret                           ; - return
         _endguess                       ; endguess

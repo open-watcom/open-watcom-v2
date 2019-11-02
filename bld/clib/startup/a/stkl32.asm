@@ -70,7 +70,7 @@ hextab  db      "0123456789ABCDEF"
         endproc __STK
 
         defpe   __CHK
-        push    eax
+        push    eax                     ; save parm for __GRO routine
         mov     eax,8[esp]
         _guess                          ; guess: no overflow
           cmp   eax,esp                 ; - check if user asking for too much
