@@ -633,7 +633,7 @@ with except for any use of the "f" or "n" options.
 contains the names of all of the makefiles processed at the time of
 expansion (includes the file currently being processed)
 .point MAKE
-contains the full name of the file that contains &makcmdup.
+contains the full name of the file that contains &makcmdup
 .point __VERSION__
 contains the wmake version.
 .endpoint
@@ -4318,7 +4318,7 @@ declarations and will result in simpler, more maintainable makefiles.
 .ix 'command execution'
 &makname is a program which must execute other programs and operating
 system shell commands.
-There are three basic types of executable files in DOS.
+There are three basic types of executable files in DOS and RDOS.
 .autopoint
 .point
 .fi &sysper.COM
@@ -4412,85 +4412,126 @@ Also, the command will be executed by the shell if the command is an
 internal shell command from the following list:
 .begpoint $compact
 .point break
-(check for Ctrl+Break)
+check for Ctrl+Break
 .point call
-(nest batch files)
+nest batch files
 .point chdir
-(change current directory)
+change current directory
 .point cd
-(change current directory)
+change current directory
 .point cls
-(clear the screen)
+clear the screen
 .point cmd
-(start NT or OS/2 command processor)
+start NT or OS/2 command processor
 .point command
-(start DOS command processor)
+start DOS command processor
 .point copy
-(copy or combine files)
+copy or combine files
 .point ctty
-(DOS redirect input/output to COM port)
+DOS redirect input/output to COM port
 .point d:
-(change drive where "d" represents a drive specifier)
+change drive where "d" represents a drive specifier
 .point date
-(set system date)
+set system date
 .point del
-(erase files)
+erase files
 .point dir
-(display contents in a directory)
+display contents in a directory
 .point echo
-(display commands as they are processed)
+display commands as they are processed, intercepted by &makcmdup
 .point erase
-(erase files)
+erase files
 .point for
-(repetitively process commands, intercepted by &makcmdup)
+repetitively process commands, intercepted by &makcmdup
 .point if
-(allow conditional processing of commands)
+allow conditional processing of commands, intercepted by &makcmdup
 .point md
-(make directory)
+make directory
 .point mkdir
-(make directory, intercepted by &makcmdup)
+make directory, intercepted by &makcmdup
 .point path
-(set search path)
+set search path
 .point pause
-(suspend batch operations)
+suspend batch operations
 .point prompt
-(change command prompt)
+change command prompt
 .point ren
-(rename files)
+rename files
 .point rename
-(rename files)
+rename files
 .point rmdir
-(remove directory, intercepted by &makcmdup)
+remove directory, intercepted by &makcmdup
 .point rd
-(remove directory)
+remove directory
 .point rm
-(erase files or directories, intercepted by &makcmdup)
+erase files or directories, intercepted by &makcmdup
 .point set
-(set environment variables, intercepted by &makcmdup)
+set environment variables, intercepted by &makcmdup
 .point time
-(set system time)
+set system time
 .point type
-(display contents of a file)
+display contents of a file
 .point ver
-(display the operating system version number)
+display the operating system version number
 .point verify
-(set data verification)
+set data verification
 .point vol
-(display disk volume label)
+display disk volume label
 .endpoint
 .np
-.ix 'SET' 'using &makname'
-The operating system shell "SET" command is intercepted by &maksname..
-The "SET" command may be used to set environment variables to values
+Below is description of all commands intercepted by &maksname..
+Their syntax and functionality is derived from DOS version of these
+commands. Some of them is not available on DOS OS, these commands
+syntax and functionality is derived from POSIX standard.
+.np
+Any of these commands have not the same limitations as on appropriate OS and
+support features necessary for all supported OSes.
+.begbull
+.bull
+no length limit for commands
+.bull
+long file name (LFN) support for file names
+.bull
+mixed forward and backward slash support for directory and file names
+.endbull
+.*
+.beglevel
+.*
+.section echo command
+.*
+.np
+.ix 'echo' 'using &makname'
+The operating system shell "echo" command is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+echo [<value>]
+
+.millust end
+The "echo" command may be used to output any string to standard 
+output without length limitation.
+.*
+.section set command
+.*
+.np
+.ix 'set' 'using &makname'
+The operating system shell "set" command is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+set <name> =[<value>]    (if no value then variable is deleted)
+
+.millust end
+The "set" command may be used to set environment variables to values
 required during makefile processing.
 The environment variable changes are only valid during makefile
 processing and do not affect the values that were in effect before
 &maksname was invoked.
-The "SET" command may be used to initialize environment variables
+The "set" command may be used to initialize environment variables
 necessary for the makefile commands to execute properly.
 .ix 'system initialization file'
 The setting of environment variables in makefiles reduces the number
-of "SET" commands required in the system initialization file.
+of "set" commands required in the system initialization file.
 Here is an example with the &cmpname compiler.
 .ix 'environment variables' '&incvarup'
 .ix 'environment variables' '&libvarup'
@@ -4499,11 +4540,11 @@ Here is an example with the &cmpname compiler.
 .ix 'environment variables'
 .ix 'setting environment variables'
 .ix '&makcmdup special macros' '$(%path)'
-.ix 'SET' '&incvarup environment variable'
-.ix 'SET' '&libvarup environment variable'
+.ix 'set' '&incvarup environment variable'
+.ix 'set' '&libvarup environment variable'
 .millust begin
 #
-# SET example
+# set example
 #
 &sysper.BEFORE
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -4522,7 +4563,7 @@ Here is an example with the &cmpname compiler.
         .
 .millust end
 .pc
-The first "SET" command will set up the
+The first "set" command will set up the
 .ev &incvarup
 environment variable so that the &cmpname compiler may find header
 files.
@@ -4530,7 +4571,7 @@ Notice that the old value of the
 .ev &incvarup
 environment variable is used in setting the new value.
 .np
-The second "SET" command indicates to the &lnkname that libraries may
+The second "set" command indicates to the &lnkname that libraries may
 be found in the indicated directories.
 .np
 Environment variables may be used also as dynamic variables that may
@@ -4566,21 +4607,29 @@ The output of the previous makefile would be:
 *message text 2*
 .millust end
 .pc
-.ix 'SET' 'using &makname'
-&maksname handles the "SET" command so that it appears to work in an
-intuitive manner similar to the operating system shell's "SET"
+.ix 'set' 'using &makname'
+&maksname handles the "set" command so that it appears to work in an
+intuitive manner similar to the operating system shell's "set"
 command.
-The "SET" command also may be used to allow commands to relay
+The "set" command also may be used to allow commands to relay
 information to commands that are executed afterwards.
+.*
+.section for command
+.*
 .np
-.ix 'FOR' 'using &makname'
-The DOS "FOR" command is intercepted by &maksname..
-The reason for this is that DOS has a fixed limit for the size of
-a command thus making it unusable for large makefile applications.
-One such application that can be done easily with &maksname is the
-construction of a &lnkcmdup command file from a makefile.
-The idea behind the next example is to have one file that contains
-the list of object files.
+.ix 'for' 'using &makname'
+The operating system shell "for" command is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+for %[%]<var> in (<set>) do <command>
+
+.millust end
+DOS has a fixed limit for the size of a command thus making it
+unusable for large makefile applications. One such application
+that can be done easily with &maksname is the construction of a
+&lnkcmdup command file from a makefile. The idea behind the next
+example is to have one file that contains the list of object files.
 Anytime this file is changed, say, after a new module has been added,
 a new linker command file will be generated which in turn, will
 cause the linker to relink the executable.
@@ -4602,7 +4651,7 @@ objs = &
 The main makefile ("MAKEFILE") is:
 .millust begin
 #
-# FOR command example
+# for command example
 #
 !include objdef.mif
 
@@ -4626,15 +4675,37 @@ FILE bios.obj
 FILE keyboard.obj
 FILE mouse.obj
 .millust end
+.*
+.section if command
+.*
 .np
-The commands "rm", "mkdir" and "rmdir" are intercepted by &maksname.
-to handle file/directory names consistently with other &maksname.
-commands (LFN, forward/backward slashes). If you want to use host OS
-native versions then simply use '!' character in front of these commands.
+.ix 'if' 'using &makname'
+The operating system shell "if" command is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+            { errorlevel <number> }
+   if [not] { <str1> == <str2>    } <command>
+            { exist <file>        }
+
+.millust end
+It handles file names consistently with other &maksname commands.
+.*
+.section rm command
+.*
 .np
 .ix 'rm' 'using &makname'
-The "rm" command is simplified implementation of the POSIX rm command. 
-It supports following options.
+The commands "rm" is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+rm [-frv] <files/directories>
+
+.millust end
+The "rm" command may be used to delete files or directories.
+&maksname "rm" command is simplified implementation of the POSIX rm command. 
+It handles file/directory names consistently with other &maksname commands.
+Following options are support.
 .begpoint $compact
 .point -f 
 force deletion of read-only files, no diagnostics messages about missing items
@@ -4643,18 +4714,46 @@ deletion of directories
 .point -v 
 verbose operation
 .endpoint
+.*
+.section mkdir command
+.*
 .np
 .ix 'mkdir' 'using &makname'
-The "mkdir" command is simplified implementation of the POSIX "mkdir" command. 
-It supports following options.
+The commands "mkdir" is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+mkdir [-p] <directory>
+
+.millust end
+The "mkdir" command may be used to create a directory.
+&maksname "mkdir" command is simplified implementation of the POSIX "mkdir" command. 
+It handles directory names consistently with other &maksname commands.
+Following options are support.
 .begpoint $compact
 .point -p 
 force creation of all parent directories
 .endpoint
+.*
+.section rmdir command
+.*
 .np
 .ix 'rmdir' 'using &makname'
-The "rmdir" command is is simplified implementation of the POSIX "rmdir" command. 
+The commands "rmdir" is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+rmdir <directory>
+
+.millust end
+The "rmdir" command may be used to delete a directory.
+&maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command. 
+It handles directory names consistently with other &maksname commands.
+.*
+.section &maksname internal commands
+.*
 .np
+.ix '&makcmdup internal commands'
 &maksname supports nine internal commands:
 .autopoint
 .point
@@ -4907,6 +5006,7 @@ appl1&exe : (dependents ...)
         (commands)
 .millust end
 .np
+.endlevel
 .*
 .section Compatibility Between &makname and UNIX Make
 .*
