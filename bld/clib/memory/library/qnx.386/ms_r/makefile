@@ -4,5 +4,6 @@ model=ms
 system=qnx
 linkage=static
 convention=register
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
