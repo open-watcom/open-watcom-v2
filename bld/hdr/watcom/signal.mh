@@ -171,10 +171,10 @@ typedef void (__SIG_FAR _WCCALLBACK *__far_sig_func)( int );
 #define __FAR_SIG_IGN       ((__far_sig_func)(unsigned)1)
 #define __FAR_SIG_HOLD      ((__far_sig_func)(unsigned)2)
 
-#define SIG_ERR             ((__sig_func)__FAR_SIG_ERR)
-#define SIG_DFL             ((__sig_func)__FAR_SIG_DFL)
-#define SIG_IGN             ((__sig_func)__FAR_SIG_IGN)
-#define SIG_HOLD            ((__sig_func)__FAR_SIG_HOLD)
+#define SIG_ERR             ((__sig_func)(unsigned)-1)
+#define SIG_DFL             ((__sig_func)(unsigned)0)
+#define SIG_IGN             ((__sig_func)(unsigned)1)
+#define SIG_HOLD            ((__sig_func)(unsigned)2)
 
 #define SIGHUP      1   /* hangup */
 #define SIGINT      2   /* interrupt */
