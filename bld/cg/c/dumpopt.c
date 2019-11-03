@@ -428,5 +428,5 @@ void    UpOpt( ins_entry *ins, uint last )
 void    DumpOpt( void )
 /*********************/
 {
-    DownOpt( FirstIns, ~0 );
+    DownOpt( FirstIns, ~0U );
 }

@@ -444,6 +444,7 @@ void GUISetKeyState( void )
 }
 
 #ifndef __OS2_PM__
+
 bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
 {
     if( scan == NULL ) {
@@ -516,7 +517,8 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
     }
     return( (WPI_MRESULT)MAKELONG( 0, 1 ) );
 }
-#else
+
+#else   /* __OS2_PM__ */
 
 typedef struct {
     gui_key     key;
@@ -634,4 +636,5 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
     }
     return( 0L );
 }
-#endif
+
+#endif  /* __OS2_PM__ */

@@ -1003,8 +1003,8 @@ STATIC RET_T handleEcho( const char *cmd )
         return( RET_SUCCESS );
     }
 
-    if( cmd[4] ) {      /* check for echo with no arguments */
-        p = cmd + 5;    /* assume "ECHO "; whitespace gets printed! */
+    if( cmd[4] != NULLCHAR ) {  /* check for echo with no arguments */
+        p = cmd + 5;            /* assume "ECHO "; whitespace gets printed! */
 
         PrtMsg( INF | PRNTSTR, p );
     }

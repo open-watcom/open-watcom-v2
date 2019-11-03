@@ -252,11 +252,11 @@ void *CarveZeroAlloc( carve_t cv )
 #ifndef NDEBUG
 static void CarveDebugFree( carve_t cv, void *elm )
 {
-    free_t *check;
-    blk_t *block;
-    char *compare;
-    char *start;
-    unsigned esize;
+    free_t      *check;
+    blk_t       *block;
+    char        *compare;
+    char        *start;
+    unsigned    esize;
 
     /* make sure object hasn't been freed before */
     for( check = cv->free_list; check != NULL; check = check->next_free ) {
@@ -278,12 +278,12 @@ static void CarveDebugFree( carve_t cv, void *elm )
         for(;;) {
             if( compare == start )
                 break;
-            compare = compare - esize;
-            if( elm == compare ) {
+            compare -= esize;
+            if( (char *)elm == compare ) {
                 break;
             }
         }
-        if( elm == compare ) {
+        if( (char *)elm == compare ) {
             break;
         }
     }
