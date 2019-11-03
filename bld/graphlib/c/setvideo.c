@@ -48,7 +48,7 @@
 static struct _console_ctrl     *ConCtrl;
 static unsigned                 old_hscroll;
 
-static void HScrollOff()
+static void HScrollOff( void )
 {
     int                         h;
 
@@ -64,7 +64,7 @@ static void HScrollOff()
     }
 }
 
-static void HScrollRestore()
+static void HScrollRestore( void )
 {
     if( ConCtrl != NULL ) {
         console_ctrl( ConCtrl, -1, old_hscroll, CONSOLE_NOHSCROLL );

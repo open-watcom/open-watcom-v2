@@ -53,7 +53,7 @@ static struct __sigtable {
 } _SignalTable;
 
 
-_WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
+_WCRTLINK void (_WCCALLBACK *signal( int sig, void (_WCCALLBACK *func)(int) ))(int)
 {
     struct sigaction act;
 

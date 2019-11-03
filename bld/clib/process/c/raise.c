@@ -48,5 +48,7 @@ _WCRTLINK int (raise)( int sig )
 
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
 {
+    /* unused parameters */ (void)sig;
+
     raise( SIGFPE );
 }

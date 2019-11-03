@@ -140,7 +140,7 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
     while( *msg != '\0' ) {
         write( STDERR_FILENO, msg++, 1 );
     }
-    eol = '\n';
+    eol[0] = '\n';
     write( STDERR_FILENO, eol, 1 );
   #elif defined( __RDOS__ )
     int     handle;
