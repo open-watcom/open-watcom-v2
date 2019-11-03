@@ -268,11 +268,14 @@ void MiscMacroDefs( void )
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
+    if( !CompFlags.extensions_enabled ) {
+        Define_Macro( "_NO_EXT_KEYS" );
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            Define_Macro( "NO_EXT_KEYS" );
+        }
+    }
     if( CompFlags.non_iso_compliant_names_enabled ) {
         Define_Macros_Extension();
-    }
-    if( !CompFlags.extensions_enabled ) {
-        Define_Macro( "NO_EXT_KEYS" );
     }
     if( CompFlags.signed_char ) {
         Define_Macro( "__CHAR_SIGNED__" );

@@ -160,9 +160,9 @@ Notes
 
 > My proposal:
 > * The new switch -za99 defines __STDC_VERSION__ = 199901L and
->   NO_EXT_KEYS.
+>   _NO_EXT_KEYS.
 > * in stdio.h snprintf() is defined in a section
->   #if !defined(NO_EXT_KEYS) || __STDC_VERSION__ >= 199901L
+>   #if !defined(_NO_EXT_KEYS) || __STDC_VERSION__ >= 199901L
 
 2. Certain name.h and cname headers are currently identical (<cassert>,
    <cerrno>, <cfloat>, <ciso646>, <climits>). This works because those

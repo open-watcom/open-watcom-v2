@@ -66,7 +66,7 @@ typedef struct {        // double precision complex
     double      imagpart;
 } dcomplex;
 
-#define NO_EXT_KEYS
+#define _NO_EXT_KEYS
 #define __NO_MATH_OPS
 
 #ifdef __cplusplus
