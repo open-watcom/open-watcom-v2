@@ -135,13 +135,14 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
 
     #endif
   #elif defined( __QNX__ )
-    char    eol[1];
+    char    chr[1];
 
     while( *msg != '\0' ) {
-        write( STDERR_FILENO, msg++, 1 );
+        chr[0] = *msg++;
+        write( STDERR_FILENO, chr, 1 );
     }
-    eol[0] = '\n';
-    write( STDERR_FILENO, eol, 1 );
+    chr[0] = '\n';
+    write( STDERR_FILENO, chr, 1 );
   #elif defined( __RDOS__ )
     int     handle;
     char    eol[2];

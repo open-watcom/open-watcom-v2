@@ -80,7 +80,7 @@ _WCRTLINK void (_WCCALLBACK *signal( int sig, void (_WCCALLBACK *func)(int) ))(i
     if( sigaction(sig, &act, &act) )
         return( SIG_ERR );
 #if defined( __SMALL_CODE__ )
-    return( (__sig_func)act.sa_handler );
+    return( (__sig_func)(unsigned)act.sa_handler );
 #else
     return( act.sa_handler );
 #endif
