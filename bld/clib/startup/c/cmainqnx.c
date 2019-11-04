@@ -51,6 +51,7 @@
 #include "cinit.h"
 #include "rtdata.h"
 #include "fltsupp.h"
+#include "slibqnx.h"
 
 
 #if defined( _M_I86 )
@@ -177,51 +178,45 @@ static void SetupArgs( struct _proc_spawn *cmd )
 
 /* Define shared library callback routines */
 
-#if defined( __SMALL__ ) || defined( __MEDIUM__ )
-    #define CALLBACK __far __loadds
-#else
-    #define CALLBACK __far
-#endif
-
-static void __far *CALLBACK _s_malloc( int i )
+static void __far * __SLIB_CALLBACK _s_malloc( int i )
 {
     register void *p1;
 
     return( (p1 = calloc( i, 1 )) != NULL ? p1 : (void *)NULL );
 }
 
-static void __far *CALLBACK _s_calloc( int i, int n )
+static void __far * __SLIB_CALLBACK _s_calloc( int i, int n )
 {
     register void *p1;
 
     return( (p1 = calloc( i, n )) != NULL ? p1 : (void *)NULL );
 }
 
-static void __far *CALLBACK _s_realloc( char __far *p, int n )
+static void __far * __SLIB_CALLBACK _s_realloc( char __far *p, int n )
 {
     register void *p1;
 
-    return( (p1 = realloc( (void *)p, n )) != NULL ? p1 : (void *)NULL );
+    return( (p1 = realloc( SLIB2CLIB( void, p ), n )) != NULL ? p1 : (void *)NULL );
 }
 
-static void CALLBACK _s_free( void __far *p )
+static void  __SLIB_CALLBACK _s_free( void __far *p )
 {
-    free( (void *)p );
+    free( SLIB2CLIB( void, p ) );
 }
 
-static char __far *CALLBACK _s_getenv( const char __far *p )
+static char __far * __SLIB_CALLBACK _s_getenv( const char __far *p )
 {
     register char *p1;
 
-    return( (p1 = getenv( (char *)p )) ? p1 : (char *)NULL );
+    return( (p1 = getenv( SLIB2CLIB( char, p ) )) ? p1 : (char *)NULL );
 }
 
-static char __far *CALLBACK _s_EFG_printf(
+static char __far * __SLIB_CALLBACK _s_EFG_printf(
     char __far      *buffer,
     char __far *    __far *args,
     void __far      *specs )
 {
-    return( (*__EFG_printf)( (char *)buffer, (struct my_va_list *)args, (void *)specs ) );
+    return( (*__EFG_printf)( SLIB2CLIB( char, buffer ), SLIB2CLIB( struct my_va_list, args ), SLIB2CLIB( void, specs ) ) );
 }
 
 static void setup_slib( void )

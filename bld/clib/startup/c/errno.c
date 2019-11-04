@@ -35,6 +35,7 @@
     #include <windows.h>
 #elif defined(__QNX__)
     #include <sys/magic.h>
+    #include "slibqnx.h"
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
@@ -47,7 +48,7 @@
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
 #if defined(_M_I86)
-    return( (int *)&__MAGIC.Errno );
+    return( SLIB2CLIB( int, &__MAGIC.Errno ) );
 #else
     void        *err_ptr;
 
