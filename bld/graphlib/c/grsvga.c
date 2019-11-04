@@ -61,19 +61,19 @@ static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 
 
 static vgapage_fn _WCI86FAR *_VGAPageFunc[ _SV_MAX-1 ] = {
-    (vgapage_fn _WCI86FAR *)_PageVESA,
-    (vgapage_fn _WCI86FAR *)_PageVideo7,
-    (vgapage_fn _WCI86FAR *)_PageParadise,
-    (vgapage_fn _WCI86FAR *)_PageATI,
-    (vgapage_fn _WCI86FAR *)_PageTseng3,
-    (vgapage_fn _WCI86FAR *)_PageTseng4,
-    (vgapage_fn _WCI86FAR *)_PageOak,
-    (vgapage_fn _WCI86FAR *)_PageTrident,
-    (vgapage_fn _WCI86FAR *)_PageChips,
-    (vgapage_fn _WCI86FAR *)_PageGenoa,
-    (vgapage_fn _WCI86FAR *)_PageS3,
-    (vgapage_fn _WCI86FAR *)_PageCirrus,
-    (vgapage_fn _WCI86FAR *)_PageViper,
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageVESA ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageVideo7 ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageParadise ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageATI ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageTseng3 ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageTseng4 ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageOak ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageTrident ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageChips ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageGenoa ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageS3 ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageCirrus ),
+    QNXFAR2NEAR( vgapage_fn _WCI86FAR, _PageViper ),
 };
 
 #if defined( _M_I86 ) || defined(__QNX__)
