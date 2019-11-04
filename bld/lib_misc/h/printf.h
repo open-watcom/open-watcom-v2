@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #define _PRINTF_H_INCLUDED
 
 #include "specs.h"
+#include "slibqnx.h"
 
 
 #if defined(__QNX__)
@@ -45,18 +47,10 @@
 #endif
 
 #if defined(__QNX__)
-    #if defined(_M_I86)
-      #if defined( __SMALL_DATA__ )
-        #define __SLIB_CALLBACK _WCFAR __loadds
-      #else
-        #define __SLIB_CALLBACK _WCFAR
-      #endif
-    #else
-        #define __SLIB_CALLBACK _WCFAR
+    #if !defined(_M_I86)
         #pragma aux slib_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
     #endif
 #else
-    #define __SLIB_CALLBACK
     #if defined( __WINDOWS_386__ )
         #ifdef __SW_3S
             #pragma aux slib_callback_t __modify [__eax __edx __ecx __fs __gs]
@@ -65,6 +59,7 @@
         #endif
     #endif
 #endif
+
 typedef void (__SLIB_CALLBACK slib_callback_t)( SPECS __SLIB *, OUTC_PARM );
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
