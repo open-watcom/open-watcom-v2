@@ -6,7 +6,7 @@
 !inject qnx_exit.obj						    q16 q32
 !inject qfddeta.obj						    q16 q32
 !inject kernel.obj						    q16 q32
-!inject kill.obj							q32
+!inject kill.obj						    q16 q32
 !inject write.obj						    q16 q32
 
 !include ../../../../objlist.mif

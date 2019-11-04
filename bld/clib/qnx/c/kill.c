@@ -31,11 +31,35 @@
 
 #include "variety.h"
 #include <signal.h>
+#include <errno.h>
 #include <sys/kernel.h>
+#include <sys/proc_msg.h>
 
 
 _WCRTLINK int  kill( pid_t pid, int signum )
 {
+#ifdef _M_I86
+    union {
+        struct _proc_signal         s;
+        struct _proc_signal_reply   r;
+    } msg;
+
+    msg.s.type = _PROC_SIGNAL;
+    msg.s.subtype = _SIGRAISE;
+    msg.s.pid = pid;
+    msg.s.signum = signum;
+
+    if( Send( PROC_PID, &msg.s, &msg.r, sizeof(msg.s), sizeof(msg.r) ) == -1 ) {
+        return( -1 );
+    }
+
+    if( msg.r.status != EOK ) {
+        errno = msg.r.status;
+        return( -1 );
+    }
+    return( 0 );
+#else
     return( Kill( pid, signum ) );
+#endif
 }
 
