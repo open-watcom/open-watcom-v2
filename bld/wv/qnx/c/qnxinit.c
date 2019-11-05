@@ -135,6 +135,8 @@ void SetCmdArgStart( int num, char *ptr )
 
 void KillDebugger( int rc )
 {
+    /* unused parameters */ (void)rc;
+
     __qnx_exit( 0 );
     // never return
 }
