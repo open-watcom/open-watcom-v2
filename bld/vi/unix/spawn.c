@@ -33,20 +33,7 @@
 #include "vi.h"
 #include "stdui.h"
 #include "uiextrn.h"
-#include "getspcmd.h"
 
-
-const char _NEAR * _NEAR InternalCommands[] = {
-    (const char _NEAR *)""
-};
-
-int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
-
-const char _NEAR * _NEAR ExeExtensions[] = {
-    (const char _NEAR *)""
-};
-
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 
 void ResetSpawnScreen( void )
 {

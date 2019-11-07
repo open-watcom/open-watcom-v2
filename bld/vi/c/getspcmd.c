@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,97 @@
 
 #include "vi.h"
 #include "posix.h"
-#include "getspcmd.h"
 
 #include "clibext.h"
 
+
+#define STR(x)  #x
+
+#define CONST_LITERAL_PTR   const char *
+
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OS2__ ) || defined( __NT__ )
+#define INTERNAL_COMMANDS() \
+    INTERNAL_COMMAND( BREAK ) \
+    INTERNAL_COMMAND( CALL ) \
+    INTERNAL_COMMAND( CD ) \
+    INTERNAL_COMMAND( CHDIR ) \
+    INTERNAL_COMMAND( CLS ) \
+    INTERNAL_COMMAND( COMMAND ) \
+    INTERNAL_COMMAND( COPY ) \
+    INTERNAL_COMMAND( CTTY ) \
+    INTERNAL_COMMAND( DATE ) \
+    INTERNAL_COMMAND( DEL ) \
+    INTERNAL_COMMAND( DIR ) \
+    INTERNAL_COMMAND( ECHO ) \
+    INTERNAL_COMMAND( ERASE ) \
+    INTERNAL_COMMAND( FOR ) \
+    INTERNAL_COMMAND( IF ) \
+    INTERNAL_COMMAND( MD ) \
+    INTERNAL_COMMAND( MKDIR ) \
+    INTERNAL_COMMAND( PATH ) \
+    INTERNAL_COMMAND( PAUSE ) \
+    INTERNAL_COMMAND( PROMPT ) \
+    INTERNAL_COMMAND( RD ) \
+    INTERNAL_COMMAND( REM ) \
+    INTERNAL_COMMAND( REN ) \
+    INTERNAL_COMMAND( RENAME ) \
+    INTERNAL_COMMAND( RMDIR ) \
+    INTERNAL_COMMAND( SET ) \
+    INTERNAL_COMMAND( TIME ) \
+    INTERNAL_COMMAND( TYPE ) \
+    INTERNAL_COMMAND( VER ) \
+    INTERNAL_COMMAND( VERIFY ) \
+    INTERNAL_COMMAND( VOL )
+#else
+#define NO_INTERNAL_COMMANDS
+#endif
+
+#ifndef NO_INTERNAL_COMMANDS
+enum {
+    #define INTERNAL_COMMAND(a) DUMMY_INTERNAL_COMMAND_##a,
+        INTERNAL_COMMANDS()
+    #undef INTERNAL_COMMAND
+    MAX_INTERNAL_COMMANDS
+};
+
+static CONST_LITERAL_PTR const _NEAR InternalCommands[MAX_INTERNAL_COMMANDS] = {
+    #define INTERNAL_COMMAND(a) (CONST_LITERAL_PTR)STR( a ),
+        INTERNAL_COMMANDS()
+    #undef INTERNAL_COMMAND
+};
+#endif
+
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#define EXE_EXTENSIONS() \
+    EXE_EXTENSION( bat ) \
+    EXE_EXTENSION( com ) \
+    EXE_EXTENSION( exe )
+#elif defined( __NT__ )
+#define EXE_EXTENSIONS() \
+    EXE_EXTENSION( bat ) \
+    EXE_EXTENSION( exe )
+#elif defined( __OS2__ )
+#define EXE_EXTENSIONS() \
+    EXE_EXTENSION( cmd ) \
+    EXE_EXTENSION( exe )
+#else
+#define NO_EXE_EXTENSIONS
+#endif
+
+#ifndef NO_EXE_EXTENSIONS
+enum {
+    #define EXE_EXTENSION(a) DUMMY_EXE_EXTENSION_##a,
+        EXE_EXTENSIONS()
+    #undef EXE_EXTENSION
+    MAX_EXE_EXTENSIONS
+};
+
+static CONST_LITERAL_PTR const _NEAR ExeExtensions[MAX_EXE_EXTENSIONS] = {
+    #define EXE_EXTENSION(a) (CONST_LITERAL_PTR)STR( .a ),
+        EXE_EXTENSIONS()
+    #undef EXE_EXTENSION
+};
+#endif
 
 void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
@@ -44,10 +131,11 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     char        full[FILENAME_MAX];
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        ext[_MAX_EXT];
+#if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     int         i;
-    bool        is_internal;
+    bool        is_internal = false;
+#endif
 
-    is_internal = false;
     cmdl = SkipLeadingSpaces( cmdl );
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
@@ -56,17 +144,21 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
         if( drive[0] == '\0' && directory[0] == '\0' ) {
             GetFromEnv( full, path );
         }
+#if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     } else {
+  #if !defined( NO_INTERNAL_COMMANDS )
         if( drive[0] == '\0' && directory[0] == '\0' ) {
-            for( i = 0; i < InternalCommandCount; i++ ) {
+            for( i = 0; i < MAX_INTERNAL_COMMANDS; i++ ) {
                 if( stricmp( full, InternalCommands[i] ) == 0 ) {
                     is_internal = true;
                     break;
                 }
             }
         }
+  #endif
+  #if !defined( NO_EXE_EXTENSIONS )
         if( !is_internal ) {
-            for( i = 0; i < ExeExtensionCount; i++ ) {
+            for( i = 0; i < MAX_EXE_EXTENSIONS; i++ ) {
                 _makepath( full, drive, directory, name, ExeExtensions[i] );
                 GetFromEnv( full, path );
                 if( path[0] != '\0' ) {
@@ -74,16 +166,28 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
                 }
             }
         }
+  #endif
+#endif
     }
+#if !defined( NO_EXE_EXTENSIONS )
     _splitpath( full, drive, directory, name, ext );
+#endif
+#if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
+  #if defined( NO_EXE_EXTENSIONS )
+    if( is_internal ) {
+  #else
     if( stricmp( ext, ExeExtensions[0] ) == 0 || is_internal ) {
+  #endif
         strcpy( path, Comspec );
         strcpy( cmds->cmd, "/c " );
         strcat( cmds->cmd, cmdl );
     } else {
+#endif
         cmd = SkipLeadingSpaces( cmd );
         strcpy( cmds->cmd, cmd );
+#if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
     }
+#endif
     cmds->len = strlen( cmds->cmd );
     cmds->cmd[cmds->len] = '\r';
 }

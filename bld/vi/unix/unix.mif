@@ -2,7 +2,6 @@ objunixtimeroot = &
     int.obj
 
 objunixsizeroot = &
-    unixcmds.obj &
     biosunix.obj &
 
 objunixsize = &

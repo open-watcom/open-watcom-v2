@@ -32,8 +32,8 @@ rc_deps = &
 !ifeq sys_windowed 1
 other = $(name).res
 ! ifeq host_os nt
-extraobjs += spawn.obj ntcmds.obj
+extraobjs += spawn.obj
 ! else
-extraobjs += exec.obj doscmds.obj hasshare.obj
+extraobjs += exec.obj hasshare.obj
 ! endif
 !endif
