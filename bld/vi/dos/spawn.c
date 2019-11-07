@@ -55,19 +55,19 @@ typedef char _fcb[16];
 
 long MySpawn( const char *cmd )
 {
-    bool        cp;
-    long        rc;
-    exec_block  exeparm;
-    _fcb        fcb1, fcb2;
-    cmd_struct  cmds;
-    char        path[_MAX_PATH], f_buff[_MAX_PATH];
-    int         i;
-    where_parm  where;
-    long        minMemoryLeft;
+    bool            cp;
+    long            rc;
+    exec_block      exeparm;
+    _fcb            fcb1, fcb2;
+    cmd_struct      cmds;
+    char            path[_MAX_PATH], f_buff[_MAX_PATH];
+    int             i;
+    where_parm      where;
+    long            minMemoryLeft;
 #if defined( USE_XMS ) || defined( USE_EMS )
-    int         chkSwapSize;
-    xhandle     *xHandle;
-    unsigned short *xSize;
+    int             chkSwapSize;
+    xhandle         *xHandle;
+    unsigned short  *xSize;
 #endif
 
     where = ON_DISK;

@@ -5,6 +5,7 @@ objntsizeroot = &
     biosnt.obj
 
 objntsize = &
+    getspcmd.obj &
     ntsys.obj &
     ntmain.obj &
     ntmouse.obj &

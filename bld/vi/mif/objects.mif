@@ -53,7 +53,7 @@ objsize = &
     io.obj tempio.obj clread.obj cledit.obj misc.obj &
     tags.obj alias.obj bnddata.obj abandon.obj &
     filter.obj ex.obj exappend.obj &
-    wingen.obj printf.obj getspcmd.obj &
+    wingen.obj printf.obj &
     selrgn.obj cstatus.obj help.obj &
     readstr.obj tab_e_c.obj gencfg.obj fts.obj
 
