@@ -81,12 +81,12 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
     if( isbool ) {
         switch( token ) {
         #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: bln = EditFlags.c; break;
-        #include "setb.h"
+            #include "setb.h"
         #undef PICK
         default:
             return( "" );
         }
-        return( ( bln ) ? (( want_boolstr ) ? BoolStr[1] : "1") : (( want_boolstr ) ? BoolStr[0] : "0") );
+        return( ( bln ) ? (( want_boolstr ) ? "TRUE" : "1") : (( want_boolstr ) ? "FALSE" : "0") );
     } else {
         switch( token ) {
         case SETVAR_T_STATUSSECTIONS:
@@ -419,7 +419,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         flag_value = false;
         switch( j ) {
         #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: flag_value = EditFlags.c; break;
-        #include "setb.h"
+            #include "setb.h"
         #undef PICK
         }
         newset = bvalue;
@@ -508,7 +508,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         /* change to new value */
         switch( j ) {
         #define PICK( a,b,c,d,e )   case SETFLAG_T_ ## e: EditFlags.c = newset; break;
-        #include "setb.h"
+            #include "setb.h"
         #undef PICK
         }
         /* post-processing, after change */
@@ -579,7 +579,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             MySprintf( fn, "%s%s set", (newset) ? "" : "no", GetTokenStringCVT( SetFlagTokens, j, settokstr, true ) );
         }
         if( toggle ) {
-            strcpy( new, BoolStr[newset] );
+            strcpy( new, (( newset ) ? "TRUE" : "FALSE") );
             (*winflag) += 1;
         }
         /* end */

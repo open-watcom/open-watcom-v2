@@ -70,7 +70,7 @@ long MySpawn( const char *cmd )
     unsigned short *xSize;
 #endif
 
-
+    where = ON_DISK;
     minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
 #if defined( USE_XMS ) || defined( USE_EMS )
     chkSwapSize = 1 + (unsigned short)( minMemoryLeft / MAX_IO_BUFFER );
@@ -78,7 +78,7 @@ long MySpawn( const char *cmd )
     /*
      * set up checkpoint file stuff:
      */
-#if defined( USE_EMS )
+  #if defined( USE_EMS )
     if( EMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
         xHandle = alloca( chkSwapSize * sizeof( xhandle ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
@@ -89,8 +89,8 @@ long MySpawn( const char *cmd )
         where = IN_EMS;
         goto evil_goto;
     }
-#endif
-#if defined( USE_XMS )
+  #endif
+  #if defined( USE_XMS )
     if( XMSBlockTest( chkSwapSize ) == ERR_NO_ERR ) {
         xHandle = alloca( chkSwapSize * sizeof( xhandle ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
@@ -101,14 +101,12 @@ long MySpawn( const char *cmd )
         where = IN_XMS;
         goto evil_goto;
     }
+  #endif
+evil_goto:
 #endif
-#endif
-    where = ON_DISK;
-
     /*
      * build command line
      */
-evil_goto:
     GetSpawnCommandLine( path, cmd, &cmds );
 
     /*

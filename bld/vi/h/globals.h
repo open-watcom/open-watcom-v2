@@ -44,7 +44,6 @@ extern const char _NEAR   MEMORIZE_MODE[];
 extern const char _NEAR   SingleBlank[];
 extern const char _NEAR   SingleSlash[];
 extern const char _NEAR   SingleQuote[];
-extern const char _NEAR   * _NEAR BoolStr[];
 extern const char _NEAR   SpinData[];
 
 /* mouse data */

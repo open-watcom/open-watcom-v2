@@ -39,8 +39,6 @@
 
 #define STR(x)  #x
 
-#define CONST_LITERAL_PTR   const char *
-
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OS2__ ) || defined( __NT__ )
 #define INTERNAL_COMMANDS() \
     INTERNAL_COMMAND( BREAK ) \
@@ -86,8 +84,8 @@ enum {
     MAX_INTERNAL_COMMANDS
 };
 
-static CONST_LITERAL_PTR const _NEAR InternalCommands[MAX_INTERNAL_COMMANDS] = {
-    #define INTERNAL_COMMAND(a) (CONST_LITERAL_PTR)STR( a ),
+static const char * const _NEAR InternalCommands[MAX_INTERNAL_COMMANDS] = {
+    #define INTERNAL_COMMAND(a) (const char *)STR( a ),
         INTERNAL_COMMANDS()
     #undef INTERNAL_COMMAND
 };
@@ -118,8 +116,8 @@ enum {
     MAX_EXE_EXTENSIONS
 };
 
-static CONST_LITERAL_PTR const _NEAR ExeExtensions[MAX_EXE_EXTENSIONS] = {
-    #define EXE_EXTENSION(a) (CONST_LITERAL_PTR)STR( .a ),
+static const char * const _NEAR ExeExtensions[MAX_EXE_EXTENSIONS] = {
+    #define EXE_EXTENSION(a) (const char *)STR( .a ),
         EXE_EXTENSIONS()
     #undef EXE_EXTENSION
 };
