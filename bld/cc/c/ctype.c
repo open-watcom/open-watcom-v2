@@ -487,8 +487,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             packed = true;
             break;
         case T_EXTERN:
-           stg_class = SC_EXTERN;
-           break;
+            stg_class = SC_EXTERN;
+            break;
         case T_STATIC:
             stg_class = SC_STATIC;
             break;

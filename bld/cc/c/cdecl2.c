@@ -91,11 +91,21 @@ static stg_classes SCSpecifier( void )
     stg_class = SC_NONE;        /* assume no storage class specified */
     if( TokenClass[CurToken] == TC_STG_CLASS ) {
         switch( CurToken ) {
-        case T_EXTERN:  stg_class = SC_EXTERN;  break;
-        case T_STATIC:  stg_class = SC_STATIC;  break;
-        case T_TYPEDEF: stg_class = SC_TYPEDEF; break;
-        case T_AUTO:    stg_class = SC_AUTO;    break;
-        case T_REGISTER:stg_class = SC_REGISTER;break;
+        case T_EXTERN:
+            stg_class = SC_EXTERN;
+            break;
+        case T_STATIC:
+            stg_class = SC_STATIC;
+            break;
+        case T_TYPEDEF:
+            stg_class = SC_TYPEDEF;
+            break;
+        case T_AUTO:
+            stg_class = SC_AUTO;
+            break;
+        case T_REGISTER:
+            stg_class = SC_REGISTER;
+            break;
         default:
             break;
         }
