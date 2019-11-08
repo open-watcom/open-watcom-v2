@@ -372,7 +372,7 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /* LCX */ { CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 };
 
-static  char    Operator[] = {
+static opr_code Operator[] = {
     #define OPERATORS_ONLY
     #define pick(token,string,class,oper) oper,
     #include "_ctokens.h"
