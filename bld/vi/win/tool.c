@@ -267,7 +267,7 @@ static void addToolBarItem( tool_item *item )
     if( item->tooltip == NULL ) {
         info.tip[0] = '\0';
     } else if( IS_INTRESOURCE( item->tooltip ) ) {
-        if( LoadString( InstanceHandle, (unsigned)item->tooltip, info.tip, MAX_TIP ) <= 0 ) {
+        if( LoadString( InstanceHandle, RESOURCE2INT( item->tooltip ), info.tip, MAX_TIP ) <= 0 ) {
             info.tip[0] = '\0';
         }
     } else {

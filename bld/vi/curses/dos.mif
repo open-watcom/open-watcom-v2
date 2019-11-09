@@ -12,5 +12,9 @@ objdossize = &
     spawn.obj &
     uicurse.c
 
+!ifeq host_cpu i86
+objdossize += getspcmd.obj
+!endif
+
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)
