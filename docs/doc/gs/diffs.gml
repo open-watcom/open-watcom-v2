@@ -30,6 +30,8 @@ OW installer for 64-bit host platform (Linux and Windows)
 C compiler changes:
 .begbull
 .bull
+C99 preprocessor _Pragma() operator was added
+.bull
 pragma "warning" was added
 .bull
 new option -zam was added to supress predefined macros non-conforming 
@@ -46,6 +48,8 @@ predefined macro NO_EXT_KEYS was replaced by _NO_EXT_KEYS, old one is defined if
 .np
 C++ compiler changes:
 .begbull
+.bull
+C99 preprocessor _Pragma() operator was added
 .bull
 fix pragmas "enable_message" and "disable_message" to not change warning level
 .bull
