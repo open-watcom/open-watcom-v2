@@ -643,7 +643,7 @@ Their use is dangerous and discouraged.
 int func();
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED
-:MSGTXT. Unprototyped function '%s' called
+:MSGTXT. The function '%s' without prototyped parameters called
 :MSGJTXT. 非プロトタイプの関数'%s'が呼ばれました
 :WARNING. 3
 .np
@@ -659,7 +659,7 @@ void bar( void )
 }
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED_INDIRECT
-:MSGTXT. Unprototyped function indirectly called
+:MSGTXT. The function without prototyped parameters indirectly called
 :MSGJTXT. 非プロトタイプの関数が間接的に呼ばれました
 :WARNING. 3
 .np
