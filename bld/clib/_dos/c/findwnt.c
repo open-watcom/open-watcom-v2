@@ -52,7 +52,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned dos_attrib, struct
     WIN32_FIND_DATA     ffd;
     unsigned            nt_attrib;
 
-    h = __fixed_FindFirstFile( (LPTSTR)path, &ffd );
+    h = __lib_FindFirstFile( (LPTSTR)path, &ffd );
 //  if( dos_attrib == _A_NORMAL ) {
 //      dos_attrib = ~(_A_SUBDIR|_A_VOLID);
 //  }
