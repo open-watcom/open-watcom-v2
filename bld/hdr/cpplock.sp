@@ -7,7 +7,7 @@
   class _WPRTLINK __get_lock {
   public:
       __get_lock( __lock * );
-      ~__get_lock();
+      ~__get_lock( );
   private:
       __lock *__lk;
   };
