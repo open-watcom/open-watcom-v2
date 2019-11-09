@@ -31,7 +31,7 @@
 
 #include "ctokens.h"
 
-char            *Tokens[] = {
+const char      *Tokens[] = {
     #define pick(token,string,class,oper) string,
     #include "_ctokens.h"
     #undef  pick

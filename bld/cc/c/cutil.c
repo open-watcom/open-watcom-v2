@@ -55,9 +55,9 @@ void MustRecog( TOKEN this_token )
     }
 }
 
-static char *NameOfCurToken( void )
+static const char *NameOfCurToken( void )
 {
-    char        *token;
+    const char  *token;
 
     switch( CurToken ) {
     case T_BAD_CHAR:

@@ -422,7 +422,9 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     SYM_HANDLE          sym_handle;
     stg_classes         stg_class;
     stg_classes         specified_stg_class;
-    auto SYM_ENTRY      sym;
+    SYM_ENTRY           sym;
+    declspec_class      decl;
+    type_modifiers      modifier;
 
     *plain_int = false;
     info->mod = FLAG_NONE;
@@ -439,23 +441,54 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         stg_class = SC_NONE;
         bit = 0;
         switch( CurToken ) {
-        case T_CHAR:      bit = M_CHAR;         break;
-        case T_INT:       bit = M_INT;          break;
-        case T_SHORT:     bit = M_SHORT;        break;
-        case T_LONG:      bit = M_LONG;         break;
-        case T___INT8:    bit = M_CHAR;         break;
-        case T___INT16:   bit = M_SHORT;        break;
-        case T___INT32:   bit = M_INT32;        break;
-        case T___INT64:   bit = M_LONG_LONG;    break;
-        case T_SIGNED:    bit = M_SIGNED;       break;
-        case T_UNSIGNED:  bit = M_UNSIGNED;     break;
-        case T_FLOAT:     bit = M_FLOAT;        break;
-        case T_DOUBLE:    bit = M_DOUBLE;       break;
-        case T_VOID:      bit = M_VOID;         break;
-        case T__COMPLEX:  bit = M_COMPLEX;      break;
-        case T__IMAGINARY:bit = M_IMAGINARY;    break;
-        case T__BOOL:     bit = M_BOOL;         break;
-
+        case T_CHAR:
+            bit = M_CHAR;
+            break;
+        case T_INT:
+            bit = M_INT;
+            break;
+        case T_SHORT:
+            bit = M_SHORT;
+            break;
+        case T_LONG:
+            bit = M_LONG;
+            break;
+        case T___INT8:
+            bit = M_CHAR;
+            break;
+        case T___INT16:
+            bit = M_SHORT;
+            break;
+        case T___INT32:
+            bit = M_INT32;
+            break;
+        case T___INT64:
+            bit = M_LONG_LONG;
+            break;
+        case T_SIGNED:
+            bit = M_SIGNED;
+            break;
+        case T_UNSIGNED:
+            bit = M_UNSIGNED;
+            break;
+        case T_FLOAT:
+            bit = M_FLOAT;
+            break;
+        case T_DOUBLE:
+            bit = M_DOUBLE;
+            break;
+        case T_VOID:
+            bit = M_VOID;
+            break;
+        case T__COMPLEX:
+            bit = M_COMPLEX;
+            break;
+        case T__IMAGINARY:
+            bit = M_IMAGINARY;
+            break;
+        case T__BOOL:
+            bit = M_BOOL;
+            break;
         case T_CONST:
             if( flags & FLAG_CONST )
                 CErr1( ERR_REPEATED_MODIFIER );
@@ -526,113 +559,108 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T___DECLSPEC:
             AdvanceToken();                   // declspec( dllimport naked )
             MustRecog( T_LEFT_PAREN );
-            {
-                declspec_class decl;
-                type_modifiers  modifier;
-
-                while( CurToken != T_RIGHT_PAREN ) {
-                    modifier = 0;
-                    switch( CurToken ) {
-                    case T___WATCALL:
-                        modifier = LANG_WATCALL;
+            while( CurToken != T_RIGHT_PAREN ) {
+                modifier = 0;
+                switch( CurToken ) {
+                case T___WATCALL:
+                    modifier = LANG_WATCALL;
+                    break;
+                case T__CDECL:
+                case T___CDECL:
+                    modifier = LANG_CDECL;
+                    break;
+                case T__PASCAL:
+                case T___PASCAL:
+                    modifier = LANG_PASCAL;
+                    break;
+                case T___FORTRAN:
+                    modifier = LANG_FORTRAN;
+                    break;
+                case T__SYSCALL:
+                case T___SYSCALL:
+                case T__SYSTEM:
+                    modifier = LANG_SYSCALL;
+                    break;
+                case T___STDCALL:
+                    modifier = LANG_STDCALL;
+                    break;
+                case T__FASTCALL:
+                case T___FASTCALL:
+                    modifier = LANG_FASTCALL;
+                    break;
+                case T__OPTLINK:
+                    modifier = LANG_OPTLINK;
+                    break;
+                case T_ID:
+                    decl = DECLSPEC_NONE;
+                    if( info->stg == SC_NONE ) {
+                        CErr1( ERR_INVALID_DECLARATOR );
                         break;
-                    case T__CDECL:
-                    case T___CDECL:
-                        modifier = LANG_CDECL;
-                        break;
-                    case T__PASCAL:
-                    case T___PASCAL:
-                        modifier = LANG_PASCAL;
-                        break;
-                    case T___FORTRAN:
-                        modifier = LANG_FORTRAN;
-                        break;
-                    case T__SYSCALL:
-                    case T___SYSCALL:
-                    case T__SYSTEM:
-                        modifier = LANG_SYSCALL;
-                        break;
-                    case T___STDCALL:
-                        modifier = LANG_STDCALL;
-                        break;
-                    case T__FASTCALL:
-                    case T___FASTCALL:
-                        modifier = LANG_FASTCALL;
-                        break;
-                    case T__OPTLINK:
-                        modifier = LANG_OPTLINK;
-                        break;
-                    case T_ID:
-                        decl = DECLSPEC_NONE;
-                        if( info->stg == SC_NONE ) {
-                            CErr1( ERR_INVALID_DECLARATOR );
-                            break;
-                        }
-                        if( CMPLIT( Buffer, "dllimport" ) == 0 ) {
-                            decl = DECLSPEC_DLLIMPORT;
-                        } else if( CMPLIT( Buffer, "overridable" ) == 0 ) {
-                            decl = DECLSPEC_DLLIMPORT;
-                        } else if( CMPLIT( Buffer, "dllexport" ) == 0 ) {
-                            decl = DECLSPEC_DLLEXPORT;
-                        } else if( CMPLIT( Buffer, "thread" ) == 0 ) {
-                            decl = DECLSPEC_THREAD;
-                        } else if( CMPLIT( Buffer, "naked" ) == 0 ) {
-                            if( info->naked ) {
-                                CErr1( ERR_INVALID_DECLSPEC );
-                            } else {
-                                info->naked = true;
-                            }
-                        } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
-                            modifier = FLAG_ABORTS;
-                        } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
-                            modifier = FLAG_NORETURN;
-                        } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
-                            modifier = FLAG_FARSS;
-                        } else {
+                    }
+                    if( CMPLIT( Buffer, "dllimport" ) == 0 ) {
+                        decl = DECLSPEC_DLLIMPORT;
+                    } else if( CMPLIT( Buffer, "overridable" ) == 0 ) {
+                        decl = DECLSPEC_DLLIMPORT;
+                    } else if( CMPLIT( Buffer, "dllexport" ) == 0 ) {
+                        decl = DECLSPEC_DLLEXPORT;
+                    } else if( CMPLIT( Buffer, "thread" ) == 0 ) {
+                        decl = DECLSPEC_THREAD;
+                    } else if( CMPLIT( Buffer, "naked" ) == 0 ) {
+                        if( info->naked ) {
                             CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->naked = true;
                         }
-                        if( decl != DECLSPEC_NONE ) {
-                            if( info->decl == DECLSPEC_NONE ) {
-                                info->decl = decl;
-                            } else {
-                                CErr1( ERR_INVALID_DECLSPEC );
-                            }
-                        }
-                        break;
-                    default:
+                    } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
+                        modifier = FLAG_ABORTS;
+                    } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
+                        modifier = FLAG_NORETURN;
+                    } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
+                        modifier = FLAG_FARSS;
+                    } else {
                         CErr1( ERR_INVALID_DECLSPEC );
-                        goto done;
                     }
-                    if( modifier & MASK_LANGUAGES ) {
-                        if( info->decl_mod & MASK_LANGUAGES ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
+                    if( decl != DECLSPEC_NONE ) {
+                        if( info->decl == DECLSPEC_NONE ) {
+                            info->decl = decl;
                         } else {
-                            info->decl_mod |= modifier;
+                            CErr1( ERR_INVALID_DECLSPEC );
                         }
                     }
-                    if( modifier & FLAG_ABORTS ) {
-                        if( info->decl_mod & FLAG_ABORTS ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
-                        } else {
-                            info->decl_mod |= modifier;
-                        }
-                    }
-                    if( modifier & FLAG_NORETURN ) {
-                        if( info->decl_mod & FLAG_NORETURN ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
-                        } else {
-                            info->decl_mod |= modifier;
-                        }
-                    }
-                    if( modifier & FLAG_FARSS ) {
-                        if( info->decl_mod & FLAG_FARSS ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
-                        } else {
-                            info->decl_mod |= modifier;
-                        }
-                    }
-                    NextToken();
+                    break;
+                default:
+                    CErr1( ERR_INVALID_DECLSPEC );
+                    goto done;
                 }
+                if( modifier & MASK_LANGUAGES ) {
+                    if( info->decl_mod & MASK_LANGUAGES ) {
+                        CErr1( ERR_INVALID_DECLSPEC );
+                    } else {
+                        info->decl_mod |= modifier;
+                    }
+                }
+                if( modifier & FLAG_ABORTS ) {
+                    if( info->decl_mod & FLAG_ABORTS ) {
+                        CErr1( ERR_INVALID_DECLSPEC );
+                    } else {
+                        info->decl_mod |= modifier;
+                    }
+                }
+                if( modifier & FLAG_NORETURN ) {
+                    if( info->decl_mod & FLAG_NORETURN ) {
+                        CErr1( ERR_INVALID_DECLSPEC );
+                    } else {
+                        info->decl_mod |= modifier;
+                    }
+                }
+                if( modifier & FLAG_FARSS ) {
+                    if( info->decl_mod & FLAG_FARSS ) {
+                        CErr1( ERR_INVALID_DECLSPEC );
+                    } else {
+                        info->decl_mod |= modifier;
+                    }
+                }
+                NextToken();
             }
          done:
             MustRecog( T_RIGHT_PAREN );

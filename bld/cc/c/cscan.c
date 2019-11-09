@@ -191,7 +191,7 @@ id_hash_idx CalcHash( const char *id, size_t len )
 
 TOKEN KwLookup( const char *buf, size_t len )
 {
-    char        *keyword;
+    const char  *keyword;
     TOKEN       token;
 
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;

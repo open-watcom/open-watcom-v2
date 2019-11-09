@@ -32,6 +32,7 @@
 
 #include "cvars.h"
 
+
 #define STRCHUNK_INCREMENT 512
 
 typedef struct {
@@ -40,12 +41,10 @@ typedef struct {
     size_t  maxsize;
 } STRCHUNK;
 
-extern  char    *Tokens[];
-
 static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch );
 
 /* matches table of type in ctypes.h */
-static  char    *CTypeNames[] = {
+static const char   *CTypeNames[] = {
     #define pick1(enum,cgtype,x86asmtype,name,size) name,
     #include "cdatatyp.h"
     #undef  pick1

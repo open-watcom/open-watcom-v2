@@ -52,8 +52,8 @@ typedef struct ErrPostList {
     union {
         /* POSTLIST_SYMBOL */
         struct {
-            char        *sym_name;
-            char        *sym_file;
+            const char  *sym_name;
+            const char  *sym_file;
             unsigned    sym_line;
         } s;
         /* POSTLIST_TWOTYPES */

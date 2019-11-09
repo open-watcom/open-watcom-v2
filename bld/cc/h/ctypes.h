@@ -60,7 +60,7 @@ typedef signed_64       int64;
 typedef unsigned_64     uint64;
 
 typedef void            *SYM_HANDLE;
-typedef char            *SYM_NAMEPTR;
+typedef const char      *SYM_NAMEPTR;
 
 typedef signed int      id_level_stype;
 typedef unsigned char   id_level_type;
