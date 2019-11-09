@@ -234,7 +234,7 @@ source\diag0017.c(25): Note! I2002: 'TREE' defined in: source\diag0017.c(21)
 source\diag0017.c(27): Error! E1034: Symbol 'TWO' already defined
 source\diag0017.c(27): Note! I2002: 'TWO' defined in: source\diag0017.c(20)
 source\diag0017.c(30): Error! E1012: Expression is not a function
-source\diag0017.c(30): Warning! W309: Unprototyped function indirectly called
+source\diag0017.c(30): Warning! W309: The function without prototyped parameters indirectly called
 source\diag0018.c(7): Error! E1071: Type of parameter 1 does not agree with previous definition
 source\diag0018.c(7): Note! I2003: source conversion type is 'enum foo_enum'
 source\diag0018.c(7): Note! I2004: target conversion type is 'char'
