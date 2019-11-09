@@ -369,6 +369,7 @@ system begin ntaxp
     option osname='Windows NT character-mode (AXP)'
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
+    libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
     libpath %OWSRCDIR%/w32api/ntaxp
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
@@ -379,6 +380,7 @@ system begin ntaxp_win
     option osname='Windows NT(AXP) windowed'
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
+    libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
     libpath %OWSRCDIR%/w32api/ntaxp
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
@@ -463,6 +465,7 @@ system begin ntaxp_dll
     option osname='Windows NT DLL (AXP)'
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
+    libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
     libpath %OWSRCDIR%/w32api/ntaxp
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
