@@ -636,7 +636,19 @@ extern void ChkCallParms( void )
             if( (sym.flags & SYM_TEMP) == 0 )
                 SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
-            if( typ->u.fn.parms != NULL ) {
+            if( typ->u.fn.parms == NULL && callnode->right == NULL ) {
+                /*
+                 * this relax case
+                 * if function prototype is defined without any parameter type
+                 * it is deprecated, but still possible
+                 * and call prototyped function without any parameter
+                 * ...
+                 * extern int t1();
+                 * ...
+                 *     t1();
+                 * ...
+                 */
+            } else if( typ->u.fn.parms != NULL ) {
                 CompareParms( typ->u.fn.parms, callnode->right, ParmsToBeReversed( sym.mods, NULL ) );
             } else {
                 // Unprototyped function called. Note that for indirect calls, there
