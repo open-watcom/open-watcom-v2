@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,21 +64,21 @@ typedef enum{
 #define Far16Pointer(flags)   ((flags & OPFLAG_FAR16PTR) == OPFLAG_FAR16PTR)
 
 typedef enum    pointer_class{
-    PTR_NEAR = 0,
-    PTR_BASED,
-    PTR_FAR,
-    PTR_FAR16,
-    PTR_HUGE,
-    PTR_INTERRUPT = PTR_HUGE,
-    PTR_FUNC,
-    PTR_FUNC_BASED,
-    PTR_FUNC_FAR,
-    PTR_FUNC_FAR16,
-    PTR_FUNC_INTERRUPT,
-    PTR_NOT,
+    PTRCLS_NEAR = 0,
+    PTRCLS_BASED,
+    PTRCLS_FAR,
+    PTRCLS_FAR16,
+    PTRCLS_HUGE,
+    PTRCLS_INTERRUPT = PTRCLS_HUGE,
+    PTRCLS_FUNC,
+    PTRCLS_FUNC_BASED,
+    PTRCLS_FUNC_FAR,
+    PTRCLS_FUNC_FAR16,
+    PTRCLS_FUNC_INTERRUPT,
+    PTRCLS_NOT,
 }pointer_class;
 
-#define FAR16_PTRCLASS(cls)     ((cls == PTR_FAR16) || (cls == PTR_FUNC_FAR16))
+#define FAR16_PTRCLASS(cls)     ((cls == PTRCLS_FAR16) || (cls == PTRCLS_FUNC_FAR16))
 
 #define MAX_INLINE_DEPTH  3             // how deep to inline
 typedef enum{

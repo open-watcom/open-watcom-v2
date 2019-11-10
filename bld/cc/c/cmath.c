@@ -446,20 +446,20 @@ static pointer_class PointerClass( TYPEPTR typ )
     flags = typ->u.p.decl_flags;
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
-    class = PTR_NEAR;                   // assume NEAR
+    class = PTRCLS_NEAR;                // assume NEAR
     if( (flags & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
-        class = PTR_INTERRUPT;          // can't have huge functions
+        class = PTRCLS_INTERRUPT;       // can't have huge functions
     } else if( flags & FLAG_BASED ) {
-        class = PTR_BASED;
+        class = PTRCLS_BASED;
     } else if( flags & FLAG_FAR ) {
-        class = PTR_FAR;
+        class = PTRCLS_FAR;
     } else if( flags & FLAG_FAR16 ) {
-        class = PTR_FAR16;
+        class = PTRCLS_FAR16;
     } else if( flags & FLAG_HUGE ) {
-        class = PTR_HUGE;
+        class = PTRCLS_HUGE;
     }
     if( typ->decl_type == TYPE_FUNCTION )
-        class += PTR_FUNC;
+        class += PTRCLS_FUNC;
     return( class );
 }
 
@@ -472,7 +472,7 @@ pointer_class ExprTypeClass( TYPEPTR typ )
     if( typ->decl_type == TYPE_POINTER ) {
         return( PointerClass( savtyp ) );
     }
-    return( PTR_NOT );               // indicate not a pointer type
+    return( PTRCLS_NOT );           // indicate not a pointer type
 }
 
 

@@ -141,7 +141,7 @@ static TREEPTR FarPtr16Cvt( TREEPTR newparm  )
     parmtyp = newparm->u.expr_type;
     SKIP_TYPEDEFS( parmtyp );
     if( parmtyp->decl_type == TYPE_POINTER ) {
-        op1_class = PTR_FAR16;
+        op1_class = PTRCLS_FAR16;
         op2_class = ExprTypeClass( newparm->u.expr_type );
         newparm = ExprNode( NULL, OPR_CONVERT_PTR, newparm );
         newparm->u.expr_type = parmtyp;
