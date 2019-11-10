@@ -44,7 +44,7 @@ typedef enum condition_codes {
     #undef pick1
 } cond_code;
 
-typedef enum{
+typedef enum {
     OPFLAG_NONE        = 0x00,          // nothing
     OPFLAG_CONST       = 0x01,          // this node contains a const
     OPFLAG_VOLATILE    = 0x02,          // this node contains a volatile
@@ -58,37 +58,38 @@ typedef enum{
     // RISC machines only have one kind of pointer,
     // but can have pointers to unaligned data
     OPFLAG_UNALIGNED   = 0x80,          // pointer points to unaligned data
-    OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR
-              | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
-}op_flags;
+    OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
+} op_flags;
 #define Far16Pointer(flags)   ((flags & OPFLAG_FAR16PTR) == OPFLAG_FAR16PTR)
 
-typedef enum    pointer_class{
+typedef enum    pointer_class {
     PTRCLS_NEAR = 0,
     PTRCLS_BASED,
     PTRCLS_FAR,
     PTRCLS_FAR16,
     PTRCLS_HUGE,
-    PTRCLS_INTERRUPT = PTRCLS_HUGE,
-    PTRCLS_FUNC,
+    PTRCLS_INTERRUPT,
+    PTRCLS_FUNC_NEAR,
     PTRCLS_FUNC_BASED,
     PTRCLS_FUNC_FAR,
     PTRCLS_FUNC_FAR16,
+    PTRCLS_FUNC_HUGE,
     PTRCLS_FUNC_INTERRUPT,
     PTRCLS_NOT,
-}pointer_class;
+} pointer_class;
 
+#define PTRCLS_FUNC             PTRCLS_FUNC_NEAR
 #define FAR16_PTRCLASS(cls)     ((cls == PTRCLS_FAR16) || (cls == PTRCLS_FUNC_FAR16))
 
 #define MAX_INLINE_DEPTH  3             // how deep to inline
-typedef enum{
+typedef enum {
     FUNC_NONE         = 0x00,
     FUNC_OK_TO_INLINE = 0x01,           // can inline this node
     FUNC_INUSE        = 0x02,           // inuse as inline or gen
     FUNC_USES_SEH     = 0x04,           // uses structure exceptions
     FUNC_USED         = 0x08,           // function should really be emitted
     FUNC_MARKED       = 0x10,           // function marked for emit investigation
-}func_flags;
+} func_flags;
 
 typedef unsigned short  LABEL_INDEX;
 

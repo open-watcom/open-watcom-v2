@@ -1108,8 +1108,8 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     case T_PLUS_PLUS:
     case T_MINUS_EQUAL:
     case T_MINUS_MINUS:
-        if( (op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR)
-         && CompFlags.extensions_enabled ) {
+        if( ( op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR )
+          && CompFlags.extensions_enabled ) {
             op1 = LCastAdj( op1 );
         }
         LValue( op1 );
@@ -1389,8 +1389,8 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
         }
     }
-    if( (op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR)
-     && CompFlags.extensions_enabled ) {
+    if( ( op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR )
+      && CompFlags.extensions_enabled ) {
         op1 = LCastAdj( op1 );
     }
     isLValue = LValue( op1 );
@@ -1418,13 +1418,14 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op1_class = ExprTypeClass( typ );
         op2_class = ExprTypeClass( op2->u.expr_type );
         if( op1_class != op2_class ) {
-            if( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) {  // if far16 pointer
+            if( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) {
+                // if far16 pointer
                 op2 = ExprNode( NULL, OPR_CONVERT_PTR, op2 );
                 op2->op.u2.sp.oldptr_class = op2_class;
                 op2->op.u2.sp.newptr_class = op1_class;
             } else {
-                 op2 = ExprNode( NULL, OPR_CONVERT, op2 );
-                 op2->op.u2.result_type = typ;
+                op2 = ExprNode( NULL, OPR_CONVERT, op2 );
+                op2->op.u2.result_type = typ;
             }
             op2->u.expr_type = typ;
         }
@@ -1748,13 +1749,14 @@ convert:                                /* moved here */
 
                     new_class = ExprTypeClass( newtyp );
                     old_class = ExprTypeClass( typ );
-                    if( new_class != old_class &&
-                    (FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class )) ) { // foreign pointers
+                    if( new_class != old_class
+                      && ( FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class ) ) ) {
+                        // foreign pointers
                         opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
                         opnd->op.u2.sp.oldptr_class = old_class;
                         opnd->op.u2.sp.newptr_class = new_class;
 #if _CPU == 8086
-                    } else if( cnv == P2A && newtyp->type_flags & TF2_TYPE_SEGMENT ) {
+                    } else if( cnv == P2A && (newtyp->type_flags & TF2_TYPE_SEGMENT) ) {
                         // getting segment value of pointer
                         opnd = BasedPtrNode( typ, opnd );
                         opnd = ExprNode( NULL, OPR_CONVERT_SEG, opnd );
@@ -1815,7 +1817,9 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
 
         new_class = ExprTypeClass( newtyp );
         old_class = ExprTypeClass( typ );
-        if( new_class != old_class ) {
+        if( new_class != old_class
+          && ( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) ) {
+            // if far16 pointer
             opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
             opnd->op.u2.sp.oldptr_class = old_class;
             opnd->op.u2.sp.newptr_class = new_class;
