@@ -1818,7 +1818,7 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
         new_class = ExprTypeClass( newtyp );
         old_class = ExprTypeClass( typ );
         if( new_class != old_class
-          && ( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) ) {
+          && ( FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class ) ) ) {
             // if far16 pointer
             opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
             opnd->op.u2.sp.oldptr_class = old_class;
