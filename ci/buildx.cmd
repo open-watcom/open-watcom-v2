@@ -60,8 +60,8 @@ REM    set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
-    regsvr32 -u -s itcc.dll
-    regsvr32 -s %OWCIBIN32%\itcc.dll
+    %systemroot%\SysWoW64\regsvr32 -u -s itcc.dll
+    %systemroot%\SysWoW64\regsvr32 -s %OWCIBIN32%\itcc.dll
     builder docs %OWDOCTARGET%
     set RC=!ERRORLEVEL!
 )
