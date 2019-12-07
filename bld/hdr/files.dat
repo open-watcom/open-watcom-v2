@@ -260,6 +260,7 @@ usr="libgen.h"
 usr="malloc.h"
 usr="mem.h"
 usr="mmintrin.h"
+usr="netdb.h"
 usr="process.h"
 usr="search.h"
 usr="share.h"
@@ -272,6 +273,7 @@ usr="wsample.h"
 
 [ DEFAULT type="s" dir="rh/sys" where="c jc f77 jf77 ac" cond="rdostarg" ]
 usr="locking.h"
+usr="socket.h"
 usr="stat.h"
 usr="time.h"
 usr="timeb.h"
@@ -410,6 +412,7 @@ usr="inet.h"
 
 [ DEFAULT type="s" dir="rh/netinet" where="c jc f77 jf77 ac" cond="rdostarg" ]
 usr="in.h"
+usr="tcp.h"
 
 
 #
