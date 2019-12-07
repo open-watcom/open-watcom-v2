@@ -211,9 +211,6 @@ aui_dir         = $(src_dir)/aui
 !ifndef wsample_dir
 wsample_dir     = $(src_dir)/wsample
 !endif
-!ifndef editdll_dir
-editdll_dir     = $(src_dir)/editdll
-!endif
 !ifndef ui_dir
 ui_dir          = $(src_dir)/ui
 !endif
