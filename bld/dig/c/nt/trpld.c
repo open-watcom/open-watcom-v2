@@ -122,8 +122,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
     TRAPENTRY_PTR_NAME( InfoFunction ) = TRAPENTRY_PTR_CAST( InfoFunction )GetProcAddress( TrapFile, (LPSTR)4 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
-      && TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
+    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
