@@ -56,9 +56,9 @@ dllbase = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
 export_common_intel = export TrapInit_.1, TrapFini_.2, TrapRequest_.3
 export_common_risc = export TrapInit.1, TrapFini.2, TrapRequest.3
 !ifdef full_export
-export_full_os2 = export TellHandles_.4,TellHardMode_.5
-export_full_nt_intel = export InfoFunction_.4, InterruptProgram_.5, Terminate_.6
-export_full_nt_risc = export InfoFunction.4, InterruptProgram.5, Terminate.6
+export_full_os2 = export TellHandles_.4, TellHardMode_.5
+export_full_nt_intel = export InfoFunction_.4
+export_full_nt_risc = export InfoFunction.4
 !endif
 
 sys_x86_os2  = sys os2 dll initinstance &
