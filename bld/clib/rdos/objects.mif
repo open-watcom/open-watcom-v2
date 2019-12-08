@@ -1,9 +1,10 @@
-#                   rdu
+#                    rdu
 #===========================
-!inject rdos.obj    rdu
-!inject fork.obj    rdu
-!inject select.obj  rdu
-!inject waitpid.obj rdu
-!inject timeday.obj rdu
+!inject rdos.obj     rdu
+!inject fork.obj     rdu
+!inject select.obj   rdu
+!inject sockioct.obj rdu
+!inject waitpid.obj  rdu
+!inject timeday.obj  rdu
 
 !include ../../../../objlist.mif
