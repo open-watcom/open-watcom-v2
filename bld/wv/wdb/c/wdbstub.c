@@ -145,7 +145,6 @@ void PerformDebuggerFinish( void );
 bool DeleteBps( char *params );
 bool DisableBps( char *params );
 bool EnableBps( char *params );
-bool IsDbgProgramLoaded( void );
 bool IsCmdQuit( const char *cmd );
 bool IsCmdPrint( const char *cmd );
 bool ProcessCmdPrint( const char *param );
@@ -841,11 +840,6 @@ bool EnableBps( char *params )
     return( true );
 }
 
-bool IsDbgProgramLoaded( void )
-{
-    return( _IsOn( SW_HAVE_TASK ) );
-}
-
 bool IsCmdQuit( const char *cmd )
 {
     return( IsCmdEqualCmd( cmd, WDB_CMD_QUIT, WDB_SHORT_CMD_QUIT ) || IsCmdEqualCmd( cmd, WDB_CMD_EXIT, WDB_SHORT_CMD_EXIT ) );
@@ -862,7 +856,7 @@ bool ProcessCmdPrint( const char *param )
         ShowDebuggerMsg( WDB_HELP_PRINT );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -885,7 +879,7 @@ bool ProcessCmdRun( const char *param )
         ShowDebuggerMsg( WDB_HELP_RUN );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -904,7 +898,7 @@ bool ProcessCmdContinue( const char *param )
         ShowDebuggerMsg( WDB_HELP_CONTINUE );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -968,7 +962,7 @@ bool ProcessCmdBreakpoint( const char *param )
         ShowDebuggerMsg(WDB_HELP_BREAKPOINT);
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1032,7 +1026,7 @@ bool ProcessCmdDisable( const char *param )
         return( true );
     }
 
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1069,7 +1063,7 @@ bool ProcessCmdEnable( const char *param )
         ShowDebuggerMsg( WDB_HELP_ENABLE );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1106,7 +1100,7 @@ bool ProcessCmdDelete( const char *param )
         ShowDebuggerMsg( WDB_HELP_DELETE );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1141,7 +1135,7 @@ bool ProcessCmdInfo( const char *param )
         ShowDebuggerMsg( WDB_HELP_INFO );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1168,7 +1162,7 @@ bool ProcessCmdNext( const char *param )
         ShowDebuggerMsg( WDB_HELP_NEXT );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1187,7 +1181,7 @@ bool ProcessCmdStep( const char *param )
         ShowDebuggerMsg( WDB_HELP_STEP );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1206,7 +1200,7 @@ bool ProcessCmdFinish( const char *param )
         ShowDebuggerMsg( WDB_HELP_FINISH );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1225,7 +1219,7 @@ bool ProcessCmdBacktrace( const char *param )
         ShowDebuggerMsg( WDB_HELP_BACKTRACE );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1248,7 +1242,7 @@ bool ProcessCmdModule( const char *param )
         ShowDebuggerMsg( WDB_HELP_MODULE );
         return( true );
     }
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
@@ -1284,7 +1278,7 @@ bool ProcessCmdKill( const char *param )
         return( true );
     }
     //fixme: Not working
-    if( !IsDbgProgramLoaded() ) {
+    if( _IsOff( SW_HAVE_TASK ) ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
