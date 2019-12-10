@@ -363,6 +363,8 @@ int RDOSAPI RdosGetMaxComPort(void);
 int RDOSAPI RdosIsComAvailable(char ID);
 int RDOSAPI RdosGetStdComPar(char ID, int *Irq, int *Io, int *Baud);
 int RDOSAPI RdosGetUsbComPar(char ID, int *Type);
+int RDOSAPI RdosGetUsbCdcComPar(char ID, int *Vendor, int *Product); 
+int RDOSAPI RdosGetUsbBusPar(char ID); 
 int RDOSAPI RdosOpenCom(char ID, long BaudRate, char Parity, char DataBits, char StopBits, int SendBufSize, int RecBufSize);
 void RDOSAPI RdosCloseCom(int Handle);
 void RDOSAPI RdosFlushCom(int Handle);
@@ -372,6 +374,7 @@ void RDOSAPI RdosEnableCts(int Handle);
 void RDOSAPI RdosDisableCts(int Handle);
 void RDOSAPI RdosEnableAutoRts(int Handle);
 void RDOSAPI RdosDisableAutoRts(int Handle);
+int RDOSAPI RdosIsAutoRtsOn(int Handle);
 int RDOSAPI RdosGetCts(int Handle);
 int RDOSAPI RdosGetDsr(int Handle);
 void RDOSAPI RdosSetDtr(int Handle);
@@ -383,6 +386,8 @@ int RDOSAPI RdosGetSendBufferSpace(int Handle);
 void RDOSAPI RdosWaitForSendCompletedCom(int Handle);
 void RDOSAPI RdosResetCom(int Handle);
 int RDOSAPI RdosGetComRecCount(int Handle);
+int RDOSAPI RdosSupportsFullDuplex(int Handle);
+int RDOSAPI RdosSendComBreak(int Handle, char CharCount);
 
 int RDOSAPI RdosGetMaxPrinters();
 int RDOSAPI RdosOpenPrinter(char ID);
@@ -430,9 +435,14 @@ int RDOSAPI RdosGetCanModuleInfo(int Module, int *ComCount, int *Id);
 int RDOSAPI RdosGetCanModuleVersion(int Module, int *MajorVersion, int *MinorVersion, int *SubVersion);
 int RDOSAPI RdosGetCanLoaderVersion(int Module, int *MajorVersion, int *MinorVersion, int *SubVersion);
 void RDOSAPI RdosGetCanSerialNumber(int Module, char *Buf);
+int RDOSAPI RdosGetCanModuleRestarts(int Module);
 int RDOSAPI RdosCheckCanSerialPort(int ComPort, int *ModuleId, int *PortNr);
 int RDOSAPI RdosProgramCanModule(int Module, const char *ProgramName);
 int RDOSAPI RdosWaitForCanModuleProgramming(int Module, int *ErrorCode, int *Position);
+
+int RDOSAPI RdosGetCanBridgeVersion(int *MajorVersion, int *MinorVersion, int *SubVersion);
+int RDOSAPI RdosProgramCanBridge(const char *ProgramName);
+int RDOSAPI RdosWaitForCanBridgeProgramming(int *ErrorCode, int *Position);
 
 int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
 int RDOSAPI RdosCloseHandle(int Handle);
@@ -457,6 +467,9 @@ int RDOSAPI RdosHasHandleException(int Handle);
 int RDOSAPI RdosAddWaitForHandleRead(int WaitHandle, int Handle, void *ID);
 int RDOSAPI RdosAddWaitForHandleWrite(int WaitHandle, int Handle, void *ID);
 int RDOSAPI RdosAddWaitForHandleException(int WaitHandle, int Handle, void *ID);
+int RDOSAPI RdosSelect(void *HandleMaskArr, int HandleCount, int Timeout);
+int RDOSAPI RdosSetHandleBlockingMode(int Handle);
+int RDOSAPI RdosSetHandleNonblockingMode(int Handle);
 
 int RDOSAPI RdosOpenFile(const char *FileName, char Access);
 int RDOSAPI RdosCreateFile(const char *FileName, int Attrib);
@@ -683,6 +696,7 @@ int RDOSAPI RdosGetLocalTcpConnectionPort(int Handle);
 int RDOSAPI RdosReadTcpConnection(int Handle, void *Buf, int Size);
 int RDOSAPI RdosWriteTcpConnection(int Handle, const void *Buf, int Size);
 int RDOSAPI RdosPollTcpConnection(int Handle);
+int RDOSAPI RdosGetTcpConnectionWriteSpace(int Handle);
 
 int RDOSAPI RdosGetLocalMailslot(const char *Name);
 int RDOSAPI RdosGetRemoteMailslot(long Ip, const char *Name);

@@ -1754,16 +1754,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_wait_for_disc_request \
     __parm [__ebx]
 
-#pragma aux RdosGetDiscRequest = \
-    OsGate_get_disc_request \
-    __parm [__ebx] \
-    __value [__edi]
-
-#pragma aux RdosPollDiscRequest = \
-    OsGate_poll_disc_request \
-    __parm [__ebx] \
-    __value [__edi]
-
 #pragma aux RdosDiscRequestCompleted = \
     OsGate_disc_request_completed \
     __parm [__ebx] [__edi]

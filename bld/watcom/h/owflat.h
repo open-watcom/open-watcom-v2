@@ -735,19 +735,19 @@
     __parm [__edx]
 
 #pragma aux RdosDebugTrace = \
-    CallGate_debug_trace;
+    CallGate_debug_trace
 
 #pragma aux RdosDebugPace = \
-    CallGate_debug_pace;
+    CallGate_debug_pace
 
 #pragma aux RdosDebugGo = \
-    CallGate_debug_go;
+    CallGate_debug_go
 
 #pragma aux RdosDebugRun = \
-    CallGate_debug_run;
+    CallGate_debug_run
 
 #pragma aux RdosDebugNext = \
-    CallGate_debug_next;
+    CallGate_debug_next
 
 #pragma aux RdosSetCodeBreak = \
     CallGate_set_code_break  \
@@ -874,6 +874,32 @@
     __parm [__al] [__esi] \
     __value [__eax]
 
+#pragma aux RdosGetUsbCdcComPar = \
+    CallGate_get_usb_cdc_com_par  \
+    "jc fail" \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "movzx eax,ax" \
+    "mov [edi],eax" \
+    "mov eax,1" \
+    "jmp done" \
+    "fail:" \
+    "xor eax,eax" \
+    "done:" \
+    __parm [__al] [__esi] [__edi] \
+    __value [__eax]
+
+#pragma aux RdosGetUsbBusPar = \
+    CallGate_get_usb_bus_par  \
+    "jc fail" \
+    "mov eax,1" \
+    "jmp done" \
+    "fail:" \
+    "xor eax,eax" \
+    "done:" \
+    __parm [__al] \
+    __value [__eax]
+
 #pragma aux RdosOpenCom = \
     CallGate_open_com  \
     ValidateHandle  \
@@ -918,6 +944,19 @@
 #pragma aux RdosDisableAutoRts = \
     CallGate_disable_auto_rts  \
     __parm [__ebx]
+
+#pragma aux RdosIsAutoRtsOn = \
+    CallGate_is_auto_rts_on  \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosSupportsFullDuplex = \
+    CallGate_supports_full_duplex  \
+    "cmc" \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
 
 #pragma aux RdosGetCts = \
     CallGate_get_cts  \
@@ -978,6 +1017,10 @@
 #pragma aux RdosWaitForSendCompletedCom = \
     CallGate_wait_for_send_completed_com  \
     __parm [__ebx]
+
+#pragma aux RdosSendComBreak = \
+    CallGate_send_com_break  \
+    __parm [__ebx] [__al]
 
 #pragma aux RdosGetMaxPrinters = \
     CallGate_get_max_printer  \
@@ -1252,11 +1295,54 @@
     CarryToBool \
     __parm [__eax] [__edi]
 
+#pragma aux RdosGetCanModuleRestarts = \
+    "xor ecx,ecx" \
+    CallGate_get_can_module_restarts  \
+    __parm [__eax] \
+    __value [__ecx]
+
 #pragma aux RdosProgramCanModule = \
     CallGate_program_can_module  \
     CarryToBool \
     __parm [__eax] [__edi] \
     __value [__eax]
+
+#pragma aux RdosWaitForCanModuleProgramming = \
+    CallGate_wait_for_can_module_programming  \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "mov [edi],ecx" \
+    __parm [__eax] [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__edx]
+
+#pragma aux RdosGetCanBridgeVersion = \
+    CallGate_get_can_bridge_version  \
+    "movzx ecx,ah" \
+    "mov [esi],ecx" \
+    "movzx ecx,al" \
+    "mov [edi],ecx" \
+    "movzx ecx,dl" \
+    "mov [ebx],ecx" \
+    CarryToBool \
+    __parm [__esi] [__edi] [__ebx] \
+    __value [__eax] \
+    __modify [__ecx __edx]
+
+#pragma aux RdosProgramCanBridge = \
+    CallGate_program_can_bridge  \
+    CarryToBool \
+    __parm [__edi] \
+    __value [__eax]
+
+#pragma aux RdosWaitForCanBridgeProgramming = \
+    CallGate_wait_for_can_bridge_programming  \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "mov [edi],ecx" \
+    __parm [__esi] [__edi] \
+    __value [__eax] \
+    __modify [__edx]
 
 #pragma aux RdosOpenHandle = \
     CallGate_open_handle  \
@@ -1377,20 +1463,21 @@
     CallGate_add_wait_for_handle_exception  \
     __parm [__ebx] [__eax] [__ecx]
 
+#pragma aux RdosSetHandleBlockingMode = \
+    CallGate_set_handle_blocking_mode  \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosSetHandleNonblockingMode = \
+    CallGate_set_handle_nonblocking_mode  \
+    __parm [__ebx] \
+    __value [__eax]
+
 #pragma aux RdosOpenFile = \
     CallGate_open_file  \
     ValidateHandle  \
     __parm [__edi] [__cl] \
     __value [__ebx]
-
-#pragma aux RdosWaitForCanModuleProgramming = \
-    CallGate_wait_for_can_module_programming  \
-    "movzx edx,dx" \
-    "mov [esi],edx" \
-    "mov [edi],ecx" \
-    __parm [__eax] [__esi] [__edi] \
-    __value [__eax] \
-    __modify [__edx]
 
 #pragma aux RdosCreateFile = \
     CallGate_create_file  \
@@ -1592,7 +1679,7 @@
     __parm [__eax] [__edx] [__ecx]
 
 #pragma aux RdosClearFaultSave = \
-    CallGate_clear_fault_save;
+    CallGate_clear_fault_save
 
 #pragma aux RdosHasCrashInfo = \
     CallGate_has_crash_info  \
@@ -1831,10 +1918,10 @@
     __value [__eax]
 
 #pragma aux RdosSoftReset = \
-    CallGate_soft_reset;
+    CallGate_soft_reset
 
 #pragma aux RdosHardReset = \
-    CallGate_hard_reset;
+    CallGate_hard_reset
 
 #pragma aux RdosPowerFailure = \
     CallGate_power_failure \
@@ -1897,7 +1984,7 @@
     __value [__eax]
 
 #pragma aux RdosTerminateThread = \
-    CallGate_terminate_thread;
+    CallGate_terminate_thread
 
 #pragma aux RdosGetThreadHandle = \
     CallGate_get_thread_handle \
@@ -1925,7 +2012,7 @@
     __parm [__eax]
 
 #pragma aux RdosFatalErrorExit = \
-    CallGate_fatal_error_exit;
+    CallGate_fatal_error_exit
 
 #pragma aux RdosGetExitCode = \
     CallGate_get_exit_code  \
@@ -2545,6 +2632,14 @@
     __parm [__ebx] \
     __value [__eax]
 
+#pragma aux RdosGetTcpConnectionWriteSpace = \
+    CallGate_get_tcp_connection_write_space  \
+    "jnc ok" \ 
+    "mov eax,07FFFFFFFh" \
+    "ok:" \
+    __parm [__ebx] \
+    __value [__eax]
+
 #pragma aux RdosCreateTcpSocket = \
     CallGate_create_tcp_socket  \
     ValidateHandle \
@@ -2586,6 +2681,11 @@
     ValidateEax \
     __parm [__esi] [__edi] \
     __value [__eax]
+
+#pragma aux RdosSelect = \
+    CallGate_select  \
+    __parm [__edi] [__ecx] [__edx] \
+    __value [__ecx]
 
 #pragma aux RdosGetLocalMailslot = \
     CallGate_get_local_mailslot  \
@@ -2637,7 +2737,7 @@
     __parm [__edi]
 
 #pragma aux RdosClearKeyboard = \
-    CallGate_flush_keyboard;
+    CallGate_flush_keyboard
 
 #pragma aux RdosPollKeyboard = \
     CallGate_poll_keyboard  \
@@ -2695,10 +2795,10 @@
     __modify [__dx]
 
 #pragma aux RdosHideMouse = \
-    CallGate_hide_mouse;
+    CallGate_hide_mouse
 
 #pragma aux RdosShowMouse = \
-    CallGate_show_mouse;
+    CallGate_show_mouse
 
 #pragma aux RdosGetMousePosition = \
     CallGate_get_mouse_position \
@@ -2768,7 +2868,7 @@
     __modify [__ecx __edx]
 
 #pragma aux RdosClearText = \
-    CallGate_clear_text;
+    CallGate_clear_text
 
 #pragma aux RdosGetTextSize = \
     CallGate_get_text_size \
@@ -3347,51 +3447,51 @@
     __value [__eax]
 
 #pragma aux RdosEnableStatusLED = \
-    CallGate_enable_status_led;
+    CallGate_enable_status_led
 
 #pragma aux RdosDisableStatusLED = \
-    CallGate_disable_status_led;
+    CallGate_disable_status_led
 
 #pragma aux RdosStartWatchdog = \
     CallGate_start_watchdog \
     __parm [__eax]
 
 #pragma aux RdosKickWatchdog = \
-    CallGate_kick_watchdog;
+    CallGate_kick_watchdog
 
 #pragma aux RdosStopWatchdog = \
-    CallGate_stop_watchdog;
+    CallGate_stop_watchdog
 
 #pragma aux RdosStartDebugger = \
     CallGate_start_debugger \
     __parm [__eax]
 
 #pragma aux RdosKickDebugger = \
-    CallGate_kick_debugger;
+    CallGate_kick_debugger
 
 #pragma aux RdosStopDebugger = \
-    CallGate_stop_debugger;
+    CallGate_stop_debugger
 
 #pragma aux RdosStartNetCapture = \
     CallGate_start_net_capture \
     __parm [__ebx]
 
 #pragma aux RdosStopNetCapture = \
-    CallGate_stop_net_capture;
+    CallGate_stop_net_capture
 
 #pragma aux RdosStartCanCapture = \
     CallGate_start_can_capture \
     __parm [__ebx]
 
 #pragma aux RdosStopCanCapture = \
-    CallGate_stop_can_capture;
+    CallGate_stop_can_capture
 
 #pragma aux RdosStartLonCapture = \
     CallGate_start_lon_capture \
     __parm [__ebx]
 
 #pragma aux RdosStopLonCapture = \
-    CallGate_stop_lon_capture;
+    CallGate_stop_lon_capture
 
 #pragma aux RdosIsCanOnline = \
     CallGate_is_can_online \
@@ -3746,7 +3846,7 @@
     __value [__eax]
 
 #pragma aux RdosResetTouchCalibrate = \
-    CallGate_reset_touch_cal;
+    CallGate_reset_touch_cal
 
 #pragma aux RdosSetTouchCalibrateDividend = \
     CallGate_set_touch_cal_dividend \

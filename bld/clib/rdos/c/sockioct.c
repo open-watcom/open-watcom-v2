@@ -36,8 +36,14 @@
 
 _WCRTLINK int ioctlsocket (int s, long cmd, char *argp)
 {
-    s = s;
-    cmd = cmd;
-    argp = argp;
-    return 0;
+    switch( cmd ) {
+        case FIONBIO:
+            if( *argp )
+                RdosSetHandleNonblockingMode( s );
+            else
+                RdosSetHandleBlockingMode( s );
+            return( 0 );
+        default:
+            return( 1 );
+    }
 }

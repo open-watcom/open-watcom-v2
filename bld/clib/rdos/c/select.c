@@ -31,20 +31,49 @@
 
 #include "variety.h"
 #include <sys/time.h>
+#include <stdlib.h>
+#include <string.h>
+#include "liballoc.h"
 #include "rdos.h"
 
 _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_set * __exceptfds, struct timeval * __timeout )
 {
-    int i;
-    int Count = 0;
-    int waithandle = 0;
-    int timeout = 0;
+    int count;
+    int timeout = 0x7FFFFFFF;
+    char *masks;
+    char *ptr;
+    int size = ( __width - 1 ) / 8 + 1;
 
     if( __timeout ) {
         timeout = __timeout->tv_usec  / 1000;
         timeout += __timeout->tv_sec * 1000; 
     }
 
+    masks = ( char * )lib_malloc( 3 * size );
+
+    ptr = masks;    
+    if( __readfds )
+        memcpy(ptr, __readfds->fds_bits, size);
+    else
+        memset(ptr, 0, size);
+   
+    ptr += size;
+    if( __writefds )
+        memcpy(ptr, __writefds->fds_bits, size);
+    else
+        memset(ptr, 0, size);
+
+    ptr += size;
+    if( __exceptfds )
+        memcpy(ptr, __exceptfds->fds_bits, size);
+    else
+        memset(ptr, 0, size);
+
+    count = RdosSelect( masks, __width, timeout );
+    lib_free( masks );
+    return( count );
+
+/*
     if( __readfds || __writefds || __exceptfds ) {
         waithandle = RdosCreateWait();
     }
@@ -112,4 +141,7 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
         RdosCloseWait( waithandle );
 
     return( Count );
+
+*/
+
 }
