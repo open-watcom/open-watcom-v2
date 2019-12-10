@@ -228,7 +228,7 @@ extern void     ServMessage( const char * );
 #endif
 
 #if !defined( SERVER )
-static bool Terminate( void )
+static bool terminate_connection( void )
 {
 #ifdef __RDOS__
     RdosPushTcpConnection( data_socket );
@@ -607,7 +607,7 @@ void RemoteUnLink( void )
     soclose( control_socket );
   #endif
 #else
-    Terminate();
+    terminate_connection();
 #endif
 
 #if defined(__NT__) || defined(__WINDOWS__)

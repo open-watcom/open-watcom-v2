@@ -43,12 +43,12 @@ extern TRAPENTRY_FUNC( GetHwndFunc );
 
 void TRAPENTRY InfoFunction( HWND hwnd )
 {
-    hwnd = hwnd;
+    /* unused parameters */ (void)hwnd;
 }
 
 void TRAPENTRY InputHook( event_hook_fn *ptr )
 {
-    ptr = ptr;
+    /* unused parameters */ (void)ptr;
 }
 
 bool TRAPENTRY HardModeCheck( void )
@@ -69,7 +69,7 @@ HWND TRAPENTRY GetHwndFunc( void )
  */
 void TRAPENTRY SetHardMode( bool force )
 {
-    force=force;
+    /* unused parameters */ (void)force;
 }
 
 /*
