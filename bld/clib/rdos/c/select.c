@@ -70,6 +70,19 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
         memset(ptr, 0, size);
 
     count = RdosSelect( masks, __width, timeout );
+
+    ptr = masks;    
+    if( __readfds )
+        memcpy(__readfds->fds_bits, ptr, size);
+   
+    ptr += size;
+    if( __writefds )
+        memcpy(__writefds->fds_bits, ptr, size);
+
+    ptr += size;
+    if( __exceptfds )
+        memcpy(__exceptfds->fds_bits, ptr, size);
+
     lib_free( masks );
     return( count );
 
