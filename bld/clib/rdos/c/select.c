@@ -40,23 +40,28 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
 {
     int count;
     int timeout = 0x7FFFFFFF;
-    char *masks;
+    char masks[3 * FD_SETSIZE / 8];
     char *ptr;
-    int size = ( __width - 1 ) / 8 + 1;
+    int size;
+    int width = __width;
+
+    if( width > FD_SETSIZE) {
+        width = FD_SETSIZE;
+        size = FD_SETSIZE / 8;
+    } else
+        size = ( width - 1 ) / 8 + 1;
 
     if( __timeout ) {
         timeout = __timeout->tv_usec  / 1000;
-        timeout += __timeout->tv_sec * 1000; 
+        timeout += __timeout->tv_sec * 1000;
     }
 
-    masks = ( char * )lib_malloc( 3 * size );
-
-    ptr = masks;    
+    ptr = masks;
     if( __readfds )
         memcpy(ptr, __readfds->fds_bits, size);
     else
         memset(ptr, 0, size);
-   
+
     ptr += size;
     if( __writefds )
         memcpy(ptr, __writefds->fds_bits, size);
@@ -69,12 +74,12 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
     else
         memset(ptr, 0, size);
 
-    count = RdosSelect( masks, __width, timeout );
+    count = RdosSelect( masks, width, timeout );
 
-    ptr = masks;    
+    ptr = masks;
     if( __readfds )
         memcpy(__readfds->fds_bits, ptr, size);
-   
+
     ptr += size;
     if( __writefds )
         memcpy(__writefds->fds_bits, ptr, size);
@@ -83,78 +88,5 @@ _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_s
     if( __exceptfds )
         memcpy(__exceptfds->fds_bits, ptr, size);
 
-    lib_free( masks );
     return( count );
-
-/*
-    if( __readfds || __writefds || __exceptfds ) {
-        waithandle = RdosCreateWait();
-    }
-
-    if( __readfds )
-        for( i = 0; i < __width; i++ )
-            if( FD_ISSET( i, __readfds ) )
-                RdosAddWaitForHandleRead( waithandle, i, (void *)0xFFFFFFFF );
-
-    if( __writefds )
-        for( i = 0; i < __width; i++ )
-            if( FD_ISSET( i, __writefds ) )
-                RdosAddWaitForHandleWrite( waithandle, i, (void *)0xFFFFFFFF );
-
-    if( __exceptfds )
-        for( i = 0; i < __width; i++ )
-            if( FD_ISSET( i, __exceptfds ) )
-                RdosAddWaitForHandleException( waithandle, i, (void *)0xFFFFFFFF );
-
-    if( waithandle ) {
-        if( timeout )
-            RdosWaitTimeout( waithandle, timeout );
-        else
-            RdosWaitForever( waithandle );
-    } else {
-        if( timeout == 0 )
-            timeout = 0x7FFFFFFF;
-        RdosWaitMilli( timeout );
-    }
-
-    if( __readfds ) {
-        for( i = 0; i < __width; i++ ) {
-            if( FD_ISSET( i, __readfds ) ) {
-                if( RdosGetHandleReadBufferCount( i ) )
-                    Count++;
-                else
-                    FD_CLR( i, __readfds );
-            }
-        }
-    }
-
-    if( __writefds ) {
-        for( i = 0; i < __width; i++ ) {
-            if( FD_ISSET( i, __writefds ) ) {
-                if( RdosGetHandleWriteBufferSpace( i ) )
-                    Count++;
-                else
-                    FD_CLR( i, __writefds );
-            }
-        }
-    }
-
-    if( __exceptfds ) {
-        for( i = 0; i < __width; i++ ) {
-            if( FD_ISSET( i, __exceptfds ) ) {
-                if( RdosHasHandleException( i ) )
-                    Count++;
-                else
-                    FD_CLR( i, __exceptfds );
-            }
-        }
-    }
-
-    if( waithandle )
-        RdosCloseWait( waithandle );
-
-    return( Count );
-
-*/
-
 }
