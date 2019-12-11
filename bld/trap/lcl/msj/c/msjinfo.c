@@ -32,24 +32,26 @@
 
 #include <windows.h>
 #include "trpimp.h"
+#include "trpsys.h"
 #include "control.h"
+
 
 extern HWND DebuggerWindow;
 
-void TRAPENTRY InfoFunction( HWND hwnd )
-/**************************************/
+void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
+/**********************************************/
 {
     DebuggerWindow = hwnd;
 }
 
-void TRAPENTRY InterruptProgram( void )
-/*************************************/
+void TRAPENTRY_FUNC( InterruptProgram )( void )
+/*********************************************/
 {
     DoInterrupt();
 }
 
-bool TRAPENTRY Terminate( void )
-/******************************/
+bool TRAPENTRY_FUNC( Terminate )( void )
+/**************************************/
 {
     EndProc();
     SignalDeath();
