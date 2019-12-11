@@ -1788,6 +1788,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     return( ver );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
 }

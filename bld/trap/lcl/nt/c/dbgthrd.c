@@ -182,7 +182,7 @@ static void ControlReq( ctl_request req )
                 switch( msg.message ) {
                 case WM_KEYDOWN:
                     if( msg.wParam == VK_CANCEL ) {
-                         InterruptProgram();
+                        InterruptProgram();
                     }
                     break;
                 case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger

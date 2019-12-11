@@ -63,6 +63,7 @@
 #include "os2extx.h"
 #include "dbgthrd.h"
 
+
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
 USHORT                  TaskFS;
