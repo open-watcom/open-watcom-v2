@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,18 @@
 
 
 #include <stddef.h>
+#if defined( __WINDOWS__ ) && !defined( SERVER )
+    #include <windows.h>
+#elif defined( ENABLE_TRAP_LOGGING )
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <windows.h>
+#endif
 #include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined( SERVER )
-#include <windows.h>
-#include "trpsys.h"
-#elif defined( ENABLE_TRAP_LOGGING )
-#include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
-#include <winbase.h>    /* For GetSystemTime */
+    #include "trpsys.h"
 #endif
 
 
