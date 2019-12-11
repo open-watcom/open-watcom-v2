@@ -78,18 +78,11 @@ typedef struct rt_init _WCNEAR      *struct_rt_init_ptr;
     #pragma aux restore_ds = "pop ds" __modify __exact [__sp]
     #define save_es()
     #define restore_es()
-#elif defined(__WINDOWS_386__)
-    #define __GETDS()
-    #define save_ds()
-    #define restore_ds()
-    #define save_es()
-    #define restore_es()
-    #define setup_es()
 #elif defined(_M_IX86)
     #define __GETDS()
     #define save_ds()
     #define restore_ds()
-  #if defined(__FLAT__)
+  #if defined(__FLAT__) || defined(__RDOSDEV__)
     #define save_es()
     #define restore_es()
     #define setup_es()
@@ -212,7 +205,7 @@ void __InitRtns( unsigned limit )
             callit_far( (fpfn *)&pnext->rtn );
         }
 #else
-        callit( &pnext->rtn );
+        callit( (npfn *)&pnext->rtn );
 #endif
         // mark entry as invoked
         pnext->rtn_type = PDONE;
@@ -285,7 +278,7 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
                 callit_far( (fpfn *)&pnext->rtn );
             }
 #else
-            callit( &pnext->rtn );
+            callit( (npfn *)&pnext->rtn );
 #endif
         }
         // mark entry as invoked even if we don't call it
