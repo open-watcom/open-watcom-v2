@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +46,6 @@ typedef enum {
     CTL_WAIT,
     CTL_CONTINUE
 }   ctl_request;
-
-extern TRAPENTRY_FUNC( InterruptProgram );
-extern TRAPENTRY_FUNC( Terminate );
 
 static struct {
     // control overhead
@@ -184,7 +182,7 @@ static void ControlReq( ctl_request req )
                 switch( msg.message ) {
                 case WM_KEYDOWN:
                     if( msg.wParam == VK_CANCEL ) {
-                        InterruptProgram();
+                         InterruptProgram();
                     }
                     break;
                 case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger

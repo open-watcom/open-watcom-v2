@@ -65,7 +65,7 @@ BOOL                    PendingTrap;
 event_hook_fn           *HookRtn;
 bool                    HardModeRequired;
 bool                    ForceHardMode;
-BOOL                    InputLocked;
+bool                    InputLocked = false;
 char                    OutBuff[MAX_STR];
 int                     OutPos;
 BOOL                    StopOnExtender;

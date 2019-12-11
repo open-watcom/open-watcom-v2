@@ -25,41 +25,31 @@
 *
 *  ========================================================================
 *
-* Description:  TRAP file loader global function/variable OS specific declaration
+* Description:  OS specific interface functions prototypes
 *
 ****************************************************************************/
 
 
 /*
- * Trap interface function/pointer macros
+ * Trap OS specific interface functions prototype used only for local debug
  */
-#define TRAP_EXTFUNC(n)         trap_ ## n
-#define TRAP_EXTFUNC_PTR(n)     ptr_ ## n
-#define TRAP_EXTFUNC_TYPE(n)    type_ ## n
-#define TRAPENTRY_FUNC(n)       TRAPENTRY Trap ## n
-
+/*        name              ret     parms                       loc ret loc parms   */
 #if defined( __OS2__ )
-
-extern bool     IsTrapFilePumpingMessageQueue( void );
-
-#elif defined( __DOS__ )
-  #if !defined( _M_I86 )
-
-extern char     DPMICheck;
-extern void     SaveOrigVectors( void );
-extern void     RestoreOrigVectors( void );
-
+  #if defined( _M_I86 )
+    pick( TellHandles,      void, (void __far *,void __far *),  void,   (void __far *, void __far *) )
+  #else
+    pick( TellHandles,      void, (HAB, HWND),                  bool,   (HAB, HWND) )
   #endif
+    pick( TellHardMode,     char, (char),                       char,   (char) )
+#elif defined( __NT__ )
+    pick( InfoFunction,     void, (HWND),                       bool,   (HWND) )
+    pick( InterruptProgram, void, (void),                       bool,   (void) )
+    pick( Terminate,        bool, (void),                       bool,   (void) )
 #elif defined( __WINDOWS__ )
-
-extern bool     TrapHardModeRequired;
-
+    pick( InfoFunction,     void, (HWND),                       bool,   (HWND) )
+    pick( GetHwndFunc,      HWND, (void),                       HWND,   (void) )
+    pick( InputHook,        void, (event_hook_fn *),            void,   (event_hook_fn *) )
+    pick( HardModeCheck,    bool, (void),                       void,   (void) )
+    pick( SetHardMode,      void, (bool),                       void,   (bool) )
+    pick( UnLockInput,      void, (void),                       void,   (void) )
 #endif
-
-#define pick(n,r,p,ar,ap)   extern ar TRAP_EXTFUNC( n ) ## ap;
-#include "_trpextf.h"
-#undef pick
-
-#define pick(n,r,p,ar,ap)   extern r TRAPENTRY_FUNC( n ) ## p;
-#include "_trpextf.h"
-#undef pick

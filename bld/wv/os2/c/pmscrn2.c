@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +74,7 @@ void WndInitWndMain( wnd_create_struct *info )
 
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
+    if( !ToldWinHandle && TRAP_EXTFUNC( TellHandles )( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
         ToldWinHandle = true;
     }
 }

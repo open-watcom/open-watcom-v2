@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,6 +70,7 @@
 #include "dbgwset1.h"
 #include "dlgbreak.h"
 #include "trptypes.h"
+#include "trpsys.h"
 
 
 /*********************************************/
@@ -281,15 +282,7 @@ void DlgCmd( void )
             if( _IsOn( SW_REMOTE_LINK ) ) {
                 printf( "Can't break remote task!\n" );
             } else {
-                HANDLE hmod;
-                TRAPENTRY_FUNC_PTR( InterruptProgram );
-
-                hmod = GetModuleHandle( TrapParms );
-                TRAPENTRY_PTR_NAME( InterruptProgram ) = TRAPENTRY_PTR_CAST( InterruptProgram )GetProcAddress( hmod, (LPSTR)5 );
-                if( TRAPENTRY_PTR_NAME( InterruptProgram ) != NULL ) {
-                    TRAPENTRY_PTR_NAME( InterruptProgram )();
-                }
-                CloseHandle( hmod );
+                TRAP_EXTFUNC( InterruptProgram )();
             }
             // break the task
             break;

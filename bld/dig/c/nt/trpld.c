@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +41,39 @@
 #include "tcerr.h"
 
 
+#define pick(n,r,p,ar,ap)   typedef r TRAPENTRY (*TRAP_EXTFUNC_TYPE(n)) ## p;
+#include "_trpextf.h"
+#undef pick
+
+#define pick(n,r,p,ar,ap)   static TRAP_EXTFUNC_TYPE(n) TRAP_EXTFUNC_PTR(n);
+#include "_trpextf.h"
+#undef pick
+
 static HANDLE           TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-static TRAPENTRY_FUNC_PTR( InfoFunction );
-
-bool TrapTellHWND( HWND hwnd )
+bool TRAP_EXTFUNC( InfoFunction )( HWND hwnd )
 {
-    if( TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
-        TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+    if( TRAP_EXTFUNC_PTR( InfoFunction ) != NULL ) {
+        TRAP_EXTFUNC_PTR( InfoFunction )( hwnd );
+        return( true );
+    }
+    return( false );
+}
+
+bool TRAP_EXTFUNC( InterruptProgram )( void )
+{
+    if( TRAP_EXTFUNC_PTR( InterruptProgram ) != NULL ) {
+        TRAP_EXTFUNC_PTR( InterruptProgram )();
+        return( true );
+    }
+    return( false );
+}
+
+bool TRAP_EXTFUNC( Terminate )( void )
+{
+    if( TRAP_EXTFUNC_PTR( Terminate ) != NULL ) {
+        TRAP_EXTFUNC_PTR( Terminate )();
         return( true );
     }
     return( false );
@@ -57,7 +82,9 @@ bool TrapTellHWND( HWND hwnd )
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    TRAPENTRY_PTR_NAME( InfoFunction ) = NULL;
+    TRAP_EXTFUNC_PTR( InfoFunction ) = NULL;
+    TRAP_EXTFUNC_PTR( InterruptProgram ) = NULL;
+    TRAP_EXTFUNC_PTR( Terminate ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
@@ -120,7 +147,9 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
-    TRAPENTRY_PTR_NAME( InfoFunction ) = TRAPENTRY_PTR_CAST( InfoFunction )GetProcAddress( TrapFile, (LPSTR)4 );
+    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)4 );
+    TRAP_EXTFUNC_PTR( InterruptProgram ) = (TRAP_EXTFUNC_TYPE( InterruptProgram ))GetProcAddress( TrapFile, (LPSTR)5 );
+    TRAP_EXTFUNC_PTR( Terminate ) = (TRAP_EXTFUNC_TYPE( Terminate ))GetProcAddress( TrapFile, (LPSTR)6 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );

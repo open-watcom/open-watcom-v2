@@ -45,6 +45,7 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trpld.h"
+#include "trpsys.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
 #include "bsexcpt.h"
@@ -60,10 +61,12 @@
 #include "os2extx.h"
 #include "dbgthrd.h"
 
+
 uDB_t                   Buff;
+USHORT                  TaskFS;
+
 static BOOL             stopOnSecond;
 static BOOL             isAttached;
-USHORT                  TaskFS;
 static byte             saved_opcode;
 static BOOL             splice_bp_set;
 static ULONG            splice_bp_lin_addr;
@@ -125,9 +128,6 @@ static unsigned_32      lastESP;
 
 bool        ExpectingAFault;
 const char  OS2ExtList[] = OS2EXTLIST;
-
-extern TRAPENTRY_FUNC( TellHandles );
-extern TRAPENTRY_FUNC( TellHardMode );
 
 static bool Is32BitSeg( unsigned seg )
 {
@@ -1704,12 +1704,12 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-void TRAPENTRY TellHandles( HAB hab, HWND hwnd )
+void TRAPENTRY_FUNC( TellHandles )( HAB hab, HWND hwnd )
 {
     TellSoftModeHandles( hab, hwnd );
 }
 
-char TRAPENTRY TellHardMode( char hard )
+char TRAPENTRY_FUNC( TellHardMode )( char hard )
 {
     return( SetHardMode( hard ) );
 }

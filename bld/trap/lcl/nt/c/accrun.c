@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,12 @@
 #include "trpld.h"
 #include "stdnt.h"
 
+
 typedef enum {
     T_OFF,
     T_ON_CURR,
     T_ON_NEXT
 }   set_t;
-
-extern TRAPENTRY_FUNC( InterruptProgram );
-extern TRAPENTRY_FUNC( Terminate );
 
 /*
  * setATBit - control if we are tracing
@@ -128,7 +127,7 @@ static void setTBitInAllThreads( set_t set )
     }
 }
 
-void TRAPENTRY InterruptProgram( void )
+void InterruptProgram( void )
 {
     setTBitInAllThreads( T_ON_CURR );
     // a trick to make app execute long enough to hit a breakpoint
@@ -136,7 +135,7 @@ void TRAPENTRY InterruptProgram( void )
     PendingProgramInterrupt = TRUE;
 }
 
-bool TRAPENTRY Terminate( void )
+bool Terminate( void )
 {
     HANDLE  hp;
 

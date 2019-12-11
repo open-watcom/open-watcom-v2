@@ -31,11 +31,11 @@
 
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #if defined( __WINDOWS__ ) && !defined( SERVER )
     #include <windows.h>
 #elif defined( ENABLE_TRAP_LOGGING )
-    #include <stdio.h>
-    #include <stdlib.h>
     #include <windows.h>
 #endif
 #include "madregs.h"
@@ -199,7 +199,7 @@ unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out
     }
     Access();
 #if defined( __WINDOWS__ ) && !defined( SERVER )
-    TrapHardModeCheck();
+    TRAP_EXTFUNC( HardModeCheck )();
 #endif
     if( result == REQUEST_FAILED )
         return( (unsigned)-1 );

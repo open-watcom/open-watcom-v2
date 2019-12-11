@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,38 +52,45 @@
 
 #define LOW(c)      ((c) | 0x20)
 
+#define pick(n,r,p,ar,ap)   typedef r TRAPENTRY (*TRAP_EXTFUNC_TYPE(n)) ## p;
+#include "_trpextf.h"
+#undef pick
+
+#define pick(n,r,p,ar,ap)   static TRAP_EXTFUNC_TYPE(n) TRAP_EXTFUNC_PTR(n);
+#include "_trpextf.h"
+#undef pick
+
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-static TRAPENTRY_FUNC_PTR( TellHandles );
-static TRAPENTRY_FUNC_PTR( TellHardMode );
-
 bool IsTrapFilePumpingMessageQueue( void )
 {
-    return( TRAPENTRY_PTR_NAME( TellHandles ) != NULL );
+    return( TRAP_EXTFUNC_PTR( TellHandles ) != NULL );
 }
 
-bool TrapTellHandles( HAB hab, HWND hwnd )
+bool TRAP_EXTFUNC( TellHandles )( HAB hab, HWND hwnd )
 {
-    if( TRAPENTRY_PTR_NAME( TellHandles ) == NULL )
-        return( false );
-    TRAPENTRY_PTR_NAME( TellHandles )( hab, hwnd );
-    return( true );
+    if( TRAP_EXTFUNC_PTR( TellHandles ) != NULL ) {
+        TRAP_EXTFUNC_PTR( TellHandles )( hab, hwnd );
+        return( true );
+    }
+    return( false );
 }
 
 
-char TrapTellHardMode( char hard )
+char TRAP_EXTFUNC( TellHardMode )( char hard )
 {
-    if( TRAPENTRY_PTR_NAME( TellHardMode ) == NULL )
-        return( 0 );
-    return( TRAPENTRY_PTR_NAME( TellHardMode )( hard ) );
+    if( TRAP_EXTFUNC_PTR( TellHardMode ) != NULL ) {
+        return( TRAP_EXTFUNC_PTR( TellHardMode )( hard ) );
+    }
+    return( 0 );
 }
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
-    TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
+    TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
+    TRAP_EXTFUNC_PTR( TellHardMode ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
@@ -155,11 +163,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( GET_PROC_ADDRESS( TrapFile, 1, init_func )
       && GET_PROC_ADDRESS( TrapFile, 2, FiniFunc )
       && GET_PROC_ADDRESS( TrapFile, 3, ReqFunc ) ) {
-        if( !GET_PROC_ADDRESS( TrapFile, 4, TRAPENTRY_PTR_NAME( TellHandles ) ) ) {
-            TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
+        if( !GET_PROC_ADDRESS( TrapFile, 4, TRAP_EXTFUNC_PTR( TellHandles ) ) ) {
+            TRAP_EXTFUNC_PTR( TellHandles ) = NULL;
         }
-        if( !GET_PROC_ADDRESS( TrapFile, 5, TRAPENTRY_PTR_NAME( TellHardMode ) ) ) {
-            TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
+        if( !GET_PROC_ADDRESS( TrapFile, 5, TRAP_EXTFUNC_PTR( TellHardMode ) ) ) {
+            TRAP_EXTFUNC_PTR( TellHardMode ) = NULL;
         }
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {

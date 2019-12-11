@@ -202,6 +202,8 @@ extern void             AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
 extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
+extern void             InterruptProgram( void );
+extern bool             Terminate( void );
 
 /* misc.c */
 extern BOOL             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );

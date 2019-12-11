@@ -71,7 +71,7 @@ static char     *CmdData;
 #if defined( GUI_IS_GUI )
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle && TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
+    if( !ToldWinHandle && TRAP_EXTFUNC( InfoFunction )( GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
         ToldWinHandle = true;
     }
 }
@@ -108,7 +108,7 @@ void GUISysFini( void  )
 
 void WndCleanUp( void )
 {
-    TrapTellHWND( (HWND)0 );
+    TRAP_EXTFUNC( InfoFunction )( (HWND)0 );
     FiniHookFunc();
 }
 
@@ -136,7 +136,7 @@ void KillDebugger( int ret_code )
 void GrabHandlers( void )
 {
     if( !ToldWinHandle ) {
-        TrapTellHWND( (HWND)0 );
+        TRAP_EXTFUNC( InfoFunction )( (HWND)0 );
     }
 }
 
