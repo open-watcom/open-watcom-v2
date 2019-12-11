@@ -31,7 +31,7 @@ objs = rfx.obj        &
        dbgfile.obj    &
        dbgtoggl.obj   &
        local$(host_os).obj &
-       $(trap_objs)
+       $(trp_objs)
 
 objs += $(host_os)filio.obj &
 
