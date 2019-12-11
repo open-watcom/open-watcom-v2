@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,13 +325,11 @@ void DlgCmd( void )
             if( _IsOn( SW_REMOTE_LINK ) ) {
                 printf( "Can't break remote task!\n" );
             } else {
-                HMODULE hmod;
-                PFN     proc = NULL;
-
-                DosQueryModuleHandle( TrapParms, &hmod );
-                DosQueryProcAddr( hmod, 5, 0, &proc );
-//                if( proc != NULL )
-//                    proc();
+//
+// NYI  OS/2 InterruptProgram must be implemented and exported from TRAP DLL
+//          TRAP_EXTFUNC( InterruptProgram )() procedure must call this export
+//
+//                TRAP_EXTFUNC( InterruptProgram )();
             }
             // break the task
             break;
