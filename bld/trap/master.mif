@@ -250,7 +250,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
 !else
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(mode_lflags)
-    @%append $^&.lnk op map, elim
+    @%append $^&.lnk op elim
     @%append $^&.lnk name $^@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP
