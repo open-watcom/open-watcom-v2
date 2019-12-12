@@ -52,8 +52,6 @@ typedef uint_8          UINT8;
 
 typedef uint_8          byte;
 
-typedef unsigned        BIT;        /* for bit fields in structures */
-
 typedef struct Node {
     struct Node *next;
     char        *name;

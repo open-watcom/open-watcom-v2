@@ -52,14 +52,14 @@ typedef struct sufsufList   SLIST;
  *  and also may be passed in implicit rules.
  */
 struct TargAttr {
-    BIT     multi       : 1;    /* .multiple flag                       */
-    BIT     precious    : 1;    /* .precious flag                       */
-    BIT     symbolic    : 1;    /* .symbolic flag                       */
-    BIT     explicit    : 1;    /* .explicit flag                       */
-    BIT     always      : 1;    /* .always flag                         */
-    BIT     auto_dep    : 1;    /* .auto_depend flag                    */
-    BIT     existsonly  : 1;    /* .existsonly flag                     */
-    BIT     recheck     : 1;    /*  re-check timestamp flag             */
+    boolbit     multi       : 1;    /* .multiple flag                       */
+    boolbit     precious    : 1;    /* .precious flag                       */
+    boolbit     symbolic    : 1;    /* .symbolic flag                       */
+    boolbit     explicit    : 1;    /* .explicit flag                       */
+    boolbit     always      : 1;    /* .always flag                         */
+    boolbit     auto_dep    : 1;    /* .auto_depend flag                    */
+    boolbit     existsonly  : 1;    /* .existsonly flag                     */
+    boolbit     recheck     : 1;    /*  re-check timestamp flag             */
 };
 
 
@@ -79,31 +79,31 @@ struct Target {
 
     /* the rest is public */
 
-    time_t      date;           /* last date read for target            */
-    DEPEND      *depend;        /* NULL if no known dependents          */
-    TATTR       attr;           /* attributes of target                 */
+    time_t      date;               /* last date read for target            */
+    DEPEND      *depend;            /* NULL if no known dependents          */
+    TATTR       attr;               /* attributes of target                 */
 
     /*
      * if !scolon and depend == NULL then "target" has only appeared on the
      * right side of a dependency.  (ie: it's only a dependent)
      */
 
-    BIT     updated     : 1;    /* target updated or not                */
-    BIT     busy        : 1;    /* recursion protection                 */
-    BIT     touched     : 1;    /* has target been touched?             */
-    BIT     existing    : 1;    /* does target exist?                   */
-    BIT     mentioned   : 1;    /* target mentioned in a makefile       */
-    BIT     executed    : 1;    /* cmds executed since last getdate     */
-    BIT     error       : 1;    /* error occured while updating target  */
-    BIT     scolon      : 1;    /* scolon == true; dcolon == false      */
+    boolbit     updated     : 1;    /* target updated or not                */
+    boolbit     busy        : 1;    /* recursion protection                 */
+    boolbit     touched     : 1;    /* has target been touched?             */
+    boolbit     existing    : 1;    /* does target exist?                   */
+    boolbit     mentioned   : 1;    /* target mentioned in a makefile       */
+    boolbit     executed    : 1;    /* cmds executed since last getdate     */
+    boolbit     error       : 1;    /* error occured while updating target  */
+    boolbit     scolon      : 1;    /* scolon == true; dcolon == false      */
 
-    BIT     special     : 1;    /* special targ - dotname|implicit rule */
-    BIT     before_after: 1;    /* is it .BEFORE or .AFTER              */
-    BIT     dot_default : 1;    /* is it a .DEFAULT                     */
-    BIT     backdated   : 1;    /* touched re: .JUST_ENOUGH */
-    BIT     allow_nocmd : 1;    /* allow no command list to update */
-    BIT     cmds_done   : 1;    /* command list was executed to update it */
-    BIT     sufsuf      : 1;    /* is this an implicit rule             */
+    boolbit     special     : 1;    /* special targ - dotname|implicit rule */
+    boolbit     before_after: 1;    /* is it .BEFORE or .AFTER              */
+    boolbit     dot_default : 1;    /* is it a .DEFAULT                     */
+    boolbit     backdated   : 1;    /* touched re: .JUST_ENOUGH */
+    boolbit     allow_nocmd : 1;    /* allow no command list to update */
+    boolbit     cmds_done   : 1;    /* command list was executed to update it */
+    boolbit     sufsuf      : 1;    /* is this an implicit rule             */
 
 };
 

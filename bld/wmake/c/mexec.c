@@ -121,9 +121,9 @@ typedef struct dd {
 } iolist;
 
 typedef struct {
-    BIT     bForce   : 1;
-    BIT     bDirs    : 1;
-    BIT     bVerbose : 1;
+    boolbit     bForce   : 1;
+    boolbit     bDirs    : 1;
+    boolbit     bVerbose : 1;
 } rm_flags;
 
 STATIC  UINT8   lastErrorLevel;

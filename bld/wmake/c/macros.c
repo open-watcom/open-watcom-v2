@@ -66,7 +66,7 @@
 typedef struct Macro {
     HASHNODE    node;       /* name is at name.node */
     const char  *value;
-    BIT         readonly;   /* ie: from command line */
+    bool        readonly;   /* ie: from command line */
 } MACRO;
 
 STATIC HASHTAB  *macTab;    /* head for the macro lookup table */

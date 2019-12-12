@@ -85,17 +85,17 @@ typedef struct streamEntry {
         } file;                     /* for SENT_FILE                        */
 
         struct {
-            const char    *cur;     /* current position in string           */
-            const char    *str;     /* beginning of string                  */
+            const char  *cur;       /* current position in string           */
+            const char  *str;       /* beginning of string                  */
         } str;                      /* for SENT_STR                         */
 
-        STRM_T s;                   /* for SENT_CHAR                        */
+        STRM_T          s;          /* for SENT_CHAR                        */
     } data;
 
-    struct streamEntry *next;       /* linked list representation of stack  */
+    struct streamEntry  *next;      /* linked list representation of stack  */
 
-    BIT     type : 2;               /* must hold an STYPE_T                 */
-    BIT     free : 1;               /* should we free resources?            */
+    STYPE_T             type;       /* must hold an STYPE_T                 */
+    bool                free;       /* should we free resources?            */
 
 } SENT;
 
