@@ -1,5 +1,7 @@
 CPPFLAGS = $(DEFS) -I. -I..\h -I..\..\lib_misc\h -I..\..\watcom\h
-CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -wd4244
+# -wd4214 "bit field types other than int"
+# -wd4244 "conversion ....., possible loss of data"
+CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -wd4214 -wd4244
 DEFS = -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR) -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DBOOTSTRAP -D__NT__
 LFLAGS = -link -INCREMENTAL:NO -DEBUG
 

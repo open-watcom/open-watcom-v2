@@ -42,7 +42,7 @@
         #define __bool_true_false_are_defined 1
     #endif
     #ifdef _MSC_VER
-        #define boolbit     unsigned
+        #define boolbit     unsigned char
     #else
         #define boolbit     bool
     #endif
