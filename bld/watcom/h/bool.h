@@ -33,15 +33,18 @@
 
 #if !defined( __cplusplus )
   #if !defined( __bool_true_false_are_defined )
-    #if defined( __WATCOMC__ ) && __WATCOMC__ > 1290 || __STDC_VERSION__ >= 199901L && defined( __UNIX__ )
+    #if defined( __WATCOMC__ ) && __WATCOMC__ > 1290 || __STDC_VERSION__ >= 199901L
         #include <stdbool.h>
-        typedef bool        boolbit;
     #else
         #define bool        unsigned char
-        typedef bool        boolbit;
         #define true        1
         #define false       0
         #define __bool_true_false_are_defined 1
+    #endif
+    #ifdef _MSC_VER
+        #define boolbit     unsigned
+    #else
+        #define boolbit     bool
     #endif
   #endif
 #endif
