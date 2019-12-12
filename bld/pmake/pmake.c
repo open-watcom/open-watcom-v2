@@ -585,10 +585,26 @@ static void SortDirectories( void )
     }
 }
 
+static void getTargets( target_list **owner )
+{
+    target_list *curr;
+
+    for( ;; ) {
+        SKIP_SPACES( CmdLine );
+        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+            CmdLine += 2;
+            break;
+        }
+        if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
+            break;
+        curr = GetTargetItem();
+        *owner = curr;
+        owner = &curr->next;
+    }
+}
+
 static void DoIt( void )
 {
-    target_list **owner;
-    target_list *curr;
     const char  *arg;
     size_t      len;
 
@@ -661,19 +677,7 @@ static void DoIt( void )
     /* gather targ_list */
     Options.targ_list = NULL;
     if( !Options.notargets ) {
-        owner = &Options.targ_list;
-        for( ;; ) {
-            SKIP_SPACES( CmdLine );
-            if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
-                CmdLine += 2;
-                break;
-            }
-            if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
-                break;
-            curr = GetTargetItem();
-            *owner = curr;
-            owner = &curr->next;
-        }
+        getTargets( &Options.targ_list );
     }
     if( Options.targ_list == NULL ) {
         Options.targ_list = MAlloc( sizeof( *Options.targ_list ) - 1 );
