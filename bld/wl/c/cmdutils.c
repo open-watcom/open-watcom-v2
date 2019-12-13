@@ -1215,7 +1215,7 @@ section *NewSection( void )
     sect->mods = NULL;
     sect->reloclist = NULL;
     SET_ADDR_UNDEFINED( sect->sect_addr );
-    sect->ovl_num = 0;
+    sect->ovlref = 0;
     sect->parent = NULL;
     sect->relocs = 0;
     sect->size = 0;

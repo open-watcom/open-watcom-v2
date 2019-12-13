@@ -67,9 +67,9 @@ typedef struct section {
     pHTable             modFilesHashed;
     MOD_ENTRY           *mods;
     CLASS_ENTRY         *classlist;
-    ORDER_CLASS         *orderlist; // Link to data for ordering, if used
+    ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
     targ_addr           sect_addr;
-    unsigned_16         ovl_num;
+    unsigned_16         ovlref;
     OVL_AREA            *areas;
     SECTION             *parent;
     unsigned_32         relocs;
@@ -178,10 +178,10 @@ typedef struct file_list {
         union dict_entry    *dict;
         MEMBER_LIST         *member;
     } u;
-    char                *strtab; /* for AR format */
+    char                *strtab;    /* for AR format */
     file_flags          flags;
-    lib_priority        priority;       /* for libraries */
-    unsigned            ovlref   : 16;  /* for fixed libraries */
+    lib_priority        priority;   /* for libraries */
+    unsigned_16         ovlref;     /* for fixed libraries */
     unsigned                     : 0;
 } file_list;
 
@@ -542,9 +542,9 @@ typedef struct seg_flags {
 typedef struct {
     symbol              *entry;
     orl_symbol_handle   handle;         // ORL: handle for the symbol
-    unsigned            ovlref  : 12;
-    unsigned            isweak  : 1;
-    unsigned            isdefd  : 1;    // used in ORL
+    unsigned_16         ovlref;
+    boolbit             isweak  : 1;
+    boolbit             isdefd  : 1;    // used in ORL
 } extnode;
 
 typedef struct {

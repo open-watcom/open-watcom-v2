@@ -80,7 +80,7 @@ static void NumASect( section *sect )
     if( FmtData.u.dos.distribute ) {
         SectOvlTab[OvlNum] = sect;
     }
-    sect->ovl_num = OvlNum++;
+    sect->ovlref = OvlNum++;
 }
 
 void NumberSections( void )

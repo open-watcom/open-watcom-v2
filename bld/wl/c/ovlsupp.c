@@ -125,7 +125,7 @@ static void WriteVectors( void )
         GetVecAddr( ++n, &addr );
         sym = vec->entry;
         WriteMap( "%a section %d : %S",
-                  &addr, sym->p.seg->u.leader->class->section->ovl_num, sym );
+                  &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
     }
 }
 
@@ -133,7 +133,7 @@ static void DoSecPubs( section *sec )
 /***********************************/
 {
     WriteMapNL( 2 );
-    WriteMap( "Overlay section %d address %a", sec->ovl_num, &sec->sect_addr );
+    WriteMap( "Overlay section %d address %a", sec->ovlref, &sec->sect_addr );
     WriteMap( "====================================" );
     WriteSegs( sec );
     StartMapSort();
@@ -320,12 +320,12 @@ void FreeOvlStruct( void )
     FreeDistStuff();
 }
 
-static bool IsAncestor( int elder, section *ceorl )
-/*************************************************/
+static bool IsAncestor( unsigned_16 elder_ovlref, section *ceorl )
+/****************************************************************/
 /* Is overlay section # "elder" an ancestor of section "ceorl" */
 {
     for( ; ; ) {
-        if( ceorl->ovl_num == elder )
+        if( ceorl->ovlref == elder_ovlref )
             return( true );
         if( ceorl->parent == NULL )
             return( false );
@@ -340,7 +340,7 @@ void OvlDefVector( symbol *sym )
 /******************************/
 {
     segdata     *sdata;
-    unsigned_16 ovl_num;
+    unsigned_16 ovlref;
 
     if( NO_VECTOR( sym ) )
         return;
@@ -348,20 +348,19 @@ void OvlDefVector( symbol *sym )
     if( sdata == NULL ) {
         sym->u.d.ovlstate |= (OVL_FORCE | OVL_NO_VECTOR);
         return;         /* NOTE: <--- premature return <----------- */
-    } else {
-        ovl_num = sdata->u.leader->class->section->ovl_num;
     }
-    if( !sdata->iscode || ( ovl_num == 0 ) ) {      // not code or in root
+    ovlref = sdata->u.leader->class->section->ovlref;
+    if( !sdata->iscode || ( ovlref == 0 ) ) {      // not code or in root
         sym->u.d.ovlstate |= (OVL_FORCE | OVL_NO_VECTOR);
     } else {
         if( sym->info & SYM_REFERENCED ) {
-            if( sym->u.d.ovlref != ovl_num ) {
+            if( sym->u.d.ovlref != ovlref ) {
                 /* first reference must have been a proper ancestor or cousin */
                 Vectorize( sym );
             }
         } else {
             sym->u.d.ovlstate |= OVL_REF;
-            sym->u.d.ovlref = ovl_num;
+            sym->u.d.ovlref = ovlref;
         }
     }
 }
@@ -384,7 +383,7 @@ void Vectorize( symbol *sym )
 static void OvlRefVector( symbol *sym )
 /*************************************/
 {
-    unsigned_16     ovl_num;
+    unsigned_16     ovlref;
 
     if( IS_SYM_COMMUNAL( sym ) )
         return;
@@ -392,7 +391,7 @@ static void OvlRefVector( symbol *sym )
         return;
     if( (sym->info & SYM_DEFINED) == 0 ) {
         if( (sym->u.d.ovlstate & OVL_REF) == 0 ) {
-            sym->u.d.ovlref = CurrSect->ovl_num;
+            sym->u.d.ovlref = CurrSect->ovlref;
             sym->u.d.ovlstate |= OVL_REF;
         } else if( FmtData.u.dos.distribute ) {
             sym->u.d.ovlref = LowestAncestor( sym->u.d.ovlref, CurrSect );
@@ -402,8 +401,8 @@ static void OvlRefVector( symbol *sym )
             return;
         /* at this point, we know it has already been defined, but does */
         /* not have an overlay vector, and is not data */
-        ovl_num = sym->p.seg->u.leader->class->section->ovl_num;
-        if( IsAncestor( ovl_num, CurrSect ) )
+        ovlref = sym->p.seg->u.leader->class->section->ovlref;
+        if( IsAncestor( ovlref, CurrSect ) )
             return;
         /* overlay vector necessary */
         Vectorize( sym );
@@ -431,8 +430,8 @@ void OvlUseVector( symbol *sym, extnode *newnode )
         return;
     if( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_MAKE_VECTOR )
         return;
-    if( IsAncestor( sym->p.seg->u.leader->class->section->ovl_num, CurrSect ) ) {
-         return;
+    if( IsAncestor( sym->p.seg->u.leader->class->section->ovlref, CurrSect ) ) {
+        return;
     }
     /* use overlay vector for all calls */
     newnode->ovlref = sym->u.d.ovlref;
@@ -441,7 +440,7 @@ void OvlUseVector( symbol *sym, extnode *newnode )
 void IndirectCall( symbol *sym )
 /******************************/
 {
-    unsigned_16 ovl_num;
+    unsigned_16 ovlref;
 
     if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
@@ -451,8 +450,8 @@ void IndirectCall( symbol *sym )
         if( sym->info & SYM_DISTRIB ) {
             DistIndCall( sym );
         } else if( sym->p.seg != NULL ) {
-            ovl_num = sym->p.seg->u.leader->class->section->ovl_num;
-            if( ( ovl_num != 0 ) && sym->p.seg->iscode ) {
+            ovlref = sym->p.seg->u.leader->class->section->ovlref;
+            if( ( ovlref != 0 ) && sym->p.seg->iscode ) {
                 Vectorize( sym );
             }
         }
@@ -552,7 +551,7 @@ static void ShortVectors( symbol *loadsym )
         }
         _HostU16toTarg( diff, template.ldr_addr );
         loadsym = vec->entry;
-        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovl_num, template.sec_num );
+        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, template.sec_num );
         temp = vect_off + offsetof( svector, target ) + sizeof( unsigned_16 );
         diff = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off ) - temp;
         if( ( diff < -32768 ) || ( diff > 32767 ) ) {
@@ -592,7 +591,7 @@ static void LongVectors( symbol *loadsym )
         }
         _HostU16toTarg( diff, template.u.v.ldr_addr );
         loadsym = vec->entry;
-        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovl_num,
+        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref,
                         template.u.v.sec_num );
         _HostU16toTarg( loadsym->addr.off, template.target.off );
         if( FmtData.u.dos.dynamic ) {
@@ -713,7 +712,7 @@ static void EmitOvlEntry( section *sect, void *_off )
     unsigned            *off = _off;
 
     _HostU16toTarg( 0, entry.code_handle );
-    flags_anc = sect->parent->ovl_num;
+    flags_anc = sect->parent->ovlref;
     if( sect == NonSect ) {
         flags_anc |= OVE_FLAG_PRELOAD;/*  pre-load the data area */
     }

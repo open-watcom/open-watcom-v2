@@ -54,7 +54,7 @@ typedef struct {
     unsigned    blk_top;
     unsigned    blk_count;
     unsigned    blk_size;
-    unsigned    size_chg : 1;
+    boolbit     size_chg : 1;
 } cv_t, *carve_t;
 
 extern carve_t CarveCreate( unsigned elm_size, unsigned how_many );

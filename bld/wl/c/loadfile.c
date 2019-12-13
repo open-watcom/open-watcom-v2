@@ -688,7 +688,7 @@ bool WriteDOSGroup( group_entry *group )
             SetOvlTableLoc( group, file_loc );
         }
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
+                &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
         file_loc += WriteDOSGroupLoad( group, repos );
         if( file_loc > finfo->file_loc ) {
             finfo->file_loc = file_loc;

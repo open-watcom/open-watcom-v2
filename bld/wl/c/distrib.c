@@ -77,8 +77,7 @@ void InitModTable( void )
     _ChkAlloc( ModTable, INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
     CurrModHandle = 0;
     ArcBufLen = INITIAL_ARC_ALLOC;
-    _ChkAlloc( ArcBuffer, sizeof(arcdata)
-                          + (INITIAL_ARC_ALLOC - 1) * sizeof(dist_arc));
+    _ChkAlloc( ArcBuffer, sizeof( arcdata ) + ( INITIAL_ARC_ALLOC - 1 ) * sizeof( dist_arc ) );
     MakePass1Blocks();
 }
 
@@ -117,7 +116,7 @@ void InitArcBuffer( mod_entry * mod )
 /* set up the mod_entry arcdata field for dead code elimination */
 {
     if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
-        _PermAlloc( mod->x.arclist, sizeof(arcdata) - DIST_ONLY_SIZE );
+        _PermAlloc( mod->x.arclist, sizeof( arcdata ) - DIST_ONLY_SIZE );
     }
 }
 
@@ -260,26 +259,29 @@ void ProcDistMods( void )
     }
 }
 
-#define SECT_VISITED 0x8000
-
-unsigned_16 LowestAncestor( unsigned_16 ovl1, section * sect )
+unsigned_16 LowestAncestor( unsigned_16 ovlref, section * sect )
 /*******************************************************************/
 /* find the lowest common ancestor of the two overlay values by marking all of
  * the ancestors of the first overlay, and then looking for marked ancestors
  * of the other overlay */
 {
-    section *   list;
+    section     *list;
 
     for( list = sect; list != NULL; list = list->parent ) {
-        list->ovl_num |= SECT_VISITED;
+        // set visited flag
+        list->next_sect = (void *)((pointer_int)list->next_sect | 1);
     }
-    for( list = SectOvlTab[ ovl1 ]; (list->ovl_num & SECT_VISITED) == 0 ; ) {
-        list = list->parent;
+    for( list = SectOvlTab[ovlref]; list != NULL; list = list->parent ) {
+        // check visited flag
+        if( (pointer_int)list->next_sect & 1 ) {
+            break;
+        }
     }
     for( ; sect != NULL; sect = sect->parent ) {
-        sect->ovl_num &= ~SECT_VISITED;
+        // reset visited flag
+        sect->next_sect = (void *)((pointer_int)sect->next_sect & ~1);
     }
-    return( list->ovl_num );
+    return( list->ovlref );
 }
 
 void DefDistribSym( symbol * sym )
@@ -305,8 +307,7 @@ void DefDistribSym( symbol * sym )
             if( arcs->ovlref == NO_ARCS_YET ) {
                 arcs->ovlref = sym->u.d.ovlref;
             } else {
-                arcs->ovlref = LowestAncestor( arcs->ovlref,
-                                               SectOvlTab[sym->u.d.ovlref] );
+                arcs->ovlref = LowestAncestor( arcs->ovlref, SectOvlTab[sym->u.d.ovlref] );
             }
         }
     }
@@ -321,10 +322,8 @@ static void AddArc( dist_arc arc )
 
     arclist = CurrMod->x.arclist;
     if( arclist->numarcs >= ArcBufLen ) {
-        _ChkAlloc( arclist, sizeof(arcdata)
-                             + (ArcBufLen * 2 - 1) * sizeof(dist_arc) );
-        memcpy( arclist, ArcBuffer, sizeof(arcdata)
-                                       + (ArcBufLen-1) * sizeof(dist_arc));
+        _ChkAlloc( arclist, sizeof( arcdata ) + ( ArcBufLen * 2 - 1 ) * sizeof( dist_arc ) );
+        memcpy( arclist, ArcBuffer, sizeof( arcdata ) + ( ArcBufLen - 1 ) * sizeof( dist_arc ) );
         _LnkFree( ArcBuffer );
         CurrMod->x.arclist = arclist;
         ArcBuffer = arclist;
@@ -383,9 +382,8 @@ void RefDistribSym( symbol * sym )
     }
 }
 
-static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
-                                                   unsigned_16 sym_ovlnum )
-/*************************************************************************/
+static bool NewRefVector( symbol *sym, unsigned_16 ovlref, unsigned_16 sym_ovlref )
+/*********************************************************************************/
 /* sometimes there can be an overlay vector generated to a routine specified
  * in an .OBJ file caused by a call from a library routine. this checks for
  * this case.*/
@@ -398,40 +396,40 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
  * at this point, we know it has already been defined, but does not have an
  * overlay vector, and is not data
 */
-    if( LowestAncestor( sym_ovlnum, SectOvlTab[ ovlnum ] ) != sym_ovlnum ) {
+    if( LowestAncestor( sym_ovlref, SectOvlTab[ ovlref ] ) != sym_ovlref ) {
         Vectorize( sym );
         return( true );
     }
     return( false );
 }
 
-static void DoRefGraph( unsigned_16 ovlnum, mod_entry * mod )
+static void DoRefGraph( unsigned_16 ovlref, mod_entry * mod )
 /***********************************************************/
 /* checks to see if the mod has changed position, and if it has, check all
  * of the routines that mod references */
 {
     arcdata *   arcs;
-    unsigned_16 ancestor;
+    unsigned_16 anc_ovlref;
 
     arcs = mod->x.arclist;
 /*
  * this next line is necessary to break cycles in the graph.
 */
-    if( (mod->modinfo & MOD_VISITED) && ( ovlnum == arcs->ovlref )
+    if( (mod->modinfo & MOD_VISITED) && ( ovlref == arcs->ovlref )
         || (mod->modinfo & MOD_FIXED) )
         return;
     if( arcs->ovlref == NO_ARCS_YET ) {
         arcs->ovlref = 0;
-        ancestor = 0;
+        anc_ovlref = 0;
         ScanArcs( mod );
     } else {
-        ancestor = LowestAncestor( ovlnum, SectOvlTab[arcs->ovlref] );
-        if( ancestor != arcs->ovlref ) {
-            arcs->ovlref = ancestor;
+        anc_ovlref = LowestAncestor( ovlref, SectOvlTab[arcs->ovlref] );
+        if( anc_ovlref != arcs->ovlref ) {
+            arcs->ovlref = anc_ovlref;
             ScanArcs( mod );
         }
     }
-    if( ancestor == 0 ) {   // it's at the root, so pull it out of the graph
+    if( anc_ovlref == 0 ) {   // it's at the root, so pull it out of the graph
         arcs->numarcs = 0;
     }
 }
@@ -455,17 +453,17 @@ static void ScanArcs( mod_entry *mod )
     symbol *    sym;
     mod_entry * refmod;
     unsigned_16 index;
-    unsigned_16 ovlnum;
+    unsigned_16 ovlref;
     dist_arc    currarc;
 
     mod->modinfo |= MOD_VISITED;
     arcs = mod->x.arclist;
-    ovlnum = arcs->ovlref;
-    if( ovlnum != NO_ARCS_YET ) {
+    ovlref = arcs->ovlref;
+    if( ovlref != NO_ARCS_YET ) {
         for( index = arcs->numarcs; index-- > 0; ) {
             currarc = arcs->arcs[index];
             if( currarc.test <= MAX_NUM_MODULES ) {     // GIANT KLUDGE!
-                DoRefGraph( ovlnum, MOD_DEREF( currarc.mod ) );
+                DoRefGraph( ovlref, MOD_DEREF( currarc.mod ) );
             } else {
                 sym = currarc.sym;
                 if( sym->info & SYM_DEFINED ) {
@@ -473,12 +471,11 @@ static void ScanArcs( mod_entry *mod )
                         currarc.test = sym->u.d.modnum;
                         refmod = MOD_DEREF( currarc.mod );
                         if( refmod->modinfo & MOD_FIXED ) {
-                            if( NewRefVector( sym, ovlnum,
-                                              refmod->x.arclist->ovlref ) ) {
+                            if( NewRefVector( sym, ovlref, refmod->x.arclist->ovlref ) ) {
                                 DeleteArc( arcs, index );
                             }
                         } else {
-                            DoRefGraph( ovlnum, refmod );
+                            DoRefGraph( ovlref, refmod );
                             if( !NotAnArc( currarc ) ) {
                                 DeleteArc( arcs, index );
                             } else {
@@ -487,18 +484,16 @@ static void ScanArcs( mod_entry *mod )
                         }
                     } else {
                         if( ( sym->p.seg == NULL )
-                            || NewRefVector( sym, ovlnum,
-                               sym->p.seg->u.leader->class->section->ovl_num ) ) {
+                          || NewRefVector( sym, ovlref, sym->p.seg->u.leader->class->section->ovlref ) ) {
                             DeleteArc( arcs, index );
                         }
                     }
                 } else {
                     if( (sym->u.d.ovlstate & OVL_REF) == 0 ) {
-                        sym->u.d.ovlref = ovlnum;
+                        sym->u.d.ovlref = ovlref;
                         sym->u.d.ovlstate |= OVL_REF;
                     } else {
-                        sym->u.d.ovlref = LowestAncestor( ovlnum,
-                                                 SectOvlTab[sym->u.d.ovlref] );
+                        sym->u.d.ovlref = LowestAncestor( ovlref, SectOvlTab[sym->u.d.ovlref] );
                     }
                 }
             } /* if (a module) */
@@ -531,15 +526,15 @@ void DistIndCall( symbol *sym )
 // handle indirect calls and their effect on distributed libs.
 {
     arcdata *   arcs;
-    unsigned_16 ovlsave;
+    unsigned_16 save_ovlref;
 
     arcs = CurrMod->x.arclist;
-    ovlsave = arcs->ovlref;
-    arcs->ovlref = 0;           // make sure current module isn't
-    CurrMod->modinfo |= MOD_VISITED;        // visited
+    save_ovlref = arcs->ovlref;
+    arcs->ovlref = 0;                   // make sure current module isn't
+    CurrMod->modinfo |= MOD_VISITED;    // visited
     DoRefGraph( 0, MOD_DEREF( sym->u.d.modnum ) );
     CurrMod->modinfo &= ~MOD_VISITED;
-    arcs->ovlref = ovlsave;
+    arcs->ovlref = save_ovlref;
     sym->u.d.ovlstate |= OVL_REF;
-    sym->u.d.ovlref = 0;        // make sure current symbol put in root.
+    sym->u.d.ovlref = 0;                // make sure current symbol put in root.
 }

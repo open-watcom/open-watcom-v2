@@ -854,7 +854,7 @@ static void WriteDBISecs( section *sec )
         header.mod_offset = dptr->mod.start;
         header.gbl_offset = dptr->global.start;
         header.addr_offset = dptr->addr.start;
-        header.section_id = sec->ovl_num;
+        header.section_id = sec->ovlref;
         DBIWriteLocal( &header, sizeof( section_dbg_header ) );
         DBIWriteInfo( dptr->locallinks.init.u.vm_ptr, dptr->locallinks.size );
         DBIWriteInfo( dptr->typelinks.init.u.vm_ptr, dptr->typelinks.size );

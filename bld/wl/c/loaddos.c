@@ -101,7 +101,7 @@ static void AssignFileLocs( section *sect )
     sect->outfile->file_loc += MAKE_PARA( sect->size )
                             + MAKE_PARA( sect->relocs * sizeof( dos_addr ) );
     DEBUG((DBG_LOADDOS, "section %d assigned to %l in %s",
-            sect->ovl_num, sect->u.file_loc, sect->outfile->fname ));
+            sect->ovlref, sect->u.file_loc, sect->outfile->fname ));
 }
 
 static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
@@ -222,7 +222,7 @@ static bool WriteCOMGroup( group_entry *group, soffset chop )
         repos = true;
     }
     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-            &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
+            &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
     COMAmountWritten = 0;
     Ring2Lookup( group->leaders, DoCOMGroup, &chop );
     file_loc += COMAmountWritten;

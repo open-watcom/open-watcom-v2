@@ -171,7 +171,7 @@ typedef enum {
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 1 means do not generate a vector
 */
 
-enum overlay_info {
+typedef enum overlay_info {
     OVL_UNDECIDED       = 0x0,
     OVL_NO_VECTOR       = 0x1,          // symbol has a vector
     OVL_FORCE           = 0x2,          // force symbol to have a vector
@@ -179,7 +179,7 @@ enum overlay_info {
     OVL_REF             = 0x8,          // reference number assigned
     OVL_MAKE_VECTOR     = OVL_FORCE,
     OVL_VEC_MASK        = (OVL_NO_VECTOR | OVL_FORCE)
-};
+} overlay_info;
 
 typedef struct {
     union {
@@ -189,9 +189,9 @@ typedef struct {
 } name_strtab;
 
 typedef struct {
-    unsigned_16 modnum;         // DOS: idx of module which defines this sym
-    unsigned_16 ovlref   : 12;  // DOS: overlay vector #
-    unsigned_16 ovlstate :  4;  // DOS: overlay vector state
+    unsigned_16     modnum;         // DOS: idx of module which defines this sym
+    unsigned_16     ovlref;         // DOS: overlay vector #
+    overlay_info    ovlstate;       // DOS: overlay vector state
 } dos_sym_data;
 
 typedef struct symbol {
