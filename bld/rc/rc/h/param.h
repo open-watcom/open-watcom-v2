@@ -51,33 +51,33 @@ typedef struct FRStrings {
 
 typedef struct RCParams {
 #ifdef SCANDEBUG
-    unsigned    DebugScanner    : 1;
+    boolbit     DebugScanner    : 1;
 #endif
 #ifdef YYDEBUG
-    unsigned    DebugParser     : 1;
+    boolbit     DebugParser     : 1;
 #endif
-    unsigned    PrintHelp       : 1;
-    unsigned    Quiet           : 1;
-    unsigned    Pass1Only       : 1;
-    unsigned    Pass2Only       : 1;
-    unsigned    NoResFile       : 1;    /* no RES file to merge in pass2 */
-    unsigned    IgnoreINCLUDE   : 1;
-    unsigned    IgnoreCWD       : 1;
-    unsigned    NoTargetDefine  : 1;
-    unsigned    MSResFormat     : 1;
-    unsigned    PrivateDLL      : 1;    /* the next 5 option are use to set bits */
-    unsigned    GlobalMemEMS    : 1;    /* in the os2_exe_header.info field */
-    unsigned    EMSInstance     : 1;
-    unsigned    EMSDirect       : 1;
-    unsigned    ProtModeOnly    : 1;
-    unsigned    PreprocessOnly  : 1;
-    unsigned    WritableRes     : 1;
-    unsigned    VersionStamp30  : 1;
-    unsigned    NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
-    unsigned    NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
-    unsigned    GenAutoDep      : 1;    /* generate autodependency info for wmake */
-    unsigned    FindAndReplace  : 1;    /* a check to see whether for this option */
-    unsigned    Prepend         : 1;
+    boolbit     PrintHelp       : 1;
+    boolbit     Quiet           : 1;
+    boolbit     Pass1Only       : 1;
+    boolbit     Pass2Only       : 1;
+    boolbit     NoResFile       : 1;    /* no RES file to merge in pass2 */
+    boolbit     IgnoreINCLUDE   : 1;
+    boolbit     IgnoreCWD       : 1;
+    boolbit     NoTargetDefine  : 1;
+    boolbit     MSResFormat     : 1;
+    boolbit     PrivateDLL      : 1;    /* the next 5 option are use to set bits */
+    boolbit     GlobalMemEMS    : 1;    /* in the os2_exe_header.info field */
+    boolbit     EMSInstance     : 1;
+    boolbit     EMSDirect       : 1;
+    boolbit     ProtModeOnly    : 1;
+    boolbit     PreprocessOnly  : 1;
+    boolbit     WritableRes     : 1;
+    boolbit     VersionStamp30  : 1;
+    boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
+    boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
+    boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
+    boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
+    boolbit     Prepend         : 1;
     unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;

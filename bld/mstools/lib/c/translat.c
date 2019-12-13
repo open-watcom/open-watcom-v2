@@ -152,7 +152,7 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
         if( info != NULL ) {
             strList = info->exports;
             while( strList != NULL ) {
-                cmdOpts->export = 1;
+                cmdOpts->export = true;
                 add_string( &cmdOpts->export_value, strList->str );
                 strList = strList->next;
             }
@@ -165,7 +165,7 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
 
             if( info->name != NULL ) {
                 add_string( &cmdOpts->name_value, info->name );
-                cmdOpts->name = 1;
+                cmdOpts->name = true;
             }
 
 

@@ -142,7 +142,7 @@ struct asmfixup {
     unsigned                fixup_loc;
     enum fixup_types        fixup_type;
     enum fixup_options      fixup_option;
-    char                    external;
+    bool                    external;
 //    unsigned                line;
 
 #if defined( _STANDALONE_ )

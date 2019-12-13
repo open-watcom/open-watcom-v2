@@ -184,7 +184,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
             filename = CmdScanFileName();
             filename = VerifyDot(filename);
             add_string( &(cmdOpts->t010101010101_value), filename, '\0' );
-            cmdOpts->t010101010101 = 1;
+            cmdOpts->t010101010101 = true;
         }
         (*itemsParsed)++;
     }
@@ -198,8 +198,8 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)x; (void)cmdOpts;
+
     DisableWarnings( true );
 }
 
@@ -207,10 +207,12 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*
  * Takes care of the t010101010101 option.
  */
-static int parse_t010101010101( OPT_STRING **p )
-/*********************************************/
+static bool parse_t010101010101( OPT_STRING **p )
+/***********************************************/
 {
-    return( 1 );
+    /* unused parammeters */ (void)p;
+
+    return( true );
 }
 
 
@@ -235,7 +237,7 @@ void OPT_CLEAN_STRING( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
                             char quote )
 /**********************************************************************/
 {
@@ -244,19 +246,20 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s option requires an argument", optName );
-        return( 0 );
+        return( false );
     }
-    if( onlyOne )  OPT_CLEAN_STRING( p );
+    if( onlyOne )
+        OPT_CLEAN_STRING( p );
     add_string( p, str, quote );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /D option.
  */
-static int parse_D( OPT_STRING **p )
-/******************************************/
+static bool parse_D( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "D", false, '\0' ) );
 }
@@ -267,7 +270,8 @@ static void handle_Fo( OPT_STORAGE *cmdOpts, int x )
 {
     char *              filename;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     OPT_CLEAN_STRING( &cmdOpts->fo_value );
     CmdScanWhitespace();
     filename = CmdScanFileName();
@@ -284,18 +288,20 @@ static void handle_Fo( OPT_STORAGE *cmdOpts, int x )
 /*
  * Parse the /Fo and /o option. Does nothing because handle_Fo does the job.
  */
-static int parse_Fo( OPT_STRING **p )
-/***********************************/
+static bool parse_Fo( OPT_STRING **p )
+/************************************/
 {
-    return( 1 );
+    /* unused parammeters */ (void)p;
+
+    return( true );
 }
 
 
 /*
  * Parse the /I option.
  */
-static int parse_I( OPT_STRING **p )
-/******************************************/
+static bool parse_I( OPT_STRING **p )
+/***********************************/
 {
     char *              filename;
 
@@ -306,7 +312,7 @@ static int parse_I( OPT_STRING **p )
     } else {
         OPT_CLEAN_STRING( p );
     }
-    return( 1 );
+    return( true );
 
 }
 
@@ -314,8 +320,8 @@ static int parse_I( OPT_STRING **p )
 /*
  * Parse the /U option.
  */
-static int parse_U( OPT_STRING **p )
-/******************************************/
+static bool parse_U( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "U", false, '\0' ) );
 }
@@ -324,7 +330,8 @@ static int parse_U( OPT_STRING **p )
 /*
  * Parse the /passwopts option.
  */
-static int parse_passwopts( OPT_STRING **p )
+static bool parse_passwopts( OPT_STRING **p )
+/*******************************************/
 {
     char *str;
     char *src;
@@ -333,14 +340,14 @@ static int parse_passwopts( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if (str == NULL)
     {
         FatalError("/passwopts requires an argument");
-        return 0;
+        return( false );
     }
 
     /*
@@ -356,14 +363,14 @@ static int parse_passwopts( OPT_STRING **p )
         if (*src != '\"')
         {
             FatalError("/passwopts argument is missing closing quote");
-            return 0;
+            return( false );
         }
 
         *dst = 0x00;
     }
 
     add_string(p, str, '\0');
-    return 1;
+    return( true );
 } /* parse_passwopts() */
 
 

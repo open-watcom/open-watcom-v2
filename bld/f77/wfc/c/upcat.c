@@ -317,7 +317,7 @@ void            ParenCat( void ) {
         // consider:    a(1)(2:3)//c
         if( ( cit->opr == OPR_LBR ) && ok_to_axe ) {
             ReqNOpn();
-            cit->is_catparen = 1;
+            cit->is_catparen = true;
             cit = CITNode;
             AdvanceITPtr();
             FreeOneNode( cit );
@@ -345,7 +345,7 @@ void            CatParen( void ) {
     cit = findMatch( &ok_to_axe, NULL );
     if( cit != NULL ) {
         if( ( cit->opr == OPR_LBR ) && ok_to_axe ) {
-            cit->is_catparen = 1;
+            cit->is_catparen = true;
             cit = CITNode;
             AdvanceITPtr();
             ReqNOpn();

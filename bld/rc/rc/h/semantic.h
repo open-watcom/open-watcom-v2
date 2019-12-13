@@ -38,18 +38,18 @@
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
     ResMemFlags         flags;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
+    boolbit             loadOptGiven        : 1;
+    boolbit             memOptGiven         : 1;
+    boolbit             purityOptGiven      : 1;
 } FullMemFlags;
 
 typedef struct FullOptFlagsOS2 {
     ResMemFlags         flags;
     uint_32             codePage;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
-    unsigned            cpOptGiven          : 1;
+    boolbit             loadOptGiven        : 1;
+    boolbit             memOptGiven         : 1;
+    boolbit             purityOptGiven      : 1;
+    boolbit             cpOptGiven          : 1;
 } FullOptFlagsOS2;
 
 typedef uint_32 SemOffset;

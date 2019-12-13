@@ -130,17 +130,17 @@ static char *DebugOptions[] = {
 };
 
 static  struct flags {
-    unsigned quiet        : 1;  // compile quietly
-    unsigned no_link      : 1;  // compile only, no link step
-    unsigned link_for_sys : 1;  // system specified
+    boolbit     quiet        : 1;  // compile quietly
+    boolbit     no_link      : 1;  // compile only, no link step
+    boolbit     link_for_sys : 1;  // system specified
 #if _CPU == 8086
-    unsigned windows      : 1;  // Windows application
-    unsigned link_for_dos : 1;  // produce DOS executable
-    unsigned link_for_os2 : 1;  // produce OS/2 executable
+    boolbit     windows      : 1;  // Windows application
+    boolbit     link_for_dos : 1;  // produce DOS executable
+    boolbit     link_for_os2 : 1;  // produce OS/2 executable
 #else
-    unsigned default_win  : 1;  // OS/2 default windowed application
+    boolbit     default_win  : 1;  // OS/2 default windowed application
 #endif
-    unsigned do_cvpack    : 1;  // do codeview cvpack
+    boolbit     do_cvpack    : 1;  // do codeview cvpack
 } Flags;
 
 typedef enum tool_type {
@@ -341,21 +341,21 @@ static  int     Parse( int argc, char **argv ) {
     //char        *end;
     char        *cmd;
     size_t      len;
-    int         cmp_option;
+    bool        cmp_option;
     int         opt_index;
     int         cmp_opt_index;
 
-    Flags.no_link = 0;
-    Flags.link_for_sys = 0;
-    Flags.quiet        = 0;
+    Flags.no_link      = false;
+    Flags.link_for_sys = false;
+    Flags.quiet        = false;
 #if _CPU == 8086
-    Flags.windows      = 0;
-    Flags.link_for_dos = 0;
-    Flags.link_for_os2 = 0;
+    Flags.windows      = false;
+    Flags.link_for_dos = false;
+    Flags.link_for_os2 = false;
 #else
-    Flags.default_win  = 0;
+    Flags.default_win  = false;
 #endif
-    Flags.do_cvpack    = 0;
+    Flags.do_cvpack    = false;
 
     DebugFlag = 0;
 
@@ -388,18 +388,18 @@ static  int     Parse( int argc, char **argv ) {
                 --len;
                 strncpy( Word, cmd + 1, len );
                 Word[len] = '\0';
-                cmp_option = 1; // assume its a compiler option
+                cmp_option = true; // assume its a compiler option
                 switch( tolower( *cmd ) ) {
                 case 'f':       // files option
                     switch( tolower( Word[0] ) ) {
                     case 'd':   // name of linker directive file
                         if( Word[1] == '\0' ) {
                             LinkName = TEMPFILE;
-                            cmp_option = 0;
+                            cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
                             MakeName( Word, ".lnk" );    // add extension
                             LinkName = strdup( Word + 2 );
-                            cmp_option = 0;
+                            cmp_option = false;
                         }
                         break;
                     case 'e':   // name of exe file
@@ -407,24 +407,24 @@ static  int     Parse( int argc, char **argv ) {
                             fputs( "name ", Fp );
                             Fputnl( Word + 2, Fp );
                             strcpy( ExeName, Word + 2 );
-                            cmp_option = 0;
+                            cmp_option = false;
                         }
                         break;
                     case 'm':   // name of map file
                         if( Word[1] == '\0' ) {
                             fputs( "option map\n", Fp );
-                            cmp_option = 0;
+                            cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
                             fputs( "option map=", Fp );
                             Fputnl( Word + 2, Fp );
-                            cmp_option = 0;
+                            cmp_option = false;
                         }
                         break;
                     case 'i':
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             fputs( "@", Fp );
                             Fputnl( Word + 2, Fp );
-                            cmp_option = 0;
+                            cmp_option = false;
                         }
                         break;
                     case 'o':   // name of object file
@@ -442,47 +442,47 @@ static  int     Parse( int argc, char **argv ) {
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
                         fputs( "option stack=", Fp );
                         Fputnl( Word + 1, Fp );
-                        cmp_option = 0;
+                        cmp_option = false;
                     }
                     break;
                 case 'c':       // compile only
                     if( Word[0] == '\0' ) {
-                        Flags.no_link = 1;
-                        cmp_option = 0;
+                        Flags.no_link = true;
+                        cmp_option = false;
                     }
                     break;
                 case 'y':
                     if( Word[0] == '\0' ) {
-                        cmp_option = 0;
+                        cmp_option = false;
                     }
                     break;
                 case 'p':
                     // ignore the /p option - we now only
                     // have a protect-mode compiler
                     if( Word[0] == '\0' ) {
-                        cmp_option = 0;
+                        cmp_option = false;
                     }
                     break;
                 case 'l':
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
-                        Flags.link_for_sys = 1;
+                        Flags.link_for_sys = true;
                         SystemName = strdup( &Word[1] );
-                        cmp_option = 0;
+                        cmp_option = false;
 #if _CPU == 8086
                     } else if( stricmp( Word, "r" ) == 0 ) {
-                        Flags.link_for_dos = 1;
-                        Flags.link_for_os2 = 0;
-                        cmp_option = 0;
+                        Flags.link_for_dos = true;
+                        Flags.link_for_os2 = false;
+                        cmp_option = false;
                     } else if( stricmp( Word, "p" ) == 0 ) {
-                        Flags.link_for_os2 = 1;
-                        Flags.link_for_dos = 0;
-                        cmp_option = 0;
+                        Flags.link_for_os2 = true;
+                        Flags.link_for_dos = false;
+                        cmp_option = false;
 #endif
                     }
                     break;
                 case '"':
                     Fputnl( &Word[0], Fp );
-                    cmp_option = 0;
+                    cmp_option = false;
                     break;
 
                 // compiler options that affect the linker
@@ -490,14 +490,14 @@ static  int     Parse( int argc, char **argv ) {
 #if _CPU != 8086
                 case 'b':
                     if( stricmp( Word, "w" ) ) {
-                        Flags.default_win = 1;
+                        Flags.default_win = true;
                     }
                     break;
 #endif
 
                 case 'q':
                     if( IsOption( cmd, len + sizeof( char ), "Quiet" ) ) {
-                        Flags.quiet = 1;
+                        Flags.quiet = true;
                     }
                     break;
                 case 'd':
@@ -513,7 +513,7 @@ static  int     Parse( int argc, char **argv ) {
                     if( strcmp( Word, "w" ) == 0 ) {
                         DebugFlag = 3;
                     } else if( strcmp( Word, "c" ) == 0 ) {
-                        Flags.do_cvpack = 1;
+                        Flags.do_cvpack = true;
                         DebugFlag = 4;
                     } else if( strcmp( Word, "d" ) == 0 ) {
                         DebugFlag = 5;
@@ -521,13 +521,13 @@ static  int     Parse( int argc, char **argv ) {
                     break;
                 case 's':
                     if( IsOption( cmd, len + sizeof( char ), "SYntax" ) ) {
-                        Flags.no_link = 1;
+                        Flags.no_link = true;
                     }
                     break;
 #if _CPU == 8086
                 case 'w':
                     if( IsOption( cmd, len + sizeof( char ), "WIndows" ) ) {
-                        Flags.windows = 1;
+                        Flags.windows = true;
                     }
                     break;
 #endif
@@ -536,7 +536,7 @@ static  int     Parse( int argc, char **argv ) {
                 }
 
                 // don't add linker-specific options to compiler command line
-                if( cmp_option != 0 ) {
+                if( cmp_option ) {
                     CmpOpts[cmp_opt_index] = (char *)MemAlloc((3+strlen(Word))*sizeof(char));
                     CmpOpts[cmp_opt_index][0] = opt;
                     CmpOpts[cmp_opt_index][1] = *cmd;

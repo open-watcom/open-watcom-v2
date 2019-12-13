@@ -49,29 +49,29 @@
 static struct XlatStatus {
     int     debugLevel;                 /* value for -d<num> switch */
     int     warnLevel;                  /* value for -w<num> switch */
-    int     charTypeUnsigned    : 1;    /* char = signed char by default */
-    int     parmsInRegs         : 1;    /* use register calling convention */
-    int     justCompile         : 1;    /* don't link */
-    int     preprocessToFile    : 1;    /* preprocess file.c to file.i */
-    int     disable_c           : 1;    /* compile */
-    int     disable_FA          : 1;    /* generate listing file */
-    int     disable_Fa          : 1;    /* set listing file name */
-    int     disable_Fm          : 1;    /* generate map file */
-    int     disable_Fo          : 1;    /* set object file name */
-    int     opt_oa              : 1;    /* use -oa option */
-    int     opt_od              : 1;    /* use -od option */
-    int     opt_oi              : 1;    /* use -oi option */
-    int     opt_ol              : 1;    /* use -ol option */
-    int     opt_ol_plus         : 1;    /* use -ol+ option */
-    int     opt_om              : 1;    /* use -om option */
-    int     opt_on              : 1;    /* use -on option */
-    int     opt_op              : 1;    /* use -op option */
-    int     opt_os              : 1;    /* use -os option */
-    int     opt_ot              : 1;    /* use -ot option */
-    int     opt_ox              : 1;    /* use -ox option */
+    boolbit charTypeUnsigned    : 1;    /* char = signed char by default */
+    boolbit parmsInRegs         : 1;    /* use register calling convention */
+    boolbit justCompile         : 1;    /* don't link */
+    boolbit preprocessToFile    : 1;    /* preprocess file.c to file.i */
+    boolbit disable_c           : 1;    /* compile */
+    boolbit disable_FA          : 1;    /* generate listing file */
+    boolbit disable_Fa          : 1;    /* set listing file name */
+    boolbit disable_Fm          : 1;    /* generate map file */
+    boolbit disable_Fo          : 1;    /* set object file name */
+    boolbit opt_oa              : 1;    /* use -oa option */
+    boolbit opt_od              : 1;    /* use -od option */
+    boolbit opt_oi              : 1;    /* use -oi option */
+    boolbit opt_ol              : 1;    /* use -ol option */
+    boolbit opt_ol_plus         : 1;    /* use -ol+ option */
+    boolbit opt_om              : 1;    /* use -om option */
+    boolbit opt_on              : 1;    /* use -on option */
+    boolbit opt_op              : 1;    /* use -op option */
+    boolbit opt_os              : 1;    /* use -os option */
+    boolbit opt_ot              : 1;    /* use -ot option */
+    boolbit opt_ox              : 1;    /* use -ox option */
 #ifdef __TARGET_386__
-    int     opt_of              : 1;    /* use -of option */
-    int     opt_or              : 1;    /* use -or option */
+    boolbit opt_of              : 1;    /* use -of option */
+    boolbit opt_or              : 1;    /* use -or option */
 #endif
 } xlat_status;
 
@@ -158,12 +158,12 @@ static void init_status( struct XlatStatus *status )
 {
     memset( status, 0, sizeof(struct XlatStatus) );
     status->warnLevel = 1;              /* default is /W1 */
-    status->parmsInRegs = 1;            /* it's faster this way */
-    status->opt_od = 1;                 /* default is no optimization */
-    #ifdef __TARGET_386__
-        status->opt_of = 1;             /* default is to make stack frames */
-        status->opt_or = 1;             /* default is pipeline optimizing */
-    #endif
+    status->parmsInRegs = true;         /* it's faster this way */
+    status->opt_od = true;              /* default is no optimization */
+#ifdef __TARGET_386__
+    status->opt_of = true;              /* default is to make stack frames */
+    status->opt_or = true;              /* default is pipeline optimizing */
+#endif
 }
 
 
@@ -218,30 +218,30 @@ static void preprocessor_opts( struct XlatStatus *status,
     }
 
     if( cmdOpts->E ) {
-        status->disable_c = 1;
-        status->disable_FA = 1;
-        status->disable_Fa = 1;
-        status->disable_Fm = 1;
-        status->disable_Fo = 1;
+        status->disable_c = true;
+        status->disable_FA = true;
+        status->disable_Fa = true;
+        status->disable_Fm = true;
+        status->disable_Fo = true;
         preprocess = true;
     }
 
     if( cmdOpts->P ) {
-        status->disable_c = 1;
-        status->disable_FA = 1;
-        status->disable_Fa = 1;
-        status->disable_Fm = 1;
-        status->disable_Fo = 1;
+        status->disable_c = true;
+        status->disable_FA = true;
+        status->disable_Fa = true;
+        status->disable_Fm = true;
+        status->disable_Fo = true;
         preprocess = true;
-        status->preprocessToFile = 1;
+        status->preprocessToFile = true;
     }
 
     if( cmdOpts->EP ) {
-        status->disable_c = 1;
-        status->disable_FA = 1;
-        status->disable_Fa = 1;
-        status->disable_Fm = 1;
-        status->disable_Fo = 1;
+        status->disable_c = true;
+        status->disable_FA = true;
+        status->disable_Fa = true;
+        status->disable_Fm = true;
+        status->disable_Fo = true;
         preprocess = true;
         includeLines = false;
     }
@@ -297,7 +297,7 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 /*********************************************************************/
 {
     if( cmdOpts->J ) {
-        status->charTypeUnsigned = 1;
+        status->charTypeUnsigned = true;
     }
 
     switch( cmdOpts->warn_level ) {
@@ -318,7 +318,7 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
       case OPT_iso_Za:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-za" );
         if( cmdOpts->iso_timestamp > cmdOpts->Op_timestamp ) {
-            status->opt_op = 1;
+            status->opt_op = true;
         }
         break;
       case OPT_iso_Ze:
@@ -332,11 +332,11 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     }
 
     if( cmdOpts->Zs ) {
-        status->disable_c = 1;
-        status->disable_FA = 1;
-        status->disable_Fa = 1;
-        status->disable_Fm = 1;
-        status->disable_Fo = 1;
+        status->disable_c = true;
+        status->disable_FA = true;
+        status->disable_Fa = true;
+        status->disable_Fm = true;
+        status->disable_Fo = true;
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-zs" );
     }
 
@@ -395,11 +395,11 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
         }
 
         if( cmdOpts->Zg ) {
-            status->disable_c = 1;
-            status->disable_FA = 1;
-            status->disable_Fa = 1;
-            status->disable_Fm = 1;
-            status->disable_Fo = 1;
+            status->disable_c = true;
+            status->disable_FA = true;
+            status->disable_Fa = true;
+            status->disable_Fm = true;
+            status->disable_Fo = true;
             Warning( "Prototypes will be output to .def file(s), not standard output" );
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-v" );
         }
@@ -431,7 +431,7 @@ static void object_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 
     if( cmdOpts->LD ) {
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-bd" );
-        if( cmdOpts->threads_linking==OPT_threads_linking_default ) {
+        if( cmdOpts->threads_linking == OPT_threads_linking_default ) {
             cmdOpts->threads_linking = OPT_threads_linking_MT;
         }
     }
@@ -495,41 +495,41 @@ static void optimization_opts( struct XlatStatus *status,
 /*************************************************************************/
 {
     if( cmdOpts->opt_level != OPT_opt_level_Od ) {
-        status->opt_od = 0;
+        status->opt_od = false;
 
         switch( cmdOpts->opt_level ) {
           case OPT_opt_level_O1:                /* minimize size */
-            cmdOpts->Og = 1;
+            cmdOpts->Og = true;
             cmdOpts->opt_size_time = OPT_opt_size_time_Os;
-            cmdOpts->Oy = 1;
+            cmdOpts->Oy = true;
             cmdOpts->Ob_value = 1;
             cmdOpts->stack_probes = OPT_stack_probes_Gs;
-            cmdOpts->Gf = 1;
-            cmdOpts->GF = 1;
-            cmdOpts->Gy = 1;
+            cmdOpts->Gf = true;
+            cmdOpts->GF = true;
+            cmdOpts->Gy = true;
             break;
           case OPT_opt_level_O2:                /* maximize speed */
-            cmdOpts->Og = 1;
-            cmdOpts->Oi = 1;
+            cmdOpts->Og = true;
+            cmdOpts->Oi = true;
             cmdOpts->opt_size_time = OPT_opt_size_time_Ot;
-            cmdOpts->Oy = 1;
+            cmdOpts->Oy = true;
             cmdOpts->Ob_value = 1;
             cmdOpts->stack_probes = OPT_stack_probes_Gs;
-            cmdOpts->Gf = 1;
-            cmdOpts->GF = 1;
-            cmdOpts->Gy = 1;
+            cmdOpts->Gf = true;
+            cmdOpts->GF = true;
+            cmdOpts->Gy = true;
             break;
           case OPT_opt_level_Ox:
             cmdOpts->Ob_value = 1;
-            cmdOpts->Og = 1;
-            cmdOpts->Oi = 1;
+            cmdOpts->Og = true;
+            cmdOpts->Oi = true;
             cmdOpts->opt_size_time = OPT_opt_size_time_Ot;
-            cmdOpts->Oy = 1;
+            cmdOpts->Oy = true;
             cmdOpts->stack_probes = OPT_stack_probes_Gs;
-            status->opt_ol_plus = 1;
-            status->opt_om = 1;
-            status->opt_on = 1;
-            status->opt_ox = 1;
+            status->opt_ol_plus = true;
+            status->opt_om = true;
+            status->opt_on = true;
+            status->opt_ox = true;
           case OPT_opt_level_default:
             /* let the compiler use its default */
             break;
@@ -539,7 +539,7 @@ static void optimization_opts( struct XlatStatus *status,
 
 
         if( cmdOpts->Oa ) {
-            status->opt_oa = 1;
+            status->opt_oa = true;
         }
 
         if( cmdOpts->Ob_value == 0 ) {
@@ -547,31 +547,31 @@ static void optimization_opts( struct XlatStatus *status,
         }
 
         if( cmdOpts->Og ) {
-            status->opt_ol = 1;
-            status->opt_ot = 1;
+            status->opt_ol = true;
+            status->opt_ot = true;
         }
 
         if( cmdOpts->Oi ) {
-            status->opt_oi = 1;
+            status->opt_oi = true;
         }
 
         if( cmdOpts->Op ) {
-            status->opt_op = 1;
+            status->opt_op = true;
         }
 
         #ifdef __TARGET_386__
             if( cmdOpts->Oy ) {
-                status->opt_of = 0;
+                status->opt_of = false;
             }
         #endif
     }
 
     switch( cmdOpts->opt_size_time ) {
       case OPT_opt_size_time_Os:
-        status->opt_os = 1;
+        status->opt_os = true;
         break;
       case OPT_opt_size_time_Ot:
-        status->opt_ot = 1;
+        status->opt_ot = true;
         break;
       case OPT_opt_size_time_default:
         break;
@@ -598,7 +598,7 @@ static void compiler_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     misc_opts( status, cmdOpts, compCmdLine );
 
     if( status->disable_c ) {
-        cmdOpts->c = 1;         /* tell mainline to skip link phase */
+        cmdOpts->c = true;         /* tell mainline to skip link phase */
     }
 }
 
@@ -733,10 +733,10 @@ static void merge_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-od" );
     } else {
         strcpy( buf, "-o" );
-        #ifdef __TARGET_386__
-            if( status->opt_of )   strcat( buf, "f" );
-            if( status->opt_or )   strcat( buf, "r" );
-        #endif
+#ifdef __TARGET_386__
+        if( status->opt_of )       strcat( buf, "f" );
+        if( status->opt_or )       strcat( buf, "r" );
+#endif
         if( status->opt_oa )       strcat( buf, "a" );
         if( status->opt_oi )       strcat( buf, "i" );
         if( status->opt_ol )       strcat( buf, "l" );

@@ -109,7 +109,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
                     cmd_line_error();
                 }
                 if( cmdOpts->gotlongoption ) {
-                    cmdOpts->gotlongoption = 0;
+                    cmdOpts->gotlongoption = false;
                     break;
                 }
             }
@@ -184,8 +184,8 @@ static void add_string( OPT_STRING **p, char *str )
  * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
  * be deleted.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
-/***********************************************************************/
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
+/************************************************************************/
 {
     char *              str;
 
@@ -193,19 +193,20 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s requires an argument", optName );
-        return( 0 );
+        return( false );
     }
-    if( onlyOne )  OPT_CLEAN_STRING( p );
+    if( onlyOne )
+        OPT_CLEAN_STRING( p );
     add_string( p, str );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /c option.
  */
-static int parse_c( OPT_STRING **p )
-/**********************************/
+static bool parse_c( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "c", true ) );
 }
@@ -214,8 +215,8 @@ static int parse_c( OPT_STRING **p )
 /*
  * Parse the /d option.
  */
-static int parse_d( OPT_STRING **p )
-/**********************************/
+static bool parse_d( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "d", false ) );
 }
@@ -224,10 +225,10 @@ static int parse_d( OPT_STRING **p )
 /*
  * Parse the /fo option.
  */
-static int parse_fo( OPT_STRING **p )
-/***********************************/
+static bool parse_fo( OPT_STRING **p )
+/************************************/
 {
-    int                 retcode;
+    bool                retcode;
     char *              newstr;
 
     retcode = do_string_parse( p, "fo", true );
@@ -243,8 +244,8 @@ static int parse_fo( OPT_STRING **p )
 /*
  * Parse the /i option.
  */
-static int parse_i( OPT_STRING **p )
-/**********************************/
+static bool parse_i( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "i", false ) );
 }
@@ -253,8 +254,8 @@ static int parse_i( OPT_STRING **p )
 /*
  * Parse the /l option.
  */
-static int parse_l( OPT_STRING **p )
-/**********************************/
+static bool parse_l( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "l", true ) );
 }
@@ -263,7 +264,8 @@ static int parse_l( OPT_STRING **p )
 /*
  * Parse the /passwopts option.
  */
-static int parse_passwopts( OPT_STRING **p )
+static bool parse_passwopts( OPT_STRING **p )
+/*******************************************/
 {
     char *str;
     char *src;
@@ -272,14 +274,14 @@ static int parse_passwopts( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if (str == NULL)
     {
         FatalError("/passwopts requires an argument");
-        return 0;
+        return( false );
     }
 
     /*
@@ -295,14 +297,14 @@ static int parse_passwopts( OPT_STRING **p )
         if (*src != '\"')
         {
             FatalError("/passwopts argument is missing closing quote");
-            return 0;
+            return( false );
         }
 
         *dst = 0x00;
     }
 
     add_string( p, str );
-    return( 1 );
+    return( true );
 } /* parse_passwopts() */
 
 
@@ -313,8 +315,9 @@ static int parse_passwopts( OPT_STRING **p )
 static void handle_long_option( OPT_STORAGE *cmdOpts, int x )
 /***********************************************************/
 {
-    x = x;
-    cmdOpts->gotlongoption = 1;
+    /* unused parammeters */ (void)x;
+
+    cmdOpts->gotlongoption = true;
 }
 
 
@@ -324,8 +327,8 @@ static void handle_long_option( OPT_STORAGE *cmdOpts, int x )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     DisableWarnings( true );
 }
 

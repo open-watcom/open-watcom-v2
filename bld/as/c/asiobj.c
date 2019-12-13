@@ -49,8 +49,8 @@ uint_8                  CurrAlignment;
 struct asm_label {
     sym_handle          sym;            // NULL if is_numeric
     struct asm_label    *next;
-    uint_32             is_numeric : 1;
-    uint_32             label_num : 31;
+    uint_32             is_numeric  : 1;
+    uint_32             label_num   : 31;
 };
 
 typedef struct asm_label *label_list;
@@ -279,7 +279,7 @@ static void doStackLabel( sym_handle sym ) {
     new_label = MemAlloc( sizeof( struct asm_label ) );
     new_label->sym = sym;
     new_label->next = labelList;
-    new_label->is_numeric = 0;
+    new_label->is_numeric = false;
     new_label->label_num = 0;
     labelList = new_label;
 }
@@ -367,7 +367,7 @@ static void doStackNumericLabel( uint_32 label_num ) {
     new_label = MemAlloc( sizeof( struct asm_label ) );
     new_label->sym = NULL;
     new_label->next = labelList;
-    new_label->is_numeric = 1;
+    new_label->is_numeric = true;
     new_label->label_num = label_num;
     labelList = new_label;
 }

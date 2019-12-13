@@ -42,8 +42,8 @@ typedef struct asm_reloc {
         int_32          label_num;
         sym_handle      sym;
     }                   target;
-    uint_32             valid : 1;
-    uint_32             is_unnamed : 1;
+    boolbit             valid       : 1;
+    boolbit             is_unnamed  : 1;
 } asm_reloc;
 
 typedef void (*fmt_func)( ins_table *, instruction *, uint_32 *, asm_reloc * );
@@ -231,13 +231,13 @@ static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, in
     if( ( op->flags & RELOC ) == RELOC ) {
         reloc->target.sym = op->reloc.target.ptr;
         reloc->type = relocType( op->reloc.type, rtype, _IsAbsolute( flags ) );
-        reloc->is_unnamed = 0;
-        reloc->valid = 1;
+        reloc->is_unnamed = false;
+        reloc->valid = true;
     } else if( ( op->flags & UNNAMED_RELOC ) == UNNAMED_RELOC ) {
         reloc->target.label_num = op->reloc.target.label;
         reloc->type = relocType( op->reloc.type, rtype, _IsAbsolute( flags ) );
-        reloc->is_unnamed = 1;
-        reloc->valid = 1;
+        reloc->is_unnamed = true;
+        reloc->valid = true;
     }
 }
 
@@ -1452,7 +1452,7 @@ void PPCEmit( instruction *ins ) {
 
     ins_table       *table;
     uint_32         result;
-    asm_reloc       reloc = { OWL_RELOC_ABSOLUTE, { 0 }, 0, 0 };
+    asm_reloc       reloc = { OWL_RELOC_ABSOLUTE, { 0 }, false, false };
 #ifdef _STANDALONE_
     uint_8          oldAlignment;
 

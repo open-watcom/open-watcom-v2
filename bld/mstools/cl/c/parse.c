@@ -139,29 +139,31 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /*
  * Parse the /D option.
  */
-static int parse_D( OPT_STRING **p )
-/**********************************/
+static bool parse_D( OPT_STRING **p )
+/***********************************/
 {
     char *              str;
     char *              eq;
 
-    p = p;
+    /* unused parammeters */ (void)p;
+
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/D requires an argument" );
-        return( 0 );
+        return( false );
     }
     for( ;; ) {                 /* convert all '#' chars to '=' chars */
         eq = strchr( str, '#' );
-        if( eq == NULL )  break;
+        if( eq == NULL )
+            break;
         *eq = '=';
     }
     if( DefineMacro( str ) ) {
-        return( 1 );
+        return( true );
     } else {
         Warning( "Ignoring invalid macro definition '%s'", str );
-        return( 0 );
+        return( false );
     }
 }
 
@@ -194,26 +196,7 @@ static void add_string( OPT_STRING **p, char *str )
 /*
  * Parse the /F option.
  */
-static int parse_F( OPT_STRING **p )
-/**********************************/
-{
-    char *              str;
-
-    CmdScanWhitespace();
-    str = CmdScanString();
-    if( str == NULL ) {
-        FatalError( "/F requires an argument" );
-        return( 0 );
-    }
-    add_string( p, str );
-    return( 1 );
-}
-
-
-/*
- * Parse the /FI option.
- */
-static int parse_FI( OPT_STRING **p )
+static bool parse_F( OPT_STRING **p )
 /***********************************/
 {
     char *              str;
@@ -221,11 +204,30 @@ static int parse_FI( OPT_STRING **p )
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
-        FatalError( "/FI requires an argument" );
-        return( 0 );
+        FatalError( "/F requires an argument" );
+        return( false );
     }
     add_string( p, str );
-    return( 1 );
+    return( true );
+}
+
+
+/*
+ * Parse the /FI option.
+ */
+static bool parse_FI( OPT_STRING **p )
+/************************************/
+{
+    char *              str;
+
+    CmdScanWhitespace();
+    str = CmdScanString();
+    if( str == NULL ) {
+        FatalError( "/FI requires an argument" );
+        return( false );
+    }
+    add_string( p, str );
+    return( true );
 }
 
 
@@ -247,8 +249,8 @@ void OPT_CLEAN_STRING( OPT_STRING **p )
 /*
  * Parse the /Fm option.
  */
-static int parse_Fm( OPT_STRING **p )
-/***********************************/
+static bool parse_Fm( OPT_STRING **p )
+/************************************/
 {
     char *              str;
 
@@ -261,15 +263,15 @@ static int parse_Fm( OPT_STRING **p )
         }
         add_string( p, str );
     }
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /Gs option.
  */
-static int parse_Gs( OPT_STRING **p )
-/***********************************/
+static bool parse_Gs( OPT_STRING **p )
+/************************************/
 {
     char *              str;
 
@@ -277,15 +279,15 @@ static int parse_Gs( OPT_STRING **p )
     if( str != NULL ) {
         add_string( p, str );
     }
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /I option.
  */
-static int parse_I( OPT_STRING **p )
-/**********************************/
+static bool parse_I( OPT_STRING **p )
+/***********************************/
 {
     char *              str;
 
@@ -293,18 +295,18 @@ static int parse_I( OPT_STRING **p )
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/I requires an argument" );
-        return( 0 );
+        return( false );
     }
     add_string( p, str );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /o option.
  */
-static int parse_o( OPT_STRING **p )
-/**********************************/
+static bool parse_o( OPT_STRING **p )
+/***********************************/
 {
     char *              str;
 
@@ -312,25 +314,25 @@ static int parse_o( OPT_STRING **p )
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/o requires an argument" );
-        return( 0 );
+        return( false );
     }
     add_string( p, str );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /link option.
  */
-static int parse_link( OPT_STRING **p )
-/*************************************/
+static bool parse_link( OPT_STRING **p )
+/**************************************/
 {
     char *              str;
     bool                gotOne = false;
 
     if( !CmdScanRecogChar( ' ' )  &&  !CmdScanRecogChar( '\t' ) ) {
         FatalError( "Whitespace required after /link" );
-        return( 0 );
+        return( false );
     }
     for( ;; ) {
         CmdScanWhitespace();
@@ -338,7 +340,7 @@ static int parse_link( OPT_STRING **p )
         if( str == NULL ) {
             if( !gotOne ) {
                 FatalError( "/link requires at least one argument" );
-                return( 0 );
+                return( false );
             } else {
                 break;
             }
@@ -346,14 +348,15 @@ static int parse_link( OPT_STRING **p )
         add_string( p, str );
         gotOne = true;
     }
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /passwopts option.
  */
-static int parse_passwopts( OPT_STRING **p )
+static bool parse_passwopts( OPT_STRING **p )
+/*******************************************/
 {
     char *str;
     char *src;
@@ -362,14 +365,14 @@ static int parse_passwopts( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if (str == NULL)
     {
         FatalError("/passwopts requires an argument");
-        return 0;
+        return( false );
     }
 
     /*
@@ -385,14 +388,14 @@ static int parse_passwopts( OPT_STRING **p )
         if (*src != '\"')
         {
             FatalError("/passwopts argument is missing closing quote");
-            return 0;
+            return( false );
         }
 
         *dst = 0x00;
     }
 
     add_string( p, str );
-    return( 1 );
+    return( true );
 } /* parse_passwopts() */
 
 
@@ -418,16 +421,16 @@ bool OPT_GET_FILE( OPT_STRING **p )
 /*
  * Parse the /Tc option.
  */
-static int parse_Tc( OPT_STRING **p )
-/***********************************/
+static bool parse_Tc( OPT_STRING **p )
+/************************************/
 {
     CmdScanWhitespace();
     if( OPT_GET_FILE( p ) ) {
         AddFile( TYPE_C_FILE, (*p)->data );
-        return( 1 );
+        return( true );
     } else {
         FatalError( "/Tc requires an argument" );
-        return( 0 );
+        return( false );
     }
 }
 
@@ -435,16 +438,16 @@ static int parse_Tc( OPT_STRING **p )
 /*
  * Parse the /Tp option.
  */
-static int parse_Tp( OPT_STRING **p )
-/***********************************/
+static bool parse_Tp( OPT_STRING **p )
+/************************************/
 {
     CmdScanWhitespace();
     if( OPT_GET_FILE( p ) ) {
         AddFile( TYPE_CPP_FILE, (*p)->data );
-        return( 1 );
+        return( true );
     } else {
         FatalError( "/Tp requires an argument" );
-        return( 0 );
+        return( false );
     }
 }
 
@@ -452,40 +455,42 @@ static int parse_Tp( OPT_STRING **p )
 /*
  * Parse the /U option.
  */
-static int parse_U( OPT_STRING **p )
-/**********************************/
+static bool parse_U( OPT_STRING **p )
+/***********************************/
 {
     char *              str;
 
-    p = p;
+    /* unused parammeters */ (void)p;
+
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/U requires an argument" );
-        return( 0 );
+        return( false );
     }
     UndefineMacro( str );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /V option.
  */
-static int parse_V( OPT_STRING **p )
-/**********************************/
+static bool parse_V( OPT_STRING **p )
+/***********************************/
 {
     char *              str;
 
-    p = p;
+    /* unused parammeters */ (void)p;
+
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/V requires an argument" );
-        return( 0 );
+        return( false );
     }
     /* it's unsupported, so just skip over it; error msg will come later */
-    return( 1 );
+    return( true );
 }
 
 
@@ -552,7 +557,8 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
     static unsigned     prevValue;
     char                oldCpu, newCpu;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     oldCpu = 0;
     newCpu = 0;
     if( hasBeenCalled ) {
@@ -608,7 +614,8 @@ static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     static int          prevValue;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( cmdOpts->debug_info == OPT_debug_info_Zi ) {
         Warning( "Replacing unsupported /Zi with /Z7" );
         cmdOpts->debug_info = OPT_debug_info_Z7;
@@ -640,7 +647,8 @@ static void handle_F( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     OPT_STRING *        p;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         Warning( "Overriding /F%s with /F%s", cmdOpts->F_value->data,
                  cmdOpts->F_value->next->data );
@@ -662,7 +670,8 @@ static void handle_Fe( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     OPT_STRING *        p;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         Warning( "Overriding /Fe%s with /Fe%s", cmdOpts->Fe_value->data,
                  cmdOpts->Fe_value->next->data );
@@ -684,7 +693,8 @@ static void handle_Fp( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     OPT_STRING *        p;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         Warning( "Overriding /Fp%s with /Fp%s", cmdOpts->Fp_value->data,
                  cmdOpts->Fp_value->next->data );
@@ -706,7 +716,8 @@ static void handle_FR( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     OPT_STRING *        p;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         Warning( "Overriding /FR%s with /FR%s", cmdOpts->FR_value->data,
                  cmdOpts->FR_value->next->data );
@@ -726,7 +737,8 @@ static void handle_FR( OPT_STORAGE *cmdOpts, int x )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
+    /* unused parammeters */ (void)x;
+
     cmdOpts = cmdOpts;
     DisableWarnings( true );
 }
@@ -741,7 +753,8 @@ static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     static unsigned     prevValue;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         if( prevValue != cmdOpts->Ob_value ) {
             Warning( "Overriding /Ob%d with /Ob%d", prevValue,
@@ -765,7 +778,8 @@ static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     static int          prevValue;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         if( prevValue == OPT_opt_level_O1 ) {
             if( cmdOpts->opt_level == OPT_opt_level_O2 ) {
@@ -806,7 +820,8 @@ static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     static int          prevValue;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         if( prevValue == OPT_opt_size_time_Os ) {
             if( cmdOpts->opt_size_time == OPT_opt_size_time_Ot ) {
@@ -833,7 +848,8 @@ static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
     static bool         hasBeenCalled;
     static int          prevValue;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( cmdOpts->Gs_value != NULL ) {
         Warning( "Ignoring unsupported parameter '%s' to /Gs",
                  cmdOpts->Gs_value->data );
@@ -867,7 +883,8 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
     static unsigned     prevValue;
     char                oldType, newType;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     oldType = 0;
     newType = 0;
     if( hasBeenCalled ) {
@@ -917,7 +934,8 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
     static int          prevType;
     static unsigned     prevLevel;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( hasBeenCalled ) {
         if( prevType == OPT_warn_level_w ) {
             if( cmdOpts->warn_level == OPT_warn_level_W ) {
@@ -956,7 +974,8 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
 static void handle_precomp_headers( OPT_STORAGE *cmdOpts, int x )
 /***************************************************************/
 {
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( cmdOpts->precomp_headers == OPT_precomp_headers_Yc ) {
         if( cmdOpts->Yc_value != NULL ) {
             Warning( "Ignoring unsupported parameter '%s' to /Yc",
@@ -1030,11 +1049,12 @@ static void handle_GX( OPT_STORAGE *cmdOpts, int x )
 {
     static bool         hasBeenCalled;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( handle_on_off_option( &hasBeenCalled, "GX", cmdOpts->GX ) ) {
-        cmdOpts->GX = 1;
+        cmdOpts->GX = true;
     } else {
-        cmdOpts->GX = 0;
+        cmdOpts->GX = false;
     }
 }
 
@@ -1047,11 +1067,12 @@ static void handle_Op( OPT_STORAGE *cmdOpts, int x )
 {
     static bool         hasBeenCalled;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( handle_on_off_option( &hasBeenCalled, "Op", cmdOpts->Op ) ) {
-        cmdOpts->Op = 1;
+        cmdOpts->Op = true;
     } else {
-        cmdOpts->Op = 0;
+        cmdOpts->Op = false;
     }
 }
 
@@ -1064,11 +1085,12 @@ static void handle_Oy( OPT_STORAGE *cmdOpts, int x )
 {
     static bool         hasBeenCalled;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( handle_on_off_option( &hasBeenCalled, "Oy", cmdOpts->Oy ) ) {
-        cmdOpts->Oy = 1;
+        cmdOpts->Oy = true;
     } else {
-        cmdOpts->Oy = 0;
+        cmdOpts->Oy = false;
     }
 }
 
@@ -1082,11 +1104,12 @@ static void handle_QIfdiv( OPT_STORAGE *cmdOpts, int x )
 {
     static bool         hasBeenCalled;
 
-    x = x;
+    /* unused parammeters */ (void)x;
+
     if( handle_on_off_option( &hasBeenCalled, "QIfdiv", cmdOpts->QIfdiv ) ) {
-        cmdOpts->QIfdiv = 1;
+        cmdOpts->QIfdiv = true;
     } else {
-        cmdOpts->QIfdiv = 0;
+        cmdOpts->QIfdiv = false;
     }
 }
 #endif
@@ -1098,8 +1121,8 @@ static void handle_QIfdiv( OPT_STORAGE *cmdOpts, int x )
 static void handle_TC( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    cmdOpts = cmdOpts;
-    x = x;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     ForceLanguage( FORCE_C_COMPILE );
 }
 
@@ -1110,8 +1133,8 @@ static void handle_TC( OPT_STORAGE *cmdOpts, int x )
 static void handle_TP( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    cmdOpts = cmdOpts;
-    x = x;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     ForceLanguage( FORCE_CPP_COMPILE );
 }
 

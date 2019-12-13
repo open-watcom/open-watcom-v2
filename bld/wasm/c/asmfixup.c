@@ -101,7 +101,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
 
     fixup = AsmAlloc( sizeof( struct asmfixup ) );
     if( fixup != NULL ) {
-        fixup->external = 0;
+        fixup->external = false;
         fixup->fixup_loc = AsmCodeAddress;
 #if defined( _STANDALONE_ )
         fixup->sym = sym;
@@ -388,7 +388,7 @@ static bool MakeFpFixup( const char *patch_name )
             fixup = AsmAlloc( sizeof( struct asmfixup ) );
             if( fixup == NULL )
                 return( RC_ERROR );
-            fixup->external = 0;
+            fixup->external = false;
             fixup->fixup_loc = AsmCodeAddress;
             fixup->fixup_seg = NULL;
             fixup->sym = &dir->sym;
@@ -440,7 +440,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
     }
     fixup->next = FixupHead;
     FixupHead = fixup;
-    fixup->external = 0;
+    fixup->external = false;
     fixup->fixup_loc = AsmCodeAddress;
     fixup->name = NULL;
     fixup->u_fppatch = patch;

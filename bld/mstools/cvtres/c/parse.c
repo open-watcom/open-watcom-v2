@@ -122,23 +122,23 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /*
  * Parse the /MACHINE option.
  */
-static int parse_machine( OPT_STRING **p )
-/****************************************/
+static bool parse_machine( OPT_STRING **p )
+/*****************************************/
 {
     char *              str;
 
     p = p;
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/MACHINE requires an argument" );
-        return( 0 );
+        return( false );
     }
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/MACHINE requires an argument" );
-        return( 0 );
+        return( false );
     }
     Warning( "Ignoring option /MACHINE:%s", str );
-    return( 1 );
+    return( true );
 }
 
 
@@ -187,8 +187,8 @@ static void add_string( OPT_STRING **p, char *str )
  * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
  * be deleted.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
-/***********************************************************************/
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
+/************************************************************************/
 {
     char *              str;
 
@@ -196,26 +196,27 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s requires an argument", optName );
-        return( 0 );
+        return( false );
     }
-    if( onlyOne )  OPT_CLEAN_STRING( p );
+    if( onlyOne )
+        OPT_CLEAN_STRING( p );
     add_string( p, str );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /O option.
  */
-static int parse_o( OPT_STRING **p )
-/**********************************/
+static bool parse_o( OPT_STRING **p )
+/***********************************/
 {
-    int                 retcode;
+    bool                retcode;
     char *              newstr;
 
     if( !CmdScanRecogChar( ' ' )  &&  !CmdScanRecogChar( '\t' ) ) {
         FatalError( "Whitespace required after /o" );
-        return( 0 );
+        return( false );
     }
     retcode = do_string_parse( p, "o", true );
     if( retcode ) {
@@ -230,15 +231,15 @@ static int parse_o( OPT_STRING **p )
 /*
  * Parse the /OUT option.
  */
-static int parse_out( OPT_STRING **p )
-/************************************/
+static bool parse_out( OPT_STRING **p )
+/*************************************/
 {
-    int                 retcode;
+    bool                retcode;
     char *              newstr;
 
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/OUT requires an argument" );
-        return( 0 );
+        return( false );
     }
     retcode = do_string_parse( p, "OUT", true );
     if( retcode ) {
@@ -256,8 +257,8 @@ static int parse_out( OPT_STRING **p )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     DisableWarnings( true );
 }
 
@@ -268,8 +269,8 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 static void handle_alpha( OPT_STORAGE *cmdOpts, int x )
 /*****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /ALPHA" );
 }
 
@@ -280,8 +281,8 @@ static void handle_alpha( OPT_STORAGE *cmdOpts, int x )
 static void handle_i386( OPT_STORAGE *cmdOpts, int x )
 /****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /I386" );
 }
 
@@ -292,8 +293,8 @@ static void handle_i386( OPT_STORAGE *cmdOpts, int x )
 static void handle_mips( OPT_STORAGE *cmdOpts, int x )
 /****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /MIPS" );
 }
 
@@ -304,8 +305,8 @@ static void handle_mips( OPT_STORAGE *cmdOpts, int x )
 static void handle_ppc( OPT_STORAGE *cmdOpts, int x )
 /***************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /PPC" );
 }
 
@@ -316,8 +317,8 @@ static void handle_ppc( OPT_STORAGE *cmdOpts, int x )
 static void handle_r( OPT_STORAGE *cmdOpts, int x )
 /*************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /R" );
 }
 
@@ -328,8 +329,8 @@ static void handle_r( OPT_STORAGE *cmdOpts, int x )
 static void handle_readonly( OPT_STORAGE *cmdOpts, int x )
 /********************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /READONLY" );
 }
 
@@ -340,8 +341,8 @@ static void handle_readonly( OPT_STORAGE *cmdOpts, int x )
 static void handle_v( OPT_STORAGE *cmdOpts, int x )
 /*************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /V" );
 }
 
@@ -352,8 +353,8 @@ static void handle_v( OPT_STORAGE *cmdOpts, int x )
 static void handle_verbose( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /VERBOSE" );
 }
 

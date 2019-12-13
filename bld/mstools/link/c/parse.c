@@ -212,7 +212,7 @@ void OPT_CLEAN_STRING( OPT_STRING **p )
 /*
  * Parse the /BASE:@{filename} option.
  */
-static int parse_base_from_file(OPT_STRING **p, char *str)
+static bool parse_base_from_file(OPT_STRING **p, char *str)
 {
     #define MAX_LEN     255
 
@@ -232,7 +232,7 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
     {
         FreeMem(buffer);
         FatalError("/BASE:@{filename} requires valid filename");
-        return 0;
+        return( false );
     }
 
     *b      = 0x00;
@@ -247,7 +247,7 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
     {
         FreeMem(buffer);
         FatalError("/BASE:@{filename} requires a valid filename");
-        return 0;
+        return( false );
     }
 
     while( fgets(buffer, MAX_LEN, stream) )
@@ -268,7 +268,7 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
                 FreeMem(buffer);
                 fclose(stream);
                 FatalError("/BASE file contains invalid offset");
-                return 0;
+                return( false );
             }
 
             b = s;
@@ -280,36 +280,36 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
             FreeMem(buffer);
             fclose(stream);
 
-            return 1;
+            return( true );
         }
     }
 
     FreeMem(buffer);
     fclose(stream);
     FatalError("/BASE file does not contain keyword");
-    return 0;
+    return( false );
 } /* parse_base_from_file() */
 
 
 /*
  * Parse the /BASE option.
  */
-static int parse_base( OPT_STRING **p )
-/*************************************/
+static bool parse_base( OPT_STRING **p )
+/**************************************/
 {
     char *str;
 
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/BASE requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if( str == NULL )
     {
         FatalError("/BASE requires an argument");
-        return 0;
+        return( false );
     }
 
     if( *str == '@' )
@@ -322,7 +322,7 @@ static int parse_base( OPT_STRING **p )
         add_string(p, str, '\0');
     }
 
-    return 1;
+    return( true );
 } /* parse_base() */
 
 
@@ -332,32 +332,32 @@ static int parse_base( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
                             char quote )
-/**********************************************************************/
+/***********************************************************************/
 {
     char *              str;
 
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/%s requires an argument", optName );
-        return( 0 );
+        return( false );
     }
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s requires an argument", optName );
-        return( 0 );
+        return( false );
     }
     if( onlyOne )  OPT_CLEAN_STRING( p );
     add_string( p, str, quote );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /COMMENT option.
  */
-static int parse_comment( OPT_STRING **p )
-/****************************************/
+static bool parse_comment( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "COMMENT", false, '\0' ) );
 }
@@ -366,8 +366,8 @@ static int parse_comment( OPT_STRING **p )
 /*
  * Parse the /DEBUG option.
  */
-static int parse_debug( OPT_STRING **p )
-/**************************************/
+static bool parse_debug( OPT_STRING **p )
+/***************************************/
 {
     char *              str;
     char                ch;
@@ -379,21 +379,21 @@ static int parse_debug( OPT_STRING **p )
         str = CmdScanString();
         if( str == NULL ) {
             FatalError( "Missing argument for /DEBUG" );
-            return( 0 );
+            return( false );
         } else {
             add_string( p, str, '\0' );
             FreeMem( str );
         }
     }
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /DEBUGTYPE option.
  */
-static int parse_debugtype( OPT_STRING **p )
-/******************************************/
+static bool parse_debugtype( OPT_STRING **p )
+/*******************************************/
 {
     return( do_string_parse( p, "DEBUGTYPE", false, '\0' ) );
 }
@@ -402,8 +402,8 @@ static int parse_debugtype( OPT_STRING **p )
 /*
  * Parse the /DEF option.
  */
-static int parse_def( OPT_STRING **p )
-/************************************/
+static bool parse_def( OPT_STRING **p )
+/*************************************/
 {
     return( do_string_parse( p, "DEF", true, '\0' ) );
 }
@@ -412,8 +412,8 @@ static int parse_def( OPT_STRING **p )
 /*
  * Parse the /DEFAULTLIB option.
  */
-static int parse_defaultlib( OPT_STRING **p )
-/*******************************************/
+static bool parse_defaultlib( OPT_STRING **p )
+/********************************************/
 {
     return( do_string_parse( p, "DEFAULTLIB", false, '\0' ) );
 }
@@ -422,8 +422,8 @@ static int parse_defaultlib( OPT_STRING **p )
 /*
  * Parse the /ENTRY option.
  */
-static int parse_entry( OPT_STRING **p )
-/**************************************/
+static bool parse_entry( OPT_STRING **p )
+/***************************************/
 {
     return( do_string_parse( p, "ENTRY", true, '\'' ) );
 }
@@ -432,8 +432,8 @@ static int parse_entry( OPT_STRING **p )
 /*
  * Parse the /EXETYPE option.
  */
-static int parse_exetype( OPT_STRING **p )
-/****************************************/
+static bool parse_exetype( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "EXETYPE", true, '\0' ) );
 }
@@ -443,8 +443,8 @@ static int parse_exetype( OPT_STRING **p )
  * Parse the /EXPORT option, which is of the form
  *      /EXPORT:entryname[=internalname][,@ordinal[,NONAME]][,DATA]
  */
-static int parse_export( OPT_STRING **optStr )
-/********************************************/
+static bool parse_export( OPT_STRING **optStr )
+/*********************************************/
 {
     char *              strStart;
     char *              str;
@@ -458,13 +458,13 @@ static int parse_export( OPT_STRING **optStr )
     /*** Extract the export string ***/
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/EXPORT requires an argument" );
-        return( 0 );
+        return( false );
     }
     str = CmdScanString();
     strStart = str;
     if( str == NULL ) {
         FatalError( "/EXPORT requires an argument" );
-        return( 0 );
+        return( false );
     }
 
     /*** Extract the entryName ***/
@@ -533,11 +533,14 @@ static int parse_export( OPT_STRING **optStr )
 
     /*** Abort on error ***/
     if( retcode == 0 ) {
-        if( entryName != NULL )  FreeMem( entryName );
-        if( internalName != NULL )  FreeMem( internalName );
-        if( ordinal != NULL )  FreeMem( ordinal );
+        if( entryName != NULL )
+            FreeMem( entryName );
+        if( internalName != NULL )
+            FreeMem( internalName );
+        if( ordinal != NULL )
+            FreeMem( ordinal );
         FreeMem( strStart );
-        return( 0 );
+        return( false );
     }
 
     /*** Merge together Watcom-style:  entryName[.ordinal][=internalName] ***/
@@ -564,18 +567,20 @@ static int parse_export( OPT_STRING **optStr )
     }
     add_string( optStr, str, '\0' );
     FreeMem( entryName );
-    if( internalName != NULL )  FreeMem( internalName );
-    if( ordinal != NULL )  FreeMem( ordinal );
+    if( internalName != NULL )
+        FreeMem( internalName );
+    if( ordinal != NULL )
+        FreeMem( ordinal );
 
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /HEAP option.
  */
-static int parse_heap( OPT_STRING **p )
-/*************************************/
+static bool parse_heap( OPT_STRING **p )
+/**************************************/
 {
     return( do_string_parse( p, "HEAP", true, '\0' ) );
 }
@@ -584,8 +589,8 @@ static int parse_heap( OPT_STRING **p )
 /*
  * Parse the /IMPLIB option.
  */
-static int parse_implib( OPT_STRING **p )
-/***************************************/
+static bool parse_implib( OPT_STRING **p )
+/****************************************/
 {
     return( do_string_parse( p, "IMPLIB", true, '\0' ) );
 }
@@ -594,8 +599,8 @@ static int parse_implib( OPT_STRING **p )
 /*
  * Parse the /INCLUDE option.
  */
-static int parse_include( OPT_STRING **p )
-/****************************************/
+static bool parse_include( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "INCLUDE", false, '\'' ) );
 }
@@ -604,26 +609,26 @@ static int parse_include( OPT_STRING **p )
 /*
  * Parse the /INCREMENTAL option.
  */
-static int parse_incremental( OPT_STRING **p )
-/********************************************/
+static bool parse_incremental( OPT_STRING **p )
+/*********************************************/
 {
     char *              str;
 
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/INCREMENTAL requires an argument" );
-        return( 0 );
+        return( false );
     }
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/INCREMENTAL requires an argument" );
-        return( 0 );
+        return( false );
     }
     if( !stricmp( str, "yes" )  ||  !stricmp( str, "no" ) ) {
         add_string( p, str, '\0' );
-        return( 1 );
+        return( true );
     } else {
         FatalError( "Invalid argument '%s' to /INCREMENTAL", str );
-        return( 0 );
+        return( false );
     }
 }
 
@@ -631,7 +636,7 @@ static int parse_incremental( OPT_STRING **p )
 /*
  * Parse the undocumented /INTERNALDLLNAME option.
  */
-static int parse_internaldllname( OPT_STRING **p )
+static bool parse_internaldllname( OPT_STRING **p )
 /*************************************************/
 {
     return( do_string_parse( p, "INTERNALDLLNAME", true, '\0' ) );
@@ -641,8 +646,8 @@ static int parse_internaldllname( OPT_STRING **p )
 /*
  * Parse the /MACHINE option.
  */
-static int parse_machine( OPT_STRING **p )
-/****************************************/
+static bool parse_machine( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "MACHINE", false, '\0' ) );
 }
@@ -651,25 +656,26 @@ static int parse_machine( OPT_STRING **p )
 /*
  * Parse the /MAP option.
  */
-static int parse_map( OPT_STRING **p )
-/************************************/
+static bool parse_map( OPT_STRING **p )
+/*************************************/
 {
     char *              str;
 
-    if( !CmdScanRecogChar( ':' ) )  return( 1 );
+    if( !CmdScanRecogChar( ':' ) )
+        return( true );
     str = CmdScanString();
     if( str != NULL ) {
         add_string( p, str, '\0' );
     }
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /ORDER option.
  */
-static int parse_order( OPT_STRING **p )
-/**************************************/
+static bool parse_order( OPT_STRING **p )
+/***************************************/
 {
     return( do_string_parse( p, "ORDER", false, '\0' ) );
 }
@@ -678,8 +684,8 @@ static int parse_order( OPT_STRING **p )
 /*
  * Parse the /OUT option.
  */
-static int parse_out( OPT_STRING **p )
-/************************************/
+static bool parse_out( OPT_STRING **p )
+/*************************************/
 {
     return( do_string_parse( p, "OUT", true, '\0' ) );
 }
@@ -688,7 +694,8 @@ static int parse_out( OPT_STRING **p )
 /*
  * Parse the /passwopts option.
  */
-static int parse_passwopts( OPT_STRING **p )
+static bool parse_passwopts( OPT_STRING **p )
+/*******************************************/
 {
     char *str;
     char *src;
@@ -697,14 +704,14 @@ static int parse_passwopts( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if( str == NULL )
     {
         FatalError("/passwopts requires an argument");
-        return 0;
+        return( false );
     }
 
     /*
@@ -720,22 +727,22 @@ static int parse_passwopts( OPT_STRING **p )
         if( *src != '\"' )
         {
             FatalError("/passwopts argument is missing closing quote");
-            return 0;
+            return( false );
         }
 
         *dst = 0x00;
     }
 
     add_string(p, str, '\0');
-    return 1;
+    return( true );
 } /* parse_passwopts() */
 
 
 /*
  * Parse the /PDB option.
  */
-static int parse_pdb( OPT_STRING **p )
-/************************************/
+static bool parse_pdb( OPT_STRING **p )
+/*************************************/
 {
     return( do_string_parse( p, "PDB", false, '\0' ) );
 }
@@ -744,8 +751,8 @@ static int parse_pdb( OPT_STRING **p )
 /*
  * Parse the /SECTION option.
  */
-static int parse_section( OPT_STRING **p )
-/****************************************/
+static bool parse_section( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "SECTION", true, '\0' ) );
 }
@@ -754,8 +761,8 @@ static int parse_section( OPT_STRING **p )
 /*
  * Parse the /STACK option.
  */
-static int parse_stack( OPT_STRING **p )
-/**************************************/
+static bool parse_stack( OPT_STRING **p )
+/***************************************/
 {
     return( do_string_parse( p, "STACK", true, '\0' ) );
 }
@@ -764,8 +771,8 @@ static int parse_stack( OPT_STRING **p )
 /*
  * Parse the /STUB option.
  */
-static int parse_stub( OPT_STRING **p )
-/*************************************/
+static bool parse_stub( OPT_STRING **p )
+/**************************************/
 {
     return( do_string_parse( p, "STUB", true, '\0' ) );
 }
@@ -774,8 +781,8 @@ static int parse_stub( OPT_STRING **p )
 /*
  * Parse the /SUBSYSTEM option.
  */
-static int parse_subsystem( OPT_STRING **p )
-/******************************************/
+static bool parse_subsystem( OPT_STRING **p )
+/*******************************************/
 {
     return( do_string_parse( p, "SUBSYSTEM", true, '\0' ) );
 }
@@ -784,8 +791,8 @@ static int parse_subsystem( OPT_STRING **p )
 /*
  * Parse the /VERSION option.
  */
-static int parse_version( OPT_STRING **p )
-/****************************************/
+static bool parse_version( OPT_STRING **p )
+/*****************************************/
 {
     return( do_string_parse( p, "VERSION", true, '\0' ) );
 }
@@ -797,7 +804,8 @@ static int parse_version( OPT_STRING **p )
 static void handle_debug( OPT_STORAGE *cmdOpts, int x )
 /*****************************************************/
 {
-    x = x;
+    /* unused parammeters */ (void)x;
+
     cmdOpts->opt_level = OPT_opt_level_opt_noref;
 
     if( cmdOpts->debug_value != NULL ) {
@@ -815,8 +823,8 @@ static void handle_debug( OPT_STORAGE *cmdOpts, int x )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     DisableWarnings( true );
 }
 

@@ -73,8 +73,8 @@
  * Various flags to keep in mind while translating options.
  */
 static struct XlatStatus {
-    int     dll                 : 1;    /* we're building a DLL */
-    int     exp                 : 1;    /* there is an .exp file */
+    boolbit     dll             : 1;    /* we're building a DLL */
+    boolbit     exp             : 1;    /* there is an .exp file */
 } xlat_status;
 
 
@@ -186,26 +186,26 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
             strList = info->exports;
             while( strList != NULL ) {
                 add_string( &cmdOpts->export_value, strList->str );
-                cmdOpts->export = 1;
+                cmdOpts->export = true;
                 strList = strList->next;
             }
 
             if( !cmdOpts->dll ) {
                 if( info->makeDll ) {
-                    cmdOpts->dll = 1;
+                    cmdOpts->dll = true;
                 }
             }
             if( !cmdOpts->base ) {
                 if( info->baseAddr != NULL ) {
                     add_string( &cmdOpts->base_value, info->baseAddr );
-                    cmdOpts->base = 1;
+                    cmdOpts->base = true;
                 }
             }
 
             if( !cmdOpts->heap ) {
                 if( info->heapsize != NULL ) {
                     add_string( &cmdOpts->heap_value, info->heapsize );
-                    cmdOpts->heap = 1;
+                    cmdOpts->heap = true;
                 }
             }
 
@@ -213,7 +213,7 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
             if( !cmdOpts->internaldllname ) {
                 if( info->internalDllName != NULL ) {
                     add_string( &cmdOpts->internaldllname_value, info->internalDllName );
-                    cmdOpts->internaldllname = 1;
+                    cmdOpts->internaldllname = true;
                 }
             }
 
@@ -221,28 +221,28 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
                 if( info->name != NULL ) {
                     newstr = PathConvert( info->name, '\'' );
                     add_string( &cmdOpts->out_value, newstr );
-                    cmdOpts->out = 1;
+                    cmdOpts->out = true;
                 }
             }
 
             if( !cmdOpts->stack ) {
                 if( info->stacksize != NULL ) {
                     add_string( &cmdOpts->stack_value, info->stacksize );
-                    cmdOpts->stack = 1;
+                    cmdOpts->stack = true;
                 }
             }
 
             if( !cmdOpts->stub ) {
                 if( info->stub != NULL ) {
                     add_string( &cmdOpts->stub_value, info->stub );
-                    cmdOpts->stub = 1;
+                    cmdOpts->stub = true;
                 }
             }
 
             if( !cmdOpts->version ) {
                 if( info->version != NULL ) {
                     add_string( &cmdOpts->version_value, info->version );
-                    cmdOpts->version = 1;
+                    cmdOpts->version = true;
                 }
             }
             FreeDefInfo(info);
@@ -572,7 +572,7 @@ static void linker_opts( struct XlatStatus *status,
     for( ;; ) {
         filename = GetNextFile( &fileType, TYPE_EXP_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
-        status->exp=1;
+        status->exp = true;
         newstr = PathConvert( filename, '\'' );
         AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "@ %s", newstr );
     }

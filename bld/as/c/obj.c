@@ -61,8 +61,8 @@ uint_8                  CurrAlignment;
 struct asm_label {
     owl_section_handle  section;
     char                *sym_name;
-    uint_32             is_numeric:1;
-    uint_32             label_num:31;
+    uint_32             is_numeric  : 1;
+    uint_32             label_num   : 31;
     owl_sym_type        sym_type;
     owl_sym_linkage     sym_linkage;
     owl_symbol_handle   sym_hdl;
@@ -202,7 +202,7 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
     new_label->sym_type = type;
     new_label->sym_linkage = linkage;
     new_label->sym_hdl = SymObjHandle( sym );
-    new_label->is_numeric = 0;
+    new_label->is_numeric = false;
     new_label->next = labelList;
     labelList = new_label;
 }
@@ -217,7 +217,7 @@ static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_li
     new_label->sym_name = NULL;
     new_label->sym_type = type;
     new_label->sym_linkage = linkage;
-    new_label->is_numeric = 1;
+    new_label->is_numeric = true;
     new_label->label_num = label_num;
     new_label->next = labelList;
     labelList = new_label;
