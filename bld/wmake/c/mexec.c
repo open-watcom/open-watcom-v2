@@ -115,9 +115,9 @@ typedef enum {
 } shell_flags;
 
 typedef struct dd {
-  struct dd     *next;
-  char          attr;
-  char          name[1];
+    struct dd   *next;
+    char        attr;
+    char        name[1];
 } iolist;
 
 typedef struct {
