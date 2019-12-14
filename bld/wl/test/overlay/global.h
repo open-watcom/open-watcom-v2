@@ -25,65 +25,26 @@
 *
 *  ========================================================================
 *
-* Description:  Overlay test, part I.
+* Description:  Overlay test global header file.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <setjmp.h>
-#include "global.h"
+extern jmp_buf  env1;
 
-
-jmp_buf env1;
-
-void ovl1( void ) {
-
-    puts( "in ovl1a" );
-    ovl2();
-    puts( "returned to ovl1a" );
-}
-
-void (*ptr)(void) = &ovl1;
-
-static void local1( void ) {
-
-    puts( "in local1" );
-}
-
-void (*ptr2)(void);
-
-static void local1a( void ) {
-
-    puts( "in local1a" );
-}
-
-void ovl1a( void ) {
-
-    ptr2 = &local1a;
-    puts( "in ovl1a" );
-    local1();
-    puts( "returned to ovl1a" );
-}
-
-void ovl1b( void ) {
-
-    puts( "in ovl1b" );
-    ovl2a();
-    puts( "returned to ovl1b" );
-}
-
-void ovl1c( void ) {
-
-    puts( "in ovl1c" );
-    if( setjmp( env1 ) == 0 ) {
-        puts( "first setjmp in ovl1c" );
-        ovl2b();
-        puts( "bogus! returned to ovl1c after first setjmp!!" );
-    } else if( setjmp( env1 ) == 0 ) {
-        puts( "second setjmp in ovl1c" );
-        root1();
-        puts( "bogus! returned to ovl1c after second setjmp!!" );
-    }
-    puts( "returned to ovl1c after longjmp" );
-}
+extern void root1( void );
+extern void ovl1( void );
+extern void ovl1a( void );
+extern void ovl1b( void );
+extern void ovl1c( void );
+extern void ovl2( void );
+extern void ovl2a( void );
+extern void ovl2b( void );
+extern void ovl3a( void );
+extern void ovl3( void );
+extern void ovl3a( void );
+extern int cg22( unsigned short );
+extern void cg24( unsigned short );
+extern int cg26( unsigned short );
+extern int cg28( unsigned short );
+extern int cg30( unsigned short );

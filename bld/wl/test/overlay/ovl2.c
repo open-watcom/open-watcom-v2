@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,8 @@
 
 
 #include <stdio.h>
+#include "global.h"
 
-extern void ovl1a( void );
-extern void ovl1b( void );
-extern void ovl1c( void );
-extern void ovl3( void );
-extern void ovl3a( void );
 
 static void local2( void ) {
 
