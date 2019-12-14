@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include <setjmp.h>
+
+
 extern jmp_buf  env1;
 
 extern void root1( void );

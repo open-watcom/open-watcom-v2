@@ -31,7 +31,6 @@
 
 
 #include <stdio.h>
-#include <setjmp.h>
 #include "global.h"
 
 
