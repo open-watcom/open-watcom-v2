@@ -794,7 +794,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             }
             if( seg->info & SEG_CODE ) {
                 if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute
-                    && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+                  && (LinkState & LS_SEARCHING_LIBRARIES) ) {
                     sym->info |= SYM_DISTRIB;
                 }
             }

@@ -215,12 +215,11 @@ static void DoLink( const char *cmdline )
 /***************************************/
 // cmdline is only used when we are running under watfor.
 {
-#ifndef __OSI__
-  #ifdef __ZDOS__
+#if defined( __OSI__ )
+#elif defined( __ZDOS__ )
     signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
-  #else
+#else
     signal( SIGINT, &TrapBreak );   /* so we can clean up */
-  #endif
 #endif
     StartTime();
     InitEnvVars();
@@ -271,9 +270,10 @@ static void DoLink( const char *cmdline )
     BuildImpLib();
     FiniEnvVars();
     EndTime();
-#ifdef __ZDOS__
+#if defined( __OSI__ )
+#elif defined( __ZDOS__ )
     signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
-#elif !defined( __OSI__ )
+#else
     signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
 #endif
 }
