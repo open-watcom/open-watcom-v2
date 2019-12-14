@@ -49,10 +49,10 @@
 typedef struct sym_block {
     struct sym_block    *next;       /* NOTE: this *must* be the first field */
     size_t              size;
-    char                block[ 1 ];
+    char                block[1];
 } sym_block;
 
-#define ALLOC_SIZE  (sizeof( sym_block )-1)
+#define ALLOC_SIZE  (sizeof( sym_block ) - 1)
 
 typedef struct {
     sym_block *     list;

@@ -53,8 +53,8 @@ static lmf_rw_end       RWEndRec;
 static group_entry *    CurrGroup;
 
 
-#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof(lmf_data))
-#define VERIFY_END (VERIFY_OFFSET + sizeof(RWEndRec.verify))
+#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
+#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
 
 static void WriteLoadRec( void )
 /******************************/
@@ -67,7 +67,7 @@ static void WriteLoadRec( void )
     if( CurrGroup->size - AmountWritten > QNX_MAX_DATA_SIZE ){
         record.data_nbytes = QNX_MAX_REC_SIZE;
     } else {
-        record.data_nbytes = CurrGroup->size - AmountWritten + sizeof(lmf_data);
+        record.data_nbytes = CurrGroup->size - AmountWritten + sizeof( lmf_data );
     }
     WriteLoad( &record, sizeof( lmf_record ) );
     data.segment = QNX_SEL_NUM( CurrGroup->grp_addr.seg );
@@ -222,9 +222,9 @@ static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg
     }
     pos = PosLoad();    /* get current position */
     while( head != NULL ) {
-        SeekLoad( pos + sizeof(lmf_record) );
+        SeekLoad( pos + sizeof( lmf_record ) );
         if( islinear ) {
-            WriteLoad( &seg, sizeof(unsigned_16) );
+            WriteLoad( &seg, sizeof( unsigned_16 ) );
         }
         size = DumpMaxRelocList( &head, QNX_MAX_FIXUPS - adjust ) + adjust;
         SeekLoad( pos );
@@ -349,7 +349,7 @@ static void WriteQNXResource( void )
                 return;
             }
             len = QFileSize( file );
-            if( len + sizeof(lmf_resource) > QNX_MAX_REC_SIZE ) {
+            if( len + sizeof( lmf_resource ) > QNX_MAX_REC_SIZE ) {
                 LnkMsg( WRN+MSG_RESOURCE_TOO_BIG, "s", FmtData.resource );
                 return;
             }
@@ -391,7 +391,7 @@ void FiniQNXLoadFile( void )
     }
     nbytes = NumGroups * sizeof( unsigned_32 );
     segments = (unsigned_32 *) alloca( nbytes );
-    SeekLoad( sizeof(lmf_header) + nbytes + sizeof(lmf_record) );
+    SeekLoad( sizeof( lmf_header ) + nbytes + sizeof( lmf_record ) );
     WriteQNXResource();
     WriteQNXData( segments );
     WriteQNXRelocs( Root->reloclist, LMF_FIXUP_REC, 0 );

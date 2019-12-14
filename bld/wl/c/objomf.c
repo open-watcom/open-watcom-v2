@@ -1044,7 +1044,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 inner = count;
                 do {
                     _TargU32toHost( _GetU32UN(buffer), rep );
-                    buffer += sizeof(unsigned_32);
+                    buffer += sizeof( unsigned_32 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
             } while( --iterate != 0 );
@@ -1054,7 +1054,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 inner = count;
                 do {
                     _TargU16toHost( _GetU16UN(buffer), rep );
-                    buffer += sizeof(unsigned_16);
+                    buffer += sizeof( unsigned_16 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
             } while( --iterate != 0 );

@@ -312,7 +312,7 @@ static file_list *AllocNewFile( member_list *member )
 {
     file_list       *new_entry;
 
-    _PermAlloc( new_entry, sizeof(file_list) );
+    _PermAlloc( new_entry, sizeof( file_list ) );
     new_entry->next_file = NULL;
     new_entry->flags = DBIFlag;
     new_entry->strtab = NULL;
@@ -1453,8 +1453,8 @@ bool ProcOrdClass( void )
     }
     LinkState |= LS_SPEC_ORDER_FLAG;
     LastOClass = CurrOClass;
-    _ChkAlloc( CurrOClass, sizeof(ORDER_CLASS));
-    if(LastOClass == NULL) {
+    _ChkAlloc( CurrOClass, sizeof( ORDER_CLASS ) );
+    if( LastOClass == NULL ) {
         CurrSect->orderlist = CurrOClass;
     } else {
         LastOClass->NextClass = CurrOClass;
@@ -1538,7 +1538,7 @@ bool ProcOrdSeg( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    _ChkAlloc( CurrOSeg, sizeof(ORDER_SEGMENT));
+    _ChkAlloc( CurrOSeg, sizeof( ORDER_SEGMENT ) );
     CurrOSeg->NextSeg = CurrOClass->SegList;
     CurrOClass->SegList = CurrOSeg;
     CurrOSeg->Name = tostring();

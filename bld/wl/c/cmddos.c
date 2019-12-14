@@ -87,7 +87,7 @@ static bool AddClass( void )
 
     _PermAlloc( ovlclass, sizeof( list_of_names ) + Token.len );
     memcpy( ovlclass->name, Token.this, Token.len );
-    ovlclass->name[ Token.len ] = '\0';
+    ovlclass->name[Token.len] = '\0';
     ovlclass->next_name = OvlClasses;
     OvlClasses = ovlclass;
     return( true );

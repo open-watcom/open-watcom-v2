@@ -40,7 +40,7 @@ extern void __near __OvlMsg__( unsigned msg )
 {
     char __far  *ptr;
 
-    ptr = __OVLMSGS__[ msg ];
+    ptr = __OVLMSGS__[msg];
     TinyFarWrite( TIO_STDERR_FILENO, ptr + sizeof( char ), *ptr );
 }
 
@@ -84,7 +84,7 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
     unsigned        num_relocs;
     int             self_ref = 0;
     dos_addr __far  *relocs;
-    dos_addr        reloc_buffer[ RELOC_CAPACITY ];
+    dos_addr        reloc_buffer[RELOC_CAPACITY];
     unsigned __far  *fixup;
     tiny_ret_t      status;
 
@@ -94,7 +94,7 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
             buffered_relocs = num_relocs;
         }
         relocs = reloc_buffer;
-        status = __OvlRead__( fp, relocs, buffered_relocs * sizeof(dos_addr) );
+        status = __OvlRead__( fp, relocs, buffered_relocs * sizeof( dos_addr ) );
         if( TINY_ERROR( status ) )
             __OvlExit__( OVL_IO_ERR );
         num_relocs -= buffered_relocs;
@@ -120,13 +120,13 @@ extern void __near __OvlNum__( unsigned ovl_num )
 //=============================================
 // Write overlay number.
 {
-    char    buff[ 4 ];  // assume overlay number < 9999
+    char    buff[4];    // assume overlay number < 9999
     int     len;
     int     power;
 
     len = 0;
     for( power = 1000; power > 0; power /= 10 ) {
-        buff[ len ] = '0' + ovl_num / power;
+        buff[len] = '0' + ovl_num / power;
         len++;
         ovl_num = ovl_num - ( ovl_num / power ) * power;
     }
@@ -174,7 +174,7 @@ extern tiny_ret_t __near __OpenOvl__( unsigned offset )
     char __far  *lastslash;
     char __far  *fnstart;
     char __far  *path;
-    char        buf[ FNMAX ];
+    char        buf[FNMAX];
     tiny_ret_t  status;
     unsigned    isexe;
 
@@ -198,7 +198,7 @@ extern tiny_ret_t __near __OpenOvl__( unsigned offset )
         }
         if( __OVLFLAGS__ & OVL_DOS3 ) {
             // go through environment to find path of .EXE file.
-            for( cmd = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[ 0 ] | cmd[ 1 ]; )
+            for( cmd = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[0] | cmd[1]; )
                 ++cmd;
             cmd += 4;
             // now replace executable name with fname.
@@ -238,7 +238,7 @@ extern tiny_ret_t __near __OpenOvl__( unsigned offset )
             }
             if( *path == ';' )
                 ++path;
-            if( cmd > buf && cmd[ -1 ] != ':' && cmd[ -1 ] != '\\' && cmd[ -1 ] != '/' )
+            if( cmd > buf && cmd[-1] != ':' && cmd[-1] != '\\' && cmd[-1] != '/' )
                 *cmd++ = '\\';
             fnstart = fname;
             for( ; *fnstart != '\0'; ) {

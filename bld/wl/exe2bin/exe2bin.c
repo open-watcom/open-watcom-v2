@@ -307,7 +307,7 @@ static void sort_reltab( reloc_table *reltab )
 
 static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
-    char    tmp_path[ _MAX_PATH2 ];
+    char    tmp_path[_MAX_PATH2];
     char    *drive;
     char    *dir;
     char    *fname;

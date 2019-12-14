@@ -85,7 +85,7 @@ typedef struct section {
 
 typedef struct path_entry {
     PATH_ENTRY          *next;
-    char                name[ 1 ];
+    char                name[1];
 } path_entry;
 
 typedef struct outfilelist {
@@ -245,7 +245,7 @@ typedef struct {
     dist_arc            arcs[1];    // dist: the actual arcs.
 } arcdata;
 
-#define DIST_ONLY_SIZE (2*sizeof(unsigned_16)+sizeof(dist_arc))
+#define DIST_ONLY_SIZE (2 * sizeof( unsigned_16 ) + sizeof( dist_arc ))
 
 typedef struct obj_name_list {
     struct obj_name_list    *next;
@@ -560,7 +560,7 @@ typedef struct {
 
 typedef struct list_of_names {
     LIST_OF_NAMES       *next_name;
-    char                name[ 1 ];
+    char                name[1];
 } list_of_names;
 
 typedef struct {

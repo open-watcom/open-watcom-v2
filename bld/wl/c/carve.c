@@ -124,7 +124,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     cv->free_list = NULL;
     cv->blk_map = NULL;
     cv->size_chg = false;
-    DbgAssert( cv->elm_size >= 2 * sizeof(void *) );
+    DbgAssert( cv->elm_size >= 2 * sizeof( void * ) );
     DbgAssert( cv->elm_count != 0 );
     DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
     return( cv );
@@ -210,8 +210,8 @@ void *CarveZeroAlloc( carve_t cv )
     }
     _REMOVE_FROM_FREE( cv, v );
     p = v;
-    DbgAssert( ( cv->elm_size / sizeof(*p) ) <= 16 );
-    switch( cv->elm_size / sizeof(*p) ) {
+    DbgAssert( ( cv->elm_size / sizeof( *p ) ) <= 16 );
+    switch( cv->elm_size / sizeof( *p ) ) {
     case 16:
         p[15] = 0;
     case 15:
@@ -424,7 +424,7 @@ void CarveRestart( carve_t cv, unsigned num )
     _ChkAlloc( cv->blk_map, numblks * sizeof( blk_t * ) );
     index = numblks - 1;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
-        cv->blk_map[ index ] = block;
+        cv->blk_map[index] = block;
         index -= 1;
     }
     remainder = num % cv->elm_count;
@@ -482,6 +482,6 @@ void *CarveMapIndex( carve_t cv, void *aindex )
     block_index = GET_BLOCK( index );
     block_offset = GET_OFFSET( index );
     block_map = cv->blk_map;
-    block = block_map[ block_index - 1 ];
-    return( &(block->data[ block_offset ]) );
+    block = block_map[block_index - 1];
+    return( &(block->data[block_offset]) );
 }

@@ -49,12 +49,11 @@
 #define STUB_ALIGN 16
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
-#define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof(map_entry) * (unsigned long)OSF_DEF_PAGE_SIZE)
+#define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof( map_entry ) * (unsigned long)OSF_DEF_PAGE_SIZE)
 
 
-static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
-                           map_entry *buf )
-/**************************************************************/
+static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf )
+/********************************************************************************/
 /* fill a buffer with consecutive numbers */
 {
     unsigned    size;
@@ -70,7 +69,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             buf->le.page_num[1] = *start >> 8;
             buf->le.page_num[0] = *start >> 16;
             buf->le.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            buf = (map_entry *)((char *)buf + sizeof(le_map_entry));
+            buf = (map_entry *)((char *)buf + sizeof( le_map_entry ));
         }
     } else {
         shift = FmtData.u.os2.segment_shift;
@@ -86,7 +85,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             }
             *start += buf->lx.data_size;
             buf->lx.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            buf = (map_entry *)((char *)buf + sizeof(lx_map_entry));
+            buf = (map_entry *)((char *)buf + sizeof( lx_map_entry ));
         }
     }
     return( size );
@@ -175,7 +174,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     }
     header->num_objects = numobjects;
     header->num_pages = numpages;
-    size = numobjects * sizeof(object_record);
+    size = numobjects * sizeof( object_record );
     loc += size;
     header->objmap_off = loc;
     start = 0;
@@ -418,8 +417,8 @@ void FiniOS2FlatLoadFile( void )
 
     memset( &exe_head, 0, sizeof( exe_head ) ); /* zero all header fields */
     stub_len = WriteStubFile( STUB_ALIGN );
-    curr_loc  = sizeof(os2_flat_header);
-    SeekLoad( stub_len + sizeof(os2_flat_header) );
+    curr_loc  = sizeof( os2_flat_header );
+    SeekLoad( stub_len + sizeof( os2_flat_header ) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );
     exe_head.resname_off = curr_loc;
     curr_loc += ResNonResNameTable( true );  // true - do resident table.

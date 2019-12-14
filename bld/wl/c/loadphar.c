@@ -98,13 +98,13 @@ static void WritePharSimple( unsigned_32 start )
     unsigned_32     temp;
 
     if( FmtData.type & MK_PHAR_REX ) {
-        SeekLoad( start + sizeof(simple_header) );
+        SeekLoad( start + sizeof( simple_header ) );
         extra = start + sizeof( simple_header ) + WritePharRelocs();
         header_size = MAKE_PARA( extra );
         PadLoad( header_size - extra );
     } else {
-        SeekLoad( start + MAKE_PARA( sizeof(simple_header) ) );
-        header_size = MAKE_PARA( sizeof(simple_header) );    // para align.
+        SeekLoad( start + MAKE_PARA( sizeof( simple_header ) ) );
+        header_size = MAKE_PARA( sizeof( simple_header ) );    // para align.
     }
     file_size = header_size + WritePharData( start + header_size );
     DBIWrite();
@@ -171,7 +171,7 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
     }
     desc.limitlow = limit;
     desc.bits2 |= (limit >> 16) & DESC_LIMIT_HIGH_MASK;
-    WriteLoad( &desc, sizeof(descriptor) );
+    WriteLoad( &desc, sizeof( descriptor ) );
 }
 
 static unsigned_32 WritePharSegData( void )
@@ -185,29 +185,29 @@ static unsigned_32 WritePharSegData( void )
 
     DEBUG(( DBG_BASE, "Writing data" ));
     OrderGroups( CompareProtSegments );
-    memset( &tss, 0, sizeof(TSS) );
+    memset( &tss, 0, sizeof( TSS ) );
     tss.eip = StartInfo.addr.off;       // NYI: what about backlink ss0-2 & esp0-2 ?
     tss.esp = StackAddr.off;
     tss.cs = StartInfo.addr.seg;
     tss.ss = StackAddr.seg;
     tss.ds = DataGroup->grp_addr.seg;
     tss.ldt = 0x28;
-    WriteLoad( &tss, sizeof(TSS) );
-    WriteDescriptor( 0, 0, 0 );         // NULL GDT entry;
-    WriteDescriptor( 0, sizeof(TSS), DR_TSS );          // TSS
-    WriteDescriptor( 0, sizeof(TSS), DR_BASE|DR_IS_APP ); // TSS alias
-    pos = sizeof(TSS);
-    size = NUM_GDT_DESCRIPTORS * sizeof(descriptor);
-    WriteDescriptor( pos, size, DR_BASE|DR_IS_APP );    // GDT
+    WriteLoad( &tss, sizeof( TSS ) );
+    WriteDescriptor( 0, 0, 0 );                             // NULL GDT entry;
+    WriteDescriptor( 0, sizeof( TSS ), DR_TSS );            // TSS
+    WriteDescriptor( 0, sizeof( TSS ), DR_BASE | DR_IS_APP ); // TSS alias
+    pos = sizeof( TSS );
+    size = NUM_GDT_DESCRIPTORS * sizeof( descriptor );
+    WriteDescriptor( pos, size, DR_BASE | DR_IS_APP );      // GDT
     pos += size;
-    size = NUM_IDT_DESCRIPTORS * sizeof(descriptor);
-    WriteDescriptor( pos, size, DR_BASE|DR_IS_APP );    // IDT
+    size = NUM_IDT_DESCRIPTORS * sizeof( descriptor );
+    WriteDescriptor( pos, size, DR_BASE | DR_IS_APP );      // IDT
     pos += size;
-    size = (NumGroups + 1) * sizeof(descriptor);
-    WriteDescriptor( pos, size, DR_BASE );              //LDT
-    WriteDescriptor( pos, size, DR_BASE|DR_IS_APP );    // LDT alias
-    WriteDescriptor( 0, 0, 0 );         // NULL IDT entry;
-    WriteDescriptor( 0, 0, 0 );         // NULL LDT entry;
+    size = ( NumGroups + 1 ) * sizeof( descriptor );
+    WriteDescriptor( pos, size, DR_BASE );                  // LDT
+    WriteDescriptor( pos, size, DR_BASE | DR_IS_APP );      // LDT alias
+    WriteDescriptor( 0, 0, 0 );                             // NULL IDT entry;
+    WriteDescriptor( 0, 0, 0 );                             // NULL LDT entry;
     pos += size;
     for( group = Groups; group != NULL; group = group->next_group ) {
         flags = DR_BASE | DR_IS_APP | DR_IS_USER;
@@ -262,7 +262,7 @@ static unsigned_32 WriteSIT( void )
         sit.selector = group->grp_addr.seg;
         sit.extra = group->totalsize - group->size;
         WriteLoad( &sit, sizeof( seg_info_table ) );
-        size += sizeof(seg_info_table);
+        size += sizeof( seg_info_table );
     }
     return size;
 }
@@ -283,7 +283,7 @@ static void WritePharExtended( unsigned_32 start )
         temp = WriteSIT();
         _HostU32toTarg( temp, header.sit_size );
         file_size += temp;
-        _HostU16toTarg( sizeof(seg_info_table), header.sit_entry_size );
+        _HostU16toTarg( sizeof( seg_info_table ), header.sit_entry_size );
         _HostU32toTarg( file_size, header.reloc_offset );
         temp = WritePharRelocs();
         _HostU32toTarg( temp, header.reloc_size );
@@ -320,20 +320,20 @@ static void WritePharExtended( unsigned_32 start )
     _HostU32toTarg( 0, header.sym_offset );
     _HostU32toTarg( 0, header.sym_size );
     if( FmtData.type & MK_PHAR_MULTISEG ) {
-        temp = sizeof(TSS);
+        temp = sizeof( TSS );
         _HostU32toTarg( temp, header.gdt_offset );
-        extra = NUM_GDT_DESCRIPTORS * sizeof(descriptor);
+        extra = NUM_GDT_DESCRIPTORS * sizeof( descriptor );
         _HostU32toTarg( extra, header.gdt_size );
         temp += extra;
-        extra = NUM_IDT_DESCRIPTORS * sizeof(descriptor);
+        extra = NUM_IDT_DESCRIPTORS * sizeof( descriptor );
         _HostU32toTarg( temp, header.idt_offset );
         _HostU32toTarg( extra, header.idt_size );
         temp += extra;
-        extra = (NumGroups + 1) * sizeof(descriptor);
+        extra = (NumGroups + 1) * sizeof( descriptor );
         _HostU32toTarg( temp, header.ldt_offset );
         _HostU32toTarg( extra, header.ldt_size );
         _HostU32toTarg( 0, header.tss_offset );
-        _HostU32toTarg( sizeof(TSS), header.tss_size );
+        _HostU32toTarg( sizeof( TSS ), header.tss_size );
         _HostU32toTarg( 0, header.min_extra );
         _HostU32toTarg( 0, header.max_extra );
         _HostU16toTarg( StackAddr.seg, header.SS );

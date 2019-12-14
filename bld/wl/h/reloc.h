@@ -145,7 +145,7 @@ typedef struct {
 } zdos_reloc_item;
 
 typedef union {
-    byte        buff[ 12 ];
+    byte        buff[12];
     struct {
         unsigned_8          nr_stype;
         unsigned_8          nr_flags;

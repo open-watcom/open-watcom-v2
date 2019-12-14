@@ -368,7 +368,7 @@ static void PrepFileList( perm_write_info *info )
 /***********************************************/
 {
     infilelist  *infile;
-    char        new_name[ PATH_MAX ];
+    char        new_name[PATH_MAX];
 
     for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
         MakeFileName( infile, new_name );

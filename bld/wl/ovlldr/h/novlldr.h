@@ -252,7 +252,7 @@ typedef struct {
     unsigned_16 end_of_list;    /* End of list if all threads used */
 } ret_trap;
 
-#define RET_TRAP_PARA   ((sizeof(ret_trap)+sizeof(unsigned_16)+15)/16)
+#define RET_TRAP_PARA   ((sizeof( ret_trap ) + sizeof( unsigned_16 ) + 15)/16)
 
 #else
 

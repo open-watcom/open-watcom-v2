@@ -58,11 +58,11 @@
 #include "clibext.h"
 
 
-#define STATIC_TABSIZE  241  /* should be prime */
-#define GLOBAL_TABSIZE  1789  /* should be prime */
+#define STATIC_TABSIZE  241     /* should be prime */
+#define GLOBAL_TABSIZE  1789    /* should be prime */
 
-#define STATIC_TABALLOC (256 * sizeof(symbol *))  // 1st power of 128 > TABSIZE
-#define GLOBAL_TABALLOC (1792 * sizeof(symbol *)) // 1st power of 128 > TABSIZE
+#define STATIC_TABALLOC (256 * sizeof( symbol * ))  // 1st power of 128 > TABSIZE
+#define GLOBAL_TABALLOC (1792 * sizeof( symbol * )) // 1st power of 128 > TABSIZE
 
 int             (*CmpRtn)( const void *, const void *, size_t );
 size_t          NameLen;
@@ -634,7 +634,7 @@ static void DumpTable( symbol **table, unsigned tabsize )
             mask |= DBG_NOCRLF;
         }
         val = 0;
-        for( sym = table[ index ]; sym != NULL; sym = sym->hash ) {
+        for( sym = table[index]; sym != NULL; sym = sym->hash ) {
             val++;
         }
         DEBUG(( mask, "%x ", val ));
@@ -754,8 +754,8 @@ void ReadHashPointers( void *cookie )
 void ClearHashPointers( void )
 /***********************************/
 {
-    memset( GlobalSymPtrs, 0, GLOBAL_TABSIZE * sizeof(symbol *) );
-    memset( StaticSymPtrs, 0, STATIC_TABSIZE * sizeof(symbol *) );
+    memset( GlobalSymPtrs, 0, GLOBAL_TABSIZE * sizeof( symbol * ) );
+    memset( StaticSymPtrs, 0, STATIC_TABSIZE * sizeof( symbol * ) );
 }
 
 void SetSymCase( void )
@@ -968,7 +968,7 @@ static unsigned StaticHashFn( const char *name, size_t len )
     modval >>= 8;
     value = value ^ ScatterTable[modval & 0xff];
     while( len-- > 0 ) {
-        value = (value << 1) ^ ScatterTable[*(unsigned char *)name ];
+        value = (value << 1) ^ ScatterTable[*(unsigned char *)name];
         ++name;
     }
     return( value % STATIC_TABSIZE );

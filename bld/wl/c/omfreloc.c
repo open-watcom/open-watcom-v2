@@ -246,7 +246,7 @@ static void StoreBakPat( segdata *sdata, byte loctype )
     bakpat_list         *bkptr;
 
     len = EOObjRec - ObjBuff;
-    _ChkAlloc( bkptr, sizeof(bakpat_list) + len - 1 );
+    _ChkAlloc( bkptr, sizeof( bakpat_list ) + len - 1 );
     bkptr->len = len;
     bkptr->loctype = loctype;
     bkptr->sdata = sdata;   /* We don't know the data offset yet. */
@@ -291,34 +291,34 @@ void DoBakPats( void )
         while( bkptr->len > 0 ) {
             if( bkptr->is32bit ) {
                 _TargU32toHost( _GetU32( data ), off );
-                data += sizeof(unsigned_32);
+                data += sizeof( unsigned_32 );
                 _TargU32toHost( _GetU32( data ), value );
-                data += sizeof(unsigned_32);
-                bkptr->len -= 2 * sizeof(unsigned_32);
+                data += sizeof( unsigned_32 );
+                bkptr->len -= 2 * sizeof( unsigned_32 );
             } else {
                 _TargU16toHost( _GetU16( data ), off );
-                data += sizeof(unsigned_16);
+                data += sizeof( unsigned_16 );
                 _TargU16toHost( _GetU16( data ), value );
-                data += sizeof(unsigned_16);
-                bkptr->len -= 2 * sizeof(unsigned_16);
+                data += sizeof( unsigned_16 );
+                bkptr->len -= 2 * sizeof( unsigned_16 );
             }
             /* Now the sdata->data pointer should be valid. */
             vmemloc = bkptr->sdata->u1.vm_ptr + off;
             switch( bkptr->loctype ) {
             case 0:
-                ReadInfo( vmemloc, &value8, sizeof(unsigned_8) );
+                ReadInfo( vmemloc, &value8, sizeof( unsigned_8 ) );
                 value8 += value;
-                PutInfo( vmemloc, &value8, sizeof(unsigned_8) );
+                PutInfo( vmemloc, &value8, sizeof( unsigned_8 ) );
                 break;
             case 1:
-                ReadInfo( vmemloc, &value16, sizeof(unsigned_16) );
+                ReadInfo( vmemloc, &value16, sizeof( unsigned_16 ) );
                 value16 += value;
-                PutInfo( vmemloc, &value16, sizeof(unsigned_16) );
+                PutInfo( vmemloc, &value16, sizeof( unsigned_16 ) );
                 break;
             case 2:
-                ReadInfo( vmemloc, &value32, sizeof(unsigned_32) );
+                ReadInfo( vmemloc, &value32, sizeof( unsigned_32 ) );
                 value32 += value;
-                PutInfo( vmemloc, &value32, sizeof(unsigned_32) );
+                PutInfo( vmemloc, &value32, sizeof( unsigned_32 ) );
                 break;
             }
         }

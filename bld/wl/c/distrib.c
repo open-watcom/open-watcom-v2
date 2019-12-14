@@ -101,7 +101,7 @@ void AddModTable( mod_entry * lp, unsigned_16 libspot )
         ModTable = new;
         CurrModThere *= 2;
     }
-    ModTable[ CurrModHandle ] = lp;
+    ModTable[CurrModHandle] = lp;
     lp->x.arclist = ArcBuffer;
     ArcBuffer->numarcs = 0;
     if( lp->modinfo & MOD_FIXED ) {
@@ -205,13 +205,13 @@ void SetSegments( void )
 
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         for( index = 1; index <= CurrModHandle; index++ ) {
-            mod = ModTable[ index ];
+            mod = ModTable[index];
             CurrMod = mod;
             ovlref = mod->x.arclist->ovlref;
             if( ovlref == NO_ARCS_YET ) {       // only data referenced
                 CurrSect = Root;
             } else {
-                CurrSect = SectOvlTab[ ovlref ];
+                CurrSect = SectOvlTab[ovlref];
             }
             DefModSegments( mod );
             mod->x.next = NULL;
@@ -238,7 +238,7 @@ void FreeDistStuff( void )
     unsigned    index;
 
     for( index = 1; index <= CurrModHandle; index++ ) {
-        FreeAMod( ModTable[ index ] );
+        FreeAMod( ModTable[index] );
     }
     _LnkFree( ModTable );
     _LnkFree( ArcBuffer );
@@ -253,7 +253,7 @@ void ProcDistMods( void )
     mod_entry * mod;
 
     for( index = 1; index <= CurrModHandle; index++ ) {
-        mod = ModTable[ index ];
+        mod = ModTable[index];
         CurrSect = mod->n.sect;
         PModule( mod );
     }
@@ -360,7 +360,7 @@ void RefDistribSym( symbol * sym )
     arc.sym = sym;
     if( sym->info & SYM_DEFINED ) {
         if( sym->info & SYM_DISTRIB ) {
-            mod = ModTable[ sym->u.d.modnum ];
+            mod = ModTable[sym->u.d.modnum];
             if( mod->modinfo & MOD_FIXED ) {        // add reference, as long
                 seg = sym->p.seg;                   // as it is a code ref.
                 if( seg->iscode ) {
@@ -396,7 +396,7 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlref, unsigned_16 sym_ovlre
  * at this point, we know it has already been defined, but does not have an
  * overlay vector, and is not data
 */
-    if( LowestAncestor( sym_ovlref, SectOvlTab[ ovlref ] ) != sym_ovlref ) {
+    if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
         Vectorize( sym );
         return( true );
     }
@@ -514,8 +514,7 @@ void FinishArcs( mod_entry *mod )
     if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module
         mod->x.arclist->numarcs = 0;        // more than once
     }
-    allocsize = mod->x.arclist->numarcs * sizeof(dist_arc)
-                                 + sizeof(arcdata) - sizeof(dist_arc);
+    allocsize = mod->x.arclist->numarcs * sizeof( dist_arc ) + sizeof( arcdata ) - sizeof( dist_arc );
     _Pass1Alloc( newarcs, allocsize );
     memcpy( newarcs, mod->x.arclist, allocsize );
     mod->x.arclist = newarcs;

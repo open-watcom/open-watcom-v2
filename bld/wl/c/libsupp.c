@@ -86,7 +86,7 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
     return( true );
 }
 
-#define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
+#define PREFIX_LEN (sizeof( ImportSymPrefix ) - 1)
 
 bool LibFind( const char *name, bool old_sym )
 /*********************************************/

@@ -502,7 +502,7 @@ static void ProcAppLoader( void )
 static void ProcCode( void )
 /**************************/
 {
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     size_t  len;
 
@@ -528,7 +528,7 @@ static void ProcData( void )
 /**************************/
 // NYI: serious copied code from ProcCode.  Should be united into one routine.
 {
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     size_t  len;
 
@@ -1086,7 +1086,7 @@ static void GetSegments( void )
 {
     char    *segname;
     size_t  seglen;
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     char    *currloc;
     size_t  len;

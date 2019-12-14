@@ -56,12 +56,13 @@ virt_mem AllocStg( virt_mem_size size )
 {
     vmemblock * ptr;
 
-    if( size == 0 ) return 0;
+    if( size == 0 )
+        return 0;
     if( size < TINY_ALLOC_CUTOFF ) {
-        _PermAlloc( ptr, size + sizeof(vmemblock) - 1 );
+        _PermAlloc( ptr, size + sizeof( vmemblock ) - 1 );
         ptr->next = ptr;
     } else {
-        _ChkAlloc( ptr, size + sizeof(vmemblock) - 1 );
+        _ChkAlloc( ptr, size + sizeof( vmemblock ) - 1 );
         ptr->prev = NULL;
         ptr->next = VMemBlocks;
         if( VMemBlocks != NULL ) {

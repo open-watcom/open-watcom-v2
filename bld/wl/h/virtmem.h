@@ -38,10 +38,10 @@ extern void WriteInfoLoad( virt_mem, virt_mem_size );
 extern void PutInfoNulls( virt_mem, virt_mem_size );
 extern bool CompareInfo( virt_mem, const void *, virt_mem_size );
 
-#define GET32INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_32) )
-#define GET16INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_16) )
-#define PUT32INFO( v, b ) PutInfo( v, &(b), sizeof(unsigned_32) )
-#define PUT16INFO( v, b ) PutInfo( v, &(b), sizeof(unsigned_16) )
+#define GET32INFO( v, b ) ReadInfo( v, &(b), sizeof( unsigned_32 ) )
+#define GET16INFO( v, b ) ReadInfo( v, &(b), sizeof( unsigned_16 ) )
+#define PUT32INFO( v, b ) PutInfo( v, &(b), sizeof( unsigned_32 ) )
+#define PUT16INFO( v, b ) PutInfo( v, &(b), sizeof( unsigned_16 ) )
 
 #else
 

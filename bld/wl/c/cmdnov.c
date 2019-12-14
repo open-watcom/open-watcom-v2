@@ -91,7 +91,7 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
     //  a function name with a numeric character (I believe)
     */
 
-    if( IS_NUMBER( &findAt[ 1 ] ) ) {
+    if( IS_NUMBER( &findAt[1] ) ) {
         *name = token;
         *namelen = tokenlen;
         return( true );

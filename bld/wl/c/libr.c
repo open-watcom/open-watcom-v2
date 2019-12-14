@@ -470,7 +470,7 @@ static void SetDict( file_list *lib, unsigned dict_page )
         if( dict->cache != NULL ) {
             QSeek( lib->infile->handle, dict->start, lib->infile->name.u.ptr );
             for( bucket = 0; bucket < num_buckets; ++bucket ) {
-                QRead( lib->infile->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
+                QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
             }
             QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->infile->name.u.ptr );
             lib->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
@@ -511,8 +511,8 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     if( cache == NULL )
         return( NULL );
     for( bucket = 0; bucket < num_buckets; ++bucket ) {
-        _LnkAlloc( cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE );
-        if( cache[ bucket ] == NULL ) {
+        _LnkAlloc( cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE );
+        if( cache[bucket] == NULL ) {
             FreeDictCache( cache, bucket );
             return( NULL );
         }
