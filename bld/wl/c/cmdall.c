@@ -72,7 +72,7 @@ void ResetCmdAll( void )
 }
 
 bool ProcDosSeg( void )
-/****************************/
+/*********************/
 /* process DOSSEG option */
 {
     LinkState |= LS_DOSSEG_FLAG;
@@ -81,7 +81,7 @@ bool ProcDosSeg( void )
 }
 
 bool ProcName( void )
-/**************************/
+/*******************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
         return( false );
@@ -94,7 +94,7 @@ bool ProcName( void )
 }
 
 bool ProcFormat( void )
-/****************************/
+/*********************/
 {
     if( LinkState & LS_FMT_SPECIFIED ) {
         LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
@@ -113,13 +113,13 @@ static bool AddOption( void )
 }
 
 bool ProcOptions( void )
-/*****************************/
+/**********************/
 {
     return( ProcArgList( AddOption, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcDebug( void )
-/***************************/
+/********************/
 {
     bool        gotmod;
 
@@ -142,7 +142,7 @@ bool ProcDebug( void )
 }
 
 bool ProcDwarfDBI( void )
-/******************************/
+/***********************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_DWARF_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -153,7 +153,7 @@ bool ProcDwarfDBI( void )
 }
 
 bool ProcWatcomDBI( void )
-/*******************************/
+/************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_OLD_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -164,7 +164,7 @@ bool ProcWatcomDBI( void )
 }
 
 bool ProcCodeviewDBI( void )
-/*********************************/
+/**************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_CV_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -175,7 +175,7 @@ bool ProcCodeviewDBI( void )
 }
 
 bool ProcLine( void )
-/**************************/
+/*******************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -186,7 +186,7 @@ bool ProcLine( void )
 
 #if 0
 bool ProcDBIStatic( void )
-/*******************************/
+/************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -197,7 +197,7 @@ bool ProcDBIStatic( void )
 #endif
 
 bool ProcType( void )
-/**************************/
+/*******************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -207,7 +207,7 @@ bool ProcType( void )
 }
 
 bool ProcLocal( void )
-/***************************/
+/********************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -217,7 +217,7 @@ bool ProcLocal( void )
 }
 
 bool ProcAll( void )
-/*************************/
+/******************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -243,7 +243,7 @@ static bool AddAlias( void )
 }
 
 bool ProcAlias( void )
-/***************************/
+/********************/
 {
     return( ProcArgList( &AddAlias, TOK_INCLUDE_DOT ) );
 }
@@ -259,13 +259,13 @@ static bool AddReference( void )
 }
 
 bool ProcReference( void )
-/*******************************/
+/************************/
 {
     return( ProcArgList( &AddReference, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcOSName( void )
-/****************************/
+/*********************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         if( FmtData.osname != NULL ) {
@@ -278,7 +278,7 @@ bool ProcOSName( void )
 }
 
 bool ProcEliminate( void )
-/*******************************/
+/************************/
 /* turn on dead code elimination */
 {
     LinkFlags |= LF_STRIP_CODE;
@@ -286,7 +286,7 @@ bool ProcEliminate( void )
 }
 
 bool ProcMaxErrors( void )
-/*******************************/
+/************************/
 /* set a maximum number of errors for the linker to generate */
 {
     if( !GetLong( &MaxErrors ) )
@@ -296,7 +296,7 @@ bool ProcMaxErrors( void )
 }
 
 bool ProcSymFile( void )
-/*****************************/
+/**********************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
@@ -308,7 +308,7 @@ bool ProcSymFile( void )
 }
 
 static file_list *AllocNewFile( member_list *member )
-/****************************************************/
+/***************************************************/
 {
     file_list       *new_entry;
 
@@ -331,7 +331,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
 
     new_member = NULL;
     if( member != NULL ) {
-        _ChkAlloc( new_member, offsetof(member_list,name) + strlen( member ) + 1 );
+        _ChkAlloc( new_member, offsetof( member_list, name ) + strlen( member ) + 1 );
         new_member->flags = DBIFlag;
         strcpy( new_member->name, member );
         new_member->next = NULL;
@@ -361,9 +361,8 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
 }
 
 file_list *AddObjLib( const char *name, lib_priority priority )
-/***************************************************************/
-
- {
+/*************************************************************/
+{
     file_list   **owner;
     file_list   **new_owner;
     file_list   *lib;
@@ -431,7 +430,7 @@ static bool AddLibFile( void )
 }
 
 bool ProcLibFile( void )
-/*****************************/
+/**********************/
 /* process FILE command */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
@@ -444,7 +443,7 @@ bool ProcLibFile( void )
 }
 
 static bool AddModFile( void )
-/*****************************/
+/****************************/
 {
     char        *ptr;
     char        *membname;
@@ -490,7 +489,7 @@ static bool AddFile( void )
 }
 
 bool ProcFiles( void )
-/***************************/
+/********************/
 /* process FILE command */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
@@ -500,7 +499,7 @@ bool ProcFiles( void )
 }
 
 bool ProcModFiles( void )
-/***************************/
+/***********************/
 {
     return( ProcArgList( &AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
@@ -532,7 +531,7 @@ static bool AddLib( void )
 }
 
 bool ProcLibrary( void )
-/*****************************/
+/**********************/
 /* process LIB command */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0
@@ -543,7 +542,7 @@ bool ProcLibrary( void )
 }
 
 bool ProcOptLib( void )
-/****************************/
+/*********************/
 {
     bool    retval;
 
@@ -554,7 +553,7 @@ bool ProcOptLib( void )
 }
 
 bool ProcLibPath( void )
-/*****************************/
+/**********************/
 /* process libpath command */
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -566,7 +565,7 @@ bool ProcLibPath( void )
 }
 
 bool ProcPath( void )
-/**************************/
+/*******************/
 /* process PATH option */
 {
     path_entry      *new_path;
@@ -592,7 +591,7 @@ bool ProcPath( void )
 }
 
 bool ProcMap( void )
-/*************************/
+/******************/
 /* process MAP option */
 {
     MapFlags |= MAP_FLAG;
@@ -607,7 +606,7 @@ bool ProcMap( void )
 }
 
 bool ProcMapLines( void )
-/*************************/
+/***********************/
 /* process MAPLINES option */
 {
     MapFlags |= MAP_LINES;
@@ -615,7 +614,7 @@ bool ProcMapLines( void )
 }
 
 bool ProcStack( void )
-/***************************/
+/********************/
 /* process STACK option */
 {
     unsigned_32     value;
@@ -630,7 +629,7 @@ bool ProcStack( void )
 }
 
 bool ProcNameLen( void )
-/*****************************/
+/**********************/
 /* process NAMELEN option */
 {
     unsigned_32     value;
@@ -648,7 +647,7 @@ bool ProcNameLen( void )
 }
 
 bool ProcCase( void )
-/**************************/
+/*******************/
 /* process CASE option */
 {
     LinkFlags |= LF_CASE_FLAG;
@@ -658,7 +657,7 @@ bool ProcCase( void )
 }
 
 bool ProcNoCaseExact( void )
-/*********************************/
+/**************************/
 /* process nocaseexact option */
 {
     LinkFlags &= ~LF_CASE_FLAG;
@@ -668,14 +667,14 @@ bool ProcNoCaseExact( void )
 }
 
 bool ProcNoExtension( void )
-/*********************************/
+/**************************/
 {
     CmdFlags |= CF_NO_EXTENSION;
     return( true );
 }
 
 bool ProcNoCache( void )
-/*****************************/
+/**********************/
 {
     LinkFlags &= ~LF_CACHE_FLAG;
     LinkFlags |= LF_NOCACHE_FLAG;
@@ -683,7 +682,7 @@ bool ProcNoCache( void )
 }
 
 bool ProcCache( void )
-/***************************/
+/********************/
 {
     LinkFlags &= ~LF_NOCACHE_FLAG;
     LinkFlags |= LF_CACHE_FLAG;
@@ -710,20 +709,20 @@ static bool AddDisable( void )
 }
 
 bool ProcDisable( void )
-/*****************************/
+/**********************/
 {
     return( ProcArgList( &AddDisable, TOK_NORMAL ) );
 }
 
 bool ProcNoDefLibs( void )
-/*******************************/
+/************************/
 /* process CASE option */
 {
     return( true );
 }
 
 bool ProcVerbose( void )
-/*****************************/
+/**********************/
 {
     MapFlags |= MAP_VERBOSE;
     DEBUG(( DBG_OLD, "verbose map file" ));
@@ -731,7 +730,7 @@ bool ProcVerbose( void )
 }
 
 bool ProcUndefsOK( void )
-/******************************/
+/***********************/
 {
     LinkFlags |= LF_UNDEFS_ARE_OK;
     DEBUG(( DBG_OLD, "undefined symbols are OK" ));
@@ -739,28 +738,28 @@ bool ProcUndefsOK( void )
 }
 
 bool ProcNoUndefsOK( void )
-/********************************/
+/*************************/
 {
     LinkFlags &= ~LF_UNDEFS_ARE_OK;
     return( true );
 }
 
 bool ProcRedefsOK( void )
-/******************************/
+/***********************/
 {
     LinkFlags |= LF_REDEFS_OK;
     return( true );
 }
 
 bool ProcNoRedefs( void )
-/******************************/
+/***********************/
 {
     LinkFlags &= ~LF_REDEFS_OK;
     return( true );
 }
 
 bool ProcCVPack( void )
-/****************************/
+/*********************/
 {
     LinkFlags |= LF_CVPACK_FLAG;
     return( true );
@@ -769,7 +768,7 @@ bool ProcCVPack( void )
 #define DEFAULT_INC_NAME "__wlink.ilk"
 
 bool ProcIncremental( void )
-/*********************************/
+/**************************/
 {
 #if !defined( __DOS__ )
     if( CmdFlags & CF_AFTER_INC ) {
@@ -789,21 +788,21 @@ bool ProcIncremental( void )
 }
 
 bool ProcQuiet( void )
-/***************************/
+/********************/
 {
     LinkFlags |= LF_QUIET_FLAG;
     return( true );
 }
 
 bool ProcMangledNames( void )
-/**********************************/
+/***************************/
 {
     LinkFlags |= LF_DONT_UNMANGLE;
     return( true );
 }
 
 bool ProcOpResource( void )
-/********************************/
+/*************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         FmtData.res_name_only = true;
@@ -817,35 +816,35 @@ bool ProcOpResource( void )
 }
 
 bool ProcStatics( void )
-/*****************************/
+/**********************/
 {
     MapFlags |= MAP_STATICS;
     return( true );
 }
 
 bool ProcArtificial( void )
-/********************************/
+/*************************/
 {
     MapFlags |= MAP_ARTIFICIAL;
     return( true );
 }
 
 bool ProcAlphabetical( void )
-/**********************************/
+/***************************/
 {
     MapFlags |= MAP_ALPHA;
     return( true );
 }
 
 bool ProcGlobal( void )
-/****************************/
+/*********************/
 {
     MapFlags |= MAP_GLOBAL;
     return( true );
 }
 
 bool ProcSort( void )
-/**************************/
+/*******************/
 {
     MapFlags |= MAP_SORT;
     if( !ProcOne( SortOptions, SEP_NO, false ) )
@@ -855,49 +854,49 @@ bool ProcSort( void )
 }
 
 bool ProcLanguage( void )
-/******************************/
+/***********************/
 {
     CmdFlags &= ~CF_LANGUAGE_MASK;
     return( ProcOne( Languages, SEP_NO, false ) );
 }
 
 bool ProcJapanese( void )
-/******************************/
+/***********************/
 {
     CmdFlags |= CF_LANGUAGE_JAPANESE;
     return( true );
 }
 
 bool ProcChinese( void )
-/*****************************/
+/**********************/
 {
     CmdFlags |= CF_LANGUAGE_CHINESE;
     return( true );
 }
 
 bool ProcKorean( void )
-/****************************/
+/*********************/
 {
     CmdFlags |= CF_LANGUAGE_KOREAN;
     return( true );
 }
 
 bool ProcShowDead( void )
-/******************************/
+/***********************/
 {
     LinkFlags |= LF_SHOW_DEAD;
     return( true );
 }
 
 bool ProcVFRemoval( void )
-/*******************************/
+/************************/
 {
     LinkFlags |= LF_VF_REMOVAL;
     return( true );
 }
 
 bool ProcStart( void )
-/***************************/
+/********************/
 {
     char        *name;
 
@@ -927,7 +926,7 @@ static bool GetPackValue( unsigned_32 *value, char *name )
 }
 
 bool ProcPackcode( void )
-/******************************/
+/***********************/
 {
     unsigned_32     value;
 
@@ -940,7 +939,7 @@ bool ProcPackcode( void )
 }
 
 bool ProcPackdata( void )
-/******************************/
+/***********************/
 {
     unsigned_32     value;
 
@@ -953,7 +952,7 @@ bool ProcPackdata( void )
 }
 
 bool ProcNewSegment( void )
-/********************************/
+/*************************/
 // force the start of a new auto-group after the previous object file.
 {
     if( LastFile.u.file == NULL ) {
@@ -1005,13 +1004,13 @@ static sysblock *FindSystemBlock( const char *name )
 }
 
 bool ProcSysDelete( void )
-/*******************************/
+/************************/
 {
     return( true );
 }
 
 bool ProcSystem( void )
-/****************************/
+/*********************/
 /* process the system directive */
 {
     char        *sysname;
@@ -1090,7 +1089,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
 }
 
 bool ProcSysBegin( void )
-/******************************/
+/***********************/
 /* parse a system begin block and store it somewhere */
 {
     char        *sysname;
@@ -1116,14 +1115,14 @@ bool ProcSysBegin( void )
 }
 
 bool ProcSysEnd( void )
-/****************************/
+/*********************/
 /* finished parsing a system block */
 {
     return( true );
 }
 
 bool ProcStartLink( void )
-/*******************************/
+/************************/
 /* save up list of commands to process later */
 {
     GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
@@ -1131,14 +1130,14 @@ bool ProcStartLink( void )
 }
 
 bool ProcEndLink( void )
-/*****************************/
+/**********************/
 /* finished parsing a link section */
 {
     return( true );
 }
 
 bool ProcStub( void )
-/**************************/
+/*******************/
 {
     char        *name;
     char        **nameptr;
@@ -1174,7 +1173,7 @@ bool ProcNoStub( void )
 }
 
 bool ProcVersion( void )
-/*****************************/
+/**********************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1217,7 +1216,7 @@ bool ProcVersion( void )
 }
 
 bool ProcImplib( void )
-/****************************/
+/*********************/
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = false;
@@ -1229,7 +1228,7 @@ bool ProcImplib( void )
 }
 
 bool ProcImpFile( void )
-/*****************************/
+/**********************/
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = true;
@@ -1248,7 +1247,7 @@ static bool AddRunTime( void )
 }
 
 bool ProcRuntime( void )
-/*****************************/
+/**********************/
 {
     return( ProcArgList( AddRunTime, TOK_INCLUDE_DOT ) );
 }
@@ -1264,7 +1263,7 @@ static bool AddSymTrace( void )
 }
 
 bool ProcSymTrace( void )
-/******************************/
+/***********************/
 {
     LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT ) );
@@ -1288,14 +1287,14 @@ static bool AddModTrace( void )
 }
 
 bool ProcModTrace( void )
-/******************************/
+/***********************/
 {
     LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 bool ProcFarCalls( void )
-/*********************************/
+/***********************/
 {
     LinkFlags |= LF_FAR_CALLS_FLAG;
     DEBUG(( DBG_OLD, "Far Calls optimization" ));
@@ -1303,7 +1302,7 @@ bool ProcFarCalls( void )
 }
 
 bool ProcNoFarCalls( void )
-/***********************************/
+/*************************/
 {
     LinkFlags &= ~LF_FAR_CALLS_FLAG ;
     DEBUG(( DBG_OLD, "No Far Calls optimization" ));
@@ -1311,7 +1310,7 @@ bool ProcNoFarCalls( void )
 }
 
 bool ProcOutput( void )
-/******************************/
+/*********************/
 {
    bool     ret;
 
@@ -1326,28 +1325,28 @@ bool ProcOutput( void )
 }
 
 bool ProcOutputRaw( void )
-/*********************************/
+/************************/
 {
    FmtData.output_raw = true;
    return( true );
 }
 
 bool ProcOutputHex( void )
-/*********************************/
+/************************/
 {
    FmtData.output_hex = true;
    return( true );
 }
 
 bool ProcOutputStart( void )
-/*********************************/
+/**************************/
 {
    FmtData.output_start = true;
    return( true );
 }
 
 bool ProcOutputOfs( void )
-/*********************************/
+/************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1366,7 +1365,7 @@ bool ProcOutputOfs( void )
 }
 
 bool ProcOutputHshift( void )
-/************************************/
+/***************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1386,7 +1385,7 @@ bool ProcOutputHshift( void )
 }
 
 bool ProcHshift( void )
-/******************************/
+/*********************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1406,7 +1405,7 @@ bool ProcHshift( void )
 }
 
 bool ProcFillchar( void )
-/********************************/
+/***********************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1428,7 +1427,7 @@ static ORDER_CLASS      *CurrOClass;
 static ORDER_SEGMENT    *CurrOSeg;
 
 bool ProcOrder( void )
-/******************************/
+/********************/
 {
     bool    ret;
 
@@ -1444,7 +1443,7 @@ bool ProcOrder( void )
 }
 
 bool ProcOrdClass( void )
-/**********************************/
+/***********************/
 {
     ORDER_CLASS *LastOClass;
 
@@ -1473,7 +1472,7 @@ bool ProcOrdClass( void )
 }
 
 bool ProcOrdSegAdr( void )
-/***********************************/
+/************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1494,7 +1493,7 @@ bool ProcOrdSegAdr( void )
 }
 
 bool ProcOrdOfsAdr( void )
-/***********************************/
+/************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1515,7 +1514,7 @@ bool ProcOrdOfsAdr( void )
 }
 
 bool ProcOrdCopy( void )
-/*********************************/
+/**********************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1526,14 +1525,14 @@ bool ProcOrdCopy( void )
 }
 
 bool ProcOrdNoEmit( void )
-/*********************************/
+/************************/
 {
     CurrOClass->NoEmit = true;
     return( true );
 }
 
 bool ProcOrdSeg( void )
-/**********************************/
+/*********************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1550,7 +1549,7 @@ bool ProcOrdSeg( void )
 }
 
 bool ProcOrdSegSegAdr( void )
-/***********************************/
+/***************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1571,7 +1570,7 @@ bool ProcOrdSegSegAdr( void )
 }
 
 bool ProcOrdSegOfsAdr( void )
-/***********************************/
+/***************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1592,9 +1591,8 @@ bool ProcOrdSegOfsAdr( void )
 }
 
 bool ProcOrdSegNoEmit( void )
-/*********************************/
+/***************************/
 {
     CurrOSeg->NoEmit = true;
     return( true );
 }
-

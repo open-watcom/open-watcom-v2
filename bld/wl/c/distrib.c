@@ -44,26 +44,27 @@
 #include "specials.h"
 #include "load16m.h"
 
-static unsigned_16  CurrModThere;
-static arcdata *    ArcBuffer;
-static unsigned_32  ArcBufLen;
-static mod_entry ** ModTable;
-static unsigned_16  CurrModHandle;
 
-section **          SectOvlTab;
+#define MOD_DEREF( x )      (ModTable[(x)])
+#define INITIAL_MOD_ALLOC   32
+#define INITIAL_ARC_ALLOC   32
+#define MAX_NUM_MODULES     (8 * 1024)
+
+section             **SectOvlTab;
+
+static unsigned_16  CurrModThere;
+static arcdata      *ArcBuffer;
+static unsigned_32  ArcBufLen;
+static mod_entry    **ModTable;
+static unsigned_16  CurrModHandle;
 
 /* forward declarations */
 
-static bool NewRefVector( symbol *, unsigned_16, unsigned_16 );
-static void ScanArcs( mod_entry *mod );
-
-#define MOD_DEREF( x )  (ModTable[(x)])
-#define INITIAL_MOD_ALLOC 32
-#define INITIAL_ARC_ALLOC 32
-#define MAX_NUM_MODULES   (8 * 1024)
+static bool     NewRefVector( symbol *, unsigned_16, unsigned_16 );
+static void     ScanArcs( mod_entry *mod );
 
 void ResetDistrib( void )
-/******************************/
+/***********************/
 {
     ArcBuffer = NULL;
     ModTable = NULL;
@@ -71,18 +72,18 @@ void ResetDistrib( void )
 }
 
 void InitModTable( void )
-/******************************/
+/***********************/
 {
     CurrModThere = INITIAL_MOD_ALLOC;
     _ChkAlloc( ModTable, INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
     CurrModHandle = 0;
     ArcBufLen = INITIAL_ARC_ALLOC;
-    _ChkAlloc( ArcBuffer, sizeof( arcdata ) + ( INITIAL_ARC_ALLOC - 1 ) * sizeof( dist_arc ) );
+    _ChkAlloc( ArcBuffer, offsetof( arcdata, arcs ) + INITIAL_ARC_ALLOC * sizeof( dist_arc ) );
     MakePass1Blocks();
 }
 
 void AddModTable( mod_entry * lp, unsigned_16 libspot )
-/************************************************************/
+/*****************************************************/
 /* add this module to the table, and make the arclist field point to a
  * scratch buffer */
 // NYI: segdata changes have completely broken distributing libraries.
@@ -112,11 +113,11 @@ void AddModTable( mod_entry * lp, unsigned_16 libspot )
 }
 
 void InitArcBuffer( mod_entry * mod )
-/******************************************/
+/***********************************/
 /* set up the mod_entry arcdata field for dead code elimination */
 {
     if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
-        _PermAlloc( mod->x.arclist, sizeof( arcdata ) - DIST_ONLY_SIZE );
+        _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
     }
 }
 
@@ -178,7 +179,7 @@ static void DefineOvlSegments( mod_entry *mod )
 }
 
 void SetSegments( void )
-/*****************************/
+/**********************/
 // now that we know where everything is, do all the processing that has been
 // postponed until now.
 {
@@ -233,7 +234,7 @@ void SetSegments( void )
 }
 
 void FreeDistStuff( void )
-/*******************************/
+/************************/
 {
     unsigned    index;
 
@@ -247,7 +248,7 @@ void FreeDistStuff( void )
 }
 
 void ProcDistMods( void )
-/******************************/
+/***********************/
 {
     unsigned_16 index;
     mod_entry * mod;
@@ -260,7 +261,7 @@ void ProcDistMods( void )
 }
 
 unsigned_16 LowestAncestor( unsigned_16 ovlref, section * sect )
-/*******************************************************************/
+/**************************************************************/
 /* find the lowest common ancestor of the two overlay values by marking all of
  * the ancestors of the first overlay, and then looking for marked ancestors
  * of the other overlay */
@@ -322,8 +323,8 @@ static void AddArc( dist_arc arc )
 
     arclist = CurrMod->x.arclist;
     if( arclist->numarcs >= ArcBufLen ) {
-        _ChkAlloc( arclist, sizeof( arcdata ) + ( ArcBufLen * 2 - 1 ) * sizeof( dist_arc ) );
-        memcpy( arclist, ArcBuffer, sizeof( arcdata ) + ( ArcBufLen - 1 ) * sizeof( dist_arc ) );
+        _ChkAlloc( arclist, offsetof( arcdata, arcs ) + 2 * ArcBufLen * sizeof( dist_arc ) );
+        memcpy( arclist, ArcBuffer, offsetof( arcdata, arcs ) + ArcBufLen * sizeof( dist_arc ) );
         _LnkFree( ArcBuffer );
         CurrMod->x.arclist = arclist;
         ArcBuffer = arclist;
@@ -415,8 +416,7 @@ static void DoRefGraph( unsigned_16 ovlref, mod_entry * mod )
 /*
  * this next line is necessary to break cycles in the graph.
 */
-    if( (mod->modinfo & MOD_VISITED) && ( ovlref == arcs->ovlref )
-        || (mod->modinfo & MOD_FIXED) )
+    if( (mod->modinfo & MOD_VISITED) && ( ovlref == arcs->ovlref ) || (mod->modinfo & MOD_FIXED) )
         return;
     if( arcs->ovlref == NO_ARCS_YET ) {
         arcs->ovlref = 0;
@@ -503,7 +503,7 @@ static void ScanArcs( mod_entry *mod )
 }
 
 void FinishArcs( mod_entry *mod )
-/**************************************/
+/*******************************/
 /* check the position of the modules referenced by mod, and then make a
  * more permanent copy of the arclist for this module. */
 {
@@ -514,14 +514,14 @@ void FinishArcs( mod_entry *mod )
     if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module
         mod->x.arclist->numarcs = 0;        // more than once
     }
-    allocsize = mod->x.arclist->numarcs * sizeof( dist_arc ) + sizeof( arcdata ) - sizeof( dist_arc );
+    allocsize = offsetof( arcdata, arcs ) + mod->x.arclist->numarcs * sizeof( dist_arc );
     _Pass1Alloc( newarcs, allocsize );
     memcpy( newarcs, mod->x.arclist, allocsize );
     mod->x.arclist = newarcs;
 }
 
 void DistIndCall( symbol *sym )
-/************************************/
+/*****************************/
 // handle indirect calls and their effect on distributed libs.
 {
     arcdata *   arcs;
