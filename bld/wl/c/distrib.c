@@ -511,8 +511,8 @@ void FinishArcs( mod_entry *mod )
     unsigned    allocsize;
 
     ScanArcs( mod );
-    if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module
-        mod->x.arclist->numarcs = 0;        // more than once
+    if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module more than once
+        mod->x.arclist->numarcs = 0;
     }
     allocsize = offsetof( arcdata, arcs ) + mod->x.arclist->numarcs * sizeof( dist_arc );
     _Pass1Alloc( newarcs, allocsize );
