@@ -66,7 +66,7 @@ extern void     FarFreeSafe( void FAR *p );
 
 #ifdef USE_SCARCE
 
-extern void IfMemScarce( RET_T (*func)( void ) );
+extern void IfMemScarce( bool (*func)( void ) );
 
 #endif
 

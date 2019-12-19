@@ -388,13 +388,13 @@ STRM_T GetCHR( void )
 }
 
 #ifdef USE_SCARCE
-STATIC RET_T streamScarce( void )
-/*******************************/
+STATIC bool streamScarce( void )
+/******************************/
 {
     SENT    *cur;
 
     if( freeSent == NULL ) {
-        return( RET_ERROR );
+        return( false );
     }
 
     while( freeSent != NULL ) {
@@ -403,7 +403,7 @@ STATIC RET_T streamScarce( void )
         FreeSafe( cur );
     }
 
-    return( RET_SUCCESS );
+    return( true );
 }
 #endif
 

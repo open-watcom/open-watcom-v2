@@ -746,8 +746,8 @@ void CheckNoCmds( void )
 
 
 #if defined( USE_SCARCE ) || !defined( NDEBUG )
-STATIC RET_T cleanupLeftovers( void )
-/***********************************/
+STATIC bool cleanupLeftovers( void )
+/**********************************/
 {
     DEPEND      *dep;
     CLIST       *c;
@@ -762,7 +762,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeDepends = dep->next;
             FreeSafe( dep );
         } while( freeDepends != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeTLists != NULL ) {
         do {
@@ -770,7 +770,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeTLists = t->next;
             FreeSafe( t );
         } while( freeTLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeNKLists != NULL ) {
         do {
@@ -778,7 +778,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeNKLists = nk->next;
             FreeSafe( nk );
         } while( freeNKLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeSLists != NULL ) {
         do {
@@ -786,7 +786,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeSLists = slist->next;
             FreeSafe( slist );
         } while( freeSLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeFLists != NULL ) {
         do {
@@ -794,7 +794,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeFLists = f->next;
             FreeSafe( f );
         } while( freeFLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeCLists != NULL ) {
         do {
@@ -802,9 +802,9 @@ STATIC RET_T cleanupLeftovers( void )
             freeCLists = c->next;
             FreeSafe( c );
         } while( freeCLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
-    return( RET_ERROR );
+    return( false );
 }
 #endif
 

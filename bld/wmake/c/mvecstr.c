@@ -86,7 +86,7 @@ STATIC OURPTR freeVec;
  */
 
 #ifdef USE_SCARCE
-STATIC RET_T vecScarce( void )
+STATIC bool vecScarce( void )
 /****************************/
 {
     OURPTR cur;
@@ -97,10 +97,10 @@ STATIC RET_T vecScarce( void )
             freeVec = freeVec->next;
             FreeSafe( cur );
         }
-        return( RET_SUCCESS );
+        return( true );
     }
 
-    return( RET_ERROR );
+    return( false );
 }
 #endif
 
