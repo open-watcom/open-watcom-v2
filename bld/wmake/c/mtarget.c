@@ -845,7 +845,7 @@ void TargetFini( void )
     WalkHashTab( targTab, walkFree, NULL );
     FreeHashTab( targTab );
     targTab = NULL;
-    while( cleanupLeftovers() != RET_ERROR )
+    while( cleanupLeftovers() )
         ;
 #endif
 }
