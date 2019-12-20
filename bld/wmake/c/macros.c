@@ -260,20 +260,20 @@ STATIC char *findEqual( char *inString )
 }
 
 
-STATIC RET_T getOldNewString( char *inString, const char **oldString, const char **newString )
-/********************************************************************************************/
+STATIC bool getOldNewString( char *inString, const char **oldString, const char **newString )
+/*******************************************************************************************/
 {
     char    *equal;
 
     equal = findEqual( inString );
 
     if( equal == NULL ) {
-        return( RET_ERROR );
+        return( false );
     } else {
         *oldString = inString;
         *equal     = NULLCHAR;
         *newString = equal + 1;
-        return( RET_SUCCESS );
+        return( true );
     }
 }
 
@@ -443,7 +443,7 @@ char *GetMacroValue( const char *name )
             if( beforeSub == NULL ) {
                 afterSub = NULL;
             } else {
-                if( getOldNewString( p, &old, &new ) == RET_SUCCESS ) {
+                if( getOldNewString( p, &old, &new ) ) {
                     afterSub = doStringSubstitute( beforeSub, old, new );
                 } else {
                     afterSub = NULL;
