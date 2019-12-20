@@ -435,9 +435,7 @@ STATIC void parseFiles( void )
     bool        ok;
 
     Glob.preproc = true;            /* turn on preprocessor */
-
-                                    /* process makeinit */
-    if( !Glob.nomakeinit ) {
+    if( !Glob.nomakeinit ) {        /* process makeinit */
         if( Glob.compat_nmake ) {
             ok = InsFile( TOOLSINI_NAME, true );
         } else {
