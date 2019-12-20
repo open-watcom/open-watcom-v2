@@ -436,7 +436,7 @@ void CacheFini( void )
 bool CacheTime( const char *fullpath, time_t *ptime )
 /****************************************************
  * Given a full path to a file, get the st_mtime for that file.  If there
- * are no errors, return 0, otherwise 1.  If the file is in directory not
+ * are no errors, return true, otherwise false.  If the file is in directory not
  * cached yet, then cache it first.
  */
 {
