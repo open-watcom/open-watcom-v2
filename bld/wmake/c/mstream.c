@@ -229,8 +229,8 @@ STATIC bool fillBuffer( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-RET_T InsFile( const char *name, bool envsearch )
-/************************************************
+bool InsFile( const char *name, bool envsearch )
+/***********************************************
  * Open file named name, and push it into stream.  If can't find name, it
  * tries an implicit suffix search (possibly using the env variable PATH)
  */
@@ -245,26 +245,23 @@ RET_T InsFile( const char *name, bool envsearch )
         PrtMsg( DBG | INF | LOC | ENTERING_FILE, path );
 
         fp = fopen( path, "rb" );
-        if( fp == NULL ) {
-            return( RET_ERROR );
+        if( fp != NULL ) {
+            tmp = getSENT( SENT_FILE );
+            tmp->free = true;
+            tmp->data.file.name = StrDupSafe( path );
+
+            pushFP( tmp, fp );
+
+            if( !Glob.overide ) {
+                UnGetCHR( '\n' );
+                InsString( path, false );
+                InsString( "$+$(__MAKEFILES__)$- ", false );
+                DefMacro( "__MAKEFILES__" );
+            }
+            return( true );
         }
-
-        tmp = getSENT( SENT_FILE );
-        tmp->free = true;
-        tmp->data.file.name = StrDupSafe( path );
-
-        pushFP( tmp, fp );
-
-        if( !Glob.overide ) {
-            UnGetCHR( '\n' );
-            InsString( path, false );
-            InsString( "$+$(__MAKEFILES__)$- ", false );
-            DefMacro( "__MAKEFILES__" );
-        }
-
-        return( RET_SUCCESS );
     }
-    return( RET_ERROR );
+    return( false );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);

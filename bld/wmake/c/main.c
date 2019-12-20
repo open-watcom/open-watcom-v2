@@ -432,18 +432,18 @@ STATIC void parseFiles( void )
     const char  *p;
     NODE        *cur;
     NODE        *newhead;
-    RET_T       ret;
+    bool        ok;
 
     Glob.preproc = true;            /* turn on preprocessor */
 
                                     /* process makeinit */
     if( !Glob.nomakeinit ) {
         if( Glob.compat_nmake ) {
-            ret = InsFile( TOOLSINI_NAME, true );
+            ok = InsFile( TOOLSINI_NAME, true );
         } else {
-            ret = InsFile( MAKEINIT_NAME, true );
+            ok = InsFile( MAKEINIT_NAME, true );
         }
-        if( ret == RET_SUCCESS ) {
+        if( ok ) {
             setFirstTarget( Parse() );
             if( firstTargFound != NULL ) {
                 PrtMsg( WRN | MAKEINIT_HAS_TARGET );
@@ -452,12 +452,15 @@ STATIC void parseFiles( void )
     }
 
     if( filesToDo == NULL ) {
-        ret = InsFile( MAKEFILE_NAME, false );
-        if( ret == RET_SUCCESS ) {
+        ok = InsFile( MAKEFILE_NAME, false );
+        if( ok ) {
             setFirstTarget( Parse() );
 #ifdef MAKEFILE_ALT
-        } else if( (ret = InsFile( MAKEFILE_ALT, false )) == RET_SUCCESS ) {
-            setFirstTarget( Parse() );
+        } else {
+            ok = InsFile( MAKEFILE_ALT, false );
+            if( ok ) {
+                setFirstTarget( Parse() );
+            }
 #endif
         }
     } else {
@@ -477,11 +480,11 @@ STATIC void parseFiles( void )
             FreeSafe( cur );
             if( p[0] == '-' && p[1] == NULLCHAR ) { /* handle -f - */
                 InsOpenFile( stdin );
-                ret = RET_SUCCESS;
+                ok = true;
             } else {
-                ret = InsFile( p, false );
+                ok = InsFile( p, false );
             }
-            if( ret == RET_SUCCESS ) {
+            if( ok ) {
                 setFirstTarget( Parse() );
             } else {
                 PrtMsg( ERR | UNABLE_TO_INCLUDE, p );
@@ -491,8 +494,8 @@ STATIC void parseFiles( void )
 
     if( !Glob.nomakeinit ) {
         if( !Glob.compat_nmake ) {
-            ret = InsFile( MAKEFINI_NAME, true );
-            if( ret == RET_SUCCESS ) {
+            ok = InsFile( MAKEFINI_NAME, true );
+            if( ok ) {
                 setFirstTarget( Parse() );
             }
         }

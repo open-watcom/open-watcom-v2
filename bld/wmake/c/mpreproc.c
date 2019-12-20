@@ -847,7 +847,7 @@ STATIC void bangInclude( void )
     char    *temp = NULL;
     char    *p;
     char    full_path[_MAX_PATH];
-    RET_T   ret;
+    bool    ok;
 
     assert( !curNest.skip );
 
@@ -872,11 +872,11 @@ STATIC void bangInclude( void )
             for( ;; ) {
                 if( *p == NULLCHAR ) {
                     _searchenv( text, INCLUDE, full_path );
-                    ret = RET_ERROR;
-                    if( *full_path != NULLCHAR ) {
-                        ret = InsFile( full_path, false );
+                    ok = ( *full_path != NULLCHAR );
+                    if( ok ) {
+                        ok = InsFile( full_path, false );
                     }
-                    if( ret == RET_ERROR ) {
+                    if( !ok ) {
                         PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     }
                     break;
@@ -899,7 +899,7 @@ STATIC void bangInclude( void )
             FreeSafe( temp );
             return;
         }
-        if( InsFile( text, false ) != RET_SUCCESS ) {
+        if( !InsFile( text, false ) ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
     }
