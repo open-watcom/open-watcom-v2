@@ -131,13 +131,13 @@ STATIC void getStats( TARGET *targ )
         } else if( targ->attr.symbolic ) {
             targ->existing = false;
             targ->date = OLDEST_DATE;
-        } else if( CacheTime( targ->node.name, &targ->date ) != RET_SUCCESS ) {
+        } else if( CacheTime( targ->node.name, &targ->date ) ) {
+            targ->existing = true;
+        } else {
             /* if file doesn't exist make it old */
             targ->date = OLDEST_DATE;
             targ->existing = false;
             /* useful in those rare cases when a file has been deleted */
-        } else {
-            targ->existing = true;
         }
     } /* else: no changes in the status */
 }

@@ -433,8 +433,8 @@ void CacheFini( void )
 }
 
 
-RET_T CacheTime( const char *fullpath, time_t *ptime )
-/************************************************************
+bool CacheTime( const char *fullpath, time_t *ptime )
+/****************************************************
  * Given a full path to a file, get the st_mtime for that file.  If there
  * are no errors, return 0, otherwise 1.  If the file is in directory not
  * cached yet, then cache it first.
@@ -461,19 +461,19 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
                 }
             }
             *ptime = centry->ce_tt;
-            return( RET_SUCCESS );
+            return( true );
         case CACHE_NOT_ENUF_MEM:
             break;
         default:
-            return( RET_ERROR );
+            return( false );
         }
     }
 #endif
     if( stat( fullpath, &buf ) == 0 ) {
         *ptime = buf.st_mtime;
-        return( RET_SUCCESS );
+        return( true );
     }
-    return( RET_ERROR );
+    return( false );
 }
 
 
