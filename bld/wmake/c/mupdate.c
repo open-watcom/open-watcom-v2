@@ -329,7 +329,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
         ResetExecuted();
         if( !targ->attr.symbolic ) {
             CacheRelease();
-            if( TouchFile( targ->node.name ) != RET_SUCCESS ) {
+            if( !TouchFile( targ->node.name ) ) {
                 PrtMsg( ERR | COULD_NOT_TOUCH, targ->node.name );
                 return( RET_ERROR );
             }

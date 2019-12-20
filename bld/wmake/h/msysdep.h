@@ -188,7 +188,7 @@ typedef enum {
 
 extern int          SwitchChar( void );
 extern int          OSCorrupted( void );
-extern RET_T        TouchFile( const char *name );
+extern bool         TouchFile( const char *name );
 extern bool         IdenticalAutoDepTimes( time_t, time_t, auto_dep_type );
 extern void         InitHardErr( void );
 extern void         OSLoadDLL( char *cmd, char *dll_name, char *ent_name );

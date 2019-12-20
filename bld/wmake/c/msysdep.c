@@ -149,8 +149,8 @@ int OSCorrupted( void )
     return( 0 );
 }
 
-RET_T TouchFile( const char *name )
-/*********************************/
+bool TouchFile( const char *name )
+/********************************/
 {
 #if defined( __DOS__ )
     tiny_date_t     dt;
@@ -178,7 +178,7 @@ RET_T TouchFile( const char *name )
         if( TINY_OK( ret ) ) {
             TinyClose( TINY_INFO( ret ) );
         } else {
-            return( RET_ERROR );
+            return( false );
         }
     }
 #else
@@ -187,12 +187,12 @@ RET_T TouchFile( const char *name )
     if( utime( name, 0 ) < 0 ) {
         fh = creat( name, PMODE_RW );
         if( fh < 0 ) {
-            return( RET_ERROR );
+            return( false );
         }
         close( fh );
     }
 #endif
-    return( RET_SUCCESS );
+    return( true );
 }
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
