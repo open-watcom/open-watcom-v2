@@ -521,10 +521,10 @@ STATIC void ignoreNoCommands( const TLIST *tlist )
     }
 }
 
-STATIC RET_T doMusts( void )
-/**************************/
+STATIC bool doMusts( void )
+/*************************/
 {
-    RET_T   ret;
+    bool    ok;
 
     if( firstTargFound == NULL && mustTargs == NULL ) {
         PrtMsg( FTL | NO_TARGETS_SPECIFIED );
@@ -543,14 +543,14 @@ STATIC RET_T doMusts( void )
 
     if( mustTargs == NULL ) {
         ignoreNoCommands( firstTargFound );
-        ret = MakeList( firstTargFound );
+        ok = MakeList( firstTargFound );
     } else {
         ignoreNoCommands( mustTargs );
-        ret = MakeList( mustTargs );
+        ok = MakeList( mustTargs );
     }
 
     UpdateFini();
-    return( ret );
+    return( ok );
 }
 
 
@@ -685,7 +685,7 @@ int main( int argc, char **argv )
     if( Glob.erroryet ) {
         return( ExitSafe( EXIT_ERROR ) );
     }
-    if( doMusts() != RET_SUCCESS ) {
+    if( !doMusts() ) {
         return( ExitSafe( EXIT_ERROR ) );
     }
     ParseFini();

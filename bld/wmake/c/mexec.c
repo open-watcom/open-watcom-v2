@@ -185,7 +185,7 @@ enum write_type {
 };
 
 
-STATIC RET_T execLine( char *line );    /* called recursively in handleFor */
+STATIC bool     execLine( char *line ); /* called recursively in handleFor */
 
 STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
@@ -313,11 +313,11 @@ STATIC char *createTmpFileName( void )
 }
 
 
-STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName )
-/********************************************************************************/
+STATIC bool processInlineFile( FILE *fp, const char *body, const char *fileName )
+/*******************************************************************************/
 {
     int         index;
-    RET_T       ret;
+    bool        ok;
     char        *DeMacroBody;
     int         currentSent;
     bool        firstTime;
@@ -326,10 +326,10 @@ STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName
 
     firstTime = true;
     currentSent = 0;
-    ret         = RET_SUCCESS;
 
     assert( body != NULL );
 
+    ok = true;
     // we will push the whole body back into the stream to be fully
     // deMacroed
     for( index = 0; (c = body[index++]) != NULLCHAR; ) {
@@ -341,10 +341,10 @@ STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName
                 size_t bytes = strlen( DeMacroBody );
 
                 if( bytes != fwrite( DeMacroBody, 1, bytes, fp ) ) {
-                    ret = RET_ERROR;
+                    ok = false;
                 }
                 if( 1 != fwrite( "\n", 1, 1, fp ) ) {
-                    ret = RET_ERROR;
+                    ok = false;
                 }
             } else {
                 if( !Glob.noheader ) {
@@ -371,11 +371,11 @@ STATIC RET_T processInlineFile( FILE *fp, const char *body, const char *fileName
             FreeSafe( DeMacroBody );
         }
     }
-    return( ret );
+    return( ok );
 }
 
-STATIC RET_T writeLineByLine( FILE *fp, const char *body )
-/********************************************************/
+STATIC bool writeLineByLine( FILE *fp, const char *body )
+/*******************************************************/
 {
     return( processInlineFile( fp, body, NULL ) );
 }
@@ -410,21 +410,22 @@ STATIC char *RemoveBackSlash( const char *inString )
 }
 
 
-STATIC RET_T VerbosePrintTempFile( const FLIST *head )
-/****************************************************/
+STATIC bool verbosePrintTempFile( const FLIST *head )
+/***************************************************/
 {
     FLIST const *current;
-    RET_T       ret = RET_SUCCESS; // success if list empty
+    bool        ok;
 
+    ok = true;      // success if list empty
     for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
-        ret = processInlineFile( NULL, current->body, current->fileName );
+        ok = processInlineFile( NULL, current->body, current->fileName );
     }
-    return( ret );
+    return( ok );
 }
 
-STATIC RET_T createFile( const FLIST *head )
-/*******************************************
+STATIC bool createFile( const FLIST *head )
+/******************************************
  * create file given information in the FLIST
  */
 {
@@ -432,12 +433,11 @@ STATIC RET_T createFile( const FLIST *head )
     FILE    *fp;
     char    *fileName = NULL;
     char    *tmpFileName = NULL;
-    RET_T   ret;
+    bool    ok;
 
     assert( head != NULL );
-    ret = RET_SUCCESS;
-
-    if( head->fileName != NULL ) {
+    ok = ( head->fileName != NULL );
+    if( ok ) {
         /* Push the filename back into the stream
          * and then get it back out using DeMacro to fully DeMacro
          */
@@ -445,17 +445,13 @@ STATIC RET_T createFile( const FLIST *head )
         InsString( head->fileName, false );
         fileName = DeMacro( TOK_MAGIC );
         GetCHR();           /* eat STRM_MAGIC */
-    } else {
-        ret = RET_ERROR;
-    }
 
-    if( ret != RET_ERROR ) {
         tmpFileName = RemoveBackSlash( fileName );
         fp = fopen( tmpFileName, "w" );
         if( fp != NULL ) {
-            if( writeLineByLine( fp, head->body ) == RET_ERROR ) {
+            if( !writeLineByLine( fp, head->body ) ) {
                 PrtMsg( ERR | ERROR_WRITING_FILE, tmpFileName );
-                ret = RET_ERROR;
+                ok = false;
             }
             if( fclose( fp ) == 0 ) {
                 if( !head->keep ) {
@@ -466,21 +462,21 @@ STATIC RET_T createFile( const FLIST *head )
                 }
             } else {
                 PrtMsg( ERR | ERROR_CLOSING_FILE, tmpFileName );
-                ret = RET_ERROR;
+                ok = false;
             }
         } else {
             PrtMsg( ERR | ERROR_OPENING_FILE, tmpFileName );
-            ret = RET_ERROR;
+            ok = false;
         }
     }
     FreeSafe( fileName );
     FreeSafe( tmpFileName );
-    return( ret );
+    return( ok );
 }
 
 
-STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
-/*************************************************************
+STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
+/************************************************************
  * This part writes the inline files
  * modifies the command text to show the temporary file names
  * assumption is that all << are removed for explicitly defined
@@ -489,7 +485,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
 {
     char    *cmdText;
     FLIST   *current;
-    RET_T   ret;
+    bool    ok;
     VECSTR  newCommand;
     size_t  start;  // start of cmdText to be copied into newCommand;
     size_t  index;  // current index of cmdText
@@ -498,13 +494,13 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
     assert( *commandIn != NULL );
 
     cmdText    = *commandIn;
-    ret        = RET_SUCCESS;
     newCommand = StartVec();
     index      = 0;
     start      = index;
 
+    ok = true;
     for( current = head;
-        current != NULL && ret == RET_SUCCESS && cmdText[index] != NULLCHAR;
+        current != NULL && ok && cmdText[index] != NULLCHAR;
         current = current->next )
     {
         // if the filename is the inline symbol then we need change
@@ -518,12 +514,12 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
                     }
                 } else if( cmdText[index] == NULLCHAR ) {
                     /* not possible to come here*/
-                    ret = RET_ERROR;
+                    ok = false;
                     break;
                 }
                 ++index;
             }
-            if( ret == RET_ERROR ) {
+            if( !ok ) {
                 break;
             }
             WriteNVec( newCommand, cmdText + start, index - start - 2 );
@@ -534,7 +530,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             WriteVec( newCommand, current->fileName );
         }
         if( !Glob.noexec ) {
-            ret = createFile( current );
+            ok = createFile( current );
         } else {
             if( !current->keep ) {
                 temp = NewNKList();
@@ -547,7 +543,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
     WriteNVec( newCommand, cmdText+start, strlen( cmdText ) - start );
     FreeSafe( cmdText );
     *commandIn = FinishVec( newCommand );
-    return( ret );
+    return( ok );
 }
 
 
@@ -1118,7 +1114,7 @@ STATIC RET_T handleIf( char *cmd )
         return( RET_ERROR );
     }
     if( not ^ condition ) {
-        return( execLine( p ) );
+        return( execLine( p ) ? RET_SUCCESS : RET_ERROR );
     }
     return( RET_SUCCESS );
 }
@@ -1314,7 +1310,7 @@ STATIC RET_T handleFor( char *line )
             /* make variable substitutions */
             doForSubst( var, varlen, subst, cmd, exec );
 
-            if( execLine( exec ) != RET_SUCCESS ) {
+            if( !execLine( exec ) ) {
                 FreeSafe( exec );
                 busy = false;
                 /* abandon remaining file entries */
@@ -2110,8 +2106,8 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 #endif
 
 
-STATIC RET_T execLine( char *line )
-/**********************************
+STATIC bool execLine( char *line )
+/*********************************
  * is allowed to hack up line any way it feels
  */
 {
@@ -2152,7 +2148,7 @@ STATIC RET_T execLine( char *line )
 
     // NMAKE quietly ignores empty commands
     if( Glob.compat_nmake && *p == NULLCHAR ) {
-        return( RET_SUCCESS );
+        return( true );
     }
     rc = shellSpawn( p, flags );
     if( OSCorrupted() ) {
@@ -2162,9 +2158,9 @@ STATIC RET_T execLine( char *line )
     }
     CheckForBreak();
     if( rc != RET_SUCCESS && (flags & FLAG_IGNORE) == 0 ) {
-        return( RET_ERROR );
+        return( false );
     }
-    return( RET_SUCCESS );
+    return( true );
 }
 
 INT32 ExecCommand( char *line )
@@ -2203,38 +2199,39 @@ INT32 ExecCommand( char *line )
 }
 
 
-RET_T ExecCList( CLIST *clist )
-/*****************************/
+bool ExecCList( CLIST *clist )
+/****************************/
 {
     char        *line;
-    RET_T       ret = RET_SUCCESS;
+    bool        ok;
     FLIST const *currentFlist;
 
     assert( clist != NULL );
 
+    ok = true;
     for( ; clist != NULL; clist = clist->next ) {
-        ret = writeInlineFiles( clist->inlineHead, &(clist->text) );
+        ok = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
-        if( ret == RET_SUCCESS ) {
+        if( ok ) {
             UnGetCHR( STRM_MAGIC );
             InsString( clist->text, false );
             line = DeMacro( TOK_MAGIC );
             GetCHR();        /* eat STRM_MAGIC */
             if( Glob.verbose ) {
-                 ret = VerbosePrintTempFile( currentFlist );
+                ok = verbosePrintTempFile( currentFlist );
             }
-            ret = execLine( line );
+            ok = execLine( line );
             FreeSafe( line );
-            if( ret != RET_SUCCESS ) {
-                return( ret );
+            if( !ok ) {
+                return( ok );
             }
         } else {
             closeCurrentFile();
-            return( ret );
+            return( ok );
         }
     }
     closeCurrentFile();
-    return( ret );
+    return( ok );
 }
 
 

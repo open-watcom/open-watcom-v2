@@ -211,7 +211,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     assert( targ != NULL && clist != NULL );
 
     ++cListCount;
-    if( ExecCList( clist ) == RET_SUCCESS ) {
+    if( ExecCList( clist ) ) {
         if( Glob.rcs_make && !Glob.noexec && !Glob.touch ) {
             if( max_time != OLDEST_DATE ) {
                 targ->date = max_time;
@@ -252,7 +252,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     err = DotCList( DOT_ERROR );
     if( err != NULL ) {
         ++cListCount;
-        if( ExecCList( err ) != RET_SUCCESS ) {
+        if( !ExecCList( err ) ) {
             PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] );
             ExitFatal();
             // never return
@@ -378,7 +378,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
         before = DotCList( DOT_BEFORE );
         if( before != NULL ) {
             ++cListCount;
-            if( ExecCList( before ) != RET_SUCCESS ) {
+            if( !ExecCList( before ) ) {
                 PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] );
                 ExitFatal();
                 // never return
@@ -397,13 +397,13 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
 }
 
 
-RET_T MakeList( TLIST *tlist )
-/***********************************/
+bool MakeList( TLIST *tlist )
+/***************************/
 {
-    RET_T   ret;
+    bool    ok;
     TARGET  *targ;
 
-    ret = RET_SUCCESS;
+    ok = true;
     for( ; tlist != NULL; tlist = tlist->next ) {
         targ = tlist->target;
         if( !targ->mentioned ) {
@@ -411,10 +411,10 @@ RET_T MakeList( TLIST *tlist )
             targ->mentioned = true;
         }   /* warning suggested by John */
         if( !Update( targ ) ) {
-            ret = RET_ERROR;
+            ok = false;
         }
     }
-    return( ret );
+    return( ok );
 }
 
 
@@ -1154,7 +1154,7 @@ void UpdateFini( void )
     after = DotCList( DOT_AFTER );
     if( doneBefore && after != NULL ) {
         ++cListCount;
-        if( ExecCList( DotCList( DOT_AFTER ) ) != RET_SUCCESS ) {
+        if( !ExecCList( DotCList( DOT_AFTER ) ) ) {
             PrtMsg( ERR | S_COMMAND_RET_BAD, DotNames[DOT_AFTER] );
         }
     }

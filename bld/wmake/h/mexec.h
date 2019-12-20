@@ -34,7 +34,7 @@
 
 #include "mtarget.h"
 
-extern RET_T    ExecCList( CLIST *clist );
+extern bool     ExecCList( CLIST *clist );
 extern INT32    ExecCommand( char *line );
 extern void     ExecInit( void );
 extern void     ExecFini( void );
