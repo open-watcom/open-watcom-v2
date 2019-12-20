@@ -657,8 +657,8 @@ STATIC void closeCurrentFile( void )
 }
 
 
-STATIC RET_T percentWrite( char *arg, enum write_type type )
-/**********************************************************/
+STATIC bool percentWrite( char *arg, enum write_type type )
+/*********************************************************/
 {
     char        *p;
     char const  *text;
@@ -670,7 +670,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     assert( arg != NULL );
 
     if( Glob.noexec ) {
-        return( RET_SUCCESS );
+        return( true );
     }
     /* handle File name */
     p = CmdGetFileName( arg, &fn, true );
@@ -692,7 +692,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
             }
             PrtMsg( ERR | SYNTAX_ERROR_IN, cmd_name );
             closeCurrentFile();
-            return( RET_ERROR );
+            return( false );
         }
         *p++ = NULLCHAR;    /* terminate file name */
         text = p;           /* set text pointer */
@@ -717,7 +717,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         if( currentFileHandle == NULL ) {
             PrtMsg( ERR | OPENING_FOR_WRITE, fn );
             closeCurrentFile();
-            return( RET_ERROR );
+            return( false );
         }
     }
 
@@ -727,38 +727,40 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         if( fwrite( text, 1, len, currentFileHandle ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
-            return( RET_ERROR );
+            return( false );
         }
     }
 
     CacheRelease();     /* so that the cache is updated */
 
-    return( RET_SUCCESS );
+    return( true );
 }
 
 
-STATIC RET_T percentErase( char *arg )
-/************************************/
+STATIC bool percentErase( char *arg )
+/***********************************/
 {
     char    *fn;
     char    *p;
+    bool    ok;
 
+    ok = false;
     /* handle File name */
     p = CmdGetFileName( arg, &fn, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_ERASE] );
         PrtMsg( INF | PRNTSTR, "File" );
         PrtMsg( INF | PRNTSTR, fn );
-        return( RET_ERROR );
+    } else {
+        *p = NULLCHAR;      /* terminate file name */
+        if( unlink( fn ) == 0 ) {
+            ok = true;
+        }
     }
-    *p = NULLCHAR;      /* terminate file name */
-    if( 0 == unlink( fn ) ) {
-        return( RET_SUCCESS );
-    }
-    return( RET_ERROR );
+    return( ok );
 }
 
-STATIC RET_T percentRename( char *arg )
+STATIC bool percentRename( char *arg )
 /************************************/
 {
     char        *p;
@@ -767,7 +769,7 @@ STATIC RET_T percentRename( char *arg )
     assert( arg != NULL );
 
     if( Glob.noexec ) {
-        return( RET_SUCCESS );
+        return( true );
     }
 
     /* Get first LFN */
@@ -776,7 +778,7 @@ STATIC RET_T percentRename( char *arg )
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
         PrtMsg( INF | PRNTSTR, fn1 );
-        return( RET_ERROR );
+        return( false );
     }
     *p++ = NULLCHAR;        /* terminate first file name */
     /* skip ws after first and before second file name */
@@ -785,75 +787,76 @@ STATIC RET_T percentRename( char *arg )
     p = CmdGetFileName( p, &fn2, true );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
-        return( RET_ERROR );
+        return( false );
     }
     *p = NULLCHAR;          /* terminate second file name */
-    if( rename( fn1, fn2 ) == 0 )
-        return( RET_SUCCESS );
-    return( RET_ERROR );
+    return( rename( fn1, fn2 ) == 0 );
 }
 
-STATIC RET_T percentCmd( const char *cmdname, char *arg )
-/********************************************************
+STATIC bool percentCmd( const char *cmdname, char *arg )
+/*******************************************************
  * handle our special percent commands
  */
 {
     char const * const  *key;
     char const          *ptr;
     int                 num;
+    bool                ok;
 
     assert( cmdname != NULL && arg != NULL );
 
     ptr = cmdname + 1;
     key = bsearch( &ptr, percentCmds, PNUM, sizeof( char * ), KWCompare );
-
-    if( key == NULL ) {
+    ok = ( key != NULL );
+    if( !ok ) {
         PrtMsg( ERR | UNKNOWN_PERCENT_CMD );
         closeCurrentFile();
-        return( RET_ERROR );
     } else {
         num = (int)( key - (char const **)percentCmds );
-    }
-
-    if( Glob.noexec && num != PER_MAKE ) {
-        return( RET_SUCCESS );
-    }
-
-    switch( num ) {
-    case PER_ABORT:
-        closeCurrentFile();
-        ExitError();
-        // never return
-    case PER_APPEND:
-        return( percentWrite( arg, WR_APPEND ) );
-    case PER_CREATE:
-        return( percentWrite( arg, WR_CREATE ) );
-    case PER_ERASE:
-        return( percentErase( arg ) );
-    case PER_MAKE:
-        return( percentMake( arg ) ? RET_SUCCESS : RET_ERROR );
-    case PER_NULL:
-        break;
-    case PER_QUIT:
-        closeCurrentFile();
-        ExitOK();
-        // never return
-    case PER_RENAME:
-        return( percentRename( arg ) );
-    case PER_STOP:
-        closeCurrentFile();
-        if( !GetYes( DO_YOU_WISH_TO_CONT ) ) {
-            ExitOK();
-            // never return
+        if( !Glob.noexec || num == PER_MAKE ) {
+            switch( num ) {
+            case PER_ABORT:
+                closeCurrentFile();
+                ExitError();
+                // never return
+            case PER_APPEND:
+                ok = percentWrite( arg, WR_APPEND );
+                break;
+            case PER_CREATE:
+                ok = percentWrite( arg, WR_CREATE );
+                break;
+            case PER_ERASE:
+                ok = percentErase( arg );
+                break;
+            case PER_MAKE:
+                ok = percentMake( arg );
+                break;
+            case PER_NULL:
+                break;
+            case PER_QUIT:
+                closeCurrentFile();
+                ExitOK();
+                // never return
+            case PER_RENAME:
+                ok = percentRename( arg );
+                break;
+            case PER_STOP:
+                closeCurrentFile();
+                if( !GetYes( DO_YOU_WISH_TO_CONT ) ) {
+                    ExitOK();
+                    // never return
+                }
+                break;
+            case PER_WRITE:
+                ok = percentWrite( arg, WR_WRITE );
+                break;
+            default:
+                assert( false );
+                break;
+            }
         }
-        break;
-    case PER_WRITE:
-        return( percentWrite( arg, WR_WRITE ) );
-    default:
-        assert( false );
-        break;
     }
-    return( RET_SUCCESS );
+    return( ok );
 }
 
 #ifdef __UNIX__
@@ -1122,16 +1125,16 @@ STATIC RET_T handleIf( char *cmd )
 }
 
 
-STATIC RET_T handleForSyntaxError( void )
+STATIC bool handleForSyntaxError( void )
 /***************************************/
 {
     PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_FOR] );
-    return( RET_ERROR );
+    return( false );
 }
 
 
-STATIC RET_T getForArgs( char *line, const char **pvar, char **pset, const char **pcmd )
-/***************************************************************************************
+STATIC bool getForArgs( char *line, const char **pvar, char **pset, const char **pcmd )
+/**************************************************************************************
  * "FOR" {ws}* "%"["%"]<var> {ws}+ "IN" {ws}* "("<set>")" {ws}* "DO" {ws}+ <command>
  */
 {
@@ -1191,7 +1194,7 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset, const char 
 
     *pcmd = (const char *)p;
 
-    return( RET_SUCCESS );
+    return( true );
 }
 
 
@@ -1280,7 +1283,7 @@ STATIC RET_T handleFor( char *line )
 #endif
 
     cmd = var = set = NULL;     /* Just to shut up gcc */
-    if( getForArgs( line, &var, &set, &cmd ) != RET_SUCCESS ) {
+    if( !getForArgs( line, &var, &set, &cmd ) ) {
         busy = false;
         return( RET_ERROR );
     }
@@ -1395,16 +1398,16 @@ STATIC RET_T handleChangeDrive( const char *cmd )
 #endif
 
 
-STATIC RET_T handleRMSyntaxError( void )
-/**************************************/
+STATIC bool handleRMSyntaxError( void )
+/*************************************/
 {
     PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RM] );
-    return( RET_ERROR );
+    return( false );
 }
 
-STATIC RET_T getRMArgs( char *line, rm_flags *flags, char **name )
-/*****************************************************************
- * returns RET_WARN when there are no more arguments
+STATIC bool getRMArgs( char *line, rm_flags *flags, char **name )
+/****************************************************************
+ * returns true and *name = NULL when there are no more arguments
  */
 {
     static char *p = NULL;
@@ -1442,9 +1445,8 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, char **name )
             *p++ = NULLCHAR;
             p = SkipWS( p );
         }
-        return( RET_SUCCESS );
     }
-    return( RET_WARN );
+    return( true );
 }
 
 STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
@@ -1653,7 +1655,7 @@ STATIC RET_T handleRM( char *cmd )
  */
 {
     rm_flags    flags;
-    RET_T       rt;
+    bool        ok;
     char        *name;
     char        *p;
 
@@ -1664,7 +1666,7 @@ STATIC RET_T handleRM( char *cmd )
     if( Glob.noexec )
         return( RET_SUCCESS );
 
-    for( rt = getRMArgs( cmd, &flags, &p ); rt == RET_SUCCESS; rt = getRMArgs( NULL, NULL, &p ) ) {
+    for( ok = getRMArgs( cmd, &flags, &p ); ok && p != NULL && *p != NULLCHAR; ok = getRMArgs( NULL, NULL, &p ) ) {
         /* handle File name */
         p = CmdGetFileName( p, &name, true );
         *p = NULLCHAR;      /* terminate file name */
@@ -1672,11 +1674,7 @@ STATIC RET_T handleRM( char *cmd )
             return( RET_ERROR );
         }
     }
-    if( rt == RET_WARN ) {
-        rt = RET_SUCCESS;
-    }
-
-    return( rt );
+    return( ( ok ) ? RET_SUCCESS : RET_ERROR );
 }
 
 STATIC RET_T handleMkdirSyntaxError( void )
@@ -1996,7 +1994,9 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         dumpCommand( cmd );
     }
     if( percent_cmd ) {
-        return( percentCmd( cmdname, arg ) );
+        if( percentCmd( cmdname, arg ) )
+            return( RET_SUCCESS );
+        return( RET_ERROR );
     }
     /*
      * The SET command must be handled locally to have any effect. Consider

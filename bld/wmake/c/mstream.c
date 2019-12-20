@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -434,8 +435,8 @@ void StreamInit( void )
 }
 
 
-RET_T GetFileLine( const char **pname, UINT16 *pline )
-/************************************************************
+bool GetFileLine( const char **pname, UINT16 *pline )
+/****************************************************
  * get filename, and line number of file closest to top of stack
  * false - no files in stack; true - returned data from top file
  */
@@ -444,30 +445,23 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
 
     for( cur = headSent; cur != NULL; cur = cur->next ) {
         if( cur->type == SENT_FILE ) {
-            break;
+            /*
+             * Because we do a line++ when we return a {nl}, we have to check if
+             * the last character returned was a {nl}.  We check the last character
+             * if any characters have been read - it is just at cur[-1].  The only
+             * time that cur > buf == false is when nothing has been read.  (Check
+             * the code for reading - even after filling the buffer this doesn't
+             * evaluate improperly).
+             */
+            *pline = cur->data.file.line;
+            if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
+                --(*pline);
+            }
+            *pname = cur->data.file.name;
+            return( true );
         }
     }
-
-    if( cur == NULL ) {
-        return( RET_ERROR );
-    }
-
-    /*
-     * Because we do a line++ when we return a {nl}, we have to check if
-     * the last character returned was a {nl}.  We check the last character
-     * if any characters have been read - it is just at cur[-1].  The only
-     * time that cur > buf == false is when nothing has been read.  (Check
-     * the code for reading - even after filling the buffer this doesn't
-     * evaluate improperly).
-     */
-    *pline = cur->data.file.line;
-    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
-        --(*pline);
-    }
-
-    *pname = cur->data.file.name;
-
-    return( RET_SUCCESS );
+    return( false );
 }
 
 

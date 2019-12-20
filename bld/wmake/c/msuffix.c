@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -491,12 +492,10 @@ void PrintSuffixes( void )
 }
 
 
-STATIC bool chkOneName( char *buffer, TARGET **chktarg )
-/******************************************************/
+STATIC bool chkOneName( const char *buffer, TARGET **chktarg )
+/************************************************************/
 {
     TARGET  *tmp;
-
-    FixName( buffer );
 
     if( chktarg != NULL ) {
         tmp = FindTarget( buffer );
@@ -532,6 +531,7 @@ STATIC bool findInPathRing( PATHRING *pathring, char *buffer,
     pathnode = *pathring;
     do {
         _makepath( buffer, NULL, pathnode->name, fake_name, NULL );
+        FixName( buffer );
         if( chkOneName( buffer, chktarg ) ) {
             if( Glob.optimize ) {       /* nail down pathring here */
                 *pathring = pathnode;
@@ -567,7 +567,9 @@ bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool trye
     /* check if filename given exists */
     if( filename != buffer ) {
         strcpy( buffer, filename );
+        FixName( buffer );
     }
+
     if( chkOneName( buffer, chktarg ) ) {
         return( true );
     }
@@ -583,7 +585,6 @@ bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool trye
     suffix = FindSuffix( pg.ext );
 
     ok = false;
-
     if( suffix == NULL || suffix->currpath == NULL ) {
         if( tryenv ) {
             /* no suffix info - use %PATH */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -204,8 +205,7 @@ extern void     PrintTargets( void );
 extern CLIST    *DotCList( DotName dot );
 extern void     ResetExecuted( void );
 extern void     CheckNoCmds( void );
-extern RET_T    WildTList( TLIST **stack, const char *base, bool mentioned,
-                            bool expandWildCardPath );
+extern bool     WildTList( TLIST **stack, const char *base, bool mentioned, bool expandWildCardPath );
 extern void     TargInitAttr( TATTR *attr );
 extern void     TargAttrOrAttr( TATTR *tattr, TATTR attr );
 

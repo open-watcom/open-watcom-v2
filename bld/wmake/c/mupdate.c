@@ -466,36 +466,35 @@ STATIC bool autoOutOfDate( TARGET *targ, time_t *max_time )
 }
 
 
-STATIC RET_T isOutOfDate( TARGET *targ, TARGET *deptarg, bool *outofdate )
-/*************************************************************************
+STATIC bool isOutOfDate( TARGET *targ, TARGET *deptarg, bool *outofdate )
+/************************************************************************
  * Checks if the current target is out of date
  */
 {
     getDate( targ );
     if( targ->existing && targ->attr.existsonly ) {
-        return( RET_SUCCESS );
+        return( true );
     }
     getDate( deptarg );
     if( targ->existing && deptarg->existing && deptarg->attr.existsonly ) {
-        return( RET_SUCCESS );
+        return( true );
     }
     if( dateCmp( targ->date, deptarg->date ) < 0 ) {
         *outofdate = true;
         if( Glob.show_offenders ) {
-            PrtMsg( INF | WILL_BE_BUILT_BECAUSE_OF,
-                targ->node.name, deptarg->node.name);
+            PrtMsg( INF | WILL_BE_BUILT_BECAUSE_OF, targ->node.name, deptarg->node.name);
         }
     }
     if( deptarg->error ) {
        /* one of the targets had an error while being updated
         * abort now
         */
-        return( RET_ERROR );
+        return( false );
     }
     if( (!deptarg->attr.recheck && deptarg->cmds_done) || deptarg->backdated ) {
         *outofdate = true;
     }
-    return( RET_SUCCESS );
+    return( true );
 }
 
 
@@ -522,7 +521,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, TARGET *cretarg, 
         must = true;
     }
 
-    if( isOutOfDate( targ, imptarg, &must ) == RET_ERROR ) {
+    if( !isOutOfDate( targ, imptarg, &must ) ) {
         return( RET_ERROR );
     }
 
@@ -842,7 +841,7 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
     /* check if out of date with deps */
     outofdate = false;
     for( tlist = depend->targs; tlist != NULL; tlist = tlist->next ) {
-        if( isOutOfDate( targ, tlist->target, &outofdate ) == RET_ERROR ) {
+        if( !isOutOfDate( targ, tlist->target, &outofdate ) ) {
             return( RET_ERROR );
         }
     }

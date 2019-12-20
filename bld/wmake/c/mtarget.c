@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -501,9 +502,8 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 }
 
 
-RET_T WildTList( TLIST **list, const char *base, bool mentioned,
-                 bool expandWildCardPath )
-/***************************************************************
+bool WildTList( TLIST **list, const char *base, bool mentioned, bool expandWildCardPath )
+/****************************************************************************************
  * Build a TLIST using base as a wildcarded path.  Uses DoWildCard().
  * Pushes targets onto list.
  */
@@ -522,7 +522,7 @@ RET_T WildTList( TLIST **list, const char *base, bool mentioned,
         assert( file != NULL );
         if( strpbrk( file, WILD_METAS ) != NULL ) {
             PrtMsg( ERR | LOC | NO_EXISTING_FILE_MATCH, file );
-            return( RET_ERROR );
+            return( false );
         }
     } else {
         file = base;
@@ -559,7 +559,7 @@ RET_T WildTList( TLIST **list, const char *base, bool mentioned,
         }
         endOfList->next = current;
     }
-    return( RET_SUCCESS );
+    return( true );
 }
 
 

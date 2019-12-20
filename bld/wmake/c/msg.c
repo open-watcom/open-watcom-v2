@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -422,7 +423,7 @@ void PrtMsg( enum MsgClass num, ... )
 
     len = 0;
 
-    if( (num & LOC) && GetFileLine( &fname, &fline ) == RET_SUCCESS ) {
+    if( (num & LOC) && GetFileLine( &fname, &fline ) ) {
         if( fname != NULL ) {
             len += FmtStr( &buff[len], "%s", fname );
         }
