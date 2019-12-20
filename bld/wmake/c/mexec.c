@@ -436,6 +436,7 @@ STATIC bool createFile( const FLIST *head )
     bool    ok;
 
     assert( head != NULL );
+
     ok = ( head->fileName != NULL );
     if( ok ) {
         /* Push the filename back into the stream
@@ -560,6 +561,7 @@ STATIC int findInternal( const char *cmd )
     char            buff[COM_MAX_LEN + 1];
 
     assert( cmd != NULL );
+
     /* test if of form x: */
 #ifndef __UNIX__
     if( cisalpha( cmd[0] ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
