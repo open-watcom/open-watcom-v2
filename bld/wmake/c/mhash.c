@@ -173,9 +173,8 @@ void FreeHashTab( HASHTAB *tab )
 }
 
 
-HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
-                        bool caseSensitive )
-/*******************************************************
+HASHNODE *FindHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
+/***************************************************************************
  * Find node named name
  */
 {
@@ -195,9 +194,8 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
 }
 
 
-HASHNODE *RemHashNode( HASHTAB *tab, const char *name,
-                              bool caseSensitive)
-/************************************************************
+HASHNODE *RemHashNode( HASHTAB *tab, const char *name, bool caseSensitive )
+/**************************************************************************
  * unlink a node named name, and return pointer to unlinked node.
  * return NULL if node doesn't exist.
  */

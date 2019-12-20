@@ -46,7 +46,6 @@
 
 
 #define HASH_PRIME      13
-#define CASESENSITIVE   false       // Is suffix name case insensitive
 
 STATIC HASHTAB          *sufTab;
 STATIC UINT16           nextId;
@@ -150,7 +149,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
     FixName( sufname );
 
-    return( (SUFFIX *)FindHashNode( sufTab, sufname, CASESENSITIVE ) );
+    return( (SUFFIX *)FindHashNode( sufTab, sufname, NOCASESENSITIVE ) );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);

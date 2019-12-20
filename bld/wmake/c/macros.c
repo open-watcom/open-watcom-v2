@@ -235,9 +235,9 @@ STATIC MACRO *getMacroNode( const char *name )
     assert( name != NULL && *name != ENVVAR_C );
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
-        caseSensitive = true;
+        caseSensitive = CASESENSITIVE;
     } else {
-        caseSensitive = false;
+        caseSensitive = NOCASESENSITIVE;
     }
 
     return( (MACRO *)FindHashNode( macTab, name, caseSensitive ) );
@@ -568,6 +568,7 @@ void UnDefMacro( const char *name )
 {
     char    macro[MAX_MAC_NAME];
     MACRO   *dead;
+    bool    caseSensitive;
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
@@ -580,7 +581,13 @@ void UnDefMacro( const char *name )
         return;
     }
 
-    dead = (MACRO *)RemHashNode( macTab, macro, true );
+    if( Glob.compat_nmake || Glob.compat_posix ) {
+        caseSensitive = CASESENSITIVE;
+    } else {
+        caseSensitive = NOCASESENSITIVE;
+    }
+
+    dead = (MACRO *)RemHashNode( macTab, macro, caseSensitive );
 
     assert( dead != NULL );
 

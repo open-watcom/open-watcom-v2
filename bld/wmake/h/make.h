@@ -40,14 +40,18 @@
 #include "msysdep.h"
 #include "massert.h"
 
-#define LINECONT_C      '&'     /* line continuation                         */
-#define UNIX_LINECONT_C '\\'    /* UNIX line continuation                    */
-#define MS_LINECONT_C   '\\'    /* MS line continuation                      */
-#define COMMENT_C       '#'     /* beginning of comment                      */
-#define BANG_C          '!'     /* preprocessor introducer                   */
-#define ENVVAR_C        '%'     /* %environment-var                          */
 
-#define NULLCHAR        '\0'
+#define CASESENSITIVE       true    /* Is Name case sensitive                   */
+#define NOCASESENSITIVE     false   /* Is not Name case sensitive               */
+
+#define LINECONT_C          '&'     /* line continuation                        */
+#define UNIX_LINECONT_C     '\\'    /* UNIX line continuation                   */
+#define MS_LINECONT_C       '\\'    /* MS line continuation                     */
+#define COMMENT_C           '#'     /* beginning of comment                     */
+#define BANG_C              '!'     /* preprocessor introducer                  */
+#define ENVVAR_C            '%'     /* %environment-var                         */
+
+#define NULLCHAR            '\0'
 
 /*
  * When we initialize ourselves, this is how many objects we will preallocate

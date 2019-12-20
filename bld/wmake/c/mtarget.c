@@ -47,7 +47,6 @@
 #define DEFAULT_S       "DEFAULT"
 
 #define HASH_PRIME      211
-#define CASESENSITIVE   false   // Is Target Name case sensitive
 
 /* just for people to copy in */
 const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
@@ -134,7 +133,7 @@ void RenameTarget( const char *oldname, const char *newname )
 {
     TARGET *targ;
 
-    targ = (TARGET *)RemHashNode( targTab, oldname, CASESENSITIVE );
+    targ = (TARGET *)RemHashNode( targTab, oldname, NOCASESENSITIVE );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
@@ -169,7 +168,7 @@ TARGET *FindTarget( const char *name )
 {
     assert( name != NULL );
 
-    return( (TARGET *)FindHashNode( targTab, name, CASESENSITIVE ) );
+    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
 }
 
 
@@ -465,7 +464,7 @@ void KillTarget( const char *name )
 {
     void    *mykill;
 
-    mykill = RemHashNode( targTab, name, CASESENSITIVE );
+    mykill = RemHashNode( targTab, name, NOCASESENSITIVE );
     if( mykill != NULL ) {
         freeTarget( mykill );
     }
@@ -812,7 +811,6 @@ STATIC bool cleanupLeftovers( void )
 void TargetInit( void )
 /*********************/
 {
-    targTab     = NULL;
     freeDepends = NULL;
     freeTLists  = NULL;
     freeCLists  = NULL;
