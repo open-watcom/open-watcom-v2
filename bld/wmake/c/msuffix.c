@@ -503,10 +503,7 @@ STATIC bool chkOneName( const char *buffer, TARGET **chktarg )
             return( true );
         }
     }
-    if( CacheExists( buffer ) ) {
-        return( true );
-    }
-    return( false );
+    return( CacheExists( buffer ) );
 }
 
 
