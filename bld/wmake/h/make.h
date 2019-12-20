@@ -41,6 +41,10 @@
 #include "massert.h"
 
 
+#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
+#define USE_DIR_CACHE
+#endif
+
 #define CASESENSITIVE       true    /* Is Name case sensitive                   */
 #define NOCASESENSITIVE     false   /* Is not Name case sensitive               */
 
@@ -85,7 +89,9 @@ struct Glob {
     boolbit     shell           : 1;    /* execute commands through the shell            */
     boolbit     preproc         : 1;    /* true - preprocessor on, false - off           */
     boolbit     erroryet        : 1;    /* has PrtMsg printed an error yet?              */
+#ifdef USE_DIR_CACHE
     boolbit     cachedir        : 1;    /* true if dir caching turned on                 */
+#endif
     boolbit     nomakeinit      : 1;    /* true if we are to suppress parsing makeinit   */
     boolbit     macreadonly     : 1;    /* should macro definitions be read only?        */
     boolbit     headerout       : 1;    /* has the header been printed out yet?          */

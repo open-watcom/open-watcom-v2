@@ -592,10 +592,14 @@ bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool trye
                 envpathring = NULL;
                 addPathToPathRing( &envpathring, env );
 
+#ifdef USE_DIR_CACHE
                 /* never cache %path */
                 Glob.cachedir = false;
+#endif
                 ok = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+#ifdef USE_DIR_CACHE
                 Glob.cachedir = true;
+#endif
 
                 freePathRing( envpathring );
             }

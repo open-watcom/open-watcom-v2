@@ -51,10 +51,6 @@
 #include "mcache.h"
 
 
-#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-#define USE_DIR_CACHE
-#endif
-
 #ifdef USE_DIR_CACHE
 
 /*
@@ -395,6 +391,9 @@ void CacheInit( void )
  * Called at the beginning of the program
  */
 {
+#ifdef USE_DIR_CACHE
+    Glob.cachedir = true;
+#endif
 }
 
 
@@ -404,11 +403,11 @@ void CacheRelease( void )
  */
 {
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_STATS
+  #ifdef CACHE_STATS
     if( Glob.cachestat ) {
         PrtMsg( INF | CACHERELEASE );
     }
-#endif
+  #endif
     freeDirectList( cacheHead );
     cacheHead = NULL;
     MemShrink();
@@ -423,12 +422,13 @@ void CacheFini( void )
  */
 {
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_STATS
-    Glob.cachestat = 0;
-#endif
-#ifndef NDEBUG
+    Glob.cachedir = false;
+  #ifdef CACHE_STATS
+    Glob.cachestat = false;
+  #endif
+  #ifndef NDEBUG
     CacheRelease();
-#endif
+  #endif
 #endif
 }
 
@@ -448,11 +448,11 @@ bool CacheTime( const char *fullpath, time_t *ptime )
     assert( fullpath != NULL && ptime != NULL );
 
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_DELAY_CHECK
+  #ifdef CACHE_DELAY_CHECK
     if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
-#else
+  #else
     if( Glob.cachedir ) {
-#endif
+  #endif
         switch( maybeCache( fullpath, &centry ) ) {
         case CACHE_OK:
             if( centry->ce_tt == YOUNGEST_DATE ) {
@@ -485,11 +485,11 @@ bool CacheExists( const char *fullpath )
     assert( fullpath != NULL );
 
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_DELAY_CHECK
+  #ifdef CACHE_DELAY_CHECK
     if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
-#else
+  #else
     if( Glob.cachedir ) {
-#endif
+  #endif
         switch( maybeCache( fullpath, NULL ) ) {
         case CACHE_OK:
             return( true );
