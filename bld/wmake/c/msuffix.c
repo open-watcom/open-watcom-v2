@@ -491,8 +491,8 @@ void PrintSuffixes( void )
 }
 
 
-STATIC RET_T chkOneName( char *buffer, TARGET **chktarg )
-/*******************************************************/
+STATIC bool chkOneName( char *buffer, TARGET **chktarg )
+/******************************************************/
 {
     TARGET  *tmp;
 
@@ -502,13 +502,13 @@ STATIC RET_T chkOneName( char *buffer, TARGET **chktarg )
         tmp = FindTarget( buffer );
         if( tmp != NULL ) {
             *chktarg = tmp;
-            return( RET_SUCCESS );
+            return( true );
         }
     }
     if( CacheExists( buffer ) ) {
-        return( RET_SUCCESS );
+        return( true );
     }
-    return( RET_ERROR );
+    return( false );
 }
 
 
@@ -532,7 +532,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
     pathnode = *pathring;
     do {
         _makepath( buffer, NULL, pathnode->name, fake_name, NULL );
-        if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
+        if( chkOneName( buffer, chktarg ) ) {
             if( Glob.optimize ) {       /* nail down pathring here */
                 *pathring = pathnode;
             }
@@ -568,7 +568,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
     if( filename != buffer ) {
         strcpy( buffer, filename );
     }
-    if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
+    if( chkOneName( buffer, chktarg ) ) {
         return( RET_SUCCESS );
     }
 
