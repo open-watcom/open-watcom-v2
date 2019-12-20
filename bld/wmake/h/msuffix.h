@@ -81,7 +81,7 @@ extern void     SetSufPath( const char *name, const char *path );
 extern char     *AddCreator( const char *sufsuf );
 extern void     PrintSuffixes( void );
 extern SUFFIX   *FindSuffix( const char *name );
-extern RET_T    TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv );
+extern bool     TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv );
 
 #endif
 

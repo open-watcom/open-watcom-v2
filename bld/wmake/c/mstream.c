@@ -241,7 +241,7 @@ bool InsFile( const char *name, bool envsearch )
 
     assert( name != NULL );
 
-    if( TrySufPath( path, name, NULL, envsearch ) == RET_SUCCESS ) {
+    if( TrySufPath( path, name, NULL, envsearch ) ) {
         PrtMsg( DBG | INF | LOC | ENTERING_FILE, path );
 
         fp = fopen( path, "rb" );

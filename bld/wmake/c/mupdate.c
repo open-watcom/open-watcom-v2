@@ -159,7 +159,7 @@ STATIC bool targExists( TARGET *targ )
         return( false );
     }
 
-    if( TrySufPath( buffer, targ->node.name, NULL, false ) == RET_SUCCESS ) {
+    if( TrySufPath( buffer, targ->node.name, NULL, false ) ) {
         RenameTarget( targ->node.name, buffer );
         targ->executed = true;      /* force get date */
         getStats( targ );
@@ -216,7 +216,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
             if( max_time != OLDEST_DATE ) {
                 targ->date = max_time;
                 targ->backdated = true;
-                if( TrySufPath( msg, targ->node.name, NULL, false ) == RET_SUCCESS ) {
+                if( TrySufPath( msg, targ->node.name, NULL, false ) ) {
                     if( USE_AUTO_DEP( targ ) ) {
                         // target has auto dependency info
                         // result: max_time may be incorrect!
@@ -410,7 +410,7 @@ RET_T MakeList( TLIST *tlist )
             PrtMsg( WRN | TARGET_NOT_MENTIONED, targ->node.name );
             targ->mentioned = true;
         }   /* warning suggested by John */
-        if( Update( targ ) != RET_SUCCESS ) {
+        if( !Update( targ ) ) {
             ret = RET_ERROR;
         }
     }
@@ -459,10 +459,10 @@ STATIC bool autoOutOfDate( TARGET *targ, time_t *max_time )
 {
     char    buffer[_MAX_PATH];
 
-    if( TrySufPath( buffer, targ->node.name, NULL, false ) != RET_SUCCESS ) {
-        return( false );
+    if( TrySufPath( buffer, targ->node.name, NULL, false ) ) {
+        return( checkForAutoDeps( targ, buffer, max_time ) );
     }
-    return( checkForAutoDeps( targ, buffer, max_time ) );
+    return( false );
 }
 
 
@@ -580,6 +580,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
     SUFFIX      *cursuf;
     TARGET      *imptarg = NULL;
     RET_T       ret;
+    bool        ok;
     bool        newtarg;
     UINT32      startcount;
     char        *buf;
@@ -607,12 +608,12 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
         slistDef = NULL;
         slistEmptyTargDepPath = NULL;
 
-        ret = RET_ERROR;
+        ok = false;
 
         UseDefaultSList = true;
         /* find path in SLIST */
         slistCount = 0;
-        for( curslist = cur->slist; curslist != NULL && ret != RET_SUCCESS; curslist = curslist->next ) {
+        for( curslist = cur->slist; curslist != NULL && !ok; curslist = curslist->next ) {
             _makepath( buf, drive, dir, NULL, NULL );
             FixName( buf );
             /*
@@ -623,8 +624,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                 /* build filename for implied target */
                 _makepath( buf, NULL, curslist->dep_path, fname, cursuf->node.name );
                 /* try to find this file on path or in targets */
-                ret = TrySufPath( buf, buf, &imptarg, false );
-                if( ret == RET_SUCCESS ) {
+                ok = TrySufPath( buf, buf, &imptarg, false );
+                if( ok ) {
                     slist = curslist;
                     /* later on we need to check if implied target does not */
                     /* exist we need to create it on the first directory we */
@@ -648,22 +649,17 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
         if( UseDefaultSList && slist == NULL && !Glob.compat_nmake ) {
             _makepath( buf, NULL, NULL, fname, cursuf->node.name );
             /* try to find this file on path or in targets */
-            ret = TrySufPath( buf, buf, &imptarg, false );
-            switch( ret ) {
-            case RET_WARN:
-                break;
-            case RET_ERROR:
+            ok = TrySufPath( buf, buf, &imptarg, false );
+            if( ok ) {
+                slist = slistEmptyTargDepPath;
+            } else {
                 if( !Glob.compat_nmake ) {
                     slistDef = slistEmptyTargDepPath;
                 }
-                break;
-            case RET_SUCCESS:
-                slist = slistEmptyTargDepPath;
-                break;
             }
         }
 
-        if( ret == RET_ERROR && slistDef == NULL ) {
+        if( !ok && slistDef == NULL ) {
             /*
              * No Default Slist found so must continue and find
              * another slist
@@ -672,11 +668,11 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             continue;
         }
 
-        if( (ret == RET_SUCCESS && imptarg == NULL) || ret == RET_ERROR ) {
+        if( (ok && imptarg == NULL) || !ok ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
-            if( ret == RET_ERROR ) {
+            if( !ok ) {
                 slist = slistDef;
                 /* file doesn't exist, assume in directory */
                 /* pointed to by the slistDef              */
@@ -688,7 +684,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             FreeSafe( buf );        /* don't need any more */
             getStats( imptarg );
             imptarg->busy = true;   /* protect against recursion */
-            if( imply( imptarg, NULL, slist->dep_path, fname, cursuf->node.name, false ) == RET_ERROR ) {
+            ret = imply( imptarg, NULL, slist->dep_path, fname, cursuf->node.name, false );
+            if( ret == RET_ERROR ) {
                 imptarg->error = true;
             }
             if( startcount != cListCount && (Glob.noexec || Glob.query) ) {
@@ -877,8 +874,8 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
 }
 
 
-RET_T Update( TARGET *targ )
-/*********************************/
+bool Update( TARGET *targ )
+/*************************/
 {
     DEPEND      *curdep;
     UINT32      startcount;
@@ -887,10 +884,10 @@ RET_T Update( TARGET *targ )
 
     CheckForBreak();
     if( targ->error ) {
-        return( RET_ERROR );
+        return( false );
     }
     if( targ->updated ) {
-        return( RET_SUCCESS );
+        return( true );
     }
     if( targ->special ) {
         PrtMsg( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name );
@@ -914,7 +911,7 @@ RET_T Update( TARGET *targ )
         if( ret == RET_ERROR ) {
             targ->busy = false;
             targ->error = true;
-            return( RET_ERROR );
+            return( false );
         } else if( ret == RET_WARN ) {
             // If target with no commands is acceptable, consider it done
             if( targ->allow_nocmd ) {
@@ -928,14 +925,14 @@ RET_T Update( TARGET *targ )
             if( resolve( targ, curdep ) != RET_SUCCESS ) {
                 targ->busy = false;
                 targ->error = true;
-                return( RET_ERROR );
+                return( false );
             }
         }
         if( !Glob.compat_nmake ) {
             if( tryImply( targ, false ) == RET_ERROR ) {
                 targ->busy = false;
                 targ->error = true;
-                return( RET_ERROR );
+                return( false );
             }
         }
     } else {
@@ -943,7 +940,7 @@ RET_T Update( TARGET *targ )
         if( resolve( targ, targ->depend ) != RET_SUCCESS ) {
             targ->busy = false;
             targ->error = true;
-            return( RET_ERROR );
+            return( false );
         }
     }
 
@@ -972,7 +969,7 @@ RET_T Update( TARGET *targ )
             targ->error = true;
             targ->busy = false;
             PrtMsg( ERR | UNABLE_TO_MAKE, targ->node.name );
-            return( RET_ERROR );
+            return( false );
         } else {
             // Target doesn't exist and we have no clue how to make it. Bomb out.
             PrtMsg( FTL | UNABLE_TO_MAKE, targ->node.name );
@@ -984,7 +981,7 @@ RET_T Update( TARGET *targ )
     targ->updated = ( !targ->attr.multi );
     targ->busy = false;
     targ->error = false;
-    return( RET_SUCCESS );
+    return( true );
 }
 
 

@@ -585,14 +585,14 @@ STATIC int findInternal( const char *cmd )
 }
 
 
-STATIC RET_T percentMake( char *arg )
-/************************************
+STATIC bool percentMake( char *arg )
+/***********************************
  * do a recursive make of the target in arg
  */
 {
     char        *finish;
     TARGET      *calltarg;
-    RET_T       ret;
+    bool        ok;
     char        *buf;
     char        *start;
     bool        newtarg;
@@ -601,7 +601,7 @@ STATIC RET_T percentMake( char *arg )
     /* %make <target> <target> ... */
     buf = MallocSafe( _MAX_PATH );
 
-    ret = RET_ERROR;
+    ok = false;
     start = arg;
     for( ;; ) {
         start = SkipWS( start );
@@ -618,17 +618,17 @@ STATIC RET_T percentMake( char *arg )
         }
 
         /* try to find this file on path or in targets */
-        ret = TrySufPath( buf, start, &calltarg, false );
+        ok = TrySufPath( buf, start, &calltarg, false );
 
         newtarg = false;
-        if( ( ret == RET_SUCCESS && calltarg == NULL ) || ret == RET_ERROR ) {
+        if( ( ok && calltarg == NULL ) || !ok ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
             calltarg = NewTarget( buf );
             newtarg = true;
         }
-        ret = Update( calltarg );
+        ok = Update( calltarg );
         if( newtarg && !Glob.noexec ) {
             /* we created a target - don't need it any more */
             KillTarget( calltarg->node.name );
@@ -640,7 +640,7 @@ STATIC RET_T percentMake( char *arg )
     }
     FreeSafe( buf );
 
-    return( ret );
+    return( ok );
 }
 
 
@@ -833,7 +833,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     case PER_ERASE:
         return( percentErase( arg ) );
     case PER_MAKE:
-        return( percentMake( arg ) );
+        return( percentMake( arg ) ? RET_SUCCESS : RET_ERROR );
     case PER_NULL:
         break;
     case PER_QUIT:

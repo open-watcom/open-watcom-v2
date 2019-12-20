@@ -512,7 +512,7 @@ STATIC bool chkOneName( char *buffer, TARGET **chktarg )
 }
 
 
-STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
+STATIC bool findInPathRing( PATHRING *pathring, char *buffer,
     const char *dir, const char *fname, const char *ext, TARGET **chktarg )
 /**************************************************************************
  * walk a path ring, and attempt to find fname.ext using different paths
@@ -523,7 +523,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
 
     assert( pathring != NULL );
     if( *pathring == NULL ) {
-        return( RET_ERROR );
+        return( false );
     }
     if( dir[0] == NULLCHAR ) {
         dir = NULL;
@@ -536,17 +536,17 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
             if( Glob.optimize ) {       /* nail down pathring here */
                 *pathring = pathnode;
             }
-            return( RET_SUCCESS );
+            return( true );
         }
         pathnode = pathnode->next;
     } while( pathnode != *pathring );
 
-    return( RET_ERROR );
+    return( false );
 }
 
 
-RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv )
-/************************************************************************************
+bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv )
+/***********************************************************************************
  * it is NOT necessary that filename != buffer
  * the contents of buffer may be destroyed even if RET_ERROR is returned
  * first checks current directory, then any in suffix path
@@ -558,7 +558,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
     SUFFIX      *suffix;
     char        *env;
     PATHRING    envpathring;
-    RET_T       ret;
+    bool        ok;
 
     if( chktarg != NULL ) { /* always NULL the chktarg before working */
         *chktarg = NULL;
@@ -569,7 +569,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
         strcpy( buffer, filename );
     }
     if( chkOneName( buffer, chktarg ) ) {
-        return( RET_SUCCESS );
+        return( true );
     }
 
     /* split up filename */
@@ -577,12 +577,12 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
 
     if( pg.drive[0] != NULLCHAR || cisdirc( pg.dir[0] ) ) {
         /* is an absolute path name */
-        return( RET_ERROR );
+        return( false );
     }
 
     suffix = FindSuffix( pg.ext );
 
-    ret = RET_ERROR;
+    ok = false;
 
     if( suffix == NULL || suffix->currpath == NULL ) {
         if( tryenv ) {
@@ -594,17 +594,17 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
 
                 /* never cache %path */
                 Glob.cachedir = false;
-                ret = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+                ok = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
                 Glob.cachedir = true;
 
                 freePathRing( envpathring );
             }
         }
     } else {
-        ret = findInPathRing( &suffix->currpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+        ok = findInPathRing( &suffix->currpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
     }
 
-    return( ret );
+    return( ok );
 }
 
 
