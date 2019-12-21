@@ -31,35 +31,17 @@
 
 
 #include "guiwind.h"
-#if defined(__OS2__) || defined(__OS2_PM__)
-    #ifndef OS2_INCLUDED
-        #undef NULL
-        #define INCL_DOSMISC
-        #include <os2.h>
-    #endif
-#elif defined(__NT__)
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#elif defined(__RDOS__)
-    #include "rdos.h"
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#if defined( __QNX__ )
+#if defined( __UNIX__ )
     #include <dirent.h>
     #include <unistd.h>
+  #if defined( __QNX__ )
     #include <sys/disk.h>
-    #include <fnmatch.h>
-#elif defined( __LINUX__ )
-    #include <dirent.h>
-    #include <unistd.h>
-    #include <fnmatch.h>
-#elif defined( __UNIX__ )
-    #include <dirent.h>
-    #include <unistd.h>
+  #endif
     #ifdef SGI
         #include "fnmatch.h"    // We get fnmatch from wclib
     #else
@@ -69,10 +51,16 @@
     #include <direct.h>
   #if defined( __NETWARE__ )
     #include <fnmatch.h>
-  #elif defined( __RDOS__ )
-  #else
-    #include <dos.h>
   #endif
+#endif
+#if defined(__OS2__)
+    #define INCL_DOSMISC
+    #include <os2.h>
+#elif defined(__NT__)
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+#elif defined(__RDOS__)
+    #include "rdos.h"
 #endif
 #include "walloca.h"
 #include "guifdlg.h"
@@ -300,14 +288,13 @@ static void splitPath( char *path, char *drive, char *dir, char *fname, char *ex
 } /* splitPath */
 
 #ifdef __OS2__
-#ifdef _M_I86
-#define STUPID_UINT     unsigned short
-#else
-#define STUPID_UINT     unsigned long
-#endif
 static drive_type getDriveType( char drive )
 {
-    STUPID_UINT         disk;
+#ifdef _M_I86
+    unsigned short      disk;
+#else
+    unsigned long       disk;
+#endif
     unsigned long       map;
     char                drv;
 
