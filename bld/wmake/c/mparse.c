@@ -411,7 +411,7 @@ STATIC void parseTargDep( MTOKEN_T t, TLIST **btlist )
     nodep = ( t == TOK_EOL || t == TOK_END );   /* check if there wasn't a colon */
 
     /* set the scolon attribute for each of these targets */
-    setSColon( *btlist, (int)(t == TOK_SCOLON || nodep) );
+    setSColon( *btlist, ( t == TOK_SCOLON || nodep ) );
 
     if( !nodep ) {
         dep = buildDepend( &attr );
