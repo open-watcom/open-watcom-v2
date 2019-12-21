@@ -811,7 +811,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
     case MAC_WS:
     case MAC_PUNC:
         p = CurAttr.u.ptr;
-        CurAttr.u.ptr  = NULL;
+        CurAttr.u.ptr = NULL;
         return( p );
     default:
 #ifdef DEVELOPMENT
@@ -888,6 +888,7 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
     case MAC_PUNC:
     case MAC_WS:
         InsString( CurAttr.u.ptr, true );
+        CurAttr.u.ptr = NULL;
         break;
     case TOK_EOL:
         UnGetCHR( '\n' );
@@ -946,7 +947,7 @@ STATIC char *deMacroText( int depth, MTOKEN_T end1, MTOKEN_T end2 )
          */
 
         result = deMacroToEnd( depth, TOK_MAGIC, TOK_MAGIC );
-        (void)LexToken( LEX_MAC_SUBST );      /* eat STRM_MAGIC */
+        LexToken( LEX_MAC_SUBST );      /* eat STRM_MAGIC */
     }
 
     /*
@@ -1089,6 +1090,7 @@ STATIC char *PartDeMacroProcess( void )
                 WriteVec( wsvec, CurAttr.u.ptr );
             }
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         case MAC_TEXT:
             if( wsvec != NULL && !leadingws ) {
@@ -1098,6 +1100,7 @@ STATIC char *PartDeMacroProcess( void )
             leadingws = false;
             WriteVec( vec, CurAttr.u.ptr );
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         default:
 #ifdef DEVELOPMENT

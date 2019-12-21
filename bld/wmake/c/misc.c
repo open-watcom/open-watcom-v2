@@ -87,22 +87,22 @@ STATIC bool is_ws_or_equal( char c )
 
 STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 /******************************************************************
- * Finds next free separator character, allowing doublequotes to
+ * Finds next free separator character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {
-    bool    string_open;
+    bool    dquote;
     char    c;
 
-    string_open = false;
+    dquote = false;
     while( (c = *str) != NULLCHAR ) {
         if( c == '\\' ) {
-            if( string_open && str[1] != NULLCHAR ) {
+            if( dquote && str[1] != NULLCHAR ) {
                 ++str;
             }
         } else if( c == '\"' ) {
-            string_open = !string_open;
-        } else if( !string_open && chk_sep( c ) ) {
+            dquote = !dquote;
+        } else if( !dquote && chk_sep( c ) ) {
             break;
         }
         str++;
@@ -113,7 +113,7 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 
 char *FindNextWS( const char *str )
 /***********************************
- * Finds next free white space character, allowing doublequotes to
+ * Finds next free white space character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {
@@ -122,7 +122,7 @@ char *FindNextWS( const char *str )
 
 char *FindNextWSorEqual( const char *str )
 /*****************************************
- * Finds next free white space or equal character, allowing doublequotes to
+ * Finds next free white space or equal character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {

@@ -194,7 +194,7 @@ STATIC NKLIST   *noKeepList;            /* contains the list of files that
 STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
 /*****************************************************************/
 {
-    bool    string_open;
+    bool    dquote;
     char    *dst;
     char    t;
 
@@ -202,11 +202,11 @@ STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
     /* unused parameters */ (void)osname;
 #endif
 
-    string_open = false;
+    dquote = false;
     *fname = src;
     for( dst = src; (t = *src) != NULLCHAR; src++ ) {
         if( t == '\\' ) {
-            if( !string_open ) {
+            if( !dquote ) {
                 t = src[1];
                 if( cisws( t ) || t == '\"' || t == '\\' ) {
                     src++;
@@ -215,9 +215,9 @@ STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
                 }
             }
         } else if( t == '\"' ) {
-            string_open = !string_open;
+            dquote = !dquote;
             continue;
-        } else if( !string_open && cisws( t ) ) {
+        } else if( !dquote && cisws( t ) ) {
             break;
         }
         *dst++ = FIX_CHAR_OS( t, osname );
@@ -1795,13 +1795,13 @@ STATIC bool hasMetas( const char *cmd )
 {
 #if defined( __DOS__ ) || defined( __NT__ )
     const char  *p;
-    bool        quoted;
+    bool        dquote;
 
-    quoted = false;
+    dquote = false;
     for( p = cmd; *p != NULLCHAR; ++p ) {
         if( *p == '"' ) {
-            quoted = !quoted;
-        } else if( !quoted && strchr( SHELL_METAS, *p ) != NULL ) {
+            dquote = !dquote;
+        } else if( !dquote && strchr( SHELL_METAS, *p ) != NULL ) {
             return( true );
         }
     }
@@ -1925,29 +1925,29 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     int         retcode;            // from spawnvp
     UINT16      tmp_env = 0;        // for * commands
     RET_T       my_ret;             // return code for this function
-    bool        quote;              // true if inside quotes
+    bool        dquote;             // true if inside double quotes
 
     assert( cmd != NULL );
 
     percent_cmd = ( cmd[0] == '%' );
     /* split cmd name from args */
-    quote = false;    /* no quotes yet */
+    dquote = false;     /* no double quotes yet */
     for( arg = cmd + (percent_cmd ? 1 : 0); *arg != NULLCHAR; arg++ ) {
-        if( !quote ) {
+        if( !dquote ) {
             if( cisws( *arg ) || *arg == Glob.swchar || *arg == '+' || *arg == '=' ) {
                 break;
             }
         }
         if( *arg == '\"' ) {
-            quote = !quote;     /* found a quote */
+            dquote = !dquote;       /* found a double quote */
         }
     }
     if( arg - cmd >= _MAX_PATH ) {
         PrtMsg( ERR | COMMAND_TOO_LONG );
         return( RET_ERROR );
     }
-    if( quote ) {
-        /* closing quote is missing */
+    if( dquote ) {
+        /* closing double quote is missing */
         PrtMsg( ERR | SYNTAX_ERROR_IN, cmd );
         return( RET_ERROR );
     }

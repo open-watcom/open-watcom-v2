@@ -153,11 +153,11 @@ STATIC void popSENT( void )
             PrtMsg( DBG | INF | LOC | FINISHED_FILE, tmp->data.file.name );
         }
         FreeSafe( tmp->data.file.buf );
-        FreeSafe( (void *)headSent->data.file.name );
+        FreeSafe( (void *)tmp->data.file.name );
         break;
     case SENT_STR:
         if( tmp->free ) {
-            FreeSafe( (void *)headSent->data.str.str );
+            FreeSafe( (void *)tmp->data.str.str );
         }
         break;
     case SENT_CHAR:
@@ -324,13 +324,7 @@ STRM_T GetCHR( void )
     STRM_T  s;
 
     flagEOF = false;
-    for( ;; ) {
-        head = headSent;
-
-        if( head == NULL ) {
-            return( STRM_END ); /* the big mama ending! no more stream! */
-        }
-
+    for( ; (head = headSent) != NULL; ) {
         switch( head->type ) {
         case SENT_FILE:
             /* GetFileLine() depends on the order of execution here */
@@ -371,18 +365,18 @@ STRM_T GetCHR( void )
             return( s );
         case SENT_STR:
             s = *(head->data.str.cur++);
-            if( s == NULLCHAR ) {
-                popSENT();
-                continue;   /* try again */
+            if( s != NULLCHAR ) {
+                return( s );
             }
-            return( s );
+            popSENT();
+            break;              /* try again */
         case SENT_CHAR:
             s = head->data.s;
             popSENT();
             return( s );
         }
-        assert( false );    /* should never get here */
     }
+    return( STRM_END ); /* the big mama ending! no more stream! */
 }
 
 #ifdef USE_SCARCE
