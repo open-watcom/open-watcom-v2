@@ -89,14 +89,11 @@ struct Glob {
     boolbit     shell           : 1;    /* execute commands through the shell            */
     boolbit     preproc         : 1;    /* true - preprocessor on, false - off           */
     boolbit     erroryet        : 1;    /* has PrtMsg printed an error yet?              */
-#ifdef USE_DIR_CACHE
-    boolbit     cachedir        : 1;    /* true if dir caching turned on                 */
-#endif
     boolbit     nomakeinit      : 1;    /* true if we are to suppress parsing makeinit   */
     boolbit     macreadonly     : 1;    /* should macro definitions be read only?        */
     boolbit     headerout       : 1;    /* has the header been printed out yet?          */
-
     boolbit     rcs_make        : 1;    /* true if new target's date is max of dep dates */
+
     boolbit     fuzzy           : 1;    /* true .AUTODEPEND times can be off by 1 minute */
     boolbit     keep_spaces     : 1;    /* true keep spaces in macro defns               */
     boolbit     compat_unix     : 1;    /* true if UNIX compatibility desired            */
@@ -104,10 +101,13 @@ struct Glob {
     boolbit     compat_nmake    : 1;    /* Microsoft nmake Optioning-Compatability switch*/
     boolbit     verbose         : 1;    /* Bit to list out the contents of a tmp file    */
     boolbit     auto_depends    : 1;    /* force autodepends info to be used             */
-
     boolbit     show_offenders  : 1;    /* display the out-of-date file                  */
+
 #ifdef CACHE_STATS
     boolbit     cachestat       : 1;    /* cache status report                           */
+#endif
+#ifdef USE_DIR_CACHE
+    boolbit     cachedir        : 1;    /* true if dir caching turned on                 */
 #endif
 };
 
