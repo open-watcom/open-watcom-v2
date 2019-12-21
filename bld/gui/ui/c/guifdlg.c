@@ -597,20 +597,22 @@ static int Compare( const void  *p1, const void *p2 )
 
 } /* Compare */
 
-#if defined( __QNX__ )
-static void getstatus( struct dirent *dent, char *path )
+#if defined( __UNIX__ )
+static void _stat2( const char *path, const char *name, struct stat *st )
 {
     char        fullname[_MAX_PATH];
 
-    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
-        _makepath( fullname, NULL, path, dent->d_name, NULL );
-        stat( fullname, &dent->d_stat );
-    }
+    _makepath( fullname, NULL, path, name, NULL );
+    stat( fullname, st );
 }
+#endif
 
+#if defined( __QNX__ )
 static bool isdir( struct dirent *dent, char *path )
 {
-    getstatus( dent, path );
+    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
+        _stat2( path, dent->d_name, &dent->d_stat );
+    }
     return( S_ISDIR( dent->d_stat.st_mode ) );
 }
 
@@ -624,7 +626,9 @@ static bool isrdonly( struct dirent *dent, char *path )
         /* we're root - we can alway write the file */
         return( false );
     }
-    getstatus( dent, path );
+    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
+        _stat2( path, dent->d_name, &dent->d_stat );
+    }
     if( dent->d_stat.st_uid == user ) {
         bit = S_IWUSR;
     } else if( dent->d_stat.st_gid == getegid() ) {
@@ -639,11 +643,7 @@ static bool isdir( struct dirent *dent, char *path )
 {
     struct stat stats;
 
-    /* unused parameters */ (void)path;
-
-    // FIXME: implement a "_stat2()" equivalent.
-    //_stat2( path, dent->d_name, &stats );
-    stat( dent->d_name, &stats );
+    _stat2( path, dent->d_name, &stats );
     return( S_ISDIR( stats.st_mode ) );
 }
 
@@ -653,16 +653,12 @@ static bool isrdonly( struct dirent *dent, char *path )
     uid_t       user;
     struct stat stats;
 
-    /* unused parameters */ (void)path;
-
     user = geteuid();
     if( user == 0 ) {
         /* we're root - we can alway write the file */
         return( false );
     }
-    // FIXME: implement a "_stat2()" equivalent.
-    //_stat2( path, dent->d_name, &stats );
-    stat( dent->d_name, &stats );
+    _stat2( path, dent->d_name, &stats );
     if( stats.st_uid == user ) {
         bit = S_IWUSR;
     } else if( stats.st_gid == getegid() ) {
@@ -675,13 +671,15 @@ static bool isrdonly( struct dirent *dent, char *path )
 #else
 static bool isdir( struct dirent *dent, char *path )
 {
-    path = path;
+    /* unused parameters */ (void)path;
+
     return( dent->d_attr & _A_SUBDIR );
 }
 
 static bool isrdonly( struct dirent *dent, char *path )
 {
-    path = path;
+    /* unused parameters */ (void)path;
+
     return( dent->d_attr & _A_RDONLY );
 }
 #endif
@@ -927,8 +925,9 @@ static process_rc processFileName( gui_window *gui )
     bool        has_wild;
     struct stat buf;
     int         rc;
-    dlg_info            *dlg = GUIGetExtra( gui );
+    dlg_info    *dlg;
 
+    dlg = GUIGetExtra( gui );
     tmp = GUIGetText( gui, CTL_EDIT );
     if( tmp == NULL ) {
         return( PROCESS_FALSE );
