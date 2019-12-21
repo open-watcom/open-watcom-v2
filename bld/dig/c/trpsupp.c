@@ -47,7 +47,7 @@
 
 
 trap_version    TrapVer;
-trap_req_func   *ReqFunc;
+trap_req_func   *ReqFunc = NULL;
 #ifdef ENABLE_TRAP_LOGGING
 char            *TrapTraceFileName = NULL;
 bool            TrapTraceFileFlush = false;
