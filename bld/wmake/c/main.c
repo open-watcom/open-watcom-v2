@@ -635,8 +635,8 @@ static int ExitSafe( int rc )
         PutEnvFini();
         DLLFini();
 #endif
-        MemFini();
         MsgFini();
+        MemFini();
         LogFini();
     }
 
