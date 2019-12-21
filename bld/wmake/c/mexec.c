@@ -203,32 +203,27 @@ STATIC char *CmdGetFileName( char *src, char **fname, bool osname )
 #endif
 
     string_open = false;
-    if( *src == '\"' ) {
-        string_open = true;
-        src++;
-    }
     *fname = src;
     for( dst = src; (t = *src) != NULLCHAR; src++ ) {
-        if( string_open ) {
-            if( t == '\"' ) {
-                src++;
-                *dst = NULLCHAR;
-                break;
-            } else if( t == '\\' ) {
-                src++;
-                t = *src;
-                if( t != '\"' && t != '\\' ) {
-                    *dst++ = '\\';
-                    if( t == NULLCHAR ) {
-                        *dst = t;
-                        break;
-                    }
+        if( t == '\\' ) {
+            if( !string_open ) {
+                t = src[1];
+                if( cisws( t ) || t == '\"' || t == '\\' ) {
+                    src++;
+                } else {
+                    t = '\\';
                 }
             }
-        } else if( cisws( t ) ) {
+        } else if( t == '\"' ) {
+            string_open = !string_open;
+            continue;
+        } else if( !string_open && cisws( t ) ) {
             break;
         }
         *dst++ = FIX_CHAR_OS( t, osname );
+    }
+    if( dst != src ) {
+        *dst = NULLCHAR;
     }
     return( src );
 }
