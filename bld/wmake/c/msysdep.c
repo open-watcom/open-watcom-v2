@@ -172,21 +172,19 @@ bool TouchFile( const char *name )
         p_hms.twosecs = tm.seconds / 2;
 
         TinySetFileStamp( TINY_INFO( ret ), p_hms, p_ymd );
-        TinyClose( TINY_INFO( ret ) );
     } else {
         ret = TinyCreate( name, TIO_NORMAL );
-        if( TINY_OK( ret ) ) {
-            TinyClose( TINY_INFO( ret ) );
-        } else {
+        if( TINY_ERROR( ret ) ) {
             return( false );
         }
     }
+    TinyClose( TINY_INFO( ret ) );
 #else
     int     fh;
 
-    if( utime( name, 0 ) < 0 ) {
+    if( utime( name, NULL ) == -1 ) {
         fh = creat( name, PMODE_RW );
-        if( fh < 0 ) {
+        if( fh == -1 ) {
             return( false );
         }
         close( fh );

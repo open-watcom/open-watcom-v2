@@ -41,7 +41,7 @@ typedef int         nest_level;
 extern void         PreProcInit( void );
 extern void         PreProcFini( void );
 extern STRM_T       PreGetCHR( void );
-extern bool         existFile( char const *inPath );
+extern bool         ExistFile( char const *inPath );
 extern nest_level   GetNestLevel( void );
 
 #endif /* !_MPREPROC_H */

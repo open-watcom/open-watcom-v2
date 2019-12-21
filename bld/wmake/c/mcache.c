@@ -45,6 +45,7 @@
 #include "mmemory.h"
 #include "mmisc.h"
 #include "dostimet.h"
+#include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "pathgrp.h"
@@ -500,5 +501,5 @@ bool CacheExists( const char *fullpath )
         }
     }
 #endif
-    return( access( fullpath, F_OK ) == 0 );
+    return( ExistFile( fullpath ) );
 }

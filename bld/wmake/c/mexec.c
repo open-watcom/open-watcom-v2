@@ -300,14 +300,13 @@ STATIC char *createTmpFileName( void )
             result = FinishVec( buf );
         }
 
-        if( !existFile( result ) ) {
+        if( !ExistFile( result ) ) {
             /* touch the file */
             TouchFile( result );
             FreeSafe( tmpPath );
             return( result );
-        } else {
-            FreeSafe( result );
         }
+        FreeSafe( result );
         tmpFileNumber = (UINT16)((tmpFileNumber + time( NULL )) % 100000);
     }
 }

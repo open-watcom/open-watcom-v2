@@ -1396,8 +1396,8 @@ STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *i
         bool (*is)(const char *);
 
         if( name2function( current, DEFINED, IsMacro,   &is )
-          || name2function( current, EXIST,  existFile, &is )
-          || name2function( current, EXISTS, existFile, &is ) ) {
+          || name2function( current, EXIST,  ExistFile, &is )
+          || name2function( current, EXISTS, ExistFile, &is ) ) {
             if( *probe == '\"' ) {      // Get macro or file name
                 makeStringToken( probe, current, index );
             } else {
@@ -1409,7 +1409,7 @@ STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *i
                 if( *probe != ')' ) {
                     current->type = OP_ERROR;
                 } else {
-                    if( is == existFile ) {
+                    if( is == ExistFile ) {
                         FixName( current->data.string );
                     }
                     current->type          = OP_INTEGER;
@@ -1964,16 +1964,13 @@ STATIC void multExpr( DATAVALUE *leftValue )
 }
 
 
-bool existFile( char const *inPath )
+bool ExistFile( char const *inPath )
 /***********************************
  * This function is to determine whether or not a particular
  * filename / directory exists  (for use with EXIST())
  */
 {
-     if( access( inPath, F_OK ) == 0 ) {
-         return( true );
-     }
-     return( false );
+     return( access( inPath, F_OK ) == 0 );
 }
 
 
