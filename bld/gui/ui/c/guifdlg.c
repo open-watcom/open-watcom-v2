@@ -35,10 +35,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/stat.h>
 #if defined( __UNIX__ )
     #include <dirent.h>
-    #include <unistd.h>
   #if defined( __QNX__ )
     #include <sys/disk.h>
   #endif
@@ -62,6 +60,7 @@
 #elif defined(__RDOS__)
     #include "rdos.h"
 #endif
+#include "wio.h"
 #include "walloca.h"
 #include "guifdlg.h"
 #include "guidlg.h"
@@ -832,9 +831,8 @@ static bool setDirList( gui_window *gui )
         if( ok ) {
             selected_item = num_items;
             directory = opendir( path );
-            if( directory == NULL ) {
-                ok = false;
-            } else {
+            ok = ( directory != NULL );
+            if( ok ) {
                 while( (dent = readdir( directory )) != NULL ) {
                     if( isdir( dent, path ) ) {
                         if( ( dent->d_name[0] == '.' ) && ( ( dent->d_name[1] == 0 )
