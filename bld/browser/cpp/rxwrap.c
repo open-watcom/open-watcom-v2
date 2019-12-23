@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include "vi.h"
+#include "bool.h"
 #include "rxwrap.h"
 
 #include "clibext.h"
 
 
-vi_rc   RegExpError;
+#define MAX_STR 256
 
 #include "../../posix/misc/regexp.c"

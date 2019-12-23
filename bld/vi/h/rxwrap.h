@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-#include "vi.h"
-#include "rxwrap.h"
+#define CASEIGNORE      EditFlags.CaseIgnore
+#define MAGICFLAG       EditFlags.Magic
+#define MAGICSTR        EditVars.Majick
+#define REALTABS        EditFlags.RealTabs
+#define ALLOC           MemAlloc
+#define WANT_EXCLAMATION
 
-#include "clibext.h"
+extern vi_rc    RegExpError;
 
-
-vi_rc   RegExpError;
-
-#include "../../posix/misc/regexp.c"
+#include "regexp.h"

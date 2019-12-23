@@ -74,7 +74,7 @@ static vi_rc fSearch( const char *, char * );
 static vi_rc eSearch( const char *, char * );
 static vi_rc doGREP( const char * );
 
-static regexp       *cRx;
+static regexp       *cRx = NULL;
 static char         *searchString;
 static const char   *origString;
 static char         *cTable;
@@ -117,15 +117,18 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
     vi_rc   rc;
 
     cRx = RegComp( string );
-    if( RegExpError ) {
-        return( RegExpError );
+    rc = RegExpError;
+    if( rc == ERR_NO_ERR ) {
+        searchString = DupString( string );
+        origString = string;
+        isFgrep = false;
+        rc = doGREP( dirlist );
+        MemFree( searchString );
     }
-    searchString = DupString( string );
-    origString = string;
-    isFgrep = false;
-    rc = doGREP( dirlist );
-    MemFree( searchString );
-    MemFree( cRx );
+    if( cRx != NULL ) {
+        MemFree( cRx );
+        cRx = NULL;
+    }
     return( rc );
 
 } /* DoEGREP */

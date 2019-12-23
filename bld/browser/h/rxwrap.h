@@ -25,17 +25,45 @@
 *
 *  ========================================================================
 *
-* Description:  Wrapper for regexp.c module.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "vi.h"
-#include "rxwrap.h"
+#ifndef __RXWRAP_H__
+#define __RXWRAP_H__
 
-#include "clibext.h"
+#define REGEX_ERRORS() \
+    pick( ERR_NO_ERR,                       NULL ) \
+    pick( ERR_RE_INTERNAL_FOULUP,           "internal regular expression problem" ) \
+    pick( ERR_RE_CORRUPTED_POINTER,         "corrupted regular expression pointer" ) \
+    pick( ERR_RE_MEMORY_CORRUPTION,         "memory corruption" ) \
+    pick( ERR_RE_TRAILING_SLASH,            "trailing slash found" ) \
+    pick( ERR_RE_OPERAND_FOLLOWS_NOTHING,   "operand follows nothing" ) \
+    pick( ERR_RE_UNMATCHED_SQUARE_BRACKET,  "unmatched square bracket" ) \
+    pick( ERR_RE_INVALID_SB_RANGE,          "invalid range" ) \
+    pick( ERR_RE_NESTED_OPERAND,            "nested operand" ) \
+    pick( ERR_RE_EMPTY_OPERAND,             "empty operand" ) \
+    pick( ERR_RE_UNMATCHED_ROUND_BRACKETS,  "unmatched round brackets" ) \
+    pick( ERR_RE_TOO_MANY_ROUND_BRACKETS,   "too many round brackets" ) \
+    pick( ERR_RE_NULL_ARGUMENT,             "no regular expression specified" ) \
+    pick( ERR_RE_INVALID_CASETOGGLE,        "invalid case toggle" )
 
+typedef enum regex_error {
+    #define pick(e,t)   e,
+        REGEX_ERRORS()
+    #undef pick
+} regex_error;
 
-vi_rc   RegExpError;
+#ifdef __cplusplus
+extern "C" {
+#endif
+    extern regex_error  RegExpError;
+#ifdef __cplusplus
+};
+#endif
 
-#include "../../posix/misc/regexp.c"
+#include "regexp.h"
+
+#endif

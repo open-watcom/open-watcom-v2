@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,6 @@
 #endif
 
 #include "watcom.h"
-#define STANDALONE
 #include "regexp.h"
 #include "misc.h"
 #include "fnutils.h"
@@ -49,20 +49,9 @@
 
 
 static char *rxErrorStrings[] = {
-    NULL,
-    "Internal err: Regexp foulup",
-    "Internal err: Regexp corrupted pointer",
-    "Internal err: Regexp memory corruption",
-    "Trailing \\\\",
-    "?+* follows nothing",
-    "Unmatched []",
-    "invalid [] range",
-    "nested *?+",
-    "*+ operand could be empty",
-    "Unmatched ()",
-    "Too many ()",
-    "NULL argument"
-    "Invalid case toggle"
+    #define pick(e,t)       t,
+        REGEXPR_ERRORS()
+    #undef pick
 };
 
 /* FileMatch - check if a file matches a wild card */
@@ -147,11 +136,11 @@ char *FileMatchInit( void **crx, const char *wild )
     tomatch[j] = 0;
 
     rx = RegComp( tomatch );
-    if( RegExpError ) {
+    if( RegExpError == ERR_NO_ERR ) {
+        *crx = rx;
+    } else {
         MemFree( rx );
         *crx = NULL;
-    } else {
-        *crx = rx;
     }
     MemFree( tomatch );
     return( rxErrorStrings[RegExpError] );

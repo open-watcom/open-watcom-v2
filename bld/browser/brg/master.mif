@@ -49,7 +49,7 @@ objs += brmem.obj $(trmem_objs)
 
 inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
 
-extra_cpp_flags     = -DSTANDALONE_RX=1 -DSTANDALONE_MERGER
+extra_cpp_flags     = -DSTANDALONE_MERGER
 !ifndef NDEBUG
 extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 !else

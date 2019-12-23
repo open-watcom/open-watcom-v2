@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,8 +161,8 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
             }
             closedir( d );
         }
-        FileMatchFini();
     }
+    FileMatchFini();
     return( rc );
 
 } /* getDir */

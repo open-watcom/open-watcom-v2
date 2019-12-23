@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +132,6 @@ extern char             *CommandBuffer;
 extern vi_rc            LastRetCode;
 extern vi_rc            LastRC;
 extern long             MaxMemFree, MemoryLeft, MaxMemFreeAfterInit;
-extern int              RegExpError;
 extern eflags           EditFlags;
 extern evars            EditVars;
 extern vi_rc            LastError;

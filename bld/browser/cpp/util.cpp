@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,11 @@
 #include <wstd.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <regexp.h>
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
 
+#include "rxwrap.h"
 #include "util.h"
 #include "brmem.h"
 
@@ -49,6 +50,11 @@
 #  include "wbrwin.h"
 #  include "optmgr.h"
 #endif
+
+
+extern "C" {
+    regex_error RegExpError;
+};
 
 static char * browserDeaths[] = {
     "spontaneous browser combustion!",
@@ -72,32 +78,20 @@ static char * dwarfDeaths[] = {
 };
 
 static char * regexpDeaths[] = {
-    "internal regular expression problem",
-    "corrupted regular expression pointer",
-    "memory corruption",
-    "trailing slash found",
-    "operand follows nothing",
-    "unmatched square bracket",
-    "invalid range",
-    "nested operand",
-    "empty operand",
-    "unmatched round brackets",
-    "too many round brackets",
-    "no regular expression specified",
-    "invalid case toggle"
+    #define pick(e,t)   t,
+        REGEX_ERRORS()
+    #undef pick
 };
-
-extern int RegExpError;
 
 
 void notYetImplemented()
 //----------------------
 {
-    #ifndef STANDALONE_MERGER
-        WMessageDialog::message( topWindow, MsgInfo, MsgOk, "Sorry -- this feature is not yet implemented", "Browser" );
-    #else
-        fprintf( stderr, "Sorry -- feature not yet implemented\n" );
-    #endif
+#ifndef STANDALONE_MERGER
+    WMessageDialog::message( topWindow, MsgInfo, MsgOk, "Sorry -- this feature is not yet implemented", "Browser" );
+#else
+    fprintf( stderr, "Sorry -- feature not yet implemented\n" );
+#endif
 }
 
 void cantOpenFile( const char * fname )
@@ -116,11 +110,11 @@ void errMessage( const char * format, ... )
     char buffer[ 500 ];
     vsprintf( buffer, format, arglist );
 
-    #ifndef STANDALONE_MERGER
-        WMessageDialog::message( topWindow, MsgError, MsgOk, buffer, "Source Browser" );
-    #else
-        fprintf( stderr, "%s\n", buffer );
-    #endif
+#ifndef STANDALONE_MERGER
+    WMessageDialog::message( topWindow, MsgError, MsgOk, buffer, "Source Browser" );
+#else
+    fprintf( stderr, "%s\n", buffer );
+#endif
 
     va_end( arglist );
 }
@@ -132,9 +126,9 @@ void IdentifyAssassin( CauseOfDeath cause )
     char *      deathmsg;
 
     if( cause >= DEATH_BY_BAD_REGEXP ) {
-        deathmsg = regexpDeaths[ (int)cause - (int)DEATH_BY_BAD_REGEXP - 1 ];
+        deathmsg = regexpDeaths[cause - DEATH_BY_BAD_REGEXP];
     } else if( cause >= DEATH_BY_KILLER_DWARFS ) {
-        deathmsg = dwarfDeaths[ (int)cause - (int)DEATH_BY_KILLER_DWARFS ];
+        deathmsg = dwarfDeaths[cause - DEATH_BY_KILLER_DWARFS];
     } else {
         deathmsg = browserDeaths[ cause ];
     }
@@ -185,7 +179,7 @@ void * WBRRegComp( const char * cname )
         }
         result = RegComp( name.gets() );
         if( result == NULL ) {
-            throw (CauseOfDeath) (DEATH_BY_BAD_REGEXP + RegExpError);
+            throw (CauseOfDeath)( DEATH_BY_BAD_REGEXP + RegExpError );
         }
     }
     if( optMgr->getAnchored() ) {

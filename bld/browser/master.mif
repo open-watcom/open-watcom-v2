@@ -42,7 +42,7 @@ sys_windowed = 1
 .rc: ../res
 
 ext = obj
-objs = $+$(template)$-
+objs = $+$(template)$- rxwrap.obj
 
 objs += brmem.obj $(trmem_objs)
 !ifeq release 0
@@ -61,7 +61,7 @@ doc_inc_dirs_win    = -I"$(doc_path_win)"
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os)) $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
-extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
+extra_cpp_flags = -DNOPERSIST=1
 !ifeq release 0
 extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 !endif
@@ -69,7 +69,7 @@ extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 extra_cpp_flags += -DUSE_VIRTMEM
 !endif
 
-extra_cpp_flags_regexp = -DALLOC=WBRAlloc
+extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
 extra_cpp_flags_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
@@ -84,7 +84,7 @@ extra_c_flags_i86 += -zw
 extra_c_flags_i86 += -zW
 !endif
 
-extra_c_flags_regexp = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
+extra_c_flags_rxwrap = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
 extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
 extra_c_flags_brmem = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)

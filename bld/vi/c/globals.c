@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,9 @@
 #include "win.h"
 #include "menu.h"
 #include "ex.h"
-#include "rxsupp.h"
+#include "rxwrap.h"
 #include "memdmp.h"
+
 
 /* strings */
 const char          _NEAR MSG_CHARACTERS[] = "characters";
@@ -203,7 +204,6 @@ vi_rc           LastRetCode;
 vi_rc           LastRC;
 long            MaxMemFree;
 long            MaxMemFreeAfterInit;
-int             RegExpError;
 regexp          *CurrentRegularExpression = NULL;
 char            * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
 int             MatchCount = INITIAL_MATCH_COUNT;

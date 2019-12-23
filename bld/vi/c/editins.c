@@ -39,6 +39,7 @@
 #include "win.h"
 #include "rxsupp.h"
 
+
 static bool     currLineRepUndo;
 static bool     overStrike;
 static bool     needNewUndoForLine;
