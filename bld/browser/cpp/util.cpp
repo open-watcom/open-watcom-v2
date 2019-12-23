@@ -53,7 +53,7 @@
 
 
 extern "C" {
-    regex_error RegExpError;
+    regex_error     RegExpError = ERR_NO_ERR;
 };
 
 static char * browserDeaths[] = {
@@ -146,9 +146,11 @@ static bool matchesAll( char * name )
 {
     char * nameend;
 
-    if( name == NULL || *name == '\0' ) return true;
+    if( name == NULL || *name == '\0' )
+        return true;
     while( isspace( *name ) ) name++;
-    if( name == '\0' ) return true;
+    if( name == '\0' )
+        return true;
     nameend = name + strlen(name) - 1;
     while( isspace( *nameend ) ) {
         *nameend = '\0';

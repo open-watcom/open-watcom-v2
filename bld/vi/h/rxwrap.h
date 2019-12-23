@@ -37,6 +37,6 @@
 #define ALLOC           MemAlloc
 #define WANT_EXCLAMATION
 
-extern vi_rc    RegExpError;
+extern vi_rc            RegExpError;
 
 #include "regexp.h"

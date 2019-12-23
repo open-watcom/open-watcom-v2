@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,7 @@ bool IsDirectory( char *name )
  */
 void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
-    path = path;
+    /* unused parameters */ (void)path;
 
     tmp->attr = dire->d_attr;
     tmp->date = *((date_struct *)&dire->d_date);
