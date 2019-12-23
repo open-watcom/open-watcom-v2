@@ -321,12 +321,12 @@ void __VersionEnforcement( void )
 }
 #endif
 
-_WCRTLINK _WCNORETURN void __exit( unsigned rc )
+_WCRTLINK _WCNORETURN void __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
-/*
- * Netware has own _exit procedure
- */
+    /*
+     * Netware has own _exit procedure
+     */
     _exit( rc );
     // never return
 }

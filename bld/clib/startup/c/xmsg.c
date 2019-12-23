@@ -83,7 +83,7 @@ static ThreadState state;
 static char FatalErrorStr[256];
 #endif
 
-_WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, int retcode )
 {
 #if defined( __DOS__ )
     __do_exit_with_msg( msg, retcode );
@@ -195,7 +195,7 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
 #endif
 }
 
-_WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
 {
 #if defined( __RDOS__ )
 #elif defined( __RDOSDEV__ )
