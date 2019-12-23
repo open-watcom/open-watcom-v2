@@ -31,7 +31,7 @@
 
 
 /* abandon.c */
-void    AbandonHopeAllYeWhoEnterHere( vi_rc );
+void    AbandonHopeAllYesWhoEnterHere( vi_rc );
 
 /* addstr.c */
 void    ReplaceString( char **, const char * );

@@ -33,9 +33,9 @@
 #include "vi.h"
 
 /*
- * AbandonHopeAllYeWhoEnterHere - death for the masses
+ * AbandonHopeAllYesWhoEnterHere - death for the masses
  */
-void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
+void AbandonHopeAllYesWhoEnterHere( vi_rc rc )
 {
 
     EditVars.AutoSaveInterval = 0;
@@ -48,4 +48,4 @@ void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
     }
     QuitEditor( rc );
 
-} /* AbandonHopeAllYeWhoEnterHere */
+} /* AbandonHopeAllYesWhoEnterHere */

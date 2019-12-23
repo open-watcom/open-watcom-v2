@@ -207,7 +207,7 @@ void *MemAlloc( size_t size )
     tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
@@ -370,7 +370,7 @@ void *MemRealloc( void *ptr, size_t size )
     tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
@@ -480,7 +480,7 @@ void * UIAPI uimalloc( size_t size )
     tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 }
@@ -499,7 +499,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 }

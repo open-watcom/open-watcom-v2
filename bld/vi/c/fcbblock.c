@@ -135,7 +135,7 @@ size_t MakeWriteBlock( fcb *fb )
     }
 
     if( len != FcbSize( fb ) ) {
-        AbandonHopeAllYeWhoEnterHere( 666 );
+        AbandonHopeAllYesWhoEnterHere( 666 );
     }
 
     return( len );
