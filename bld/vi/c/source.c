@@ -399,7 +399,7 @@ void FileSPVAR( void )
     } else {
         path[0] = '\0';
     }
-    if( path[strlen(path) - 1] == FILE_SEP ) {
+    if( path[strlen( path ) - 1] == FILE_SEP ) {
         StrMerge( 2, path, pg.fname, pg.ext );
     } else {
         StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );

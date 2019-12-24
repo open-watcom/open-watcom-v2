@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "stack.h"
+#include "pathgrp.h"
 
 
 /*
@@ -40,11 +41,11 @@
 static void getEXEName( char *name )
 {
     PGROUP  pg;
-    char path[_MAX_PATH];
-    char tmppath[_MAX_PATH];
+    char    path[_MAX_PATH];
+    char    tmppath[_MAX_PATH];
 
     _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-    if( ext[0] != '\0' ) {
+    if( pg.ext[0] != '\0' ) {
         EXEName = name;
     } else {
         _makepath( tmppath, pg.drive, pg.dir, pg.fname, ".exe" );

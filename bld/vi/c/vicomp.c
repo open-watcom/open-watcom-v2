@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include "posix.h"
 #include "specio.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 

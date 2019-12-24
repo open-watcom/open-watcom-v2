@@ -41,6 +41,7 @@
 #include "banner.h"
 #include "pathgrp.h"
 #include "bnddata.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
