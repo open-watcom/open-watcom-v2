@@ -43,6 +43,7 @@
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -278,8 +279,7 @@ int main( int argc, char *argv[] )
     bool            dllflag = false;
     char            *wext = NULL;
     unsigned_32     exelen = 0;
-    char            drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME];
-    char            ext[_MAX_EXT];
+    PGROUP          pg;
     char            rex[_MAX_PATH];
     char            exe[_MAX_PATH];
     char            dll[_MAX_PATH];
@@ -360,19 +360,19 @@ int main( int argc, char *argv[] )
      * get files to use
      */
     normalizeFName( path, strlen( path ) + 1, path );
-    _splitpath( path, drive, dir, fname, ext );
-    _makepath( rex, drive, dir, fname, ".rex" );
+    _splitpath( path, pg.drive, pg.dir, pg.fname, pg.ext );
+    _makepath( rex, pg.drive, pg.dir, pg.fname, ".rex" );
     if( dllflag ) {
-        _makepath( dll, drive, dir, fname, ".dll" );
+        _makepath( dll, pg.drive, pg.dir, pg.fname, ".dll" );
     }
-    _makepath( exe, drive, dir, fname, ".exe" );
-    _makepath( res, drive, dir, fname, "" );
+    _makepath( exe, pg.drive, pg.dir, pg.fname, ".exe" );
+    _makepath( res, pg.drive, pg.dir, pg.fname, "" );
 
     /*
      * do the unbind
      */
     if( uflag ) {
-        if( ext[0] == 0 ) {
+        if( pg.ext[0] == 0 ) {
             path = exe;
         }
         in = fopen( path, "rb" );
@@ -503,11 +503,11 @@ int main( int argc, char *argv[] )
      */
     fseek( out, NH_MAGIC_REX, SEEK_SET );
     fwrite( &exelen, 1, sizeof( exelen ), out );
-    len = strlen( fname );
+    len = strlen( pg.fname );
     if( len < 8 ) {
-        memset( &fname[len], ' ', 8 - len );
+        memset( &pg.fname[len], ' ', 8 - len );
     }
-    updateNHStuff( out, fname, desc );
+    updateNHStuff( out, pg.fname, desc );
     fclose( out );
     if( dllflag ) {
         remove( dll );
