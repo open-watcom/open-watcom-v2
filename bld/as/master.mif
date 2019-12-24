@@ -25,14 +25,13 @@ additional_cleanup_subdir = $(stand_subdir)
 !include deftarg.mif
 !include osi.mif
 !include trmem.mif
+!include wres.mif
 
 !include $(owl_dir)/client.mif
 !include $(cpp_dir)/client.mif
 !ifdef test_inline_as
 !include $(as_dir)/client.mif
 !endif
-
-!include wres.mif
 
 # yacc
 #########################
