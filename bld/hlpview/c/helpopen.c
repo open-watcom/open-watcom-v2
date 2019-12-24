@@ -40,6 +40,7 @@
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -52,16 +53,13 @@ static HelpSrchPathItem         *srch_List;
 
 void SetHelpFileDefExt( const char *name, char *buff )
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP      pg;
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( *ext == '\0' ) {
-        strcpy( ext, DEF_EXT );
+    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        strcpy( pg.ext, DEF_EXT );
     }
-    _makepath( buff, drive, dir, fname, ext );
+    _makepath( buff, pg.drive, pg.dir, pg.fname, pg.ext );
 }
 
 static void freeSearchList( void )

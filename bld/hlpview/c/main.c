@@ -44,6 +44,7 @@
 #include "helpmem.h"
 #include "filelist.h"
 #include "initmode.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -82,19 +83,16 @@ static void showCmdlHelp( char *name )
 
 static HelpSrchPathItem *checkFileName( const char *name, char *buf )
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP      pg;
     char        path[_MAX_PATH];
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( *ext == '\0' ) {
-        strcpy( ext, DEF_EXT );
+    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        strcpy( pg.ext, DEF_EXT );
     }
-    _makepath( buf, NULL, NULL, fname, ext );
-    if( *drive != '\0' || *dir != '\0' ) {
-        _makepath( path, drive, dir, NULL, NULL );
+    _makepath( buf, NULL, NULL, pg.fname, pg.ext );
+    if( *pg.drive != '\0' || *pg.dir != '\0' ) {
+        _makepath( path, pg.drive, pg.dir, NULL, NULL );
         searchList[0].info = HelpMemAlloc( strlen( path ) + 1 );
         strcpy( searchList[0].info, path );
     }
