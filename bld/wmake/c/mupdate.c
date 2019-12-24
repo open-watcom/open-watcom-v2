@@ -730,8 +730,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 STATIC RET_T tryImply( TARGET *targ, bool must )
 /**********************************************/
 {
-    PGROUP2 pg;
-    RET_T   ret;
+    PGROUP2     pg;
+    RET_T       ret;
 
     if( Glob.block ) {
         return( RET_WARN );

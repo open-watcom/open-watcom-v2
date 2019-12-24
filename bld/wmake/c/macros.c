@@ -135,8 +135,8 @@ const char *procPath( const char *fullpath )
  * returns: pointer to a static buffer
  */
 {
-    PGROUP2 pg;
-    char    *p;
+    PGROUP2     pg;
+    char        *p;
 
     if( fullpath == NULL ) {
         return( NULL );
