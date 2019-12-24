@@ -43,7 +43,7 @@
 #include "wio.h"
 #include "diskos.h"
 #include "clcommon.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #ifdef TRMEM
 #include "trmem.h"
 #endif
@@ -311,8 +311,8 @@ void  AddNameObj( const char *name )
     list        *last_name;
     list        *new_name;
     char        path[_MAX_PATH];
-    PGROUP      pg1;
-    PGROUP      pg2;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 
     last_name = NULL;
     for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
