@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include "banner.h"
 #include "dmpobj.h"
 #include "wnoret.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -83,10 +85,7 @@ int main( int argc, char **argv )
 /*******************************/
 {
     FILE        *fp;
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP      pg;
     char        file[_MAX_PATH];
     char        *fn;
     int         i;
@@ -155,9 +154,9 @@ int main( int argc, char **argv )
 
     ShowProductInfo();
     for( ; i < argc; ++i ) {
-        _splitpath( argv[i], drive, dir, fname, ext );
-        if( ext[0] == 0 ) {
-            _makepath( file, drive, dir, fname, OBJSUFFIX );
+        _splitpath( argv[i], pg.drive, pg.dir, pg.fname, pg.ext );
+        if( pg.ext[0] == 0 ) {
+            _makepath( file, pg.drive, pg.dir, pg.fname, OBJSUFFIX );
             fn = file;
         } else {
             fn = argv[i];
@@ -168,7 +167,7 @@ int main( int argc, char **argv )
             leave( 20 );    // never return
         }
         if( list_file ) {
-            _makepath( file, drive, dir, fname, LSTSUFFIX );
+            _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
             fh = fopen( file, "w" );
             if( fh == NULL ) {
                 Output( "Cannot open '%s' for writing" CRLF, file );

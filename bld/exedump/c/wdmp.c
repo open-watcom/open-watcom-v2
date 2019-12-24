@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,12 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 #include "banner.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
 
-char  Fname[ _MAX_FNAME ];
+char  Fname[_MAX_FNAME];
 
 /*
  * parse the executable
@@ -155,11 +157,9 @@ static bool find_file( char * file_path )
 /***************************************/
 {
     int     access_rc;
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
-    char    given_ext[ _MAX_EXT ];
+    PGROUP  pg;
 
-    _splitpath( file_path, drive, dir, Fname, given_ext );
+    _splitpath( file_path, pg.drive, pg.dir, Fname, pg.ext );
     /* check if the given file name exists */
     access_rc = access( file_path, R_OK );
     if( access_rc == 0 ) {

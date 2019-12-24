@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #else
 #include "asinline.h"
 #endif
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -221,20 +223,16 @@ char *MakeAsmFilename( const char *orig_name )
 //********************************************
 {
     static char ret[ _MAX_PATH ];
-    char        default_ext[] = "asm";
-    char        drive[ _MAX_DRIVE ];
-    char        dir[ _MAX_DIR ];
-    char        fname[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
+    PGROUP      pg;
     char        *asm_ext;
 
-    _splitpath( orig_name, drive, dir, fname, ext );
-    if( stricmp( ext, "" ) != 0 ) {     // extension is specified
-        asm_ext = ext;
+    _splitpath( orig_name, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] != '\0' ) {   // extension is specified
+        asm_ext = pg.ext;
     } else {
-        asm_ext = default_ext;
+        asm_ext = "asm";
     }
-    _makepath( ret, drive, dir, fname, asm_ext );
+    _makepath( ret, pg.drive, pg.dir, pg.fname, asm_ext );
     return( ret );
 }
 
