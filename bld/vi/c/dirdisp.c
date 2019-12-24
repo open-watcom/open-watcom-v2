@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, 
     list_linenum    n;
     size_t          newstart;
     bool            newstartdef;
-    char            buff[MAX_STR * 2];
+    char            fullmask[MAX_STR * 2];
     vi_rc           rc;
     int             c;
 
@@ -145,12 +145,12 @@ static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, 
     if( getnew ) {
         k = 0;
         for( j = i; j < start; j++ ) {
-            buff[k++] = data[j];
+            fullmask[k++] = data[j];
         }
         lastFilec = -1;
-        buff[k++] = '*';
-        buff[k] = '\0';
-        rc = GetSortDir( buff, false );
+        fullmask[k++] = '*';
+        fullmask[k] = '\0';
+        rc = GetSortDir( fullmask, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }

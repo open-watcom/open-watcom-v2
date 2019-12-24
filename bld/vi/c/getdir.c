@@ -48,36 +48,45 @@ static int compare( const void *p1, const void *p2 )
 
 } /* compare */
 
-static bool skipEntry( struct dirent *dire )
+#if defined( __UNIX__ )
+int _stat2( const char *path, const char *name, struct stat *st )
+{
+    char        full_name[_MAX_PATH];
+
+    _makepath( full_name, NULL, path, name, NULL );
+    return( stat( full_name, st ) );
+}
+#endif
+
+static bool skipEntry( const char *path, struct dirent *dire, bool want_all_dirs )
 {
 #ifdef __UNIX__
-    /* unused parameters */ (void)dire;
-
-    return( false );
-#else
-    return( (dire->d_attr & _A_VOLID) != 0 );
-#endif
-}
-
-static bool isDirectory( struct dirent *dire )
-{
-#if defined( __QNX__ )
+  #if defined( __QNX__ )
     if( (dire->d_stat.st_status & _FILE_USED) == 0 )
-        stat( dire->d_name, &dire->d_stat );
-    return( S_ISDIR( dire->d_stat.st_mode ) );
-#elif defined( __UNIX__ )
-    struct stat st;
+        _stat2( path, dire->d_name, &dire->d_stat );
+    if( S_ISDIR( dire->d_stat.st_mode ) ) {
+  #else
+    struct stat     st;
 
-    stat( dire->d_name, &st );
-    return( S_ISDIR( st.st_mode ) );
+    _stat2( path, dire->d_name, &st );
+    if( S_ISDIR( st.st_mode ) ) {
+  #endif
 #else
-    return( (dire->d_attr & _A_SUBDIR) != 0 );
+    /* unused parameters */ (void)path;
+
+    if( dire->d_attr & _A_VOLID )
+        return( true );
+    if( dire->d_attr & _A_SUBDIR ) {
 #endif
+        return( !want_all_dirs );
+    }
+    return( !FileMatch( dire->d_name ) );
 }
+
 /*
  * getDir - get current directory list (no sorting)
  */
-static vi_rc getDir( const char *dname, bool want_all_dirs )
+static vi_rc getDir( const char *fullmask, bool want_all_dirs )
 {
     DIR                 *d;
     struct dirent       *dire;
@@ -87,15 +96,16 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     size_t              len;
     char                wild[FILENAME_MAX];
     char                path[FILENAME_MAX];
+    char                fullname[FILENAME_MAX];
     char                ch;
     vi_rc               rc;
 
     /*
      * initialize for file scan
      */
-    len = strlen( dname );
+    len = strlen( fullmask );
     for( i = len; i > 0; i-- ) {
-        ch = dname[i - 1];
+        ch = fullmask[i - 1];
 #ifdef __UNIX__
         if( ch == FILE_SEP ) {
 #else
@@ -105,32 +115,37 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
         }
     }
     for( j = 0; j < i; j++ ) {
-        path[j] = dname[j];
+        path[j] = fullmask[j];
     }
-    path[j] = '\0';
+    path[i] = '\0';
     if( i > 0 ) {
         ch = path[i - 1];
     } else {
         ch = '\0';
     }
     for( ; j < len; j++ ) {
-        wild[j - i] = dname[j];
+        wild[j - i] = fullmask[j];
     }
     wild[j - i] = '\0';
     rc = FileMatchInit( wild );
     if( rc == ERR_NO_ERR ) {
 #ifndef __UNIX__
         if( ch != FILE_SEP && ch != ALT_FILE_SEP && ch != DRV_SEP && ch != '\0' ) {
+#else
+        if( ch != FILE_SEP && ch != '\0' ) {
+#endif
             strcat( path, FILE_SEP_STR );
         }
-        strcat( path, ALL_FILES_WILD_CARD );
+        strcpy( fullname, path );
+#ifndef __UNIX__
+        strcat( fullname, ALL_FILES_WILD_CARD );
 #else
         if( ch == '\0' ) {
-            path[0] = '.';
-            path[1] = '\0';
+            fullname[0] = '.';
+            fullname[1] = '\0';
         }
 #endif
-        d = opendir( path );
+        d = opendir( fullname );
         if( d == NULL ) {
             rc = ERR_FILE_NOT_FOUND;
         } else {
@@ -138,15 +153,8 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
              * loop through all directory entries
              */
             while( (dire = readdir( d )) != NULL ) {
-                if( skipEntry( dire ) )
+                if( skipEntry( path, dire, want_all_dirs ) )
                     continue;
-                if( isDirectory( dire ) ) {
-                    if( !want_all_dirs ) {
-                        continue;
-                    }
-                } else if( !FileMatch( dire->d_name ) ) {
-                    continue;
-                }
                 if( DirFileCount >= MAX_FILES ) {
                     break;
                 }
@@ -168,15 +176,15 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
 } /* getDir */
 
 /*
- * GetSortDir - get a directory and sort it
+ * GetSortDir - get a directory contents by file name mask and sort it
  */
-vi_rc GetSortDir( const char *name, bool want_all_dirs )
+vi_rc GetSortDir( const char *fullmask, bool want_all_dirs )
 {
     vi_rc       rc;
 
     DirFini();
 
-    rc = getDir( name, want_all_dirs );
+    rc = getDir( fullmask, want_all_dirs );
     if( rc == ERR_NO_ERR ) {
         if( DirFileCount > 0 ) {
             qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );

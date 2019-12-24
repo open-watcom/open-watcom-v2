@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,25 +75,22 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     vi_rc               rc;
     char                *p;
 
-    cfile = NULL;
-
-    /*
-     * get current directory
-     */
-    strcpy( dd, dir );
-    strcpy( cdir, dir );
-    SetCWD( dir );
-    need_entire_path = false;
-
     /*
      * work through all files
      */
-    for( ;; ) {
+    need_entire_path = false;
+    cfile = NULL;
+    strcpy( dd, dir );
+    for( ; (rc = SetCWD( dd )) == ERR_NO_ERR; ) {
+        strcpy( dd, CurrentDirectory );
+        strcpy( cdir, CurrentDirectory );
+
         p = dd + strlen( dd );
         if( *(p - 1) != FILE_SEP ) {
             *p++ = FILE_SEP;
         }
         strcpy( p, mask );
+
         rc = GetSortDir( dd, want_all_dirs );
         if( rc != ERR_NO_ERR ) {
             break;
@@ -162,23 +159,15 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             dd[1] = ':';
             dd[2] = '\0';
         }
-        rc = SetCWD( dd );
-        if( rc != ERR_NO_ERR ) {
-            break;
-        }
+        need_entire_path = true;
         FreeEntireFile( cfile );
         cfile = NULL;
-        need_entire_path = true;
-        strcpy( cdir, CurrentDirectory );
-        strcpy( dd, CurrentDirectory );
     }
 
     /*
      * done, free memory
      */
-    if( cfile != NULL ) {
-        FreeEntireFile( cfile );
-    }
+    FreeEntireFile( cfile );
     DCDisplayAllLines();
     return( rc );
 

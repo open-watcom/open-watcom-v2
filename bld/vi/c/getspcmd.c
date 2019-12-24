@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "posix.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -127,8 +128,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
     char        *cmd;
     char        full[FILENAME_MAX];
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP      pg;
 #if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     int         i;
     bool        is_internal = false;
@@ -137,15 +137,15 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     cmdl = SkipLeadingSpaces( cmdl );
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
-    _splitpath( full, drive, directory, name, ext );
-    if( ext[0] != '\0' ) {
-        if( drive[0] == '\0' && directory[0] == '\0' ) {
+    _splitpath( full, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] != '\0' ) {
+        if( pg.drive[0] == '\0' && pg.dir[0] == '\0' ) {
             GetFromEnv( full, path );
         }
 #if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     } else {
   #if !defined( NO_INTERNAL_COMMANDS )
-        if( drive[0] == '\0' && directory[0] == '\0' ) {
+        if( pg.drive[0] == '\0' && pg.dir[0] == '\0' ) {
             for( i = 0; i < MAX_INTERNAL_COMMANDS; i++ ) {
                 if( stricmp( full, InternalCommands[i] ) == 0 ) {
                     is_internal = true;
@@ -157,7 +157,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
   #if !defined( NO_EXE_EXTENSIONS )
         if( !is_internal ) {
             for( i = 0; i < MAX_EXE_EXTENSIONS; i++ ) {
-                _makepath( full, drive, directory, name, ExeExtensions[i] );
+                _makepath( full, pg.drive, pg.dir, pg.fname, ExeExtensions[i] );
                 GetFromEnv( full, path );
                 if( path[0] != '\0' ) {
                     break;
@@ -168,13 +168,13 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 #endif
     }
 #if !defined( NO_EXE_EXTENSIONS )
-    _splitpath( full, drive, directory, name, ext );
+    _splitpath( full, pg.drive, pg.dir, pg.fname, pg.ext );
 #endif
 #if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
   #if defined( NO_EXE_EXTENSIONS )
     if( is_internal ) {
   #else
-    if( stricmp( ext, ExeExtensions[0] ) == 0 || is_internal ) {
+    if( stricmp( pg.ext, ExeExtensions[0] ) == 0 || is_internal ) {
   #endif
         strcpy( path, Comspec );
         strcpy( cmds->cmd, "/c " );

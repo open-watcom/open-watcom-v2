@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,25 +37,15 @@
 #include <time.h>
 
 
-#define SET_ATTRIBS(m)  ((m & S_IFDIR) ? _A_SUBDIR : 0)
+#define SET_ATTRIBS(m)  (( S_ISDIR( m ) ) ? _A_SUBDIR : 0)
 
 /*
  * GetFileInfo - get info from a directory entry
  */
 void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
-    char        tmpname[_MAX_PATH];
-    int         len;
-
     if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
-        strcpy( tmpname, path );
-        len = strlen( tmpname );
-        if( tmpname[len - 1] != FILE_SEP ) {
-            tmpname[len] = FILE_SEP;
-            tmpname[len + 1] = '\0';
-        }
-        strcat( tmpname, dire->d_name );
-        stat( tmpname, &dire->d_stat );
+        _stat2( path, dire->d_name, &dire->d_stat );
     }
     tmp->attr = SET_ATTRIBS( dire->d_stat.st_mode );
     tmp->fsize = dire->d_stat.st_size;
@@ -88,7 +79,7 @@ bool IsDirectory( char *name )
     if( stat( name, &sb ) < 0 ) {
         return( false );
     }
-    if( sb.st_mode & S_IFDIR ) {
+    if( S_ISDIR( sb.st_mode ) ) {
         return( true );
     }
     return( false );

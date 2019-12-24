@@ -187,7 +187,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
 {
     sfile       *curr;
     FILE        *foo;
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    PGROUP      pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
     int         token;
@@ -198,8 +198,8 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
      * get compiled file name, and make error file
      */
     if( vn[0] == '\0' ) {
-        _splitpath( fn, drive, directory, name, NULL );
-        _makepath( path, drive, directory, name, "._vi" );
+        _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "._vi" );
     } else {
         strcpy( path, vn );
     }

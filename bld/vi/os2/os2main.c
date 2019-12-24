@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +39,15 @@
  */
 static void getEXEName( char *name )
 {
-    char path[_MAX_PATH], drive[_MAX_DRIVE], dir[_MAX_DIR];
-    char fname[_MAX_FNAME], ext[_MAX_EXT];
+    PGROUP  pg;
+    char path[_MAX_PATH];
     char tmppath[_MAX_PATH];
 
-    _splitpath( name, drive, dir, fname, ext );
+    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
     if( ext[0] != '\0' ) {
         EXEName = name;
     } else {
-        _makepath( tmppath, drive, dir, fname, ".exe" );
+        _makepath( tmppath, pg.drive, pg.dir, pg.fname, ".exe" );
         _searchenv( tmppath, "PATH", path );
         EXEName = DupString( path );
     }

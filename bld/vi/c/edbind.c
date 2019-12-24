@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,7 @@
 #include "watcom.h"
 #include "bool.h"
 #include "banner.h"
+#include "pathgrp.h"
 #include "bnddata.h"
 
 #include "clibext.h"
@@ -313,8 +315,7 @@ int main( int argc, char *argv[] )
     bind_size           fi;
     FILE                *fp;
     struct stat         fs;
-    char                drive[_MAX_DRIVE], dir[_MAX_DIR];
-    char                fname[_MAX_FNAME], ext[_MAX_EXT];
+    PGROUP              pg;
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     char                tmpfname[_MAX_FNAME], tmpext[_MAX_EXT];
@@ -359,9 +360,9 @@ int main( int argc, char *argv[] )
     if( argc < 2 ) {
         Usage( "No executable to bind" );
     }
-    _splitpath( argv[1], drive, dir, fname, ext );
-    if( ext[0] == '\0' ) {
-        _makepath( path, drive, dir, fname, ".exe" );
+    _splitpath( argv[1], pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        _makepath( path, pg.drive, pg.dir, pg.fname, ".exe" );
     } else {
         strcpy( path, argv[1] );
     }

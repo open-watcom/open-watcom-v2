@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "menu.h"
 #include "ex.h"
 #include "fts.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -360,7 +362,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 void FileSPVAR( void )
 {
     char        path[_MAX_PATH];
-    char        drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+    PGROUP      pg;
     int         i;
 
     /*
@@ -369,17 +371,17 @@ void FileSPVAR( void )
     if( CurrentFile == NULL ) {
         VarAddGlobalStr( "F", "" );
         VarAddGlobalStr( "H", "" );
-        drive[0] = dir[0] = fname[0] = ext[0] = '\0';
+        pg.drive[0] = pg.dir[0] = pg.fname[0] = pg.ext[0] = '\0';
     } else {
         VarAddGlobalStr( "F", CurrentFile->name );
         VarAddGlobalStr( "H", CurrentFile->home );
         ConditionalChangeDirectory( CurrentFile->home );
-        _splitpath( CurrentFile->name, drive, dir, fname, ext );
+        _splitpath( CurrentFile->name, pg.drive, pg.dir, pg.fname, pg.ext );
     }
-    VarAddGlobalStr( "P1", dir );
-    VarAddGlobalStr( "D1", drive );
-    strcpy( path, drive );
-    strcat( path, dir );
+    VarAddGlobalStr( "P1", pg.dir );
+    VarAddGlobalStr( "D1", pg.drive );
+    strcpy( path, pg.drive );
+    strcat( path, pg.dir );
     i = strlen( path );
     if( i-- > 1 ) {
 #ifdef __UNIX__
@@ -398,15 +400,15 @@ void FileSPVAR( void )
         path[0] = '\0';
     }
     if( path[strlen(path) - 1] == FILE_SEP ) {
-        StrMerge( 2, path, fname, ext );
+        StrMerge( 2, path, pg.fname, pg.ext );
     } else {
-        StrMerge( 3, path, FILE_SEP_STR, fname, ext );
+        StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );
     }
-    _splitpath( path, drive, dir, fname, ext );
-    VarAddGlobalStr( "D", drive );
-    VarAddGlobalStr( "P", dir );
-    VarAddGlobalStr( "N", fname );
-    VarAddGlobalStr( "E", ext );
+    _splitpath( path, pg.drive, pg.dir, pg.fname, pg.ext );
+    VarAddGlobalStr( "D", pg.drive );
+    VarAddGlobalStr( "P", pg.dir );
+    VarAddGlobalStr( "N", pg.fname );
+    VarAddGlobalStr( "E", pg.ext );
 
 } /* FileSPVAR */
 
@@ -437,15 +439,15 @@ void SourceError( char *msg )
  */
 static void finiSourceErrFile( const char *fn )
 {
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    PGROUP      pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
 
     if( !EditFlags.CompileScript ) {
         return;
     }
-    _splitpath( fn, drive, directory, name, NULL );
-    _makepath( path, drive, directory, name, ".err" );
+    _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
+    _makepath( path, pg.drive, pg.dir, pg.fname, ".err" );
     remove( path );
     if( srcErrFile != NULL ) {
         GetDateTimeString( tmp );
@@ -465,7 +467,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
 {
     sfile       *curr;
     FILE        *foo;
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    PGROUP      pg;
     char        path[FILENAME_MAX];
     char        buff[MAX_SRC_LINE];
     const char  *tmp;
@@ -476,8 +478,8 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
      * get compiled file name, and make error file
      */
     if( vn[0] == '\0' ) {
-        _splitpath( fn, drive, directory, name, NULL );
-        _makepath( path, drive, directory, name, "._vi" );
+        _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "._vi" );
     } else {
         strcpy( path, vn );
     }

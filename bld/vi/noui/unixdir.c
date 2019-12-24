@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +43,9 @@
  */
 void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
 {
-    char        *tmpname;
-    size_t      len;
-    struct stat st;
+    struct stat     st;
 
-    len = strlen( path );
-    tmpname = MemAlloc( len + strlen( dire->d_name ) + 3 );
-    strcpy( tmpname, path );
-    if( tmpname[len - 1] != FILE_SEP ) {
-        tmpname[len++] = FILE_SEP;
-        tmpname[len] = '\0';
-    }
-    strcpy( tmpname + len, dire->d_name );
-    stat( tmpname, &st );
-    MemFree( tmpname );
+    _stat2( path, dire->d_name, &st );
     tmp->attr = SET_ATTRIBS( st.st_mode );
     tmp->fsize = st.st_size;
     tmp->time = st.st_mtime;
@@ -68,7 +58,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path )
  */
 vi_rc MyGetFileSize( const char *inname, long *size )
 {
-    struct stat sb;
+    struct stat     sb;
 
     if( stat( inname, &sb ) < 0 ) {
         return( ERR_FILE_NOT_FOUND );
@@ -83,7 +73,7 @@ vi_rc MyGetFileSize( const char *inname, long *size )
  */
 bool IsDirectory( char *name )
 {
-    struct stat sb;
+    struct stat     sb;
 
     if( stat( name, &sb ) < 0 ) {
         return( false );

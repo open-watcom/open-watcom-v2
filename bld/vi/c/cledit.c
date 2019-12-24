@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include "vi.h"
 #include "posix.h"
 #include "win.h"
+#include "pathgrp.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -229,6 +230,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 FreeUndoStacks();
                 FreeMarkList();
                 FreeEntireFile( CurrentFile );
+                CurrentFile = NULL;
                 MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail, (ss *)CurrentInfo ) );
                 CurrentInfo = NULL;
                 current_window_id = NO_WINDOW;
@@ -250,15 +252,12 @@ vi_rc EditFile( const char *name, bool dammit )
                     /* directory has changed -- check with full path
                      * note that this will fail if an absolute path
                      * was specified thus we do the regular check first */
-                    char path[FILENAME_MAX];
-                    char drive[_MAX_DRIVE];
-                    char dir[_MAX_DIR];
-                    char fname[_MAX_FNAME];
-                    char ext[_MAX_EXT];
+                    char    path[FILENAME_MAX];
+                    PGROUP  pg;
 
-                    _splitpath( il->CurrentFile->name, drive, dir, fname, ext );
-                    if( drive[0] == '\0' ) {
-                        _splitpath( il->CurrentFile->home, drive, NULL, NULL, NULL );
+                    _splitpath( il->CurrentFile->name, pg.drive, pg.dir, pg.fname, pg.ext );
+                    if( pg.drive[0] == '\0' ) {
+                        _splitpath( il->CurrentFile->home, pg.drive, NULL, NULL, NULL );
                     }
                     strcpy( path, il->CurrentFile->home );
                     len = strlen( path );
@@ -276,15 +275,15 @@ vi_rc EditFile( const char *name, bool dammit )
                             break;
                         }
                     }
-                    if( dir[0] == '\0' ) {
-                        _splitpath( path, NULL, dir, NULL, NULL );
-                    } else if( dir[0] != FILE_SEP ) {
+                    if( pg.dir[0] == '\0' ) {
+                        _splitpath( path, NULL, pg.dir, NULL, NULL );
+                    } else if( pg.dir[0] != FILE_SEP ) {
                         char dir2[_MAX_DIR];
                         _splitpath( path, NULL, dir2, NULL, NULL );
-                        strcat( dir2, dir );
-                        strcpy( dir, dir2 );
+                        strcat( dir2, pg.dir );
+                        strcpy( pg.dir, dir2 );
                     }
-                    _makepath( path, drive, dir, fname, ext );
+                    _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
 
                     if( SameFile( path, currfn ) ) {
                         break;

@@ -36,6 +36,7 @@
 #include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "pathgrp.h"
 #ifdef __WIN__
     #include "filelist.rh"
     #include "vifont.h"
@@ -592,16 +593,13 @@ static vi_rc doGREP( const char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( const char *dir, char **list, list_linenum *clist, window_id wid )
+static void fileGrep( const char *fullmask, char **list, list_linenum *clist, window_id wid )
 {
     char            fn[FILENAME_MAX];
     char            data[FILENAME_MAX];
     char            ts[FILENAME_MAX];
     char            path[FILENAME_MAX];
-    char            drive[_MAX_DRIVE];
-    char            directory[_MAX_DIR];
-    char            name[_MAX_FNAME];
-    char            ext[_MAX_EXT];
+    PGROUP          pg;
     list_linenum    i;
 #if defined( __WIN__ ) && defined( __NT__ )
     LVITEM          lvi;
@@ -611,15 +609,15 @@ static void fileGrep( const char *dir, char **list, list_linenum *clist, window_
     /*
      * get file path prefix
      */
-    _splitpath( dir, drive, directory, name, ext );
-    strcpy( path, drive );
-    strcat( path, directory );
-//    _makepath( path, drive, directory, NULL,NULL );
+    _splitpath( fullmask, pg.drive, pg.dir, pg.fname, pg.ext );
+    strcpy( path, pg.drive );
+    strcat( path, pg.dir );
+//    _makepath( path, pg.drive, pg.dir, NULL,NULL );
 
     /*
      * run through each entry and search it; building a list of matches
      */
-    rc = GetSortDir( dir, false );
+    rc = GetSortDir( fullmask, false );
     if( rc == ERR_NO_ERR ) {
         for( i = 0; i < DirFileCount; i++ ) {
             if( IS_SUBDIR( DirFiles[i] ) )
