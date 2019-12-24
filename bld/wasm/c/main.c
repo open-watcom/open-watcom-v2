@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 #endif
 #include "directiv.h"
 #include "standalo.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -418,8 +419,8 @@ static void get_fname( char *token, int type )
 {
     char        name [_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
-    PGROUP      pg;
-    PGROUP      def;
+    PGROUP2     pg;
+    PGROUP2     def;
 
     /* get filename for source file */
 

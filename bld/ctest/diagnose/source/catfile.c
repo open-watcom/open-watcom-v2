@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #define TRUE  1
 #define FALSE 0
@@ -321,7 +322,7 @@ static int processFilePattern   // PROCESS FILE PATTERN
     DIR             *dp;        // - directory stuff
     struct dirent   *entry;
     struct stat     buf;
-    PGROUP          pg;
+    PGROUP2         pg;
     char            path[ _MAX_PATH ];
     char            pattern[ _MAX_PATH ]; // - file pattern
 

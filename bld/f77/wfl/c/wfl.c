@@ -58,7 +58,7 @@
 #include "showopts.h"
 #include "inout.h"
 #include "errutil.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -619,7 +619,7 @@ static void DoWildCardClose( void )
 static const char *DoWildCard( const char *base )
 /***********************************************/
 {
-    PGROUP          pg;
+    PGROUP2         pg;
     struct dirent   *entry;
 
     if( base != NULL ) {
@@ -732,7 +732,7 @@ static  int     CompLink( void ) {
     int         rc;
     const char  *file;
     bool        comp_err;
-    PGROUP      pg;
+    PGROUP2     pg;
     int         i;
     list        *currobj;
     list        *nextobj;
@@ -869,7 +869,7 @@ static  void    Fputnl( char *text, FILE *fptr ) {
 static  void    MakeName( char *name, char *ext ) {
 //=================================================
 
-    PGROUP  pg;
+    PGROUP2 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
@@ -885,8 +885,8 @@ static  void    AddName( char *name, FILE *link_fp ) {
     list        *last_name;
     list        *new_name;
     char        path[_MAX_PATH];
-    PGROUP      pg1;
-    PGROUP      pg2;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 
     last_name = NULL;
     for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {

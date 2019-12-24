@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -135,7 +135,7 @@ const char *procPath( const char *fullpath )
  * returns: pointer to a static buffer
  */
 {
-    PGROUP  pg;
+    PGROUP2 pg;
     char    *p;
 
     if( fullpath == NULL ) {

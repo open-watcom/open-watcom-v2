@@ -40,7 +40,7 @@
 #include "mtarget.h"
 #include "mvecstr.h"
 #include "msuffix.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -550,7 +550,7 @@ bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool trye
  * then buffer, and filename do not overlap
  */
 {
-    PGROUP      pg;
+    PGROUP2     pg;
     SUFFIX      *suffix;
     char        *env;
     PATHRING    envpathring;

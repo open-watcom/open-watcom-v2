@@ -52,7 +52,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -730,7 +730,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 STATIC RET_T tryImply( TARGET *targ, bool must )
 /**********************************************/
 {
-    PGROUP  pg;
+    PGROUP2 pg;
     RET_T   ret;
 
     if( Glob.block ) {

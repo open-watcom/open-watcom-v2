@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include <assert.h>
 #include "watcom.h"
 #include "misc.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -124,7 +125,7 @@ static char *pattern = NULL;
 extern char *DoWildCard( char *base )
 /***********************************************/
 {
-    PGROUP          pg;
+    PGROUP2         pg;
     struct dirent   *entry;
 
     if( base != NULL ) {
