@@ -908,8 +908,7 @@ static  void    AddName( char *name, FILE *link_fp ) {
         _splitpath2( ObjName, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
         if( pg1.ext[0] == '\0' )
             pg1.ext = OBJ_EXT;
-        if( ( pg1.fname[0] == '\0' ) ||
-            ( ( pg1.fname[0] == '*' ) && ( pg1.fname[1] == '\0' ) ) ) {
+        if( ( pg1.fname[0] == '\0' ) || ( ( pg1.fname[0] == '*' ) && ( pg1.fname[1] == '\0' ) ) ) {
             _splitpath2( name, pg2.buffer, NULL, NULL, &pg1.fname, &pg2.ext );
             if( pg2.ext[0] != '\0' ) {
                 pg1.ext = pg2.ext;
