@@ -39,6 +39,7 @@
   #define _WINSOCKAPI_
   #include <windows.h>
 #endif
+#include "bool.h"
 
 #include "control.h"
 

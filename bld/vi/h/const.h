@@ -32,9 +32,6 @@
 #ifndef _CONST_INCLUDED
 #define _CONST_INCLUDED
 
-#include "bool.h"
-
-
 #ifdef __WIN__
     #define CFG_NAME            "weditor.ini"
 #else
