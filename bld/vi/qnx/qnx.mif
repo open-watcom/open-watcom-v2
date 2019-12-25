@@ -10,7 +10,8 @@ objqnxsize = &
     qnxmain.obj &
     qnxmouse.obj &
     time.obj  &
-    spawn.obj
+    spawn.obj &
+    stat2.obj
 
 extraobjs = $(objqnxsize)
 extraobjsroot = $(objqnxtimeroot) $(objqnxsizeroot)

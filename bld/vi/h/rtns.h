@@ -421,9 +421,6 @@ vi_rc   GenerateConfiguration( const char *fname, bool is_cmdline );
 int     GetAutoIndentAmount( char *, int, bool );
 
 /* getdir.c */
-#if defined( __UNIX__ )
-int     _stat2( const char *path, const char *name, struct stat *st );
-#endif
 vi_rc   GetSortDir( const char *fullmask, bool want_all_dirs );
 
 /* getspcmd.c */

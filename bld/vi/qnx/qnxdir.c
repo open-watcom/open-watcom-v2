@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <time.h>
+#include "stat2.h"
 
 
 #define SET_ATTRIBS(m)  (( S_ISDIR( m ) ) ? _A_SUBDIR : 0)

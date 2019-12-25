@@ -34,6 +34,7 @@
 #include "vi.h"
 #include <stddef.h>
 #include "posix.h"
+#include "stat2.h"
 
 #include "clibext.h"
 
@@ -47,16 +48,6 @@ static int compare( const void *p1, const void *p2 )
                     (*(direct_ent * const *)p2)->name ) );
 
 } /* compare */
-
-#if defined( __UNIX__ )
-int _stat2( const char *path, const char *name, struct stat *st )
-{
-    char        full_name[_MAX_PATH];
-
-    _makepath( full_name, NULL, path, name, NULL );
-    return( stat( full_name, st ) );
-}
-#endif
 
 static bool skipEntry( const char *path, struct dirent *dire, bool want_all_dirs )
 {

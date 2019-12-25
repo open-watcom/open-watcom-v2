@@ -34,6 +34,7 @@
 #include <dirent.h>
 #include <time.h>
 #include "wio.h"
+#include "stat2.h"
 
 #include "clibext.h"
 

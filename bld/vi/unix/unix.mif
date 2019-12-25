@@ -10,7 +10,8 @@ objunixsize = &
     unixmous.obj &
     unixmain.obj &
     time.obj &
-    spawn.obj
+    spawn.obj &
+    stat2.obj
 
 extraobjs = $(objunixsize)
 extraobjsroot = $(objunixtimeroot) $(objunixsizeroot)
