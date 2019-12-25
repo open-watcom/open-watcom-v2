@@ -56,7 +56,6 @@
 #include "memutils.h"
 
 #include "clibext.h"
-#include "bldstruc.h"
 
 
 #define WILD_METAS      "*?"
@@ -81,6 +80,12 @@
 #endif
 
 #define COPY_BUFF_SIZE  (32 * 1024)
+
+typedef struct struct_copy {
+    struct struct_copy  *next;
+    char                src[_MAX_PATH];
+    char                dst[_MAX_PATH];
+} struct_copy;
 
 typedef struct dd {
     struct dd   *next;
@@ -175,9 +180,9 @@ static int ProcSet( const char *cmd )
     return( setenv( tmp_buf, rep, 1 ) );
 }
 
-void ResetArchives( copy_entry *list )
+void ResetArchives( copy_entry list )
 {
-    copy_entry  *next;
+    copy_entry  next;
 #ifndef __UNIX__
     unsigned    attr;
 #endif
@@ -200,9 +205,9 @@ static int IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
-static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
+static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 {
-    copy_entry  *entry;
+    copy_entry  entry;
 
     entry = MAlloc( sizeof( *entry ) );
     entry->next = NULL;
@@ -212,7 +217,7 @@ static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
     return( &entry->next );
 }
 
-static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
+static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry *list )
 {
     char                *dst_end;
     char                path_buffer[_MAX_PATH2];
@@ -443,8 +448,8 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
 static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
 {
     char        *p;
-    copy_entry  *list;
-    copy_entry  *next;
+    copy_entry  list;
+    copy_entry  next;
     int         res;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
@@ -477,8 +482,8 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
                     res = rc;
 #ifndef __UNIX__
                 } else if( test_abit ) {
-                    list->next = IncludeStk->reset_abit;
-                    IncludeStk->reset_abit = list;
+                    list->next = GetArchive();
+                    SetArchive( list );
                     continue;
 #endif
                 }
@@ -517,9 +522,9 @@ static int DoPMake( pmake_data *data )
             rc = res;
             continue;
         }
-        getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+        SetIncludeCWD();
         if( data->display )
-            LogDir( IncludeStk->cwd );
+            LogDir( GetIncludeCWD() );
         PMakeCommand( data, cmd );
         res = SysRunCommand( cmd );
         if( res != 0 ) {
@@ -547,11 +552,11 @@ static int ProcPMake( const char *cmd, bool ignore_errors )
         return( 2 );
     }
     data->ignore_errors = ignore_errors;
-    strcpy( save, IncludeStk->cwd );
+    strcpy( save, GetIncludeCWD() );
     res = DoPMake( data );
     PMakeCleanup( data );
     SysChdir( save );
-    getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    SetIncludeCWD();
     return( res );
 }
 
@@ -812,13 +817,13 @@ int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
     if( BUILTIN( cmd, "CD" ) ) {
         res = SysChdir( SKIP_CMD( cmd, "CD" ) );
         if( res == 0 ) {
-            getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+            SetIncludeCWD();
         }
     } else if( BUILTIN( cmd, "CDSAY" ) ) {
         res = SysChdir( SKIP_CMD( cmd, "CDSAY" ) );
         if( res == 0 ) {
-            getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
-            LogDir( IncludeStk->cwd );
+            SetIncludeCWD();
+            LogDir( GetIncludeCWD() );
         }
     } else if( BUILTIN( cmd, "SET" ) ) {
         res = ProcSet( SKIP_CMD( cmd, "SET" ) );

@@ -43,7 +43,6 @@
 #include "memutils.h"
 
 #include "clibext.h"
-#include "bldstruc.h"
 
 
 #define DEFCTLNAME      "builder.ctl"
@@ -55,22 +54,34 @@
 
 #define DOS_EOF_CHAR    0x1a
 
+typedef struct include_entry {
+    struct include_entry    *prev;
+    FILE                    *fp;
+    unsigned                skipping;
+    unsigned                ifdefskipping;
+    unsigned                lineno;
+    char                    name[_MAX_PATH];
+    char                    cwd[_MAX_PATH];
+    copy_entry              reset_abit;
+} include_entry;
+
 typedef struct ctl_file {
     struct ctl_file     *next;
     char                name[_MAX_PATH];
 } ctl_file;
 
-bool               Quiet;
-include            *IncludeStk;
-FILE               *LogFile = NULL;
-static ctl_file    *CtlList;
-static char        Line[MAX_LINE];
-static char        ProcLine[MAX_LINE];
-static unsigned    VerbLevel;
-static bool        UndefWarn;
-static bool        IgnoreErrors;
-static unsigned    ParmCount;
-static unsigned    LogBackup;
+bool                    Quiet;
+FILE                    *LogFile = NULL;
+
+static include_entry    *includeStk;
+static ctl_file         *CtlList;
+static char             Line[MAX_LINE];
+static char             ProcLine[MAX_LINE];
+static unsigned         VerbLevel;
+static bool             UndefWarn;
+static bool             IgnoreErrors;
+static unsigned         ParmCount;
+static unsigned         LogBackup;
 
 static void PutNumber( const char *src, char *dst, unsigned num )
 {
@@ -305,21 +316,21 @@ static bool ProcessEnv( bool opt_end )
 
 static void PushInclude( const char *name )
 {
-    include     *new;
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
-    char        dir_name[_MAX_PATH];
+    include_entry   *new;
+    char            path_buffer[_MAX_PATH2];
+    char            *drive;
+    char            *dir;
+    char            *fn;
+    char            *ext;
+    char            dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
-    new->prev = IncludeStk;
+    new->prev = includeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
     new->lineno = 0;
     new->reset_abit = NULL;
-    IncludeStk = new;
+    includeStk = new;
     new->fp = fopen( name, "rb" );      // We will cook (handle \r) internally
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
@@ -330,33 +341,33 @@ static void PushInclude( const char *name )
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
     }
-    (void)getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    SetIncludeCWD();
 }
 
 static bool PopInclude( void )
 {
-    include     *curr;
+    include_entry   *curr;
 
-    curr = IncludeStk;
+    curr = includeStk;
     fclose( curr->fp );
-    IncludeStk = curr->prev;
+    includeStk = curr->prev;
     ResetArchives( curr->reset_abit );
     MFree( curr );
-    if( IncludeStk == NULL )
+    if( includeStk == NULL )
         return( false );
-    SysChdir( IncludeStk->cwd );
+    SysChdir( GetIncludeCWD() );
     return( true );
 }
 
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        (void)fgets( line, max_len, IncludeStk->fp );
-        if( ferror( IncludeStk->fp ) ) {
-            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
+        (void)fgets( line, max_len, includeStk->fp );
+        if( ferror( includeStk->fp ) ) {
+            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
         }
-        if( !feof( IncludeStk->fp ) ) {
-            IncludeStk->lineno++;
+        if( !feof( includeStk->fp ) ) {
+            includeStk->lineno++;
             break;
         }
         if( !PopInclude() ) {
@@ -403,7 +414,7 @@ static char *SubstOne( const char **inp, char *out )
                 *out = '\0';
                 return( out );
             } else if( stricmp( out, "CWD" ) == 0 ) {
-                rep = IncludeStk->cwd;
+                rep = GetIncludeCWD();
             } else {
                 rep = getenv( out );
             }
@@ -421,7 +432,7 @@ static char *SubstOne( const char **inp, char *out )
             p = SubstOne( &in, p );
             break;
         case '\0':
-            Fatal( "Missing '>' in '%s' line %d\n", IncludeStk->name, IncludeStk->lineno );
+            Fatal( "Missing '>' in '%s' line %d\n", includeStk->name, includeStk->lineno );
             break;
         default:
             *p++ = *in++;
@@ -576,12 +587,12 @@ static int ProcessCtlFile( const char *name )
             /* a directive */
             p = GetWord( p + 1, &word );
             if( stricmp( word, "INCLUDE" ) == 0 ) {
-                if( !IncludeStk->skipping && !IncludeStk->ifdefskipping ) {
+                if( !includeStk->skipping && !includeStk->ifdefskipping ) {
                     p = GetWord( p, &word );
                     PushInclude( word );
                 }
             } else if( stricmp( word, "LOG" ) == 0 ) {
-                if( IncludeStk->skipping == 0 ) {
+                if( includeStk->skipping == 0 ) {
                     p = GetWord( p, &log_name );
                     p = GetWord( p, &word );
                     if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
@@ -594,23 +605,23 @@ static int ProcessCtlFile( const char *name )
                     }
                 }
             } else if( stricmp( word, "BLOCK" ) == 0 ) {
-                IncludeStk->skipping = 0;   // New block: reset skip flags
-                IncludeStk->ifdefskipping = 0;
+                includeStk->skipping = 0;   // New block: reset skip flags
+                includeStk->ifdefskipping = 0;
                 if( !MatchFound( p ) )
-                    IncludeStk->skipping++;
+                    includeStk->skipping++;
                 break;
             } else if( stricmp( word, "IFDEF" ) == 0 ) {
-                if( IncludeStk->ifdefskipping != 0 )
-                    IncludeStk->ifdefskipping--;
+                if( includeStk->ifdefskipping != 0 )
+                    includeStk->ifdefskipping--;
                 if( !MatchFound( p ) )
-                    IncludeStk->ifdefskipping++;
+                    includeStk->ifdefskipping++;
                 break;
             } else if( stricmp( word, "ENDIF" ) == 0 ) {
-                if( IncludeStk->ifdefskipping != 0 )
-                    IncludeStk->ifdefskipping--;
+                if( includeStk->ifdefskipping != 0 )
+                    includeStk->ifdefskipping--;
                 break;
             } else {
-                Fatal( "Unknown directive '%s' in '%s' line %d\n", word, IncludeStk->name, IncludeStk->lineno );
+                Fatal( "Unknown directive '%s' in '%s' line %d\n", word, includeStk->name, includeStk->lineno );
             }
             break;
         default:
@@ -621,7 +632,7 @@ static int ProcessCtlFile( const char *name )
                 SKIP_BLANKS( p );
                 logit = false;
             }
-            if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
+            if( includeStk->skipping == 0 && includeStk->ifdefskipping == 0 ) {
                 if( logit ) {
                     Log( false, "+++<%s>+++\n", p );
                 }
@@ -724,4 +735,24 @@ int main( int argc, char *argv[] )
     CloseLog();
     MClose();
     return( rc );
+}
+
+const char *GetIncludeCWD( void )
+{
+    return( includeStk->cwd );
+}
+
+void SetIncludeCWD( void )
+{
+    getcwd( includeStk->cwd, sizeof( includeStk->cwd ) );
+}
+
+void SetArchive( copy_entry entry )
+{
+    includeStk->reset_abit = entry;
+}
+
+copy_entry GetArchive( void )
+{
+    return( includeStk->reset_abit );
 }

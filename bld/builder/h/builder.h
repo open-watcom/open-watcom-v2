@@ -34,9 +34,17 @@
 #include "watcom.h"
 #include "bldutils.h"
 
+typedef struct struct_copy      *copy_entry;
 
 extern bool         Quiet;
 extern char         tmp_buf[MAX_LINE];
+
+extern void         ResetArchives( copy_entry entries );
+extern void         SetArchive( copy_entry entry );
+extern copy_entry   GetArchive( void );
+
+extern void         SetIncludeCWD( void );
+extern const char   *GetIncludeCWD( void );
 
 extern int          RunIt( const char *, bool, bool * );
 extern void         SysInit( int argc, char *argv[] );
