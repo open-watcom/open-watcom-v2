@@ -54,6 +54,7 @@
 #include "pmake.h"
 #include "wio.h"
 #include "memutils.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -220,12 +221,8 @@ static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry *list )
 {
     char                *dst_end;
-    char                path_buffer[_MAX_PATH2];
+    PGROUP2             pg;
     char                full[_MAX_PATH];
-    char                *drive;
-    char                *dir;
-    char                *fn;
-    char                *ext;
     DIR                 *directory;
     struct dirent       *dent;
 #ifdef __UNIX__
@@ -248,8 +245,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         case '\\':
         case '/':
             /* need to append source file name */
-            _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
-            _makepath( full, NULL, dst, fn, ext );
+            _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( full, NULL, dst, pg.fname, pg.ext );
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
             break;
         default:
@@ -261,10 +258,10 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         }
         return( 0 );
     }
-    _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
+    _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #ifdef __UNIX__
-    _makepath( src, drive, dir, NULL, NULL );
-    _makepath( pattern, NULL, NULL, fn, ext );
+    _makepath( src, pg.drive, pg.dir, NULL, NULL );
+    _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
     if( src[0] == '\0' ) {
         directory = opendir( "." );
     } else {
@@ -296,7 +293,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
             if( dent->d_attr & _A_SUBDIR )
                 continue;
 #endif
-            _makepath( full, drive, dir, dent->d_name, NULL );
+            _makepath( full, pg.drive, pg.dir, dent->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
             switch( *dst_end ) {

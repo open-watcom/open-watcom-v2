@@ -41,6 +41,7 @@
 #include "watcom.h"
 #include "builder.h"
 #include "memutils.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -102,11 +103,7 @@ static void PutNumber( const char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
+    PGROUP2     pg;
     char        old_name[_MAX_PATH];
     char        new_name[_MAX_PATH];
     char        temp_ext[5];
@@ -117,16 +114,16 @@ static void BackupLog( const char *log_name, unsigned copies )
         remove( log_name );
         return;
     }
-    _splitpath2( log_name, path_buffer, &drive, &dir, &fn, &ext );
+    _splitpath2( log_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     while( copies != 0 ) {
-        PutNumber( ext, temp_ext, copies );
-        _makepath( new_name, drive, dir, fn, temp_ext );
+        PutNumber( pg.ext, temp_ext, copies );
+        _makepath( new_name, pg.drive, pg.dir, pg.fname, temp_ext );
         remove( new_name );
         if( copies == 1 ) {
             strcpy( old_name, log_name );
         } else {
-            PutNumber( ext, temp_ext, copies - 1 );
-            _makepath( old_name, drive, dir, fn, temp_ext );
+            PutNumber( pg.ext, temp_ext, copies - 1 );
+            _makepath( old_name, pg.drive, pg.dir, pg.fname, temp_ext );
         }
         rename( old_name, new_name );
         --copies;
@@ -317,11 +314,7 @@ static bool ProcessEnv( bool opt_end )
 static void PushInclude( const char *name )
 {
     include_entry   *new;
-    char            path_buffer[_MAX_PATH2];
-    char            *drive;
-    char            *dir;
-    char            *fn;
-    char            *ext;
+    PGROUP2         pg;
     char            dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
@@ -336,8 +329,8 @@ static void PushInclude( const char *name )
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
     strcpy( new->name, name );
-    _splitpath2( name, path_buffer, &drive, &dir, &fn, &ext );
-    _makepath( dir_name, drive, dir, NULL, NULL );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( dir_name, pg.drive, pg.dir, NULL, NULL );
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
     }
@@ -661,11 +654,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
+    PGROUP2     pg;
     char        *end;
     FILE        *fp;
 
@@ -676,11 +665,11 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             fclose( fp );
             return( true );
         }
-        _splitpath2( result, path_buffer, &drive, &dir, &fn, &ext );
-        if( *dir == '\0' )
+        _splitpath2( result, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.dir[0] == '\0' )
             return( false );
-        end = dir + strlen( dir ) - 1;
-        if( end == dir )
+        end = pg.dir + strlen( pg.dir ) - 1;
+        if( end == pg.dir )
             return( false );
         switch( *end ) {
         case '\\':
@@ -688,7 +677,7 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             --end;
         }
         for( ;; ) {
-            if( end == dir ) {
+            if( end == pg.dir ) {
                 *end++ = '/';
                 break;
             }
@@ -697,7 +686,7 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             --end;
         }
         *end = '\0';
-        _makepath( result, drive, dir, fn, ext );
+        _makepath( result, pg.drive, pg.dir, pg.fname, pg.ext );
     }
 }
 
