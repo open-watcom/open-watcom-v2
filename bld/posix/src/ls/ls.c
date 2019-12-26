@@ -47,6 +47,7 @@
 #include "fnutils.h"
 #include "console.h"
 #include "filerx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -298,9 +299,7 @@ static int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 static void DoLS( char *path, char *name )
 {
     char                filename[_MAX_PATH];
-    char                filebuff[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
+    PGROUP2             pg;
     int                 filecnt = 0;
     DIR                 *dirp;
     struct dirent       **files = NULL;
@@ -330,7 +329,7 @@ static void DoLS( char *path, char *name )
             strcat( filename, "\\" );
         }
     }
-    _splitpath2( filename, filebuff, &drive, &dir, NULL, NULL );
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     if( lflag ) {
         i = 0;
@@ -446,7 +445,7 @@ static void DoLS( char *path, char *name )
         maxfileperline = line_width / columnwidth;
         fileperlinecnt = 0;
         for( i = 0 ; i < filecnt ; i++ ) {
-            PrintFile( drive, dir, files[i] );
+            PrintFile( pg.drive, pg.dir, files[i] );
         }
         if( fileperlinecnt != 0 ) {
             printf( "\n" );
@@ -455,7 +454,7 @@ static void DoLS( char *path, char *name )
         if( Rflag ) {
             for( i = 0 ; i < filecnt ; i++ ) {
                 if( files[i]->d_attr & _A_SUBDIR ) {
-                    _makepath( filename, drive, dir, files[i]->d_name, NULL );
+                    _makepath( filename, pg.drive, pg.dir, files[i]->d_name, NULL );
                     printf( "\n%s:\n", filename );
                     DoLS( filename, name );
                 }
@@ -593,13 +592,11 @@ static int IsX( char *file )
 } /* IsX */
 
 static int IsSpecialRoot( char * filename )
-/**********************************/
+/*****************************************/
 // Check if 'filename' is of the form 'd:'
 {
-    char                filebuff[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
+    PGROUP2     pg;
 
-    _splitpath2( filename, filebuff, &drive, &dir, NULL, NULL );
-    return( drive[0] != '\0' && dir[0] == '\0' );
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    return( pg.drive[0] != '\0' && pg.dir[0] == '\0' );
 } /* IsSpecialRoot */

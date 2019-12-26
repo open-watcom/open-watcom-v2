@@ -43,6 +43,7 @@
 #include "misc.h"
 #include "fnutils.h"
 #include "filerx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -180,9 +181,7 @@ int FileMatchNoRx( const char *name, const char *wild )
 {
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
-    char        sp_buf[_MAX_PATH2];
-    char        *cfname;
-    char        *cext;
+    PGROUP2     pg;
     unsigned    j, elen, flen;
     size_t      i, k, len;
 
@@ -220,26 +219,25 @@ int FileMatchNoRx( const char *name, const char *wild )
     }
     ext[elen] = 0;
 
-    memset( sp_buf, 0, sizeof( sp_buf ) );
-    _splitpath2( name, sp_buf, NULL, NULL, &cfname, &cext );
-    if( cext[0] == '.' ) {
-        ++cext;
+    _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '.' ) {
+        ++pg.ext;
     }
 
-    len = strlen( cfname );
+    len = strlen( pg.fname );
     if( len < flen )
         len = flen;
     for( i = 0; i < len; i++ ) {
-        if( FNameCharCmp( cfname[i], fname[i] ) != 0 && fname[i] != '?' ) {
+        if( FNameCharCmp( pg.fname[i], fname[i] ) != 0 && fname[i] != '?' ) {
             return( false );
         }
     }
 
-    len = strlen( cext );
+    len = strlen( pg.ext );
     if( len < elen )
         len = elen;
     for( i = 0; i < len; i++ ) {
-        if( FNameCharCmp( cext[i], ext[i] ) != 0 && ext[i] != '?' ) {
+        if( FNameCharCmp( pg.ext[i], ext[i] ) != 0 && ext[i] != '?' ) {
             return( false );
         }
     }
