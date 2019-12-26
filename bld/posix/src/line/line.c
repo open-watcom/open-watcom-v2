@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +35,19 @@
 #include <stdio.h>
 #include <ctype.h>
 
-void main( void )
+int main( void )
 /***************/
 {
     int c;
 
     for(;;) {
         c = fgetc( stdin );
-        if( c == EOF ) break;
+        if( c == EOF )
+            break;
         putchar( c );
         if( c == '\n' ) {
             break;
         }
     }
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

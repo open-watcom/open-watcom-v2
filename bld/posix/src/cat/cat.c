@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "bool.h"
 #include "wio.h"
 #include "misc.h"
 #include "getopt.h"
@@ -70,19 +72,21 @@ static void DoCAT( int fh ) {
     }
 }
 
-void main( int argc, char **argv ) {
-    int         rxflag, ch;
+int main( int argc, char **argv )
+{
+    bool        rxflag;
+    int         ch;
     int         fh;
 
     argv = ExpandEnv( &argc, argv );
 
-    rxflag = 0;
+    rxflag = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "X", usageMsg );
         if( ch == -1 ) {
             break;
         } else if( ch == 'X' ) {
-            rxflag = 1;
+            rxflag = true;
         }
     }
 
@@ -104,5 +108,5 @@ void main( int argc, char **argv ) {
             argv++;
         }
     }
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

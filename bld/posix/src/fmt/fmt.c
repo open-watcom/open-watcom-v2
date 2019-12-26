@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <limits.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -577,50 +579,51 @@ static void formatFile( FILE *fp, unsigned width, unsigned offset )
     freeWordlist( list );               // free the text space
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
 
     unsigned    width  = DEF_LINE_LEN;
     unsigned    offset = 0;
-    int         regexp = 0;
+    bool        regexp;
     int         value;
 
     argv = ExpandEnv( &argc, argv );
 
+    regexp = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "Xcjnl:p:", usageMsg );
         if( ch == -1 ) {
             break;
         }
         switch( ch ) {
-            case 'c':
-                f_mode |= FMT_CENTRE;
-                break;
-            case 'j':
-                f_mode |= FMT_JUSTIFY;
-                break;
-            case 'n':
-                f_mode |= FMT_NOSPACE;
-                break;
-            case 'l':
-                value = atoi( OptArg );
-                if( value <= 0 ) {
-                    Die( "fmt: invalid line length\n" );
-                }
-                width = (unsigned)value;
-                break;
-            case 'p':
-                value = atoi( OptArg );
-                if( value < 0 ) {
-                    Die( "fmt: invalid page offset\n" );
-                }
-                offset = (unsigned)value;
-                break;
-            case 'X':
-                regexp = 1;
-                break;
+        case 'c':
+            f_mode |= FMT_CENTRE;
+            break;
+        case 'j':
+            f_mode |= FMT_JUSTIFY;
+            break;
+        case 'n':
+            f_mode |= FMT_NOSPACE;
+            break;
+        case 'l':
+            value = atoi( OptArg );
+            if( value <= 0 ) {
+                Die( "fmt: invalid line length\n" );
+            }
+            width = (unsigned)value;
+            break;
+        case 'p':
+            value = atoi( OptArg );
+            if( value < 0 ) {
+                Die( "fmt: invalid page offset\n" );
+            }
+            offset = (unsigned)value;
+            break;
+        case 'X':
+            regexp = true;
+            break;
         }
     }
 
@@ -645,5 +648,5 @@ void main( int argc, char **argv )
         }
     }
     free( w_buff );                     // free the word space
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

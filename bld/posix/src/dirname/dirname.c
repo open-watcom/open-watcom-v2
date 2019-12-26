@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     char        *dir, *drive;
     size_t      len;
@@ -76,4 +77,5 @@ void main( int argc, char **argv )
         free( dir );
         free( drive );
     }
+    return( 0 );
 }

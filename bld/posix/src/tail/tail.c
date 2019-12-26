@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 #include "wio.h"
 #include "misc.h"
 #include "getopt.h"
@@ -175,14 +177,14 @@ static void tailFile( char *fname )
 }
 
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     int         ch;
     int         i;
-    int         rxflag;
+    bool        rxflag;
 
     tailCount = 10;
-    rxflag = 0;
+    rxflag = false;
     for(;;) {
         ch = GetOpt( &argc, argv, "#X", usageMsg );
         if( ch == -1 ) {
@@ -193,7 +195,7 @@ void main( int argc, char *argv[] )
             tailCount = atoi( OptArg );
             break;
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
     }
@@ -203,12 +205,12 @@ void main( int argc, char *argv[] )
     if( argc == 1 ) {
         tailStdin();
     } else {
-        for( i=1;i<argc;i++ ) {
+        for( i = 1; i < argc; i++ ) {
             if( argc > 2 ) {
                 printf( "\n%s:\n", strupr( argv[i] ) );
             }
             tailFile( argv[i] );
         }
     }
-    exit( 0 );
+    return( 0 );
 }

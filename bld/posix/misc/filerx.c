@@ -66,7 +66,7 @@ int FileMatch( void *crx, const char *name )
 }
 
 /* FileNameWild - determine if a file name has a wild card */
-int FileNameWild( const char *wild, int isrx )
+bool FileNameWild( const char *wild, bool isrx )
 {
     size_t      len, i;
     int         ch;

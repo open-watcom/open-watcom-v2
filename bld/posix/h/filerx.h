@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
 extern int      FileMatch( void *crx, const char *name );
 extern char     *FileMatchInit( void **crx, const char *wild );
 extern void     FileMatchFini( void *crx );
-extern int      FileNameWild( const char *wild, int isrx );
+extern bool     FileNameWild( const char *wild, bool isrx );
 extern char     *FileMatchDirAll( const char *filename, char *npath, char *wild );
 extern int      FileMatchNoRx( const char *name, const char *wild );
 

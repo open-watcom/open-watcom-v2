@@ -114,7 +114,7 @@ static int IsX( char *file );
  */
 int main( int argc, char *argv[] )
 {
-    DIR         *d;
+    DIR         *dirp;
     char        filebuff[_MAX_PATH];
     char        **todo = NULL;
     int         todocnt = 0;
@@ -191,13 +191,13 @@ int main( int argc, char *argv[] )
      */
     for( i = 1 ; i < argc ; i++ ) {
         if( FileNameWild( argv[i], rxflag ) ) {
-            d = NULL;
+            dirp = NULL;
         } else if( IsSpecialRoot( argv[i] ) ) {
-            d = opendir( strcat( strcpy( filebuff, argv[i] ), "\\" ) );
+            dirp = opendir( strcat( strcpy( filebuff, argv[i] ), "\\" ) );
         } else {
-            d = opendir( argv[i] );
+            dirp = opendir( argv[i] );
         }
-        if( d != NULL && (d->d_attr & _A_SUBDIR) ) {
+        if( dirp != NULL && (dirp->d_attr & _A_SUBDIR) ) {
             printf( "%s:\n", argv[i] );
             if( rxflag ) {
                 DoLS( argv[i], "*" );
@@ -206,15 +206,15 @@ int main( int argc, char *argv[] )
             }
             printf( "\n" );
         } else {
-            todo = realloc( todo, (todocnt+1)*sizeof( char * ) );
+            todo = realloc( todo, ( todocnt + 1 ) * sizeof( char * ) );
             if( todo == NULL ) {
                 printf( "Out of memory!\n" );
                 exit( 1 );
             }
             todo[todocnt++] = argv[i];
         }
-        if( d != NULL ) {
-            closedir( d );
+        if( dirp != NULL ) {
+            closedir( dirp );
         }
     }
 

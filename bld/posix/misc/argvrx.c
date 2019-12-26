@@ -37,6 +37,7 @@
 #else
  #include <direct.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "misc.h"
@@ -47,7 +48,7 @@
 #include "clibext.h"
 
 
-char **ExpandArgv( int *oargc, char *oargv[], int isrx )
+char **ExpandArgv( int *oargc, char *oargv[], bool isrx )
 {
     int                 argc, i;
     char                *err;

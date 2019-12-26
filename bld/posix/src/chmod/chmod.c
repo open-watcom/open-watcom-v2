@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <ctype.h>
 #include <dos.h>
 #include <io.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -66,15 +68,15 @@ static const char *usageMsg[] = {
 static unsigned attrToAdd;
 static unsigned attrToRemove;
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     int         ch;
     int         i;
     unsigned    attr;
-    int         rxflag;
+    bool        rxflag;
 
     AltOptChar = '+';
-    rxflag = 0;
+    rxflag = false;
 
     argv = ExpandEnv( &argc, argv );
 
@@ -94,7 +96,7 @@ void main( int argc, char *argv[] )
             attr = _A_SYSTEM;
             break;
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
         if( OptChar == '-' ) {
@@ -114,5 +116,5 @@ void main( int argc, char *argv[] )
         attr &= ~attrToRemove;
         _dos_setfileattr( argv[i], attr );
     }
-    exit( 0 );
+    return( 0 );
 }

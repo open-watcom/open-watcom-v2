@@ -87,7 +87,8 @@ int main( int argc, char *argv[] )
 {
     int i;
     int ch;
-    DIR *d;
+    DIR *dirp;
+    bool isdir;
 
     /* process options */
     while( ( ch = GetOpt( &argc, argv, "firRsvX", usageMsg ) ) != -1 ) {
@@ -109,25 +110,30 @@ int main( int argc, char *argv[] )
     /* process -r option */
     if( rflag ) {
         for( i = 1; i < argc; i++ ) {
-            if( strcmp( argv[i], rxflag ? "*" : "*.*" ) == 0 )
+            if( strcmp( argv[i], rxflag ? "*" : "*.*" ) == 0 ) {
                 RecursiveRM( "." );
-            else {
-                d = FileNameWild( argv[i], rxflag ) ? NULL : opendir( argv[i] );
-                if( d != NULL ) {
-                    if( (d->d_attr & _A_SUBDIR) == 0 ) {
-                        closedir( d );
-                        if( fflag ) {
+            } else {
+                if( FileNameWild( argv[i], rxflag ) ) {
+                    dirp = NULL;
+                } else {
+                    dirp = opendir( argv[i] );
+                    if( dirp != NULL ) {
+                        isdir = ( (dirp->d_attr & _A_SUBDIR) != 0 );
+                        closedir( dirp );
+                        if( isdir ) {
+                            RecursiveRM( argv[i] );
+                        } else if( fflag ) {
                             DoRM( argv[i] );
                         } else {
                             PrintALineThenDrop( "%s is not a directory.", argv[i] );
                         }
-                    } else {
-                        closedir( d );
-                        RecursiveRM( argv[i] );
                     }
-                } else if( !fflag ) {
-                    PrintALineThenDrop( "Directory %s not found.", argv[i] );
-                    error_occured = 1;
+                }
+                if( dirp == NULL ) {
+                    if( !fflag ) {
+                        PrintALineThenDrop( "Directory %s not found.", argv[i] );
+                        error_occured = 1;
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,11 +199,11 @@ static int searchBuffer( char *buf )
             char       *s = buf;
             char const *p = fPatterns[ ui ];
             char const  first = *p++;
-            
+
             for( ;; ) {
                 if( CharTrans[ *(unsigned char *)s ] == first ) {
                     char       * const next = ++s;
-                    
+
                     for( ; ; s++, p++ ) {
                         if( *p == '\0' )
                             return( 1 );
@@ -382,7 +383,7 @@ static void changeTransTable( void )
     }
 }
 
-static void handle_options( int *pargc, char **argv, int *prematch )
+static void handle_options( int *pargc, char **argv, bool *prematch )
 {
     int         ch;             // switch chars
 
@@ -415,7 +416,7 @@ static void handle_options( int *pargc, char **argv, int *prematch )
                 Flags |= M_SEARCH_INVERT;
                 break;
             case 'X':
-                *prematch = 1;
+                *prematch = true;
                 break;
             case 'x':
                 Flags |= M_SEARCH_EXACT;
@@ -428,13 +429,15 @@ static void handle_options( int *pargc, char **argv, int *prematch )
 
 int main( int argc, char **argv )
 {
-    int         rematch = 0;    // regexp file matching is OFF
+    bool        rematch;
     unsigned    matches = 0;    // number of matches
 
     IObuffer = malloc( IObsize );
     if( IObuffer == NULL )
         errorExit( "insufficient memory for file buffer" );
-    CaseIgnore  = false;        // case sensitive match by default
+    CaseIgnore = false;         // case sensitive match by default
+    rematch = false;            // regexp file matching is OFF
+
     argv = ExpandEnv( &argc, argv );
     handle_options( &argc, argv, &rematch );
 

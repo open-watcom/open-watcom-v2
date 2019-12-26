@@ -261,7 +261,7 @@ static void doDF( int drive )
 } /* doDF */
 
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     int         ch;
     int         i;
@@ -292,6 +292,6 @@ void main( int argc, char *argv[] )
         }
     }
 
-    exit( 0 );
+    return( 0 );
 
 } /* main */

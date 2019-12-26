@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "getopt.h"
 #include "argvrx.h"
 
 char *OptEnvVar="wc";
 
-int     line_flag;
-int     word_flag;
-int     char_flag;
+bool    line_flag = false;
+bool    word_flag = false;
+bool    char_flag = false;
 
 unsigned long total_lines;
 unsigned long total_words;
@@ -84,28 +86,31 @@ static void PrintLine( unsigned long lines,
 static void DoWC( FILE *fh, const char *name )
 {
     int                 ch;
-    int                 in_word = 0;
+    bool                in_word;
     unsigned long       lines = 0;
     unsigned long       words = 0;
     unsigned long       chars = 0;
 
+    in_word = false;
     for(;;) {
         ch = fgetc( fh );
-        if( ch == EOF ) break;
+        if( ch == EOF )
+            break;
         ++chars;
         if( isspace( ch ) ) {
             if( in_word ) {
-                in_word = 0;
+                in_word = false;
                 ++words;
             }
         } else {
-            in_word = 1;
+            in_word = true;
         }
         if( ch == '\n' ) {
             ++lines;
         }
     }
-    if( in_word ) ++words;
+    if( in_word )
+        ++words;
     total_lines += lines;
     total_words += words;
     total_chars += chars;
@@ -113,27 +118,27 @@ static void DoWC( FILE *fh, const char *name )
 }
 
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     int         i,ch;
     FILE        *fh;
-    int         more_than_one;
-    int         rxflag;
+    bool        more_than_one;
+    bool        rxflag;
 
-    rxflag = 0;
+    rxflag = false;
     while( (ch = GetOpt( &argc, argv, "Xwlc", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'w':
-            word_flag = 1;
+            word_flag = true;
             break;
         case 'l':
-            line_flag = 1;
+            line_flag = true;
             break;
         case 'c':
-            char_flag = 1;
+            char_flag = true;
             break;
         case 'x':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
     }
@@ -141,13 +146,13 @@ void main( int argc, char **argv )
     argv = ExpandArgv( &argc, argv, rxflag );
 
     if( !word_flag && !line_flag && !char_flag ) {
-        word_flag = line_flag = char_flag = 1;
+        word_flag = line_flag = char_flag = true;
     }
     if( argc == 1 ) {
         DoWC( stdin, NULL );
     } else {
         i = 1;
-        more_than_one = 0;
+        more_than_one = false;
         for(;;) {
             fh = fopen( argv[ i ], "r" );
             if( fh == NULL ) {
@@ -158,12 +163,13 @@ void main( int argc, char **argv )
             DoWC( fh, argv[ i ] );
             fclose( fh );
             ++i;
-            if( i == argc ) break;
-            more_than_one = 1;
+            if( i == argc )
+                break;
+            more_than_one = true;
         }
         if( more_than_one ) {
             PrintLine( total_lines, total_words, total_chars, "--Total" );
         }
     }
-    exit( 0 );
+    return( 0 );
 }

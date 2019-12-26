@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +145,7 @@ static void compareFiles( FILE *fp1, FILE *fp2, char mask )
     free( l2.buff );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp1, *fp2;
     int         ch;
@@ -158,15 +159,15 @@ void main( int argc, char **argv )
             break;
         }
         switch( ch ) {
-            case '1':
-                mask |= S_FIRST;
-                break;
-            case '2':
-                mask |= S_SECOND;
-                break;
-            case '3':
-                mask |= S_BOTH;
-                break;
+        case '1':
+            mask |= S_FIRST;
+            break;
+        case '2':
+            mask |= S_SECOND;
+            break;
+        case '3':
+            mask |= S_BOTH;
+            break;
         }
     }
 
@@ -183,4 +184,5 @@ void main( int argc, char **argv )
         fclose( fp1 );
         fclose( fp2 );
     }
+    return( 0 );
 }
