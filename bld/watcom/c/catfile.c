@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,15 +42,10 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include "bool.h"
+#include "pathgrp2.h"
 
+#include "clibext.h"
 
-typedef struct PathGroup {
-    char    *drive;
-    char    *dir;
-    char    *fname;
-    char    *ext;
-    char    buffer[FILENAME_MAX + 4];
-} PGROUP;
 
 struct {                        // Program switches
     unsigned sort_date  :1;     // - sort by date
@@ -227,11 +223,10 @@ static int processSwitch        // PROCESS SWITCH
 #define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
 #if defined( __UNIX__ )
 #define FNAMECMPCHAR(a,b)   (a-b)
-#define ISVALIDENTRY(e)     (1)
+#define ISVALIDENTRY(e)     (true)
 #else
 #define FNAMECMPCHAR(a,b)   (tolower(a)-tolower(b))
 #define ISVALIDENTRY(e)     ((e->d_attr & _A_VOLID) == 0)
-
 #endif
 
 static int __fnmatch( char *pattern, char *string )
@@ -327,7 +322,7 @@ static int processFilePattern   // PROCESS FILE PATTERN
     DIR             *dp;        // - directory stuff
     struct dirent   *entry;
     struct stat     buf;
-    PGROUP          pg;
+    PGROUP2         pg;
     char            path[ _MAX_PATH ];
     char            pattern[ _MAX_PATH ]; // - file pattern
 
