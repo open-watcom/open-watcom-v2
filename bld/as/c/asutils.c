@@ -222,7 +222,7 @@ void AbortParse( void )
 char *MakeAsmFilename( const char *orig_name )
 //********************************************
 {
-    static char ret[ _MAX_PATH ];
+    static char ret[_MAX_PATH];
     PGROUP      pg;
     char        *asm_ext;
 

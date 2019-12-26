@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -125,7 +126,7 @@ bool ObjInit( char *fname ) {
 //***************************
 
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
-    char                name[ _MAX_FNAME ];
+    char                name[_MAX_FNAME];
     owl_format          obj_format;
 
     SectionInit();
@@ -133,17 +134,14 @@ bool ObjInit( char *fname ) {
     if( !objectDefined ) {
         _makepath( objName, NULL, NULL, name, OBJ_EXT );
     } else {
-        char    tmpName[ _MAX_PATH2 ];
-        char    *tmpNode;
-        char    *tmpDir;
-        char    *tmpFname;
-        char    *tmpExt;
-        _splitpath2( objName, tmpName, &tmpNode, &tmpDir, &tmpFname, &tmpExt );
-        if( *tmpExt == 0 )
-            tmpExt = OBJ_EXT;
-        if( *tmpFname == 0 )
-            tmpFname = name;
-        _makepath( objName, tmpNode, tmpDir, tmpFname, tmpExt );
+        PGROUP2 pg;
+
+        _splitpath2( objName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == '\0' )
+            pg.ext = OBJ_EXT;
+        if( pg.fname[0] == '\0' )
+            pg.fname = name;
+        _makepath( objName, pg.drive, pg.dir, pg.fname, pg.ext );
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
     _makepath( errorFilename, NULL, NULL, name, ".err" );
@@ -332,10 +330,12 @@ owl_offset ObjAlign( owl_section_handle section, uint_8 alignment ) {
     owl_offset  offset;
 
     offset = OWLTellOffset( section );
-    if( alignment == 0 ) return( offset );    // alignment disabled
+    if( alignment == 0 )
+    	return( offset );      // alignment disabled
     alignment = 1 << alignment;
     alignment = ( alignment - ( offset % alignment ) ) % alignment;
-    if( alignment == 0 ) return( offset );
+    if( alignment == 0 )
+        return( offset );
     if( OWLTellSectionType( section ) & OWL_SEC_ATTR_CODE ) {
         ObjNopPad( section, alignment / 4 );
         _DBGMSG2( "Align: %d nops emitted\n", alignment / 4 );
