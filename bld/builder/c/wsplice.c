@@ -361,11 +361,11 @@ static FILE *OpenFileTruncate(
 
         truncated = false;
         _splitpath2( file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.fname != NULL && strlen( pg.fname ) > 8 ) {
+        if( strlen( pg.fname ) > 8 ) {
             pg.fname[8] = '\0';
             truncated = true;
         }
-        if( pg.ext != NULL && strlen( pg.ext ) > 4 ) {
+        if( strlen( pg.ext ) > 4 ) {
             pg.ext[4] = '\0';
             truncated = true;
         }

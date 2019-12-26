@@ -379,8 +379,7 @@ static void ReplaceExt( char *name, const char *new_ext, bool force )
 
     _splitpath2( name, buff, &d, &p, &n, &e );
     if( force || e[0] == '\0' ) {
-        strcpy( e, new_ext );
-        _makepath( name, d, p, n, e );
+        _makepath( name, d, p, n, new_ext );
     }
 }
 

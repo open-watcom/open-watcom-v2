@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +152,7 @@ static void composeFileNames( bool list_file )
 #ifndef __UNIX__
     // tacking on an extension is self-defeating on UNIX, and the extra
     // dot at end trick doesn't work either
-    if( strlen( extension ) == 0 ) {
+    if( extension[0] == '\0' ) {
         length = strlen( ObjFileName );
         MemFree( ObjFileName );
         ObjFileName = (char *)MemAlloc( length + strlen( OBJ_FILE_EXTENSION ) + 1 );
@@ -167,7 +168,7 @@ static void composeFileNames( bool list_file )
         } else {
             // check extension
             _splitpath2( ListFileName, path, &drive, &dir, &file_name, &extension );
-            if( strlen( extension ) == 0 ) {
+            if( extension[0] == '\0' ) {
                 length = strlen( ListFileName );
                 MemFree( ListFileName );
                 ListFileName = (char *)MemAlloc( length + strlen( LIST_FILE_EXTENSION ) + 1 );

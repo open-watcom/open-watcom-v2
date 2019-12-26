@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +174,7 @@ static struct dirent *my_readdir( DIRECTORY *direct, DIR *dp )
     dir = readdir( dp );
     if( dir == NULL ) return( NULL );
 #ifdef __QNX__
-    if( !(dir->d_stat.st_status & _FILE_USED) ) {
+    if( (dir->d_stat.st_status & _FILE_USED) == 0 ) {
         char            *where;
 
         add_name( direct, dir->d_name, &where );

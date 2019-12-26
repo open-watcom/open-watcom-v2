@@ -350,20 +350,17 @@ static int parse_cmdline( arguments *arg, int argc, char *argv[] )
     // process file-name(s)
     if( i < argc ) {
         _splitpath2( argv[i], tmp_path, &drive, &dir, &fname, &ext );
-        if( *ext == '\0' ) {
-            strcpy( ext, "exe" );
+        if( ext[0] == '\0' ) {
+            ext = "exe";
         }
         _makepath( arg->iname, drive, dir, fname, ext );
         i++;
         if( i < argc ) {
             strncpy( arg->oname, argv[i], _MAX_PATH );
+        } else {
+            _makepath( arg->oname, drive, dir, fname, "bin" );
         }
-        else {
-            strcpy( ext, "bin" );
-            _makepath( arg->oname, drive, dir, fname, ext );
-        }
-    }
-    else {
+    } else {
         return( ERR_USAGE );
     }
 

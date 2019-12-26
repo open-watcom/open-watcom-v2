@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -73,13 +73,12 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     len = strlen( pgmname ) + 7 + _MAX_PATH2;
     p = lib_malloc( len );
 
-    _splitpath2( pgmname, p + (len-_MAX_PATH2),
-                 &drive, &dir, &fname, &ext );
+    _splitpath2( pgmname, p + (len-_MAX_PATH2), &drive, &dir, &fname, &ext );
 
     _makepath( p, drive, dir, fname, ext );
     fh = RdosOpenFile( p, 0 );
     if( fh == 0 ) {
-        if( strlen( drive ) == 0 && strlen( dir ) == 0 ) {
+        if( drive[0] == '\0' && dir[0] == '\0' ) {
             envdata = getenv( "PATH" );
             if( envdata ) {
                 envp = envdata;

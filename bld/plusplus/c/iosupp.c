@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +246,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     _splitpath2( path, buff, &drive, &dir, &fname, &extf );
     ext = extf;
     if( typ == OFT_SRCDEP ) {
-        if( ext == NULL || ext[0] == '\0' ) {
+        if( ext[0] == '\0' ) {
             if( SrcDepFileName != NULL ) {
                 _splitpath2( WholeFName, extsrc, NULL, NULL, NULL, &extf );
                 ext = extf;

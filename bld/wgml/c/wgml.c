@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -111,7 +111,7 @@ static  void    set_default_extension( const char * masterfname )
     char    *   ext;
 
     _splitpath2( masterfname, buff, NULL, NULL, NULL, &ext );
-    if( strlen( ext ) > 0) {
+    if( ext[0] != '\0' ) {
         if( strlen( ext ) > strlen( def_ext ) ) {
             mem_free( def_ext);
             def_ext = mem_alloc( 1 + strlen( ext ) );
