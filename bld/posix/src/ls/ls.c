@@ -46,9 +46,9 @@
 #include "getopt.h"
 #include "fnutils.h"
 #include "console.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 #define LINE_WIDTH      80
@@ -308,6 +308,7 @@ static void DoLS( char *path, char *name )
     struct dirent       *file;
     int                 (*fn)(struct dirent **, struct dirent **);
     int                 i;
+    char                tmppath[_MAX_PATH];
     char                wild[_MAX_PATH];
     char                *err;
     void                *crx = NULL;
@@ -340,7 +341,7 @@ static void DoLS( char *path, char *name )
     }
 
     if( rxflag ) {
-        dirp = OpenDirAll( filename, wild );
+        dirp = opendir( FileMatchDirAll( filename, tmppath, wild ) );
     } else {
         dirp = opendir( filename );
     }

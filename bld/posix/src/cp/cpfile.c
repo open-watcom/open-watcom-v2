@@ -54,9 +54,9 @@
 #include "watcom.h"
 #include "cp.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)

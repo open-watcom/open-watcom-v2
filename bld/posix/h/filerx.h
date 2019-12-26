@@ -33,13 +33,6 @@
 #ifndef _INCLUDED_FILERX_H
 #define _INCLUDED_FILERX_H
 
-extern int     FileMatch( void *crx, const char *name );
-extern char    *FileMatchInit( void **crx, const char *wild );
-extern void    FileMatchFini( void *crx );
-extern int     FileNameWild( const char *wild, int isrx );
-extern DIR     *OpenDirAll( const char *filename, char *wild );
-extern int     FileMatchNoRx( const char *name, const char *wild );
-
 #ifdef __UNIX__
 #define FILESEPSTR      "/"
 #define isFILESEP(c)    ( c == '/' )
@@ -47,5 +40,12 @@ extern int     FileMatchNoRx( const char *name, const char *wild );
 #define FILESEPSTR      "\\"
 #define isFILESEP(c)    ( ( c == '/' ) || ( c == '\\' ) )
 #endif
+
+extern int      FileMatch( void *crx, const char *name );
+extern char     *FileMatchInit( void **crx, const char *wild );
+extern void     FileMatchFini( void *crx );
+extern int      FileNameWild( const char *wild, int isrx );
+extern char     *FileMatchDirAll( const char *filename, char *npath, char *wild );
+extern int      FileMatchNoRx( const char *name, const char *wild );
 
 #endif

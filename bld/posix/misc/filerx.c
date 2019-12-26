@@ -38,14 +38,13 @@
 #else
 #include <direct.h>
 #endif
-
 #include "watcom.h"
 #include "regexp.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 static char *rxErrorStrings[] = {
@@ -152,11 +151,9 @@ void FileMatchFini( void *crx )
     MemFree( crx );
 }
 
-/* OpenDirAll */
-DIR *OpenDirAll( const char *filename, char *wild )
+char *FileMatchDirAll( const char *filename, char *npath, char *wild )
 {
     size_t      i, j, len;
-    char        npath[_MAX_PATH];
     char        ch;
 
     len = strlen( filename );
@@ -175,8 +172,7 @@ DIR *OpenDirAll( const char *filename, char *wild )
     }
 
     strcat( npath, "*.*" );
-
-    return( opendir( npath ) );
+    return( npath );
 }
 
 /* FileMatchNoRx - match file name vs a wild card, the old dos way */

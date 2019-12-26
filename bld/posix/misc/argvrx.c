@@ -42,9 +42,9 @@
 #include "misc.h"
 #include "argvrx.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 char **ExpandArgv( int *oargc, char *oargv[], int isrx )
@@ -74,7 +74,7 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             continue;
         }
         if( isrx ) {
-            dirp = OpenDirAll( oargv[i], wild );
+            dirp = opendir( FileMatchDirAll( oargv[i], path, wild ) );
         } else {
             dirp = opendir( oargv[i] );
         }

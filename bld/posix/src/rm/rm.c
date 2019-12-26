@@ -44,9 +44,9 @@
 #include "misc.h"
 #include "getopt.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 char                    *OptEnvVar = "rm";
@@ -180,7 +180,7 @@ void DoRM( const char *f )
             i = -1;
         }
     }
-    dirp = OpenDirAll( f, wild );
+    dirp = opendir( FileMatchDirAll( f, tmppath, wild ) );
     if( dirp == NULL ) {
         PrintALineThenDrop( "File (%s) not found.", f );
         if( !fflag ) {
