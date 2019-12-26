@@ -302,9 +302,9 @@ static void DoLS( char *path, char *name )
     char                *drive;
     char                *dir;
     int                 filecnt = 0;
-    DIR                 *directory;
+    DIR                 *dirp;
     struct dirent       **files = NULL;
-    struct dirent       *nextdirentry;
+    struct dirent       *dire;
     struct dirent       *file;
     int                 (*fn)(struct dirent **, struct dirent **);
     int                 i;
@@ -340,13 +340,13 @@ static void DoLS( char *path, char *name )
     }
 
     if( rxflag ) {
-        directory = OpenDirAll( filename, wild );
+        dirp = OpenDirAll( filename, wild );
     } else {
-        directory = opendir( filename );
+        dirp = opendir( filename );
     }
 
 
-    if( directory == NULL ) {
+    if( dirp == NULL ) {
         printf( "File (%s) not found.\n", filename );
         return;
     }
@@ -360,20 +360,20 @@ static void DoLS( char *path, char *name )
             Die( "\"%s\": %s\n", err, wild );
         }
     }
-    while( ( nextdirentry = readdir( directory ) ) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 
-        FNameLower( nextdirentry->d_name );
+        FNameLower( dire->d_name );
         if( rxflag ) {
-            if( !FileMatch( crx, nextdirentry->d_name ) ) {
+            if( !FileMatch( crx, dire->d_name ) ) {
                 continue;
             }
         }
         if( hflag ) {
-            if( nextdirentry->d_attr & (_A_HIDDEN | _A_SYSTEM) ) {
+            if( dire->d_attr & (_A_HIDDEN | _A_SYSTEM) ) {
                 continue;
             }
         }
-        if( (nextdirentry->d_attr & _A_SUBDIR) && IsDotOrDotDot( nextdirentry->d_name ) ) {
+        if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) ) {
             continue;
         }
         files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
@@ -385,14 +385,14 @@ static void DoLS( char *path, char *name )
         if( files[filecnt] == NULL ) {
             break;
         }
-        fname_len = (unsigned)strlen( nextdirentry->d_name );
+        fname_len = (unsigned)strlen( dire->d_name );
         if( max_fname_len < fname_len ) {
             max_fname_len = fname_len;
         }
-        memcpy( files[filecnt++], nextdirentry, sizeof( struct dirent ) );
+        memcpy( files[filecnt++], dire, sizeof( struct dirent ) );
 
     }
-    closedir( directory );
+    closedir( dirp );
     if( rxflag ) {
         FileMatchFini( crx );
     }

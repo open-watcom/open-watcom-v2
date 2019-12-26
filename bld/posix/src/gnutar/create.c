@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,15 +214,13 @@ badfile:
                     statbuf->st_size = 0;
                     header = start_header(fname, statbuf);
                     if (header == NULL)
-                            goto badfile;
-                    strcpy(header->header.linkname,
-                            lp->name);
+                        goto badfile;
+                    strcpy(header->header.linkname, lp->name);
                     header->header.linkflag = LF_LINK;
                     finish_header(header);
                     if (f_verbose)
-                            annorec(stdout, (char *) NULL);
-                    printf("%s link to %s\n",
-                            fname, lp->name);
+                        annorec(stdout, (char *) NULL);
+                    printf("%s link to %s\n", fname, lp->name);
 
                     /*
                      * Maybe remove from list after all links found?
@@ -388,7 +387,7 @@ padit:
     case S_IFDIR:                           /* Directory */
       {
         DIR     *dirp;
-        struct dirent *d;
+        struct dirent *dire;
         char    namebuf[NAMSIZ + 2];
         size_t  len;
 
@@ -450,23 +449,23 @@ padit:
         }
 
         /* Should speed this up by cd-ing into the dir, FIXME */
-        while (NULL != (d = readdir(dirp))) {
+        while( (dire = readdir( dirp )) != NULL ) {
             /* Skip . and .. */
-            if (d->d_name[0] == '.') {
-                if (d->d_name[1] == '\0')
+            if (dire->d_name[0] == '.') {
+                if (dire->d_name[1] == '\0')
                     continue;
-                if (d->d_name[1] == '.') {
-                    if (d->d_name[2] == '\0') {
+                if (dire->d_name[1] == '.') {
+                    if (dire->d_name[2] == '\0') {
                         continue;
                     }
                 }
             }
-            if (strlen(d->d_name) + len >= NAMSIZ) {
+            if (strlen(dire->d_name) + len >= NAMSIZ) {
                 annorec(stderr, tar);
-                fprintf(stderr, "%s%s: name too long\n", namebuf, d->d_name);
+                fprintf(stderr, "%s%s: name too long\n", namebuf, dire->d_name);
                 continue;
             }
-            strcpy(namebuf + len, d->d_name);
+            strcpy(namebuf + len, dire->d_name);
             dump_file(namebuf);
         }
 

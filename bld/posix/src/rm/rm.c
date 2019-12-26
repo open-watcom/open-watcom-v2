@@ -164,8 +164,8 @@ void DoRM( const char *f )
     int                 l;
 
     size_t              len;
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                wild[_MAX_PATH];
     char                *err;
     void                *crx = NULL;
@@ -180,8 +180,8 @@ void DoRM( const char *f )
             i = -1;
         }
     }
-    d = OpenDirAll( f, wild );
-    if( d == NULL ) {
+    dirp = OpenDirAll( f, wild );
+    if( dirp == NULL ) {
         PrintALineThenDrop( "File (%s) not found.", f );
         if( !fflag ) {
             error_occured = 1;
@@ -196,27 +196,27 @@ void DoRM( const char *f )
     }
 
     k = ( int ) strlen( fpath );
-    while( (nd = readdir( d )) != NULL ) {
-        FNameLower( nd->d_name );
+    while( (dire = readdir( dirp )) != NULL ) {
+        FNameLower( dire->d_name );
         if( rxflag ) {
-            if( !FileMatch( crx, nd->d_name ) ) {
+            if( !FileMatch( crx, dire->d_name ) ) {
                 continue;
             }
         } else {
-            if( !FileMatchNoRx( nd->d_name, wild ) ) {
+            if( !FileMatchNoRx( dire->d_name, wild ) ) {
                 continue;
             }
         }
         /* set up file name, then try to delete it */
-        l = ( int ) strlen( nd->d_name );
+        l = ( int ) strlen( dire->d_name );
         bo = tmppath;
         for( i = 0; i < k; i++ )
             *bo++ = fpath[i];
         for( i = 0; i < l; i++ )
-            *bo++ = nd->d_name[i];
+            *bo++ = dire->d_name[i];
         *bo = 0;
-        if( nd->d_attr & _A_SUBDIR ) {
-            if( IsDotOrDotDot( nd->d_name ) ) {
+        if( dire->d_attr & _A_SUBDIR ) {
+            if( IsDotOrDotDot( dire->d_name ) ) {
                 continue;
             }
             /* process a directory */
@@ -235,7 +235,7 @@ void DoRM( const char *f )
                 error_occured = 1;
             }
 
-        } else if( (nd->d_attr & _A_RDONLY) && !fflag ) {
+        } else if( (dire->d_attr & _A_RDONLY) && !fflag ) {
             PrintALineThenDrop( "%s is read-only, use -f", tmppath );
             error_occured = 1;
         } else {
@@ -248,10 +248,10 @@ void DoRM( const char *f )
                 ftail->next = tmp;
             ftail = tmp;
             memcpy( tmp->name, tmppath, len + 1 );
-            tmp->attr = nd->d_attr;
+            tmp->attr = dire->d_attr;
         }
     }
-    closedir( d );
+    closedir( dirp );
     if( rxflag )
         FileMatchFini( crx );
 

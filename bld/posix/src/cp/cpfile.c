@@ -187,16 +187,16 @@ static void recursiveCp( char *source_head, char *source_tail,
     char *source_wild, char *dest_head, char *dest_tail )
 {
 
-    DIR                 *directory;
-    struct dirent       *nextdirentry;
+    DIR                 *dirp;
+    struct dirent       *dire;
     void                *crx = NULL;
     char                *new_source_tail;
     char                *new_dest_tail;
 
     pathCopy( source_head, source_tail, "*.*" );
 
-    directory = opendir( source_head );
-    if( directory == NULL ) {
+    dirp = opendir( source_head );
+    if( dirp == NULL ) {
         DropPrintALine( "file \"%s\" not found", source_head );
         return;
     }
@@ -211,26 +211,25 @@ static void recursiveCp( char *source_head, char *source_tail,
     /*
      * loop through all files
      */
-    while( ( nextdirentry = readdir( directory ) ) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
         /*
          * set up file name, then try to copy it
          */
-        FNameLower( nextdirentry->d_name );
+        FNameLower( dire->d_name );
         if( rxflag ) {
-            if( !FileMatch( crx, nextdirentry->d_name ) ) {
+            if( !FileMatch( crx, dire->d_name ) ) {
                 continue;
             }
         } else {
-            if( !FileMatchNoRx( nextdirentry->d_name, source_wild ) ) {
+            if( !FileMatchNoRx( dire->d_name, source_wild ) ) {
                 continue;
             }
         }
-        new_source_tail = pathCopy( source_head, source_tail,
-            nextdirentry->d_name );
-        new_dest_tail = pathCopy( dest_head, dest_tail, nextdirentry->d_name );
+        new_source_tail = pathCopy( source_head, source_tail, dire->d_name );
+        new_dest_tail = pathCopy( dest_head, dest_tail, dire->d_name );
 
-        if( nextdirentry->d_attr & _A_SUBDIR ) {
-            if( IsDotOrDotDot( nextdirentry->d_name ) ) {
+        if( dire->d_attr & _A_SUBDIR ) {
+            if( IsDotOrDotDot( dire->d_name ) ) {
                 continue;
             }
 
@@ -243,11 +242,9 @@ static void recursiveCp( char *source_head, char *source_tail,
                 }
                 if( !sflag ) {
                     if( rc ) {
-                        PrintALineThenDrop( "directory %s already exists",
-                            dest_head );
+                        PrintALineThenDrop( "directory %s already exists", dest_head );
                     } else {
-                        PrintALineThenDrop( "created new directory %s",
-                            dest_head );
+                        PrintALineThenDrop( "created new directory %s", dest_head );
                     }
                 }
                 new_dest_tail = pathCopy( dest_head, new_dest_tail,
@@ -266,7 +263,7 @@ static void recursiveCp( char *source_head, char *source_tail,
         }
 
     }
-    closedir( directory );
+    closedir( dirp );
     if( rxflag ) {
         FileMatchFini( crx );
     }

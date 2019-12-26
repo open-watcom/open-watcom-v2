@@ -52,8 +52,8 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
     int                 argc, i;
     char                *err;
     char                **argv;
-    DIR                 *directory;
-    struct dirent       *nextdirentry;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                wild[_MAX_PATH];
     char                sp_buf[_MAX_PATH2];
     char                *drive;
@@ -74,11 +74,11 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             continue;
         }
         if( isrx ) {
-            directory = OpenDirAll( oargv[i], wild );
+            dirp = OpenDirAll( oargv[i], wild );
         } else {
-            directory = opendir( oargv[i] );
+            dirp = opendir( oargv[i] );
         }
-        if( directory == NULL ) {
+        if( dirp == NULL ) {
             argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
             argv[argc] = oargv[i];
             argc++;
@@ -91,26 +91,26 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             }
         }
         _splitpath2( oargv[i], sp_buf, &drive, &dir, &name, &extin );
-        while( ( nextdirentry = readdir( directory ) ) != NULL ) {
-            FNameLower( nextdirentry->d_name );
+        while( (dire = readdir( dirp )) != NULL ) {
+            FNameLower( dire->d_name );
             if( isrx ) {
-                if( !FileMatch( crx, nextdirentry->d_name ) ) {
+                if( !FileMatch( crx, dire->d_name ) ) {
                     continue;
                 }
             }
 #if defined( __QNX__ )
-            if( S_ISREG( nextdirentry->d_stat.st_mode ) ) {
+            if( S_ISREG( dire->d_stat.st_mode ) ) {
 #else
-            if( (nextdirentry->d_attr & _A_SUBDIR) == 0 ) {
+            if( (dire->d_attr & _A_SUBDIR) == 0 ) {
 #endif
-                _makepath( path, drive, dir, nextdirentry->d_name, NULL );
+                _makepath( path, drive, dir, dire->d_name, NULL );
                 argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
                 argv[argc] = MemAlloc( strlen( path ) + 1 );
                 strcpy( argv[argc], path );
                 argc++;
             }
         }
-        closedir( directory );
+        closedir( dirp );
         if( isrx ) {
             FileMatchFini( crx );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,29 +73,27 @@ static void writeNL( const char *buf )
 
 static void checkDir( void )
 {
-    DIR                 *parent;
-    struct dirent       *entry;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                *p;
 
     _makepath( open_path, NULL, path, fname, ext );
-    parent = opendir( open_path );
-    if( parent == NULL ) {
-        return;
-    }
-    entry = readdir( parent );
-    while( entry != NULL ) {
-        p = entry->d_name;
-        if( p[0] != '.' || ( p[1] != 0 && ( p[1] != '.' || p[2] != 0 ) ) ) {
-            _makepath( open_path, NULL, path, p, NULL );
-            FNameLower( open_path );
-            writeNL( open_path );
-            foundAFile = 1;
-            if( !findAll ) break;
+    dirp = opendir( open_path );
+    if( dirp != NULL ) {
+        while( (dire = readdir( dirp )) != NULL ) {
+            p = dire->d_name;
+            if( p[0] != '.' || ( p[1] != 0 && ( p[1] != '.' || p[2] != 0 ) ) ) {
+                _makepath( open_path, NULL, path, p, NULL );
+                FNameLower( open_path );
+                writeNL( open_path );
+                foundAFile = 1;
+                if( !findAll ) {
+                    break;
+                }
+            }
         }
-        entry = readdir( parent );
+        closedir( dirp );
     }
-
-    closedir( parent );
 }
 
 

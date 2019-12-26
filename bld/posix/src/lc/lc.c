@@ -163,8 +163,8 @@ static int Compare( const void *_p1, const void *_p2 )
 void DoLC( char *dir )
 {
     int                 i;
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
 #ifdef __QNX__
     char                tmpname[ _MAX_PATH ];
     char                drive[_MAX_DRIVE],directory[_MAX_DIR];
@@ -194,36 +194,34 @@ void DoLC( char *dir )
     }
     _splitpath( filename, drive, directory, name, ext );
 #endif
-    d = opendir( filename );
-    if( d == NULL ) {
+    dirp = opendir( filename );
+    if( dirp == NULL ) {
         printf( "Directory (%s) not found.\n",filename );
         return;
     }
-
-
     /*
      * find all files (except for . and ..)
      */
-    while( (nd = readdir( d )) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 
 #ifndef __QNX__
-        if( files_only && (nd->d_attr & _A_SUBDIR) ) {
+        if( files_only && (dire->d_attr & _A_SUBDIR) ) {
             continue;
         }
-        if( directories_only && (nd->d_attr & _A_SUBDIR) == 0 ) {
+        if( directories_only && (dire->d_attr & _A_SUBDIR) == 0 ) {
             continue;
         }
-        if( (nd->d_attr & _A_SUBDIR) && IsDotOrDotDot( nd->d_name ) ) {
+        if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) ) {
             continue;
         }
 #else
-        if( files_only && S_ISDIR( nd->d_stat.st_mode ) ) {
+        if( files_only && S_ISDIR( dire->d_stat.st_mode ) ) {
             continue;
         }
-        if( directories_only && !S_ISDIR( nd->d_stat.st_mode ) ) {
+        if( directories_only && !S_ISDIR( dire->d_stat.st_mode ) ) {
             continue;
         }
-        if( S_ISDIR( nd->d_stat.st_mode) && IsDotOrDotDot( nd->d_name ) ) {
+        if( S_ISDIR( dire->d_stat.st_mode) && IsDotOrDotDot( dire->d_name ) ) {
             continue;
         }
 #endif
@@ -237,18 +235,18 @@ void DoLC( char *dir )
             break;
         }
 #ifndef __QNX__
-        FNameLower( nd->d_name );
+        FNameLower( dire->d_name );
 #else
-        if( !(nd->d_stat.st_status & _FILE_USED ) ) {
-            _splitpath( nd->d_name, NULL, NULL, name, ext );
+        if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
+            _splitpath( dire->d_name, NULL, NULL, name, ext );
             _makepath( tmpname, drive, directory, name, ext );
-            stat( tmpname, &nd->d_stat );
+            stat( tmpname, &dire->d_stat );
         }
 #endif
-        memcpy( files[filecnt++],nd,sizeof( struct dirent ) );
+        memcpy( files[filecnt++], dire, sizeof( struct dirent ) );
 
     }
-    closedir( d );
+    closedir( dirp );
     if( filecnt == 0 ) {
         return;
     }
