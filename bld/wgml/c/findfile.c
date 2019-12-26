@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +51,7 @@
 #include "copdir.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -269,14 +271,10 @@ void ff_teardown( void )
 
 bool search_file_in_dirs( const char *filename, const char *defext, const char *altext, dirseq sequence )
 {
-    char            buff[_MAX_PATH2];
+    PGROUP2         pg;
     char            alternate_file[FILENAME_MAX];
     char            default_file[FILENAME_MAX];
     char            primary_file[FILENAME_MAX];
-    char            *fn_dir;
-    char            *fn_drive;
-    char            *fn_ext;
-    char            *fn_name;
     char            *member_name = NULL;
     char            *searchdirs[5];
     char            *path_list;
@@ -305,9 +303,9 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
 
         /* Determine if filename contains path information. */
 
-        _splitpath2( filename, buff, &fn_drive, &fn_dir, &fn_name, &fn_ext );
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-        if( fn_drive[0] != '\0' || fn_dir[0] != '\0' ) {
+        if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
             xx_simple_err_c( err_file_name, filename );
             return( false );
         }
@@ -316,7 +314,7 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
          * are used. Note that all literal extensions contain 4 characters.
          */
 
-        if( *fn_ext == '\0' ) {
+        if( pg.ext[0] == '\0' ) {
             if( strlen( filename ) + 4 >= FILENAME_MAX ) {
                 switch( sequence ) {
                 case ds_opt_file:
@@ -344,11 +342,11 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
     pd = searchdirs;
     switch( sequence ) {
     case ds_opt_file:
-        strcpy( primary_file, fn_name );
-        if( *fn_ext == '\0' ) {
+        strcpy( primary_file, pg.fname );
+        if( pg.ext[0] == '\0' ) {
             strcat( primary_file, OPT_EXT );
         } else {
-            strcat( primary_file, fn_ext );
+            strcat( primary_file, pg.ext );
         }
         *pd++ = cur_dir_list;
         *pd++ = gml_lib_dirs;
@@ -356,18 +354,18 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
         *pd++ = path_dirs;
         break;
     case ds_doc_spec:
-        strcpy( primary_file, fn_name );
-        if( *fn_ext == '\0' ) {
+        strcpy( primary_file, pg.fname );
+        if( pg.ext[0] == '\0' ) {
             strcat( primary_file, GML_EXT );
         } else {
-            strcat( primary_file, fn_ext );
+            strcat( primary_file, pg.ext );
         }
-        if( *altext != '\0' && *fn_ext == '\0' ) {
-            strcpy( alternate_file, fn_name );
+        if( altext[0] != '\0' && pg.ext[0] == '\0' ) {
+            strcpy( alternate_file, pg.fname );
             strcat( alternate_file, altext );
         }
-        if( *fn_ext == '\0' && FNAMECMPSTR( defext, GML_EXT )) {
-            strcpy( default_file, fn_name );
+        if( pg.ext[0] == '\0' && FNAMECMPSTR( defext, GML_EXT )) {
+            strcpy( default_file, pg.fname );
             strcat( default_file, GML_EXT );
         }
         *pd++ = cur_dir_list;
@@ -381,14 +379,14 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
         *pd++ = path_dirs;
         break;
     case ds_lib_src:
-        strcpy( primary_file, fn_name );
-        if( *fn_ext == '\0' ) {
+        strcpy( primary_file, pg.fname );
+        if( pg.ext[0] == '\0' ) {
             strcat( primary_file, PCD_EXT );
         } else {
-            strcat( primary_file, fn_ext );
+            strcat( primary_file, pg.ext );
         }
-        strcpy( alternate_file, fn_name );
-        if( *altext == '\0' ) {
+        strcpy( alternate_file, pg.fname );
+        if( altext[0] == '\0' ) {
             strcat( alternate_file, FON_EXT );
         } else {
             strcat( alternate_file, altext );

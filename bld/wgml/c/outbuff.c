@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ======================================================================
@@ -68,6 +69,7 @@
 #include "devfuncs.h"
 #include "findfile.h"
 #include "outbuff.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -723,63 +725,51 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
 static void set_out_file( void )
 {
-    char        cmd_outfile[_MAX_PATH2];
-    char    *   cmd_drive;
-    char    *   cmd_dir;
-    char    *   cmd_ext;
-    char    *   cmd_fname;
-    char        dev_outfile[_MAX_PATH2];
-    char    *   dev_drive;
-    char    *   dev_dir;
-    char    *   dev_ext;
-    char    *   dev_fname;
-    char        doc_spec[_MAX_PATH2];
-    char    *   doc_drive;
-    char    *   doc_dir;
-    char    *   doc_ext;
-    char    *   doc_fname;
+    PGROUP2     cmd;
+    PGROUP2     dev;
+    PGROUP2     doc;
+
     char        temp_outfile[_MAX_PATH];
 
     /* Split the possible source names into their component parts. */
 
     if( master_fname == NULL ) {
-        doc_spec[0] = '\0';
-        doc_drive = &doc_spec[0];
-        doc_spec[1] = '\0';
-        doc_dir = &doc_spec[1];
-        doc_spec[2] = '\0';
-        doc_fname = &doc_spec[2];
-        doc_spec[3] = '\0';
-        doc_ext = &doc_spec[3];
+        doc.buffer[0] = '\0';
+        doc.drive = &doc.buffer[0];
+        doc.buffer[1] = '\0';
+        doc.dir = &doc.buffer[1];
+        doc.buffer[2] = '\0';
+        doc.fname = &doc.buffer[2];
+        doc.buffer[3] = '\0';
+        doc.ext = &doc.buffer[3];
     } else {
-        _splitpath2( master_fname, doc_spec, &doc_drive, &doc_dir, &doc_fname, &doc_ext );
+        _splitpath2( master_fname, doc.buffer, &doc.drive, &doc.dir, &doc.fname, &doc.ext );
     }
 
     if( out_file == NULL ) {
-        cmd_outfile[0] = '\0';
-        cmd_drive = &cmd_outfile[0];
-        cmd_outfile[1] = '\0';
-        cmd_dir = &cmd_outfile[1];
-        cmd_outfile[2] = '\0';
-        cmd_fname = &cmd_outfile[2];
-        cmd_outfile[3] = '\0';
-        cmd_ext = &cmd_outfile[3];
+        cmd.buffer[0] = '\0';
+        cmd.drive = &cmd.buffer[0];
+        cmd.buffer[1] = '\0';
+        cmd.dir = &cmd.buffer[1];
+        cmd.buffer[2] = '\0';
+        cmd.fname = &cmd.buffer[2];
+        cmd.buffer[3] = '\0';
+        cmd.ext = &cmd.buffer[3];
     } else {
-        _splitpath2( out_file, cmd_outfile, &cmd_drive, &cmd_dir, &cmd_fname, &cmd_ext );
+        _splitpath2( out_file, cmd.buffer, &cmd.drive, &cmd.dir, &cmd.fname, &cmd.ext );
     }
 
     if( bin_device->output_name == NULL ) {
-        dev_outfile[0] = '\0';
-        dev_drive = &dev_outfile[0];
-        dev_outfile[1] = '\0';
-        dev_dir = &dev_outfile[1];
-        dev_outfile[2] = '\0';
-        dev_fname = &dev_outfile[2];
-        dev_outfile[3] = '\0';
-        dev_ext = &dev_outfile[3];
+        dev.buffer[0] = '\0';
+        dev.drive = &dev.buffer[0];
+        dev.buffer[1] = '\0';
+        dev.dir = &dev.buffer[1];
+        dev.buffer[2] = '\0';
+        dev.fname = &dev.buffer[2];
+        dev.buffer[3] = '\0';
+        dev.ext = &dev.buffer[3];
     } else {
-        _splitpath2( bin_device->output_name, dev_outfile, &dev_drive, &dev_dir,
-                     &dev_fname, &dev_ext );
+        _splitpath2( bin_device->output_name, dev.buffer, &dev.drive, &dev.dir, &dev.fname, &dev.ext );
     }
 
     /* Ensure it is possible to tell if a file name was constructed. */
@@ -787,13 +777,13 @@ static void set_out_file( void )
     temp_outfile[0] = '\0';
 
     /* Construct the file name, if necessary. If the command-line option OUTput
-     * was used and both a filename and and extension were given, then cmd_fname
+     * was used and both a filename and and extension were given, then cmd.fname
      * will be used as-is and temp_outfile will not be touched.
      */
 
-    if( *cmd_fname != '\0' ) {
-        if( *cmd_fname != '*' ) {
-            if( *cmd_ext != '\0' ) {
+    if( cmd.fname[0] != '\0' ) {
+        if( cmd.fname[0] != '*' ) {
+            if( cmd.ext[0] != '\0' ) {
 
             /* If both name and extension were given on the command line, use
              * out_file as-is.
@@ -805,17 +795,16 @@ static void set_out_file( void )
              * extension given in the :DEVICE block.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, cmd_fname,
-                           bin_device->output_extension );
+                _makepath( temp_outfile, cmd.drive, cmd.dir, cmd.fname, bin_device->output_extension );
             }
         } else {
-            if( *cmd_ext != '\0' ) {
+            if( cmd.ext[0] != '\0' ) {
 
             /* If the name was not given but an extension was given on the command
              * line, use the document specification name with the extension given.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname, cmd_ext );
+                _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, cmd.ext );
             } else {
 
             /* If neither a specific name nor an extension was given on the
@@ -823,19 +812,17 @@ static void set_out_file( void )
              * extension given in the :DEVICE block.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
-                           bin_device->output_extension );
+                _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, bin_device->output_extension );
             }
         }
     } else {
-        if( (*cmd_drive != '\0') || (*cmd_dir != '\0') ) {
+        if( (cmd.drive[0] != '\0') || (cmd.dir[0] != '\0') ) {
 
             /* Command line OPTION was used with something like "c:" or "..\" but
              * with no filename or extension.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
-                           bin_device->output_extension );
+            _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, bin_device->output_extension );
         } else {
 
             /* The situation here is that command-line option OUTPUT was not
@@ -844,22 +831,20 @@ static void set_out_file( void )
              * at all.
              */
 
-            if( (*dev_fname != '*') && (*dev_fname != '\0') ) {
+            if( (dev.fname[0] != '*') && (dev.fname[0] != '\0') ) {
 
                 /* If the :DEVICE block specified a file name then use the file
                  * name and any extension provided.
                  */
 
-                _makepath( temp_outfile, "", "", bin_device->output_name,
-                           bin_device->output_extension );
+                _makepath( temp_outfile, "", "", bin_device->output_name, bin_device->output_extension );
             } else {
 
                 /* If the :DEVICE block did not specify a file name then use the
                  * document specification name with any extension provided.
                  */
 
-                _makepath( temp_outfile, dev_drive, dev_dir, doc_fname,
-                           bin_device->output_extension );
+                _makepath( temp_outfile, dev.drive, dev.dir, doc.fname, bin_device->output_extension );
             }
         }
     }
