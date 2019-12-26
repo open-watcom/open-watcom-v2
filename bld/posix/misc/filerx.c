@@ -221,7 +221,7 @@ int FileMatchNoRx( const char *name, const char *wild )
 
     _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
     if( pg.ext[0] == '.' ) {
-        ++pg.ext;
+        pg.ext++;
     }
 
     len = strlen( pg.fname );

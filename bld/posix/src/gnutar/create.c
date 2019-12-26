@@ -437,13 +437,13 @@ padit:
 
         /* Now output all the files in the directory */
         errno = 0;
-        dirp = opendir(fname);
-        if (!dirp) {
-            if (errno) {
-                perror(fname);
+        dirp = opendir( fname );
+        if( dirp == NULL ) {
+            if( errno ) {
+                perror( fname );
             } else {
-                annorec(stderr, tar);
-                fprintf(stderr, "%s: error opening directory", fname);
+                annorec( stderr, tar );
+                fprintf( stderr, "%s: error opening directory", fname );
             }
             break;
         }
@@ -468,8 +468,7 @@ padit:
             strcpy(namebuf + len, dire->d_name);
             dump_file(namebuf);
         }
-
-        closedir(dirp);
+        closedir( dirp );
         break;
       }
     case S_IFCHR:                           /* Character special file */

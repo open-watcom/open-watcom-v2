@@ -39,26 +39,24 @@
 #include "getopt.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
 
-static int foundAFile;
-static int findAll;
-static char drive[ _MAX_DRIVE ];
-static char dir[ _MAX_DIR ];
-static char fname[ _MAX_FNAME ];
-static char ext[ _MAX_EXT ];
-static char path[ _MAX_PATH ];
-static char open_path[ _MAX_PATH ];
+static int      foundAFile;
+static int      findAll;
+static PGROUP   pg;
+static char     path[ _MAX_PATH ];
+static char     open_path[ _MAX_PATH ];
 
 static const char * usageTxt[] = {
-"Usage: which [-?a] [-e env_name] filename",
-"-?\t\tdisplay this help",
-"-a\t\tdisplay all matches, not just the first",
-"-e env_name\tuse value of env_name instead of PATH for searching",
-"returns 0 if a file found, 1 if no files found or error.",
-NULL
+    "Usage: which [-?a] [-e env_name] filename",
+    "-?\t\tdisplay this help",
+    "-a\t\tdisplay all matches, not just the first",
+    "-e env_name\tuse value of env_name instead of PATH for searching",
+    "returns 0 if a file found, 1 if no files found or error.",
+    NULL
 };
 
 char *OptEnvVar = "which";
@@ -77,7 +75,7 @@ static void checkDir( void )
     struct dirent       *dire;
     char                *p;
 
-    _makepath( open_path, NULL, path, fname, ext );
+    _makepath( open_path, NULL, path, pg.fname, pg.ext );
     dirp = opendir( open_path );
     if( dirp != NULL ) {
         while( (dire = readdir( dirp )) != NULL ) {
@@ -102,8 +100,8 @@ static void work( const char *path_list, const char *name )
     char    *end_path;
     size_t  path_len;
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( drive[0] != 0 || dir[0] != 0 ) {
+    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.drive[0] != 0 || pg.dir[0] != 0 ) {
             /* absolute path, so we just check the abs path */
         if( access( name, 0 ) == 0 ) {
             strcpy( path, name );
@@ -113,13 +111,14 @@ static void work( const char *path_list, const char *name )
         }
         return;
     }
-    if( ext[0] == 0 ) {
-        strcpy( ext, ".*" );
+    if( pg.ext[0] == 0 ) {
+        strcpy( pg.ext, ".*" );
     }
 
     path[0] = 0;    /* check current directory first */
     checkDir();
-    if( foundAFile && !findAll ) return;
+    if( foundAFile && !findAll )
+        return;
     while( path_list != NULL ) {
         end_path = strchr( path_list, ';' );
         if( end_path == NULL ) {
@@ -133,10 +132,14 @@ static void work( const char *path_list, const char *name )
         memcpy( path, path_list, path_len );
         path[ path_len ] = 0;
         checkDir();
-        if( foundAFile && !findAll ) return;
-        if( *end_path != ';' ) break;
+        if( foundAFile && !findAll )
+            return;
+        if( *end_path != ';' )
+            break;
         path_list = end_path + 1;
-        if( *path_list == 0 ) break;
+        if( *path_list == 0 ) {
+            break;
+        }
     }
 }
 

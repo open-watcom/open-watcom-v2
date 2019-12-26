@@ -56,6 +56,7 @@
 #ifndef __QNX__
 #include <dos.h>
 #include <direct.h>
+#include "pathgrp.h"
 #else
 #include <unistd.h>
 #include <dirent.h>
@@ -167,36 +168,35 @@ void DoLC( char *dir )
     struct dirent       *dire;
 #ifdef __QNX__
     char                tmpname[ _MAX_PATH ];
-    char                drive[_MAX_DRIVE],directory[_MAX_DIR];
-    char                name[_MAX_FNAME],ext[_MAX_EXT];
+    PGROUP              pg;
 #endif
 
     /*
      * initialize for file scan
      */
     filecnt = 0;
-    strcpy(filename,dir);
+    strcpy( filename, dir );
 #ifndef __QNX__
-    if( !FNameCompare(dir,"..") ) {
-        strcat(filename,"\\*.*");
-    } else if( dir[ strlen(dir)-1 ] == '.' ) {
-        filename[ strlen(dir)-1 ] = 0;
-        strcat(filename,"*.*");
-    } else if( dir[ strlen(dir)-1 ] == '\\' ) {
-        strcat(filename,"*.*");
+    if( !FNameCompare( dir, ".." ) ) {
+        strcat( filename, "\\*.*" );
+    } else if( dir[strlen( dir ) - 1] == '.' ) {
+        filename[strlen( dir ) - 1] = 0;
+        strcat( filename, "*.*" );
+    } else if( dir[strlen( dir ) - 1] == '\\' ) {
+        strcat( filename, "*.*" );
     } else {
-        strcat(filename,"\\*.*");
+        strcat( filename, "\\*.*" );
     }
 #else
     if( filename[0] == 0 ) {
         filename[0] = '.';
         filename[1] = 0;
     }
-    _splitpath( filename, drive, directory, name, ext );
+    _splitpath( filename, pg.drive, pg.dir, pg.fname, pg.ext );
 #endif
     dirp = opendir( filename );
     if( dirp == NULL ) {
-        printf( "Directory (%s) not found.\n",filename );
+        printf( "Directory (%s) not found.\n", filename );
         return;
     }
     /*
@@ -225,7 +225,7 @@ void DoLC( char *dir )
             continue;
         }
 #endif
-        files = realloc( files, ( filecnt+1 )*sizeof( struct dirent * ) );
+        files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
         if( files == NULL ) {
             printf( "Out of memory!\n" );
             exit( 1 );
@@ -238,8 +238,8 @@ void DoLC( char *dir )
         FNameLower( dire->d_name );
 #else
         if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
-            _splitpath( dire->d_name, NULL, NULL, name, ext );
-            _makepath( tmpname, drive, directory, name, ext );
+            _splitpath( dire->d_name, NULL, NULL, pg.fname, pg.ext );
+            _makepath( tmpname, pg.drive, pg.dir, pg.fname, pg.ext );
             stat( tmpname, &dire->d_stat );
         }
 #endif
@@ -254,7 +254,7 @@ void DoLC( char *dir )
     /*
      * sort the data.
      */
-    qsort( files, filecnt, sizeof(struct dirent *), Compare );
+    qsort( files, filecnt, sizeof( struct dirent * ), Compare );
 
     /*
      * determine if there are files and/or directories

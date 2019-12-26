@@ -37,11 +37,12 @@
 #include <process.h>
 #include <ctype.h>
 #include <errno.h>
-
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 char *OptEnvVar="env";
 
@@ -131,7 +132,7 @@ int main( int argc, char **argv )
 
     if( argc == 1 ) {
         printEnv( environ );
-        return;
+        return( 0 );
     } else if( !strcmp( argv[1], "-" ) ) {
         envptr  = (char **) malloc( argc * sizeof( char * ) );
         *envptr = NULL;

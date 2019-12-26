@@ -39,6 +39,7 @@
 #else
     #include <sys/utime.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "argvenv.h"
 #include "getopt.h"
