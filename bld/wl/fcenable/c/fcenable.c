@@ -47,6 +47,7 @@
 #include "walloca.h"
 #include "fcenable.h"
 #include "banner.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -371,15 +372,11 @@ static void CloseFiles( void )
 static void ReplaceExt( char *name, const char *new_ext, bool force )
 /*******************************************************************/
 {
-    char        buff[_MAX_PATH2];
-    char        *p;
-    char        *d;
-    char        *n;
-    char        *e;
+    PGROUP2     pg;
 
-    _splitpath2( name, buff, &d, &p, &n, &e );
-    if( force || e[0] == '\0' ) {
-        _makepath( name, d, p, n, new_ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( force || pg.ext[0] == '\0' ) {
+        _makepath( name, pg.drive, pg.dir, pg.fname, new_ext );
     }
 }
 

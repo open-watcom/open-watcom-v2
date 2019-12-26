@@ -43,6 +43,7 @@
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
 #include "banner.h"             // Watcom banner
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -307,11 +308,7 @@ static void sort_reltab( reloc_table *reltab )
 
 static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
-    char    tmp_path[_MAX_PATH2];
-    char    *drive;
-    char    *dir;
-    char    *fname;
-    char    *ext;
+    PGROUP2 pg;
     int     i;
 
     arg->opt.be_ext   = 0;
@@ -349,16 +346,16 @@ static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 
     // process file-name(s)
     if( i < argc ) {
-        _splitpath2( argv[i], tmp_path, &drive, &dir, &fname, &ext );
-        if( ext[0] == '\0' ) {
-            ext = "exe";
+        _splitpath2( argv[i], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == '\0' ) {
+            pg.ext = "exe";
         }
-        _makepath( arg->iname, drive, dir, fname, ext );
+        _makepath( arg->iname, pg.drive, pg.dir, pg.fname, pg.ext );
         i++;
         if( i < argc ) {
             strncpy( arg->oname, argv[i], _MAX_PATH );
         } else {
-            _makepath( arg->oname, drive, dir, fname, "bin" );
+            _makepath( arg->oname, pg.drive, pg.dir, pg.fname, "bin" );
         }
     } else {
         return( ERR_USAGE );
