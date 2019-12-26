@@ -52,6 +52,7 @@
 #include "iopath.h"
 #include "sysdep.h"
 #include "ialias.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -185,17 +186,13 @@ static char *FNameBuf = NULL;   // file name buffer for output files
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     out_file_type typ )         // - extension
 {
-    char *drive;
-    char *dir;
-    char *fname;
+    PGROUP2 pg1;
+    PGROUP2 pg2;
     const char *ext;
     char       *path;
     bool use_defaults;
     unsigned mask;
     FILE *try_create;
-    auto char buff[_MAX_PATH2];
-    auto char extsrc[_MAX_EXT];
-    char *extf;
 
     path = WholeFName;
     use_defaults = true;
@@ -243,26 +240,26 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         }
         break;
     }
-    _splitpath2( path, buff, &drive, &dir, &fname, &extf );
-    ext = extf;
+    _splitpath2( path, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    ext = pg1.ext;
     if( typ == OFT_SRCDEP ) {
         if( ext[0] == '\0' ) {
             if( SrcDepFileName != NULL ) {
-                _splitpath2( WholeFName, extsrc, NULL, NULL, NULL, &extf );
-                ext = extf;
+                _splitpath2( WholeFName, pg2.buffer, NULL, NULL, NULL, &pg2.ext );
+                ext = pg2.ext;
             }
         }
     } else if( use_defaults || ext[0] == '\0' ) {
         ext = extsOut[typ];
     }
-    if( fname[0] == '\0' || fname[0] == '*' ) {
-        fname = ModuleName;
+    if( pg1.fname[0] == '\0' || pg1.fname[0] == '*' ) {
+        pg1.fname = ModuleName;
     }
     if( use_defaults ) {
-        drive = "";
-        dir = "";
+        pg1.drive = "";
+        pg1.dir = "";
     }
-    _makepath( FNameBuf, drive, dir, fname, ext );
+    _makepath( FNameBuf, pg1.drive, pg1.dir, pg1.fname, ext );
     mask = 1 << typ;
     if( (outFileChecked & mask) == 0 ) {
         outFileChecked |= mask;
@@ -337,36 +334,6 @@ bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
 }
 
 
-struct path_descr               // path description
-{   char buffer[_MAX_PATH2];    // - buffer
-    char *drv;                  // - drive
-    char *dir;                  // - directory
-    char *fnm;                  // - file name
-    char *ext;                  // - extension
-};
-
-
-static void splitFileName(      // SPLIT APART PATH/FILENAME
-    const char *name,           // - name to be split
-    struct path_descr *descr )  // - descriptor
-{
-    _splitpath2( name
-               , descr->buffer
-               , &descr->drv
-               , &descr->dir
-               , &descr->fnm
-               , &descr->ext );
-}
-
-
-static void makeDirName(        // MAKE FILE NAME (WITHOUT DRIVE)
-    char *pp,                   // - target location
-    struct path_descr *nd )     // - name descriptor
-{
-    _makepath( pp, NULL, nd->dir, nd->fnm, nd->ext );
-}
-
-
 static bool openSrc(            // ATTEMPT TO OPEN FILE
     char *name,                 // - file name
     src_file_type typ )         // - type of file being opened
@@ -431,12 +398,12 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 
 static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     const char *ext,            // - extension
-    struct path_descr *nd,      // - name descriptor
+    PGROUP2 *nd,                // - name descriptor
     src_file_type typ )         // - type of file being opened
 {
     char name[_MAX_PATH];       // - buffer for file name
 
-    _makepath( name, nd->drv, nd->dir, nd->fnm, ext );
+    _makepath( name, nd->drive, nd->dir, nd->fname, ext );
     /* so we can tell if the open worked */
     if( openSrc( name, typ ) )
         return( (ext != NULL) ? ext : "" );
@@ -446,7 +413,7 @@ static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
 
 static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char **exts,          // - extensions
-    struct path_descr *nd,      // - name descriptor
+    PGROUP2 *nd,                // - name descriptor
     src_file_type typ )         // - type of file being opened
 {
     const char *ext;            // - current extension
@@ -487,23 +454,23 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 
 static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
-    struct path_descr *fd,      // - file descriptor
+    PGROUP2 *fd,                // - file descriptor
     const char **exts,          // - file extensions
     src_file_type typ )         // - type of file being opened
 {
     bool ok;                    // - return: true ==> opened
-    struct path_descr pd;       // - path descriptor
+    PGROUP2 pd;                 // - path descriptor
     char dir[_MAX_PATH * 2];    // - new path
     char *pp;                   // - pointer into path
     const char *ext;            // - extension opened
 
     ok = false;
     dir[0] = '\0';
-    splitFileName( path, &pd );
-    if( fd->drv[0] == '\0' ) {
+    _splitpath2( path, pd.buffer, &pd.drive, &pd.dir, &pd.fname, &pd.ext );
+    if( fd->drive[0] == '\0' ) {
         pp = stxpcpy( dir, path );
-    } else if( pd.drv[0] == '\0' ) {
-        pp = stxpcpy( dir, fd->drv );
+    } else if( pd.drive[0] == '\0' ) {
+        pp = stxpcpy( dir, fd->drive );
         pp = stxpcpy( pp, path );
     } else {
         return( ok );
@@ -513,20 +480,20 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
             *pp++ = DIR_SEP;
         }
     }
-    makeDirName( pp, fd );
-    splitFileName( dir, &pd );
+    _makepath( pp, NULL, fd->dir, fd->fname, fd->ext );
+    _splitpath2( dir, pd.buffer, &pd.drive, &pd.dir, &pd.fname, &pd.ext );
     ext = openSrcExts( exts, &pd, typ );
     if( ext != NULL ) {
         ok = true;
         if( ( typ == FT_SRC ) && ( ext != fd->ext ) ) {
-            _makepath( dir, fd->drv, fd->dir, fd->fnm, ext );
+            _makepath( dir, fd->drive, fd->dir, fd->fname, ext );
             WholeFName = FNameAdd( dir );
         }
     }
     return( ok );
 }
 
-static bool try_open_file( const char *path, struct path_descr *fd, struct path_descr *fa, const char **exts, src_file_type typ )
+static bool try_open_file( const char *path, PGROUP2 *fd, PGROUP2 *fa, const char **exts, src_file_type typ )
 {
     bool    ok;
     bool    truncated;
@@ -544,11 +511,11 @@ static bool try_open_file( const char *path, struct path_descr *fd, struct path_
         }
     }
     if( CompFlags.check_truncated_fnames ) {
-        save_chr_name = fd->fnm[8];
+        save_chr_name = fd->fname[8];
         save_chr_ext = fd->ext[4];
         truncated = false;
-        if( strlen( fd->fnm ) > 8 ) {
-            fd->fnm[8] = '\0';
+        if( strlen( fd->fname ) > 8 ) {
+            fd->fname[8] = '\0';
             truncated = true;
         }
         if( strlen( fd->ext ) > 4 ) {
@@ -560,7 +527,7 @@ static bool try_open_file( const char *path, struct path_descr *fd, struct path_
             if( ok ) {
                 return( ok );
             }
-            fd->fnm[8] = save_chr_name;
+            fd->fname[8] = save_chr_name;
             fd->ext[4] = save_chr_ext;
         }
     }
@@ -568,8 +535,8 @@ static bool try_open_file( const char *path, struct path_descr *fd, struct path_
 }
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
-    struct path_descr *fd,      // - descriptor for file name
-    struct path_descr *fai,     // - descriptor for alias file name
+    PGROUP2 *fd,                // - descriptor for file name
+    PGROUP2 *fai,               // - descriptor for alias file name
     src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
@@ -579,12 +546,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
     SRCFILE stdin_srcfile;      // - srcfile for stdin
-    struct path_descr idescr;   // - descriptor for included file
+    PGROUP2 idescr;             // - descriptor for included file
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[_MAX_PATH];    // - buffer for previous path
     bool alias_abs;
     bool alias_check;
-    struct path_descr *fa;
+    PGROUP2 *fa;
 
     alias_abs = false;
     alias_check = false;
@@ -593,7 +560,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     switch( typ ) {
     case FT_SRC:
         exts = extsSrc;
-        if( fd->fnm[0] == '\0' && fd->ext[0] == '.' && fd->ext[1] == '\0' ) {
+        if( fd->fname[0] == '\0' && fd->ext[0] == '.' && fd->ext[1] == '\0' ) {
             if( ErrCount != 0 ) {
                 // command line errors may result in "." as the input name
                 // so the user thinks that the compiler is hung!
@@ -622,9 +589,9 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
-        alias_abs = ( fai != NULL && ( fai->drv[0] != '\0' || IS_DIR_SEP( fai->dir[0] ) ) );
+        alias_abs = ( fai != NULL && ( fai->drive[0] != '\0' || IS_DIR_SEP( fai->dir[0] ) ) );
         // have to look for absolute paths
-        if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
+        if( fd->drive[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
             if( alias_abs )
                 fa = fai;
             alias_abs = false;
@@ -632,7 +599,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             break;
         }
         /* if alias contains abs path then check it after last check for regular name */
-        alias_check = ( fai != NULL && fai->drv[0] == '\0' && !IS_DIR_SEP( fai->dir[0] ) );
+        alias_check = ( fai != NULL && fai->drive[0] == '\0' && !IS_DIR_SEP( fai->dir[0] ) );
         if( alias_check )
             fa = fai;
         if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
@@ -640,8 +607,8 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 bufpth[0] = '\0';
                 curr = SrcFileCurrent();
                 if( curr != NULL ) {
-                    splitFileName( SrcFileName( curr ), &idescr );
-                    _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                    _splitpath2( SrcFileName( curr ), idescr.buffer, &idescr.drive, &idescr.dir, &idescr.fname, &idescr.ext );
+                    _makepath( bufpth, idescr.drive, idescr.dir, NULL, NULL );
                 }
                 ok = try_open_file( bufpth, fd, fa, exts, typ );
                 if( ok ) {
@@ -660,8 +627,8 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 prevpth[1] = '\0';
                 curr = SrcFileCurrent();
                 for( ; curr != NULL; ) {
-                    splitFileName( SrcFileName( curr ), &idescr );
-                    _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                    _splitpath2( SrcFileName( curr ), idescr.buffer, &idescr.drive, &idescr.dir, &idescr.fname, &idescr.ext );
+                    _makepath( bufpth, idescr.drive, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
                         ok = try_open_file( bufpth, fd, fa, exts, typ );
@@ -754,10 +721,10 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     src_file_type typ )         // - type of search path to use
 {
-    struct path_descr   fd;     // - descriptor for file name
-    struct path_descr   fa;     // - descriptor for alias file name
-    struct path_descr   *fap;   // - pointer to descriptor for alias file name
-    const char          *alias_file_name;
+    PGROUP2     fd;             // - descriptor for file name
+    PGROUP2     fa;             // - descriptor for alias file name
+    PGROUP2     *fap;           // - pointer to descriptor for alias file name
+    const char  *alias_file_name;
 
 #ifdef OPT_BR
     if( NULL != file_name
@@ -775,7 +742,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
     }
 #endif
-    splitFileName( file_name, &fd );
+    _splitpath2( file_name, fd.buffer, &fd.drive, &fd.dir, &fd.fname, &fd.ext );
     normalizeSep( fd.dir );
     fap = NULL;
     switch( typ ) {
@@ -786,7 +753,7 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
         // See if there's an alias for this file name
         alias_file_name = IAliasLookup( file_name, typ == FT_LIBRARY );
         if( alias_file_name != file_name ) {
-            splitFileName( alias_file_name, &fa );
+            _splitpath2( alias_file_name, fa.buffer, &fa.drive, &fa.dir, &fa.fname, &fa.ext );
             normalizeSep( fa.dir );
             fap = &fa;
         }

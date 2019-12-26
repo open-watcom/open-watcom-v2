@@ -61,6 +61,7 @@
 #include "swchar.h"
 #include "ialias.h"
 #include "ideentry.h"
+#include "pathgrp2.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "enterdb.h"
@@ -118,14 +119,10 @@ static void resetHandlers( void )
 static void MakePgmName(        // MAKE CANONICAL FILE NAME
     char *argv )                // - input name
 {
-    char buff[_MAX_PATH2];
-    char *drv;                  // - drive
-    char *dir;                  // - directory
-    char *fnm;                  // - file name
-    char *ext;                  // - extension
+    PGROUP2     pg;
 
-    _splitpath2( argv, buff, &drv, &dir, &fnm, &ext );
-    SrcFName = FNameAdd( fnm );
+    _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    SrcFName = FNameAdd( pg.fname );
     if( ModuleName == NULL ) {
         ModuleName = strsave( SrcFName );
     }
