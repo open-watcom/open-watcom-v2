@@ -50,6 +50,7 @@
 #include "tistrail.h"
 #include "wstrip.h"
 #include "wressetr.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -113,8 +114,6 @@ static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
 
 static fdata   finfo, fin, fout, ftmp;
-
-static char    fbuff[_MAX_PATH2];
 
 static bool quiet = false;
 static bool nodebug_ok = false;
@@ -395,10 +394,7 @@ int main( int argc, char *argv[] )
     int                 j;
     size_t              k;
     size_t              argvlen;
-    char                *drive;
-    char                *dir;
-    char                *name;
-    char                *ext;
+    PGROUP2             pg;
     const char          *ext1;
     int                 add_file;
     struct stat         other_stat;
@@ -477,20 +473,20 @@ int main( int argc, char *argv[] )
     }
     if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
         if( stat( argv[2], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fin.name, fbuff, &drive, &dir, &name, &ext );
-            _makepath( fout.name, NULL, argv[2], name, ext );
+            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( fout.name, NULL, argv[2], pg.fname, pg.ext );
         } else {
             strcpy( fout.name, argv[2] );
-            _splitpath2( fin.name, fbuff, &drive, &dir, &name, &ext );
-            Suffix( fout.name, ext );
+            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            Suffix( fout.name, pg.ext );
         }
     } else {
         strcpy( fout.name, fin.name );
     }
     if( argc >= 4 ) {
         if( stat( argv[3], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fout.name, fbuff, &drive, &dir, &name, &ext );
-            _makepath( finfo.name, NULL, argv[3], name, NULL );
+            _splitpath2( fout.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( finfo.name, NULL, argv[3], pg.fname, NULL );
         } else {
             strcpy( finfo.name, argv[3] );
         }

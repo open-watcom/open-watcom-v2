@@ -52,6 +52,8 @@
 #include "pathgrp2.h"
 #include "mcache.h"
 
+#include "clibext.h"
+
 
 #ifdef USE_DIR_CACHE
 

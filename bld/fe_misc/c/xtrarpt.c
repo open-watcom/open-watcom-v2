@@ -49,6 +49,10 @@
 #include "ringfns.h"
 #include "ringcarv.h"
 #include "vbuf.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define printf  @use outputLine@
 #define puts    @use outputLine@
@@ -186,7 +190,6 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
     RPTREG *reg;
     FILE *fp;
     PGROUP2 pg;
-    char *base;
     char make_buff[_MAX_PATH];
 
     _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );

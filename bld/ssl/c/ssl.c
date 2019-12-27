@@ -37,6 +37,7 @@
 #include "preproc.h"
 #include "ssl.h"
 #include "sslint.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -157,19 +158,15 @@ unsigned short SrcLine( void )
 
 static void OpenFiles( bool verbose, char *path, char *out_file )
 {
-    char        buff[_MAX_PATH2];
+    PGROUP2     pg;
     char        file_name[_MAX_PATH];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
     bool        given;
 
-    _splitpath2( path, buff, &drive, &dir, &fname, &ext );
-    if( ext[0] == '\0' ) {
-        ext = ".ssl";
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ".ssl";
     }
-    _makepath( file_name, drive, dir, fname, ext );
+    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     if( PP_FileInit( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
@@ -178,21 +175,21 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
         out_file = path;
         given = false;
     }
-    _splitpath2( out_file, buff, &drive, &dir, &fname, &ext );
+    _splitpath2( out_file, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( !given ) {
-        drive = "";
-        dir = "";
-        ext = "";
+        pg.drive = "";
+        pg.dir = "";
+        pg.ext = "";
     }
-    if( ext[0] == '\0' ) {
-        ext = ".prs";
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ".prs";
     }
-    _makepath( file_name, drive, dir, fname, ext );
+    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     PrsFile = fopen( file_name, Language ? "wt" : "wb" );
     if( PrsFile == NULL )
         Error( "can not open '%s'", file_name );
     if( verbose ) {
-        _makepath( file_name, drive, dir, fname, ".tbl" );
+        _makepath( file_name, pg.drive, pg.dir, pg.fname, ".tbl" );
         TblFile = fopen( file_name, "w" );
         if( TblFile == NULL ) {
             Error( "can not open '%s'", file_name );

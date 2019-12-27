@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "wpdriver.h"
 #include "sampinfo.h"
 #include "wpdata.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -57,15 +58,14 @@ bool WPSampFound( void )
 /**********************/
 {
     struct stat     file_stat;
-    char            buffer[_MAX_PATH2];
-    char            *ext;
+    PGROUP2         pg;
 
     if( stat( SamplePath, &file_stat ) != -1 )
         return( true );
     if( SamplePath[0] == NULLCHAR )
         return( false );
-    _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR )
+    _splitpath2( SamplePath, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] != NULLCHAR )
         return( false );
     ReplaceExt( SamplePath, ".smp" );
     if( stat( SamplePath, &file_stat ) != -1 )

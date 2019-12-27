@@ -496,7 +496,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 static bool try_open_file( const char *path, PGROUP2 *fd, PGROUP2 *fa, const char **exts, src_file_type typ )
 {
     bool    ok;
-    char    save_chr_name;
+    char    save_chr_fname;
     char    save_chr_ext;
 
     ok = openSrcPath( path, fd, exts, typ );
@@ -510,21 +510,21 @@ static bool try_open_file( const char *path, PGROUP2 *fd, PGROUP2 *fa, const cha
         }
     }
     if( CompFlags.check_truncated_fnames ) {
-        save_chr_name = '\0';
-        save_chr_ext = '\0';
+        save_chr_fname = '\0';
         if( strlen( fd->fname ) > 8 ) {
-            save_chr_name = fd->fname[8];
+            save_chr_fname = fd->fname[8];
             fd->fname[8] = '\0';
         }
+        save_chr_ext = '\0';
         if( strlen( fd->ext ) > 4 ) {
             save_chr_ext = fd->ext[4];
             fd->ext[4] = '\0';
         }
-        if( save_chr_name != '\0' || save_chr_ext != '\0' ) {
+        if( save_chr_fname != '\0' || save_chr_ext != '\0' ) {
             ok = openSrcPath( path, fd, exts, typ );
             if( !ok ) {
-                if( save_chr_name != '\0' ) {
-                    fd->fname[8] = save_chr_name;
+                if( save_chr_fname != '\0' ) {
+                    fd->fname[8] = save_chr_fname;
                 }
                 if( save_chr_ext != '\0' ) {
                     fd->ext[4] = save_chr_ext;

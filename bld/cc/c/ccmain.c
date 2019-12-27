@@ -1102,8 +1102,7 @@ static void DoCCompile( char **cmdline )
 static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
 {
     bool    ok;
-    bool    truncated;
-    char    save_chr_name;
+    char    save_chr_fname;
     char    save_chr_ext;
 
     // try to open regular name
@@ -1119,25 +1118,27 @@ static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_
         }
     }
     if( CompFlags.check_truncated_fnames ) {
-        save_chr_name = fp->fname[8];
-        save_chr_ext = fp->ext[4];
-        truncated = false;
+        save_chr_fname = '\0';
         if( strlen( fp->fname ) > 8 ) {
+            save_chr_fname = fp->fname[8];
             fp->fname[8] = '\0';
-            truncated = true;
         }
+        save_chr_ext = '\0';
         if( strlen( fp->ext ) > 4 ) {
+            save_chr_ext = fp->ext[4];
             fp->ext[4] = '\0';
-            truncated = true;
         }
-        if( truncated ) {
+        if( save_chr_fname != '\0' || save_chr_ext != '\0' ) {
             // try to open truncated name if enabled
             ok = TryOpen( path, fp, typ );
-            if( ok ) {
-                return( ok );
+            if( !ok ) {
+                if( save_chr_fname != '\0' ) {
+                    fp->fname[8] = save_chr_fname;
+                }
+                if( save_chr_ext != '\0' ) {
+                    fp->ext[4] = save_chr_ext;
+                }
             }
-            fp->fname[8] = save_chr_name;
-            fp->ext[4] = save_chr_ext;
         }
     }
     return( ok );

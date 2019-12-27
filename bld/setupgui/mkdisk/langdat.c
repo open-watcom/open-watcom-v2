@@ -41,6 +41,7 @@
 #include "bldutils.h"
 #include "memutils.h"
 #include "iopath.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -63,18 +64,18 @@ typedef struct include {
     char                cwd[_MAX_PATH];
 } include;
 
-bool            Quiet;
-FILE            *LogFile;
-static ctl_file *CtlList = NULL;
-static include  *IncludeStk;
-static char     Line[MAX_LINE];
-static char     ProcLine[MAX_LINE];
-static unsigned VerbLevel;
-static bool     UndefWarn;
-static unsigned ParmCount;
-static ctl_file *Product = NULL;
-static ctl_file *KeyList = NULL;
-static char     Product_ver[3];
+bool                Quiet;
+FILE                *LogFile;
+static ctl_file     *CtlList = NULL;
+static include      *IncludeStk;
+static char         Line[MAX_LINE];
+static char         ProcLine[MAX_LINE];
+static unsigned     VerbLevel;
+static bool         UndefWarn;
+static unsigned     ParmCount;
+static ctl_file     *Product = NULL;
+static ctl_file     *KeyList = NULL;
+static char         Product_ver[3];
 
 /* Defaults for all output values */
 static const char   *DefType   = NULL;
@@ -224,11 +225,8 @@ static int sysChdir( const char *dir )
 static void PushInclude( const char *name )
 {
     include     *new;
-    char        buff[_MAX_PATH2];
-    char        *drive;
+    PGROUP2     pg;
     char        *dir;
-    char        *fn;
-    char        *ext;
     char        dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
@@ -249,8 +247,8 @@ static void PushInclude( const char *name )
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", new->name, strerror( errno ) );
     }
-    _splitpath2( new->name, buff, &drive, &dir, &fn, &ext );
-    _makepath( dir_name, drive, dir, NULL, NULL );
+    _splitpath2( new->name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( dir_name, pg.drive, pg.dir, NULL, NULL );
     if( sysChdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );
     }
@@ -819,11 +817,7 @@ static void ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result )
 {
-    char        buff[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
+    PGROUP2     pg;
     char        *end;
     FILE        *fp;
 
@@ -834,14 +828,14 @@ static bool SearchUpDirs( const char *name, char *result )
             fclose( fp );
             return( true );
         }
-        _splitpath2( result, buff, &drive, &dir, &fn, &ext );
-        end = &dir[strlen( dir ) - 1];
-        if( end == dir )
+        _splitpath2( result, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        end = &pg.dir[strlen( pg.dir ) - 1];
+        if( end == pg.dir )
             return( false );
         if( IS_DIR_SEP( *end ) )
             --end;
         for( ;; ) {
-            if( end == dir ) {
+            if( end == pg.dir ) {
                 *end++ = DIR_SEP;
                 break;
             }
@@ -850,7 +844,7 @@ static bool SearchUpDirs( const char *name, char *result )
             --end;
         }
         *end = '\0';
-        _makepath( result, drive, dir, fn, ext );
+        _makepath( result, pg.drive, pg.dir, pg.fname, pg.ext );
     }
 }
 
