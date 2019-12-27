@@ -120,7 +120,7 @@ typedef struct list {
     struct list *next;
 } list;
 
-static char *DebugOptions[] = {
+static const char *DebugOptions[] = {
     "",
     "debug dwarf\n",
     "debug dwarf\n",
@@ -177,12 +177,12 @@ static  int     DebugFlag;              // debugging flag
 /* forward declarations */
 static  void    Usage( void );
 static  int     Parse( int, char ** );
-static  void    FindPath( char *name, char *buf );
+static  void    FindPath( const char *name, char *buf );
 static  int     CompLink( void );
-static  void    MakeName( char *name, char *ext );
-static  void    Fputnl( char *text, FILE *fptr );
-static  int     IsOption( char *cmd, size_t cmd_len, char *opt );
-static  void    AddName( char *name, FILE *link_fp );
+static  void    MakeName( char *name, const char *ext );
+static  void    Fputnl( const char *text, FILE *fptr );
+static  int     IsOption( const char *cmd, size_t cmd_len, const char *opt );
+static  void    AddName( const char *name, FILE *link_fp );
 
 
 static  void    wfl_exit( int rc ) {
@@ -222,14 +222,6 @@ void    PrtBanner( void ) {
 }
 
 
-static  char    *SkipSpaces( char *ptr ) {
-//========================================
-
-    while( *ptr == ' ' ) ptr++;
-    return( ptr );
-}
-
-
 static  void    *MemAlloc( size_t size ) {
 //=====================================
 
@@ -243,7 +235,7 @@ static  void    *MemAlloc( size_t size ) {
     return( ptr );
 }
 
-static void     AddFile( list **l, char *fname )
+static void     AddFile( list **l, const char *fname )
 {
     list *p;
 
@@ -253,9 +245,9 @@ static void     AddFile( list **l, char *fname )
     *l = p;
 }
 
-int     main( int argc, char *argv[] ) {
-//======================================
-
+int     main( int argc, char *argv[] )
+//====================================
+{
     int         rc;
     char        *wfl_env;
     char        *p;
@@ -296,7 +288,8 @@ int     main( int argc, char *argv[] ) {
         getcmd( cmd );
         p = cmd;
     }
-    p = SkipSpaces( p );
+    while( *p == ' ' )
+        p++;
     if( ( *p == '\0' ) || ( strncmp( p, "? ", 2 ) == 0 ) ) {
         Usage();
         rc = 1;
@@ -334,9 +327,9 @@ int     main( int argc, char *argv[] ) {
     return( 0 );
 }
 
-static  int     Parse( int argc, char **argv ) {
-//==================================
-
+static  int     Parse( int argc, char **argv )
+//============================================
+{
     char        opt;
     //char        *end;
     char        *cmd;
@@ -552,9 +545,9 @@ static  int     Parse( int argc, char **argv ) {
 }
 
 
-static int     IsOption( char *cmd, size_t cmd_len, char *opt ) {
-//============================================================
-
+static int     IsOption( const char *cmd, size_t cmd_len, const char *opt )
+//=========================================================================
+{
     size_t      len;
 
     len = 0;
@@ -673,7 +666,7 @@ static char *FindToolPath( tool_type utl )
 }
 
 static int tool_exec( tool_type utl, char *target, char **options )
-/*******************************************************/
+/*****************************************************************/
 {
     int     rc;
     int     pass_argc;
@@ -858,29 +851,29 @@ static  int     CompLink( void ) {
 }
 
 
-static  void    Fputnl( char *text, FILE *fptr ) {
-//================================================
-
+static  void    Fputnl( const char *text, FILE *fptr )
+//====================================================
+{
     fputs( text, fptr );
     fputs( "\n", fptr );
 }
 
 
-static  void    MakeName( char *name, char *ext ) {
-//=================================================
-
+static  void    MakeName( char *name, const char *ext )
+//=====================================================
+{
     PGROUP2 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' )
-        pg.ext = ext;
-    _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] != '\0' )
+        ext = pg.ext;
+    _makepath( name, pg.drive, pg.dir, pg.fname, ext );
 }
 
 
-static  void    AddName( char *name, FILE *link_fp ) {
-//====================================================
-
+static  void    AddName( const char *name, FILE *link_fp )
+//========================================================
+{
     list        *curr_name;
     list        *last_name;
     list        *new_name;
@@ -908,7 +901,8 @@ static  void    AddName( char *name, FILE *link_fp ) {
         _splitpath2( ObjName, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
         if( pg1.ext[0] == '\0' )
             pg1.ext = OBJ_EXT;
-        if( ( pg1.fname[0] == '\0' ) || ( ( pg1.fname[0] == '*' ) && ( pg1.fname[1] == '\0' ) ) ) {
+        if( ( pg1.fname[0] == '\0' )
+          || ( ( pg1.fname[0] == '*' ) && ( pg1.fname[1] == '\0' ) ) ) {
             _splitpath2( name, pg2.buffer, NULL, NULL, &pg1.fname, &pg2.ext );
             if( pg2.ext[0] != '\0' ) {
                 pg1.ext = pg2.ext;
@@ -924,9 +918,9 @@ static  void    AddName( char *name, FILE *link_fp ) {
 }
 
 
-static  void    FindPath( char *name, char *buf ) {
-//=================================================
-
+static  void    FindPath( const char *name, char *buf )
+//=====================================================
+{
     _searchenv( name, "PATH", buf );
     if( buf[0] == '\0' ) {
         PrintMsg( CL_UNABLE_TO_FIND, name );
@@ -955,9 +949,9 @@ void    TOut( const char *msg )
 #include "optinfo.h"
 
 
-static  void    Usage( void ) {
-//=============================
-
+static  void    Usage( void )
+//===========================
+{
     char        buff[LIST_BUFF_SIZE+1];
 
     PrtBanner();
