@@ -203,7 +203,6 @@ static void DelDepFile( void )
 
 static char *createFileName( const char *template, const char *ext, bool forceext )
 {
-#if !defined( __CMS__ )
     PGROUP2     pg;
     const char  *path;
 
@@ -221,17 +220,6 @@ static char *createFileName( const char *template, const char *ext, bool forceex
         pg.dir = "";
     }
     _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
-#else
-    char    *p;
-
-    if( template == NULL )
-        template = WholeFName;
-    strcpy( FNameBuf, template );
-    p = FNameBuf;
-    while( *p != '\0' && *p != ' ' )
-        ++p;
-    strcpy( p, ext );
-#endif
     return( FNameBuf );
 }
 
@@ -539,7 +527,6 @@ void CppPrtChar( int c )
 
 void OpenDefFile( void )
 {
-#if !defined( __CMS__ )
     PGROUP2     pg;
     char        name[_MAX_PATH];
 
@@ -553,9 +540,6 @@ void OpenDefFile( void )
     if( DefFile != NULL ) {
         setvbuf( DefFile, CPermAlloc( 1024 ), _IOFBF, 1024 );
     }
-#else
-    DefFile = fopen( DefFName, "w" );
-#endif
 }
 
 FILE *OpenBrowseFile( void )
