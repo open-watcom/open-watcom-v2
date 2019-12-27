@@ -201,7 +201,7 @@ static void DelDepFile( void )
     }
 }
 
-char *CreateFileName( const char *template, const char *ext, bool forceext )
+static char *createFileName( const char *template, const char *ext, bool forceext )
 {
 #if !defined( __CMS__ )
     PGROUP2     pg;
@@ -243,7 +243,7 @@ static void DumpDepFile( void )
     if( DepFile != NULL ) {
         curr = NextDependency( NULL );
         if( curr != NULL ) {
-            fprintf( DepFile, "%s :", ForceSlash( CreateFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
+            fprintf( DepFile, "%s :", ForceSlash( createFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
             fprintf( DepFile, " %s", ForceSlash( GetSourceDepName(), DependForceSlash ) );
             for( curr = NextDependency( curr ); curr != NULL; curr = NextDependency( curr ) ) {
                 fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
@@ -504,30 +504,30 @@ char *GetSourceDepName( void )
     PGROUP2     pg;
 
     _splitpath2( WholeFName, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    return( CreateFileName( SrcDepName, pg.ext, false ) );
+    return( createFileName( SrcDepName, pg.ext, false ) );
 }
 
 
 char *ObjFileName( void )
 {
-    return( CreateFileName( ObjectFileName, OBJ_EXT, false ) );
+    return( createFileName( ObjectFileName, OBJ_EXT, false ) );
 }
 
 char *CppFileName( void )
 {
-    return( CreateFileName( ObjectFileName, CPP_EXT, false ) );
+    return( createFileName( ObjectFileName, CPP_EXT, false ) );
 }
 
 char *DepFileName( void )
 {
-    return( CreateFileName( DependFileName, DEP_EXT, false ) );
+    return( createFileName( DependFileName, DEP_EXT, false ) );
 }
 
 char *ErrFileName( void )
 {
     if( ErrorFileName == NULL )
         return( NULL );
-    return( CreateFileName( ErrorFileName, ERR_EXT, false ) );
+    return( createFileName( ErrorFileName, ERR_EXT, false ) );
 }
 
 void CppPrtChar( int c )
@@ -565,7 +565,7 @@ FILE *OpenBrowseFile( void )
     FILE        *mbr_file;
 
     if( CompFlags.cpp_output_to_file ) {
-        strcpy( name, CreateFileName( ObjectFileName, MBR_EXT, true ) );
+        strcpy( name, createFileName( ObjectFileName, MBR_EXT, true ) );
     } else {
         _splitpath2( SrcFName, pg.buffer, NULL, NULL, &pg.fname, NULL );
         _makepath( name, NULL, NULL, pg.fname, MBR_EXT );
