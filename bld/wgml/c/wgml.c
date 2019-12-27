@@ -41,12 +41,13 @@
 #else
 #include <io.h>
 #endif
-
 #include "wgml.h"
 #include "findfile.h"
 #include "banner.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*  Usage info and end program                                             */
@@ -107,16 +108,15 @@ char *get_filename_full_path( char *buff, char const * name, size_t max )
 
 static  void    set_default_extension( const char * masterfname )
 {
-    char        buff[FILENAME_MAX];
-    char    *   ext;
+    PGROUP2     pg;
 
-    _splitpath2( masterfname, buff, NULL, NULL, NULL, &ext );
-    if( ext[0] != '\0' ) {
-        if( strlen( ext ) > strlen( def_ext ) ) {
+    _splitpath2( masterfname, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] != '\0' ) {
+        if( strlen( pg.ext ) > strlen( def_ext ) ) {
             mem_free( def_ext);
-            def_ext = mem_alloc( 1 + strlen( ext ) );
+            def_ext = mem_alloc( 1 + strlen( pg.ext ) );
         }
-        strcpy( def_ext, ext );
+        strcpy( def_ext, pg.ext );
     }
     return;
 }

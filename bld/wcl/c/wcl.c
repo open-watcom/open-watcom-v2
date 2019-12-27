@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,7 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -907,35 +909,32 @@ static int tool_exec( tool_type utl, const char *p1, const char *p2 )
 static tool_type SrcName( char *name )
 /************************************/
 {
-    char        *p;
-    char        buffer[_MAX_PATH2];
-    char        *ext;
+    PGROUP2     pg;
     tool_type   utl;
 
-    _splitpath2( name, buffer, NULL, NULL, NULL, &ext );
-    p = &ext[0];
-    if( ext[0] == '\0' ) {
-        p = name + strlen( name );
-        strcpy( p, ".cxx" );
+    _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = name + strlen( name );
+        strcpy( pg.ext, ".cxx" );
         if( access( name, F_OK ) != 0 ) {
-            strcpy( p, ".cpp" );
+            strcpy( pg.ext, ".cpp" );
             if( access( name, F_OK ) != 0 ) {
-                strcpy( p, ".cc" );
+                strcpy( pg.ext, ".cc" );
                 if( access( name, F_OK ) != 0 ) {
-                    strcpy( p, ASM_EXT );
+                    strcpy( pg.ext, ASM_EXT );
                     if( access( name, F_OK ) != 0 ) {
-                        strcpy( p, ".c" );
+                        strcpy( pg.ext, ".c" );
                     }
                 }
             }
         }
     }
-    if( IS_ASM( p ) ) {
+    if( IS_ASM( pg.ext ) ) {
         utl = TYPE_ASM;
     } else {
         utl = TYPE_C;               // assume C compiler
         if( !Flags.force_c ) {
-            if( Flags.force_c_plus || useCPlusPlus( p ) ) {
+            if( Flags.force_c_plus || useCPlusPlus( pg.ext ) ) {
                 utl = TYPE_CPP;     // use C++ compiler
             }
         }
