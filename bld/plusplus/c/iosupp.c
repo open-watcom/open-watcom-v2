@@ -189,7 +189,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     PGROUP2 pg1;
     PGROUP2 pg2;
     const char *ext;
-    char       *path;
+    char *path;
     bool use_defaults;
     unsigned mask;
     FILE *try_create;
@@ -241,9 +241,16 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         break;
     }
     _splitpath2( path, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    if( use_defaults ) {
+        pg1.drive = "";
+        pg1.dir = "";
+    }
+    if( pg1.fname[0] == '\0' || pg1.fname[0] == '*' ) {
+        pg1.fname = ModuleName;
+    }
     ext = pg1.ext;
     if( typ == OFT_SRCDEP ) {
-        if( ext[0] == '\0' ) {
+        if( pg1.ext[0] == '\0' ) {
             if( SrcDepFileName != NULL ) {
                 _splitpath2( WholeFName, pg2.buffer, NULL, NULL, NULL, &pg2.ext );
                 ext = pg2.ext;
@@ -251,13 +258,6 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         }
     } else if( use_defaults || ext[0] == '\0' ) {
         ext = extsOut[typ];
-    }
-    if( pg1.fname[0] == '\0' || pg1.fname[0] == '*' ) {
-        pg1.fname = ModuleName;
-    }
-    if( use_defaults ) {
-        pg1.drive = "";
-        pg1.dir = "";
     }
     _makepath( FNameBuf, pg1.drive, pg1.dir, pg1.fname, ext );
     mask = 1 << typ;

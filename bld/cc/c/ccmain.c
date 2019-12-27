@@ -204,20 +204,22 @@ static void DelDepFile( void )
 static char *createFileName( const char *template, const char *ext, bool forceext )
 {
     PGROUP2     pg;
-    const char  *path;
+    bool        use_defaults;
 
-    path = (template == NULL) ? WholeFName : template;
-    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( !forceext && template != NULL && pg.ext[0] != '\0' ) {
-        ext = pg.ext;
+    use_defaults = ( template == NULL );
+    if( use_defaults )
+        template = WholeFName;
+    _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( use_defaults ) {
+        /* default object file goes in current directory */
+        pg.drive = "";
+        pg.dir = "";
     }
     if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
         pg.fname = ModuleName;
     }
-    if( template == NULL ) {
-        /* default object file goes in current directory */
-        pg.drive = "";
-        pg.dir = "";
+    if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
+        ext = pg.ext;
     }
     _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
     return( FNameBuf );
