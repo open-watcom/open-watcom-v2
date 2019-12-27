@@ -37,6 +37,8 @@
 #include <stddef.h>
 #include "rtinit.h"
 #include "p5prof.h"
+#include "pathgrp2.h"
+
 
 extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #if defined(__386__)
@@ -48,11 +50,11 @@ extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #endif
 
 union tsc {
-        short int       bigint[4];
-        struct {
-            reg_32      lo_cycle;
-            reg_32      hi_cycle;
-        };
+    short int       bigint[4];
+    struct {
+        reg_32      lo_cycle;
+        reg_32      hi_cycle;
+    };
 };
 
 extern  void    _RDTSC( union tsc * );
@@ -92,10 +94,6 @@ static void p5_profile_init( void )
     }
 }
 
-#if !defined(_MAX_PATH2)
-#define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
-#endif
-
 static void p5_profile_fini( void )
 /*
  * Dump profiling data to file
@@ -106,13 +104,7 @@ static void p5_profile_fini( void )
     FILE                *out;
     unsigned            len;
     int                 i;
-    char                *drive;
-    char                *dir;
-    char                *name;
-#if ! defined(__NETWARE__)
-    char                fname[ _MAX_PATH2 ];
-#endif
-    char                pname[ _MAX_PATH2 ];
+    char                pname[_MAX_PATH2];
     char                stkbuf[24];
     union tsc           final_tsc;
     union tsc           u;
@@ -123,23 +115,26 @@ static void p5_profile_fini( void )
 #if defined(__NETWARE__)
     strcpy( pname, *_argv );
     for( i = strlen( pname ); i > 0; i-- ) {
-        if( pname[i] == '.' ) break;
+        if( pname[i] == '.' ) {
+            break;
+        }
     }
     if( i > 0 ) {
         strcpy( &pname[i], ".prf" );
+#else
+    if( *_argv != NULL ) {
+        PGROUP2     pg;
+
+        _splitpath2( *_argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( pname, pg.drive, pg.dir, pg.fname, ".prf" );
+#endif
     } else {
         strcpy( pname, "results.prf" );
     }
-#else
-    strcpy( pname, "results.prf" );
-    if( *_argv != NULL ) {
-        _splitpath2( *_argv, &fname, &drive, &dir, &name, NULL );
-        _makepath( pname, drive, dir, name, ".prf" );
-    }
-#endif
 
     out = fopen( pname, "wt+" );
-    if( out == NULL ) return;
+    if( out == NULL )
+        return;
     while( (void *)( (char *)curr + offsetof( P5_timing_info, name ) ) < last ) {
 //      fprintf( out, "%20.20s\t%08x\t%08x%08x\n", curr->name, curr->count, curr->hi_cycle, curr->lo_cycle );
 //      fprintf( out, "%08lx%08lx%11lu\t%s\n", curr->hi_cycle, curr->lo_cycle, curr->count, curr->name );
@@ -153,9 +148,10 @@ static void p5_profile_fini( void )
             }
             u.hi_cycle += final_tsc.hi_cycle;
         }
-        _Bin2String((short int _WCNEAR *)&u.bigint[0],(char _WCNEAR *)stkbuf,20 );
-        for( i = 0; stkbuf[i+1] != '\0'; i++ ) {
-            if( stkbuf[i] != '0' ) break;
+        _Bin2String( (short int _WCNEAR *)&u.bigint[0], (char _WCNEAR *)stkbuf, 20 );
+        for( i = 0; stkbuf[i + 1] != '\0'; i++ ) {
+            if( stkbuf[i] != '0' )
+                break;
             stkbuf[i] = ' ';
         }
         fprintf( out, "%s%11lu  %s\n", stkbuf, curr->count, curr->name );

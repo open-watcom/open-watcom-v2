@@ -57,6 +57,7 @@
 #include "wtmsg.h"
 #include "_dtaxxx.h"
 #include "d2ttime.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -401,9 +402,7 @@ static void doTouch( void )
     struct file_list *curr;
     struct utimbuf stamp;
     struct stat sb;
-    char sp_buf[ _MAX_PATH2 ];
-    char *drive;
-    char *dir;
+    PGROUP2 pg;
     char full_name[_MAX_PATH];
     char dir_name[_MAX_PATH];
     int len;
@@ -450,7 +449,7 @@ static void doTouch( void )
             dir_name[len + 2] = '\0';
             item = dir_name;
         }
-        _splitpath2( item, sp_buf, &drive, &dir, NULL, NULL );
+        _splitpath2( item, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         number_of_successful_touches = 0;
 #if defined(__LINUX__) || defined(__OSX__)
         strcpy( full_name, item );
@@ -463,7 +462,7 @@ static void doTouch( void )
             while( (ndir = readdir( dirpt )) != NULL ) {
                 int attr;
 
-                _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                _makepath( full_name, pg.drive, pg.dir, ndir->d_name, NULL );
     #ifdef __QNX__
                 attr = ndir->d_stat.st_mode;
                 if( S_ISREG( attr ) ) {
@@ -481,7 +480,7 @@ static void doTouch( void )
             }
 #endif
             if( TouchFlags.recursive ) {
-                _makepath( full_name, drive, dir, NULL, NULL );
+                _makepath( full_name, pg.drive, pg.dir, NULL, NULL );
                 dirpt = opendir( full_name );
                 // it would make no sense for this to fail, and I'm not entirely sure
                 // what to do if it does....
@@ -489,12 +488,12 @@ static void doTouch( void )
                     while( (ndir = readdir( dirpt )) != NULL ) {
                         if ( '.' != *ndir->d_name ) {
 #ifdef __UNIX__
-                            _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                            _makepath( full_name, pg.drive, pg.dir, ndir->d_name, NULL );
                             if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
 #else
                             if( ndir->d_attr & _A_SUBDIR ) {
 
-                                _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                                _makepath( full_name, pg.drive, pg.dir, ndir->d_name, NULL );
 #endif
                                 insertFileSpec( strdup(full_name), curr );
                             }
