@@ -433,7 +433,6 @@ extern char         *DepFileName(void);
 extern char         *ObjFileName(void);
 extern char         *CppFileName(void);
 extern char         *ForceSlash(char *, char );
-extern char         *CreateFileName( const char *template, const char *extension, bool forceext );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
 extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );

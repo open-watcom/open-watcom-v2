@@ -201,6 +201,40 @@ static void DelDepFile( void )
     }
 }
 
+char *CreateFileName( const char *template, const char *ext, bool forceext )
+{
+#if !defined( __CMS__ )
+    PGROUP2     pg;
+    const char  *path;
+
+    path = (template == NULL) ? WholeFName : template;
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( !forceext && template != NULL && pg.ext[0] != '\0' ) {
+        ext = pg.ext;
+    }
+    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
+        pg.fname = ModuleName;
+    }
+    if( template == NULL ) {
+        /* default object file goes in current directory */
+        pg.drive = "";
+        pg.dir = "";
+    }
+    _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
+#else
+    char    *p;
+
+    if( template == NULL )
+        template = WholeFName;
+    strcpy( FNameBuf, template );
+    p = FNameBuf;
+    while( *p != '\0' && *p != ' ' )
+        ++p;
+    strcpy( p, ext );
+#endif
+    return( FNameBuf );
+}
+
 static void DumpDepFile( void )
 {
     FNAMEPTR    curr;
@@ -463,40 +497,6 @@ static void OpenCppFile( void )
         }
         setvbuf( CppFile, CPermAlloc( 4096 ), _IOFBF, 4096 );
     }
-}
-
-char *CreateFileName( const char *template, const char *ext, bool forceext )
-{
-#if !defined( __CMS__ )
-    PGROUP2     pg;
-    const char  *path;
-
-    path = (template == NULL) ? WholeFName : template;
-    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( !forceext && template != NULL && pg.ext[0] != '\0' ) {
-        ext = pg.ext;
-    }
-    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
-        pg.fname = ModuleName;
-    }
-    if( template == NULL ) {
-        /* default object file goes in current directory */
-        pg.drive = "";
-        pg.dir = "";
-    }
-    _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
-#else
-    char    *p;
-
-    if( template == NULL )
-        template = WholeFName;
-    strcpy( FNameBuf, template );
-    p = FNameBuf;
-    while( *p != '\0' && *p != ' ' )
-        ++p;
-    strcpy( p, ext );
-#endif
-    return( FNameBuf );
 }
 
 char *GetSourceDepName( void )
