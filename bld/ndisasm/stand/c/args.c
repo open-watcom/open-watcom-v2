@@ -46,6 +46,7 @@
 #include "memfuncs.h"
 #include "print.h"
 #include "cmdlhelp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -140,39 +141,35 @@ static char *getFileName( const char *start, const char *following )
 
 static void composeFileNames( bool list_file )
 {
-    char        path[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *file_name;
-    char        *extension;
+    PGROUP2     pg;
     size_t      length;
 
     // object file name
-    _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );
+    _splitpath2( ObjFileName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #ifndef __UNIX__
     // tacking on an extension is self-defeating on UNIX, and the extra
     // dot at end trick doesn't work either
-    if( extension[0] == '\0' ) {
+    if( pg.ext[0] == '\0' ) {
         length = strlen( ObjFileName );
         MemFree( ObjFileName );
         ObjFileName = (char *)MemAlloc( length + strlen( OBJ_FILE_EXTENSION ) + 1 );
-        _makepath( ObjFileName, drive, dir, file_name, OBJ_FILE_EXTENSION );
+        _makepath( ObjFileName, pg.drive, pg.dir, pg.fname, OBJ_FILE_EXTENSION );
     } // else file name has an extension - leave as is
 #endif
     if( list_file ) {
         if( ListFileName == NULL ) {
-            length = strlen( drive ) + strlen( dir ) + strlen( dir ) +
-                strlen( file_name ) + strlen( LIST_FILE_EXTENSION );
+            length = strlen( pg.drive ) + strlen( pg.dir ) + strlen( pg.fname )
+                                                        + strlen( LIST_FILE_EXTENSION );
             ListFileName = (char *)MemAlloc( length + 1 );
-            _makepath( ListFileName, drive, dir, file_name, LIST_FILE_EXTENSION );
+            _makepath( ListFileName, pg.drive, pg.dir, pg.fname, LIST_FILE_EXTENSION );
         } else {
             // check extension
-            _splitpath2( ListFileName, path, &drive, &dir, &file_name, &extension );
-            if( extension[0] == '\0' ) {
+            _splitpath2( ListFileName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            if( pg.ext[0] == '\0' ) {
                 length = strlen( ListFileName );
                 MemFree( ListFileName );
                 ListFileName = (char *)MemAlloc( length + strlen( LIST_FILE_EXTENSION ) + 1 );
-                _makepath( ListFileName, drive, dir, file_name, LIST_FILE_EXTENSION );
+                _makepath( ListFileName, pg.drive, pg.dir, pg.fname, LIST_FILE_EXTENSION );
             } // else has extension, leave it as is
         }
     }

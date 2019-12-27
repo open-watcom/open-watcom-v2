@@ -47,6 +47,7 @@
 #include "lsspec.h"
 #include "encodlng.h"
 #include "intlload.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -190,10 +191,8 @@ IntlData *LoadInternationalData(
     int fh;
     res_language_enumeration language;
     size_t len;
-    char *drive;
-    char *dir;
+    PGROUP2 pg;
     char cmd_name[_MAX_PATH];
-    char split_buff[_MAX_PATH2];
     char base[16];
 
     language = _WResLanguage();
@@ -203,7 +202,7 @@ IntlData *LoadInternationalData(
     if( imageName( cmd_name ) == NULL ) {
         return( NULL );
     }
-    _splitpath2( cmd_name, split_buff, &drive, &dir, NULL, NULL );
+    _splitpath2( cmd_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     len = strlen( file_prefix );
     if( len > 6 ) {
         len = 6;
@@ -212,7 +211,7 @@ IntlData *LoadInternationalData(
     base[len++] = '0';
     base[len++] = '0' + language;
     base[len] = '\0';
-    _makepath( cmd_name, drive, dir, base, "." LOCALE_DATA_EXT );
+    _makepath( cmd_name, pg.drive, pg.dir, base, "." LOCALE_DATA_EXT );
     fh = sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( fh == -1 ) {
         return( NULL );
