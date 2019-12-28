@@ -47,7 +47,6 @@
 #include "ovltab.h"
 #include "msg.h"
 #include "memutil.h"
-#include "clibext.h"
 #include "support.h"
 #include "wpdata.h"
 #include "pathgrp2.h"
