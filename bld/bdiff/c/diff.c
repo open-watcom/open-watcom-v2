@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,9 @@
 #include "symtab.h"
 #include "diff.h"
 #include "wdbginfo.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 #define BUFF_SIZE       16384
@@ -117,13 +121,8 @@ static byte         *CurrPatch;
 static foff         PatchSize;
 
 #ifdef USE_DBGINFO
-static exe_info old;
-static exe_info new;
-
-static char drive[_MAX_DRIVE];
-static char dir[_MAX_DIR];
-static char fname[_MAX_FNAME];
-static char ext[_MAX_EXT];
+static exe_info     old;
+static exe_info     new;
 #endif
 
 /*
@@ -840,19 +839,20 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     auto addr_dbg_info      seg_chunk;
     auto exe_mod            tmp_mod;
     char                    file_name[_MAX_PATH];
+    PGROUP2                 pg;
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( ext[0] == '\0' ) {
-        strcpy( ext, ".exe" );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ".exe";
     }
-    _makepath( file_name, drive, dir, fname, ext );
+    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     exe->fd = fopen( file_name, "rb" );
     FileCheck( exe->fd, file_name );
-    _splitpath( sym_name, drive, dir, fname, ext );
-    if( ext[0] == '\0' ) {
-        strcpy( ext, ".sym" );
+    _splitpath2( sym_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ".sym";
     }
-    _makepath( file_name, drive, dir, fname, ext );
+    _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     exe->sym.fd = fopen( file_name, "rb" );
     FileCheck( exe->sym.fd, file_name );
     SeekCheck( fseek( exe->sym.fd, -(long)sizeof( dbg_head ), SEEK_END ), file_name );
