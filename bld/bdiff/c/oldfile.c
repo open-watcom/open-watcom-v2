@@ -38,6 +38,7 @@
 #include "myio.h"
 #include "msg.h"
 #include "installp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
