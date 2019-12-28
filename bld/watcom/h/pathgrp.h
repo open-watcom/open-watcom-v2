@@ -11,7 +11,8 @@
 ****************************************************************************/
 
 
-#define PGROUP  struct {        \
+#define PGROUP  struct \
+{ \
     char    drive[_MAX_DRIVE];  \
     char    dir[_MAX_DIR];      \
     char    fname[_MAX_FNAME];  \

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2007-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2007-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -11,10 +11,11 @@
 ****************************************************************************/
 
 
-#define PGROUP2 struct {    \
-    char    *drive;         \
-    char    *dir;           \
-    char    *fname;         \
-    char    *ext;           \
+#define PGROUP2 struct \
+{ \
+    char    *drive;                 \
+    char    *dir;                   \
+    char    *fname;                 \
+    char    *ext;                   \
     char    buffer[PATH_MAX + 4];   \
 }
