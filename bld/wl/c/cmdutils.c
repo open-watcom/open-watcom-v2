@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +79,8 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 #else
     const char          *p;
     char                *start;
-    DIR                 *dir;
-    struct dirent       *dirent;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                drive[_MAX_DRIVE];
     char                directory[_MAX_DIR];
     char                name[_MAX_FNAME];
@@ -108,13 +109,13 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         retval = true;
         /* expand file names */
         start = tostring();
-        dir = opendir( start );
-        if( dir != NULL ) {
+        dirp = opendir( start );
+        if( dirp != NULL ) {
             _splitpath( start, drive, directory, NULL, NULL );
-            while( (dirent = readdir( dir )) != NULL ) {
-                if( dirent->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR) )
+            while( (dire = readdir( dirp )) != NULL ) {
+                if( dire->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR) )
                     continue;
-                _splitpath( dirent->d_name, NULL, NULL, name, extin );
+                _splitpath( dire->d_name, NULL, NULL, name, extin );
                 _makepath( pathin, drive, directory, name, extin );
                 Token.this = pathin;            // dangerous?
                 Token.len = strlen( pathin );
@@ -125,7 +126,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
                     break;
                 }
             }
-            closedir( dir );
+            closedir( dirp );
         } else {
             retval = rtn();
         }

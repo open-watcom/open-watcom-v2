@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,26 +58,27 @@ static char *stpcpy( char *d, const char *s )
 static int doADir( char *path, char *work )
 /*****************************************/
 {
-    DIR     *parent;
-    DIR     *entry;
-    char    *p;
-    char    attr;
+    DIR             *dirp;
+    struct dirent   *dire;
+    char            *p;
+    char            attr;
 
     *work = 0;
     puts( path );
 
     strcpy( work, "*.*" );
-    parent = opendir( path );
-    if( parent == NULL ) {
+    dirp = opendir( path );
+    if( dirp == NULL ) {
         return( -1 );
     }
 
         /* note assignment in while(...) */
-    while( entry = readdir( parent ) ) {
-        attr = entry->d_attr;
-        p = entry->d_name;
-        if( p[0] == '.' && ( p[1] == '\0' ||
-            ( p[1] == '.' && p[2] == '\0' ) ) ) continue;
+    while( (dire = readdir( dirp )) != NULL ) {
+        attr = dire->d_attr;
+        p = dire->d_name;
+        if( p[0] == '.' && ( p[1] == '\0'
+          || ( p[1] == '.' && p[2] == '\0' ) ) )
+            continue;
         if( attr & _A_SUBDIR ) {
             p = stpcpy( work, p );
             *p++ = '\\';
@@ -86,7 +88,7 @@ static int doADir( char *path, char *work )
             puts( path );
         }
     }
-    closedir( parent );
+    closedir( dirp );
 
     return( 0 );
 }

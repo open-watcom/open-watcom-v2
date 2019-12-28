@@ -1122,7 +1122,7 @@ static bool FindUpgradeFile( char *path )
 /***************************************/
 {
     DIR                 *dirp;
-    struct dirent       *info;
+    struct dirent       *dire;
     char                *path_end;
     int                 upgrades;
     int                 i;
@@ -1140,15 +1140,15 @@ static bool FindUpgradeFile( char *path )
             upgrades = SimNumUpgrades();
             ConcatDirSep( path );
             path_end = path + strlen( path );
-            while( !ok && (info = readdir( dirp )) != NULL ) {
-                strcpy( path_end, info->d_name );
+            while( !ok && (dire = readdir( dirp )) != NULL ) {
+                strcpy( path_end, dire->d_name );
 #if defined( __UNIX__ )
                 stat( path, &statbuf );
                 if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-                if( info->d_attr & _A_SUBDIR ) {
+                if( dire->d_attr & _A_SUBDIR ) {
 #endif
-                    if( IS_VALID_DIR( info ) ) {
+                    if( IS_VALID_DIR( dire ) ) {
                         if( FindUpgradeFile( path ) ) {
                             ok = true;
                         }
@@ -2137,7 +2137,7 @@ static bool NukePath( VBUF *path, int status )
 /********************************************/
 {
     DIR                 *dirp;
-    struct dirent       *info;
+    struct dirent       *dire;
     bool                ok;
     size_t              path_len;
 #if defined( __UNIX__ )
@@ -2149,15 +2149,15 @@ static bool NukePath( VBUF *path, int status )
     if( dirp != NULL ) {
         VbufAddDirSep( path );
         path_len = VbufLen( path );
-        while( (info = readdir( dirp )) != NULL ) {
-            VbufSetStrAt( path, info->d_name, path_len );
+        while( (dire = readdir( dirp )) != NULL ) {
+            VbufSetStrAt( path, dire->d_name, path_len );
 #if defined( __UNIX__ )
             stat_vbuf( path, &statbuf );
             if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-            if( info->d_attr & _A_SUBDIR ) {
+            if( dire->d_attr & _A_SUBDIR ) {
 #endif
-                if( IS_VALID_DIR( info ) ) {
+                if( IS_VALID_DIR( dire ) ) {
                     if( !NukePath( path, status ) ) {
                         ok = false;
                         break;
@@ -2168,7 +2168,7 @@ static bool NukePath( VBUF *path, int status )
 #if defined( __UNIX__ )
                 if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
 #else
-                if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
+                if( dire->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
                     chmod_vbuf( path, PMODE_USR_W );
                 }

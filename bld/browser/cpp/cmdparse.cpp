@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -353,7 +354,7 @@ void CommandParser::addFile( const char * fname )
 // return true if successful, false on error
 {
     DIR *           dirp;
-    struct dirent * direntp;
+    struct dirent * dire;
     String          file( fname );
     FullName        dirName;
 
@@ -371,13 +372,9 @@ void CommandParser::addFile( const char * fname )
             return;
         }
 
-        for(;;) {
-            const char AvoidAttribs = _A_HIDDEN | _A_SYSTEM | _A_VOLID |
-                                      _A_SUBDIR;
+        const char AvoidAttribs = _A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR;
 
-            direntp = readdir( dirp );
-            if( direntp == NULL ) break;
-
+        for( ; (dire = readdir( dirp )) != NULL; ) {
             if( (dirp->d_attr & AvoidAttribs) == 0 ) {
                 String addFile;
                 addFile = dirName.drive;

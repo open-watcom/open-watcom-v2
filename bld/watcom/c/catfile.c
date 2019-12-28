@@ -319,8 +319,8 @@ static int processFilePattern   // PROCESS FILE PATTERN
     , void* data )              // - not used
 {
     int             retn;       // - return code
-    DIR             *dp;        // - directory stuff
-    struct dirent   *entry;
+    DIR             *dirp;      // - directory stuff
+    struct dirent   *dire;
     struct stat     buf;
     PGROUP2         pg;
     char            path[ _MAX_PATH ];
@@ -330,15 +330,15 @@ static int processFilePattern   // PROCESS FILE PATTERN
     _splitpath2( tp->text, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( path, pg.drive, pg.dir, ".", NULL );
     _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
-    dp = opendir( path );
-    if( dp == NULL ) {
+    dirp = opendir( path );
+    if( dirp == NULL ) {
         retn = errMsg( "opening directory:", path, NULL );
     } else {
         retn = 0;
-        for( entry = readdir( dp ); entry != NULL; entry = readdir( dp ) ) {
-            if( ISVALIDENTRY( entry ) ) {
-                if( __fnmatch( pattern, entry->d_name ) ) {
-                    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            if( ISVALIDENTRY( dire ) ) {
+                if( __fnmatch( pattern, dire->d_name ) ) {
+                    _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
                     if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
                         Text* tp;           // - current entry
                         retn = textAlloc( strlen( path ) + 1, &tp );
@@ -547,7 +547,7 @@ static int processCmdLine       // PROCESS COMMAND LINE
             any_options = 1;
             retn = processSwitch( cmd );
         } else {
-            Text *tp;           // - text entry
+            Text *tp;           // - text dire
             retn = textAlloc( strlen( cmd ), &tp );
             if( retn == 0 ) {
                 textInsert( tp, &file_patterns );

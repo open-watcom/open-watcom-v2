@@ -223,8 +223,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
     char                *dst_end;
     PGROUP2             pg;
     char                full[_MAX_PATH];
-    DIR                 *directory;
-    struct dirent       *dent;
+    DIR                 *dirp;
+    struct dirent       *dire;
 #ifdef __UNIX__
     char                pattern[_MAX_PATH];
 #endif
@@ -263,15 +263,15 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
     _makepath( src, pg.drive, pg.dir, NULL, NULL );
     _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
     if( src[0] == '\0' ) {
-        directory = opendir( "." );
+        dirp = opendir( "." );
     } else {
-        directory = opendir( src );
+        dirp = opendir( src );
     }
 #else
-    directory = opendir( src );
+    dirp = opendir( src );
 #endif
     rc = 1;
-    if( directory == NULL ) {
+    if( dirp == NULL ) {
         if( !cond_copy ) {
             Log( false, "Can not open source directory '%s': %s\n", src, strerror( errno ) );
         }
@@ -279,35 +279,35 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
 #ifdef __UNIX__
         char *src_end = src + strlen( src );
 #endif
-        while( (dent = readdir( directory )) != NULL ) {
-            if( ENTRY_INVALID1( dent ) )
+        while( (dire = readdir( dirp )) != NULL ) {
+            if( ENTRY_INVALID1( dire ) )
                 continue;
             rc = 0;
 #ifdef __UNIX__
-            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+            if( fnmatch( pattern, dire->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
                 continue;
-            strcpy( src_end, dent->d_name );
+            strcpy( src_end, dire->d_name );
             if( chk_is_dir( src ) )
                 continue;
 #else
-            if( dent->d_attr & _A_SUBDIR )
+            if( dire->d_attr & _A_SUBDIR )
                 continue;
 #endif
-            _makepath( full, pg.drive, pg.dir, dent->d_name, NULL );
+            _makepath( full, pg.drive, pg.dir, dire->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
             switch( *dst_end ) {
             case '\\':
             case '/':
-                strcat( full, dent->d_name );
+                strcat( full, dire->d_name );
                 break;
             }
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
-            if( !test_abit || ENTRY_CHANGED2( entry_src, dent, entry_dst ) ) {
+            if( !test_abit || ENTRY_CHANGED2( entry_src, dire, entry_dst ) ) {
                 list = add_copy_entry( list, entry_src, entry_dst );
             }
         }
-        closedir( directory );
+        closedir( dirp );
     }
     if( cond_copy ) {
         return( 0 );
@@ -607,8 +607,8 @@ static int DoRM( const char *f )
     size_t              i;
     size_t              j;
     size_t              len;
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
     int                 rc;
     int                 retval = 0;
 
@@ -640,20 +640,20 @@ static int DoRM( const char *f )
         memcpy( fname, f + j, len - j + 1 );
     }
 #endif
-    d = opendir( fpath );
-    if( d == NULL ) {
+    dirp = opendir( fpath );
+    if( dirp == NULL ) {
         Log( false, "File (%s) not found.\n", f );
         return( ENOENT );
     }
 
-    while( (nd = readdir( d )) != NULL ) {
-        if( ENTRY_INVALID2( fname, nd ) )
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ENTRY_INVALID2( fname, dire ) )
             continue;
         /* set up file name, then try to delete it */
-        len = strlen( nd->d_name );
-        memcpy( fpathend, nd->d_name, len );
+        len = strlen( dire->d_name );
+        memcpy( fpathend, dire->d_name, len );
         fpathend[len] = '\0';
-        if( ENTRY_SUBDIR( fpath, nd ) ) {
+        if( ENTRY_SUBDIR( fpath, dire ) ) {
             /* process a directory */
             if( rflag ) {
                 /* build directory list */
@@ -671,7 +671,7 @@ static int DoRM( const char *f )
                 Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
-        } else if( !fflag && ENTRY_RDONLY( fpath, nd ) ) {
+        } else if( !fflag && ENTRY_RDONLY( fpath, dire ) ) {
             Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
@@ -681,7 +681,7 @@ static int DoRM( const char *f )
             }
         }
     }
-    closedir( d );
+    closedir( dirp );
     /* process any directories found */
     for( tmp = dhead; tmp != NULL; tmp = dhead ) {
         dhead = tmp->next;

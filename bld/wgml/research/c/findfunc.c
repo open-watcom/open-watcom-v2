@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,11 +51,12 @@
 #else
 #include <direct.h>
 #endif
-#include "clibext.h"
-
 #include "banner.h"
 #include "common.h"
 #include "research.h"
+
+#include "clibext.h"
+
 
 /* From gtype.h, this is what wgml is using. */
 
@@ -167,7 +169,7 @@ NULL
  * Static Variables modified on success:
  *      cur_file->scanptr is set to the first character after the device
  *          function name which was found.
- *      cur_token->start is set to the first character of the device 
+ *      cur_token->start is set to the first character of the device
  *          function name which was found.
  *      cur_token->count is set to the number of characters in the device
  *          function name which was found.
@@ -191,7 +193,7 @@ static int get_dev_func( void )
     size_t      position;
     size_t      scanned;
     size_t      unscanned;
-    
+
     if( cur_file->scanptr == NULL ) {
 
         /* First call: start by getting data into the buffer. */
@@ -208,7 +210,7 @@ static int get_dev_func( void )
     cur_token->start = NULL;
     cur_token->count = 0;
 
-    for( ;; ) {        
+    for( ;; ) {
 
         /* Find the next device function name. */
 
@@ -276,7 +278,7 @@ static int get_dev_func( void )
 
         cur_file->scanptr = cur_file->filebuf;
     }
-    
+
     return( SUCCESS ) ;
 }
 
@@ -295,8 +297,8 @@ static int get_dev_func( void )
 static int check_directory( void )
 {
     char                *   extension       = NULL;
-    DIR                 *   current_dir     = NULL;
-    struct dirent       *   dir_entry       = NULL;
+    DIR                 *   dirp            = NULL;
+    struct dirent       *   dire            = NULL;
     FILE                *   current_file    = NULL;
     int                     dev_func_cnt    = sizeof( dev_funcs ) / sizeof( dev_funcs[ 0 ] );
     int                     i;
@@ -304,23 +306,25 @@ static int check_directory( void )
     int                     ret_val;
 
     ret_val = SUCCESS;
-    current_dir = opendir( tgt_path );
-    if( current_dir == NULL ) return( FAILURE );
+    dirp = opendir( tgt_path );
+    if( dirp == NULL )
+        return( FAILURE );
     chdir( tgt_path );
-    for(;;) {
-        dir_entry = readdir( current_dir );
-        if( dir_entry == NULL ) break;
+    for( ; (dire = readdir( dirp )) != NULL; ) {
 
         /* Ensure that the extension is ".PCD". */
 
-        extension = strrchr( dir_entry->d_name, '.' );
-        if( extension == NULL) continue;
-        if( stricmp( extension, PCD_EXT ) ) continue;
+        extension = strrchr( dire->d_name, '.' );
+        if( extension == NULL)
+            continue;
+        if( stricmp( extension, PCD_EXT ) )
+            continue;
 
         /* Open the file. */
 
-        fopen_s( &current_file, dir_entry->d_name, "rb" );
-        if( current_file == NULL ) continue;
+        fopen_s( &current_file, dire->d_name, "rb" );
+        if( current_file == NULL )
+            continue;
 
         /* Process the file. */
 
@@ -331,9 +335,10 @@ static int check_directory( void )
         while( ret_val != FAILURE ) {
 
             /* Get the first/next device function name. */
-            
+
             ret_val = get_dev_func();
-            if( ret_val == FAILURE ) break;
+            if( ret_val == FAILURE )
+                break;
 
             /* Trim the device function name. */
 
@@ -343,8 +348,9 @@ static int check_directory( void )
             /* Search the table. */
 
             for( i = 0; i < dev_func_cnt; i++ ) {
-                if( !memicmp( dev_funcs[i].func_name, cur_token->start, cur_token->count ) ) break;
-
+                if( !memicmp( dev_funcs[i].func_name, cur_token->start, cur_token->count ) ) {
+                    break;
+                }
             }
 
             if( i == dev_func_cnt ) {
@@ -364,8 +370,8 @@ static int check_directory( void )
         fclose( current_file );
         current_file = NULL;
     }
-    closedir( current_dir );
-   
+    closedir( dirp );
+
     return( SUCCESS );
 }
 
@@ -488,7 +494,7 @@ int main()
       print_usage();
       return( EXIT_FAILURE );
     }
-    
+
     return( EXIT_SUCCESS );
 }
 

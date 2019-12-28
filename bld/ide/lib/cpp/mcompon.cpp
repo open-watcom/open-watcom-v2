@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -500,17 +501,18 @@ bool MComponent::addFromFilename( WFileName& filename, WString& err )
 bool MComponent::addFromMask( WFileName& search, WString& err )
 {
     bool ok = true;
+
     WFileName asearch( search );
+
     asearch.absoluteTo( _filename );
-    DIR* dir = opendir( asearch );
-    if( !dir ) {
+    DIR *dirp = opendir( asearch );
+    if( dirp == NULL ) {
         err.printf( "no files found for '%s'", (const char*)search );
         ok = false;
     } else {
-        for(;;) {
-            struct dirent* ent = readdir( dir );
-            if( !ent ) break;
-            WFileName newfile( ent->d_name );
+        struct dirent *dire;
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            WFileName newfile( dire->d_name );
             newfile.setDrive( search.drive() );
             newfile.setDir( search.dir() );
 //            newfile.toLower();
@@ -519,7 +521,7 @@ bool MComponent::addFromMask( WFileName& search, WString& err )
                 break;
             }
         }
-        closedir( dir );
+        closedir( dirp );
     }
     return( ok );
 }

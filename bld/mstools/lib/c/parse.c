@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ static void VerifyAddFile( char *filename )
 /*****************************************/
 {
     DIR *               dirp;
-    struct dirent *     direntp;
+    struct dirent *     dire;
     char *              tempfilename;
     char *              newfilename;
     char                fullname[_MAX_PATH];
@@ -134,12 +135,10 @@ static void VerifyAddFile( char *filename )
         } else {
             FreeMem( filename );
             FreeMem( newfilename );
-            for (;;) {
-                direntp = readdir (dirp);
-                if ( direntp == NULL ) break;
+            for( ; (dire = readdir( dirp )) != NULL; ) {
                 _splitpath( pattern, drive, dir, NULL, NULL );
                 _makepath( fullname, drive, dir, "", "" );
-                strcat( fullname, direntp->d_name );
+                strcat( fullname, dire->d_name );
                 filename = fullname;
                 filename = VerifyDot(filename);
                 AddFile( TYPE_DEFAULT_FILE, filename );

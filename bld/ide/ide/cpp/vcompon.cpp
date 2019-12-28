@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -368,11 +369,11 @@ void VComponent::mAddItem( WMenuItem* )
 #ifdef __OS2__
         rc = add.getInput( inp, "Enter filename(s) separated by spaces:" );
 #else
-        ret = GetNewFiles( this, &inp, h, _config->fileFilters(),
-                            _component->filename() );
+        ret = GetNewFiles( this, &inp, h, _config->fileFilters(), _component->filename() );
         rc = (ret != 0);
 #endif
-        if( !rc ) break;
+        if( !rc )
+            break;
 //        inp.toLower();
         WStringList names( inp );
         startWait();
@@ -385,17 +386,16 @@ void VComponent::mAddItem( WMenuItem* )
             if( search.isMask() ) {
                 WFileName asearch( search );
                 asearch.absoluteTo( _component->filename() );
-                DIR* dir = opendir( asearch );
-                if( !dir ) {
+                DIR *dirp = opendir( asearch );
+                if( dirp == NULL ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk,
                         _viperError, "no files found for '%s'",
                         (const char*)search );
                     done = true;
                 } else {
-                    for(;;) {
-                        struct dirent* ent = readdir( dir );
-                        if( !ent ) break;
-                        WFileName fn( ent->d_name );
+                    struct dirent *dire;
+                    for( ; (dire = readdir( dirp )) != NULL; ) {
+                        WFileName fn( dire->d_name );
 //                        fn.toLower();
                         fn.absoluteTo( asearch );
                         WVList& items = _component->items();
@@ -403,11 +403,12 @@ void VComponent::mAddItem( WMenuItem* )
                         for( int j=0; j<items.count(); j++ ) {
                             mm = (MItem*)items[j];
                             WFileName ff; mm->absName( ff );
-                            if( ff == fn ) break;
+                            if( ff == fn )
+                                break;
                             mm = NULL;
                         }
                         if( !mm ) {
-                            WFileName newfile( ent->d_name );
+                            WFileName newfile( dire->d_name );
                             newfile.setDrive( search.drive() );
                             newfile.setDir( search.dir() );
                             if( !newItem( newfile ) ) {
@@ -416,16 +417,19 @@ void VComponent::mAddItem( WMenuItem* )
                             }
                         }
                     }
-                    closedir( dir );
+                    closedir( dirp );
                 }
             } else {
-                if( !newItem( search ) ) break;
+                if( !newItem( search ) ) {
+                    break;
+                }
             }
             names.removeAt( 0 );
         }
         _component->setBatchMode( false );
         stopWait();
-        if( names.count() == 0 ) break;
+        if( names.count() == 0 )
+            break;
         inp = names.cString();
     }
     if( list_was_empty && _component->items().count() != 0 ) {

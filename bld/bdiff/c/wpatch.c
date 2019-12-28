@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ void    DirDelete( char *tgtDir );
 void    DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag );
 void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
 
-void main( int argc, char *argv[] ) 
+void main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 3 ) {
@@ -107,7 +108,7 @@ void WPatchApply( const char *patch_name, const char *TgtPath )
     PatchReadClose();
 }
 
-void DirDelete( char *tgtDir ) 
+void DirDelete( char *tgtDir )
 {
     DIR     *tgtdirp;
 
@@ -125,7 +126,7 @@ void DirDelete( char *tgtDir )
     remove( tgtDir );
 }
 
-void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag ) 
+void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag )
 {
     int     indexTgt;
     char    FullTgtPath[PATCH_MAX_PATH_SIZE];
@@ -142,28 +143,25 @@ void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag )
     }
 }
 
-void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] ) 
+void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 {
-    struct dirent   *direntp;
+    struct dirent   *dire;
     int             file = 0;
     int             dir  = 0;
 
-    for( ;; ) {
-        direntp = readdir( dirp );
-        if( direntp == NULL )
-            break;
-        if(( direntp->d_attr & _A_SUBDIR ) == 0 ) {
+    for( ; (dire = readdir( dirp )) != NULL; ) {
+        if(( dire->d_attr & _A_SUBDIR ) == 0 ) {
             /* must be a file */
-            Files[file] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );
-            strcpy( Files[file], direntp->d_name );
+            Files[file] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+            strcpy( Files[file], dire->d_name );
             file += 1;
             if( file >= 1000 ) {
                 perror( "File limit in directory is 1000." );
             }
         } else {
             /* must be a directory */
-            Dirs[dir] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );
-            strcpy( Dirs[dir], direntp->d_name );
+            Dirs[dir] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+            strcpy( Dirs[dir], dire->d_name );
             if( strcmp( Dirs[dir], "." ) != 0 && strcmp( Dirs[dir], ".." ) != 0 ) {
                 dir += 1;
             }

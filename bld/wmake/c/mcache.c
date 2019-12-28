@@ -185,8 +185,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
  */
 {
     CENTRYPTR       cnew;       /* new cacheEntry struct */
-    DIR             *parent;    /* parent directory entry */
-    struct dirent   *entry;     /* current directory entry */
+    DIR             *dirp;      /* parent directory entry */
+    struct dirent   *dire;      /* current directory entry */
     HASH_T          h;          /* hash value */
     size_t          len;
     char            *name_ptr;
@@ -218,8 +218,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
     memcpy( name_ptr, "*.*", 4 );
 #endif
-    parent = opendir( path );
-    if( parent == NULL ) {
+    dirp = opendir( path );
+    if( dirp == NULL ) {
 #ifdef CACHE_STATS
         if( Glob.cachestat ) {
             PrtMsg( INF | NEOL | CACHE_FILES_BYTES, files, bytes, hits );
@@ -228,16 +228,16 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         return( CACHE_OK );     /* an empty, or nonexistent directory */
     }
 
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
-        if( entry->d_attr & IGNORE_MASK )
+        if( dire->d_attr & IGNORE_MASK )
             continue;
 #endif
         /* we tromp on entry, and get hash value */
-        h = Hash( FixName( entry->d_name ), HASH_PRIME );
+        h = Hash( FixName( dire->d_name ), HASH_PRIME );
         cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
-            closedir( parent );
+            closedir( dirp );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
@@ -254,8 +254,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         bytes += sizeof( *cnew );
         ++files;
 #endif
-        cnew->ce_tt = get_direntry_timestamp( entry );
-        ConstMemCpy( cnew->ce_name, entry->d_name, NAME_MAX + 1 );
+        cnew->ce_tt = get_direntry_timestamp( dire );
+        ConstMemCpy( cnew->ce_name, dire->d_name, NAME_MAX + 1 );
         cnew->ce_next = (*pdhead)->dh_table[h];
         (*pdhead)->dh_table[h] = cnew;
 #ifdef CACHE_STATS
@@ -265,7 +265,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         }
 #endif
     }
-    closedir( parent );
+    closedir( dirp );
 
 #ifdef CACHE_STATS
     if( Glob.cachestat ) {

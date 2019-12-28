@@ -1506,8 +1506,8 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
     size_t              i;
     size_t              j;
     size_t              len;
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
     bool                rc = true;
 
     /* separate file name to path and file name parts */
@@ -1537,20 +1537,20 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         memcpy( fname, fullpath + j, len - j + 1 );
     }
 #endif
-    d = opendir( fpath );
-    if( d == NULL ) {
+    dirp = opendir( fpath );
+    if( dirp == NULL ) {
 //        Log( false, "File (%s) not found.\n", f );
         return( true );
     }
 
-    while( ( nd = readdir( d ) ) != NULL ) {
-        if( ENTRY_INVALID( fname, nd ) )
+    while( ( dire = readdir( dirp ) ) != NULL ) {
+        if( ENTRY_INVALID( fname, dire ) )
             continue;
         /* set up file name, then try to delete it */
-        len = strlen( nd->d_name );
-        memcpy( fpathend, nd->d_name, len );
+        len = strlen( dire->d_name );
+        memcpy( fpathend, dire->d_name, len );
         fpathend[len] = NULLCHAR;
-        if( ENTRY_SUBDIR( fpath, nd ) ) {
+        if( ENTRY_SUBDIR( fpath, dire ) ) {
             /* process a directory */
             if( flags->bDirs ) {
                 /* build directory list */
@@ -1569,7 +1569,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
 //                retval = EACCES;
                 rc = false;
             }
-        } else if( !flags->bDirs && ENTRY_RDONLY( fpath, nd ) ) {
+        } else if( !flags->bDirs && ENTRY_RDONLY( fpath, dire ) ) {
 //            Log( false, "%s is read-only, use -f\n", fpath );
 //            retval = EACCES;
             rc = false;
@@ -1579,7 +1579,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
             }
         }
     }
-    closedir( d );
+    closedir( dirp );
     /* process any directories found */
     for( tmp = dhead; tmp != NULL; tmp = dhead ) {
         dhead = tmp->next;

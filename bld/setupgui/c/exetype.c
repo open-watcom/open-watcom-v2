@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ int main( int argc, char *argv[] )
     char                dir[_MAX_DIR];
     char                drive[_MAX_DRIVE];
     DIR                 *dirp;
-    struct dirent       *direntp;
+    struct dirent       *dire;
 
     if( argc != 2 ) {
         printf( "Usage: EXETYPE file-pattern\n" );
@@ -62,8 +63,8 @@ int main( int argc, char *argv[] )
     dirp = opendir( pattern );
     if( dirp != NULL ) {
         _splitpath( pattern, drive, dir, NULL, NULL );
-        for( ; (direntp = readdir( dirp )) != NULL; ) {
-            CheckFile( direntp->d_name, drive, dir );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            CheckFile( dire->d_name, drive, dir );
         }
         closedir( dirp );
         return( 0 );

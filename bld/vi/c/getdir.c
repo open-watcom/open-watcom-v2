@@ -79,7 +79,7 @@ static bool skipEntry( const char *path, struct dirent *dire, bool want_all_dirs
  */
 static vi_rc getDir( const char *fullmask, bool want_all_dirs )
 {
-    DIR                 *d;
+    DIR                 *dirp;
     struct dirent       *dire;
     direct_ent          *tmp;
     size_t              i;
@@ -136,14 +136,14 @@ static vi_rc getDir( const char *fullmask, bool want_all_dirs )
             fullname[1] = '\0';
         }
 #endif
-        d = opendir( fullname );
-        if( d == NULL ) {
+        dirp = opendir( fullname );
+        if( dirp == NULL ) {
             rc = ERR_FILE_NOT_FOUND;
         } else {
             /*
              * loop through all directory entries
              */
-            while( (dire = readdir( d )) != NULL ) {
+            while( (dire = readdir( dirp )) != NULL ) {
                 if( skipEntry( path, dire, want_all_dirs ) )
                     continue;
                 if( DirFileCount >= MAX_FILES ) {
@@ -158,7 +158,7 @@ static vi_rc getDir( const char *fullmask, bool want_all_dirs )
 #endif
                 DirFiles[DirFileCount++] = tmp;
             }
-            closedir( d );
+            closedir( dirp );
         }
     }
     FileMatchFini();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,7 +462,7 @@ static void delete_dir( const VBUF *dir )
 /***************************************/
 {
     DIR                 *dirp;
-    struct dirent       *direntp;
+    struct dirent       *dire;
     VBUF                file;
     size_t              dir_len;
 
@@ -473,11 +474,11 @@ static void delete_dir( const VBUF *dir )
     VbufConcStr( &file, "*.*" );
     dirp = opendir_vbuf( &file );
     if( dirp != NULL ) {
-        for( ; (direntp = readdir( dirp )) != NULL; ) {
-            if( direntp->d_attr & _A_SUBDIR ) {   /* don't care about directories */
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            if( dire->d_attr & _A_SUBDIR ) {   /* don't care about directories */
                 continue;
             }
-            VbufSetStrAt( &file, direntp->d_name, dir_len );
+            VbufSetStrAt( &file, dire->d_name, dir_len );
             remove_vbuf( &file );
         }
         closedir( dirp );

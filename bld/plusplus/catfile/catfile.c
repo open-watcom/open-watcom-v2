@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,13 +231,14 @@ static int processFilePattern   // PROCESS FILE PATTERN
 {
     char const * pat;           // - file pattern
     int retn;                   // - return code
-    struct dirent* dp;          // - directory stuff
+    DIR *dirp;                  // - directory stuff
+    struct dirent *dire;        // - directory entry
     size_t dir_size;            // - size of directory portion
 
     data = data;
     pat = tp->text;
-    dp = opendir( pat );
-    if( dp == NULL ) {
+    dirp = opendir( pat );
+    if( dirp == NULL ) {
         retn = errMsg( "opening directory:", pat, NULL );
     } else {
         for( dir_size = strlen( pat ); dir_size > 0; ) {
@@ -250,20 +252,19 @@ static int processFilePattern   // PROCESS FILE PATTERN
             }
         }
         retn = 0;
-        for( ; ; ) {
-            Text* tp;           // - current entry
-            dp = readdir( dp );
-            if( dp == NULL )
-                break;
-            retn = textAlloc( dir_size + strlen( dp->d_name ), &tp );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            Text *tp;           // - current entry
+
+            retn = textAlloc( dir_size + strlen( dire->d_name ), &tp );
             if( retn != 0 )
                 break;
             textInsert( tp, &files );
             memcpy( files->text, pat, dir_size );
-            strcpy( &files->text[dir_size], dp->d_name );
-            files->date = dp->d_date;
-            files->time = dp->d_time;
+            strcpy( &files->text[dir_size], dire->d_name );
+            files->date = dire->d_date;
+            files->time = dire->d_time;
         }
+        closedir( dirp );
     }
     return( retn );
 }

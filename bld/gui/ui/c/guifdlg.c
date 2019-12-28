@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -607,15 +607,15 @@ static void _stat2( const char *path, const char *name, struct stat *st )
 #endif
 
 #if defined( __QNX__ )
-static bool isdir( struct dirent *dent, char *path )
+static bool isdir( struct dirent *dire, char *path )
 {
-    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
-        _stat2( path, dent->d_name, &dent->d_stat );
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
+        _stat2( path, dire->d_name, &dire->d_stat );
     }
-    return( S_ISDIR( dent->d_stat.st_mode ) );
+    return( S_ISDIR( dire->d_stat.st_mode ) );
 }
 
-static bool isrdonly( struct dirent *dent, char *path )
+static bool isrdonly( struct dirent *dire, char *path )
 {
     unsigned    bit;
     uid_t       user;
@@ -625,28 +625,28 @@ static bool isrdonly( struct dirent *dent, char *path )
         /* we're root - we can alway write the file */
         return( false );
     }
-    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
-        _stat2( path, dent->d_name, &dent->d_stat );
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
+        _stat2( path, dire->d_name, &dire->d_stat );
     }
-    if( dent->d_stat.st_uid == user ) {
+    if( dire->d_stat.st_uid == user ) {
         bit = S_IWUSR;
-    } else if( dent->d_stat.st_gid == getegid() ) {
+    } else if( dire->d_stat.st_gid == getegid() ) {
         bit = S_IWGRP;
     } else {
         bit = S_IWOTH;
     }
-    return( (dent->d_stat.st_mode & bit) == 0 );
+    return( (dire->d_stat.st_mode & bit) == 0 );
 }
 #elif defined( __UNIX__ )
-static bool isdir( struct dirent *dent, char *path )
+static bool isdir( struct dirent *dire, char *path )
 {
     struct stat stats;
 
-    _stat2( path, dent->d_name, &stats );
+    _stat2( path, dire->d_name, &stats );
     return( S_ISDIR( stats.st_mode ) );
 }
 
-static bool isrdonly( struct dirent *dent, char *path )
+static bool isrdonly( struct dirent *dire, char *path )
 {
     unsigned    bit;
     uid_t       user;
@@ -657,7 +657,7 @@ static bool isrdonly( struct dirent *dent, char *path )
         /* we're root - we can alway write the file */
         return( false );
     }
-    _stat2( path, dent->d_name, &stats );
+    _stat2( path, dire->d_name, &stats );
     if( stats.st_uid == user ) {
         bit = S_IWUSR;
     } else if( stats.st_gid == getegid() ) {
@@ -668,18 +668,18 @@ static bool isrdonly( struct dirent *dent, char *path )
     return( (stats.st_mode & bit) == 0 );
 }
 #else
-static bool isdir( struct dirent *dent, char *path )
+static bool isdir( struct dirent *dire, char *path )
 {
     /* unused parameters */ (void)path;
 
-    return( dent->d_attr & _A_SUBDIR );
+    return( dire->d_attr & _A_SUBDIR );
 }
 
-static bool isrdonly( struct dirent *dent, char *path )
+static bool isrdonly( struct dirent *dire, char *path )
 {
     /* unused parameters */ (void)path;
 
-    return( dent->d_attr & _A_RDONLY );
+    return( dire->d_attr & _A_RDONLY );
 }
 #endif
 /*
@@ -688,8 +688,8 @@ static bool isrdonly( struct dirent *dent, char *path )
 static bool setFileList( gui_window *gui, const char *ext )
 {
     char                path[_MAX_PATH];
-    DIR                 *directory;
-    struct dirent       *dent;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                *ptr;
     const char          **list;
     int                 num_items;
@@ -715,26 +715,26 @@ static bool setFileList( gui_window *gui, const char *ext )
         strcat( path, ptr );
 #endif
 
-        directory = opendir( path );
-        if( directory != NULL ) {
-            while( (dent = readdir( directory )) != NULL ) {
-                if( !isdir( dent, path ) ) {
-                    if( (dlg->currOFN->flags & FN_HIDEREADONLY) && isrdonly( dent, path ) ) {
+        dirp = opendir( path );
+        if( dirp != NULL ) {
+            while( (dire = readdir( dirp )) != NULL ) {
+                if( !isdir( dire, path ) ) {
+                    if( (dlg->currOFN->flags & FN_HIDEREADONLY) && isrdonly( dire, path ) ) {
                         continue;
                     }
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
-                    if( fnmatch( ptr, dent->d_name, FNM_PATHNAME ) != 0 ) {
+                    if( fnmatch( ptr, dire->d_name, FNM_PATHNAME ) != 0 ) {
                         continue;
                     }
 #endif
-                    if( !addToList( &list, num_items, dent->d_name, strlen( dent->d_name ) ) ) {
+                    if( !addToList( &list, num_items, dire->d_name, strlen( dire->d_name ) ) ) {
                         ok = false;
                         break;
                     }
                     num_items++;
                 }
             }
-            closedir( directory );
+            closedir( dirp );
         }
     }
     GUIClearList( gui, CTL_FILE_LIST );
@@ -759,8 +759,8 @@ static bool setDirList( gui_window *gui )
     char                path[_MAX_PATH];
     char                dir[_MAX_DIR];
     char                drive[_MAX_DRIVE + 3];
-    DIR                 *directory;
-    struct dirent       *dent;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                *ptr,*start;
     char                indent[80];
     char                tmp[256];
@@ -830,19 +830,19 @@ static bool setDirList( gui_window *gui )
         }
         if( ok ) {
             selected_item = num_items;
-            directory = opendir( path );
-            ok = ( directory != NULL );
+            dirp = opendir( path );
+            ok = ( dirp != NULL );
             if( ok ) {
-                while( (dent = readdir( directory )) != NULL ) {
-                    if( isdir( dent, path ) ) {
-                        if( ( dent->d_name[0] == '.' ) && ( ( dent->d_name[1] == 0 )
-                          || ( dent->d_name[1] == '.' && dent->d_name[2] == 0 ) ) ) {
+                while( (dire = readdir( dirp )) != NULL ) {
+                    if( isdir( dire, path ) ) {
+                        if( ( dire->d_name[0] == '.' ) && ( ( dire->d_name[1] == 0 )
+                          || ( dire->d_name[1] == '.' && dire->d_name[2] == 0 ) ) ) {
                             continue;
                         }
                         len = strlen( indent );
                         memcpy( tmp, indent, len );
                         tmp[len++] = UNOPENED_DIR_CHAR;
-                        strcpy( tmp + len, dent->d_name );
+                        strcpy( tmp + len, dire->d_name );
                         if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
                             ok = false;
                             break;
@@ -850,7 +850,7 @@ static bool setDirList( gui_window *gui )
                         num_items++;
                     }
                 }
-                closedir( directory );
+                closedir( dirp );
                 if( ok ) {
                     qsort( (void *)list, num_items, sizeof( char * ), Compare );
                     for( i = 0; i < num_items; i++ ) {

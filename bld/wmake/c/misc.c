@@ -294,7 +294,7 @@ static bool __fnmatch( const char *pattern, const char *string )
  *
  */
 
-static DIR  *parent = NULL;  /* we need this across invocations */
+static DIR  *dirp = NULL;  /* we need this across invocations */
 static char *path = NULL;
 static char *pattern = NULL;
 
@@ -302,7 +302,7 @@ const char *DoWildCard( const char *base )
 /***********************************************/
 {
     PGROUP2         pg;
-    struct dirent   *entry;
+    struct dirent   *dire;
 
     if( base != NULL ) {
         /* clean up from previous invocation */
@@ -321,35 +321,35 @@ const char *DoWildCard( const char *base )
         // create file name pattern
         _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
 
-        parent = opendir( path );
-        if( parent == NULL ) {
+        dirp = opendir( path );
+        if( dirp == NULL ) {
             DoWildCardClose();
             return( base );
         }
     }
 
-    if( parent == NULL ) {
+    if( dirp == NULL ) {
         return( NULL );
     }
 
-    assert( path != NULL && parent != NULL );
+    assert( path != NULL && dirp != NULL );
 
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
-        if( entry->d_attr & IGNORE_MASK )
+        if( dire->d_attr & IGNORE_MASK )
             continue;
 #endif
-        if( __fnmatch( pattern, entry->d_name ) ) {
+        if( __fnmatch( pattern, dire->d_name ) ) {
             break;
         }
     }
-    if( entry == NULL ) {
+    if( dire == NULL ) {
         DoWildCardClose();
         return( base );
     }
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+    _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
 
     return( path );
 }
@@ -366,9 +366,9 @@ void DoWildCardClose( void )
         FreeSafe( pattern );
         pattern = NULL;
     }
-    if( parent != NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( dirp != NULL ) {
+        closedir( dirp );
+        dirp = NULL;
     }
 }
 

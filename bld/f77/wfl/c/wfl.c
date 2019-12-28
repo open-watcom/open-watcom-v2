@@ -588,7 +588,7 @@ static int     IsOption( const char *cmd, size_t cmd_len, const char *opt )
  *
  */
 
-static DIR  *wildparent = NULL;  /* we need this across invocations */
+static DIR  *wild_dirp = NULL;  /* we need this across invocations */
 static char *wildpath = NULL;
 static char *wildpattern = NULL;
 
@@ -603,9 +603,9 @@ static void DoWildCardClose( void )
         free( wildpattern );
         wildpattern = NULL;
     }
-    if( wildparent != NULL ) {
-        closedir( wildparent );
-        wildparent = NULL;
+    if( wild_dirp != NULL ) {
+        closedir( wild_dirp );
+        wild_dirp = NULL;
     }
 }
 
@@ -613,7 +613,7 @@ static const char *DoWildCard( const char *base )
 /***********************************************/
 {
     PGROUP2         pg;
-    struct dirent   *entry;
+    struct dirent   *dire;
 
     if( base != NULL ) {
         /* clean up from previous invocation */
@@ -629,28 +629,28 @@ static const char *DoWildCard( const char *base )
         _makepath( wildpath, pg.drive, pg.dir, ".", NULL );
         // create file name pattern
         _makepath( wildpattern, NULL, NULL, pg.fname, pg.ext );
-        wildparent = opendir( wildpath );
-        if( wildparent == NULL ) {
+        wild_dirp = opendir( wildpath );
+        if( wild_dirp == NULL ) {
             DoWildCardClose();
             return( NULL );
         }
     }
-    if( wildparent == NULL ) {
+    if( wild_dirp == NULL ) {
         return( NULL );
     }
-    while( (entry = readdir( wildparent )) != NULL ) {
-        if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( wildpattern, entry->d_name, FNMATCH_FLAGS ) == 0 ) {
+    while( (dire = readdir( wild_dirp )) != NULL ) {
+        if( ISVALIDENTRY( dire ) ) {
+            if( fnmatch( wildpattern, dire->d_name, FNMATCH_FLAGS ) == 0 ) {
                 break;
             }
         }
     }
-    if( entry == NULL ) {
+    if( dire == NULL ) {
         DoWildCardClose();
         return( NULL );
     }
     _splitpath2( wildpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( wildpath, pg.drive, pg.dir, entry->d_name, NULL );
+    _makepath( wildpath, pg.drive, pg.dir, dire->d_name, NULL );
     return( wildpath );
 }
 

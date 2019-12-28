@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,30 +64,26 @@ static char const       BRMExt[] = ".BRM";
 
 void Test( void )
 {
-    DIR         *dirp;
-    DIR         *file;
-    char        path[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    DIR             *dirp;
+    struct dirent   *dire;
+    char            path[_MAX_PATH];
+    char            drive[_MAX_DRIVE];
+    char            dir[_MAX_DIR];
+    char            fname[_MAX_FNAME];
+    char            ext[_MAX_EXT];
 
     dirp = opendir( "." );
     if( dirp != NULL ){
         handle = NewMerger();
-        for( ;; ){
-            file = readdir( dirp );
-            if( file == NULL ){
-                break;
-            }
-            _fullpath( path, file->d_name, _MAX_PATH );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            _fullpath( path, dire->d_name, _MAX_PATH );
             _splitpath( path, drive, dir, fname, ext );
             if( stricmp( ext, BRMExt ) == 0 ){
-                AddFile( handle, file->d_name );
+                AddFile( handle, dire->d_name );
             }
         }
         FileClassesIter(handle, "c:\\helpcomp\\cpp\\topic.cpp", &::SymIter, NULL );
         DestroyMerger(handle);
+        closedir( dirp );
     }
-    closedir( dirp );
 }

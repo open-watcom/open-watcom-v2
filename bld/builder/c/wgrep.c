@@ -732,8 +732,8 @@ static void extendPath( char *path, char *ext )
 
 static void executeWgrep( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     size_t              i;
     char                exp[_MAX_EXT];
     char                ext[_MAX_EXT];
@@ -745,22 +745,20 @@ static void executeWgrep( void )
     if( strcmp( CurrPattern, "@@" ) == 0 ) {
         performSearch( CurrPattern );
     } else {
-        dirh = opendir( PathBuff );
-        if( dirh != NULL ) {
-            for( ; !DoneFlag; ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+        dirp = opendir( PathBuff );
+        if( dirp != NULL ) {
+            for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( dp->d_attr & _A_SUBDIR ) {
+                if( dire->d_attr & _A_SUBDIR ) {
                     continue;
                 }
 #else
                 {
                     struct stat sblk;
                     char tmp_path[_MAX_PATH + 1];
+
                     strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dp->d_name );
+                    extendPath( tmp_path, dire->d_name );
                     if( stat( tmp_path, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
@@ -768,7 +766,7 @@ static void executeWgrep( void )
 #endif
 
                 if( IgnoreListCnt > 0 ) {
-                    _splitpath( dp->d_name, NULL, NULL, NULL, ext );
+                    _splitpath( dire->d_name, NULL, NULL, NULL, ext );
                     if( stricmp( ext, exp ) != 0 ) {
                         for( i = 0; i < IgnoreListCnt; i++ ) {
                             if( stricmp( ext, IgnoreList[i] ) == 0 ) {
@@ -780,31 +778,28 @@ static void executeWgrep( void )
                         }
                     }
                 }
-                extendPath( PathBuff, dp->d_name );
+                extendPath( PathBuff, dire->d_name );
                 performSearch( PathBuff );
             }
-            closedir( dirh );
+            closedir( dirp );
         }
     }
 }
 
 static void processDirectory( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     dirstack            *tmp;
 
     if( RecurLevels != 0 ) {
         extendPath( PathBuff, "*.*" );
-        dirh = opendir( PathBuff );
-        if( dirh != NULL ) {
+        dirp = opendir( PathBuff );
+        if( dirp != NULL ) {
             --RecurLevels;
-            for( ; !DoneFlag; ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+            for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( (dp->d_attr & _A_SUBDIR) == 0 ) {
+                if( (dire->d_attr & _A_SUBDIR) == 0 ) {
                     continue;
                 }
 #else
@@ -812,26 +807,26 @@ static void processDirectory( void )
                     struct stat sblk;
                     char tmp_path[_MAX_PATH + 1];
                     strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dp->d_name );
+                    extendPath( tmp_path, dire->d_name );
                     if( stat( tmp_path, &sblk ) == 0 && !S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
                 }
 #endif
-                if( IsDotOrDotdot( dp->d_name ) ) {
+                if( IsDotOrDotdot( dire->d_name ) ) {
                     continue;
                 }
                 if( DoneFlag )
                     break;
                 tmp = (dirstack *)SafeMalloc( sizeof( dirstack ) );
-                extendPath( tmp->name, dp->d_name );
+                extendPath( tmp->name, dire->d_name );
                 tmp->prev = Stack;
                 Stack = tmp;
                 processDirectory();
                 Stack = tmp->prev;
                 free( tmp );
             }
-            closedir( dirh );
+            closedir( dirp );
             ++RecurLevels;
             if( DoneFlag ) {
                 return;

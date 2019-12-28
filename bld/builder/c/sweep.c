@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,8 +320,8 @@ static void SubstituteAndRun( char *fname )
 
 static void ExecuteCommands( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
 
     if( Options.verbose )
         printf( "\n>>> SWEEP >>> %s\n", CurrPath() );
@@ -328,67 +329,63 @@ static void ExecuteCommands( void )
         SubstituteAndRun( "" );
         return;
     }
-    dirh = opendir( "." );
-    if( dirh != NULL ) {
-        while( !DoneFlag ) {
-            dp = readdir( dirh );
-            if( dp == NULL )
-                break;
+    dirp = opendir( "." );
+    if( dirp != NULL ) {
+        while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
 #ifdef __UNIX__
             {
                 struct stat buf;
-                stat( dp->d_name, &buf );
+
+                stat( dire->d_name, &buf );
                 if( S_ISDIR( buf.st_mode ) ) {
                     continue;
                 }
             }
 #else
-            if( dp->d_attr & _A_SUBDIR )
+            if( dire->d_attr & _A_SUBDIR )
                 continue;
 #endif
-            SubstituteAndRun( dp->d_name );
+            SubstituteAndRun( dire->d_name );
         }
-        closedir( dirh );
+        closedir( dirp );
     }
 }
 
 
 static void ProcessCurrentDirectory( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     dirstack            *stack;
 
     if( !Options.depthfirst ) {
         ExecuteCommands();
     }
     if( Options.levels != 0 ) {
-        dirh = opendir( "." );
-        if( dirh != NULL ) {
+        dirp = opendir( "." );
+        if( dirp != NULL ) {
             --Options.levels;
-            while( !DoneFlag ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+            while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
 #ifdef __UNIX__
                 {
                     struct stat buf;
-                    stat( dp->d_name, &buf );
+
+                    stat( dire->d_name, &buf );
                     if( !S_ISDIR( buf.st_mode ) ) {
                         continue;
                     }
                 }
 #else
-                if( !( dp->d_attr & _A_SUBDIR ) )
+                if( !( dire->d_attr & _A_SUBDIR ) )
                     continue;
 #endif
-                if( dp->d_name[0] == '.' ) {
-                    if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' )
+                if( dire->d_name[0] == '.' ) {
+                    if( dire->d_name[1] == '.' || dire->d_name[1] == '\0' )
                         continue;
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
-                stack->name_len = (unsigned short)strlen( dp->d_name );
-                memcpy( stack->name, dp->d_name, stack->name_len + 1 );
+                stack->name_len = (unsigned short)strlen( dire->d_name );
+                memcpy( stack->name, dire->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
                 Stack = stack;
                 chdir( stack->name );
@@ -398,7 +395,7 @@ static void ProcessCurrentDirectory( void )
                 free( stack );
             }
             ++Options.levels;
-            closedir( dirh );
+            closedir( dirp );
             if( DoneFlag ) {
                 return;
             }

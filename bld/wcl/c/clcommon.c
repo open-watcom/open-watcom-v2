@@ -384,7 +384,7 @@ char  *GetName( const char *path, char *buffer )
     const char      *p;
 #ifndef __UNIX__
     static DIR      *dirp;
-    struct dirent   *direntp;
+    struct dirent   *dire;
 
     if( path != NULL ) {                /* if given a filespec to open,  */
         if( *path == '\0' ) {           /*   but filespec is empty, then */
@@ -406,9 +406,9 @@ char  *GetName( const char *path, char *buffer )
         }
     }
 
-    while( (direntp = readdir( dirp )) != NULL ) {
-        if( ( direntp->d_attr & ATTR_MASK ) == 0 ) {    /* valid file? */
-            return( direntp->d_name );
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ( dire->d_attr & ATTR_MASK ) == 0 ) {    /* valid file? */
+            return( dire->d_name );
         }
     }
     closedir( dirp );
