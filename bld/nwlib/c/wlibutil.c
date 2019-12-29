@@ -107,7 +107,7 @@ static char     dir[_MAX_DIR];
 static char     fname[_MAX_FNAME];
 static char     fext[_MAX_EXT];
 
-bool SameFile( const char *a, const char *b )
+bool IsSameFile( const char *a, const char *b )
 {
     char fulla[_MAX_PATH];
 
@@ -116,7 +116,7 @@ bool SameFile( const char *a, const char *b )
     return( FNCMP( fulla, path ) == 0 );
 }
 
-bool SameName( const char *a, const char *b )
+bool IsSameFName( const char *a, const char *b )
 {
     _splitpath( a, NULL, NULL, path, fext );
     _splitpath( b, NULL, NULL, fname, fext );
@@ -171,6 +171,19 @@ char *MakeBakName( void )
     return( path );
 }
 
+char *TrimPath( const char *name )
+{
+    _splitpath( name, NULL, NULL, fname, fext );
+    _makepath( path, NULL, NULL, fname, fext );
+    return( path );
+}
+
+void TrimPathInPlace( char *name )
+{
+    _splitpath( name, NULL, NULL, fname, fext );
+    _makepath( name, NULL, NULL, fname, fext );
+}
+
 char *MakeTmpName( char *buffer )
 {
     char name[9];
@@ -199,14 +212,6 @@ char *MakeTmpName( char *buffer )
 
     return( buffer );
 }
-
-char *TrimPath( char *name )
-{
-    _splitpath( name, NULL, NULL, fname, fext );
-    _makepath( name, NULL, NULL, fname, fext );
-    return( name );
-}
-
 
 char    *FormSym( const char *name )
 {
