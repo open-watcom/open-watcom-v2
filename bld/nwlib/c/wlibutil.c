@@ -147,7 +147,7 @@ char *MakeObjOutputName( const char *src, const char *new )
     if( new != NULL ) {
         _splitpath2( new, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
         if( pg1.fname[0] == '\0' ) {
-            _splitpath( src, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+            _splitpath2( src, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
             pg1.fname = pg2.fname;
         }
     } else {

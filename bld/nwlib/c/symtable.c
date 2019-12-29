@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -287,7 +288,7 @@ static void SortSymbols( void )
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
-                sfile->arch.name = DupStr( TrimPath( sfile->arch.ffname ) );
+                sfile->arch.name = DupStrGlobal( TrimPath( sfile->arch.ffname ) );
                 sfile->name_length = strlen( sfile->arch.name );
             }
             name_length = sfile->name_length;
