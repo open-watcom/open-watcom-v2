@@ -38,7 +38,7 @@
 #else
 #include "asinline.h"
 #endif
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -223,16 +223,13 @@ char *MakeAsmFilename( const char *orig_name )
 //********************************************
 {
     static char ret[_MAX_PATH];
-    PGROUP      pg;
-    char        *asm_ext;
+    PGROUP2     pg;
 
-    _splitpath( orig_name, pg.drive, pg.dir, pg.fname, pg.ext );
-    if( pg.ext[0] != '\0' ) {   // extension is specified
-        asm_ext = pg.ext;
-    } else {
-        asm_ext = "asm";
+    _splitpath2( orig_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {   // extension is not specified
+        pg.ext = "asm";
     }
-    _makepath( ret, pg.drive, pg.dir, pg.fname, asm_ext );
+    _makepath( ret, pg.drive, pg.dir, pg.fname, pg.ext );
     return( ret );
 }
 

@@ -127,25 +127,24 @@ bool ObjInit( char *fname ) {
 //***************************
 
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
-    char                name[_MAX_FNAME];
+    PGROUP2             pg1;
+    PGROUP2             pg2;
     owl_format          obj_format;
 
     SectionInit();
-    _splitpath( fname, NULL, NULL, name, NULL );
+    _splitpath2( fname, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( !objectDefined ) {
-        _makepath( objName, NULL, NULL, name, OBJ_EXT );
+        _makepath( objName, NULL, NULL, pg1.fname, OBJ_EXT );
     } else {
-        PGROUP2 pg;
-
-        _splitpath2( objName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext[0] == '\0' )
-            pg.ext = OBJ_EXT;
-        if( pg.fname[0] == '\0' )
-            pg.fname = name;
-        _makepath( objName, pg.drive, pg.dir, pg.fname, pg.ext );
+        _splitpath2( objName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+        if( pg2.ext[0] == '\0' )
+            pg2.ext = OBJ_EXT;
+        if( pg2.fname[0] == '\0' )
+            pg2.fname = pg1.fname;
+        _makepath( objName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
-    _makepath( errorFilename, NULL, NULL, name, ".err" );
+    _makepath( errorFilename, NULL, NULL, pg1.fname, ".err" );
     objFP = fopen( objName, "wb" );
     if( objFP == NULL ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
@@ -332,7 +331,7 @@ owl_offset ObjAlign( owl_section_handle section, uint_8 alignment ) {
 
     offset = OWLTellOffset( section );
     if( alignment == 0 )
-    	return( offset );      // alignment disabled
+        return( offset );      // alignment disabled
     alignment = 1 << alignment;
     alignment = ( alignment - ( offset % alignment ) ) % alignment;
     if( alignment == 0 )
