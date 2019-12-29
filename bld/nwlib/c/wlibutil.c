@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "wlib.h"
 #include "wio.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -102,86 +104,85 @@ void Copy( libfile source, libfile dest, file_offset size )
 
 static char     path[_MAX_PATH];
 
-static char     drive[_MAX_DRIVE];
-static char     dir[_MAX_DIR];
-static char     fname[_MAX_FNAME];
-static char     fext[_MAX_EXT];
+static PGROUP2  pg1;
+static PGROUP2  pg2;
 
 bool IsSameFile( const char *a, const char *b )
 {
-    char fulla[_MAX_PATH];
-
-    _fullpath( fulla, a, sizeof( fulla ) );
-    _fullpath( path, b, sizeof( path ) );
-    return( FNCMP( fulla, path ) == 0 );
+    _fullpath( pg1.buffer, a, sizeof( pg1.buffer ) );
+    _fullpath( pg2.buffer, b, sizeof( pg2.buffer ) );
+    return( FNCMP( pg1.buffer, pg2.buffer ) == 0 );
 }
 
 bool IsSameFName( const char *a, const char *b )
 {
-    _splitpath( a, NULL, NULL, path, fext );
-    _splitpath( b, NULL, NULL, fname, fext );
-    return( FNCMP( path, fname ) == 0 );
+    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+    return( FNCMP( pg1.fname, pg2.fname ) == 0 );
 }
 
 char *MakeFName( const char *a )
 {
-    _splitpath( a, NULL, NULL, fname, fext );
-    return( fname );
+    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    strcpy( path, pg1.fname );
+    return( path );
 }
 
 bool IsExt( const char *a, const char *b )
 {
-    _splitpath( a, NULL, NULL, NULL, fext );
-    return( FNCMP( fext, b ) == 0 );
+    _splitpath2( a, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
+    return( FNCMP( pg1.ext, b ) == 0 );
 }
 
 void DefaultExtension( char *name, const char *def_ext )
 {
-    _splitpath( name, drive, dir, fname, fext );
-    if( fext[0] == '\0' ) {
-        _makepath( name, drive, dir, fname, def_ext );
+    _splitpath2( name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    if( pg1.ext[0] == '\0' ) {
+        _makepath( name, pg1.drive, pg1.dir, pg1.fname, def_ext );
     }
 }
 
 char *MakeObjOutputName( const char *src, const char *new )
 {
     if( new != NULL ) {
-        _splitpath( new, NULL, NULL, fname, fext );
-        if( *fname == 0 )
-            _splitpath( src, NULL, NULL, fname, NULL );
-        _makepath( path, NULL, Options.output_directory, fname, fext );
+        _splitpath2( new, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
+        if( pg1.fname[0] == '\0' ) {
+            _splitpath( src, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+            pg1.fname = pg2.fname;
+        }
     } else {
-        _splitpath( src, NULL, NULL, fname, fext );
-        _makepath( path, NULL, Options.output_directory, fname, EXT_OBJ );
+        _splitpath2( src, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+        pg1.ext = EXT_OBJ;
     }
+    _makepath( path, NULL, Options.output_directory, pg1.fname, pg1.ext );
     return( path );
 }
 
 char *MakeListName( void )
 {
-    _splitpath( Options.input_name, NULL, NULL, fname, fext );
-    _makepath( path, NULL, NULL, fname, EXT_LST );
+    _splitpath2( Options.input_name, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    _makepath( path, NULL, NULL, pg1.fname, EXT_LST );
     return( path );
 }
 
 char *MakeBakName( void )
 {
-    _splitpath( Options.input_name, drive, dir, fname, fext );
-    _makepath( path, drive, dir, fname, EXT_BAK );
+    _splitpath2( Options.input_name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, NULL );
+    _makepath( path, pg1.drive, pg1.dir, pg1.fname, EXT_BAK );
     return( path );
 }
 
 char *TrimPath( const char *name )
 {
-    _splitpath( name, NULL, NULL, fname, fext );
-    _makepath( path, NULL, NULL, fname, fext );
+    _splitpath2( name, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
+    _makepath( path, NULL, NULL, pg1.fname, pg1.ext );
     return( path );
 }
 
 void TrimPathInPlace( char *name )
 {
-    _splitpath( name, NULL, NULL, fname, fext );
-    _makepath( name, NULL, NULL, fname, fext );
+    _splitpath2( name, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
+    _makepath( name, NULL, NULL, pg1.fname, pg1.ext );
 }
 
 char *MakeTmpName( char *buffer )
@@ -190,7 +191,7 @@ char *MakeTmpName( char *buffer )
     long initial;
     long count;
 
-    _splitpath( Options.input_name, drive, dir, fname, fext );
+    _splitpath2( Options.input_name, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
 
     /*
      * For whatever it's worth, we'll only check 9999 files before
@@ -199,7 +200,7 @@ char *MakeTmpName( char *buffer )
     initial = time( NULL ) % 1000L;
     for( count = ( initial + 1L ) % 1000L; count != initial; count = ( count + 1L ) % 1000L ) {
         sprintf( name, "_wlib%03ld", count );
-        _makepath( buffer, drive, dir, name, "$$$" );
+        _makepath( buffer, pg1.drive, pg1.dir, name, "$$$" );
 
         if( access( buffer, 0 ) != 0 ) {
             break;

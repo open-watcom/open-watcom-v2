@@ -39,12 +39,9 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 #include "banner.h"
-#include "pathgrp.h"
 
 #include "clibext.h"
 
-
-char  Fname[_MAX_FNAME];
 
 /*
  * parse the executable
@@ -153,20 +150,11 @@ static void dmp_exe( void )
     }
 }
 
-static bool find_file( char * file_path )
-/***************************************/
+static bool find_file( const char * file_path )
+/*********************************************/
 {
-    int     access_rc;
-    PGROUP  pg;
-
-    _splitpath( file_path, pg.drive, pg.dir, Fname, pg.ext );
     /* check if the given file name exists */
-    access_rc = access( file_path, R_OK );
-    if( access_rc == 0 ) {
-        return( true );
-    } else {
-        return( false );
-    }
+    return( access( file_path, R_OK ) == 0 );
 }
 
 /*
