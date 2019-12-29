@@ -52,8 +52,8 @@
 #define EV_HELP         EV_F1
 
 enum {
-        E_UP = EV_FIRST_UNUSED,
-        E_DOWN
+    E_UP = EV_FIRST_UNUSED,
+    E_DOWN
 };
 
 typedef enum {

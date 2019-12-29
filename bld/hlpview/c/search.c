@@ -38,6 +38,7 @@
 #include "helpmem.h"
 #include "helpio.h"
 #include "search.h"
+#include "help.h"
 
 #include "clibext.h"
 
@@ -113,7 +114,7 @@ static char *doFindEntry( const char *name, unsigned *entry_num )
         }
         if( cmpret > 0 ) {
             if( i > 0 ) {
-                i --;
+                i--;
             }
             break;
         }
@@ -273,8 +274,8 @@ HelpHdl InitHelpSearch( FILE *fp )
     hdl->fp = fp;
     HelpRead( fp, &( hdl->header ), sizeof( HelpHeader ) );
     if( hdl->header.sig[0] != HELP_SIG_1
-        || hdl->header.sig[1] != HELP_SIG_2
-        || hdl->header.ver_min != HELP_MIN_VER ) {
+      || hdl->header.sig[1] != HELP_SIG_2
+      || hdl->header.ver_min != HELP_MIN_VER ) {
         HelpMemFree( hdl );
         hdl = NULL;
     } else if( hdl->header.ver_maj != HELP_MAJ_VER ) {

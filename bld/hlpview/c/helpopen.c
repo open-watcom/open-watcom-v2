@@ -40,7 +40,7 @@
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -55,9 +55,9 @@ static HelpSrchPathItem         *srch_List;
 
 void SetHelpFileDefExt( const char *name, char *buff )
 {
-    PGROUP      pg;
+    PGROUP2      pg;
 
-    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
         strcpy( pg.ext, DEF_EXT );
     }

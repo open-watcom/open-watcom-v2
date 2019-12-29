@@ -47,6 +47,7 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -1397,7 +1398,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     int             err;
     char            filename[_MAX_PATH];
     const char      *hfiles[] = { NULL, NULL };
-    char            ext[_MAX_EXT];
+    PGROUP2         pg;
     char            *buffer;
     char            *helptopic;
     help_file_info  *fileinfo;
@@ -1426,8 +1427,8 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     tabFilter.first = helpTab;
     tabFilter.wrap = false;
     tabFilter.enter = false;
-    _splitpath( fileinfo->name, NULL, NULL, filename, ext );
-    strcat( filename, ext );
+    _splitpath2( fileinfo->name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+    _makepath( filename, NULL, NULL, pg.fname, pg.ext );
     hfiles[0] = filename;
     helptopic = HelpDupStr( topic );
     err = HELP_OK;

@@ -46,6 +46,7 @@
 #include "index.h"
 #include "search.h"
 #include "filelist.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -136,7 +137,7 @@ static void scanDirectory( char *buf, FileList *list )
 {
     DIR                 *dirp;
     struct dirent       *dire;
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
     unsigned            len;
 
     dirp = opendir( buf );
@@ -148,9 +149,9 @@ static void scanDirectory( char *buf, FileList *list )
             }
             list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
             list->items[list->used]->fpath = HelpDupStr( buf );
-            _splitpath( dire->d_name, NULL, NULL, fname, NULL );
-            list->items[list->used]->fname = HelpDupStr( fname );
-            list->used ++;
+            _splitpath2( dire->d_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+            list->items[list->used]->fname = HelpDupStr( pg.fname );
+            list->used++;
             if( list->used == list->allocated ) {
                 list->allocated += MAX_HELPFILES;
                 list = HelpMemRealloc( list, sizeof( FileList ) + list->allocated * sizeof( FileInfo * ) );

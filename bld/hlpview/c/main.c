@@ -44,7 +44,7 @@
 #include "helpmem.h"
 #include "filelist.h"
 #include "initmode.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -63,14 +63,14 @@ static HelpSrchPathItem searchList[] = {
     { SRCHTYPE_EOL,     NULL }
 };
 
-static void showCmdlHelp( char *name )
+static void showCmdlHelp( const char *name )
 {
-    char        fname[_MAX_FNAME];
+    PGROUP2     pg;
 
-    _splitpath( name, NULL, NULL, fname, NULL );
+    _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );
     printf( "\nThe Watcom Help command line:\n" );
     printf( "\n" );
-    printf( "               %s help_file [topic_name]\n", fname );
+    printf( "               %s help_file [topic_name]\n", pg.fname );
     printf( "\n" );
     printf( "- if help_file is specified without an extension \"%s\" is assumed\n", DEF_EXT );
     printf( "- the topic_name parameter is optional\n" );
@@ -83,15 +83,15 @@ static void showCmdlHelp( char *name )
 
 static HelpSrchPathItem *checkFileName( const char *name, char *buf )
 {
-    PGROUP      pg;
+    PGROUP2     pg;
     char        path[_MAX_PATH];
 
-    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
-        strcpy( pg.ext, DEF_EXT );
+        pg.ext = DEF_EXT;
     }
     _makepath( buf, NULL, NULL, pg.fname, pg.ext );
-    if( *pg.drive != '\0' || *pg.dir != '\0' ) {
+    if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
         _makepath( path, pg.drive, pg.dir, NULL, NULL );
         searchList[0].info = HelpDupStr( path );
     }
@@ -112,62 +112,69 @@ int main( int argc, char *argv[] )
     char                filename[_MAX_PATH];
     HelpSrchPathItem    *srchlist;
     int                 rc;
-    bool                err;
+    int                 err;
 
+    rc = EXIT_SUCCESS;
     HelpMemOpen();
-    err = false;
     if( argc < 2 || strcmp( argv[1], "?" ) == 0 || strcmp( argv[1], "-?" ) == 0
         || strcmp( argv[1], "/?" ) == 0 ) {
         showCmdlHelp( argv[0] );
-        return( EXIT_SUCCESS );
-    }
-    if( argc > 3 ) {
+    } else if( argc > 3 ) {
         printf( "Too many arguments specified on the command line\n" );
         printf( "For help type %s -?\n", argv[0] );
-        return( EXIT_FAILURE );
-    }
-    srchlist = checkFileName( argv[1], filename );
-    strlwr( filename );
-    helpfiles[0] = filename;
-    if( argc == 3 ) {
-        topic = argv[2];
+        rc = EXIT_FAILURE;
     } else {
-        topic = NULL;
-    }
-    if( !uistart() ) {
-        printf( "ui failed\n" );
-        return( EXIT_FAILURE );
-    } else {
-#if defined( __OS2__ ) || defined( __NT__ )
-        initmouse( INIT_MOUSE_INITIALIZED );
-#elif !defined __UNIX__
-        uiinitgmouse( INIT_MOUSE_INITIALIZED );
-        FlipCharacterMap();
-#endif
-        if( helpinit( helpfiles, srchlist ) ) {
-            rc = showhelp( topic, NULL, HELPLANG_ENGLISH );
-            if( rc == HELP_NO_SUBJECT ) {
-                err = true;
-                uirestorebackground();
-                printf( "Unable to find the topic \"%s\" in the help file \"%s\".\n",
-                        topic, filename );
-            }
+        srchlist = checkFileName( argv[1], filename );
+        strlwr( filename );
+        helpfiles[0] = filename;
+        if( argc == 3 ) {
+            topic = argv[2];
         } else {
-            err = true;
-            uirestorebackground();
-            printf( "Unable to open the help file \"%s\".\n", filename );
-//          printf( "Please check that you have specified the correct help file\n" );
-//          printf( "and that the file is in a directory listed in your PATH\n" );
-//          printf( "or the file is in the current directory\n" );
-//          printf( "or you have specified the path where the file is located.\n" );
+            topic = NULL;
         }
-        helpfini();
+        if( !uistart() ) {
+            printf( "ui failed\n" );
+            rc = EXIT_FAILURE;
+        } else {
+#if defined( __OS2__ ) || defined( __NT__ )
+            initmouse( INIT_MOUSE_INITIALIZED );
+#elif !defined __UNIX__
+            uiinitgmouse( INIT_MOUSE_INITIALIZED );
+            FlipCharacterMap();
+#endif
+            err = 0;
+            if( helpinit( helpfiles, srchlist ) ) {
+                if( showhelp( topic, NULL, HELPLANG_ENGLISH ) == HELP_NO_SUBJECT ) {
+                    err = 1;
+                }
+            } else {
+                err = 2;
+            }
+            helpfini();
+            uirestorebackground();
+            uifini();
+            switch( err ) {
+            case 0:
+                break;
+            case 1:
+                printf( "Unable to find the topic \"%s\" in the help file \"%s\".\n", topic, filename );
+                rc = EXIT_FAILURE;
+                break;
+            case 2:
+                printf( "Unable to open the help file \"%s\".\n", filename );
+//                printf( "Please check that you have specified the correct help file\n" );
+//                printf( "and that the file is in a directory listed in your PATH\n" );
+//                printf( "or the file is in the current directory\n" );
+//                printf( "or you have specified the path where the file is located.\n" );
+                rc = EXIT_FAILURE;
+                break;
+            default:
+                rc = EXIT_FAILURE;
+                break;
+            }
+        }
         freeSrchList();
-        if( !err ) {
-            uirestorebackground();
-        }
-        uifini();
     }
     HelpMemClose();
-    return( EXIT_SUCCESS );
+    return( rc );
 }
