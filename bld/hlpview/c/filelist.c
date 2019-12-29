@@ -147,13 +147,9 @@ static void scanDirectory( char *buf, FileList *list )
                 continue;
             }
             list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
-            len = strlen( buf ) + 1;
-            list->items[list->used]->fpath = HelpMemAlloc( len );
-            strcpy( list->items[list->used]->fpath, buf );
+            list->items[list->used]->fpath = HelpDupStr( buf );
             _splitpath( dire->d_name, NULL, NULL, fname, NULL );
-            len = strlen( fname ) + 1;
-            list->items[list->used]->fname = HelpMemAlloc( len );
-            strcpy( list->items[list->used]->fname, fname );
+            list->items[list->used]->fname = HelpDupStr( fname );
             list->used ++;
             if( list->used == list->allocated ) {
                 list->allocated += MAX_HELPFILES;

@@ -1343,13 +1343,9 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     if( *helptopic != NULL && first ) {
         htopic = fixHelpTopic( *helptopic );
     } else if( *helptopic == NULL ) {
-        len = 1;
-        htopic = HelpMemAlloc( len );
-        htopic[0] = '\0';
+        htopic = HelpDupStr( "" );
     } else {
-        len = strlen( *helptopic );
-        htopic = HelpMemAlloc( len + 1 );
-        strcpy( htopic, *helptopic );
+        htopic = HelpDupStr( *helptopic );
     }
     nexttopic( htopic );
     for( ;; ) {
@@ -1433,13 +1429,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     _splitpath( fileinfo->name, NULL, NULL, filename, ext );
     strcat( filename, ext );
     hfiles[0] = filename;
-    if( topic != NULL ) {
-        size_t len = strlen( topic ) + 1;
-        helptopic = HelpMemAlloc( len );
-        memcpy( helptopic, topic, len );
-    } else {
-        helptopic = NULL;
-    }
+    helptopic = HelpDupStr( topic );
     err = HELP_OK;
     first = true;
     while( helptopic != NULL || first ) {
@@ -1454,8 +1444,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
             ShowMsgBox( "Error", buffer );
             HelpMemFree( buffer );
             HelpMemFree( helptopic );
-            helptopic = HelpMemAlloc( strlen( helpStack->word ) + 1 );
-            strcpy( helptopic, helpStack->word );
+            helptopic = HelpDupStr( helpStack->word );
             strcpy( filename, helpStack->helpfname );
             prevtopic();
         }
@@ -1464,4 +1453,20 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     if( helptopic != NULL )
         HelpMemFree( helptopic );
     return( err );
+}
+
+char *HelpDupStr( const char *str )
+{
+    size_t  len;
+    char    *ptr;
+
+    ptr = NULL;
+    if( str != NULL ) {
+        len = strlen( str ) + 1;
+        ptr = HelpMemAlloc( len );
+        if( ptr != NULL ) {
+            strcpy( ptr, str );
+        }
+    }
+    return( ptr );
 }

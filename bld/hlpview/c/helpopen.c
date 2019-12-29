@@ -152,12 +152,7 @@ static void initSearchList(
         srch_List = HelpMemAlloc( count * sizeof( HelpSrchPathItem ) );
         for( i = 0; i < count ; ++i ) {
             srch_List[i].type = srchlist[i].type;
-            if( srchlist[i].info != NULL ) {
-                srch_List[i].info = HelpMemAlloc( strlen( srchlist[i].info ) + 1 );
-                strcpy( srch_List[i].info, srchlist[i].info );
-            } else {
-                srch_List[i].info = NULL;
-            }
+            srch_List[i].info = HelpDupStr( srchlist[i].info );
         }
     }
 }
@@ -175,8 +170,7 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
     for( ; *helpfilenames != NULL; ++helpfilenames ) {
         SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
-            helpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
-            strcpy( helpFiles[count].name, fullpath );
+            helpFiles[count].name = HelpDupStr( fullpath );
             helpFiles[count].fp = NULL;
             ++count;
             if( count >= MAX_HELP_FILES ) {

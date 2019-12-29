@@ -92,3 +92,4 @@ extern void             Free_Stack( void );
 extern int              showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
 extern void             SetHelpFileDefExt( const char *name, char *buff );
 extern help_file_info   *HelpFileInfo( void );
+extern char             *HelpDupStr( const char *str );
