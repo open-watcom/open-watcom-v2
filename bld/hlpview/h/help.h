@@ -85,13 +85,10 @@ typedef struct help_file_info {
     HelpHdl             searchhdl;
 } help_file_info;
 
-#define MAX_HELP_FILES  10
-
-extern help_file_info   HelpFiles[MAX_HELP_FILES + 1];
-
-extern int  helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
-extern int  help_reinit( const char **helpfilenames );
-extern void helpfini( void );
-extern void Free_Stack( void );
-extern int  showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
-extern void SetHelpFileDefExt( const char *name, char *buff );
+extern int              helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
+extern int              help_reinit( const char **helpfilenames );
+extern void             helpfini( void );
+extern void             Free_Stack( void );
+extern int              showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
+extern void             SetHelpFileDefExt( const char *name, char *buff );
+extern help_file_info   *HelpFileInfo( void );

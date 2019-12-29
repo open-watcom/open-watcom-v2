@@ -45,7 +45,9 @@
 #include "clibext.h"
 
 
-help_file_info  HelpFiles[MAX_HELP_FILES + 1] = {
+#define MAX_HELP_FILES  10
+
+static help_file_info   helpFiles[MAX_HELP_FILES + 1] = {
     { NULL, NULL, 0 }
 };
 
@@ -83,10 +85,10 @@ static void freeHelpFiles( void )
     int         count;
 
     for( count = 0; count < MAX_HELP_FILES; ++count ) {
-        if( HelpFiles[count].name == NULL )
+        if( helpFiles[count].name == NULL )
             break;
-        HelpMemFree( HelpFiles[count].name );
-        HelpFiles[count].name = NULL;
+        HelpMemFree( helpFiles[count].name );
+        helpFiles[count].name = NULL;
     }
 }
 
@@ -173,9 +175,9 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
     for( ; *helpfilenames != NULL; ++helpfilenames ) {
         SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
-            HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
-            strcpy( HelpFiles[count].name, fullpath );
-            HelpFiles[count].fp = NULL;
+            helpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
+            strcpy( helpFiles[count].name, fullpath );
+            helpFiles[count].fp = NULL;
             ++count;
             if( count >= MAX_HELP_FILES ) {
                 break;
@@ -204,4 +206,9 @@ void helpfini( void )
 {
     freeHelpFiles();
     freeSearchList();
+}
+
+help_file_info  *HelpFileInfo( void )
+{
+    return( helpFiles );
 }

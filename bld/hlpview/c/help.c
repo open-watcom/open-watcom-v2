@@ -364,7 +364,7 @@ static void help_close( void )
 {
     help_file_info  *fileinfo;
 
-    for( fileinfo = HelpFiles; fileinfo->name != NULL; ++fileinfo ) {
+    for( fileinfo = HelpFileInfo(); fileinfo->name != NULL; ++fileinfo ) {
         if( fileinfo->fp != NULL ) {
             HelpClose( fileinfo->fp );
             FiniHelpSearch( fileinfo->searchhdl );
@@ -382,7 +382,7 @@ static help_file_info *help_open( char *buffer )
     help_file_info  *fileinfo;
     char            *newtopic;
 
-    for( fileinfo = HelpFiles; fileinfo->name != NULL; fileinfo++ ) {
+    for( fileinfo = HelpFileInfo(); fileinfo->name != NULL; fileinfo++ ) {
         if( fileinfo->fp == NULL ) {
             /* text files screw up ctrl z */
             fileinfo->fp = HelpOpen( fileinfo->name );
@@ -1397,15 +1397,17 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
 
 int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang )
 {
-    bool        first;
-    int         err;
-    char        filename[_MAX_PATH];
-    const char  *hfiles[] = { NULL, NULL };
-    char        ext[_MAX_EXT];
-    char        *buffer;
-    char        *helptopic;
+    bool            first;
+    int             err;
+    char            filename[_MAX_PATH];
+    const char      *hfiles[] = { NULL, NULL };
+    char            ext[_MAX_EXT];
+    char            *buffer;
+    char            *helptopic;
+    help_file_info  *fileinfo;
 
-    if( HelpFiles[0].name == NULL ) {
+    fileinfo = HelpFileInfo();
+    if( fileinfo->name == NULL ) {
         return( HELP_NO_FILE );
     }
     switch( lang ) {
@@ -1428,7 +1430,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     tabFilter.first = helpTab;
     tabFilter.wrap = false;
     tabFilter.enter = false;
-    _splitpath( HelpFiles[0].name, NULL, NULL, filename, ext );
+    _splitpath( fileinfo->name, NULL, NULL, filename, ext );
     strcat( filename, ext );
     hfiles[0] = filename;
     if( topic != NULL ) {
