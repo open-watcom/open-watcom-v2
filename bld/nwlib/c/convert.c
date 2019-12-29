@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,15 +96,14 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
 }
 
 char *GetFFName( arch_header *arch )
+/**********************************/
 {
-    char        *name = NULL;
-    size_t      len;
+    char        *name;
 
+    name = NULL;
     if( arch->ffnametab != NULL && arch->nextffname != NULL ) {
-        len = strlen( arch->nextffname );
-        name = MemAlloc( len + 1 );
-        memcpy( name, arch->nextffname, len + 1 );
-        arch->nextffname += len + 1;
+        name = DupStr( arch->nextffname );
+        arch->nextffname += strlen( name ) + 1;
         if( arch->nextffname >= arch->lastffname || ( arch->nextffname[0] == '\n'
                 && arch->nextffname + 1 >= arch->lastffname ) ) {
             arch->nextffname = NULL;

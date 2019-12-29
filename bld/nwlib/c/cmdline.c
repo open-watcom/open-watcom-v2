@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -736,7 +737,7 @@ void ProcessCmdLine( char *argv[] )
         /* Default action: List the input lib */
         if( Options.output_name == NULL ) {
             Options.list_contents = true;
-            Options.list_file = DupStr("");
+            Options.list_file = DupStr( "" );
         } else { /* Or copy it to the output lib */
             Options.modified = true;
         }
