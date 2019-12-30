@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,9 @@
 #include "file.h"
 #include "memory.h"
 #include "pathconv.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /*
@@ -75,10 +79,10 @@ static int              languageToForce = FORCE_NONE;
 static int file_type( const char *filename )
 /******************************************/
 {
-    char *              newfilename;
-    char *              tempfilename;
-    char                ext[_MAX_EXT];
-    int                 type;
+    char    *   newfilename;
+    char    *   tempfilename;
+    PGROUP2     pg;
+    int         type;
 
     /*** Strip quotes from filename ***/
     newfilename = DupStrMem( filename );
@@ -89,34 +93,34 @@ static int file_type( const char *filename )
         tempfilename = newfilename;
     }
 
-    _splitpath( tempfilename, NULL, NULL, NULL, ext );
-    if( allowC && !stricmp( ext, ".c" ) ) {
+    _splitpath2( tempfilename, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( allowC && stricmp( pg.ext, ".c" ) == 0 ) {
         type = TYPE_C_FILE;
-    } else if( allowCPP && !stricmp( ext, ".cc" ) ) {
+    } else if( allowCPP && stricmp( pg.ext, ".cc" ) == 0 ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && !stricmp( ext, ".cpp" ) ) {
+    } else if( allowCPP && stricmp( pg.ext, ".cpp" ) == 0 ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && !stricmp( ext, ".cxx" ) ) {
+    } else if( allowCPP && stricmp( pg.ext, ".cxx" ) == 0 ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && !stricmp( ext, ".odl" ) ) {
+    } else if( allowCPP && stricmp( pg.ext, ".odl" ) == 0 ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && !stricmp( ext, ".idl" ) ) {
+    } else if( allowCPP && stricmp( pg.ext, ".idl" ) == 0 ) {
         type = TYPE_CPP_FILE;
-    } else if( allowDEF && !stricmp( ext, ".def" ) ) {
+    } else if( allowDEF && stricmp( pg.ext, ".def" ) == 0 ) {
         type = TYPE_DEF_FILE;
-    } else if( allowOBJ && !stricmp( ext, ".obj" ) ) {
+    } else if( allowOBJ && stricmp( pg.ext, ".obj" ) == 0 ) {
         type = TYPE_OBJ_FILE;
-    } else if( allowLIB && !stricmp( ext, ".lib" ) ) {
+    } else if( allowLIB && stricmp( pg.ext, ".lib" ) == 0 ) {
         type = TYPE_LIB_FILE;
-    } else if( allowRC && !stricmp( ext, ".rc" ) ) {
+    } else if( allowRC && stricmp( pg.ext, ".rc" ) == 0 ) {
         type = TYPE_RC_FILE;
-    } else if( allowRES && !stricmp( ext, ".res" ) ) {
+    } else if( allowRES && stricmp( pg.ext, ".res" ) == 0 ) {
         type = TYPE_RES_FILE;
-    } else if( allowRBJ && !stricmp( ext, ".rbj" ) ) {
+    } else if( allowRBJ && stricmp( pg.ext, ".rbj" ) == 0 ) {
         type = TYPE_RBJ_FILE;
-    } else if( allowRS && !stricmp( ext, ".rs" ) ) {
+    } else if( allowRS && stricmp( pg.ext, ".rs" ) == 0 ) {
         type = TYPE_RS_FILE;
-    } else if( allowEXP && !stricmp( ext, ".exp" ) ) {
+    } else if( allowEXP && stricmp( pg.ext, ".exp" ) == 0 ) {
         type = TYPE_EXP_FILE;
     } else {
         if( defaultType == TYPE_INVALID_FILE ) {

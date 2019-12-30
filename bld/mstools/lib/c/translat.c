@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,10 @@
 #include "memory.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -350,7 +355,7 @@ static void init_fuzzy( void )
     unsigned            count;
     char *              filename;
     char *              newstr;
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
     char **             objsvector;
 
     /*** Get the object file names into an array ***/
@@ -363,8 +368,8 @@ static void init_fuzzy( void )
         newstr = PathConvert( filename, '\'' );
 
         /*** Skip .res files ***/
-        _splitpath( newstr, NULL, NULL, NULL, ext );
-        if( !stricmp( ext, ".res" ) ) {
+        _splitpath2( newstr, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        if( stricmp( pg.ext, ".res" ) == 0 ) {
             FreeMem( newstr );
             continue;
         }
@@ -408,13 +413,11 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     char *              p;
     char *              tmp;
     char                expname[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
 
     /*** Replace the '.lib' extension with '.exp' ***/
-    _splitpath( name, drive, dir, fname, NULL );
-    _makepath( expname, drive, dir, fname, ".exp" );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( expname, pg.drive, pg.dir, pg.fname, "exp" );
 
     exp_file = fopen( expname, "w" );
     if( exp_file == NULL ) {
@@ -632,9 +635,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     char *              p;
     OPT_STRING *        optStr;
     char                dllfilename[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
 
     if( cmdOpts->def ) {
         if( cmdOpts->out ) {
@@ -648,8 +649,8 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", newstr );
         CreateExp( cmdOpts, newstr );
-        _splitpath( newstr, drive, dir, fname, NULL );  /* .dll extension */
-        _makepath( dllfilename, drive, dir, fname, ".dll" );
+        _splitpath2( newstr, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );  /* .dll extension */
+        _makepath( dllfilename, pg.drive, pg.dir, pg.fname, "dll" );
         if( cmdOpts->export ) {
             init_fuzzy();
             optStr = cmdOpts->export_value;
@@ -662,12 +663,13 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
                 optStr = optStr->next;
             }
 
-            if( exp_file) fclose(exp_file);
+            if( exp_file )
+                fclose( exp_file );
             FiniFuzzy();
-        }else {
+        } else {
             FatalError( "/EXPORT option not specified!" );
         }
-    }else if( cmdOpts->list ) {
+    } else if( cmdOpts->list ) {
         if( cmdOpts->list_value != NULL ) {
             newstr = VerifyDot(cmdOpts->list_value->data);
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "/l=%s", newstr );
@@ -699,8 +701,9 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
 
     }
-    if( newstr!=NULL) FreeMem(newstr);
-
+    if( newstr != NULL ) {
+        FreeMem( newstr );
+    }
 }
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "bool.h"
 #include "cl.h"
@@ -39,6 +41,10 @@
 #include "message.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -799,9 +805,7 @@ void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
                           CmdLine *linkCmdLine )
 /*******************************************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
     char                fullPath[_MAX_PATH];
     char *              newpath;
 
@@ -810,11 +814,10 @@ void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
     /*** Handle the /P switch ***/
     if( xlat_status.preprocessToFile ) {
         if( compCmdLine != NULL ) {
-            _splitpath( filename, drive, dir, fname, NULL );
-            _makepath( fullPath, NULL, NULL, fname, ".i" );
+            _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+            _makepath( fullPath, NULL, NULL, pg.fname, "i" );
             newpath = PathConvert( fullPath, '"' );
-            AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fo=%s",
-                              newpath );
+            AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fo=%s", newpath );
         }
     }
 }

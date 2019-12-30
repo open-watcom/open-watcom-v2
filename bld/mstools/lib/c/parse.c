@@ -47,6 +47,7 @@
 #include "message.h"
 #include "parse.h"
 #include "cmdlnprs.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -114,8 +115,7 @@ static void VerifyAddFile( char *filename )
     char *              tempfilename;
     char *              newfilename;
     char                fullname[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
+    PGROUP2             pg;
     char *              pattern;
 
     if ((strchr(filename,'?')!=NULL) || (strchr(filename,'*')!=NULL)){
@@ -136,8 +136,8 @@ static void VerifyAddFile( char *filename )
             FreeMem( filename );
             FreeMem( newfilename );
             for( ; (dire = readdir( dirp )) != NULL; ) {
-                _splitpath( pattern, drive, dir, NULL, NULL );
-                _makepath( fullname, drive, dir, "", "" );
+                _splitpath2( pattern, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+                _makepath( fullname, pg.drive, pg.dir, NULL, NULL );
                 strcat( fullname, dire->d_name );
                 filename = fullname;
                 filename = VerifyDot(filename);

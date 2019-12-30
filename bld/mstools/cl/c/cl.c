@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,9 @@
 #include "message.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 #include "clibint.h"
 
 
@@ -119,10 +123,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
     char *              compiler = NULL;
     int                 rc;
     int                 numCompiled = 0;
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
     char                fullPath[_MAX_PATH];
     int                 count;
 
@@ -163,10 +164,10 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
         }
 
         /*** Spawn the compiler ***/
-        _splitpath( filename, drive, dir, fname, ext );
-        fprintf( stderr, "%s%s\n", fname, ext ); /* print name of file we're compiling */
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        fprintf( stderr, "%s%s\n", pg.fname, pg.ext ); /* print name of file we're compiling */
         if( cmdOpts->showwopts ) {
-            for( count=0; args[count]!=NULL; count++ ) {
+            for( count = 0; args[count] != NULL; count++ ) {
                 fprintf( stderr, "%s ", args[count] );
             }
             fprintf( stderr, "\n" );
@@ -186,7 +187,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
         if( cmdOpts->Fo ) {
             AddFile( TYPE_OBJ_FILE, PathConvert( cmdOpts->Fo_value->data, '"' ) );
         } else {
-            _makepath( fullPath, NULL, NULL, fname, ".obj" );
+            _makepath( fullPath, NULL, NULL, pg.fname, "obj" );
             AddFile( TYPE_OBJ_FILE, fullPath );
         }
 

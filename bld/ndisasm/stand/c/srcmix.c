@@ -58,10 +58,10 @@ static enum {
 } line_type;
 
 static const char * const src_exts[] = {
-    ".c",
-    ".cpp",
-    ".for",
-    ".asm"
+    "c",
+    "cpp",
+    "for",
+    "asm"
 };
 
 static void NoSource( char *file )
@@ -91,7 +91,7 @@ static void OpenSourceFileExts( const char *fname )
             return;
         }
     }
-    _makepath( src_filename, pg.drive, pg.dir, pg.fname, ".*" );
+    _makepath( src_filename, pg.drive, pg.dir, pg.fname, "*" );
     NoSource( src_filename );
     MemFree( src_filename );
 }

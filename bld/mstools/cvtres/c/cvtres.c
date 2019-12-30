@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,9 @@
 #include "message.h"
 #include "pathconv.h"
 #include "parse.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 #include "clibint.h"
 
 
@@ -92,9 +96,7 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
     void *              buf;
     char *              infilename;
     char                outfilename[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
     FILE *              in;
     FILE *              out;
     long                bytes;
@@ -123,8 +125,8 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         FreeMem( p );
     }
     if( !strcmp( outfilename, "" ) ) {          /* based on input filename */
-        _splitpath( infilename, drive, dir, fname, NULL );
-        _makepath( outfilename, drive, dir, fname, ".obj" );
+        _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( outfilename, pg.drive, pg.dir, pg.fname, "obj" );
     }
 
 

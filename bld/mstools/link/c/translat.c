@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,10 @@
 #include "memory.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -483,19 +488,13 @@ static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
                                  char *executable )
 /**************************************************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2     pg;
 
     if( cmdOpts->out ) {
         strcpy( executable, cmdOpts->out_value->data );
     } else {
-        _splitpath( firstObj, drive, dir, fname, NULL );
-        if( !cmdOpts->dll ) {
-            _makepath( executable, drive, dir, fname, ".exe" );
-        } else {
-            _makepath( executable, drive, dir, fname, ".dll" );
-        }
+        _splitpath2( firstObj, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( executable, pg.drive, pg.dir, pg.fname, ( cmdOpts->dll ) ? "dll" : "exe" );
     }
 }
 
