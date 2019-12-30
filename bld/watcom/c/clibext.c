@@ -505,58 +505,51 @@ void _makepath(
 {
     *path = '\0';
 
-    if( node != NULL ) {
-        if( *node != '\0' ) {
-            strcpy( path, node );
-            path = strchr( path, '\0' );
+    if( node != NULL && *node != '\0' ) {
+        strcpy( path, node );
+        path = strchr( path, '\0' );
 
-            /* if node did not end in '/' then put in a provisional one */
-            if( path[-1] == PC ) {
-                path--;
-            } else {
-                *path = PC;
-            }
+        /* if node did not end in '/' then put in a provisional one */
+        if( path[-1] == PC ) {
+            path--;
+        } else {
+            *path = PC;
         }
     }
-    if( dir != NULL ) {
-        if( *dir != '\0' ) {
-            /*  if dir does not start with a '/' and we had a node then
-                    stick in a separator
-            */
-            if( (*dir != PC) && (*path == PC) )
-                path++;
+    if( dir != NULL && *dir != '\0' ) {
+        /*  if dir does not start with a '/' and we had a node then
+                stick in a separator
+        */
+        if( (*dir != PC) && (*path == PC) )
+            path++;
 
-            strcpy( path, dir );
-            path = strchr( path, '\0' );
+        strcpy( path, dir );
+        path = strchr( path, '\0' );
 
-            /* if dir did not end in '/' then put in a provisional one */
-            if( path[-1] == PC ) {
-                path--;
-            } else {
-                *path = PC;
-            }
+        /* if dir did not end in '/' then put in a provisional one */
+        if( path[-1] == PC ) {
+            path--;
+        } else {
+            *path = PC;
         }
     }
 
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != '\0' ) {
         if( (*fname != PC) && (*path == PC) )
             path++;
 
         strcpy( path, fname );
         path = strchr( path, '\0' );
-
     } else {
         if( *path == PC ) {
             path++;
         }
     }
-    if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
-            strcpy( path, ext );
-            path = strchr( path, '\0' );
-        }
+    if( ext != NULL && *ext != '\0' ) {
+        if( *ext != '.' )
+            *path++ = '.';
+        strcpy( path, ext );
+        path = strchr( path, '\0' );
     }
     *path = '\0';
 }
@@ -583,37 +576,33 @@ extern void _makepath( char *path, const char *volume,
 {
     char first_pc = '\0';
 
-    if( volume != NULL ) {
-        if( *volume != '\0' ) {
-            do {
-                *path++ = *volume++;
-            } while( *volume != '\0' );
-            if( path[-1] != ':' ) {
-                *path++ = ':';
-            }
+    if( volume != NULL && *volume != '\0' ) {
+        do {
+            *path++ = *volume++;
+        } while( *volume != '\0' );
+        if( path[-1] != ':' ) {
+            *path++ = ':';
         }
     }
     *path = '\0';
-    if( dir != NULL ) {
-        if( *dir != '\0' ) {
-            do {
-                *path++ = pickup( *dir++, &first_pc );
-            } while( *dir != '\0' );
-            /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' )
-                first_pc = PC;
-            /* if dir did not end in path sep then put in a provisional one */
-            if( path[-1] == first_pc ) {
-                path--;
-            } else {
-                *path = first_pc;
-            }
+    if( dir != NULL && *dir != '\0' ) {
+        do {
+            *path++ = pickup( *dir++, &first_pc );
+        } while( *dir != '\0' );
+        /* if no path separator was specified then pick a default */
+        if( first_pc == '\0' )
+            first_pc = PC;
+        /* if dir did not end in path sep then put in a provisional one */
+        if( path[-1] == first_pc ) {
+            path--;
+        } else {
+            *path = first_pc;
         }
     }
     /* if no path separator was specified thus far then pick a default */
     if( first_pc == '\0' )
         first_pc = PC;
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != '\0' ) {
         if( (pickup( *fname, &first_pc ) != first_pc) && (*path == first_pc) )
             path++;
         while( *fname != '\0' ) {
@@ -624,13 +613,11 @@ extern void _makepath( char *path, const char *volume,
             path++;
         }
     }
-    if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
-            while( *ext != '\0' ) {
-                *path++ = *ext++;
-            }
+    if( ext != NULL && *ext != '\0' ) {
+        if( *ext != '.' )
+            *path++ = '.';
+        while( *ext != '\0' ) {
+            *path++ = *ext++;
         }
     }
     *path = '\0';
@@ -662,43 +649,39 @@ void _makepath( char *path, const char *drive,
     char *              pathstart = path;
     unsigned            ch;
 
-    if( drive != NULL ) {
-        if( *drive != '\0' ) {
-            if ((*drive == '\\') && (drive[1] == '\\')) {
-                strcpy(path, drive);
-                path += strlen(drive);
-            } else {
-                *path++ = *drive;                               /* OK for MBCS */
-                *path++ = ':';
-            }
+    if( drive != NULL && *drive != '\0' ) {
+        if ((*drive == '\\') && (drive[1] == '\\')) {
+            strcpy(path, drive);
+            path += strlen(drive);
+        } else {
+            *path++ = *drive;                               /* OK for MBCS */
+            *path++ = ':';
         }
     }
     *path = '\0';
-    if( dir != NULL ) {
-        if( *dir != '\0' ) {
-            do {
-                ch = pickup( _mbsnextc( dir ), &first_pc );
-                _mbvtop( ch, path );
-                path[_mbclen( path )] = '\0';
-                path = _mbsinc( path );
-                dir = _mbsinc( dir );
-            } while( *dir != '\0' );
-            /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' )
-                first_pc = PC;
-            /* if dir did not end in '/' then put in a provisional one */
-            if( *(_mbsdec( pathstart, path )) == first_pc ) {
-                path--;
-            } else {
-                *path = first_pc;
-            }
+    if( dir != NULL && *dir != '\0' ) {
+        do {
+            ch = pickup( _mbsnextc( dir ), &first_pc );
+            _mbvtop( ch, path );
+            path[_mbclen( path )] = '\0';
+            path = _mbsinc( path );
+            dir = _mbsinc( dir );
+        } while( *dir != '\0' );
+        /* if no path separator was specified then pick a default */
+        if( first_pc == '\0' )
+            first_pc = PC;
+        /* if dir did not end in '/' then put in a provisional one */
+        if( *(_mbsdec( pathstart, path )) == first_pc ) {
+            path--;
+        } else {
+            *path = first_pc;
         }
     }
 
     /* if no path separator was specified thus far then pick a default */
     if( first_pc == '\0' )
         first_pc = PC;
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != '\0' ) {
         ch = _mbsnextc( fname );
         if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
             path++;
@@ -716,13 +699,11 @@ void _makepath( char *path, const char *drive,
             path++;
         }
     }
-    if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
-            while( *ext != '\0' ) {
-                *path++ = *ext++;     /* OK for MBCS */
-            }
+    if( ext != NULL && *ext != '\0' ) {
+        if( *ext != '.' )
+            *path++ = '.';
+        while( *ext != '\0' ) {
+            *path++ = *ext++;     /* OK for MBCS */
         }
     }
     *path = '\0';
