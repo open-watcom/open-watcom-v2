@@ -144,7 +144,7 @@ static void scanDirectory( char *buf, FileList *list )
     if( dirp != NULL ) {
         while( (dire = readdir( dirp )) != NULL ) {
             len = strlen( dire->d_name );
-            if ( len < sizeof( DEF_EXT ) || stricmp ( &dire->d_name[len - ( sizeof( DEF_EXT ) - 1 )], DEF_EXT ) != 0 ) {
+            if ( len < ( sizeof( "." DEF_EXT ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." DEF_EXT ) - 1 )], "." DEF_EXT ) != 0 ) {
                 continue;
             }
             list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
@@ -228,7 +228,8 @@ static void fillFileList( HelpSrchPathItem *srch, FileList *list )
             done = 1;
             break;
         }
-        if( done ) break;
+        if( done )
+            break;
         if( cur != NULL ) {
             doFillFileList( cur, list );
         }

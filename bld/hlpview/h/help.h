@@ -35,7 +35,7 @@
 #include "search.h"
 #include "helpchar.h"
 
-#define DEF_EXT         ".ihp"
+#define DEF_EXT         "ihp"
 
 #define HELP_NO_MEM     (-4)
 #define HELP_ERROR      (-3)

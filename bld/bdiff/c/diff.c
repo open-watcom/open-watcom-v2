@@ -842,16 +842,14 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     PGROUP2                 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        pg.ext = ".exe";
-    }
+    if( pg.ext[0] == '\0' )
+        pg.ext = "exe";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     exe->fd = fopen( file_name, "rb" );
     FileCheck( exe->fd, file_name );
     _splitpath2( sym_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        pg.ext = ".sym";
-    }
+    if( pg.ext[0] == '\0' )
+        pg.ext = "sym";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     exe->sym.fd = fopen( file_name, "rb" );
     FileCheck( exe->sym.fd, file_name );

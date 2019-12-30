@@ -72,7 +72,7 @@ static void showCmdlHelp( const char *name )
     printf( "\n" );
     printf( "               %s help_file [topic_name]\n", pg.fname );
     printf( "\n" );
-    printf( "- if help_file is specified without an extension \"%s\" is assumed\n", DEF_EXT );
+    printf( "- if help_file is specified without an extension \"%s\" is assumed\n", "." DEF_EXT );
     printf( "- the topic_name parameter is optional\n" );
     printf( "- if topic_name is not specifed the default topic used.\n" );
     printf( "- if topic_name contains spaces then it must be enclosed in quotes\n" );
@@ -87,9 +87,8 @@ static HelpSrchPathItem *checkFileName( const char *name, char *buf )
     char        path[_MAX_PATH];
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
+    if( pg.ext[0] == '\0' )
         pg.ext = DEF_EXT;
-    }
     _makepath( buf, NULL, NULL, pg.fname, pg.ext );
     if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
         _makepath( path, pg.drive, pg.dir, NULL, NULL );

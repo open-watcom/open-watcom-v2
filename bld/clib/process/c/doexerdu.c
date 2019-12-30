@@ -82,7 +82,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                         null_repl = *ep;
                         *ep = 0;
                     }
-                    _makepath( p, "", envp, fname, ext );
+                    _makepath( p, NULL, envp, fname, ext );
                     fh = RdosOpenFile( p, 0 );
                     if( fh ) {
                         ok = 1;

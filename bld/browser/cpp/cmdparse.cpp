@@ -92,7 +92,7 @@ void CommandParser::setCommand( const char * name )
     if( _command ) {
         errMessage( "Warning:  ignoring nested include @%s.", name );
     } else {
-        setExtension( nameStr, ".cbr" );
+        setExtension( nameStr, "cbr" );
         _command = new CheckedBufferedFile( nameStr );
         _command->open( CheckedFile::ReadText, CheckedFile::UserReadWrite );
 
@@ -107,7 +107,7 @@ void CommandParser::setDatabase( const char * dbs )
 //-------------------------------------------------
 {
     _database = dbs;
-    setExtension( _database, ".dbr" );
+    setExtension( _database, "dbr" );
 }
 
 void CommandParser::setSearchPath( const char * path )
@@ -120,7 +120,7 @@ void CommandParser::setOptions( const char * opt )
 //------------------------------------------------
 {
     _options = opt;
-    setExtension( _options, ".obr" );
+    setExtension( _options, "obr" );
 }
 
 
@@ -354,7 +354,7 @@ void CommandParser::addFile( const char * fname )
     String          file( fname );
     PGROUP2         pg;
 
-    setExtension( file, ".mbr" );
+    setExtension( file, "mbr" );
 
     // FIXME -- these error messages have to do something smarter!
     if( ( strchr( file, '?' ) != NULL ) || ( strchr( file, '*' ) != NULL ) ) {
@@ -378,7 +378,7 @@ void CommandParser::addFile( const char * fname )
 
                 // do NOT do a setExtension here as we only get here
                 // if user did *.* or *. something.
-                // setExtension( addFile, ".mbr" );
+                // setExtension( addFile, "mbr" );
 
                 if( !ListContains( _files, addFile ) ) {
                     _files->append( addFile );
@@ -410,9 +410,8 @@ void CommandParser::setExtension( String & str, const char * ext )
     char *      res;
 
     _splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] != '\0' ) {
+    if( pg.ext[0] != '\0' )
         ext = pg.ext;
-    }
     _makepath( path, pg.drive, pg.dir, pg.fname, ext );
 
     res = _fullpath( newDir, path, _MAX_PATH );

@@ -58,9 +58,8 @@ void SetHelpFileDefExt( const char *name, char *buff )
     PGROUP2      pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        strcpy( pg.ext, DEF_EXT );
-    }
+    if( pg.ext[0] == '\0' )
+        pg.ext = DEF_EXT;
     _makepath( buff, pg.drive, pg.dir, pg.fname, pg.ext );
 }
 

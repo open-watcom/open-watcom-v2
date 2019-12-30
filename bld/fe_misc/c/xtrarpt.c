@@ -193,7 +193,7 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
     char make_buff[_MAX_PATH];
 
     _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );
-    _makepath( make_buff, NULL, NULL, pg.fname, ".rpt" );
+    _makepath( make_buff, NULL, NULL, pg.fname, "rpt" );
     fp = fopen( make_buff, "w" );
     if( fp == NULL ) {
         return;

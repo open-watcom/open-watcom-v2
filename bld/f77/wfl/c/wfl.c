@@ -92,11 +92,11 @@
 #define TEMPFILE        "__wfl__.lnk"   // temporary linker directive file
 
 #if defined( __UNIX__ )
-  #define OBJ_EXT       ".o"          // object file extension
-  #define EXE_EXT       ""            // executable file extension
+  #define OBJ_EXT       "o"             // object file extension
+  #define TOOL_EXE_EXT  ""              // tool executable file extension
 #else
-  #define OBJ_EXT       ".obj"        // object file extension
-  #define EXE_EXT       ".exe"        // executable file extension
+  #define OBJ_EXT       "obj"           // object file extension
+  #define TOOL_EXE_EXT  ".exe"          // tool executable file extension
 #endif
 
 #ifdef __UNIX__
@@ -155,9 +155,9 @@ static struct {
     char *exename;
     char *path;
 } tools[ TYPE_MAX ] = {
-    { WFC,      WFC EXE_EXT,        NULL },
-    { LINK,     LINK EXE_EXT,       NULL },
-    { PACK,     PACK EXE_EXT,       NULL }
+    { WFC,      WFC TOOL_EXE_EXT,       NULL },
+    { LINK,     LINK TOOL_EXE_EXT,      NULL },
+    { PACK,     PACK TOOL_EXE_EXT,      NULL }
 };
 
 static  char    *Word;                  // one parameter
@@ -177,7 +177,6 @@ static  int     DebugFlag;              // debugging flag
 /* forward declarations */
 static  void    Usage( void );
 static  int     Parse( int, char ** );
-static  void    FindPath( const char *name, char *buf );
 static  int     CompLink( void );
 static  void    MakeName( char *name, const char *ext );
 static  void    Fputnl( const char *text, FILE *fptr );
@@ -390,7 +389,7 @@ static  int     Parse( int argc, char **argv )
                             LinkName = TEMPFILE;
                             cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
-                            MakeName( Word, ".lnk" );    // add extension
+                            MakeName( Word, "lnk" );    // add extension
                             LinkName = strdup( Word + 2 );
                             cmp_option = false;
                         }
@@ -658,9 +657,12 @@ static char *FindToolPath( tool_type utl )
 /****************************************/
 {
     if( tools[utl].path == NULL ) {
-        FindPath( tools[utl].exename, PathBuffer );
-        tools[utl].path = MemAlloc( strlen( PathBuffer ) + 1 );
-        strcpy( tools[utl].path, PathBuffer );
+        _searchenv( tools[utl].exename, "PATH", PathBuffer );
+        if( PathBuffer[0] == '\0' ) {
+            PrintMsg( CL_UNABLE_TO_FIND, tools[utl].exename );
+            wfl_exit( 1 );
+        }
+        tools[utl].path = strdup( PathBuffer );
     }
     return( tools[utl].path );
 }
@@ -670,9 +672,8 @@ static int tool_exec( tool_type utl, char *target, char **options )
 {
     int     rc;
     int     pass_argc;
-    char    *pass_argv[MAX_OPTIONS+3];
+    char    *pass_argv[MAX_OPTIONS + 3];
 
-    FindToolPath( utl );
 
     pass_argv[0] = tools[utl].name;
     pass_argc = 1;
@@ -695,7 +696,7 @@ static int tool_exec( tool_type utl, char *target, char **options )
     }
     fflush( NULL );
 
-    rc = (int)spawnvp( P_WAIT, tools[utl].path, (char const *const *)pass_argv );
+    rc = (int)spawnvp( P_WAIT, FindToolPath( utl ), (char const *const *)pass_argv );
 
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
@@ -778,7 +779,7 @@ static  int     CompLink( void ) {
     ObjList = NULL;
     for( currobj = FileList; currobj != NULL; currobj = nextobj ) {
         strcpy( Word, currobj->filename );
-        MakeName( Word, ".for" );   // if no extension, assume ".for"
+        MakeName( Word, "for" );    // if no extension, assume ".for"
         file = DoWildCard( Word );
         while( file != NULL ) {     // while more filenames:
             strcpy( Word, file );
@@ -786,7 +787,7 @@ static  int     CompLink( void ) {
             strlwr( Word );
 #endif
             _splitpath2( Word, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            if( strcmp( pg.ext, OBJ_EXT ) != 0 ) {  // if not object, compile
+            if( strcmp( pg.ext, "." OBJ_EXT ) != 0 ) {  // if not object, compile
                 rc = tool_exec( TYPE_FOR, Word, CmpOpts );
                 if( rc != 0 ) {
                     comp_err = true;
@@ -915,17 +916,6 @@ static  void    AddName( const char *name, FILE *link_fp )
     }
     fputs( name, link_fp );
     Fputnl( "'", link_fp );
-}
-
-
-static  void    FindPath( const char *name, char *buf )
-//=====================================================
-{
-    _searchenv( name, "PATH", buf );
-    if( buf[0] == '\0' ) {
-        PrintMsg( CL_UNABLE_TO_FIND, name );
-        wfl_exit( 1 );
-    }
 }
 
 

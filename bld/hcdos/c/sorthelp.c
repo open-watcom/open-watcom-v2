@@ -104,7 +104,7 @@ static void InitError( const char *target )
 
     errHasOccurred = false;
     _splitpath2( target, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
-    _makepath( errFileName, pg.drive, pg.dir, pg.fname, ".err" );
+    _makepath( errFileName, pg.drive, pg.dir, pg.fname, "err" );
 }
 
 

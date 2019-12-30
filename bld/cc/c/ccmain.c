@@ -53,18 +53,18 @@
 #if defined(__UNIX__)
  #define C_PATH         "../c/"
  #define H_PATH         "../h/"
- #define OBJ_EXT        ".o"
+ #define OBJ_EXT        "o"
 #else
  #define C_PATH         "..\\c\\"
  #define H_PATH         "..\\h\\"
- #define OBJ_EXT        ".obj"
+ #define OBJ_EXT        "obj"
 #endif
-#define DEF_EXT         ".def"
-#define ERR_EXT         ".err"
-#define MBR_EXT         ".mbr"
-#define C_EXT           ".c"
-#define CPP_EXT         ".i"
-#define DEP_EXT         ".d"
+#define DEF_EXT         "def"
+#define ERR_EXT         "err"
+#define MBR_EXT         "mbr"
+#define C_EXT           "c"
+#define CPP_EXT         "i"
+#define DEP_EXT         "d"
 
 bool    PrintWhiteSpace;     // also refered from cmac2.c
 
@@ -350,16 +350,11 @@ static void MakePgmName( void )
         pg.fname = WholeFName;
         len = sizeof( STDIN_NAME );
     } else {
-        _splitpath2( WholeFName, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) { // no extension
-            char *new;
-
             len = strlen( WholeFName );
-            new = CMemAlloc( len + sizeof( C_EXT ) );
-            memcpy( new, WholeFName, len );
-            memcpy( new + len, C_EXT, sizeof( C_EXT ) );
-            CMemFree( WholeFName );
-            WholeFName = new;
+            WholeFName = CMemRealloc( WholeFName, len + 1 + sizeof( C_EXT ) );
+            strcat( WholeFName + len, "." C_EXT );
         }
         len = strlen( pg.fname ) + 1;
     }
@@ -1134,7 +1129,6 @@ static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
 {
     char        *s;
     char        *p;
-    char        buff[_MAX_PATH2];
     char        try[_MAX_PATH];
     FCB         *curr;
     char        c;
@@ -1191,7 +1185,7 @@ static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
         }
         s = IncPathList;
         while( (c = *s) != '\0' ) {
-            p = buff;
+            p = fd.buffer;
             do {
                 ++s;
                 if( IS_PATH_LIST_SEP( c ) )
@@ -1203,7 +1197,7 @@ static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
                 *p++ = DIR_SEP;
             }
             *p = '\0';
-            if( try_open_file( buff, fp, fa, typ ) ) {
+            if( try_open_file( fd.buffer, fp, fa, typ ) ) {
                 return( true );
             }
         }

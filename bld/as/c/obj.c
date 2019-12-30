@@ -40,9 +40,9 @@
 
 
 #if defined( __UNIX__ )
-  #define OBJ_EXT        ".o"
+  #define OBJ_EXT        "o"
 #else
-  #define OBJ_EXT        ".obj"
+  #define OBJ_EXT        "obj"
 #endif
 
 extern int              ExitStatus;
@@ -144,7 +144,7 @@ bool ObjInit( char *fname ) {
         _makepath( objName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
-    _makepath( errorFilename, NULL, NULL, pg1.fname, ".err" );
+    _makepath( errorFilename, NULL, NULL, pg1.fname, "err" );
     objFP = fopen( objName, "wb" );
     if( objFP == NULL ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );

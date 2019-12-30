@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,7 @@
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
 #include "wclbproc.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -95,19 +96,21 @@ static void checkRemoveButton( HWND hwnd )
     }
 }
 
-static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
+static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
+{
     size_t      len;
-    char        buf[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
+    PGROUP2     pg;
 
-    drive[0] = '\0';
-    _splitpath( fname, drive, NULL, NULL, NULL );
-    if( drive[0] == '\0' ) {
-        hwnd = hwnd;
-        getcwd( buf, _MAX_PATH );
-        *fullname = buf;
-        len = strlen( buf );
-        if( buf[len - 1] != '\\' ) fullname->concat( "\\" );
+    /* unused parameters */ (void)hwnd;
+
+    _splitpath2( fname, pg.buffer, &pg.drive, NULL, NULL, NULL );
+    if( pg.drive[0] == '\0' ) {
+        getcwd( pg.buffer, sizeof( pg.buffer ) );
+        *fullname = pg.buffer;
+        len = strlen( pg.buffer );
+        if( pg.buffer[len - 1] != '\\' ) {
+            fullname->concat( "\\" );
+        }
     }
     fullname->concat( fname );
 }
@@ -147,20 +150,20 @@ static void formRelDir( const char *filedir, const char *tgtdir,WString *dir )
     if( *filedir != '\0' ) dir->concat( filedir + 1 );
 }
 
-static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
-    WString              fullpath;
-    GetFilesInfo        *info;
-    WFileName            tgt;
-    WFileName            filename;
-    char                 drive[_MAX_DRIVE];
-    char                 dir[_MAX_DIR];
+static void getRelFname( HWND hwnd, const char *fname, WString *relname )
+{
+    WString         fullpath;
+    GetFilesInfo    *info;
+    WFileName       tgt;
+    WFileName       filename;
+    PGROUP2         pg;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
     filename = fullpath.gets();
-    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
-    if( !stricmp( drive, filename.drive() ) ) {
-        formRelDir( filename.dir(), dir, relname );
+    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    if( stricmp( pg.drive, filename.drive() ) == 0 ) {
+        formRelDir( filename.dir(), pg.dir, relname );
         relname->concat( filename.fName() );
         relname->concat( filename.ext() );
     } else {
@@ -553,12 +556,11 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     OPENFILENAME    of;
     int             rc;
     char            fname[256];
-    char            drive[_MAX_DRIVE];
-    char            dir[_MAX_DIR];
+    PGROUP2         pg;
     char            newpath[_MAX_PATH];
 
-    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
-    _makepath( newpath, drive, dir, NULL, NULL );
+    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( newpath, pg.drive, pg.dir, NULL, NULL );
     fname[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -568,7 +570,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     of.lpstrDefExt = "";
     of.nFilterIndex = last_filter_index;
     of.lpstrFile = fname;
-    of.nMaxFile = _MAX_PATH;
+    of.nMaxFile = sizeof( fname );
     of.lpstrTitle = caption;
     of.lCustData = (LPARAM)info;
     of.lpstrInitialDir = newpath;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ char *FindOld( const char *name )
     PGROUP2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( temp, "", "", pg.fname, pg.ext );
+    _makepath( temp, NULL, NULL, pg.fname, pg.ext );
 #ifdef INSTALL_PROGRAM
     if( SecondaryPatchSearch( name, oldName ) ) {
 #endif
@@ -104,7 +105,7 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
 
     prompt=prompt;
     _splitpath2( oldName, pgold.buffer, &pgold.drive, &pgold.dir, &pgold.fname, &pgold.ext );
-    _makepath( newName, pgold.drive, pgold.dir, TEMP_FILE_NAME, "" );
+    _makepath( newName, pgold.drive, pgold.dir, TEMP_FILE_NAME, NULL );
     fh = mkstemp( newName );
     if( fh == -1 ) {
         NewName = "";

@@ -211,7 +211,7 @@ IntlData *LoadInternationalData(
     base[len++] = '0';
     base[len++] = '0' + language;
     base[len] = '\0';
-    _makepath( cmd_name, pg.drive, pg.dir, base, "." LOCALE_DATA_EXT );
+    _makepath( cmd_name, pg.drive, pg.dir, base, LOCALE_DATA_EXT );
     fh = sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( fh == -1 ) {
         return( NULL );
