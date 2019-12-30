@@ -512,7 +512,7 @@ int HasFileExtension( const char *p, const char *ext )
     const char  *dot;
 
     if( (dot = strrchr( p, '.' )) != NULL ) {
-        if( fname_cmp( dot, ext ) == 0 ) {
+        if( fname_cmp( dot + 1, ext ) == 0 ) {
             return( 1 );                /* indicate file extension matches */
         }
     }

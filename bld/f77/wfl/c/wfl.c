@@ -91,6 +91,12 @@
 #define PACK            "cvpack"        // packer name
 #define TEMPFILE        "__wfl__.lnk"   // temporary linker directive file
 
+#if defined(__UNIX__)
+#define fname_cmp   strcmp
+#else
+#define fname_cmp   stricmp
+#endif
+
 #if defined( __UNIX__ )
   #define OBJ_EXT       "o"             // object file extension
   #define TOOL_EXE_EXT  ""              // tool executable file extension
@@ -114,6 +120,8 @@
 #endif
 
 #define MAX_OPTIONS     64
+
+#define IS_OBJ(x)       (x[0] == '.' && fname_cmp(x + 1, OBJ_EXT) == 0)
 
 typedef struct list {
     char        *filename;
@@ -309,7 +317,7 @@ int     main( int argc, char *argv[] )
             if( rc == 1 )
                 fclose( Fp );
             if( LinkName != NULL ) {
-                if( stricmp( LinkName, TEMPFILE ) != 0 ) {
+                if( fname_cmp( LinkName, TEMPFILE ) != 0 ) {
                     remove( LinkName );
                     rename( TEMPFILE, LinkName );
                     free( LinkName );
@@ -787,7 +795,7 @@ static  int     CompLink( void ) {
             strlwr( Word );
 #endif
             _splitpath2( Word, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            if( strcmp( pg.ext, "." OBJ_EXT ) != 0 ) {  // if not object, compile
+            if( !IS_OBJ( pg.ext ) ) {   // if not object, compile
                 rc = tool_exec( TYPE_FOR, Word, CmpOpts );
                 if( rc != 0 ) {
                     comp_err = true;
@@ -884,7 +892,7 @@ static  void    AddName( const char *name, FILE *link_fp )
 
     last_name = NULL;
     for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {
-        if( stricmp( name, curr_name->filename ) == 0 )
+        if( fname_cmp( name, curr_name->filename ) == 0 )
             return;
         last_name = curr_name;
     }

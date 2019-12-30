@@ -118,7 +118,7 @@
   #define _TARGET_      "x86 32-bit"
 #endif
 
-#define TEMPFILE        "__wcl__" LNK_EXT   /* temporary linker directive file  */
+#define TEMPFILE        "__wcl__" TOOL_LNK_EXT   /* temporary linker directive file  */
 
 #ifdef __UNIX__
 #define IS_OPT(x)       ((x)=='-')
@@ -128,9 +128,9 @@
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
-#define IS_ASM(x)       (fname_cmp(x, ASM_EXT) == 0)
+#define IS_ASM(x)       (x[0] == '.' && fname_cmp(x + 1, ASM_EXT) == 0)
 #define IS_LIB(x)       HasFileExtension(x, LIB_EXT)
-#define IS_RES(x)       HasFileExtension(x, ".res")
+#define IS_RES(x)       HasFileExtension(x, RES_EXT)
 
 #define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
@@ -164,13 +164,13 @@ static const char *EnglishHelp[] = {
 
 
 static etool tools[TYPE_MAX] = {
-    { LINK, LINK EXE_EXT,   NULL },
-    { PACK, PACK EXE_EXT,   NULL },
-    { DIS,  DIS  EXE_EXT,   NULL },
-    { AS,   AS   EXE_EXT,   NULL },
-    { CC,   CC   EXE_EXT,   NULL },
-    { CPP,  CPP  EXE_EXT,   NULL },
-    { FC,   FC   EXE_EXT,   NULL }
+    { LINK, LINK TOOL_EXE_EXT,   NULL },
+    { PACK, PACK TOOL_EXE_EXT,   NULL },
+    { DIS,  DIS  TOOL_EXE_EXT,   NULL },
+    { AS,   AS   TOOL_EXE_EXT,   NULL },
+    { CC,   CC   TOOL_EXE_EXT,   NULL },
+    { CPP,  CPP  TOOL_EXE_EXT,   NULL },
+    { FC,   FC   TOOL_EXE_EXT,   NULL }
 };
 
 
@@ -588,7 +588,7 @@ static int Parse( const char *cmd )
                     }
                     end = ScanFName( end, Word + len );
                     NormalizeFName( Word, MAX_CMD, Word );
-                    MakeName( Word, LNK_EXT );
+                    MakeName( Word, TOOL_LNK_EXT );
                     errno = 0;
                     if( (atfp = fopen( Word, "r" )) == NULL ) {
                         PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
@@ -628,7 +628,7 @@ static int Parse( const char *cmd )
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
-                            MakeName( Word, LNK_EXT );  /* add extension */
+                            MakeName( Word, TOOL_LNK_EXT );  /* add extension */
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( Word );
                         } else {
@@ -846,12 +846,12 @@ static int Parse( const char *cmd )
 static int useCPlusPlus( const char *p )
 /**************************************/
 {
-    return(
-        fname_cmp( p, ".cpp" ) == 0 ||
-        fname_cmp( p, ".cxx" ) == 0 ||
-        fname_cmp( p, ".cc" )  == 0 ||
-        fname_cmp( p, ".hpp" ) == 0 ||
-        fname_cmp( p, ".hxx" ) == 0 );
+    return( *p++ == '.' && (
+        fname_cmp( p, "cpp" ) == 0 ||
+        fname_cmp( p, "cxx" ) == 0 ||
+        fname_cmp( p, "cc" )  == 0 ||
+        fname_cmp( p, "hpp" ) == 0 ||
+        fname_cmp( p, "hxx" ) == 0 ) );
 }
 
 
@@ -921,7 +921,7 @@ static tool_type SrcName( char *name )
             if( access( name, F_OK ) != 0 ) {
                 strcpy( pg.ext, ".cc" );
                 if( access( name, F_OK ) != 0 ) {
-                    strcpy( pg.ext, ASM_EXT );
+                    strcpy( pg.ext, "." ASM_EXT );
                     if( access( name, F_OK ) != 0 ) {
                         strcpy( pg.ext, ".c" );
                     }

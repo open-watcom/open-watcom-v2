@@ -109,12 +109,12 @@
 #define WCLENV      "OWCC"
 
 #define OUTPUTFILE  "a.out"
-#define TEMPFILE    "__owcc__" LNK_EXT  /* temporary linker directive file    */
+#define TEMPFILE    "__owcc__" TOOL_LNK_EXT  /* temporary linker directive file    */
 
 #define MAX_CC_OPTS 256
 
-#define IS_ASM(x)   (fname_cmp( x, ASM_EXT ) == 0 || stricmp( x, ASMS_EXT ) == 0)
-#define IS_FOR(x)   (fname_cmp( x, ".f" ) == 0 || stricmp( x, ".for" ) == 0 || fname_cmp( x, ".ftn" ) == 0)
+#define IS_ASM(x)   (x[0] == '.' && (fname_cmp(x + 1, ASM_EXT) == 0 || stricmp(x + 1, ASMS_EXT) == 0))
+#define IS_FOR(x)   (x[0] == '.' && (fname_cmp(x + 1, "f") == 0 || stricmp(x + 1, "for") == 0 || fname_cmp(x + 1, "ftn") == 0))
 #define IS_LIB(x)   (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
 
 typedef enum {
@@ -269,45 +269,45 @@ OW options that might be useful to add:
 */
 
 static etool tools_allarch[TYPE_ALLARCH_COUNT] = {
-    { LINK, LINK EXE_EXT,   NULL },
-    { PACK, PACK EXE_EXT,   NULL },
-    { DIS,  DIS EXE_EXT,    NULL }
+    { LINK, LINK TOOL_EXE_EXT,   NULL },
+    { PACK, PACK TOOL_EXE_EXT,   NULL },
+    { DIS,  DIS TOOL_EXE_EXT,    NULL }
 };
 
 static etool tools_asm_arch[TARGET_ARCH_COUNT] = {
-    { ASM,            ASM EXE_EXT,            NULL },   // default
-    { BPRFX "wasm",   BPRFX "wasm" EXE_EXT,   NULL },   // i86
-    { BPRFX "wasm",   BPRFX "wasm" EXE_EXT,   NULL },   // i386
-    { BPRFX "wasaxp", BPRFX "wasaxp" EXE_EXT, NULL },   // axp
-    { BPRFX "wasmps", BPRFX "wasmps" EXE_EXT, NULL },   // mips
-    { BPRFX "wasppc", BPRFX "wasppc" EXE_EXT, NULL },   // ppc
+    { ASM,            ASM TOOL_EXE_EXT,            NULL },   // default
+    { BPRFX "wasm",   BPRFX "wasm" TOOL_EXE_EXT,   NULL },   // i86
+    { BPRFX "wasm",   BPRFX "wasm" TOOL_EXE_EXT,   NULL },   // i386
+    { BPRFX "wasaxp", BPRFX "wasaxp" TOOL_EXE_EXT, NULL },   // axp
+    { BPRFX "wasmps", BPRFX "wasmps" TOOL_EXE_EXT, NULL },   // mips
+    { BPRFX "wasppc", BPRFX "wasppc" TOOL_EXE_EXT, NULL },   // ppc
 };
 
 static etool tools_cc_arch[TARGET_ARCH_COUNT] = {
-    { CC,             CC EXE_EXT,             NULL },   // default
-    { BPRFX "wcc",    BPRFX "wcc" EXE_EXT,    NULL },   // i86
-    { BPRFX "wcc386", BPRFX "wcc386" EXE_EXT, NULL },   // i386
-    { BPRFX "wccaxp", BPRFX "wccaxp" EXE_EXT, NULL },   // axp
-    { BPRFX "wccmps", BPRFX "wccmps" EXE_EXT, NULL },   // mips
-    { BPRFX "wccppc", BPRFX "wccppc" EXE_EXT, NULL },   // ppc
+    { CC,             CC TOOL_EXE_EXT,             NULL },   // default
+    { BPRFX "wcc",    BPRFX "wcc" TOOL_EXE_EXT,    NULL },   // i86
+    { BPRFX "wcc386", BPRFX "wcc386" TOOL_EXE_EXT, NULL },   // i386
+    { BPRFX "wccaxp", BPRFX "wccaxp" TOOL_EXE_EXT, NULL },   // axp
+    { BPRFX "wccmps", BPRFX "wccmps" TOOL_EXE_EXT, NULL },   // mips
+    { BPRFX "wccppc", BPRFX "wccppc" TOOL_EXE_EXT, NULL },   // ppc
 };
 
 static etool tools_ccxx_arch[TARGET_ARCH_COUNT] = {
-    { CCXX,           CCXX EXE_EXT,           NULL },   // default
-    { BPRFX "wpp",    BPRFX "wpp" EXE_EXT,    NULL },   // i86
-    { BPRFX "wpp386", BPRFX "wpp386" EXE_EXT, NULL },   // i386
-    { BPRFX "wppaxp", BPRFX "wppaxp" EXE_EXT, NULL },   // axp
-    { BPRFX "wppmps", BPRFX "wppmps" EXE_EXT, NULL },   // mips
-    { BPRFX "wppppc", BPRFX "wppppc" EXE_EXT, NULL },   // ppc
+    { CCXX,           CCXX TOOL_EXE_EXT,           NULL },   // default
+    { BPRFX "wpp",    BPRFX "wpp" TOOL_EXE_EXT,    NULL },   // i86
+    { BPRFX "wpp386", BPRFX "wpp386" TOOL_EXE_EXT, NULL },   // i386
+    { BPRFX "wppaxp", BPRFX "wppaxp" TOOL_EXE_EXT, NULL },   // axp
+    { BPRFX "wppmps", BPRFX "wppmps" TOOL_EXE_EXT, NULL },   // mips
+    { BPRFX "wppppc", BPRFX "wppppc" TOOL_EXE_EXT, NULL },   // ppc
 };
 
 static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
-    { FC,             FC EXE_EXT,             NULL },   // default
-    { BPRFX "wfc",    BPRFX "wfc" EXE_EXT,    NULL },   // i86
-    { BPRFX "wfc386", BPRFX "wfc386" EXE_EXT, NULL },   // i386
-    { BPRFX "wfcaxp", BPRFX "wfcaxp" EXE_EXT, NULL },   // axp
-    { BPRFX "wfcmps", BPRFX "wfcmps" EXE_EXT, NULL },   // mips
-    { BPRFX "wfcppc", BPRFX "wfcppc" EXE_EXT, NULL },   // ppc
+    { FC,             FC TOOL_EXE_EXT,             NULL },   // default
+    { BPRFX "wfc",    BPRFX "wfc" TOOL_EXE_EXT,    NULL },   // i86
+    { BPRFX "wfc386", BPRFX "wfc386" TOOL_EXE_EXT, NULL },   // i386
+    { BPRFX "wfcaxp", BPRFX "wfcaxp" TOOL_EXE_EXT, NULL },   // axp
+    { BPRFX "wfcmps", BPRFX "wfcmps" TOOL_EXE_EXT, NULL },   // mips
+    { BPRFX "wfcppc", BPRFX "wfcppc" TOOL_EXE_EXT, NULL },   // ppc
 };
 
 static void print_banner( void )
@@ -731,7 +731,7 @@ static  int  ParseArgs( int argc, char **argv )
             switch( Word[0] ) {
             case 'd':           /* name of linker directive file */
                 if( Word[1] == '=' || Word[1] == '#' ) {
-                    MakeName( Word, LNK_EXT );  /* add extension */
+                    MakeName( Word, TOOL_LNK_EXT );  /* add extension */
                     MemFree( Link_Name );
                     Link_Name = strfdup( Word + 2 );
                 } else {
@@ -982,7 +982,7 @@ static  int  ParseArgs( int argc, char **argv )
             new_item->next = NULL;
             p = MemAlloc( strlen( Word ) + 2 + 1 );
             strcpy( p, Word );
-            strcat( p, LIB_EXT_SECONDARY );
+            strcat( p, "." LIB_EXT_SECONDARY );
             new_item->item = strfdup( p );
             MemFree( p );
             ListAppend( &Libs_List, new_item );
@@ -1025,7 +1025,7 @@ static  int  ParseArgs( int argc, char **argv )
                 /* NB: only -MMD really matches OW's behaviour, but
                  * for now, let's accept -MD to mean the same */
                 /* translate to -adt=.o */
-                strcpy( Word, "dt=" OBJ_EXT );
+                strcpy( Word, "dt=" "." OBJ_EXT );
             } else if( strcmp( Word, "F" ) == 0 ) {
                 Word = MemRealloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
@@ -1200,19 +1200,18 @@ static  int  Parse( int argc, char **argv )
 static int useCPlusPlus( const char *p )
 /**************************************/
 {
-    return(
-        fname_cmp( p, ".cp" ) == 0 ||
-        fname_cmp( p, ".cpp" ) == 0 ||
+    return( *p++ == '.' && (
+        fname_cmp( p, "cp" ) == 0 ||
+        fname_cmp( p, "cpp" ) == 0 ||
 #ifdef __UNIX__
-        strcmp( p, ".c++" ) == 0 ||
-        strcmp( p, ".C" ) == 0 ||
+        strcmp( p, "c++" ) == 0 ||
+        strcmp( p, "C" ) == 0 ||
 #endif
-        fname_cmp( p, ".cxx" ) == 0 ||
-        fname_cmp( p, ".cc" )  == 0 ||
-        fname_cmp( p, ".hpp" ) == 0 ||
-        fname_cmp( p, ".hxx" ) == 0 );
+        fname_cmp( p, "cxx" ) == 0 ||
+        fname_cmp( p, "cc" )  == 0 ||
+        fname_cmp( p, "hpp" ) == 0 ||
+        fname_cmp( p, "hxx" ) == 0 ) );
 }
-
 
 static etool *FindToolGetPath( tool_type utl )
 /********************************************/
@@ -1473,7 +1472,7 @@ static  int  CompLink( void )
                     } else {                /* wdis needs extension */
                         DoQuoted( ofname, Obj_Name, '"' );
                     }
-                    strcat( Word, ASMS_EXT );
+                    strcat( Word, "." ASMS_EXT );
                     DoQuoted( sfname + 3, Word, '"' );
                 }
                 dis_args[0] = sfname;
@@ -1554,7 +1553,7 @@ static int ProcMemInit( void )
 {
     Exe_Name = NULL;
     Map_Name = NULL;
-    Obj_Name = MemStrDup( OBJ_EXT );
+    Obj_Name = MemStrDup( "." OBJ_EXT );
     Link_Name = NULL;
     SystemName = NULL;
     StackSize = NULL;
