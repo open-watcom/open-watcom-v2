@@ -47,6 +47,7 @@
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -223,7 +224,7 @@ static bool console_tty = false;
 static void RcIoPrintUsage( void )
 /********************************/
 {
-    char        progfname[_MAX_FNAME];
+    PGROUP2     pg;
     int         index;
     char        buf[256];
     char        imageName[_MAX_PATH];
@@ -241,12 +242,12 @@ static void RcIoPrintUsage( void )
         ConsoleMessage( "\n" );
         ++count;
     }
-    _splitpath( imageName, NULL, NULL, progfname, NULL );
-    strlwr( progfname );
+    _splitpath2( imageName, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    strlwr( pg.fname );
 
     index = USAGE_MSG_FIRST;
     GetRcMsg( index, buf, sizeof( buf ) );
-    ConsoleMessage( buf, progfname );
+    ConsoleMessage( buf, pg.fname );
     ConsoleMessage( "\n" );
     ++count;
     for( ++index; index <= USAGE_MSG_LAST; index++ ) {

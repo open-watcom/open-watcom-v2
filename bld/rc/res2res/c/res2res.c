@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,19 @@
 #include "param.h"
 #include "convert.h"
 #include "trmemcvr.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 static void PrintUsageMesage( const char * progpath )
 {
-    char    progname[ _MAX_FNAME ];
+    PGROUP2     pg;
 
-    _splitpath( progpath, NULL, NULL, progname, NULL );
-    strlwr( progname );
+    _splitpath2( progpath, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    strlwr( pg.fname );
 
-    printf( "Usage: %s {options} file1 [file2]\n", progname );
+    printf( "Usage: %s {options} file1 [file2]\n", pg.fname );
     puts( "Converts a Microsoft .RES file to a Watcom .RES "
                 "file or vice versa." );
 #ifdef __UNIX__

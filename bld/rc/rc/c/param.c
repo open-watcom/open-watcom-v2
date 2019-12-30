@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #endif
 #include "leadbyte.h"
 #include "rccore.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -521,21 +523,18 @@ static bool ScanOptionsArg( const char *arg )
 static char *MakeFileName( const char *infilename, const char *ext )
 /******************************************************************/
 {
-    char    name[_MAX_FNAME];
-    char    dir[_MAX_DIR];
-    char    drive[_MAX_DRIVE];
-    char    xext[_MAX_EXT];
-    size_t  len;
-    char    *out;
+    PGROUP2     pg;
+    size_t      len;
+    char        *out;
 
     len = strlen( infilename ) + 1;
     if( ext == NULL ) {
         out = RcMemMalloc( len );
         strcpy( out, infilename );
     } else {
-        _splitpath( infilename, drive, dir, name, xext );
-        out = RcMemMalloc( len - strlen( xext ) + strlen( ext ) + 1 );
-        _makepath( out, drive, dir, name, ext );
+        _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        out = RcMemMalloc( len + ( 1 + strlen( ext ) - strlen( &pg.ext ) ) );
+        _makepath( out, pg.drive, pg.dir, pg.fname, ext );
     }
     return( out );
 } /* MakeFileName */
@@ -543,45 +542,43 @@ static char *MakeFileName( const char *infilename, const char *ext )
 static void CheckExtension( char **filename, const char *defext )
 /***************************************************************/
 {
-    char    name[_MAX_FNAME];
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    ext[_MAX_EXT];
-    size_t  len;
+    PGROUP2     pg;
+    size_t      len;
 
-    _splitpath( *filename, drive, dir, name, ext );
-    if( *ext == '\0' ) {
-        len = strlen( *filename ) + strlen( defext ) + 1;
+    _splitpath2( *filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        len = strlen( *filename ) + 1;
+        len += 1 + strlen( defext );
         RcMemFree( *filename );
         *filename = RcMemMalloc( len );
-        _makepath( *filename, drive, dir, name, defext );
+        _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
     }
 } /* CheckExtension */
 
 /* extensions for Windows executables */
 /* The strings are in the format of the _splitpath function */
 static const char *ExeExt[] =   {
-    ".EXE",
-    ".DLL",
-    ".DRV",
-    ".SCR",                     /* Windows 3.1 screen saver apps */
+    "exe",
+    "dll",
+    "drv",
+    "scr",                     /* Windows 3.1 screen saver apps */
     NULL
 };
 
 static void CheckPass2Only( void )
 /********************************/
 {
-    char    ext[_MAX_EXT];
-    char    **check_ext;
+    PGROUP2     pg;
+    char        **check_ext;
 
-    _splitpath( CmdLineParms.InFileName, NULL, NULL, NULL, ext );
-    if( stricmp( ext, ".RES" ) == 0 ) {
+    _splitpath2( CmdLineParms.InFileName, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] == '.' && stricmp( pg.ext + 1, "res" ) == 0 ) {
         CmdLineParms.Pass2Only = true;
     } else {
         /* if the extension is in the ExeExt list then we want pass2 only */
         /* and there is no resource file to merge */
         for( check_ext = (char **)ExeExt; *check_ext != NULL; check_ext++ ) {
-            if( stricmp( ext, *check_ext ) == 0 ) {
+            if( pg.ext[0] == '.' && stricmp( pg.ext + 1, *check_ext ) == 0 ) {
                 CmdLineParms.Pass2Only = true;
                 CmdLineParms.NoResFile = true;
             }

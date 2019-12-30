@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,11 +55,12 @@
 #include "rcrtns.h"
 #include "rccore.h"
 #include "exeutil.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
-#define BUFFER_SIZE     1024
+#define BUFFER_SIZE         1024
 
 #define MAX_INCLUDE_DEPTH   16
 
@@ -283,14 +285,14 @@ unsigned RcIoGetCurrentFileLineNo( void )
 static bool checkCurrentFileType( void )
 /**************************************/
 {
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        isCOrH;
 
     isCOrH = false;
-    _splitpath( InStack.Current->loc.Filename, NULL, NULL, NULL, ext );
+    _splitpath2( InStack.Current->loc.Filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
     /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-    if( ext[0] == '.' && ext[1] != '\0' && ext[2] == '\0' ) {
-        switch( ext[1] ) {
+    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+        switch( pg.ext[1] ) {
         case 'c':
         case 'C':
         case 'h':

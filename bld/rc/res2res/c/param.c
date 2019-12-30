@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,10 @@
 #include "bool.h"
 #include "param.h"
 #include "swchar.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 struct Res2ResParams CmdLineParms;
 
@@ -91,14 +96,11 @@ static void MakeOutFilename( void )
 
 static void CheckExtention( char * path )
 {
-    char    name[ _MAX_FNAME ];
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
-    char    ext[ _MAX_EXT ];
+    PGROUP2     pg;
 
-    _splitpath( path, drive, dir, name, ext );
-    if (*ext == '\0') {
-        _makepath( path, drive, dir, name, "RES" );
+    _splitpath2( path, pg.buffer, pg.drive, pg.dir, pg.fname, pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        _makepath( path, pg.drive, pg.dir, pg.name, "res" );
     }
 }
 

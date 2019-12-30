@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,9 @@
 #include "dmpfile.h"
 #include "param.h"
 #include "global.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 static const char * const HelpText[] = {
@@ -53,13 +57,13 @@ static const char * const HelpText[] = {
 static void PrintUsageMessage( const char * progpath )
 /****************************************************/
 {
-    int     linenum;
-    char    progfname[ _MAX_FNAME ];
+    int         linenum;
+    PGROUP2     pg;
 
-    _splitpath( progpath, NULL, NULL, progfname, NULL );
-    strlwr( progfname );
+    _splitpath2( progpath, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    strlwr( pg.fname );
 
-    fprintf( stdout, HelpText[ 0 ], progfname );
+    fprintf( stdout, HelpText[ 0 ], pg.fname );
     fputc( '\n', stdout );
 
     for (linenum = 1; HelpText[ linenum ] != NULL; linenum++) {
