@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,6 @@ static char const *com_strs[] = {
 
 
 #define TOPIC_LIMIT 512 // Arbitrary limit to topic size.
-
-char const RtfExt[] = ".RTF";
 
 
 //  FindCommand     --Map command strings to their assigned numbers.

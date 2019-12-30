@@ -53,10 +53,6 @@
 #include "clibext.h"
 
 
-// Extension of a .HLP file.
-static char const   HlpExt[] = ".hlp";
-
-
 int main( int argc, char *argv[] )
 {
 #if !defined( __WATCOMC__ )
@@ -137,16 +133,16 @@ int main( int argc, char *argv[] )
     _fullpath( path, pfilename, _MAX_PATH );
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    if( stricmp( pg.ext, PhExt ) == 0 || stricmp( pg.ext, HlpExt ) == 0 ) {
+    if( stricmp( pg.ext, "." PH_EXT ) == 0 || stricmp( pg.ext, "." HLP_EXT ) == 0 ) {
         HCWarning( BAD_EXT );
         return( -1 );
     }
     if( pg.ext[0] == '\0' ) {
-        _makepath( path, pg.drive, pg.dir, pg.fname, HpjExt );
+        _makepath( path, pg.drive, pg.dir, pg.fname, HPJ_EXT );
     }
 
     char    destpath[_MAX_PATH];
-    _makepath( destpath, pg.drive, pg.dir, pg.fname, HlpExt );
+    _makepath( destpath, pg.drive, pg.dir, pg.fname, HLP_EXT );
 
     {
         InFile  input( path );
@@ -179,7 +175,7 @@ int main( int argc, char *argv[] )
                                 &bitfiles,
             };
 
-            if( stricmp( pg.ext, RtfExt ) == 0 ) {
+            if( stricmp( pg.ext, "." RTF_EXT ) == 0 ) {
                 my_files._topFile = new HFTopic( &helpfile );
                 RTFparser   rtfhandler( &my_files, &input );
                 rtfhandler.Go();

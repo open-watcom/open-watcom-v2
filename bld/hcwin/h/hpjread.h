@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +46,11 @@
 #include "ctxomap.h"
 
 
-// Extension of a .HPJ file.
-extern char const   HpjExt[];
+// Extension of a files.
+#define HPJ_EXT     "hpj"
+#define HLP_EXT     "hlp"
+#define RTF_EXT     "rtf"
+#define PH_EXT      "ph"
 
 
 //

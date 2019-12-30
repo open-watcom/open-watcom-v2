@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,6 @@
 #define HASH_SIZE   691
 #define PTBL_SIZE   1720
 #define MAX_DATA_SIZE   0xFFFF
-
-
-char const  PhExt[] = ".ph";
 
 
 struct Edge;    // Forward declaration.
