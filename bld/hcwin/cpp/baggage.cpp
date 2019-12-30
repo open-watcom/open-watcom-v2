@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@ BAGGAGE:  Baggage file handling.
 #include <stdlib.h>
 #include <string.h>
 #include "baggage.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -45,17 +47,15 @@ BAGGAGE:  Baggage file handling.
 Baggage::Baggage( HFSDirectory *d_file, char const filename[] )
     : File( filename )
 {
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    fname[_MAX_FNAME + _MAX_EXT];
-    char    ext[_MAX_EXT];
+    char        fname[_MAX_PATH];
+    PGROUP2     pg;
 
     if( !_badFile ) {
         reset( 0, SEEK_END );
         _size = (uint_32)tell();
         reset();
-        _splitpath( _fullName, drive, dir, fname, ext );
-        strcat( fname, ext );
+        _splitpath2( _fullName, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _makepath( fname, NULL, NULL, pg.fname, pg.ext );
         d_file->addFile( this, fname );
         close();
     } else {

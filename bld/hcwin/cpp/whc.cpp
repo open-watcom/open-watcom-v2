@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +48,7 @@
 #include "hpjread.h"
 #include "parsing.h"
 #include "hcerrors.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -129,25 +131,22 @@ int main( int argc, char *argv[] )
 
     //  Parse the given filename.
 
-    char    path[_MAX_PATH];
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    fname[_MAX_FNAME];
-    char    ext[_MAX_EXT];
+    char        path[_MAX_PATH];
+    PGROUP2     pg;
 
     _fullpath( path, pfilename, _MAX_PATH );
-    _splitpath( path, drive, dir, fname, ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    if( stricmp( ext, PhExt ) == 0 || stricmp( ext, HlpExt ) == 0 ) {
+    if( stricmp( pg.ext, PhExt ) == 0 || stricmp( pg.ext, HlpExt ) == 0 ) {
         HCWarning( BAD_EXT );
         return( -1 );
     }
-    if( ext[0] == '\0' ) {
-        _makepath( path, drive, dir, fname, HpjExt );
+    if( pg.ext[0] == '\0' ) {
+        _makepath( path, pg.drive, pg.dir, pg.fname, HpjExt );
     }
 
     char    destpath[_MAX_PATH];
-    _makepath( destpath, drive, dir, fname, HlpExt );
+    _makepath( destpath, pg.drive, pg.dir, pg.fname, HlpExt );
 
     {
         InFile  input( path );
@@ -180,7 +179,7 @@ int main( int argc, char *argv[] )
                                 &bitfiles,
             };
 
-            if( stricmp( ext, RtfExt ) == 0 ) {
+            if( stricmp( pg.ext, RtfExt ) == 0 ) {
                 my_files._topFile = new HFTopic( &helpfile );
                 RTFparser   rtfhandler( &my_files, &input );
                 rtfhandler.Go();
