@@ -43,6 +43,8 @@
 #include "chbffile.h"
 #include "cmdparse.h"
 #include "util.h"
+#include "pathgrp2.h"
+
 
 enum TokenVal {
     TOK_EOF         = '\0',
@@ -53,14 +55,6 @@ enum TokenVal {
     TOK_At          = '@',
     TOK_NotATok
 };
-
-typedef struct fullName {
-    char        path[ _MAX_PATH + 1 ];
-    char        drive[ _MAX_DRIVE + 1 ];
-    char        dir[ _MAX_DIR + 1 ];
-    char        fname[ _MAX_FNAME + 1 ];
-    char        ext[ _MAX_EXT + 1 ];
-} FullName;
 
 CommandParser::CommandParser( char * cmdLine, bool optAllowed )
                 : _cmdLine( cmdLine )
@@ -356,16 +350,14 @@ void CommandParser::addFile( const char * fname )
     DIR *           dirp;
     struct dirent * dire;
     String          file( fname );
-    FullName        dirName;
+    PGROUP2         pg;
 
     setExtension( file, ".mbr" );
 
     // FIXME -- these error messages have to do something smarter!
     if( ( strchr( file, '?' ) != NULL ) || ( strchr( file, '*' ) != NULL ) ) {
 
-        _splitpath( file, dirName.drive, dirName.dir,
-                    dirName.fname, dirName.ext );
-
+        _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         dirp = opendir( file );
         if( dirp == NULL ) {
             errMessage( "No files found matching \"%s\".", fname );
@@ -377,8 +369,8 @@ void CommandParser::addFile( const char * fname )
         for( ; (dire = readdir( dirp )) != NULL; ) {
             if( (dirp->d_attr & AvoidAttribs) == 0 ) {
                 String addFile;
-                addFile = dirName.drive;
-                addFile += dirName.dir;
+                addFile = pg.drive;
+                addFile += pg.dir;
                 addFile += dirp->d_name;
 
                 // do NOT do a setExtension here as we only get here
@@ -409,20 +401,20 @@ void CommandParser::setExtension( String & str, const char * ext )
 // split a path apart, set its extension to ext if it is blank,
 // stick it back together and return the full path name.
 {
-    FullName    name;
+    PGROUP2     pg;
     char        newDir[ _MAX_PATH ];
     char *      res;
     String      retStr;
+    char        path[_MAX_PATH + 1];
 
-    _splitpath( str, name.drive, name.dir, name.fname, name.ext );
 
-    if( *name.ext == '\0' ) {
-        strcpy( name.ext, ext );
+    _splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] != '\0' ) {
+        ext = pg.ext;
     }
+    _makepath( path, pg.drive, pg.dir, pg.fname, ext );
 
-    _makepath( name.path, name.drive, name.dir, name.fname, name.ext );
-
-    res = _fullpath( newDir, name.path, _MAX_PATH );
+    res = _fullpath( newDir, path, _MAX_PATH );
 
     if( res == NULL ) {
         FileExcept oops( FileExcept::Read, errno, str );
