@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -365,7 +366,7 @@ void DoOutput( void ) {
     PBDefInfo   *cur;
 
     PrintPBDef( &SymbolInfo );
-    if( Config.nuo_name != NULL ) {
+    if( Config.nu_name != NULL ) {
         CreateNonVisualObj( &SymbolInfo );
     }
     while( SymbolInfo.func != NULL ) {

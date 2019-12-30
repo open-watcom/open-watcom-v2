@@ -212,7 +212,7 @@ static void genTmpFName( char *file, char *buf ) {
     _splitpath( file, drive, dir, NULL, NULL );
     for( i=0 ; i < 0x1000; i++ ) {
         sprintf( fname, "TMP%03X", i );
-        _makepath( buf, drive, dir, fname, ".tmp" );
+        _makepath( buf, drive, dir, fname, "tmp" );
         if( access( buf, F_OK ) ) break;
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +42,12 @@ typedef struct {
     unsigned    def_cnt;
     char        *dll_name;
     char        *out_file;
-    char        *nuo_name;      // non-visual user object name
+    char        *nu_name;       // non-visual user object name
     char        *nuo_file;      // non-visual user object file name
-}CmdLineInfo;
+} CmdLineInfo;
 
-extern CmdLineInfo      Config;
-extern BOOL             ErrorHasOccured;
+extern CmdLineInfo  Config;
+extern BOOL         ErrorHasOccured;
 
 extern void         ReportError( char *msg, ... );
 extern void         DebugOut( char *msg, ... );

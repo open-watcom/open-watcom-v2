@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,15 +143,15 @@ void CreateNonVisualObj( SymbolList *info ) {
     PBTypeInfo  *pbtype;
 
     if( !OpenFile( Config.nuo_file ) ) {
-        WriteText( "$PBExportHeader$%s.sru\n", Config.nuo_name );
+        WriteText( "$PBExportHeader$%s.sru\n", Config.nu_name );
         WriteText( "forward\n" );
-        WriteText( "global type %s from nonvisualobject\n", Config.nuo_name );
+        WriteText( "global type %s from nonvisualobject\n", Config.nu_name );
         WriteText( "end type\n" );
         WriteText( "end forward\n" );
         WriteText( "\n" );
-        WriteText( "global type %s from nonvisualobject\n", Config.nuo_name );
+        WriteText( "global type %s from nonvisualobject\n", Config.nu_name );
         WriteText( "end type\n" );
-        WriteText( "global %s %s\n", Config.nuo_name, Config.nuo_name );
+        WriteText( "global %s %s\n", Config.nu_name, Config.nu_name );
         WriteText( "\n" );
 
         WriteText( "type prototypes\n" );
@@ -217,10 +218,10 @@ void CreateNonVisualObj( SymbolList *info ) {
             pbdef = pbdef->next;
         }
 
-        WriteText( "on %s.create\n", Config.nuo_name );
+        WriteText( "on %s.create\n", Config.nu_name );
         WriteText( "TriggerEvent( this, \"constructor\" )\n" );
         WriteText( "end on\n\n" );
-        WriteText( "on %s.destroy\n", Config.nuo_name );
+        WriteText( "on %s.destroy\n", Config.nu_name );
         WriteText( "TriggerEvent( this, \"destructor\" )\n" );
         WriteText( "end on\n" );
         CloseFile();

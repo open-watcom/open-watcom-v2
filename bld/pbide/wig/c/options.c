@@ -70,11 +70,11 @@ typedef struct wig_opts {
 static wig_opts wigOpts;
 
 /* text prefixxes and suffixxes */
-#define HPP_EXT         ".hpp"
-#define CPP_EXT         ".cpp"
-#define C_EXT           ".c"
-#define DLL_EXT         ".dll"
-#define ERR_EXT         ".err"
+#define HPP_EXT         "hpp"
+#define CPP_EXT         "cpp"
+#define C_EXT           "c"
+#define DLL_EXT         "dll"
+#define ERR_EXT         "err"
 #define LIBMAIN_FNAME   "lmain"
 
 char    *GetInputFile( void ) {
@@ -217,9 +217,9 @@ static void getFname( const char *uoname, char prefix, char *fname )
     }
 }
 
-void    SetBaseName( const char *src ) {
-/**************************************/
-
+void    SetBaseName( const char *src )
+/************************************/
+{
     char        fname[_MAX_FNAME];
 
     assert( src );
@@ -230,30 +230,24 @@ void    SetBaseName( const char *src ) {
     strncpy( wigOpts.basename, src, MAX_PATH );
 
     if( !( Options & OPT_LIBRARY_NAME_SET ) ) {
-        _makepath( wigOpts.libname, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, DLL_EXT );
+        _makepath( wigOpts.libname, wigOpts.outputdrive, wigOpts.outputdir, fname, DLL_EXT );
     }
     if( !( Options & OPT_HEADER_FILE_SET ) ) {
-        _makepath( wigOpts.headerfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, HPP_EXT );
+        _makepath( wigOpts.headerfile, wigOpts.outputdrive, wigOpts.outputdir, fname, HPP_EXT );
     }
     if( !( Options & OPT_ERROR_FILE_SET ) ) {
-        _makepath( wigOpts.errfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, ERR_EXT );
+        _makepath( wigOpts.errfile, wigOpts.outputdrive, wigOpts.outputdir, fname, ERR_EXT );
     }
     if( !( Options & OPT_CODE_FILE_SET ) ) {
         if( Options & OPT_GEN_C_CODE ) {
-            _makepath( wigOpts.codefile, wigOpts.outputdrive,
-                        wigOpts.outputdir, fname, C_EXT );
+            _makepath( wigOpts.codefile, wigOpts.outputdrive, wigOpts.outputdir, fname, C_EXT );
         } else {
-            _makepath( wigOpts.codefile, wigOpts.outputdrive,
-                        wigOpts.outputdir, fname, CPP_EXT );
+            _makepath( wigOpts.codefile, wigOpts.outputdrive, wigOpts.outputdir, fname, CPP_EXT );
         }
     }
     if( !( Options & OPT_COVER_FILE_SET ) ) {
         getFname( src, 'c', fname );
-        _makepath( wigOpts.coverfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, CPP_EXT );
+        _makepath( wigOpts.coverfile, wigOpts.outputdrive, wigOpts.outputdir, fname, CPP_EXT );
     }
 }
 
@@ -267,10 +261,8 @@ void PostProcessOptions( void ) {
             _makepath( wigOpts.parentheader, NULL, NULL, fname, HPP_EXT );
         }
     }
-    _splitpath( wigOpts.infile, wigOpts.outputdrive, wigOpts.outputdir,
-                NULL, NULL );
-    _makepath( wigOpts.lmainfile, wigOpts.outputdrive, wigOpts.outputdir,
-                LIBMAIN_FNAME, CPP_EXT );
+    _splitpath( wigOpts.infile, wigOpts.outputdrive, wigOpts.outputdir, NULL, NULL );
+    _makepath( wigOpts.lmainfile, wigOpts.outputdrive, wigOpts.outputdir, LIBMAIN_FNAME, CPP_EXT );
 }
 
 static void showUsage( void ) {
