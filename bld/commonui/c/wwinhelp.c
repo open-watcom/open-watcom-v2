@@ -41,6 +41,8 @@
     #include <htmlhelp.h>
 #endif
 
+#include "clibext.h"
+
 
 #ifdef __NT__
 typedef HWND (WINAPI *PFNHH)( HWND, LPCSTR, UINT, DWORD_PTR );
