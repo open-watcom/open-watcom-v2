@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "ldstr.h"
 #include "uistr.gh"
 #include "wclbproc.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -177,24 +178,21 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
  */
 bool GenTmpFileName( const char *tmpname, char *buf )
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     char        *ptr;
     size_t      len;
     size_t      fname_len;
     unsigned    i;
     char        id[4];
 
-    _splitpath( tmpname, drive, dir, fname, ext );
+    _splitpath2( tmpname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     len = 0;
-    strcpy( buf, drive );
-    len += strlen( drive );
-    strcpy( buf + len, dir );
-    len += strlen( dir );
-    strcpy( buf + len, fname );
-    fname_len = strlen( fname );
+    strcpy( buf, pg.drive );
+    len += strlen( pg.drive );
+    strcpy( buf + len, pg.dir );
+    len += strlen( pg.dir );
+    strcpy( buf + len, pg.fname );
+    fname_len = strlen( pg.fname );
     if( fname_len < _MAX_FNAME - 4 ) {
         ptr = buf + len + fname_len;
         len = len + fname_len + 3;
@@ -202,7 +200,7 @@ bool GenTmpFileName( const char *tmpname, char *buf )
         ptr = buf + len + _MAX_FNAME - 4;
         len = len + _MAX_FNAME - 1;
     }
-    strcpy( buf + len, ext );
+    strcpy( buf + len, pg.ext );
     for( i = 0;; ) {
         sprintf( id, "%03d", i );
         memcpy( ptr, id, 3 );
@@ -227,48 +225,41 @@ static void relToAbs( const char *path, char *out )
 {
     char        *cwd;
     int         old_drive;
-    char        dir[_MAX_DIR];
-    char        drive[_MAX_DRIVE];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-    char        *ptr;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
+    size_t      len;
 
-    cwd = getcwd( NULL, 0 );
-    old_drive = _getdrive();
-    _splitpath( path, drive, dir, fname, ext );
-    if( strcmp( dir, "\\" ) != 0 ) {
-        if( *dir != '\0' ) {
-            ptr = dir;
-            while( *ptr ) {
-                ptr++;
-            }
-            ptr--;
-            *ptr = '\0';
-        }
+    /* remove directory separator on the path end */
+    _splitpath2( path, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    if( pg1.dir[0] != '\0' && ( pg1.dir[0] != '\\' || pg1.dir[1] != '\0' ) ) {
+        pg1.dir[strlen( pg1.dir ) - 1] = '\0';
     }
-    _chdrive( toupper( drive[0] ) - 'A' + 1 );
-    chdir( dir );
+
+    /* get file current directory on appropriate drive */
+    old_drive = _getdrive();
+    cwd = getcwd( NULL, 0 );
+    _chdrive( toupper( pg1.drive[0] ) - 'A' + 1 );
+    chdir( pg1.dir );
     getcwd( out, _MAX_PATH );
     _chdrive( old_drive );
     chdir( cwd );
     free( cwd );
-    ptr = out;
+
     /*
      * Make sure _splitpath doesn't mistake the last directory spec as a
      * filename.
      */
-    while( *ptr != '\0' ) {
-        ptr++;
-    }
-    if( *(ptr - 1) != '\\' ) {
-        ptr[0] = '\\';
-        ptr++;
-    }
-    strcpy( ptr, "a" );
-    strupr( fname );
-    strupr( ext );
-    _splitpath( out, drive, dir, NULL, NULL );
-    _makepath( out, drive, dir, fname, ext );
+    len = strlen( out );
+    if( len > 0 && out[len - 1] != '\\' )
+        out[len++] = '\\';
+    out[len++] = 'a';   /* add fake file name for _splitpath2 */
+    out[len] = '\0';
+    _splitpath2( out, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
+
+    /* create absolute path for file */
+    strupr( pg1.fname );
+    strupr( pg1.ext );
+    _makepath( out, pg2.drive, pg2.dir, pg1.fname, pg1.ext );
 
 } /* relToAbs */
 

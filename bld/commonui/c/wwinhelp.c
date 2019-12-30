@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include "mbstring.h"
 #include "bool.h"
 #include "wwinhelp.h"
+#include "pathgrp2.h"
 #ifdef __NT__
     #include <htmlhelp.h>
 #endif
@@ -63,21 +65,18 @@ bool WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
 #if !defined( _WIN64 )
         if( __IsDBCS ) {
             /* Look for Japanese version of help file first */
-            char        drive[_MAX_DRIVE];
-            char        dir[_MAX_DIR];
-            char        fname[_MAX_FNAME];
-            char        ext[_MAX_EXT];
+            PGROUP2     pg;
             char        new_filename[_MAX_PATH];
             size_t      len;
 
-            _splitpath( helpFile, drive, dir, fname, ext );
-            len = strlen( fname );
+            _splitpath2( helpFile, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            len = strlen( pg.fname );
             if( len > 0 ) {
                 if( len > 7 )
                     len = 7;
                 fname[len++] = 'j';
                 fname[len] = '\0';
-                _makepath( new_filename, drive, dir, fname, ext );
+                _makepath( new_filename, pg.drive, pg.dir, pg.fname, pg.ext );
 
                 _searchenv( new_filename, "WWINHELP", buff );
                 if( buff[0] != '\0' ) {
