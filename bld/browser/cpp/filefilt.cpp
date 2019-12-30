@@ -43,6 +43,10 @@
 #include "filefilt.h"
 #include "viewmgr.h"
 #include "wbrwin.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define FNAMECHARCMP( a, b ) ( tolower( (int) a ) - tolower( (int) b ) )
 
@@ -72,8 +76,8 @@ bool FFiltPattern::match( String & s )
         return true;
     }
 
-    _splitpath2( s, file.buffer, file.drive, file.dir, file.fname, file.ext );
-    _splitpath2( _pattern, pat.buffer, pat.drive, pat.dir, pat.fname, pat.ext );
+    _splitpath2( s, file.buffer, &file.drive, &file.dir, &file.fname, &file.ext );
+    _splitpath2( _pattern, pat.buffer, &pat.drive, &pat.dir, &pat.fname, &pat.ext );
 
     if( stricmp( file.drive, pat.drive ) ) {
         return false;

@@ -201,18 +201,14 @@ bool GenTmpFileName( const char *tmpname, char *buf )
         len = len + _MAX_FNAME - 1;
     }
     strcpy( buf + len, pg.ext );
-    for( i = 0;; ) {
+    for( i = 0; i < 1000; i++ ) {
         sprintf( id, "%03d", i );
         memcpy( ptr, id, 3 );
         if( access( buf, F_OK ) == -1 ) {
             break;
         }
-        i++;
-        if( i > 999 ) {
-            return( false );
-        }
     }
-    return( true );
+    return( i < 1000 );
 
 } /* GenTmpFileName */
 
@@ -288,26 +284,26 @@ void SaveListBox( int how, void (*headerfn)(FILE *), char *(*linefn)(bool, HWND,
                   const char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
-    bool        ret;
+    bool        ok;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
 
     if( how == SLB_SAVE_AS ) {
-        ret = GetSaveFName( mainhwnd, fname );
+        ok = GetSaveFName( mainhwnd, fname );
     } else {
-        ret = GenTmpFileName( tmpname, fname );
-        if( !ret ) {
-            ReportSave( mainhwnd, fname, appname, ret );
+        ok = GenTmpFileName( tmpname, fname );
+        if( !ok ) {
+            ReportSave( mainhwnd, fname, appname, ok );
         }
     }
-    if( ret ) {
+    if( ok ) {
         hourglass = LoadCursor( (HINSTANCE)NULL, IDC_WAIT );
         SetCapture( mainhwnd );
         oldcursor = SetCursor( hourglass );
-        ret = writeListBoxContents( headerfn, linefn, fname, listbox );
+        ok = writeListBoxContents( headerfn, linefn, fname, listbox );
         SetCursor( oldcursor );
         ReleaseCapture();
-        ReportSave( mainhwnd, fname, appname, ret );
+        ReportSave( mainhwnd, fname, appname, ok );
     }
 
 } /* SaveListBox */

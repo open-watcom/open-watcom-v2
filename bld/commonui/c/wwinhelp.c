@@ -32,14 +32,15 @@
 
 #include "commonui.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#ifdef __NT__
+    #include <htmlhelp.h>
+#endif
 #include "mbstring.h"
 #include "bool.h"
 #include "wwinhelp.h"
 #include "pathgrp2.h"
-#ifdef __NT__
-    #include <htmlhelp.h>
-#endif
 
 #include "clibext.h"
 
@@ -76,8 +77,8 @@ bool WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
             if( len > 0 ) {
                 if( len > 7 )
                     len = 7;
-                fname[len++] = 'j';
-                fname[len] = '\0';
+                pg.fname[len++] = 'j';
+                pg.fname[len] = '\0';
                 _makepath( new_filename, pg.drive, pg.dir, pg.fname, pg.ext );
 
                 _searchenv( new_filename, "WWINHELP", buff );

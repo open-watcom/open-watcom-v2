@@ -45,6 +45,8 @@
 #include "util.h"
 #include "pathgrp2.h"
 
+#include "clibext.h"
+
 
 enum TokenVal {
     TOK_EOF         = '\0',
@@ -369,6 +371,7 @@ void CommandParser::addFile( const char * fname )
         for( ; (dire = readdir( dirp )) != NULL; ) {
             if( (dirp->d_attr & AvoidAttribs) == 0 ) {
                 String addFile;
+
                 addFile = pg.drive;
                 addFile += pg.dir;
                 addFile += dirp->d_name;
@@ -402,11 +405,9 @@ void CommandParser::setExtension( String & str, const char * ext )
 // stick it back together and return the full path name.
 {
     PGROUP2     pg;
-    char        newDir[ _MAX_PATH ];
+    char        path[_MAX_PATH];
+    char        newDir[_MAX_PATH];
     char *      res;
-    String      retStr;
-    char        path[_MAX_PATH + 1];
-
 
     _splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] != '\0' ) {

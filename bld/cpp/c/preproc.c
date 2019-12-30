@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "watcom.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -232,8 +234,6 @@ static int findInclude( const char *path, const char *filename, size_t len, char
 int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, int incl_type )
 {
     int         rc = -1;
-    char        drivebuf[_MAX_DRIVE];
-    char        dirbuf[_MAX_DIR];
 
     memcpy( fullfilename, filename, len );
     fullfilename[len] = '\0';
@@ -244,10 +244,11 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             rc = access( fullfilename, R_OK );
         }
         if( rc == -1 && incl_type == PPINCLUDE_USR && PP_File != NULL ) {
-            size_t  len1;
+            PGROUP2     pg;
+            size_t      len1;
 
-            _splitpath( PP_File->filename, drivebuf, dirbuf, NULL, NULL );
-            _makepath( fullfilename, drivebuf, dirbuf, NULL, NULL );
+            _splitpath2( PP_File->filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+            _makepath( fullfilename, pg.drive, pg.dir, NULL, NULL );
             len1 = strlen( fullfilename );
             if( len1 > 0 ) {
                 char c = fullfilename[len1 - 1];
@@ -486,7 +487,7 @@ static size_t PP_ReadBuf( size_t line_len )
         memcpy( p, PPLineBuf, line_len );
         PP_Free( PPLineBuf );
         PPLineBuf = p;
-    } 
+    }
     return( len );
 }
 
