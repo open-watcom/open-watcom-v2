@@ -138,11 +138,14 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         /*** Prepare to convert (copy) the file ***/
         buf = AllocMem( BUFSIZE );
         in = fopen( infilename, "rb" );
-        if( in == NULL )  FatalError( "Cannot open '%s'", infilename );
+        if( in == NULL )
+            FatalError( "Cannot open '%s'", infilename );
         out = fopen( outfilename, "wb" );
-        if( out == NULL )  FatalError( "Cannot create '%s'", outfilename );
+        if( out == NULL )
+            FatalError( "Cannot create '%s'", outfilename );
         bytes = filelength( fileno( in ) );
-        if( bytes == -1L )  FatalError( "Cannot get size of '%s'", infilename );
+        if( bytes == -1L )
+            FatalError( "Cannot get size of '%s'", infilename );
 
         /*** Convert (copy) the file ***/
         amount = BUFSIZE;
@@ -150,9 +153,11 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
             if( bytes < BUFSIZE )
                 amount = bytes;
             rc = fread( buf, amount, 1, in );
-            if( rc == 0 )  FatalError( "Cannot read from '%s'", infilename );
+            if( rc == 0 )
+                FatalError( "Cannot read from '%s'", infilename );
             rc = fwrite( buf, amount, 1, out );
-            if( rc == 0 )  FatalError( "Cannot write to '%s'", outfilename );
+            if( rc == 0 )
+                FatalError( "Cannot write to '%s'", outfilename );
             bytes -= amount;
         }
         fclose( in );

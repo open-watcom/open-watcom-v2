@@ -369,7 +369,7 @@ static void init_fuzzy( void )
 
         /*** Skip .res files ***/
         _splitpath2( newstr, pg.buffer, NULL, NULL, NULL, &pg.ext );
-        if( stricmp( pg.ext, ".res" ) == 0 ) {
+        if( CMPFEXT( pg.ext, "res" ) ) {
             FreeMem( newstr );
             continue;
         }

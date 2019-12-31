@@ -94,33 +94,33 @@ static int file_type( const char *filename )
     }
 
     _splitpath2( tempfilename, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    if( allowC && stricmp( pg.ext, ".c" ) == 0 ) {
+    if( allowC && CMPFEXT( pg.ext, "c" ) ) {
         type = TYPE_C_FILE;
-    } else if( allowCPP && stricmp( pg.ext, ".cc" ) == 0 ) {
+    } else if( allowCPP && CMPFEXT( pg.ext, "cc" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && stricmp( pg.ext, ".cpp" ) == 0 ) {
+    } else if( allowCPP && CMPFEXT( pg.ext, "cpp" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && stricmp( pg.ext, ".cxx" ) == 0 ) {
+    } else if( allowCPP && CMPFEXT( pg.ext, "cxx" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && stricmp( pg.ext, ".odl" ) == 0 ) {
+    } else if( allowCPP && CMPFEXT( pg.ext, "odl" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP && stricmp( pg.ext, ".idl" ) == 0 ) {
+    } else if( allowCPP && CMPFEXT( pg.ext, "idl" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowDEF && stricmp( pg.ext, ".def" ) == 0 ) {
+    } else if( allowDEF && CMPFEXT( pg.ext, "def" ) ) {
         type = TYPE_DEF_FILE;
-    } else if( allowOBJ && stricmp( pg.ext, ".obj" ) == 0 ) {
+    } else if( allowOBJ && CMPFEXT( pg.ext, "obj" ) ) {
         type = TYPE_OBJ_FILE;
-    } else if( allowLIB && stricmp( pg.ext, ".lib" ) == 0 ) {
+    } else if( allowLIB && CMPFEXT( pg.ext, "lib" ) ) {
         type = TYPE_LIB_FILE;
-    } else if( allowRC && stricmp( pg.ext, ".rc" ) == 0 ) {
+    } else if( allowRC && CMPFEXT( pg.ext, "rc" ) ) {
         type = TYPE_RC_FILE;
-    } else if( allowRES && stricmp( pg.ext, ".res" ) == 0 ) {
+    } else if( allowRES && CMPFEXT( pg.ext, "res" ) ) {
         type = TYPE_RES_FILE;
-    } else if( allowRBJ && stricmp( pg.ext, ".rbj" ) == 0 ) {
+    } else if( allowRBJ && CMPFEXT( pg.ext, "rbj" ) ) {
         type = TYPE_RBJ_FILE;
-    } else if( allowRS && stricmp( pg.ext, ".rs" ) == 0 ) {
+    } else if( allowRS && CMPFEXT( pg.ext, "rs" ) ) {
         type = TYPE_RS_FILE;
-    } else if( allowEXP && stricmp( pg.ext, ".exp" ) == 0 ) {
+    } else if( allowEXP && CMPFEXT( pg.ext, "exp" ) ) {
         type = TYPE_EXP_FILE;
     } else {
         if( defaultType == TYPE_INVALID_FILE ) {

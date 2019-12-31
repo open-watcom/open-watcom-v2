@@ -129,15 +129,15 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
 
     /*** Process all the source files, in the order they were given ***/
     for( ;; ) {
-        filename = GetNextFile( &fileType, TYPE_C_FILE, TYPE_CPP_FILE,
-                                TYPE_INVALID_FILE );
-        if( filename == NULL )  break;
+        filename = GetNextFile( &fileType, TYPE_C_FILE, TYPE_CPP_FILE, TYPE_INVALID_FILE );
+        if( filename == NULL )
+            break;
 
         /*** Prepare to spawn the compiler ***/
         cloneCmdLine = CloneCmdLine( compCmdLine );
         HandleFileTranslate( filename, cloneCmdLine, NULL );
         switch( fileType ) {
-          case TYPE_C_FILE:
+        case TYPE_C_FILE:
             compiler = C_COMPILER;
             AppendCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION, compiler );
             AppendCmdLine( cloneCmdLine, CL_C_FILENAMES_SECTION, filename );
@@ -149,7 +149,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
                                  CL_C_FILENAMES_SECTION,
                                  INVALID_MERGE_CMDLINE );
             break;
-          case TYPE_CPP_FILE:
+        case TYPE_CPP_FILE:
             compiler = CPP_COMPILER;
             AppendCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION, compiler );
             AppendCmdLine( cloneCmdLine, CL_C_FILENAMES_SECTION, filename );
@@ -159,7 +159,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
                                  CL_C_FILENAMES_SECTION,
                                  INVALID_MERGE_CMDLINE );
             break;
-          default:
+        default:
             Zoinks();
         }
 

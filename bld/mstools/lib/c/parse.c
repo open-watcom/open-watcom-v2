@@ -76,7 +76,7 @@ void FiniParse( OPT_STORAGE *cmdOpts )
  * Appends '.' to a filename without extension ie. 'my_file' becomes 'my_file.'
  */
 static char *VerifyDot( char *filename )
-/************************************/
+/**************************************/
 {
     char *              newfilename;
     char *              tempfilename;
@@ -107,8 +107,8 @@ static char *VerifyDot( char *filename )
 /*
  * Checks file for '.' and wildcards and then adds it to the list.
  */
-static void VerifyAddFile( char *filename )
-/*****************************************/
+static void VerifyAddFile( const char *filename )
+/***********************************************/
 {
     DIR *               dirp;
     struct dirent *     dire;
@@ -116,41 +116,34 @@ static void VerifyAddFile( char *filename )
     char *              newfilename;
     char                fullname[_MAX_PATH];
     PGROUP2             pg;
-    char *              pattern;
 
-    if ((strchr(filename,'?')!=NULL) || (strchr(filename,'*')!=NULL)){
+    newfilename = DupStrMem( filename );
+    if( ( strchr( newfilename, '?' ) != NULL ) || ( strchr( newfilename, '*' ) != NULL ) ) {
         /*** Strip quotes from filename ***/
-        newfilename = DupStrMem(filename);
-        if( *filename == '"' ) {
+        if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
-            tempfilename[ strlen(tempfilename)-1 ] = '\0';      /* smite trailing " */
+            tempfilename[strlen( tempfilename ) - 1] = '\0';    /* smite trailing " */
         } else {
             tempfilename = newfilename;
         }
-
-        pattern = DupStrMem( tempfilename );
-        dirp = opendir( pattern );
-        if (dirp == NULL) {
-            FatalError("can't find following files: %s",filename);
+        _splitpath2( tempfilename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+        dirp = opendir( tempfilename );
+        FreeMem( newfilename );
+        if( dirp == NULL ) {
+            FatalError( "can't find following files: %s", filename );
         } else {
-            FreeMem( filename );
-            FreeMem( newfilename );
             for( ; (dire = readdir( dirp )) != NULL; ) {
-                _splitpath2( pattern, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-                _makepath( fullname, pg.drive, pg.dir, NULL, NULL );
-                strcat( fullname, dire->d_name );
-                filename = fullname;
-                filename = VerifyDot(filename);
-                AddFile( TYPE_DEFAULT_FILE, filename );
-                FreeMem( filename );
+                _makepath( fullname, pg.drive, pg.dir, dire->d_name, NULL );
+                tempfilename = VerifyDot( DupStrMem( fullname ) );
+                AddFile( TYPE_DEFAULT_FILE, tempfilename );
+                FreeMem( tempfilename );
             }
             closedir( dirp );
         }
-        FreeMem( pattern );
     } else {
-        filename = VerifyDot(filename);
-        AddFile( TYPE_DEFAULT_FILE, filename );
-        FreeMem( filename );
+        newfilename = VerifyDot( newfilename );
+        AddFile( TYPE_DEFAULT_FILE, newfilename );
+        FreeMem( newfilename );
     }
 }
 
@@ -203,6 +196,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
             UngetCharContext();
             filename = CmdScanFileName();
             VerifyAddFile(filename);
+            FreeMem( filename );
         }
         (*itemsParsed)++;
     }

@@ -801,9 +801,8 @@ static void merge_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
  * Given the filename, it updates the given command line appropriately.  Any
  * CmdLine pointer which is NULL is ignored.
  */
-void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
-                          CmdLine *linkCmdLine )
-/*******************************************************************/
+void HandleFileTranslate( const char *filename, CmdLine *compCmdLine, CmdLine *linkCmdLine )
+/******************************************************************************************/
 {
     PGROUP2             pg;
     char                fullPath[_MAX_PATH];
