@@ -72,13 +72,13 @@ void GetProg( char *cmd, char *eoc )
     *eoc = save;
 #ifdef __NETWARE__
     if( pg1.ext[0] == '\0' )
-        pg1.ext = ".nlm";
+        pg1.ext = "nlm";
 #elif defined( __DOS__ ) && defined( _PLS )
     if( pg1.ext[0] == '\0' )
-        pg1.ext = ".exp";
+        pg1.ext = "exp";
 #elif !defined( __UNIX__ )
     if( pg1.ext[0] == '\0' )
-        pg1.ext = ".exe";
+        pg1.ext = "exe";
 #endif
     _makepath( prog_name, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
 

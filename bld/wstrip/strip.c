@@ -67,6 +67,8 @@
 
 #define CopyData(i,o)   CopyDataLen( i, o, ~0UL )
 
+#define ARRAYSIZE(a)    (sizeof( a ) / sizeof( a[0] ))
+
 #include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -107,7 +109,6 @@ static const char *ExtLst[] = {
 #ifndef __UNIX__
     ".qnx", "",
 #endif
-    NULL
 };
 
 static const char SymExt[] = { ".sym" };
@@ -455,11 +456,11 @@ int main( int argc, char *argv[] )
     }
     finfo.name[0] = '\0';
     mtime = 0;
-    for( i = 0; (ext1 = ExtLst[i]) != NULL; ++i ) {
+    for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
         struct stat     in_stat;
 
         strcpy( fin.name, argv[1] );
-        has_ext = Suffix( fin.name, ext1 );
+        has_ext = Suffix( fin.name, ExtLst[i] );
         if( stat( fin.name, &in_stat ) == 0 ) {
             mtime = in_stat.st_mtime;
             break;
@@ -468,7 +469,7 @@ int main( int argc, char *argv[] )
             break;
         }
     }
-    if( ext1 == NULL ) {
+    if( i == ARRAYSIZE( ExtLst ) ) {
         Fatal( MSG_CANT_FIND, argv[1] );
     }
     if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {

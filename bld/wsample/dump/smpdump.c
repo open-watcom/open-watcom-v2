@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,11 +58,8 @@ static const char * const Types[] = {
     ""
 };
 
-static char path[_MAX_PATH];
-static char drv[_MAX_DRIVE];
-static char dir[_MAX_DIR];
-static char name[_MAX_FNAME];
-static char ext[_MAX_EXT];
+static char     path[_MAX_PATH];
+static PGROUP2  pg;
 
 int main( int argc, char **argv )
 {
@@ -96,11 +93,10 @@ int main( int argc, char **argv )
     if( argc == 3 && strcmp( argv[2], "-q" ) == 0 ) {
         quiet = 1;
     }
-    _splitpath( argv[1], drv, dir, name, ext );
-    if( ext[0] == '\0' ) {
-        strcpy( ext, ".smp" );
-    }
-    _makepath( path, drv, dir, name, ext );
+    _splitpath2( argv[1], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' )
+        pg.ext = "smp";
+    _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
     fp = fopen( path, "rb" );
     if( fp == NULL )
         return( 1 );
