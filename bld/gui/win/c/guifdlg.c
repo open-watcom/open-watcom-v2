@@ -85,9 +85,10 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     FILEDLG             fdlg;
     int                 str_index;
     int                 rc;
+    int                 rc2;
     ULONG               i;
     ULONG               slen, flen;
-    int                 drive;
+    int                 new_drive;
     int                 old_drive;
     char                initial_path[_MAX_PATH];
     char                old_path[_MAX_PATH];
@@ -102,9 +103,9 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     old_drive = 0;
-    drive = 0;
+    new_drive = 0;
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
-        drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
+        new_drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
     }
     initial_path[0] = '\0';
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' ) {
@@ -134,7 +135,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         fdlg.szFullFile[CCHMAXPATH - 1] = '\0';
     }
 
-    if( ( !ofn->file_name || !*ofn->file_name ) && ofn->filter_index >= 0 ) {
+    if( ( ofn->file_name == NULL || *ofn->file_name == '\0' ) && ofn->filter_index >= 0 ) {
         str_index = 0;
         for( i = 0; ; i++ ) {
             if( ofn->filter_list[i] == '\0' ) {
@@ -154,9 +155,9 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-    if( drive ) {
+    if( new_drive ) {
         old_drive = _getdrive();
-        _chdrive( drive );
+        _chdrive( new_drive );
         if( *initial_path && *old_path ) {
             chdir( initial_path );
         }
@@ -164,13 +165,23 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 
     rc = (int)WinFileDlg( HWND_DESKTOP, GUIGetParentFrameHWND( wnd ), &fdlg );
 
+    if( new_drive ) {
+        _chdrive( old_drive );
+        if( *initial_path && *old_path ) {
+            chdir( old_path );
+        }
+    }
+
+    rc2 = -1;
+
     if( fdlg.papszFQFilename ) {
         ofn->file_name[0] = '\0';
         slen = 0;
         for( i = 0; i < fdlg.ulFQFCount; i++ ) {
             flen = strlen( fdlg.papszFQFilename[0][i] );
             if( ( slen + flen + 2 ) > ofn->max_file_name ) {
-                return( FN_RC_FAILED_TO_INITIALIZE );
+                rc2 = FN_RC_FAILED_TO_INITIALIZE;
+                break;
             }
             if( slen ) {
                 ofn->file_name[slen++] = ' ';
@@ -184,7 +195,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     } else {
         if( strlen( fdlg.szFullFile ) > ( ofn->max_file_name - 1 ) ) {
-            return( FN_RC_FAILED_TO_INITIALIZE );
+            rc2 = FN_RC_FAILED_TO_INITIALIZE;
         } else {
             strcpy( ofn->file_name, fdlg.szFullFile );
             _splitpath( fdlg.szFullFile, NULL, NULL, fname, NULL );
@@ -198,11 +209,8 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-    if( drive ) {
-        _chdrive( old_drive );
-        if( *initial_path && *old_path ) {
-            chdir( old_path );
-        }
+    if( rc2 != -1 ) {
+        return( rc2 );
     }
 
     if( fdlg.lReturn == DID_CANCEL ) {
@@ -277,14 +285,14 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     OPENFILENAME        wofn;
     bool                issave;
     int                 rc;
-    int                 drive;
+    int                 new_drive;
     int                 old_drive;
 
     LastPath = NULL;
     old_drive = 0;
-    drive = 0;
+    new_drive = 0;
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
-        drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
+        new_drive = tolower( (unsigned char)ofn->initial_dir[0] ) - 'a' + 1;
         memmove( ofn->initial_dir, ofn->initial_dir + 2, strlen( ofn->initial_dir + 2 ) + 1 );
     }
 
@@ -335,9 +343,9 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, GUIMainHInst );
     }
 
-    if( drive ) {
+    if( new_drive ) {
         old_drive = _getdrive();
-        _chdrive( drive );
+        _chdrive( new_drive );
     }
     if( issave ) {
         rc = GetSaveFileName( &wofn );
@@ -349,12 +357,12 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
 
-    if( LastPath && ( !rc || (ofn->flags & FN_WANT_LAST_PATH) == 0 ) ) {
+    if( LastPath && ( rc == 0 || (ofn->flags & FN_WANT_LAST_PATH) == 0 ) ) {
         GUIMemFree( LastPath );
         LastPath = NULL;
     }
     ofn->last_path = LastPath;
-    if( drive ) {
+    if( new_drive ) {
         _chdrive( old_drive );
     }
     if( rc ) {
