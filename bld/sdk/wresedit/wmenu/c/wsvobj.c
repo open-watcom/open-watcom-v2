@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,9 @@
 #include "rcstr.gh"
 #include "wmen2rc.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -68,23 +72,19 @@ static bool WSaveObjectInto( WMenuEditInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-static bool WSaveObjectToRC( WMenuEditInfo *einfo, char *filename,
+static bool WSaveObjectToRC( WMenuEditInfo *einfo, const char *filename,
                              bool shadow, bool append )
 {
+    PGROUP2     pg;
     char        fn_path[ _MAX_PATH ];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
-    char        fn_ext[_MAX_EXT + 1];
 
     if( einfo == NULL || filename == NULL ) {
         return( false );
     }
 
     if( shadow ) {
-        _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
-        strcpy( fn_ext, ".mnu" );
-        _makepath( fn_path, fn_drive, fn_dir, fn_name, fn_ext );
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( fn_path, pg.drive, pg.dir, pg.fname, "mnu" );
     } else {
         strcpy( fn_path, filename );
     }
@@ -102,13 +102,14 @@ static bool WSaveObjectToRC( WMenuEditInfo *einfo, char *filename,
 
 bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
 {
-    bool    ok, data_saved;
+    bool    ok;
+    bool    data_saved;
     void    *old_data;
     size_t  old_size;
 
-    data_saved = FALSE;
+    data_saved = false;
 
-    WSetWaitCursor( einfo->win, TRUE );
+    WSetWaitCursor( einfo->win, true );
 
     ok = (einfo != NULL);
 
@@ -139,7 +140,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
     if( ok ) {
         old_data = einfo->info->data;
         old_size = einfo->info->data_size;
-        data_saved = TRUE;
+        data_saved = true;
         WMakeDataFromMenu( einfo->menu, &einfo->info->data, &einfo->info->data_size );
         ok = (einfo->info->data != NULL && einfo->info->data_size != 0);
     }
@@ -166,7 +167,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
         einfo->info->data_size = old_size;
     }
 
-    WSetWaitCursor( einfo->win, FALSE );
+    WSetWaitCursor( einfo->win, false );
 
     return( ok );
 }
@@ -184,7 +185,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
     bool                ok;
 
     fname = NULL;
-    got_name = FALSE;
+    got_name = false;
 
     ok = (einfo != NULL);
 
@@ -224,7 +225,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
                 FreeRCString( gf.filter );
             }
             if( fname != NULL ) {
-                got_name = TRUE;
+                got_name = true;
             }
         } else {
             fname = einfo->file_name;
@@ -234,7 +235,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
 
     if( ok ) {
         if( got_name ) {
-            ftype = WSelectFileType( einfo->win, fname, einfo->info->is32bit, TRUE,
+            ftype = WSelectFileType( einfo->win, fname, einfo->info->is32bit, true,
                                      WGetEditInstance(), WMenuHelpRoutine );
         } else {
             ftype = einfo->file_type;
@@ -244,7 +245,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
 
     if( ok ) {
         if( ftype == WR_WIN_RC_MENU ) {
-            ok = WSaveObjectToRC( einfo, fname, FALSE, FALSE );
+            ok = WSaveObjectToRC( einfo, fname, false, false );
             if( ok ) {
                 WGetInternalRESName( fname, resfile );
                 if( einfo->info->is32bit ) {
@@ -334,9 +335,9 @@ bool WSaveObjectInto( WMenuEditInfo *einfo )
 
     if( ok ) {
         ftype = WSelectFileType( einfo->win, fname, einfo->info->is32bit,
-                                 TRUE, WGetEditInstance(), WMenuHelpRoutine );
+                                 true, WGetEditInstance(), WMenuHelpRoutine );
         if( ftype == WR_WIN_RC_MENU ) {
-            ok = WSaveObjectToRC( einfo, fname, FALSE, TRUE );
+            ok = WSaveObjectToRC( einfo, fname, false, true );
         } else {
             idata.name = einfo->info->res_name;
             idata.data = einfo->info->data;
@@ -369,16 +370,16 @@ bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, b
     bool                ok;
 
     if( einfo == NULL || table == NULL || file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     ok = true;
 
-    WSetWaitCursor( einfo->win, TRUE );
+    WSetWaitCursor( einfo->win, true );
 
     if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
@@ -411,7 +412,7 @@ bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, b
         WRMakeHashTableClean( table );
     }
 
-    WSetWaitCursor( einfo->win, FALSE );
+    WSetWaitCursor( einfo->win, false );
 
     return( ok );
 }

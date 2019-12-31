@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,9 @@
 #include "wde_wres.h"
 #include "wdesvres.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -64,21 +68,17 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *, uint_16, uint_32, uin
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WdeCreateDLGName( char *filename, char *newname )
+bool WdeCreateDLGName( const char *filename, char *newname )
 {
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
-    char        fn_ext[_MAX_EXT + 1];
+    PGROUP2     pg;
 
     if( filename != NULL && newname != NULL ) {
-        _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
-        strcpy( fn_ext, ".dlg" );
-        _makepath( newname, fn_drive, fn_dir, fn_name, fn_ext );
-        return( TRUE );
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( newname, pg.drive, pg.dir, pg.fname, "dlg" );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeSaveResourceToFile( WdeResInfo *res_info )
@@ -153,7 +153,7 @@ bool WdeInfoToData( WdeResInfo *info )
 
 
     if( info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     def_lang.lang = DEF_SUBLANG;
@@ -167,7 +167,7 @@ bool WdeInfoToData( WdeResInfo *info )
 
         if( ditem->object != NULL || ditem->dialog_info != NULL ) {
             if( !WdeGetItemData( ditem, &data, &size ) ) {
-                return( FALSE );
+                return( false );
             }
         }
 
@@ -176,7 +176,7 @@ bool WdeInfoToData( WdeResInfo *info )
                 rnode = WdeRenameWResResNode( dnode, ditem->rnode, ditem->dialog_name );
                 if( rnode == NULL ) {
                     WRMemFree( data );
-                    return( FALSE );
+                    return( false );
                 }
                 ditem->rnode = rnode;
                 ditem->lnode->data = data;
@@ -204,18 +204,18 @@ bool WdeInfoToData( WdeResInfo *info )
                     WRMemFree( rnode->Head );
                     WRMemFree( rnode );
                     WRMemFree( data );
-                    return( FALSE );
+                    return( false );
                 }
             } else {
                 WRMemFree( data );
-                return( FALSE );
+                return( false );
             }
 
             info->info->dir->NumResources++;
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeInfoData( WdeResInfo *info )
@@ -231,7 +231,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
     WResID              *name;
 
     if( ditem == NULL ) {
-        return( FALSE );
+        return( NULL );
     }
 
     if( ditem->object != NULL ) {
@@ -251,8 +251,6 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
                 WdeFreeDialogBoxInfo( ditem->dialog_info );
             }
             ditem->dialog_info = dbi;
-        } else {
-            return( FALSE );
         }
     } else {
         dbi = ditem->dialog_info;

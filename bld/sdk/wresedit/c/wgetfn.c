@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,9 @@
 #include "wstrdup.h"
 #include "wgetfn.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -142,10 +146,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     BOOL            ret;
     DWORD           error;
     size_t          len;
-    char            fn_drive[_MAX_DRIVE];
-    char            fn_dir[_MAX_DIR];
-    char            fn_name[_MAX_FNAME];
-    char            fn_ext[_MAX_EXT + 1];
+    PGROUP2         pg;
     HINSTANCE       app_inst;
 
     if( gf == NULL ) {
@@ -171,11 +172,11 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     }
 
     if( gf->file_name != NULL && *gf->file_name != '\0' ) {
-        _splitpath( gf->file_name, fn_drive, fn_dir, fn_name, fn_ext );
-        if( *fn_drive != '\0' || *fn_dir != '\0' ) {
-            _makepath( WInitialDir, fn_drive, fn_dir, NULL, NULL );
+        _splitpath2( gf->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
+            _makepath( WInitialDir, pg.drive, pg.dir, NULL, NULL );
         }
-        _makepath( WFn, NULL, NULL, fn_name, fn_ext );
+        _makepath( WFn, NULL, NULL, pg.fname, pg.ext );
     } else {
         WFn[0] = '\0';
     }
@@ -249,8 +250,8 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
             WInitialDir[wofn.nFileOffset] = '\0';
         }
         WFileFilter = wofn.nFilterIndex;
-        _splitpath( WFn, NULL, NULL, NULL, fn_ext + 1 );
-        if( fn_ext[1] == '\0' ) {
+        _splitpath2( WFn, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        if( pg.ext[0] == '\0' ) {
             char *out_ext;
             out_ext = WFindFileFilterFromIndex( gf->filter, wofn.nFilterIndex );
             if( out_ext[2] != '*' ) {
@@ -290,21 +291,17 @@ WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam
 }
 #endif
 
-bool WGetInternalRESName( char *filename, char *newname )
+bool WGetInternalRESName( const char *filename, char *newname )
 {
-    char                fn_drive[_MAX_DRIVE];
-    char                fn_dir[_MAX_DIR];
-    char                fn_name[_MAX_FNAME];
-    char                fn_ext[_MAX_EXT + 1];
+    PGROUP2     pg;
 
     if( filename != NULL && newname != NULL ) {
-        _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
-        strcpy( fn_ext, ".res" );
-        _makepath( newname, fn_drive, fn_dir, fn_name, fn_ext );
-        return( TRUE );
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( newname, pg.drive, pg.dir, pg.fname, "res" );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WMassageFilter( char *filter )

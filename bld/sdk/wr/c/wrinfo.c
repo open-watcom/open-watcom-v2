@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,10 @@
 #include "wrglbl.h"
 #include "wrinfoi.h"
 #include "wrmsg.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -248,15 +253,11 @@ bool WRRelinkInfo( WRInfo *info )
 
 bool WRAPI WRGetInternalRESName( const char *filename, char *newname )
 {
-    char                fn_drive[_MAX_DRIVE];
-    char                fn_dir[_MAX_DIR];
-    char                fn_name[_MAX_FNAME];
-    char                fn_ext[_MAX_EXT + 1];
+    PGROUP2     pg;
 
     if( filename != NULL && newname != NULL ) {
-        _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
-        strcpy( fn_ext, ".res" );
-        _makepath( newname, fn_drive, fn_dir, fn_name, fn_ext );
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( newname, pg.drive, pg.dir, pg.fname, "res" );
         return( true );
     }
 
