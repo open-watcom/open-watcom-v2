@@ -133,7 +133,7 @@ int main( int argc, char *argv[] )
     _fullpath( path, pfilename, _MAX_PATH );
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    if( stricmp( pg.ext, "." PH_EXT ) == 0 || stricmp( pg.ext, "." HLP_EXT ) == 0 ) {
+    if( CMPFEXT( pg.ext, PH_EXT ) || CMPFEXT( pg.ext, HLP_EXT ) ) {
         HCWarning( BAD_EXT );
         return( -1 );
     }
@@ -175,7 +175,7 @@ int main( int argc, char *argv[] )
                                 &bitfiles,
             };
 
-            if( stricmp( pg.ext, "." RTF_EXT ) == 0 ) {
+            if( CMPFEXT( pg.ext, RTF_EXT ) ) {
                 my_files._topFile = new HFTopic( &helpfile );
                 RTFparser   rtfhandler( &my_files, &input );
                 rtfhandler.Go();

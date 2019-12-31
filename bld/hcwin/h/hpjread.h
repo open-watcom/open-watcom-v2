@@ -52,6 +52,7 @@
 #define RTF_EXT     "rtf"
 #define PH_EXT      "ph"
 
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 //
 //  HPJScanner  --Simple scanner class, suited to reading .HPJ files.
