@@ -95,9 +95,9 @@ static void CheckExtention( char * path )
 {
     PGROUP2     pg;
 
-    _splitpath2( path, pg.buffer, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
-        _makepath( path, pg.drive, pg.dir, pg.name, "res" );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "res" );
     }
 }
 

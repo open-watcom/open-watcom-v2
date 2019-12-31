@@ -547,8 +547,7 @@ static void CheckExtension( char **filename, const char *defext )
 
     _splitpath2( *filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
-        len = strlen( *filename ) + 1;
-        len += 1 + strlen( defext );
+        len = strlen( *filename ) + ( 1 + strlen( defext ) ) + 1;
         RcMemFree( *filename );
         *filename = RcMemMalloc( len );
         _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
