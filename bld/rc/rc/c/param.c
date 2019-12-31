@@ -533,7 +533,7 @@ static char *MakeFileName( const char *infilename, const char *ext )
         strcpy( out, infilename );
     } else {
         _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        out = RcMemMalloc( len + ( 1 + strlen( ext ) - strlen( &pg.ext ) ) );
+        out = RcMemMalloc( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
         _makepath( out, pg.drive, pg.dir, pg.fname, ext );
     }
     return( out );
