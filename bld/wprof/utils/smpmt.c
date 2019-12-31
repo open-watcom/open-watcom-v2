@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +48,14 @@
 
 #include "common.h"
 #include "sample.h"
+#include "pathgrp2.h"
 
-char path[_MAX_PATH];
-char drive[_MAX_DRIVE];
-char dir[_MAX_DIR];
-char name[_MAX_FNAME];
-char ext[_MAX_EXT];
+#include "clibext.h"
 
-char sample_file[_MAX_PATH];
+
+static char path[_MAX_PATH];
+
+static char sample_file[_MAX_PATH];
 
 static void quit( char *msg )
 {
@@ -62,30 +63,36 @@ static void quit( char *msg )
     exit( 1 );
 }
 
-static void makeName( char *original, char *extension, char *target )
+static void makeName( const char *original, const char *ext, char *target )
 {
+    PGROUP2     pg1;
+    PGROUP2     pg2;
+
     getcwd( path, _MAX_PATH );
     strcat( path, "\\dummy.ext" );
-    _splitpath( original, drive, dir, name, ext );
-    if( drive[0] == '\0' ) {
-        _splitpath( path, drive, NULL, NULL, NULL );
+    _splitpath2( original, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    _splitpath2( path, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
+    if( pg1.drive[0] == '\0' ) {
+        pg1.drive = pg2.drive;
     }
-    if( dir[0] == '\0' ) {
-        _splitpath( path, NULL, dir, NULL, NULL );
+    if( pg1.dir[0] == '\0' ) {
+        pg1.dir = pg2.dir;
     }
-    if( ext[0] == '\0' ) {
-        strcpy( ext, extension );
+    if( pg1.ext[0] != '\0' ) {
+        ext = pg1.ext;
     }
-    _makepath( target, drive, dir, name, ext );
+    _makepath( target, pg1.drive, pg1.dir, pg1.fname, ext );
     strupr( target );
 }
 
-void check( int b )
+#if 0
+static void check( int b )
 {
     if( !b ) {
         quit( "I/O error" );
     }
 }
+#endif
 
 void main( int argc, char **argv )
 {
@@ -104,7 +111,7 @@ puts( "WATCOM Sample File Thread Creation Utility  Version 1.0" );
 puts( "Copyright by WATCOM Systems Inc. 1990, 1991.  All rights reserved." );
 puts( "WATCOM is a trademark of WATCOM Systems Inc." );
 
-    makeName( argv[1], ".SMP", sample_file );
+    makeName( argv[1], "SMP", sample_file );
     in = fopen( sample_file, "r+b" );
     if( in == NULL ) {
         quit( "cannot open sample file" );

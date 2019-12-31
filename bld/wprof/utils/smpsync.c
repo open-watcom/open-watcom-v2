@@ -45,24 +45,25 @@
 #include <fcntl.h>
 //#include <malloc.h>
 #include <direct.h>
-
 #include "common.h"
 #include "sample.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define OUTPUT_NAME     "$$SYNC$$.SMP"
 
-FILE *sfp;
-FILE *tfp;
+static FILE *sfp;
+static FILE *tfp;
 
-char path[_MAX_PATH];
-char drive[_MAX_DRIVE];
-char dir[_MAX_DIR];
-char name[_MAX_FNAME];
-char ext[_MAX_EXT];
+static char path[_MAX_PATH];
+static char sample_file[_MAX_PATH];
+static char exe_file[_MAX_PATH];
+static char new_file[_MAX_PATH];
 
-char sample_file[_MAX_PATH];
-char exe_file[_MAX_PATH];
-char new_file[_MAX_PATH];
+static PGROUP2     pg1;
+static PGROUP2     pg2;
 
 static void quit( char *msg )
 {
@@ -70,21 +71,22 @@ static void quit( char *msg )
     exit( 1 );
 }
 
-static void makeName( char *original, char *extension, char *target )
+static void makeName( const char *original, const char *ext, char *target )
 {
     getcwd( path, _MAX_PATH );
     strcat( path, "\\dummy.ext" );
-    _splitpath( original, drive, dir, name, ext );
-    if( drive[0] == '\0' ) {
-        _splitpath( path, drive, NULL, NULL, NULL );
+    _splitpath2( original, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    _splitpath2( path, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
+    if( pg1.drive[0] == '\0' ) {
+        pg1.drive = pg2.drive;
     }
-    if( dir[0] == '\0' ) {
-        _splitpath( path, NULL, dir, NULL, NULL );
+    if( pg1.dir[0] == '\0' ) {
+        pg1.dir = pg2.dir;
     }
-    if( ext[0] == '\0' ) {
-        strcpy( ext, extension );
+    if( pg1.ext[0] != '\0' ) {
+        ext = pg1.ext;
     }
-    _makepath( target, drive, dir, name, ext );
+    _makepath( target, pg1.drive, pg1.dir, pg1.fname, ext );
     strupr( target );
 }
 
@@ -100,7 +102,7 @@ static void transferUpTo( fpos_t from, fpos_t to )
     }
 }
 
-void check( int b )
+static void check( int b )
 {
     if( ! b ) {
         quit( "I/O error" );
@@ -130,11 +132,11 @@ void main( int argc, char **argv )
     bias = 0;
     if( argc == 4 && ( argv[1][0] == '-' || argv[1][0] == '/' ) && argv[1][1] == 'b' ) {
         sscanf( &argv[1][2], "%lx", &bias ); /* read in bias offset */
-        makeName( argv[2], ".SMP", sample_file );
-        makeName( argv[3], ".EXE", exe_file );
+        makeName( argv[2], "SMP", sample_file );
+        makeName( argv[3], "EXE", exe_file );
     } else if( argc == 3 ) {
-        makeName( argv[1], ".SMP", sample_file );
-        makeName( argv[2], ".EXE", exe_file );
+        makeName( argv[1], "SMP", sample_file );
+        makeName( argv[2], "EXE", exe_file );
     } else {
         puts( "usage: SMPSYNC { -b<offset bias> } <sample_file> <exe_file>" );
         puts( "where: <offset bias> is the hexadecimal offset" );
@@ -145,9 +147,9 @@ void main( int argc, char **argv )
     puts( "WATCOM Sample File Synchronization Utility  Version 1.0" );
     puts( "Copyright by WATCOM Systems Inc. 1989, 1992.  All rights reserved." );
     puts( "WATCOM is a trademark of WATCOM Systems Inc.\n" );
-    _splitpath( sample_file, drive, dir, NULL, NULL );
-    _makepath( new_file, drive, dir, OUTPUT_NAME, NULL );
-    makeName( new_file, ".SMP", new_file );
+    _splitpath2( sample_file, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+    _makepath( new_file, pg1.drive, pg1.dir, OUTPUT_NAME, NULL );
+    makeName( new_file, "SMP", new_file );
     sfp = fopen( sample_file, "rb" );
     if( sfp == NULL ) {
         quit( "cannot open sample file" );
