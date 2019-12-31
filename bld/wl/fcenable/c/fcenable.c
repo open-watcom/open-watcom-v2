@@ -439,7 +439,7 @@ static void ProcFile( const char *fname )
     if( name == NULL )      // null == no stack space left.
         Suicide();
     strcpy( name, fname );
-    ReplaceExt( name, ".obj", false );
+    ReplaceExt( name, "obj", false );
     InFile = QOpen( name, "rb" );
     for( ;; ) {
         CleanRecStuff();
@@ -478,9 +478,9 @@ static void ProcFile( const char *fname )
             Suicide();
         strcpy( bak, name );
         if( ftype == ENDLIBRARY ) {
-            ReplaceExt( bak, ".bak", true );
+            ReplaceExt( bak, "bak", true );
         } else {
-            ReplaceExt( bak, ".bob", true );
+            ReplaceExt( bak, "bob", true );
         }
         doCopyFile( name, bak );
     }

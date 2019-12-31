@@ -363,7 +363,7 @@ int main( int argc, char *argv[] )
     }
     _splitpath( argv[1], pg.drive, pg.dir, pg.fname, pg.ext );
     if( pg.ext[0] == '\0' ) {
-        _makepath( path, pg.drive, pg.dir, pg.fname, ".exe" );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "exe" );
     } else {
         strcpy( path, argv[1] );
     }

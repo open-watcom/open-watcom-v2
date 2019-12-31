@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 #include "common.h"
 #include "sample.h"
 
-#define OUTPUT_NAME     "$$SYNC$$"
+#define OUTPUT_NAME     "$$SYNC$$.SMP"
 
 FILE *sfp;
 FILE *tfp;
@@ -145,7 +146,7 @@ void main( int argc, char **argv )
     puts( "Copyright by WATCOM Systems Inc. 1989, 1992.  All rights reserved." );
     puts( "WATCOM is a trademark of WATCOM Systems Inc.\n" );
     _splitpath( sample_file, drive, dir, NULL, NULL );
-    _makepath( new_file, drive, dir, OUTPUT_NAME, ".SMP" );
+    _makepath( new_file, drive, dir, OUTPUT_NAME, NULL );
     makeName( new_file, ".SMP", new_file );
     sfp = fopen( sample_file, "rb" );
     if( sfp == NULL ) {
@@ -169,7 +170,7 @@ void main( int argc, char **argv )
     printf("executable file:     %s\n", exe_file );
     printf("sample file:         %s\n", sample_file );
     printf("sample file version: %u.%u\n", header.major_ver, header.minor_ver );
-    printf("new sample file:     " OUTPUT_NAME ".SMP\n" );
+    printf("new sample file:     " OUTPUT_NAME "\n" );
     st = fseek( sfp, header.sample_start, SEEK_SET );
     check( st == 0 );
     st = fgetpos( sfp, &curr_position );

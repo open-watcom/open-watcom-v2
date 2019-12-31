@@ -65,6 +65,7 @@
 #include "guifdlg.h"
 #include "guidlg.h"
 #include "guistr.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -187,13 +188,6 @@ static bool     ControlsInitialized = false;
 #define SetFileExtsTextList(x)  dlg->fileExtensions = (x)
 #define freeFileExtsTextList()  freeStringList(&dlg.fileExtensions)
 
-#if defined( __UNIX__ ) || defined( __NETWARE__ )
-  #define PC '/'
-#else   /* DOS, OS/2, Windows */
-  #define PC '\\'
-  #define ALT_PC '/'
-#endif
-
 static void InitDlgControls( void )
 {
     dlgControls[FILENAME_TITLE_IDX].text = LIT( File_Name_Colon );
@@ -207,84 +201,6 @@ static void InitDlgControls( void )
     dlgControls[DRIVES_TITLE_IDX].text = LIT( Drives_Colon );
 #endif
 }
-
-static void copyPart( char *buff, char *p, int len, int maxlen )
-{
-    if( buff != NULL ) {
-        if( len > maxlen ) {
-            len = maxlen;
-        }
-        memcpy( buff, p, len );
-        buff[len] = 0;
-    }
-}
-
-/*
- * splitPath - need because C library will truncate fname and ext too early
- */
-static void splitPath( char *path, char *drive, char *dir, char *fname, char *ext )
-{
-    char        *dotp;
-    char        *fnamep;
-    char        *startp;
-    char        ch;
-
-#if defined( __UNIX__ ) || defined( __NETWARE__ )
-    /* process node/drive specification */
-    startp = path;
-    if( path[0] == FILE_SEP_CHAR && path[1] == FILE_SEP_CHAR ) {
-        for( path += 2; (ch = *path) != '\0'; path++ ) {
-            if( ch == FILE_SEP_CHAR || ch == '.' ) {
-                break;
-            }
-        }
-    }
-    copyPart( drive, startp, (int)( path - startp ), _MAX_DRIVE );
-#else
-    /* processs drive specification */
-    if( path[0] != 0  &&  path[1] == ':' ) {
-        if( drive != NULL ) {
-            drive[0] = path[0];
-            drive[1] = ':';
-            drive[2] = 0;
-        }
-        path += 2;
-    } else if( drive != NULL ) {
-        drive[0] = 0;
-    }
-#endif
-
-    dotp = NULL;
-    fnamep = path;
-    startp = path;
-
-    for( ; (ch = *path) != '\0'; path++ ) {
-        if( ch == '.' ) {
-            dotp = path;
-            continue;
-        }
-#if defined( __UNIX__ ) || defined( __NETWARE__ )
-        if( ch == FILE_SEP_CHAR ) {
-#else
-        if( ch == FILE_SEP_CHAR  ||  ch == '/' ) {
-#endif
-            fnamep = path + 1;
-            dotp = NULL;
-        }
-    }
-    copyPart( dir, startp, (int)( fnamep - startp ), _MAX_DIR - 1 );
-    if( dotp == NULL ) {
-        dotp = path;
-    }
-#if defined( __UNIX__ ) || defined( __NETWARE__ )
-    if( ext == NULL )  {
-        dotp = path;
-    }
-#endif
-    copyPart( fname, fnamep, (int)( dotp - fnamep ), _MAX_PATH - 1 );
-    copyPart( ext, dotp, (int)( path - dotp ), _MAX_PATH - 1);
-
-} /* splitPath */
 
 #ifdef __OS2__
 static drive_type getDriveType( char drive )
@@ -321,7 +237,7 @@ static drive_type getDriveType( char drv )
     drive[0] = drv;
     drive[1] = ':';
     drive[2] = '\\';
-    drive[3] = 0;
+    drive[3] = '\0';
 
     ret = GetDriveType( drive );
     switch ( ret ) {
@@ -519,7 +435,9 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
  */
 static bool goToDir( gui_window *gui, char *dir )
 {
-    char        drive[_MAX_DRIVE];
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+    PGROUP2     pg;
+#endif
     bool        removed_end;
     size_t      len;
     int         rc;
@@ -530,16 +448,16 @@ static bool goToDir( gui_window *gui, char *dir )
         return( false );
     }
 
-    if( dir[0] == 0 ) {
+    if( dir[0] == '\0' ) {
         return( true );
     }
 
-    if( !(dir[1] == ':' && dir[2] == 0) ) {
+    if( !(dir[1] == ':' && dir[2] == '\0') ) {
         len = strlen( dir );
         removed_end = false;
         if( dir[len - 1] == FILE_SEP_CHAR ) {
             if( len > 1 && dir[len - 2] != ':' ) {
-                dir[len - 1] = 0;
+                dir[len - 1] = '\0';
                 removed_end = true;
             }
         }
@@ -561,12 +479,12 @@ static bool goToDir( gui_window *gui, char *dir )
         }
     }
 
-    splitPath( dir, drive, NULL, NULL, NULL );
-    if( drive[0] != 0 ) {
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        _chdrive( toupper( drive[0] ) - 'A' + 1 );
-#endif
+    _splitpath2( dir, pg.buffer, &pg.drive, NULL, NULL, NULL );
+    if( pg.drive[0] != '\0' ) {
+        _chdrive( toupper( pg.drive[0] ) - 'A' + 1 );
     }
+#endif
     return( true );
 
 } /* goToDir */
@@ -757,7 +675,7 @@ static bool setFileList( gui_window *gui, const char *ext )
 static bool setDirList( gui_window *gui )
 {
     char                path[_MAX_PATH];
-    char                dir[_MAX_DIR];
+    PGROUP2             pg;
     char                drive[_MAX_DRIVE + 3];
     DIR                 *dirp;
     struct dirent       *dire;
@@ -793,8 +711,9 @@ static bool setDirList( gui_window *gui )
         strcat( path, FILE_SEP FILES_ALL );
 #endif
     }
-    splitPath( path, drive + 1, dir, NULL, NULL );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     drive[0] = OPENED_DIR_CHAR;
+    strcpy( drive + 1, pg.drive );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = GetDriveTextList();
     for( i = 0; drvlist[i] != NULL; i++ ) {
@@ -811,7 +730,7 @@ static bool setDirList( gui_window *gui )
         num_items++;
         ok = true;
         strcpy( indent, INDENT_STR );
-        start = dir + 1;
+        start = pg.dir + 1;
         for( ptr = start; *ptr != '\0'; ptr++ ) {
             if( *ptr == FILE_SEP_CHAR ) {
                 *ptr = '\0';
@@ -835,8 +754,8 @@ static bool setDirList( gui_window *gui )
             if( ok ) {
                 while( (dire = readdir( dirp )) != NULL ) {
                     if( isdir( dire, path ) ) {
-                        if( ( dire->d_name[0] == '.' ) && ( ( dire->d_name[1] == 0 )
-                          || ( dire->d_name[1] == '.' && dire->d_name[2] == 0 ) ) ) {
+                        if( ( dire->d_name[0] == '.' ) && ( ( dire->d_name[1] == '\0' )
+                          || ( dire->d_name[1] == '.' && dire->d_name[2] == '\0' ) ) ) {
                             continue;
                         }
                         len = strlen( indent );
@@ -914,11 +833,8 @@ static process_rc processFileName( gui_window *gui )
     char        *tmp;
     char        *txt;
     size_t      len;
+    PGROUP2     pg;
     char        path[_MAX_PATH];
-    char        dir[_MAX_DIR];
-    char        drive[_MAX_DRIVE];
-    char        fname[_MAX_PATH];
-    char        ext[_MAX_PATH];
     char        *buff;
     bool        has_wild;
     struct stat buf;
@@ -937,10 +853,10 @@ static process_rc processFileName( gui_window *gui )
     }
     strcpy( txt, tmp );
     GUIMemFree( tmp );
-    splitPath( txt, drive, dir, fname, ext );
+    _splitpath2( txt, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
     has_wild = hasWild( txt );
-    if( has_wild && fname[0] == 0 ) {
+    if( has_wild && pg.fname[0] == '\0' ) {
         return( PROCESS_FALSE );
     }
 
@@ -956,7 +872,7 @@ static process_rc processFileName( gui_window *gui )
                 return( PROCESS_FALSE );
             }
         }
-        _makepath( path, drive, dir, NULL, NULL );
+        _makepath( path, pg.drive, pg.dir, NULL, NULL );
         if( !goToDir( gui, path ) ) {
             return( PROCESS_FALSE );
         }
@@ -969,7 +885,7 @@ static process_rc processFileName( gui_window *gui )
                 return( PROCESS_FALSE );
             }
         }
-        _makepath( path, NULL, NULL, fname, ext );
+        _makepath( path, NULL, NULL, pg.fname, pg.ext );
 
         if( dlg->currOFN->base_file_name != NULL ) {
             len = strlen( txt );
@@ -977,31 +893,31 @@ static process_rc processFileName( gui_window *gui )
                 len = dlg->currOFN->max_base_file_name - 1;
             }
             memcpy( dlg->currOFN->base_file_name, txt, len );
-            dlg->currOFN->base_file_name[len] = 0;
+            dlg->currOFN->base_file_name[len] = '\0';
         }
         if( dlg->currOFN->file_name != NULL ) {
             getcwd( path, sizeof( path ) );
             len = strlen( path );
             if( path[len - 1] != FILE_SEP_CHAR ) {
                 path[len] = FILE_SEP_CHAR;
-                path[len + 1] = 0;
+                path[len + 1] = '\0';
             }
-            strcat( path, fname );
-            strcat( path, ext );
+            strcat( path, pg.fname );
+            strcat( path, pg.ext );
             len = strlen( path );
             if( len >= dlg->currOFN->max_file_name ) {
                 len = dlg->currOFN->max_file_name-1;
             }
             memcpy( dlg->currOFN->file_name, path, len );
-            dlg->currOFN->file_name[len] = 0;
+            dlg->currOFN->file_name[len] = '\0';
         }
         return( PROCESS_TRUE );
     }
-    _makepath( path, drive, dir, NULL, NULL );
+    _makepath( path, pg.drive, pg.dir, NULL, NULL );
     if( !goToDir( gui, path ) ) {
         return( PROCESS_FALSE );
     }
-    _makepath( path, NULL, NULL, fname, ext );
+    _makepath( path, NULL, NULL, pg.fname, pg.ext );
     if( !initDialog( gui, path, NULL ) ) {
         return( PROCESS_FAIL );
     }
@@ -1054,9 +970,9 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         GUIGetCurrSelect( gui, id, &sel );
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
         path[0] = FILE_SEP_CHAR;
-        path[1] = 0;
+        path[1] = '\0';
 #else
-        path[0] = 0;
+        path[0] = '\0';
 #endif
         realsel = 0;
         for( i = 0; i < sel; i++ ) {
@@ -1168,7 +1084,7 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
             sel = -1;
             GUIGetCurrSelect( gui, id, &sel );
             strcpy( path, GetDriveTextList()[sel] );
-            path[2] = 0;
+            path[2] = '\0';
             goToDir( gui, path );
             if( !initDialog( gui, NULL, NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;

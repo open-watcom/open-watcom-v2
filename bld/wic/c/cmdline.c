@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +220,7 @@ static void _scanCurrArg(char *currArg) {
             int len;
 
             _splitpath(currArg, drive, dir, name, ext);
-            _makepath(driveDir, drive, dir, "", "");
+            _makepath(driveDir, drive, dir, NULL, NULL);
             len = strlen(driveDir);
             if (len > 0) if (driveDir[len-1] == '\\') {
                 driveDir[len-1] = 0;

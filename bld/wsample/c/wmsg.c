@@ -109,7 +109,7 @@ bool MsgInit( void )
             PGROUP2     pg;
 
             _splitpath2( buffer, pg.buffer, NULL, NULL, &pg.fname, NULL );
-            _makepath( buffer, NULL, NULL, pg.fname, ".exp" );
+            _makepath( buffer, NULL, NULL, pg.fname, "exp" );
             _searchenv( buffer, "PATH", pg.buffer );
             if( pg.buffer[0] != '\0' ) {
                 rc = OpenResFile( &hInstance, pg.buffer );

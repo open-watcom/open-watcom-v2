@@ -447,7 +447,7 @@ static void finiSourceErrFile( const char *fn )
         return;
     }
     _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
-    _makepath( path, pg.drive, pg.dir, pg.fname, ".err" );
+    _makepath( path, pg.drive, pg.dir, pg.fname, "err" );
     remove( path );
     if( srcErrFile != NULL ) {
         GetDateTimeString( tmp );
@@ -479,7 +479,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
      */
     if( vn[0] == '\0' ) {
         _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
-        _makepath( path, pg.drive, pg.dir, pg.fname, "._vi" );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "_vi" );
     } else {
         strcpy( path, vn );
     }

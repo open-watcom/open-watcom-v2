@@ -48,7 +48,7 @@ static void getEXEName( char *name )
     if( pg.ext[0] != '\0' ) {
         EXEName = name;
     } else {
-        _makepath( tmppath, pg.drive, pg.dir, pg.fname, ".exe" );
+        _makepath( tmppath, pg.drive, pg.dir, pg.fname, "exe" );
         _searchenv( tmppath, "PATH", path );
         EXEName = DupString( path );
     }

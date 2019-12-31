@@ -108,8 +108,8 @@
 #define SWCHAR          '/'
 #define INCCHAR         '@'
 #define CMTCHAR         '#'
-#define WMP_EXTENSION   ".WMP"
-#define OBJ_EXTENSION   ".OBJ"
+#define WMP_EXTENSION   "WMP"
+#define OBJ_EXTENSION   "OBJ"
 #define WILD_CARDS      "*?"    /* wild cards that may appear in filenames */
 
 /*
@@ -362,8 +362,8 @@ STATIC const char *doToggle( const char *str ) {
 
 STATIC const char *addFile( const char *str ) {
 
-    DIR                 *parent;
-    struct dirent       *direntp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     PGROUP2             pg;
     char                path[ _MAX_PATH ];
     char                *p;
@@ -381,8 +381,8 @@ STATIC const char *addFile( const char *str ) {
         return( str );
     }
     /* process a wildcarded name */
-    parent = opendir( p );
-    if( parent == NULL ) {
+    dirp = opendir( p );
+    if( dirp == NULL ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
     /*
@@ -391,30 +391,25 @@ STATIC const char *addFile( const char *str ) {
         we count the number of files in the directory.
     */
     files_in_dir = 0;
-    for(;;) {           /* count number of directory entries */
-        direntp = readdir( parent );
-        if( direntp == NULL ) break;
+    for( ; (dire = readdir( dirp )) != NULL; ) {    /* count number of directory entries */
         ++files_in_dir;
     }
-    closedir( parent );
+    closedir( dirp );
     if( files_in_dir == 0 ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
     curAct = MemRealloc( curAct, sizeof( act_grp_t ) +
         sizeof( const char * ) * ( curAct->num_files + files_in_dir - 1 ) );
-    parent = opendir( p );
-    if( parent == NULL ) {
+    dirp = opendir( p );
+    if( dirp == NULL ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
     _splitpath2( p, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     MemFree( p );               /* no longer need this */
-    for(;;) {
+    for( ; (dire = readdir( dirp )) != NULL; ) {
         /* we ignore any difference between the number of times we can
           loop here, and file_in_dir calc'd above */
-        direntp = readdir( parent );
-        if( direntp == NULL )
-            break;
-        _makepath( path, pg.drive, pg.dir, direntp->d_name, NULL );
+        _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
         len = strlen( path ) + 1;
         curAct->files[ curAct->num_files ] = memcpy( MemAlloc( len ), path, len );
         ++curAct->num_files;
@@ -423,7 +418,7 @@ STATIC const char *addFile( const char *str ) {
             break;
         }
     }
-    closedir( parent );
+    closedir( dirp );
     return( str );
 }
 

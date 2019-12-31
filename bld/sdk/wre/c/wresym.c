@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,7 +437,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
             _splitpath( rinfo->info->save_name, fn_drive, fn_dir, fn_name, NULL );
         }
         _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
-        _makepath( inc_path, fn_drive, fn_dir, "", "" );
+        _makepath( inc_path, fn_drive, fn_dir, NULL, NULL );
         WRESetInitialDir( inc_path );
         prompt = TRUE;
     } else {

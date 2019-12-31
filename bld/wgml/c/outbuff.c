@@ -837,7 +837,7 @@ static void set_out_file( void )
                  * name and any extension provided.
                  */
 
-                _makepath( temp_outfile, "", "", bin_device->output_name, bin_device->output_extension );
+                _makepath( temp_outfile, NULL, NULL, bin_device->output_name, bin_device->output_extension );
             } else {
 
                 /* If the :DEVICE block did not specify a file name then use the

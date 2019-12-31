@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -361,12 +362,12 @@ int main( int argc, char *argv[] )
      */
     normalizeFName( path, strlen( path ) + 1, path );
     _splitpath( path, pg.drive, pg.dir, pg.fname, pg.ext );
-    _makepath( rex, pg.drive, pg.dir, pg.fname, ".rex" );
+    _makepath( rex, pg.drive, pg.dir, pg.fname, "rex" );
     if( dllflag ) {
-        _makepath( dll, pg.drive, pg.dir, pg.fname, ".dll" );
+        _makepath( dll, pg.drive, pg.dir, pg.fname, "dll" );
     }
-    _makepath( exe, pg.drive, pg.dir, pg.fname, ".exe" );
-    _makepath( res, pg.drive, pg.dir, pg.fname, "" );
+    _makepath( exe, pg.drive, pg.dir, pg.fname, "exe" );
+    _makepath( res, pg.drive, pg.dir, pg.fname, NULL );
 
     /*
      * do the unbind

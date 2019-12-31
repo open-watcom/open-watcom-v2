@@ -38,6 +38,8 @@
 #include "clibext.h"
 
 
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+
 #define STR(x)  #x
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OS2__ ) || defined( __NT__ )
@@ -118,7 +120,7 @@ enum {
 };
 
 static const char * const _NEAR ExeExtensions[MAX_EXE_EXTENSIONS] = {
-    #define EXE_EXTENSION(a) (const char *)STR( .a ),
+    #define EXE_EXTENSION(a) (const char *)STR( a ),
         EXE_EXTENSIONS()
     #undef EXE_EXTENSION
 };
@@ -174,7 +176,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
   #if defined( NO_EXE_EXTENSIONS )
     if( is_internal ) {
   #else
-    if( stricmp( pg.ext, ExeExtensions[0] ) == 0 || is_internal ) {
+    if( CMPFEXT( pg.ext, ExeExtensions[0] ) || is_internal ) {
   #endif
         strcpy( path, Comspec );
         strcpy( cmds->cmd, "/c " );

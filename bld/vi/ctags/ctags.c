@@ -44,12 +44,14 @@
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <fnmatch.h>
 #endif
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"
 
 #include "clibext.h"
 
+
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 static const char       *usageMsg[] = {
     "Usage: ctags [-?adempstqvxy] [-z[a,c,f]] [-f<fname>] [files] [@optfile]",
@@ -243,24 +245,23 @@ static void doOption( int ch )
  */
 static void processFile( const char *arg )
 {
-    char        buff[_MAX_EXT + 5];
-    char        *ext;
+    PGROUP2     pg;
     file_type   ftype;
     unsigned    tag_count;
 
     StartFile( arg );
-    _splitpath2( arg, buff, NULL, NULL, NULL, &ext );
+    _splitpath2( arg, pg.buffer, NULL, NULL, NULL, &pg.ext );
     if( fileType == TYPE_NONE ) {
         ftype = TYPE_C;
-        if( stricmp( ext, ".for" ) == 0 ) {
+        if( CMPFEXT( pg.ext, "for" ) ) {
             ftype = TYPE_FORTRAN;
-        } else if( stricmp( ext, ".fi" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "fi" ) ) {
             ftype = TYPE_FORTRAN;
-        } else if( stricmp( ext, ".pas" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "pas" ) ) {
             ftype = TYPE_PASCAL;
-        } else if( stricmp( ext, ".cpp" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "cpp" ) ) {
             ftype = TYPE_CPLUSPLUS;
-        } else if( stricmp( ext, ".asm" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "asm" ) ) {
             ftype = TYPE_ASM;
         }
     } else {
@@ -308,7 +309,8 @@ static void processFileList( const char *fullmask )
     char                fullname[_MAX_PATH];
     char                path[_MAX_PATH];
     char                mask[_MAX_PATH];
-    PGROUP              pg;
+    PGROUP2             pg1;
+    PGROUP2             pg2;
 
     has_wild = false;
     for( tmp = fullmask; *tmp != '\0'; tmp++ ) {
@@ -323,16 +325,16 @@ static void processFileList( const char *fullmask )
         return;
     }
 
-    _splitpath( fullmask, pg.drive, pg.dir, pg.fname, pg.ext );
-    _makepath( path, pg.drive, pg.dir, NULL, NULL );
-    _makepath( mask, NULL, NULL, pg.fname, pg.ext );
+    _splitpath2( fullmask, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    _makepath( path, pg1.drive, pg1.dir, NULL, NULL );
+    _makepath( mask, NULL, NULL, pg1.fname, pg1.ext );
     dirp = opendir( fullmask );
     if( dirp != NULL ) {
         while( (dire = readdir( dirp )) != NULL ) {
             if( skipEntry( path, mask, dire ) )
                 continue;
-            _splitpath( dire->d_name, NULL, NULL, pg.fname, pg.ext );
-            _makepath( fullname, pg.drive, pg.dir, pg.fname, pg.ext );
+            _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+            _makepath( fullname, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
 #ifndef __UNIX__
             strlwr( fullname );
 #endif

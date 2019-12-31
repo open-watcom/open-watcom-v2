@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -335,7 +335,7 @@ INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     switch( msg ) {
     case WM_INITDIALOG:
         _splitpath( DTModuleEntry.szExePath, drive, dir, fname, ext );
-        _makepath( dumpFile, drive, dir, fname, ".dmp" );
+        _makepath( dumpFile, drive, dir, fname, "dmp" );
         strlwr( dumpFile );
 #if 0
         SetCourierFont( hwnd, DUMP_FILE_NAME );

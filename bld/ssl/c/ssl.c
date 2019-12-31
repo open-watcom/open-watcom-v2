@@ -163,9 +163,8 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
     bool        given;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        pg.ext = ".ssl";
-    }
+    if( pg.ext[0] == '\0' )
+        pg.ext = "ssl";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     if( PP_FileInit( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
@@ -181,15 +180,14 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
         pg.dir = "";
         pg.ext = "";
     }
-    if( pg.ext[0] == '\0' ) {
-        pg.ext = ".prs";
-    }
+    if( pg.ext[0] == '\0' )
+        pg.ext = "prs";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
     PrsFile = fopen( file_name, Language ? "wt" : "wb" );
     if( PrsFile == NULL )
         Error( "can not open '%s'", file_name );
     if( verbose ) {
-        _makepath( file_name, pg.drive, pg.dir, pg.fname, ".tbl" );
+        _makepath( file_name, pg.drive, pg.dir, pg.fname, "tbl" );
         TblFile = fopen( file_name, "w" );
         if( TblFile == NULL ) {
             Error( "can not open '%s'", file_name );

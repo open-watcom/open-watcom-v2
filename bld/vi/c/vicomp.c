@@ -200,7 +200,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
      */
     if( vn[0] == '\0' ) {
         _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
-        _makepath( path, pg.drive, pg.dir, pg.fname, "._vi" );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "_vi" );
     } else {
         strcpy( path, vn );
     }
