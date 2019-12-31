@@ -353,7 +353,7 @@ static void MakePgmName( void )
         _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) { // no extension
             len = strlen( WholeFName );
-            WholeFName = CMemRealloc( WholeFName, len + 1 + sizeof( C_EXT ) );
+            WholeFName = CMemRealloc( WholeFName, len + ( 1 + sizeof( C_EXT ) ) + 1 );
             strcat( WholeFName + len, "." C_EXT );
         }
         len = strlen( pg.fname ) + 1;
