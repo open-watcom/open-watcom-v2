@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1010,12 +1010,12 @@ void CheckGridItem( HMENU hmenu )
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
     if( _wpi_isitemchecked( hmenu, IMGED_GRID ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_GRID, MF_UNCHECKED, FALSE );
-        ImgedConfigInfo.grid_on = FALSE;
+        ImgedConfigInfo.grid_on = false;
         BlowupImage( NULL, NULL );
         PrintHintTextByID( WIE_GRIDTURNEDOFF, NULL );
     } else {
         _wpi_checkmenuitem( hmenu, IMGED_GRID, MF_CHECKED, FALSE );
-        ImgedConfigInfo.grid_on = TRUE;
+        ImgedConfigInfo.grid_on = true;
         BlowupImage( NULL, NULL );
         PrintHintTextByID( WIE_GRIDTURNEDON, NULL );
     }
@@ -1253,11 +1253,11 @@ void CheckSquareGrid( HMENU hmenu )
 {
     if( _wpi_isitemchecked( hmenu, IMGED_SQUARE ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_SQUARE, MF_UNCHECKED, FALSE );
-        ImgedConfigInfo.square_grid = FALSE;
+        ImgedConfigInfo.square_grid = false;
         PrintHintTextByID( WIE_SQUAREGRIDOFF, NULL );
     } else {
         _wpi_checkmenuitem( hmenu, IMGED_SQUARE, MF_CHECKED, FALSE );
-        ImgedConfigInfo.square_grid = TRUE;
+        ImgedConfigInfo.square_grid = true;
         PrintHintTextByID( WIE_SQUAREGRIDON, NULL );
     }
 

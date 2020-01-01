@@ -495,7 +495,7 @@ void AddNewIcon( void )
     /*
      * this will make the XOR and the AND bitmaps
      */
-    MakeIcon( &new_icon, TRUE );
+    MakeIcon( &new_icon, true );
     AddIconToList( &new_icon, node );
 
     iconInfo[iconType].exists = TRUE;
@@ -557,7 +557,7 @@ void DeleteIconImg( void )
 
     newnode = RemoveIconFromList( node, icon_index );
     DelIconUndoStack( newnode, icon_index );
-    MakeIcon( newnode, FALSE );         // This will set it as active image
+    MakeIcon( newnode, false );         // This will set it as active image
 
     for( i = icon_index; i < numberOfIcons - 1; i++ ) {
         iconNumber[i] = iconNumber[i + 1];

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,7 @@ static void setDefaultValues( settings_info *info )
     ImgedConfigInfo.y_pos = 0;
     ImgedConfigInfo.height = 4 * (y / 5);
 #endif
-    ImgedConfigInfo.ismaximized = FALSE;
+    ImgedConfigInfo.ismaximized = false;
 
     ImgedConfigInfo.tool_xpos = ImgedConfigInfo.x_pos + ImgedConfigInfo.width - TBWidth - 2;
     ImgedConfigInfo.tool_ypos = ImgedConfigInfo.y_pos +
@@ -91,11 +92,11 @@ static void setDefaultValues( settings_info *info )
     info->paste = SET_PASTE_STR;
     info->rotate = 10 + SET_ROT_SIMPLE;        // 10 means keep area
     info->viewwnd = SET_VIEW_1;
-    info->wrapshift = TRUE;
+    info->wrapshift = true;
     ImgedConfigInfo.shift = 1;
-    ImgedConfigInfo.square_grid = TRUE;
+    ImgedConfigInfo.square_grid = true;
     ImgedConfigInfo.brush_size = 2;
-    ImgedConfigInfo.grid_on = TRUE;
+    ImgedConfigInfo.grid_on = true;
 
     strcpy( info->opendir, "" );
     strcpy( info->savedir, "" );

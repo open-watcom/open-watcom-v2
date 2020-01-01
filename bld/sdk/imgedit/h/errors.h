@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,4 +51,4 @@ extern char     *IEAllocRCString( msg_id id );
 extern void     IEFreeRCString( char *str );
 extern int      IECopyRCString( msg_id id, char *buf, int bufsize );
 extern void     IEFiniErrors( void );
-extern BOOL     IEInitErrors( HINSTANCE inst );
+extern bool     IEInitErrors( HINSTANCE inst );

@@ -61,7 +61,7 @@ static void IECheckIfActiveWindow( void )
  *                - returns FALSE if CANCEL is selected
  *                - otherwise, returns TRUE
  */
-static BOOL lastChanceSave( img_node *node )
+static bool lastChanceSave( img_node *node )
 {
     int         retcode;
     int         how;
@@ -72,7 +72,7 @@ static BOOL lastChanceSave( img_node *node )
     char        filename[_MAX_PATH];
 
     if( node == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     IECheckIfActiveWindow();
@@ -112,16 +112,16 @@ static BOOL lastChanceSave( img_node *node )
                 SetIsSaved( node->hwnd, true );
             } else {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-                return( FALSE );
+                return( false );
             }
 #else
             PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-            return( FALSE );
+            return( false );
 #endif
         } else {
             if( !SaveFile( how ) ) {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-                return( FALSE );
+                return( false );
             } else {
                 hmenu = _wpi_getmenu( HMainWindow );
                 _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
@@ -129,9 +129,9 @@ static BOOL lastChanceSave( img_node *node )
             }
         }
     } else if( retcode == IDCANCEL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* lastChanceSave */
 

@@ -1018,10 +1018,8 @@ bool SaveFileFromNode( img_node *node, int how )
         if( !getSaveFName( new_name, rootnode->imgtype ) ) {
             return( ok );
         }
-        node = rootnode;
-        while( node != NULL ) {
+        for( node = rootnode; node != NULL; node = node->nexticon ) {
             strcpy( node->fname, new_name );
-            node = node->nexticon;
         }
     }
 

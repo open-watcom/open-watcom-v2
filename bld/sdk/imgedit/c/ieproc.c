@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,14 +41,14 @@
 
 #include "wwinhelp.h"
 
-extern BOOL FusionCalled;
+extern bool FusionCalled;
 
-static BOOL ImgEdEnableMenuInput = FALSE;
+static bool ImgEdEnableMenuInput = false;
 
 /*
  * IEEnableMenuInput
  */
-void IEEnableMenuInput( BOOL enable )
+void IEEnableMenuInput( bool enable )
 {
     ImgEdEnableMenuInput = enable;
 
@@ -214,23 +214,23 @@ static void checkBrushItem( HMENU hmenu, int newitem )
 /*
  * IEIsMenuIDValid
  */
-static BOOL IEIsMenuIDValid( HMENU menu, unsigned id )
+static bool IEIsMenuIDValid( HMENU menu, unsigned id )
 {
     UINT st;
 
     if( !ImgEdEnableMenuInput ) {
-        return( FALSE );
+        return( false );
     }
 
     if( menu == (HMENU)NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     // put any menu identifiers that you would like forced here
     switch( id ) {
     case IMGED_CLOSEALL:
         if( ImgedIsDDE ) {
-            return( TRUE );
+            return( true );
         }
         break;
     }
@@ -238,10 +238,10 @@ static BOOL IEIsMenuIDValid( HMENU menu, unsigned id )
     st = GetMenuState( menu, id, MF_BYCOMMAND );
 
     if( st == -1 || (st & MF_GRAYED) == MF_GRAYED ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 
 } /* IEIsMenuIDValid */
 
@@ -355,7 +355,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             _wpi_getwindowrect( hwnd, &rcmain );
             ImgedConfigInfo.width = (short)_wpi_getwidthrect( rcmain );
             ImgedConfigInfo.height = (short)_wpi_getheightrect( rcmain );
-            ImgedConfigInfo.ismaximized = FALSE;
+            ImgedConfigInfo.ismaximized = false;
         } else {
             ImgedConfigInfo.x_pos = ImgedConfigInfo.last_xpos;
             ImgedConfigInfo.y_pos = ImgedConfigInfo.last_ypos;

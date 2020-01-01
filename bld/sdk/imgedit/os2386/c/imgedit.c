@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ WPI_MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PAR
 static BOOL imgEditInit( HAB hab )
 {
     ULONG       flags;
-    BOOL        maximized;
+    bool        maximized;
     HWND        frame;
     char        clientclass[] = { "IMGEDClientClass" };
     HWND        hwnd;
@@ -245,7 +246,7 @@ int main( int argc, char *argv[] )
         // never return
     }
 
-    IEEnableMenuInput( TRUE );
+    IEEnableMenuInput( true );
 
     if( argc > 1 ) {
         parseCmdLine( argc, argv );

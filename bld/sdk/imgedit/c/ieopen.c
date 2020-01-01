@@ -69,7 +69,7 @@ WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam,
 static image_type       imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
 
-extern BOOL OpenNewFiles;
+extern bool OpenNewFiles;
 
 /*
  * SetupMenuAfterOpen
@@ -170,7 +170,7 @@ static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *f
         node.wrinfo = info;
         node.lnode = lnode;
 
-        MakeBitmap( &node, FALSE );
+        MakeBitmap( &node, false );
         CreateNewDrawPad( &node );
 
         MemFree( bmi->u.bm_info );
@@ -218,7 +218,7 @@ bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLan
     bitmap_info         bmi;
     HBITMAP             hbitmap;
     HCURSOR             prevcursor;
-    bool                ret;
+    bool                ok;
 
     prevcursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
     hbitmap = BitmapFromData( data, &bmi );
@@ -228,13 +228,13 @@ bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLan
         return( false );
     }
 
-    ret = doReadInBitmapFile( hbitmap, &bmi, fullname, info, lnode );
+    ok = doReadInBitmapFile( hbitmap, &bmi, fullname, info, lnode );
 
-    if( ret ) {
+    if( ok ) {
         SetupMenuAfterOpen();
     }
 
-    return( ret );
+    return( ok );
 
 } /* ReadBitmapFromData */
 
@@ -494,7 +494,7 @@ static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cu
     ImageClose( cursorfile );
 
     PrintHintTextByID( WIE_OPENEDTEXT, filename );
-    MakeIcon( &node, FALSE );           // also makes cursors
+    MakeIcon( &node, false );           // also makes cursors
     CreateNewDrawPad( &node );
 
     return( true );
@@ -538,7 +538,7 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
     unsigned            pos;
     an_img_file         *cursorfile;
     an_img              *cursor;
-    bool                ret;
+    bool                ok;
 
     pos = 0;
     cursorfile = ImageOpenData( (BYTE *)data, &pos );
@@ -548,13 +548,13 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
     }
     cursor = ImgResourceToImgData( (BYTE *)data, &pos, cursorfile, 0 );
 
-    ret = doReadCursor( fname, cursorfile, cursor, info, lnode );
+    ok = doReadCursor( fname, cursorfile, cursor, info, lnode );
 
-    if( ret ) {
+    if( ok ) {
         SetupMenuAfterOpen();
     }
 
-    return( ret );
+    return( ok );
 
 } /* ReadCursorFromData */
 
@@ -736,39 +736,32 @@ static bool readInResourceFile( const char *fullname )
 /*
  * reallyOpenImage
  */
-static int reallyOpenImage( const char *fname )
+static bool reallyOpenImage( const char *fname )
 {
-    char    filename[_MAX_FNAME + _MAX_EXT];
+    char        filename[_MAX_FNAME + _MAX_EXT];
+    bool        ok;
 
     switch( imgType ) {
     case BITMAP_IMG:
-        if( !readInBitmapFile( fname ) ) {
-            return( FALSE );
-        }
+        ok = readInBitmapFile( fname );
         break;
     case ICON_IMG:
-        if( !readInIconFile( fname ) ) {
-            return( FALSE );
-        }
+        ok = readInIconFile( fname );
         break;
     case CURSOR_IMG:
-        if( !readInCursorFile( fname ) ) {
-            return( FALSE );
-        }
+        ok = readInCursorFile( fname );
         break;
     case RESOURCE_IMG:
-        if( !readInResourceFile( fname ) ) {
-            return( FALSE );
-        }
+        ok = readInResourceFile( fname );
         break;
     default:
         GetFnameFromPath( fname, filename );
         WImgEditError( WIE_ERR_BAD_FILE_EXT, filename );
         imgType = BITMAP_IMG;
-        return( FALSE );
+        ok = false;
     }
 
-    return( imgType );
+    return( ok );
 
 } /* reallyOpenImage */
 
@@ -777,11 +770,12 @@ static int reallyOpenImage( const char *fname )
  *           - depending on the extension, set the type (.ico, .bmp, .cur) and call the
  *             appropriate function to open it
  */
-int OpenImage( HANDLE hDrop )
+bool OpenImage( HANDLE hDrop )
 {
     char                fname[_MAX_PATH];
-    int                 rv = FALSE;
+    bool                ok;
 
+    ok = false;
     if( NULL == hDrop ) {
         /*
          * Not doing a drag-drop
@@ -789,11 +783,10 @@ int OpenImage( HANDLE hDrop )
         if( !getOpenFName( fname ) ) {
             if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
                 WImgEditError( WIE_ERR_BAD_FILENAME, fname );
-                return( FALSE );
             }
-            return( FALSE );
+            return( ok );
         }
-        rv = reallyOpenImage( fname );
+        ok = reallyOpenImage( fname );
     } else {
         /*
          * hDrop is only ever !NULL when we're dealing with a WM_DROPFILES
@@ -803,19 +796,20 @@ int OpenImage( HANDLE hDrop )
         int     nFiles = DragQueryFile( hDrop, 0xFFFFFFFF, NULL, 0 );
         int     i;
 
-        for( i = 0, rv = TRUE; rv && i < nFiles; i++ ) {
+        ok = true;
+        for( i = 0; ok && i < nFiles; i++ ) {
             DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
             imgType = updateInfoFromFilename( fname );
-            rv = reallyOpenImage( fname );
+            ok = reallyOpenImage( fname );
         }
 #endif
     }
 
-    if( rv ) {
+    if( ok ) {
         SetupMenuAfterOpen();
     }
 
-    return( rv );
+    return( ok );
 
 } /* OpenImage */
 
@@ -868,7 +862,7 @@ static BOOL getOpenPalName( char *fname )
 /*
  * LoadColorPalette - load a palette
  */
-BOOL LoadColorPalette( void )
+bool LoadColorPalette( void )
 {
     char                fname[_MAX_PATH];
     char                filename[_MAX_FNAME + _MAX_EXT];
@@ -879,16 +873,16 @@ BOOL LoadColorPalette( void )
     if( !getOpenPalName( fname ) ) {
         if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
             WImgEditError( WIE_ERR_BAD_FILENAME, fname );
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
 
     pal_file = MemAlloc( sizeof( a_pal_file ) );
     fp = fopen( fname, "rb" );
     if( fp == NULL ) {
         WImgEditError( WIE_ERR_FILE_NOT_OPENED, fname );
-        return( FALSE );
+        return( false );
     }
 
     GetFnameFromPath( fname, filename );
@@ -898,7 +892,7 @@ BOOL LoadColorPalette( void )
     if( file_type != PALETTE_FILE ) {
         WImgEditError( WIE_ERR_BAD_PALFILE, filename );
         fclose( fp );
-        return( FALSE );
+        return( false );
     }
 
     fseek( fp, 0L, SEEK_SET );
@@ -909,7 +903,7 @@ BOOL LoadColorPalette( void )
     PrintHintTextByID( WIE_PALETTELOADEDFROM, filename );
 
     MemFree( pal_file );
-    return( TRUE );
+    return( true );
 
 } /* LoadColorPalette */
 
@@ -941,8 +935,7 @@ char *GetInitOpenDir( void )
  */
 void OpenFileOnStart( const char *fname )
 {
-    int         namelen;
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     FILE        *fp;
     image_type  img_type;
 
@@ -958,9 +951,8 @@ void OpenFileOnStart( const char *fname )
     }
     fclose( fp );
 
-    namelen = strlen( fname );
-    strcpy( ext, &fname[namelen - 3] );
-    img_type = GetImageFileType( ext, false );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    img_type = GetImageFileType( pg.ext, false );
     if( img_type == BITMAP_IMG ) {
         if( readInBitmapFile( fname ) ) {
             SetupMenuAfterOpen();

@@ -80,7 +80,7 @@ static void checkRectBounds( RECT *rect )
 /*
  * SelectDynamicBitmap - let the user select the bitmap from the screen
  */
-BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
+bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 {
     HDC         hdc;
     HDC         memdc;
@@ -118,7 +118,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
         NULL );             /* Create parameters */
 
     if( bitmappickwindow == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     while( notDestroyed && GetMessage( &msg, bitmappickwindow, 0, 0 ) ) {
@@ -149,7 +149,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
         IEDisplayErrorMsg( WIE_APPNAME, WIE_INVALIDREGIONSELECTED,
                            MB_OK | MB_ICONINFORMATION );
         notDestroyed = TRUE;
-        return( FALSE );
+        return( false );
     }
 
     node->imgtype = BITMAP_IMG;
@@ -168,7 +168,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
         sprintf( node->fname, "%s (%d)", IEImageUntitled, imgcount );
     }
 
-    MakeBitmap( node, TRUE );
+    MakeBitmap( node, true );
 
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
@@ -188,7 +188,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
     DestroyWindow( deskTopWindow );
 #endif
     notDestroyed = TRUE;
-    return( TRUE );
+    return( true );
 
 } /* SelectDynamicBitmap */
 

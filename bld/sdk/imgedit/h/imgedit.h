@@ -129,14 +129,13 @@ typedef struct list_element {
 } img_node;
 
 typedef struct {
-    BOOL        ismaximized;
     short       x_pos;
     short       y_pos;
     short       last_xpos;
     short       last_ypos;
     short       width;
     short       height;
-    BOOL        show_state;
+    short       show_state;
     short       tool_xpos;
     short       tool_ypos;
     short       pal_xpos;
@@ -144,9 +143,10 @@ typedef struct {
     short       view_xpos;
     short       view_ypos;
     short       shift;
-    BOOL        square_grid;
     short       brush_size;
-    BOOL        grid_on;
+    boolbit     ismaximized     : 1;
+    boolbit     square_grid     : 1;
+    boolbit     grid_on         : 1;
 } config_info;
 
 typedef struct {
@@ -154,7 +154,7 @@ typedef struct {
     int         paste;
     int         rotate;
     int         viewwnd;
-    BOOL        wrapshift;
+    bool        wrapshift;
     char        opendir[_MAX_PATH];
     char        savedir[_MAX_PATH];
     char        color[10];
@@ -177,7 +177,7 @@ extern WPI_FONT         SmallFont;
 extern int              ColorPlanes;
 extern int              BitsPerPixel;
 extern config_info      ImgedConfigInfo;
-extern BOOL             ImgedIsDDE;
+extern bool             ImgedIsDDE;
 extern char             *IEAppTitle;
 extern char             *IEImageFilter;
 extern char             *IEPaletteFilter;
@@ -194,12 +194,12 @@ extern int              StatusWidth;
 
 /* ieglob.c */
 void    IEFiniGlobalStrings( void );
-BOOL    IEInitGlobalStrings( void );
+bool    IEInitGlobalStrings( void );
 
 /* ieproc.c */
 WPI_EXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void CALLBACK       IEHelpCallBack( void );
-void                IEEnableMenuInput( BOOL enable );
+void                IEEnableMenuInput( bool enable );
 void                IEHelpRoutine( void );
 void                IEHelpSearchRoutine( void );
 void                IEHelpOnHelpRoutine( void );
@@ -214,10 +214,10 @@ void                SetRGBValues( RGBQUAD *argbvals, int upperlimit );
 WPI_EXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 WPI_EXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorControls( HWND hparent );
-void                DisplayScreenClrs( BOOL fdisplay );
+void                DisplayScreenClrs( bool fdisplay );
 void                SetNumColors( int number_of_colors );
 void                SetScreenClr( COLORREF screen_color );
-void                ShowNewColor( int index, COLORREF newcolor, BOOL repaint );
+void                ShowNewColor( int index, COLORREF newcolor, bool repaint );
 void                SetInitScreenColor( COLORREF color );
 
 /* curclr.c */
@@ -238,9 +238,9 @@ void            SetViewBkColor( COLORREF color );
 void            ResetViewWindow( HWND hwnd );
 void            HideViewWindow( HWND hwnd );
 void            RePositionViewWnd( img_node *node );
-void            SetViewWindow( BOOL justone );
+void            SetViewWindow( bool justone );
 void            ShowViewWindows( HWND hwnd );
-BOOL            IsOneViewWindow( void );
+bool            IsOneViewWindow( void );
 
 /* ieutil.c */
 HBITMAP         CreateViewBitmap( img_node *node );
@@ -259,13 +259,13 @@ bool    ToolBarProc(HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam
 void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );
-void    AddHotSpotTool( BOOL faddhotspot );
+void    AddHotSpotTool( bool faddhotspot );
 void    PushToolButton( ctl_id cmdid );
 
 /* ieopen.c */
 void    SetupMenuAfterOpen( void );
-int     OpenImage( HANDLE hDrop );
-BOOL    LoadColorPalette( void );
+bool    OpenImage( HANDLE hDrop );
+bool    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
 void    OpenFileOnStart( const char *fname );
@@ -323,8 +323,8 @@ void                InitializeCursors( void );
 void                CleanupCursors( void );
 
 /* xorand.c */
-void        MakeBitmap( img_node *node, BOOL isnew );
-void        MakeIcon( img_node *node, BOOL isnew );
+void        MakeBitmap( img_node *node, bool isnew );
+void        MakeIcon( img_node *node, bool isnew );
 void        RemoveIcon( short index );
 void        LineXorAnd( COLORREF xorcolor, COLORREF andcolor, WPI_POINT *startpt, WPI_POINT *endpt );
 void        RegionXorAnd( COLORREF xorcolor, COLORREF andcolor, BOOL fFillRgn, WPI_RECT *r, BOOL is_rect );
@@ -381,7 +381,7 @@ void        ReplacePaletteEntry( COLORREF newcolor );
 void        ResetColorPalette( void );
 COLORREF    GetPaletteColor( int index );
 int         GetColorIndex( COLORREF color );
-void        SetCurrentColors( BOOL fshowscreenclrs );
+void        SetCurrentColors( bool fshowscreenclrs );
 void        InitFromColorPalette( palette_box *screen, palette_box *inverse, palette_box *avail_colors );
 BOOL        GetPaletteFile( a_pal_file *pal_file );
 void        SetNewPalette( a_pal_file *pal_file );
@@ -418,7 +418,7 @@ void    ChooseBkColor( void );
 /* imgdata.c */
 void        AddImageNode( img_node *node );
 img_node    *SelectImage( HWND hwnd );
-BOOL        DeleteNode( HWND hwnd );
+bool        DeleteNode( HWND hwnd );
 void        DeleteList( void );
 int         DoImagesExist( void );
 img_node    *GetHeadNode( void );
@@ -431,7 +431,7 @@ const char  *GetImageFileExt( image_type img_type, bool res );
 image_type  GetImageFileType( const char *ext, bool res );
 
 /* iestatus.c */
-BOOL    InitStatusLine( HWND parent );
+bool    InitStatusLine( HWND parent );
 void    SetPosInStatus( WPI_POINT *pt, WPI_POINT *pointsize, HWND hwnd );
 void    SetSizeInStatus( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT *pointsize );
 void    ResizeStatusBar( WPI_PARAM2 lparam );
@@ -455,10 +455,10 @@ void    ChangeImageSize( void );
 void    SelectOptions( void );
 int     StretchPastedImage( void );
 int     GetRotateType( void );
-BOOL    DoKeepRect( void );
+bool    DoKeepRect( void );
 void    SetSettingsDlg( settings_info *info );
 void    GetSettings( settings_info *info );
-BOOL    IsShiftWrap( void );
+bool    IsShiftWrap( void );
 
 /* trnsform.c */
 void    FlipImage( WORD whichway );
@@ -497,7 +497,7 @@ void    WImgEditError( msg_id error, const char *fname );
 void    Win_CreateColorPal( void );
 HWND    Win_CreateCurrentDisp( HWND hparent );
 void    Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs, HWND *screentxt, HWND *inversetxt );
-HWND    WinCreateViewWin( HWND hviewwnd, BOOL foneview, int *showstate, int width, int height );
+HWND    WinCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width, int height );
 HWND    WinNewDrawPad( img_node *node );
 
 /* winutils.c */
@@ -526,7 +526,7 @@ BITMAPINFO  *GetDIBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO *bmi );
 
 /* pickbmp.c */
-extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
+extern bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
@@ -540,7 +540,7 @@ void    PM_CreateColorPal( void );
 HWND    PM_CreateCurrentDisp( HWND hparent );
 void    PM_CreateColorCtrls( HWND hpar, HWND *colours, HWND *screenclrs, HWND *screentxt, HWND *inversetxt );
 HWND    PMNewDrawPad( img_node *node );
-HWND    PMCreateViewWin( HWND hviewwnd, BOOL foneview, int *showstate, int width, int height );
+HWND    PMCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width, int height );
 
 /* pmutils.c */
 void        InitXorAndBitmaps( img_node *node );

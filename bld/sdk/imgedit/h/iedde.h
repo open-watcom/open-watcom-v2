@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,11 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL IEDDEStart( HINSTANCE inst );
+extern bool IEDDEStart( HINSTANCE inst );
 extern void IEDDEEnd( void );
-extern BOOL IEDDEDumpConversation( HINSTANCE inst );
-extern BOOL IEDDEStartConversation( void );
+extern bool IEDDEDumpConversation( HINSTANCE inst );
+extern bool IEDDEStartConversation( void );
 extern void IEDDEEndConversation( void );
-extern BOOL IEUpdateDDEEditSession( void );
+extern bool IEUpdateDDEEditSession( void );
 
 #endif

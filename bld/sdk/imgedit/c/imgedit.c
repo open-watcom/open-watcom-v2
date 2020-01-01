@@ -62,9 +62,9 @@ static HANDLE   hAccel;
 static HBRUSH   hBkBrush;
 #endif
 
-BOOL OpenNewFiles = FALSE;
-BOOL FusionCalled = FALSE;
-BOOL NoTitleScreen = FALSE;
+bool OpenNewFiles = false;
+bool FusionCalled = false;
+bool NoTitleScreen = false;
 
 /*
  * imgEditInit - initialization
@@ -74,7 +74,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     WNDCLASS    wc;
     HMENU       hmenu;
     HDC         hdc;
-    BOOL        maximized;
+    bool        maximized;
     int         show_state;
 
     hdc = GetDC( NULL );
@@ -380,20 +380,20 @@ static void parseArgs( int count, char **cmdline )
 
     for( i = 1; i < count; i++ ) {
         if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
-            ImgedIsDDE = TRUE;
+            ImgedIsDDE = true;
             continue;
         }
         if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
-            OpenNewFiles = TRUE;
+            OpenNewFiles = true;
             continue;
         }
         if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
-            NoTitleScreen = TRUE;
+            NoTitleScreen = true;
             continue;
         }
         if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
-            FusionCalled = TRUE;
-            NoTitleScreen = TRUE;
+            FusionCalled = true;
+            NoTitleScreen = true;
             continue;
         }
     }
@@ -458,7 +458,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
         }
     }
 
-    IEEnableMenuInput( TRUE );
+    IEEnableMenuInput( true );
 
     if( _argc > 1 ) {
         parseCmdLine( _argc, _argv );

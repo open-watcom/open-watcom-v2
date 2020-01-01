@@ -290,9 +290,9 @@ static void initializeImage( img_node *node, const char *filename )
     }
 
     if( imgType == BITMAP_IMG ) {
-        MakeBitmap( node, TRUE );
+        MakeBitmap( node, true );
     } else {
-        MakeIcon( node, TRUE );           // also makes cursors
+        MakeIcon( node, true );           // also makes cursors
     }
 
 } /* initializeImage */
@@ -339,14 +339,14 @@ int NewImage( image_type img_type, const char *filename )
         if( button_type == DLGID_CANCEL ) {
             imgType = UNDEF_IMG;
             imageCount--;
-            return( imgType );
+            return( false );
         } else if( button_type == SEL_SELECT ) {
 #ifdef __OS2_PM__
             IEDisplayErrorMsg( WIE_NOTE, WIE_NOTIMPLEMENTED, MB_OK | MB_ICONINFORMATION );
-            return( FALSE );
+            return( false );
 #else
             if( !SelectDynamicBitmap( &node, imageCount, filename ) ) {
-                return( FALSE );
+                return( false );
             }
 #endif
         } else {
@@ -357,7 +357,7 @@ int NewImage( image_type img_type, const char *filename )
     case ICON_IMG:
         if( !CreateNewIcon( &width, &height, &bcount, TRUE ) ) {
             imgType = UNDEF_IMG;
-            return( imgType );
+            return( false );
         }
         imgWidth = width;
         imgHeight = height;
@@ -369,7 +369,7 @@ int NewImage( image_type img_type, const char *filename )
 #ifdef __OS2_PM__
         if( !CreateNewIcon( &width, &height, &bcount, FALSE ) ) {
             imgType = UNDEF_IMG;
-            return( imgType );
+            return( false );
         }
         imgWidth = width;
         imgHeight = height;
@@ -380,14 +380,14 @@ int NewImage( image_type img_type, const char *filename )
         FreeProcInstance_DLG( dlgproc );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
-            return( imgType );
+            return( false );
         }
 #endif
         initializeImage( &node, filename );
         break;
 
     default:
-        return( FALSE );
+        return( false );
     }
 
     node.wrinfo = NULL;
@@ -397,6 +397,6 @@ int NewImage( image_type img_type, const char *filename )
 
     SetupMenuAfterOpen();
 
-    return( imgType );
+    return( imgType != UNDEF_IMG );
 
 } /* NewImage */

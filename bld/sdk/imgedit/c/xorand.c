@@ -38,7 +38,7 @@ static img_node         *activeImage = NULL;
 /*
  * MakeBitmap - make the bitmap
  */
-void MakeBitmap( img_node *node, BOOL isnew )
+void MakeBitmap( img_node *node, bool isnew )
 {
     HDC                 hdc;
     WPI_PRES            pres;
@@ -73,7 +73,7 @@ void MakeBitmap( img_node *node, BOOL isnew )
 /*
  * MakeIcon - create the AND and XOR bitmaps and draw the icon (or cursor)
  */
-void MakeIcon( img_node *node, BOOL isnew )
+void MakeIcon( img_node *node, bool isnew )
 {
     if( !isnew ) {
         activeImage = node;

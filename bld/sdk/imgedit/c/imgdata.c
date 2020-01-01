@@ -216,7 +216,7 @@ img_node *SelectImage( HWND hwnd )
 /*
  * DeleteNode - delete the node (frees memory) corresponding to the hwnd given
  */
-BOOL DeleteNode( HWND hwnd )
+bool DeleteNode( HWND hwnd )
 {
     img_node    *node;
     img_node    *delnode;
@@ -246,7 +246,7 @@ BOOL DeleteNode( HWND hwnd )
             indexHead = indexHead->next;
         }
         MemFree( index );
-        return( TRUE );
+        return( true );
     }
 
     while( node->next != NULL ) {
@@ -266,13 +266,13 @@ BOOL DeleteNode( HWND hwnd )
             index->next = delindex->next;
             MemFree( delindex );
 
-            return( TRUE );
+            return( true );
         }
         node = node->next;
         index = index->next;
     }
 
-    return( FALSE );
+    return( false );
 
 } /* DeleteNode */
 

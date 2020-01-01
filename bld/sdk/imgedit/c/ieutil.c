@@ -452,9 +452,7 @@ void GetFnameFromPath( const char *fullpath, char *fname )
         return;
     }
     _splitpath2( fullpath, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
-
-    strcpy( fname, pg.fname );
-    strupr( strcat( fname, pg.ext ) );
+    _makepath( fname, NULL, NULL, pg.fname, pg.ext );
 
 } /* GetFnameFromPath */
 
@@ -662,15 +660,15 @@ void SetMenus( img_node *node )
 #endif
 
     if( node->imgtype == BITMAP_IMG ) {
-        DisplayScreenClrs( FALSE );
-        AddHotSpotTool( FALSE );
+        DisplayScreenClrs( false );
+        AddHotSpotTool( false );
         _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_DELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, TRUE, FALSE );
     } else if( node->imgtype == ICON_IMG ) {
-        DisplayScreenClrs( TRUE );
-        AddHotSpotTool( FALSE );
+        DisplayScreenClrs( true );
+        AddHotSpotTool( false );
         _wpi_enablemenuitem( hmenu, IMGED_SELIMG, TRUE, FALSE );
         if( node->num_of_images < NUM_OF_ICONS ) {
             _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, TRUE, FALSE );
@@ -687,8 +685,8 @@ void SetMenus( img_node *node )
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, FALSE, FALSE );
         SetIconInfo( node );
     } else if( node->imgtype == CURSOR_IMG ) {
-        DisplayScreenClrs( TRUE );
-        AddHotSpotTool( TRUE );
+        DisplayScreenClrs( true );
+        AddHotSpotTool( true );
         _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_DELIMG, FALSE, FALSE );

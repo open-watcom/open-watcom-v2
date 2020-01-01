@@ -195,7 +195,7 @@ void ChangeImageSize( void )
     new_node.bitcount = node->bitcount;
     new_node.imgtype = BITMAP_IMG;
 
-    MakeBitmap( &new_node, TRUE );
+    MakeBitmap( &new_node, true );
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );

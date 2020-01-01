@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,7 +217,7 @@ static BOOL readInBitmapFile( const char *fullname )
         sprintf( text, "Opened '%s'.", filename );
         SetHintText( text );
 
-        MakeBitmap( &node, FALSE );
+        MakeBitmap( &node, false );
         CreateNewDrawPad( &node );
     } else {
         WImgEditError( WIE_ERR_BAD_BITMAP_FILE, filename );
@@ -233,25 +234,18 @@ static BOOL readInBitmapFile( const char *fullname )
 static BOOL getOpenFName( char *fname )
 {
     FILEDLG             filedlg;
-    char                ext[ _MAX_EXT ];
-    char                drive[ _MAX_DRIVE ];
-    char                path[ _MAX_PATH ];
+    PGROUP2             pg;
     HWND                hdlg;
     char                fullfile[ CCHMAXPATH ];
+    size_t                              len;
 
-    fname[ 0 ] = 0;
     memset( &filedlg, 0, sizeof( FILEDLG ) );
-    strcpy( fullfile, initialDir );
-    if ( fullfile[strlen(fullfile)-1] != '\\' ) {
-        strcat( fullfile, "\\" );
+    pg.dir = initialDir;
+    pg.fname = "*";
+    if ( pg.dir[strlen( pg.dir ) - 1] != '\\' ) {
+        pg.fname = "\\*";
     }
-    if (imgType == BITMAP_IMG) {
-        strcat( fullfile, "*.bmp" );
-    } else if (imgType == ICON_IMG) {
-        strcat( fullfile, "*.ico" );
-    } else {
-        strcat( fullfile, "*.ptr" );
-    }
+    _makepath( fullfile, NULL, pg.dir, pg.fname, GetImageFileExt( imgType, false ) );
 
     /*
      * set the values of the filedlg structure ...
@@ -265,27 +259,26 @@ static BOOL getOpenFName( char *fname )
     hdlg = WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg );
 
     if ((hdlg == NULLHANDLE) || (filedlg.lReturn != DID_OK)) {
+        fname[0] = '\0';
         return(FALSE);
     }
 
     strcpy( fname, filedlg.szFullFile );
-    _splitpath( fname, drive, path, NULL, ext );
-    strcpy( initialDir, drive );
-    strcat( initialDir, path );
-    initialDir[ strlen(initialDir)-1 ] = '\0';
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len != 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
+    }
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
 
-    if ( stricmp( ext, ".bmp" ) == 0 ) {
-        imgType = BITMAP_IMG;
-        return( TRUE );
-    } else if ( stricmp( ext, ".ico" ) == 0 ) {
-        imgType = ICON_IMG;
-        return( TRUE );
-    } else if ( stricmp( ext, ".ptr" ) == 0 ) {
-        imgType = CURSOR_IMG;
-        return( TRUE );
-    } else {
+    imgType = GetImageFileType( pg.ext, false );
+    if( imgType == UNDEF_IMG ) {
         return( FALSE );
     }
+    return( TRUE );
+
 } /* getOpenFName */
 
 /*
@@ -293,43 +286,40 @@ static BOOL getOpenFName( char *fname )
  *              extension set the type (.ico, .bmp, .ptr) and call the
  *              appropriate function to open it.
  */
-int OpenImage( void )
+bool OpenImage( void )
 {
     char                fname[ _MAX_PATH ];
     char                filename[ _MAX_FNAME ];
     char                error_text[HINT_TEXT_LEN];
 
-    if (!getOpenFName( &fname )) {
+    if( !getOpenFName( &fname ) ) {
         SetHintText( "File not opened" );
-        return( FALSE );
+        return( false );
     }
 
-    switch (imgType) {
+    switch( imgType ) {
     case BITMAP_IMG:
-        if (!readInBitmapFile( fname )) {
-            GetFnameFromPath( fname, filename );
-            sprintf( error_text, "Error opening '%s'", filename );
-            SetHintText( error_text );
-            return( FALSE );
+        if( readInBitmapFile( fname ) ) {
+            SetupMenuAfterOpen();
+            return( true );
         }
+        GetFnameFromPath( fname, filename );
+        sprintf( error_text, "Error opening '%s'", filename );
+        SetHintText( error_text );
         break;
     case ICON_IMG:
     case CURSOR_IMG:
-        if (!readInImageFile( fname )) {
-            GetFnameFromPath( fname, filename );
-            sprintf( error_text, "Error opening '%s'", filename );
-            SetHintText( error_text );
-            return( FALSE );
+        if( readInImageFile( fname ) ) {
+            SetupMenuAfterOpen();
+            return( true );
         }
-        break;
-    default:
-        return( FALSE );
+        GetFnameFromPath( fname, filename );
+        sprintf( error_text, "Error opening '%s'", filename );
+        SetHintText( error_text );
         break;
     }
+    return( false );
 
-    SetupMenuAfterOpen();
-
-    return( imgType );
 } /* OpenImage */
 
 /*
@@ -358,11 +348,11 @@ char *GetInitOpenDir( void )
  */
 void OpenFileOnStart( const char *fname )
 {
-    int         namelen;
-    char        ext[ _MAX_EXT ];
+    PGROUP2     pg;
     FILE        *fp;
     char        text[ HINT_TEXT_LEN ];
     char        filename[ _MAX_FNAME+_MAX_EXT ];
+    image_type  img_type;
 
     fp = fopen( fname, "r" );
     if( fp == NULL ) {
@@ -373,26 +363,20 @@ void OpenFileOnStart( const char *fname )
     }
     fclose( fp );
 
-    namelen = strlen( fname );
-    strcpy( ext, &(fname[namelen-3]) );
-
-    if( stricmp(ext, "bmp") == 0 ) {
-        if (!readInBitmapFile( fname )) {
-            return;
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    img_type = GetImageFileType( pg.ext, false );
+    if( img_type == BITMAP_IMG ) {
+        if( readInBitmapFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
-    } else if( stricmp(ext, "ico") == 0 ) {
-        if (!readInImageFile( fname )) {
-            return;
+    } else if( img_type == ICON_IMG ) {
+        if( readInImageFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
-    } else if( stricmp(ext, "cur") == 0 ) {
-        if (!readInImageFile( fname )) {
-            return;
+    } else if( img_type == CURSOR_IMG ) {
+        if( readInImageFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
-    } else {
-        return;
     }
 
-    SetupMenuAfterOpen();
-
 } /* OpenFileOnStart */
-

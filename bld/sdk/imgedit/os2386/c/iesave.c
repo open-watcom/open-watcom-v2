@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,29 +187,14 @@ static BITMAPFILEHEADER2 *fillFileHeader( img_node *node )
  */
 static void checkForExt( img_node *node )
 {
-    char        drive[ _MAX_PATH ];
-    char        dir[ _MAX_DIR ];
-    char        fname[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
-    char        *fullpath;
+    PGROUP      pg;
     img_node    *next_icon;
-    char        default_ext[3][4] = {
-                                "bmp",
-                                "ico",
-                                "cur" };
 
     for( next_icon = node; next_icon != NULL; next_icon = next_icon->nexticon ) {
-        fullpath = next_icon->fname;
-        _splitpath( fullpath, drive, dir, fname, ext );
-
-        if( strlen( ext ) > 1 ) {
+        _splitpath2( next_icon->fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] != '\0' )
             return;
-        }
-
-        if( fullpath[strlen( fullpath ) - 1] != '.' ) {
-            strcat( fullpath, "." );
-        }
-        strcat( fullpath, default_ext[next_icon->imgtype - 1] );
+        _makepath( next_icon->fname, pg.drive, pg.dir, pg.fname, GetImageFileExt( next_icon->imgtype ) );
     }
 } /* checkForExt */
 

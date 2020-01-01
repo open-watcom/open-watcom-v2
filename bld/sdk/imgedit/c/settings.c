@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,11 +41,11 @@ WPI_EXPORT WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg
 
 static int      stretchClipPaste;
 static int      rotateType;
-static BOOL     fCheckSquareGrid = FALSE;
-static BOOL     fKeepSelectedArea;
-static BOOL     fSavePosition;
-static BOOL     fSaveSettings;
-static BOOL     fWrapShift;
+static bool     fCheckSquareGrid = false;
+static bool     fKeepSelectedArea;
+static bool     fSavePosition;
+static bool     fSaveSettings;
+static bool     fWrapShift;
 
 /*
  * CurrentSettingsDlgProc - display the current settings and allows for change
@@ -57,7 +57,7 @@ WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
     char                *text;
     char                *msg_text;
     short               new_shift;
-    static BOOL         keepsquare;
+    static bool         keepsquare;
     bool                ret;
 
     ret = false;
@@ -90,11 +90,11 @@ WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
             fSavePosition = _wpi_isbuttonchecked( hwnd, SAVE_POSITION );
 
             if( _wpi_isbuttonchecked( hwnd, KEEP_SQUARE ) && !keepsquare ) {
-                fCheckSquareGrid = TRUE;
+                fCheckSquareGrid = true;
             } else if( !_wpi_isbuttonchecked( hwnd, KEEP_SQUARE ) && keepsquare ) {
-                fCheckSquareGrid = TRUE;
+                fCheckSquareGrid = true;
             } else {
-                fCheckSquareGrid = FALSE;
+                fCheckSquareGrid = false;
             }
 
             if( _wpi_isbuttonchecked( hwnd, STRETCH_PASTE ) ) {
@@ -138,11 +138,8 @@ WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
             _wpi_checkdlgbutton( hwnd, SAVE_SETTINGS, ( fSaveSettings ) ? BST_CHECKED : BST_UNCHECKED );
             _wpi_checkdlgbutton( hwnd, SAVE_POSITION, ( fSavePosition ) ? BST_CHECKED : BST_UNCHECKED );
 
-            if( ImgedConfigInfo.square_grid ) {
-                keepsquare = TRUE;
-            } else {
-                keepsquare = FALSE;
-            }
+            keepsquare = ImgedConfigInfo.square_grid;
+
             _wpi_checkdlgbutton( hwnd, KEEP_SQUARE, ( keepsquare ) ? BST_CHECKED : BST_UNCHECKED );
             _wpi_setdlgitemshort( hwnd, SHIFT_AMOUNT, ImgedConfigInfo.shift, FALSE );
 
@@ -224,7 +221,7 @@ int GetRotateType( void )
 /*
  * DoKeepRect - return whether or not we want to keep the rectangle after rotating
  */
-BOOL DoKeepRect( void )
+bool DoKeepRect( void )
 {
     return( fKeepSelectedArea );
 
@@ -244,10 +241,10 @@ void SetSettingsDlg( settings_info *info )
     }
 
     if( info->rotate > 10 ) {
-        fKeepSelectedArea = TRUE;
+        fKeepSelectedArea = true;
         rotate = info->rotate - 10;
     } else {
-        fKeepSelectedArea = FALSE;
+        fKeepSelectedArea = false;
         rotate = info->rotate;
     }
     if( rotate == SET_ROT_SIMPLE ) {
@@ -259,21 +256,13 @@ void SetSettingsDlg( settings_info *info )
     }
 
     if( info->viewwnd == SET_VIEW_1 ) {
-        SetViewWindow( TRUE );
+        SetViewWindow( true );
     } else {
-        SetViewWindow( FALSE );
+        SetViewWindow( false );
     }
 
-    if( info->settings & SET_SAVE_SET ) {
-        fSaveSettings = TRUE;
-    } else {
-        fSaveSettings = FALSE;
-    }
-    if( info->settings & SET_SAVE_POS ) {
-        fSavePosition = TRUE;
-    } else {
-        fSavePosition = FALSE;
-    }
+    fSaveSettings = ( (info->settings & SET_SAVE_SET) != 0 );
+    fSavePosition = ( (info->settings & SET_SAVE_POS) != 0 );
 
     fWrapShift = info->wrapshift;
 
@@ -325,7 +314,7 @@ void GetSettings( settings_info *info )
 /*
  * IsShiftWrap - return whether or not we wrap the shift
  */
-BOOL IsShiftWrap( void )
+bool IsShiftWrap( void )
 {
     return( fWrapShift );
 
