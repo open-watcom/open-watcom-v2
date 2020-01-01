@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -586,29 +586,23 @@ UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 /*
  * getImageTypeFromFilename
  */
-static int getImageTypeFromFilename( char *fname )
+static image_type getImageTypeFromFilename( char *fname )
 {
     char                ext[_MAX_EXT];
     char                drive[_MAX_DRIVE];
     char                path[_MAX_PATH];
+    image_type          img_type;
 
     _splitpath( fname, drive, path, NULL, ext );
     strcpy( initialDir, drive );
     strcat( initialDir, path );
     initialDir[strlen( initialDir ) - 1] = '\0';
 
-    if( stricmp( ext, ".bmp" ) == 0 ) {
-        return( BITMAP_IMG );
-    } else if( stricmp( ext, ".ico" ) == 0 ) {
-        return( ICON_IMG );
-    } else if( stricmp( ext, ".cur" ) == 0 ) {
-        return( CURSOR_IMG );
-    } else if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
-               stricmp( ext, ".dll" ) == 0 ) {
-        return( RESOURCE_IMG );
-    } else {
-        return( UNDEF_IMG );
+    img_type = GetImageFileType( ext, true );
+    if( img_type == EXE_IMG || img_type == DLL_IMG ) {
+        img_type = RESOURCE_IMG;
     }
+    return( img_type );
 
 } /* getImageTypeFromFilename */
 
@@ -744,7 +738,7 @@ static bool readInResourceFile( const char *fullname )
  */
 static int reallyOpenImage( const char *fname )
 {
-    char                filename[_MAX_FNAME + _MAX_EXT];
+    char    filename[_MAX_FNAME + _MAX_EXT];
 
     switch( imgType ) {
     case BITMAP_IMG:
@@ -950,6 +944,7 @@ void OpenFileOnStart( const char *fname )
     int         namelen;
     char        ext[_MAX_EXT];
     FILE        *fp;
+    image_type  img_type;
 
     fp = fopen( fname, "r" );
     if( fp == NULL ) {
@@ -965,16 +960,16 @@ void OpenFileOnStart( const char *fname )
 
     namelen = strlen( fname );
     strcpy( ext, &fname[namelen - 3] );
-
-    if( stricmp( ext, "bmp" ) == 0 ) {
+    img_type = GetImageFileType( ext, false );
+    if( img_type == BITMAP_IMG ) {
         if( !readInBitmapFile( fname ) ) {
             return;
         }
-    } else if( stricmp( ext, "ico" ) == 0 ) {
+    } else if( img_type == ICON_IMG ) {
         if( !readInIconFile( fname ) ) {
             return;
         }
-    } else if( stricmp( ext, "cur" ) == 0 ) {
+    } else if( img_type == CURSOR_IMG ) {
         if( !readInCursorFile( fname ) ) {
             return;
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "wclbproc.h"
 
 
-static int              imgType = UNDEF_IMG;
+static image_type       imgType = UNDEF_IMG;
 static short            imgHeight = DIM_DEFAULT;
 static short            imgWidth = DIM_DEFAULT;
 static short            bitCount;
@@ -297,7 +297,7 @@ static void initializeImage( img_node *node, const char *filename )
 /*
  * NewImage - create a new image and return the image type (bitmap, icon, or cursor)
  */
-int NewImage( int img_type, const char *filename )
+int NewImage( image_type img_type, const char *filename )
 {
     WPI_DLGPROC         dlgproc;
     INT_PTR             button_type;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,6 @@ static void checkForExt( img_node *node )
     char        ext[_MAX_EXT];
     char        *fullpath;
     img_node    *next_icon;
-    char        default_ext[3][4] = { "bmp", "ico", "cur" };
 
     next_icon = node;
     while( next_icon != NULL ) {
@@ -192,7 +191,7 @@ static void checkForExt( img_node *node )
         if( fullpath[strlen( fullpath ) - 1] != '.' ) {
             strcat( fullpath, "." );
         }
-        strcat( fullpath, default_ext[next_icon->imgtype - 1] );
+        strcat( fullpath, GetImageFileExt( next_icon->imgtype, false ) );
         next_icon = next_icon->nexticon;
     }
 
@@ -1004,6 +1003,7 @@ bool SaveFileFromNode( img_node *node, int how )
     char        new_name[_MAX_PATH];
     char        ext[_MAX_EXT];
     bool        ok;
+    image_type  img_type;
 
     ok = false;
     if( node == NULL ) {
@@ -1033,11 +1033,10 @@ bool SaveFileFromNode( img_node *node, int how )
     checkForExt( rootnode );
 
     _splitpath( rootnode->fname, NULL, NULL, NULL, ext );
-    if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
-        stricmp( ext, ".dll" ) == 0 ) {
+    img_type = GetImageFileType( ext, true );
+    if( img_type == RESOURCE_IMG || img_type == EXE_IMG || img_type == DLL_IMG ) {
         return( saveResourceFile( rootnode ) );
     }
-
     switch( rootnode->imgtype ) {
     case BITMAP_IMG:
         ok = saveBitmapFile( rootnode );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "wrdll.h"
 #include "wpi.h"
 #include "img_wpi.h"
+#include "imgtypes.h"
 #include "fill.h"
 #include "bits.h"
 #include "dialogs.rh"
@@ -73,13 +74,7 @@
 
 #define FILE_SAVE       2
 #define DIM_DEFAULT     32              // This is temporarily the default
-#define UNDEF_IMG       0
-#define BITMAP_IMG      1
-#define ICON_IMG        2
-#define CURSOR_IMG      3
-#define RESOURCE_IMG    4
 #define NUMBER_OF_TOOLS 10
-#define MAX_IMAGES      5               // Check this
 #define HINT_TEXT_LEN   40
 
 #define IDM_FIRSTCHILD          100
@@ -91,6 +86,8 @@
 
 #define RGBQ_SIZE( bc )         ((unsigned_32)sizeof( RGBQUAD ) * ((unsigned_32)1 << (bc)))
 #define IMGED_DIM               WPI_RECTDIM
+
+#define CMPFEXT(e,c)            (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 /*
  * typedefs
@@ -111,7 +108,7 @@ typedef struct {
 } palette_box;
 
 typedef struct list_element {
-    wie_imgtype                 imgtype;
+    image_type                  imgtype;
     HWND                        hwnd;
     HWND                        viewhwnd;
     short                       width;
@@ -292,7 +289,7 @@ WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG m
 #ifndef __OS2_PM__
 WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int         NewImage( int img_type, const char *filename );
+int         NewImage( image_type img_type, const char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -430,6 +427,8 @@ img_node    *GetImageNode( HWND hwnd );
 void        AddIconToList( img_node *icon, img_node *current_node );
 img_node    *RemoveIconFromList( img_node *node, int index );
 img_node    *SelectFromViewHwnd( HWND viewhwnd );
+const char  *GetImageFileExt( image_type img_type, bool res );
+image_type  GetImageFileType( const char *ext, bool res );
 
 /* iestatus.c */
 BOOL    InitStatusLine( HWND parent );

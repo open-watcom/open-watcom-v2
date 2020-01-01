@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -479,3 +479,55 @@ img_node *SelectFromViewHwnd( HWND viewhwnd )
     return( NULL );
 
 } /* SelectFromViewHwnd */
+
+const char *GetImageFileExt( image_type img_type, bool res )
+{
+    const char  *ext;
+
+    if( img_type == BITMAP_IMG ) {
+        ext = "bmp";
+    } else if( img_type == ICON_IMG ) {
+        ext = "ico";
+    } else if( img_type == CURSOR_IMG ) {
+#ifdef __OS2__
+        ext = "ptr";
+#else
+        ext = "cur";
+#endif
+    } else if( res && img_type == RESOURCE_IMG ) {
+        ext = "res";
+    } else if( res && img_type == EXE_IMG ) {
+        ext = "exe";
+    } else if( res && img_type == DLL_IMG ) {
+        ext = "dll";
+    } else {
+        ext = NULL;
+    }
+    return( ext );
+}
+
+image_type GetImageFileType( const char *ext, bool res )
+{
+    image_type  img_type;
+
+    if( CMPFEXT( ext, "bmp" ) ) {
+        img_type = BITMAP_IMG;
+    } else if( CMPFEXT( ext, "ico" ) ) {
+        img_type = ICON_IMG;
+#ifdef __OS2__
+    } else if( CMPFEXT( ext, "ptr" ) ) {
+#else
+    } else if( CMPFEXT( ext, "cur" ) ) {
+#endif
+        img_type = CURSOR_IMG;
+    } else if( res && CMPFEXT( ext, "res" ) ) {
+        img_type = RESOURCE_IMG;
+    } else if( res && CMPFEXT( ext, "exe" ) ) {
+        img_type = EXE_IMG;
+    } else if( res && CMPFEXT( ext, "dll" ) ) {
+        img_type = DLL_IMG;
+    } else {
+        img_type = UNDEF_IMG;
+    }
+    return( img_type );
+}

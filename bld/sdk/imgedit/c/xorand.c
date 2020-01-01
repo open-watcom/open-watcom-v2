@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +232,7 @@ void FillXorAnd( COLORREF brushcolor, WPI_POINT *pt, wie_clrtype colortype )
 {
     fill_info_struct    fillinfo;
 
-    fillinfo.img_type = activeImage->imgtype;
+    fillinfo.imgtype = activeImage->imgtype;
     fillinfo.colortype = colortype;
     fillinfo.pt = *pt;
 

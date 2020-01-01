@@ -25,25 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Enumeration types for file image types
 *
 ****************************************************************************/
 
 
-#define NORMAL_FILL     1
-#define DIFFERENT_FILL  2
-
-typedef enum {
-    NORMAL_CLR  = 0,
-    INVERSE_CLR = 1,
-    SCREEN_CLR  = 2
-} wie_clrtype;
-
-typedef struct {
-    image_type  imgtype;
-    COLORREF    xorcolor;
-    COLORREF    andcolor;
-    WPI_POINT   pt;
-    wie_clrtype colortype;
-} fill_info_struct;
+typedef enum image_type {
+    UNDEF_IMG = 0,
+    BITMAP_IMG,
+    ICON_IMG,
+    CURSOR_IMG,
+    RESOURCE_IMG,
+    EXE_IMG,
+    DLL_IMG
+} image_type;
