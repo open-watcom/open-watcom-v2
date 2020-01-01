@@ -352,6 +352,8 @@ void IEDDEEndConversation( void )
  */
 bool IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 {
+    bool    ok;
+
     ok = ( hData != NULL && mem != NULL && size != NULL );
 
     if( ok ) {
@@ -360,7 +362,7 @@ bool IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 
         if( ok ) {
             *mem = MemAlloc( *size );
-            ok = ( *mem != NULL ) {
+            ok = ( *mem != NULL );
         }
 
         if( ok && (DWORD)*size != DdeGetData( hData, *mem, (DWORD)*size, 0 ) ) {
