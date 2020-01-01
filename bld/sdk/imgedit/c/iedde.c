@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ WINEXPORT FNCALLBACK DdeCallBack;
 
 extern BOOL     IEHData2Mem( HDDEDATA, void **, uint_32 * );
 extern BOOL     IEStartDDEEditSession( void );
-extern HDDEDATA IECreateResData( img_node *node );
+static HDDEDATA IECreateResData( img_node *node );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -381,7 +381,7 @@ HDDEDATA IECreateResData( img_node *node )
     HDDEDATA    hdata;
     BYTE        *data;
     size_t      size;
-    BOOL        ok;
+    bool        ok;
 
     data = NULL;
     hdata = NULL;
@@ -465,7 +465,7 @@ BOOL IEUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
     }
 
     return( ok );

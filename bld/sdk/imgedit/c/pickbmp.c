@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +160,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
     node->hotspot.y = 0;
     node->num_of_images = 1;
     node->nexticon = NULL;
-    node->issaved = FALSE;
+    node->issaved = false;
     node->next = NULL;
     if( filename != NULL ) {
         strcpy( node->fname, filename );

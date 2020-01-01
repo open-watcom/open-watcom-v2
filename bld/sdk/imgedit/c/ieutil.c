@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,9 @@
 
 #include "imgedit.h"
 #include "iconinfo.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /* Local Window callback functions prototypes */
@@ -335,14 +338,11 @@ HBITMAP EnlargeImage( HWND hwnd )
 /*
  * SetIsSaved - set whether the given MDI child has been saved
  */
-void SetIsSaved( HWND hwnd, BOOL fissaved )
+void SetIsSaved( HWND hwnd, bool issaved )
 {
     img_node    *node;
     img_node    *next_icon;
-    char        fname[_MAX_FNAME];
-    char        dir[_MAX_DIR];
-    char        ext[_MAX_EXT];
-    char        drive[_MAX_DRIVE];
+    PGROUP2     pg;
     char        title[_MAX_EXT + _MAX_FNAME + 2];
     char        *main_title;
 
@@ -355,27 +355,27 @@ void SetIsSaved( HWND hwnd, BOOL fissaved )
     // title bars updated here because sometimes we will save images
     // that are not modified to different files.
 #if 0
-    if( fissaved == node->issaved ) {
+    if( issaved == node->issaved ) {
         return;
     }
 #endif
 
     next_icon = node;
     while( next_icon != NULL ) {
-        next_icon->issaved = fissaved;
+        next_icon->issaved = issaved;
         next_icon = next_icon->nexticon;
     }
 
-    if( fissaved ) {
+    if( issaved ) {
         _wpi_getwindowtext( _wpi_getframe( node->hwnd ), title, sizeof( title ) );
         if( strnicmp( title, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 &&
             strnicmp( node->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
             return;
         }
-        _splitpath( node->fname, drive, dir, fname, ext );
+        _splitpath2( node->fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-        strcpy( title, fname );
-        strupr( strcat( title, ext ) );
+        strcpy( title, pg.fname );
+        strupr( strcat( title, pg.ext ) );
         _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
         main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
@@ -445,17 +445,16 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
  */
 void GetFnameFromPath( const char *fullpath, char *fname )
 {
-    char        filename[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
 
     if( strnicmp( fullpath, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
         strcpy( fname, fullpath );
         return;
     }
-    _splitpath( fullpath, NULL, NULL, filename, ext );
+    _splitpath2( fullpath, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
 
-    strcpy( fname, filename );
-    strupr( strcat( fname, ext ) );
+    strcpy( fname, pg.fname );
+    strupr( strcat( fname, pg.ext ) );
 
 } /* GetFnameFromPath */
 

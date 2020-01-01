@@ -49,6 +49,9 @@
 #include "wrselimg.h"
 #include "wresdefn.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 #ifdef __WATCOMC__
@@ -63,7 +66,7 @@
 /* Local Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static signed short     imgType = BITMAP_IMG;
+static image_type       imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
 
 extern BOOL OpenNewFiles;
@@ -141,7 +144,7 @@ static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *f
         node.hotspot.y = 0;
         node.num_of_images = 1;
         node.nexticon = NULL;
-        node.issaved = TRUE;
+        node.issaved = true;
         if( node.bitcount == 1 ) {
             hdc = GetDC( NULL );
             srcdc = CreateCompatibleDC( hdc );
@@ -337,7 +340,7 @@ static bool readInIconFile( const char *fname )
         if( i > 0 ) {
             node[i - 1].nexticon = &node[i];
         }
-        node[i].issaved = TRUE;
+        node[i].issaved = true;
         node[i].next = NULL;
         strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
@@ -428,7 +431,7 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
             node[i].wrinfo = info;
             node[i].lnode = lnode;
         }
-        node[i].issaved = TRUE;
+        node[i].issaved = true;
         node[i].next = NULL;
         strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
@@ -474,7 +477,7 @@ static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cu
     node.bitcount = cursor->bm->bmiHeader.biBitCount;
     node.hotspot.x = cursorfile->resources->xhotspot;
     node.hotspot.y = cursorfile->resources->yhotspot;
-    node.issaved = TRUE;
+    node.issaved = true;
     node.num_of_images = 1;
     node.next = NULL;
     node.nexticon = NULL;
@@ -584,27 +587,24 @@ UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 } /* OpenOFNHookProc */
 
 /*
- * getImageTypeFromFilename
+ * updateInfoFromFilename
  */
-static image_type getImageTypeFromFilename( char *fname )
+static image_type updateInfoFromFilename( const char *fname )
 {
-    char                ext[_MAX_EXT];
-    char                drive[_MAX_DRIVE];
-    char                path[_MAX_PATH];
-    image_type          img_type;
+    PGROUP2             pg;
+    size_t              len;
 
-    _splitpath( fname, drive, path, NULL, ext );
-    strcpy( initialDir, drive );
-    strcat( initialDir, path );
-    initialDir[strlen( initialDir ) - 1] = '\0';
-
-    img_type = GetImageFileType( ext, true );
-    if( img_type == EXE_IMG || img_type == DLL_IMG ) {
-        img_type = RESOURCE_IMG;
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len > 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
     }
-    return( img_type );
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    return( GetImageFileType( pg.ext, true ) );
 
-} /* getImageTypeFromFilename */
+} /* updateInfoFromFilename */
 
 /*
  * getOpenFName - let the user select a file name for an open operation
@@ -653,7 +653,7 @@ static BOOL getOpenFName( char *fname )
 #endif
 
     if( rc ) {
-        imgType = getImageTypeFromFilename( fname );
+        imgType = updateInfoFromFilename( fname );
         return( TRUE );
     } else {
         return( FALSE );
@@ -805,7 +805,7 @@ int OpenImage( HANDLE hDrop )
 
         for( i = 0, rv = TRUE; rv && i < nFiles; i++ ) {
             DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
-            imgType = getImageTypeFromFilename( fname );
+            imgType = updateInfoFromFilename( fname );
             rv = reallyOpenImage( fname );
         }
 #endif
@@ -962,21 +962,17 @@ void OpenFileOnStart( const char *fname )
     strcpy( ext, &fname[namelen - 3] );
     img_type = GetImageFileType( ext, false );
     if( img_type == BITMAP_IMG ) {
-        if( !readInBitmapFile( fname ) ) {
-            return;
+        if( readInBitmapFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
     } else if( img_type == ICON_IMG ) {
-        if( !readInIconFile( fname ) ) {
-            return;
+        if( readInIconFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
     } else if( img_type == CURSOR_IMG ) {
-        if( !readInCursorFile( fname ) ) {
-            return;
+        if( readInCursorFile( fname ) ) {
+            SetupMenuAfterOpen();
         }
-    } else {
-        return;
     }
-
-    SetupMenuAfterOpen();
 
 } /* OpenFileOnStart */

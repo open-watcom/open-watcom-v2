@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,7 +248,7 @@ void ChangeImageSize( void )
     node->width = (short)imgWidth;
     node->height = (short)imgHeight;
 
-    SetIsSaved( node->hwnd, FALSE );
+    SetIsSaved( node->hwnd, false );
     ResetUndoStack( node );
 
     RePositionViewWnd( node );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,7 @@ static BOOL lastChanceSave( HWND hwnd )
         } else {
             hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
             _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
-            SetIsSaved( hwnd, TRUE );
+            SetIsSaved( hwnd, true );
         }
     } else if( retcode == WPI_IDCANCEL ) {
         return( FALSE );
@@ -418,7 +418,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             break;
 
         case IMGED_HOTSPOT:
-            SetIsSaved( hwnd, FALSE );
+            SetIsSaved( hwnd, false );
             prev_pt.x = start_pt.x / pointsize.x;
             prev_pt.y = start_pt.y / pointsize.y;
             SetNewHotSpot( &prev_pt );

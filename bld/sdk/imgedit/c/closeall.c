@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +109,7 @@ static BOOL lastChanceSave( img_node *node )
         if( ImgedIsDDE ) {
 #ifndef __OS2_PM__
             if( IEUpdateDDEEditSession() ) {
-                SetIsSaved( node->hwnd, TRUE );
+                SetIsSaved( node->hwnd, true );
             } else {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
                 return( FALSE );
@@ -124,7 +125,7 @@ static BOOL lastChanceSave( img_node *node )
             } else {
                 hmenu = _wpi_getmenu( HMainWindow );
                 _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
-                SetIsSaved( node->hwnd, TRUE );
+                SetIsSaved( node->hwnd, true );
             }
         }
     } else if( retcode == IDCANCEL ) {

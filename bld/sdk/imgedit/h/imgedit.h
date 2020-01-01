@@ -115,7 +115,7 @@ typedef struct list_element {
     short                       height;
     short                       bitcount;
     char                        fname[_MAX_PATH];
-    BOOL                        issaved;
+    bool                        issaved;
     WPI_POINT                   hotspot;
     HBITMAP                     hxorbitmap;
     HBITMAP                     handbitmap;
@@ -247,7 +247,7 @@ HBITMAP         CreateViewBitmap( img_node *node );
 HBITMAP         DuplicateBitmap( HBITMAP hbitmap);
 HBITMAP         EnlargeImage( HWND hwnd );
 //void            ConvertToDIBitmap( HBITMAP hbitmap );
-void            SetIsSaved( HWND hwnd, BOOL fissaved );
+void            SetIsSaved( HWND hwnd, bool issaved );
 void            OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc );
 void            GetFnameFromPath( const char *fullpath, char *fname );
 void            GrayEditOptions( void );

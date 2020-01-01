@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +104,7 @@ static short getIconType( int bitcount, int width, int height )
         } else if( height == 16 ) {
             if( width == 32 ) {
                 return( 2 );           // 2 col, 32x16
-            } else if( width == 16 ) {      
+            } else if( width == 16 ) {
                 return( 4 );           // 2 col, 16x16
             } else {
                 return( -1 );
@@ -173,7 +174,7 @@ void InitIconInfo( void )
     iconInfo[XX].height = iconInfo[11].width = 16;
     iconInfo[XX].height = iconInfo[12].width = 48;
     */
-    
+
     iconInfo[0].text = IEAllocRCString( WIE_16COLOR32X32 );
     iconInfo[1].text = IEAllocRCString( WIE_2COLOR32X32 );
     iconInfo[2].text = IEAllocRCString( WIE_2COLOR32X16 );
@@ -197,7 +198,7 @@ void InitIconInfo( void )
     iconInfo[XX].text = IEAllocRCString( WIE_TRUECOLOR16X16 );
     iconInfo[XX].text = IEAllocRCString( WIE_TRUECOLOR48X48 );
     */
-    
+
     iconInfo[0].bitcount = 4;
     iconInfo[1].bitcount = 1;
     iconInfo[2].bitcount = 1;
@@ -216,7 +217,7 @@ void InitIconInfo( void )
     iconInfo[13].bitcount = 2;
     iconInfo[14].bitcount = 4;
     iconInfo[15].bitcount = 8;
-    
+
     /*
     iconInfo[XX].bitcount = 24;
     iconInfo[XX].bitcount = 24;
@@ -503,7 +504,7 @@ void AddNewIcon( void )
 
     AddIconUndoStack( &new_icon );
     SelectIcon( imagecount );
-    SetIsSaved( new_icon.hwnd, FALSE );
+    SetIsSaved( new_icon.hwnd, false );
 
     hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
     _wpi_enablemenuitem( hmenu, IMGED_SELIMG, TRUE, FALSE );
@@ -550,10 +551,8 @@ void DeleteIconImg( void )
 
     iconInfo[iconType].exists = FALSE;
 
-    currentnode = node;
-    while( currentnode ) {
+    for( currentnode = node; currentnode != NULL; currentnode = currentnode->nexticon ) {
         currentnode->num_of_images -= 1;
-        currentnode = currentnode->nexticon;
     }
 
     newnode = RemoveIconFromList( node, icon_index );

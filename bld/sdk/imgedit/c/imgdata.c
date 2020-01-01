@@ -523,9 +523,9 @@ image_type GetImageFileType( const char *ext, bool res )
     } else if( res && CMPFEXT( ext, "res" ) ) {
         img_type = RESOURCE_IMG;
     } else if( res && CMPFEXT( ext, "exe" ) ) {
-        img_type = EXE_IMG;
+        img_type = RESOURCE_IMG;
     } else if( res && CMPFEXT( ext, "dll" ) ) {
-        img_type = DLL_IMG;
+        img_type = RESOURCE_IMG;
     } else {
         img_type = UNDEF_IMG;
     }

@@ -35,6 +35,9 @@
 #include "iconinfo.h"
 #include "jdlg.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 static image_type       imgType = UNDEF_IMG;
@@ -278,7 +281,7 @@ static void initializeImage( img_node *node, const char *filename )
     node->hotspot.y = 0;
     node->num_of_images = 1;
     node->nexticon = NULL;
-    node->issaved = TRUE;
+    node->issaved = true;
     node->next = NULL;
     if( filename != NULL ) {
         strcpy( node->fname, filename );
@@ -305,19 +308,13 @@ int NewImage( image_type img_type, const char *filename )
     short               height;
     short               bcount;
     img_node            node;
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
 
     // If filename is not NULL and we don't know the image type,
     // then guess based on the file extesion.
     if( filename != NULL && img_type == UNDEF_IMG ) {
-        _splitpath( filename, NULL, NULL, NULL, ext );
-        if( stricmp( ext, ".bmp" ) == 0 ) {
-            img_type = BITMAP_IMG;
-        } else if( stricmp( ext, ".ico" ) == 0 ) {
-            img_type = ICON_IMG;
-        } else if( stricmp( ext, ".cur" ) == 0 ) {
-            img_type = CURSOR_IMG;
-        }
+        _splitpath2( filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        img_type = GetImageFileType( pg.ext, false );
     }
 
     if( img_type == UNDEF_IMG ) {
