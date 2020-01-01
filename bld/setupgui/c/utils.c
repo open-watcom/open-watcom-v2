@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1754,13 +1754,13 @@ static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
 
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
         NewFileToCheck( name, false );
-        VbufSetStr( &ext, "._N_" );
+        VbufSetStr( &ext, "_N_" );
         VbufSetPathExt( name, &ext );
         rc = true;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        VbufSetStr( &ext, "._D_" );
+        VbufSetStr( &ext, "_D_" );
         VbufSetPathExt( name, &ext );
 #endif
         rc = true;

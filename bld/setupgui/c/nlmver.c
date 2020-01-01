@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,7 +203,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 
     cancel = false;
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
-    VbufConcStr( &temp, "._N_" );
+    VbufConcStr( &temp, "_N_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
     if( CheckNewer( &unpacked_as, name ) ) {
         VbufSetStr( &dir, sysPath );

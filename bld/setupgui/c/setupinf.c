@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1826,8 +1826,8 @@ static bool ProcLine( char *line, pass_type pass )
                 VbufInit( &file->name );
                 VbufConcStr( &file->name, line );
                 VbufSplitpath( &file->name, NULL, NULL, NULL, &buff );
-                file->is_nlm = VbufCompStr( &buff, ".nlm", true ) == 0;
-                file->is_dll = VbufCompStr( &buff, ".dll", true ) == 0;
+                file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
+                file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
                 file->size = GET36( line ) * 512UL;
                 if( p != NULL && *p != '\0' && *p != '!' ) {
@@ -3172,7 +3172,7 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
 
         VbufInit( &ext );
         VbufSplitpath( filename, NULL, NULL, NULL, &ext );
-        if( VbufCompStr( &ext, ".DLL", true ) == 0 ) {
+        if( VbufCompExt( &ext, "dll", true ) == 0 ) {
             VBUF        file_desc;
             VBUF        dir;
             VBUF        dst_path;

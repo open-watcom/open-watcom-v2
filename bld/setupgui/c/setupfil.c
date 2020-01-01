@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -637,7 +637,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
             if( uninstall )
                 break;
             VbufSplitpath( &line_var, NULL, NULL, &fname, &fext );
-            if( VbufCompStr( &fname, "win", true ) != 0 || ( VbufCompStr( &fext, ".com", true ) != 0 && VbufLen( &fext ) > 0 ) )
+            if( VbufCompStr( &fname, "win", true ) != 0 || ( VbufCompExt( &fext, "com", true ) != 0 && VbufLen( &fext ) > 0 ) )
                 break;
             WinDotCom = GUIStrDup( line, NULL );
             line[0] = '\0';
@@ -1384,7 +1384,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
     VbufMakepath( &dll_name, NULL, NULL, &fname, &ext );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-    VbufSetStr( &ext, "._D_" );
+    VbufSetStr( &ext, "_D_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
 #else
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
@@ -1847,9 +1847,8 @@ bool GenerateBatchFile( bool uninstall )
 
     ReplaceVars( &batch_file, GetVariableStrVal( "BatchFileName" ) );
     VbufSplitpath( &batch_file, &drive, &dir, &fname, &ext );
-    if( VbufLen( &ext ) == 0 ) {
+    if( VbufLen( &ext ) == 0 )
         VbufConcStr( &ext, BATCHEXT );
-    }
     VbufMakepath( &batch_file, &drive, &dir, &fname, &ext );
     if( uninstall ) {
         remove_vbuf( &batch_file );
