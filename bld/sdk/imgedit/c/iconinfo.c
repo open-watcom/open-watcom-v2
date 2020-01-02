@@ -413,7 +413,7 @@ WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
  * CreateNewIcon - select the icon from the listbox (used by FILE.NEW)
  *               - if is_icon is FALSE, then this is a pointer (cursor)
  */
-BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
+bool CreateNewIcon( short *width, short *height, short *bitcount, bool is_icon )
 {
     WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
@@ -430,7 +430,7 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
     _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
-        return( FALSE );
+        return( false );
     }
 
     *width = iconInfo[iconType].width;
@@ -440,7 +440,7 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
     iconInfo[iconType].exists = TRUE;
     iconNumber[numberOfIcons] = iconType;
     numberOfIcons++;
-    return( TRUE );
+    return( true );
 
 } /* CreateNewIcon */
 

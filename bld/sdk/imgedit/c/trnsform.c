@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +136,7 @@ void FlipImage( WORD whichway )
     InvalidateRect( node->viewhwnd, NULL, TRUE );
 
     if( !DoKeepRect() ) {
-        SetRectExists( FALSE );
+        SetRectExists( false );
     }
     RecordImage( node->hwnd );
     BlowupImage( node->hwnd, NULL );
@@ -328,7 +329,7 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
  * simpleRotate - simply rotate the image around the center of the given rectangle
  */
 static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
-                          HBITMAP rotandbmp, BOOL rectexists )
+                          HBITMAP rotandbmp, bool rectexists )
 {
     WPI_POINT   topleft;
     WPI_POINT   centre_pt;
@@ -409,7 +410,7 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
         }
     } else {
         rectexists = rectexists;
-        SetRectExists( FALSE );
+        SetRectExists( false );
     }
 
     BlowupImage( node->hwnd, NULL );
@@ -519,8 +520,8 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
                 }
             }
         }
-        _imged_freethebits( xorbits, xorpres, node->hxorbitmap, FALSE, oldxor );
-        _imged_freethebits( rotxorbits, rotxorpres, rotxorbmp, TRUE, oldxorrot );
+        _imged_freethebits( xorbits, xorpres, node->hxorbitmap, false, oldxor );
+        _imged_freethebits( rotxorbits, rotxorpres, rotxorbmp, true, oldxorrot );
         _wpi_deletecompatiblepres( xorpres, xordc );
         _wpi_deletecompatiblepres( rotxorpres, rotxordc );
 
@@ -566,10 +567,10 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
                 }
             }
         }
-        FreeTheBits( xorbits, node->hxorbitmap, FALSE );
-        FreeTheBits( andbits, node->handbitmap, FALSE );
-        FreeTheBits( rotxorbits, rotxorbmp, TRUE );
-        FreeTheBits( rotandbits, rotandbmp, TRUE );
+        FreeTheBits( xorbits, node->hxorbitmap, false );
+        FreeTheBits( andbits, node->handbitmap, false );
+        FreeTheBits( rotxorbits, rotxorbmp, true );
+        FreeTheBits( rotandbits, rotandbmp, true );
     }
 
 } /* rotateTheImage */
@@ -585,7 +586,7 @@ void RotateImage( WORD whichway )
     HCURSOR     prevcursor;
     int         rotate_type;
     WPI_RECT    rotate_rect;
-    BOOL        rectexists;
+    bool        rectexists;
     short       new_width;
     short       new_height;
     WPI_PRES    pres;
@@ -600,11 +601,11 @@ void RotateImage( WORD whichway )
     PrintHintTextByID( WIE_ROTATINGIMAGE, NULL );
 
     if( DoesRectExist( &rotate_rect ) ) {
-        rectexists = TRUE;
+        rectexists = true;
         new_width = (short)_wpi_getheightrect( rotate_rect );
         new_height = (short)_wpi_getwidthrect( rotate_rect );
     } else {
-        rectexists = FALSE;
+        rectexists = false;
         _wpi_setwrectvalues( &rotate_rect, 0, 0, node->width, node->height );
         new_width = node->height;
         new_height = node->width;
@@ -674,7 +675,7 @@ void ClearImage( void )
     }
 
     if( DoesRectExist( &clear_area ) ) {
-        SetRectExists( FALSE );
+        SetRectExists( false );
     } else {
         _wpi_setwrectvalues( &clear_area, 0, 0, node->width, node->height );
     }

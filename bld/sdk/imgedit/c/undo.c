@@ -893,7 +893,7 @@ void DelIconUndoStack( img_node *node, int index )
  *              - also called when the record image routine realizes that memory
  *                is getting low
  */
-BOOL RelieveUndos( void )
+bool RelieveUndos( void )
 {
     an_undo_stack       *stack;
     an_undo_stack       *iconstack;
@@ -920,7 +920,7 @@ BOOL RelieveUndos( void )
     if( max_ops == 0 ) {
         PrintHintTextByID( WIE_NOUNDOSRECORDED, NULL );
         _wpi_setcursor( prevcursor );
-        return( FALSE );
+        return( false );
     }
     if( max_ops > 5 ) {
         for( i = 0; i < 5; i++ ) {
@@ -932,6 +932,6 @@ BOOL RelieveUndos( void )
         delstack->opcount--;
     }
     _wpi_setcursor( prevcursor );
-    return( TRUE );
+    return( true );
 
 } /* RelieveUndos */

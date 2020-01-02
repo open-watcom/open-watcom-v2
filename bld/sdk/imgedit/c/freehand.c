@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,7 +138,7 @@ void EndFreeHand( HWND hwnd )
  *                                presentation spaces of this module and thus cannot be
  *                                selected into any other presentation spaces
  */
-BOOL GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor )
+bool GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor )
 {
     if( win != NULL ) {
         *win = presWindow;

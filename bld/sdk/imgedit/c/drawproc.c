@@ -263,7 +263,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                         OutlineLine( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     } else if( toolType == IMGED_CLIP ) {
                         OutlineClip( hwnd, &start_pt, &prev_pt, &new_pt, true );
-                        SetRectExists( FALSE );
+                        SetRectExists( false );
                     } else {
                         OutlineRegion( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     }
@@ -525,7 +525,7 @@ int SetToolType( int toolid )
         node = GetCurrentNode();
         if( node != NULL ) {
             RedrawPrevClip( node->hwnd );
-            SetRectExists( FALSE );
+            SetRectExists( false );
         }
     }
 

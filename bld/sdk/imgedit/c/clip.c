@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ static HBITMAP          hAndClipped = NULL;
 static HBITMAP          hXorClipped = NULL;
 static short            dragWidth;
 static short            dragHeight;
-static BOOL             fEnableCutCopy = FALSE;
+static bool             fEnableCutCopy = false;
 static int              prevToolType;
 static HCURSOR          prevCursor;
 static HCURSOR          pointCursor;
@@ -240,7 +240,7 @@ void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT poi
     _wpi_setrectvalues( &clipRect.rect, left, top, right, bottom );
     clipRect.hwnd = hwnd;
 
-    fEnableCutCopy = TRUE;
+    fEnableCutCopy = true;
 
 } /* SetClipRect */
 
@@ -280,7 +280,7 @@ void IECopyImage( void )
     } else {
         PrintHintTextByID( WIE_AREACOPIED, NULL );
         RedrawPrevClip( node->hwnd );
-        fEnableCutCopy = FALSE;
+        fEnableCutCopy = false;
     }
 
 } /* IECopyImage */
@@ -313,7 +313,7 @@ void PlaceAndPaste( void )
     if( fEnableCutCopy ) {
         RedrawPrevClip( node->hwnd );
         PasteImage( NULL, pointsize, node->hwnd );
-        fEnableCutCopy = FALSE;
+        fEnableCutCopy = false;
         return;
     }
 
@@ -563,7 +563,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         SetToolType( prevToolType );
     }
 
-    fEnableCutCopy = FALSE;
+    fEnableCutCopy = false;
     RecordImage( hwnd );
     BlowupImage( NULL, NULL );
 
@@ -625,7 +625,7 @@ void CutImage( void )
         PrintHintTextByID( WIE_ENTIREIMAGECUT, NULL );
     } else {
         PrintHintTextByID( WIE_AREACUT, NULL );
-        fEnableCutCopy = FALSE;
+        fEnableCutCopy = false;
     }
     BlowupImage( node->hwnd, NULL );
 
@@ -696,7 +696,7 @@ void CheckForClipboard( HMENU hmenu )
  * SetRectExists - set whether or not there is a clipping rectangle on the
  *                 screen (indicated by fEnableCutCopy flag)
  */
-void SetRectExists( BOOL does_rect_exist )
+void SetRectExists( bool does_rect_exist )
 {
     fEnableCutCopy = does_rect_exist;
 
@@ -735,7 +735,7 @@ void DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize )
 /*
  * DoesRectExist - return whether or not a rectangle exists
  */
-BOOL DoesRectExist( WPI_RECT *rc )
+bool DoesRectExist( WPI_RECT *rc )
 {
     if( fEnableCutCopy ) {
         *rc = clipRect.rect;
@@ -752,6 +752,6 @@ BOOL DoesRectExist( WPI_RECT *rc )
 void SetDeviceClipRect( WPI_RECT *rect )
 {
     clipRect.rect = *rect;
-    fEnableCutCopy = TRUE;
+    fEnableCutCopy = true;
 
 } /* SetDeviceClipRect */

@@ -357,7 +357,7 @@ bool NewImage( image_type img_type, const char *filename )
         break;
 
     case ICON_IMG:
-        if( !CreateNewIcon( &width, &height, &bcount, TRUE ) ) {
+        if( !CreateNewIcon( &width, &height, &bcount, true ) ) {
             imgType = UNDEF_IMG;
             ok = false;
             break;
@@ -370,7 +370,7 @@ bool NewImage( image_type img_type, const char *filename )
 
     case CURSOR_IMG:
 #ifdef __OS2_PM__
-        if( !CreateNewIcon( &width, &height, &bcount, FALSE ) ) {
+        if( !CreateNewIcon( &width, &height, &bcount, false ) ) {
             imgType = UNDEF_IMG;
             ok = false;
             break;

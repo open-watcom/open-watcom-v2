@@ -328,7 +328,7 @@ void        MakeBitmap( img_node *node, bool isnew );
 void        MakeIcon( img_node *node, bool isnew );
 void        RemoveIcon( short index );
 void        LineXorAnd( COLORREF xorcolor, COLORREF andcolor, WPI_POINT *startpt, WPI_POINT *endpt );
-void        RegionXorAnd( COLORREF xorcolor, COLORREF andcolor, BOOL fFillRgn, WPI_RECT *r, BOOL is_rect );
+void        RegionXorAnd( COLORREF xorcolor, COLORREF andcolor, bool fFillRgn, WPI_RECT *r, bool is_rect );
 void        FillXorAnd( COLORREF brushcolor, WPI_POINT *pt, wie_clrtype colortype );
 void        SetNewHotSpot( WPI_POINT *pt );
 void        FocusOnImage( HWND hwnd );
@@ -341,7 +341,7 @@ void    BeginFreeHand( HWND hwnd );
 void    DrawThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor, WPI_POINT *pt );
 void    BrushThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor, WPI_POINT *pt, int brushsize );
 void    EndFreeHand( HWND hwnd );
-BOOL    GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor );
+bool    GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor );
 
 /* clip.c */
 void    SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT pointsize );
@@ -352,10 +352,10 @@ void    CutImage( void );
 void    DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize );
 void    CheckForClipboard( HMENU hmenu );
 void    RedrawPrevClip( HWND hwnd );
-void    SetRectExists( BOOL does_rect_exist );
+void    SetRectExists( bool does_rect_exist );
 void    CleanupClipboard( void );
 void    DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize );
-BOOL    DoesRectExist( WPI_RECT *rc );
+bool    DoesRectExist( WPI_RECT *rc );
 void    SetDeviceClipRect( WPI_RECT *rect );
 
 /* undo.c */
@@ -371,7 +371,7 @@ void    ResetUndoStack( img_node *node );
 void    SelIconUndoStack( HWND hwnd, short index );
 void    AddIconUndoStack( img_node *node );
 void    DelIconUndoStack( img_node *node, int index );
-BOOL    RelieveUndos( void );
+bool    RelieveUndos( void );
 
 /* colors.c */
 void        InitPalette( void );
@@ -384,7 +384,7 @@ COLORREF    GetPaletteColor( int index );
 int         GetColorIndex( COLORREF color );
 void        SetCurrentColors( bool fshowscreenclrs );
 void        InitFromColorPalette( palette_box *screen, palette_box *inverse, palette_box *avail_colors );
-BOOL        GetPaletteFile( a_pal_file *pal_file );
+bool        GetPaletteFile( a_pal_file *pal_file );
 void        SetNewPalette( a_pal_file *pal_file );
 void        RestoreColorPalette( void );
 void        InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap );
@@ -392,7 +392,7 @@ void        InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobi
 /* iconinfo.c */
 void    FiniIconInfo( void );
 void    InitIconInfo( void );
-BOOL    CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon );
+bool    CreateNewIcon( short *width, short *height, short *bitcount,  bool is_icon );
 void    AddNewIcon( void );
 void    DeleteIconImg( void );
 void    SelectIconImg( void );
@@ -484,7 +484,7 @@ void    SaveAllImages( void );
 bitmap_bits *GetTheBits( HBITMAP bitmap );
 COLORREF    MyGetPixel( bitmap_bits *bits, int x, int y );
 void        MySetPixel( bitmap_bits *bits, int x, int y, COLORREF color );
-void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, BOOL setbits );
+void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, bool setbits );
 
 /* iectl3d.c */
 bool    IECtl3dInit( HINSTANCE );

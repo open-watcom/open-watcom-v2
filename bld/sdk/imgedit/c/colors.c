@@ -694,12 +694,12 @@ void InitFromColorPalette( palette_box *screen, palette_box *inverse,
  *                - since it isn't documented (?!), I got this from a hex dump of a file
  *                  created by other image editors (MS)
  */
-BOOL GetPaletteFile( a_pal_file *pal_file )
+bool GetPaletteFile( a_pal_file *pal_file )
 {
     int                 i;
 
     if( currentPalIndex != COLOR_16 && currentPalIndex != COLOR_256 ) {
-        return( FALSE );
+        return( false );
     }
 
     pal_file->file_id = PALETTE_FILE;
@@ -717,7 +717,7 @@ BOOL GetPaletteFile( a_pal_file *pal_file )
         pal_file->rgbqs[i].rgbReserved = 0;
     }
 
-    return( TRUE );
+    return( true );
 
 } /* GetPaletteFile */
 

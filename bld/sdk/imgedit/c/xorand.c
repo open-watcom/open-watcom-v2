@@ -141,7 +141,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
  *                the view window
  */
 void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
-                   BOOL fFillRgn, WPI_RECT *r, BOOL is_rect )
+                   bool fFillRgn, WPI_RECT *r, bool is_rect )
 {
     HBRUSH      oldbrush;
     HBRUSH      hbrush;
@@ -270,7 +270,7 @@ void FocusOnImage( HWND hwnd )
 
     if( activeImage != NULL  ) {
         RedrawPrevClip( activeImage->hwnd );
-        SetRectExists( FALSE );
+        SetRectExists( false );
     }
 
     activeImage = SelectImage( hwnd );

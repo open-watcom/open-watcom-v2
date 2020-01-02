@@ -275,10 +275,10 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
             }
         }
     }
-    FreeTheBits( andbits, node->handbitmap, TRUE );
-    FreeTheBits( xorbits, node->hxorbitmap, TRUE );
-    FreeTheBits( screenbeforebits, screendup, FALSE );
-    FreeTheBits( screenbits, bigbitmap, FALSE );
+    FreeTheBits( andbits, node->handbitmap, true );
+    FreeTheBits( xorbits, node->hxorbitmap, true );
+    FreeTheBits( screenbeforebits, screendup, false );
+    FreeTheBits( screenbits, bigbitmap, false );
 
     _wpi_deletebitmap( bigbitmap );
     _wpi_deletebitmap( screendup );

@@ -681,8 +681,8 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     WPI_POINT   imgstart_pt;
     WPI_POINT   imgend_pt;
     WPI_RECT    rect;
-    BOOL        dofillrgn;
-    BOOL        is_rect;
+    bool        dofillrgn;
+    bool        is_rect;
     wie_clrtype type;
     img_node    *node;
     WPI_RECTDIM tmps;
@@ -724,26 +724,26 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     dithered = GetSelectedColor( mousebutton, &solid, &type );
     switch( toolType ) {
     case IMGED_RECTO:
-        dofillrgn = FALSE;
-        is_rect = TRUE;
+        dofillrgn = false;
+        is_rect = true;
         color = solid;
         break;
 
     case IMGED_RECTF:
-        dofillrgn = TRUE;
-        is_rect = TRUE;
+        dofillrgn = true;
+        is_rect = true;
         color = dithered;
         break;
 
     case IMGED_CIRCLEO:
-        dofillrgn = FALSE;
-        is_rect = FALSE;
+        dofillrgn = false;
+        is_rect = false;
         color = solid;
         break;
 
     case IMGED_CIRCLEF:
-        dofillrgn = TRUE;
-        is_rect = FALSE;
+        dofillrgn = true;
+        is_rect = false;
         color = dithered;
         break;
 
