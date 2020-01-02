@@ -774,8 +774,8 @@ static bool reallyOpenImage( const char *fname )
  */
 bool OpenImage( HANDLE hDrop )
 {
-    char                fname[_MAX_PATH];
-    bool                ok;
+    char        fname[_MAX_PATH];
+    bool        ok;
 
     ok = false;
     if( NULL == hDrop ) {

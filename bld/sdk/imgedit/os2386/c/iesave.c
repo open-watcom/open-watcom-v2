@@ -472,6 +472,7 @@ bool SaveFile( short how )
         }
     }
     return( ok );
+
 } /* SaveFile */
 
 #if 0

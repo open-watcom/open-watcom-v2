@@ -198,6 +198,9 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 
 } /* SaveOFNHookProc */
 
+/*
+ * updateSaveFileInfo
+ */
 static bool updateSaveFileInfo( const char *fname )
 {
     PGROUP2     pg;
@@ -212,7 +215,8 @@ static bool updateSaveFileInfo( const char *fname )
     }
     _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
     return( true );
-}
+
+} /* updateSaveFileInfo */
 
 /*
  * getSaveFName - get the name of the file to be saved

@@ -46,19 +46,19 @@ void SetupMenuAfterOpen( void )
     HMENU               hmenu;
 
     hmenu = GetMenu( _wpi_getframe(HMainWindow) );
-    _wpi_enablemenuitem( hmenu, IMGED_CLEAR, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_REST, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_SAVE, MF_GRAYED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_SAVE_AS, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_LINE, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_RECTO, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_RECTF, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEO, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEF, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_FREEHAND, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_FILL, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_BRUSH, MF_ENABLED, false );
-    _wpi_enablemenuitem( hmenu, IMGED_CLIP, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_CLEAR, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_REST, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_SAVE, MF_GRAYED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_SAVE_AS, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_LINE, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_RECTO, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_RECTF, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEO, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEF, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_FREEHAND, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_FILL, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_BRUSH, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_CLIP, MF_ENABLED, FALSE );
 
 } /* SetupMenuAfterOpen */
 
@@ -267,7 +267,7 @@ static bool updateOpenFileInfo( const char *fname )
         }
     }
     _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
-    imgType = GetImageFileType( pg.ext, true );
+    imgType = GetImageFileType( pg.ext, false );
     return( imgType != UNDEF_IMG );
 
 } /* updateOpenFileInfo */
