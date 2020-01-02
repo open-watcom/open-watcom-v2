@@ -63,13 +63,13 @@
 #endif
 
 
+extern bool             OpenNewFiles;
+
 /* Local Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static image_type       imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
-
-extern bool OpenNewFiles;
 
 /*
  * SetupMenuAfterOpen
@@ -544,7 +544,7 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
     cursorfile = ImageOpenData( (BYTE *)data, &pos );
     if( cursorfile == NULL ) {
         WImgEditError( WIE_ERR_BAD_CURSOR_DATA, fname );
-        return( FALSE );
+        return( false );
     }
     cursor = ImgResourceToImgData( (BYTE *)data, &pos, cursorfile, 0 );
 
@@ -825,7 +825,7 @@ static bool getOpenPalName( char *fname )
     bool                ok;
     long                of_size;
 
-    fname[0] = 0;
+    fname[0] = '\0';
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64

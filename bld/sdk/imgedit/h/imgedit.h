@@ -290,7 +290,7 @@ WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG m
 #ifndef __OS2_PM__
 WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int         NewImage( image_type img_type, const char *filename );
+bool        NewImage( image_type img_type, const char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -428,8 +428,12 @@ img_node    *GetImageNode( HWND hwnd );
 void        AddIconToList( img_node *icon, img_node *current_node );
 img_node    *RemoveIconFromList( img_node *node, int index );
 img_node    *SelectFromViewHwnd( HWND viewhwnd );
+
+/* imgutil.c */
 const char  *GetImageFileExt( image_type img_type, bool res );
 image_type  GetImageFileType( const char *ext, bool res );
+void        CheckForExt( img_node *node );
+void        CheckForPalExt( char *filename );
 
 /* iestatus.c */
 bool    InitStatusLine( HWND parent );

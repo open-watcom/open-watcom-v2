@@ -33,6 +33,9 @@
 
 #include "imgedit.h"
 #include "iconinfo.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 typedef struct list_el {
@@ -195,17 +198,14 @@ img_node *SelectImage( HWND hwnd )
     index_table *tableptr;
     short       i;
 
-    current_node = imgHead;
     tableptr = indexHead;
-
-    while( current_node != NULL ) {
+    for( current_node = imgHead; current_node != NULL; current_node = current_node->next ) {
         if( current_node->hwnd == hwnd ) {
             for( i = 0; i < tableptr->index; i++ ) {
                 current_node = current_node->nexticon;
             }
             return( current_node );
         }
-        current_node = current_node->next;
         tableptr = tableptr->next;
     }
 
@@ -223,13 +223,11 @@ bool DeleteNode( HWND hwnd )
     index_table *delindex;
     index_table *index;
 
-    node = imgHead;
-    index = indexHead;
-
     /*
      * First check the head and from then on check node->next ...
      */
     if( imgHead->hwnd == hwnd ) {
+        node = imgHead;
         if( imgHead == imgTail ) {
             imgTail = NULL;
             imgHead = NULL;
@@ -237,11 +235,11 @@ bool DeleteNode( HWND hwnd )
             imgHead = imgHead->next;
         }
         deleteNodeData( node );
-        node = NULL;
 
+        index = indexHead;
         if( indexHead == indexTail ) {
             indexTail = NULL;
-            indexTail = NULL;
+            indexHead = NULL;
         } else {
             indexHead = indexHead->next;
         }
@@ -249,7 +247,8 @@ bool DeleteNode( HWND hwnd )
         return( true );
     }
 
-    while( node->next != NULL ) {
+    for( node = imgHead, index = indexHead; node->next != NULL;
+            node = node->next, index = index->next ) {
         if( node->next->hwnd == hwnd ) {
             delnode = node->next;
             if( delnode == imgTail ) {
@@ -257,7 +256,6 @@ bool DeleteNode( HWND hwnd )
             }
             node->next = delnode->next;
             deleteNodeData( delnode );
-            delnode = NULL;
 
             delindex = index->next;
             if( delindex == indexTail ) {
@@ -268,8 +266,6 @@ bool DeleteNode( HWND hwnd )
 
             return( true );
         }
-        node = node->next;
-        index = index->next;
     }
 
     return( false );
@@ -292,7 +288,6 @@ void DeleteList( void )
         node = imgHead;
         imgHead = node->next;
         deleteNodeData( node );
-        node = NULL;
 
         index = indexHead;
         indexHead = index->next;
@@ -317,10 +312,8 @@ int DoImagesExist( void )
         return( 0 );
     }
 
-    node = imgHead;
-    while( node != imgTail ) {
+    for( node = imgHead; node != imgTail; node = node->next ) {
         img_count++;
-        node = node->next;
     }
     return( img_count );
 
@@ -344,14 +337,12 @@ img_node *GetNthIcon( HWND hwnd, short index )
     index_table         *tableptr;
     int                 i;
 
-    node = imgHead;
     tableptr = indexHead;
 
-    while( node != NULL ) {
+    for( node = imgHead; node != NULL; node = node->next ) {
         if( node->hwnd == hwnd ) {
             break;
         }
-        node = node->next;
         tableptr = tableptr->next;
     }
 
@@ -388,12 +379,10 @@ img_node *GetImageNode( HWND hwnd )
 {
     img_node            *node;
 
-    node = imgHead;
-    while( node != NULL ) {
+    for( node = imgHead; node != NULL; node = node->next ) {
         if( node->hwnd == hwnd ) {
             return( node );
         }
-        node = node->next;
     }
 
     return( NULL );
@@ -409,17 +398,15 @@ void AddIconToList( img_node *icon, img_node *current_node )
     img_node            *temp;
     img_node            *new_icon;
 
-    temp = current_node;
 
     new_icon = MemAlloc( sizeof( img_node ) );
     memcpy( new_icon, icon, sizeof( img_node ) );
 
-    while( temp != NULL ) {
+    for( temp = current_node; temp != NULL; temp = temp->nexticon ) {
         if( temp->nexticon == NULL ) {
             temp->nexticon = new_icon;
             break;
         }
-        temp = temp->nexticon;
     }
 
 } /* AddIconToList */
@@ -463,71 +450,17 @@ img_node *SelectFromViewHwnd( HWND viewhwnd )
     index_table *tableptr;
     short       i;
 
-    current_node = imgHead;
     tableptr = indexHead;
 
-    while( current_node != NULL ) {
+    for( current_node = imgHead; current_node != NULL; current_node = current_node->next ) {
         if( current_node->viewhwnd == viewhwnd ) {
             for( i = 0; i < tableptr->index; i++ ) {
                 current_node = current_node->nexticon;
             }
             return( current_node );
         }
-        current_node = current_node->next;
         tableptr = tableptr->next;
     }
     return( NULL );
 
 } /* SelectFromViewHwnd */
-
-const char *GetImageFileExt( image_type img_type, bool res )
-{
-    const char  *ext;
-
-    if( img_type == BITMAP_IMG ) {
-        ext = "bmp";
-    } else if( img_type == ICON_IMG ) {
-        ext = "ico";
-    } else if( img_type == CURSOR_IMG ) {
-#ifdef __OS2__
-        ext = "ptr";
-#else
-        ext = "cur";
-#endif
-    } else if( res && img_type == RESOURCE_IMG ) {
-        ext = "res";
-    } else if( res && img_type == EXE_IMG ) {
-        ext = "exe";
-    } else if( res && img_type == DLL_IMG ) {
-        ext = "dll";
-    } else {
-        ext = NULL;
-    }
-    return( ext );
-}
-
-image_type GetImageFileType( const char *ext, bool res )
-{
-    image_type  img_type;
-
-    if( CMPFEXT( ext, "bmp" ) ) {
-        img_type = BITMAP_IMG;
-    } else if( CMPFEXT( ext, "ico" ) ) {
-        img_type = ICON_IMG;
-#ifdef __OS2__
-    } else if( CMPFEXT( ext, "ptr" ) ) {
-#else
-    } else if( CMPFEXT( ext, "cur" ) ) {
-#endif
-        img_type = CURSOR_IMG;
-    } else if( res && CMPFEXT( ext, "res" ) ) {
-        img_type = RESOURCE_IMG;
-    } else if( res && CMPFEXT( ext, "exe" ) ) {
-        img_type = RESOURCE_IMG;
-    } else if( res && CMPFEXT( ext, "dll" ) ) {
-        img_type = RESOURCE_IMG;
-    } else {
-        img_type = UNDEF_IMG;
-    }
-    return( img_type );
-}

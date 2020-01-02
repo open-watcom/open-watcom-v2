@@ -34,12 +34,13 @@
 #include "imgedit.h"
 #include <math.h>
 #include "..\h\wbitmap.h"
+#include "pathgrp2.h"
 
 
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
 
-static char     initialDir[ _MAX_PATH ];
+static char     initialDir[_MAX_PATH];
 
 /*
  * writeDataInPieces - writes the xor data for the bitmap in chunks
@@ -182,45 +183,6 @@ static BITMAPFILEHEADER2 *fillFileHeader( img_node *node )
 } /* fillFileHeader */
 
 /*
- * checkForExt - if no extension is given, use the default for the given
- *               type.
- */
-static void checkForExt( img_node *node )
-{
-    PGROUP      pg;
-    img_node    *next_icon;
-
-    for( next_icon = node; next_icon != NULL; next_icon = next_icon->nexticon ) {
-        _splitpath2( next_icon->fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext[0] != '\0' )
-            return;
-        _makepath( next_icon->fname, pg.drive, pg.dir, pg.fname, GetImageFileExt( next_icon->imgtype ) );
-    }
-} /* checkForExt */
-
-#if 0
-/*
- * checkForPalExt - if no extension is given, use the default palette
- *              extension of .pal.
- */
-static void checkForPalExt( char *filename )
-{
-    char        ext[ _MAX_EXT ];
-
-    _splitpath( filename, NULL, NULL, NULL, ext );
-
-    if( strlen( ext ) > 1 ) {
-        return;
-    }
-
-    if( filename[strlen( filename ) - 1] != '.' ) {
-        strcat( filename, "." );
-    }
-    strcat( filename, "pal" );
-} /* checkForPalExt */
-#endif
-
-/*
  * initSaveFileInfo
  */
 static bool initSaveFileInfo( char *fullfile, image_type img_type )
@@ -269,7 +231,7 @@ static bool getSaveFName( char *fname, image_type img_type )
     bool                ok;
     char                fullfile[CCHMAXPATH];
 
-    fname[0] = 0;
+    fname[0] = '\0';
 
     initSaveFileInfo( fullfile, img_type );
 
@@ -303,8 +265,8 @@ static bool saveBitmapFile( img_node *node )
     long                        clrtable_size;
     RGB2                        *colours;
     FILE                        *fp;
-    char                        text[ HINT_TEXT_LEN ];
-    char                        filename[ _MAX_FNAME ];
+    char                        text[HINT_TEXT_LEN];
+    char                        filename[_MAX_FNAME];
     bool                        ok;
 
     ok = false;
@@ -346,7 +308,7 @@ static bool saveBitmapFile( img_node *node )
         FreeDIBitmapInfo( bmi );
         if( ok ) {
             AllowRestoreOption( node );
-            SetIsSaved( node->hwnd, TRUE );
+            SetIsSaved( node->hwnd, true );
             GetFnameFromPath( node->fname, filename );
             sprintf( text, "Bitmap saved to '%s'", filename );
             SetHintText( text );
@@ -370,8 +332,8 @@ static bool saveImageFile( img_node *node )
     ULONG                       nextoff;
     RGB2                        *colours;
     FILE                        *fp;
-    char                        text[ HINT_TEXT_LEN ];
-    char                        filename[ _MAX_FNAME ];
+    char                        text[HINT_TEXT_LEN];
+    char                        filename[_MAX_FNAME];
     img_node                    *new_image;
     bool                        ok;
 
@@ -452,7 +414,7 @@ static bool saveImageFile( img_node *node )
             return( false );
         }
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
         GetFnameFromPath( node->fname, filename );
         if( node->imgtype == ICON_IMG ) {
             sprintf( text, "Icon saved to '%s'", filename );
@@ -471,45 +433,43 @@ bool SaveFile( short how )
 {
     img_node    *node;
     img_node    *rootnode;
-    char        new_name[ _MAX_PATH ];
+    char        new_name[_MAX_PATH];
     bool        ok;
 
-    ok = false;
     node = GetCurrentNode();
-    if( node == NULL )
-        return( ok );
-    rootnode = GetImageNode( node->hwnd );
-
-    if( rootnode == NULL )
-        return( ok );
-
-    if( strnicmp(rootnode->fname, "(Untitled)", 10) == 0 ) {
-        how = SB_SAVE_AS;
+    ok = ( node != NULL )
+    if( ok ) {
+        rootnode = GetImageNode( node->hwnd );
+        ok = ( rootnode != NULL )
     }
-
-    if( how == SB_SAVE_AS ) {
-        if( !getSaveFName(new_name, rootnode->imgtype) ) {
-            return( ok );
+    if( ok ) {
+        if( strnicmp( rootnode->fname, "(Untitled)", 10 ) == 0 ) {
+            how = SB_SAVE_AS;
         }
-        for( node = rootnode; node != NULL; node = node->nexticon ) {
-            strcpy( node->fname, new_name );
+        if( how == SB_SAVE_AS ) {
+            ok = getSaveFName( new_name, rootnode->imgtype );
+            if( ok ) {
+                for( node = rootnode; node != NULL; node = node->nexticon ) {
+                    strcpy( node->fname, new_name );
+                }
+            }
         }
     }
+    if( ok ) {
+        CheckForExt( rootnode );
 
-    checkForExt( rootnode );
-
-    switch( rootnode->imgtype ) {
-    case BITMAP_IMG:
-        ok = saveBitmapFile( rootnode );
-        if( !ok )
-            MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-        break;
-    case ICON_IMG:
-    case CURSOR_IMG:
-        ok = saveImageFile( rootnode );
-        if( !ok )
-            MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-        break;
+        switch( rootnode->imgtype ) {
+        case BITMAP_IMG:
+            ok = saveBitmapFile( rootnode );
+            break;
+        case ICON_IMG:
+        case CURSOR_IMG:
+            ok = saveImageFile( rootnode );
+            break;
+        }
+        if( !ok ) {
+            MessageBox( HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION );
+        }
     }
     return( ok );
 } /* SaveFile */
@@ -527,7 +487,7 @@ static bool getSavePalName( char *fname )
     char                szFileTitle[_MAX_PATH];
     bool                ok;
 
-    fname[0] = 0;
+    fname[0] = '\0';
 
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -555,9 +515,9 @@ bool SaveColourPalette( void )
 {
     a_pal_file          pal_file;
     FILE                *fp;
-    char                fname[ _MAX_PATH ];
-    char                filename[ _MAX_FNAME + _MAX_EXT ];
-    char                text[ HINT_TEXT_LEN ];
+    char                fname[_MAX_PATH];
+    char                filename[_MAX_FNAME + _MAX_EXT];
+    char                text[HINT_TEXT_LEN];
     bool                ok;
 
     if( !getSavePalName( fname ) ) {
@@ -568,7 +528,7 @@ bool SaveColourPalette( void )
         }
         return( true );
     }
-    checkForPalExt( fname );
+    CheckForPalExt( fname );
     if( !GetPaletteFile( &pal_file ) ) {
         sprintf( text, "Current palette not 16 colours!", fname );
         SetHintText( text );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+WINEXPORT WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 
 #define TITLE_TIMER       666
 
@@ -53,7 +53,7 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 /*
  * wTitleDlgProc - callback function for the displaying of the title screen
  */
-INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
+WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -111,7 +111,7 @@ INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM l
         if( brush != NULL ) {
             dc = (HDC)wparam;
             SetBkColor( dc, color );
-            return( (INT_PTR)brush );
+            ret = true;
         }
         break;
 #else
@@ -121,7 +121,7 @@ INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM l
             if( HIWORD( lparam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            return( (INT_PTR)brush );
+            ret = true;
         }
         break;
 #endif
@@ -170,7 +170,7 @@ INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM l
         }
         break;
     }
-    return( ret );
+    _wpi_dlgreturn( ret );
 
 } /* wTitleDlgProc */
 

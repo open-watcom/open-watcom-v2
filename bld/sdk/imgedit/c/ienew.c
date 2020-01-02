@@ -82,7 +82,7 @@ WPI_DLGRESULT CALLBACK SelImgDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             if ( imgType == UNDEF_IMG ) {
                 _wpi_checkradiobutton( hwnd, SEL_BITMAP, SEL_CURSOR, SEL_BITMAP );
             } else {
-                _wpi_checkradiobutton( hwnd, SEL_BITMAP, SEL_CURSOR, SEL_BITMAP + imgType - 1 );
+                _wpi_checkradiobutton( hwnd, SEL_BITMAP, SEL_CURSOR, SEL_BITMAP + ( imgType - BITMAP_IMG ) );
             }
             ret = true;
             break;
@@ -206,7 +206,7 @@ WPI_DLGRESULT CALLBACK SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpar
 /*
  * SelCursorDlgProc - select the target device to use the cursor on
  */
-INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WPI_DLGRESULT CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HWND hlistbox;
     char        *mono32x32;
@@ -262,7 +262,7 @@ INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         ret = true;
         break;
     }
-    return( ret );
+    _wpi_dlgreturn( ret );
 
 } /* SelCursorDlgProc */
 
@@ -300,7 +300,7 @@ static void initializeImage( img_node *node, const char *filename )
 /*
  * NewImage - create a new image and return the image type (bitmap, icon, or cursor)
  */
-int NewImage( image_type img_type, const char *filename )
+bool NewImage( image_type img_type, const char *filename )
 {
     WPI_DLGPROC         dlgproc;
     INT_PTR             button_type;
@@ -309,6 +309,7 @@ int NewImage( image_type img_type, const char *filename )
     short               bcount;
     img_node            node;
     PGROUP2             pg;
+    bool                ok;
 
     // If filename is not NULL and we don't know the image type,
     // then guess based on the file extesion.
@@ -323,7 +324,7 @@ int NewImage( image_type img_type, const char *filename )
         _wpi_freedlgprocinstance( dlgproc );
 
         if( button_type == DLGID_CANCEL ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         imgType = img_type;
@@ -331,6 +332,7 @@ int NewImage( image_type img_type, const char *filename )
 
     imageCount++;
 
+    ok = true;
     switch( imgType ) {
     case BITMAP_IMG:
         dlgproc = _wpi_makedlgprocinstance( SelBitmapDlgProc, Instance );
@@ -339,14 +341,14 @@ int NewImage( image_type img_type, const char *filename )
         if( button_type == DLGID_CANCEL ) {
             imgType = UNDEF_IMG;
             imageCount--;
-            return( false );
+            ok = false;
         } else if( button_type == SEL_SELECT ) {
 #ifdef __OS2_PM__
             IEDisplayErrorMsg( WIE_NOTE, WIE_NOTIMPLEMENTED, MB_OK | MB_ICONINFORMATION );
-            return( false );
+            ok = false;
 #else
             if( !SelectDynamicBitmap( &node, imageCount, filename ) ) {
-                return( false );
+                ok = false;
             }
 #endif
         } else {
@@ -357,7 +359,8 @@ int NewImage( image_type img_type, const char *filename )
     case ICON_IMG:
         if( !CreateNewIcon( &width, &height, &bcount, TRUE ) ) {
             imgType = UNDEF_IMG;
-            return( false );
+            ok = false;
+            break;
         }
         imgWidth = width;
         imgHeight = height;
@@ -369,7 +372,8 @@ int NewImage( image_type img_type, const char *filename )
 #ifdef __OS2_PM__
         if( !CreateNewIcon( &width, &height, &bcount, FALSE ) ) {
             imgType = UNDEF_IMG;
-            return( false );
+            ok = false;
+            break;
         }
         imgWidth = width;
         imgHeight = height;
@@ -380,23 +384,27 @@ int NewImage( image_type img_type, const char *filename )
         FreeProcInstance_DLG( dlgproc );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
-            return( false );
+            ok = false;
+            break;
         }
 #endif
         initializeImage( &node, filename );
         break;
 
     default:
-        return( false );
+        ok = false;
+        break;
     }
 
-    node.wrinfo = NULL;
-    node.lnode = NULL;
+    if( ok ) {
+        node.wrinfo = NULL;
+        node.lnode = NULL;
 
-    CreateNewDrawPad( &node );
+        CreateNewDrawPad( &node );
 
-    SetupMenuAfterOpen();
-
-    return( imgType != UNDEF_IMG );
+        SetupMenuAfterOpen();
+        ok = ( imgType != UNDEF_IMG );
+    }
+    return( ok );
 
 } /* NewImage */

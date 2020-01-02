@@ -171,39 +171,6 @@ static bool writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
 } /* writeDataInPiecesData */
 
 /*
- * checkForExt - if no extension is given, use the default for the given type
- */
-static void checkForExt( img_node *node )
-{
-    PGROUP2     pg;
-    img_node    *next_icon;
-
-    for( next_icon = node; next_icon != NULL; next_icon = next_icon->nexticon ) {
-        _splitpath2( next_icon->fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext[0] != '\0' ) {
-            return;
-        }
-        _makepath( next_icon->fname, pg.drive, pg.dir, pg.fname, GetImageFileExt( next_icon->imgtype, false ) );
-    }
-
-} /* checkForExt */
-
-/*
- * checkForPalExt - if no extension is given, use the default palette
- *                  extension of .pal.
- */
-static void checkForPalExt( char *filename )
-{
-    PGROUP2     pg;
-
-    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        _makepath( filename, pg.drive, pg.dir, pg.fname, "pal" );
-    }
-
-} /* checkForPalExt */
-
-/*
  * SaveOFNHookProc - hook used called by common dialog for 3D controls
  */
 UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
@@ -890,7 +857,9 @@ static bool saveResourceFile( img_node *node )
         if( info_created ) {
             ok = createNewImageLNODE( node, type );
         }
-        ok = (ok && node->lnode != NULL);
+        if( ok ) {
+            ok = ( node->lnode != NULL );
+        }
     }
 
     if( ok ) {
@@ -903,15 +872,13 @@ static bool saveResourceFile( img_node *node )
             if( was32bit ) {
                 if( is32bit ) {
                     break;
-                } else {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16, MB_ICONSTOP | MB_OK );
                 }
+                IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16, MB_ICONSTOP | MB_OK );
             } else {
-                if( is32bit ) {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32, MB_ICONSTOP | MB_OK );
-                } else {
+                if( !is32bit ) {
                     break;
                 }
+                IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32, MB_ICONSTOP | MB_OK );
             }
         }
         ok = (save_type != WR_DONT_KNOW);
@@ -1001,44 +968,42 @@ bool SaveFileFromNode( img_node *node, int how )
     bool        ok;
     image_type  img_type;
 
-    ok = false;
-    if( node == NULL ) {
-        return( ok );
+    ok = ( node != NULL );
+    if( ok ) {
+        rootnode = GetImageNode( node->hwnd );
+        ok = ( rootnode != NULL );
     }
-    rootnode = GetImageNode( node->hwnd );
-
-    if( rootnode == NULL ) {
-        return( ok );
-    }
-
-    if( strnicmp( rootnode->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
-        how = SB_SAVE_AS;
-    }
-
-    if( how == SB_SAVE_AS ) {
-        if( !getSaveFName( new_name, rootnode->imgtype ) ) {
-            return( ok );
+    if( ok ) {
+        if( strnicmp( rootnode->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
+            how = SB_SAVE_AS;
         }
-        for( node = rootnode; node != NULL; node = node->nexticon ) {
-            strcpy( node->fname, new_name );
+
+        if( how == SB_SAVE_AS ) {
+            ok = getSaveFName( new_name, rootnode->imgtype );
+            if( ok ) {
+                for( node = rootnode; node != NULL; node = node->nexticon ) {
+                    strcpy( node->fname, new_name );
+                }
+            }
         }
     }
+    if( ok ) {
+        CheckForExt( rootnode );
 
-    checkForExt( rootnode );
-
-    _splitpath2( rootnode->fname, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    img_type = GetImageFileType( pg.ext, true );
-    if( img_type == RESOURCE_IMG ) {
-        return( saveResourceFile( rootnode ) );
-    }
-    switch( rootnode->imgtype ) {
-    case BITMAP_IMG:
-        ok = saveBitmapFile( rootnode );
-        break;
-    case ICON_IMG:
-    case CURSOR_IMG:
-        ok = saveImgFile( rootnode );
-        break;
+        _splitpath2( rootnode->fname, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        img_type = GetImageFileType( pg.ext, true );
+        if( img_type == RESOURCE_IMG ) {
+            return( saveResourceFile( rootnode ) );
+        }
+        switch( rootnode->imgtype ) {
+        case BITMAP_IMG:
+            ok = saveBitmapFile( rootnode );
+            break;
+        case ICON_IMG:
+        case CURSOR_IMG:
+            ok = saveImgFile( rootnode );
+            break;
+        }
     }
     return( ok );
 
@@ -1118,21 +1083,19 @@ bool SaveColorPalette( void )
         return( true );                     // Just return ... no error
     }
 
-    ok = false;
-    if( !getSavePalName( fname ) ) {
-        return( ok );
-    }
-    checkForPalExt( fname );
+    ok = getSavePalName( fname );
+    if( ok ) {
+        CheckForPalExt( fname );
 
-    GetFnameFromPath( fname, filename );
-    fp = fopen( fname, "wb" );
-    if( fp != NULL ) {
-        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
-            if( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) == 1 ) {
-                ok = true;
+        GetFnameFromPath( fname, filename );
+        ok = false;
+        fp = fopen( fname, "wb" );
+        if( fp != NULL ) {
+            if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+                ok = ( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) == 1 );
             }
+            fclose( fp );
         }
-        fclose( fp );
     }
     if( ok ) {
         PrintHintTextByID( WIE_PALETTESAVEDTO, filename );

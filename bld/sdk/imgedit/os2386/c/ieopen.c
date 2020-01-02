@@ -35,63 +35,66 @@
 #include "imgedit.h"
 #include "..\h\wbitmap.h"
 #include "..\h\pmicon.h"
+#include "pathgrp2.h"
 
-static signed short     imgType = BITMAP_IMG;
-static char             initialDir[ _MAX_PATH+_MAX_DIR ];
+
+static image_type       imgType = BITMAP_IMG;
+static char             initialDir[_MAX_PATH + _MAX_DIR];
 
 void SetupMenuAfterOpen( void )
 {
     HMENU               hmenu;
 
     hmenu = GetMenu( _wpi_getframe(HMainWindow) );
-    _wpi_enablemenuitem( hmenu, IMGED_CLEAR, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_REST, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_SAVE, MF_GRAYED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_SAVE_AS, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_LINE, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_RECTO, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_RECTF, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEO, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEF, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_FREEHAND, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_FILL, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_BRUSH, MF_ENABLED, FALSE );
-    _wpi_enablemenuitem( hmenu, IMGED_CLIP, MF_ENABLED, FALSE );
+    _wpi_enablemenuitem( hmenu, IMGED_CLEAR, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_REST, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_SAVE, MF_GRAYED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_SAVE_AS, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_LINE, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_RECTO, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_RECTF, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEO, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_CIRCLEF, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_FREEHAND, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_FILL, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_BRUSH, MF_ENABLED, false );
+    _wpi_enablemenuitem( hmenu, IMGED_CLIP, MF_ENABLED, false );
 
 } /* SetupMenuAfterOpen */
 
 /*
  * readInImageFile - reads in an icon or cursor file (bitmaps too??!!)
  */
-static BOOL readInImageFile( const char *fullname )
+static bool readInImageFile( const char *fullname )
 {
     FILE                *fp;
     a_pm_image_file     *imgfile;
     int                 retcode;
     img_node            *node;
     a_pm_image          *image;
-    char                filename[ _MAX_FNAME + _MAX_EXT ];
-    char                text[ HINT_TEXT_LEN ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
+    char                text[HINT_TEXT_LEN];
     int                 file_type;
     int                 i;
 
     fp = fopen( fullname, "rb" );
-    if (!fp) return( FALSE );
+    if( fp == NULL )
+        return( false );
 
-    if (imgType == BITMAP_IMG) {
+    if( imgType == BITMAP_IMG ) {
         file_type = PMBITMAP_FILETYPE;
-    } else if (imgType == ICON_IMG) {
+    } else if( imgType == ICON_IMG ) {
         file_type = PMICON_FILETYPE;
     } else {
         file_type = PMPOINTER_FILETYPE;
     }
 
     imgfile = OpenPMImage( fp, file_type, &retcode );
-    if (!imgfile) {
+    if( imgfile == NULL ) {
         fclose( fp );
-        return( FALSE );
+        return( false );
     }
-    if (retcode != file_type) {
+    if( retcode != file_type ) {
         if( imgType == ICON_IMG ) {
             WImgEditError( WIE_ERR_BAD_ICON_FILE, filename );
         } else {
@@ -99,11 +102,11 @@ static BOOL readInImageFile( const char *fullname )
         }
         ClosePMImage( imgfile );
         fclose( fp );
-        return( FALSE );
+        return( false );
     }
     node = malloc( sizeof(img_node) * imgfile->count );
 
-    for (i=0; i < imgfile->count; ++i) {
+    for( i = 0; i < imgfile->count; ++i ) {
         node[i].imgtype = imgType;
         node[i].bitcount = imgfile->resources[i].xorinfo->cBitCount;
         node[i].width = imgfile->resources[i].xorinfo->cx;
@@ -116,10 +119,10 @@ static BOOL readInImageFile( const char *fullname )
         node[i].hxorbitmap = PMImageToWinXorBitmap(image, imgfile, i, Instance);
         node[i].num_of_images = imgfile->count;
         node[i].viewhwnd = NULL;
-        if (i > 0) {
+        if( i > 0 ) {
             node[i-1].nexticon = &(node[i]);
         }
-        node[i].issaved = TRUE;
+        node[i].issaved = true;
         node[i].next = NULL;
         strupr( strcpy( node[i].fname, fullname ) );
         FiniPMImage( image );
@@ -130,22 +133,23 @@ static BOOL readInImageFile( const char *fullname )
     fclose( fp );
 
     GetFnameFromPath( fullname, filename );
-    if (imgType == ICON_IMG) {
+    if( imgType == ICON_IMG ) {
         sprintf( text, "Opened '%s' (%d icons)", filename, node->num_of_images );
-    } else if (imgType == CURSOR_IMG) {
+    } else if( imgType == CURSOR_IMG ) {
         sprintf( text, "Opened '%s' (%d pointers)", filename, node->num_of_images );
     }
     SetHintText( text );
     CreateNewDrawPad( node );
 
     free( node );
-    return(TRUE);
+    return( true );
+
 } /* readInImageFile */
 
 /*
  * readInBitmapFile - reads in a bitmap file
  */
-static BOOL readInBitmapFile( const char *fullname )
+static bool readInBitmapFile( const char *fullname )
 {
     HBITMAP             hrealbitmap;
     HBITMAP             hbitmap;
@@ -159,23 +163,23 @@ static BOOL readInBitmapFile( const char *fullname )
     WPI_PRES            destpres;
     HDC                 destdc;
     char                text[HINT_TEXT_LEN];
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
 
     // NOTE that ReadPMBitmapFile returns an actual hbitmap!!
     hrealbitmap = ReadPMBitmapFile( HMainWindow, fullname, &info );
     hbitmap = MakeWPIBitmap( hrealbitmap );
     GetFnameFromPath( fullname, filename );
 
-    if ( hbitmap ) {
-        if ( (info.cx > MAX_DIM) || (info.cy > MAX_DIM) ) {
+    if( hbitmap ) {
+        if( ( info.cx > MAX_DIM ) || ( info.cy > MAX_DIM ) ) {
             WImgEditError( WIE_ERR_BITMAP_TOO_BIG, filename );
             _wpi_deletebitmap( hbitmap );
-            return( FALSE );
+            return( false );
 #if 1
-        } else if (info.cBitCount > 4) {
+        } else if( info.cBitCount > 4 ) {
             WImgEditError( WIE_ERR_256CLR_BITMAP, filename );
             _wpi_deletebitmap( hbitmap );
-            return( FALSE );
+            return( false );
 #endif
         }
         node.imgtype = BITMAP_IMG;
@@ -186,8 +190,8 @@ static BOOL readInBitmapFile( const char *fullname )
         node.hotspot.y = 0;
         node.num_of_images = 1;
         node.nexticon = NULL;
-        node.issaved = TRUE;
-        if (node.bitcount == 1) {
+        node.issaved = true;
+        if( node.bitcount == 1 ) {
             pres = _wpi_getpres( HWND_DESKTOP );
             srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
             destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
@@ -221,9 +225,10 @@ static BOOL readInBitmapFile( const char *fullname )
         CreateNewDrawPad( &node );
     } else {
         WImgEditError( WIE_ERR_BAD_BITMAP_FILE, filename );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
+
 } /* readInBitmapFile */
 
 /*
@@ -276,7 +281,7 @@ static bool getOpenFName( char *fname )
 {
     FILEDLG             filedlg;
     bool                ok;
-    char                fullfile[ CCHMAXPATH ];
+    char                fullfile[CCHMAXPATH];
 
     fname[0] = '\0';
 
@@ -309,8 +314,8 @@ static bool getOpenFName( char *fname )
  */
 bool OpenImage( void )
 {
-    char                fname[ _MAX_PATH ];
-    char                filename[ _MAX_FNAME ];
+    char                fname[_MAX_PATH];
+    char                filename[_MAX_FNAME];
     char                error_text[HINT_TEXT_LEN];
 
     if( !getOpenFName( &fname ) ) {
@@ -348,7 +353,7 @@ bool OpenImage( void )
  */
 void SetInitialOpenDir( char *new_dir )
 {
-    if (new_dir) {
+    if( new_dir != NULL ) {
         strcpy( initialDir, new_dir );
     } else {
         strcpy( initialDir, "" );
@@ -361,7 +366,8 @@ void SetInitialOpenDir( char *new_dir )
  */
 char *GetInitOpenDir( void )
 {
-    return(initialDir);
+    return( initialDir );
+
 } /* GetInitOpenDir */
 
 /*
@@ -371,8 +377,8 @@ void OpenFileOnStart( const char *fname )
 {
     PGROUP2     pg;
     FILE        *fp;
-    char        text[ HINT_TEXT_LEN ];
-    char        filename[ _MAX_FNAME+_MAX_EXT ];
+    char        text[HINT_TEXT_LEN];
+    char        filename[_MAX_FNAME + _MAX_EXT];
     image_type  img_type;
 
     fp = fopen( fname, "r" );
