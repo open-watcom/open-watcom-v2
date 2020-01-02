@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
 #include "macros.h"
 #ifdef __OS2_PM__

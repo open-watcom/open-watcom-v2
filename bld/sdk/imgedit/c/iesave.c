@@ -231,7 +231,7 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 
 } /* SaveOFNHookProc */
 
-static void updateInfoFromFilename( const char *fname )
+static bool updateSaveFileInfo( const char *fname )
 {
     PGROUP2     pg;
     size_t      len;
@@ -244,6 +244,7 @@ static void updateInfoFromFilename( const char *fname )
         }
     }
     _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    return( true );
 }
 
 /*
@@ -256,6 +257,8 @@ static bool getSaveFName( char *fname, image_type img_type )
     bool                ok;
     long                of_size;
 
+    fname[0] = '\0';
+
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
   #if defined( __NT__ ) && (_WIN32_WINNT >= 0x0500)
@@ -265,8 +268,6 @@ static bool getSaveFName( char *fname, image_type img_type )
     }
   #endif
 #endif
-
-    fname[0] = '\0';
     memset( &of, 0, of_size );
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
@@ -290,7 +291,7 @@ static bool getSaveFName( char *fname, image_type img_type )
 #endif
 
     if( ok ) {
-        updateInfoFromFilename( fname );
+        ok = updateSaveFileInfo( fname );
     }
     return( ok );
 
@@ -1066,6 +1067,8 @@ static bool getSavePalName( char *fname )
     bool                ok;
     long                of_size;
 
+    fname[0] = '\0';
+
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
   #if defined( __NT__ ) && (_WIN32_WINNT >= 0x0500)
@@ -1075,8 +1078,6 @@ static bool getSavePalName( char *fname )
     }
   #endif
 #endif
-
-    fname[0] = '\0';
     memset( &of, 0, of_size );
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;

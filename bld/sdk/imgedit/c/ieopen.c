@@ -563,9 +563,12 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
  */
 UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    wparam = wparam;
-    lparam = lparam;
-    hwnd = hwnd;
+#ifdef _WIN64
+    /* unused parameters */ (void)hwnd; (void)wparam; (void)lparam;
+#else
+    /* unused parameters */ (void)wparam; (void)lparam;
+#endif
+
     switch( msg ) {
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
@@ -587,9 +590,9 @@ UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 } /* OpenOFNHookProc */
 
 /*
- * updateInfoFromFilename
+ * updateOpenFileInfo
  */
-static image_type updateInfoFromFilename( const char *fname )
+static bool updateOpenFileInfo( const char *fname )
 {
     PGROUP2             pg;
     size_t              len;
@@ -602,21 +605,24 @@ static image_type updateInfoFromFilename( const char *fname )
         }
     }
     _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
-    return( GetImageFileType( pg.ext, true ) );
+    imgType = GetImageFileType( pg.ext, true );
+    return( imgType != UNDEF_IMG );
 
-} /* updateInfoFromFilename */
+} /* updateOpenFileInfo */
 
 /*
  * getOpenFName - let the user select a file name for an open operation
  *              - fname must point to a buffer of length at least _MAX_PATH
  *              - also set the type of file (bitmap, icon, cursor)
  */
-static BOOL getOpenFName( char *fname )
+static bool getOpenFName( char *fname )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    int                 rc;
+    bool                ok;
     long                of_size;
+
+    fname[0] = '\0';
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
@@ -627,9 +633,7 @@ static BOOL getOpenFName( char *fname )
     }
   #endif
 #endif
-    fname[0] = '\0';
     memset( &of, 0, of_size );
-
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
     of.lpstrFilter = (LPSTR)IEImageFilter;
@@ -647,17 +651,15 @@ static BOOL getOpenFName( char *fname )
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-    rc = GetOpenFileName( &of );
+    ok = ( GetOpenFileName( &of ) != 0 );
 #ifndef __NT__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
-    if( rc ) {
-        imgType = updateInfoFromFilename( fname );
-        return( TRUE );
-    } else {
-        return( FALSE );
+    if( ok ) {
+        ok = updateOpenFileInfo( fname );
     }
+    return( ok );
 
 } /* getOpenFName */
 
@@ -799,7 +801,7 @@ bool OpenImage( HANDLE hDrop )
         ok = true;
         for( i = 0; ok && i < nFiles; i++ ) {
             DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
-            imgType = updateInfoFromFilename( fname );
+            updateOpenFileInfo( fname );
             ok = reallyOpenImage( fname );
         }
 #endif
@@ -816,12 +818,14 @@ bool OpenImage( HANDLE hDrop )
 /*
  * getOpenPalName - let the user select a palette file name to load
  */
-static BOOL getOpenPalName( char *fname )
+static bool getOpenPalName( char *fname )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    int                 rc;
+    bool                ok;
     long                of_size;
+
+    fname[0] = 0;
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
@@ -832,8 +836,6 @@ static BOOL getOpenPalName( char *fname )
     }
   #endif
 #endif
-
-    fname[0] = 0;
     memset( &of, 0, of_size );
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
@@ -851,11 +853,11 @@ static BOOL getOpenPalName( char *fname )
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, Instance );
 #endif
-    rc = GetOpenFileName( &of );
+    ok = ( GetOpenFileName( &of ) != 0 );
 #ifndef __NT__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
-    return( rc );
+    return( ok );
 
 } /* getOpenPalName */
 

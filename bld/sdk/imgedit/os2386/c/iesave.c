@@ -221,52 +221,76 @@ static void checkForPalExt( char *filename )
 #endif
 
 /*
+ * initSaveFileInfo
+ */
+static bool initSaveFileInfo( char *fullfile, image_type img_type )
+{
+    char        *fname;
+    size_t      len;
+
+    fname = "*";
+    if( initialDir[0] != '\0' ) {
+        len = strlen( initialDir ) - 1;
+        if( initialDir[len] != ':' && initialDir[len] != '\\' ) {
+            fname = "\\*";
+        }
+    }
+    _makepath( fullfile, NULL, initialDir, fname, GetImageFileExt( img_type, false ) );
+    return( true );
+
+} /* initSaveFileInfo */
+
+/*
+ * updateSaveFileInfo
+ */
+static bool updateSaveFileInfo( const char *fname )
+{
+    PGROUP2             pg;
+    size_t              len;
+
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len > 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
+    }
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    return( true );
+
+} /* updateSaveFileInfo */
+
+/*
  * getSaveFName - Get the name of the file to be saved.
  */
-static bool getSaveFName( char *fname, int imgtype )
+static bool getSaveFName( char *fname, image_type img_type )
 {
     FILEDLG             filedlg;
-    char                ext[ _MAX_EXT ];
-    char                drive[ _MAX_DRIVE ];
-    char                path[ _MAX_PATH ];
-    HWND                hdlg;
-    char                fullfile[ CCHMAXPATH ];
+    bool                ok;
+    char                fullfile[CCHMAXPATH];
 
-    fname[ 0 ] = 0;
-    memset( &filedlg, 0, sizeof( FILEDLG ) );
-    strcpy( fullfile, initialDir );
-    if( fullfile[strlen( fullfile ) - 1] != '\\' ) {
-        strcat( fullfile, "\\" );
-    }
-    if( imgtype == BITMAP_IMG ) {
-        strcat( fullfile, "*.bmp" );
-    } else if( imgtype == ICON_IMG ) {
-        strcat( fullfile, "*.ico" );
-    } else {
-        strcat( fullfile, "*.ptr" );
-    }
+    fname[0] = 0;
+
+    initSaveFileInfo( fullfile, img_type );
 
     /*
      * set the values of the filedlg structure ...
      */
+    memset( &filedlg, 0, sizeof( FILEDLG ) );
     filedlg.cbSize = sizeof( FILEDLG );
     filedlg.fl = FDS_SAVEAS_DIALOG | FDS_CENTER;
     filedlg.pszTitle = "Save Image File";
     filedlg.pszOKButton = "Save";
     strcpy( filedlg.szFullFile, fullfile );
 
-    hdlg = WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg );
+    ok = ( WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg ) != NULLHANDLE && filedlg.lReturn == DID_OK );
 
-    if( ( hdlg == NULLHANDLE ) || ( filedlg.lReturn != DID_OK ) ) {
-        return( false );
+    if( ok ) {
+        strcpy( fname, filedlg.szFullFile );
+        ok = updateSaveFileInfo( fname );
     }
+    return( ok );
 
-    strcpy( fname, filedlg.szFullFile );
-    _splitpath( fname, drive, path, NULL, ext );
-    strcpy( initialDir, drive );
-    strcat( initialDir, path );
-    initialDir[strlen( initialDir ) - 1] = '\0';
-    return( true );
 } /* getSaveFName */
 
 /*
@@ -496,19 +520,15 @@ bool SaveFile( short how )
  */
 static bool getSavePalName( char *fname )
 {
-    static char         filterList[] = "Palette (*.pal)" \
-                                        "\0" \
-                                        "*.pal" \
-                                        "\0" \
-                                        "All Files (*.*)" \
-                                        "\0" \
-                                        "*.*" \
-                                        "\0\0";
+    static char         filterList[] = "Palette (*.pal)\0*.pal\0" \
+                                        "All Files (*.*)\0*.*\0" \
+                                        "\0";
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
     bool                ok;
 
-    fname[ 0 ] = 0;
+    fname[0] = 0;
+
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = HMainWindow;
@@ -545,9 +565,8 @@ bool SaveColourPalette( void )
             sprintf( text, "Error saving '%s'", fname );
             SetHintText( text );
             return( false );
-        } else {
-            return( true );
         }
+        return( true );
     }
     checkForPalExt( fname );
     if( !GetPaletteFile( &pal_file ) ) {

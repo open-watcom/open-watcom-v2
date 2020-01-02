@@ -227,57 +227,78 @@ static BOOL readInBitmapFile( const char *fullname )
 } /* readInBitmapFile */
 
 /*
+ * initOpenFileInfo
+ */
+static bool initOpenFileInfo( const char *fullfile, image_type img_type )
+{
+    char        *fname;
+    size_t      len;
+
+    fname = "*";
+    if( initialDir[0] != '\0' ) {
+        len = strlen( initialDir ) - 1;
+        if( initialDir[len] != ':' && initialDir[len] != '\\' ) {
+            fname = "\\*";
+        }
+    }
+    _makepath( fullfile, NULL, initialDir, fname, GetImageFileExt( img_type, false ) );
+    return( true );
+
+} /* initOpenFileInfo */
+
+/*
+ * updateOpenFileInfo
+ */
+static bool updateOpenFileInfo( const char *fname )
+{
+    PGROUP2             pg;
+    size_t              len;
+
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len > 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
+    }
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    imgType = GetImageFileType( pg.ext, true );
+    return( imgType != UNDEF_IMG );
+
+} /* updateOpenFileInfo */
+
+/*
  * getOpenFName - let the user select a file name for an open operation
  *                fname must point to a buffer of length at least _MAX_PATH
  *                also sets the type of file (bitmap, icon, cursor).
  */
-static BOOL getOpenFName( char *fname )
+static bool getOpenFName( char *fname )
 {
     FILEDLG             filedlg;
-    PGROUP2             pg;
-    HWND                hdlg;
+    bool                ok;
     char                fullfile[ CCHMAXPATH ];
-    size_t                              len;
 
-    memset( &filedlg, 0, sizeof( FILEDLG ) );
-    pg.dir = initialDir;
-    pg.fname = "*";
-    if ( pg.dir[strlen( pg.dir ) - 1] != '\\' ) {
-        pg.fname = "\\*";
-    }
-    _makepath( fullfile, NULL, pg.dir, pg.fname, GetImageFileExt( imgType, false ) );
+    fname[0] = '\0';
+
+    initOpenFileInfo( fullfile, imgType );
 
     /*
      * set the values of the filedlg structure ...
      */
+    memset( &filedlg, 0, sizeof( FILEDLG ) );
     filedlg.cbSize = sizeof( FILEDLG );
     filedlg.fl = FDS_OPEN_DIALOG | FDS_CENTER;
     filedlg.pszTitle = "Open Image File";
     filedlg.pszOKButton = "Open";
     strcpy( filedlg.szFullFile, fullfile );
 
-    hdlg = WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg );
+    ok = ( WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg ) != NULLHANDLE && filedlg.lReturn == DID_OK );
 
-    if ((hdlg == NULLHANDLE) || (filedlg.lReturn != DID_OK)) {
-        fname[0] = '\0';
-        return(FALSE);
+    if( ok ) {
+        strcpy( fname, filedlg.szFullFile );
+        ok = updateOpenFileInfo( fname );
     }
-
-    strcpy( fname, filedlg.szFullFile );
-    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
-    if( pg.dir[0] != '\0' ) {
-        len = strlen( pg.dir ) - 1;
-        if( len != 0 && pg.dir[len] == '\\' ) {
-            pg.dir[len] = '\0';
-        }
-    }
-    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
-
-    imgType = GetImageFileType( pg.ext, false );
-    if( imgType == UNDEF_IMG ) {
-        return( FALSE );
-    }
-    return( TRUE );
+    return( ok );
 
 } /* getOpenFName */
 
