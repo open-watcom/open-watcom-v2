@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,14 +64,15 @@ void FreeErrInfo( WatIDEErrInfo *info ) {
     if( info != NULL ) MemFree( info );
 }
 
-BOOL InitError( void ) {
-/***********************/
+bool InitError( void )
+/********************/
+{
     errBufSize = ERR_BUF_INCRMT;
     errBuf = MemMalloc( sizeof( WatIDEErrInfo ) + errBufSize );
     errBuf->errcnt = 0;
     errBuf->warncnt = 0;
     errLen = 0;
-    return( FALSE );
+    return( false );
 }
 
 void FiniError( void ) {

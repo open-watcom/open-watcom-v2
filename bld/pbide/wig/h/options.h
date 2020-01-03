@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ extern char     *GetErrorFile( void );
 extern char     *GetLmainName( void );
 extern void     GetHash( const char *uoname, char *hash, unsigned len );
 extern void     SetBaseName(const char *);
-extern BOOL     ProcessOptions(int, char **);
+extern bool     ProcessOptions(int, char **);
 extern void     PostProcessOptions( void );
 
 extern unsigned long            Options;

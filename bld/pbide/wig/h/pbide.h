@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ unsigned IDE_EXPORT WatIDE_GetVersion( void );
  *
  *      Returns: TRUE if no files were found or FALSE otherwise.
  */
-BOOL IDE_EXPORT WatIDE_DirIsOk( char *dllname );
+BOOL IDE_EXPORT WatIDE_DirIsOk( const char *dllname );
 
 /* WatIDE_RunWig - This function is used to generate C++ code from an SRU
  *              file.  It should be called once for each C++ user object
@@ -99,7 +100,7 @@ BOOL IDE_EXPORT WatIDE_DirIsOk( char *dllname );
  *      Returns: TRUE if a error occurred and processing could not be
  *               completed or FALSE otherwise.
 */
-BOOL IDE_EXPORT WatIDE_RunWig( char *sruname, char *parentname,
+BOOL IDE_EXPORT WatIDE_RunWig( const char *sruname, const char *parentname,
                                WatIDEErrInfo **info );
 
 /*
@@ -132,7 +133,7 @@ void IDE_EXPORT WatIDE_FiniErrInfo( WatIDEErrInfo *info );
  *              code generated in the same directory and included in the
  *              same DLL.
  */
-BOOL IDE_EXPORT WatIDE_RunIDE( char *dllname );
+BOOL IDE_EXPORT WatIDE_RunIDE( const char *dllname );
 
 /*
  * WatIDE_CloseIDE - used to close the IDE.  This should be called when
@@ -164,6 +165,6 @@ BOOL IDE_EXPORT WatIDE_CloseIDE( void );
  *                      type != FN_GET_FUNCTION.
  */
 void IDE_EXPORT WatIDE_GetFunctionName(  FunctionRequest type, char *buf,
-                                         char *uoname, char *fnname );
+                                    const char *uoname, const char *fnname );
 
 #endif

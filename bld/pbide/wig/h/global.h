@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,10 @@
 #ifndef GLOBAL_CONSTANTS_INCLUDED
 #define GLOBAL_CONSTANTS_INCLUDED
 
-#if !defined(__WINDOWS__) && !defined(__NT__)
-typedef enum {
-    TRUE = ( 1==1 ),
-    FALSE = ( 1==2 )
-} BOOL;
-#else
+#if defined(__WINDOWS__) || defined(__NT__)
 #include <windows.h>
 #endif
+#include "bool.h"
 
 #define WIG_HEADER "/* WATCOM Interface Generator   Version 1.0 */\n"
 #define WIG_BANNER "\

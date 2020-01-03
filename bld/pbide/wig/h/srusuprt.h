@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,7 @@ extern void DoPostProcessing( void );
 extern void AddDataMethod2( TypeInfo *typ, List *varlist );
 extern void SetDefaultAccess( id_type type );
 extern void FreeSru( void );
-extern void GetDestructor( char *uoname, char *buf );
-extern void GetConstructor( char *uoname, char *buf );
+extern void GetDestructor( const char *uoname, char *buf );
+extern void GetConstructor( const char *uoname, char *buf );
 
 #endif

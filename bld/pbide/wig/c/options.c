@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,12 +251,13 @@ void    SetBaseName( const char *src )
     }
 }
 
-void PostProcessOptions( void ) {
-/********************************/
-    char        fname[ _MAX_FNAME ];
+void PostProcessOptions( void )
+/*****************************/
+{
+    char        fname[_MAX_FNAME];
 
     if( Options & OPT_PARENT_SET ) {
-        if( !( Options & OPT_PARENT_HEADER_SET ) ) {
+        if( (Options & OPT_PARENT_HEADER_SET) == 0 ) {
             getFname( wigOpts.parentclass, 0, fname );
             _makepath( wigOpts.parentheader, NULL, NULL, fname, HPP_EXT );
         }
@@ -287,13 +288,13 @@ static void showUsage( void ) {
 #endif
 }
 
-BOOL    ProcessOptions( int argc, char **argv ) {
-/***********************************************/
-
+bool    ProcessOptions( int argc, char **argv )
+/*********************************************/
+{
     int         count = 1;
-    BOOL        err = FALSE;
-    BOOL        stop = FALSE;
-    BOOL        multi_ch = FALSE;
+    bool        err = false;
+    bool        stop = false;
+    bool        multi_ch = false;
 
     assert( argc );
     assert( argv );
@@ -303,7 +304,7 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 
     if( !argc ) {
         showUsage();
-        return( TRUE );
+        return( true );
     }
 
     /* loop through all options and record them, and issue errors if necessary*/
@@ -317,14 +318,14 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                                 // the new PB C++ UO painter is complete
                 if( argv[count][2] == 's' ) {
                     Options |= OPT_MODIFY_SRU;
-                    multi_ch = TRUE;
+                    multi_ch = true;
                 }
                 break;
             case( 'f' ):
             case( 'F' ):
-                multi_ch = TRUE;
+                multi_ch = true;
                 if( ( argv[count][3] != '=' ) || !strlen(&(argv[count][4]) ) ) {
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 switch( argv[count][2] ) {
@@ -354,7 +355,7 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 //                  Options |= OPT_OUTPUT_FILE_SET;
 //                  break;
                 default:
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 break;
@@ -363,9 +364,9 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                 switch( argv[count][2] ) {
                 case( 'n' ):
                 case( 'N' ):
-                    multi_ch = TRUE;
+                    multi_ch = true;
                     if( argv[count][3] != '=' || !strlen( &(argv[count][4]) ) ){
-                        err = TRUE;
+                        err = true;
                     } else {
                         strcpy( wigOpts.parentclass, argv[count] + 4 );
                         Options |= OPT_PARENT_SET;
@@ -373,16 +374,16 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                     break;
                 case( 'h' ):
                 case( 'H' ):
-                    multi_ch = TRUE;
+                    multi_ch = true;
                     if( argv[count][3] != '=' || !strlen( &(argv[count][4]) ) ){
-                        err = TRUE;
+                        err = true;
                     } else {
                         strcpy( wigOpts.parentheader, argv[count] + 4 );
                         Options |= OPT_PARENT_HEADER_SET;
                     }
                     break;
                 default:
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 break;
@@ -396,9 +397,9 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 //              break;
             case( 'L' ):
             case( 'l' ):
-                multi_ch = TRUE;
+                multi_ch = true;
                 if( ( argv[count][2] != '=' ) || !strlen( &(argv[count][3]) ) ){
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 strncpy( wigOpts.libname, &(argv[count][3]), MAX_PATH );
@@ -408,19 +409,19 @@ BOOL    ProcessOptions( int argc, char **argv ) {
             case( 'H' ):
             case( '?' ):
                 showUsage();
-                stop = TRUE;
+                stop = true;
                 break;
             default:
-                err = TRUE;
+                err = true;
             }
             if( err || ( ( strlen( argv[count] ) > 2 ) && !multi_ch ) ) {
                 Error( CLI_BAD_CMD_OPT, argv[ count ] );
-                stop = TRUE;
+                stop = true;
             }
         } else {
             if( Options & OPT_INPUT_FILE_SET ) {
                 Error( CLI_MULTI_INPUTS, argv[count] );
-                stop = TRUE;
+                stop = true;
             } else {
                 strncpy( wigOpts.infile, argv[count], MAX_PATH );
                 Options |= OPT_INPUT_FILE_SET;
@@ -429,16 +430,17 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                 }
             }
         }
-        err = FALSE;
-        multi_ch = FALSE;
+        err = false;
+        multi_ch = false;
         count++;
         argc--;
     }
     if( !stop && !(Options & OPT_INPUT_FILE_SET) ) {
         Error( CLI_NO_INPUT_FILE );
-        stop = TRUE;
+        stop = true;
     }
-    if( stop ) return( TRUE );
+    if( stop )
+        return( true );
     PostProcessOptions();
-    return( FALSE );
+    return( false );
 }

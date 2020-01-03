@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +31,8 @@
 ****************************************************************************/
 
 
-typedef enum {
-    TRUE = (1==1),
-    FALSE = (1==3)
-} BOOL;
-
 typedef struct {
-    BOOL        debug;
+    bool        debug;
     char        **def_file;
     unsigned    def_cnt;
     char        *dll_name;
@@ -47,7 +42,7 @@ typedef struct {
 } CmdLineInfo;
 
 extern CmdLineInfo  Config;
-extern BOOL         ErrorHasOccured;
+extern bool         ErrorHasOccured;
 
 extern void         ReportError( char *msg, ... );
 extern void         DebugOut( char *msg, ... );

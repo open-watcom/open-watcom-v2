@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,23 +45,23 @@
 #define ARRAY_DYNAMIC   0x0008
 
 typedef struct {
-    unsigned    flags;
-    unsigned    elemcnt;
+    unsigned            flags;
+    unsigned            elemcnt;
 } ArrayInfo;
 
 #define VAR_ARRAY       0x0001
 #define VAR_BAD_DECL    0x0002
 
 typedef struct {
-    unsigned    flags;
-    char        *name;
-    ArrayInfo   array;
-    BOOL        fake;
+    unsigned            flags;
+    char                *name;
+    ArrayInfo           array;
+    bool                fake;
 } VarInfo;
 
 typedef struct {
-    char        *name;
-    BOOL        isref;
+    char                *name;
+    bool                isref;
 } TypeInfo;
 
 typedef struct {                        // used for variables
@@ -69,7 +69,7 @@ typedef struct {                        // used for variables
     id_type             access_id;      /* protected, private or public */
     id_type             typ_id;         /* type id of variable          */
     List                *varlist;       /* list of variable information */
-    BOOL                fake;           /* do not dump this out         */
+    bool                fake;           /* do not dump this out         */
 } var_list;
 
 typedef struct var_rec {                // used for parms
@@ -77,7 +77,7 @@ typedef struct var_rec {                // used for parms
     TypeInfo            type;           /* type of variable             */
     id_type             typ_id;         /* type id of variable          */
     char                *name;          /* name of variable             */
-    BOOL                fake;           /* do not dump this out         */
+    bool                fake;           /* do not dump this out         */
     ArrayInfo           *array;
 } var_rec;
 
@@ -87,8 +87,8 @@ typedef struct sp_header {
     char                *name;          /* subprogram name              */
     id_type             typ;            /* subprogram type              */
     unsigned            user_code;      /* does it contain user code    */
-    BOOL                fake;           /* do not dump this out         */
-    BOOL                subroutine;     /* TRUE if this is a subroutine */
+    bool                fake;           /* do not dump this out         */
+    bool                subroutine;     /* true if this is a subroutine */
     var_rec             *parm_list;     /* its parameter list           */
     var_rec             *last_parm;     /* its last parameter           */
     struct statement    *ret_stmt;      /* pointer to return statement  */
@@ -108,7 +108,7 @@ typedef union spec {
 typedef struct statement {
     struct statement    *next;  /* next statment in the sru file        */
     struct statement    *link;  /* next specific type of statement      */
-    BOOL                keep;   /* do not destroy after statement dump  */
+    bool                keep;   /* do not destroy after statement dump  */
     id_type             typ;    /* type of statement                    */
     spec                data;   /* statement related union of data      */
     char                stmt[1];/* statement                            */

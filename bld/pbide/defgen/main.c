@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 
 CmdLineInfo     Config;
-BOOL            ErrorHasOccured;
+bool            ErrorHasOccured;
 
 static char     outName[_MAX_FNAME + _MAX_EXT];
 static char     nuoName[_MAX_FNAME + _MAX_EXT];
@@ -54,13 +54,13 @@ static void SetExtension( char *buf, const char *file, const char *ext )
     _makepath( buf, pg.dir, pg.drive, pg.fname, ext );
 }
 
-static BOOL FillParms( void )
+static bool FillParms( void )
 {
     PGROUP2     pg;
 
     if( Config.def_file == NULL ) {
         ReportError( "No .def file specified" );
-        return( TRUE );
+        return( true );
     }
     if( Config.dll_name == NULL ) {
         Config.dll_name = "noname.dll";
@@ -78,10 +78,10 @@ static BOOL FillParms( void )
         SetExtension( nuoName, pg.buffer, "sru" );
         Config.nuo_file = nuoName;
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL ScanParms( int argc, char *argv[] )
+static bool ScanParms( int argc, char *argv[] )
 {
     unsigned    i;
     char        *str;
@@ -95,7 +95,7 @@ static BOOL ScanParms( int argc, char *argv[] )
         if( *str == '-' || *str == '/' ) {
             str++;
             if( *str == 'v' ) {
-                Config.debug = TRUE;
+                Config.debug = true;
             } else if( str[0] == 'd' && str[1] == 'l' && str[2] == 'l'
                         && str[3] == '=' ) {
                 str += 4;
@@ -110,7 +110,7 @@ static BOOL ScanParms( int argc, char *argv[] )
                 }
             } else {
                 ReportError( "Unrecognized Command Line Option" );
-                return( TRUE );
+                return( true );
             }
         } else {
             if( used == allocated ) {

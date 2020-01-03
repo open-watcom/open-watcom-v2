@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,14 +71,15 @@ static void WriteText( char *fmt, ... ) {
 }
 
 
-static BOOL OpenFile( char *fname ) {
+static bool OpenFile( char *fname )
+{
     OutFileHdl = open( fname, O_WRONLY | O_CREAT | O_TRUNC | O_TEXT,
                         S_IRWXU | S_IRWXG | S_IRWXO );
     if( OutFileHdl == -1 ) {
         ReportError( "Unable to open output file '%s'", fname );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void CloseFile( void ) {

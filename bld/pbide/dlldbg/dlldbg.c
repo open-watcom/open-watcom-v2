@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include "bool.h"
 #include "winexprt.h"
 
 
@@ -93,7 +94,8 @@ WINEXPORT BOOL FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam, LONG lp
     return( FALSE );
 }
 
-static BOOL InitFirstInst( HANDLE hinst ) {
+static bool InitFirstInst( HANDLE hinst )
+{
     WNDCLASS    wc;
 
     wc.style = 0L;
@@ -106,7 +108,7 @@ static BOOL InitFirstInst( HANDLE hinst ) {
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = PB_DLLDBG_CLASS;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)

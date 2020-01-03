@@ -4,7 +4,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,16 +261,16 @@ var_dec
             { 
                 $$.name = MemStrDup( $1 );
                 $$.flags = 0;
-                $$.fake = FALSE;
+                $$.fake = false;
             }
         | variable array_spec
             { 
                 $$.name = MemStrDup( $1 );
                 $$.flags = VAR_ARRAY;
                 $$.array = $2;
-                $$.fake = TRUE;
+                $$.fake = true;
                 if( $$.array.flags & ARRAY_SIMPLE ) {
-                    $$.fake = FALSE;
+                    $$.fake = false;
                 } else if( $$.array.flags & ARRAY_MULTI_DIM ) {
                     Warning( ERR_MULTI_DIM_ARRAY, $1 );
                 } else if( $$.array.flags & ARRAY_RANGE ) {
@@ -463,12 +463,12 @@ type
         : ST_REF ID_IDENTIFIER                  
             { 
                 $$.name = $2; 
-                $$.isref = TRUE; 
+                $$.isref = true; 
             }
         | ID_IDENTIFIER                         
             { 
                 $$.name = $1; 
-                $$.isref = FALSE;
+                $$.isref = false;
             }
         ;
         

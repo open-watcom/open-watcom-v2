@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +53,9 @@ static FILE     *errFile = stdout;
 
 jmp_buf         ErrorEnv;
 
-BOOL InitError( void ) {
-/***********************/
-
+bool InitError( void )
+/********************/
+{
     if( errFile == NULL ) {
         if( Options & OPT_ERROR_FILE_SET ) {
             errFile = WigOpenFile( GetErrorFile(), "wt" );

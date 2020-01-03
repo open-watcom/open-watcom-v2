@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ static int      yyLineCnt = 0;          /* Current line size            */
 static char     idBuffer[LINE_INC];     /* delayed token destroy buffer */
 static int      idPtr;                  /* pointer to current token     */
 static hash_tab keyTable;               /* hash table of keywords       */
-static BOOL     yyLineFini;             /* have we finished a line      */
+static bool     yyLineFini;             /* have we finished a line      */
 
 static void     destroyLex( void );
 static void     initLex( void );
@@ -115,7 +115,7 @@ int yylex( void )
     int         ccnt = 0;
     int         hash = 0;
 
-    yyLineFini = FALSE;
+    yyLineFini = false;
 
     /* do initilization and eof checking */
     if( lexStatus == LS_INIT ) {
@@ -177,7 +177,7 @@ int yylex( void )
         SetComment();
         if( c == '\n' ) {
             FinishLine();
-            yyLineFini = TRUE;
+            yyLineFini = true;
             return( 0 ); /* execute parse */
         }
         /* else c == '/' */
@@ -202,9 +202,9 @@ char *GetParsedLine( void ) {
 }
 
 
-BOOL LineFinished( void ) {
-/*************************/
-
+bool LineFinished( void )
+/***********************/
+{
     return( yyLineFini );
 }
 

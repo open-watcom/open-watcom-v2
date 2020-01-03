@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +50,8 @@
 #define ID_BUFLEN               (8*1024)
 #define BUF_SIZE_INCREMENT      1024
 
-static BOOL     atEOF;                  /* have we reached end of file  */
-static BOOL     yyLineFini;             /* have we finished a line      */
+static bool     atEOF;                  /* have we reached end of file  */
+static bool     yyLineFini;             /* have we finished a line      */
 static unsigned yyTextSize;             /* size of current token buffer */
 static unsigned yyTextLen;              /* length of current token      */
 static char     *yyText;                /* token buffer                 */
@@ -133,11 +133,11 @@ static char *add2IdBuffer( char *src )
     return( idBuffer + idPtr - len );
 }
 
-BOOL InitLex( char *fname )
+bool InitLex( char *fname )
 /*************************/
 {
-    yyLineFini = FALSE;
-    atEOF = FALSE;
+    yyLineFini = false;
+    atEOF = false;
 
     yyTextSize = BUF_SIZE_INCREMENT;
     yyTextLen = 0;
@@ -157,7 +157,7 @@ BOOL InitLex( char *fname )
         Error( FILE_OPEN_ERR, fname );
     }
     yyFileName = MemStrDup( fname );
-    return( FALSE );
+    return( false );
 }
 
 void FiniLex( void )
@@ -215,9 +215,10 @@ int yylex( void )
     unsigned    len;
     int         ret;
 
-    yyLineFini = FALSE;
+    yyLineFini = false;
     yyTextLen = 0;
-    if( atEOF ) return( 0 );    //yacc wants 0 for EOF
+    if( atEOF )
+        return( 0 );    //yacc wants 0 for EOF
 
     len = 0;
     ch = nextChar();
@@ -253,7 +254,7 @@ int yylex( void )
                     state = S_STRING;
                     break;
                 case EOF:
-                    atEOF = TRUE;
+                    atEOF = true;
                     return( FI_EOF );
                 default:
                     state = S_ERROR;
@@ -362,7 +363,7 @@ char *GetParsedLine( void )
 }
 
 
-BOOL LineFinished( void )
+bool LineFinished( void )
 /***********************/
 {
     return( yyLineFini );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,8 +53,8 @@
 
 
 static sru_file         SRU;
-static BOOL             inSubPgm;
-static BOOL             setHeader;
+static bool             inSubPgm;
+static bool             setHeader;
 
 #define PROTO_PRIME     257
 #define OVERHEAD        16
@@ -127,29 +127,30 @@ static id_type isTypeKnown( TypeInfo *typ ) {
 }
 
 
-static BOOL isConsDes( const char *name ) {
-/*****************************************/
-
+static bool isConsDes( const char *name )
+/***************************************/
+{
     assert( name );
 
-    return( !stricmp( name, SRU.con_name ) || !stricmp( name, SRU.des_name ) );
+    return( stricmp( name, SRU.con_name ) == 0 || stricmp( name, SRU.des_name ) == 0 );
 }
 
-void GetConstructor( char *uoname, char *buf ) {
-/***********************************************/
+void GetConstructor( const char *uoname, char *buf )
+/**************************************************/
+{
     GenerateCoverFnName( uoname, "_CPP_CONSTRUCTOR", buf );
 }
 
-void GetDestructor( char *uoname, char *buf ) {
-/**********************************************/
+void GetDestructor( const char *uoname, char *buf )
+/*************************************************/
+{
     GenerateCoverFnName( uoname, "_CPP_DESTRUCTOR", buf );
 }
 
-static void mkConsDesNames( void ) {
-/**********************************/
-
+static void mkConsDesNames( void )
+/********************************/
 /* puts together SRU constructor and destructor names */
-
+{
     int         len;
     char        *classname;
 
@@ -202,8 +203,8 @@ void InitSru( void ) {
     long        x;
 
     memset( &SRU, 0, sizeof( sru_file ) );
-    inSubPgm = FALSE;
-    setHeader = FALSE;
+    inSubPgm = false;
+    setHeader = false;
     SRU.type_prots = NewHashTable( PROTO_PRIME );
     SRU.name = MemStrDup( NONAME_FILE );
     SetDefaultAccess( ST_PUBLIC );
@@ -234,9 +235,9 @@ void SetDefaultAccess( id_type type ) {
     SRU.curr_access = type;
 }
 
-void SetHeader( char *name, char *ext ) {
-/***************************************/
-
+void SetHeader( char *name, char *ext )
+/*************************************/
+{
     unsigned            headerlen;
 
     ext = ext;
@@ -247,7 +248,7 @@ void SetHeader( char *name, char *ext ) {
     assert( name );
     assert( ext );
 
-    setHeader = TRUE;
+    setHeader = true;
 
     if( SRU.name ) {
         MemFree( SRU.name );
@@ -321,7 +322,7 @@ void SetFunction( TypeInfo *ret, char *fname ) {
         if( SRU.sections->data.sec.primary == ST_FORWARD ) {
             Warning( UNKNOWN_TYPE, ret->name, fname );
         }
-        SRU.curr.sp.fake = TRUE;
+        SRU.curr.sp.fake = true;
     }
 }
 
@@ -335,10 +336,10 @@ void SetSubroutine( char *sname ) {
     assert( sname );
 
     SRU.curr.sp.ret_type.name = NULL;
-    SRU.curr.sp.ret_type.isref = FALSE;
+    SRU.curr.sp.ret_type.isref = false;
     SRU.curr.sp.name = MemStrDup( sname );
     SRU.curr.sp.typ = ST_SUBROUTINE;
-    SRU.curr.sp.subroutine = TRUE;
+    SRU.curr.sp.subroutine = true;
     SRU.curr_typ = SRU_SUBPROG;
 }
 
@@ -381,7 +382,7 @@ void EndSubProgram( void ) {
         return;
     }
 
-    inSubPgm = FALSE;
+    inSubPgm = false;
 
     assert( SRU.subprog );
 
@@ -485,7 +486,7 @@ void AddParm( TypeInfo *typ, char *tname, ArrayInfo *array ) {
     copyTypeInfo( &ptmp->type, typ );
     ptmp->typ_id = isTypeKnown( typ );
     if( !ptmp->typ_id ) {
-        ptmp->fake = TRUE;
+        ptmp->fake = true;
     }
     ptmp->next = NULL;
     ptmp->name = MemStrDup( tname );
@@ -553,7 +554,7 @@ void AddDataMethod( id_type access_type, TypeInfo *typ, List *varlist ) {
     SRU.curr.vars.access_id = access_type;
     SRU.curr.vars.typ_id = isTypeKnown( &SRU.curr.vars.type );
     if( !SRU.curr.vars.typ_id ) {
-        SRU.curr.vars.fake = TRUE;
+        SRU.curr.vars.fake = true;
         // NYI -  put out a good error msg
         varcnt = GetListCount( SRU.curr.vars.varlist );
         for( ; varcnt > 0; varcnt-- ) {
@@ -561,7 +562,7 @@ void AddDataMethod( id_type access_type, TypeInfo *typ, List *varlist ) {
             Warning( UNKNOWN_DATA_TYPE, info->name, typ->name );
         }
     } else {
-        SRU.curr.vars.fake = FALSE;
+        SRU.curr.vars.fake = false;
     }
     SRU.curr_typ = SRU_VARIABLE;
 }
@@ -642,7 +643,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
             strcat( typbuf, typ->name );
             ret = typbuf;
             if( !func->data.sp.typ_id ) {
-                func->data.sp.fake = TRUE;
+                func->data.sp.fake = true;
             }
         } else {
             ret = typ->name;
@@ -716,7 +717,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     SRU.curr.sp.parm_list = NULL;
     SRU.curr.sp.last_parm = NULL;
     tmptype.name = THIS_TYPE;
-    tmptype.isref = FALSE;
+    tmptype.isref = false;
     AddParm( &tmptype, THIS_VARIABLE, NULL );
     while( finger ) {
         AddParm( &finger->type, finger->name, finger->array );
@@ -758,7 +759,7 @@ static void resolveTypePrototypes( void ) {
             rc = insertTypePrototype( finger, SRU.type_sec );
             rc->link = SRU.cpp_prots;
             SRU.cpp_prots = rc;
-            rc->keep = TRUE;
+            rc->keep = true;
             InsertHashValue( SRU.type_prots, rc->data.sp.name,
                              strlen( rc->data.sp.name ), rc );
         }
@@ -856,12 +857,12 @@ void ProcessStatement( void ) {
         if( inSubPgm ) {
             break;
         } else if( !SRU.sections ) {
-            inSubPgm = TRUE;
+            inSubPgm = true;
         }
         parm = stmt->data.sp.parm_list;
         while( parm != NULL ) {
             if( parm->fake ) {
-                stmt->data.sp.fake = TRUE;
+                stmt->data.sp.fake = true;
                 /* only issue a warning for forward definitions so we don't
                  * issue the same warning twice */
                 if( SRU.sections->data.sec.primary == ST_FORWARD ) {
@@ -872,13 +873,13 @@ void ProcessStatement( void ) {
             }
             if( parm->array != NULL ) {
                 if( parm->array->flags & ARRAY_MULTI_DIM ) {
-                    stmt->data.sp.fake = TRUE;
+                    stmt->data.sp.fake = true;
                     if( SRU.sections->data.sec.primary == ST_FORWARD ) {
                         Warning( ERR_MULTI_DIM_PARM, parm->name,
                                  stmt->data.sp.name );
                     }
                 } else if( parm->array->flags & ARRAY_RANGE ) {
-                    stmt->data.sp.fake = TRUE;
+                    stmt->data.sp.fake = true;
                     if( SRU.sections->data.sec.primary == ST_FORWARD ) {
                         Warning( ERR_INDEX_DEF_PARM, parm->name,
                                  stmt->data.sp.name );
@@ -901,7 +902,7 @@ void ProcessStatement( void ) {
                                  strlen( stmt->data.sp.name ), stmt );
                 stmt->link = SRU.cpp_prots;
                 SRU.cpp_prots = stmt;
-                stmt->keep = TRUE;
+                stmt->keep = true;
             }
         }
         break;
@@ -917,7 +918,7 @@ void ProcessStatement( void ) {
             stmt->link = SRU.obj_vars;
             SRU.obj_vars = stmt;
         }
-        stmt->keep = TRUE;
+        stmt->keep = true;
         break;
     case( SRU_SECTION ):
         /* identify two special sections when they come up */
