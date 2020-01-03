@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -488,7 +488,7 @@ static void logMyTask( void )
     }
     addr.seg = IntData.CS;
     addr.offset = IntData.EIP;
-    if( FindWatSymbol( &addr, &si, TRUE ) == FOUND ) {
+    if( FindWatSymbol( &addr, &si, true ) ) {
         rcLogPrint( STR_SOURCE_INFO );
         rcLogPrint( STR_FILE_IS, si.filename );
         if( si.linenum > 0 ) {
@@ -565,7 +565,7 @@ static void logStackTrace( void )
 
         addr.seg = ste.wCS;
         addr.offset = ste.wIP;
-        if( FindWatSymbol( &addr, &si, TRUE ) == FOUND ) {
+        if( FindWatSymbol( &addr, &si, true ) ) {
             rcLogPrint( STR_SOURCE_INFO );
             rcLogPrint( STR_FILE_IS, si.filename );
             if( si.linenum > 0 ) {

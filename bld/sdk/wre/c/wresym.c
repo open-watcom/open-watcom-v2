@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,11 +284,11 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
     bool                ok;
 
     if( table == NULL || file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     ok = true;
@@ -358,12 +358,12 @@ bool WRELoadResourceSymbols( WREResInfo *info )
     char        *symbol_file;
 
     if( info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    symbol_file = WRELoadSymbols( &info->symbol_table, NULL, TRUE );
+    symbol_file = WRELoadSymbols( &info->symbol_table, NULL, true );
     if( symbol_file == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( info->symbol_file != NULL ) {
@@ -375,15 +375,15 @@ bool WRELoadResourceSymbols( WREResInfo *info )
 
     // ***** call routine to update the edit sessions *****
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREResourceSaveSymbols( WREResInfo *info )
 {
     if( info != NULL ) {
-        return( WRESaveSymbols( info->symbol_table, &info->symbol_file, TRUE ) );
+        return( WRESaveSymbols( info->symbol_table, &info->symbol_file, true ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool WREDeleteDLGInclude( WResDir dir )
@@ -426,7 +426,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 
     if( rinfo == NULL || rinfo->info == NULL ||
         (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
-        return( FALSE );
+        return( false );
     }
 
     symbol_file = WREFindDLGInclude( rinfo->info );
@@ -439,15 +439,15 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
         _makepath( inc_path, fn_drive, fn_dir, NULL, NULL );
         WRESetInitialDir( inc_path );
-        prompt = TRUE;
+        prompt = true;
     } else {
         strcpy( fn_path, symbol_file );
         WRMemFree( symbol_file );
         symbol_file = NULL;
-        prompt = FALSE;
+        prompt = false;
     }
 
-    ret = TRUE;
+    ret = true;
 
     if( WRFileExists( fn_path ) ) {
         symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt );

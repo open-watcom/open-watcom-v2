@@ -158,7 +158,7 @@ bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 {
     bool ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( action ) {
     case VIEW_HASH:
@@ -218,7 +218,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
     bool        from_id;
     char        *include;
 
-    include = WdeLoadSymbols( &info->hash_table, NULL, TRUE );
+    include = WdeLoadSymbols( &info->hash_table, NULL, true );
     if( include == NULL ) {
         return( false );
     }
@@ -247,7 +247,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
 bool WdeResourceWriteHash( WdeResInfo *info )
 {
-    return( WdeWriteSymbols( info->hash_table, &info->sym_name, TRUE ) );
+    return( WdeWriteSymbols( info->hash_table, &info->sym_name, true ) );
 }
 
 bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
@@ -424,12 +424,12 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     if( include == NULL ) {
         _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
-        prompt = TRUE;
+        prompt = true;
     } else {
         strcpy( fn_path, include );
         WRMemFree( include );
         include = NULL;
-        prompt = FALSE;
+        prompt = false;
     }
 
     ret = true;
@@ -465,7 +465,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     unsigned            busy_count;
     char                busy_str[2];
 
-    pop_env = FALSE;
+    pop_env = false;
     name = NULL;
 
     PP_Init( '#' );
@@ -564,11 +564,11 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
     WdeGetFileStruct    gf;
 
     if( table == NULL || file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     WdeSetStatusText( NULL, "", false );
@@ -580,7 +580,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
         gf.filter = WdeSymSaveFilter;
         name = WdeGetSaveFileName( &gf );
         if( name == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( *file_name != NULL ) {
             WRMemFree( *file_name );
@@ -596,7 +596,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )

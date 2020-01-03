@@ -235,7 +235,7 @@ static void InitStatDialog( HWND hwnd )
      * fill in source information
      */
     GetCurrAddr( &( statdata->curr_addr ), info->regs );
-    if( FindWatSymbol( &( statdata->curr_addr ), &si, TRUE ) == FOUND ) {
+    if( FindWatSymbol( &( statdata->curr_addr ), &si, true ) ) {
         RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
         StatShowSymbols = true;
         CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );

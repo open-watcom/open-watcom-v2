@@ -192,7 +192,7 @@ static void InitStatDialog( HWND hwnd )
      */
     addr.seg = IntData.CS;
     addr.offset = IntData.EIP;
-    if( FindWatSymbol( &addr, &si, TRUE ) == FOUND ) {
+    if( FindWatSymbol( &addr, &si, true ) ) {
         RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
     } else {
         RCsprintf( buff, STR_N_A );

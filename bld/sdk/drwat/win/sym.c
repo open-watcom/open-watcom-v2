@@ -148,74 +148,69 @@ bool LoadDbgInfo( void )
 /*
  * doFindSymbol
  */
-static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
+static bool doFindSymbol( ADDRESS *addr, syminfo *si, bool getsrcinfo )
 {
     sym_handle          *symhdl;
     cue_handle          *cueh;
     search_result       sr;
     location_list       ll;
     address             dipaddr;
-    BOOL                ret;
+    bool                ret;
 
     si->segnum = -1;
     si->name[0] = '\0';
-    if( !StatShowSymbols || curProcess == NULL ) {
-        return( FALSE );
-    }
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
-    dipaddr.sect_id = 0;
-    dipaddr.indirect = FALSE;
-    dipaddr.mach.offset = addr->offset;
-    dipaddr.mach.segment = addr->seg;
-    sr = DIPAddrSym( NO_MOD, dipaddr, symhdl );
-    switch( sr ) {
-    case SR_CLOSEST:
-        DIPSymLocation( symhdl, NULL, &ll );
-        si->symoff = addr->offset - ll.e[0].u.addr.mach.offset;
-        break;
-    case SR_EXACT:
-        si->symoff = 0;
-        break;
-    case SR_NONE:
-        ret = FALSE;
-        break;
-    }
-    if( sr != SR_NONE ) {
-        DIPSymName( symhdl, NULL, SNT_OBJECT, si->name, MAX_SYM_NAME );
-//      DIPSymName( symhdl, NULL, SNT_SOURCE, si->name, MAX_SYM_NAME );
-        if( getsrcinfo ) {
-            cueh = alloca( DIPHandleSize( HK_CUE ) );
-            if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {
-                ret = FALSE;
-            } else {
-                DIPCueFile( cueh, si->filename, MAX_FILE_NAME );
-                si->linenum = DIPCueLine( cueh );
-                ret = TRUE;
+    ret = false;
+    if( StatShowSymbols && curProcess != NULL ) {
+        symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
+        if( symhdl != NULL ) {
+            dipaddr.sect_id = 0;
+            dipaddr.indirect = FALSE;
+            dipaddr.mach.offset = addr->offset;
+            dipaddr.mach.segment = addr->seg;
+            sr = DIPAddrSym( NO_MOD, dipaddr, symhdl );
+            switch( sr ) {
+            case SR_CLOSEST:
+                DIPSymLocation( symhdl, NULL, &ll );
+                si->symoff = addr->offset - ll.e[0].u.addr.mach.offset;
+                break;
+            case SR_EXACT:
+                si->symoff = 0;
+                break;
+            case SR_NONE:
+                break;
             }
+            if( sr != SR_NONE ) {
+                DIPSymName( symhdl, NULL, SNT_OBJECT, si->name, MAX_SYM_NAME );
+//                DIPSymName( symhdl, NULL, SNT_SOURCE, si->name, MAX_SYM_NAME );
+                if( getsrcinfo ) {
+                    cueh = alloca( DIPHandleSize( HK_CUE ) );
+                    if( DIPAddrCue( NO_MOD, dipaddr, cueh ) != SR_NONE ) {
+                        DIPCueFile( cueh, si->filename, MAX_FILE_NAME );
+                        si->linenum = DIPCueLine( cueh );
+                        ret = true;
+                    }
+                }
+            }
+            MemFree( symhdl );
         }
     }
-    MemFree( symhdl );
     return( ret );
 }
 
 /*
  * FindWatSymbol
  */
-RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
+bool FindWatSymbol( ADDRESS *addr, syminfo *si, bool getsrcinfo )
 {
-    if( doFindSymbol( addr, si, getsrcinfo ) ) {
-        return( FOUND );
-    } else {
-        return( NO_INFO );
-    }
+    return( doFindSymbol( addr, si, getsrcinfo ) );
 }
 
 /*
  * FindSymbol - locate a symbol for a name
  */
-BOOL FindSymbol( ADDRESS *addr, syminfo *si )
+bool FindSymbol( ADDRESS *addr, syminfo *si )
 {
-    return( doFindSymbol( addr, si, FALSE ) );
+    return( doFindSymbol( addr, si, false ) );
 }
 
 /*
