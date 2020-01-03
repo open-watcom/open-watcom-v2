@@ -39,7 +39,7 @@ WPI_EXPORT WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI
 
 static int      imgHeight;
 static int      imgWidth;
-static BOOL     stretchImage;
+static bool     stretchImage;
 
 /*
  * ChangeSizeDlgProc - change the size of the image being edited
@@ -82,9 +82,9 @@ WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpa
             }
 
             if( _wpi_isbuttonchecked( hwnd, SIZE_STRETCH ) ) {
-                stretchImage = TRUE;
+                stretchImage = true;
             } else {
-                stretchImage = FALSE;
+                stretchImage = false;
             }
             _wpi_enddialog( hwnd, DLGID_OK );
             break;

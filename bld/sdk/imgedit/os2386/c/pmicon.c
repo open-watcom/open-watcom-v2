@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +79,7 @@ static BITMAPINFO2 *convertToBmp2( BITMAPINFO *bmi )
 /*
  * readBitmapInfo - returns the bitmap info
  */
-static BITMAPINFO2 *readBitmapInfo( FILE *fp, BOOL is_bmp2 )
+static BITMAPINFO2 *readBitmapInfo( FILE *fp, bool is_bmp2 )
 {
     ULONG               size;
     BITMAPINFO2         *bmi2;
@@ -141,7 +142,7 @@ static BITMAPFILEHEADER2 *readFileHeader( FILE *fp )
  * assignImageInfo - assigns the values in the image info
  */
 static void assignImageInfo( pm_image_info *info, int filetype, FILE *fp,
-                                ULONG offset, ULONG offbits, BOOL is_bmp2 )
+                                ULONG offset, ULONG offbits, bool is_bmp2 )
 {
     BITMAPFILEHEADER2   *bfh;
 
@@ -168,7 +169,7 @@ a_pm_image_file *OpenPMImage( FILE *fp, int type, int *retcode )
     BITMAPARRAYFILEHEADER2      *bafh;
     USHORT                      i;
     USHORT                      filetype;
-    BOOL                        is_bmp2 = TRUE;
+    bool                        is_bmp2 = true;
     ULONG                       bafh_offset;
 
     type = type;                // temporary
@@ -208,7 +209,7 @@ a_pm_image_file *OpenPMImage( FILE *fp, int type, int *retcode )
     }
 
     if (bafh->cbSize != sizeof(BITMAPARRAYFILEHEADER2)) {
-        is_bmp2 = FALSE;
+        is_bmp2 = false;
     }
 
     i = 0;

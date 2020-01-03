@@ -41,7 +41,7 @@ int TBHeight = TB_HEIGHT;
 
 static toolbar          *toolBar;
 static ctl_id           currentTool;
-static BOOL             hotspotPresent = FALSE;
+static bool             hotspotPresent = false;
 static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
     { CLPRECT,  CLPRECTD,   NULL, NULL },
     { PENCIL,   PENCILD,    NULL, NULL },
@@ -278,7 +278,7 @@ void AddHotSpotTool( bool faddhotspot )
         tii.flags = ITEM_DOWNBMP | ITEM_STICKY;
         tii.depressed = bitmaps[9].hToolDep;
         ToolBarAddItem( toolBar, &tii );
-        hotspotPresent = TRUE;
+        hotspotPresent = true;
         if( HMainWindow != NULL ) {
             hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
             _wpi_enablemenuitem( hmenu, IMGED_HOTSPOT, TRUE, FALSE );
@@ -293,7 +293,7 @@ void AddHotSpotTool( bool faddhotspot )
             SetToolType( currentTool );
             ToolBarSetState( toolBar, currentTool, BUTTON_DOWN );
         }
-        hotspotPresent = FALSE;
+        hotspotPresent = false;
         if( HMainWindow != NULL ) {
             hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
             _wpi_enablemenuitem( hmenu, IMGED_HOTSPOT, FALSE, FALSE );

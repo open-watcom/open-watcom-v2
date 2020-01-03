@@ -147,7 +147,7 @@ void InitIconInfo( void )
     short       i;
 
     for( i = 0; i < NUM_OF_ICONS; i++ ) {
-        iconInfo[i].exists = FALSE;
+        iconInfo[i].exists = false;
         iconInfo[i].width = 32;
         iconInfo[i].height = 32;
     }
@@ -239,7 +239,7 @@ static void resetIconInfo( void )
     short       i;
 
     for( i = 0; i < NUM_OF_ICONS; i++ ) {
-        iconInfo[i].exists = FALSE;
+        iconInfo[i].exists = false;
         iconNumber[i] = -1;
     }
     numberOfIcons = 0;
@@ -437,7 +437,7 @@ bool CreateNewIcon( short *width, short *height, short *bitcount, bool is_icon )
     *height = iconInfo[iconType].height;
     *bitcount = iconInfo[iconType].bitcount;
 
-    iconInfo[iconType].exists = TRUE;
+    iconInfo[iconType].exists = true;
     iconNumber[numberOfIcons] = iconType;
     numberOfIcons++;
     return( true );
@@ -498,7 +498,7 @@ void AddNewIcon( void )
     MakeIcon( &new_icon, true );
     AddIconToList( &new_icon, node );
 
-    iconInfo[iconType].exists = TRUE;
+    iconInfo[iconType].exists = true;
     iconNumber[numberOfIcons] = iconType;
     numberOfIcons++;
 
@@ -549,7 +549,7 @@ void DeleteIconImg( void )
         return;
     }
 
-    iconInfo[iconType].exists = FALSE;
+    iconInfo[iconType].exists = false;
 
     for( currentnode = node; currentnode != NULL; currentnode = currentnode->nexticon ) {
         currentnode->num_of_images -= 1;
@@ -634,7 +634,7 @@ void SetIconInfo( img_node *node )
         }
         icon_type = getIconType( icon->bitcount, icon->width, icon->height );
         iconNumber[i] = icon_type;
-        iconInfo[icon_type].exists = TRUE;
+        iconInfo[icon_type].exists = true;
         icon = icon->nexticon;
     }
 

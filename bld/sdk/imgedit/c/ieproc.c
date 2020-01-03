@@ -250,7 +250,7 @@ static bool IEIsMenuIDValid( HMENU menu, unsigned id )
 WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
                                  WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    static BOOL         window_destroyed = FALSE;
+    static bool         window_destroyed = false;
     static HMENU        hmenu;
     ctl_id              cmdid;
     img_node            *node;
@@ -678,7 +678,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
         if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
             return( 0 );
         }
-        window_destroyed = TRUE;
+        window_destroyed = true;
         _wpi_destroywindow( _wpi_getframe( hwnd ) );
         return( 0 );
 #endif

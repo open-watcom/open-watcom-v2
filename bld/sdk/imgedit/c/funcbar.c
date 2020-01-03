@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ static void functionBarHelpProc( HWND hwnd, ctl_id id, bool pressed )
 static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
-    static BOOL         gridButtonDown = FALSE;
+    static bool         gridButtonDown = false;
     ctl_id              id;
 
     hwnd = hwnd;
@@ -194,9 +194,9 @@ static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARA
         id = LOWORD( wparam );
         if( id == IMGED_GRID ) {
             if( !gridButtonDown ) {
-                gridButtonDown = TRUE;
+                gridButtonDown = true;
             } else {
-                gridButtonDown = FALSE;
+                gridButtonDown = false;
             }
             if( HMainWindow == NULL ) {
                 break;

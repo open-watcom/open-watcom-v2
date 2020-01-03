@@ -38,7 +38,7 @@
 
 static UINT     prevState;
 static RECT     bmpRegion;
-static BOOL     notDestroyed = TRUE;
+static bool     notDestroyed = true;
 #ifdef __NT__
 static HWND     deskTopWindow;
 #endif
@@ -148,7 +148,7 @@ bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 #endif
         IEDisplayErrorMsg( WIE_APPNAME, WIE_INVALIDREGIONSELECTED,
                            MB_OK | MB_ICONINFORMATION );
-        notDestroyed = TRUE;
+        notDestroyed = true;
         return( false );
     }
 
@@ -187,7 +187,7 @@ bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 #ifdef __NT__
     DestroyWindow( deskTopWindow );
 #endif
-    notDestroyed = TRUE;
+    notDestroyed = true;
     return( true );
 
 } /* SelectDynamicBitmap */
@@ -202,7 +202,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     static POINT        bottomright;
     static RECT         prevpos;
     static bool         firsttime = true;
-    static BOOL         buttondown;
+    static bool         buttondown;
     static HCURSOR      prevcursor;
     static HCURSOR      crosshairs;
     HDC                 hdc;
@@ -218,7 +218,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
     case WM_LBUTTONDOWN:
         GetCursorPos( &topleft );
-        buttondown = TRUE;
+        buttondown = true;
         break;
 
     case WM_LBUTTONUP:
@@ -228,7 +228,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         hdc = GetDC( NULL );
         OutlineRectangle( true, hdc, &prevpos, &bmpRegion );
         ReleaseDC( NULL, hdc );
-        buttondown = FALSE;
+        buttondown = false;
         ReleaseCapture();
         SendMessage( hwnd, WM_CLOSE, 0, 0L );
         break;
@@ -247,7 +247,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         break;
 
     case WM_DESTROY:
-        notDestroyed = FALSE;
+        notDestroyed = false;
         SetCursor( prevcursor );
         DestroyCursor( crosshairs );
         break;

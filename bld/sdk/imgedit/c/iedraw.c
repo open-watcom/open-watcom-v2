@@ -129,7 +129,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     HBITMAP     newbitmap;
     HWND        hwnd;
     img_node    *node;
-    BOOL        new_pres;
+    bool        new_pres;
 
     if( hmdiwnd != NULL ) {
         hwnd = hmdiwnd;
@@ -146,10 +146,10 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         return;
     }
 
-    new_pres = FALSE;
+    new_pres = false;
     if( pres == (WPI_PRES)NULL ) {
         pres = _wpi_getpres( hwnd );
-        new_pres = TRUE;
+        new_pres = true;
     }
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
@@ -309,7 +309,7 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
     wie_clrtype type;
     WPI_PRES    pres;
     int         brushsize;
-    BOOL        gridvisible;
+    bool        gridvisible;
 
     GetClientRect( hwnd, &rcclient );
     wndwidth = _wpi_getwidthrect( rcclient );
@@ -448,7 +448,7 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
     WPI_RECT    rcclient;
     wie_clrtype type;
     int         brushsize;
-    BOOL        gridvisible;
+    bool        gridvisible;
 
     hwnd = (HWND)GET_HWND_PARAM2( lparam );
     mousebutton = currentMouseButton;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "ieclrpal.h"
 #include "ieprofil.h"
 
-static BOOL     fRestEnabled = FALSE;
+static bool     fRestEnabled = false;
 static DWORD    customcolors[16] = {
 #if 1
                 RGB( 255, 255, 255 ), RGB( 239, 239, 239 ),
@@ -95,7 +96,7 @@ void EditColors( void )
     }
 
     ReplacePaletteEntry( choosecolor.rgbResult );
-    fRestEnabled = TRUE;
+    fRestEnabled = true;
     hmenu = GetMenu( HMainWindow );
     EnableMenuItem( hmenu, IMGED_CRESET, MF_ENABLED );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 /*
  * getXorBits - retrieve the bits for the XOR bitmap (only for icons and cursors)
  */
-static BOOL getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
+static bool getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -62,7 +62,7 @@ static BOOL getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
     }
     GetDIBits( memdc, node->hxorbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
     DeleteDC( memdc );
-    return( TRUE );
+    return( true );
 
 } /* getXorBits */
 

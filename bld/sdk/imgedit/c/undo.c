@@ -270,7 +270,7 @@ static void deleteFromBottom( an_undo_stack *stack )
  *               bitmaps are the new bitmaps for the active image, so we
  *               don't want to delete them
  */
-static void moveFromTop( an_undo_stack *stack, BOOL add_to_redo )
+static void moveFromTop( an_undo_stack *stack, bool add_to_redo )
 {
     an_undo_node        *new_undo;
 
@@ -405,7 +405,7 @@ void UndoOp( void )
         return;
     }
 
-    moveFromTop( stack, TRUE );
+    moveFromTop( stack, true );
     if( stack->top_undo == NULL ) {
         copyBitmaps( node, stack->firstxor, stack->firstand );
     } else {
@@ -574,7 +574,7 @@ void DeleteUndoStack( HWND hwnd )
         max_ops = stack->opcount;
         i = 0;
         while( stack->top_undo != NULL ) {
-            moveFromTop( stack, FALSE );
+            moveFromTop( stack, false );
             stack->opcount--;
             percent_complete = (i * 100) / max_ops;
             IEPrintAmtText( WIE_CLOSINGIMAGEPERCENT, percent_complete );
@@ -660,7 +660,7 @@ void ResetUndoStack( img_node *node )
     deleteRedoStack( stack );
 
     while( stack->top_undo != NULL ) {
-        moveFromTop( stack, FALSE );
+        moveFromTop( stack, false );
         stack->opcount--;
     }
 
@@ -860,7 +860,7 @@ void DelIconUndoStack( img_node *node, int index )
     deleteRedoStack( stack );
 
     while( stack->top_undo != NULL ) {
-        moveFromTop( stack, FALSE );
+        moveFromTop( stack, false );
         stack->opcount--;
     }
 

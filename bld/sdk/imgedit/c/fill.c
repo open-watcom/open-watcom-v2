@@ -209,7 +209,7 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     oldscreen;
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
     COLORREF    fillcolor;
-    BOOL        screenchanged;
+    bool        screenchanged;
     short       x, y;
     bitmap_bits *xorbits;
     bitmap_bits *screenbeforebits;
@@ -314,8 +314,8 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
     COLORREF    xorcolor;
     COLORREF    fillcolor;
-    BOOL        xorchanged;
-    BOOL        screenchanged;
+    bool        xorchanged;
+    bool        screenchanged;
     short       x, y;
 
     /*
