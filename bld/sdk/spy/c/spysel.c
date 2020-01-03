@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,7 +310,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
             while( isspace( *res ) ) {
                 res++;
             }
-            if( res[0] == 0 ) {
+            if( res[0] == '\0' ) {
                 break;
             }
             ch = res[SPYOUT_HWND_LEN];

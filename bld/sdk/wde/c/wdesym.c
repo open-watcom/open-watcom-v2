@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +52,9 @@
 #include "wdesym.h"
 #include "preproc.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -382,29 +386,25 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     return( include );
 }
 
-char *WdeCreateSymName( char *fname )
+char *WdeCreateSymName( const char *fname )
 {
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
+    PGROUP2     pg;
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WdeStrDup( fn_path ) );
 }
 
 bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
     char        *include;
     bool        prompt;
     bool        ret;
@@ -412,7 +412,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     include = NULL;
 
     if( rinfo == NULL || rinfo->info->file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     include = WdeFindDLGInclude( rinfo );
@@ -422,8 +422,8 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     }
 
     if( include == NULL ) {
-        _splitpath( rinfo->info->file_name, fn_drive, fn_dir, fn_name, NULL );
-        _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+        _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
         prompt = TRUE;
     } else {
         strcpy( fn_path, include );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -326,7 +326,7 @@ INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
                 sel = (int)SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
-                str[4] = 0;
+                str[4] = '\0';
                 seg = atoi( str );
                 if( DoGlobalEntryModule( &ge, DTTaskEntry.hModule, seg ) ) {
                     DispMem( Instance, hwnd, (WORD)ge.hBlock, (ge.dwSize == 1) );

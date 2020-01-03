@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,9 @@
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -81,7 +85,7 @@ static WRFileType WRFTARRAY[3][2][2] = {
 
 static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 {
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -90,21 +94,21 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 
     guess = WR_DONT_KNOW;
 
-    _splitpath( name, NULL, NULL, NULL, ext );
+    _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );
 
-    if( CMPFEXT( ext, "exe" ) ) {
+    if( CMPFEXT( pg.ext, "exe" ) ) {
         if( is32bit ) {
             guess = WR_WINNT_EXE;
         } else {
             guess = WR_WIN16_EXE;
         }
-    } else if( CMPFEXT( ext, "dll" ) ) {
+    } else if( CMPFEXT( pg.ext, "dll" ) ) {
         if( is32bit ) {
             guess = WR_WINNT_DLL;
         } else {
             guess = WR_WIN16_DLL;
         }
-    } else if( CMPFEXT( ext, "res" ) ) {
+    } else if( CMPFEXT( pg.ext, "res" ) ) {
         if( is32bit ) {
             guess = WR_WINNTW_RES;
         } else {
@@ -160,7 +164,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
 
 WRFileType WRAPI WRGuessFileType( const char *name )
 {
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -169,23 +173,23 @@ WRFileType WRAPI WRGuessFileType( const char *name )
 
     guess = WR_DONT_KNOW;
 
-    _splitpath( name, NULL, NULL, NULL, ext );
+    _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );
 
-    if( CMPFEXT( ext, "bmp" ) ) {
+    if( CMPFEXT( pg.ext, "bmp" ) ) {
         guess = WR_WIN_BITMAP;
-    } else if( CMPFEXT( ext, "cur" ) ) {
+    } else if( CMPFEXT( pg.ext, "cur" ) ) {
         guess = WR_WIN_CURSOR;
-    } else if( CMPFEXT( ext, "ico" ) ) {
+    } else if( CMPFEXT( pg.ext, "ico" ) ) {
         guess = WR_WIN_ICON;
-    } else if( CMPFEXT( ext, "rc" ) ) {
+    } else if( CMPFEXT( pg.ext, "rc" ) ) {
         guess = WR_WIN_RC;
-    } else if( CMPFEXT( ext, "dlg" ) ) {
+    } else if( CMPFEXT( pg.ext, "dlg" ) ) {
         guess = WR_WIN_RC_DLG;
-    } else if( CMPFEXT( ext, "str" ) ) {
+    } else if( CMPFEXT( pg.ext, "str" ) ) {
         guess = WR_WIN_RC_STR;
-    } else if( CMPFEXT( ext, "mnu" ) ) {
+    } else if( CMPFEXT( pg.ext, "mnu" ) ) {
         guess = WR_WIN_RC_MENU;
-    } else if( CMPFEXT( ext, "acc" ) ) {
+    } else if( CMPFEXT( pg.ext, "acc" ) ) {
         guess = WR_WIN_RC_ACCEL;
     }
 
@@ -194,7 +198,7 @@ WRFileType WRAPI WRGuessFileType( const char *name )
 
 void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 {
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        no_exe;
 
     if( sft == NULL ) {
@@ -205,13 +209,13 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 
     if( sft->file_name != NULL ) {
         SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
-        _splitpath( sft->file_name, NULL, NULL, NULL, ext );
-        if( CMPFEXT( ext, "res" ) ) {
+        _splitpath2( sft->file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        if( CMPFEXT( pg.ext, "res" ) ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
             no_exe = TRUE;
-        } else if( CMPFEXT( ext, "exe" ) ) {
+        } else if( CMPFEXT( pg.ext, "exe" ) ) {
             CheckDlgButton( hDlg, IDM_FTEXE, BST_CHECKED );
-        } else if( CMPFEXT( ext, "dll" ) ) {
+        } else if( CMPFEXT( pg.ext, "dll" ) ) {
             CheckDlgButton( hDlg, IDM_FTDLL, BST_CHECKED );
         }
     }

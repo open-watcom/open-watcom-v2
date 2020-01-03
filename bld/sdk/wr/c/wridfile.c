@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,10 @@
 #include "wrrdw16.h"
 #include "wrrdwnt.h"
 #include "exedos.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -65,34 +70,34 @@ bool WRAPI WRIs32Bit( WRFileType ftype )
 WRFileType WRAPI WRIdentifyFile( const char *fname )
 {
     WRFileType  ftype;
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        ok;
 
     ok = ( fname != NULL );
     if( ok ) {
-        _splitpath( fname, NULL, NULL, NULL, ext );
-        if( CMPFEXT( ext, "bmp" ) ) {
+        _splitpath2( fname, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        if( CMPFEXT( pg.ext, "bmp" ) ) {
             ftype = WRIdentifyWinBMPFile( fname );
-        } else if( CMPFEXT( ext, "cur" ) ) {
+        } else if( CMPFEXT( pg.ext, "cur" ) ) {
             ftype = WRIdentifyWinICOFile( fname );
-        } else if( CMPFEXT( ext, "ico" ) ) {
+        } else if( CMPFEXT( pg.ext, "ico" ) ) {
             ftype = WRIdentifyWinICOFile( fname );
-        } else if( CMPFEXT( ext, "dlg" ) ) {
+        } else if( CMPFEXT( pg.ext, "dlg" ) ) {
             //ftype = WRIdentifyWinRCFile( fname );
             ftype = WR_WIN_RC_DLG;
-        } else if( CMPFEXT( ext, "rc" ) ) {
+        } else if( CMPFEXT( pg.ext, "rc" ) ) {
             ftype = WRIdentifyWinRCFile( fname );
-        } else if( CMPFEXT( ext, "str" ) ) {
+        } else if( CMPFEXT( pg.ext, "str" ) ) {
             ftype = WR_WIN_RC_STR;
-        } else if( CMPFEXT( ext, "mnu" ) ) {
+        } else if( CMPFEXT( pg.ext, "mnu" ) ) {
             ftype = WR_WIN_RC_MENU;
-        } else if( CMPFEXT( ext, "acc" ) ) {
+        } else if( CMPFEXT( pg.ext, "acc" ) ) {
             ftype = WR_WIN_RC_ACCEL;
-        } else if( CMPFEXT( ext, "res" ) ) {
+        } else if( CMPFEXT( pg.ext, "res" ) ) {
             ftype = WRIdentifyRESFile( fname );
-        } else if( CMPFEXT( ext, "exe" ) ) {
+        } else if( CMPFEXT( pg.ext, "exe" ) ) {
             ftype = WRIdentifyEXEFile( fname, false );
-        } else if( CMPFEXT( ext, "dll" ) ) {
+        } else if( CMPFEXT( pg.ext, "dll" ) ) {
             ftype = WRIdentifyEXEFile( fname, true );
         } else {
             ok = false;

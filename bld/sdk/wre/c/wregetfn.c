@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,9 @@
 #include "wregetfn.h"
 #include "wrdll.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -84,7 +88,7 @@ static int WREFindFileFilterIndex( char *filter )
                     break;
                 }
                 index++;
-                if( index % 2 == 0 ) {
+                if( (index % 2) == 0 ) {
                     if( stricmp( LastFileFilter, &filter[i + 1] ) == 0 ) {
                         return( index / 2 );
                     }
@@ -109,7 +113,7 @@ static char *WREFindFileFilterFromIndex( char *filter, int index )
                     break;
                 }
                 ind++;
-                if( ind % 2 == 0 && ind / 2 == index ) {
+                if( (ind % 2) == 0 && ind / 2 == index ) {
                     return( &filter[i + 1] );
                 }
             }
@@ -175,16 +179,14 @@ char *WREGetSaveFileName( WREGetFileStruct *gf )
 
 char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action )
 {
-    OPENFILENAME  wreofn;
-    HWND          owner_window;
-    bool          ret;
-    DWORD         error;
-    int           len;
-    char          fn_drive[_MAX_DRIVE];
-    char          fn_dir[_MAX_DIR];
-    char          fn_name[_MAX_FNAME];
-    char          fn_ext[_MAX_EXT + 1];
-    HINSTANCE     app_inst;
+    OPENFILENAME    wreofn;
+    HWND            owner_window;
+    bool            ret;
+    DWORD           error;
+    int             len;
+    PGROUP2         pg;
+    char            ext[_MAX_EXT + 1];
+    HINSTANCE       app_inst;
 
     if( gf == NULL ) {
         return( NULL );
@@ -206,17 +208,17 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
             wrefntitle[_MAX_PATH - 1] = 0;
         }
     } else {
-        wrefntitle[0] = 0;
+        wrefntitle[0] = '\0';
     }
 
     if( gf->file_name != NULL && *gf->file_name != '\0' ) {
-        _splitpath( gf->file_name, fn_drive, fn_dir, fn_name, fn_ext );
-        if( *fn_drive != '\0' || *fn_dir != '\0' ) {
-            _makepath( wre_initial_dir, fn_drive, fn_dir, NULL, NULL );
+        _splitpath2( gf->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
+            _makepath( wre_initial_dir, pg.drive, pg.dir, NULL, NULL );
         }
-        _makepath( wre_file_name, NULL, NULL, fn_name, fn_ext );
+        _makepath( wre_file_name, NULL, NULL, pg.fname, pg.ext );
     } else {
-        wre_file_name[0] = 0;
+        wre_file_name[0] = '\0';
     }
 
     /* set the initial directory */
@@ -284,15 +286,15 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
             wre_initial_dir[wreofn.nFileOffset] = '\0';
         }
         if( gf->save_ext ) {
-            _splitpath( wre_file_name, NULL, NULL, NULL, fn_ext + 1 );
-            if( fn_ext[1] != '\0' ) {
-                fn_ext[0] = '*';
-                WRESetFileFilter( fn_ext );
+            _splitpath2( wre_file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+            if( pg.ext[0] != '\0' ) {
+                ext[0] = '*';
+                strcpy( ext + 1, pg.ext );
+                WRESetFileFilter( ext );
             } else {
-                char *out_ext;
-                out_ext = WREFindFileFilterFromIndex( gf->filter, wreofn.nFilterIndex );
-                if( out_ext[2] != '*' ) {
-                    strcat( wre_file_name, &out_ext[1] );
+                pg.ext = WREFindFileFilterFromIndex( gf->filter, wreofn.nFilterIndex ) + 1;
+                if( pg.ext[1] != '*' ) {
+                    strcat( wre_file_name, pg.ext );
                 }
             }
         }

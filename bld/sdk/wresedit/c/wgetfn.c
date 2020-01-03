@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static char *WFindFileFilterFromIndex( char *filter, int index )
                     break;
                 }
                 ind++;
-                if( ind % 2 == 0 && ind / 2 == index ) {
+                if( (ind % 2) == 0 && (ind / 2) == index ) {
                     return( &filter[i + 1] );
                 }
             }
@@ -168,7 +168,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
             WFnTitle[_MAX_PATH - 1] = 0;
         }
     } else {
-        WFnTitle[0] = 0;
+        WFnTitle[0] = '\0';
     }
 
     if( gf->file_name != NULL && *gf->file_name != '\0' ) {
@@ -252,10 +252,9 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
         WFileFilter = wofn.nFilterIndex;
         _splitpath2( WFn, pg.buffer, NULL, NULL, NULL, &pg.ext );
         if( pg.ext[0] == '\0' ) {
-            char *out_ext;
-            out_ext = WFindFileFilterFromIndex( gf->filter, wofn.nFilterIndex );
-            if( out_ext[2] != '*' ) {
-                strcat( WFn, &out_ext[1] );
+            pg.ext = WFindFileFilterFromIndex( gf->filter, wofn.nFilterIndex ) + 1;
+            if( pg.ext[1] != '*' ) {
+                strcat( WFn, pg.ext );
             }
         }
     }

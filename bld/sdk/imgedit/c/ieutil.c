@@ -373,9 +373,8 @@ void SetIsSaved( HWND hwnd, bool issaved )
             return;
         }
         _splitpath2( node->fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-
-        strcpy( title, pg.fname );
-        strupr( strcat( title, pg.ext ) );
+        _makepath( title, NULL, NULL, pg.fname, pg.ext );
+        strupr( title );
         _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
         main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );

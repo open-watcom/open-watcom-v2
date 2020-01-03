@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +57,6 @@ extern bool WdeFindAndLoadSymbols( WdeResInfo * );
 extern bool WdeWriteSymbols( WdeHashTable *, char **, bool );
 extern bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
 extern bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
-extern char *WdeCreateSymName( char *fname );
+extern char *WdeCreateSymName( const char *fname );
 
 #endif

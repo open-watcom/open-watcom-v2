@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,9 @@
 #include "wdegetfn.h"
 #include "wrdll.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -90,7 +94,7 @@ static int WdeFindFileFilterIndex( char *filter, char *last_filter )
                 break;
             }
             index++;
-            if( index % 2 == 0 ) {
+            if( (index % 2) == 0 ) {
                 if( stricmp( last_filter, &filter[i + 1] ) == 0 ) {
                     return( index / 2 );
                 }
@@ -114,7 +118,7 @@ static char *WdeFindFileFilterFromIndex( char *filter, int index )
                     break;
                 }
                 ind++;
-                if( ind % 2 == 0 && ind / 2 == index ) {
+                if( (ind % 2) == 0 && ind / 2 == index ) {
                     return( &filter[i + 1] );
                 }
             }
@@ -182,15 +186,12 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     OPENFILENAME        wdeofn;
     HWND                owner_window;
     DWORD               error;
-    char                fn_drive[_MAX_DRIVE];
-    char                fn_dir[_MAX_DIR];
-    char                fn_name[_MAX_FNAME];
-    char                fn_ext[_MAX_EXT];
+    PGROUP2             pg;
     char                ext[_MAX_EXT + 1];
     HINSTANCE           app_inst;
     int                 len;
     int                 filter;
-    BOOL                ret;
+    bool                ok;
 
     if( gf == NULL ) {
         return( NULL );
@@ -217,24 +218,24 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
             wdefntitle[MAX_NAME - 1] = 0;
         }
     } else {
-        wdefntitle[0] = 0;
+        wdefntitle[0] = '\0';
     }
 
     filter = 0;
 
     if( gf->file_name != NULL && *gf->file_name != '\0' ) {
-        _splitpath( gf->file_name, fn_drive, fn_dir, fn_name, fn_ext );
-        if( *fn_drive != '\0' || *fn_dir != '\0' ) {
-            _makepath( wde_initial_dir, fn_drive, fn_dir, NULL, NULL );
+        _splitpath2( gf->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
+            _makepath( wde_initial_dir, pg.drive, pg.dir, NULL, NULL );
         }
-        _makepath( wde_file_name, NULL, NULL, fn_name, fn_ext );
-        if( fn_ext[0] != '\0' ) {
+        _makepath( wde_file_name, NULL, NULL, pg.fname, pg.ext );
+        if( pg.ext[0] != '\0' ) {
             ext[0] = '*';
-            strcpy( ext + 1, fn_ext );
+            strcpy( ext + 1, pg.ext );
             filter = WdeFindFileFilterIndex( gf->filter, ext );
         }
     } else {
-        wde_file_name[0] = 0;
+        wde_file_name[0] = '\0';
     }
 
     if( filter == 0 ) {
@@ -280,9 +281,9 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
 #endif
 
     if( action == WDEOPENFILE ) {
-        ret = GetOpenFileName( (LPOPENFILENAME)&wdeofn );
+        ok = ( GetOpenFileName( (LPOPENFILENAME)&wdeofn ) != 0 );
     } else if( action == WDESAVEFILE ) {
-        ret = GetSaveFileName( (LPOPENFILENAME)&wdeofn );
+        ok = ( GetSaveFileName( (LPOPENFILENAME)&wdeofn ) != 0 );
     } else {
         return( NULL );
     }
@@ -295,7 +296,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     gf->ext_offset = wdeofn.nFileExtension;
 
     /* show the dialog box */
-    if( !ret ) {
+    if( !ok ) {
         error = CommDlgExtendedError();
         if( error ) {
             WdeDisplayErrorMsg( WDE_ERRORSELECTINGFILE );
@@ -309,15 +310,15 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
         } else {
             wde_initial_dir[wdeofn.nFileOffset] = '\0';
         }
-        _splitpath( wde_file_name, NULL, NULL, NULL, fn_ext + 1 );
-        if( fn_ext[1] != '\0' ) {
-            fn_ext[0] = '*';
-            WdeSetFileFilter( fn_ext );
+        _splitpath2( wde_file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        if( pg.ext[0] != '\0' ) {
+            ext[0] = '*';
+            strcpy( ext + 1, pg.ext );
+            WdeSetFileFilter( ext );
         } else {
-            char *out_ext;
-            out_ext = WdeFindFileFilterFromIndex( gf->filter, wdeofn.nFilterIndex );
-            if( out_ext[2] != '*' ) {
-                strcat( wde_file_name, &out_ext[1] );
+            pg.ext = WdeFindFileFilterFromIndex( gf->filter, wdeofn.nFilterIndex ) + 1;
+            if( pg.ext[1] != '*' ) {
+                strcat( wde_file_name, pg.ext );
             }
         }
     }

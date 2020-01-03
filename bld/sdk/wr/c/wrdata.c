@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +166,7 @@ void * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
     }
 
     if( ok ) {
-        ok = ( (fseek( fh, offset, SEEK_SET )) == 0 );
+        ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
     }
 
     buf = data;

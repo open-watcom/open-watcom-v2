@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,9 @@
 #include "wclbproc.h"
 #include "watini.h"
 #include "jdlg.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /* Local Window callback functions prototypes */
@@ -69,22 +73,21 @@ WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
 /*
  * ValidateFName - ensure that the path specified by 'path' actually exists
  */
-static BOOL ValidateFName( char *path ) {
-
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
+static bool ValidateFName( const char *path )
+{
+    PGROUP2     pg;
     char        name[_MAX_PATH];
     DIR         *info;
 
-    _splitpath( path, drive, dir, NULL, NULL );
-    _makepath( name, drive, dir, "*", "*" );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( name, pg.drive, pg.dir, "*", "*" );
     info = opendir( name );
     if( info == NULL ) {
-        return( FALSE );
-    } else {
-        closedir( info );
-        return( TRUE );
+        return( false );
     }
+    closedir( info );
+    return( true );
+
 } /* ValidateFName */
 
 /*
@@ -134,56 +137,34 @@ void ReadConfig( void ) {
     MemWndConfig        info;
 
     GetDefaults( &Config );
-    LSortType = GetPrivateProfileInt( SECT_NAME, LSORT,
-                                HEAPMENU_SORT_HANDLE, WATCOM_INI );
-    GSortType = GetPrivateProfileInt( SECT_NAME, GSORT,
-                                HEAPMENU_SORT_HANDLE, WATCOM_INI );
-    HeapType = GetPrivateProfileInt( SECT_NAME, DISP_TYPE,
-                                HEAPMENU_DISPLAY_ENTIRE, WATCOM_INI );
-    Config.disp_res = GetPrivateProfileInt( SECT_NAME, DISP_RES,
-                                        Config.disp_res, WATCOM_INI );
-    Config.save_glob_pos = GetPrivateProfileInt( SECT_NAME, SAVE_GLOB_POS,
-                                        Config.save_glob_pos, WATCOM_INI );
-    Config.save_mem_pos = GetPrivateProfileInt( SECT_NAME, SAVE_MW_POS,
-                                        Config.save_mem_pos, WATCOM_INI );
-    Config.glob_xpos = GetPrivateProfileInt( SECT_NAME, GLOB_XPOS,
-                                        Config.glob_xpos, WATCOM_INI );
-    Config.glob_ypos = GetPrivateProfileInt( SECT_NAME, GLOB_YPOS,
-                                        Config.glob_ypos, WATCOM_INI );
-    Config.glob_xsize = GetPrivateProfileInt( SECT_NAME, GLOB_XSIZE,
-                                        Config.glob_xsize, WATCOM_INI );
-    Config.glob_ysize = GetPrivateProfileInt( SECT_NAME, GLOB_YSIZE,
-                                        Config.glob_ysize, WATCOM_INI );
+    LSortType = GetPrivateProfileInt( SECT_NAME, LSORT, HEAPMENU_SORT_HANDLE, WATCOM_INI );
+    GSortType = GetPrivateProfileInt( SECT_NAME, GSORT, HEAPMENU_SORT_HANDLE, WATCOM_INI );
+    HeapType = GetPrivateProfileInt( SECT_NAME, DISP_TYPE, HEAPMENU_DISPLAY_ENTIRE, WATCOM_INI );
+    Config.disp_res = GetPrivateProfileInt( SECT_NAME, DISP_RES, Config.disp_res, WATCOM_INI );
+    Config.save_glob_pos = GetPrivateProfileInt( SECT_NAME, SAVE_GLOB_POS, Config.save_glob_pos, WATCOM_INI );
+    Config.save_mem_pos = GetPrivateProfileInt( SECT_NAME, SAVE_MW_POS, Config.save_mem_pos, WATCOM_INI );
+    Config.glob_xpos = GetPrivateProfileInt( SECT_NAME, GLOB_XPOS, Config.glob_xpos, WATCOM_INI );
+    Config.glob_ypos = GetPrivateProfileInt( SECT_NAME, GLOB_YPOS, Config.glob_ypos, WATCOM_INI );
+    Config.glob_xsize = GetPrivateProfileInt( SECT_NAME, GLOB_XSIZE, Config.glob_xsize, WATCOM_INI );
+    Config.glob_ysize = GetPrivateProfileInt( SECT_NAME, GLOB_YSIZE, Config.glob_ysize, WATCOM_INI );
     GetPrivateProfileString( SECT_NAME, GSAVE, Config.gfname, Config.gfname, _MAX_PATH, WATCOM_INI );
     GetPrivateProfileString( SECT_NAME, LSAVE, Config.lfname, Config.lfname, _MAX_PATH, WATCOM_INI );
 
     /* read information about the memory window */
 
     GetMemWndConfig( &info );
-    info.xpos = GetPrivateProfileInt( SECT_NAME, MW_XPOS,
-                                        info.xpos, WATCOM_INI );
-    info.ypos = GetPrivateProfileInt( SECT_NAME, MW_YPOS,
-                                        info.ypos, WATCOM_INI );
-    info.xsize = GetPrivateProfileInt( SECT_NAME, MW_XSIZE,
-                                        info.xsize, WATCOM_INI );
-    info.ysize = GetPrivateProfileInt( SECT_NAME, MW_YSIZE,
-                                        info.ysize, WATCOM_INI );
-    GetPrivateProfileString( SECT_NAME, MW_FNAME, info.fname, info.fname,
-                                        _MAX_PATH, WATCOM_INI );
-    info.maximized = GetPrivateProfileInt( SECT_NAME, MW_MAX,
-                                        info.maximized, WATCOM_INI );
-    info.disp_info = GetPrivateProfileInt( SECT_NAME, MW_DISP_INFO,
-                                        info.disp_info, WATCOM_INI );
-    info.autopos_info = GetPrivateProfileInt( SECT_NAME, MW_AUTOPOS,
-                                        info.autopos_info, WATCOM_INI );
-    info.forget_pos = GetPrivateProfileInt( SECT_NAME, MW_NO_UPDT,
-                                        info.forget_pos, WATCOM_INI );
-    info.allowmult = GetPrivateProfileInt( SECT_NAME, MW_1_WND,
-                                        info.allowmult, WATCOM_INI );
-    info.data_type = GetPrivateProfileInt( SECT_NAME, MW_DISP_TYPE,
-                                        info.data_type, WATCOM_INI );
-    info.code_type = GetPrivateProfileInt( SECT_NAME, MW_CODE_TYPE,
-                                        info.code_type, WATCOM_INI );
+    info.xpos = GetPrivateProfileInt( SECT_NAME, MW_XPOS, info.xpos, WATCOM_INI );
+    info.ypos = GetPrivateProfileInt( SECT_NAME, MW_YPOS, info.ypos, WATCOM_INI );
+    info.xsize = GetPrivateProfileInt( SECT_NAME, MW_XSIZE, info.xsize, WATCOM_INI );
+    info.ysize = GetPrivateProfileInt( SECT_NAME, MW_YSIZE, info.ysize, WATCOM_INI );
+    GetPrivateProfileString( SECT_NAME, MW_FNAME, info.fname, info.fname, _MAX_PATH, WATCOM_INI );
+    info.maximized = GetPrivateProfileInt( SECT_NAME, MW_MAX, info.maximized, WATCOM_INI );
+    info.disp_info = GetPrivateProfileInt( SECT_NAME, MW_DISP_INFO, info.disp_info, WATCOM_INI );
+    info.autopos_info = GetPrivateProfileInt( SECT_NAME, MW_AUTOPOS, info.autopos_info, WATCOM_INI );
+    info.forget_pos = GetPrivateProfileInt( SECT_NAME, MW_NO_UPDT, info.forget_pos, WATCOM_INI );
+    info.allowmult = GetPrivateProfileInt( SECT_NAME, MW_1_WND, info.allowmult, WATCOM_INI );
+    info.data_type = GetPrivateProfileInt( SECT_NAME, MW_DISP_TYPE, info.data_type, WATCOM_INI );
+    info.code_type = GetPrivateProfileInt( SECT_NAME, MW_CODE_TYPE, info.code_type, WATCOM_INI );
     SetMemWndConfig( &info );
     InitMonoFont( SECT_NAME, WATCOM_INI, SYSTEM_FIXED_FONT, Instance );
 } /* ReadConfig */
@@ -231,8 +212,7 @@ void SaveConfigFile( BOOL save_all_values ) {
         utoa( info.ysize, buf, 10 );
         WritePrivateProfileString( SECT_NAME, MW_YSIZE, buf, WATCOM_INI );
     }
-    WritePrivateProfileString( SECT_NAME, MW_FNAME, info.fname,
-                               WATCOM_INI );
+    WritePrivateProfileString( SECT_NAME, MW_FNAME, info.fname, WATCOM_INI );
     PutProfileBool( MW_MAX, info.maximized );
     PutProfileBool( MW_DISP_INFO, info.disp_info );
     PutProfileBool( MW_AUTOPOS, info.autopos_info );
@@ -334,24 +314,21 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             GetDlgItemText( hwnd, CONFIG_GNAME, buf, _MAX_PATH );
             if( !ValidateFName( buf ) ) {
                 GetWindowText( hwnd, buf, sizeof( buf ) );
-                RCMessageBox( hwnd, STR_INVALID_GLOB_FNAME,
-                              buf, MB_OK | MB_ICONEXCLAMATION );
+                RCMessageBox( hwnd, STR_INVALID_GLOB_FNAME, buf, MB_OK | MB_ICONEXCLAMATION );
                 ret = true;
                 break;
             }
             GetDlgItemText( hwnd, CONFIG_LNAME, buf, _MAX_PATH );
             if( !ValidateFName( buf ) ) {
                 GetWindowText( hwnd, buf, sizeof( buf ) );
-                RCMessageBox( hwnd, STR_INVALID_LCL_FNAME, buf,
-                            MB_OK | MB_ICONEXCLAMATION );
+                RCMessageBox( hwnd, STR_INVALID_LCL_FNAME, buf, MB_OK | MB_ICONEXCLAMATION );
                 ret = true;
                 break;
             }
             GetDlgItemText( hwnd, CONFIG_MNAME, buf, _MAX_PATH );
             if( !ValidateFName( buf ) ) {
                 GetWindowText( hwnd, buf, sizeof( buf ) );
-                RCMessageBox( hwnd, STR_INVALID_MEM_FNAME, buf,
-                            MB_OK | MB_ICONEXCLAMATION );
+                RCMessageBox( hwnd, STR_INVALID_MEM_FNAME, buf, MB_OK | MB_ICONEXCLAMATION );
                 ret = true;
                 break;
             }
@@ -364,10 +341,8 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
                 info.allowmult = WND_REPLACE;
             }
             Config.disp_res = IsDlgButtonChecked( hwnd, CONFIG_DISP_RES );
-            Config.save_glob_pos = IsDlgButtonChecked( hwnd,
-                                                       CONFIG_SAVE_MAIN_POS );
-            Config.save_mem_pos = IsDlgButtonChecked( hwnd,
-                                                       CONFIG_SAVE_MEM_POS );
+            Config.save_glob_pos = IsDlgButtonChecked( hwnd, CONFIG_SAVE_MAIN_POS );
+            Config.save_mem_pos = IsDlgButtonChecked( hwnd, CONFIG_SAVE_MEM_POS );
             GetDlgItemText( hwnd, CONFIG_GNAME, Config.gfname, _MAX_PATH );
             GetDlgItemText( hwnd, CONFIG_LNAME, Config.lfname, _MAX_PATH );
             GetDlgItemText( hwnd, CONFIG_MNAME, info.fname, _MAX_PATH );
