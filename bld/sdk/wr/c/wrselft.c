@@ -92,19 +92,19 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 
     _splitpath( name, NULL, NULL, NULL, ext );
 
-    if( stricmp( ext, ".exe" ) == 0 ) {
+    if( CMPFEXT( ext, "exe" ) ) {
         if( is32bit ) {
             guess = WR_WINNT_EXE;
         } else {
             guess = WR_WIN16_EXE;
         }
-    } else if( stricmp( ext, ".dll" ) == 0 ) {
+    } else if( CMPFEXT( ext, "dll" ) ) {
         if( is32bit ) {
             guess = WR_WINNT_DLL;
         } else {
             guess = WR_WIN16_DLL;
         }
-    } else if( stricmp( ext, ".res" ) == 0 ) {
+    } else if( CMPFEXT( ext, "res" ) ) {
         if( is32bit ) {
             guess = WR_WINNTW_RES;
         } else {
@@ -171,21 +171,21 @@ WRFileType WRAPI WRGuessFileType( const char *name )
 
     _splitpath( name, NULL, NULL, NULL, ext );
 
-    if( stricmp( ext, ".bmp" ) == 0 ) {
+    if( CMPFEXT( ext, "bmp" ) ) {
         guess = WR_WIN_BITMAP;
-    } else if( stricmp( ext, ".cur" ) == 0 ) {
+    } else if( CMPFEXT( ext, "cur" ) ) {
         guess = WR_WIN_CURSOR;
-    } else if( stricmp( ext, ".ico" ) == 0 ) {
+    } else if( CMPFEXT( ext, "ico" ) ) {
         guess = WR_WIN_ICON;
-    } else if( stricmp( ext, ".rc" ) == 0 ) {
+    } else if( CMPFEXT( ext, "rc" ) ) {
         guess = WR_WIN_RC;
-    } else if( stricmp( ext, ".dlg" ) == 0 ) {
+    } else if( CMPFEXT( ext, "dlg" ) ) {
         guess = WR_WIN_RC_DLG;
-    } else if( stricmp( ext, ".str" ) == 0 ) {
+    } else if( CMPFEXT( ext, "str" ) ) {
         guess = WR_WIN_RC_STR;
-    } else if( stricmp( ext, ".mnu" ) == 0 ) {
+    } else if( CMPFEXT( ext, "mnu" ) ) {
         guess = WR_WIN_RC_MENU;
-    } else if( stricmp( ext, ".acc" ) == 0 ) {
+    } else if( CMPFEXT( ext, "acc" ) ) {
         guess = WR_WIN_RC_ACCEL;
     }
 
@@ -206,12 +206,12 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
     if( sft->file_name != NULL ) {
         SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
         _splitpath( sft->file_name, NULL, NULL, NULL, ext );
-        if( stricmp( ext, ".res" ) == 0 ) {
+        if( CMPFEXT( ext, "res" ) ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
             no_exe = TRUE;
-        } else if( stricmp( ext, ".exe" ) == 0 ) {
+        } else if( CMPFEXT( ext, "exe" ) ) {
             CheckDlgButton( hDlg, IDM_FTEXE, BST_CHECKED );
-        } else if( stricmp( ext, ".dll" ) == 0 ) {
+        } else if( CMPFEXT( ext, "dll" ) ) {
             CheckDlgButton( hDlg, IDM_FTDLL, BST_CHECKED );
         }
     }
