@@ -182,7 +182,7 @@ bool WRAPI WRRenameFile( const char *new, const char *old )
     }
 
     _splitpath( new, new_drive, NULL, NULL, NULL );
-    _splitpath( old, new_drive, NULL, NULL, NULL );
+    _splitpath( old, old_drive, NULL, NULL, NULL );
 
     if( stricmp( new_drive, old_drive ) ) {
         if( WRCopyFile( new, old ) ) {
