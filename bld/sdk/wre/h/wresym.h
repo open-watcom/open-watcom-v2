@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +55,6 @@ extern bool WREResourceSaveSymbols( WREResInfo *info );
 extern bool WREDeleteDLGInclude( WResDir dir );
 extern bool WRECreateDLGInclude( WResDir *dir, const char *include );
 extern bool WREFindAndLoadSymbols( WREResInfo *rinfo );
-extern char *WRECreateSymName( char *fname );
+extern char *WRECreateSymFileName( const char *fname );
 
 #endif

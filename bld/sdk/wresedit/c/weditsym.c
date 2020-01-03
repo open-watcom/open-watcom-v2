@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,9 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "preproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 typedef struct {
@@ -202,19 +205,17 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     return( ret );
 }
 
-char *WCreateSymName( char *fname )
+char *WCreateSymFileName( const char *fname )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WStrDup( fn_path ) );
 }

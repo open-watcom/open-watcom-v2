@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -974,7 +975,7 @@ bool WQuerySaveSym( WStringEditInfo *einfo, bool force_exit )
             } else {
                 fname = einfo->file_name;
             }
-            einfo->info->symbol_file = WCreateSymName( fname );
+            einfo->info->symbol_file = WCreateSymFileName( fname );
         }
         return( WSaveSymbols( einfo, einfo->info->symbol_table,
                               &einfo->info->symbol_file, FALSE ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,26 +41,33 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#if 0
+#include "pathgrp2.h"
+
+#include "clibext.h"
+#endif
 
 
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
 #define DEBUGOUT( x )
 
 #if 0
-FILE *PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, const char *ext )
 {
+    PGROUP2     pg;
     char        path[ _MAX_PATH ];
     char        *realname;
     char        *filename;
 
-    len = len;
+    /* unused parameters */ (void)len;
+
     if( ext == NULL || *ext == '\0' ) {
         realname = name;
     } else {
         realname = MemAlloc( _MAX_PATH );
         filename = MemAlloc( _MAX_FNAME );
-        _splitpath( name, NULL, NULL, filename, NULL );
-        _makepath( realname, NULL, NULL, filename, ext );
+        _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( realname, NULL, NULL, pg.fname, ext );
         MemFree( realname );
         MemFree( filename );
     }

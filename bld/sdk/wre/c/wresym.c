@@ -47,6 +47,9 @@
 #include "preproc.h"
 #include "wresym.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -396,19 +399,17 @@ bool WRECreateDLGInclude( WResDir *dir, const char *include )
     return( WRCreateDLGInclude( dir, include ) );
 }
 
-char *WRECreateSymName( char *fname )
+char *WRECreateSymFileName( const char *fname )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WREStrDup( fn_path ) );
 }
@@ -417,27 +418,25 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 {
     char        inc_path[_MAX_PATH];
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
+    PGROUP2     pg;
     char        *symbol_file;
     bool        prompt;
     bool        ret;
 
-    if( rinfo == NULL || rinfo->info == NULL ||
-        (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
+    if( rinfo == NULL || rinfo->info == NULL
+      || (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
         return( false );
     }
 
     symbol_file = WREFindDLGInclude( rinfo->info );
     if( symbol_file == NULL ) {
         if( rinfo->info->file_name ) {
-            _splitpath( rinfo->info->file_name, fn_drive, fn_dir, fn_name, NULL );
+            _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         } else {
-            _splitpath( rinfo->info->save_name, fn_drive, fn_dir, fn_name, NULL );
+            _splitpath2( rinfo->info->save_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         }
-        _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
-        _makepath( inc_path, fn_drive, fn_dir, NULL, NULL );
+        _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
+        _makepath( inc_path, pg.drive, pg.dir, NULL, NULL );
         WRESetInitialDir( inc_path );
         prompt = true;
     } else {

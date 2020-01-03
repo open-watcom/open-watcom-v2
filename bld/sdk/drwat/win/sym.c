@@ -41,39 +41,45 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#if 0
+#include "pathgrp2.h"
+
+#include "clibext.h"
+#endif
 
 
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
 #define DEBUGOUT( x )
+
 static process_info     *curProcess;
 static mod_handle       curModHdl;
 static BOOL             dipIsLoaded;
 
 
 #if 0
-FILE *PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, const char *ext )
 {
+    PGROUP2     pg;
     char        path[ _MAX_PATH ];
     char        *realname;
     char        *filename;
 
-    len = len;
+    /* unused parameters */ (void)len;
+
     if( ext == NULL || *ext == '\0' ) {
         realname = name;
     } else {
         realname = MemAlloc( _MAX_PATH );
         filename = MemAlloc( _MAX_FNAME );
-        _splitpath( name, NULL, NULL, filename, NULL );
-        _makepath( realname, NULL, NULL, filename, ext );
+        _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( realname, NULL, NULL, pg.fname, ext );
         MemFree( realname );
         MemFree( filename );
     }
     _searchenv( realname, "PATH", path );
-    if( *path == '\0' ) {
+    if( *path == '\0' )
         return( NULL );
-    } else {
-        return( DIGCli( Open )( path, DIG_READ ) );
-    }
+    return( DIGCli( Open )( path, DIG_READ ) );
 }
 #endif
 

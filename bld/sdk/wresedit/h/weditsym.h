@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,6 @@
 
 extern char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt );
 extern bool WEditSymbols( HWND parent, WRHashTable **symbol_table, HINSTANCE inst, HELP_CALLBACK help_callback );
-extern char *WCreateSymName( char *fname );
+extern char *WCreateSymFileName( const char *fname );
 
 #endif
