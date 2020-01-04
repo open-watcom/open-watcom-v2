@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,22 +51,20 @@
 #include "clibext.h"
 
 
-#define STDOUT_HANDLE 1
-
 int IOStatus;
 static unsigned long infile_posn;
 
 void WriteMsg( char *msg )
 /*******************************/
 {
-    write( STDOUT_HANDLE, msg, strlen( msg ) );
+    write( STDOUT_FILENO, msg, strlen( msg ) );
 }
 
 #if _WPACK
 void WriteLen( char *msg, int len1 )
 /****************************************/
 {
-    write( STDOUT_HANDLE, msg, len1 );
+    write( STDOUT_FILENO, msg, len1 );
 }
 
 void IndentLine( int amount )
@@ -74,7 +72,7 @@ void IndentLine( int amount )
 // grossly inefficient, but it doesn't really matter
 {
     while( amount > 0 ) {
-        write( STDOUT_HANDLE, " ", 1 );
+        write( STDOUT_FILENO, " ", 1 );
         amount--;
     }
 }
@@ -87,7 +85,7 @@ void WriteNumeric( char *msg, unsigned long num )
     WriteMsg( msg );
     ultoa( num, buf, 10 );
     WriteMsg( buf );
-    write( STDOUT_HANDLE, "\n", 1 );
+    write( STDOUT_FILENO, "\n", 1 );
 }
 #endif
 

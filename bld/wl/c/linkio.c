@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +70,8 @@ void LnkFilesInit( void )
     CaughtBreak = NOT_HIT;
     if( !AuxFilesClosed ) {
         OpenFiles = 2;      // will be 0 when done closing stdaux & stdprn.
-        QClose( STDAUX_HANDLE, "stdaux" );
-        QClose( STDPRN_HANDLE, "stdprn" );
+        QClose( STDAUX_FILENO, "stdaux" );
+        QClose( STDPRN_FILENO, "stdprn" );
         AuxFilesClosed = true;
         OpenFiles = 0;
     }

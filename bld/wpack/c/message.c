@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,6 @@
 #include "message.h"
 
 
-#define STDOUT_HANDLE 1
 void LogUnPacking( char *name )
 //=============================
 {
@@ -55,10 +55,10 @@ void Log( char *start, ... )
     int i = 0;
 
     while( curr != NULL ) {
-        write( STDOUT_HANDLE, curr, strlen( curr ) );
+        write( STDOUT_FILENO, curr, strlen( curr ) );
         curr = ( &start )[ ++i ];
     }
-    write( STDOUT_HANDLE, "\n", 1 );
+    write( STDOUT_FILENO, "\n", 1 );
 }
 
 void BumpStatus( long by )
@@ -66,8 +66,6 @@ void BumpStatus( long by )
 {
     by=by;
 }
-
-#undef STDOUT_HANDLE
 
 void getinput( char *buffer, int len1 )
     {

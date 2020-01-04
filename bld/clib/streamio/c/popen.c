@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,12 +52,6 @@
 #include "rtdata.h"
 #include "liballoc.h"
 #include "osver.h"
-
-
-#ifdef __OS2__
-    #define STDIN_HANDLE        0
-    #define STDOUT_HANDLE       1
-#endif
 
 
 /*
@@ -210,9 +205,9 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
         }
 #elif defined( __OS2__ )
         oldHandle = (HFILE)-1;                /* duplicate standard input */
-        rc = DosDupHandle( STDIN_HANDLE, &oldHandle );
+        rc = DosDupHandle( STDIN_FILENO, &oldHandle );
         if( rc != NO_ERROR )  return( 0 );
-        osHandle = STDIN_HANDLE;            /* use new standard input */
+        osHandle = STDIN_FILENO;            /* use new standard input */
         rc = DosDupHandle( (HFILE)_os_handle(handles[0]), &osHandle );
         if( rc != NO_ERROR ) {
             DosClose( oldHandle );
@@ -227,7 +222,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 #if defined( __NT__ )
         SetStdHandle( STD_INPUT_HANDLE, oldHandle );
 #elif defined( __OS2__ )
-        osHandle = STDIN_HANDLE;
+        osHandle = STDIN_FILENO;
         rc = DosDupHandle( oldHandle, &osHandle );
 #endif
         close( handles[0] );        /* parent process should close this */
@@ -247,11 +242,11 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
         }
 #elif defined( __OS2__ )
         oldHandle = (HFILE)-1;              /* duplicate standard input */
-        rc = DosDupHandle( STDOUT_HANDLE, &oldHandle );
+        rc = DosDupHandle( STDOUT_FILENO, &oldHandle );
         if( rc != NO_ERROR ) {
             return( 0 );
         }
-        osHandle = STDOUT_HANDLE;           /* use new standard input */
+        osHandle = STDOUT_FILENO;           /* use new standard input */
         rc = DosDupHandle( (HFILE)_os_handle(handles[1]), &osHandle );
         if( rc != NO_ERROR ) {
             DosClose( oldHandle );
@@ -266,7 +261,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 #if defined( __NT__ )
         SetStdHandle( STD_OUTPUT_HANDLE, oldHandle );
 #elif defined( __OS2__ )
-        osHandle = STDOUT_HANDLE;
+        osHandle = STDOUT_FILENO;
         rc = DosDupHandle( oldHandle, &osHandle );
 #endif
         close( handles[1] );        /* parent process should close this */

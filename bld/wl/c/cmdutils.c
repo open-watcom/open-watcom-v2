@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -689,7 +689,7 @@ static void GetNewLine( void )
     case INTERACTIVE:
         /* interactive prompt with entry */
         OutPutPrompt( _LinkerPrompt );
-        if( QReadStr( STDIN_HANDLE, Token.buff, MAX_REC, "console" ) ) {
+        if( QReadStr( STDIN_FILENO, Token.buff, MAX_REC, "console" ) ) {
             Token.where = ENDOFCMD;
         } else {
             Token.where = MIDST;
@@ -970,7 +970,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
     cmdfilelist     *newfile;
 
     _ChkAlloc( newfile, sizeof( cmdfilelist ) );
-    newfile->file = STDIN_HANDLE;
+    newfile->file = STDIN_FILENO;
     newfile->symprefix = NULL;
     if( CmdFile != NULL ) {     /* save current state */
         memcpy( &CmdFile->token, &Token, sizeof( tok ) );
@@ -1104,7 +1104,7 @@ static void deleteCmdFile( cmdfilelist *cmdfile )
     f_handle    file;
 
     file = cmdfile->file;
-    if( file != NIL_FHANDLE && file != STDIN_HANDLE ) {
+    if( file != NIL_FHANDLE && file != STDIN_FILENO ) {
         QClose( file, cmdfile->name );
     }
     if( cmdfile->symprefix != NULL ) {
