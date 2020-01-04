@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 #include "rdos.h"
+#include "pathgrp2.h"
 
 
 #define TRPH2LH(th)     (int)((th)->handle.u._32[0])
@@ -237,32 +238,29 @@ trap_retval ReqFile_string_to_fullpath( void )
     file_string_to_fullpath_ret *ret;
     char                        *name;
     char                        *fullname;
-    char                        drive[10];
-    char                        dir[256];
-    char                        fname[100];
-    char                        ext[10];
+    PGROUP2                     pg;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
 
-    _splitpath( name, drive, dir, fname, ext );
-    _makepath( fullname, drive, dir, fname, ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( fullname, pg.drive, pg.dir, pg.fname, pg.ext );
 
-    if( access( fullname, 0 ) == 0 )
+    if( access( fullname, 0 ) == 0 ) {
         ret->err = 0;
-    else {
-        _makepath( fullname, drive, dir, fname, "exe" );
+    } else {
+        _makepath( fullname, pg.drive, pg.dir, pg.fname, "exe" );
 
-        if( access( fullname, 0 ) == 0 )
+        if( access( fullname, 0 ) == 0 ) {
             ret->err = 0;
-        else {
-            _makepath( fullname, drive, dir, fname, "dll" );
+        } else {
+            _makepath( fullname, pg.drive, pg.dir, pg.fname, "dll" );
 
-            if( access( fullname, 0 ) == 0 )
+            if( access( fullname, 0 ) == 0 ) {
                 ret->err = 0;
-            else {
+            } else {
                 ret->err = MSG_FILE_NOT_FOUND;
                 *fullname = 0;
             }

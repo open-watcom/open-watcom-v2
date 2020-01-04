@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,9 @@
 #include "stdnt.h"
 #include "trperr.h"
 #include "trpimp.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 typedef enum {
@@ -389,8 +392,7 @@ static BOOL StartDebuggee( void )
     SERVICE_STATUS      status;
     DWORD               i;
     char                buff[_MAX_PATH];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
 
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
@@ -493,8 +495,8 @@ static BOOL StartDebuggee( void )
         strcat( buff, "." );
         if( FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
            if( dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
-                _splitpath( dll_name, NULL, NULL, fname, ext );
-                _makepath( buff, NULL, dll_destination, fname, ext );
+                _splitpath2( dll_name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+                _makepath( buff, NULL, dll_destination, pg.fname, pg.ext );
                 dll_destination = buff;
             }
         }
