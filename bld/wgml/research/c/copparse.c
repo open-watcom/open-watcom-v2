@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +225,7 @@ static void display_driver( cop_driver * in_driver )
 {
     int i;
     int j;
-    
+
     printf_s( "Allocated size:            %i\n", in_driver->allocated_size );
     printf_s( "Bytes used:                %i\n", in_driver->next_offset );
     if( in_driver->rec_spec == NULL ) puts( "Record Specification:");
@@ -309,7 +310,7 @@ static void display_driver( cop_driver * in_driver )
     }
     if( in_driver->fontstyles.fontstyleblocks == NULL ) puts( ":FONTSTYLE Block:");
     else {
-        puts( ":FONTSTYLE Block(s):" );    
+        puts( ":FONTSTYLE Block(s):" );
         for( i = 0; i < in_driver->fontstyles.count; i++ ) {
             if( in_driver->fontstyles.fontstyleblocks[i].type == NULL )
                 puts( "  Type:");
@@ -331,7 +332,7 @@ static void display_driver( cop_driver * in_driver )
                 puts( "  No :LINEPROC Blocks");
             } else {
                 puts( "  :LINEPROC Block(s):");
-                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].line_passes; j++ ) { 
+                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].line_passes; j++ ) {
                     printf_s( "  Pass: %i\n", j+1 );
                     if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startvalue == NULL ) {
                         puts( "  No :STARTVALUE Block");
@@ -498,12 +499,12 @@ static cop_device * get_cop_device( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
         return( out_device );
     }
 
     /* Determine if the file encodes a :DEVICE block. */
-    
+
     file_type = parse_header( try_fp );
 
     switch( file_type ) {
@@ -518,7 +519,7 @@ static cop_device * get_cop_device( char const * in_name )
     case not_bin_dev:
     case not_se_v4_1:
     case dir_v4_1_se:
-    
+
         /* Wrong type of file: something is wrong with the device library. */
 
         out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
@@ -576,12 +577,12 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
         return( out_driver );
     }
 
     /* Determine if the file encodes a :DRIVER block. */
-    
+
     file_type = parse_header( try_fp );
 
     switch( file_type ) {
@@ -596,7 +597,7 @@ static cop_driver * get_cop_driver( char const * in_name )
     case not_bin_dev:
     case not_se_v4_1:
     case dir_v4_1_se:
-    
+
         /* Wrong type of file: something is wrong with the device library. */
 
         out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
@@ -654,12 +655,12 @@ static cop_font * get_cop_font( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
         return( out_font );
     }
 
     /* Determine if the file encodes a :FONT block. */
-    
+
     file_type = parse_header( try_fp );
 
     switch( file_type ) {
@@ -674,7 +675,7 @@ static cop_font * get_cop_font( char const * in_name )
     case not_bin_dev:
     case not_se_v4_1:
     case dir_v4_1_se:
-    
+
         /* Wrong type of file: something is wrong with the device library. */
 
         out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
@@ -714,7 +715,7 @@ static cop_font * get_cop_font( char const * in_name )
  * This function is, in fact, the test function for those functions.
  *
  * Note: since mem_alloc() is used to allocate these structs, mem_free()
- *      must be used to free them. 
+ *      must be used to free them.
  *
  * Global Used:
  *      tgt_path contains the defined name passed on the command line.
@@ -784,7 +785,7 @@ void print_usage( void )
 }
 
 /* Function main().
- * Given a valid defined name, verify that it is a valid .COP file and parse 
+ * Given a valid defined name, verify that it is a valid .COP file and parse
  * it if it is.
  *
  * The actual parsing is performed in the function parse_defined_name(); main()
@@ -876,7 +877,7 @@ int main()
     }
 
     free_some_mem();            // wgml globals
- 
+
     return( EXIT_SUCCESS );
 }
 

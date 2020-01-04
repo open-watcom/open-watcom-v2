@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@
 
 #define BUF_SIZE        512             // default buffersize for filecb e.a.
 
-#define PCD_EXT         ".pcd"
+#define PCD_EXT         "pcd"
 
 /* Local structs. */
 
@@ -317,7 +317,7 @@ static int check_directory( void )
         extension = strrchr( dire->d_name, '.' );
         if( extension == NULL)
             continue;
-        if( stricmp( extension, PCD_EXT ) )
+        if( stricmp( extension + 1, PCD_EXT ) )
             continue;
 
         /* Open the file. */

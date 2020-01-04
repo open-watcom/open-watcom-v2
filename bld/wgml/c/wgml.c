@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -112,11 +112,10 @@ static  void    set_default_extension( const char * masterfname )
 
     _splitpath2( masterfname, pg.buffer, NULL, NULL, NULL, &pg.ext );
     if( pg.ext[0] != '\0' ) {
-        if( strlen( pg.ext ) > strlen( def_ext ) ) {
+        pg.ext++;   /* skip dot character */
+        if( def_ext != NULL )
             mem_free( def_ext);
-            def_ext = mem_alloc( 1 + strlen( pg.ext ) );
-        }
-        strcpy( def_ext, pg.ext );
+        def_ext = mem_dupstr( pg.ext );
     }
     return;
 }

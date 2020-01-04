@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -152,6 +152,30 @@ void *mem_alloc( size_t size )
         err_count++;
         g_suicide();
     }
+    return( p );
+}
+
+/***************************************************************************/
+/*  Allocate string duplication                                            */
+/***************************************************************************/
+
+void *mem_dupstr( const char *str )
+{
+    void    *p;
+    size_t  size;
+
+    size = strlen( str ) + 1;
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), handle );
+#else
+    p = malloc( size );
+#endif
+    if( p == NULL ) {
+        g_err( err_nomem_avail );
+        err_count++;
+        g_suicide();
+    }
+    strcpy( p, str );
     return( p );
 }
 

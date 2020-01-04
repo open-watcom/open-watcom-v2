@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1972,7 +1972,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         if( ext[0] == '.' ) {
             FixName( ext );
             /* if extension specified let the shell handle it */
-            if( !FNameEq( ext, ".exe" ) && !FNameEq( ext, ".com" ) ) {
+            if( !FNameEq( ext + 1, "exe" ) && !FNameEq( ext + 1, "com" ) ) {
                 flags |= FLAG_SHELL; /* .bat and .cmd need the shell anyway */
             }
         }

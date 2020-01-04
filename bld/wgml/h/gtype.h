@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,18 +29,19 @@
 *
 ****************************************************************************/
 
+
 #ifndef GTYPE_H_INCLUDED
 #define GTYPE_H_INCLUDED
 
-/* default filename extensions */
-#define DEF_EXT         ".def"
-#define ERR_EXT         ".err"
-#define GML_EXT         ".gml"
-#define LAY_EXT         ".lay"
-#define OPT_EXT         ".opt"
-#define COP_EXT         ".cop"
-#define PCD_EXT         ".pcd"
-#define FON_EXT         ".fon"
+/* filename extensions used by wgml tools */
+#define DEF_EXT         "def"
+#define ERR_EXT         "err"
+#define GML_EXT         "gml"
+#define LAY_EXT         "lay"
+#define OPT_EXT         "opt"
+#define COP_EXT         "cop"
+#define PCD_EXT         "pcd"
+#define FON_EXT         "fon"
 
 //================= Some global defines ========================
 #define TAG_NAME_LENGTH 15              // :tag name length
@@ -137,4 +138,4 @@ typedef struct symvar {
 } symvar;
 
 
-#endif                                  // GTYPE_H_INCLUDED
+#endif /* GTYPE_H_INCLUDED */

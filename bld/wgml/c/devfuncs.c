@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -384,17 +385,7 @@ static void fb_newline( void )
 
 static char *char_convert( const char *in_val )
 {
-    char    *ret_val = NULL;
-
-    if( in_val == NULL ) {
-        ret_val = mem_alloc( 1 );
-        ret_val[0] = '\0';
-    } else {
-        ret_val = mem_alloc( strlen( in_val ) + 1 );
-        strcpy( ret_val, in_val );
-    }
-
-    return( ret_val );
+    return( mem_dupstr( ( in_val == NULL ) ? "" : in_val ) );
 }
 
 /* Function output_spaces().

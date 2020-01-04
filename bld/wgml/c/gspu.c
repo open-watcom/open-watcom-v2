@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,7 +43,7 @@ static FILE * workfile[9] =           // support for 9 workfiles sysusr0n.gml
 
 char    *get_pu_file_name( char *buf, size_t buf_size, int n )
 {
-    char    filename[] = "sysusr00" GML_EXT;
+    char    filename[] = "sysusr00" "." GML_EXT;
 
     /* unused parameters */ (void)buf_size;
 

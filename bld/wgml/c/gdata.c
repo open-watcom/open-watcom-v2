@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -70,8 +70,7 @@ void init_global_vars( void )
     out_file_attr       = NULL;         // output file name attributes
 
     switch_char         = _dos_switch_char();
-    alt_ext             = mem_alloc( 5 );   // alternate extension   .xxx
-    *alt_ext            = '\0';
+    alt_ext             = NULL;         // alternate extension   xxx
     def_ext             = mem_alloc( sizeof( GML_EXT ) );
     strcpy( def_ext, GML_EXT );
 

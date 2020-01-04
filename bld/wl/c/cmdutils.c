@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctype.h>
 #if !defined( __UNIX__ )
     #include <direct.h>
@@ -50,6 +51,7 @@
 #include "fileio.h"
 #include "ideentry.h"
 #include "cmdline.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -81,10 +83,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
     char                *start;
     DIR                 *dirp;
     struct dirent       *dire;
-    char                drive[_MAX_DRIVE];
-    char                directory[_MAX_DIR];
-    char                name[_MAX_FNAME];
-    char                extin[_MAX_EXT];
+    PGROUP2             pg;
     char                pathin[_MAX_PATH];
     bool                wildcrd;
     bool                retval;
@@ -111,12 +110,11 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         start = tostring();
         dirp = opendir( start );
         if( dirp != NULL ) {
-            _splitpath( start, drive, directory, NULL, NULL );
+            _splitpath2( start, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
             while( (dire = readdir( dirp )) != NULL ) {
                 if( dire->d_attr & (_A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR) )
                     continue;
-                _splitpath( dire->d_name, NULL, NULL, name, extin );
-                _makepath( pathin, drive, directory, name, extin );
+                _makepath( pathin, pg.drive, pg.dir, dire->d_name, NULL );
                 Token.this = pathin;            // dangerous?
                 Token.len = strlen( pathin );
                 if( !(*rtn)() ) {

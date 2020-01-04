@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ======================================================================
@@ -314,7 +314,8 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length ) ob_flush();
+    if( buffout.current == buffout.length )
+        ob_flush();
 
     return;
 }
@@ -785,32 +786,32 @@ static void set_out_file( void )
         if( cmd.fname[0] != '*' ) {
             if( cmd.ext[0] != '\0' ) {
 
-            /* If both name and extension were given on the command line, use
-             * out_file as-is.
-             */
+                /* If both name and extension were given on the command line, use
+                 * out_file as-is.
+                 */
 
             } else {
 
-            /* If the name was given on the command line, use out_file with the
-             * extension given in the :DEVICE block.
-             */
+                /* If the name was given on the command line, use out_file with the
+                 * extension given in the :DEVICE block.
+                 */
 
                 _makepath( temp_outfile, cmd.drive, cmd.dir, cmd.fname, bin_device->output_extension );
             }
         } else {
             if( cmd.ext[0] != '\0' ) {
 
-            /* If the name was not given but an extension was given on the command
-             * line, use the document specification name with the extension given.
-             */
+                /* If the name was not given but an extension was given on the command
+                 * line, use the document specification name with the extension given.
+                 */
 
                 _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, cmd.ext );
             } else {
 
-            /* If neither a specific name nor an extension was given on the
-             * command line, use use the document specification name with the
-             * extension given in the :DEVICE block.
-             */
+                /* If neither a specific name nor an extension was given on the
+                 * command line, use use the document specification name with the
+                 * extension given in the :DEVICE block.
+                 */
 
                 _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, bin_device->output_extension );
             }
@@ -854,8 +855,7 @@ static void set_out_file( void )
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL )
             mem_free( out_file );
-        out_file = mem_alloc( strlen( temp_outfile ) + 1 );
-        strcpy( out_file, temp_outfile );
+        out_file = mem_dupstr( temp_outfile );
     }
 
     return;
@@ -880,14 +880,11 @@ static void set_out_file_attr( void )
     if( out_file_attr == NULL ) {
         if( bin_driver->rec_spec != NULL ) {
             len = strlen( bin_driver->rec_spec );
-            if( (bin_driver->rec_spec[0] != '(') ||
-                                        (bin_driver->rec_spec[len - 1] != ')')) {
+            if( ( bin_driver->rec_spec[0] != '(' ) || ( bin_driver->rec_spec[len - 1] != ')' ) ) {
 
                 /* Use default if rec_spec is badly-formed. */
 
-                len = 1 + strlen( "t:132" );
-                out_file_attr = mem_alloc( len );
-                strcpy( out_file_attr, "t:132" );
+                out_file_attr = mem_dupstr( "t:132" );
 
             } else {
 
@@ -904,9 +901,7 @@ static void set_out_file_attr( void )
 
             /* Use default if rec_spec is missing. */
 
-            len = 1 + strlen( "t:132" );
-            out_file_attr = mem_alloc( len );
-            strcpy( out_file_attr, "t:132" );
+            out_file_attr = mem_dupstr( "t:132" );
         }
     }
 
@@ -996,7 +991,7 @@ void ob_binclude( binclude_element * in_el )
     strlwr( fname );
     in_name = fname;
 #endif
-    if( search_file_in_dirs( in_name, "", "", ds_doc_spec ) ) {
+    if( search_file_in_dirs( in_name, NULL, NULL, ds_doc_spec ) ) {
         fb_binclude_support( in_el );
         if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
@@ -1133,7 +1128,7 @@ void ob_graphic( graphic_element * in_el )
     strlwr( fname );
     in_name = fname;
 #endif
-    if( search_file_in_dirs( in_name, "", "", ds_doc_spec ) ) {
+    if( search_file_in_dirs( in_name, NULL, NULL, ds_doc_spec ) ) {
         fb_graphic_support( in_el );
         ob_flush();
 
@@ -1324,7 +1319,7 @@ void ob_setup( void )
     /* The record type must be "t"; it must have only one character and be */
     /* followed by ":".                                                    */
 
-    if( tolower( (out_file_attr[0] ) != 't') || (out_file_attr[1] != ':') ) {
+    if( (tolower( out_file_attr[0] ) != 't') || (out_file_attr[1] != ':') ) {
         xx_simple_err_c( err_rec_att_not_sup, out_file_attr );
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -372,8 +372,8 @@ global  char            quote_char;     // value is quoted by this char or \0
 global  locflags        rs_loc;         // restricted location
 
 global  int             switch_char;    // DOS switch character
-global  char        *   alt_ext;        // alternate extension
-global  char        *   def_ext;        // default extension
+global  char        *   alt_ext;        // alternate extension (without leading dot)
+global  char        *   def_ext;        // default extension (without leading dot)
 
 global  char        *   master_fname;   // Primary input file name
 global  char        *   master_fname_attr;// Primary input file name attributes
