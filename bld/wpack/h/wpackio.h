@@ -60,12 +60,15 @@ extern int          WriteSeek( unsigned long position );
 #endif
 extern byte         EncReadByte( void );
 extern void         UnReadByte( byte value );
-extern byte         DecReadByte( void );
 #if _WPACK
-extern void         DecWriteByte( byte c );            // DecWriteByte is declared further down in the file
 extern void         EncWriteByte( byte c );
 #endif
+extern byte         DecReadByte( void );
 extern void         DecWriteByte( byte c );
+#ifdef _M_IX86
+#pragma aux DecReadByte __parm __nomemory __modify __nomemory
+#pragma aux DecWriteByte __parm __nomemory __modify __nomemory
+#endif
 extern void         FlushWrite( void );
 extern void         FlushRead( void );
 #if _WPACK

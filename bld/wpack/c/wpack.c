@@ -398,12 +398,10 @@ static int DisplayArchive( arccmd *cmd )
     return( true );
 }
 
-static int HandleError( arccmd *cmd )
-/***********************************/
+static void HandleError( arccmd *cmd )
+/************************************/
 {
-    cmd = cmd;
-    PackExit();
-    return( true );
+    /* unused parameters */ (void)cmd;
 }
 
 static int DeleteEntry( arccmd *cmd )
@@ -521,7 +519,7 @@ static int DeleteEntry( arccmd *cmd )
 }
 
 static int (*CmdJumpTable[])(arccmd *) = {
-    HandleError,
+    NULL,       /* Error */
     Encode,
     Decode,
     DisplayArchive,
@@ -578,7 +576,11 @@ int main( int argc, char **argv )
 #endif
     SetupTextTable();
     InitIO();
-    (*CmdJumpTable[ action  ])( &cmd );
+    if( CmdJumpTable[action] == NULL ) {
+        HandleError( &cmd );
+        return( EXIT_FAILED );
+    }
+    (*CmdJumpTable[action])( &cmd );
 //  CloseDown();
     return( EXIT_OK );
 }

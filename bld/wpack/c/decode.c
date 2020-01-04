@@ -55,11 +55,6 @@
 #include "clibext.h"
 
 
-#ifdef _M_IX86
-#pragma aux DecReadByte __parm __nomemory __modify __nomemory;
-#pragma aux DecWriteByte __parm __nomemory __modify __nomemory;
-#endif
-
 unsigned short   MinCodeLen;
 unsigned short   MinVal[ MAX_CODE_BITS + 1];
 unsigned short   MapOffset[ MAX_CODE_BITS + 1];

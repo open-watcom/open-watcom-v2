@@ -485,7 +485,6 @@ byte DecReadByte( void )
 }
 
 #if _WPACK
-void DecWriteByte( byte c );            // DecWriteByte is declared further down in the file
 void EncWriteByte( byte c )
 /********************************/
 {
