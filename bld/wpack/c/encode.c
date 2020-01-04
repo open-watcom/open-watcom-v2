@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,7 @@
 #include "common.h"
 #include "encode.h"
 #include "txttable.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -348,8 +350,10 @@ static void CalcLengths( unsigned long num, int start, int finish, byte tlen )
     index = start;
     for(;;) {
         subtotal += code[ indicies[ index ] ];
-        if( subtotal >= num / 2 ) break;
-        if( index >= finish - 1 ) break;
+        if( subtotal >= num / 2 )
+            break;
+        if( index >= finish - 1 )
+            break;
         index++;
     }
 
@@ -416,8 +420,10 @@ static byte     CurrRunLen;
 static void AddRunEntry( void )
 /*****************************/
 {
-    if( !WasLiteral ) CurrRunLen |= 0x80;
-    if( LastRunLen >= MAX_COPYLIST_SIZE ) NewRunBuffer();
+    if( !WasLiteral )
+        CurrRunLen |= 0x80;
+    if( LastRunLen >= MAX_COPYLIST_SIZE )
+        NewRunBuffer();
     *(CurrRun->data + LastRunLen) = CurrRunLen;
     LastRunLen++;
     CurrRunLen = 0;
@@ -579,7 +585,8 @@ static int DoEncode( arccmd *cmd )
     for (num = 0; num < LAHEAD_SIZE && (c = EncReadByte(),IOStatus == OK); num++) {
         text_buf[r + num] = c;
     }
-    if( IOStatus == IO_PROBLEM ) return( -1 );
+    if( IOStatus == IO_PROBLEM )
+        return( -1 );
     for (index = 1; index <= LAHEAD_SIZE; index++) {
         InsertNode(r - index);
     }
@@ -612,7 +619,8 @@ static int DoEncode( arccmd *cmd )
             r = (r + 1) & (STRBUF_SIZE - 1);
             InsertNode(r);
         }
-        if( IOStatus == IO_PROBLEM ) return( -1 );
+        if( IOStatus == IO_PROBLEM )
+            return( -1 );
         while (index++ < last_match_length) {
             DeleteNode(s);
             s = (s + 1) & (STRBUF_SIZE - 1);
@@ -686,15 +694,13 @@ static void WriteHeaders( arc_header *header, info_list *list, int numfiles,
     QWrite( file, header, sizeof( arc_header ) );
 }
 
-static void ReplaceExt( char * name, char * new_ext )
-/***************************************************/
+static void ReplaceExt( char *name, const char *new_ext )
+/*******************************************************/
 {
-    char p[ _MAX_DIR ];
-    char d[ _MAX_DRIVE ];
-    char n[ _MAX_FNAME ];
+    PGROUP2     pg;
 
-    _splitpath( name, d, p, n, NULL );
-    _makepath( name, d, p, n, new_ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( name, pg.drive, pg.dir, pg.fname, new_ext );
 }
 
 // this is used for keeping track of the different archives while multipacking
@@ -741,13 +747,14 @@ static void MultiPack( arccmd *cmd, info_list *list )
         }
         currarc = archead;
         while( currarc != NULL ) {      // find an archive to pack file in.
-            if( currarc->length + currarc->info_len + compressed
-                                                  + entrylen < limit ) break;
+            if( currarc->length + currarc->info_len + compressed + entrylen < limit )
+                break;
             currarc = currarc->next;
         }
         if( currarc == NULL ) {         // need to make a new archive
             currarc = alloca( sizeof( arc_list ) );
-            if( currarc == NULL ) Error( -1, "insufficient stack space!" );
+            if( currarc == NULL )
+                Error( -1, "insufficient stack space!" );
             currarc->next = NULL;
             currarc->info = NULL;
             currarc->info_len = 0;
@@ -757,7 +764,8 @@ static void MultiPack( arccmd *cmd, info_list *list )
             itoa( numarcs, extension, 36 );
             ReplaceExt( arcfname, extension );
             currarc->handle = QOpenW( arcfname );
-            if( currarc->handle < 0 ) PackExit();
+            if( currarc->handle < 0 )
+                PackExit();
             QSeek( currarc->handle, sizeof( arc_header ), SEEK_SET );
             LinkList( &archead, currarc );
         }
@@ -813,7 +821,8 @@ int Encode( arccmd *cmd )
             Error( -1, "old archive already exists");
         }
         outfile = QOpenM( cmd->arcname );
-        if( outfile == -1 ) PackExit();
+        if( outfile == -1 )
+            PackExit();
         WriteSeek( header.info_offset );
         amtwrote = header.info_offset;
     } else {
@@ -850,7 +859,8 @@ int Encode( arccmd *cmd )
                 WriteMsg( "'\n" );
             }
             result = DoEncode( cmd );
-            if( result == -1 ) continue;      // don't archive if error.
+            if( result == -1 )
+                continue;      // don't archive if error.
             if( currname->packname != NULL ) {
                 name = currname->packname;
             } else if( !(cmd->flags & KEEP_PATHNAME) ) { // search for actual file name

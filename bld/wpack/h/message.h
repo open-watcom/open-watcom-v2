@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,9 @@
 ****************************************************************************/
 
 
-extern void     LogUnPacking( char *name );
-extern void     Log( char *start, ... );
+extern void     Log( const char *start, ... );
 extern void     BumpStatus( long by );
 extern void     getinput( char *buffer, int len );
-extern int      UnPackHook( char *name );
-extern int      OK_ToReplace( char *name );
-extern int      OK_ReplaceRDOnly( char *name );
+extern int      UnPackHook( const char *name );
+extern int      OK_ToReplace( const char *name );
+extern int      OK_ReplaceRDOnly( const char *name );

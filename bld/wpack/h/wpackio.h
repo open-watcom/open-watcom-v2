@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,25 +32,25 @@
 
 extern int          IOStatus;
 
-extern void         WriteMsg( char *msg );
+extern void         WriteMsg( const char *msg );
 #if _WPACK
-extern void         WriteLen( char *msg, int len );
+extern void         WriteLen( const char *msg, int len );
 extern void         IndentLine( int amount );
-extern void         WriteNumeric( char *msg, unsigned long num );
+extern void         WriteNumeric( const char *msg, unsigned long num );
 #endif
 extern int          QRead( int file, void *buffer, int amount );
 extern int          QWrite( int file, void *buffer, int amount );
-extern int          QOpenR( char * filename );
-extern int          NoErrOpen( char * filename );
-extern int          QOpenW( char * filename );
+extern int          QOpenR( const char *filename );
+extern int          NoErrOpen( const char *filename );
+extern int          QOpenW( const char *filename );
 #if _WPACK
-extern int          QOpenM( char * filename );
+extern int          QOpenM( const char *filename );
 extern unsigned long QFileLen( int file );
 extern unsigned long QGetDate( int handle );
 #endif
 extern void         QSeek( int file, signed long position, int seektype );
 extern void         QClose( int file );
-extern void         QSetDate( char *fname, unsigned long stamp );
+extern void         QSetDate( const char *fname, unsigned long stamp );
 extern int          InitIO( void );
 extern void         FiniIO( void );
 extern int          BufSeek( unsigned long position );

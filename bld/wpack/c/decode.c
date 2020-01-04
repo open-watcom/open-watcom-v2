@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -48,6 +50,7 @@
 #endif
 #include "wpackio.h"
 #include "decode.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -429,7 +432,7 @@ static bool CompareCRC( unsigned long crcvalue )
     return( retval );
 }
 
-static int FileExists( char *name, file_info *info )
+static int FileExists( const char *name, file_info *info )
 {
     auto struct stat            statblk;
     int                         rc;
@@ -463,14 +466,12 @@ static int FileExists( char *name, file_info *info )
 bool DecodeFile( file_info *info, arccmd *cmd )
 /****************************************************/
 {
-    char           drive[_MAX_DRIVE];
-    char           directory[_MAX_DIR];
-    char           fname[_MAX_FNAME];
-    char           extin[_MAX_EXT];
-    char *         name;
-    char *         thename;      // filename terminated with a nullchar.
-    int            pathlen;
-    unsigned short namelen;
+    PGROUP2         pg1;
+    PGROUP2         pg2;
+    char            *name;
+    char            *thename;   // filename terminated with a nullchar.
+    int             pathlen;
+    unsigned short  namelen;
 
     namelen = info->namelen & NAMELEN_MASK;
     thename = alloca( namelen + 1 );
@@ -484,21 +485,21 @@ bool DecodeFile( file_info *info, arccmd *cmd )
         pathlen = strlen( cmd->u.path );
         name = alloca( namelen + pathlen  + 1 );
         if( cmd->flags & REPLACE_PATH ) {
-            _splitpath( cmd->u.path, drive, directory, NULL, NULL );
-            _splitpath( thename, NULL, NULL, fname, extin );
-            _makepath( name, drive, directory, fname, extin );
+            _splitpath2( cmd->u.path, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+            _splitpath2( thename, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+            _makepath( name, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
         } else {
             memcpy( name, cmd->u.path, pathlen );
             memcpy( name + pathlen, info->name, namelen );
             *(name + pathlen + namelen) = '\0';
         }
     }
-    if( ! FileExists( name, info ) ) {
+    if( !FileExists( name, info ) ) {
         outfile = QOpenW( name );
         if( outfile == -1 )  {
             return( false );
         } else {
-            LogUnPacking( name );
+            Log( LookupText( NULL, TXT_UNPACK ), "\'", name, "\'", NULL );
             if( info->namelen & NO_SHANNON_CODE ) {
                 NoShannonDecode( info->length );
             } else {

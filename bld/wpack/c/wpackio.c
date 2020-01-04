@@ -54,14 +54,14 @@
 int IOStatus;
 static unsigned long infile_posn;
 
-void WriteMsg( char *msg )
-/*******************************/
+void WriteMsg( const char *msg )
+/******************************/
 {
     write( STDOUT_FILENO, msg, strlen( msg ) );
 }
 
 #if _WPACK
-void WriteLen( char *msg, int len1 )
+void WriteLen( const char *msg, int len1 )
 /****************************************/
 {
     write( STDOUT_FILENO, msg, len1 );
@@ -77,8 +77,8 @@ void IndentLine( int amount )
     }
 }
 
-void WriteNumeric( char *msg, unsigned long num )
-/******************************************************/
+void WriteNumeric( const char *msg, unsigned long num )
+/*****************************************************/
 {
     char    buf[ 11 ];
 
@@ -89,8 +89,8 @@ void WriteNumeric( char *msg, unsigned long num )
 }
 #endif
 
-static void IOError( unsigned errnum, char *name )
-/************************************************/
+static void IOError( unsigned errnum, const char *name )
+/******************************************************/
 // also ineffiecient, but it doesn't matter.
 {
     char errstr[ 160 ];
@@ -134,8 +134,8 @@ int QWrite( int file, void *buffer, int amount )
     return( result );
 }
 
-int QOpenR( char * filename )
-/**********************************/
+int QOpenR( const char *filename )
+/********************************/
 {
     int result;
 
@@ -146,15 +146,15 @@ int QOpenR( char * filename )
     return( result );
 }
 
-int NoErrOpen( char * filename )
-/*************************************/
+int NoErrOpen( const char *filename )
+/***********************************/
 {
     infile_posn = ~0L;
     return( open( filename, O_BINARY | O_RDONLY, 0 ) );
 }
 
-int QOpenW( char * filename )
-/**********************************/
+int QOpenW( const char *filename )
+/********************************/
 {
     int result;
 
@@ -166,8 +166,8 @@ int QOpenW( char * filename )
 }
 
 #if _WPACK
-int QOpenM( char * filename )
-/**********************************/
+int QOpenM( const char *filename )
+/********************************/
 {
     int result;
 
@@ -206,7 +206,7 @@ void QClose( int file )
     close( file );
 }
 
-void QSetDate( char *fname, unsigned long stamp )
+void QSetDate( const char *fname, unsigned long stamp )
 /******************************************************/
 {
     struct stat     statblk;
