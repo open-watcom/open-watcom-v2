@@ -174,34 +174,36 @@ static void SetCmdTime( arccmd *cmd )
 }
 
 static wpackfile *AddFileName( wpackfile *list, char *fname, size_t *listlen )
-/******************************************************************************/
+/****************************************************************************/
 {
     char            *packname;
+    size_t          len;
 
-    *listlen += 1;
-    list = realloc( list, (*listlen)*sizeof( *list ) );
+    len = *listlen;
+    list = realloc( list, ( len + 1 ) * sizeof( *list ) );
     if( fname == NULL ) {
-        list[(*listlen)-1].filename = NULL;
-        list[(*listlen)-1].packname = NULL;
+        list[len].filename = NULL;
+        list[len].packname = NULL;
     } else {
         packname = NULL;
         packname = strchr( fname, ';' );
         if( packname == NULL ) {
-            list[(*listlen)-1].packname = NULL;
+            list[len].packname = NULL;
         } else {
             *packname = '\0';
             ++packname;
-            list[(*listlen)-1].packname = strdup( packname );
+            list[len].packname = strdup( packname );
         }
-        list[(*listlen)-1].filename = strdup( fname );
+        list[len].filename = strdup( fname );
     }
+    *listlen = ++len;
     return( list );
 }
 
 static wpackfile *ProcFileName( char **argv )
-/***************************************/
+/*******************************************/
 {
-    unsigned    newlistlen;
+    size_t      newlistlen;
     wpackfile   *newlist;
     char        buff[256];
     char        *curr;
