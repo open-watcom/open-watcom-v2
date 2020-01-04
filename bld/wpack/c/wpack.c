@@ -56,6 +56,7 @@
 #include "common.h"
 #include "wpackio.h"
 #include "dtparse.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -410,17 +411,15 @@ static int DeleteEntry( arccmd *cmd )
 /***********************************/
 {
     char            tempname[ L_tmpnam ];
-    char            drive[_MAX_DRIVE];
-    char            directory[_MAX_DIR];
-    char            fname[_MAX_FNAME];
-    char            extin[_MAX_EXT];
-    char *          tmpfname;
+    PGROUP2         pg1;
+    PGROUP2         pg2;
+    char            *tmpfname;
     arc_header      header;         // archive main header.
-    file_info **    filedata;       // block of file infos from old archive.
-    file_info **    currdata;
-    file_info *     nextdata;
-    wpackfile *     currfile;
-    wpackfile *     endfile;
+    file_info       **filedata;     // block of file infos from old archive.
+    file_info       **currdata;
+    file_info       *nextdata;
+    wpackfile       *currfile;
+    wpackfile       *endfile;
     bool            deletethis;
     bool            onedeleted;
     unsigned long   offset;
@@ -440,11 +439,12 @@ static int DeleteEntry( arccmd *cmd )
     tmpnam( tempname );     // get a temporary file name & put in same dir.
     namelen = strlen( tempname ) + strlen( cmd->arcname ) + 1;  // as arcname
     tmpfname = alloca( namelen );
-    _splitpath( cmd->arcname, drive, directory, NULL, NULL );
-    _splitpath( tempname, NULL, NULL, fname, extin );
-    _makepath( tmpfname, drive, directory, fname, extin );
+    _splitpath2( cmd->arcname, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+    _splitpath2( tempname, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+    _makepath( tmpfname, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
     outfile = QOpenW( tmpfname );
-    if( outfile < 0 ) PackExit();
+    if( outfile < 0 )
+        PackExit();
     for( endfile = cmd->files; (endfile + 1)->filename != NULL; endfile++ ) {}
     QWrite( outfile, &header, sizeof( arc_header ) );   // reserve space
     offset = sizeof( arc_header );
