@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "menu.h"
 #include "ex.h"
 #include "fts.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -362,7 +362,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 void FileSPVAR( void )
 {
     char        path[_MAX_PATH];
-    PGROUP      pg;
+    PGROUP2     pg;
     int         i;
 
     /*
@@ -371,17 +371,16 @@ void FileSPVAR( void )
     if( CurrentFile == NULL ) {
         VarAddGlobalStr( "F", "" );
         VarAddGlobalStr( "H", "" );
-        pg.drive[0] = pg.dir[0] = pg.fname[0] = pg.ext[0] = '\0';
+        pg.drive = pg.dir = pg.fname = pg.ext = "";
     } else {
         VarAddGlobalStr( "F", CurrentFile->name );
         VarAddGlobalStr( "H", CurrentFile->home );
         ConditionalChangeDirectory( CurrentFile->home );
-        _splitpath( CurrentFile->name, pg.drive, pg.dir, pg.fname, pg.ext );
+        _splitpath2( CurrentFile->name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     }
     VarAddGlobalStr( "P1", pg.dir );
     VarAddGlobalStr( "D1", pg.drive );
-    strcpy( path, pg.drive );
-    strcat( path, pg.dir );
+    _makepath( path, pg.drive, pg.dir, NULL, NULL );
     i = strlen( path );
     if( i-- > 1 ) {
 #ifdef __UNIX__
@@ -404,7 +403,7 @@ void FileSPVAR( void )
     } else {
         StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );
     }
-    _splitpath( path, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     VarAddGlobalStr( "D", pg.drive );
     VarAddGlobalStr( "P", pg.dir );
     VarAddGlobalStr( "N", pg.fname );
@@ -439,14 +438,14 @@ void SourceError( char *msg )
  */
 static void finiSourceErrFile( const char *fn )
 {
-    PGROUP      pg;
+    PGROUP2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
 
     if( !EditFlags.CompileScript ) {
         return;
     }
-    _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
+    _splitpath2( fn, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( path, pg.drive, pg.dir, pg.fname, "err" );
     remove( path );
     if( srcErrFile != NULL ) {
@@ -467,7 +466,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
 {
     sfile       *curr;
     FILE        *foo;
-    PGROUP      pg;
+    PGROUP2     pg;
     char        path[FILENAME_MAX];
     char        buff[MAX_SRC_LINE];
     const char  *tmp;
@@ -478,7 +477,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
      * get compiled file name, and make error file
      */
     if( vn[0] == '\0' ) {
-        _splitpath( fn, pg.drive, pg.dir, pg.fname, NULL );
+        _splitpath2( fn, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( path, pg.drive, pg.dir, pg.fname, "_vi" );
     } else {
         strcpy( path, vn );

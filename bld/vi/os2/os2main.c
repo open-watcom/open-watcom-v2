@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "stack.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 
 /*
@@ -40,11 +40,11 @@
  */
 static void getEXEName( char *name )
 {
-    PGROUP  pg;
-    char    path[_MAX_PATH];
-    char    tmppath[_MAX_PATH];
+    PGROUP2     pg;
+    char        path[_MAX_PATH];
+    char        tmppath[_MAX_PATH];
 
-    _splitpath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] != '\0' ) {
         EXEName = name;
     } else {

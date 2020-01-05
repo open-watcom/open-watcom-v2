@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "banner.h"
 #include "pathgrp.h"
 #include "bnddata.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -316,10 +316,9 @@ int main( int argc, char *argv[] )
     bind_size           fi;
     FILE                *fp;
     struct stat         fs;
-    PGROUP              pg;
+    PGROUP2             pg;
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
-    char                tmpfname[_MAX_FNAME], tmpext[_MAX_EXT];
     bind_size           data_len;
     bind_size           len1;
     bind_size           lines;
@@ -361,12 +360,10 @@ int main( int argc, char *argv[] )
     if( argc < 2 ) {
         Usage( "No executable to bind" );
     }
-    _splitpath( argv[1], pg.drive, pg.dir, pg.fname, pg.ext );
-    if( pg.ext[0] == '\0' ) {
-        _makepath( path, pg.drive, pg.dir, pg.fname, "exe" );
-    } else {
-        strcpy( path, argv[1] );
-    }
+    _splitpath2( argv[1], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' )
+        pg.ext = "exe";
+    _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
     if( stat( path, &fs ) == -1 ) {
         Abort( "Could not find executable \"%s\"", path );
     }
@@ -416,8 +413,8 @@ int main( int argc, char *argv[] )
         data_len += sizeof( bind_size );
         len1 = 1;
         for( fi = 0; fi < FileCount; fi++ ) {
-            _splitpath( dats[fi], NULL, NULL, tmpfname, tmpext );
-            _makepath( tmppath, NULL, NULL, tmpfname, tmpext );
+            _splitpath2( dats[fi], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+            _makepath( tmppath, NULL, NULL, pg.fname, pg.ext );
             len = strlen( tmppath ) + 1;
             memcpy( buffn, tmppath, len );
             buffn += len;

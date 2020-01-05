@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 
 #include "vi.h"
 #include "posix.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -130,7 +130,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
     char        *cmd;
     char        full[FILENAME_MAX];
-    PGROUP      pg;
+    PGROUP2     pg;
 #if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     int         i;
     bool        is_internal = false;
@@ -139,7 +139,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     cmdl = SkipLeadingSpaces( cmdl );
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
-    _splitpath( full, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] != '\0' ) {
         if( pg.drive[0] == '\0' && pg.dir[0] == '\0' ) {
             GetFromEnv( full, path );
@@ -170,7 +170,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 #endif
     }
 #if !defined( NO_EXE_EXTENSIONS )
-    _splitpath( full, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #endif
 #if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
   #if defined( NO_EXE_EXTENSIONS )

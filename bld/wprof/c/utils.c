@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,23 +38,22 @@
 #include "wio.h"
 #include "common.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-#include <windows.h>
+    #include <windows.h>
 #endif
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
-#if defined( __WATCOMC__ )
-#   include "tinyio.h"
-#endif
+    #if defined( __WATCOMC__ )
+        #include "tinyio.h"
+    #endif
 #elif defined( __OS2__ )
-#   define INCL_DOS
-#   include "os2.h"
+    #define INCL_DOS
+    #include "os2.h"
 #elif defined( __UNIX__ )
-#   if defined( __WATCOMC__ )
-#       include <process.h>
-#   endif
+    #if defined( __WATCOMC__ )
+        #include <process.h>
+    #endif
 #else
-#   error OS not supported
+    #error OS not supported
 #endif
-
 #include "aui.h"
 #include "dip.h"
 #include "wpaui.h"

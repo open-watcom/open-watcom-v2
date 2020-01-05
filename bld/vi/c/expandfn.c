@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "posix.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -45,7 +45,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
 {
     list_linenum    argc;
     list_linenum    i;
-    PGROUP          pg;
+    PGROUP2         pg;
     char            pathin[FILENAME_MAX];
     const char      *p;
     char            *new;
@@ -89,7 +89,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
         strcpy( new, fullmask );
         return( argc );
     }
-    _splitpath( fullmask, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     /*
      * run through matches
@@ -97,8 +97,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
     for( i = 0; i < DirFileCount; i++ ) {
         if( IS_SUBDIR( DirFiles[i] ) )
             continue;
-        _splitpath( DirFiles[i]->name, NULL, NULL, pg.fname, pg.ext );
-        _makepath( pathin, pg.drive, pg.dir, pg.fname, pg.ext );
+        _makepath( pathin, pg.drive, pg.dir, DirFiles[i]->name, NULL );
         *argv = _MemReallocList( *argv, argc + 1 );
         new = MemAlloc( strlen( pathin ) + 1 );
         (*argv)[argc++] = new;

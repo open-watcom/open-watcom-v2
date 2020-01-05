@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
+#include "pathgrp2.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -519,16 +521,16 @@ vi_rc FancyFileSave( void )
 vi_rc DoKeyboardSave( void )
 {
 #ifdef __WIN__
-    vi_rc   rc;
-    char    fname[_MAX_FNAME];
+    vi_rc       rc;
+    PGROUP2     pg;
 
     if( CurrentFile != NULL ) {
-        _splitpath( CurrentFile->name, NULL, NULL, fname, NULL );
+        _splitpath2( CurrentFile->name, pg.buffer, NULL, NULL, &pg.fname, NULL );
     } else {
-        fname[0] = '\0';
+        pg.fname = "";
     }
 
-    if( strcmp( fname, "untitled" ) == 0 ) {
+    if( strcmp( pg.fname, "untitled" ) == 0 ) {
         rc = SaveFileAs();
     } else {
         rc = FancyFileSave();

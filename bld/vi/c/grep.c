@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #ifdef __WIN__
     #include "filelist.rh"
     #include "vifont.h"
@@ -598,8 +598,7 @@ static void fileGrep( const char *fullmask, char **list, list_linenum *clist, wi
     char            fn[FILENAME_MAX];
     char            data[FILENAME_MAX];
     char            ts[FILENAME_MAX];
-    char            path[FILENAME_MAX];
-    PGROUP          pg;
+    PGROUP2         pg;
     list_linenum    i;
 #if defined( __WIN__ ) && defined( __NT__ )
     LVITEM          lvi;
@@ -609,10 +608,7 @@ static void fileGrep( const char *fullmask, char **list, list_linenum *clist, wi
     /*
      * get file path prefix
      */
-    _splitpath( fullmask, pg.drive, pg.dir, pg.fname, pg.ext );
-    strcpy( path, pg.drive );
-    strcat( path, pg.dir );
-//    _makepath( path, pg.drive, pg.dir, NULL,NULL );
+    _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     /*
      * run through each entry and search it; building a list of matches
@@ -622,8 +618,7 @@ static void fileGrep( const char *fullmask, char **list, list_linenum *clist, wi
         for( i = 0; i < DirFileCount; i++ ) {
             if( IS_SUBDIR( DirFiles[i] ) )
                 continue;
-            strcpy( fn, path );
-            strcat( fn, DirFiles[i]->name );
+            _makepath( fn, pg.drive, pg.dir, DirFiles[i]->name, NULL );
 #ifdef __WIN__
             EditFlags.BreakPressed = SetGrepDialogFile( fn );
 #else

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,7 @@
 #include "asmeval.h"
 #include "myassert.h"
 #include "asmdefs.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -2159,13 +2161,12 @@ void ModuleFini( void )
 static void get_module_name( void )
 /*********************************/
 {
-    char dummy[_MAX_EXT];
-    char fname[_MAX_FNAME];
+    PGROUP2     pg;
     char        *p;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );
-    _splitpath( AsmFiles.fname[ASM], NULL, NULL, fname, dummy );
-    ModuleInfo.name = AsmStrDup( fname );
+    _splitpath2( AsmFiles.fname[ASM], pg.buffer, NULL, NULL, &pg.fname, NULL );
+    ModuleInfo.name = AsmStrDup( pg.fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
             || ( *p == '@' ) || ( *p == '?') ) ) {
