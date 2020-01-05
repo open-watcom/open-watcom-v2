@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,10 @@
 #include "myio.h"
 #include "msg.h"
 #include "installp.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #ifdef BDIFF
 
@@ -438,6 +442,7 @@ PATCH_RET_CODE DoPatch(
 {
     char            patch_level[sizeof( PATCH_LEVEL_LEVEL )];
     PATCH_RET_CODE  ret;
+    PGROUP2         pg;
   #ifndef _WPATCH
     const char      *target = NULL;
   #endif
@@ -467,7 +472,8 @@ PATCH_RET_CODE DoPatch(
         return( PATCH_RET_OKAY );
     }
   #endif
-    _splitpath( PatchName, NULL, NULL, NULL, patch_level );
+    _splitpath2( PatchName, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    strcpy( patch_level, pg.ext );
   #ifndef _WPATCH
     ret = InitPatch( &target );
   #else

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1300,8 +1300,11 @@ static void WriteDiffs( void )
 
 static void AddLevel( const char *name )
 {
+    PGROUP2     pg;
+
     memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
-    _splitpath( name, NULL, NULL, NULL, LevelBuff + PATCH_LEVEL_HEAD_SIZE );
+    _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    strcpy( LevelBuff + PATCH_LEVEL_HEAD_SIZE, pg.ext );
     memcpy( NewFile + EndNew, LevelBuff, sizeof( PATCH_LEVEL ) );
 }
 
