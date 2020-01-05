@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +111,7 @@ struct fmt_os2_data {
     char                *stub_file_name;
     char                *module_name;
     char                *old_lib_name;
-    struct os2_seg_flags *os2_seg_flags;
+    struct os2_seg_flags *seg_flags;
     unsigned_32         heapsize;
     unsigned            segment_shift;
     unsigned            flags;            // in LOADOS2.H

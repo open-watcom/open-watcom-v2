@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 extern void     FiniLinkStruct( void );
 extern void     CleanLinkStruct( void );
 extern void     FreeObjInfo( void );
-extern void     FreeSegFlags( seg_flags * );
+extern void     FreeSegFlags( xxx_seg_flags * );
 extern void     FreeAMod( mod_entry * );
 extern void     FreeGroups( group_entry * );

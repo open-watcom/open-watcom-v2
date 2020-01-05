@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,8 +82,8 @@ void            FillOutFilePtrs( void ) {}
 void            FreeImpNameTab( void ) {}
 void            FreeExportList( void ) {}
 
-extern void FreeList( void *parm )
-/*******************************/
+void FreeList( void *parm )
+/*************************/
 /* Free a list of nodes. */
 {
     node *      curr;
@@ -95,10 +95,10 @@ extern void FreeList( void *parm )
     }
 }
 
-extern void FreeSegFlags( seg_flags * curr )
-/******************************************/
+void FreeSegFlags( xxx_seg_flags *curr )
+/**************************************/
 {
-    seg_flags * next;
+    xxx_seg_flags   *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;

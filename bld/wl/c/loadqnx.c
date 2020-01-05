@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -323,7 +324,7 @@ static void SetQNXGroupFlags( void )
 void SetQNXSegFlags( void )
 /********************************/
 {
-    SetSegFlags( (seg_flags *) FmtData.u.qnx.seg_flags );
+    SetSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
     FmtData.u.qnx.seg_flags = NULL;        // segsegflags frees the list.
     SetQNXGroupFlags();
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,14 @@
 
 // linker specific OS/2 load file stuff.
 
+// the first 4 fields must be the same as the xxx_seg_flags structure
+// defined in objstruc.h
+
 typedef struct os2_seg_flags {
-    struct os2_seg_flags *  next;
-    unsigned_16             flags;      // as above.
-    char *                  name;
-    segflag_type            type;    // true if flags for a class.
+    struct os2_seg_flags    *next;
+    unsigned_16             flags;
+    char                    *name;
+    segflag_type            type;
     unsigned_16             specified;  // used for enforcing mutual exclusion
 } os2_seg_flags;
 

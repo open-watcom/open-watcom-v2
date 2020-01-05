@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -630,8 +630,8 @@ static unsigned long DumpEntryTable( void )
 void ChkOS2Data( void )
 /**********************/
 {
-    SetSegFlags( (seg_flags *) FmtData.u.os2.os2_seg_flags );
-    FmtData.u.os2.os2_seg_flags = NULL;
+    SetSegFlags( (xxx_seg_flags *)FmtData.u.os2.seg_flags );
+    FmtData.u.os2.seg_flags = NULL;
 }
 
 #define DEF_SEG_ON (SEG_PURE|SEG_READ_ONLY|SEG_CONFORMING|SEG_MOVABLE|SEG_DISCARD|SEG_RESIDENT|SEG_CONTIGUOUS|SEG_NOPAGE)

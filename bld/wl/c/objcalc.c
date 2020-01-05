@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -939,12 +939,12 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 }
 
 
-void SetSegFlags( seg_flags *flag_list )
-/**********************************************/
+void SetSegFlags( xxx_seg_flags *flag_list )
+/******************************************/
 {
-    seg_flags       *next_one;
+    xxx_seg_flags   *next_one;
     seg_leader      *leader;
-    seg_flags       *start;
+    xxx_seg_flags   *start;
     class_entry     *class;
 
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
@@ -954,7 +954,7 @@ void SetSegFlags( seg_flags *flag_list )
     // process all class type def'ns first.
     for( ; flag_list != NULL; flag_list = flag_list->next ) {
         if( ( flag_list->type == SEGFLAG_CODE )
-            || ( flag_list->type == SEGFLAG_DATA ) ){
+          || ( flag_list->type == SEGFLAG_DATA ) ){
             FillTypeFlags( flag_list->flags, flag_list->type );
         }
     }
@@ -966,6 +966,7 @@ void SetSegFlags( seg_flags *flag_list )
     }
     // now process individual segments
     for( flag_list = start; flag_list != NULL; flag_list = next_one ) {
+        next_one = flag_list->next;
         if( flag_list->type == SEGFLAG_SEGMENT ) {
             leader = FindSegment( Root, flag_list->name );
             if( leader == NULL ) {
@@ -974,7 +975,6 @@ void SetSegFlags( seg_flags *flag_list )
                 leader->segflags = flag_list->flags;
             }
         }
-        next_one = flag_list->next;
         _LnkFree( flag_list->name );
         _LnkFree( flag_list );
     }

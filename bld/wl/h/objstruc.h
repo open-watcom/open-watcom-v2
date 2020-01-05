@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -532,12 +532,13 @@ typedef enum {
 } segflag_type;
 
 // this structure used for processing segment flags for various executable types
-typedef struct seg_flags {
-    struct seg_flags    *next;
-    unsigned_16         flags;  // as above.
-    char                *name;
-    segflag_type        type;
-} seg_flags;
+// structures qnx_seg_flags and os2_seg_flags depend on this declaration
+typedef struct xxx_seg_flags {
+    struct xxx_seg_flags    *next;
+    unsigned_16             flags;
+    char                    *name;
+    segflag_type            type;   // as above.
+} xxx_seg_flags;
 
 typedef struct {
     symbol              *entry;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +31,14 @@
 ****************************************************************************/
 
 
-// the first 4 fields must be the same as the seg_flags structure defined in
-// objstruc.h
+// the first 4 fields must be the same as the xxx_seg_flags structure
+// defined in objstruc.h
 
 typedef struct qnx_seg_flags {
-    struct qnx_seg_flags *  next;
-    unsigned_16             flags;      // as above.
-    char *                  name;
-    bool                    isclass;    // true if flags for a class.
+    struct qnx_seg_flags    *next;
+    unsigned_16             flags;
+    char                    *name;
+    segflag_type            type;
 } qnx_seg_flags;
 
 #define QNX_PRIV_SHIFT  0x0002

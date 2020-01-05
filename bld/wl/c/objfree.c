@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,10 +203,10 @@ void CleanLinkStruct( void )
 }
 
 #if defined(_OS2) || defined( _QNXLOAD )
-void FreeSegFlags( seg_flags * curr )
-/******************************************/
+void FreeSegFlags( xxx_seg_flags *curr )
+/**************************************/
 {
-    seg_flags * next;
+    xxx_seg_flags   *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
