@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,6 +130,7 @@ static const char * usage_data[] = {
 #include <unistd.h>
 #include <fcntl.h>
 #endif
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -150,7 +152,7 @@ int main( int argc, char **argv )
     mode_t      mode;
     int         cnt;
     char        *file_name;
-    char        fname[_MAX_FNAME];
+    PGROUP2     pg;
     char        full_name[_MAX_PATH];
     struct stat sbuf;
 #endif
@@ -192,8 +194,8 @@ int main( int argc, char **argv )
         if( argc == 2 ) {
             file_name = argv[2];
         } else {
-            _splitpath( argv[1], NULL, NULL, fname, NULL );
-            _makepath( full_name, NULL, NULL, fname, "uu" );
+            _splitpath2( argv[1], pg.buffer, NULL, NULL, &pg.fname, NULL );
+            _makepath( full_name, NULL, NULL, pg.fname, "uu" );
             file_name = full_name;
         }
         out = fopen( file_name, "w" );
