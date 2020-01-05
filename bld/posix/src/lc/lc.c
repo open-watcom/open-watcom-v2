@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +192,7 @@ void DoLC( char *dir )
         filename[0] = '.';
         filename[1] = 0;
     }
-    _splitpath( filename, pg.drive, pg.dir, pg.fname, pg.ext );
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 #endif
     dirp = opendir( filename );
     if( dirp == NULL ) {
@@ -238,8 +238,7 @@ void DoLC( char *dir )
         FNameLower( dire->d_name );
 #else
         if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
-            _splitpath( dire->d_name, NULL, NULL, pg.fname, pg.ext );
-            _makepath( tmpname, pg.drive, pg.dir, pg.fname, pg.ext );
+            _makepath( tmpname, pg.drive, pg.dir, dire->d_name, NULL );
             stat( tmpname, &dire->d_stat );
         }
 #endif
