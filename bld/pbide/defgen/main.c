@@ -39,6 +39,12 @@
 #include "semantic.h"
 #include "pathgrp2.h"
 
+#include "clibext.h"
+
+
+#define DEF_EXT     "def"
+#define PBF_EXT     "pbf"
+#define SRU_EXT     "sru"
 
 CmdLineInfo     Config;
 bool            ErrorHasOccured;
@@ -66,7 +72,7 @@ static bool FillParms( void )
         Config.dll_name = "noname.dll";
     }
     if( Config.out_file == NULL ) {
-        SetExtension( outName, Config.dll_name, "pbf" );
+        SetExtension( outName, Config.dll_name, PBF_EXT );
         Config.out_file = outName;
     }
     if( Config.nu_name == NULL && Config.nuo_file != NULL ) {
@@ -75,7 +81,7 @@ static bool FillParms( void )
         Config.nu_name = nuoName;
     } else if( Config.nuo_file == NULL && Config.nu_name != NULL ) {
         strcpy( pg.buffer, Config.nu_name );
-        SetExtension( nuoName, pg.buffer, "sru" );
+        SetExtension( nuoName, pg.buffer, SRU_EXT );
         Config.nuo_file = nuoName;
     }
     return( false );
@@ -157,7 +163,7 @@ int main( int argc, char *argv[] )
     if( !ScanParms( argc, argv ) ) {
         def_file = malloc( _MAX_PATH );
         for( i = 0; i < Config.def_cnt; i++ ) {
-            SetExtension( def_file, Config.def_file[i], "def" );
+            SetExtension( def_file, Config.def_file[i], DEF_EXT );
             if( !ScanInit( def_file ) ) {
                 yyparse();
                 ScanFini();

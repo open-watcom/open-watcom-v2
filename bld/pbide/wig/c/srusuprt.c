@@ -75,7 +75,6 @@ static bool             setHeader;
 #define FUNCTION                "function "
 #define SUBROUTINE              "subroutine "
 #define LIBRARY                 "library "
-#define DLL_SUFFIX              ".dll"
 #define NONAME_FILE             "noname"
 #define REF_MODIFIER            "ref "
 #define DQUOTE                  "\""
@@ -657,7 +656,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     libname = GetLibName();
     size = strlen( name ) + strlen( sp ) + strlen( ret ) + strlen( libname );
     size += sizeof( DECL_THIS_VAR ) + sizeof( LIBRARY  ) + sizeof( LEFT_PAREN )
-          + sizeof( RIGHT_PAREN ) + sizeof( DLL_SUFFIX ) + sizeof( DQUOTE )
+          + sizeof( RIGHT_PAREN ) + sizeof( "." DLL_EXT ) + sizeof( DQUOTE )
           + sizeof( DQUOTE ) + OVERHEAD;
 
     finger = func->data.sp.parm_list;
@@ -700,7 +699,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     strcat( line, LIBRARY );
     strcat( line, DQUOTE );
     strcat( line, libname );
-    strcat( line, DLL_SUFFIX );
+    strcat( line, "." DLL_EXT );
     strcat( line, DQUOTE );
     strcat( line, "\n" );
 

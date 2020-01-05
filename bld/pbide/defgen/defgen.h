@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#include "bool.h"
+
+
 typedef struct {
     bool        debug;
     char        **def_file;
@@ -44,7 +47,7 @@ typedef struct {
 extern CmdLineInfo  Config;
 extern bool         ErrorHasOccured;
 
-extern void         ReportError( char *msg, ... );
-extern void         DebugOut( char *msg, ... );
-extern void         ReportWarning( char *msg, ... );
+extern void         ReportError( const char *msg, ... );
+extern void         DebugOut( const char *msg, ... );
+extern void         ReportWarning( const char *msg, ... );
 extern int          yyparse( void );

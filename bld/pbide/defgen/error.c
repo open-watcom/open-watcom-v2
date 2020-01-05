@@ -49,7 +49,7 @@ void SemLine( char *fname, char *lineno ) {
     CurLine = lineno;
 }
 
-void ReportError( char *msg, ... ) {
+void ReportError( const char *msg, ... ) {
     va_list     al;
 
     ErrorHasOccured = true;
@@ -62,7 +62,7 @@ void ReportError( char *msg, ... ) {
     va_end( al );
 }
 
-void ReportWarning( char *msg, ... ) {
+void ReportWarning( const char *msg, ... ) {
     va_list     al;
 
     if( CurFile != NULL && CurLine != NULL ) {
@@ -74,7 +74,7 @@ void ReportWarning( char *msg, ... ) {
     va_end( al );
 }
 
-void DebugOut( char *msg, ... ) {
+void DebugOut( const char *msg, ... ) {
     va_list     al;
 
     va_start( al, msg );

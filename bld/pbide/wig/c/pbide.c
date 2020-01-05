@@ -148,10 +148,10 @@ BOOL IDE_EXPORT WatIDE_DirIsOk( const char *dllname )
 
     say( "DirIsOk %s", dllname );
     _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-    _makepath( mask, pg.drive, pg.dir, "*", "cpp" );
+    _makepath( mask, pg.drive, pg.dir, "*", CPP_EXT );
     if( matchsExist( mask ) )
         return( FALSE );
-    _makepath( mask, pg.drive, pg.dir, "*", "hpp" );
+    _makepath( mask, pg.drive, pg.dir, "*", HPP_EXT );
     if( matchsExist( mask ) )
         return( FALSE );
     return( TRUE );
@@ -242,7 +242,7 @@ static void mkProjectName( char *buf, const char *dllname )
     PGROUP2     pg;
 
     _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
-    _makepath( buf, pg.drive, pg.dir, pg.fname, "wpj" );
+    _makepath( buf, pg.drive, pg.dir, pg.fname, WPJ_EXT );
 }
 
 static char     CmdBuffer[ _MAX_PATH * 4 ];

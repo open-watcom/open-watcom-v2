@@ -48,4 +48,13 @@ WATCOM is a trademark of WATCOM International Corp.\n\
 
 #define HASH_PRIME              257
 
+/* files extensions */
+#define HPP_EXT         "hpp"
+#define CPP_EXT         "cpp"
+#define C_EXT           "c"
+#define DLL_EXT         "dll"
+#define ERR_EXT         "err"
+#define WPJ_EXT         "wpj"
+#define TMP_EXT         "tmp"
+
 #endif

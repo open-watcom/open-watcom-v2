@@ -214,7 +214,7 @@ static void genTmpFName( const char *file, char *buf )
     _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     for( i = 0 ; i < 0x1000; i++ ) {
         sprintf( fname, "tmp%03x", i );
-        _makepath( buf, pg.drive, pg.dir, fname, "tmp" );
+        _makepath( buf, pg.drive, pg.dir, fname, TMP_EXT );
         if( access( buf, F_OK ) ) {
             break;
         }
@@ -237,13 +237,20 @@ static void generateLibMain( void ) {
         Error( FILE_OPEN_ERR, fname );
     }
 
-    if( fputs( LIBMAIN_HEADER, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( IF_NT, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( DLLMAIN_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( ELSE, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( LIBMAIN_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( WEP_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( END_IF, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
+    if( fputs( LIBMAIN_HEADER, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( IF_NT, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( DLLMAIN_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( ELSE, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( LIBMAIN_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( WEP_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( END_IF, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
     WigCloseFile( fp );
 }
 
@@ -330,26 +337,22 @@ static void outPutFunc( const sp_header *sp, FileInfo *fp, const char *class, in
     parm = sp->parm_list;
     switch( typ ) {
     case( O_CLASS_PROTO ):
-        sprintf( buffer, "virtual %s %s( ", ConvertRetType( sp->typ_id ),
-                 sp->name );
+        sprintf( buffer, "virtual %s %s( ", ConvertRetType( sp->typ_id ), sp->name );
         break;
     case( O_PROTOTYPE ):
     case( O_FULL_FUNC ):
         GenerateCoverFnName( class, sp->name, fnname );
         if( Options & OPT_GEN_C_CODE ) {
-            sprintf( buffer, "%s PB_EXPORT %s( ",
-                        ConvertRetType( sp->typ_id ), fnname );
+            sprintf( buffer, "%s PB_EXPORT %s( ", ConvertRetType( sp->typ_id ), fnname );
         } else {
-            len = sprintf( buffer, "%s PB_EXPORT %s( %s *this_hdl",
-                           ConvertRetType( sp->typ_id ), fnname, class );
+            len = sprintf( buffer, "%s PB_EXPORT %s( %s *this_hdl", ConvertRetType( sp->typ_id ), fnname, class );
             if( parm && ( strcmp( parm->name, THIS_HDL ) || parm->next ) ) {
                 sprintf( buffer + len, COMMA_DELIM );
             }
         }
         break;
     case( O_CLASS_FUNC ):
-        sprintf( buffer, "%s %s::%s( ", ConvertRetType( sp->typ_id ), class,
-                 sp->name);
+        sprintf( buffer, "%s %s::%s( ", ConvertRetType( sp->typ_id ), class, sp->name);
         break;
     default:
         assert( false );
@@ -429,7 +432,8 @@ static void outCoverCall( sp_header *sp, FileInfo *fp ) {
     }
 
     /* indent code and begin start of call */
-    if( fputs( INDENT, fp->fp ) == EOF )  Error( FILE_WRITE_ERR, fp->name );
+    if( fputs( INDENT, fp->fp ) == EOF )
+        Error( FILE_WRITE_ERR, fp->name );
     if( _BaseType( sp->typ_id ) ) {
         if( fputs( START_RETURN, fp->fp ) == EOF ) {
             Error( FILE_WRITE_ERR, fp->name );
@@ -614,15 +618,12 @@ static bool doOutputDataMembers( FileInfo *fpo, statement *curr, char *prefix,
                 info = GetListItem( curr->data.vars.varlist, i );
                 if( !info->fake ) {
                     if( info->flags & VAR_ARRAY ) {
-                        ConvertVarType( lineBuffer, arraydesc,
-                                        curr->data.vars.typ_id,
-                                        &info->array );
+                        ConvertVarType( lineBuffer, arraydesc, curr->data.vars.typ_id, &info->array );
                     } else {
-                        ConvertVarType( lineBuffer, arraydesc,
-                                        curr->data.vars.typ_id, NULL );
+                        ConvertVarType( lineBuffer, arraydesc, curr->data.vars.typ_id, NULL );
                     }
-                    rc = fprintf( fpo->fp, "%s%-*s %s%s;\n", prefix, type_fmt_len,
-                             lineBuffer, info->name, arraydesc );
+                    rc = fprintf( fpo->fp, "%s%-*s %s%s;\n",
+                                    prefix, type_fmt_len, lineBuffer, info->name, arraydesc );
                     if( rc < 0 ) {
                         Error( FILE_WRITE_ERR, fpo->name );
                     }
@@ -655,12 +656,10 @@ static void outPutDataMembers( FileInfo *fpo, sru_file *sru )
 
     for( i = 0; accessNames[i].header != NULL; i++ ) {
         header = accessNames[i].header;
-        rc = doOutputDataMembers( fpo, sru->obj_vars, INDENT,
-                                  accessNames[i].type, header );
+        rc = doOutputDataMembers( fpo, sru->obj_vars, INDENT, accessNames[i].type, header );
         if( rc )
             header = NULL;
-        doOutputDataMembers( fpo, sru->shared_vars, INDENT"static ",
-                           accessNames[i].type, header );
+        doOutputDataMembers( fpo, sru->shared_vars, INDENT "static ", accessNames[i].type, header );
     }
 }
 
@@ -701,7 +700,8 @@ static void dumpNewClassDef( sru_file *sru, FileInfo *fpo ) {
     for( curr = sru->cpp_prots; curr != NULL; curr = curr->link ) {
         if( !curr->data.sp.fake ) {
             rc = fprintf( fpo->fp, INDENT );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             outPutFunc( &(curr->data.sp), fpo, classname, O_CLASS_PROTO, NULL );
         }
     }
@@ -907,11 +907,9 @@ static void addAdditionalMethods( statement *curr, FileInfo *fpo ) {
             if( rc < 0 )
                 Error( FILE_WRITE_ERR, fpo->name );
             if( Options & OPT_GEN_C_CODE ) {
-                outPutFunc( &(curr->data.sp), fpo, classname, O_FULL_FUNC,
-                            NULL);
+                outPutFunc( &(curr->data.sp), fpo, classname, O_FULL_FUNC, NULL);
             } else {
-                outPutFunc( &(curr->data.sp), fpo, classname,
-                            O_CLASS_FUNC, NULL);
+                outPutFunc( &(curr->data.sp), fpo, classname, O_CLASS_FUNC, NULL);
             }
             rc = fprintf( fpo->fp, WIG_END_HEADER, classname );
             if( rc < 0 )
@@ -957,14 +955,12 @@ static void removeFromMethodChain( statement **curr, statement *func )
 }
 
 
-static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
-                              FileInfo *fpo ) {
-/*****************************************/
-
+static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi, FileInfo *fpo )
+/*******************************************************************************************/
 /* moves through a WIG/user main CPP file avoiding user code, and modifying
    its own
 */
-
+{
     statement   *func;
     char        *cmp_str;
     char        *ptr;
@@ -1025,11 +1021,9 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
                 Error( FILE_WRITE_ERR, fpo->name );
             }
             if( Options & OPT_GEN_C_CODE ) {
-                outPutFunc( &(func->data.sp), fpo, classname,
-                            O_FULL_FUNC, lineBuffer2 );
+                outPutFunc( &(func->data.sp), fpo, classname, O_FULL_FUNC, lineBuffer2 );
             } else {
-                outPutFunc( &(func->data.sp), fpo, classname,
-                            O_CLASS_FUNC, lineBuffer2 );
+                outPutFunc( &(func->data.sp), fpo, classname, O_CLASS_FUNC, lineBuffer2 );
             }
             removeFromMethodChain( curr, func );
             *qtr = '(';

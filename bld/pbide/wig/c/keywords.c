@@ -55,25 +55,25 @@ enum {
 };
 
 const keyword __near Statements[] = {
-    NULL, "end",                    ST_END,                 FALSE,
-    NULL, "forward",                ST_FORWARD,             FALSE,
-    NULL, "from",                   ST_FROM,                FALSE,
-    NULL, "function",               ST_FUNCTION,            FALSE,
-    NULL, "global",                 ST_GLOBAL,              FALSE,
-    NULL, "library",                ST_LIBRARY,             FALSE,
-    NULL, "on",                     ST_ON,                  FALSE,
-    NULL, "private",                ST_PRIVATE,             FALSE,
-    NULL, "protected",              ST_PROTECTED,           FALSE,
-    NULL, "prototypes",             ST_PROTOTYPES,          FALSE,
-    NULL, "public",                 ST_PUBLIC,              FALSE,
-    NULL, "ref",                    ST_REF,                 FALSE,
-    NULL, "return",                 ST_RETURN,              FALSE,
-    NULL, "shared",                 ST_SHARED,              FALSE,
-    NULL, "subroutine",             ST_SUBROUTINE,          FALSE,
-    NULL, "to",                     ST_TO,                  FALSE,
-    NULL, "type",                   ST_TYPE,                FALSE,
-    NULL, "variables",              ST_VARIABLES,           FALSE,
-    NULL, NULL,                     0,                      FALSE
+    NULL, "end",                    ST_END,                 0,
+    NULL, "forward",                ST_FORWARD,             0,
+    NULL, "from",                   ST_FROM,                0,
+    NULL, "function",               ST_FUNCTION,            0,
+    NULL, "global",                 ST_GLOBAL,              0,
+    NULL, "library",                ST_LIBRARY,             0,
+    NULL, "on",                     ST_ON,                  0,
+    NULL, "private",                ST_PRIVATE,             0,
+    NULL, "protected",              ST_PROTECTED,           0,
+    NULL, "prototypes",             ST_PROTOTYPES,          0,
+    NULL, "public",                 ST_PUBLIC,              0,
+    NULL, "ref",                    ST_REF,                 0,
+    NULL, "return",                 ST_RETURN,              0,
+    NULL, "shared",                 ST_SHARED,              0,
+    NULL, "subroutine",             ST_SUBROUTINE,          0,
+    NULL, "to",                     ST_TO,                  0,
+    NULL, "type",                   ST_TYPE,                0,
+    NULL, "variables",              ST_VARIABLES,           0,
+    NULL, NULL,                     0,                      0
 };
 
 const keyword __near DataTypes[] = {
@@ -227,7 +227,7 @@ static const keyword *findTypeFromId( id_type id )
         }
         x++;
     }
-    assert( FALSE );
+    assert( false );
     return( NULL ); /* never reach this point hopefully */
 }
 
@@ -377,6 +377,6 @@ const char  *FindStmt( id_type id )
         }
         x++;
     }
-    assert( FALSE );
+    assert( false );
     return( NULL ); /* never reach this point hopefully */
 }
