@@ -181,7 +181,9 @@ static bool WriteSegData( void *_sdata, void *_start )
                 COMAmountWritten += sdata->length + pad;
             } else {
                 pad = COMAmountWritten - newpos;
-                WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+                if( sdata->length > 0 ) {
+                    WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+                }
                 COMAmountWritten += sdata->length - pad;
             }
         }
