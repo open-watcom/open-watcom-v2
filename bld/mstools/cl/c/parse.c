@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,8 @@
 #include "parse.h"
 #include "cmdlnprs.h"
 
+
+#include "parseext.c"
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -169,31 +172,6 @@ static bool parse_D( OPT_STRING **p )
 
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
  * Parse the /F option.
  */
 static bool parse_F( OPT_STRING **p )
@@ -207,7 +185,7 @@ static bool parse_F( OPT_STRING **p )
         FatalError( "/F requires an argument" );
         return( false );
     }
-    add_string( p, str );
+    add_string( p, str, '\0' );
     return( true );
 }
 
@@ -226,23 +204,8 @@ static bool parse_FI( OPT_STRING **p )
         FatalError( "/FI requires an argument" );
         return( false );
     }
-    add_string( p, str );
+    add_string( p, str, '\0' );
     return( true );
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-void OPT_CLEAN_STRING( OPT_STRING **p )
-/*************************************/
-{
-    OPT_STRING *        s;
-
-    while( (s = *p) != NULL ) {
-        *p = s->next;
-        FreeMem( s );
-    }
 }
 
 
@@ -261,7 +224,7 @@ static bool parse_Fm( OPT_STRING **p )
         if( *p != NULL ) {
             Warning( "Overriding /Fm%s with /Fm%s", (*p)->data, str );
         }
-        add_string( p, str );
+        add_string( p, str, '\0' );
     }
     return( true );
 }
@@ -277,7 +240,7 @@ static bool parse_Gs( OPT_STRING **p )
 
     str = CmdScanString();
     if( str != NULL ) {
-        add_string( p, str );
+        add_string( p, str, '\0' );
     }
     return( true );
 }
@@ -297,7 +260,7 @@ static bool parse_I( OPT_STRING **p )
         FatalError( "/I requires an argument" );
         return( false );
     }
-    add_string( p, str );
+    add_string( p, str, '\0' );
     return( true );
 }
 
@@ -316,7 +279,7 @@ static bool parse_o( OPT_STRING **p )
         FatalError( "/o requires an argument" );
         return( false );
     }
-    add_string( p, str );
+    add_string( p, str, '\0' );
     return( true );
 }
 
@@ -345,7 +308,7 @@ static bool parse_link( OPT_STRING **p )
                 break;
             }
         }
-        add_string( p, str );
+        add_string( p, str, '\0' );
         gotOne = true;
     }
     return( true );
@@ -394,7 +357,7 @@ static bool parse_passwopts( OPT_STRING **p )
         *dst = 0x00;
     }
 
-    add_string( p, str );
+    add_string( p, str, '\0' );
     return( true );
 } /* parse_passwopts() */
 
@@ -409,7 +372,7 @@ bool OPT_GET_FILE( OPT_STRING **p )
 
     filename = CmdScanFileName();
     if( filename != NULL ) {
-        add_string( p, filename );
+        add_string( p, filename, '\0' );
         return( true );
     } else {
         OPT_CLEAN_STRING( p );
@@ -1191,7 +1154,7 @@ bool OPT_GET_FILE_OPT( OPT_STRING **p )
 
     filename = CmdScanFileName();
     if( filename != NULL ) {
-        add_string( p, filename );
+        add_string( p, filename, '\0' );
     } else {
         OPT_CLEAN_STRING( p );
     }
@@ -1209,7 +1172,7 @@ bool OPT_GET_PATH( OPT_STRING **p )
 
     filename = CmdScanFileName();
     if( filename != NULL ) {
-        add_string( p, filename );
+        add_string( p, filename, '\0' );
     } else {
         OPT_CLEAN_STRING( p );
     }

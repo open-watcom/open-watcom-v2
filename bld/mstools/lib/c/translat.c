@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,9 @@ static OPT_STRING *     stub = NULL;
 static OPT_STRING *     version = NULL;
 
 
+#define NO_CLEAN_STRING
+#include "parseext.c"
+
 /*
  * Add one more unsupported option to optStr.
  */
@@ -115,31 +118,6 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof( OPT_STRING ) + strlen( str ) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
  * Parse a .def file if necessary.
  */
 static void def_file_opts( OPT_STORAGE *cmdOpts )
@@ -158,44 +136,44 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
             strList = info->exports;
             while( strList != NULL ) {
                 cmdOpts->export = true;
-                add_string( &cmdOpts->export_value, strList->str );
+                add_string( &cmdOpts->export_value, strList->str, '\0' );
                 strList = strList->next;
             }
 
             strList = info->description;
             while( strList != NULL ) {
-                add_string( &comment, strList->str );
+                add_string( &comment, strList->str, '\0' );
                 strList = strList->next;
             }
 
             if( info->name != NULL ) {
-                add_string( &cmdOpts->name_value, info->name );
+                add_string( &cmdOpts->name_value, info->name, '\0' );
                 cmdOpts->name = true;
             }
 
 
             if( info->baseAddr != NULL ) {
-                add_string( &base, info->baseAddr );
+                add_string( &base, info->baseAddr, '\0' );
             }
 
             if( info->heapsize != NULL ) {
-                add_string( &heap, info->heapsize );
+                add_string( &heap, info->heapsize, '\0' );
             }
 
             if( info->stacksize != NULL ) {
-                add_string( &stack, info->stacksize );
+                add_string( &stack, info->stacksize, '\0' );
             }
 
             if( info->internalDllName != NULL ) {
-                add_string( &internaldllname, info->internalDllName );
+                add_string( &internaldllname, info->internalDllName, '\0' );
             }
 
             if( info->stub != NULL ) {
-                add_string( &stub, info->stub );
+                add_string( &stub, info->stub, '\0' );
             }
 
             if( info->version != NULL ) {
-                add_string( &version, info->version );
+                add_string( &version, info->version, '\0' );
             }
 
             FreeDefInfo(info);

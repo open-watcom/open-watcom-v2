@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,6 +84,9 @@ static struct XlatStatus {
 
 
 
+#define NO_CLEAN_STRING
+#include "parseext.c"
+
 /*
  * Initialize a struct XlatStatus.
  */
@@ -140,31 +143,6 @@ static void unsupported_opts( const OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
  * Parse a .def file if necessary.
  */
 static void def_file_opts( OPT_STORAGE *cmdOpts )
@@ -184,13 +162,13 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
         if( info != NULL ) {
             strList = info->description;
             while( strList != NULL ) {
-                add_string( &cmdOpts->comment_value, strList->str );
+                add_string( &cmdOpts->comment_value, strList->str, '\0' );
                 strList = strList->next;
             }
 
             strList = info->exports;
             while( strList != NULL ) {
-                add_string( &cmdOpts->export_value, strList->str );
+                add_string( &cmdOpts->export_value, strList->str, '\0' );
                 cmdOpts->export = true;
                 strList = strList->next;
             }
@@ -202,14 +180,14 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
             }
             if( !cmdOpts->base ) {
                 if( info->baseAddr != NULL ) {
-                    add_string( &cmdOpts->base_value, info->baseAddr );
+                    add_string( &cmdOpts->base_value, info->baseAddr, '\0' );
                     cmdOpts->base = true;
                 }
             }
 
             if( !cmdOpts->heap ) {
                 if( info->heapsize != NULL ) {
-                    add_string( &cmdOpts->heap_value, info->heapsize );
+                    add_string( &cmdOpts->heap_value, info->heapsize, '\0' );
                     cmdOpts->heap = true;
                 }
             }
@@ -217,7 +195,7 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
 
             if( !cmdOpts->internaldllname ) {
                 if( info->internalDllName != NULL ) {
-                    add_string( &cmdOpts->internaldllname_value, info->internalDllName );
+                    add_string( &cmdOpts->internaldllname_value, info->internalDllName, '\0' );
                     cmdOpts->internaldllname = true;
                 }
             }
@@ -225,28 +203,28 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
             if( !cmdOpts->out ) {
                 if( info->name != NULL ) {
                     newstr = PathConvert( info->name, '\'' );
-                    add_string( &cmdOpts->out_value, newstr );
+                    add_string( &cmdOpts->out_value, newstr, '\0' );
                     cmdOpts->out = true;
                 }
             }
 
             if( !cmdOpts->stack ) {
                 if( info->stacksize != NULL ) {
-                    add_string( &cmdOpts->stack_value, info->stacksize );
+                    add_string( &cmdOpts->stack_value, info->stacksize, '\0' );
                     cmdOpts->stack = true;
                 }
             }
 
             if( !cmdOpts->stub ) {
                 if( info->stub != NULL ) {
-                    add_string( &cmdOpts->stub_value, info->stub );
+                    add_string( &cmdOpts->stub_value, info->stub, '\0' );
                     cmdOpts->stub = true;
                 }
             }
 
             if( !cmdOpts->version ) {
                 if( info->version != NULL ) {
-                    add_string( &cmdOpts->version_value, info->version );
+                    add_string( &cmdOpts->version_value, info->version, '\0' );
                     cmdOpts->version = true;
                 }
             }
@@ -540,7 +518,7 @@ static void linker_opts( struct XlatStatus *status,
         filename = GetNextFile( &fileType, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
         if( cmdOpts->export || cmdOpts->entry ) {
-            add_string( &objs, filename );
+            add_string( &objs, filename, '\0' );
         }
         newstr = PathConvert( filename, '\'' );
         if( firstObj == NULL )  firstObj = newstr;
@@ -561,7 +539,7 @@ static void linker_opts( struct XlatStatus *status,
         filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
         if( cmdOpts->export || cmdOpts->entry ) {
-            add_string( &libs, filename );
+            add_string( &libs, filename, '\0' );
         }
         newstr = PathConvert( filename, '\'' );
         AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "LIBRARY %s", newstr );

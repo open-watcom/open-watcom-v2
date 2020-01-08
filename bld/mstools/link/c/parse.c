@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,8 @@
 #include "parse.h"
 #include "cmdlnprs.h"
 
+
+#include "parseext.c"
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -150,66 +152,6 @@ static void check_align( unsigned *p )
 #define skip_nonwhite(s)   while( *s && !isspace( *s ) ) ++s;
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str, char quote )
-/*************************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-    size_t              len;
-    bool                add_quote = false;
-
-    len = strlen(str);
-    if( quote != '\0' ) {
-        for( ;; ) {
-            if( str[0] == '"'  && str[len - 1] == '"'  )
-                break;
-            if( str[0] == '\'' && str[len - 1] == '\'' )
-                break;
-            len += 2;
-            add_quote = true;
-        }
-    }
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + len );
-    if( add_quote ) {
-        buf->data[0] = quote;
-        strcpy( &(buf->data[1]), str );
-        buf->data[len-1] = quote;
-        buf->data[len] = '\0';
-    } else {
-        strcpy( buf->data, str );
-    }
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-void OPT_CLEAN_STRING( OPT_STRING **p )
-/*************************************/
-{
-    OPT_STRING *        s;
-
-    while( (s = *p) != NULL ) {
-        *p = s->next;
-        FreeMem( s );
-    }
-}
-
-
-/*
  * Parse the /BASE:@{filename} option.
  */
 static bool parse_base_from_file(OPT_STRING **p, char *str)
@@ -276,7 +218,7 @@ static bool parse_base_from_file(OPT_STRING **p, char *str)
             *b = 0x00;
 
             OPT_CLEAN_STRING( p );
-            add_string(p, s, '\0');
+            add_string( p, s, '\0' );
             FreeMem(buffer);
             fclose(stream);
 
@@ -319,7 +261,7 @@ static bool parse_base( OPT_STRING **p )
     else
     {
         OPT_CLEAN_STRING( p );
-        add_string(p, str, '\0');
+        add_string( p, str, '\0' );
     }
 
     return( true );
@@ -733,7 +675,7 @@ static bool parse_passwopts( OPT_STRING **p )
         *dst = 0x00;
     }
 
-    add_string(p, str, '\0');
+    add_string( p, str, '\0' );
     return( true );
 } /* parse_passwopts() */
 
