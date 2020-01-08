@@ -372,6 +372,7 @@ typedef struct seg_leader {
     group_entry         *group;
     class_entry         *class;
     offset              size;               // total size of segment
+    offset              vsize;              // total virtual size of segment
     SEG_LEADER          *DupSeg;            // Segment to get data from for output
     unsigned_16         info;
     unsigned_16         align   : 5;        // alignment of seg (power of 2)

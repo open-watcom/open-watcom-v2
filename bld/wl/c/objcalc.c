@@ -178,14 +178,14 @@ static void AddUpSegData( void *_sdata )
         return;
     leader = sdata->u.leader;
     if( leader->info & SEG_ABSOLUTE ) {
-        sdata->a.delta = 0;
+        leader->vsize = sdata->a.delta = 0;
         if( leader->size < sdata->length ) {
-            leader->size = sdata->length;
+            leader->vsize = leader->size = sdata->length;
         }
     } else {
-        sdata->a.delta = CAlign( leader->size, sdata->align );
+        leader->vsize = sdata->a.delta = CAlign( leader->vsize, sdata->align );
         if( sdata->length > 0 ) {
-            leader->size = sdata->a.delta + sdata->length;
+            leader->vsize = leader->size = sdata->a.delta + sdata->length;
         }
     }
     if( leader->align < sdata->align ) {
