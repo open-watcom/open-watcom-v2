@@ -91,13 +91,11 @@ char *DupQuoteStrMem( const char *str, char quote )
 
     len = strlen( str );
     if( quote != '\0' ) {
-        for( ;; ) {
-            if( str[0] == '"'  && str[len - 1] == '"'  )
-                break;
-            if( str[0] == '\'' && str[len - 1] == '\'' )
-                break;
-            len += 2;
-            add_quote = true;
+        if( str[0] != '"' || str[len - 1] != '"'  ) {
+            if( str[0] != '\'' || str[len - 1] != '\'' ) {
+                len += 2;
+                add_quote = true;
+            }
         }
     }
     p = AllocMem( len + 1 );
