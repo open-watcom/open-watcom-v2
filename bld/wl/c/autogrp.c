@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,7 +258,7 @@ static void InitGroup( group_entry *group )
     group->totalsize = 0;
     group->size = 0;
     group->segflags = DEFAULT_GRP_FLAGS;
-    group->u.miscflags = 0;
+    group->u.os2flags = 0;
     group->isfree = false;
     group->isautogrp = false;
     group->isdup = false;

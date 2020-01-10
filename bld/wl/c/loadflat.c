@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         leader = Ring2First( group->leaders );
         if( leader->info & USE_32 ) {
             objrec.flags |= OBJ_BIG;
-        } else { //if( group->u.miscflags & SEG_16_ALIAS ) {
+        } else { //if( group->u.os2flags & SEG_16_ALIAS ) {
             objrec.flags |= OBJ_ALIAS_REQUIRED;
         }
         if( (group->segflags & SEG_LEVEL_MASK) != SEG_LEVEL_3 ) {
