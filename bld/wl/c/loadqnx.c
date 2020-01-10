@@ -276,8 +276,8 @@ static void WriteQNXData( unsigned_32 * segments )
 }
 
 
-static bool CheckQNXGrpFlag( void *_seg, void *_grp )
-/**************************************************************/
+static bool checkGroupFlags( void *_seg, void *_grp )
+/***************************************************/
 {
     seg_leader     *seg = _seg;
     group_entry    *grp = _grp;
@@ -285,19 +285,20 @@ static bool CheckQNXGrpFlag( void *_seg, void *_grp )
 
     sflags = seg->segflags;
 
-// the default value for segflags is set to SEG_LEVEL_3 (0xC00) for OS/2
-// and SEG_MOVABLE (0x10) for windows. Since the highest value that can be
-// specified for a QNX seg flag is 4, if sflags >= 0x10, there was no QNX value
-// specified.
+    // the default value for segflags is set to SEG_LEVEL_3 (0xC00) for OS/2
+    // and SEG_MOVABLE (0x10) for windows. Since the highest value that can be
+    // specified for a QNX seg flag is 4, if sflags >= 0x10, there was no QNX value
+    // specified.
 
     if( sflags < 0x10 ) {
-        if( (sflags & 1) == 0 ) {     // if can read/write or exec/read
-            grp->u.qnxflags &= ~1;       // can for all segments.
+        if( (sflags & 1) == 0 ) {       // if can read/write or exec/read
+            grp->u.qnxflags &= ~1;      // can for all segments.
             return true;                // no need to check others
         }
     } else {
-// make segments read/write or exec/read unless every segment is specifically
-// set otherwise.
+        // make segments read/write or exec/read unless every segment is specifically
+        // set otherwise.
+
         grp->u.qnxflags &= ~1;
         return true;
     }
@@ -317,7 +318,7 @@ void SetQNXGroupFlags( void )
         } else {
             group->u.qnxflags = QNX_EXEC_ONLY;     // 3
         }
-        Ring2Lookup( group->leaders, CheckQNXGrpFlag, group );
+        Ring2Lookup( group->leaders, checkGroupFlags, group );
     }
 }
 

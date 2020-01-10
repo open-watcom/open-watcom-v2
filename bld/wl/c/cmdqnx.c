@@ -91,8 +91,8 @@ void CmdQNXFini( void )
     }
 }
 
-static bool GetQNXSegFlags( void )
-/********************************/
+static bool getSegFlags( void )
+/*****************************/
 {
     bool            isclass;
     qnx_seg_flags   *entry;
@@ -114,7 +114,7 @@ static bool GetQNXSegFlags( void )
 bool ProcQNXSegment( void )
 /********************************/
 {
-    return( ProcArgList( GetQNXSegFlags, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( getSegFlags, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcQNXClass( void )
