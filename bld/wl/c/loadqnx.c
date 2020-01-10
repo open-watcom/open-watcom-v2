@@ -304,8 +304,8 @@ static bool CheckQNXGrpFlag( void *_seg, void *_grp )
     return false;
 }
 
-static void SetQNXGroupFlags( void )
-/**********************************/
+void SetQNXGroupFlags( void )
+/***************************/
 // This goes through the groups, setting the flag word to be compatible with
 // the flag words that are specified in the segments.
 {
@@ -322,11 +322,10 @@ static void SetQNXGroupFlags( void )
 }
 
 void SetQNXSegFlags( void )
-/********************************/
+/*************************/
 {
     SetSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
     FmtData.u.qnx.seg_flags = NULL;        // segsegflags frees the list.
-    SetQNXGroupFlags();
 }
 
 static void WriteQNXResource( void )

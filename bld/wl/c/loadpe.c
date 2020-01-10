@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1667,7 +1667,6 @@ void ChkPEData( void )
 {
     class_entry *class;
 
-    ChkOS2Data();
     /* find the last code class in the program */
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
         if( class->flags & CLASS_CODE ) {
@@ -1700,7 +1699,6 @@ void AllocPETransferTable( void )
     /*
      *  Moved export check here as otherwise flags don't get propagated
      */
-    ChkOS2Exports();
     if( XFerSegData == NULL ) {
         return;
     }

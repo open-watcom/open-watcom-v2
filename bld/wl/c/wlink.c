@@ -285,17 +285,20 @@ static void PreAddrCalcFormatSpec( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
+        SetOS2SegFlags();
         ChkPEData();
-    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        SetOS2SegFlags();
+    } else if( FmtData.type & MK_OS2 ) {
 #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
-            ChkOS2Data();
+            SetOS2SegFlags();
         }
 #else
-        ChkOS2Data();
+        SetOS2SegFlags();
 #endif
     }
 #endif
@@ -317,25 +320,36 @@ static void PostAddrCalcFormatSpec( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
+        SetOS2GroupFlags();
+        ChkOS2Exports();
         AllocPETransferTable();
-    } else if( FmtData.type & MK_ELF ) {
-        ChkElfData();
-    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
-#if 0
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        SetOS2GroupFlags();
+        ChkOS2Exports();
+    } else if( FmtData.type & MK_OS2 ) {
+  #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
+            SetOS2GroupFlags();
             ChkOS2Exports();
         }
-#else
+  #else
+        SetOS2GroupFlags();
         ChkOS2Exports();
+  #endif
+    }
 #endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        ChkElfData();
     }
 #endif
 #ifdef _QNX
-    else if( FmtData.type & MK_QNX ) {
+    if( FmtData.type & MK_QNX ) {
         SetQNXSegFlags();
+        SetQNXGroupFlags();
     }
 #endif
 }

@@ -54,6 +54,7 @@ typedef struct qnx_seg_flags {
 #define QNX_GROUP_ALIGN 0x1000
 
 extern void             SetQNXSegFlags( void );
+extern void             SetQNXGroupFlags( void );
 extern void             FiniQNXLoadFile( void );
 extern unsigned_16      ToQNXSel( unsigned_16 );
 extern unsigned_16      ToQNXIndex( unsigned_16 );

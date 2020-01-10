@@ -627,8 +627,8 @@ static unsigned long DumpEntryTable( void )
     return( size + 2 );
 }
 
-void ChkOS2Data( void )
-/**********************/
+void SetOS2SegFlags( void )
+/*************************/
 {
     SetSegFlags( (xxx_seg_flags *)FmtData.u.os2.seg_flags );
     FmtData.u.os2.seg_flags = NULL;
@@ -655,8 +655,8 @@ static void CheckGrpFlags( void *_leader )
     }
 }
 
-static void SetGroupFlags( void )
-/*******************************/
+void SetOS2GroupFlags( void )
+/***************************/
 // This goes through the groups, setting the flag word to be compatible with
 // the flag words that are specified in the segments.
 {
@@ -684,8 +684,8 @@ void ChkOS2Exports( void )
     group_entry     *group;
     unsigned        num_entries;
 
-    SetGroupFlags();            // NOTE: there is a continue in this loop!
     num_entries = 0;
+    // NOTE: there is a continue in this loop!
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
         num_entries++;
         symptr = exp->sym;
