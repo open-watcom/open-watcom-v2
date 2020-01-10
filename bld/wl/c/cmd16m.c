@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +175,7 @@ extern bool ProcBuffer( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value < 1024 || value > 32768 ) {
+    if( value < _1KB || value > _32KB ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "buffer" );
     } else {
         FmtData.u.d16m.buffer = value;
@@ -193,7 +194,7 @@ extern bool ProcGDTSize( void )
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "gdtsize" );
         value &= -8;
     }
-    if( value > 65536 ) {
+    if( value > 0x10000 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "gdtsize" );
     } else {
         FmtData.u.d16m.gdtsize = --value;
@@ -233,7 +234,7 @@ extern bool ProcSelStart( void )
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "selstart" );
         value &= -8;
     }
-    if( value > 65536 || value < D16M_USER_SEL ) {
+    if( value >= 0x10000 || value < D16M_USER_SEL ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "selstart" );
     } else {
         FmtData.u.d16m.selstart = value;
@@ -249,7 +250,7 @@ extern bool ProcExtended( void )
     if( !GetLong( &value ) )
         return( false );
     value >>= 10;      // value should be in K.
-    if( value > 65535 ) {
+    if( value >= 0x10000 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "extended" );
     } else {
         FmtData.u.d16m.extended = value;
@@ -277,7 +278,7 @@ extern bool ProcDataSize( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value > 65536 ) {
+    if( value > _64KB ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "datasize" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;

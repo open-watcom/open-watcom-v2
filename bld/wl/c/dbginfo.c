@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,7 @@
 #include "clibext.h"
 
 
-#define ADDR_INFO_LIMIT ( 63 * 1024U / sizeof( addr_dbg_info ) )
-#define DEMAND_INFO_SPLIT ( 16 * 1024 )
+#define DEMAND_INFO_SPLIT   _16KB
 
 #define NON_SECT_INFO 0x8000
 

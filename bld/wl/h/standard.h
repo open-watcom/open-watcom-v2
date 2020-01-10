@@ -46,6 +46,17 @@
 #define CONSTU32(x)     x ## U
 #endif
 
+#define _1KB            CONSTU32( 1024 )
+#define _2KB            (2 * _1KB)
+#define _4KB            (4 * _1KB)
+#define _5KB            (5 * _1KB)
+#define _8KB            (8 * _1KB)
+#define _16KB           (16 * _1KB)
+#define _32KB           (32 * _1KB)
+#define _64KB           (64 * _1KB)
+#define _1MB            (_1KB * _1KB)
+#define _256MB          (256 * _1MB)
+
 /* round up by a power of 2 */
 #define ROUND_UP( x, r )        (((x)+((r)-1))&~((r)-1))
 #define ROUND_SHIFT( x, r )     ROUND_UP( x, 1 << (r) )

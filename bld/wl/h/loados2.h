@@ -87,7 +87,7 @@ typedef struct os2_seg_flags {
 #define PM_NOT_COMPATIBLE   0x4000
 #define TERM_INSTANCE_FLAG  0x8000
 
-#define FLAT_GRANULARITY    (64UL * 1024)
+#define FLAT_GRANULARITY    _64KB
 #define FLAT_ROUND( x )     ROUND_UP( x, FLAT_GRANULARITY )
 
 #include "exeos2.h"

@@ -74,7 +74,7 @@ void SetQNXFmt( void )
     FmtData.u.qnx.heapsize = 4096;
     FmtData.u.qnx.gen_seg_relocs = true;
     FmtData.u.qnx.gen_linear_relocs = false;
-    ChkBase( 4 * 1024 );
+    ChkBase( _4KB );
 }
 
 void FreeQNXFmt( void )

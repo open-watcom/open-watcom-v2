@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -157,7 +158,7 @@ typedef enum {
 
 
 /*  Generic constants */
-#define MAX_REC                 1024
+#define MAX_REC                 _1KB
 #define UNDEFINED               ((segment)0xffff)           /* undefined segment */
 
 #define SET_ADDR_UNDEFINED(a)   (a).seg=UNDEFINED;(a).off=0

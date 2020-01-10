@@ -166,7 +166,7 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
         desc.bits2 |= DESC_GENERAL;
     }
     if( limit > 0 ) limit--;
-    if( limit >= (1024*1024UL) ) {
+    if( limit >= _1MB ) {
         limit >>= 12;
         desc.bits2 |= DESC_GRANULARITY_BIT;
     }

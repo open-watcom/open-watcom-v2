@@ -199,7 +199,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     return( TINY_INFO(h) );
 }
 
-#define QWRITE_BLOCK_SIZE   (16*1024)
+#define QWRITE_BLOCK_SIZE   _16KB
 
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/

@@ -270,7 +270,7 @@ static void WriteCOMFile( void )
             }
         }
     }
-    if( fnode->file_loc > (64 * 1024L - 0x200) ) {
+    if( fnode->file_loc > (_64KB - 0x200) ) {
         LnkMsg( ERR+MSG_COM_TOO_LARGE, NULL );
     }
     DBIWrite();

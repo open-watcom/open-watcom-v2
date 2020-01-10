@@ -473,9 +473,9 @@ static void CalcGrpAddr( group_entry *currgrp )
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
             if( (FmtData.type & MK_REAL_MODE) && (seg->info & USE_32) == 0
-                && (info.end_addr - info.grp_addr > 64 * 1024L) ) {
+                && (info.end_addr - info.grp_addr > _64KB) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", currgrp->sym->name,
-                        info.end_addr - info.grp_addr - 64 * 1024L );
+                        info.end_addr - info.grp_addr - _64KB );
             }
             currgrp->totalsize = info.end_addr - info.grp_addr;
         }
@@ -799,7 +799,7 @@ void CalcAddresses( void )
         if( FmtData.type & MK_PE ) {
             FmtData.base = PE_DEFAULT_BASE;
         } else if( FmtData.type & MK_QNX_FLAT ) {
-            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, 4 * 1024 );
+            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
         } else if( FmtData.type & MK_WIN_VXD ) {
             FmtData.base = 0;
         } else if( FmtData.type & MK_OS2_FLAT ) {
@@ -826,24 +826,24 @@ void CalcAddresses( void )
         if( FmtData.objalign == NO_BASE_SPEC ) {
             if( FmtData.type & MK_PE ) {
                 if( (LinkState & LS_HAVE_I86_CODE) ) {
-                    FmtData.objalign = 4*1024;
+                    FmtData.objalign = _4KB;
                 } else if( (LinkState & LS_HAVE_X64_CODE) ) {
                     // TODO
-                    FmtData.objalign = ( 64 * 1024UL );
+                    FmtData.objalign = _64KB;
                 } else {
-                    FmtData.objalign = ( 64 * 1024UL );
+                    FmtData.objalign = _64KB;
                 }
             } else if( FmtData.type & MK_QNX ) {
                 FmtData.objalign = QNX_GROUP_ALIGN;
 #if 0
             } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
                 // Development temporarly on hold:
-                // FmtData.objalign = 1024;
+                // FmtData.objalign = _1KB;
 #endif
             } else if( FmtData.type & MK_ELF ) {
-                FmtData.objalign = 4*1024;
+                FmtData.objalign = _4KB;
             } else if( FmtData.type & MK_WIN_VXD ) {
-                FmtData.objalign = 4*1024;
+                FmtData.objalign = _4KB;
             } else {
                 FmtData.objalign = FLAT_GRANULARITY;
             }

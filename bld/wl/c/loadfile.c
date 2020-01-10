@@ -1102,7 +1102,7 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
     return( (void *)dummy );
 }
 
-#define BUFF_BLOCK_SIZE (16*1024)
+#define BUFF_BLOCK_SIZE _16KB
 
 static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
 /************************************************************************************************/

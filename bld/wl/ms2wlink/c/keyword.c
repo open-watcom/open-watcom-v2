@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@
 
 #include "clibext.h"
 
+
+#define _64KB           (64 * 1024UL)
 
 #define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);memcpy(x,s,l);p=x;}
 
@@ -738,7 +741,7 @@ static void GetExport( void )
     }
     value = 0xFFFFF; // arbitrary >64K.
     if( MakeToken( SEP_AT, true ) ) {                               // got an ordinal.
-        if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
+        if( !GetNumber( &value ) || value > _64KB ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
         } else {
@@ -786,7 +789,7 @@ static void GetExport( void )
     currloc = command + 7;
     memcpy( currloc, name, namelen );
     currloc += namelen;
-    if( value <= (64*1024UL) ) {   // if an ordinal was specified....
+    if( value <= _64KB ) {   // if an ordinal was specified....
         *currloc++ = '.';
         ultoa( value, currloc, 10 );
         while( *currloc != '\0' ) {    // find end of string.
@@ -843,7 +846,7 @@ static void ProcHeapsize( void )
         Warning( "argument for heapsize not recognized", OPTION_SLOT );
     } else if( memicmp( CmdFile->token, "maxval", 6 ) == 0 ) {
         AddNumOption( "heapsize", 0xFFFF );
-    } else if( !GetNumber( &value ) || value >= (64*1024UL) ) {
+    } else if( !GetNumber( &value ) || value >= _64KB ) {
         Warning( "argument for heapsize not valid", OPTION_SLOT );
     } else {
         AddNumOption( "heapsize", value );
@@ -884,7 +887,7 @@ static void GetImport( void )
         if( second == NULL ) {
             Warning("must have an internal name when an ordinal is specified", OPTION_SLOT );
             return;
-        } else if( value >= (64*1024UL) ) {
+        } else if( value >= _64KB ) {
             Warning( "import ordinal out of range", OPTION_SLOT );
             return;
         }
@@ -908,7 +911,7 @@ static void GetImport( void )
     *currloc++ = ' ';
     memcpy( currloc, first, firstlen );   // module name
     currloc += firstlen;
-    if( value < (64*1024UL) ) {
+    if( value < _64KB ) {
         *currloc++ = '.';
         ultoa( value, currloc, 10 );
     } else {
@@ -1144,7 +1147,7 @@ static void ProcStackSize( void )
 
     if( !MakeToken( SEP_NO, true ) ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
-    } else if( !GetNumber( &value ) || value >= (64*1024UL) ) {
+    } else if( !GetNumber( &value ) || value >= _64KB ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
     } else {
         AddNumOption( "stack", value );

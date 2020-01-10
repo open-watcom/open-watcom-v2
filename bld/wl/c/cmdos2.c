@@ -310,9 +310,9 @@ bool ProcObjAlign( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > (256 * 1024UL * 1024) || (value & (value - 1)) ) {
+    if( value < 16 || value > _256MB || (value & (value - 1)) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "objalign" );
-        value = 64*1024;
+        value = _64KB;
     }
     FmtData.objalign = value;
     ChkBase(value);
@@ -559,7 +559,7 @@ void SetOS2Fmt( void )
         FmtData.def_seg_flags |= SEG_PRELOAD;
     }
     Extension = E_LOAD;
-    ChkBase(64*1024);
+    ChkBase( _64KB );
 }
 
 void FreeOS2Fmt( void )

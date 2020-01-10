@@ -821,7 +821,7 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
     return( length );
 }
 
-#define MAX_DGROUP_SIZE (64 * 1024UL)
+#define MAX_DGROUP_SIZE _64KB
 
 void FiniOS2LoadFile( void )
 /***************************/

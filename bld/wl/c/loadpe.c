@@ -1389,7 +1389,7 @@ void FiniPELoadFile( void )
 
         totalsize = QFileSize( outfile->handle );
 
-#define CRC_BUFF_SIZE   (16 * 1024)
+#define CRC_BUFF_SIZE   _16KB
         _ChkAlloc( buffer, CRC_BUFF_SIZE );
 
         if( buffer ) {

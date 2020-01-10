@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static bool             DumpFileCache( infilelist *, bool );
 
 static bool             Multipage;
 
-#define CACHE_PAGE_SIZE         (8*1024)
+#define CACHE_PAGE_SIZE _8KB
 
 static unsigned NumCacheBlocks( unsigned long len )
 /*************************************************/

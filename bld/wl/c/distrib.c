@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 #define MOD_DEREF( x )      (ModTable[(x)])
 #define INITIAL_MOD_ALLOC   32
 #define INITIAL_ARC_ALLOC   32
-#define MAX_NUM_MODULES     (8 * 1024)
+#define MAX_NUM_MODULES     _8KB
 
 section             **SectOvlTab;
 

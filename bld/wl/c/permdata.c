@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,10 +77,10 @@ static char             *OldSymFile;
 static void             *AltDefData;
 static char             *IncStrTab;
 
-#define SEG_CARVE_SIZE          (2 * 1024)
-#define MOD_CARVE_SIZE          (5 * 1024)
-#define SDATA_CARVE_SIZE        (16 * 1024)
-#define SYM_CARVE_SIZE          (32 * 1024)
+#define SEG_CARVE_SIZE          _2KB
+#define MOD_CARVE_SIZE          _5KB
+#define SDATA_CARVE_SIZE        _16KB
+#define SYM_CARVE_SIZE          _32KB
 
 void ResetPermData( void )
 /************************/

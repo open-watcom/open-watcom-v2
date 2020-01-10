@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +173,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     return( h );
 }
 
-#define QWRITE_BLOCK_SIZE  (16*1024)
+#define QWRITE_BLOCK_SIZE  _16KB
 
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/

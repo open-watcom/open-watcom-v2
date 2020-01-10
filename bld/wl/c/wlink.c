@@ -83,7 +83,8 @@
 #include "wlink.h"
 #include "ideentry.h"
 
-#define DEF_STACK_SIZE  (4 * 1024UL)
+
+#define DEF_STACK_SIZE  _4KB
 
 static void     PreAddrCalcFormatSpec( void );
 static void     PostAddrCalcFormatSpec( void );
