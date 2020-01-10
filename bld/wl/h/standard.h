@@ -37,6 +37,18 @@
 #include "bool.h"
 #include "iopath.h"
 
+/* configured supported target formats */
+#define _EXE            0
+#define _QNX            1
+#define _OS2            2
+#define _PHARLAP        3
+#define _NOVELL         4
+#define _DOS16M         5
+#define _ELF            6
+#define _ZDOS           7
+#define _RAW            8
+#define _RDOS           9
+
 #define NLCHAR          '\n'
 #define CTRLZ           '\32'
 
@@ -109,24 +121,3 @@ typedef union {
     virt_mem        vm_ptr;
     virt_mem_size   vm_offs;
 } virt_mem_ptr;
-
-#if defined( __QNX__ )
-    #define _EXE       0
-    #define _QNX       1
-    #define _OS2       2
-    #define _PHARLAP   3
-    #define _NOVELL    4
-    #define _DOS16M    5
-//    #define _ELF       6
-#else
-    #define _EXE       0
-    #define _QNX       1
-    #define _OS2       2
-    #define _PHARLAP   3
-    #define _NOVELL    4
-    #define _DOS16M    5
-    #define _ELF       6
-    #define _ZDOS      7
-    #define _RAW       8
-    #define _RDOS      9
- #endif

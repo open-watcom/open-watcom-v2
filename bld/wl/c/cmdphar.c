@@ -44,7 +44,7 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "cmdphar.h"
-#include "cmdos2.h"
+#include "cmdall.h"
 
 
 bool ProcPharLap( void )

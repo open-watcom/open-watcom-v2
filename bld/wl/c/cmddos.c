@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,6 @@
 #include "cmdline.h"
 #include "cmddos.h"
 
-byte            OvlLevel;
-
 #ifdef _INT_DEBUG
 static void             PrintOvl( void );
 static void             PrintAreas( OVL_AREA *ovlarea );
@@ -51,6 +50,8 @@ static void             PrintSect( section *sect );
 #endif
 static bool             AddClass( void );
 static void             NewArea( section *sect );
+
+static byte             OvlLevel;
 
 void SetDosFmt( void )
 /***************************/
@@ -64,6 +65,11 @@ bool ProcDos( void )
     OvlLevel = 0;
     ProcOne( DosOptions, SEP_NO, false );
     return( true );
+}
+
+byte GetOvlRef( void )
+{
+    return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
 static void SetOvlClasses( void )
@@ -124,6 +130,12 @@ bool ProcFixedLib( void )
     return( ret );
 }
 
+static section *OvlNewSection( void )
+{
+    OvlSectNum++;
+    return( NewSection() );
+}
+
 // this is an arbitrary non-zero value put in the sect->relocs field to
 // signify that ProcBegin already made a new section, so ProcSection
 // should not.
@@ -146,7 +158,7 @@ bool ProcBegin( void )
     } else {
         oldsect = CurrSect;
         oldflist = CurrFList;
-        sect = NewSection();
+        sect = OvlNewSection();
         if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }
@@ -200,7 +212,7 @@ static void MakeNonArea( void )
 /*****************************/
 /* make a new overlay area for non-overlay classes */
 {
-    NonSect = NewSection();   // No debug info in nonsect.
+    NonSect = OvlNewSection();   // No debug info in nonsect.
     NewArea( NonSect );
 }
 
@@ -224,7 +236,7 @@ void MakeNewSection( void )
     section             *sect;
 
     if( CurrSect->relocs != SECT_ALREADY_MADE ) {
-        sect = NewSection();
+        sect = OvlNewSection();
         if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }

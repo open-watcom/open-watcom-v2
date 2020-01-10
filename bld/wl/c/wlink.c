@@ -155,7 +155,6 @@ static void ResetSubSystems( void )
     ResetMsg();
     VirtMemInit();
     ResetMisc();
-    Root = NewSection();
     ResetDBI();
     ResetMapIO();
     ResetCmdAll();
@@ -176,6 +175,7 @@ static void ResetSubSystems( void )
     ResetLoadFile();
     ResetAddr();
     ResetToc();
+    Root = NewSection();
 }
 
 static void CleanSubSystems( void )
@@ -371,11 +371,6 @@ static void ResetMisc( void )
     LibModules = NULL;
     Groups = NULL;
     SET_ADDR_UNDEFINED( CurrLoc );
-    OvlClasses = NULL;
-    OvlVectors = NULL;
-    VecNum = 0;
-    OvlNum = 0;
-    OvlFName = NULL;
     CurrMod = NULL;
     StackSize = DEF_STACK_SIZE;
     // set case sensitivity for symbols

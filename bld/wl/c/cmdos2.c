@@ -48,6 +48,8 @@
 #include "fileio.h"
 #include "impexp.h"
 #include "objpass1.h"
+#include "cmdall.h"
+
 
 static void             ParseVersion( void );
 static bool             GetWlibImports( void );
@@ -298,27 +300,6 @@ bool ProcOS2Alignment( void )
     return( true );
 }
 
-bool ProcObjAlign( void )
-/******************************/
-/* process ObjAlign option */
-{
-    ord_state           ret;
-    unsigned_32         value;
-
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
-    ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
-        return( false );
-    }                                            /* value not a power of 2 */
-    if( value < 16 || value > _256MB || (value & (value - 1)) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "objalign" );
-        value = _64KB;
-    }
-    FmtData.objalign = value;
-    ChkBase(value);
-    return( true );
-}
-
 bool ProcModName( void )
 /*****************************/
 {
@@ -364,19 +345,6 @@ bool ProcOS2HeapSize( void )
     } else {
         FmtData.u.os2.heapsize = value;
     }
-    return( true );
-}
-
-bool ProcDescription( void )
-/*********************************/
-{
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        return( false );
-    }
-    if( FmtData.description != NULL ) {
-        _LnkFree( FmtData.description );
-    }
-    FmtData.description = tostring();
     return( true );
 }
 
@@ -524,19 +492,6 @@ bool ProcWindows( void )
 /*****************************/
 {
     return( ProcOS2() );
-}
-
-void ChkBase( offset align )
-/*********************************/
-// Note: align must be a power of 2
-{
-    if( FmtData.objalign != NO_BASE_SPEC && FmtData.objalign > align ) {
-        align = FmtData.objalign;
-    }
-    if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
-        FmtData.base = ROUND_UP( FmtData.base, align );
-    }
 }
 
 void SetOS2Fmt( void )

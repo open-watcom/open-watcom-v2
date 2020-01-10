@@ -615,7 +615,8 @@ parse_entry ZdosOptions[] = {
     "SYS",          &ProcZdosSYS,           MK_ZDOS, 0,
     "HWD",          &ProcZdosHWD,           MK_ZDOS, 0,
     "FSD",          &ProcZdosFSD,           MK_ZDOS, 0,
-    NULL };
+    NULL
+};
 #endif
 
 #ifdef _RDOS
@@ -625,14 +626,16 @@ parse_entry RdosOptions[] = {
     "BIN16",          &ProcRdosBin16,       MK_RDOS, 0,
     "BIN32",          &ProcRdosBin32,       MK_RDOS, 0,
     "MBOOT",          &ProcRdosMboot,       MK_RDOS, 0,
-    NULL };
+    NULL
+};
 #endif
 
 #ifdef _RAW
 parse_entry RawOptions[] = {
     "BIN",          &ProcRawBIN,            MK_RAW, 0,
     "HEX",          &ProcRawHEX,            MK_RAW, 0,
-    NULL };
+    NULL
+};
 #endif
 
 parse_entry OrderOpts[] = {

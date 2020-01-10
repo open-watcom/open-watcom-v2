@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,6 @@ extern bool     ProcOldLibrary( void );
 extern bool     ProcModName( void );
 extern bool     ProcNewFiles( void );
 extern bool     ProcProtMode( void );
-extern bool     ProcDescription( void );
-extern bool     ProcObjAlign( void );
 extern bool     ProcRWRelocCheck( void );
 extern bool     ProcSelfRelative( void );
 extern bool     ProcInternalRelocs( void );
@@ -133,7 +132,6 @@ extern bool     ProcOS2Alignment( void );
 extern bool     ProcOS2HeapSize( void );
 extern bool     ProcPENoRelocs( void );
 
-extern void     ChkBase( offset align );
 extern void     SetOS2Fmt( void );
 extern void     FreeOS2Fmt( void );
 

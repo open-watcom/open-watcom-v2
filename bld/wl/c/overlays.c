@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +41,11 @@
 #include "distrib.h"
 #include "overlays.h"
 
+
+byte    OvlSectNum;
+
 void WalkAllSects( void (*rtn)( section * ) )
-/**************************************************/
+/*******************************************/
 {
     rtn( Root );
     if( FmtData.type & MK_OVERLAYS ) {
@@ -50,7 +54,7 @@ void WalkAllSects( void (*rtn)( section * ) )
 }
 
 void WalkAllOvl( void (*rtn)( section * ) )
-/************************************************/
+/*****************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         WalkAreas( Root->areas, rtn );
@@ -58,7 +62,7 @@ void WalkAllOvl( void (*rtn)( section * ) )
 }
 
 void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
-/**************************************************************************/
+/*******************************************************************/
 {
     rtn( Root, parm );
     if( FmtData.type & MK_OVERLAYS ) {
@@ -67,7 +71,7 @@ void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
 }
 
 void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
-/************************************************************************/
+/*****************************************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         ParmWalkAreas( Root->areas, rtn, parm );
@@ -78,30 +82,30 @@ static void NumASect( section *sect )
 /***********************************/
 {
     if( FmtData.u.dos.distribute ) {
-        SectOvlTab[OvlNum] = sect;
+        SectOvlTab[OvlSectNum] = sect;
     }
-    sect->ovlref = OvlNum++;
+    sect->ovlref = OvlSectNum++;
 }
 
 void NumberSections( void )
-/********************************/
+/*************************/
 {
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlNum + 1 ) );
+        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
         SectOvlTab[0] = Root;
     }
-    OvlNum = 1;
+    OvlSectNum = 1;
     WalkAllOvl( &NumASect );
 }
 
 void FillOutFilePtrs( void )
-/*********************************/
+/**************************/
 {
     WalkAllOvl( FillOutPtr );
 }
 
 void TryDefVector( symbol *sym )
-/**************************************/
+/******************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         if( sym->info & SYM_DISTRIB ) {
@@ -113,7 +117,7 @@ void TryDefVector( symbol *sym )
 }
 
 void TryUseVector( symbol *sym, extnode *newnode )
-/********************************************************/
+/************************************************/
 {
     if( newnode != NULL ) {
         newnode->ovlref = 0;
@@ -124,14 +128,14 @@ void TryUseVector( symbol *sym, extnode *newnode )
 }
 
 static void PSection( section *sec )
-/***********************************/
+/**********************************/
 {
     CurrSect = sec;
     PModList( sec->mods );
 }
 
 void OvlPass2( void )
-/**************************/
+/*******************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         EmitOvlVectors();

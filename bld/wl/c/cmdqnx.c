@@ -46,7 +46,7 @@
 #include "loadqnx.h"
 #include "wlnkmsg.h"
 #include "cmdqnx.h"
-#include "cmdos2.h"     // for ChkBase
+#include "cmdall.h"     // for ChkBase
 
 
 bool ProcQNX( void )

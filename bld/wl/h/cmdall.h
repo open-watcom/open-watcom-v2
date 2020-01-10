@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,6 +137,9 @@ extern bool     ProcOrdSegSegAdr( void );
 extern bool     ProcOrdSegOfsAdr( void );
 extern bool     ProcOrdSegCopy( void );
 extern bool     ProcOrdSegNoEmit( void );
+extern bool     ProcDescription( void );
+extern bool     ProcObjAlign( void );
 extern void     ResetCmdAll( void );
 
 extern sysblock *FindSysBlock( const char * );
+extern void     ChkBase( offset align );

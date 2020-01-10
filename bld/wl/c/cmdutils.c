@@ -1203,7 +1203,6 @@ section *NewSection( void )
 {
     section             *sect;
 
-    OvlNum++;
     _ChkAlloc( sect, sizeof( section ) );
     sect->next_sect = NULL;
     sect->classlist = NULL;

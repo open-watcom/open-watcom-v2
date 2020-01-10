@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,15 +55,23 @@
 
 #include "clibext.h"
 
+
+seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab */
+unsigned_16         AreaSize;
+list_of_names       *OvlClasses;        /* list of classes to be overlayed      */
+
 static segdata      *OvlSegData;
-static symbol       *OverlayTable;   /* symbol entry for overlay table */
-static symbol       *OverlayTableEnd;/* symbol entry for overlay table */
-static symbol       *OvlVecStart;    /* symbol entry for overlay vector start */
-static symbol       *OvlVecEnd;      /* symbol entry for overlay vector end */
-static targ_addr    OvlvecAddr;      /* address of overlay vectors */
+static symbol       *OverlayTable;      /* symbol entry for overlay table */
+static symbol       *OverlayTableEnd;   /* symbol entry for overlay table */
+static symbol       *OvlVecStart;       /* symbol entry for overlay vector start */
+static symbol       *OvlVecEnd;         /* symbol entry for overlay vector end */
+static targ_addr    OvlvecAddr;         /* address of overlay vectors */
 static targ_addr    Stash;
 
-unsigned_16         AreaSize;
+static group_entry  *OvlGroup;          /* pointer to group for overlay table   */
+static targ_addr    OvltabAddr;         /* address of overlay tables            */
+static unsigned     OvltabSize;         /* size of overlay tables               */
+static vecnode      *OvlVectors;        /* point to overlay vector notes        */
 
 static void         AllocAreas( OVL_AREA *area );
 
@@ -70,6 +79,10 @@ void ResetOvlSupp( void )
 /***********************/
 {
     AreaSize = 0xFFFF;
+    OvlVectors = NULL;
+    OvlSectNum = 1;
+    OvlClasses = NULL;
+    VecNum = 0;
 }
 
 static void ParmWalkSections( section *sect, void (*rtn)( section *, void * ), void *parm )
@@ -190,7 +203,7 @@ static void AllocSections( section *first_sect )
     if( first_sect == NonSect ) {
         if( FmtData.u.dos.dynamic ) {
             ovl_size = CurrLoc.seg - Stash.seg;
-            min_size = ovl_size + OvlNum + 1;  // need at least 1 para per sect. + 1
+            min_size = ovl_size + OvlSectNum + 1;  // need at least 1 para per sect. + 1
             if( min_size < 64 ) {
                 min_size = 64;      // reserve 1 K for the stack
             }
@@ -260,7 +273,7 @@ void CalcOvl( void )
     DEBUG(( DBG_OLD, "Overlay table address %a", &CurrLoc ));
     OvltabAddr = CurrLoc;
     /* calculate size of overlay table proper */
-    temp = sizeof( ovl_null_table ) + ( OvlNum - 1 ) * sizeof( ovltab_entry );
+    temp = sizeof( ovl_null_table ) + ( OvlSectNum - 1 ) * sizeof( ovltab_entry );
     SET_SYM_ADDR( OverlayTableEnd, CurrLoc.off + temp - sizeof( unsigned_16 ), CurrLoc.seg );
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->ovlfnoff = temp;
