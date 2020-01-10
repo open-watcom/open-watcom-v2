@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ static bool WriteBinSegGroup( group_entry *group )
             }
             DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                 &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
-            file_loc += WriteDOSGroupLoad( group, repos );
+            file_loc += WriteGroupLoad( group, repos );
             if( file_loc > finfo->file_loc ) {
                 finfo->file_loc = file_loc;
             }
@@ -120,7 +121,7 @@ void BinOutput( void )
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }
-                WriteGroupLoad( group );
+                WriteGroupLoad( group, false );
             }
         }
     } else {
@@ -463,7 +464,7 @@ extern void FiniRawLoadFile( void )
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }
-                file_loc += WriteGroupLoad( group );
+                file_loc += WriteGroupLoad( group, false );
             }
             if( file_loc > finfo->file_loc ) {
                 finfo->file_loc = file_loc;

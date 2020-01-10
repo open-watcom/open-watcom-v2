@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -410,7 +411,7 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
             iscode = false;
         }
         if( iscode == docode ) {  // logical XNOR would be better, but...
-            repos = WriteDOSGroup( group );
+            repos = WriteGroup( group );
             if( repos ) {
                 SeekLoad( fnode->file_loc );
             }

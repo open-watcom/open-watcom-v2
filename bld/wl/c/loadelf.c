@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,7 +282,7 @@ static void WriteELFGroups( ElfHdr *hdr )
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
         SetGroupHeaders( group, off, ph, sh );
-        WriteGroupLoad( group );
+        WriteGroupLoad( group, false );
         off = OffsetAlign( off + group->size, FmtData.objalign );
         sh->sh_name = AddSecName( hdr, GroupSecName( group ) );
         sh++;

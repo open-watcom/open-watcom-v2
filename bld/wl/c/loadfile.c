@@ -662,8 +662,8 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     }
 }
 
-bool WriteDOSGroup( group_entry *group )
-/**************************************/
+bool WriteGroup( group_entry *group )
+/***********************************/
 /* write the data for group to the loadfile */
 /* returns true if the file should be repositioned */
 {
@@ -689,7 +689,7 @@ bool WriteDOSGroup( group_entry *group )
         }
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                 &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
-        file_loc += WriteDOSGroupLoad( group, repos );
+        file_loc += WriteGroupLoad( group, repos );
         if( file_loc > finfo->file_loc ) {
             finfo->file_loc = file_loc;
         }
@@ -1056,8 +1056,8 @@ static bool WriteCopyGroups( void *_seg, void *_info )
     return( false );
 }
 
-offset  WriteDOSGroupLoad( group_entry *group, bool repos )
-/*********************************************************/
+offset  WriteGroupLoad( group_entry *group, bool repos )
+/******************************************************/
 {
     grpwriteinfo     info;
     class_entry      *class;
@@ -1077,12 +1077,6 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
         Ring2Lookup( group->leaders, DoGroupLeader, &info );
     }
     return( PosLoad() - grp_start );
-}
-
-offset  WriteGroupLoad( group_entry *group )
-/******************************************/
-{
-    return( WriteDOSGroupLoad( group, false ) );
 }
 
 void FreeOutFiles( void )

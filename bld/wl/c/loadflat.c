@@ -375,7 +375,7 @@ static unsigned WriteDataPages( unsigned long loc )
                 PadLoad( size );
                 loc += size;
             }
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             loc += group->size;
             last_page = group->size & (OSF_DEF_PAGE_SIZE-1);
         }

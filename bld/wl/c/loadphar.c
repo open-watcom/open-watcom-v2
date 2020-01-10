@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ static unsigned_32 WritePharData( unsigned file_pos )
     Root->u.file_loc = file_pos;
     Root->sect_addr = Groups->grp_addr;
     for( group = Groups; group != NULL; group = group->next_group ) {
-        repos = WriteDOSGroup( group );
+        repos = WriteGroup( group );
         if( repos ) {
             SeekLoad( fnode->file_loc );
         }
@@ -218,7 +219,7 @@ static unsigned_32 WritePharSegData( void )
         pos += group->totalsize;
     }
     for( group = Groups; group != NULL; group = group->next_group ) {
-        WriteGroupLoad( group );
+        WriteGroupLoad( group, false );
         if( group->totalsize > group->size ) {  // phar lap is stupid
             PadLoad( group->totalsize - group->size );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +87,7 @@ static void WriteBinData( void )
         CurrSect = sect;
 
         if( group->totalsize ) {
-            WriteDOSGroup( group );
+            WriteGroup( group );
             CodeSize += group->totalsize;
         }
         group = group->next_group;
@@ -129,7 +130,7 @@ static void WriteRDOSCode( void )
         CurrSect = sect;
         if( iscode ) {
             sect->u.file_loc = HeaderSize + CodeSize;
-            WriteDOSGroup( group );
+            WriteGroup( group );
             if( group->totalsize > group->size )
                 PadLoad( group->totalsize - group->size );
 
@@ -179,7 +180,7 @@ static void WriteRDOSData( void )
                     group->totalsize -= StackSize;
                 }
             }
-            WriteDOSGroup( group );
+            WriteGroup( group );
             if( group->totalsize > group->size )
                 PadLoad( group->totalsize - group->size );
             DataSize += group->totalsize;

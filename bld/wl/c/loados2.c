@@ -146,7 +146,7 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
                 LnkMsg( ERR+MSG_ALIGN_TOO_SMALL, NULL );
             }
             segrec.address = (unsigned_16)seg_addr;
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             NullAlign( 2 );         // segment must be even length
             relocsize = WriteOS2Relocs( group );
             if( relocsize != 0 ) {

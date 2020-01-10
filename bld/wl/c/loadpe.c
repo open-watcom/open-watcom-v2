@@ -445,7 +445,7 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
         }
         if( size_ph != 0 ) {
             object->physical_offset = NullAlign( file_align );
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             PadLoad( size_ph - group->size );
         }
         ++object;
