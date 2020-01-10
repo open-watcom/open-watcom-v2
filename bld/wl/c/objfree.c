@@ -202,7 +202,7 @@ void CleanLinkStruct( void )
     }
 }
 
-#if defined(_OS2) || defined( _QNXLOAD )
+#if defined( _OS2 ) || defined( _QNX )
 void FreeSegFlags( xxx_seg_flags *curr )
 /**************************************/
 {

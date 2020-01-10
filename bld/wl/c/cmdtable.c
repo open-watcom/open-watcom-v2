@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ parse_entry     Directives[] = {
     "IMPort",       &ProcImport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE), CF_AFTER_INC,
     "EXPort",       &ProcExport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD ), CF_AFTER_INC,
 #endif
-#if defined( _OS2 ) || defined( _QNXLOAD )
+#if defined( _OS2 ) || defined( _QNX )
     "SEGment",      &ProcSegment,       (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
 #endif
 #ifdef _EXE
@@ -141,7 +142,7 @@ parse_entry     Directives[] = {
     "MEMory",       &ProcMemory16M,     MK_DOS16M, 0,
     "TRansparent",  &ProcTransparent,   MK_DOS16M, 0,
 #endif
-#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNXLOAD )
+#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   &ProcNewSegment,    (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
 #endif
 #ifdef _INT_DEBUG
@@ -283,7 +284,7 @@ parse_entry     SysDirectives[] = {
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
     "RUntime",      &ProcRuntime,       (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
 #endif
-#if defined( _OS2 ) || defined( _QNXLOAD )
+#if defined( _OS2 ) || defined( _QNX )
     "SEGment",      &ProcSegment,       (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
 #endif
 #ifdef _DOS16M
@@ -305,7 +306,7 @@ parse_entry    Models[] = {
 #ifdef _NOVELL
     "NOVell",       &ProcNovell,        MK_NOVELL, 0,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     "QNX",          &ProcQNX,           MK_QNX, 0,
 #endif
 #ifdef _DOS16M
@@ -407,7 +408,7 @@ parse_entry  TransTypes[] = {
 };
 #endif
 
-#ifdef _QNXLOAD
+#ifdef _QNX
 /* parse tables used in CMDQNX.C */
 
 parse_entry QNXSegModel[] = {

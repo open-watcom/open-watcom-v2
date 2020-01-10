@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +101,7 @@ typedef union {
 
 #if defined( __QNX__ )
     #define _EXE       0
-    #define _QNXLOAD   1
+    #define _QNX       1
     #define _OS2       2
     #define _PHARLAP   3
     #define _NOVELL    4
@@ -108,7 +109,7 @@ typedef union {
 //    #define _ELF       6
 #else
     #define _EXE       0
-    #define _QNXLOAD   1
+    #define _QNX       1
     #define _OS2       2
     #define _PHARLAP   3
     #define _NOVELL    4

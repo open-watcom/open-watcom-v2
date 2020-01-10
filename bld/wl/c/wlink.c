@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -332,7 +333,7 @@ static void PostAddrCalcFormatSpec( void )
 #endif
     }
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     else if( FmtData.type & MK_QNX ) {
         SetQNXSegFlags();
     }

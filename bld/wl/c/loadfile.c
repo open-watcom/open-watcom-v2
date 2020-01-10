@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,7 @@ void FiniLoadFile( void )
     } else if( FmtData.type & MK_DOS16M ) {
         Fini16MLoadFile();
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     } else if( FmtData.type & MK_QNX ) {
         FiniQNXLoadFile();
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,7 @@ static  parse_entry   FormatHelp[] = {
 #ifdef _DOS16M
     "DOS16M",       Proc16MHelp,            MK_ALL,     0,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     "QNX",          ProcQNXHelp,            MK_ALL,     0,
 #endif
 #ifdef _ELF
@@ -425,7 +425,7 @@ static void DisplayOptions( void )
         isout = true;
     }
     WriteGenHelp();
-#if defined( _QNXLOAD ) && defined( __QNX__ )
+#if defined( _QNX ) && defined( __QNX__ )
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _EXE
@@ -446,7 +446,7 @@ static void DisplayOptions( void )
 #ifdef _DOS16M
     WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, isout );
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNX ) && !defined( __QNX__ )
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _ELF
@@ -533,7 +533,7 @@ static bool Proc16MHelp( void )
     return( true );
 }
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
 static bool ProcQNXHelp( void )
 /*******************************/
 {
@@ -685,7 +685,7 @@ void SetFormat( void )
         LnkMsg( MAP+MSG_EXE_NAME, "s", Root->outfile->fname );
         LnkMsg( MAP+MSG_CREATE_EXE, "f" );
     }
-#ifdef _QNXLOAD
+#ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         CmdQNXFini();
     }
@@ -705,7 +705,7 @@ static const select_format PossibleFmt[] = {
 #ifdef _DOS16M
     MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
 #endif
 #ifdef _ELF
@@ -987,7 +987,7 @@ bool ProcImport( void )
 #endif
 }
 
-#if defined(_OS2) || defined(_NOVELL)
+#if defined( _OS2 ) || defined( _NOVELL )
 bool ProcExport( void )
 /****************************/
 {
@@ -1004,11 +1004,11 @@ bool ProcExport( void )
 }
 #endif
 
-#if defined( _DOS16M ) || defined( _QNXLOAD ) || defined( _OS2 ) || defined( _ELF )
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
 bool ProcNoRelocs( void )
 /******************************/
 {
-#if defined( _QNXLOAD )
+#if defined( _QNX )
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXNoRelocs() );
     }
@@ -1032,7 +1032,7 @@ bool ProcNoRelocs( void )
 }
 #endif
 
-#if defined(_OS2) || defined(_QNXLOAD)
+#if defined( _OS2 ) || defined( _QNX )
 bool ProcSegment( void )
 /*****************************/
 {
@@ -1041,7 +1041,7 @@ bool ProcSegment( void )
         return( ProcOS2Segment() );
     }
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXSegment() );
     }
@@ -1076,7 +1076,7 @@ bool ProcHeapSize( void )
         return( ProcOS2HeapSize() );
     }
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNX ) && !defined( __QNX__ )
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXHeapSize() );
     }
@@ -1084,7 +1084,7 @@ bool ProcHeapSize( void )
     return( true );
 }
 
-#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2) || defined(_RAW)
+#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _RAW )
 bool ProcOffset( void )
 /****************************/
 {
