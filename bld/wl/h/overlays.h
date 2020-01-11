@@ -31,9 +31,6 @@
 ****************************************************************************/
 
 
-typedef void walksecs_fn( section * );
-typedef void parmwalksecs_fn( section *, void * );
-
 extern seg_leader       *OvlSeg;
 extern unsigned_16      AreaSize;
 extern byte             OvlSectNum;
@@ -68,8 +65,6 @@ extern void             SetOvlTableLoc( group_entry *, unsigned long );
 
 extern void             WalkAllOvl( walksecs_fn * );
 extern void             ParmWalkAllOvl( parmwalksecs_fn *, void * );
-extern void             WalkAllSects( walksecs_fn * );
-extern void             ParmWalkAllSects( parmwalksecs_fn *, void * );
 extern void             NumberSections( void );
 extern void             FillOutFilePtrs( void );
 extern void             TryDefVector( symbol * );

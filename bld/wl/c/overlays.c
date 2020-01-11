@@ -44,29 +44,11 @@
 
 byte    OvlSectNum;
 
-void WalkAllSects( void (*rtn)( section * ) )
-/*******************************************/
-{
-    rtn( Root );
-    if( FmtData.type & MK_OVERLAYS ) {
-        WalkAreas( Root->areas, rtn );
-    }
-}
-
 void WalkAllOvl( void (*rtn)( section * ) )
 /*****************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         WalkAreas( Root->areas, rtn );
-    }
-}
-
-void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
-/*******************************************************************/
-{
-    rtn( Root, parm );
-    if( FmtData.type & MK_OVERLAYS ) {
-        ParmWalkAreas( Root->areas, rtn, parm );
     }
 }
 

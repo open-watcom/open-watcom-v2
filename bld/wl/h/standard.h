@@ -37,7 +37,7 @@
 #include "bool.h"
 #include "iopath.h"
 
-/* configured supported target formats */
+/* linker configured output formats */
 #define _EXE            0
 #define _QNX            1
 #define _OS2            2
