@@ -25,40 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  Overlay loader IO routines.
+* Description:  set the sharing flags used by the overlay manager
 *
 ****************************************************************************/
 
 
-#include "ovlstd.h"
-
-
-tiny_ret_t __near __OvlOpen__( const char __far *fname )
-/******************************************************/
-{
-    open_attr   openmode;
-
-    openmode = TIO_READ;
-    if( __OVLFLAGS__ & OVL_DOS3 ) {
-        openmode |= TIO_INHERITANCE;
-    }
-    return( TinyFarOpen( fname, __OVLSHARE__ | openmode ) );
-}
-
-tiny_ret_t __near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
-/*******************************************************************/
-{
-    return( TinySeek( hdl, pos, TIO_SEEK_START ) );
-}
-
-tiny_ret_t __near __OvlRead__( tiny_handle_t hdl, void __far *buff, unsigned len )
-/********************************************************************************/
-{
-    return( TinyFarRead( hdl, buff, len ) );
-}
-
-void __near __OvlClose__( tiny_handle_t hdl )
-/*******************************************/
-{
-    TinyClose( hdl );
-}
+extern unsigned __far _ovl_openflags( unsigned share );

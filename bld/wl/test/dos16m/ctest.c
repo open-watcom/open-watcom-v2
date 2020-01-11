@@ -3,7 +3,8 @@
 #include <string.h>
 #include <dos16.h>
 
-extern char __far       _env16M[]; 
+
+extern char __far       _env16M[];
 
 /* Exercise basic DOS/16M functionality, especially the special
  * DOS/16M kernel selectors (which require the linker to handle

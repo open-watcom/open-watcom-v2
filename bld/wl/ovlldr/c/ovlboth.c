@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,9 @@
 #include <string.h>
 #include "ovlstd.h"
 
-extern void __near __OvlMsg__( unsigned msg )
-//=========================================
+
+void __near __OvlMsg__( unsigned msg )
+//====================================
 // Write message.
 {
     char __far  *ptr;
@@ -44,8 +46,8 @@ extern void __near __OvlMsg__( unsigned msg )
     TinyFarWrite( TIO_STDERR_FILENO, ptr + sizeof( char ), *ptr );
 }
 
-extern void __near __OvlExit__( unsigned msg )
-//==========================================
+void __near __OvlExit__( unsigned msg )
+//=====================================
 // Terminate execution.
 {
     __OvlMsg__( msg );
@@ -116,8 +118,8 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
 #define FNMAX 80
 
 #ifdef OVL_DEBUG
-extern void __near __OvlNum__( unsigned ovl_num )
-//=============================================
+void __near __OvlNum__( unsigned ovl_num )
+//========================================
 // Write overlay number.
 {
     char    buff[4];    // assume overlay number < 9999
@@ -154,8 +156,8 @@ static char __far *getpathenv( void )
     return( __OVLNULLSTR__ );
 }
 
-extern void __far __CloseOvl__( void )
-//==================================
+void __far __CloseOvl__( void )
+//=============================
 {
     if( __OVLFILEPREV__ != 0xFFFF ) {
         __OvlClose__( TINY_INFO( __OVLHDLPREV__ ) );
@@ -164,8 +166,8 @@ extern void __far __CloseOvl__( void )
 }
 
 
-extern tiny_ret_t __near __OpenOvl__( unsigned offset )
-//===================================================
+tiny_ret_t __near __OpenOvl__( unsigned offset )
+//==============================================
 // Open section file.
 {
     char __far  *fname;

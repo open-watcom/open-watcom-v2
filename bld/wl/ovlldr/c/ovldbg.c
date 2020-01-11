@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,22 +41,10 @@
 #endif
 #include "ovlldr.h"
 #include "trpovl.h"
+#include "xovldbg.h"
 
 
 typedef unsigned char byte;
-
-#ifdef OVL_WHOOSH
-typedef struct {
-    unsigned    location;
-    unsigned    section;
-    unsigned    bitsize;
-} ovl_dbg_info;
-
-extern ovl_dbg_info _CODE_BASED __OVLDBGINFO__;
-#else
-extern unsigned     _CODE_BASED __BankStack__;
-#endif
-
 
 static int GetSizeOverlays( void )
 /********************************/
