@@ -710,13 +710,16 @@ size_t IncSaveRelocs( void *_save )
 static void DumpReloc( base_reloc *breloc )
 /*****************************************/
 {
+#ifdef _QNX
     if( breloc->isfloat ) {
-        FloatReloc( &breloc->item );
+        QNXFloatReloc( &breloc->item );
     } else if( breloc->isqnxlinear ) {
         QNXLinearReloc( CurrRec.seg->u.leader->group, &breloc->item );
     } else {
+#endif
         WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off,
                     &breloc->item, breloc->rel_size );
+#ifdef _OS2
         if( FmtData.type & MK_OS2_FLAT ) {
             if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
                 /* stupid relocation has been split across two
@@ -726,7 +729,10 @@ static void DumpReloc( base_reloc *breloc )
                             breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
             }
         }
+#endif
+#ifdef _QNX
     }
+#endif
 }
 
 static void InitReloc( base_reloc *breloc )
@@ -831,6 +837,7 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
     }
 }
 
+#ifdef _QNX
 static void MakeQNXFloatReloc( fix_relo_data *fix )
 /*************************************************/
 {
@@ -844,7 +851,9 @@ static void MakeQNXFloatReloc( fix_relo_data *fix )
         DumpReloc( &breloc );
     }
 }
+#endif
 
+#ifdef _OS2
 static void MakeWindowsFloatReloc( fix_relo_data *fix )
 /*****************************************************/
 {
@@ -859,6 +868,7 @@ static void MakeWindowsFloatReloc( fix_relo_data *fix )
     os2item->put.fltpt = fix->fpp_type;
     DumpReloc( &breloc );
 }
+#endif
 
 static offset GetSegOff( segdata *sdata )
 /***************************************/
@@ -898,25 +908,39 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
     segdata     *sdata;
     fix_type    special;
 
+#ifdef _ELF
     if( FmtData.type & MK_ELF ) {
-        if( (fix->type & FIX_REL) == 0 )
+        if( (fix->type & FIX_REL) == 0 ) {
             return( false );
-#if 0
+        }
+  #if 0
     XXX: this is not the right thing to do for elf-i386
-        if( fix->loc_addr.seg != fix->tgt_addr.seg )
+        if( fix->loc_addr.seg != fix->tgt_addr.seg ) {
             return( false );
-#endif
+        }
+  #endif
     }
-    if( (FmtData.type & (MK_QNX | MK_WINDOWS)) && ( fix->fpp_type != FPP_NONE ) ) {
-        if( fix->fpp_type != FPP_IGNORE ) {
-            if( FmtData.type & MK_QNX ) {
+#endif
+#if defined( _QNX ) || defined( _OS2 )
+    if( ( fix->fpp_type != FPP_NONE ) ) {
+  #ifdef _QNX
+        if( FmtData.type & MK_QNX ) {
+            if( fix->fpp_type != FPP_IGNORE ) {
                 MakeQNXFloatReloc( fix );
-            } else {
+            }
+            return( true );
+        }
+  #endif
+  #ifdef _OS2
+        if( FmtData.type & MK_WINDOWS ) {
+            if( fix->fpp_type != FPP_IGNORE ) {
                 MakeWindowsFloatReloc( fix );
             }
+            return( true );
         }
-        return( true );
+  #endif
     }
+#endif
     special = fix->type & FIX_SPECIAL_MASK;
     if( ( special == FIX_TOC ) || ( special == FIX_TOCV ) ) {
         if( special == FIX_TOCV ) {
@@ -946,6 +970,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
     }
     if( (fix->type & FIX_REL) == 0 )
         return( false );
+#ifdef _OS2
     if( FmtData.type & MK_OS2_FLAT ) {
         /* OS/2 V2 relative fixups to imported items or other objects
             require special handling */
@@ -955,6 +980,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
             return( false );
         }
     }
+#endif
     if( (fix->type & FIX_ABS) && (FmtData.type & MK_QNX) == 0 ) {
         LnkMsg( LOC+ERR+MSG_BAD_ABS_FIXUP, "a", &fix->loc_addr );
         return( true );
@@ -964,11 +990,18 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         return( true );
     }
     if( fix->imported ) {
+#ifdef _OS2
         if( FmtData.type & MK_OS2_16BIT ) {  // can not get at a DLL relatively
             LnkMsg( LOC+ERR+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
-        } else if( FmtData.type & MK_ELF ) {
+        }
+#endif
+#ifdef _ELF
+        if( FmtData.type & MK_ELF ) {
             return( false );
-        } else if( FmtData.type & MK_NOVELL ) {
+        }
+#endif
+#ifdef _NOVELL
+        if( FmtData.type & MK_NOVELL ) {
             if( ( (fix->type & FIX_OFFSET_MASK) != FIX_OFFSET_32 )
                 || (fix->type & FIX_BASE) ) {
                 LnkMsg( LOC+ERR+MSG_BAD_IMP_REL_RELOC, "a", &fix->loc_addr );
@@ -979,6 +1012,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
                 PatchOffset( fix, (offset)-4, true );
             }
         }
+#endif
         return( true );
     }
     /* XXX: MK_ELF must not be included for non-i386 */
