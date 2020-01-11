@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +48,7 @@
 #include "cmdline.h"
 #include "cmdrdv.h"
 
+
 void SetRdosFmt( void )
 /*********************/
 // set up the structures needed to be able to process something in RDOS mode.
@@ -67,16 +69,16 @@ void FreeRdosFmt( void )
 {
 }
 
-extern bool ProcRdos( void )
-/*************************/
+bool ProcRdos( void )
+/*******************/
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
     ProcOne( RdosOptions, SEP_NO, false );
     return( true );
 }
 
-extern bool ProcRdosDev16( void )
-/*************************/
+bool ProcRdosDev16( void )
+/************************/
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 16;
@@ -84,8 +86,8 @@ extern bool ProcRdosDev16( void )
     return( true );
 }
 
-extern bool ProcRdosDev32( void )
-/*************************/
+bool ProcRdosDev32( void )
+/************************/
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 32;
@@ -93,8 +95,8 @@ extern bool ProcRdosDev32( void )
     return( true );
 }
 
-extern bool ProcRdosBin16( void )
-/*************************/
+bool ProcRdosBin16( void )
+/************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
@@ -102,8 +104,8 @@ extern bool ProcRdosBin16( void )
     return( true );
 }
 
-extern bool ProcRdosBin32( void )
-/*************************/
+bool ProcRdosBin32( void )
+/************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 32;
@@ -111,8 +113,8 @@ extern bool ProcRdosBin32( void )
     return( true );
 }
 
-extern bool ProcRdosMboot( void )
-/*************************/
+bool ProcRdosMboot( void )
+/************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;

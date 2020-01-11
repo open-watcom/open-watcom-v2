@@ -58,7 +58,7 @@ parse_entry     PosDbgMods[] = {
     NULL
 };
 
- parse_entry     DbgMods[] = {
+parse_entry     DbgMods[] = {
     "Watcom",       &ProcWatcomDBI,     MK_ALL, 0,
     "Dwarf",        &ProcDwarfDBI,      MK_ALL, 0,
     "Codeview",     &ProcCodeviewDBI,   MK_ALL, 0,
@@ -385,11 +385,6 @@ parse_entry  RunOptions[] = {
 #ifdef _DOS16M
 /* parse tables used in cmd16m.c */
 
-extern bool     ProcTryExtended( void );
-extern bool     ProcTryLow( void );
-extern bool     ProcForceExtended( void );
-extern bool     ProcForceLow( void );
-
 parse_entry  Strategies[] = {
     "TRYExtended",  &ProcTryExtended,   MK_DOS16M, 0,
     "TRYLow",       &ProcTryLow,        MK_DOS16M, 0,
@@ -397,9 +392,6 @@ parse_entry  Strategies[] = {
     "FORCELow",     &ProcForceLow,      MK_DOS16M, 0,
     NULL
 };
-
-extern bool     ProcTStack( void );
-extern bool     ProcTData( void );
 
 parse_entry  TransTypes[] = {
     "STack",        &ProcTStack,        MK_DOS16M, 0,

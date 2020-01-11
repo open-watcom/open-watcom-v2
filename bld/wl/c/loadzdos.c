@@ -44,11 +44,12 @@
 #include "fileio.h"
 #include "loadfile.h"
 
+
 static unsigned_32  WriteZdosData( unsigned file_pos );
 static unsigned_32  WriteZdosRelocs( void );
 
-extern void FiniZdosLoadFile( void )
-/*************************************/
+void FiniZdosLoadFile( void )
+/***************************/
 {
     zdos_exe_header header;
     unsigned_32     position;

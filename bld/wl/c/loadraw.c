@@ -426,8 +426,8 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
     return( PosLoad() - file_loc );
 }
 
-extern void FiniRawLoadFile( void )
-/*************************************/
+void FiniRawLoadFile( void )
+/**************************/
 {
     group_entry     *group;
     outfilelist     *fnode;

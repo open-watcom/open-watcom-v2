@@ -378,8 +378,8 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
     return( true );
 }
 
-extern bool GetNumber( unsigned long *val )
-/*****************************************/
+bool GetNumber( unsigned long *val )
+/**********************************/
 {
     return( GetNumberStr( val, CmdFile->token, CmdFile->len ) );
 }
@@ -446,8 +446,8 @@ static bool ProcessKeyword( parse_entry *entry )
 
 // the microsoft definitions file.
 
-extern void ProcessDefCommand( void )
-/***********************************/
+void ProcessDefCommand( void )
+/****************************/
 {
     if( !ProcessKeyword( DefStatements ) ) {
         if( MultiLine != NULL ) {
@@ -1559,8 +1559,8 @@ static void ProcWarnFixup( const char *arg )
     NotSupported( "warnfixup" );
 }
 
-extern void ProcessOption( const char *opt )
-/******************************************/
+void ProcessOption( const char *opt )
+/***********************************/
 {
     switch_entry        *entry;
     const char          *key;

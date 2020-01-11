@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,9 @@
 #include "cmdline.h"
 #include "cmdraw.h"
 
-extern bool ProcRaw( void )
-/*************************/
+
+bool ProcRaw( void )
+/******************/
 {
     FmtData.base = 0;                               // Default offset
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
@@ -56,16 +58,16 @@ extern bool ProcRaw( void )
     return( true );
 }
 
-extern bool ProcRawBIN( void )
-/*************************/
+bool ProcRawBIN( void )
+/*********************/
 {
     Extension = E_BIN;
     FmtData.raw_hex_output = false;
     return( true );
 }
 
-extern bool ProcRawHEX( void )
-/*************************/
+bool ProcRawHEX( void )
+/*********************/
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = true;

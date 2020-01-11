@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,11 @@
 
 #ifdef _INT_DEBUG
 
-long unsigned SpyWrite = -1;
+extern int      Debug;
+
+long unsigned   TrecCount;
+bool            TrecHit = false;
+long unsigned   SpyWrite = -1;
 
 static jmp_buf  lj;
 static int      segViolationCount;
@@ -93,8 +97,6 @@ void LPrint( const char *str, ... )
 
 //---------------------------------------------------------------
 
-extern int Debug;
-
 void _Debug( unsigned int mask, const char *str, ... )
 {
     va_list     arglist;
@@ -113,9 +115,6 @@ void _Debug( unsigned int mask, const char *str, ... )
 }
 
 //---------------------------------------------------------------
-
-long unsigned   TrecCount;
-bool            TrecHit = false;
 
 static void TrecFailCondition( void )
 // set TrecHit here if failure detected:
