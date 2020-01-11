@@ -50,29 +50,9 @@
 #include "clibext.h"
 
 
-static group_entry      *GetAutoGroup( bool );
-static void             SortGroup( seg_leader * );
-static void             PackSegs( seg_leader *, unsigned );
-static void             SortGroupList( void );
-static void             FindSplitGroups( void );
-static void             NumberNonAutos( void );
-static void             AutoGroupSect( section * );
-
-
-static group_entry      *CurrGroup;
 int                     NumGroups;
 
-void AutoGroup( void )
-/********************/
-{
-    WalkAllSects( &AutoGroupSect );
-    SortGroupList();
-    FindSplitGroups();
-    if( NumGroups == 0 ) {
-        LnkMsg( FTL+MSG_NO_CODE_OR_DATA, NULL );
-    }
-    NumberNonAutos();
-}
+static group_entry      *CurrGroup;
 
 static offset GetSegGroupPackLimit( seg_leader *seg )
 /***************************************************/
@@ -164,6 +144,59 @@ static bool CanPack( seg_leader *one, seg_leader *two )
     return( true );
 }
 
+static group_entry *GetAutoGroup( bool abs_seg )
+/***********************************************/
+{
+    group_entry      *group;
+    group_entry **   grp_list;
+
+    if( abs_seg ) {
+        grp_list = &AbsGroups;
+    } else {
+        grp_list = &Groups;
+    }
+    group = AllocGroup( AutoGrpName, grp_list );
+    if( !abs_seg ) {
+        CurrGroup = group;
+    }
+    return( group );
+}
+
+static void PackSegs( seg_leader *seg, unsigned num_segs )
+/********************************************************/
+{
+    group_entry         *group;
+
+    if( num_segs == 0 )
+        return;
+
+    if( seg->group != NULL ) {
+        group = seg->group;
+    } else {
+        group = GetAutoGroup( seg->info & SEG_ABSOLUTE );
+    }
+    group->section = seg->class->section;
+    while( num_segs != 0 ) {
+        if( seg->group == NULL || seg->group == group ) {
+            if( (seg->info & SEG_CODE) == 0 ) {
+                group->segflags |= SEG_DATA;
+            }
+            if( (seg->class->flags & CLASS_READ_ONLY) == 0 ) {
+                group->segflags &= ~SEG_READ_ONLY;
+            }
+            if( seg->class->flags & CLASS_COPY ) {  // If class is copied, mark group accordingly
+                group->isdup = true;
+            }
+            if( seg->group == NULL ) {              // if its not in a group add it to this one
+                seg->group = group;
+                Ring2Append( &group->leaders, seg );
+            }
+            --num_segs;
+        }
+        seg = GetNextSeg( group->section, seg );
+    }
+}
+
 static void AutoGroupSect( section *sec )
 /***************************************/
 {
@@ -216,41 +249,6 @@ static void AutoGroupSect( section *sec )
     PackSegs( packstart, num_segs );
 }
 
-static void PackSegs( seg_leader *seg, unsigned num_segs )
-/********************************************************/
-{
-    group_entry         *group;
-
-    if( num_segs == 0 )
-        return;
-
-    if( seg->group != NULL ) {
-        group = seg->group;
-    } else {
-        group = GetAutoGroup( seg->info & SEG_ABSOLUTE );
-    }
-    group->section = seg->class->section;
-    while( num_segs != 0 ) {
-        if( seg->group == NULL || seg->group == group ) {
-            if( (seg->info & SEG_CODE) == 0 ) {
-                group->segflags |= SEG_DATA;
-            }
-            if( (seg->class->flags & CLASS_READ_ONLY) == 0 ) {
-                group->segflags &= ~SEG_READ_ONLY;
-            }
-            if( seg->class->flags & CLASS_COPY ) {  // If class is copied, mark group accordingly
-                group->isdup = true;
-            }
-            if( seg->group == NULL ) {              // if its not in a group add it to this one
-                seg->group = group;
-                Ring2Append( &group->leaders, seg );
-            }
-            --num_segs;
-        }
-        seg = GetNextSeg( group->section, seg );
-    }
-}
-
 static void InitGroup( group_entry *group )
 /*****************************************/
 {
@@ -291,22 +289,28 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
     return( group );
 }
 
-static group_entry *GetAutoGroup( bool abs_seg )
-/***********************************************/
+static void SortGroup( seg_leader *seg )
+/**************************************/
+// Go through the classes & segments, and rebuild the group list in sorted form
 {
-    group_entry      *group;
-    group_entry **   grp_list;
-
-    if( abs_seg ) {
-        grp_list = &AbsGroups;
-    } else {
-        grp_list = &Groups;
+    if( seg->group == NULL )
+        return;
+    if( seg->info & SEG_ABSOLUTE )
+        return;
+    Ring2Append( &seg->group->leaders, seg );
+    if( seg->group->next_group == NULL ) { // not in the list yet
+        if( CurrGroup == NULL ) {
+            Groups = CurrGroup = seg->group;
+        } else {
+            CurrGroup->next_group = seg->group;
+            CurrGroup = CurrGroup->next_group;
+        }
+        // Make the list circular so we have an easy way of telling if a node
+        // is in the list.
+        CurrGroup->next_group = Groups;
+        NumGroups--;
+        DbgAssert( NumGroups >= 0 );
     }
-    group = AllocGroup( AutoGrpName, grp_list );
-    if( !abs_seg ) {
-        CurrGroup = group;
-    }
-    return( group );
 }
 
 static void SortGroupList( void )
@@ -332,30 +336,6 @@ static void SortGroupList( void )
     WalkLeaders( SortGroup );
     CurrGroup->next_group = NULL;  // break the circular list.
     NumGroups = number;            // save # of groups.
-}
-
-static void SortGroup( seg_leader *seg )
-/**************************************/
-// Go through the classes & segments, and rebuild the group list in sorted form
-{
-    if( seg->group == NULL )
-        return;
-    if( seg->info & SEG_ABSOLUTE )
-        return;
-    Ring2Append( &seg->group->leaders, seg );
-    if( seg->group->next_group == NULL ) { // not in the list yet
-        if( CurrGroup == NULL ) {
-            Groups = CurrGroup = seg->group;
-        } else {
-            CurrGroup->next_group = seg->group;
-            CurrGroup = CurrGroup->next_group;
-        }
-        // Make the list circular so we have an easy way of telling if a node
-        // is in the list.
-        CurrGroup->next_group = Groups;
-        NumGroups--;
-        DbgAssert( NumGroups >= 0 );
-    }
 }
 
 static bool CheckGroupSplit( void *leader, void *sect )
@@ -396,4 +376,16 @@ static void NumberNonAutos( void )
             group->num = num;
         }
     }
+}
+
+void AutoGroup( void )
+/********************/
+{
+    WalkAllSects( &AutoGroupSect );
+    SortGroupList();
+    FindSplitGroups();
+    if( NumGroups == 0 ) {
+        LnkMsg( FTL+MSG_NO_CODE_OR_DATA, NULL );
+    }
+    NumberNonAutos();
 }

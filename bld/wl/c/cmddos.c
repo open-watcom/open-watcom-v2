@@ -43,13 +43,6 @@
 #include "cmdline.h"
 #include "cmddos.h"
 
-#ifdef _INT_DEBUG
-static void             PrintOvl( void );
-static void             PrintAreas( OVL_AREA *ovlarea );
-static void             PrintSect( section *sect );
-#endif
-static bool             AddClass( void );
-static void             NewArea( section *sect );
 
 static byte             OvlLevel;
 
@@ -137,6 +130,23 @@ static section *OvlNewSection( void )
     return( NewSection() );
 }
 
+static void NewArea( section *sect )
+/**********************************/
+/* allocate a new area including this section */
+{
+    ovl_area            *ovl;
+    ovl_area            **owner;
+
+    _PermAlloc( ovl, sizeof( ovl_area ) );
+    ovl->next_area = NULL;
+    ovl->sections = sect;
+    sect->parent = CurrSect;
+    for( owner = &CurrSect->areas; *owner != NULL; ) {
+        owner = &(*owner)->next_area;
+    }
+    *owner = ovl;
+}
+
 // this is an arbitrary non-zero value put in the sect->relocs field to
 // signify that ProcBegin already made a new section, so ProcSection
 // should not.
@@ -189,23 +199,6 @@ bool ProcInto( void )
     }
     LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
     return( false );
-}
-
-static void NewArea( section *sect )
-/**********************************/
-/* allocate a new area including this section */
-{
-    ovl_area            *ovl;
-    ovl_area            **owner;
-
-    _PermAlloc( ovl, sizeof( ovl_area ) );
-    ovl->next_area = NULL;
-    ovl->sections = sect;
-    sect->parent = CurrSect;
-    for( owner = &CurrSect->areas; *owner != NULL; ) {
-        owner = &(*owner)->next_area;
-    }
-    *owner = ovl;
 }
 
 
@@ -387,32 +380,8 @@ bool ProcArea( void )
     return( ret );
 }
 
-void CmdOvlFini( void )
-/****************************/
-{
-    if( OvlLevel != 0 ) {
-        Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_EXPECTING_END, NULL );
-    }
-    if( FmtData.u.dos.dynamic &&
-        ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
-        Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_INCORRECT_NUM_AREAS, NULL );
-    }
-    SetOvlClasses();
-    MakeNonArea();
 #ifdef _INT_DEBUG
-    PrintOvl();
-#endif
-}
-
-#ifdef _INT_DEBUG
-static void PrintOvl( void )
-/**************************/
-{
-    OvlLevel = 0;
-    PrintAreas( Root->areas );
-}
+static void PrintSect( section *sect );
 
 static void PrintAreas( OVL_AREA *ovlarea )
 {
@@ -426,6 +395,12 @@ static void PrintAreas( OVL_AREA *ovlarea )
     }
 }
 
+static void PrintOvl( void )
+/**************************/
+{
+    OvlLevel = 0;
+    PrintAreas( Root->areas );
+}
 
 static void PrintSect( section *sect )
 /************************************/
@@ -448,3 +423,22 @@ static void PrintSect( section *sect )
     OvlLevel--;
 }
 #endif
+
+void CmdOvlFini( void )
+/****************************/
+{
+    if( OvlLevel != 0 ) {
+        Ignite();
+        LnkMsg( LOC+LINE+FTL+MSG_EXPECTING_END, NULL );
+    }
+    if( FmtData.u.dos.dynamic &&
+        ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
+        Ignite();
+        LnkMsg( LOC+LINE+FTL+MSG_INCORRECT_NUM_AREAS, NULL );
+    }
+    SetOvlClasses();
+    MakeNonArea();
+#ifdef _INT_DEBUG
+    PrintOvl();
+#endif
+}

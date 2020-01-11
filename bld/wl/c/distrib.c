@@ -61,7 +61,6 @@ static unsigned_16  CurrModHandle;
 
 /* forward declarations */
 
-static bool     NewRefVector( symbol *, overlay_ref, overlay_ref );
 static void     ScanArcs( mod_entry *mod );
 
 void ResetDistrib( void )
@@ -286,6 +285,27 @@ overlay_ref LowestAncestor( overlay_ref ovlref, section * sect )
     return( list->ovlref );
 }
 
+static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlref )
+/*********************************************************************************/
+/* sometimes there can be an overlay vector generated to a routine specified
+ * in an .OBJ file caused by a call from a library routine. this checks for
+ * this case.*/
+{
+    if( ( sym->p.seg == NULL )
+        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+        return( true );
+    }
+    /*
+     * at this point, we know it has already been defined, but does not have an
+     * overlay vector, and is not data
+     */
+    if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
+        Vectorize( sym );
+        return( true );
+    }
+    return( false );
+}
+
 void DefDistribSym( symbol * sym )
 /***************************************/
 /* move current module based on where this symbol has been referenced from,
@@ -382,27 +402,6 @@ void RefDistribSym( symbol * sym )
     } else {   // just a reference, so it has to be added to the call graph.
         AddArc( arc );
     }
-}
-
-static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlref )
-/*********************************************************************************/
-/* sometimes there can be an overlay vector generated to a routine specified
- * in an .OBJ file caused by a call from a library routine. this checks for
- * this case.*/
-{
-    if( ( sym->p.seg == NULL )
-        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
-        return( true );
-    }
-    /*
-     * at this point, we know it has already been defined, but does not have an
-     * overlay vector, and is not data
-     */
-    if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
-        Vectorize( sym );
-        return( true );
-    }
-    return( false );
 }
 
 static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )

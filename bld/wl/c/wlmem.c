@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,21 +56,36 @@
 #include "ideentry.h"
 
 void    *TrHdl;
-
-static void         PrintAllMem( void );
 #endif
 
-static bool         CacheRelease( void );
-
 #ifdef TRMEM
-
 static void PrintLine( void *bogus, const char *buff, size_t len )
 {
     /* unused parameters */ (void)bogus; (void)len;
 
     WriteStdOutWithNL( (void *)buff );
 }
+
+static void PrintAllMem( void )
+/*****************************/
+{
+    if( _trmem_prt_list( TrHdl ) == 0 ) {
+        _trmem_prt_usage( TrHdl );
+    }
+}
 #endif
+
+static bool CacheRelease( void )
+/******************************/
+{
+    bool   freed;
+
+    freed = DumpObjCache();
+    if( !freed ) {
+        freed = DiscardDicts();      /* .. discard dictionarys */
+    }
+    return( freed );
+}
 
 void LnkMemInit( void )
 /*********************/
@@ -223,16 +238,6 @@ int ValidateMem( void )
 #endif
 }
 
-#ifdef TRMEM
-void PrintAllMem( void )
-/**********************/
-{
-    if( _trmem_prt_list( TrHdl ) == 0 ) {
-        _trmem_prt_usage( TrHdl );
-    }
-}
-#endif
-
 #ifndef NDEBUG
 void DbgZapAlloc( void *tgt, size_t size )
 /****************************************/
@@ -246,18 +251,6 @@ void DbgZapFreed( void *tgt, size_t size )
     memset( tgt, 0xBD, size );
 }
 #endif
-
-static bool CacheRelease( void )
-/******************************/
-{
-    bool   freed;
-
-    freed = DumpObjCache();
-    if( !freed ) {
-        freed = DiscardDicts();      /* .. discard dictionarys */
-    }
-    return( freed );
-}
 
 bool FreeUpMemory( void )
 /***********************/

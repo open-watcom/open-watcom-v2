@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +74,6 @@ static orl_handle               ORLHandle;
 static long                     ORLFilePos;
 static long                     ORLPos;
 
-static void                     ClearCachedData( file_list *list );
-
 static ORL_STRUCT( orl_reloc )  SavedReloc;
 static char                     *ImpExternalName;
 static char                     *ImpModName;
@@ -141,27 +140,6 @@ static long ORLFileSeek( file_list *list, long pos, int where )
     return( ORLFilePos + ORLPos );
 }
 
-bool IsORL( file_list *list, unsigned long loc )
-/**********************************************/
-// return true if this is can be handled by ORL
-{
-    orl_file_format     type;
-    bool                isOK;
-
-    isOK = true;
-    ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, FL2FP( list ) );
-    if( type == ORL_ELF ) {
-        ObjFormat |= FMT_ELF;
-    } else if( type == ORL_COFF ) {
-        ObjFormat |= FMT_COFF;
-    } else {
-        isOK = false;
-    }
-    ClearCachedData( list );
-    return( isOK );
-}
-
 static orl_file_handle InitFile( void )
 /*************************************/
 {
@@ -192,6 +170,27 @@ static void ClearCachedData( file_list *list )
         _LnkFree( cache );
     }
     ReadCacheList = NULL;
+}
+
+bool IsORL( file_list *list, unsigned long loc )
+/**********************************************/
+// return true if this is can be handled by ORL
+{
+    orl_file_format     type;
+    bool                isOK;
+
+    isOK = true;
+    ORLFileSeek( list, loc, SEEK_SET );
+    type = ORLFileIdentify( ORLHandle, FL2FP( list ) );
+    if( type == ORL_ELF ) {
+        ObjFormat |= FMT_ELF;
+    } else if( type == ORL_COFF ) {
+        ObjFormat |= FMT_COFF;
+    } else {
+        isOK = false;
+    }
+    ClearCachedData( list );
+    return( isOK );
 }
 
 static void FiniFile( orl_file_handle filehdl, file_list *list )

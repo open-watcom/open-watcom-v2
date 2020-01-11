@@ -45,8 +45,37 @@
 #include "loadfile.h"
 
 
-static unsigned_32  WriteZdosData( unsigned file_pos );
-static unsigned_32  WriteZdosRelocs( void );
+static unsigned_32 WriteZdosData( unsigned file_pos )
+/***************************************************/
+{
+    group_entry         *group;
+    outfilelist *       fnode;
+    bool                repos;
+
+    DEBUG(( DBG_BASE, "Writing data" ));
+    OrderGroups( CompareOffsets );
+    CurrSect = Root;            // needed for WriteInfo.
+    fnode = Root->outfile;
+    fnode->file_loc = file_pos;
+    Root->u.file_loc = file_pos;
+    Root->sect_addr = Groups->grp_addr;
+    for( group = Groups; group != NULL; group = group->next_group ) {
+        repos = WriteGroup( group );
+        if( repos ) {
+            SeekLoad( fnode->file_loc );
+        }
+    }
+    return( fnode->file_loc - file_pos );
+}
+
+static unsigned_32 WriteZdosRelocs( void )
+/****************************************/
+{
+    RELOC_INFO  *temp;
+
+    temp = Root->reloclist;                 // don't want to modify original
+    return DumpMaxRelocList( &temp, 0 );    // write the relocations.
+}
 
 void FiniZdosLoadFile( void )
 /***************************/
@@ -89,36 +118,4 @@ void FiniZdosLoadFile( void )
     DBIWrite();
     SeekLoad( 0 );
     WriteLoad( &header, sizeof( zdos_exe_header ) );
-}
-
-static unsigned_32 WriteZdosData( unsigned file_pos )
-/***************************************************/
-{
-    group_entry         *group;
-    outfilelist *       fnode;
-    bool                repos;
-
-    DEBUG(( DBG_BASE, "Writing data" ));
-    OrderGroups( CompareOffsets );
-    CurrSect = Root;            // needed for WriteInfo.
-    fnode = Root->outfile;
-    fnode->file_loc = file_pos;
-    Root->u.file_loc = file_pos;
-    Root->sect_addr = Groups->grp_addr;
-    for( group = Groups; group != NULL; group = group->next_group ) {
-        repos = WriteGroup( group );
-        if( repos ) {
-            SeekLoad( fnode->file_loc );
-        }
-    }
-    return( fnode->file_loc - file_pos );
-}
-
-static unsigned_32 WriteZdosRelocs( void )
-/****************************************/
-{
-    RELOC_INFO  *temp;
-
-    temp = Root->reloclist;                 // don't want to modify original
-    return DumpMaxRelocList( &temp, 0 );    // write the relocations.
 }

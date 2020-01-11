@@ -63,8 +63,6 @@ typedef struct {
 static block_data Pass1Blocks;
 static block_data PermBlocks;
 
-static void *AllocBlock( size_t, block_data * );
-
 void GetSymBlock( void )
 /**********************/
 /* allocate memory for symbol table allocation and code */
@@ -119,19 +117,6 @@ bool PermShrink( void )
     return( ret );
 }
 
-void *Pass1Alloc( size_t size )
-/*****************************/
-{
-    return( AllocBlock( size, &Pass1Blocks ) );
-}
-
-void *PermAlloc( size_t size )
-/****************************/
-/* allocate a hunk of permanently allocated memory */
-{
-    return( AllocBlock( size, &PermBlocks ) );
-}
-
 static void GetNewBlock( block_data *block, size_t size )
 /*******************************************************/
 {
@@ -173,6 +158,19 @@ static void *AllocBlock( size_t size, block_data *block )
     ptr = block->list->block + block->currbrk;
     block->currbrk += size;
     return( ptr );
+}
+
+void *Pass1Alloc( size_t size )
+/*****************************/
+{
+    return( AllocBlock( size, &Pass1Blocks ) );
+}
+
+void *PermAlloc( size_t size )
+/****************************/
+/* allocate a hunk of permanently allocated memory */
+{
+    return( AllocBlock( size, &PermBlocks ) );
 }
 
 void BasicInitSym( symbol *sym )

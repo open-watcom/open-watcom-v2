@@ -34,6 +34,7 @@
 #include "ms2wlink.h"
 #include "banner.h"
 
+
 // this array contains linked lists of the commands which are to be put into the
 // wlink command file. The data stored in the indices is as followes:
 // 0 == object file names
@@ -73,8 +74,6 @@ format_type     FmtType = FMT_DEFAULT;
 extra_type      FmtInfo = NO_EXTRA;
 bool            HaveDefFile = false;
 
-static void         DoConvert( void );
-
 static void FreeMemory( void )
 /****************************/
 {
@@ -90,17 +89,6 @@ static void FreeMemory( void )
             MemFree( cmd );
         }
     }
-}
-
-int main( void )
-/**********************/
-{
-    MemInit();
-    UtilsInit();
-    Spawn( DoConvert );
-    FreeMemory();
-    MemFini();
-    return( 0 );
 }
 
 static void PrefixWrite( cmdentry *cmdlist, char *prefix, int len )
@@ -203,4 +191,15 @@ static void DoConvert( void )
         ParseMicrosoft();      // most of the work is done here.
         BuildWATCOM();
     }
+}
+
+int main( void )
+/**********************/
+{
+    MemInit();
+    UtilsInit();
+    Spawn( DoConvert );
+    FreeMemory();
+    MemFini();
+    return( 0 );
 }

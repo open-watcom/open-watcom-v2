@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,7 @@
 #include "ring.h"
 #include "omfreloc.h"
 
+
 typedef struct bakpatlist {
     struct bakpatlist   *next;
     unsigned_16         len;
@@ -75,88 +77,10 @@ static fix_type RelocTypeMap[] = {
     FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
 };
 
-static void GetTarget( unsigned loc, target_spec *target );
-static void GetFrame( unsigned frame, frame_spec *refframe );
-
 void ResetOMFReloc( void )
 /*******************************/
 {
     BakPats = NULL;
-}
-
-void DoRelocs( void )
-/**************************/
-/* Process FIXUP records. */
-{
-    fix_type    fixtype;
-    unsigned    typ;
-    unsigned    omftype;
-    offset      place_to_fix;
-    unsigned    loc;
-    offset      addend;
-    frame_spec  fthread;
-    target_spec tthread;
-
-    if( ObjFormat & FMT_IGNORE_FIXUPP )
-        return;
-    if( ObjFormat & FMT_IS_LIDATA ) {
-        LnkMsg( LOC_REC+WRN+MSG_REL_IN_LIDATA, NULL );
-        return;
-    }
-    do {
-        typ = *ObjBuff++;
-        omftype = (typ >> 2) & 7;
-        if( (typ & 0x80) == 0 ) {   /*  thread */
-            if( typ & 0x40 ) {      /*  frame */
-                GetFrame( omftype, &FrameThreads[typ & 3] );
-            } else {                /*  target */
-                GetTarget( omftype, &TargThreads[typ & 3] );
-            }
-        } else {                    /* fixup */
-            if( typ & 0x20 ) {      // used in 32-bit microsoft fixups.
-                switch( omftype ) {
-                case LOC_OFFSET:
-                case LOC_MS_LINK_OFFSET:
-                    omftype = LOC_OFFSET_32;
-                    break;
-                case LOC_BASE_OFFSET:
-                    omftype = LOC_BASE_OFFSET_32;
-                    break;
-                }
-            } else if( omftype == LOC_MS_LINK_OFFSET && (ObjFormat & FMT_32BIT_REC) == 0 ) {
-                omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
-            }
-            fixtype = RelocTypeMap[omftype];
-            if( (typ & 0x40) == 0 ) {
-                fixtype |= FIX_REL;
-            }
-            place_to_fix = ((typ & 3) << 8) + *ObjBuff++;
-            typ = *ObjBuff++;
-            loc = typ >> 4 & 7;
-            if( typ & 0x80 ) {
-                fthread = FrameThreads[loc & 3];
-            } else {
-                GetFrame( loc, &fthread );
-            }
-            loc = typ & 7;
-            if( typ & 8 ) {
-                tthread = TargThreads[loc & 3];
-            } else {
-                GetTarget( loc, &tthread );
-            }
-            addend = 0;
-            if( loc <= TARGET_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
-                if( ObjFormat & FMT_32BIT_REC ) {
-                    addend = GET_U32_UN( ObjBuff );
-                    ObjBuff += sizeof( unsigned_32 );
-                } else {
-                    addend = GET_U16_UN( ObjBuff );
-                    ObjBuff += sizeof( unsigned_16 );
-                }
-            }
-            StoreFixup( place_to_fix, fixtype, &fthread, &tthread, addend );
-        }
-    } while( ObjBuff < EOObjRec );
 }
 
 static void GetFrame( unsigned frame, frame_spec *refframe )
@@ -236,6 +160,81 @@ static void GetTarget( unsigned loc, target_spec *target )
         target->type = FIX_TARGET_ABS;
         break;
     }
+}
+
+void DoRelocs( void )
+/**************************/
+/* Process FIXUP records. */
+{
+    fix_type    fixtype;
+    unsigned    typ;
+    unsigned    omftype;
+    offset      place_to_fix;
+    unsigned    loc;
+    offset      addend;
+    frame_spec  fthread;
+    target_spec tthread;
+
+    if( ObjFormat & FMT_IGNORE_FIXUPP )
+        return;
+    if( ObjFormat & FMT_IS_LIDATA ) {
+        LnkMsg( LOC_REC+WRN+MSG_REL_IN_LIDATA, NULL );
+        return;
+    }
+    do {
+        typ = *ObjBuff++;
+        omftype = (typ >> 2) & 7;
+        if( (typ & 0x80) == 0 ) {   /*  thread */
+            if( typ & 0x40 ) {      /*  frame */
+                GetFrame( omftype, &FrameThreads[typ & 3] );
+            } else {                /*  target */
+                GetTarget( omftype, &TargThreads[typ & 3] );
+            }
+        } else {                    /* fixup */
+            if( typ & 0x20 ) {      // used in 32-bit microsoft fixups.
+                switch( omftype ) {
+                case LOC_OFFSET:
+                case LOC_MS_LINK_OFFSET:
+                    omftype = LOC_OFFSET_32;
+                    break;
+                case LOC_BASE_OFFSET:
+                    omftype = LOC_BASE_OFFSET_32;
+                    break;
+                }
+            } else if( omftype == LOC_MS_LINK_OFFSET && (ObjFormat & FMT_32BIT_REC) == 0 ) {
+                omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
+            }
+            fixtype = RelocTypeMap[omftype];
+            if( (typ & 0x40) == 0 ) {
+                fixtype |= FIX_REL;
+            }
+            place_to_fix = ((typ & 3) << 8) + *ObjBuff++;
+            typ = *ObjBuff++;
+            loc = typ >> 4 & 7;
+            if( typ & 0x80 ) {
+                fthread = FrameThreads[loc & 3];
+            } else {
+                GetFrame( loc, &fthread );
+            }
+            loc = typ & 7;
+            if( typ & 8 ) {
+                tthread = TargThreads[loc & 3];
+            } else {
+                GetTarget( loc, &tthread );
+            }
+            addend = 0;
+            if( loc <= TARGET_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
+                if( ObjFormat & FMT_32BIT_REC ) {
+                    addend = GET_U32_UN( ObjBuff );
+                    ObjBuff += sizeof( unsigned_32 );
+                } else {
+                    addend = GET_U16_UN( ObjBuff );
+                    ObjBuff += sizeof( unsigned_16 );
+                }
+            }
+            StoreFixup( place_to_fix, fixtype, &fthread, &tthread, addend );
+        }
+    } while( ObjBuff < EOObjRec );
 }
 
 static void StoreBakPat( segdata *sdata, byte loctype )

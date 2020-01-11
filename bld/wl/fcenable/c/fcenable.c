@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,11 @@
 #include "clibext.h"
 
 
+#define TEMP_OBJ_NAME   "_@FCOBJ_.%$%"
+#define TEMP_LIB_NAME   "_@FCLIB_.%$%"
+
+#define DEF_CLASS       "CODE"
+
 typedef enum {
     EX_NONE,
     EX_GOT_SEG,
@@ -87,16 +92,6 @@ static char         *HelpMsg =
 "files can be object files, concatenated object files, or library files\n"
 "file names may contain wild cards\n"
 ;
-
-#define TEMP_OBJ_NAME   "_@FCOBJ_.%$%"
-#define TEMP_LIB_NAME   "_@FCLIB_.%$%"
-
-#define DEF_CLASS       "CODE"
-
-// forward declarations
-static void     ProcessFiles( const char ** );
-static void     ProcFile( const char *fname );
-
 
 // the spawn & suicide support.
 
@@ -148,41 +143,6 @@ static void QRemove( const char *filename )
     if( remove( filename ) != 0 ) {
         IOError( "problem removing file" );
     }
-}
-
-
-int main(int argc, char **argv )
-/******************************/
-{
-    int     retval = 0;
-
-    MemInit();
-#if defined( _BETAVER )
-    printf( banner1w1( "Far Call Optimization Enabling Utility" ) );
-    printf( banner1w2( _FCENABLE_VERSION_ ) );
-#else
-    printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
-#endif
-    printf( banner2 );
-    printf( banner2a( 1990 ) );
-    printf( banner3 );
-    printf( banner3a );
-    InputBuffer = InitRecStuff();
-    InFile = NULL;
-    OutFile = NULL;
-    ClassList = MemAlloc( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
-    ClassList->next = NULL;
-    ClassList->lnameidx = 0;
-    memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
-    if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
-        printf( HelpMsg );
-    } else {
-        argv++;     // skip the program name
-        retval = Spawn1( ProcessFiles, argv );
-    }
-    FinalCleanup();
-    MemFini();
-    return( retval );
 }
 
 static void ProcList( bool (*fn)(const char *, size_t), const char ***argv )
@@ -339,23 +299,6 @@ static void ProcessOption( const char ***argv )
     }
 }
 
-static void ProcessFiles( const char **argv )
-/*******************************************/
-{
-    const char  *item;
-
-    while( *argv != NULL ) {
-        item = *argv;
-        if( *item == '-' || *item == '/' ) {
-            ProcessOption( &argv );
-        } else {
-            printf( "Processing file '%s'\n", item );
-            ProcFile( item );
-            argv++;
-        }
-    }
-}
-
 static void CloseFiles( void )
 /****************************/
 {
@@ -493,6 +436,23 @@ static void ProcFile( const char *fname )
     FileCleanup();
 }
 
+static void ProcessFiles( const char **argv )
+/*******************************************/
+{
+    const char  *item;
+
+    while( *argv != NULL ) {
+        item = *argv;
+        if( *item == '-' || *item == '/' ) {
+            ProcessOption( &argv );
+        } else {
+            printf( "Processing file '%s'\n", item );
+            ProcFile( item );
+            argv++;
+        }
+    }
+}
+
 // these are utility routines used frequently in TDCVT.
 
 typedef struct _node {      // structure used for list traversal routines.
@@ -582,4 +542,39 @@ int QSeek( FILE *fp, long offset, int origin )
         IOError( "problem during seek" );
     }
     return( result );
+}
+
+
+int main(int argc, char **argv )
+/******************************/
+{
+    int     retval = 0;
+
+    MemInit();
+#if defined( _BETAVER )
+    printf( banner1w1( "Far Call Optimization Enabling Utility" ) );
+    printf( banner1w2( _FCENABLE_VERSION_ ) );
+#else
+    printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
+#endif
+    printf( banner2 );
+    printf( banner2a( 1990 ) );
+    printf( banner3 );
+    printf( banner3a );
+    InputBuffer = InitRecStuff();
+    InFile = NULL;
+    OutFile = NULL;
+    ClassList = MemAlloc( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
+    ClassList->next = NULL;
+    ClassList->lnameidx = 0;
+    memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
+    if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
+        printf( HelpMsg );
+    } else {
+        argv++;     // skip the program name
+        retval = Spawn1( ProcessFiles, argv );
+    }
+    FinalCleanup();
+    MemFini();
+    return( retval );
 }

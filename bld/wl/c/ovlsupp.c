@@ -73,8 +73,6 @@ static targ_addr    OvltabAddr;         /* address of overlay tables            
 static unsigned     OvltabSize;         /* size of overlay tables               */
 static vecnode      *OvlVectors;        /* point to overlay vector notes        */
 
-static void         AllocAreas( OVL_AREA *area );
-
 void ResetOvlSupp( void )
 /***********************/
 {
@@ -184,6 +182,8 @@ void FillOutPtr( section *sec )
         }
     }
 }
+
+static void         AllocAreas( OVL_AREA *area );
 
 static void AllocSections( section *first_sect )
 /**********************************************/

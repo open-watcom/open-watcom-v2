@@ -52,10 +52,6 @@
 #include "objpass2.h"
 #include "objfree.h"
 
-static void FreeAreas( OVL_AREA *area );
-static void FreeClasses( class_entry * list );
-static void FreeFiles( file_list *list );
-static void FreeMods( mod_entry *head );
 
 void FiniLinkStruct( void )
 /********************************/
@@ -68,6 +64,52 @@ void FiniLinkStruct( void )
     ObjORLFini();
 }
 
+static void FreeClasses( class_entry * list )
+/*******************************************/
+{
+    class_entry *       next;
+
+    for( ; list != NULL; list = next ) {
+        next = list->next_class;
+        RingWalk( list->segs, FreeLeader );
+        CarveFree( CarveClass, list );
+    }
+}
+
+void FreeAMod( mod_entry *mod )
+/************************************/
+{
+    FreeObjCache( mod->f.source );
+    FreeModEntry( mod );
+}
+
+static void FreeMods( mod_entry *head )
+/*************************************/
+{
+    void        *next;
+
+    for( ; head != NULL; head = next ) {
+        next = head->n.next_mod;
+        FreeAMod( head );
+    }
+}
+
+static void FreeFiles( file_list *list )
+/**************************************/
+{
+    void        *next;
+
+    for( ; list != NULL; list = next ) {
+        next = list->next_file;
+        CacheClose( list, 3 );
+        if( (list->flags & STAT_HAS_MEMBER) && list->u.member != NULL ) {
+            FreeList( list->u.member );
+        }
+        _PermFree( list );
+    }
+}
+
+static void FreeAreas( OVL_AREA *area );
 
 static void FreeSections( section *sec )
 /**************************************/
@@ -118,51 +160,6 @@ static void FreeAreas( OVL_AREA *area )
     for( ; area != NULL; area = next ) {
         next = area->next_area;
         FreeSections( area->sections );
-    }
-}
-
-static void FreeClasses( class_entry * list )
-/*******************************************/
-{
-    class_entry *       next;
-
-    for( ; list != NULL; list = next ) {
-        next = list->next_class;
-        RingWalk( list->segs, FreeLeader );
-        CarveFree( CarveClass, list );
-    }
-}
-
-void FreeAMod( mod_entry *mod )
-/************************************/
-{
-    FreeObjCache( mod->f.source );
-    FreeModEntry( mod );
-}
-
-static void FreeMods( mod_entry *head )
-/*************************************/
-{
-    void        *next;
-
-    for( ; head != NULL; head = next ) {
-        next = head->n.next_mod;
-        FreeAMod( head );
-    }
-}
-
-static void FreeFiles( file_list *list )
-/**************************************/
-{
-    void        *next;
-
-    for( ; list != NULL; list = next ) {
-        next = list->next_file;
-        CacheClose( list, 3 );
-        if( (list->flags & STAT_HAS_MEMBER) && list->u.member != NULL ) {
-            FreeList( list->u.member );
-        }
-        _PermFree( list );
     }
 }
 

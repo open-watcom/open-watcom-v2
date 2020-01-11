@@ -59,13 +59,10 @@
 
 #include "clibext.h"
 
-#define MAX_SEGMENT         0x10000
+
+#define MAX_SEGMENT     0x10000
 
 static seg_leader       *LastCodeSeg;    // last code segment in current module
-
-static seg_leader   *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_16 info );
-static seg_leader   *FindALeader( segdata *sdata, class_entry *class, unsigned_16 info );
-static void         DoAllocateSegment( segdata *sdata, char *clname );
 
 void ResetObjPass1( void )
 /************************/
@@ -279,39 +276,6 @@ static void DoIncSymbol( void *_sym )
     }
 }
 
-unsigned long IncPass1( void )
-/****************************/
-{
-    segdata         *seglist;
-    segdata         *seg;
-    symbol          *publist;
-    virt_mem_size   dataoff;
-    size_t          relocs;
-
-    seglist = CurrMod->segs;
-    CurrMod->segs = NULL;
-    CurrMod->lines = NULL;
-    for(;;) {
-        seg = Ring2Pop( &seglist );
-        if( seg == NULL )
-            break;
-        dataoff = seg->u1.vm_offs;
-        DoAllocateSegment( seg, seg->o.clname.u.ptr );
-        seg->o.mod = CurrMod;
-        if( !seg->isuninit && !seg->isdead && !seg->iscdat ) {
-            PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
-            seg->u.leader->info |= SEG_LXDATA_SEEN;
-        }
-    }
-    publist = CurrMod->publist;
-    CurrMod->publist = NULL;
-    Ring2Walk( publist, DoIncSymbol );
-    relocs = CurrMod->relocs;
-    PermStartMod( CurrMod );    // destroys currmod->relocs
-    IterateModRelocs( relocs, CurrMod->sizerelocs, IncSaveRelocs );
-    return( 0 );
-}
-
 static class_entry *FindNamedClass( char *name )
 /**********************************************/
 // NYI:  this doesn't take into account 16 & 32 bit classes with the same name.
@@ -415,14 +379,6 @@ void Set16BitMode( void )
     }
 }
 
-void AllocateSegment( segnode *newseg, char *clname )
-/***************************************************/
-// allocate a new segment (or new piece of a segment)
-{
-    DoAllocateSegment( newseg->entry, clname );
-    newseg->info = newseg->entry->u.leader->info;
-}
-
 static void DoAllocateSegment( segdata *sdata, char *clname )
 /***********************************************************/
 {
@@ -457,6 +413,47 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
 }
 
+void AllocateSegment( segnode *newseg, char *clname )
+/***************************************************/
+// allocate a new segment (or new piece of a segment)
+{
+    DoAllocateSegment( newseg->entry, clname );
+    newseg->info = newseg->entry->u.leader->info;
+}
+
+unsigned long IncPass1( void )
+/****************************/
+{
+    segdata         *seglist;
+    segdata         *seg;
+    symbol          *publist;
+    virt_mem_size   dataoff;
+    size_t          relocs;
+
+    seglist = CurrMod->segs;
+    CurrMod->segs = NULL;
+    CurrMod->lines = NULL;
+    for(;;) {
+        seg = Ring2Pop( &seglist );
+        if( seg == NULL )
+            break;
+        dataoff = seg->u1.vm_offs;
+        DoAllocateSegment( seg, seg->o.clname.u.ptr );
+        seg->o.mod = CurrMod;
+        if( !seg->isuninit && !seg->isdead && !seg->iscdat ) {
+            PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
+            seg->u.leader->info |= SEG_LXDATA_SEEN;
+        }
+    }
+    publist = CurrMod->publist;
+    CurrMod->publist = NULL;
+    Ring2Walk( publist, DoIncSymbol );
+    relocs = CurrMod->relocs;
+    PermStartMod( CurrMod );    // destroys currmod->relocs
+    IterateModRelocs( relocs, CurrMod->sizerelocs, IncSaveRelocs );
+    return( 0 );
+}
+
 static void CheckQNXSegMismatch( stateflag mask )
 /***********************************************/
 {
@@ -464,70 +461,6 @@ static void CheckQNXSegMismatch( stateflag mask )
                                 && !FmtData.u.qnx.seen_mismatch ) {
         LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
         FmtData.u.qnx.seen_mismatch = true;
-    }
-}
-
-void AddSegment( segdata *sd, class_entry *class )
-/************************************************/
-/* Add a segment to the segment list for an object file */
-{
-    unsigned_16     info;
-    seg_leader      *leader;
-
-    DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name.u.ptr, class->name.u.ptr ));
-    DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
-                      sd->length, sd->combine, sd->align ));
-    info = 0;
-    if( sd->is32bit ) {
-        info |= USE_32;
-    }
-    if( class->flags & CLASS_CODE ) {
-        info |= SEG_CODE;
-    }
-    if( sd->isabs ) {
-        info |= SEG_ABSOLUTE;
-        sd->isdefd = true;
-    }
-    if( sd->isabs || sd->combine == COMBINE_INVALID ) {
-        leader = MakeNewLeader( sd, class, info );
-    } else {
-        const char  *seg_name = sd->u.name.u.ptr;
-
-        leader = FindALeader( sd, class, info );
-        if( ( (leader->info & USE_32) != (info & USE_32) ) &&
-            !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
-            (FmtData.type & MK_RAW) == 0 ) {
-            const char  *segname_16;
-            const char  *segname_32;
-
-            if( info & USE_32 ) {
-                segname_16 = leader->segname.u.ptr;
-                segname_32 = seg_name;
-            } else {
-                segname_16 = seg_name;
-                segname_32 = leader->segname.u.ptr;
-            }
-            LnkMsg( ERR+MSG_CANT_COMBINE_32_AND_16, "12", segname_32, segname_16 );
-        }
-    }
-    leader->dbgtype = DBIColSeg( class );
-    if( !IS_DBG_INFO( leader ) ) {
-        if( sd->is32bit ) {
-            Set32BitMode();
-            CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
-        } else {
-            Set16BitMode();
-            CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
-        }
-    }
-    if( DBISkip( leader ) ) {
-        sd->isdead = true;
-    }
-    if( sd->isabs ) {
-        leader->seg_addr.off = 0;
-        leader->seg_addr.seg = sd->frame;
-    } else if( !sd->isdead ) {
-        DBIAddLocal( leader, sd->length );
     }
 }
 
@@ -638,6 +571,23 @@ static void AddToLeader( seg_leader *seg, segdata *sdata )
     Ring2Append( &CurrMod->segs, sdata );
 }
 
+static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_16 info )
+/**************************************************************************************/
+{
+    seg_leader *leader;
+
+    sdata->u.leader = leader = InitLeader( sdata->u.name.u.ptr );
+    leader->align = sdata->align;
+    leader->combine = sdata->combine;
+    leader->class = class;
+    leader->info = info;
+    CheckForLast( leader, class );
+    RingAppend( &class->segs, leader );
+    RingAppend( &leader->pieces, sdata );
+    Ring2Append( &CurrMod->segs, sdata );
+    return( leader );
+}
+
 static seg_leader *FindALeader( segdata *sdata, class_entry *class, unsigned_16 info )
 /************************************************************************************/
 {
@@ -674,28 +624,75 @@ seg_leader *InitLeader( const char *segname )
     return( seg );
 }
 
+void AddSegment( segdata *sd, class_entry *class )
+/************************************************/
+/* Add a segment to the segment list for an object file */
+{
+    unsigned_16     info;
+    seg_leader      *leader;
+
+    DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name.u.ptr, class->name.u.ptr ));
+    DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
+                      sd->length, sd->combine, sd->align ));
+    info = 0;
+    if( sd->is32bit ) {
+        info |= USE_32;
+    }
+    if( class->flags & CLASS_CODE ) {
+        info |= SEG_CODE;
+    }
+    if( sd->isabs ) {
+        info |= SEG_ABSOLUTE;
+        sd->isdefd = true;
+    }
+    if( sd->isabs || sd->combine == COMBINE_INVALID ) {
+        leader = MakeNewLeader( sd, class, info );
+    } else {
+        const char  *seg_name = sd->u.name.u.ptr;
+
+        leader = FindALeader( sd, class, info );
+        if( ( (leader->info & USE_32) != (info & USE_32) ) &&
+            !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
+            (FmtData.type & MK_RAW) == 0 ) {
+            const char  *segname_16;
+            const char  *segname_32;
+
+            if( info & USE_32 ) {
+                segname_16 = leader->segname.u.ptr;
+                segname_32 = seg_name;
+            } else {
+                segname_16 = seg_name;
+                segname_32 = leader->segname.u.ptr;
+            }
+            LnkMsg( ERR+MSG_CANT_COMBINE_32_AND_16, "12", segname_32, segname_16 );
+        }
+    }
+    leader->dbgtype = DBIColSeg( class );
+    if( !IS_DBG_INFO( leader ) ) {
+        if( sd->is32bit ) {
+            Set32BitMode();
+            CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
+        } else {
+            Set16BitMode();
+            CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
+        }
+    }
+    if( DBISkip( leader ) ) {
+        sd->isdead = true;
+    }
+    if( sd->isabs ) {
+        leader->seg_addr.off = 0;
+        leader->seg_addr.seg = sd->frame;
+    } else if( !sd->isdead ) {
+        DBIAddLocal( leader, sd->length );
+    }
+}
+
 void FreeLeader( void *seg )
 /**************************/
 {
     RingWalk( ((seg_leader *)seg)->pieces, FreeSegData );
     CarveFree( CarveLeader, seg );
-}
-
-static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_16 info )
-/**************************************************************************************/
-{
-    seg_leader *leader;
-
-    sdata->u.leader = leader = InitLeader( sdata->u.name.u.ptr );
-    leader->align = sdata->align;
-    leader->combine = sdata->combine;
-    leader->class = class;
-    leader->info = info;
-    CheckForLast( leader, class );
-    RingAppend( &class->segs, leader );
-    RingAppend( &leader->pieces, sdata );
-    Ring2Append( &CurrMod->segs, sdata );
-    return( leader );
 }
 
 static bool CmpLeaderPtr( void *a, void *b )
