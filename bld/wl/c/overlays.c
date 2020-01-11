@@ -42,7 +42,7 @@
 #include "overlays.h"
 
 
-byte    OvlSectNum;
+overlay_ref     OvlSectNum;
 
 void WalkAllOvl( void (*rtn)( section * ) )
 /*****************************************/
@@ -72,12 +72,14 @@ static void NumASect( section *sect )
 void NumberSections( void )
 /*************************/
 {
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
-        SectOvlTab[0] = Root;
+    if( FmtData.type & MK_OVERLAYS ) {
+        if( FmtData.u.dos.distribute ) {
+            _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
+            SectOvlTab[0] = Root;
+        }
+        OvlSectNum = 1;
+        WalkAreas( Root->areas, NumASect );
     }
-    OvlSectNum = 1;
-    WalkAllOvl( &NumASect );
 }
 
 void FillOutFilePtrs( void )

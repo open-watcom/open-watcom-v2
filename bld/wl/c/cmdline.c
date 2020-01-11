@@ -314,7 +314,9 @@ void DoCmdFile( const char *fname )
     CheckTraces();
     BurnUtils();
     PruneSystemList();
+#ifdef _EXE
     NumberSections();
+#endif
     DBIInit();
 }
 

@@ -333,7 +333,7 @@ void FreeOvlStruct( void )
     FreeDistStuff();
 }
 
-static bool IsAncestor( unsigned_16 elder_ovlref, section *ceorl )
+static bool IsAncestor( overlay_ref elder_ovlref, section *ceorl )
 /****************************************************************/
 /* Is overlay section # "elder" an ancestor of section "ceorl" */
 {
@@ -353,7 +353,7 @@ void OvlDefVector( symbol *sym )
 /******************************/
 {
     segdata     *sdata;
-    unsigned_16 ovlref;
+    overlay_ref ovlref;
 
     if( NO_VECTOR( sym ) )
         return;
@@ -396,7 +396,7 @@ void Vectorize( symbol *sym )
 static void OvlRefVector( symbol *sym )
 /*************************************/
 {
-    unsigned_16     ovlref;
+    overlay_ref     ovlref;
 
     if( IS_SYM_COMMUNAL( sym ) )
         return;
@@ -453,7 +453,7 @@ void OvlUseVector( symbol *sym, extnode *newnode )
 void IndirectCall( symbol *sym )
 /******************************/
 {
-    unsigned_16 ovlref;
+    overlay_ref ovlref;
 
     if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
@@ -752,33 +752,33 @@ void EmitOvlTable( void )
     outfilelist         *fnode;
 
     off = OvltabAddr.off;
-/*
-    Generate prolog :
-*/
+    /*
+     *  Generate prolog :
+     */
     template.major = OVL_MAJOR_VERSION;
     template.minor = OVL_MINOR_VERSION;
-/*
-    output start address for program
-    reloc for this was emitted by EmitOvlVectors
-*/
+    /*
+     *  output start address for program
+     *  reloc for this was emitted by EmitOvlVectors
+     */
     _HostU16toTarg( Stash.off, template.start.off );
     _HostU16toTarg( Stash.seg, template.start.seg );
-/*
-    this should give us the paragraph of the load module start
-    reloc for this was emitted by EmitOvlVectors
-*/
+    /*
+     *  this should give us the paragraph of the load module start
+     *  reloc for this was emitted by EmitOvlVectors
+     */
     _HostU16toTarg( 0, template.delta );
     _HostU16toTarg( AreaSize, template.ovl_size );
 
     PutOvlInfo( off, &template, sizeof( template ) );
-/*
-    Generate entries :
-*/
+    /*
+     *  Generate entries :
+     */
     off += sizeof( template );
     ParmWalkAreas( Root->areas, EmitOvlEntry, &off );
-/*
-    Generate epilog :
-*/
+    /*
+     *  Generate epilog :
+     */
     u16 = OVLTAB_TERMINATOR;
     PutOvlInfo( off, &u16, sizeof( unsigned_16 ) );
     off += sizeof( unsigned_16 );

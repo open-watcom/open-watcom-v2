@@ -33,7 +33,7 @@
 
 extern seg_leader       *OvlSeg;
 extern unsigned_16      AreaSize;
-extern byte             OvlSectNum;
+extern overlay_ref      OvlSectNum;
 extern list_of_names    *OvlClasses;
 
 /* in ovlsupp.c */

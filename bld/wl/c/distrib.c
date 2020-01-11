@@ -61,7 +61,7 @@ static unsigned_16  CurrModHandle;
 
 /* forward declarations */
 
-static bool     NewRefVector( symbol *, unsigned_16, unsigned_16 );
+static bool     NewRefVector( symbol *, overlay_ref, overlay_ref );
 static void     ScanArcs( mod_entry *mod );
 
 void ResetDistrib( void )
@@ -83,8 +83,8 @@ void InitModTable( void )
     MakePass1Blocks();
 }
 
-void AddModTable( mod_entry * lp, unsigned_16 libspot )
-/*****************************************************/
+void AddModTable( mod_entry * lp, overlay_ref ovlref )
+/******************************************************/
 /* add this module to the table, and make the arclist field point to a
  * scratch buffer */
 // NYI: segdata changes have completely broken distributing libraries.
@@ -107,7 +107,7 @@ void AddModTable( mod_entry * lp, unsigned_16 libspot )
     lp->x.arclist = ArcBuffer;
     ArcBuffer->numarcs = 0;
     if( lp->modinfo & MOD_FIXED ) {
-        ArcBuffer->ovlref = libspot;
+        ArcBuffer->ovlref = ovlref;
     } else {
         ArcBuffer->ovlref = NO_ARCS_YET;
     }
@@ -201,7 +201,7 @@ void SetSegments( void )
 #if 0           // NYI: distributing libraries completely broken.
     unsigned        index;
     mod_entry *     mod;
-    unsigned_16     ovlref;
+    overlay_ref     ovlref;
     mod_entry **    currmod;
     unsigned        num_segdefs;
 
@@ -261,7 +261,7 @@ void ProcDistMods( void )
     }
 }
 
-unsigned_16 LowestAncestor( unsigned_16 ovlref, section * sect )
+overlay_ref LowestAncestor( overlay_ref ovlref, section * sect )
 /**************************************************************/
 /* find the lowest common ancestor of the two overlay values by marking all of
  * the ancestors of the first overlay, and then looking for marked ancestors
@@ -292,8 +292,8 @@ void DefDistribSym( symbol * sym )
  * and make the symbol point to the current module. All symbols which get
  * passed to this routine are in an overlay class. */
 {
-    arcdata *   arcs;
-    segdata *   seg;
+    arcdata     *arcs;
+    segdata     *seg;
 
     if( sym->info & SYM_REFERENCED ) {
         arcs = CurrMod->x.arclist;
@@ -320,7 +320,7 @@ static void AddArc( dist_arc arc )
 /********************************/
 /* add an arc to the arclist for the current module */
 {
-    arcdata *   arclist;
+    arcdata     *arclist;
 
     arclist = CurrMod->x.arclist;
     if( arclist->numarcs >= ArcBufLen ) {
@@ -384,7 +384,7 @@ void RefDistribSym( symbol * sym )
     }
 }
 
-static bool NewRefVector( symbol *sym, unsigned_16 ovlref, unsigned_16 sym_ovlref )
+static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlref )
 /*********************************************************************************/
 /* sometimes there can be an overlay vector generated to a routine specified
  * in an .OBJ file caused by a call from a library routine. this checks for
@@ -394,10 +394,10 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlref, unsigned_16 sym_ovlre
         || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
-/*
- * at this point, we know it has already been defined, but does not have an
- * overlay vector, and is not data
-*/
+    /*
+     * at this point, we know it has already been defined, but does not have an
+     * overlay vector, and is not data
+     */
     if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
         Vectorize( sym );
         return( true );
@@ -405,13 +405,13 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlref, unsigned_16 sym_ovlre
     return( false );
 }
 
-static void DoRefGraph( unsigned_16 ovlref, mod_entry * mod )
+static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )
 /***********************************************************/
 /* checks to see if the mod has changed position, and if it has, check all
  * of the routines that mod references */
 {
-    arcdata *   arcs;
-    unsigned_16 anc_ovlref;
+    arcdata     *arcs;
+    overlay_ref anc_ovlref;
 
     arcs = mod->x.arclist;
 /*
@@ -454,7 +454,7 @@ static void ScanArcs( mod_entry *mod )
     symbol *    sym;
     mod_entry * refmod;
     unsigned_16 index;
-    unsigned_16 ovlref;
+    overlay_ref ovlref;
     dist_arc    currarc;
 
     mod->modinfo |= MOD_VISITED;
@@ -525,8 +525,8 @@ void DistIndCall( symbol *sym )
 /*****************************/
 // handle indirect calls and their effect on distributed libs.
 {
-    arcdata *   arcs;
-    unsigned_16 save_ovlref;
+    arcdata         *arcs;
+    overlay_ref     save_ovlref;
 
     arcs = CurrMod->x.arclist;
     save_ovlref = arcs->ovlref;

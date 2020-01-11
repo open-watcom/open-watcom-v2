@@ -54,20 +54,21 @@ static void             NewArea( section *sect );
 static byte             OvlLevel;
 
 void SetDosFmt( void )
-/***************************/
+/********************/
 {
     Extension = E_LOAD;
 }
 
 bool ProcDos( void )
-/*************************/
+/******************/
 {
     OvlLevel = 0;
     ProcOne( DosOptions, SEP_NO, false );
     return( true );
 }
 
-byte GetOvlRef( void )
+overlay_ref GetOvlRef( void )
+/***************************/
 {
     return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }

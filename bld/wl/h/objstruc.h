@@ -34,6 +34,8 @@
 #include "hash.h"
 
 
+typedef unsigned_16             overlay_ref;
+
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
@@ -69,7 +71,7 @@ typedef struct section {
     CLASS_ENTRY         *classlist;
     ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
     targ_addr           sect_addr;
-    unsigned_16         ovlref;
+    overlay_ref         ovlref;
     OVL_AREA            *areas;
     SECTION             *parent;
     unsigned_32         relocs;
@@ -181,7 +183,7 @@ typedef struct file_list {
     char                *strtab;    /* for AR format */
     file_flags          flags;
     lib_priority        priority;   /* for libraries */
-    unsigned_16         ovlref;     /* for fixed libraries */
+    overlay_ref         ovlref;     /* for fixed libraries */
     unsigned                     : 0;
 } file_list;
 
@@ -221,7 +223,7 @@ typedef struct member_list {
     char                name[1];
 } member_list;
 
-#define NO_ARCS_YET 0xFFFF
+#define NO_ARCS_YET     ((overlay_ref)-1)
 
 /*
    NOTE: this is an entry for the kludge of the year award, 1993.
@@ -240,7 +242,7 @@ typedef union {
 // remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
 
 typedef struct {
-    unsigned_16         ovlref;     // dist: # of the module
+    overlay_ref         ovlref;     // dist: # of the module
     unsigned_16         numarcs;    // dist: of arcs in the list
     dist_arc            arcs[1];    // dist: the actual arcs.
 } arcdata;
@@ -544,7 +546,7 @@ typedef struct xxx_seg_flags {
 typedef struct {
     symbol              *entry;
     orl_symbol_handle   handle;         // ORL: handle for the symbol
-    unsigned_16         ovlref;
+    overlay_ref         ovlref;
     boolbit             isweak  : 1;
     boolbit             isdefd  : 1;    // used in ORL
 } extnode;
