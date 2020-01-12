@@ -338,6 +338,7 @@ static void SortGroupList( void )
     NumGroups = number;            // save # of groups.
 }
 
+#ifdef _EXE
 static bool CheckGroupSplit( void *leader, void *sect )
 /*****************************************************/
 {
@@ -350,7 +351,6 @@ static void FindSplitGroups( void )
 // overlays. This causes all hell to break loose, so this checks to make sure
 // that this doesn't happen.
 {
-#ifdef _EXE
     group_entry     *group;
 
     if( FmtData.type & MK_OVERLAYS ) {
@@ -360,8 +360,8 @@ static void FindSplitGroups( void )
             }
         }
     }
-#endif
 }
+#endif
 
 static void NumberNonAutos( void )
 /********************************/
@@ -385,7 +385,9 @@ void AutoGroup( void )
 {
     WalkAllSects( &AutoGroupSect );
     SortGroupList();
+#ifdef _EXE
     FindSplitGroups();
+#endif
     if( NumGroups == 0 ) {
         LnkMsg( FTL+MSG_NO_CODE_OR_DATA, NULL );
     }
