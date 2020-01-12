@@ -52,6 +52,7 @@
 #include "procfile.h"
 #include "spillio.h"
 #include "virtmem.h"
+#include "load16m.h"
 #include "loados2.h"
 #include "loadpe.h"
 #include "loadqnx.h"
@@ -326,6 +327,19 @@ void FiniSubSystems( void )
     FiniMsg();
     FiniSym();
     LnkMemFini();
+}
+
+static void SetSegments( void )
+/*****************************/
+// now that we know where everything is, do all the processing that has been
+// postponed until now.
+{
+    if( FmtData.type & MK_DOS16M ) {
+        MakeDos16PM();
+    }
+    if( (LinkFlags & LF_STRIP_CODE) == 0 )
+        return;
+    DistrSetSegments();
 }
 
 static void set_signal( void )

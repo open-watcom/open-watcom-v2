@@ -181,14 +181,11 @@ static void DefineOvlSegments( mod_entry *mod )
     Ring2Walk( mod->publist, KillUnrefedSyms );
 }
 
-void SetSegments( void )
-/**********************/
+void DistrSetSegments( void )
+/***************************/
 // now that we know where everything is, do all the processing that has been
 // postponed until now.
 {
-    if( FmtData.type & MK_DOS16M ) {
-        MakeDos16PM();
-    }
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
