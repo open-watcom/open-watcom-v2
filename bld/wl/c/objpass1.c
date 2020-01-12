@@ -384,12 +384,14 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
 {
     section         *sect;
     class_entry     *class;
+#ifdef _EXE
     bool            isovlclass;
 
     isovlclass = false;
     if( FmtData.type & MK_OVERLAYS ) {
-        sdata->iscode = CheckOvlClass( clname, &isovlclass );
+        sdata->iscode = OvlCheckOvlClass( clname, &isovlclass );
     }
+#endif
     if( sdata->iscode ) {
         if( !sdata->is32bit ) {
             LinkState |= LS_HAVE_16BIT_CODE;
@@ -397,17 +399,20 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
     sect = DBIGetSect( clname );
     if( sect == NULL ) {
-        if( (FmtData.type & MK_OVERLAYS) == 0 || isovlclass ) {
-            sect = CurrSect;
-        } else {
+        sect = CurrSect;
+#ifdef _EXE
+        if( (FmtData.type & MK_OVERLAYS) && !isovlclass ) {
             sect = NonSect;
         }
+#endif
     }
     class = FindClass( sect, clname, sdata->is32bit, sdata->iscode );
     AddSegment( sdata, class );
+#ifdef _EXE
     if( isovlclass ) {
         sdata->u.leader->info |= SEG_OVERLAYED;
     }
+#endif
     if( !sdata->isdead && !sdata->isuninit && !sdata->iscdat ) {
         sdata->u1.vm_ptr = AllocStg( sdata->length );
     }
@@ -792,15 +797,23 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
                 DefStripSym( sym, seg->entry );
             }
             if( seg->info & SEG_CODE ) {
-                if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute
-                  && (LinkState & LS_SEARCHING_LIBRARIES) ) {
-                    sym->info |= SYM_DISTRIB;
+#ifdef _EXE
+                if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+                    if( LinkState & LS_SEARCHING_LIBRARIES ) {
+                        sym->info |= SYM_DISTRIB;
+                    }
                 }
+#endif
             }
             sym->p.seg = seg->entry;
-            if( sym->p.seg->isabs )
+            if( sym->p.seg->isabs ) {
                 sym->info |= SYM_ABSOLUTE;
-            TryDefVector( sym );
+            }
+#ifdef _EXE
+            if( FmtData.type & MK_OVERLAYS ) {
+                OvlTryDefVector( sym );
+            }
+#endif
         } else {
             if( LinkFlags & LF_STRIP_CODE ) {
                 CleanStripInfo( sym );
@@ -822,11 +835,12 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     segdata             *sdata;
     seg_leader          *leader;
 
+    sect = Root;
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        sect = CheckOvlSect( class_name );
-    } else {
-        sect = Root;
+        sect = OvlCheckOvlSection( class_name );
     }
+#endif
     class = FindClass( sect, class_name, !use_16, false );
     info = 0;
     sdata = AllocSegData();
@@ -1170,14 +1184,23 @@ void DefineReference( symbol *sym )
 /*********************************/
 // we have an object file reference for sym
 {
+#if defined( _EXE ) || defined( _NOVELL )
+  #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        TryRefVector( sym );
+        OvlTryRefVector( sym );
     }
-    if( (FmtData.type & MK_NOVELL) && (LinkState & LS_SEARCHING_LIBRARIES)
-            && IS_SYM_IMPORTED( sym ) && (sym->info & SYM_CHECKED) ) {
-        sym->info &= ~SYM_CHECKED;
-        LinkState |= LS_LIBRARIES_ADDED;   // force another pass thru libs
+  #endif
+  #ifdef _NOVELL
+    if( (FmtData.type & MK_NOVELL) ) {
+        if( (LinkState & LS_SEARCHING_LIBRARIES) && IS_SYM_IMPORTED( sym ) && (sym->info & SYM_CHECKED) ) {
+            sym->info &= ~SYM_CHECKED;
+            LinkState |= LS_LIBRARIES_ADDED;   // force another pass thru libs
+        }
     }
+  #endif
+#else
+    /* unused parameters */ (void)sym;
+#endif
 }
 
 group_entry *GetGroup( const char *name )

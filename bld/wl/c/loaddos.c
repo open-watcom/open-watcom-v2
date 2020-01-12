@@ -124,8 +124,8 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
     Root->u.file_loc = header_size;
     if( Root->areas != NULL ) {
         Root->outfile->file_loc = header_size + Root->size;
-        WalkAllOvl( &AssignFileLocs );
-        EmitOvlTable();
+        WalkAreas( Root->areas, AssignFileLocs );
+        OvlEmitTable();
     }
 
 // keep track of positions within the file.
@@ -299,7 +299,7 @@ void FiniDOSLoadFile( void )
     SeekLoad( mz_hdr_size );
     root_size = WriteDOSData( mz_hdr_size );
     if( FmtData.type & MK_OVERLAYS ) {
-        PadOvlFiles();
+        OvlPadOvlFiles();
     }
     // output debug info into root main output file
     CurrSect = Root;

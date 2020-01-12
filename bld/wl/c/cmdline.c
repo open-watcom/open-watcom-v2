@@ -278,13 +278,12 @@ void DoCmdFile( const char *fname )
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {
         CmdNovFini();
-    } else {
+    }
 #endif
-        if( FmtData.type & MK_OVERLAYS ) {
-            CmdOvlFini();
-            AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
-        }
-#ifdef _NOVELL
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        CmdOvlFini();
+        AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
     }
 #endif
     if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
@@ -315,7 +314,9 @@ void DoCmdFile( const char *fname )
     BurnUtils();
     PruneSystemList();
 #ifdef _EXE
-    NumberSections();
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlNumberSections();
+    }
 #endif
     DBIInit();
 }
@@ -682,7 +683,11 @@ void SetFormat( void )
     }
     Root->outfile = NewOutFile( fname );
     Name = NULL;
-    FillOutFilePtrs();   // fill in all unspecified outfile pointers.
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlFillOutFilePtrs();   // fill in all unspecified outfile pointers.
+    }
+#endif
     if( MapFlags & MAP_FLAG ) {
         LnkMsg( MAP+MSG_EXE_NAME, "s", Root->outfile->fname );
         LnkMsg( MAP+MSG_CREATE_EXE, "f" );

@@ -168,7 +168,8 @@ void CleanLinkStruct( void )
 /*********************************/
 /* free all structures */
 {
-    if( Root == NULL ) return;  /* haven't finished initializing */
+    if( Root == NULL )
+        return;  /* haven't finished initializing */
     BurnLibs();
     FreeFiles( ObjLibFiles );
     FreeFiles( Root->files );

@@ -579,14 +579,18 @@ static void DefinePublics( void )
     }
     StartMapSort();
     ProcPubs( Root->mods, Root );
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        ProcOvlSectPubs( Root );
+        OvlProcPubsSect( Root );
     }
+#endif
     ProcPubs( LibModules, Root );
     FinishMapSort();
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        ProcOvlPubs();
+        OvlProcPubs();
     }
+#endif
     if( MapFlags & MAP_FLAG ) {
         if( MapFlags & MAP_VERBOSE ) {
             WriteModSegs();
@@ -855,9 +859,11 @@ void CalcAddresses( void )
     StartMemMap();
     AllocClasses( Root );
     if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
-            CalcOvl();
+            OvlCalc();
         }
+#endif
         CalcGrpAddr( Groups );
         CalcGrpAddr( AbsGroups );
 #ifdef _DOS16M

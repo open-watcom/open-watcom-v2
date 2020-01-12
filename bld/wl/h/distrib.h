@@ -35,7 +35,7 @@ extern section **       SectOvlTab;
 
 extern void             InitModTable( void );
 extern void             AddModTable( mod_entry *, overlay_ref );
-extern void             InitArcBuffer( mod_entry * );
+extern void             InitArcList( mod_entry * );
 extern void             SetSegments( void );
 extern void             FreeDistStuff( void );
 extern void             ProcDistMods( void );

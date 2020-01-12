@@ -302,7 +302,7 @@ bool ProcNoVector( void )
 static bool AddVector( void )
 /***************************/
 {
-    Vectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
+    OvlVectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
     return(true);
 }
 
@@ -318,7 +318,7 @@ static bool AddForceVector( void )
     symbol  *sym;
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
-    Vectorize( sym );
+    OvlVectorize( sym );
     sym->u.d.ovlstate |= OVL_ALWAYS;
     return(true);
 }
@@ -375,7 +375,7 @@ bool ProcArea( void )
 
     ret = GetLong( &value );
     if( ret ) {
-        AreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
+        OvlAreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
     }
     return( ret );
 }

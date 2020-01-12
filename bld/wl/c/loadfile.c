@@ -302,9 +302,11 @@ static seg_leader *StackSegment( void )
 
     seg = FindStack( Root );
     if( seg == NULL ) {
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             seg = FindStack( NonSect );
         }
+#endif
     }
     return( seg );
 }
@@ -358,9 +360,11 @@ static void DefABSSSym( const char *name )
     sym = RefISymbol( name );
     if( (sym->info & SYM_DEFINED) == 0 || (sym->info & SYM_LINK_GEN) ) {
         sym->info |= SYM_DEFINED | SYM_LINK_GEN;
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             sym->u.d.ovlstate |= OVL_NO_VECTOR | OVL_FORCE;
         }
+#endif
         SET_ADDR_UNDEFINED( sym->addr );
     }
  }
@@ -684,9 +688,11 @@ bool WriteGroup( group_entry *group )
             SeekLoad( file_loc );
             repos = true;
         }
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
-            SetOvlTableLoc( group, file_loc );
+            OvlSetTableLoc( group, file_loc );
         }
+#endif
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                 &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
         file_loc += WriteGroupLoad( group, repos );

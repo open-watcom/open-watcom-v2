@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -567,9 +568,11 @@ void ProcObjFiles( void )
         IncLoadObjFiles();
     } else {
         LoadObjFiles( Root );
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             OvlPass1();
         }
+#endif
     }
 }
 

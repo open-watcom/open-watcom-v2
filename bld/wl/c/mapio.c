@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -879,10 +879,12 @@ void MapSizes( void )
     Write32( msg_buff, StackSize );
     Msg_Get( MSG_MAP_MEM_SIZE, msg_buff );
     Write32( msg_buff, MemorySize() );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.dynamic ) {
         Msg_Get( MSG_MAP_OVL_SIZE, msg_buff );
-        Write32( msg_buff, (unsigned long)AreaSize * 16 );
+        Write32( msg_buff, (unsigned long)OvlAreaSize * 16 );
     }
+#endif
     if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }

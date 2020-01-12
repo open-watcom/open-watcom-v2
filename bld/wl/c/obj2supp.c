@@ -175,15 +175,15 @@ static void TraceFixup( fix_type type, target_spec *target )
                 switch( type & FIX_POINTER_MASK ) {
                 case FIX_OFFSET_16:
                     if( FmtData.u.dos.ovl_short ) {
-                        IndirectCall( target->u.sym );
+                        OvlIndirectCall( target->u.sym );
                     }
                     break;
                 case FIX_BASE:
-                    IndirectCall( target->u.sym );
+                    OvlIndirectCall( target->u.sym );
                     break;
                 case FIX_BASE_OFFSET_16:
                     if( isovldata ) {
-                        IndirectCall( target->u.sym );
+                        OvlIndirectCall( target->u.sym );
                     }
                     break;
                 }
@@ -1728,15 +1728,19 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
     if( IsTargAbsolute( target ) ) {
         fix.type |= FIX_ABS;
     }
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         if( ( target->type == FIX_TARGET_EXT )
             && ( (fix.type & FIX_REL) == 0 || FmtData.u.dos.ovl_short )
             && target->u.sym->u.d.ovlref
             && ( (target->u.sym->u.d.ovlstate & OVL_VEC_MASK) == OVL_MAKE_VECTOR ) ) {
             // redirect target to appropriate vector entry
-            GetVecAddr( target->u.sym->u.d.ovlref, &fix.tgt_addr );
+            OvlGetVecAddr( target->u.sym->u.d.ovlref, &fix.tgt_addr );
         }
-    } else if( FmtData.type & MK_PE ) {
+    }
+#endif
+#ifdef _OS2
+    if( FmtData.type & MK_PE ) {
         if( fix.imported ) {
             /*
                 Under PE, the imported symbol address is set to the
@@ -1746,7 +1750,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
             fix.imported = false;
         }
     }
-
+#endif
     Relocate( off, &fix, target );
 }
 

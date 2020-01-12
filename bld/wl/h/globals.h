@@ -63,7 +63,6 @@ GLOB seg_leader     *CurrentSeg;    /* current segment being allocated      */
 GLOB section        *Root;          /* pointer to root information          */
 GLOB section        *CurrSect;      /* current section for file processing  */
 GLOB offset         StackSize;      /* size of stack                        */
-GLOB int            VecNum;         /* number of vectors so far             */
 GLOB section        *NonSect;       /* non-overlay-class section            */
 GLOB path_entry     *ObjPath;       /* path for object files                */
 GLOB path_entry     *UsrLibPath;    /* path for library files (LibPath)     */

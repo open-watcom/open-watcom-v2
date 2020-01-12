@@ -44,22 +44,6 @@
 
 overlay_ref     OvlSectNum;
 
-void WalkAllOvl( void (*rtn)( section * ) )
-/*****************************************/
-{
-    if( FmtData.type & MK_OVERLAYS ) {
-        WalkAreas( Root->areas, rtn );
-    }
-}
-
-void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
-/*****************************************************************/
-{
-    if( FmtData.type & MK_OVERLAYS ) {
-        ParmWalkAreas( Root->areas, rtn, parm );
-    }
-}
-
 static void NumASect( section *sect )
 /***********************************/
 {
@@ -69,45 +53,51 @@ static void NumASect( section *sect )
     sect->ovlref = OvlSectNum++;
 }
 
-void NumberSections( void )
-/*************************/
+void OvlNumberSections( void )
+/****************************/
 {
-    if( FmtData.type & MK_OVERLAYS ) {
-        if( FmtData.u.dos.distribute ) {
-            _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
-            SectOvlTab[0] = Root;
-        }
-        OvlSectNum = 1;
-        WalkAreas( Root->areas, NumASect );
+    if( FmtData.u.dos.distribute ) {
+        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
+        SectOvlTab[0] = Root;
     }
+    OvlSectNum = 1;
+    WalkAreas( Root->areas, NumASect );
 }
 
-void FillOutFilePtrs( void )
-/**************************/
+static void FillOutPtr( section *sec )
+/************************************/
 {
-    WalkAllOvl( FillOutPtr );
-}
-
-void TryDefVector( symbol *sym )
-/******************************/
-{
-    if( FmtData.type & MK_OVERLAYS ) {
-        if( sym->info & SYM_DISTRIB ) {
-            DefDistribSym( sym );
+    if( sec->outfile == NULL ) {
+        if( sec->parent != NULL ) {
+            sec->outfile = sec->parent->outfile;  //same file as ancestor.
         } else {
-            OvlDefVector( sym );
+            sec->outfile = Root->outfile;
         }
     }
 }
 
-void TryUseVector( symbol *sym, extnode *newnode )
-/************************************************/
+void OvlFillOutFilePtrs( void )
+/*****************************/
+{
+    WalkAreas( Root->areas, FillOutPtr );
+}
+
+void OvlTryDefVector( symbol *sym )
+/*********************************/
+{
+    if( sym->info & SYM_DISTRIB ) {
+        DefDistribSym( sym );
+    } else {
+        OvlDefVector( sym );
+    }
+}
+
+void OvlTryUseVector( symbol *sym, extnode *newnode )
+/***************************************************/
 {
     if( newnode != NULL ) {
         newnode->ovlref = 0;
-        if( FmtData.type & MK_OVERLAYS ) {
-            OvlUseVector( sym, newnode );
-        }
+        OvlUseVector( sym, newnode );
     }
 }
 
@@ -121,8 +111,6 @@ static void PSection( section *sec )
 void OvlPass2( void )
 /*******************/
 {
-    if( FmtData.type & MK_OVERLAYS ) {
-        EmitOvlVectors();
-        WalkAllOvl( PSection );
-    }
+    OvlEmitVectors();
+    WalkAreas( Root->areas, PSection );
 }

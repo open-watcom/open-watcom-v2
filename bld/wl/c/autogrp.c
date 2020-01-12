@@ -350,6 +350,7 @@ static void FindSplitGroups( void )
 // overlays. This causes all hell to break loose, so this checks to make sure
 // that this doesn't happen.
 {
+#ifdef _EXE
     group_entry     *group;
 
     if( FmtData.type & MK_OVERLAYS ) {
@@ -359,6 +360,7 @@ static void FindSplitGroups( void )
             }
         }
     }
+#endif
 }
 
 static void NumberNonAutos( void )
