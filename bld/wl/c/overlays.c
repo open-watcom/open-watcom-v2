@@ -59,6 +59,12 @@ void OvlNumberSections( void )
     WalkAreas( Root->areas, OvlNumASect );
 }
 
+void OvlSetSegments( void )
+/*************************/
+{
+    DistribSetSegments();
+}
+
 static void FillOutPtr( section *sec )
 /************************************/
 {

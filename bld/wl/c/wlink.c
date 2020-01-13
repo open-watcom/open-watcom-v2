@@ -63,7 +63,6 @@
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
-#include "distrib.h"
 #include "objorl.h"
 #include "strtab.h"
 #include "carve.h"
@@ -259,14 +258,12 @@ static void ResetSubSystems( void )
     ResetCmdAll();
     ResetOvlSupp();
     ResetComdef();
-    ResetDistrib();
     ResetLoadNov();
     ResetLoadPE();
     ResetObj2Supp();
     ResetObjIO();
     ResetObjOMF();
     ResetObjPass1();
-//    ResetDistrib(); // duplicate call
     ResetObjStrip();
     ResetOMFReloc();
     ResetReloc();
@@ -339,7 +336,7 @@ static void SetSegments( void )
     }
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
-    DistribSetSegments();
+    OvlSetSegments();
 }
 
 static void set_signal( void )

@@ -63,6 +63,7 @@ extern void             OvlSetTableLoc( group_entry *, unsigned long );
 /* in overlays.c */
 
 extern void             OvlNumberSections( void );
+extern void             OvlSetSegments( void );
 extern void             OvlFillOutFilePtrs( void );
 extern void             OvlTryDefVector( symbol * );
 extern void             OvlTryUseVector( symbol *, extnode * );

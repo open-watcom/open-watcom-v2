@@ -83,6 +83,7 @@ void ResetOvlSupp( void )
     OvlSectNum = 1;
     OvlClasses = NULL;
     VecNum = 0;
+    ResetDistrib();
 }
 
 static void ParmWalkSections( section *sect, void (*rtn)( section *, void * ), void *parm )
