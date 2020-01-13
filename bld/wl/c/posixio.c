@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ static int DoOpen( const char *name, unsigned mode, bool isexe )
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        if ( (mode & O_CREAT) && !stat( name, &st) )
+        if( (mode & O_CREAT) && !stat( name, &st ) )
             unlink( name );
         h = open( name, mode, pmode );
         if( h != -1 ) {

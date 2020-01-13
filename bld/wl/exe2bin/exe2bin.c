@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,10 +192,10 @@ static void disp_header( dos_exe_header *header )
     printf( "Minimum allocation (paras)     %04X\n",   header->min_16       );
     printf( "Maximum allocation (paras)     %04X\n",   header->max_16       );
     printf( "Initial ss:sp             %04X:%04X\n",   header->SS_offset,
-                                                       header->SP );
+                                                       header->SP           );
     printf( "Checksum                       %04X\n",   header->chk_sum      );
     printf( "Initial cs:ip             %04X:%04X\n",   header->CS_offset,
-                                                       header->IP );
+                                                       header->IP           );
     printf( "Relocation-table at            %04X\n",   header->reloc_offset );
     printf( "Overlay number                 %04X\n\n", header->overlay_num  );
 }
@@ -277,7 +277,7 @@ static reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
                     break;
                 } else {
                     reltab->reloc[i] = (GET_LE_16( rel_off.segment ) << 4)
-                                      + GET_LE_16( rel_off.offset  );
+                                      + GET_LE_16( rel_off.offset );
                 }
             }
         }

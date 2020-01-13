@@ -462,7 +462,7 @@ static unsigned __near DefragmentMem( unsigned amount, unsigned area_seg )
     /* there is enough room, so we move used blocks until we get a
      * free block large enough */
     to_seg = area->fblk.next;
-    for(;;) {
+    for( ;; ) {
         to_block = MK_FP( to_seg, 0 );
         to_block_paras = to_block->num_paras;
         to_block_next = to_block->next;
@@ -529,7 +529,7 @@ static unsigned __near ForceAllocate( unsigned amount )
     */
     call_chain = __OVLSCANCALLCHAIN__();
     rover_save = __OVLROVER__;
-    for(;;) {
+    for( ;; ) {
         area_seg = UnloadNonChained( amount, rover_save );
         if( area_seg != NULL_SEG ) {
             seg = DefragmentMem( amount, area_seg );

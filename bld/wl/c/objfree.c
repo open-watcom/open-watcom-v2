@@ -141,7 +141,7 @@ static void FreeSections( section *sec )
             // Order Seg entries can also have members and sucessors
             for( Seg = Class->SegList; Seg != NULL; Seg = NextSeg ) {
                 NextSeg = Seg->NextSeg;
-                if ( Seg->Name != NULL ) {
+                if( Seg->Name != NULL ) {
                     _LnkFree( Seg->Name );
                 }
                 _LnkFree ( Seg );
@@ -184,7 +184,7 @@ void CleanLinkStruct( void )
     if( FmtData.osname != NULL ) {
         _LnkFree( FmtData.osname );
     }
-    if (FmtData.resource != NULL) {
+    if( FmtData.resource != NULL ) {
         _LnkFree( FmtData.resource );
     }
     FreeRelocInfo();

@@ -409,7 +409,7 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len 
         ptr = arg;
         len = 0;
         plen = arg_len;
-        for(;;) {
+        for( ;; ) {
             if( plen == 0 && len >= entry->minlen ) {
                 MultiLine = NULL;               // for processdefcommand.
                 (*entry->rtn)();
@@ -948,7 +948,7 @@ static bool IsInitType( void )
     if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 ) == 0 ) {
         FmtInfo = DLL_INITGLOBAL;
         return( true );
-    } else if ( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
+    } else if( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
         FmtInfo = DLL_INITINSTANCE;
         return( true );
     }

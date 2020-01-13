@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,9 +178,10 @@ static bool isCOMDEF32( void )
     SEGDATA *segs = CurrMod->segs;
     SEGDATA *seg = NULL;
 
-    for(;;) {
+    for( ;; ) {
         seg = Ring2Step( segs, seg );
-        if( seg == NULL ) break;
+        if( seg == NULL )
+            break;
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {

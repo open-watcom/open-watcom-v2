@@ -380,7 +380,7 @@ void FiniPharLapLoadFile( void )
     unsigned_32 start;
 
     start = AppendToLoadFile( FmtData.u.phar.stub );
-    if( FmtData.type & (MK_PHAR_FLAT|MK_PHAR_MULTISEG) ) {
+    if( FmtData.type & (MK_PHAR_FLAT | MK_PHAR_MULTISEG) ) {
         WritePharExtended( start );
     } else {
         WritePharSimple( start );

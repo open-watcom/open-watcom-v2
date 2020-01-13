@@ -255,7 +255,7 @@ static bool getexport( void )
     }
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
-    if( (FmtData.type & (MK_WINDOWS|MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+    if( (FmtData.type & (MK_WINDOWS | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );

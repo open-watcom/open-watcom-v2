@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +66,8 @@ pHTable CreateHTable( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
 pHTable CreateHTableDouble( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
          pAllocFunc allocFunc, pFreeFunc freeFunc )
 {
-    pHTable table = CreateHTable(size, hashFunc, compareFunc, allocFunc, freeFunc);
-    if (table != NULL) {
+    pHTable table = CreateHTable( size, hashFunc, compareFunc, allocFunc, freeFunc );
+    if( table != NULL ) {
         table->allowDoubles = 1;
     }
     return( table );

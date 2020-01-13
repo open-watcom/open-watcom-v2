@@ -786,7 +786,7 @@ bool HintFormat( exe_format hint )
     }
     if( possible == 0 ) {
 #ifdef _OS2
-        if( (~(MK_OS2|MK_PE|MK_WIN_VXD) & FmtData.type) == 0 ) {
+        if( (~(MK_OS2 | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
             /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
                 want the same structure */
             InitFmt( SetOS2Fmt );
@@ -1097,9 +1097,9 @@ bool ProcOffset( void )
 {
     if( !GetLong( &FmtData.base ) )
         return( false );
-    if( (FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) == 0 ) {
+    if( (FmtData.type & (MK_PHAR_LAP | MK_QNX_FLAT | MK_RAW)) == 0 ) {
         ChkBase( _64KB );
-    } else if( (FmtData.type & (MK_OS2_FLAT|MK_PE)) == 0 ) {
+    } else if( (FmtData.type & (MK_OS2_FLAT | MK_PE)) == 0 ) {
         ChkBase( _4KB );
     }
     return( true );

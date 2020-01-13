@@ -63,7 +63,7 @@ typedef enum {          // there is a corresp. table in MSG.C
 #define MK_OS2_16BIT (MK_ONLY_OS2_16 | MK_WINDOWS)
 /* MK_WIN_VXD is not included into MK_OS2 */
 #define MK_OS2       (MK_OS2_16BIT | MK_OS2_LE | MK_OS2_LX)
-#define MK_PHAR_LAP  (MK_PHAR_SIMPLE|MK_PHAR_FLAT|MK_PHAR_REX|MK_PHAR_MULTISEG)
+#define MK_PHAR_LAP  (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_PHAR_MULTISEG)
 #define MK_QNX       (MK_QNX_16 | MK_QNX_FLAT)
 #define MK_64BIT     (MK_PE | MK_ELF)
 #define MK_32BIT     (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_LE | MK_OS2_LX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS)

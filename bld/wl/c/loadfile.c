@@ -213,9 +213,9 @@ void FiniLoadFile( void )
     FreeSavedRelocs();
     OpenOutFiles();
     SetupImpLib();
-    if ( FmtData.output_raw ) {         // These must come first because
+    if( FmtData.output_raw ) {          // These must come first because
         BinOutput();                    //    they apply to all formats
-    } else if ( FmtData.output_hex ) {  //    and override native output
+    } else if( FmtData.output_hex ) {   //    and override native output
         HexOutput();
     } else if( FmtData.type & MK_DOS ) {
         FiniDOSLoadFile();

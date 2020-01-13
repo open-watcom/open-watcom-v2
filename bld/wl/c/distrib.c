@@ -513,9 +513,9 @@ static void ScanArcs( mod_entry *mod )
                         sym->u.d.ovlref = LowestAncestor( ovlref, SectOvlTab[sym->u.d.ovlref] );
                     }
                 }
-            } /* if (a module) */
-        } /* for (arcs left) */
-    } /* if (an ovlnum defined) */
+            } /* if( a module ) */
+        } /* for( arcs left ) */
+    } /* if( an ovlnum defined ) */
     mod->modinfo &= ~MOD_VISITED;
 }
 

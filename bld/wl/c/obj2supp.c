@@ -187,8 +187,8 @@ static void TraceFixup( fix_type type, target_spec *target )
                     }
                     break;
                 }
-            }  /* end if (notrelative && overlay) */
-        } /* end if (a symbol/segment) */
+            }  /* end if( notrelative && overlay ) */
+        } /* end if( a symbol/segment ) */
     }
 }
 
@@ -943,7 +943,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         off = SUB_REAL_ADDR( fix->tgt_addr, fix->loc_addr );
     }
     fixsize = CalcFixupSize( fix->type );
-    if ( (fix->type & FIX_NOADJ) == 0 ) {
+    if( (fix->type & FIX_NOADJ) == 0 ) {
         off -= fixsize;
     }
     if( fix->type == FIX_OFFSET_16 ) {
@@ -1393,7 +1393,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
             }
         }
         // ALWAYS set the alias flag for 16:16 pointers!
-        if ( fixtype == 3 )
+        if( fixtype == 3 )
             fixtype |= OSF_FIXUP_TO_ALIAS;
 
         PUT_U8( fixptr, fixtype );

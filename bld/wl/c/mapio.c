@@ -342,7 +342,7 @@ void WritePubModHead( void )
 {
     char        full_name[PATH_MAX];
 
-    if ( CurrMod->f.source == NULL ) {
+    if( CurrMod->f.source == NULL ) {
         strcpy( full_name, CurrMod->name.u.ptr );
     } else {
         MakeFileName( CurrMod->f.source->infile, full_name );
@@ -484,7 +484,7 @@ static void dump_state( line_state_info *state )
         }
     }
     state->col++;
-    if( state->col == 4) {
+    if( state->col == 4 ) {
         WriteMapNL( 1 );
         state->col = 0;
     }
@@ -885,7 +885,7 @@ void MapSizes( void )
         Write32( msg_buff, (unsigned long)OvlAreaSize * 16 );
     }
 #endif
-    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
+    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
     if( FmtData.u.os2.no_stub ) {

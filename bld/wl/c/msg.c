@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,7 +187,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
     int             temp;
 
     dest = buff;
-    for(;;) {
+    for( ;; ) {
         ch = *src++;
         if( ch == '\0' || len == 1 )
             break;
@@ -321,7 +322,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     size = FmtStr( dest, len, "%h", addr->off );
                 } else if( FmtData.type & MK_QNX_FLAT) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr( addr ) );
-                } else if( FmtData.type & (MK_ELF|MK_PE) ) {
+                } else if( FmtData.type & (MK_ELF | MK_PE) ) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr2( addr ) );
                 } else if( FmtData.type & MK_ID_SPLIT ) {
                     if( addr->seg == CODE_SEGMENT ) {

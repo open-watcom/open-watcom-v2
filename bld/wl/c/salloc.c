@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,7 +156,7 @@ void ChkLocated( targ_addr *segadr, bool fixed)
 //  unless location counter is already past it
 // This should only be called from real mode
 {
-    if ( fixed ) {
+    if( fixed ) {
         if( (CurrLoc.seg << FmtData.SegShift) + CurrLoc.off >
             (segadr->seg << FmtData.SegShift) + segadr->off ) {
             LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", segadr);

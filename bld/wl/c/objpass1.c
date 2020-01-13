@@ -438,7 +438,7 @@ unsigned long IncPass1( void )
     seglist = CurrMod->segs;
     CurrMod->segs = NULL;
     CurrMod->lines = NULL;
-    for(;;) {
+    for( ;; ) {
         seg = Ring2Pop( &seglist );
         if( seg == NULL )
             break;
@@ -876,7 +876,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
     segdata     *first;
 
     first = NULL;
-    for(;;) {
+    for( ;; ) {
         seg = GetSegment( sym->name.u.ptr, FarDataClassName, NULL,
                           0, COMBINE_INVALID, !IS_SYM_COMM32( sym ) );
         if( first == NULL )
@@ -1150,7 +1150,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
             } else {
                 startlist = symlist;
                 oldlist = sym->e.vfdata;
-                for(;;) {
+                for( ;; ) {
                     if( *oldlist != *symlist ) {
                         LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
                         break;

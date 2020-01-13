@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -275,7 +275,7 @@ static void CarveDebugFree( carve_t cv, void *elm )
         }
 #endif
         esize = cv->elm_size;
-        for(;;) {
+        for( ;; ) {
             if( compare == start )
                 break;
             compare -= esize;

@@ -293,10 +293,11 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 bool QIsDevice( f_handle file )
 /*****************************/
 {
-    if ( DosIoctlGetDeviceInfo ( file ) & 0x80 )
+    if( DosIoctlGetDeviceInfo ( file ) & 0x80 ) {
         return( true );
-    else
+    } else {
         return( false );  // don't write the prompt if input not from stdin
+    }
 }
 
 f_handle ExeCreate( const char *name )

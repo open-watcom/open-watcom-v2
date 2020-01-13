@@ -233,9 +233,9 @@ static void DoMSOMF( void )
 /***********************************/
 /* Figure out debug info type and handle it accordingly later. */
 {
-    if( ObjBuff == EOObjRec )
+    if( ObjBuff == EOObjRec ) {
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
-    else {
+    } else {
 //        unsigned_8  version;
 
         /* version = * */ ObjBuff++;
@@ -986,7 +986,7 @@ static void Pass1Cmd( byte cmd )
     case CMD_LINN32:
         ObjFormat |= FMT_MS_386;
     case CMD_LINNUM:
-        if (CurrMod->omfdbg == OMF_DBG_CODEVIEW)
+        if( CurrMod->omfdbg == OMF_DBG_CODEVIEW )
             ProcLinnum();
         break;
     case CMD_LINS32:
