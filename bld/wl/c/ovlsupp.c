@@ -75,8 +75,8 @@ static unsigned     OvltabSize;         /* size of overlay tables               
 static vecnode      *OvlVectors;        /* point to overlay vector notes        */
 static int          VecNum;             /* number of vectors so far             */
 
-void ResetOvlSupp( void )
-/***********************/
+void ResetOverlaySupp( void )
+/***************************/
 {
     OvlAreaSize = 0xFFFF;
     OvlVectors = NULL;

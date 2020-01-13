@@ -57,7 +57,7 @@ extern void             OvlSetStartAddr( void );
 extern void             OvlPass1( void );
 extern void             OvlEmitTable( void );
 extern void             OvlPadOvlFiles( void );
-extern void             ResetOvlSupp( void );
+extern void             ResetOverlaySupp( void );
 extern void             OvlSetTableLoc( group_entry *, unsigned long );
 
 /* in overlays.c */

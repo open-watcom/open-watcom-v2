@@ -86,10 +86,10 @@
 
 #define DEF_STACK_SIZE  _4KB
 
-#ifdef _INT_DEBUG
+#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
 /*
- *  I have temporarily left these as extern as they are internal data. On the final pass, either find
- *  a library header that defines these or create one!
+ *  Following symbols are specific for Open Watcom Linker generated executables
+ *  and appropriate code can be used only if this program is linked by OW Linker
  */
 extern char     *_edata;
 extern char     *_end;
@@ -111,16 +111,16 @@ static void PreAddrCalcFormatSpec( void )
     } else if( FmtData.type & MK_WIN_VXD ) {
         SetOS2SegFlags();
     } else if( FmtData.type & MK_OS2 ) {
-#if 0
+  #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
             SetOS2SegFlags();
         }
-#else
+  #else
         SetOS2SegFlags();
-#endif
+  #endif
     }
 #endif
 #ifdef _NOVELL
@@ -256,7 +256,7 @@ static void ResetSubSystems( void )
     ResetDBI();
     ResetMapIO();
     ResetCmdAll();
-    ResetOvlSupp();
+    ResetOverlaySupp();
     ResetComdef();
     ResetLoadNov();
     ResetLoadPE();
@@ -277,7 +277,7 @@ static void ResetSubSystems( void )
 void InitSubSystems( void )
 /********************************/
 {
-#ifdef _INT_DEBUG
+#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
     memset( _edata, 0xA5, _end - _edata );      // don't rely on BSS == 0
 #endif
     LnkMemInit();
@@ -331,12 +331,17 @@ static void SetSegments( void )
 // now that we know where everything is, do all the processing that has been
 // postponed until now.
 {
+#ifdef _DOS16M
     if( FmtData.type & MK_DOS16M ) {
         MakeDos16PM();
     }
-    if( (LinkFlags & LF_STRIP_CODE) == 0 )
+#endif
+    if( (LinkFlags & LF_STRIP_CODE) == 0 ) {
         return;
+    }
+#ifdef _EXE
     OvlSetSegments();
+#endif
 }
 
 static void set_signal( void )
@@ -401,8 +406,9 @@ static void DoLink( const char *cmdline )
     GetStartAddr();
     PostAddrCalcFormatSpec();
 #ifdef _RDOS
-    if( FmtData.type & MK_RDOS )
+    if( FmtData.type & MK_RDOS ) {
         GetRdosSegs();
+    }
 #endif
     CheckErr();
     InitLoadFile();
@@ -428,12 +434,14 @@ static void LinkMeBaby( void )
 void LinkMainLine( const char *cmds )
 /***********************************/
 {
-    for(;;) {
+    for( ;; ) {
         ArgSave = cmds;         // bogus way to pass args to spawn
         Spawn( &LinkMeBaby );
         CleanSubSystems();
         cmds = GetNextLink();
-        if( cmds == NULL ) break;
+        if( cmds == NULL ) {
+            break;
+        }
     }
 #if defined( __WATCOMC__ )
     _heapshrink();
