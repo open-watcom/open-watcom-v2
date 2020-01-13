@@ -42,6 +42,7 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmddos.h"
+#include "distrib.h"
 
 
 static byte             OvlLevel;
@@ -125,6 +126,7 @@ bool ProcFixedLib( void )
 }
 
 static section *OvlNewSection( void )
+/***********************************/
 {
     OvlSectNum++;
     return( NewSection() );

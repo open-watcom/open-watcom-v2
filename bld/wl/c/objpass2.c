@@ -65,7 +65,7 @@ void ObjPass2( void )
         OvlPass2();
     }
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        ProcDistMods();
+        DistribProcMods();
     } else {
 #endif
         CurrSect = Root;

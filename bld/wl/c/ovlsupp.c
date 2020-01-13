@@ -56,6 +56,7 @@
 #include "clibext.h"
 
 
+overlay_ref         OvlSectNum;
 seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab */
 unsigned_16         OvlAreaSize;
 list_of_names       *OvlClasses;        /* list of classes to be overlayed      */
@@ -319,7 +320,7 @@ void FreeOvlStruct( void )
     if( OvlSeg != NULL ) {
         FreeLeader( OvlSeg );
     }
-    FreeDistStuff();
+    FreeDistribStuff();
 }
 
 static bool IsAncestor( overlay_ref elder_ovlref, section *ceorl )
@@ -444,7 +445,7 @@ void OvlIndirectCall( symbol *sym )
         return;
     if( sym->info & SYM_DEFINED ) {
         if( sym->info & SYM_DISTRIB ) {
-            DistIndCall( sym );
+            DistribIndirectCall( sym );
         } else if( sym->p.seg != NULL ) {
             ovlref = sym->p.seg->u.leader->class->section->ovlref;
             if( ( ovlref != 0 ) && sym->p.seg->iscode ) {

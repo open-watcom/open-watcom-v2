@@ -46,13 +46,11 @@
 #include "load16m.h"
 
 
-#define MOD_DEREF( x )      (ModTable[(x)])
 #define INITIAL_MOD_ALLOC   32
 #define INITIAL_ARC_ALLOC   32
 #define MAX_NUM_MODULES     _8KB
 
-section             **SectOvlTab;
-
+static section      **SectOvlTab;
 static arcdata      *ArcList;
 static unsigned_32  ArcListMaxLen;
 static mod_entry    **ModTable;
@@ -62,6 +60,21 @@ static unsigned_16  CurrModHandle;
 /* forward declarations */
 
 static void     ScanArcs( mod_entry *mod );
+
+static void DistribNumASect( section *sect )
+/******************************************/
+{
+    SectOvlTab[OvlSectNum++] = sect;
+}
+
+void DistribNumberSections( void )
+/********************************/
+{
+    _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
+    SectOvlTab[0] = Root;
+    OvlSectNum = 1;
+    WalkAreas( Root->areas, DistribNumASect );
+}
 
 void ResetDistrib( void )
 /***********************/
@@ -73,8 +86,8 @@ void ResetDistrib( void )
     SectOvlTab = NULL;
 }
 
-void InitModTable( void )
-/***********************/
+void DistribInitMods( void )
+/**************************/
 {
     ModTableMaxLen = INITIAL_MOD_ALLOC;
     _ChkAlloc( ModTable, INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
@@ -85,7 +98,7 @@ void InitModTable( void )
     MakePass1Blocks();
 }
 
-void AddModTable( mod_entry * lp, overlay_ref ovlref )
+void DistribAddMod( mod_entry * lp, overlay_ref ovlref )
 /******************************************************/
 /* add this module to the table, and make the arclist field point to a
  * scratch buffer */
@@ -181,8 +194,8 @@ static void DefineOvlSegments( mod_entry *mod )
     Ring2Walk( mod->publist, KillUnrefedSyms );
 }
 
-void DistrSetSegments( void )
-/***************************/
+void DistribSetSegments( void )
+/*****************************/
 // now that we know where everything is, do all the processing that has been
 // postponed until now.
 {
@@ -230,11 +243,15 @@ void DistrSetSegments( void )
         SectOvlTab = NULL;
     }
 #endif
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+        _LnkFree( SectOvlTab );
+        SectOvlTab = NULL;
+    }
     ReleasePass1();
 }
 
-void FreeDistStuff( void )
-/************************/
+void FreeDistribStuff( void )
+/***************************/
 {
     unsigned    index;
 
@@ -247,8 +264,8 @@ void FreeDistStuff( void )
     ReleasePass1();
 }
 
-void ProcDistMods( void )
-/***********************/
+void DistribProcMods( void )
+/**************************/
 {
     unsigned_16 index;
     mod_entry * mod;
@@ -372,7 +389,7 @@ static bool NotAnArc( dist_arc arc )
 }
 
 void RefDistribSym( symbol * sym )
-/***************************************/
+/********************************/
 /* add an arc to the reference graph if it is not already in the graph */
 {
     mod_entry * mod;
@@ -463,13 +480,13 @@ static void ScanArcs( mod_entry *mod )
         for( index = arclist->numarcs; index-- > 0; ) {
             currarc = arclist->arcs[index];
             if( currarc.test <= MAX_NUM_MODULES ) {     // GIANT KLUDGE!
-                DoRefGraph( ovlref, MOD_DEREF( currarc.mod ) );
+                DoRefGraph( ovlref, ModTable[currarc.mod] );
             } else {
                 sym = currarc.sym;
                 if( sym->info & SYM_DEFINED ) {
                     if( sym->info & SYM_DISTRIB ) {
                         currarc.test = sym->u.d.modnum;
-                        refmod = MOD_DEREF( currarc.mod );
+                        refmod = ModTable[currarc.mod];
                         if( refmod->modinfo & MOD_FIXED ) {
                             if( NewRefVector( sym, ovlref, refmod->x.arclist->ovlref ) ) {
                                 DeleteArc( arclist, index );
@@ -520,8 +537,8 @@ void FinishArcs( mod_entry *mod )
     mod->x.arclist = arclist;
 }
 
-void DistIndCall( symbol *sym )
-/*****************************/
+void DistribIndirectCall( symbol *sym )
+/*************************************/
 // handle indirect calls and their effect on distributed libs.
 {
     arcdata         *arclist;
@@ -531,7 +548,7 @@ void DistIndCall( symbol *sym )
     save_ovlref = arclist->ovlref;
     arclist->ovlref = 0;                   // make sure current module isn't
     CurrMod->modinfo |= MOD_VISITED;    // visited
-    DoRefGraph( 0, MOD_DEREF( sym->u.d.modnum ) );
+    DoRefGraph( 0, ModTable[sym->u.d.modnum] );
     CurrMod->modinfo &= ~MOD_VISITED;
     arclist->ovlref = save_ovlref;
     sym->u.d.ovlstate |= OVL_REF;

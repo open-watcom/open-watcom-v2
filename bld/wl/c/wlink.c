@@ -339,7 +339,7 @@ static void SetSegments( void )
     }
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
-    DistrSetSegments();
+    DistribSetSegments();
 }
 
 static void set_signal( void )

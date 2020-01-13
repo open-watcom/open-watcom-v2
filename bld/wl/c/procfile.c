@@ -675,7 +675,7 @@ void ResolveUndefined( void )
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         LinkState |= LS_CAN_REMOVE_SEGMENTS;
-        InitModTable();
+        DistribInitMods();
     }
     CurrSect = Root;
     ResolveVFExtdefs();

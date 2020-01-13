@@ -40,16 +40,12 @@
 #include "objcalc.h"
 #include "distrib.h"
 #include "overlays.h"
+#include "distrib.h"
 
 
-overlay_ref     OvlSectNum;
-
-static void NumASect( section *sect )
-/***********************************/
+static void OvlNumASect( section *sect )
+/**************************************/
 {
-    if( FmtData.u.dos.distribute ) {
-        SectOvlTab[OvlSectNum] = sect;
-    }
     sect->ovlref = OvlSectNum++;
 }
 
@@ -57,11 +53,10 @@ void OvlNumberSections( void )
 /****************************/
 {
     if( FmtData.u.dos.distribute ) {
-        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
-        SectOvlTab[0] = Root;
+        DistribNumberSections();
     }
     OvlSectNum = 1;
-    WalkAreas( Root->areas, NumASect );
+    WalkAreas( Root->areas, OvlNumASect );
 }
 
 static void FillOutPtr( section *sec )

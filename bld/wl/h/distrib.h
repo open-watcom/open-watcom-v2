@@ -31,17 +31,16 @@
 ****************************************************************************/
 
 
-extern section **       SectOvlTab;
-
-extern void             InitModTable( void );
-extern void             AddModTable( mod_entry *, overlay_ref );
+extern void             DistribInitMods( void );
+extern void             DistribAddMod( mod_entry *, overlay_ref );
 extern void             InitArcList( mod_entry * );
-extern void             DistrSetSegments( void );
-extern void             FreeDistStuff( void );
-extern void             ProcDistMods( void );
+extern void             DistribSetSegments( void );
+extern void             FreeDistribStuff( void );
+extern void             DistribProcMods( void );
 extern overlay_ref      LowestAncestor( overlay_ref, section * );
 extern void             DefDistribSym( symbol * );
 extern void             RefDistribSym( symbol * );
 extern void             FinishArcs( mod_entry * );
-extern void             DistIndCall( symbol * );
+extern void             DistribIndirectCall( symbol * );
 extern void             ResetDistrib( void );
+extern void             DistribNumberSections( void );
