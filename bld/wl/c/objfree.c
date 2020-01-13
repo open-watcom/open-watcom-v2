@@ -196,7 +196,7 @@ void CleanLinkStruct( void )
     DBICleanup();
     Root = NULL;
     if( FmtData.type & MK_REAL_MODE ) {
-        FreeOvlStruct();
+        FreeOverlaySupp();
     }
 }
 

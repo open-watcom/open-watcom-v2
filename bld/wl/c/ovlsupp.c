@@ -83,7 +83,7 @@ void ResetOvlSupp( void )
     OvlSectNum = 1;
     OvlClasses = NULL;
     VecNum = 0;
-    ResetDistrib();
+    ResetDistribSupp();
 }
 
 static void ParmWalkSections( section *sect, void (*rtn)( section *, void * ), void *parm )
@@ -313,15 +313,15 @@ void OvlCalc( void )
     RingAppend( &OvlSegData->u.leader->pieces, OvlSegData );
 }
 
-void FreeOvlStruct( void )
-/************************/
+void FreeOverlaySupp( void )
+/**************************/
 {
     OvlClasses = NULL;
     OvlVectors = NULL;
     if( OvlSeg != NULL ) {
         FreeLeader( OvlSeg );
     }
-    FreeDistribStuff();
+    FreeDistribSupp();
 }
 
 static bool IsAncestor( overlay_ref elder_ovlref, section *ceorl )

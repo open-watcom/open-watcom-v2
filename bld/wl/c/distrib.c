@@ -76,8 +76,8 @@ void DistribNumberSections( void )
     WalkAreas( Root->areas, DistribNumASect );
 }
 
-void ResetDistrib( void )
-/***********************/
+void ResetDistribSupp( void )
+/***************************/
 {
     ArcList = NULL;
     ArcListMaxLen = 0;
@@ -250,8 +250,8 @@ void DistribSetSegments( void )
     ReleasePass1();
 }
 
-void FreeDistribStuff( void )
-/***************************/
+void FreeDistribSupp( void )
+/**************************/
 {
     unsigned    index;
 
@@ -519,8 +519,8 @@ static void ScanArcs( mod_entry *mod )
     mod->modinfo &= ~MOD_VISITED;
 }
 
-void FinishArcs( mod_entry *mod )
-/*******************************/
+void DistribFinishMod( mod_entry *mod )
+/*************************************/
 /* check the position of the modules referenced by mod, and then make a
  * more permanent copy of the arclist for this module. */
 {

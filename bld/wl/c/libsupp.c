@@ -79,7 +79,7 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
     ObjPass1();
     CacheClose( lib, 1 );
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        FinishArcs( lp );
+        DistribFinishMod( lp );
     }
     if( FindLibTrace( lp ) ) {
         TraceSymList( lp->publist );

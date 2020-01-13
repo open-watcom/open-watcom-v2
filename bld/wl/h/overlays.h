@@ -43,7 +43,7 @@ extern void             ParmWalkAreas( OVL_AREA *, parmwalksecs_fn *, void * );
 extern void             OvlProcPubsSect( section * );
 extern void             OvlProcPubs( void );
 extern void             OvlCalc( void );
-extern void             FreeOvlStruct( void );
+extern void             FreeOverlaySupp( void );
 extern void             OvlDefVector( symbol * );
 extern void             OvlVectorize( symbol * );
 extern void             OvlTryRefVector( symbol * );
