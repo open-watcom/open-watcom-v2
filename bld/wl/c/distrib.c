@@ -95,7 +95,7 @@ void DistribInitMods( void )
     ArcListMaxLen = INITIAL_ARC_ALLOC;
     _ChkAlloc( ArcList, offsetof( arcdata, arcs ) + INITIAL_ARC_ALLOC * sizeof( dist_arc ) );
     ArcList->numarcs = 0;
-    MakePass1Blocks();
+    ResetPass1Blocks();
 }
 
 void DistribAddMod( mod_entry * lp, overlay_ref ovlref )
@@ -247,7 +247,7 @@ void DistribSetSegments( void )
         _LnkFree( SectOvlTab );
         SectOvlTab = NULL;
     }
-    ReleasePass1();
+    ReleasePass1Blocks();
 }
 
 void FreeDistribSupp( void )
@@ -261,7 +261,7 @@ void FreeDistribSupp( void )
     _LnkFree( ModTable );
     _LnkFree( ArcList );
     _LnkFree( SectOvlTab );
-    ReleasePass1();
+    ReleasePass1Blocks();
 }
 
 void DistribProcMods( void )

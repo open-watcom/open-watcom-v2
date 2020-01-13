@@ -63,15 +63,15 @@ typedef struct {
 static block_data Pass1Blocks;
 static block_data PermBlocks;
 
-void GetSymBlock( void )
-/**********************/
+void ResetPermBlocks( void )
+/**************************/
 /* allocate memory for symbol table allocation and code */
 {
     PermBlocks.list = NULL;
 }
 
-void MakePass1Blocks( void )
-/**************************/
+void ResetPass1Blocks( void )
+/***************************/
 {
     Pass1Blocks.list = NULL;
 }
@@ -89,11 +89,11 @@ static bool ShrinkBlock( block_data *block )
     _LnkRealloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
-#ifdef _DEVELOPMENT
+  #ifdef _DEVELOPMENT
     if( new != block->list ) {
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }
-#endif
+  #endif
     return( true );
 #else
     /* There is no guarantee realloc() won't move memory - just don't do it */
@@ -168,7 +168,7 @@ void *Pass1Alloc( size_t size )
 
 void *PermAlloc( size_t size )
 /****************************/
-/* allocate a hunk of permanently allocated memory */
+/* allocate a thunk of permanently allocated memory */
 {
     return( AllocBlock( size, &PermBlocks ) );
 }
@@ -204,16 +204,16 @@ symbol * AddSym( void )
     return( sym );
 }
 
-void ReleasePass1( void )
-/******************************/
+void ReleasePass1Blocks( void )
+/*****************************/
 /* free pass1 block allocations */
 {
     FreeList( Pass1Blocks.list );
     Pass1Blocks.list = NULL;
 }
 
-void RelSymBlock( void )
-/*****************************/
+void ReleasePermBlocks( void )
+/****************************/
 /* free memory used for symbol table allocation and code */
 {
     FreeList( PermBlocks.list );

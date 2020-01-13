@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@ extern void     *Pass1Alloc( size_t );
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
 extern bool     FreeUpMemory( void );
-extern void     MakePass1Blocks( void );
+extern void     ResetPass1Blocks( void );
 extern bool     PermShrink( void );
-extern void     ReleasePass1( void );
+extern void     ReleasePass1Blocks( void );
 
 #define _ChkAlloc( dest, size )         dest = ChkLAlloc( size )
 #define _LnkAlloc( dest, size )         dest = LAlloc( size )

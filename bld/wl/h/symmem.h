@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,7 @@
 ****************************************************************************/
 
 
-extern void     InitSymMem( void );
-extern void     GetSymBlock( void );
+extern void     ResetPermBlocks( void );
 extern void     BasicInitSym( symbol *sym );
-extern symbol * AddSym( void );
-extern void     RelSymBlock( void );
+extern symbol   *AddSym( void );
+extern void     ReleasePermBlocks( void );
