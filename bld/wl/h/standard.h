@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#ifndef _INCLUDE_STANDARD_H
+#define _INCLUDE_STANDARD_H
+
 #include <stddef.h>
 #include <stdarg.h>
 #include <time.h>
@@ -121,3 +124,5 @@ typedef union {
     virt_mem        vm_ptr;
     virt_mem_size   vm_offs;
 } virt_mem_ptr;
+
+#endif
