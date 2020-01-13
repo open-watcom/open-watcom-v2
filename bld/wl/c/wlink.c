@@ -336,9 +336,6 @@ static void SetSegments( void )
         MakeDos16PM();
     }
 #endif
-    if( (LinkFlags & LF_STRIP_CODE) == 0 ) {
-        return;
-    }
 #ifdef _EXE
     OvlSetSegments();
 #endif
