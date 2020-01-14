@@ -118,12 +118,14 @@ extern bool     ProcVersion( void );
 extern bool     ProcImplib( void );
 extern bool     ProcImpFile( void );
 extern bool     ProcRuntime( void );
+#ifdef _RAW
 extern bool     ProcOutput( void );
 extern bool     ProcOutputRaw( void );
 extern bool     ProcOutputHex( void );
-extern bool     ProcOutputOfs( void );
+extern bool     ProcOutputOffset( void );
 extern bool     ProcOutputStart( void );
 extern bool     ProcOutputHshift( void );
+#endif
 extern bool     ProcHshift( void );
 extern bool     ProcFillchar( void );
 extern bool     ProcOrder( void );

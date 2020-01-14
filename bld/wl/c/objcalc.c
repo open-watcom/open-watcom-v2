@@ -873,10 +873,14 @@ void CalcAddresses( void )
     } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_QNX_FLAT | MK_ELF) ) {
         if( FmtData.output_raw || FmtData.output_hex ) {
             flat = 0;
+#ifdef _OS2
         } else if( FmtData.type & MK_PE ) {
             flat = GetPEHeaderSize();
+#endif
+#ifdef _ELF
         } else if( FmtData.type & MK_ELF ) {
             flat = GetElfHeaderSize();
+#endif
         } else {
             flat = FmtData.base;
         }

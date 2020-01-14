@@ -1306,6 +1306,8 @@ bool ProcNoFarCalls( void )
     return( true );
 }
 
+#ifdef _RAW
+
 bool ProcOutput( void )
 /*********************/
 {
@@ -1342,8 +1344,8 @@ bool ProcOutputStart( void )
    return( true );
 }
 
-bool ProcOutputOfs( void )
-/************************/
+bool ProcOutputOffset( void )
+/***************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1380,6 +1382,8 @@ bool ProcOutputHshift( void )
         return( false );
     }
 }
+
+#endif
 
 bool ProcHshift( void )
 /*********************/

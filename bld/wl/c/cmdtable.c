@@ -111,7 +111,9 @@ parse_entry     Directives[] = {
     "STARTLink",    &ProcStartLink,     MK_ALL, 0,
     "OPTLIB",       &ProcOptLib,        MK_ALL, 0,
     "ORDer",        &ProcOrder,         MK_ALL, 0,
+#ifdef _RAW
     "OUTput",       &ProcOutput,        MK_ALL, 0,
+#endif
 #ifdef _OS2
     "RESource",     &ProcResource,      MK_PE, 0,
     "COMmit",       &ProcCommit,        MK_PE, 0,
@@ -280,7 +282,9 @@ parse_entry     SysDirectives[] = {
     "DISAble",      &ProcDisable,       MK_ALL, 0,
     "SOrt",         &ProcSort,          MK_ALL, 0,
     "ORDer",        &ProcOrder,         MK_ALL, 0,
+#ifdef _RAW
     "OUTput",       &ProcOutput,        MK_ALL, 0,
+#endif
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
     "RUntime",      &ProcRuntime,       (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
 #endif
@@ -651,11 +655,13 @@ parse_entry OrderSegOpts[] = {
     NULL
 };
 
+#ifdef _RAW
 parse_entry OutputOpts[] = {
     "RAW",          &ProcOutputRaw,     MK_ALL, 0,
     "HEX",          &ProcOutputHex,     MK_ALL, 0,
-    "OFFset",       &ProcOutputOfs,     MK_ALL, 0,
+    "OFFset",       &ProcOutputOffset,  MK_ALL, 0,
     "HSHIFT",       &ProcOutputHshift,  MK_ALL, 0,
     "STartrec",     &ProcOutputStart,   MK_ALL, 0,
     NULL
 };
+#endif

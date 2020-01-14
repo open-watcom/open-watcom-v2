@@ -1091,17 +1091,43 @@ bool ProcHeapSize( void )
     return( true );
 }
 
-#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _RAW )
+#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF ) || defined( _RAW )
 bool ProcOffset( void )
 /****************************/
 {
     if( !GetLong( &FmtData.base ) )
         return( false );
-    if( (FmtData.type & (MK_PHAR_LAP | MK_QNX_FLAT | MK_RAW)) == 0 ) {
-        ChkBase( _64KB );
-    } else if( (FmtData.type & (MK_OS2_FLAT | MK_PE)) == 0 ) {
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
         ChkBase( _4KB );
+        return( true );
     }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+#ifdef _RAW
+    if( FmtData.type & MK_RAW ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+//#ifdef _OS2
+//    if( FmtData.type & (MK_OS2 | MK_PE) ) {
+//        ChkBase( _64KB );
+//        return( true );
+//    }
+//#endif
+//#ifdef _ELF
+//    if( FmtData.type & MK_ELF ) {
+//        ChkBase( _4KB );
+//        return( true );
+//    }
+//#endif
+    ChkBase( _64KB );
     return( true );
 }
 #endif

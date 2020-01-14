@@ -217,14 +217,16 @@ void FiniLoadFile( void )
         BinOutput();                    //    they apply to all formats
     } else if( FmtData.output_hex ) {   //    and override native output
         HexOutput();
+#ifdef _EXE
     } else if( FmtData.type & MK_DOS ) {
         FiniDOSLoadFile();
+#endif
 #ifdef _OS2
-#if 0
+  #if 0
     } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // development temporarly on hold:
         // FiniELFLoadFile();
-#endif
+  #endif
     } else if( FmtData.type & MK_OS2_FLAT ) {
         FiniOS2FlatLoadFile();
     } else if( FmtData.type & MK_PE ) {
