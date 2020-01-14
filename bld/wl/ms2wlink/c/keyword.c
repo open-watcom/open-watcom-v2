@@ -56,7 +56,7 @@ typedef struct {
     const char          *keyword;
     void                (*rtn)( void );
     unsigned char       minlen;
-} parse_entry;
+} word_entry;
 
 /* An entry for parsing command line switches. */
 typedef struct {
@@ -85,7 +85,7 @@ static void ProcStackSize( void );
 static void ProcStub( void );
 static void ProcVirtual( void );
 
-static  parse_entry     DefStatements[] = {
+static  word_entry      DefStatements[] = {
     "apploader",        ProcAppLoader,      9,
     "code",             ProcCode,           4,
     "data",             ProcData,           4,
@@ -121,7 +121,7 @@ static void ProcFixed( void );
 static void ProcDiscardable( void );
 static void ProcNonDiscardable( void );
 
-static  parse_entry     CodeAttributes[] = {
+static  word_entry      CodeAttributes[] = {
     "preload",          ProcPreload,        7,
     "loadoncall",       ProcLoadOnCall,     10,
     "executeonly",      ProcExecuteOnly,    11,
@@ -143,7 +143,7 @@ static void ProcReadWrite( void );
 static void ProcShared( void );
 static void ProcNonShared( void );
 
-static  parse_entry     SegAttributes[] = {
+static  word_entry      SegAttributes[] = {
     "preload",          ProcPreload,        7,
     "loadoncall",       ProcLoadOnCall,     10,
     "executeonly",      ProcExecuteOnly,    11,
@@ -167,7 +167,7 @@ static void ProcNone( void );
 static void ProcSingle( void );
 static void ProcMultiple( void );
 
-static  parse_entry     DataAttributes[] = {
+static  word_entry      DataAttributes[] = {
     "none",             ProcNone,           4,
     "single",           ProcSingle,         6,
     "multiple",         ProcMultiple,       8,
@@ -189,7 +189,7 @@ static  parse_entry     DataAttributes[] = {
 static void ProcClass( void );
 static void ProcOvl( void );
 
-static  parse_entry     SegOptions[] = {
+static  word_entry      SegOptions[] = {
     "class",            ProcClass,      5,
     "ovl",              ProcOvl,        3,
     NULL
@@ -200,7 +200,7 @@ static void SetWindowsVxD( void );
 static void SetWindowsVxDDyn( void );
 static void SetOS2( void );
 
-static  parse_entry     ExeTypeKeywords[] = {
+static  word_entry      ExeTypeKeywords[] = {
     "os2",              SetOS2,             3,
     "windows",          SetWindows,         7,
     "dos4",             NullRoutine,        4,
@@ -215,7 +215,7 @@ static void ProcWindowCompat( void );
 static void ProcNotWindowCompat( void );
 static void ProcNewFiles( void );
 
-static  parse_entry     ApplicationTypes[] = {
+static  word_entry      ApplicationTypes[] = {
     "windowapi",        ProcWindowApi,      9,
     "windowcompat",     ProcWindowCompat,   12,
     "notwindowcompat",  ProcNotWindowCompat,15,
@@ -225,14 +225,14 @@ static  parse_entry     ApplicationTypes[] = {
 
 static void ProcPrivateLib( void );
 
-static  parse_entry     LibraryTypes[] = {
+static  word_entry      LibraryTypes[] = {
     "privatelib",       ProcPrivateLib,     10,
     NULL
 };
 
 static void ProcDevice( void );
 
-static  parse_entry     DeviceKeyword[] = {
+static  word_entry      DeviceKeyword[] = {
     "device",           ProcDevice,         6,
     NULL
 };
@@ -396,8 +396,8 @@ static void CheckNum( const char *arg )
     }
 }
 
-static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len )
-/*******************************************************************************/
+static bool ProcessKeyList( word_entry *entry, const char *arg, size_t arg_len )
+/******************************************************************************/
 {
     const char          *key;
     const char          *ptr;
@@ -428,8 +428,8 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len 
     return( false );
 }
 
-static bool ProcessKeyword( parse_entry *entry )
-/**********************************************/
+static bool ProcessKeyword( word_entry *entry )
+/*********************************************/
 // returns true if keyword found.
 {
     bool    ret;
@@ -1491,7 +1491,7 @@ static void ProcNoVIO( void )
 }
 
 
-static  parse_entry     PMTypes[] = {
+static  word_entry      PMTypes[] = {
     "pm",               ProcWindowApi,      1,
     "vio",              ProcWindowCompat,   1,
     "novio",            ProcNoVIO,          1,
