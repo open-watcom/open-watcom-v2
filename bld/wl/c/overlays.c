@@ -55,6 +55,8 @@ void OvlNumberSections( void )
     if( FmtData.u.dos.distribute ) {
         DistribNumberSections();
     }
+    /* OvlSectNum value 0 is reserved for Root */
+    /* Overlayed sections start at 1 */
     OvlSectNum = 1;
     WalkAreas( Root->areas, OvlNumASect );
 }

@@ -71,8 +71,10 @@ void DistribNumberSections( void )
 /********************************/
 {
     _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
-    SectOvlTab[0] = Root;
-    OvlSectNum = 1;
+    /* OvlSectNum value 0 is reserved for Root */
+    /* Overlayed sections start at 1 */
+    OvlSectNum = 0;
+    DistribNumASect( Root );
     WalkAreas( Root->areas, DistribNumASect );
 }
 

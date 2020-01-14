@@ -56,7 +56,7 @@
 #include "clibext.h"
 
 
-overlay_ref         OvlSectNum;
+overlay_ref         OvlSectNum;         /* OvlSectNum value 0 is reserved for Root */
 seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab */
 unsigned_16         OvlAreaSize;
 list_of_names       *OvlClasses;        /* list of classes to be overlayed      */
@@ -80,6 +80,8 @@ void ResetOverlaySupp( void )
 {
     OvlAreaSize = 0xFFFF;
     OvlVectors = NULL;
+    /* OvlSectNum value 0 is reserved for Root */
+    /* Overlayed sections start at 1 */
     OvlSectNum = 1;
     OvlClasses = NULL;
     VecNum = 0;
@@ -123,7 +125,7 @@ void WalkAreas( OVL_AREA *ovl, void (*rtn)( section * ) )
 static void WriteVectors( void )
 /******************************/
 {
-    vecnode             *vec;
+    vecnode             *vectnode;
     int                 n;
     targ_addr           addr;
     symbol              *sym;
@@ -135,9 +137,9 @@ static void WriteVectors( void )
     XReportSymAddr( OvlVecEnd );
     WriteOvlHead();
     n = 0;
-    for( vec = OvlVectors; vec != NULL; vec = vec->next ) {
+    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         OvlGetVecAddr( ++n, &addr );
-        sym = vec->entry;
+        sym = vectnode->entry;
         WriteMap( "%a section %d : %S",
                   &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
     }
@@ -194,6 +196,7 @@ static void AllocSections( section *first_sect )
     if( first_sect == NonSect ) {
         if( FmtData.u.dos.dynamic ) {
             ovl_size = CurrLoc.seg - Stash.seg;
+            /* OvlSectNum value 0 is reserved for Root */
             min_size = ovl_size + OvlSectNum + 1;  // need at least 1 para per sect. + 1
             if( min_size < 64 ) {
                 min_size = 64;      // reserve 1 K for the stack
@@ -264,8 +267,10 @@ void OvlCalc( void )
     DEBUG(( DBG_OLD, "Overlay table address %a", &CurrLoc ));
     OvltabAddr = CurrLoc;
     /* calculate size of overlay table proper */
-    temp = sizeof( ovl_null_table ) + ( OvlSectNum - 1 ) * sizeof( ovltab_entry );
-    SET_SYM_ADDR( OverlayTableEnd, CurrLoc.off + temp - sizeof( unsigned_16 ), CurrLoc.seg );
+    /* OvlSectNum value 0 is reserved for Root, Root entry is not emited */
+    temp = sizeof( ovltab_prolog ) + ( OvlSectNum - 1 ) * sizeof( ovltab_entry );
+    SET_SYM_ADDR( OverlayTableEnd, CurrLoc.off + temp, CurrLoc.seg );
+    temp += sizeof( unsigned_16 );      /* add Overlays table terminator */
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->ovlfnoff = temp;
         temp += strlen( fnode->fname ) + 1;
@@ -373,14 +378,14 @@ void OvlVectorize( symbol *sym )
 /******************************/
 /* allocate an overlay vector for a symbol */
 {
-    vecnode         *vec;
+    vecnode         *vectnode;
 
     sym->u.d.ovlref = ++VecNum;
     sym->u.d.ovlstate &= ~OVL_NO_VECTOR;
     sym->u.d.ovlstate |= OVL_FORCE;
-    _PermAlloc( vec, sizeof( vecnode ) );
-    vec->entry = sym;
-    LinkList( &OvlVectors, vec );
+    _PermAlloc( vectnode, sizeof( vecnode ) );
+    vectnode->entry = sym;
+    LinkList( &OvlVectors, vectnode );
     DEBUG(( DBG_OLD, "Vectorize %d %S", VecNum, sym ));
 }
 
@@ -525,39 +530,39 @@ static void PutOvlInfo( unsigned off, void *src, unsigned len )
 static void ShortVectors( symbol *loadsym )
 /*****************************************/
 {
-    vecnode             *vec;
-    unsigned            vect_off;
+    vecnode             *vectnode;
+    unsigned            vectoff;
+    svector             vectdata;
     unsigned_32         loadval;
     unsigned_32         temp;
     signed_32           diff;
     int                 vecnum;
-    svector             template;
 
-    vect_off = OvlvecAddr.off;
+    vectoff = OvlvecAddr.off;
     temp = MK_REAL_ADDR( OvlvecAddr.seg, OvlvecAddr.off );
     /* get loader address */
     loadval = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off );
-    /* fill in overlay vector template */
-    template.call_op = 0xe8;
-    template.jmp_op = 0xe9;     // near jmp
+    /* fill in overlay vector */
+    vectdata.call_op = 0xe8;
+    vectdata.jmp_op = 0xe9;     // near jmp
     vecnum = 1;
-    for( vec = OvlVectors; vec != NULL; vec = vec->next ) {
-        temp = vect_off + offsetof( svector, ldr_addr ) + sizeof( unsigned_16 );
+    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+        temp = vectoff + offsetof( svector, ldr_addr ) + sizeof( unsigned_16 );
         diff = loadval - temp;
         if( ( diff < -32768 ) || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (1)", vecnum );
         }
-        _HostU16toTarg( diff, template.ldr_addr );
-        loadsym = vec->entry;
-        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, template.sec_num );
-        temp = vect_off + offsetof( svector, target ) + sizeof( unsigned_16 );
+        _HostU16toTarg( diff, vectdata.ldr_addr );
+        loadsym = vectnode->entry;
+        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.sec_num );
+        temp = vectoff + offsetof( svector, target ) + sizeof( unsigned_16 );
         diff = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off ) - temp;
         if( ( diff < -32768 ) || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (2)", vecnum );
         }
-        _HostU16toTarg( diff, template.target );
-        PutOvlInfo( vect_off, &template, sizeof( svector ) );
-        vect_off += sizeof( svector );
+        _HostU16toTarg( diff, vectdata.target );
+        PutOvlInfo( vectoff, &vectdata, sizeof( vectdata ) );
+        vectoff += sizeof( vectdata );
         ++vecnum;
     }
 }
@@ -565,42 +570,41 @@ static void ShortVectors( symbol *loadsym )
 static void LongVectors( symbol *loadsym )
 /****************************************/
 {
-    vecnode             *vec;
-    unsigned            vect_off;
-    lvector             template;
+    vecnode             *vectnode;
+    unsigned            vectoff;
+    lvector             vectdata;
     dos_addr            addr;
     signed_32           diff;
     unsigned_32         loadval;
     unsigned_32         temp;
     int                 vecnum;
 
-    vect_off = OvlvecAddr.off;
-    /* fill in overlay vector template */
-    template.u.v.call_op = 0xe8;
-    template.jmp_op = 0xea;     // far jmp
+    vectoff = OvlvecAddr.off;
+    /* fill in overlay vector */
+    vectdata.u.v.call_op = 0xe8;
+    vectdata.jmp_op = 0xea;     // far jmp
     loadval = loadsym->addr.off;
     addr.seg = OvlGroup->grp_addr.seg;
     vecnum = 1;
-    for( vec = OvlVectors; vec != NULL; vec = vec->next ) {
-        temp = vect_off + offsetof( lvector, u.v.ldr_addr ) + sizeof( unsigned_16 );
+    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+        temp = vectoff + offsetof( lvector, u.v.ldr_addr ) + sizeof( unsigned_16 );
         diff = loadval - temp;
         if( ( diff < -32768 ) || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "long", vecnum );
         }
-        _HostU16toTarg( diff, template.u.v.ldr_addr );
-        loadsym = vec->entry;
-        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref,
-                        template.u.v.sec_num );
-        _HostU16toTarg( loadsym->addr.off, template.target.off );
+        _HostU16toTarg( diff, vectdata.u.v.ldr_addr );
+        loadsym = vectnode->entry;
+        _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.u.v.sec_num );
+        _HostU16toTarg( loadsym->addr.off, vectdata.target.off );
         if( FmtData.u.dos.dynamic ) {
-            _HostU16toTarg( loadsym->addr.seg - loadsym->p.seg->u.leader->group->grp_addr.seg, template.target.seg );
+            _HostU16toTarg( loadsym->addr.seg - loadsym->p.seg->u.leader->group->grp_addr.seg, vectdata.target.seg );
         } else {
-            _HostU16toTarg( loadsym->addr.seg, template.target.seg );
-            addr.off = vect_off + offsetof( lvector, target.seg );
+            _HostU16toTarg( loadsym->addr.seg, vectdata.target.seg );
+            addr.off = vectoff + offsetof( lvector, target.seg );
             WriteReloc( OvlGroup, addr.off, &addr, sizeof( dos_addr ) );
         }
-        PutOvlInfo( vect_off, &template, sizeof( lvector ) );
-        vect_off += sizeof( lvector );
+        PutOvlInfo( vectoff, &vectdata, sizeof( vectdata ) );
+        vectoff += sizeof( vectdata );
         vecnum++;
     }
 }
@@ -731,7 +735,7 @@ void OvlEmitTable( void )
 /* generate overlay table */
 {
     unsigned            off;
-    ovltab_prolog       template;
+    ovltab_prolog       prolog;
     unsigned_16         u16;
     unsigned            len;
     outfilelist         *fnode;
@@ -740,26 +744,26 @@ void OvlEmitTable( void )
     /*
      *  Generate prolog :
      */
-    template.major = OVL_MAJOR_VERSION;
-    template.minor = OVL_MINOR_VERSION;
+    prolog.major = OVL_MAJOR_VERSION;
+    prolog.minor = OVL_MINOR_VERSION;
     /*
      *  output start address for program
      *  reloc for this was emitted by OvlEmitVectors
      */
-    _HostU16toTarg( Stash.off, template.start.off );
-    _HostU16toTarg( Stash.seg, template.start.seg );
+    _HostU16toTarg( Stash.off, prolog.start.off );
+    _HostU16toTarg( Stash.seg, prolog.start.seg );
     /*
      *  this should give us the paragraph of the load module start
      *  reloc for this was emitted by OvlEmitVectors
      */
-    _HostU16toTarg( 0, template.delta );
-    _HostU16toTarg( OvlAreaSize, template.ovl_size );
+    _HostU16toTarg( 0, prolog.delta );
+    _HostU16toTarg( OvlAreaSize, prolog.ovl_size );
 
-    PutOvlInfo( off, &template, sizeof( template ) );
+    PutOvlInfo( off, &prolog, sizeof( prolog ) );
     /*
      *  Generate entries :
      */
-    off += sizeof( template );
+    off += sizeof( prolog );
     ParmWalkAreas( Root->areas, EmitOvlEntry, &off );
     /*
      *  Generate epilog :
@@ -767,7 +771,7 @@ void OvlEmitTable( void )
     u16 = OVLTAB_TERMINATOR;
     PutOvlInfo( off, &u16, sizeof( unsigned_16 ) );
     off += sizeof( unsigned_16 );
-    /* generate overlay filenames, including NULLCHARS*/
+    /* generate overlay filenames, including NULLCHARS */
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         len = strlen( fnode->fname ) + 1;
         PutOvlInfo( off, fnode->fname, len );

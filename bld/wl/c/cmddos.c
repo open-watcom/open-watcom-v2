@@ -64,6 +64,7 @@ bool ProcDos( void )
 overlay_ref GetOvlRef( void )
 /***************************/
 {
+    /* OvlSectNum value 0 is reserved for Root */
     return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
