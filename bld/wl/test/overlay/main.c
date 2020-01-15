@@ -38,6 +38,9 @@
 extern void _ovl_grablow( unsigned );
 
 void main( int argc, char **argv ) {
+#ifndef DYNOVLMGR
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
 
     puts( "in main" );
 #ifdef DYNOVLMGR
