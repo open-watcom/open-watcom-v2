@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +56,10 @@ size_t SysRead( int fh, void *buff, size_t amt )
 unsigned long SysTell( int fh )
 /*****************************/
 {
-    unsigned long pos;
-    tiny_ret_t    rc;
+    uint_32     pos;
+    tiny_ret_t  rc;
 
-    rc = TinyLSeek( fh, 0, SEEK_CUR, (u32_stk_ptr)&pos );
+    rc = TinyLSeek( fh, 0, SEEK_CUR, &pos );
     if( TINY_ERROR( rc ) ) {
         return( -1UL );
     }

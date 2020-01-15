@@ -45,6 +45,7 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trpld.h"
+#include "trpsys.h"
 #include "dosdebug.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
@@ -62,13 +63,12 @@
 #include "os2extx.h"
 #include "dbgthrd.h"
 
+
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
-static BOOL             stopOnSecond;
 USHORT                  TaskFS;
 
-extern TRAPENTRY_FUNC( TellHandles );
-extern TRAPENTRY_FUNC( TellHardMode );
+static BOOL             stopOnSecond;
 
 #ifdef DEBUG_OUT
 
@@ -1533,12 +1533,12 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-void TRAPENTRY TellHandles( HAB hab, HWND hwnd )
+void TRAPENTRY_FUNC( TellHandles )( HAB hab, HWND hwnd )
 {
     TellSoftModeHandles( hab, hwnd );
 }
 
-char TRAPENTRY TellHardMode( char hard )
+char TRAPENTRY_FUNC( TellHardMode )( char hard )
 {
     return( SetHardMode( hard ) );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,13 +79,13 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int sta
                 /* scrolled down/left */
                 *min += diff;
                 *max -= diff;
-                uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+                uivmoveblock( &wnd->vs, area, ydiff, xdiff );
                 *min += ( *max - diff );
                 *max = diff;
             } else {
                 /* scrolled up/right */
                 *max += diff;
-                uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+                uivmoveblock( &wnd->vs, area, ydiff, xdiff );
                 *max = -diff;
             }
         }

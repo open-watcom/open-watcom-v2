@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -276,7 +277,7 @@ static char *ExpandMacroToken( void )
 {
     size_t      i;
     size_t      len;
-    char        *p;
+    const char  *p;
     char        *buf;
     TOKEN       tok;
 
@@ -918,7 +919,7 @@ static MACRO_TOKEN *BuildString( const char *p )
     MACRO_TOKEN     **lnk;
     size_t          i;
     char            c;
-    char            *tokenstr;
+    const char      *tokenstr;
     size_t          len;
     char            *buf;
     size_t          bufsize;

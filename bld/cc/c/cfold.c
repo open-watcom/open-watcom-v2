@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -675,7 +676,7 @@ void MakeBinaryFloat( TREEPTR opnd )
 }
 
 
-static int FltCmp( ld_arg ld1, ld_arg ld2 )
+static int FltCmp( ld_stk_ptr ld1, ld_stk_ptr ld2 )
 {
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );

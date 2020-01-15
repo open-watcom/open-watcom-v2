@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,23 +35,36 @@
 #include "uidef.h"
 #include "uimenu.h"
 
+void UIAPI uiscreeninit( VSCREEN *vs, SAREA *area, screen_flags flags )
+/*********************************************************************/
+{
+    vs->event = EV_NO_EVENT;
+    vs->flags = flags;
+    vs->cursor_col = 0;
+    vs->cursor_row = 0;
+    vs->cursor_type = C_OFF;
+    vs->title = NULL;
+    vs->dynamic_title = false;
+    if( area == NULL ) {
+        vs->area.row = 0;
+        vs->area.col = 0;
+        vs->area.height = 0;
+        vs->area.width = 0;
+    } else {
+        vs->area = *area;
+    }
+}
+
 VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
 /***************************************************************************/
 {
-    VSCREEN             *s;
+    VSCREEN             *vs;
 
-    s = uimalloc( sizeof( VSCREEN ) );
-    if( s == NULL ) {
-        return( s );
+    vs = uimalloc( sizeof( VSCREEN ) );
+    if( vs == NULL ) {
+        return( vs );
     }
-    s->event = EV_NO_EVENT;
-    s->area = *area;
-    s->flags = flags;
-    s->cursor_col = 0;
-    s->cursor_row = 0;
-    s->cursor_type = C_OFF;
-    s->title = NULL;
-    s->dynamic_title = false;
+    uiscreeninit( vs, area, flags );
     if( title != NULL ) {
         unsigned    len;
         char        *str;
@@ -59,20 +73,20 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
         str = uimalloc( len + 1 );
         memcpy( str, title, len );
         str[len] = '\0';
-        s->title = str;
-        s->dynamic_title = true;
+        vs->title = str;
+        vs->dynamic_title = true;
     }
-    uivopen( s );
-    return( s );
+    uivopen( vs );
+    return( vs );
 }
 
-void intern uiclose( VSCREEN *s )
-/*******************************/
+void intern uiclose( VSCREEN *vs )
+/********************************/
 {
-    uivclose( s );
-    if( s->dynamic_title )
-        uifree( (void *)s->title );
-    uifree( s );
+    uivclose( vs );
+    if( vs->dynamic_title )
+        uifree( (void *)vs->title );
+    uifree( vs );
 }
 
 void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const char *text )
@@ -91,14 +105,14 @@ void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const 
     }
 }
 
-void uinocursor( VSCREEN *vs )
-/****************************/
+void UIAPI uinocursor( VSCREEN *vs )
+/**********************************/
 {
     vs->cursor_type = C_OFF;
 }
 
-void uicursor( VSCREEN *vs, CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype )
-/*****************************************************************************/
+void UIAPI uicursor( VSCREEN *vs, CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype )
+/***********************************************************************************/
 {
     vs->cursor_type = ctype;
     vs->cursor_row = crow;

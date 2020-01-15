@@ -201,15 +201,20 @@ void WEXPORT WFileName::relativeTo( const char* f )
             _x.drive[0] = '\0';
             int b = 0;
             for( i=1; _x.dir[i] != '\0' && s.dir[i] != '\0'; i++ ) {
-                if( tolower( (unsigned char)_x.dir[i] ) != tolower( (unsigned char)s.dir[i] ) ) break;
-                if( s.dir[i] == PATHSEP_CHAR ) b = i;
+                if( tolower( (unsigned char)_x.dir[i] ) != tolower( (unsigned char)s.dir[i] ) )
+                    break;
+                if( s.dir[i] == PATHSEP_CHAR ) {
+                    b = i;
+                }
             }
             if( b == 0 ) {
                 strcpy( s.dir, _x.dir );
             } else {
                 int n = 0;
                 for( ; s.dir[i] != '\0'; i++ ) {
-                    if( s.dir[i] == PATHSEP_CHAR )  n++;
+                    if( s.dir[i] == PATHSEP_CHAR ) {
+                        n++;
+                    }
                 }
                 s.dir[0] = '\0';
                 if( n > 0 ) {
@@ -248,14 +253,17 @@ void WEXPORT WFileName::absoluteTo( const char* f )
     if( _x.dir[0] == PATHSEP_CHAR ) {
         strcpy( s.dir, _x.dir );
     } else if( _x.dir[0] == '.' ) {
-        for( i = 0; strnicmp( &_x.dir[i], PARENTSEP_STR, 3 ) == 0; i += 3 );
+        for( i = 0; strnicmp( &_x.dir[i], PARENTSEP_STR, 3 ) == 0; i += 3 )
+            ;
         size_t slen = strlen( s.dir );
         if( slen > 0 && s.dir[slen - 1] == PATHSEP_CHAR ) {
             s.dir[slen - 1] = '\0';
         }
         for( j = 0; j < i; j += 3 ) {
             for( k = strlen( s.dir ); k > 0; k-- ) {
-                if( s.dir[k] == PATHSEP_CHAR ) break;
+                if( s.dir[k] == PATHSEP_CHAR ) {
+                    break;
+                }
             }
             s.dir[k] = '\0';
         }
@@ -364,8 +372,7 @@ bool WEXPORT WFileName::attribs( unsigned* attribs ) const
     found = false;
     handle = _findfirst( *this, &fileinfo );
     if( handle != -1 ) {
-        rc = 0;
-        while( rc != -1 ) {
+        for( rc = 0; rc != -1; rc = _findnext( handle, &fileinfo ) ) {
             if( (fileinfo.attrib & (_A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_VOLID)) == 0 ) {
                 if( attribs != NULL ) {
                     *attribs = fileinfo.attrib;
@@ -373,7 +380,6 @@ bool WEXPORT WFileName::attribs( unsigned* attribs ) const
                 found = true;
                 break;
             }
-            rc = _findnext( handle, &fileinfo );
         }
         _findclose( handle );
     }
@@ -462,11 +468,10 @@ static const char legalChars[] = { "_^$~!#%&-{}()@`'." };
 static bool isSpecialChar( char ch ) {
     char const        *ptr;
 
-    ptr = legalChars;
-    while( *ptr != '\0' ) {
-        if( *ptr == ch )
+    for( ptr = legalChars; *ptr != '\0'; ptr++ ) {
+        if( *ptr == ch ) {
             return( true );
-        ptr++;
+        }
     }
     return( false );
 }
@@ -475,11 +480,10 @@ static const char illegalChars[] = { "\\/:*?\"<>|" };
 static bool isIllegalChar( char ch ) {
     char const        *ptr;
 
-    ptr = illegalChars;
-    while( *ptr != '\0' ) {
-        if( *ptr == ch )
+    for( ptr = illegalChars; *ptr != '\0'; ptr++ ) {
+        if( *ptr == ch ) {
             return( true );
-        ptr++;
+        }
     }
     return( false );
 }
@@ -506,13 +510,11 @@ static bool isLongDirName( char* dirNames, const char *pathsep )
     bool rc = false;
 
     cpDirNames = strdup( dirNames );
-    aDirName = strtok( cpDirNames, pathsep );
-    while( aDirName != NULL ) {
+    for( aDirName = strtok( cpDirNames, pathsep ); aDirName != NULL; aDirName = strtok( NULL, pathsep ) ) {
         if( isLongName( aDirName ) ) {
             rc = true;
             break;
         }
-        aDirName = strtok( NULL, pathsep );
     }
     free( cpDirNames );
     return( rc );
@@ -582,7 +584,8 @@ bool WEXPORT WFileName::legal() const
 
 bool WEXPORT WFileName::match( const char* mask, char ctrlFlags ) const
 {
-    if( mask == NULL ) mask = "";
+    if( mask == NULL )
+        mask = "";
     _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
     FullName    m;
     _splitpath( mask, m.drive, m.dir, m.fname, m.ext );
@@ -701,8 +704,7 @@ bool WEXPORT WFileName::addPath( const char *path )
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8
-#pragma warning 657 9
+#pragma disable_message( 657 )
 #endif
 
 WEXPORT WFileName::~WFileName()

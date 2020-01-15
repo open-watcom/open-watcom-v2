@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ struct _trmem_internal {
 static int isValidChunk( entry_ptr, const char *, _trmem_who, _trmem_hdl );
 
 #ifdef __WATCOMC__
-//#pragma warning 579 9;  // shut up pointer truncated warning
+//#pragma disable_message( 579 )  // shut up pointer truncated warning
 #endif
 static void setSize( entry_ptr p, size_t size )
 {
@@ -159,7 +159,7 @@ static size_t getSize( entry_ptr p )
     return( p->size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p );
 }
 #ifdef __WATCOMC__
-//#pragma warning 579 4;  // reenable pointer truncated warning.
+//#pragma enable_message( 579 )   // reenable pointer truncated warning.
 #endif
 
 static char *mystpcpy( char *dest, const char *src )
@@ -195,11 +195,11 @@ static char * formFarPtr( char *ptr, void __far *data )
     *ptr = ':';
     ptr++;
 #ifdef __WATCOMC__
-//#pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
+//#pragma disable_message( 579 )  // shut up pointer truncated warning for FP_OFF
 #endif
     return formHex( ptr, FP_OFF( data ), sizeof( void __near * ) );
 #ifdef __WATCOMC__
-//#pragma warning 579 4;  // reenable pointer truncated warning
+//#pragma enable_message( 579 )   // reenable pointer truncated warning
 #endif
 }
 #endif
@@ -207,19 +207,23 @@ static char * formFarPtr( char *ptr, void __far *data )
 static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 {
 #ifdef __WINDOWS__
-//#pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
+//#pragma disable_message( 579 )  // shut up pointer truncated warning for FP_OFF
     GLOBALENTRY     entry;
 
     if( hdl->use_code_seg_num ) {
         MEMSET( &entry, 0, sizeof( GLOBALENTRY ) );
         entry.dwSize = sizeof( GLOBALENTRY );
-        if( GlobalEntryHandle( &entry, (HGLOBAL) GlobalHandle( FP_SEG( who ) ) ) ) {
+        if( GlobalEntryHandle( &entry, (HGLOBAL)GlobalHandle( FP_SEG( who ) ) ) ) {
             if( entry.wType == GT_CODE ) {
-                who = (_trmem_who) MK_FP( entry.wData, FP_OFF( who ) );
+#ifdef _M_I86
+                who = (_trmem_who)MK_FP( entry.wData, FP_OFF( who ) );
+#else
+                who = (_trmem_who)(unsigned long long)MK_FP( entry.wData, FP_OFF( who ) );
+#endif
             }
         }
     }
-//#pragma warning 579 4;  // reenable pointer truncated warning
+//#pragma enable_message( 579 )   // reenable pointer truncated warning
 #else
     hdl = hdl;
 #endif
@@ -334,8 +338,6 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
         }
     }
     va_end( args );
-    *ptr++ = '\r';
-    *ptr++ = '\n';
     *ptr = '\0';
     hdl->prt_line( hdl->prt_parm, buff, ptr - buff );
 }

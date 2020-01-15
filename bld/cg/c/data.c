@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,6 +74,6 @@ int                     InOptimizer;
 byte                    OptForSize;
 bool                    HaveLiveInfo;
 bool                    HaveDominatorInfo;
-pointer_int             FrlSize;
+pointer_uint            FrlSize;
 bool                    HaveCurrBlock;
 proc_revision           CGProcessorVersion;

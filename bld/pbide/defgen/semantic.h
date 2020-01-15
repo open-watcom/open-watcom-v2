@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,21 +36,21 @@ typedef struct {
 } TypeInfo;
 
 typedef struct {
-    BOOL        m_near;
-    BOOL        m_const;
-    BOOL        m_far;
-    BOOL        m_huge;
-    BOOL        m_cdecl;
-    BOOL        m_pascal;
-    BOOL        m_fortran;
-    BOOL        m_syscall;
-    BOOL        m_export;
+    bool        m_near;
+    bool        m_const;
+    bool        m_far;
+    bool        m_huge;
+    bool        m_cdecl;
+    bool        m_pascal;
+    bool        m_fortran;
+    bool        m_syscall;
+    bool        m_export;
 } ModifierInfo;
 
 typedef struct paraminfo {
     struct paraminfo    *next;
     struct paraminfo    *parameters;
-    BOOL                err;
+    bool                err;
     ModifierInfo        *modifiers;
     TypeInfo            *type;
     char                *name;

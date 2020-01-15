@@ -76,9 +76,10 @@ void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
         }
         break;
     default:
-        for( i = Token_Count; i >= start; i-- ) {
+        for( i = Token_Count; i > start; i-- ) {
             buffer[i + count] = buffer[i];
         }
+        buffer[i + count] = buffer[i];
         break;
     }
     Token_Count += count;
@@ -381,7 +382,7 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
                    ( !dir->e.constinfo->redefine &&
                    ( Parse_Pass == PASS_1 ) ) ) {
             /* error */
-            AsmError( LABEL_ALREADY_DEFINED );
+            AsmErr( LABEL_ALREADY_DEFINED, sym->name );
             return( RC_ERROR );
         }
     }
@@ -427,7 +428,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     } else if(( dir->sym.state != SYM_CONST )
         || ( !dir->e.constinfo->redefine && ( Parse_Pass == PASS_1 ))) {
         /* error */
-        AsmError( LABEL_ALREADY_DEFINED );
+        AsmErr( LABEL_ALREADY_DEFINED, dir->sym.name );
         return( RC_ERROR );
     }
 

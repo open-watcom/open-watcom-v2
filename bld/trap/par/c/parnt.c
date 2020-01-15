@@ -72,8 +72,10 @@ unsigned PrnAddress( int printer )
 
 unsigned AccessPorts( unsigned first, unsigned last )
 {
-        // We have direct I/O port access
-        return( 1 );
+    /* unused parameters */ (void)first; (void)last;
+
+    // We have direct I/O port access
+    return( 1 );
 }
 
 void FreePorts( unsigned first, unsigned last )

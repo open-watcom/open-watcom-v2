@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -446,8 +446,8 @@ static void NextSubdir( void )
 
 static void ProcessDirectoryQueue( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     const char          *makefile;
 #ifdef __UNIX__
     struct stat         buf;
@@ -456,15 +456,15 @@ static void ProcessDirectoryQueue( void )
     makefile = Options.makefile;
     while( QueueHead != NULL ) {
         /* process directory */
-        dirh = opendir( "." );
-        if( dirh != NULL ) {
-            while( (dp = readdir( dirh )) != NULL ) {
-                if( IS_SUBDIR( dp ) ) {
-                    if( DOT_OR_DOTDOT( dp ) )
+        dirp = opendir( "." );
+        if( dirp != NULL ) {
+            while( (dire = readdir( dirp )) != NULL ) {
+                if( IS_SUBDIR( dire ) ) {
+                    if( DOT_OR_DOTDOT( dire ) )
                         continue;
                     /* queue subdirectory */
-                    EnQueue( dp->d_name );
-                } else if( stricmp( dp->d_name, makefile ) == 0 ) {
+                    EnQueue( dire->d_name );
+                } else if( stricmp( dire->d_name, makefile ) == 0 ) {
                     /* add directory with makefile to the list for next processing */
                     TestDirectory( makefile );
                 }
@@ -472,7 +472,7 @@ static void ProcessDirectoryQueue( void )
                     break;
                 }
             }
-            closedir( dirh );
+            closedir( dirp );
         }
         if( DoneFlag ) {
             return;
@@ -585,10 +585,26 @@ static void SortDirectories( void )
     }
 }
 
+static void getTargets( target_list **owner )
+{
+    target_list *curr;
+
+    for( ;; ) {
+        SKIP_SPACES( CmdLine );
+        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+            CmdLine += 2;
+            break;
+        }
+        if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
+            break;
+        curr = GetTargetItem();
+        *owner = curr;
+        owner = &curr->next;
+    }
+}
+
 static void DoIt( void )
 {
-    target_list **owner;
-    target_list *curr;
     const char  *arg;
     size_t      len;
 
@@ -602,14 +618,14 @@ static void DoIt( void )
     /* gather options */
     for( ;; ) {
         SKIP_SPACES( CmdLine );
-        if( *CmdLine != '-' && *CmdLine != '/' )
-            break;
-        ++CmdLine;
-        if( *CmdLine == '-' || *CmdLine == '/' ) {
-            ++CmdLine;
+        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+            CmdLine += 2;
             Options.notargets = 1;
             break;
         }
+        if( *CmdLine != '-' && *CmdLine != '/' )
+            break;
+        ++CmdLine;
         switch( *CmdLine++ ) {
         case 'b':
             Options.batch = 1;
@@ -661,21 +677,7 @@ static void DoIt( void )
     /* gather targ_list */
     Options.targ_list = NULL;
     if( !Options.notargets ) {
-        owner = &Options.targ_list;
-        for( ;; ) {
-            SKIP_SPACES( CmdLine );
-            if( *CmdLine == '\0' )
-                break;
-            if( CmdLine[0] == '-' || CmdLine[0] == '/' ) {
-                if( CmdLine[1] == '-' || CmdLine[1] == '/' ) {
-                    CmdLine += 2;
-                }
-                break;
-            }
-            curr = GetTargetItem();
-            *owner = curr;
-            owner = &curr->next;
-        }
+        getTargets( &Options.targ_list );
     }
     if( Options.targ_list == NULL ) {
         Options.targ_list = MAlloc( sizeof( *Options.targ_list ) - 1 );

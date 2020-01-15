@@ -87,7 +87,7 @@ extern BOOL ReadPatterns( void )
 
     GetModuleFileName( ThisInst, filename, _MAX_PATH );
     _splitpath( filename, drive, dir, NULL, NULL );
-    _makepath( filename, drive, dir, "*", ".LIF" );
+    _makepath( filename, drive, dir, "*", "LIF" );
     dir_handle = opendir( filename );
     Patterns = malloc( sizeof( Patterns[0] ) );
     Patterns[0] = &Pixie;

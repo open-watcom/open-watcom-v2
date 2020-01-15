@@ -86,22 +86,26 @@ typedef struct {
  */
 static IDEBool __stdcall print_message( IDECBHdl idehdl, const char *text )
 {
-    idehdl = idehdl; text = text;
+    /* unused parameters */ (void)idehdl; (void)text;
+
     return( 1 );
 }
 static IDEBool __stdcall print_message_crlf( IDECBHdl idehdl, const char *text )
 {
-    idehdl = idehdl; text = text;
+    /* unused parameters */ (void)idehdl; (void)text;
+
     return( 1 );
 }
 static IDEBool __stdcall print_with_info2( IDECBHdl idehdl, IDEMsgInfo2 *info )
 {
-    idehdl = idehdl; info = info;
+    /* unused parameters */ (void)idehdl; (void)info;
+
     return( 1 );
 }
 static IDEBool __stdcall print_with_info( IDECBHdl idehdl, IDEMsgInfo *info )
 {
-    idehdl = idehdl; info = info;
+    /* unused parameters */ (void)idehdl; (void)info;
+
     return( 1 );
 }
 

@@ -101,7 +101,7 @@ static int __sysconf_pages( int name )
 #endif
 }
 
-static int __sysconf_somaxconn( )
+static int __sysconf_somaxconn( void )
 {
     FILE *fp;
     int ret;

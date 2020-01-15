@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include "banner.h"
 #include "dmpobj.h"
 #include "wnoret.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -48,7 +50,8 @@ void leave( int rc )
 {
     OutputSetFH( stdout );
     OutputFini();
-    exit( rc ); // never return
+    exit( rc );
+    // never return
 }
 
 static void ShowProductInfo( void )
@@ -83,10 +86,7 @@ int main( int argc, char **argv )
 /*******************************/
 {
     FILE        *fp;
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     char        file[_MAX_PATH];
     char        *fn;
     int         i;
@@ -142,7 +142,8 @@ int main( int argc, char **argv )
                 break;
             default:
                 usage();
-                leave( 1 ); // never return
+                leave( 1 );
+                // never return
             }
         } else {
             break;
@@ -150,14 +151,15 @@ int main( int argc, char **argv )
     }
     if( i == argc ) {
         usage();
-        leave( 1 ); // never return
+        leave( 1 );
+        // never return
     }
 
     ShowProductInfo();
     for( ; i < argc; ++i ) {
-        _splitpath( argv[i], drive, dir, fname, ext );
-        if( ext[0] == 0 ) {
-            _makepath( file, drive, dir, fname, OBJSUFFIX );
+        _splitpath2( argv[i], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == 0 ) {
+            _makepath( file, pg.drive, pg.dir, pg.fname, OBJSUFFIX );
             fn = file;
         } else {
             fn = argv[i];
@@ -165,14 +167,16 @@ int main( int argc, char **argv )
         fp = fopen( fn, "rb" );
         if( fp == NULL ) {
             Output( "Cannot open '%s' for reading" CRLF, fn );
-            leave( 20 );    // never return
+            leave( 20 );
+            // never return
         }
         if( list_file ) {
-            _makepath( file, drive, dir, fname, LSTSUFFIX );
+            _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
             fh = fopen( file, "w" );
             if( fh == NULL ) {
                 Output( "Cannot open '%s' for writing" CRLF, file );
-                leave( 20 );    // never return
+                leave( 20 );
+                // never return
             }
             OutputSetFH( fh );
         }
@@ -180,7 +184,8 @@ int main( int argc, char **argv )
         fclose( fp );
         OutputSetFH( stdout );  /* does fclose() if necessary */
     }
-    leave( 0 ); // never return
+    leave( 0 );
+    // never return
     // next is for compilers not supporting "no return" function modifier
     NO_RETURN_FAKE( return( 0 ) );
 }

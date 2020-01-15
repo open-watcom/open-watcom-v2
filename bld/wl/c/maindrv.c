@@ -55,15 +55,13 @@ int main( int argc, char **argv )
 #endif
     IDEDRV_STATUS   status;
 
-#if !defined( __UNIX__ )
-#if defined( __WATCOMC__ )
-    argc = argc;
-    argv = argv;
-#else
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
-#endif
+
     status = IDEDRV_ERR_LOAD;
     IdeDrvInit( &inf, DLL_NAME_STR, NULL );
 #if !defined( __UNIX__ )

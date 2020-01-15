@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ char _viperRequest[] = { "IDE Request" };
 char _viperInfo[] = { "IDE Information" };
 
 #ifdef __WATCOMC__
-#pragma warning 438 9
+#pragma disable_message( 438 )
 #endif
 
 const char* _viperDesc[] = {

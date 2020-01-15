@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,8 @@ size_t DisGetString( size_t index, char *buff, bool to_upper )
     len = *src++ & ~LENGTH_BIT;
     i = len;
     for( ;; ) {
-        if( i == 0 ) break;
+        if( i == 0 )
+            break;
         c = *src++;
         if( !(c & LENGTH_BIT) ) {
             if( to_upper )
@@ -119,7 +121,8 @@ dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
     default:
         return( DR_FAIL );
     }
-    if( h->d->range == NULL ) return( DR_FAIL );
+    if( h->d->range == NULL )
+        return( DR_FAIL );
     h->need_bswap = swap_bytes;
     return( DR_OK );
 }
@@ -185,7 +188,8 @@ dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
             for( ;; ) {
                 idx = (ins->opcode >> table[curr+offs].shift) & table[curr+offs].mask;
                 curr = DisSelectorTable[idx + table[curr+offs].index];
-                if( curr >= 0 ) break;
+                if( curr >= 0 )
+                    break;
                 curr = -curr;
             }
             if( (DisInstructionTable[curr].mask & ins->opcode) == DisInstructionTable[curr].opcode ) {
@@ -198,7 +202,8 @@ dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
         }
         ins->type = curr;
         hr = DisInstructionTable[curr].handler( h, d, ins );
-        if( hr == DHR_DONE ) break;
+        if( hr == DHR_DONE )
+            break;
         if( hr == DHR_INVALID ) {
             BadOpcode( h, ins );
             break;
@@ -208,7 +213,9 @@ dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
     if( ins->num_ops > MAX_NUM_OPERANDS ) {
         /* nobody's set the number of operands */
         for( idx = 0; idx < MAX_NUM_OPERANDS; ++idx ) {
-            if( ins->op[idx].type == DO_NONE ) break;
+            if( ins->op[idx].type == DO_NONE ) {
+                break;
+            }
         }
         ins->num_ops = idx;
     }
@@ -306,7 +313,8 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
 
     ins = *ins_p;       /* so we can fiddle it around */
 
-    if( name != NULL ) name[0] = '\0';
+    if( name != NULL )
+        name[0] = '\0';
     len = h->d->ins_hook( h, d, &ins, flags, name );
     if( name != NULL ) {
         if( len == 0 ) {
@@ -334,6 +342,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
         }
         if( p != opers )
             *p++ = ' ';
+        ins.flags = ins_p->flags;
         len = h->d->post_op_hook( h, d, &ins, flags, i, p, end - p );
         if( len ) {
             p += len;

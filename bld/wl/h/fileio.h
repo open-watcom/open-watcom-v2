@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,18 +31,6 @@
 
 
 #define NIL_FHANDLE         ((f_handle)-1)
-#if defined( __NT__ )
-#include <stdio.h>
-    #define STDIN_HANDLE    fileno( stdin )
-    #define STDOUT_HANDLE   fileno( stdout )
-    #define STDERR_HANDLE   fileno( stderr )
-#else
-    #define STDIN_HANDLE    ((f_handle)0)
-    #define STDOUT_HANDLE   ((f_handle)1)
-    #define STDERR_HANDLE   ((f_handle)2)
-    #define STDAUX_HANDLE   ((f_handle)3)
-    #define STDPRN_HANDLE   ((f_handle)4)
-#endif
 
 #define LSEEK_START    0       /* Seek relative to the start of file   */
 #define LSEEK_CURRENT  1       /* Seek relative to current position    */
@@ -80,11 +69,9 @@ extern bool             QReadStr( f_handle, char *, size_t, const char * );
 extern bool             QIsDevice( f_handle );
 extern f_handle         QObjOpen( const char * );
 extern f_handle         TempFileOpen( const char * );
-extern bool             QSysHelp( char ** );
 extern bool             QModTime( const char *, time_t * );
 extern time_t           QFModTime( int );
 extern int              WaitForKey( void );
-extern void             GetCmdLine( char * );
 extern void             TrapBreak( int );
 extern void             SetBreak( void );
 extern void             RestoreBreak( void );

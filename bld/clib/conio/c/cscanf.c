@@ -39,36 +39,38 @@
 
 
 static int cget_console( PTR_SCNF_SPECS specs )
-    {
-        int c;
+{
+    int c;
 
-        if( (c = getche()) == EOF ) {
-            specs->eoinp = 1;
-        }
-        return( c );
+    if( (c = getche()) == EOF ) {
+        specs->eoinp = 1;
     }
+    return( c );
+}
 
 
 static void uncget_console( int c, PTR_SCNF_SPECS specs )
-    {
-        ungetch( c );
-    }
+{
+    /* unused parameters */ (void)specs;
+
+    ungetch( c );
+}
 
 
 _WCRTLINK int vcscanf( const char *format, va_list args )
-    {
-        auto SCNF_SPECS specs;
+{
+    SCNF_SPECS specs;
 
-        specs.cget_rtn = cget_console;
-        specs.uncget_rtn = uncget_console;
-        return( __scnf( (PTR_SCNF_SPECS)&specs, format, args ) );
-    }
+    specs.cget_rtn = cget_console;
+    specs.uncget_rtn = uncget_console;
+    return( __scnf( (PTR_SCNF_SPECS)&specs, format, args ) );
+}
 
 
 _WCRTLINK int cscanf( const char *format,... )
-    {
-        va_list args;
+{
+    va_list args;
 
-        va_start( args, format );
-        return( vcscanf( format, args ) );
-    }
+    va_start( args, format );
+    return( vcscanf( format, args ) );
+}

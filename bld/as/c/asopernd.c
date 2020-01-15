@@ -134,8 +134,8 @@ static void opConstant( ins_operand *op, expr_tree *expr )
     ETFree( expr );
 }
 
-extern ins_operand *OpImmed( expr_tree *expr )
-//********************************************
+ins_operand *OpImmed( expr_tree *expr )
+//*************************************
 {
     ins_operand *op;
 
@@ -161,8 +161,8 @@ static void atRegCheck( reg r )
     }
 }
 
-extern ins_operand *OpRegister( reg r )
-//*************************************
+ins_operand *OpRegister( reg r )
+//******************************
 {
     ins_operand *op;
 
@@ -174,8 +174,8 @@ extern ins_operand *OpRegister( reg r )
     return( op );
 }
 
-extern ins_operand *OpRegIndirect( reg r, expr_tree *expr )
-//*********************************************************
+ins_operand *OpRegIndirect( reg r, expr_tree *expr )
+//**************************************************
 {
     ins_operand *op;
 
@@ -191,8 +191,8 @@ extern ins_operand *OpRegIndirect( reg r, expr_tree *expr )
 }
 
 #ifdef AS_PPC
-extern ins_operand *OpBI( uint_32 cr, uint_32 bit_offset )
-//********************************************************
+ins_operand *OpBI( uint_32 cr, uint_32 bit_offset )
+//*************************************************
 // This operand type specifies which of the 32 bits in the CR
 // represents the condition to test. (PPC specific)
 {
@@ -217,8 +217,8 @@ static char *reloc_modifier[] = {
     "b^"
 };
 
-extern void DumpOperand( ins_operand *op )
-//****************************************
+void DumpOperand( ins_operand *op )
+//*********************************
 {
     switch( op->type ) {
     case OP_IMMED:

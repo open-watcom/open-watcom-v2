@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,15 +136,16 @@ static int CheckReservedWords( char *tokbuf ) {
     }
 }
 
-BOOL ScanInit( char *fname ) {
+bool ScanInit( char *fname )
+{
     FileHdl = open( fname, O_RDONLY | O_TEXT );
     BufEnd = Buffer;
     CurPos = BufEnd;
     if( FileHdl == -1 ) {
         ReportError( "Unable to open '%s'", fname );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

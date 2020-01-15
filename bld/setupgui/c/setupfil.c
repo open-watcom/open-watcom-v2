@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -322,23 +322,27 @@ static var_type getEnvironVarType( const VBUF *env_var )
 {
     var_type        vt;
 
+#ifdef __UNIX__
+    /* unused parameters */ (void)env_var;
+#endif
+
     vt = VAR_SETENV_ASSIGN;
 #ifndef __UNIX__
-#ifndef __OS2__
+  #ifndef __OS2__
     if( GetVariableBoolVal( "IsOS2DosBox" ) ) {
-#endif
+  #endif
         // OS/2
         if( VbufCompStr( env_var, "LIBPATH", true ) == 0 ) {
             vt = VAR_ASSIGN;
         }
-#ifndef __OS2__
+  #ifndef __OS2__
     } else {
         // DOS, WINDOWS, NT
         if( VbufCompStr( env_var, "PATH", true ) == 0 ) {
             vt = VAR_CMD;
         }
     }
-#endif
+  #endif
 #endif
     return( vt );
 }
@@ -633,7 +637,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
             if( uninstall )
                 break;
             VbufSplitpath( &line_var, NULL, NULL, &fname, &fext );
-            if( VbufCompStr( &fname, "win", true ) != 0 || ( VbufCompStr( &fext, ".com", true ) != 0 && VbufLen( &fext ) > 0 ) )
+            if( VbufCompStr( &fname, "win", true ) != 0 || ( VbufCompExt( &fext, "com", true ) != 0 && VbufLen( &fext ) > 0 ) )
                 break;
             WinDotCom = GUIStrDup( line, NULL );
             line[0] = '\0';
@@ -970,7 +974,7 @@ bool ModifyAutoExec( bool uninstall )
 #else
     SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_AUTOEXEC" ) );
 #endif
-    if( DoDialog( "Modify" ) == DLG_CAN ) {
+    if( DoDialog( "Modify" ) == DLG_CANCEL ) {
         ok = false;
     }
     if( ok ) {
@@ -1004,7 +1008,7 @@ bool ModifyAutoExec( bool uninstall )
         SetVariableByName( "FileToFind", "CONFIG.SYS" );
         while( access_vbuf( &OrigConfig, F_OK ) != 0 ) {
             SetVariableByName_vbuf( "CfgDir", &OrigConfig );
-            if( DoDialog( "LocCfg" ) == DLG_CAN ) {
+            if( DoDialog( "LocCfg" ) == DLG_CANCEL ) {
                 MsgBox( NULL, "IDS_CANTFINDCONFIGSYS", GUI_OK );
                 ok = false;
                 break;
@@ -1028,7 +1032,7 @@ bool ModifyAutoExec( bool uninstall )
         SetVariableByName( "FileToFind", "AUTOEXEC.BAT" );
         while( access_vbuf( &OrigAutoExec, F_OK ) != 0 ) {
             SetVariableByName_vbuf( "CfgDir", &OrigAutoExec );
-            if( DoDialog( "LocCfg" ) == DLG_CAN ) {
+            if( DoDialog( "LocCfg" ) == DLG_CANCEL ) {
                 MsgBox( NULL, "IDS_CANTFINDAUTOEXEC", GUI_OK );
                 ok = false;
                 break;
@@ -1380,7 +1384,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
     VbufMakepath( &dll_name, NULL, NULL, &fname, &ext );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-    VbufSetStr( &ext, "._D_" );
+    VbufSetStr( &ext, "_D_" );
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
 #else
     VbufMakepath( &unpacked_as, &drive, &dir, &fname, &ext );
@@ -1454,7 +1458,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
 
         // don't display the dialog if the user selected the "Skip dialog" option
         if( !GetVariableBoolVal( "DLL_Skip_Dialog" ) ) {
-            if( DoDialog( "DLLInstall" ) == DLG_CAN ) {
+            if( DoDialog( "DLLInstall" ) == DLG_CANCEL ) {
                 remove_vbuf( &unpacked_as );
                 cancel = true;
                 ok = false;
@@ -1615,14 +1619,14 @@ bool ModifyConfiguration( bool uninstall )
     RegLocation[LOCAL_MACHINE].key_is_open = ( rc == 0 );
 
     if( RegLocation[LOCAL_MACHINE].key_is_open && !uninstall ) {
-        if( DoDialog( "ModifyEnvironment" ) == DLG_CAN ) {
+        if( DoDialog( "ModifyEnvironment" ) == DLG_CANCEL ) {
             return( false );
         }
     } else {
         // Note we use the same dialog as for AUTOEXEC changes
         // We set the Variable AUTOTEXT to contain the proper wording
         SetVariableByName( "AutoText", GetVariableStrVal( "IDS_MODIFY_ENVIRONMENT" ) );
-        if( DoDialog( "Modify" ) == DLG_CAN ) {
+        if( DoDialog( "Modify" ) == DLG_CANCEL ) {
             return( false );
         }
     }
@@ -1716,7 +1720,7 @@ bool ModifyRegAssoc( bool uninstall )
     int     i;
 
     if( !uninstall ) {
-        if( DoDialog( "ModifyAssociations" ) == DLG_CAN ) {
+        if( DoDialog( "ModifyAssociations" ) == DLG_CANCEL ) {
             return( false );
         }
         if( GetVariableBoolVal( "NoModEnv" ) ) {
@@ -1843,9 +1847,8 @@ bool GenerateBatchFile( bool uninstall )
 
     ReplaceVars( &batch_file, GetVariableStrVal( "BatchFileName" ) );
     VbufSplitpath( &batch_file, &drive, &dir, &fname, &ext );
-    if( VbufLen( &ext ) == 0 ) {
+    if( VbufLen( &ext ) == 0 )
         VbufConcStr( &ext, BATCHEXT );
-    }
     VbufMakepath( &batch_file, &drive, &dir, &fname, &ext );
     if( uninstall ) {
         remove_vbuf( &batch_file );

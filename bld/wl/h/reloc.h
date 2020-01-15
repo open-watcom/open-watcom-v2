@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ typedef struct os2_reloc_item {
             unsigned_16     modref_idx; /*      in 'module_name'.dll     */
             unsigned_16     impnam_off; /*      with res_name table      */
         } name;
-        unsigned_32     fltpt;          // floating point fixup value
+        unsigned_32     fltpt;          // floating point patch value
     } put;
 } os2_reloc_item;
 
@@ -144,7 +145,7 @@ typedef struct {
 } zdos_reloc_item;
 
 typedef union {
-    byte        buff[ 12 ];
+    byte        buff[12];
     struct {
         unsigned_8          nr_stype;
         unsigned_8          nr_flags;
@@ -211,8 +212,10 @@ extern unsigned         FmtRelocSize;
 extern RELOC_INFO       *FloatFixups;
 
 extern void             WriteReloc( group_entry *, offset, void *, size_t );
-extern void             FloatReloc( reloc_item * item );
+#ifdef _QNX
+extern void             QNXFloatReloc( reloc_item * item );
 extern void             QNXLinearReloc( group_entry *, reloc_item * );
+#endif
 extern bool             TraverseOS2RelocList( group_entry *, bool (*)(RELOC_INFO *));
 extern void             FreeRelocInfo( void );
 extern unsigned_32      RelocSize( RELOC_INFO * );

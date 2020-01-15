@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +46,12 @@
 
 static _trmem_hdl   RcMemHandle = NULL;
 
-static void RcPutLine( void *dummy, const char *buf, size_t len )
-/***************************************************************/
+static void RcPrintLine( void *dummy, const char *buf, size_t len )
+/*****************************************************************/
 {
-    dummy = dummy;
-    printf( buf );
+    /* unused parameters */ (void)dummy; (void)len;
+
+    printf( "%s\n", buf );
 }
 #endif
 
@@ -58,7 +60,7 @@ void RcMemInit( void )
 {
 #ifdef RC_USE_TRMEM
     RcMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
-                        NULL, RcPutLine,
+                        NULL, RcPrintLine,
                         _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL |
                         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #else

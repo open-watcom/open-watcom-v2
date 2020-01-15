@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,10 @@
 #include "objio.h"
 #include "objcache.h"
 
-static bool             DumpFileCache( infilelist *, bool );
+
+#define CACHE_PAGE_SIZE _8KB
 
 static bool             Multipage;
-
-#define CACHE_PAGE_SIZE         (8*1024)
 
 static unsigned NumCacheBlocks( unsigned long len )
 /*************************************************/
@@ -122,6 +122,36 @@ bool CacheOpen( file_list *list )
         }
     }
     return( true );
+}
+
+static bool DumpFileCache( infilelist *infile, bool nuke )
+/******************************************************/
+{
+    unsigned    num;
+    unsigned    savenum;
+    unsigned    index;
+    char **     blocklist;
+    bool        blockfreed;
+
+    blockfreed = false;
+    if( nuke ) {
+        savenum = UINT_MAX;
+    } else {
+        savenum = infile->currpos / CACHE_PAGE_SIZE;
+    }
+    if( infile->cache != NULL ) {
+        num = NumCacheBlocks( infile->len );
+        blocklist = infile->cache;
+        for( index = 0; index < num; index++ ) {
+            if( index != savenum && *blocklist != NULL ) {
+                _LnkFree( *blocklist );
+                *blocklist = NULL;
+                blockfreed = true;
+            }
+            blocklist++;
+        }
+    }
+    return( blockfreed );
 }
 
 void CacheClose( file_list *list, unsigned pass )
@@ -268,36 +298,6 @@ void CacheFree( file_list *list, void *mem )
     if( list->infile->status & INSTAT_PAGE_CACHE ) {
         _LnkFree( mem );
     }
-}
-
-static bool DumpFileCache( infilelist *infile, bool nuke )
-/******************************************************/
-{
-    unsigned    num;
-    unsigned    savenum;
-    unsigned    index;
-    char **     blocklist;
-    bool        blockfreed;
-
-    blockfreed = false;
-    if( nuke ) {
-        savenum = UINT_MAX;
-    } else {
-        savenum = infile->currpos / CACHE_PAGE_SIZE;
-    }
-    if( infile->cache != NULL ) {
-        num = NumCacheBlocks( infile->len );
-        blocklist = infile->cache;
-        for( index = 0; index < num; index++ ) {
-            if( index != savenum && *blocklist != NULL ) {
-                _LnkFree( *blocklist );
-                *blocklist = NULL;
-                blockfreed = true;
-            }
-            blocklist++;
-        }
-    }
-    return( blockfreed );
 }
 
 void FreeObjCache( file_list *list )

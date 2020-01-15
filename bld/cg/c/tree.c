@@ -1473,12 +1473,12 @@ static  name *TNFindBase( tn node )
         op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->u2.t.rite );
         if( op != NULL )
             return( op );
-    /* fall through */
+        /* fall through */
     case TN_BINARY:
         // creating a based pointer via a binary convert - don't want a fake base
         if( node->class == TN_BINARY && node->u2.t.op == O_CONVERT )
             return( NULL );
-    /* fall through */
+        /* fall through */
     case TN_LV_ASSIGN:
     case TN_LV_PRE_GETS:
         if( (node->tipe->attr & TYPE_POINTER) == 0 )
@@ -2132,20 +2132,23 @@ an  TNBinary( tn node )
     BurnTree( r );
     // end of ugly hack
 
-#if _TARGET & (_TARG_80386 | _TARG_IAPX86)
+#if _TARGET & _TARG_INTEL
     /* based pointer junk */
     if( node->u2.t.op == O_CONVERT ) {
         retv = MakeBased( left, rite, node->tipe );
-    } else /* Note missing brace */
-#endif
-    if( node->flags & TF_DEMOTED ) {
-        was_address = SetAddress( false ); /* force it to be generated! */
-        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, false );
-        AddrDemote( retv );
-        SetAddress( was_address );
     } else {
-        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, true );
+#endif
+        if( node->flags & TF_DEMOTED ) {
+            was_address = SetAddress( false ); /* force it to be generated! */
+            retv = BGBinary( node->u2.t.op, left, rite, node->tipe, false );
+            AddrDemote( retv );
+            SetAddress( was_address );
+        } else {
+            retv = BGBinary( node->u2.t.op, left, rite, node->tipe, true );
+        }
+#if _TARGET & _TARG_INTEL
     }
+#endif
     retv->flags |= FL_STACKABLE;
     return( retv );
 }

@@ -44,28 +44,31 @@ _WCRTLINK int socket( int domain, int type, int protocol )
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)domain;
     args[1] = (unsigned long)type;
     args[2] = (unsigned long)protocol;
     return( __socketcall( SYS_SOCKET, args ) );
 #elif defined( __RDOS__ )
-    if( domain == AF_INET )
-    {
-        switch( type )
-        {
-            case SOCK_STREAM:
-                return( RdosCreateTcpSocket() );
 
-            case SOCK_DGRAM:
-                return( RdosCreateUdpSocket() );
+    /* unused parameters */ (void)protocol;
 
-            default:
-                return( -1 );
+    if( domain == AF_INET ) {
+        switch( type ) {
+        case SOCK_STREAM:
+            return( RdosCreateTcpSocket() );
+        case SOCK_DGRAM:
+            return( RdosCreateUdpSocket() );
+        default:
+            return( -1 );
         }
-    }
-    else
+    } else {
         return( -1 );
+    }
 #else
+
+    /* unused parameters */ (void)domain; (void)type; (void)protocol;
+
     return( -1 );
 #endif
 }

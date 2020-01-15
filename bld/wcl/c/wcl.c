@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,7 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -116,7 +118,7 @@
   #define _TARGET_      "x86 32-bit"
 #endif
 
-#define TEMPFILE        "__wcl__" LNK_EXT   /* temporary linker directive file  */
+#define TEMPFILE        "__wcl__" TOOL_LNK_EXT   /* temporary linker directive file  */
 
 #ifdef __UNIX__
 #define IS_OPT(x)       ((x)=='-')
@@ -126,9 +128,9 @@
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
-#define IS_ASM(x)       (fname_cmp(x, ASM_EXT) == 0)
+#define IS_ASM(x)       (x[0] == '.' && fname_cmp(x + 1, ASM_EXT) == 0)
 #define IS_LIB(x)       HasFileExtension(x, LIB_EXT)
-#define IS_RES(x)       HasFileExtension(x, ".res")
+#define IS_RES(x)       HasFileExtension(x, RES_EXT)
 
 #define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
@@ -162,13 +164,13 @@ static const char *EnglishHelp[] = {
 
 
 static etool tools[TYPE_MAX] = {
-    { LINK, LINK EXE_EXT,   NULL },
-    { PACK, PACK EXE_EXT,   NULL },
-    { DIS,  DIS  EXE_EXT,   NULL },
-    { AS,   AS   EXE_EXT,   NULL },
-    { CC,   CC   EXE_EXT,   NULL },
-    { CPP,  CPP  EXE_EXT,   NULL },
-    { FC,   FC   EXE_EXT,   NULL }
+    { LINK, LINK TOOL_EXE_EXT,   NULL },
+    { PACK, PACK TOOL_EXE_EXT,   NULL },
+    { DIS,  DIS  TOOL_EXE_EXT,   NULL },
+    { AS,   AS   TOOL_EXE_EXT,   NULL },
+    { CC,   CC   TOOL_EXE_EXT,   NULL },
+    { CPP,  CPP  TOOL_EXE_EXT,   NULL },
+    { FC,   FC   TOOL_EXE_EXT,   NULL }
 };
 
 
@@ -586,7 +588,7 @@ static int Parse( const char *cmd )
                     }
                     end = ScanFName( end, Word + len );
                     NormalizeFName( Word, MAX_CMD, Word );
-                    MakeName( Word, LNK_EXT );
+                    MakeName( Word, TOOL_LNK_EXT );
                     errno = 0;
                     if( (atfp = fopen( Word, "r" )) == NULL ) {
                         PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
@@ -626,7 +628,7 @@ static int Parse( const char *cmd )
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
-                            MakeName( Word, LNK_EXT );  /* add extension */
+                            MakeName( Word, TOOL_LNK_EXT );  /* add extension */
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( Word );
                         } else {
@@ -844,12 +846,12 @@ static int Parse( const char *cmd )
 static int useCPlusPlus( const char *p )
 /**************************************/
 {
-    return(
-        fname_cmp( p, ".cpp" ) == 0 ||
-        fname_cmp( p, ".cxx" ) == 0 ||
-        fname_cmp( p, ".cc" )  == 0 ||
-        fname_cmp( p, ".hpp" ) == 0 ||
-        fname_cmp( p, ".hxx" ) == 0 );
+    return( *p++ == '.' && (
+        fname_cmp( p, "cpp" ) == 0 ||
+        fname_cmp( p, "cxx" ) == 0 ||
+        fname_cmp( p, "cc" )  == 0 ||
+        fname_cmp( p, "hpp" ) == 0 ||
+        fname_cmp( p, "hxx" ) == 0 ) );
 }
 
 
@@ -907,35 +909,32 @@ static int tool_exec( tool_type utl, const char *p1, const char *p2 )
 static tool_type SrcName( char *name )
 /************************************/
 {
-    char        *p;
-    char        buffer[_MAX_PATH2];
-    char        *ext;
+    PGROUP2     pg;
     tool_type   utl;
 
-    _splitpath2( name, buffer, NULL, NULL, NULL, &ext );
-    p = &ext[0];
-    if( ext[0] == '\0' ) {
-        p = name + strlen( name );
-        strcpy( p, ".cxx" );
+    _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = name + strlen( name );
+        strcpy( pg.ext, ".cxx" );
         if( access( name, F_OK ) != 0 ) {
-            strcpy( p, ".cpp" );
+            strcpy( pg.ext, ".cpp" );
             if( access( name, F_OK ) != 0 ) {
-                strcpy( p, ".cc" );
+                strcpy( pg.ext, ".cc" );
                 if( access( name, F_OK ) != 0 ) {
-                    strcpy( p, ASM_EXT );
+                    strcpy( pg.ext, "." ASM_EXT );
                     if( access( name, F_OK ) != 0 ) {
-                        strcpy( p, ".c" );
+                        strcpy( pg.ext, ".c" );
                     }
                 }
             }
         }
     }
-    if( IS_ASM( p ) ) {
+    if( IS_ASM( pg.ext ) ) {
         utl = TYPE_ASM;
     } else {
         utl = TYPE_C;               // assume C compiler
         if( !Flags.force_c ) {
-            if( Flags.force_c_plus || useCPlusPlus( p ) ) {
+            if( Flags.force_c_plus || useCPlusPlus( pg.ext ) ) {
                 utl = TYPE_CPP;     // use C++ compiler
             }
         }
@@ -1150,10 +1149,13 @@ int  main( int argc, char **argv )
     const char  *p;
     char        *cmd;           /* command line parameters  */
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
 #ifndef __UNIX__
     alt_switch_char = _dos_switch_char();
 #endif

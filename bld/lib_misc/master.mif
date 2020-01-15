@@ -15,7 +15,11 @@ objs = $(name).obj
 $(name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
+! else
     $(cl) $(clflags) $(objs) $(ldflags)
+! endif
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,7 +233,7 @@ short _RMAlloc( int size, RM_ALLOC *stg )
             return( FALSE );
         } else {
             stg->rm_seg = mem >> 16L;
-            stg->pm_ptr = MK_FP( (unsigned short)( mem & 0x0000ffffL ), 0 );
+            stg->pm_ptr = _MK_FP( (unsigned short)( mem & 0x0000ffffL ), 0 );
             return( TRUE );
         }
     } else if( _IsPharLap() ) {
@@ -241,7 +242,7 @@ short _RMAlloc( int size, RM_ALLOC *stg )
             return( FALSE );
         } else {
             stg->rm_seg = seg;
-            stg->pm_ptr = MK_FP( 0x34, seg << 4 );
+            stg->pm_ptr = _MK_FP( 0x34, seg << 4 );
             return( TRUE );
         }
     } else {
@@ -255,7 +256,7 @@ void _RMFree( RM_ALLOC *stg )
 
 {
     if( _IsRational() ) {
-        DPMIFreeDOSMemory( FP_SEG( stg->pm_ptr ) );
+        DPMIFreeDOSMemory( _FP_SEG( stg->pm_ptr ) );
     } else {
         PharlapFree( stg->rm_seg );
     }

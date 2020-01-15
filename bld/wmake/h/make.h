@@ -40,14 +40,22 @@
 #include "msysdep.h"
 #include "massert.h"
 
-#define LINECONT_C      '&'     /* line continuation                         */
-#define UNIX_LINECONT_C '\\'    /* UNIX line continuation                    */
-#define MS_LINECONT_C   '\\'    /* MS line continuation                      */
-#define COMMENT_C       '#'     /* beginning of comment                      */
-#define BANG_C          '!'     /* preprocessor introducer                   */
-#define ENVVAR_C        '%'     /* %environment-var                          */
 
-#define NULLCHAR        '\0'
+#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
+#define USE_DIR_CACHE
+#endif
+
+#define CASESENSITIVE       true    /* Is Name case sensitive                   */
+#define NOCASESENSITIVE     false   /* Is not Name case sensitive               */
+
+#define LINECONT_C          '&'     /* line continuation                        */
+#define UNIX_LINECONT_C     '\\'    /* UNIX line continuation                   */
+#define MS_LINECONT_C       '\\'    /* MS line continuation                     */
+#define COMMENT_C           '#'     /* beginning of comment                     */
+#define BANG_C              '!'     /* preprocessor introducer                  */
+#define ENVVAR_C            '%'     /* %environment-var                         */
+
+#define NULLCHAR            '\0'
 
 /*
  * When we initialize ourselves, this is how many objects we will preallocate
@@ -57,47 +65,49 @@
 #define VECSTR_ALLOC_VECSTR     5
 
 struct Glob {
-    char    swchar;     /* the 'switch' character (ie: '-' or '/' )          */
+    char        swchar;                 /* the 'switch' character (ie: '-' or '/' )      */
 
-    BIT     all         : 1;/* make all targets                              */
-    BIT     block       : 1;/* block the use of implicit rules               */
-    BIT     nocheck     : 1;/* don't check for existence of files made       */
-    BIT     debug       : 1;/* print debugging info                          */
-    BIT     erase       : 1;/* on error delete the file without asking       */
-    BIT     noheader    : 1;/* do not display the header                     */
-    BIT     ignore      : 1;/* ignore error returns from commands            */
-    BIT     cont        : 1;/* continue with other targets after error       */
+    boolbit     all             : 1;    /* make all targets                              */
+    boolbit     block           : 1;    /* block the use of implicit rules               */
+    boolbit     nocheck         : 1;    /* don't check for existence of files made       */
+    boolbit     debug           : 1;    /* print debugging info                          */
+    boolbit     erase           : 1;    /* on error delete the file without asking       */
+    boolbit     noheader        : 1;    /* do not display the header                     */
+    boolbit     ignore          : 1;    /* ignore error returns from commands            */
+    boolbit     cont            : 1;    /* continue with other targets after error       */
 
-    BIT     noexec      : 1;/* don't execute any commands                    */
-    BIT     optimize    : 1;/* use circular path feature                     */
-    BIT     print       : 1;/* print the dependency tree                     */
-    BIT     query       : 1;/* query mode - check if target up to date       */
-    BIT     overide     : 1;/* do not use any default rules                  */
-    BIT     silent      : 1;/* do not print cmds                             */
-    BIT     silentno    : 1;/* print cmds - overrules silent                 */
-    BIT     touch       : 1;/* just touch the files, don't execute anything  */
+    boolbit     noexec          : 1;    /* don't execute any commands                    */
+    boolbit     optimize        : 1;    /* use circular path feature                     */
+    boolbit     print           : 1;    /* print the dependency tree                     */
+    boolbit     query           : 1;    /* query mode - check if target up to date       */
+    boolbit     overide         : 1;    /* do not use any default rules                  */
+    boolbit     silent          : 1;    /* do not print cmds                             */
+    boolbit     silentno        : 1;    /* print cmds - overrules silent                 */
+    boolbit     touch           : 1;    /* just touch the files, don't execute anything  */
 
-    BIT     hold        : 1;/* on error don't erase (and don't ask)          */
-    BIT     shell       : 1;/* execute commands through the shell            */
-    BIT     preproc     : 1;/* true - preprocessor on, false - off           */
-    BIT     erroryet    : 1;/* has PrtMsg printed an error yet?              */
-    BIT     cachedir    : 1;/* true if dir caching turned on                 */
-    BIT     nomakeinit  : 1;/* true if we are to suppress parsing makeinit   */
-    BIT     macreadonly : 1;/* should macro definitions be read only?        */
-    BIT     headerout   : 1;/* has the header been printed out yet?          */
+    boolbit     hold            : 1;    /* on error don't erase (and don't ask)          */
+    boolbit     shell           : 1;    /* execute commands through the shell            */
+    boolbit     preproc         : 1;    /* true - preprocessor on, false - off           */
+    boolbit     erroryet        : 1;    /* has PrtMsg printed an error yet?              */
+    boolbit     nomakeinit      : 1;    /* true if we are to suppress parsing makeinit   */
+    boolbit     macreadonly     : 1;    /* should macro definitions be read only?        */
+    boolbit     headerout       : 1;    /* has the header been printed out yet?          */
+    boolbit     rcs_make        : 1;    /* true if new target's date is max of dep dates */
 
-    BIT     rcs_make    : 1;/* true if new target's date is max of dep dates */
-    BIT     fuzzy       : 1;/* true .AUTODEPEND times can be off by 1 minute */
-    BIT     keep_spaces : 1;/* true keep spaces in macro defns               */
-    BIT     compat_unix : 1;/* true if UNIX compatibility desired            */
-    BIT     compat_posix: 1;/* true if POSIX conformance desired             */
-    BIT     compat_nmake: 1;/* Microsoft nmake Optioning-Compatability switch*/
-    BIT     verbose     : 1;/* Bit to list out the contents of a tmp file    */
-    BIT     auto_depends: 1;/* force autodepends info to be used             */
+    boolbit     fuzzy           : 1;    /* true .AUTODEPEND times can be off by 1 minute */
+    boolbit     keep_spaces     : 1;    /* true keep spaces in macro defns               */
+    boolbit     compat_unix     : 1;    /* true if UNIX compatibility desired            */
+    boolbit     compat_posix    : 1;    /* true if POSIX conformance desired             */
+    boolbit     compat_nmake    : 1;    /* Microsoft nmake Optioning-Compatability switch*/
+    boolbit     verbose         : 1;    /* Bit to list out the contents of a tmp file    */
+    boolbit     auto_depends    : 1;    /* force autodepends info to be used             */
+    boolbit     show_offenders  : 1;    /* display the out-of-date file                  */
 
-    BIT     show_offenders: 1;   /* display the out-of-date file             */
 #ifdef CACHE_STATS
-    BIT     cachestat   : 1;/* cache status report                           */
+    boolbit     cachestat       : 1;    /* cache status report                           */
+#endif
+#ifdef USE_DIR_CACHE
+    boolbit     cachedir        : 1;    /* true if dir caching turned on                 */
 #endif
 };
 

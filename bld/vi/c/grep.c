@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
+#include "pathgrp2.h"
 #ifdef __WIN__
     #include "filelist.rh"
     #include "vifont.h"
@@ -74,7 +75,7 @@ static vi_rc fSearch( const char *, char * );
 static vi_rc eSearch( const char *, char * );
 static vi_rc doGREP( const char * );
 
-static regexp       *cRx;
+static regexp       *cRx = NULL;
 static char         *searchString;
 static const char   *origString;
 static char         *cTable;
@@ -117,15 +118,18 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
     vi_rc   rc;
 
     cRx = RegComp( string );
-    if( RegExpError ) {
-        return( RegExpError );
+    rc = RegExpError;
+    if( rc == ERR_NO_ERR ) {
+        searchString = DupString( string );
+        origString = string;
+        isFgrep = false;
+        rc = doGREP( dirlist );
+        MemFree( searchString );
     }
-    searchString = DupString( string );
-    origString = string;
-    isFgrep = false;
-    rc = doGREP( dirlist );
-    MemFree( searchString );
-    MemFree( cRx );
+    if( cRx != NULL ) {
+        MemFree( cRx );
+        cRx = NULL;
+    }
     return( rc );
 
 } /* DoEGREP */
@@ -589,16 +593,12 @@ static vi_rc doGREP( const char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( const char *dir, char **list, list_linenum *clist, window_id wid )
+static void fileGrep( const char *fullmask, char **list, list_linenum *clist, window_id wid )
 {
     char            fn[FILENAME_MAX];
     char            data[FILENAME_MAX];
     char            ts[FILENAME_MAX];
-    char            path[FILENAME_MAX];
-    char            drive[_MAX_DRIVE];
-    char            directory[_MAX_DIR];
-    char            name[_MAX_FNAME];
-    char            ext[_MAX_EXT];
+    PGROUP2         pg;
     list_linenum    i;
 #if defined( __WIN__ ) && defined( __NT__ )
     LVITEM          lvi;
@@ -608,21 +608,17 @@ static void fileGrep( const char *dir, char **list, list_linenum *clist, window_
     /*
      * get file path prefix
      */
-    _splitpath( dir, drive, directory, name, ext );
-    strcpy( path, drive );
-    strcat( path, directory );
-//    _makepath( path, drive, directory, NULL,NULL );
+    _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     /*
      * run through each entry and search it; building a list of matches
      */
-    rc = GetSortDir( dir, false );
+    rc = GetSortDir( fullmask, false );
     if( rc == ERR_NO_ERR ) {
         for( i = 0; i < DirFileCount; i++ ) {
             if( IS_SUBDIR( DirFiles[i] ) )
                 continue;
-            strcpy( fn, path );
-            strcat( fn, DirFiles[i]->name );
+            _makepath( fn, pg.drive, pg.dir, DirFiles[i]->name, NULL );
 #ifdef __WIN__
             EditFlags.BreakPressed = SetGrepDialogFile( fn );
 #else

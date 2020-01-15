@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <stdarg.h>
 #include "title.h"
 #include "iedde.h"
+
 #include "clibint.h"
 
 
@@ -60,19 +62,19 @@ static HANDLE   hAccel;
 static HBRUSH   hBkBrush;
 #endif
 
-BOOL OpenNewFiles = FALSE;
-BOOL FusionCalled = FALSE;
-BOOL NoTitleScreen = FALSE;
+bool OpenNewFiles = false;
+bool FusionCalled = false;
+bool NoTitleScreen = false;
 
 /*
  * imgEditInit - initialization
  */
-static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
+static bool imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 {
     WNDCLASS    wc;
     HMENU       hmenu;
     HDC         hdc;
-    BOOL        maximized;
+    bool        maximized;
     int         show_state;
 
     hdc = GetDC( NULL );
@@ -116,7 +118,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = className;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -135,7 +137,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassB;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -151,7 +153,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassI;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -167,7 +169,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassC;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -183,7 +185,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = ViewWinClass;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -203,7 +205,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = PaletteClass;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -224,7 +226,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = "ColorsClass";
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -244,7 +246,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = "ScreenClass";
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -264,7 +266,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = "CurrentClass";
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -284,7 +286,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = BitmapPickClass;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -310,7 +312,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         NULL );                                 /* Create parameters */
 
     if( HMainWindow == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( maximized ) {
@@ -338,7 +340,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 #endif
     //SetActiveWindow( HMainWindow );
     BringWindowToTop( HMainWindow );
-    return( TRUE );
+    return( true );
 
 } /* imgEditInit */
 
@@ -378,20 +380,20 @@ static void parseArgs( int count, char **cmdline )
 
     for( i = 1; i < count; i++ ) {
         if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
-            ImgedIsDDE = TRUE;
+            ImgedIsDDE = true;
             continue;
         }
         if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
-            OpenNewFiles = TRUE;
+            OpenNewFiles = true;
             continue;
         }
         if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
-            NoTitleScreen = TRUE;
+            NoTitleScreen = true;
             continue;
         }
         if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
-            FusionCalled = TRUE;
-            NoTitleScreen = TRUE;
+            FusionCalled = true;
+            NoTitleScreen = true;
             continue;
         }
     }
@@ -456,7 +458,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
         }
     }
 
-    IEEnableMenuInput( TRUE );
+    IEEnableMenuInput( true );
 
     if( _argc > 1 ) {
         parseCmdLine( _argc, _argv );

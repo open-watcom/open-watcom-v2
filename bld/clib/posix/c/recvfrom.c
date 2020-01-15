@@ -43,6 +43,7 @@ _WCRTLINK int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr 
 {
 #if defined( __LINUX__ )
     unsigned long args[6];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)buf;
     args[2] = (unsigned long)len;
@@ -51,8 +52,14 @@ _WCRTLINK int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr 
     args[5] = (unsigned long)fromlen;
     return( __socketcall( SYS_RECVFROM, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)s; (void)buf; (void)len; (void)flags; (void)from; (void)fromlen;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)buf; (void)len; (void)flags; (void)from; (void)fromlen;
+
     return( -1 );
 #endif
 }

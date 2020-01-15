@@ -215,16 +215,6 @@ static void getNumber( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getWhiteSpace( ss_block *ss_new, char *start )
-{
-    char    *end = start + 1;
-
-    SKIP_SPACES( end );
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = end - start;
-}
-
-
 static void getText( ss_block *ss_new, char *start )
 {
     char    *keyword;
@@ -345,12 +335,6 @@ static void getComment( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getBeyondText( ss_block *ss_new )
-{
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = BEYOND_TEXT;
-}
-
 static void getInvalidChar( ss_block *ss_new )
 {
     ss_new->type = SE_INVALIDTEXT;
@@ -378,14 +362,14 @@ static void getLabelOrWS( ss_block *ss_new, char *start, int text_col )
         }
         ss_new->len = end - start;
     } else {
-        getWhiteSpace( ss_new, start );
+        SSGetWhiteSpace( ss_new, start );
     }
 }
 
 static void getContinuationOrWS( ss_block *ss_new, char *start )
 {
     if( isspace( *start ) ) {
-        getWhiteSpace( ss_new, start );
+        SSGetWhiteSpace( ss_new, start );
         return;
     }
     /* this is technically wrong - a ' ' on an initial line is
@@ -466,7 +450,7 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
             // with an unterminated string from previous line
             flags.inString = false;
         }
-        getBeyondText( ss_new );
+        SSGetBeyondText( ss_new );
         return;
     }
 
@@ -491,7 +475,7 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
     }
 
     if( isspace( start[0] ) ) {
-        getWhiteSpace( ss_new, start );
+        SSGetWhiteSpace( ss_new, start );
         return;
     }
 

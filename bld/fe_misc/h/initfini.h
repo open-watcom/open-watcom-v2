@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ struct initfini {                   // INITFINI -- register init/fini
 
 struct exit_point {                 // EXIT_POINT -- registration point
     EXIT_POINT  *previous;          // - previous exit point
-    bool        subsequent : 1;     // - true ==> not first time
+    boolbit     subsequent : 1;     // - true ==> not first time
     INITFINI    *registered[1];     // - registrations
 };
 

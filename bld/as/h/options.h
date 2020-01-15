@@ -49,3 +49,7 @@ typedef enum {
 #define _IsOption( x )          ( ( AsOptions & (x) ) != EMPTY )
 
 extern as_flags AsOptions;
+
+extern bool     OptionsInit( int argc, char **argv );
+extern void     OptionsFini( void );
+extern void     OptionsPPDefine( void );

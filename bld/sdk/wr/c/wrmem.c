@@ -46,7 +46,9 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    fputs( buff, TRMemFile );
+    if( TRMemFile != NULL ) {
+        fprintf( TRMemFile, "%s\n", buff );
+    }
 }
 
 #endif

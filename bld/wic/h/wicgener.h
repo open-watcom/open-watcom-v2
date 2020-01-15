@@ -80,7 +80,7 @@ void debugOut(char *format, ...);
 #ifdef NDEBUG
  #define assert(__ignore) ((void)0)
 #else
- #if !defined(NO_EXT_KEYS) /* extensions enabled */
+ #if !defined( _NO_EXT_KEYS ) /* extensions enabled */
   #define assert(expr)   ((expr)?(void)0:wicAssert(0,#expr,__FILE__,__LINE__))
  #else
   #define assert(expr)  wicAssert(expr,#expr,__FILE__,__LINE__)

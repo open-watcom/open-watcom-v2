@@ -222,7 +222,7 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-_WCRTLINK _WCNORETURN void __exit( unsigned rc )
+_WCRTLINK _WCNORETURN void __exit( int rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include <assert.h>
 #include "watcom.h"
 #include "misc.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -117,28 +118,28 @@ extern char *FixName( char *name )
  *
  */
 
-static DIR  *parent = NULL;  /* we need this across invocations */
+static DIR  *dirp = NULL;  /* we need this across invocations */
 static char *path = NULL;
 static char *pattern = NULL;
 
 extern char *DoWildCard( char *base )
 /***********************************************/
 {
-    PGROUP          pg;
-    struct dirent   *entry;
+    PGROUP2         pg;
+    struct dirent   *dire;
 
     if( base != NULL ) {
         if( path != NULL ) {        /* clean up from previous invocation */
             free( path );
-            path = NULL;            /* 1-jun-90 AFS */
+            path = NULL;
         }
         if( pattern != NULL ) {
             free( pattern );
             pattern = NULL;
         }
-        if( parent != NULL ) {
-            closedir( parent );
-            parent = NULL;          /* 1-jun-90 AFS */
+        if( dirp != NULL ) {
+            closedir( dirp );
+            dirp = NULL;
         }
         if( strpbrk( base, "*?" ) == NULL ) {
             return( base );
@@ -154,8 +155,8 @@ extern char *DoWildCard( char *base )
         // create file name pattern
         _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
 
-        parent = opendir( path );
-        if( parent == NULL ) {
+        dirp = opendir( path );
+        if( dirp == NULL ) {
             free( path );
             path = NULL;
             free( pattern );
@@ -163,22 +164,20 @@ extern char *DoWildCard( char *base )
             return( base );
         }
     }
-    if( parent == NULL ) {
+    if( dirp == NULL ) {
         return( NULL );
     }
-    assert( path != NULL && parent != NULL );
-    entry = readdir( parent );
-    while( entry != NULL ) {
-        if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( pattern, entry->d_name, FNMATCH_FLAGS ) == 0 ) {
+    assert( path != NULL && dirp != NULL );
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ISVALIDENTRY( dire ) ) {
+            if( fnmatch( pattern, dire->d_name, FNMATCH_FLAGS ) == 0 ) {
                 break;
             }
         }
-        entry = readdir( parent );
     }
-    if( entry == NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( dire == NULL ) {
+        closedir( dirp );
+        dirp = NULL;
         free( path );
         path = NULL;
         free( pattern );
@@ -186,7 +185,7 @@ extern char *DoWildCard( char *base )
         return( base );
     }
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+    _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
     return( path );
 }
 
@@ -201,8 +200,8 @@ extern void DoWildCardClose( void )
         free( pattern );
         pattern = NULL;
     }
-    if( parent != NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( dirp != NULL ) {
+        closedir( dirp );
+        dirp = NULL;
     }
 }

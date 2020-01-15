@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,8 @@
 
 
 #include <stdio.h>
-#include <setjmp.h>
+#include "global.h"
 
-extern void root1( void );
-extern void ovl2( void );
-extern void ovl2a( void );
-extern void ovl2b( void );
-extern void ovl3a( void );
 
 jmp_buf env1;
 

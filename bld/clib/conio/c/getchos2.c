@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ _WCRTLINK int getch( void )
     }
 #endif
 #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return( _dos( DOS_GET_CHAR_NO_ECHO_CHECK ) );
     }
 #endif

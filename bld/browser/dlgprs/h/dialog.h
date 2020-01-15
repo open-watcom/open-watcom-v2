@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
-#pragma warning 665 9
+#pragma disable_message( 665 )
 #endif
 
 #include <wstd.h>

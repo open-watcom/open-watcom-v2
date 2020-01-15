@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,9 +80,9 @@ _WCRTLINK void_fptr _frealloc( void_fptr cstg_old, size_t req_size )
         return( NULL );
     }
     old_size = _fmsize( cstg_old );
-    if( FP_SEG( cstg_old ) == _DGroup() ) {
+    if( _FP_SEG( cstg_old ) == _DGroup() ) {
         cstg_new = cstg_old;
-        if( _nexpand( (void_nptr)cstg_old, req_size ) == NULL ) {
+        if( _nexpand( (void_nptr)_FP_OFF( cstg_old ), req_size ) == NULL ) {
             cstg_new = NULL;
         }
     } else {
@@ -93,8 +94,8 @@ _WCRTLINK void_fptr _frealloc( void_fptr cstg_old, size_t req_size )
             _mymemcpy( cstg_new, cstg_old, old_size );
             _ffree( cstg_old );
         } else {
-            if( FP_SEG( cstg_old ) == _DGroup() ) {
-                _nexpand( (void_nptr)cstg_old, old_size );
+            if( _FP_SEG( cstg_old ) == _DGroup() ) {
+                _nexpand( (void_nptr)_FP_OFF( cstg_old ), old_size );
             } else {
                 _fexpand( cstg_old, old_size );
             }

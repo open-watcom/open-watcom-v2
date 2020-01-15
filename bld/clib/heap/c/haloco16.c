@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,5 +107,5 @@ _WCRTLINK void_hptr halloc( long n, unsigned size )
 
 _WCRTLINK void hfree( void_hptr cstg )
 {
-    __FreeSeg( FP_SEG( cstg ) );
+    __FreeSeg( _FP_SEG( cstg ) );
 }

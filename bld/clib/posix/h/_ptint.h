@@ -8,11 +8,11 @@
 #define SIGCANCEL 36
 
 /* Thread bookkeeping */
-extern pthread_t        __register_thread();
+extern pthread_t        __register_thread( void );
 extern pthread_t        __get_thread( pid_t tid );
-extern pthread_t        __get_current_thread( );
+extern pthread_t        __get_current_thread( void );
 extern void             __unregister_thread( pthread_t thread );
-extern void             __unregister_current_thread( );
+extern void             __unregister_current_thread( void );
 
 /* Thread-specific keys bookkeeping */
 extern pthread_key_t    __register_pkey( void (*destructor)(void *) );
@@ -40,7 +40,7 @@ extern int              __get_thread_cancel_status( pthread_t thread );
 extern int              __set_thread_detached( pthread_t thread );
 extern int              __get_thread_detached( pthread_t thread );
 
-/* Check if a mutex is owned by the current thread 
+/* Check if a mutex is owned by the current thread
  * 0  = yes
  * -1 = no
  * >0 = error (no)

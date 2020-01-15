@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,25 +75,22 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
     vi_rc               rc;
     char                *p;
 
-    cfile = NULL;
-
-    /*
-     * get current directory
-     */
-    strcpy( dd, dir );
-    strcpy( cdir, dir );
-    SetCWD( dir );
-    need_entire_path = false;
-
     /*
      * work through all files
      */
-    for( ;; ) {
+    need_entire_path = false;
+    cfile = NULL;
+    strcpy( dd, dir );
+    for( ; (rc = SetCWD( dd )) == ERR_NO_ERR; ) {
+        strcpy( dd, CurrentDirectory );
+        strcpy( cdir, CurrentDirectory );
+
         p = dd + strlen( dd );
         if( *(p - 1) != FILE_SEP ) {
             *p++ = FILE_SEP;
         }
         strcpy( p, mask );
+
         rc = GetSortDir( dd, want_all_dirs );
         if( rc != ERR_NO_ERR ) {
             break;
@@ -108,11 +105,20 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
         /*
          * go get selected line
          */
-        memset( &sfd, 0, sizeof( sfd ) );
-        sfd.f = cfile;
-        sfd.wi = &dirw_info;
-        sfd.title = CurrentDirectory;
+        sfd.is_menu = false;
         sfd.show_lineno = true;
+        sfd.has_scroll_gadgets = false;
+        sfd.f = cfile;
+        sfd.vals = NULL;
+        sfd.valoff = 0;
+        sfd.wi = &dirw_info;
+        sfd.sl = 0;
+        sfd.title = CurrentDirectory;
+        sfd.checkres = NULL;
+        sfd.allowrl = NULL;
+        sfd.hi_list = NULL;
+        sfd.retevents = NULL;
+        sfd.event = VI_KEY( DUMMY );
         sfd.cln = 1;
         sfd.event_wid = NO_WINDOW;
         rc = SelectLineInFile( &sfd );
@@ -153,23 +159,15 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             dd[1] = ':';
             dd[2] = '\0';
         }
-        rc = SetCWD( dd );
-        if( rc != ERR_NO_ERR ) {
-            break;
-        }
+        need_entire_path = true;
         FreeEntireFile( cfile );
         cfile = NULL;
-        need_entire_path = true;
-        strcpy( cdir, CurrentDirectory );
-        strcpy( dd, CurrentDirectory );
     }
 
     /*
      * done, free memory
      */
-    if( cfile != NULL ) {
-        FreeEntireFile( cfile );
-    }
+    FreeEntireFile( cfile );
     DCDisplayAllLines();
     return( rc );
 
@@ -448,7 +446,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 {
     list_linenum    i;
     int             winflag;
-    int             leftcol = 0;
+    int             leftcol;
     int             key2;
     bool            done;
     bool            redraw;
@@ -502,6 +500,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
          * now, allow free scrolling and selection
          */
         lln = 1;
+        leftcol = 0;
         redraw = true;
         drawbord = false;
         done = false;

@@ -45,10 +45,6 @@
 #define GCC_NORETURN /* nothing */
 #endif
 
-#ifndef GCC_UNUSED
-#define GCC_UNUSED /* nothing */
-#endif
-
 #ifndef HAVE_BIG_CORE
 #define HAVE_BIG_CORE 0
 #endif

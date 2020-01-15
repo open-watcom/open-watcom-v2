@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -330,7 +331,7 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
  * FreeTheBits - frees the bits associated with bits and sets the bitmap
  *               bits if requested
  */
-void FreeTheBits( bitmap_bits *info, HBITMAP bitmap, BOOL setbits )
+void FreeTheBits( bitmap_bits *info, HBITMAP bitmap, bool setbits )
 {
     if( setbits ) {
         setTheBitmapBits( bitmap, info->byte_count, info->bits );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,13 @@ static int              screenHeight;
 static palette_box      paletteBox[PALETTE_SIZE];
 static palette_box      screenColor;
 static palette_box      inverseColor;
-static BOOL             fShowScreenClr = FALSE;
+static bool             fShowScreenClr = false;
 static HWND             hScreenTxt;
 static HWND             hInverseTxt;
 static short            numberOfColors;
 static HBITMAP          hColorBitmap;
 static HBITMAP          hMonoBitmap;
-static int              prevRestoreState = FALSE;
+static bool             prevRestoreState = false;
 
 /*
  * paintColors - paint the available colors on the color palette
@@ -365,7 +366,7 @@ void CreateColorControls( HWND hparent )
  *                     and the inverse color (for icons and cursors but
  *                     not for bitmaps)
  */
-void DisplayScreenClrs( BOOL fdisplay )
+void DisplayScreenClrs( bool fdisplay )
 {
     HWND        frame;
     char        *text;
@@ -378,7 +379,7 @@ void DisplayScreenClrs( BOOL fdisplay )
         }
         SetWindowText( hScreenTxt, "" );
         SetWindowText( hInverseTxt, "" );
-        fShowScreenClr = FALSE;
+        fShowScreenClr = false;
         ShowWindow( frame, SW_HIDE );
     } else {
         text = IEAllocRCString( WIE_SCREENTEXT );
@@ -395,7 +396,7 @@ void DisplayScreenClrs( BOOL fdisplay )
         } else {
             SetWindowText( hInverseTxt, "Inverse:" );
         }
-        fShowScreenClr = TRUE;
+        fShowScreenClr = true;
         ShowWindow( frame, SW_SHOWNORMAL );
 #ifdef __OS2_PM__
         InvalidateRect( hScreenWnd, NULL, TRUE );
@@ -425,9 +426,9 @@ void SetNumColors( int number_of_colors )
             frame = _wpi_getframe( HMainWindow );
             hmenu = GetMenu( frame );
             if( _wpi_isitemenabled( hmenu, IMGED_RCOLOR ) ) {
-                prevRestoreState = TRUE;
+                prevRestoreState = true;
             } else {
-                prevRestoreState = FALSE;
+                prevRestoreState = false;
             }
             _wpi_enablemenuitem( hmenu, IMGED_SCOLOR, FALSE, FALSE );
             _wpi_enablemenuitem( hmenu, IMGED_RCOLOR, FALSE, FALSE );
@@ -469,7 +470,7 @@ void SetScreenClr( COLORREF screen_color )
 /*
  * ShowNewColor - replace the color of the color box and redisplay the boxes
  */
-void ShowNewColor( int index, COLORREF newcolor, BOOL repaint )
+void ShowNewColor( int index, COLORREF newcolor, bool repaint )
 {
     WPI_POINT   topleft;
     WPI_POINT   bottomright;

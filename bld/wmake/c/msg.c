@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,6 @@
 #include "mstream.h"
 
 
-STATIC const char   *logName;
-STATIC FILE         *logFP;
-
 typedef union msg_arg {
     UINT16      ui16;
     UINT32      ui32;
@@ -49,6 +47,9 @@ typedef union msg_arg {
     char        *cp;
     char FAR    *cfp;
 } MSG_ARG;
+
+STATIC const char   *logName = NULL;
+STATIC FILE         *logFP = NULL;
 
 STATIC MSG_ARG  ArgValue[2];
 STATIC bool     USEARGVALUE = false;    /* set to non_zero if ArgValue is used */
@@ -422,7 +423,7 @@ void PrtMsg( enum MsgClass num, ... )
 
     len = 0;
 
-    if( (num & LOC) && GetFileLine( &fname, &fline ) == RET_SUCCESS ) {
+    if( (num & LOC) && GetFileLine( &fname, &fline ) ) {
         if( fname != NULL ) {
             len += FmtStr( &buff[len], "%s", fname );
         }
@@ -558,7 +559,7 @@ void LogInit( const char *name )
 {
     logName = name;
     logFP = NULL;
-    if( name != NULL ) {
+    if( logName != NULL ) {
         logFP = fopen( logName, "a" );
     }
 }
@@ -569,5 +570,6 @@ void LogFini( void )
 {
     if( logFP != NULL ) {
         fclose( logFP );
+        logFP = NULL;
     }
 }

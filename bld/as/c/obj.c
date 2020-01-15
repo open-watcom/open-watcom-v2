@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
 #if defined( __UNIX__ )
-  #define OBJ_EXT        ".o"
+  #define OBJ_EXT        "o"
 #else
-  #define OBJ_EXT        ".obj"
+  #define OBJ_EXT        "obj"
 #endif
 
 extern int              ExitStatus;
@@ -61,8 +63,8 @@ uint_8                  CurrAlignment;
 struct asm_label {
     owl_section_handle  section;
     char                *sym_name;
-    uint_32             is_numeric:1;
-    uint_32             label_num:31;
+    uint_32             is_numeric  : 1;
+    uint_32             label_num   : 31;
     owl_sym_type        sym_type;
     owl_sym_linkage     sym_linkage;
     owl_symbol_handle   sym_hdl;
@@ -125,28 +127,24 @@ bool ObjInit( char *fname ) {
 //***************************
 
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
-    char                name[ _MAX_FNAME ];
+    PGROUP2             pg1;
+    PGROUP2             pg2;
     owl_format          obj_format;
 
     SectionInit();
-    _splitpath( fname, NULL, NULL, name, NULL );
+    _splitpath2( fname, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( !objectDefined ) {
-        _makepath( objName, NULL, NULL, name, OBJ_EXT );
+        _makepath( objName, NULL, NULL, pg1.fname, OBJ_EXT );
     } else {
-        char    tmpName[ _MAX_PATH2 ];
-        char    *tmpNode;
-        char    *tmpDir;
-        char    *tmpFname;
-        char    *tmpExt;
-        _splitpath2( objName, tmpName, &tmpNode, &tmpDir, &tmpFname, &tmpExt );
-        if( *tmpExt == 0 )
-            tmpExt = OBJ_EXT;
-        if( *tmpFname == 0 )
-            tmpFname = name;
-        _makepath( objName, tmpNode, tmpDir, tmpFname, tmpExt );
+        _splitpath2( objName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+        if( pg2.ext[0] == '\0' )
+            pg2.ext = OBJ_EXT;
+        if( pg2.fname[0] == '\0' )
+            pg2.fname = pg1.fname;
+        _makepath( objName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
-    _makepath( errorFilename, NULL, NULL, name, ".err" );
+    _makepath( errorFilename, NULL, NULL, pg1.fname, "err" );
     objFP = fopen( objName, "wb" );
     if( objFP == NULL ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
@@ -202,7 +200,7 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
     new_label->sym_type = type;
     new_label->sym_linkage = linkage;
     new_label->sym_hdl = SymObjHandle( sym );
-    new_label->is_numeric = 0;
+    new_label->is_numeric = false;
     new_label->next = labelList;
     labelList = new_label;
 }
@@ -217,7 +215,7 @@ static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_li
     new_label->sym_name = NULL;
     new_label->sym_type = type;
     new_label->sym_linkage = linkage;
-    new_label->is_numeric = 1;
+    new_label->is_numeric = true;
     new_label->label_num = label_num;
     new_label->next = labelList;
     labelList = new_label;
@@ -332,10 +330,12 @@ owl_offset ObjAlign( owl_section_handle section, uint_8 alignment ) {
     owl_offset  offset;
 
     offset = OWLTellOffset( section );
-    if( alignment == 0 ) return( offset );    // alignment disabled
+    if( alignment == 0 )
+        return( offset );      // alignment disabled
     alignment = 1 << alignment;
     alignment = ( alignment - ( offset % alignment ) ) % alignment;
-    if( alignment == 0 ) return( offset );
+    if( alignment == 0 )
+        return( offset );
     if( OWLTellSectionType( section ) & OWL_SEC_ATTR_CODE ) {
         ObjNopPad( section, alignment / 4 );
         _DBGMSG2( "Align: %d nops emitted\n", alignment / 4 );
@@ -497,9 +497,10 @@ void ObjFini( void ) {
     SectionFini();
 }
 
-extern sym_obj_hdl ObjSymbolInit( char *name ) {
-//**********************************************
+sym_obj_hdl ObjSymbolInit( char *name )
+//*************************************
 // Called by the symbol table routines to create and destroy the label name
 // handles
+{
     return( OWLSymbolInit( OwlFile, name ) );
 }

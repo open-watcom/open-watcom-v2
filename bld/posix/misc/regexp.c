@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,14 +109,11 @@ char    *MagicString = "()";
 #endif
 
 #ifdef STANDALONE_RX
-int     RegExpError;
+regex_error     RegExpError;
 #endif
 
 /* regError - set regular expression error */
-static void regError( int rc )
-{
-    RegExpError = rc;
-}
+#define regError(e)     RegExpError = e
 
 /* StrChr - case sensitive/insensitive version of strchr */
 static const char *StrChr( const char *s, char c )

@@ -211,9 +211,7 @@ common_objs = &
     $(_subdir_)asmalloc.obj &
     $(_subdir_)asmmsg.obj
 
-!ifeq plusplus_trmem 1
-plusplus_trmem_objs = $(_subdir_)trmem.obj
-!endif
+plusplus_trmem_objs = $(trmem_objs)
 
 !ifdef __WATCOM_TOOLS__
 # assumes Watcom math library

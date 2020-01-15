@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,9 @@
 
 
 #include "bdiff.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 #define MXFNAME         130
@@ -51,8 +55,7 @@ void main( int argc, char *argv[] )
 {
     size_t      size, bufsize;
     char        outfile[_MAX_PATH], infile[_MAX_PATH];
-    char        drive[_MAX_DRIVE], dir[_MAX_DIR];
-    char        name[_MAX_FNAME], ext[_MAX_EXT];
+    PGROUP2     pg;
     FILE        *fpin, *fpout, *fpcmt;
     char        *pos;
 
@@ -76,9 +79,9 @@ void main( int argc, char *argv[] )
     }
 
     strcpy( infile, argv[2] );
-    _splitpath( infile, drive, dir, name, ext );
+    _splitpath2( infile, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     for( ;; ) {
-        _makepath( outfile, drive, dir, "__", TmpExt );
+        _makepath( outfile, pg.drive, pg.dir, "__", TmpExt );
         if( access( outfile, 0 ) != 0 )
             break;
         TmpExt[0]++;

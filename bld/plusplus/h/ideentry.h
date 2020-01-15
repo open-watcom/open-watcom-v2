@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,11 @@
 #ifndef __WCPPDLL_H__
 #define __WCPPDLL_H__
 
+#include "compinfo.h"
+
 // Definitions for DLL processing with C++
 
-#define IDEFN(x)    ((IDECallBacks *)CompInfo.idecbs)->x
+#define IDEFN(x)    CompInfo.idecbs->x
 
 void IdePrintFini               // COMPLETE PRINTING
     ( void )
@@ -44,5 +47,11 @@ void IdePrintInit               // INITIALIZE PRINTING
     ( void )
 ;
 
+
+int WppCompile(                 // MAIN-LINE (DLL)
+    DLL_DATA* dll_data,         // - data for DLL
+    char *input,                // - input file name argv string
+    char *output )              // - output file name argv string
+;
 
 #endif

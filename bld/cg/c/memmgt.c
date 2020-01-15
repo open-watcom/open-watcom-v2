@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,15 +65,12 @@ static          mem_out_action  MemOut;
 
 static _trmem_hdl       Handle;
 
-static void Prt( void *handle, const char *buff, size_t len )
-/***********************************************************/
+static void PrintLine( void *handle, const char *buff, size_t len )
+/*****************************************************************/
 {
-    size_t i;
+    /* unused parameters */ (void)handle; (void)len;
 
-    handle=handle;
-    for( i = 0; i < len; ++i ) {
-        fputc( *buff++, stderr );
-    }
+    fprintf( stderr, "%s\n", buff );
 }
 
 #elif _MEMORY_TRACKING & _CHUNK_TRACKING
@@ -85,7 +83,7 @@ void    CGMemInit( void )
     _SysReInit();
     MemOut = MO_FATAL;
 #if _MEMORY_TRACKING & _FULL_TRACKING
-    Handle = _trmem_open( &_SysAlloc, &_SysFree, NULL, NULL, NULL, &Prt,
+    Handle = _trmem_open( _SysAlloc, _SysFree, NULL, NULL, NULL, PrintLine,
                                 _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                 _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                                 _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

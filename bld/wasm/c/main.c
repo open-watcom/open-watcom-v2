@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 #endif
 #include "directiv.h"
 #include "standalo.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -418,8 +419,8 @@ static void get_fname( char *token, int type )
 {
     char        name [_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
-    PGROUP      pg;
-    PGROUP      def;
+    PGROUP2     pg;
+    PGROUP2     def;
 
     /* get filename for source file */
 
@@ -433,7 +434,7 @@ static void get_fname( char *token, int type )
         }
 
         _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( *pg.ext == '\0' ) {
+        if( pg.ext[0] == '\0' ) {
             pg.ext = ASM_EXT;
         }
         _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
@@ -450,9 +451,9 @@ static void get_fname( char *token, int type )
         } else {
             _splitpath2( AsmFiles.fname[OBJ], def.buffer, &def.drive,
                          &def.dir, &def.fname, &def.ext );
-            if( *def.fname == NULLC )
+            if( def.fname[0] == NULLC )
                 def.fname = pg.fname;
-            if( *def.ext == NULLC )
+            if( def.ext[0] == NULLC )
                 def.ext = OBJ_EXT;
 
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
@@ -466,9 +467,9 @@ static void get_fname( char *token, int type )
         } else {
             _splitpath2( AsmFiles.fname[ERR], def.buffer, &def.drive,
                          &def.dir, &def.fname, &def.ext );
-            if( *def.fname == NULLC )
+            if( def.fname[0] == NULLC )
                 def.fname = pg.fname;
-            if( *def.ext == NULLC )
+            if( def.ext[0] == NULLC )
                 def.ext = ERR_EXT;
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[ERR] );
@@ -481,9 +482,9 @@ static void get_fname( char *token, int type )
         } else {
             _splitpath2( AsmFiles.fname[LST], def.buffer, &def.drive,
                          &def.dir, &def.fname, &def.ext );
-            if( *def.fname == NULLC )
+            if( def.fname[0] == NULLC )
                 def.fname = pg.fname;
-            if( *def.ext == NULLC )
+            if( def.ext[0] == NULLC )
                 def.ext = LST_EXT;
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[LST] );
@@ -496,11 +497,11 @@ static void get_fname( char *token, int type )
         if( AsmFiles.fname[ASM] != NULL ) {
             _splitpath2( AsmFiles.fname[ASM], def.buffer, &def.drive,
                          &def.dir, &def.fname, &def.ext );
-            if( *pg.fname == NULLC ) {
+            if( pg.fname[0] == NULLC ) {
                 pg.fname = def.fname;
             }
         }
-        if( *pg.ext == NULLC ) {
+        if( pg.ext[0] == NULLC ) {
             switch( type ) {
             case ERR:   pg.ext = ERR_EXT;  break;
             case LST:   pg.ext = LST_EXT;  break;
@@ -1194,12 +1195,12 @@ static void do_fini_stuff( void )
 int main( int argc, char **argv )
 /*******************************/
 {
-    /* unused parameters */ (void)argc;
-
-#ifndef __WATCOMC__
-    _argv = argv;
+  #if !defined( __WATCOMC__ )
     _argc = argc;
-#endif
+    _argv = argv;
+  #else
+    /* unused parameters */ (void)argc;
+  #endif
 
 #else
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,9 @@ typedef struct item {
     int             menuid;
     char            *name;
     char            *help;
-    bool            in_menu     : 1;
-    bool            is_active   : 1;
-    bool            is_checked  : 1;
+    boolbit         in_menu     : 1;
+    boolbit         is_active   : 1;
+    boolbit         is_checked  : 1;
     char            cmd[1];
 } item;
 
@@ -60,9 +60,9 @@ typedef struct menu {
     int             orig_num_items;
     HMENU           hmenu;
     char            *help;
-    bool            has_file_list   : 1;
-    bool            need_hook       : 1;
-    bool            has_last_files  : 1;
+    boolbit         has_file_list   : 1;
+    boolbit         need_hook       : 1;
+    boolbit         has_last_files  : 1;
     char            name[1];
 } menu;
 

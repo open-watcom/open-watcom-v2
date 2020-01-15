@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
 #include "banner.h"             // Watcom banner
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -73,11 +75,11 @@ typedef struct {
     FILE            *ifile;
     FILE            *ofile;
     struct {
-        bool        be_ext      : 1;    // option 'x'
-        bool        be_quiet    : 1;    // option 'q'
-        bool        disp_h      : 1;    // option 'h'
-        bool        disp_r      : 1;    // option 'r'
-        bool        have_l      : 1;    // option 'l'
+        boolbit     be_ext      : 1;    // option 'x'
+        boolbit     be_quiet    : 1;    // option 'q'
+        boolbit     disp_h      : 1;    // option 'h'
+        boolbit     disp_r      : 1;    // option 'r'
+        boolbit     have_l      : 1;    // option 'l'
         unsigned_16 lseg;               // arg to 'l'
     }               opt;
     char            iname[_MAX_PATH];
@@ -190,10 +192,10 @@ static void disp_header( dos_exe_header *header )
     printf( "Minimum allocation (paras)     %04X\n",   header->min_16       );
     printf( "Maximum allocation (paras)     %04X\n",   header->max_16       );
     printf( "Initial ss:sp             %04X:%04X\n",   header->SS_offset,
-                                                       header->SP );
+                                                       header->SP           );
     printf( "Checksum                       %04X\n",   header->chk_sum      );
     printf( "Initial cs:ip             %04X:%04X\n",   header->CS_offset,
-                                                       header->IP );
+                                                       header->IP           );
     printf( "Relocation-table at            %04X\n",   header->reloc_offset );
     printf( "Overlay number                 %04X\n\n", header->overlay_num  );
 }
@@ -275,7 +277,7 @@ static reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
                     break;
                 } else {
                     reltab->reloc[i] = (GET_LE_16( rel_off.segment ) << 4)
-                                      + GET_LE_16( rel_off.offset  );
+                                      + GET_LE_16( rel_off.offset );
                 }
             }
         }
@@ -306,11 +308,7 @@ static void sort_reltab( reloc_table *reltab )
 
 static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
-    char    tmp_path[ _MAX_PATH2 ];
-    char    *drive;
-    char    *dir;
-    char    *fname;
-    char    *ext;
+    PGROUP2 pg;
     int     i;
 
     arg->opt.be_ext   = 0;
@@ -348,21 +346,18 @@ static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 
     // process file-name(s)
     if( i < argc ) {
-        _splitpath2( argv[i], tmp_path, &drive, &dir, &fname, &ext );
-        if( *ext == '\0' ) {
-            strcpy( ext, "exe" );
+        _splitpath2( argv[i], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == '\0' ) {
+            pg.ext = "exe";
         }
-        _makepath( arg->iname, drive, dir, fname, ext );
+        _makepath( arg->iname, pg.drive, pg.dir, pg.fname, pg.ext );
         i++;
         if( i < argc ) {
             strncpy( arg->oname, argv[i], _MAX_PATH );
+        } else {
+            _makepath( arg->oname, pg.drive, pg.dir, pg.fname, "bin" );
         }
-        else {
-            strcpy( ext, "bin" );
-            _makepath( arg->oname, drive, dir, fname, ext );
-        }
-    }
-    else {
+    } else {
         return( ERR_USAGE );
     }
 

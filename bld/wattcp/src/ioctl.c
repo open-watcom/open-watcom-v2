@@ -191,7 +191,7 @@ static int iface_ioctrl (Socket *socket, long cmd, char *argp)
   struct sockaddr_in *sin;
   /*const*/ eth_address  *eth;
   int   len;
- 
+
   VERIFY_RW (argp, sizeof(*ifr));
 
   switch ((DWORD)cmd)
@@ -380,6 +380,8 @@ static int iface_ioctrl (Socket *socket, long cmd, char *argp)
  */
 static int waterm_ioctrl (Socket *socket, long cmd, char *argp)
 {
+  /* unused parameters */ (void)socket;
+
   VERIFY_RW (argp, sizeof(*argp));
 
   switch ((DWORD)cmd)
@@ -419,10 +421,13 @@ static int waterm_ioctrl (Socket *socket, long cmd, char *argp)
  */
 static int arp_ioctrl (Socket *socket, long cmd, char *argp)
 {
-  struct arpreq    *arp = (struct arpreq*) argp;
-  struct arp_table *tab;
+  struct arpreq     *arp;
+  struct arp_table  *tab;
   DWORD             ip;
 
+  /* unused parameters */ (void)socket;
+
+  arp = (struct arpreq *)argp;
   switch ((DWORD)cmd)
   {
     case SIOCSARP:      /* add given IP/MAC-addr pair to ARP cache */

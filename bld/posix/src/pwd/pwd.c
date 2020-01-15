@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,16 @@
 #include <errno.h>
 #include <string.h>
 
-void main( void )
-/***************/
+int main( void )
+/**************/
 {
     char *cwd;
 
     cwd = getcwd( NULL, 0 );
     if( cwd == NULL ) {
         printf( "\nCLIB error[%d] %s\n", errno, strerror( errno ) );
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
     puts( cwd );
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

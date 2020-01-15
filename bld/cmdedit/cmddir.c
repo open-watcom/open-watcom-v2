@@ -33,7 +33,7 @@
 #include "cmdedit.h"
 
 
-#ifdef DOS
+#ifdef __DOS__
 #define SIZE    80
 #else
 #define SIZE    260
@@ -124,9 +124,9 @@ static void    DirCmds( char *p )
 #if 0
     char        buff[SIZE+1];
 #endif
-    #ifndef DOS
-        unsigned long    drive_map;
-    #endif
+#ifdef __OS2__
+    unsigned long    drive_map;
+#endif
 
     cmd = *p++;
     while( *p == ' ' )

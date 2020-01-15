@@ -88,14 +88,14 @@ static unsigned_32 ElfHash( char *sym_name )
     return( h );
 }
 
-ElfSymTable *CreateElfSymTable( int maxElems, stringtable *strtab )
-/************************************************************************/
+ElfSymTable *CreateElfSymTable( unsigned maxElems, stringtable *strtab )
+/**********************************************************************/
 {
     ElfSymTable *tab;
 
     _ChkAlloc( tab, sizeof( ElfSymTable ) );
     tab->numBuckets = FindClosestPrime( maxElems / 2 );
-    tab->maxElems = maxElems+1; // element 0 is NIL
+    tab->maxElems = maxElems + 1; // element 0 is NIL
     tab->numElems = 1;
     _ChkAlloc( tab->table, tab->maxElems * sizeof( tab->table[0] ) );
     memset( tab->table, 0, tab->maxElems * sizeof( tab->table[0] ) );
@@ -123,8 +123,8 @@ void AddSymElfSymTable( ElfSymTable *tab, symbol *sym )
     tab->numElems++;
 }
 
-int FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym )
-/********************************************************/
+unsigned FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym )
+/*************************************************************/
 {
     unsigned_32 hash;
     unsigned_32 idx;
@@ -190,11 +190,11 @@ static void SetElfSym( ElfHdr *hdr, Elf32_Sym *elfsym, symbol *sym )
 
 }
 
-void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
-                                int symtabidx, int strtabidx )
-/***********************************************************************/
+void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, unsigned hashidx,
+                                unsigned symtabidx, unsigned strtabidx )
+/**********************************************************************/
 {
-    int         i;
+    unsigned    i;
     size_t      len;
     Elf32_Sym   elfsym;
     Elf32_Shdr  *hashSH;

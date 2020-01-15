@@ -71,7 +71,8 @@ WFlashPage::WFlashPage( WWindow* parent, WHotSpots* hs, int idx, const char* tit
     if( text ) {
         for( int i=0; text[i]; i++ ) {
             int w = getTextExtentX( text[i] );
-            if( _width < w ) _width = w;
+            if( _width < w )
+                _width = w;
             _height += getTextExtentY( text[i] );
             _text.add( new WString( text[i] ) );
         }
@@ -83,7 +84,8 @@ void WFlashPage::init( int interval, const char *title )
 {
     WPoint hotSize;
     _hotSpot->hotSpotSize( _idx, hotSize );
-    if( _width < hotSize.x() ) _width = hotSize.x();
+    if( _width < hotSize.x() )
+        _width = hotSize.x();
     _height += hotSize.y();
 
     if( interval == INTERVAL_OK_BUTTON ) {

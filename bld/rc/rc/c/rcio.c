@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,11 +55,12 @@
 #include "rcrtns.h"
 #include "rccore.h"
 #include "exeutil.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
-#define BUFFER_SIZE     1024
+#define BUFFER_SIZE         1024
 
 #define MAX_INCLUDE_DEPTH   16
 
@@ -283,14 +285,14 @@ unsigned RcIoGetCurrentFileLineNo( void )
 static bool checkCurrentFileType( void )
 /**************************************/
 {
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        isCOrH;
 
     isCOrH = false;
-    _splitpath( InStack.Current->loc.Filename, NULL, NULL, NULL, ext );
+    _splitpath2( InStack.Current->loc.Filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
     /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-    if( ext[0] == '.' && ext[1] != '\0' && ext[2] == '\0' ) {
-        switch( ext[1] ) {
+    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+        switch( pg.ext[1] ) {
         case 'c':
         case 'C':
         case 'h':
@@ -493,8 +495,8 @@ static bool PreprocessInputFile( void )
 {
     unsigned    flags;
     char        rcdefine[13];
-    char      **cppargs;
-    char       *p;
+    char        **cppargs;
+    char        *p;
     int         rc;
 
     flags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
@@ -520,18 +522,15 @@ static bool PreprocessInputFile( void )
             PP_Define( rcdefine );
         }
     }
-    cppargs = CmdLineParms.CPPArgs;
-    if( cppargs != NULL ) {
-        for( ++cppargs; (p = *cppargs) != NULL; ++cppargs ) {
+    if( CmdLineParms.CPPArgs != NULL ) {
+        for( cppargs = CmdLineParms.CPPArgs; (p = *cppargs) != NULL; ++cppargs ) {
             for( ; *p != '\0'; ++p ) {
                 if( *p == '=' ) {
                     *p = ' ';
                     break;
                 }
             }
-            p = *cppargs;
-            PP_Define( p + 2 );         // skip over -d
-            RESFREE( p );
+            PP_Define( *cppargs + 2 );         // skip over -d
         }
     }
     return( false );                    // indicate no error

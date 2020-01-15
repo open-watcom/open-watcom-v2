@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "wio.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -59,12 +61,13 @@ int main( int argc, char *argv[] )
 void SplitFile( long size, long max_size, char * input_file )
 /***********************************************************/
 {
-    char                fullname[_MAX_PATH], drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+    char                fullname[_MAX_PATH];
+    PGROUP2             pg;
     FILE                *bigfile, *smallfile;
     char                *buffer;
     int                 len_read;
     unsigned            idx;
+    char                ext_idx[5];
 
     bigfile = fopen( input_file, "rb" );
     if( bigfile == NULL ) {
@@ -77,12 +80,11 @@ void SplitFile( long size, long max_size, char * input_file )
         exit( 3 );
     }
 
-    _splitpath( input_file, drive, dir, fname, NULL );
-
     idx = 0;
+    _splitpath2( input_file, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     for( ;; ) {
-        sprintf( ext, "%u", ++idx );
-        _makepath( fullname, drive, dir, fname, ext );
+        sprintf( ext_idx, "%u", ++idx );
+        _makepath( fullname, pg.drive, pg.dir, pg.fname, ext_idx );
         smallfile = fopen( fullname, "wb" );
         if( smallfile == NULL ) {
             free( buffer );

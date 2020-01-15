@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,17 +60,25 @@ void ObjPass2( void )
     WalkAllSects( DBIP2Start );
     CurrSect = Root;/*  TAI */
     PModList( Root->mods );
-    OvlPass2();
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlPass2();
+    }
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        ProcDistMods();
+        DistribProcMods();
     } else {
+#endif
         CurrSect = Root;
         PModList( LibModules );
+#ifdef _EXE
     }
+#endif
     WriteUndefined();
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        SetOvlStartAddr();
+        OvlSetStartAddr();
     }
+#endif
     WalkAllSects( DBIFini );
 }
 

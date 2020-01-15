@@ -111,7 +111,7 @@ static void WriteCh( int ch )
     }
 }
 
-static char ReadCh()
+static char ReadCh( void )
 {
 /*
     Buffered read of the output from CMD.EXE.
@@ -181,6 +181,19 @@ static void __far Echo( void )
     }
 }
 
+void SetCurPosWithScroll( int row, int col )
+{
+    if( VioSetCurPos( row+1, 0, 0 ) != 0 ) {
+        static char buffer[2];
+        static USHORT length;
+
+        length = 2;
+        VioReadCellStr( &buffer, &length, row, col, 0 );
+        buffer[0] = ' ';
+        VioScrollUp( 0, 0, -1, -1, 1, (PBYTE)&buffer, 0 );
+        VioSetCurPos( row, 0, 0 );
+    }
+}
 
 void main( void )
 {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "as.h"
 
+
 static expr_tree *etAlloc( et_class type ) {
 /*******************************************
     Alloc an expression node of the given
@@ -52,10 +54,11 @@ static void etFree( expr_tree *node ) {
     MemFree( node );
 }
 
-extern expr_tree *ETReloc( asm_reloc_type rtype, sym_handle sym ) {
-/******************************************************************
+expr_tree *ETReloc( asm_reloc_type rtype, sym_handle sym )
+/**********************************************************
     Allocate a leaf node for a relocatable constant.
 */
+{
     expr_tree   *node;
 
     node = etAlloc( ET_RELOCATABLE );
@@ -65,10 +68,11 @@ extern expr_tree *ETReloc( asm_reloc_type rtype, sym_handle sym ) {
     return( node );
 }
 
-extern expr_tree *ETNumLabelReloc( asm_reloc_type rtype, int_32 label_num ) {
-/****************************************************************************
+expr_tree *ETNumLabelReloc( asm_reloc_type rtype, int_32 label_num )
+/*******************************************************************
     Allocate a leaf node for a reference to a numeric label (eg. 2f)
 */
+{
     expr_tree   *node;
 
     node = etAlloc( ET_UNNAMED_RELOCATABLE );
@@ -78,10 +82,11 @@ extern expr_tree *ETNumLabelReloc( asm_reloc_type rtype, int_32 label_num ) {
     return( node );
 }
 
-extern expr_tree *ETConst( signed_32 value ) {
-/*********************************************
+expr_tree *ETConst( signed_32 value )
+/************************************
     Allocate a leaf node for an integer constant.
 */
+{
     expr_tree   *node;
 
     node = etAlloc( ET_CONSTANT );
@@ -89,10 +94,11 @@ extern expr_tree *ETConst( signed_32 value ) {
     return( node );
 }
 
-extern expr_tree *ETFPConst( double value ) {
-/********************************************
+expr_tree *ETFPConst( double value )
+/***********************************
     Allocate a leaf node for an floating point constant.
 */
+{
     expr_tree   *node;
 
     node = etAlloc( ET_FP_CONSTANT );
@@ -100,10 +106,11 @@ extern expr_tree *ETFPConst( double value ) {
     return( node );
 }
 
-extern expr_tree *ETUnary( et_class type, expr_tree *child ) {
+expr_tree *ETUnary( et_class type, expr_tree *child )
 /*************************************************************
     Allocate a unary node of the given type.
 */
+{
     expr_tree   *node;
 
     assert( _IsUnary( type ) );
@@ -112,10 +119,11 @@ extern expr_tree *ETUnary( et_class type, expr_tree *child ) {
     return( node );
 }
 
-extern expr_tree *ETBinary( et_class type, expr_tree *left, expr_tree *right ) {
-/*******************************************************************************
+expr_tree *ETBinary( et_class type, expr_tree *left, expr_tree *right )
+/**********************************************************************
     Allocate a binary node of the given type.
 */
+{
     expr_tree   *node;
 
     assert( _IsBinary( type ) );
@@ -351,13 +359,14 @@ static expr_tree *relocFold( expr_tree *tree ) {
     return( tree );
 }
 
-extern expr_tree *ETBurn( expr_tree *tree ) {
-/********************************************
+expr_tree *ETBurn( expr_tree *tree )
+/***********************************
     Burn down the given tree as much as possible, returning
     whatever is left. Ideally, we will be left with a leaf
     but this is not always possible (an unresolved reloc which
     was part of the "reloc - reloc -> abs" deal).
 */
+{
     switch( tree->type ) {
     case ET_CONSTANT:
     case ET_FP_CONSTANT:
@@ -387,11 +396,11 @@ extern expr_tree *ETBurn( expr_tree *tree ) {
     return( tree );
 }
 
-extern void ETFree( expr_tree *tree ) {
-/**************************************
+void ETFree( expr_tree *tree )
+/*****************************
     Free up the entire sub tree.
 */
-
+{
     switch( tree->type ) {
     case ET_CONSTANT:
     case ET_FP_CONSTANT:
@@ -477,7 +486,7 @@ static void doDump( expr_tree *tree, int level ) {
         break;
     case ET_RELOCATABLE:
         outIndent( level );
-        printf( "%s(%lx,%s,%ld)\n", nodeNames[ tree->type ], RELOC_SYMBOL( tree ), relocString[RELOC_TYPE( tree )], RELOC_DISP( tree ) );
+        printf( "%s(%lx,%s,%ld)\n", nodeNames[ tree->type ], (unsigned long)(pointer_uint)RELOC_SYMBOL( tree ), relocString[RELOC_TYPE( tree )], RELOC_DISP( tree ) );
         break;
     case ET_NOT:
     case ET_UNARY_MINUS:
@@ -495,10 +504,11 @@ static void doDump( expr_tree *tree, int level ) {
     }
 }
 
-extern void ETDump( expr_tree *tree ) {
-/**************************************
+void ETDump( expr_tree *tree )
+/*****************************
     Dump a copy of the tree to stdout.
 */
+{
     doDump( tree, 0 );
     fflush( stdout );
 }

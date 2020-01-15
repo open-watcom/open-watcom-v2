@@ -31,7 +31,7 @@
 
 
 #include <dos.h>
-#ifndef   DOS
+#ifdef __OS2__
     #define INCL_SUB
     #define INCL_DOSQUEUES
     #define INCL_DOSPROCESS
@@ -44,7 +44,7 @@
 /* OPTIONS start here */
 
 #define PATH "PATH="
-#ifdef   DOS
+#ifdef __DOS__
     #define     ALIAS_FILE      "CMDEDIT="
     #define     SAVE_SIZE       512
     #define     MAX_FNAME       (256+100) // make sure DIRINFO bigger than WIN32_FIND_DATA
@@ -59,7 +59,7 @@
 
 /* OPTIONS end here */
 
-#ifdef DOS
+#ifdef __DOS__
 
 #define PASPTR /**/
 #define USHORT  unsigned short
@@ -86,7 +86,7 @@ typedef struct {
     int     output;
 } LENGTH;
 
-#ifdef DOS
+#ifdef __DOS__
 
 typedef char            CHAR;
 typedef unsigned char   UCHAR;
@@ -160,7 +160,7 @@ typedef struct _FILEFINDBUF DIRINFO;
 
 #endif
 
-#ifdef DOS
+#ifdef __DOS__
 #define LINE_WIDTH 128
 #else
 #define LINE_WIDTH 512
@@ -271,7 +271,7 @@ enum {
 #define _null( ch )  ( ( ch ) == '\0' )
 #define _white_or_null( ch ) ( _white( ch ) || _null( ch ) )
 
-#ifdef DOS
+#ifdef __DOS__
 
 #define DosSetSigHandler( r, p, pa, a, n )
 #define KbdGetStatus( k, i ) DKbdGetStatus( k )
@@ -388,12 +388,13 @@ extern int      ExpandDirCommand( void );
 extern int      ReplaceAlias( char __far *alias, char *word, char *endword );
 extern void     ZapLower( char *str );
 
+extern void     SetCurPosWithScroll( int row, int col );
 
 /* assembler interface declaration */
 extern void     __far SaveSave( char __far *file );
 extern void     __near InitRetrieve( char __far * );
 extern int      __near StringIn( char __far *, LENGTH __far *, int, int );
-#ifdef DOS
+#ifdef __DOS__
 extern char     __far * __far AliasList;
 #else
 extern char     __far *AliasList;

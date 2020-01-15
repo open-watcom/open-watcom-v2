@@ -89,8 +89,8 @@ pick( INVALID_START_ADDRESS,
                                 "Invalid start address" ,
                                 "無効なスタートアドレスです" )
 pick( LABEL_ALREADY_DEFINED,
-                                "Label is already defined" ,
-                                "ラベルは既に定義されています" )
+                                "Label '%s' is already defined" ,
+                                "Label '%s' is already defined" )
 pick( TOKEN_TOO_LONG,
                                 "Token is too long" ,
                                 "トークンが長すぎます" )
@@ -347,8 +347,8 @@ pick( LOCAL_LABEL_OUTSIDE_PROC,
                                 "Local labels may only be used within a PROC" ,
                                 "Local labels may only be used within a PROC" )
 pick( ARGUMENT_SIZE_NOT_SUPPORTED,
-				"Argument size not supported" ,
-				"Argument size not supported" )
+                                "Argument size not supported" ,
+                                "Argument size not supported" )
 pick( USES_MEANINGLESS_WITHOUT_LANGUAGE,
-				"USES is meaningless without language" ,
-				"USES is meaningless without language" )
+                                "USES is meaningless without language" ,
+                                "USES is meaningless without language" )

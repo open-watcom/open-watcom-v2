@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct vsprtf_s_buf     *info;
 
-    info = (struct vsprtf_s_buf *)specs->_dest;
+    info = SLIB2CLIB( struct vsprtf_s_buf, specs->_dest );
     if( info->chars_output <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;

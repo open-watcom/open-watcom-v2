@@ -262,6 +262,8 @@ void CheckResults( struct CtypeBits *s1, struct CtypeBits *s2, int count )
 {
     int i;
 
+    /* unused parameters */ (void)count;
+
     far_data++; // set ds outside DGROUP
 
     for( i = 0; i < TEST_ARRAY_SIZE; i++ ) {
@@ -370,6 +372,9 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     far_data++; // set ds outside DGROUP
 
     /*** Initialize ***/
@@ -387,14 +392,20 @@ int main( int argc, char *argv[] )
     /*** Print a pass/fail message and quit ***/
     if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-        return( EXIT_FAILURE );
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-    printf( "Tests completed (%s).\n", ProgramName );
 #ifdef __SW_BW
-    fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    }
     fclose( my_stdout );
     _dwShutDown();
 #endif
 
+    if( NumErrors != 0 )
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
 }

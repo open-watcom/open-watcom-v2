@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,9 @@
 #include "preproc.h"
 #include "wresym.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -283,11 +287,11 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
     bool                ok;
 
     if( table == NULL || file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     ok = true;
@@ -357,12 +361,12 @@ bool WRELoadResourceSymbols( WREResInfo *info )
     char        *symbol_file;
 
     if( info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    symbol_file = WRELoadSymbols( &info->symbol_table, NULL, TRUE );
+    symbol_file = WRELoadSymbols( &info->symbol_table, NULL, true );
     if( symbol_file == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( info->symbol_file != NULL ) {
@@ -374,15 +378,15 @@ bool WRELoadResourceSymbols( WREResInfo *info )
 
     // ***** call routine to update the edit sessions *****
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREResourceSaveSymbols( WREResInfo *info )
 {
     if( info != NULL ) {
-        return( WRESaveSymbols( info->symbol_table, &info->symbol_file, TRUE ) );
+        return( WRESaveSymbols( info->symbol_table, &info->symbol_file, true ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool WREDeleteDLGInclude( WResDir dir )
@@ -395,19 +399,17 @@ bool WRECreateDLGInclude( WResDir *dir, const char *include )
     return( WRCreateDLGInclude( dir, include ) );
 }
 
-char *WRECreateSymName( char *fname )
+char *WRECreateSymFileName( const char *fname )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WREStrDup( fn_path ) );
 }
@@ -416,37 +418,35 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 {
     char        inc_path[_MAX_PATH];
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
+    PGROUP2     pg;
     char        *symbol_file;
     bool        prompt;
     bool        ret;
 
-    if( rinfo == NULL || rinfo->info == NULL ||
-        (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
-        return( FALSE );
+    if( rinfo == NULL || rinfo->info == NULL
+      || (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
+        return( false );
     }
 
     symbol_file = WREFindDLGInclude( rinfo->info );
     if( symbol_file == NULL ) {
         if( rinfo->info->file_name ) {
-            _splitpath( rinfo->info->file_name, fn_drive, fn_dir, fn_name, NULL );
+            _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         } else {
-            _splitpath( rinfo->info->save_name, fn_drive, fn_dir, fn_name, NULL );
+            _splitpath2( rinfo->info->save_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         }
-        _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
-        _makepath( inc_path, fn_drive, fn_dir, "", "" );
+        _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
+        _makepath( inc_path, pg.drive, pg.dir, NULL, NULL );
         WRESetInitialDir( inc_path );
-        prompt = TRUE;
+        prompt = true;
     } else {
         strcpy( fn_path, symbol_file );
         WRMemFree( symbol_file );
         symbol_file = NULL;
-        prompt = FALSE;
+        prompt = false;
     }
 
-    ret = TRUE;
+    ret = true;
 
     if( WRFileExists( fn_path ) ) {
         symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt );

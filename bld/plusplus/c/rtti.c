@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,11 @@
 #define BLOCK_RTTI_TYPEID       16
 #define BLOCK_RTTI_VFPTR        16
 
-#define rttiClassPCHRead()      rttiClassMapIndex( (RTTI_CLASS *)(pointer_int)PCHReadCVIndex() )
-#define rttiTypeidPCHRead()     rttiTypeidMapIndex( (RTTI_TYPEID *)(pointer_int)PCHReadCVIndex() )
+#define rttiClassPCHRead()      rttiClassMapIndex( (RTTI_CLASS *)(pointer_uint)PCHReadCVIndex() )
+#define rttiTypeidPCHRead()     rttiTypeidMapIndex( (RTTI_TYPEID *)(pointer_uint)PCHReadCVIndex() )
 
-#define rttiClassPCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)rttiClassGetIndex(x) );
-#define rttiTypeidPCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)rttiTypeidGetIndex(x) );
+#define rttiClassPCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_uint)rttiClassGetIndex(x) );
+#define rttiTypeidPCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_uint)rttiTypeidGetIndex(x) );
 
 static carve_t carveRTTI_CLASS;         // - allocations for RTTI_CLASSs
 static carve_t carveRTTI_TYPEID;        // - allocations for RTTI_TYPEIDs

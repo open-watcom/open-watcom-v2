@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static HCURSOR          hCursor[NUMBER_OF_CURSORS];
  *                - return FALSE if CANCEL is selected
  *                - otherwise, it return TRUE
  */
-static BOOL lastChanceSave( HWND hwnd )
+static bool lastChanceSave( HWND hwnd )
 {
     int         retcode;
     int         how;
@@ -58,17 +58,17 @@ static BOOL lastChanceSave( HWND hwnd )
     char        filename[_MAX_PATH];
 
     if( !DoImagesExist() ) {
-        return( TRUE );
+        return( true );
     }
 
     node = SelectImage( hwnd );
     if( node == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     for( icon = GetImageNode( hwnd ); icon != NULL; icon = icon->nexticon ) {
         if( icon->issaved ) {
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -100,16 +100,16 @@ static BOOL lastChanceSave( HWND hwnd )
     if( retcode == WPI_IDYES ) {
         if( !SaveFile( how ) ) {
             PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-            return( FALSE );
+            return( false );
         } else {
             hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
             _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
-            SetIsSaved( hwnd, TRUE );
+            SetIsSaved( hwnd, true );
         }
     } else if( retcode == WPI_IDCANCEL ) {
-        return( FALSE );
+        return( false);
     }
-    return( TRUE );
+    return( true );
 
 } /* lastChanceSave */
 
@@ -149,11 +149,11 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     static WPI_POINT    prev_pt = { -1, -1 };
     static WPI_POINT    new_pt = { -1, -1 };
     static WPI_POINT    pt1;
-    static BOOL         flbuttondown = FALSE;
-    static BOOL         frbuttondown = FALSE;
-    static BOOL         fdraw_shape = FALSE;
+    static bool         flbuttondown = false;
+    static bool         frbuttondown = false;
+    static bool         fdraw_shape = false;
     static bool         firsttime;
-    static BOOL         wasicon;
+    static bool         wasicon;
     int                 mousebutton;
     WPI_POINT           pointsize;
     WPI_POINT           pt2;
@@ -178,7 +178,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         AddImageNode( node );
         CreateUndoStack( node );
         setTheCursor( -1, hwnd );
-        wasicon = FALSE;
+        wasicon = false;
 #endif
         firsttime = true;
         i = i;
@@ -187,10 +187,10 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     case WM_MDIACTIVATE:
         if( IMGED_GET_MDI_FACTIVATE( hwnd, wparam, lparam ) ) {
             if( _wpi_isiconic( hwnd ) ) {
-                wasicon = TRUE;
+                wasicon = true;
                 break;
             } else {
-                wasicon = FALSE;
+                wasicon = false;
                 FocusOnImage( hwnd );
             }
         }
@@ -220,7 +220,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             firsttime = false;
             if( wasicon ) {
                 FocusOnImage( hwnd );
-                wasicon = FALSE;
+                wasicon = false;
             }
 #ifndef __OS2_PM__
         } else if ( _imgwpi_issizeminimized( wparam ) ) {
@@ -229,7 +229,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             DeleteActiveImage();
             ClearImageText();
             SendMessage( ClientWindow, WM_MDINEXT, (WPARAM)(LPVOID)hwnd, 0L );
-            wasicon = TRUE;
+            wasicon = true;
 #endif
         }
         return( 0 );
@@ -241,9 +241,9 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             if( !(lparam & 0x40000000) ) {
                 switch( toolType ) {
                 case IMGED_PASTE:
-                    fdraw_shape = FALSE;
-                    flbuttondown = FALSE;
-                    frbuttondown = FALSE;
+                    fdraw_shape = false;
+                    flbuttondown = false;
+                    frbuttondown = false;
                     DontPaste( hwnd, &pt1, pointsize );
                     break;
 
@@ -256,14 +256,14 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                     if( !flbuttondown && !frbuttondown ) {
                         break;
                     }
-                    fdraw_shape = FALSE;
-                    flbuttondown = FALSE;
-                    frbuttondown = FALSE;
+                    fdraw_shape = false;
+                    flbuttondown = false;
+                    frbuttondown = false;
                     if( toolType == IMGED_LINE ) {
                         OutlineLine( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     } else if( toolType == IMGED_CLIP ) {
                         OutlineClip( hwnd, &start_pt, &prev_pt, &new_pt, true );
-                        SetRectExists( FALSE );
+                        SetRectExists( false );
                     } else {
                         OutlineRegion( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     }
@@ -360,7 +360,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                 break;
             }
 #endif
-            flbuttondown = TRUE;
+            flbuttondown = true;
             mousebutton = LMOUSEBUTTON;
         } else {
             if( flbuttondown ) {
@@ -370,10 +370,10 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             if( hwnd != node->hwnd ) {
                 break;
             }
-            frbuttondown = TRUE;
+            frbuttondown = true;
             mousebutton = RMOUSEBUTTON;
         }
-        fdraw_shape = TRUE;
+        fdraw_shape = true;
         WPI_MAKEPOINT( wparam, lparam, start_pt );
         WPI_MAKEPOINT( wparam, lparam, new_pt );
 
@@ -382,9 +382,9 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 #ifndef __OS2_PM__
             TransferImage( hwnd );
 #endif
-            fdraw_shape = FALSE;
-            flbuttondown = FALSE;
-            frbuttondown = FALSE;
+            fdraw_shape = false;
+            flbuttondown = false;
+            frbuttondown = false;
             break;
 
         case IMGED_FREEHAND:
@@ -418,7 +418,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             break;
 
         case IMGED_HOTSPOT:
-            SetIsSaved( hwnd, FALSE );
+            SetIsSaved( hwnd, false );
             prev_pt.x = start_pt.x / pointsize.x;
             prev_pt.y = start_pt.y / pointsize.y;
             SetNewHotSpot( &prev_pt );
@@ -445,8 +445,8 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             switch( toolType ) {
             case IMGED_PASTE:
                 PasteImage( &start_pt, pointsize, hwnd );
-                flbuttondown = FALSE;
-                frbuttondown = FALSE;
+                flbuttondown = false;
+                frbuttondown = false;
                 break;
 
             case IMGED_FREEHAND:
@@ -477,11 +477,11 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             default:
                 break;
             }
-            fdraw_shape = FALSE;
+            fdraw_shape = false;
         }
         ReleaseCapture();
-        flbuttondown = FALSE;
-        frbuttondown = FALSE;
+        flbuttondown = false;
+        frbuttondown = false;
         prev_pt = new_pt;
         return( 0 );
 
@@ -525,7 +525,7 @@ int SetToolType( int toolid )
         node = GetCurrentNode();
         if( node != NULL ) {
             RedrawPrevClip( node->hwnd );
-            SetRectExists( FALSE );
+            SetRectExists( false );
         }
     }
 

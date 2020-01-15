@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,11 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
 
 _WCRTLINK long __lseek( int handle, long offset, int origin )
 {
-    long            pos;
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    uint_32             pos;
+#else
+    unsigned long       pos;
+#endif
 
     __handle_check( handle, -1 );
 
@@ -146,7 +150,7 @@ _WCRTLINK long __lseek( int handle, long offset, int origin )
     {
         APIRET          rc;
 
-        rc = DosChgFilePtr( handle, offset, origin, (PULONG)&pos );
+        rc = DosChgFilePtr( handle, offset, origin, &pos );
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }
@@ -160,7 +164,7 @@ _WCRTLINK long __lseek( int handle, long offset, int origin )
     {
         tiny_ret_t      rc;
 
-        rc = TinyLSeek( handle, offset, origin, (u32_stk_ptr)&pos );
+        rc = TinyLSeek( handle, offset, origin, &pos );
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos( TINY_INFO( rc ) ) );
         }

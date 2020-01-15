@@ -74,15 +74,8 @@
 #include "fileacc.h"
 #include "trdlstac.h"
 #include "maxthrds.h"
-
 #if defined( __UNIX__ )
-
-  #include "semapsx.h"
-  #if defined( __LINUX__ )
-    void *__LinuxGetThreadData( );
-    void  __LinuxSetThreadData( void *__data );
-  #endif
-
+    #include "semapsx.h"
 #endif
 
 

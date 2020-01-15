@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,8 +183,8 @@ static int SpecialComp( const void *p1, const void *p2 ) {
 }
 
 
-static BOOL ConvertType( char *type, int ptrcnt, int arraycnt,
-                         PBTypeInfo *ret, BOOL is_rettype )
+static bool ConvertType( char *type, int ptrcnt, int arraycnt,
+                         PBTypeInfo *ret, bool is_rettype )
 {
     SimpleConvInfo      *simple;
     FullConvInfo        *special;
@@ -194,8 +195,10 @@ static BOOL ConvertType( char *type, int ptrcnt, int arraycnt,
                      sizeof( Conversion ) / sizeof( SimpleConvInfo ),
                      sizeof( SimpleConvInfo ), SimpleComp );
     if( simple != NULL ) {
-        if( is_rettype && ptrcnt + arraycnt > 0 ) return( TRUE );
-        if( ptrcnt + arraycnt > 1 ) return( TRUE );
+        if( is_rettype && ptrcnt + arraycnt > 0 )
+            return( true );
+        if( ptrcnt + arraycnt > 1 )
+            return( true );
         ret->arraycnt = arraycnt;
         if( ptrcnt > 0 ) {
             ret->modifiers = "REF ";
@@ -203,30 +206,32 @@ static BOOL ConvertType( char *type, int ptrcnt, int arraycnt,
             ret->modifiers = "";
         }
         ret->type = simple->pbtype;
-        return( FALSE );
+        return( false );
     }
     /* search special types */
     special = bsearch( type, SpecialConversion,
                      sizeof( SpecialConversion ) / sizeof( FullConvInfo ),
                      sizeof( FullConvInfo ), SpecialComp );
-    if( special == NULL ) return( TRUE );
+    if( special == NULL )
+        return( true );
     cur = special->info;
     while( cur->pbtype != NULL ) {
         if( cur->ptrcnt == ptrcnt && cur->arraycnt == arraycnt ) {
             ret->modifiers = "";
             if( is_rettype ) {
-                if( cur->pbrettype == NULL ) break;
+                if( cur->pbrettype == NULL )
+                    break;
                 ret->type = cur->pbrettype;
                 ret->arraycnt = 0;
             } else {
                 ret->type = cur->pbtype;
                 ret->arraycnt = cur->pbarraycnt;
             }
-            return( FALSE );
+            return( false );
         }
         cur++;
     }
-    return( TRUE );
+    return( true );
 }
 
 static void FreeDefInfo( PBDefInfo *info ) {
@@ -277,8 +282,9 @@ static char *fmtType( ParamInfo *info ) {
     return( ErrBuf );
 }
 
-void SemFunction( ParamInfo *finfo ) {
-    BOOL        rc;
+void SemFunction( ParamInfo *finfo )
+{
+    bool        rc;
     ParamInfo   *cur;
     PBTypeInfo  *pbtype;
     PBDefInfo   *pbdef;
@@ -297,7 +303,7 @@ void SemFunction( ParamInfo *finfo ) {
         } else {
             pbdef->type = PB_FUNCTION;
             rc = ConvertType( finfo->type->typename, finfo->ptrcnt,
-                              0, &(pbdef->rettype), TRUE );
+                              0, &(pbdef->rettype), true );
             if( rc ) {
                 type = fmtType( finfo );
                 ReportWarning( "Can't convert return type '%s' of function %s",
@@ -332,7 +338,7 @@ void SemFunction( ParamInfo *finfo ) {
                 genparmcnt++;
             }
             rc = ConvertType( cur->type->typename, cur->ptrcnt,
-                             cur->arraycnt, pbtype, FALSE );
+                             cur->arraycnt, pbtype, false );
             if( rc ) {
                 type = fmtType( cur );
                 ReportWarning( "Can't convert type of parameter %d '%s' in function %s",
@@ -365,7 +371,7 @@ void DoOutput( void ) {
     PBDefInfo   *cur;
 
     PrintPBDef( &SymbolInfo );
-    if( Config.nuo_name != NULL ) {
+    if( Config.nu_name != NULL ) {
         CreateNonVisualObj( &SymbolInfo );
     }
     while( SymbolInfo.func != NULL ) {
@@ -396,31 +402,31 @@ ModifierInfo *SemAddSpecifier( ModifierInfo *table, int tok ) {
     }
     switch( tok ) {
     case T_NEAR:
-        table->m_near = TRUE;
+        table->m_near = true;
         break;
     case T_CONST:
-        table->m_const = TRUE;
+        table->m_const = true;
         break;
     case T_FAR:
-        table->m_far = TRUE;
+        table->m_far = true;
         break;
     case T_HUGE:
-        table->m_huge = TRUE;
+        table->m_huge = true;
         break;
     case T_CDECL:
-        table->m_cdecl = TRUE;
+        table->m_cdecl = true;
         break;
     case T_PASCAL:
-        table->m_pascal = TRUE;
+        table->m_pascal = true;
         break;
     case T_FORTRAN:
-        table->m_fortran = TRUE;
+        table->m_fortran = true;
         break;
     case T_SYSCALL:
-        table->m_syscall = TRUE;
+        table->m_syscall = true;
         break;
     case T_EXPORT:
-        table->m_export = TRUE;
+        table->m_export = true;
         break;
     }
     return( table );

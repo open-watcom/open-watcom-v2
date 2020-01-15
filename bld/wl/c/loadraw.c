@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,8 +81,8 @@ static bool WriteBinSegGroup( group_entry *group )
                 repos = true;
             }
             DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
-            file_loc += WriteDOSGroupLoad( group, repos );
+                &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
+            file_loc += WriteGroupLoad( group, repos );
             if( file_loc > finfo->file_loc ) {
                 finfo->file_loc = file_loc;
             }
@@ -120,7 +121,7 @@ void BinOutput( void )
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }
-                WriteGroupLoad( group );
+                WriteGroupLoad( group, false );
             }
         }
     } else {
@@ -351,7 +352,7 @@ void HexOutput( void )
 #ifdef _INT_DEBUG
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+                    &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
 #endif
                 if( group->leaders->class->flags & CLASS_COPY ) {
                     Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.offs );
@@ -377,7 +378,7 @@ void HexOutput( void )
 #ifdef _INT_DEBUG
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+                    &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
 #endif
                 info.lastgrp = NULL;
                 RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info);
@@ -389,7 +390,7 @@ void HexOutput( void )
 #ifdef _INT_DEBUG
                     finfo = sect->outfile;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                        &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+                        &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
 #endif
                     Ring2Lookup( group->leaders, DoHexLeader, &info.offs );
                 }
@@ -416,7 +417,7 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
     file_loc = PosLoad();
     info.offs = GROUP_SECTION_DELTA( group );
     // If group is a copy group, substitute source group(s) here
-    if( class->flags & CLASS_COPY  ) {
+    if( class->flags & CLASS_COPY ) {
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info );
     } else {
@@ -425,8 +426,8 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
     return( PosLoad() - file_loc );
 }
 
-extern void FiniRawLoadFile( void )
-/*************************************/
+void FiniRawLoadFile( void )
+/**************************/
 {
     group_entry     *group;
     outfilelist     *fnode;
@@ -463,7 +464,7 @@ extern void FiniRawLoadFile( void )
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }
-                file_loc += WriteGroupLoad( group );
+                file_loc += WriteGroupLoad( group, false );
             }
             if( file_loc > finfo->file_loc ) {
                 finfo->file_loc = file_loc;

@@ -170,8 +170,13 @@ extern BOOL     __lib_SetFileAttributesW( LPCWSTR lpFileName,
 #define __lib_CreateDirectoryA                  CreateDirectoryA
 #define __lib_CreateFileA                       CreateFileA
 #define __lib_DeleteFileA                       DeleteFileA
+#if defined(__AXP__) || defined(__PPC__)
+#define __lib_FindFirstFileA                    FindFirstFileA
+#define __lib_FindNextFileA                     FindNextFileA
+#else
 #define __lib_FindFirstFileA                    __fixed_FindFirstFileA
 #define __lib_FindNextFileA                     __fixed_FindNextFileA
+#endif
 #define __lib_GetCurrentDirectoryA              GetCurrentDirectoryA
 #define __lib_GetDriveTypeA                     GetDriveTypeA
 #define __lib_GetFileAttributesA                __fixed_GetFileAttributesA

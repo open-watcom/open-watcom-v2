@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,9 @@
 #include "tinyio.h"
 #include "getcsip.h"
 #include "jdlg.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /* Local Window callback functions prototypes */
@@ -325,17 +328,14 @@ void DoDump( HWND hwnd )
  */
 INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        ret;
 
     ret = false;
     switch( msg ) {
     case WM_INITDIALOG:
-        _splitpath( DTModuleEntry.szExePath, drive, dir, fname, ext );
-        _makepath( dumpFile, drive, dir, fname, ".dmp" );
+        _splitpath2( DTModuleEntry.szExePath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( dumpFile, pg.drive, pg.dir, pg.fname, "dmp" );
         strlwr( dumpFile );
 #if 0
         SetCourierFont( hwnd, DUMP_FILE_NAME );
@@ -378,7 +378,7 @@ INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
             DoDump( hwnd );
             if( invokeDebugger ) {
                 char str[256];
-                sprintf( str, "wvideo /tr=pmd.dll %s", dumpFile );
+                sprintf( str, "wdw /tr=pmd.dll %s", dumpFile );
                 WinExec( str, SW_SHOWNORMAL );
             }
             EndDialog( hwnd, 0 );

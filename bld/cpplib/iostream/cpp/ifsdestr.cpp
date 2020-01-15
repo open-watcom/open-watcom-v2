@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,7 @@
 #endif
 
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
+#pragma disable_message( 656 )
 
 namespace std {
 

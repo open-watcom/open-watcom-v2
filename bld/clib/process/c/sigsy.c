@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  DOS Ctrl-Break, critical error and FPE hooking and handling.
+* Description:  Ctrl-Break, critical error and FPE hooking and handling.
+*                   (DOS and Windows 3.x code)
 *
 ****************************************************************************/
 
@@ -272,7 +273,7 @@ void __grab_int23( void )
         if( _IsPharLap() ) {
             __old_int23 = pharlap_rm_getvect( 0x23 );
             __old_pm_int23 = pharlap_pm_getvect( 0x23 );
-            pharlap_setvect( 0x23, (pfun) (void (_WCNEAR *)(void))__int23_handler );
+            pharlap_setvect( 0x23, __int23_handler );
         } else if( __DPMI_hosted() == 1 ) {
             DPMILockLinearRegion((long)__int23_handler,
                 ((long)__int_ctrl_break_handler - (long)__int23_handler));
@@ -305,7 +306,7 @@ void __grab_int_ctrl_break( void )
         if( _IsPharLap() ) {
             __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BRK_VEC );
             __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BRK_VEC );
-            pharlap_setvect( CTRL_BRK_VEC, (pfun) (void (_WCNEAR *)(void))__int_ctrl_break_handler );
+            pharlap_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
         } else if( __DPMI_hosted() == 1 ) {
             DPMILockLinearRegion((long)__int_ctrl_break_handler,
                 ((long)__restore_int23 - (long)__int_ctrl_break_handler));

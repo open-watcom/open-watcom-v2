@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,8 @@
 #ifndef _INCLUDED_GETOPT_H
 #define _INCLUDED_GETOPT_H
 
-int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] );
+
+extern int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] );
 
 /*
  * optstr: contains a list of option characters.  If an option character
@@ -60,21 +62,5 @@ extern int      OptInd;
 extern char     *OptEnvVar; /* must be defined, specifies env var to search */
 extern char     OptChar;
 extern char     AltOptChar;
-
-enum {
-    _USAGE_ALL,
-    _USAGE_BRIEF
-};
-
-extern void     ExitWithUsage( const char *__usage[], int __type );
-#if defined( __WATCOMC__ ) && !defined( __AXP__ )
-#pragma aux ExitWithUsage __aborts
-#endif
-
-/*
- * __usage:     same as the usage parameter for GetOpt
- * __type:      _USAGE_ALL: print entire usage text
- *              _USAGE_ERROR: print just the brief line
- */
 
 #endif

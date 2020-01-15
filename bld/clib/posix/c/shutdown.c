@@ -49,8 +49,14 @@ _WCRTLINK int shutdown( int sockfd, int how )
     args[1] = (unsigned long)how;
     return( __socketcall( SYS_SHUTDOWN, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)sockfd; (void)how;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)sockfd; (void)how;
+
     return( -1 );
 #endif
 }

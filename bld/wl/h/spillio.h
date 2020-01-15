@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ typedef union {
 
 extern void             InitSpillFile( void );
 extern virt_mem_size    SpillAlloc( virt_mem_size );
-extern void             SpillNull( virt_mem_size, size_t, size_t  );
+extern void             SpillNull( virt_mem_size, size_t, size_t );
 extern void             SpillWrite( virt_mem_size, size_t, const void *, size_t );
 extern void             SpillRead( virt_mem_size, size_t, void *, size_t );
 extern void             CloseSpillFile( void );

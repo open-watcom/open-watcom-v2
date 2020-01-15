@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +53,9 @@
 #include "dllmain.h"
 #include "wresdefn.h"
 #include "reserr.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -316,10 +320,10 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 
 bool WRAPI WRSaveResource( WRInfo *info, bool backup )
 {
-    bool    ret;
-    char    *tmp;
-    char    *name;
-    char    ext[_MAX_EXT];
+    bool        ret;
+    char        *tmp;
+    char        *name;
+    PGROUP2     pg;
 
     if( info->save_name == NULL ) {
         return( false );
@@ -341,8 +345,8 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     /* if the save and file names are the same then use a tmp file */
     if( name != NULL && stricmp( name, info->save_name ) == 0 ) {
         tmp = info->save_name;
-        _splitpath( info->save_name, NULL, NULL, NULL, ext );
-        info->save_name = WRGetTempFileName( ext );
+        _splitpath2( info->save_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        info->save_name = WRGetTempFileName( pg.ext );
         if( info->save_name == NULL ) {
             info->save_name = tmp;
             return( false );
@@ -415,20 +419,20 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     bool        ret;
     char        *tsave;
     WRFileType  ttype;
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
 
     if( info == NULL || info->file_name == NULL ) {
         return( false );
     }
 
     if( info->internal_filename != NULL ) {
-        _splitpath( info->internal_filename, NULL, NULL, NULL, ext );
+        _splitpath2( info->internal_filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
     } else {
-        _splitpath( info->file_name, NULL, NULL, NULL, ext );
+        _splitpath2( info->file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
     }
 
     if( info->tmp_file == NULL ) {
-        info->tmp_file = WRGetTempFileName( ext );
+        info->tmp_file = WRGetTempFileName( pg.ext );
         if( info->tmp_file == NULL ) {
             return( false );
         }
@@ -441,7 +445,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     } else {
         info->save_type = info->file_type;
     }
-    info->save_name = WRGetTempFileName( ext );
+    info->save_name = WRGetTempFileName( pg.ext );
     if( info->save_name == NULL ) {
         info->save_name = tsave;
         info->save_type = ttype;
@@ -572,7 +576,7 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
 {
     WRInfo      *info;
     char        *tmp_file;
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     long        type;
     bool        ok;
 
@@ -587,8 +591,8 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
     }
 
     if( ok ) {
-        _splitpath( info->file_name, NULL, NULL, NULL, ext );
-        ok = ((tmp_file = WRGetTempFileName( ext )) != NULL);
+        _splitpath2( info->file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        ok = ((tmp_file = WRGetTempFileName( pg.ext )) != NULL);
     }
 
     if( ok ) {

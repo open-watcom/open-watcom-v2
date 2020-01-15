@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wic.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 static int _scanSize(char *str, SizeType *type) {
     SizeType temp = 0;
@@ -212,21 +217,20 @@ static void _scanCurrArg(char *currArg) {
     default:
         {
             char driveDir[_MAX_DRIVE+_MAX_DIR+10];
-            char drive[_MAX_DRIVE];
-            char dir[_MAX_DIR];
-            char name[_MAX_FNAME];
-            char ext[_MAX_EXT];
+            PGROUP2 pg;
             int len;
 
-            _splitpath(currArg, drive, dir, name, ext);
-            _makepath(driveDir, drive, dir, "", "");
-            len = strlen(driveDir);
-            if (len > 0) if (driveDir[len-1] == '\\') {
-                driveDir[len-1] = 0;
+            _splitpath2( currArg, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( driveDir, pg.drive, pg.dir, NULL, NULL );
+            len = strlen( driveDir );
+            if( len > 0 ) {
+                if( driveDir[len - 1] == '\\') {
+                    driveDir[len - 1] = '\0';
+                }
             }
 
-            addSLListElem(g_opt.fileNameList, wicStrdup(currArg));
-            addIncPath(driveDir, 0, 0);  // Add at the beginning
+            addSLListElem( g_opt.fileNameList, wicStrdup( currArg ) );
+            addIncPath( driveDir, 0, 0 );   // Add at the beginning
         }
     }
 }

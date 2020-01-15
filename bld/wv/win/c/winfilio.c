@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,9 +140,9 @@ size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
 unsigned long LocalSeek( sys_handle sh, unsigned long npos, seek_method method )
 {
     tiny_ret_t      ret;
-    unsigned long   pos;
+    uint_32         pos;
 
-    ret = TinyLSeek( SYSH2LH( sh ), npos, local_seek_method[method], (u32_stk_ptr)&pos );
+    ret = TinyLSeek( SYSH2LH( sh ), npos, local_seek_method[method], &pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( ERR_SEEK );

@@ -47,6 +47,7 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -110,7 +111,7 @@ static VSCREEN helpScreen = {
 };
 
 static a_gadget         vGadget = {
-    NULL,                       /* window */
+    NULL,                       /* virtual screen */
     VERTICAL,                   /* direction */
     0,                          /* anchor position */
     0,                          /* start of bar */
@@ -137,10 +138,10 @@ static a_hot_spot       hotSpots[] = {
 #define SEARCH_HOT_SPOT         2
 
 static VFIELD hotSpotFields[] = {
-    {{0}, FLD_HOT, &hotSpots[0] },
-    {{0}, FLD_HOT, &hotSpots[2] },
-    {{0}, FLD_HOT, &hotSpots[1] },
-    {{0}, FLD_VOID,NULL }
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[0] },
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[2] },
+    {{0, 0, 0, 0}, FLD_HOT, &hotSpots[1] },
+    {{0, 0, 0, 0}, FLD_NONE,NULL }
 };
 
 static ui_event keyShift[] = {
@@ -322,7 +323,7 @@ static char *scanTopic( char *buf, char **theend )
         while( *topic == ' ' )
             topic++;
         end = topic;
-        while( *end != ' ' && *end != '\n' && end != '\0' ) {
+        while( *end != ' ' && *end != '\n' && *end != '\0' ) {
             end++;
         }
     }
@@ -364,7 +365,7 @@ static void help_close( void )
 {
     help_file_info  *fileinfo;
 
-    for( fileinfo = HelpFiles; fileinfo->name != NULL; ++fileinfo ) {
+    for( fileinfo = HelpFileInfo(); fileinfo->name != NULL; ++fileinfo ) {
         if( fileinfo->fp != NULL ) {
             HelpClose( fileinfo->fp );
             FiniHelpSearch( fileinfo->searchhdl );
@@ -382,7 +383,7 @@ static help_file_info *help_open( char *buffer )
     help_file_info  *fileinfo;
     char            *newtopic;
 
-    for( fileinfo = HelpFiles; fileinfo->name != NULL; fileinfo++ ) {
+    for( fileinfo = HelpFileInfo(); fileinfo->name != NULL; fileinfo++ ) {
         if( fileinfo->fp == NULL ) {
             /* text files screw up ctrl z */
             fileinfo->fp = HelpOpen( fileinfo->name );
@@ -1092,7 +1093,7 @@ static void setupScrollBar( SAREA *use )
     vGadget.start = use->row + 1;
     vGadget.end = vGadget.start + use->height - 1;
     vGadget.anchor = helpScreen.area.width + 1;
-    vGadget.win = &helpScreen;
+    vGadget.vs = &helpScreen;
     vGadget.total_size = helpLines;
     vGadget.page_size = use->height;
     vGadget.pos = 0;
@@ -1343,13 +1344,9 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
     if( *helptopic != NULL && first ) {
         htopic = fixHelpTopic( *helptopic );
     } else if( *helptopic == NULL ) {
-        len = 1;
-        htopic = HelpMemAlloc( len );
-        htopic[0] = '\0';
+        htopic = HelpDupStr( "" );
     } else {
-        len = strlen( *helptopic );
-        htopic = HelpMemAlloc( len + 1 );
-        strcpy( htopic, *helptopic );
+        htopic = HelpDupStr( *helptopic );
     }
     nexttopic( htopic );
     for( ;; ) {
@@ -1397,15 +1394,17 @@ static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_ev
 
 int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang )
 {
-    bool        first;
-    int         err;
-    char        filename[_MAX_PATH];
-    const char  *hfiles[] = { NULL, NULL };
-    char        ext[_MAX_EXT];
-    char        *buffer;
-    char        *helptopic;
+    bool            first;
+    int             err;
+    char            filename[_MAX_PATH];
+    const char      *hfiles[] = { NULL, NULL };
+    PGROUP2         pg;
+    char            *buffer;
+    char            *helptopic;
+    help_file_info  *fileinfo;
 
-    if( HelpFiles[0].name == NULL ) {
+    fileinfo = HelpFileInfo();
+    if( fileinfo->name == NULL ) {
         return( HELP_NO_FILE );
     }
     switch( lang ) {
@@ -1428,16 +1427,10 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     tabFilter.first = helpTab;
     tabFilter.wrap = false;
     tabFilter.enter = false;
-    _splitpath( HelpFiles[0].name, NULL, NULL, filename, ext );
-    strcat( filename, ext );
+    _splitpath2( fileinfo->name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+    _makepath( filename, NULL, NULL, pg.fname, pg.ext );
     hfiles[0] = filename;
-    if( topic != NULL ) {
-        size_t len = strlen( topic ) + 1;
-        helptopic = HelpMemAlloc( len );
-        memcpy( helptopic, topic, len );
-    } else {
-        helptopic = NULL;
-    }
+    helptopic = HelpDupStr( topic );
     err = HELP_OK;
     first = true;
     while( helptopic != NULL || first ) {
@@ -1452,8 +1445,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
             ShowMsgBox( "Error", buffer );
             HelpMemFree( buffer );
             HelpMemFree( helptopic );
-            helptopic = HelpMemAlloc( strlen( helpStack->word ) + 1 );
-            strcpy( helptopic, helpStack->word );
+            helptopic = HelpDupStr( helpStack->word );
             strcpy( filename, helpStack->helpfname );
             prevtopic();
         }
@@ -1462,4 +1454,20 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     if( helptopic != NULL )
         HelpMemFree( helptopic );
     return( err );
+}
+
+char *HelpDupStr( const char *str )
+{
+    size_t  len;
+    char    *ptr;
+
+    ptr = NULL;
+    if( str != NULL ) {
+        len = strlen( str ) + 1;
+        ptr = HelpMemAlloc( len );
+        if( ptr != NULL ) {
+            strcpy( ptr, str );
+        }
+    }
+    return( ptr );
 }

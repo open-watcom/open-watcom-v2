@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,10 @@
 #include <string.h>
 #include "wdglb.h"
 #include "wdfunc.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
+
 
 #define PE_RVA(t) \
     (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).table[t].rva : PE32( Pe_head ).table[t].rva )
@@ -66,14 +69,11 @@ static  const_string_table pe_import_msg[] = {
     NULL
 };
 
-extern char  Fname[ _MAX_FNAME ];
-
 /*
  * Dump the Export address Table.
  */
-static void dmp_exp_addr( unsigned_32 offset, unsigned_32 num_ent,
-                          unsigned_32 base )
-/****************************************************************/
+static void dmp_exp_addr( unsigned_32 offset, unsigned_32 num_ent, unsigned_32 base )
+/***********************************************************************************/
 {
     unsigned_32     *address;
     unsigned_32     addr_size;
@@ -102,9 +102,8 @@ static void dmp_exp_addr( unsigned_32 offset, unsigned_32 num_ent,
 /*
  * Dump the Export Name and Ordinal Tables.
  */
-static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
-                       unsigned_32 num_ptr, unsigned_32 base )
-/*********************************************************************/
+static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned_32 num_ptr, unsigned_32 base )
+/*************************************************************************************************************/
 {
     unsigned_16     *ord_addr;
     unsigned_32     *nam_addr;
@@ -266,16 +265,18 @@ static void dmp_imp_lookup( unsigned_32 offset )
 /*
  * Dump the Export Name and Ordinal Tables.
  */
-static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
-                   unsigned_32 num_ptr, unsigned_32 base )
-/*****************************************************************/
+static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned_32 num_ptr, unsigned_32 base )
+/*********************************************************************************************************/
 {
     unsigned_16     *ord_addr;
     unsigned_32     *nam_addr;
     unsigned_32     addr_size;
     size_t          i;
     unsigned_32     export_rva;
+    PGROUP2         pg;
 
+    _splitpath2( Name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    strupr( pg.fname );
     Wlseek( nam_off );
     addr_size = num_ptr * sizeof( unsigned_32 );
     nam_addr = Wmalloc( addr_size );
@@ -290,7 +291,7 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
         Dump_asciiz( nam_addr[i] - export_rva + Exp_off );
         Wdputc( '.' );
         Wdputc( '\'' );
-        Wdputs( Fname );
+        Wdputs( pg.fname );
         Wdputs( ".DLL\'." );
         Putdec( ord_addr[i] + base );
         Wdputslc( "\n" );
@@ -308,7 +309,6 @@ void Dmp_exp_tab( void )
     pe_export_directory     pe_export;
     unsigned_32             export_rva;
 
-    strupr( Fname );
     Wlseek( Exp_off );
     Wread( &pe_export, sizeof( pe_export_directory ) );
     export_rva = PE_RVA( PE_TBL_EXPORT );

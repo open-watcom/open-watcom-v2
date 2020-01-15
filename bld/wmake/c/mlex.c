@@ -111,6 +111,7 @@ void LexMaybeFree( MTOKEN_T tok )
     case MAC_PUNC:
     case MAC_TEXT:
         FreeSafe( CurAttr.u.ptr );
+        CurAttr.u.ptr = NULL;
         break;
     default:
         break;

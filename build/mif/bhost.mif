@@ -20,32 +20,30 @@ bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
 blib            = $(noecho)$(blibrarian_$(bld_cpu)) -q
-bcc             = $(bcc_$(bld_cpu)) -zq
-bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
-bas             = $(bas_$(bld_cpu)) -q
+bcc             = $(bcc_$(bld_cpu)) -zq $(bldver_cppflags)
+bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq $(bldver_cppflags)
+bas             = $(bas_$(bld_cpu)) -q $(bldver_cppflags)
 blink           = *wlink op q
 
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags    = $(build_cppflags)
-
-bld_gen_cflags  = -za99-w8-j-fo=.obj
-!ifeq release 0
-bld_gen_cflags  += -d2
-!else
-bld_gen_cflags  += -ox
-!endif
 !ifdef bldnewowtools
-bld_gen_cflags  += -xx-zam
+bld_new_cflags  = -xx-zam
+!endif
+
+!ifeq release 0
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-d2$(bld_new_cflags)-fo=.obj
+!else
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations
 bld_cflags      = $(bld_gen_cflags)
 
 # options for single source utility compilations
-bld_clflags     = $(bld_cppflags) $(bld_gen_cflags) -fe=$^@
+bld_clflags     = $(bld_gen_cflags) -fe=$^@
 
 # options for linking
 bld_ldflags     =
@@ -57,7 +55,7 @@ bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
 awk             = $(noecho)*awk
-cpp             = $(noecho)*wcpp
+cpp             = $(noecho)*wcpp $(bldver_cppflags)
 cwc             = bcwc
 edbind          = $(noecho)bedbind
 ide2make        = bide2mak
@@ -68,6 +66,7 @@ wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
 yacc            = $(noecho)yacc
+tr              = $(noecho)tr
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
@@ -154,4 +153,4 @@ bind_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc) -k $^&.res $^@
+    $(rc_bnd) $^&.res $^@

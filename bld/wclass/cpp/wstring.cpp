@@ -313,8 +313,10 @@ bool WEXPORT WString::match( const char* mask ) const
 {
     bool ok = false;
     const char* value = (const char *)_value;
-    if( mask == NULL ) mask = "";
-    if( value == NULL ) value = "";
+    if( mask == NULL )
+        mask = "";
+    if( value == NULL )
+        value = "";
     int     i = 0;
     int     j = 0;
     for( ;; ) {
@@ -382,9 +384,13 @@ size_t WEXPORT WString::trim( bool beg, bool end )
             size_t len = strlen( _value );
             size_t i;
             for( i=0; i<len; i++ ) {
-                if( _value[i] != ' ' ) break;
+                if( _value[i] != ' ' ) {
+                    break;
+                }
             }
-            if( i ) chop( i );
+            if( i ) {
+                chop( i );
+            }
         }
     }
     if( end ) {
@@ -392,9 +398,13 @@ size_t WEXPORT WString::trim( bool beg, bool end )
             size_t len = strlen( _value );
             size_t i;
             for( i=len; i>0; i-- ) {
-                if( _value[i - 1] != ' ' ) break;
+                if( _value[i - 1] != ' ' ) {
+                    break;
+                }
             }
-            if( i-len ) chop( i-len );
+            if( i-len ) {
+                chop( i-len );
+            }
         }
     }
     return( size() );

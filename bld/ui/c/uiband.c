@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,37 +40,37 @@ static SAREA            BandArea;
 static ATTR             Attr;
 
 
-static void drawband( SAREA area, void *dummy )
+static void drawband_update_fn( SAREA area, void *dummy )
 {
     /* unused parameters */ (void)area; (void)dummy;
 
     drawbox( &UIData->screen, BandArea, SBOX_CHARS(), Attr, false );
 }
 
-void UIAPI uibandinit( SAREA start, ATTR attr )
+void UIAPI uibandinit( SAREA area, ATTR attr )
 {
     Attr = attr;
-    start.width++;
-    start.height++;
-    BandArea = start;
-    start.width = 0;
-    start.height = 0;
-    BandWnd.area = start;
+    area.width++;
+    area.height++;
+    BandArea = area;
+    area.width = 0;
+    area.height = 0;
+    BandWnd.area = area;
     BandWnd.priority = P_UNBUFFERED;
-    BandWnd.update_proc = drawband;
-    BandWnd.parm = NULL;
+    BandWnd.update_func = drawband_update_fn;
+    BandWnd.update_parm = NULL;
     openwindow( &BandWnd );
     BandWnd.dirty_area = BandArea;
 }
 
 
-void UIAPI uibandmove( SAREA new )
+void UIAPI uibandmove( SAREA area )
 {
-    new.width++;
-    new.height++;
+    area.width++;
+    area.height++;
     uidirty( BandArea );
-    BandArea = new;
-    uidirty( new );
+    BandArea = area;
+    uidirty( area );
     BandWnd.dirty_area = BandArea;
 }
 
@@ -78,5 +79,5 @@ void UIAPI uibandfini( void )
 {
     uidirty( BandArea );
     closewindow( &BandWnd );
-    BandWnd.update_proc = NULL;
+    BandWnd.update_func = NULL;
 }

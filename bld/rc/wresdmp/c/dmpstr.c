@@ -35,6 +35,7 @@
 #include "types.h"
 #include "dmpstr.h"
 #include "rcrtns.h"
+#include "trmemcvr.h"
 
 #include "clibext.h"
 

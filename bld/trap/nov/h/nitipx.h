@@ -41,223 +41,233 @@
     #endif
 #endif
 
-#ifdef __WINDOWS__
-#define ESRFUNC __export __far __pascal
-#else
-#define ESRFUNC
-#endif
-
 typedef struct NetworkAddress
 {
-    BYTE        a[4];           /* high-low */
+    BYTE            a[4];                       /* high-low */
 } NetworkAddress;
 
 typedef struct NodeAddress
 {
-    BYTE        a[6];           /* high-low */
+    BYTE            a[6];                       /* high-low */
 } NodeAddress;
 
 typedef struct IPXAddress
 {
-        NetworkAddress  network;
-        NodeAddress     node;
-        WORD            socket; /* high-low */
+    NetworkAddress  network;
+    NodeAddress     node;
+    WORD            socket;                     /* high-low */
 } IPXAddress;
 
 #define _IPXFIELDS \
-        WORD            checkSum;                       /* high-low */ \
-        WORD            length;                         /* high-low */ \
-        BYTE            transportControl; \
-        BYTE            packetType; \
-        IPXAddress      destination; \
-        IPXAddress      source
-
+    WORD            checkSum;                   /* high-low */ \
+    WORD            length;                     /* high-low */ \
+    BYTE            transportControl; \
+    BYTE            packetType; \
+    IPXAddress      destination; \
+    IPXAddress      source
 
 typedef struct IPXHeader
 {
-        _IPXFIELDS;
+    _IPXFIELDS;
 } IPXHeader;
 
 typedef struct SPXHeader
 {
-        _IPXFIELDS;
-        BYTE            connectControl;
-        BYTE            dataStreamType;
-        WORD            sourceConnectID;
-        WORD            destConnectID;
-        WORD            sequenceNumber;
-        WORD            acknowledgeNumber;
-        WORD            allocationNumber;
+    _IPXFIELDS;
+    BYTE            connectControl;
+    BYTE            dataStreamType;
+    WORD            sourceConnectID;
+    WORD            destConnectID;
+    WORD            sequenceNumber;
+    WORD            acknowledgeNumber;
+    WORD            allocationNumber;
 } SPXHeader;
 
 #define MAX_NAME_LEN    47
 
-typedef struct SIP {            /* Service Identification Packet */
-        _IPXFIELDS;
-        WORD                infoType;               /* high-low */
-        WORD                serverType;             /* high-low */
-        char                name[MAX_NAME_LEN+1];
-        IPXAddress          address;
-        WORD                intermediateNetworks;   /* high-low */
+typedef struct SIP {        /* Service Identification Packet */
+    _IPXFIELDS;
+    WORD            infoType;                   /* high-low */
+    WORD            serverType;                 /* high-low */
+    char            name[MAX_NAME_LEN+1];
+    IPXAddress      address;
+    WORD            intermediateNetworks;       /* high-low */
 } SIP;
 
 typedef struct ECBFragment {
-        void    __far *address;
-        WORD    size;                   /* low-high */
+    void            __far *address;
+    WORD            size;                       /* low-high */
 } ECBFragment;
-
 
 typedef struct ECB
 {
-        void            __far *linkAddress;
-        void            (__far *ESRAddress)();
-        BYTE            volatile inUseFlag;
-        BYTE            completionCode;
-        WORD            socketNumber;           /* high-low */
-        WORD            SPXConnectionID;
-        WORD            IPXWorkspace;
-        BYTE            xxx_driverWorkspace[12];    /* N/A */
-        NodeAddress     immediateAddress;
-        WORD            fragmentCount;          /* low-high */
-        ECBFragment     fragmentDescriptor[2];
+    void            __far *linkAddress;
+    void            (__far *ESRAddress)();
+    BYTE            volatile inUseFlag;
+    BYTE            completionCode;
+    WORD            socketNumber;               /* high-low */
+    WORD            SPXConnectionID;
+    WORD            IPXWorkspace;
+    BYTE            xxx_driverWorkspace[12];    /* N/A */
+    NodeAddress     immediateAddress;
+    WORD            fragmentCount;              /* low-high */
+    ECBFragment     fragmentDescriptor[2];
 } ECB;
 
 typedef struct {
-        BYTE            connectionStatus;
-        BYTE            connectionFlags;
+    BYTE            connectionStatus;
+    BYTE            connectionFlags;
 
-        WORD            sourceConnectionID;
-        WORD            destinationConnectionID;
-        WORD            sequenceNumber;
-        WORD            acknowledgeNumber;
-        WORD            allocationNumber;
+    WORD            sourceConnectionID;
+    WORD            destinationConnectionID;
+    WORD            sequenceNumber;
+    WORD            acknowledgeNumber;
+    WORD            allocationNumber;
 
-        WORD            remoteAcknowledgeNumber;
-        WORD            remoteAllocationNumber;
-        WORD            connectionSocket;
+    WORD            remoteAcknowledgeNumber;
+    WORD            remoteAllocationNumber;
+    WORD            connectionSocket;
 
-        NodeAddress     immediateAddress;
-        IPXAddress      destination;
+    NodeAddress     immediateAddress;
+    IPXAddress      destination;
 
-        WORD            retransCount;
-        WORD            roundtripDelay;
-        WORD            retransmittedPacktes;
-        WORD            supressedPackets;
+    WORD            retransCount;
+    WORD            roundtripDelay;
+    WORD            retransmittedPacktes;
+    WORD            supressedPackets;
 } CSB; // connection status block
 
-extern int  _IPXCancelEvent(ECB *);
-extern void _IPXCloseSocket(WORD);
-extern void _IPXDisconnectFromTarget(BYTE *);
-extern void _IPXGetInternetworkAddress(BYTE *);
-extern WORD _IPXGetIntervalMarker(void);
-extern int  _IPXGetLocalTarget(BYTE *, BYTE *, WORD *);
-extern int  _IPXInitialize(void);
-extern void _IPXListenForPacket(ECB *);
-extern int  _IPXOpenSocket(WORD *, BYTE);
-extern void _IPXRelinquishControl(void);
-extern void _IPXScheduleIPXEvent(WORD, ECB *);
-extern void _IPXSendPacket(ECB *);
+#define IPX_ALL_FUNCS \
+    IPX_pick( IPXInitialize ) \
+    IPX_pick( IPXSPXDeinit ) \
+    IPX_pick( IPXCancelEvent ) \
+    IPX_pick( IPXCloseSocket ) \
+    IPX_pick( IPXDisconnectFromTarget ) \
+    IPX_pick( IPXGetInternetworkAddress ) \
+    IPX_pick( IPXGetIntervalMarker ) \
+    IPX_pick( IPXGetLocalTarget ) \
+    IPX_pick( IPXListenForPacket ) \
+    IPX_pick( IPXOpenSocket ) \
+    IPX_pick( IPXRelinquishControl ) \
+    IPX_pick( IPXScheduleIPXEvent ) \
+    IPX_pick( IPXSendPacket ) \
+    IPX_pick( SPXAbortConnection ) \
+    IPX_pick( SPXEstablishConnection ) \
+    IPX_pick( SPXInitialize ) \
+    IPX_pick( SPXListenForConnection ) \
+    IPX_pick( SPXListenForSequencedPacket ) \
+    IPX_pick( SPXSendSequencedPacket ) \
+    IPX_pick( SPXTerminateConnection ) \
+    IPX_pick( SPXGetConnectionStatus )
 
-extern int _SPXEstablishConnection(BYTE,BYTE,WORD*,ECB*);
-extern int _SPXListenForConnection(BYTE,BYTE,ECB*);
-extern void _SPXListenForSequencedPacket(ECB*);
-extern void _SPXSendSequencedPacket(WORD,ECB*);
-extern void _SPXTerminateConnection(WORD,ECB*);
-extern void _SPXAbortConnection(WORD);
-extern int _SPXGetConnectionStatus(WORD,CSB*);
+#ifdef __WINDOWS__
+
+typedef int  WINAPI NWReadPropertyValue_fnw(unsigned,const char __far *,WORD,const char __far *,BYTE,BYTE __far *,BYTE __far *,BYTE __far *);
+
+typedef void WINAPI IPXSPXDeinit_fnw(DWORD);
+typedef int  WINAPI SPXInitialize_fnw(DWORD __far *,WORD,WORD,BYTE __far *,BYTE __far *,WORD __far *,WORD __far *);
+
+typedef int  WINAPI IPXCancelEvent_fnw(DWORD,ECB __far *);
+typedef void WINAPI IPXCloseSocket_fnw(DWORD,WORD);
+typedef void WINAPI IPXDisconnectFromTarget_fnw(DWORD,BYTE __far *);
+typedef void WINAPI IPXGetInternetworkAddress_fnw(DWORD,BYTE __far *);
+typedef WORD WINAPI IPXGetIntervalMarker_fnw(DWORD);
+typedef int  WINAPI IPXGetLocalTarget_fnw(DWORD,BYTE __far *,BYTE __far *,WORD __far *);
+typedef int  WINAPI IPXInitialize_fnw(DWORD __far *,WORD,WORD);
+typedef void WINAPI IPXListenForPacket_fnw(DWORD,ECB __far *);
+typedef int  WINAPI IPXOpenSocket_fnw(DWORD,WORD __far *,BYTE);
+typedef void WINAPI IPXRelinquishControl_fnw(void);
+typedef void WINAPI IPXScheduleIPXEvent_fnw(DWORD,WORD,ECB __far *);
+typedef void WINAPI IPXSendPacket_fnw(DWORD,ECB __far *);
+typedef int  WINAPI SPXEstablishConnection_fnw(DWORD,BYTE,BYTE,WORD __far *,ECB __far *);
+typedef int  WINAPI SPXListenForConnection_fnw(DWORD,BYTE,BYTE,ECB __far *);
+typedef void WINAPI SPXListenForSequencedPacket_fnw(DWORD,ECB __far *);
+typedef void WINAPI SPXSendSequencedPacket_fnw(DWORD,WORD,ECB __far *);
+typedef void WINAPI SPXTerminateConnection_fnw(DWORD,WORD,ECB __far *);
+typedef void WINAPI SPXAbortConnection_fnw(WORD);
+typedef int  WINAPI SPXGetConnectionStatus_fnw(DWORD,WORD,CSB __far *);
+
+#define IPX_pick(f) FN_##f,
+enum {
+    FN_NWReadPropertyValue,
+    IPX_ALL_FUNCS
+    IPX_MAX_FUNCS
+};
+#undef IPX_pick
+
+#define IPX_FUNC(f) ((f##_fnw *)(IPXFuncs[FN_##f]))
+
+#define NWReadPropertyValue( a,b,c,d,e,f,g,h )  IPX_FUNC( NWReadPropertyValue )( a, b, c, d, e, f, g, h )
+#define IPXInitialize( a,b,c )                  IPX_FUNC( IPXInitialize )( a, b, c )
+#define IPXSPXDeinit()                          IPX_FUNC( IPXSPXDeinit )( IPXTaskID )
+#define _IPXCancelEvent(a)                      IPX_FUNC( IPXCancelEvent )( IPXTaskID, a )
+#define _IPXCloseSocket(a)                      IPX_FUNC( IPXCloseSocket )( IPXTaskID, a )
+#define _IPXDisconnectFromTarget(a)             IPX_FUNC( IPXDisconnectFromTarget )( IPXTaskID, a )
+#define _IPXGetInternetworkAddress(a)           IPX_FUNC( IPXGetInternetworkAddress )( IPXTaskID, a )
+#define _IPXGetIntervalMarker()                 IPX_FUNC( IPXGetIntervalMarker )( IPXTaskID )
+#define _IPXGetLocalTarget(a,b,c)               IPX_FUNC( IPXGetLocalTarget )( IPXTaskID, a, b, c )
+#define _IPXListenForPacket(a)                  IPX_FUNC( IPXListenForPacket )( IPXTaskID, a )
+#define _IPXOpenSocket(a,b)                     IPX_FUNC( IPXOpenSocket )( IPXTaskID, a, b )
+#define _IPXRelinquishControl()                 IPX_FUNC( IPXRelinquishControl )()
+#define _IPXScheduleIPXEvent(a,b)               IPX_FUNC( IPXScheduleIPXEvent )( IPXTaskID, a, b )
+#define _IPXSendPacket(a)                       IPX_FUNC( IPXSendPacket )( IPXTaskID, a )
+#define _SPXInitialize(a,b,c,d,e,f)             IPX_FUNC( SPXInitialize )( &IPXTaskID, a, b, c, d, e, f )
+#define _SPXEstablishConnection(a,b,c,d)        IPX_FUNC( SPXEstablishConnection )( IPXTaskID, a, b, c, d )
+#define _SPXListenForConnection(a,b,c)          IPX_FUNC( SPXListenForConnection )( IPXTaskID, a, b, c )
+#define _SPXListenForSequencedPacket(a)         IPX_FUNC( SPXListenForSequencedPacket )( IPXTaskID, a )
+#define _SPXSendSequencedPacket(a,b)            IPX_FUNC( SPXSendSequencedPacket )( IPXTaskID, a, b )
+#define _SPXTerminateConnection(a,b)            IPX_FUNC( SPXTerminateConnection )( IPXTaskID, a, b )
+#define _SPXAbortConnection(a)                  IPX_FUNC( SPXAbortConnection )( a )
+#define _SPXGetConnectionStatus(a,b)            IPX_FUNC( SPXGetConnectionStatus )( IPXTaskID, a, b )
+
+#else
+
+typedef void    IPXSPXDeinit_fn(void);
+typedef int     SPXInitialize_fn(BYTE*,BYTE*,WORD*,WORD*);
+
+typedef int     IPXCancelEvent_fn(ECB *);
+typedef void    IPXCloseSocket_fn(WORD);
+typedef void    IPXDisconnectFromTarget_fn(BYTE *);
+typedef void    IPXGetInternetworkAddress_fn(BYTE *);
+typedef WORD    IPXGetIntervalMarker_fn(void);
+typedef int     IPXGetLocalTarget_fn(BYTE *, BYTE *, WORD *);
+typedef int     IPXInitialize_fn(void);
+typedef void    IPXListenForPacket_fn(ECB *);
+typedef int     IPXOpenSocket_fn(WORD *, BYTE);
+typedef void    IPXRelinquishControl_fn(void);
+typedef void    IPXScheduleIPXEvent_fn(WORD, ECB *);
+typedef void    IPXSendPacket_fn(ECB *);
+typedef int     SPXEstablishConnection_fn(BYTE,BYTE,WORD*,ECB*);
+typedef int     SPXListenForConnection_fn(BYTE,BYTE,ECB*);
+typedef void    SPXListenForSequencedPacket_fn(ECB*);
+typedef void    SPXSendSequencedPacket_fn(WORD,ECB*);
+typedef void    SPXTerminateConnection_fn(WORD,ECB*);
+typedef void    SPXAbortConnection_fn(WORD);
+typedef int     SPXGetConnectionStatus_fn(WORD,CSB*);
+
+#define IPX_pick(f) extern f##_fn _##f;
+    IPX_ALL_FUNCS
+#undef IPX_pick
+
+#define IPXSPXDeinit()
+extern SPXInitialize_fn SPXInitialize;
+#define _SPXInitialize(a,b,c,d,e,f) SPXInitialize(c,d,e,f)
+
+extern void __far SAPWaitESR( void );
+extern void __far SAPBroadESR( void );
+extern void __far ServRespESR( void );
+
+#endif
+
+#ifdef __WINDOWS__
+    extern HANDLE       Instance;
+    #define _ESR( r1 )  (void __far *)MakeProcInstance( (FARPROC)(r1), Instance )
+    #define ESRFUNC     __export WINAPI
+#else
+    #define _ESR( r1 )  &(r1##ESR)
+    #define ESRFUNC
+#endif
 
 extern void ESRFUNC SAPWait( void );
 extern void ESRFUNC SAPBroad( void );
 extern void ESRFUNC ServResp( void );
-
-#ifndef __WINDOWS__
-    #define IPXSPXDeinit()
-    extern BYTE SPXInitialize(BYTE*,BYTE*,WORD*,WORD*);
-    #define _SPXInitialize(a,b,c,d,e,f) \
-                    SPXInitialize(c,d,e,f)
-    extern void __far SAPWaitESR( void );
-    extern void __far SAPBroadESR( void );
-    extern void __far ServRespESR( void );
-#else
-
-    extern void __far __pascal SAPWaitESR( void );
-    extern void __far __pascal SAPBroadESR( void );
-    extern void __far __pascal ServRespESR( void );
-
-
-enum {
-    NWReadPropertyValue,
-    IPXInitialize,
-    IPXSPXDeinit,
-    IPXCancelEvent,
-    IPXCloseSocket,
-    IPXDisconnectFromTarget,
-    IPXGetInternetworkAddress,
-    IPXGetIntervalMarker,
-    IPXGetLocalTarget,
-    IPXListenForPacket,
-    IPXOpenSocket,
-    IPXRelinquishControl,
-    IPXScheduleIPXEvent,
-    IPXSendPacket,
-    SPXAbortConnection,
-    SPXEstablishConnection,
-    SPXInitialize,
-    SPXListenForConnection,
-    SPXListenForSequencedPacket,
-    SPXSendSequencedPacket,
-    SPXTerminateConnection,
-    IPX_MAX_FUNCS
-};
-
-#define NWReadPropertyValue( a,b,c,d,e,f,g,h ) \
-    IPXFuncs[ NWReadPropertyValue ]( (unsigned)(a), (char*)(b), (WORD)(c), (char*)(d), \
-                                     (BYTE)(e), (BYTE*)(f), (BYTE*)(g), (BYTE*)(h) )
-#define IPXInitialize( a,b,c ) \
-    IPXFuncs[ IPXInitialize ]( a, (WORD)(b), (WORD)(c) )
-#define IPXSPXDeinit() \
-    IPXFuncs[ IPXSPXDeinit ]( (DWORD)IPXTaskID )
-#define _IPXCancelEvent(a) \
-    IPXFuncs[ IPXCancelEvent ]( (DWORD)IPXTaskID, (ECB*)(a) )
-#define _IPXCloseSocket(a) \
-    IPXFuncs[ IPXCloseSocket ]( (DWORD)IPXTaskID, (WORD)(a) )
-#define _IPXDisconnectFromTarget(a) \
-    IPXFuncs[ IPXDisconnectFromTarget ]( (DWORD)IPXTaskID, (BYTE*)(a) )
-#define _IPXGetInternetworkAddress(a) \
-    IPXFuncs[ IPXGetInternetworkAddress ]( (DWORD)IPXTaskID, (BYTE*)(a) )
-#define _IPXGetIntervalMarker() \
-    IPXFuncs[ IPXGetIntervalMarker ]( (DWORD)IPXTaskID )
-#define _IPXGetLocalTarget(a,b,c) \
-    IPXFuncs[ IPXGetLocalTarget ]( (DWORD)IPXTaskID, (BYTE*)(a), (BYTE*)(b), (WORD*)(c) )
-#define _IPXListenForPacket(a) \
-    IPXFuncs[ IPXListenForPacket ]( (DWORD)IPXTaskID, (ECB*)(a) )
-#define _IPXOpenSocket(a,b) \
-    IPXFuncs[ IPXOpenSocket ]( (DWORD)IPXTaskID, (WORD*)(a), (BYTE)(b) )
-#define _IPXRelinquishControl() \
-    IPXFuncs[ IPXRelinquishControl ]()
-#define _IPXScheduleIPXEvent(a,b) \
-    IPXFuncs[ IPXScheduleIPXEvent ]( (DWORD)IPXTaskID, (WORD)(a), (ECB*)(b) )
-#define _IPXSendPacket(a) \
-    IPXFuncs[ IPXSendPacket ]( (DWORD)IPXTaskID, (ECB*)(a) )
-#define _SPXInitialize(a,b,c,d,e,f) \
-    IPXFuncs[ SPXInitialize ]( (DWORD*)&IPXTaskID, (WORD)(a), (WORD)(b), (BYTE*)(c), (BYTE*)(d), (WORD*)(e), (WORD*)(f) )
-#define _SPXEstablishConnection(a,b,c,d) \
-    IPXFuncs[ SPXEstablishConnection ]( (DWORD)IPXTaskID, (BYTE)(a), (BYTE)(b), (WORD*)(c), (ECB*)(d) )
-#define _SPXListenForConnection(a,b,c) \
-    IPXFuncs[ SPXListenForConnection ]( (DWORD)IPXTaskID, (BYTE)(a), (BYTE)(b), (ECB*)(c) )
-#define _SPXListenForSequencedPacket(a) \
-    IPXFuncs[ SPXListenForSequencedPacket ]( (DWORD)IPXTaskID, (ECB*)(a) )
-#define _SPXSendSequencedPacket(a,b) \
-    IPXFuncs[ SPXSendSequencedPacket ]( (DWORD)IPXTaskID, (WORD)(a), (ECB*)(b) )
-#define _SPXTerminateConnection(a,b) \
-    IPXFuncs[ SPXTerminateConnection ]( (DWORD)IPXTaskID, (WORD)(a), (ECB*)(b) )
-#define _SPXAbortConnection(a) \
-    IPXFuncs[ SPXAbortConnection ]( (WORD)(a) )
-#endif
-
-#ifdef __WINDOWS__
-    extern HANDLE Instance;
-    #define _ESR( r1 )      (void __far *)MakeProcInstance( (FARPROC)(r1), Instance )
-#else
-    #define _ESR( r1 )      &(r1##ESR)
-#endif

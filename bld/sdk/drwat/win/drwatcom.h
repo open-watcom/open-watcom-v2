@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,8 +189,8 @@ void ScrollAsmDisplay( HWND hwnd, WORD wparam, ADDRESS *paddr, ADDRESS *flagaddr
 void DoStatDialog( HWND );
 
 /* sym.c */
-BOOL FindSymbol( ADDRESS *addr, syminfo *si );
-RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo );
+bool FindSymbol( ADDRESS *addr, syminfo *si );
+bool FindWatSymbol( ADDRESS *addr, syminfo *si, bool getsrcinfo );
 bool InitSymbols( void );
 void FiniSymbols( void );
 bool LoadDbgInfo( void );

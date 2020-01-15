@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,36 +92,35 @@ static bool setupscrnbuff( void )
     int                 rows;
     int                 cols;
     LP_PIXEL            scrn;
-    size_t              size;
-    size_t              i;
+    unsigned            size;
+    unsigned            i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( false );
     }
     UIData->width = cols;
     UIData->height = rows;
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
     {
 #ifdef _M_I86
         unsigned    seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
-        scrn = MK_FP( seg, 0 );
+        scrn = _MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size );
+        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL ) {
             return( false );
         }
 #endif
     }
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
@@ -225,8 +225,8 @@ static void my_console_write(
     unsigned                offset,
     LP_STRING               buf,
     int                     nbytes,
-    int                     row,
-    int                     col,
+    CURSORORD               crow,
+    CURSORORD               ccol,
     int                     type )
 {
         struct _mxfer_entry sx[2];
@@ -239,8 +239,8 @@ static void my_console_write(
         msg.write.type = _CONSOLE_WRITE;
         msg.write.handle = cc->handle;
         msg.write.console = console;
-        msg.write.curs_row = row;
-        msg.write.curs_col = col;
+        msg.write.curs_row = crow;
+        msg.write.curs_col = ccol;
         msg.write.curs_type = type;
         msg.write.offset = offset;
         msg.write.nbytes = nbytes;
@@ -293,13 +293,13 @@ static int cd_update( SAREA *area )
 {
     unsigned short  offset; /* pixel offset into buffer to begin update at */
     unsigned short  count;  /* number of pixels to update */
-    int             row;
-    int             col;
+    CURSORORD       crow;
+    CURSORORD       ccol;
     int             type;
     int             i;
 
-    row = UIData->cursor_row;
-    col = UIData->cursor_col;
+    crow = UIData->cursor_row;
+    ccol = UIData->cursor_col;
     switch( UIData->cursor_type ) {
     case C_OFF:     type = CURSOR_OFF;          break;
     case C_NORMAL:  type = CURSOR_UNDERLINE;    break;
@@ -308,14 +308,14 @@ static int cd_update( SAREA *area )
     if( area == NULL ) {
         my_console_write( UIConCtrl, UIConsole, 0,
                         (LP_STRING)UIData->screen.origin, 0,
-                        row, col, type );
+                        crow, ccol, type );
     } else {
         count = area->width * sizeof( PIXEL );
         for( i = area->row; i < ( area->row + area->height ); i++ ) {
             offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
             my_console_write( UIConCtrl, UIConsole, offset,
                             (LP_STRING)UIData->screen.origin + offset, count,
-                            row, col, type );
+                            crow, ccol, type );
         }
     }
     return( 0 );

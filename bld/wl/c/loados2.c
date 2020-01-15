@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
                 LnkMsg( ERR+MSG_ALIGN_TOO_SMALL, NULL );
             }
             segrec.address = (unsigned_16)seg_addr;
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             NullAlign( 2 );         // segment must be even length
             relocsize = WriteOS2Relocs( group );
             if( relocsize != 0 ) {
@@ -627,11 +627,11 @@ static unsigned long DumpEntryTable( void )
     return( size + 2 );
 }
 
-void ChkOS2Data( void )
-/**********************/
+void SetOS2SegFlags( void )
+/*************************/
 {
-    SetSegFlags( (seg_flags *) FmtData.u.os2.os2_seg_flags );
-    FmtData.u.os2.os2_seg_flags = NULL;
+    SetSegFlags( (xxx_seg_flags *)FmtData.u.os2.seg_flags );
+    FmtData.u.os2.seg_flags = NULL;
 }
 
 #define DEF_SEG_ON (SEG_PURE|SEG_READ_ONLY|SEG_CONFORMING|SEG_MOVABLE|SEG_DISCARD|SEG_RESIDENT|SEG_CONTIGUOUS|SEG_NOPAGE)
@@ -655,8 +655,8 @@ static void CheckGrpFlags( void *_leader )
     }
 }
 
-static void SetGroupFlags( void )
-/*******************************/
+void SetOS2GroupFlags( void )
+/***************************/
 // This goes through the groups, setting the flag word to be compatible with
 // the flag words that are specified in the segments.
 {
@@ -684,8 +684,8 @@ void ChkOS2Exports( void )
     group_entry     *group;
     unsigned        num_entries;
 
-    SetGroupFlags();            // NOTE: there is a continue in this loop!
     num_entries = 0;
+    // NOTE: there is a continue in this loop!
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
         num_entries++;
         symptr = exp->sym;
@@ -821,7 +821,7 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
     return( length );
 }
 
-#define MAX_DGROUP_SIZE (64 * 1024UL)
+#define MAX_DGROUP_SIZE _64KB
 
 void FiniOS2LoadFile( void )
 /***************************/

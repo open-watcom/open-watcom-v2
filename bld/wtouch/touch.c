@@ -57,6 +57,7 @@
 #include "wtmsg.h"
 #include "_dtaxxx.h"
 #include "d2ttime.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -140,13 +141,13 @@ static void usage( void )
     char msgbuff[MAX_RESOURCE_SIZE];
     int  i;
 
-    text = useText;
-    while( *text ) {
-        printf( "%s\n", *text++ );
+    for( text = useText; *text != NULL; text++ ) {
+        printf( "%s\n", *text );
     }
     for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) break;
+        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) )
+            break;
         printf( "%s\n", msgbuff );
     }
     showDateTimeFormat();
@@ -210,12 +211,15 @@ static void incTouchTime( void )
 }
 
 static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
-/**********************************************************************/
+/***************************************************************************************/
 {
     time_t      ftime;
     struct tm  *ptime;
 
     /* unused parameters */ (void)full_name;
+#if defined( __UNIX__ ) && !defined( __QNX__ )
+    /* unused parameters */ (void)dir;
+#endif
 
     /* check for the case of only specifying '/i' with nothing else */
     if( ! TouchFlags.increment_time ) {
@@ -349,7 +353,7 @@ static int processOptions( int argc, char **argv )
     return( 1 );
 }
 
-static int doTouchFile( char *full_name, struct dirent *ndir,
+static int doTouchFile( char *full_name, struct dirent *dire,
                         struct utimbuf *stamp )
 /*********************************************/
 {
@@ -357,7 +361,7 @@ static int doTouchFile( char *full_name, struct dirent *ndir,
     int stat_rc;
     struct stat sb;
 
-    incFilesOwnTime( full_name, ndir, stamp );
+    incFilesOwnTime( full_name, dire, stamp );
     utime_rc = utime( full_name, stamp );
     if( utime_rc == -1 ) {
         stat_rc = stat( full_name, &sb );
@@ -392,15 +396,13 @@ static void doTouch( void )
 {
     int fh;
     char *item;
-    DIR *dirpt;
-    struct dirent *ndir;
+    DIR *dirp;
+    struct dirent *dire;
     unsigned number_of_successful_touches;
     struct file_list *curr;
     struct utimbuf stamp;
     struct stat sb;
-    char sp_buf[ _MAX_PATH2 ];
-    char *drive;
-    char *dir;
+    PGROUP2 pg;
     char full_name[_MAX_PATH];
     char dir_name[_MAX_PATH];
     int len;
@@ -447,57 +449,57 @@ static void doTouch( void )
             dir_name[len + 2] = '\0';
             item = dir_name;
         }
-        _splitpath2( item, sp_buf, &drive, &dir, NULL, NULL );
+        _splitpath2( item, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         number_of_successful_touches = 0;
 #if defined(__LINUX__) || defined(__OSX__)
         strcpy( full_name, item );
-        ndir = NULL;
-        number_of_successful_touches += doTouchFile( full_name, ndir, &stamp );
+        dire = NULL;
+        number_of_successful_touches += doTouchFile( full_name, dire, &stamp );
         {
 #else
-        dirpt = opendir( item );
-        if( dirpt != NULL ) {
-            while( (ndir = readdir( dirpt )) != NULL ) {
+        dirp = opendir( item );
+        if( dirp != NULL ) {
+            while( (dire = readdir( dirp )) != NULL ) {
                 int attr;
 
-                _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                _makepath( full_name, pg.drive, pg.dir, dire->d_name, NULL );
     #ifdef __QNX__
-                attr = ndir->d_stat.st_mode;
+                attr = dire->d_stat.st_mode;
                 if( S_ISREG( attr ) ) {
     #else
-                attr = ndir->d_attr;
-                if( !( ndir->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
+                attr = dire->d_attr;
+                if( !( dire->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
     #endif
                     number_of_successful_touches +=
-                        doTouchFile( full_name, ndir, &stamp );
+                        doTouchFile( full_name, dire, &stamp );
                 }
             }
-            if( closedir( dirpt ) != 0 ) {
+            if( closedir( dirp ) != 0 ) {
                 writeMsg( MSG_ERR_CLOSE, item );
                 continue;
             }
 #endif
             if( TouchFlags.recursive ) {
-                _makepath( full_name, drive, dir, NULL, NULL );
-                dirpt = opendir( full_name );
+                _makepath( full_name, pg.drive, pg.dir, NULL, NULL );
+                dirp = opendir( full_name );
                 // it would make no sense for this to fail, and I'm not entirely sure
                 // what to do if it does....
-                if( dirpt != NULL ) {
-                    while( (ndir = readdir( dirpt )) != NULL ) {
-                        if ( '.' != *ndir->d_name ) {
+                if( dirp != NULL ) {
+                    while( (dire = readdir( dirp )) != NULL ) {
+                        if ( '.' != *dire->d_name ) {
 #ifdef __UNIX__
-                            _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                            _makepath( full_name, pg.drive, pg.dir, dire->d_name, NULL );
                             if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
 #else
-                            if( ndir->d_attr & _A_SUBDIR ) {
+                            if( dire->d_attr & _A_SUBDIR ) {
 
-                                _makepath( full_name, drive, dir, ndir->d_name, NULL );
+                                _makepath( full_name, pg.drive, pg.dir, dire->d_name, NULL );
 #endif
                                 insertFileSpec( strdup(full_name), curr );
                             }
                         }
                     }
-                    closedir( dirpt );
+                    closedir( dirp );
                 }
             }
         }

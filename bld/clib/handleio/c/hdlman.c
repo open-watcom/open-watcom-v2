@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,14 +262,14 @@ _WCRTLINK int _grow_handles( int num )
             } else {
                 _fmemset( new_handles, 0xFF, num );
 
-                psp_num_handles = MK_FP( _RWD_psp, 0x32 );
-                psp_handles = MK_FP( _RWD_psp, 0x34 );
+                psp_num_handles = _MK_FP( _RWD_psp, 0x32 );
+                psp_handles = _MK_FP( _RWD_psp, 0x34 );
                 _fmemcpy( new_handles, *psp_handles, *psp_num_handles );
 
                 _disable();
-                psp_handles = MK_FP( _RWD_psp, 0x34 );
+                psp_handles = _MK_FP( _RWD_psp, 0x34 );
                 *psp_handles = new_handles;
-                psp_num_handles = MK_FP( _RWD_psp, 0x32 );
+                psp_num_handles = _MK_FP( _RWD_psp, 0x32 );
                 *psp_num_handles = num;
                 _enable();
             }

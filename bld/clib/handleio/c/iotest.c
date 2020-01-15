@@ -44,32 +44,34 @@
   #include <wdefwin.h>
 #endif
 
-#define VERIFY( exp )   if( !(exp) ) {                                      \
-                            fprintf( stdout,                                \
-                                "%s: ***FAILURE*** at line %d of %s.\n",    \
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            fprintf( stdout, "%s\n", strerror(errno) );     \
-                            fflush( stdout );                               \
-                            NumErrors++;                                    \
-                            exit( -1 );                                     \
-                        }
+#define VERIFY( exp ) \
+    if( !(exp) ) {                                      \
+        fprintf( stdout,                                \
+            "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__,                  \
+                strlwr(__FILE__) );                     \
+        fprintf( stdout, "%s\n", strerror(errno) );     \
+        fflush( stdout );                               \
+        NumErrors++;                                    \
+        exit( EXIT_FAILURE );                           \
+    }
 
-#define VERIFYX( exp )  if( !(exp) ) {                                      \
-                            fprintf( stdout,                                \
-                                "%s: ***FAILURE*** at line %d of %s.\n",    \
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            fprintf( stdout, "%s\n", strerror(errno) );     \
-                            fflush( stdout );                               \
-                            NumErrors++;                                    \
-                            exit( -1 );                                     \
-                        } else {                                            \
-                            fprintf( stdout, "%s: OK at line %d of %s.\n",  \
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            fflush( stdout );                               \
-                        }
+#define VERIFYX( exp ) \
+    if( !(exp) ) {                                      \
+        fprintf( stdout,                                \
+            "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__,                  \
+                strlwr(__FILE__) );                     \
+        fprintf( stdout, "%s\n", strerror(errno) );     \
+        fflush( stdout );                               \
+        NumErrors++;                                    \
+        exit( EXIT_FAILURE );                           \
+    } else {                                            \
+        fprintf( stdout, "%s: OK at line %d of %s.\n",  \
+                ProgramName, __LINE__,                  \
+                strlwr(__FILE__) );                     \
+        fflush( stdout );                               \
+    }
 
 void TestOpenClose( void );
 void TestReadWrite( void );
@@ -92,14 +94,17 @@ int NumErrors = 0;                              /* number of errors */
 
 int main( int argc, char *argv[] )
 {
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( EXIT_FAILURE );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr(argv[0]) );     /* store executable filename */
 
@@ -116,21 +121,25 @@ int main( int argc, char *argv[] )
     TestUnlink();                               /* file deletion */
 
     /*** Print a pass/fail message and quit ***/
-    if( NumErrors!=0 ) {
+    if( NumErrors != 0 ) {
         fprintf( stdout, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-        fflush( stdout );
-        return( EXIT_FAILURE );
+    } else {
+        fprintf( stdout, "Tests completed (%s).\n", ProgramName );
     }
-    fprintf( stdout, "Tests completed (%s).\n", strlwr( argv[0] ) );
     fflush( stdout );
 #ifdef __SW_BW
-    {
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
     }
+    fflush( stderr );
+    fclose( my_stdout );
+    _dwShutDown();
 #endif
-    return( 0 );
+    if( NumErrors != 0 )
+        return( EXIT_FAILURE );
+    return( EXIT_SUCCESS );
 }
 
 

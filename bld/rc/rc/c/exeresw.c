@@ -41,8 +41,8 @@
 #include "clibext.h"
 
 
-extern void InitWINResTable( void )
-/*********************************/
+void InitWINResTable( void )
+/**************************/
 {
     ExeResDir           *res;
     StringsBlock        *str;
@@ -79,8 +79,8 @@ extern void InitWINResTable( void )
 } /* InitWINResTable */
 
 
-extern uint_32 ComputeWINResourceSize( WResDir dir )
-/**************************************************/
+uint_32 ComputeWINResourceSize( WResDir dir )
+/*******************************************/
 {
     uint_32         length;
     WResDirWindow   wind;
@@ -374,12 +374,12 @@ static RcStatus writeStringBlock( FILE *fp, StringsBlock *str )
     return( RS_OK );
 } /* writeStringBlock */
 
+RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code )
+/********************************************************************/
 /*
  * WriteWINResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code )
-/***************************************************************************/
 {
     FullTypeRecord              *exe_type;
     FullResourceRecord          *exe_res;

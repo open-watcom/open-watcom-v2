@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +39,14 @@
 #define MAX_HELP_WIDTH  72
 #define MAX_LINE_SIZE   1000
 
-FILE *cfp;
-FILE *hfp;
-char *ok;
+static FILE *cfp;
+static FILE *hfp;
+static char *ok;
 
-char cbuff[MAX_LINE_SIZE];
-char hbuff[MAX_LINE_SIZE];
+static char cbuff[MAX_LINE_SIZE];
+static char hbuff[MAX_LINE_SIZE];
 
-void RemoveNewline( char *p )
+static void RemoveNewline( char *p )
 {
     for( ; *p; ++p ) {
         if( *p == '\n' ) {
@@ -55,7 +56,7 @@ void RemoveNewline( char *p )
     }
 }
 
-void ReadCNames( void )
+static void ReadCNames( void )
 {
     ok = fgets( cbuff, sizeof( cbuff ), cfp );
     if( !ok ) {
@@ -65,7 +66,7 @@ void ReadCNames( void )
     RemoveNewline( cbuff );
 }
 
-int IsHelpName( char *p )
+static int IsHelpName( char *p )
 {
     if( !p ) {
         hbuff[0] = '\0';
@@ -86,7 +87,7 @@ int IsHelpName( char *p )
     return( 1 );
 }
 
-int IsIndirect( char *p )
+static int IsIndirect( char *p )
 {
     if( !p ) {
         hbuff[0] = '\0';
@@ -104,7 +105,7 @@ int IsIndirect( char *p )
     return( 1 );
 }
 
-void ReadHNames( void )
+static void ReadHNames( void )
 {
     if( !IsHelpName( ok ) ) {
         puts( "out of sync" );
@@ -117,7 +118,7 @@ void ReadHNames( void )
     RemoveNewline( hbuff );
 }
 
-void CenterTitle( char *p )
+static void CenterTitle( char *p )
 {
     int state;
     char *start;
@@ -148,7 +149,7 @@ void CenterTitle( char *p )
     }
 }
 
-void UnderLine( char *p )
+static void UnderLine( char *p )
 {
     int state;
 
@@ -163,7 +164,7 @@ void UnderLine( char *p )
     }
 }
 
-void FlushText( void )
+static void FlushText( void )
 {
     ok = fgets( hbuff, sizeof( hbuff ), hfp );
     if( !ok || IsHelpName( ok ) ) {
@@ -186,7 +187,7 @@ void FlushText( void )
     }
 }
 
-int CompareNames( void )
+static int CompareNames( void )
 {
     if( cbuff[0] == '\0' ) {
         if( hbuff[0] == '\0' ) {
@@ -199,7 +200,7 @@ int CompareNames( void )
     return( stricmp( cbuff, hbuff ) );
 }
 
-void Merge( void )
+static void Merge( void )
 {
     int comp;
 

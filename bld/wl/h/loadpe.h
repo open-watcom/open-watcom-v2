@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,14 +32,13 @@
 
 #include "exepe.h"
 
-#define DEF_VALUE           CONSTU32( 0xFFFFFFFF )
-#define _1kB                CONSTU32( 1024 )
+#define DEF_VALUE               CONSTU32( 0xFFFFFFFF )
 
-#define PE_DEFAULT_BASE     CONSTU32( 0x400000 )
-#define PE_DEF_STACK_SIZE   (1024 * _1kB)
-#define PE_DEF_STACK_COMMIT (64 * _1kB)
-#define PE_DEF_HEAP_SIZE    (8 * _1kB)
-#define PE_DEF_HEAP_COMMIT  (4 * _1kB)
+#define PE_DEFAULT_BASE         CONSTU32( 0x400000 )
+#define PE_DEF_STACK_SIZE       _1MB
+#define PE_DEF_STACK_COMMIT     _64KB
+#define PE_DEF_HEAP_SIZE        _8KB
+#define PE_DEF_HEAP_COMMIT      _4KB
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );

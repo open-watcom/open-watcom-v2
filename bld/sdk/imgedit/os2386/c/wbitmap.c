@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +104,7 @@ static BITMAPINFO2 *convertToBmp2( BITMAPINFO *bmi )
  * readBitmapInfo - returns the bitmap info
  */
 static BITMAPINFO2 *readBitmapInfo( FILE *fp, BITMAPINFOHEADER2 *infoheader,
-                                                BOOL is_bmp2, ULONG offset )
+                                                bool is_bmp2, ULONG offset )
 {
     ULONG               tablesize;
     BITMAPINFO2         *bmi2;
@@ -145,7 +146,7 @@ static BITMAPINFO2 *readBitmapInfo( FILE *fp, BITMAPINFOHEADER2 *infoheader,
  * readBitmap - reads in the bitmap.
  */
 static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
-                                BOOL is_bmp2, BITMAPINFOHEADER2 *bmih2 )
+                                bool is_bmp2, BITMAPINFOHEADER2 *bmih2 )
 {
     ULONG               size;
     HBITMAP             hbitmap;
@@ -188,7 +189,7 @@ static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
  *                          reading the BITMAPARRAYFILEHEADER structure from
  *                          the given offset.
  */
-static BITMAPFILEHEADER2 *getFileHeaderFromArray( FILE *fp, ULONG offset, BOOL *is_bmp2 )
+static BITMAPFILEHEADER2 *getFileHeaderFromArray( FILE *fp, ULONG offset, bool *is_bmp2 )
 {
     BITMAPARRAYFILEHEADER       filearray;
     BITMAPARRAYFILEHEADER2      filearray2;
@@ -209,7 +210,7 @@ static BITMAPFILEHEADER2 *getFileHeaderFromArray( FILE *fp, ULONG offset, BOOL *
         f->bmp2.cy = filearray.bfh.bmp.cy;
         f->bmp2.cPlanes = filearray.bfh.bmp.cPlanes;
         f->bmp2.cBitCount = filearray.bfh.bmp.cBitCount;
-        *is_bmp2 = FALSE;
+        *is_bmp2 = false;
         memcpy( fileheader2, f, sizeof(BITMAPFILEHEADER2) );
     } else {
         memcpy( fileheader2, &(filearray2.bfh2), sizeof(BITMAPFILEHEADER2) );
@@ -221,7 +222,7 @@ static BITMAPFILEHEADER2 *getFileHeaderFromArray( FILE *fp, ULONG offset, BOOL *
  * readFileHeader - reads the bitmap file header (converts to
  *                  BITMAPFILEHEADER2 type) from the given offset.
  */
-static BITMAPFILEHEADER2 *readFileHeader( FILE *fp, ULONG offset, BOOL *is_bmp2 )
+static BITMAPFILEHEADER2 *readFileHeader( FILE *fp, ULONG offset, bool *is_bmp2 )
 {
     BITMAPFILEHEADER    *bmfh;
     BITMAPFILEHEADER2   *bmfh2;
@@ -244,10 +245,10 @@ static BITMAPFILEHEADER2 *readFileHeader( FILE *fp, ULONG offset, BOOL *is_bmp2 
         bmfh2->bmp2.cy = bmfh->bmp.cy;
         bmfh2->bmp2.cPlanes = bmfh->bmp.cPlanes;
         bmfh2->bmp2.cBitCount = bmfh->bmp.cBitCount;
-        *is_bmp2 = FALSE;
+        *is_bmp2 = false;
         MemFree( bmfh );
     } else {
-        *is_bmp2 = TRUE;
+        *is_bmp2 = true;
     }
     return( bmfh2 );
 } /* readFileHeader */
@@ -261,7 +262,7 @@ HBITMAP ReadPMBitmapFile( HWND hwnd, char *fname, BITMAPINFOHEADER2 *info )
     FILE                *fp;
     HBITMAP             hbitmap;
     BITMAPFILEHEADER2   *file_header2;
-    BOOL                is_bmp2;
+    bool                is_bmp2;
     USHORT              filetype;
     ULONG               offset;
 

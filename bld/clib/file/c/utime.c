@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,14 +88,15 @@ static int _get_dos_tms( struct utimbuf const *times, _dos_tms *dostms )
 }
 
 #if defined( __WATCOM_LFN__ )
-static tiny_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date,
-                                                                  unsigned mode )
-/*******************************************************************************/
+static tiny_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode )
+/***********************************************************************************************/
 {
   #ifdef _M_I86
     return( __dos_utime_lfn( path, time, date, mode ) );
   #else
     call_struct     dpmi_rm;
+
+    /* unused parameters */ (void)path;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
@@ -151,8 +153,8 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
         reg_set.x.dx = alias & 0xffff;
         sregs.ds = alias >> 16;
   #else
-        reg_set.w.dx = FP_OFF( fname );
-        sregs.ds = FP_SEG( fname );
+        reg_set.w.dx = _FP_OFF( fname );
+        sregs.ds = _FP_SEG( fname );
   #endif
         sregs.es = sregs.ds;                        /* for DOS/16M */
         reg_set.h.ah = DOS_OPEN;

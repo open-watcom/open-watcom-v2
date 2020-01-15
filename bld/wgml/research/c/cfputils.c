@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@
 #define BAD_MATCH  3
 #define GOOD_MATCH 4
 
-#define COP_EXT         ".cop"
+#define COP_EXT         "cop"
 
 /*  Local variables. */
 
@@ -118,7 +119,7 @@ int parse_cop_file( void )
     char            designator[4];
     uint16_t        entry_count;
     char            file_type;
-    int             retval;    
+    int             retval;
 
     /* Open the file. */
 
@@ -134,7 +135,7 @@ int parse_cop_file( void )
         return( FAILURE) ;
     }
     switch( file_type ) {
-    case( 0x02 ): 
+    case( 0x02 ):
         /* This is a version 3.33 directory file. */
 
         fread( &entry_count, sizeof( entry_count ), 1, current_file );
@@ -173,7 +174,7 @@ int parse_cop_file( void )
         designator[3] = '\0';
         printf_s("Incorrect file type: %s\n", designator);
         break;
-    case( 0x04 ): 
+    case( 0x04 ):
         /* This is a version 4.1 directory file */
 
         fread( &entry_count, sizeof( entry_count ), 1, current_file );
@@ -233,12 +234,9 @@ void check_directory( FILE * in_file, uint32_t count )
 {
     /* Used for processing the directory file. */
 
-    char                dir[_MAX_DIR];
-    char                drive[_MAX_DRIVE];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
     char                file_path[_MAX_PATH];
-    char                fname[_MAX_FNAME];
-    directory_entry      current_entry;
+    directory_entry     current_entry;
     uint32_t            i;
     int                 retval;
     uint16_t            entry_type;
@@ -253,12 +251,11 @@ void check_directory( FILE * in_file, uint32_t count )
 
     /* Split tgt_path. */
 
-    _splitpath( tgt_path, drive, dir, fname, ext );
+    _splitpath2( tgt_path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
     /* Construct file_path. */
 
-    strcpy_s( file_path, sizeof( file_path ), drive );
-    strcat_s( file_path, sizeof( file_path ), dir );
+    _makepath( file_path, pg.drive, pg.dir, NULL, NULL );
 
     /* Tabulate the entry types. */
 
@@ -274,7 +271,7 @@ void check_directory( FILE * in_file, uint32_t count )
             /* Not an entry type, reset counter. */
 
             i--;
-            break;    
+            break;
         case 0x0001:
             /* Start of an ExtendedDirEntry. */
             /* Ensure loop is always exited at some point. */
@@ -290,12 +287,12 @@ void check_directory( FILE * in_file, uint32_t count )
                     /* Not an entry type, reset counter. */
 
                     i--;
-                    break;    
+                    break;
                 case 0x0001:
                     /* Start of an ExtendedDirEntry. */
                     /* This is the only case where the loop is not exited. */
-                
-                    continue;    
+
+                    continue;
                 case 0x0101:
                     /* This ExtendedDirEntry is for a device file. */
 
@@ -548,7 +545,7 @@ void display_device( cop_device * in_device )
     return;
 }
 
-/*  Function verify_device().   
+/*  Function verify_device().
  *  Verifies that the file is a device file.
  *
  *  Parameter:
@@ -562,7 +559,7 @@ void display_device( cop_device * in_device )
  *      BAD_MATCH  if the bytes that should contain "DEV" contains something else.
  *      GOOD_MATCH if the bytes that should contain "DEV" do contain "DEV".
  */
- 
+
 int verify_device( char * in_path, char * in_name )
 {
     char            designator[4];
@@ -570,12 +567,10 @@ int verify_device( char * in_path, char * in_name )
     char            type;
     cop_device *    current_device = NULL;
     FILE *          device_file = NULL;
-    
+
     /* Build the file name. */
 
-    strcpy_s( member_name, sizeof( member_name ), in_path );
-    strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
 
     /* Open the file. */
 
@@ -592,7 +587,7 @@ int verify_device( char * in_path, char * in_name )
         fclose( device_file );
         return( BAD_HEADER );
     }
-    
+
     /* Perform the test and parse the file if appropriate. */
 
     if( is_dev_file( device_file ) ) {
@@ -603,10 +598,10 @@ int verify_device( char * in_path, char * in_name )
     }
 
     /* Report the mismatched designator. */
-    
+
     /* Reset file to designator. */
 
-    fseek( device_file, -3, SEEK_CUR ); 
+    fseek( device_file, -3, SEEK_CUR );
     fread( &designator, 3, 1, device_file );
     if( ferror( device_file ) || feof( device_file ) ) {
         puts("Incorrect file type: file error on attempt to get designator");
@@ -630,7 +625,7 @@ void display_driver( cop_driver * in_driver )
 {
     int i;
     int j;
-    
+
     printf_s( "Allocated size:            %i\n", in_driver->allocated_size );
     printf_s( "Bytes used:                %i\n", in_driver->next_offset );
     if( in_driver->rec_spec == NULL ) puts( "Record Specification:");
@@ -688,7 +683,7 @@ void display_driver( cop_driver * in_driver )
     if( in_driver->fontswitches.fontswitchblocks == NULL )
         puts( ":FONTSWITCH Block:");
     else {
-        puts( ":FONTSWITCH Block(s):" );    
+        puts( ":FONTSWITCH Block(s):" );
         for( i = 0; i < in_driver->fontswitches.count; i++ ) {
             printf_s( "  Type: %s\n", in_driver->fontswitches.fontswitchblocks[i].type );
             if( in_driver->fontswitches.fontswitchblocks[i].startvalue != NULL ) {
@@ -703,7 +698,7 @@ void display_driver( cop_driver * in_driver )
     }
     if( in_driver->fontstyles.fontstyleblocks == NULL ) puts( ":FONTSTYLE Block:");
     else {
-        puts( ":FONTSTYLE Block(s):" );    
+        puts( ":FONTSTYLE Block(s):" );
         for( i = 0; i < in_driver->fontstyles.count; i++ ) {
             printf_s( "  Type: %s\n", in_driver->fontstyles.fontstyleblocks[i].type );
             if( in_driver->fontstyles.fontstyleblocks[i].startvalue == NULL ) {
@@ -722,7 +717,7 @@ void display_driver( cop_driver * in_driver )
                 puts( "  No :LINEPROC Blocks");
             } else {
                 puts( "  :LINEPROC Block(s):");
-                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].passes; j++ ) { 
+                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].passes; j++ ) {
                     printf_s( "  Pass: %i\n", j+1 );
                     if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startvalue == NULL ) {
                         puts( "  No :STARTVALUE Block");
@@ -803,7 +798,7 @@ void display_driver( cop_driver * in_driver )
  *      BAD_MATCH  if the bytes that should contain "DRV" contains something else.
  *      GOOD_MATCH if the bytes that should contain "DRV" do contain "DRV".
  */
- 
+
 int verify_driver( char * in_path, char * in_name )
 {
     char            designator[4];
@@ -814,9 +809,7 @@ int verify_driver( char * in_path, char * in_name )
 
     /* Build the file name. */
 
-    strcpy_s( member_name, sizeof( member_name ), in_path );
-    strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
 
     /* Open the file. */
 
@@ -833,7 +826,7 @@ int verify_driver( char * in_path, char * in_name )
         fclose( driver_file );
         return( BAD_HEADER );
     }
-    
+
     /* Perform the test and parse the file if appropriate. */
 
     if( is_drv_file( driver_file ) ) {
@@ -844,7 +837,7 @@ int verify_driver( char * in_path, char * in_name )
     }
 
     /* Report the mismatched designator. */
-    
+
     /* Reset file to designator. */
 
     fseek( driver_file, -3, SEEK_CUR );
@@ -944,7 +937,7 @@ void display_font( cop_font * in_font )
  *      BAD_MATCH  if the bytes that should contain "FON" contains something else.
  *      GOOD_MATCH if the bytes that should contain "FON" do contain "FON".
  */
- 
+
 int verify_font( char * in_path, char * in_name )
 {
     char       designator[4];
@@ -952,12 +945,10 @@ int verify_font( char * in_path, char * in_name )
     char       type;
     cop_font * current_font = NULL;
     FILE *     font_file = NULL;
-    
+
     /* Build the file name. */
 
-    strcpy_s( member_name, sizeof( member_name ), in_path );
-    strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
 
     /* Open the file. */
 
@@ -974,7 +965,7 @@ int verify_font( char * in_path, char * in_name )
         fclose( font_file );
         return( BAD_HEADER );
     }
-    
+
     /* Perform the test and parse the file if appropriate. */
 
     if( is_fon_file( font_file ) ) {
@@ -983,9 +974,9 @@ int verify_font( char * in_path, char * in_name )
         fclose( font_file );
         return( GOOD_MATCH );
     }
-    
+
     /* Report the mismatched designator. */
-    
+
     /* Reset file to designator. */
 
     fseek( font_file, -3, SEEK_CUR );

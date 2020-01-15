@@ -42,6 +42,7 @@
 #endif
 #include "initarg.h"
 #include "_prof.h"
+#include "pathgrp2.h"
 
 #define info new_P5_timing_info
 
@@ -174,12 +175,14 @@ static info *FindOrAllocInfo( info *callerBlock, reg_32 callee )
     info        *newBlock;
 
     for( ;; ) {
-        if( callerBlock->callee == callee ) break;
-        if( callerBlock->callee == 0 ) break;
+        if( callerBlock->callee == callee )
+            break;
+        if( callerBlock->callee == 0 )
+            break;
         if( callerBlock->flag[0] != 0 ) {
             if( callerBlock->dynamic == 0 ) {
                 callerBlock->flag[0] = PROFILE_FLAG_DYNAMIC;
-                newBlock = (info*)__ProfAlloc( NUM_ALLOC*sizeof( info ) );
+                newBlock = (info *)__ProfAlloc( NUM_ALLOC * sizeof( info ) );
                 callerBlock->dynamic = newBlock;
                 callerBlock = newBlock;
                 for( i = 0; i < NUM_ALLOC; ++i ) {
@@ -361,29 +364,32 @@ _WCRTLINK void __ProfEpilog( info *block )
 #define VXDEXT  ".VXD"
 static int findVXD( char *buff )
 {
-    char fname[ _MAX_PATH2 ];
-    char *drive,*dir;
+    PGROUP2 pg;
 
-    _splitpath2( _LpPgmName, &fname, &drive, &dir, NULL, NULL );
-    _makepath( buff, drive, dir, VXDNAME, VXDEXT );
-    if( access( buff, R_OK ) == 0 ) return( TRUE );
+    _splitpath2( _LpPgmName, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( buff, pg.drive, pg.dir, VXDNAME, VXDEXT );
+    if( access( buff, R_OK ) == 0 )
+        return( TRUE );
 
     strcpy( buff, ".\\" VXDNAME VXDEXT );
-    if( access( buff, R_OK ) == 0 ) return( TRUE );
+    if( access( buff, R_OK ) == 0 )
+        return( TRUE );
 
     GetSystemDirectory( buff, _MAX_PATH );
     strcat( buff, "\\" );
     strcat( buff, VXDNAME VXDEXT );
-    if( access( buff, R_OK ) == 0 ) return( TRUE );
+    if( access( buff, R_OK ) == 0 )
+        return( TRUE );
 
     GetWindowsDirectory( buff, _MAX_PATH );
     strcat( buff, "\\" );
     strcat( buff, VXDNAME VXDEXT );
-    if( access( buff, R_OK ) == 0 ) return( TRUE );
+    if( access( buff, R_OK ) == 0 )
+        return( TRUE );
 
     _searchenv( VXDNAME VXDEXT, "PATH", buff );
-    if( buff[0] != '\0' ) return( TRUE );
-
+    if( buff[0] != '\0' )
+        return( TRUE );
     return( FALSE );
 }
 #endif

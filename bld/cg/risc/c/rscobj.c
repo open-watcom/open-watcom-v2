@@ -358,7 +358,7 @@ void    ObjFini( void )
     OWLFini( owlHandle );
     DeleteSections();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_int)code_size );
+    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_uint)code_size );
 }
 
 
@@ -875,7 +875,7 @@ static void DumpImportResolve( label_handle label )
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (int)(pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
+            type = (int)(pointer_uint)FEAuxInfo( sym, IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );

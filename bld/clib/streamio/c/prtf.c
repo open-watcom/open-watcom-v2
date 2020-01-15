@@ -88,221 +88,31 @@
 #if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
 #else
 
-/* forward references */
-static const CHAR_TYPE *evalflags( const CHAR_TYPE *, SPECS __SLIB * );
-static FAR_STRING formstring( CHAR_TYPE *, my_va_list *, SPECS __SLIB *, CHAR_TYPE * );
-static const CHAR_TYPE * getprintspecs( const CHAR_TYPE *, my_va_list *, SPECS __SLIB * );
-#ifdef USE_MBCS_TRANSLATION
-static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, slib_callback_t *out_putc );
-static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, slib_callback_t *out_putc );
-#endif
-
-#ifdef SAFE_PRINTF
-int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
-#elif defined( IN_SLIB )
-int __F_NAME(__prtf_slib,__wprtf_slib)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc, int ptr_size )
-#else
-int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )
-#endif
-/* dest         parm for use by out_putc    */
-/* format       pointer to format string    */
-/* args         pointer to pointer to args  */
-/* msg          rt-constraint message       */
-/* out_putc     char output routine         */
+static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, SPECS __SLIB *specs )
 {
-    CHAR_TYPE           buffer[ BUF_SIZE ];
-    CHAR_TYPE           null_char = NULLCHAR;
-    CHAR_TYPE           *a;
-    FAR_STRING          arg;
-    const CHAR_TYPE     *ctl;
-    SPECS               specs;
-
-    specs._dest = dest;
-    specs._flags = 0;
-    specs._version = SPECS_VERSION;
-    specs._output_count = 0;
-    ctl = format;
-    while( *ctl != NULLCHAR ) {
-        if( *ctl != STRING( '%' ) ) {
-            (out_putc)( &specs, *ctl++ );
+    specs->_flags = 0;
+    for( ; ; ctl++ ) {
+        if( *ctl == STRING( '-' ) ) {
+            specs->_flags |= SPF_LEFT_ADJUST;
+        } else if( *ctl == STRING( '#' ) ) {
+            specs->_flags |= SPF_ALT;
+        } else if( *ctl == STRING( '+' ) ) {
+            specs->_flags |= SPF_FORCE_SIGN;
+            specs->_flags &= ~SPF_BLANK;
+        } else if( *ctl == STRING( ' ' ) ) {
+            if( ( specs->_flags & SPF_FORCE_SIGN ) == 0 ) {
+                specs->_flags |= SPF_BLANK;
+            }
+        } else if( *ctl == STRING( '0' ) ) {
+            specs->_pad_char = STRING( '0' );
+#ifdef __QNX__
+            specs->_flags |= SPF_ZERO_PAD;
+#endif
         } else {
-            ++ctl;
-            {
-                my_va_list  pargs;
-                pargs = MY_VA_LIST( args );
-                ctl = getprintspecs( ctl, &pargs, &specs );
-                MY_VA_LIST( args ) = pargs;
-            }
-
-            specs._character = *ctl++;
-            if( specs._character == NULLCHAR )
-                break;
-
-            if( specs._character == STRING( 'n' ) ) {
-#ifdef SAFE_PRINTF
-                /* The %n specifier is not allowed - too dangerous. */
-                *msg = "%n";
-                break;
-#else
-                FAR_INT         iptr;
-
-                /*
-                   For the shared library, all pointers are FAR unless
-                   explicitly set NEAR (the shared library use big_data model).
-                */
-#if defined( __FAR_SUPPORT__ )
-                if( specs._flags & SPF_FAR ) {
-                    iptr = va_arg( args, int _WCFAR * );
-                } else if( specs._flags & SPF_NEAR ) {
-                    iptr = va_arg( args, int _WCNEAR * );
-                } else {
-                    iptr = va_arg( args, int * );
-                }
-#else
-                iptr = va_arg( args, int * );
-#endif
-                if( specs._flags & SPF_CHAR ) {
-                    *((FAR_CHAR)iptr) = specs._output_count;
-                } else if( specs._flags & SPF_SHORT ) {
-                    *((FAR_SHORT)iptr) = specs._output_count;
-                } else if( specs._flags & SPF_LONG ) {
-                    *((FAR_LONG)iptr) = specs._output_count;
-#if defined( __LONG_LONG_SUPPORT__ )
-                } else if( specs._flags & SPF_LONG_LONG ) {
-                    *((FAR_INT64)iptr) = specs._output_count;
-#endif
-                } else {
-                    *iptr = specs._output_count;
-                }
-#endif  /* SAFE_PRINTF */
-            } else {
-#ifdef SAFE_PRINTF
-                if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
-                    FAR_STRING  str;
-                    va_list     args_copy;
-
-                    /* Make sure %s argument is not NULL. Note that near pointers
-                     * in segmented models need special handling because only
-                     * offset will be NULL, not segment.
-                     */
-                    va_copy( args_copy, args );
-#if defined( __FAR_SUPPORT__ )
-                    if( specs._flags & SPF_FAR ) {
-                        str = va_arg( args_copy, CHAR_TYPE _WCFAR * );
-                    } else if( specs._flags & SPF_NEAR ) {
-                        CHAR_TYPE _WCNEAR   *ptr;
-
-                        ptr = va_arg( args_copy, CHAR_TYPE _WCNEAR * );
-                        if( ptr == NULL ) {
-                            str = NULL;
-                        } else {
-                            str = ptr;
-                        }
-                    } else {
-                        CHAR_TYPE   *ptr;
-
-                        ptr = va_arg( args_copy, CHAR_TYPE * );
-                        if( ptr == NULL ) {
-                            str = NULL;
-                        } else {
-                            str = ptr;
-                        }
-                    }
-#else
-                    str = va_arg( args_copy, CHAR_TYPE * );
-#endif
-                    va_end( args_copy );
-                    if( str == NULL ) {
-                        *msg = "%s -> NULL";
-                        break;  /* bail out */
-                    }
-                }
-#endif  /* SAFE_PRINTF */
-
-                {
-                    my_va_list  pargs;
-                    pargs = MY_VA_LIST( args );
-                    arg = formstring( buffer, &pargs, &specs, &null_char );
-                    MY_VA_LIST( args ) = pargs;
-                }
-                specs._fld_width -= specs._n0  +
-                                    specs._nz0 +
-                                    specs._n1  +
-                                    specs._nz1 +
-                                    specs._n2  +
-                                    specs._nz2;
-                if( !(specs._flags & SPF_LEFT_ADJUST) ) {
-                    if( specs._pad_char == STRING( ' ' ) ) {
-                        while( specs._fld_width > 0 ) {
-                            (out_putc)( &specs, STRING( ' ' ) );
-                            --specs._fld_width;
-                        }
-                    }
-                }
-                a = buffer;
-                while( specs._n0 > 0 ) {
-                    (out_putc)( &specs, *a );
-                    ++a;
-                    --specs._n0;
-                }
-                while( specs._nz0 > 0 ) {
-                    (out_putc)( &specs, STRING( '0' ) );
-                    --specs._nz0;
-                }
-                if( specs._character == STRING( 's' ) ) {
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-                    if( specs._flags & SPF_SHORT ) {
-                        write_skinny_string( (FAR_ASCII_STRING)arg, &specs, out_putc );
-                    } else
-#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-                    if( specs._flags & SPF_LONG ) {
-                        write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
-                    } else
-#endif
-                    {
-                        while( specs._n1 > 0 ) {
-                            (out_putc)( &specs, *arg++ );
-                            --specs._n1;
-                        }
-                    }
-                }
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-                else if( specs._character == WIDE_CHAR_STRING ) {
-                    write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
-                } else
-#elif !defined( __WIDECHAR__ ) && defined( __NETWARE__ )
-                else if( specs._character == WIDE_CHAR_STRING ) {
-                } else
-#endif
-                {
-                    while( specs._n1 > 0 ) {
-                        (out_putc)( &specs, *arg++ );
-                        --specs._n1;
-                    }
-                }
-                while( specs._nz1 > 0 ) {
-                    (out_putc)( &specs, STRING( '0' ) );
-                    --specs._nz1;
-                }
-                while( specs._n2 > 0 ) {
-                    (out_putc)( &specs, *arg );
-                    ++arg;
-                    --specs._n2;
-                }
-                while( specs._nz2 > 0 ) {
-                    (out_putc)( &specs, STRING( '0' ) );
-                    --specs._nz2;
-                }
-                if( specs._flags & SPF_LEFT_ADJUST ) {
-                    while( specs._fld_width > 0 ) {
-                        (out_putc)( &specs, STRING( ' ' ) );
-                        --specs._fld_width;
-                    }
-                }
-            }
+            break;
         }
     }
-    return( specs._output_count );
+    return( ctl );
 }
 
 static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
@@ -410,34 +220,6 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
 }
 
 
-static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, SPECS __SLIB *specs )
-{
-    specs->_flags = 0;
-    for( ; ; ctl++ ) {
-        if( *ctl == STRING( '-' ) ) {
-            specs->_flags |= SPF_LEFT_ADJUST;
-        } else if( *ctl == STRING( '#' ) ) {
-            specs->_flags |= SPF_ALT;
-        } else if( *ctl == STRING( '+' ) ) {
-            specs->_flags |= SPF_FORCE_SIGN;
-            specs->_flags &= ~SPF_BLANK;
-        } else if( *ctl == STRING( ' ' ) ) {
-            if( ( specs->_flags & SPF_FORCE_SIGN ) == 0 ) {
-                specs->_flags |= SPF_BLANK;
-            }
-        } else if( *ctl == STRING( '0' ) ) {
-            specs->_pad_char = STRING( '0' );
-#ifdef __QNX__
-            specs->_flags |= SPF_ZERO_PAD;
-#endif
-        } else {
-            break;
-        }
-    }
-    return( ctl );
-}
-
-
 static int far_strlen( FAR_STRING s, int precision )
 {
     int     len;
@@ -459,6 +241,9 @@ static int far_strlen( FAR_STRING s, int precision )
 static int far_other_strlen( FAR_STRING s, int precision )
 {
 #if defined( __RDOS__ ) || defined( __RDOSDEV__ )
+
+    /* unused parameters */ (void)s; (void)precision;
+
     return( 0 );  // RDOS doesn't support unicode
 #else
     int                 len = 0;
@@ -727,6 +512,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
     int                     bytes;
 #endif
+
+    /* unused parameters */ (void)null_string;
 
     arg = buffer;
 
@@ -1096,6 +883,221 @@ processNumericTypes:
     }
     SetZeroPad( specs );
     return( arg );
+}
+
+
+#ifdef SAFE_PRINTF
+int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
+#elif defined( IN_SLIB )
+int __F_NAME(__prtf_slib,__wprtf_slib)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc, int ptr_size )
+#else
+int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )
+#endif
+/* dest         parm for use by out_putc    */
+/* format       pointer to format string    */
+/* args         pointer to pointer to args  */
+/* msg          rt-constraint message       */
+/* out_putc     char output routine         */
+{
+    CHAR_TYPE           buffer[ BUF_SIZE ];
+    CHAR_TYPE           null_char = NULLCHAR;
+    CHAR_TYPE           *a;
+    FAR_STRING          arg;
+    const CHAR_TYPE     *ctl;
+    SPECS               specs;
+
+#if !defined( SAFE_PRINTF ) && defined( IN_SLIB )
+
+    /* unused parameters */ (void)ptr_size;
+
+#endif
+
+    specs._dest = dest;
+    specs._flags = 0;
+    specs._version = SPECS_VERSION;
+    specs._output_count = 0;
+    ctl = format;
+    while( *ctl != NULLCHAR ) {
+        if( *ctl != STRING( '%' ) ) {
+            (out_putc)( &specs, *ctl++ );
+        } else {
+            ++ctl;
+            {
+                my_va_list  pargs;
+                pargs = MY_VA_LIST( args );
+                ctl = getprintspecs( ctl, &pargs, &specs );
+                MY_VA_LIST( args ) = pargs;
+            }
+
+            specs._character = *ctl++;
+            if( specs._character == NULLCHAR )
+                break;
+
+            if( specs._character == STRING( 'n' ) ) {
+#ifdef SAFE_PRINTF
+                /* The %n specifier is not allowed - too dangerous. */
+                *msg = "%n";
+                break;
+#else
+                FAR_INT         iptr;
+
+                /*
+                   For the shared library, all pointers are FAR unless
+                   explicitly set NEAR (the shared library use big_data model).
+                */
+#if defined( __FAR_SUPPORT__ )
+                if( specs._flags & SPF_FAR ) {
+                    iptr = va_arg( args, int _WCFAR * );
+                } else if( specs._flags & SPF_NEAR ) {
+                    iptr = va_arg( args, int _WCNEAR * );
+                } else {
+                    iptr = va_arg( args, int * );
+                }
+#else
+                iptr = va_arg( args, int * );
+#endif
+                if( specs._flags & SPF_CHAR ) {
+                    *((FAR_CHAR)iptr) = specs._output_count;
+                } else if( specs._flags & SPF_SHORT ) {
+                    *((FAR_SHORT)iptr) = specs._output_count;
+                } else if( specs._flags & SPF_LONG ) {
+                    *((FAR_LONG)iptr) = specs._output_count;
+#if defined( __LONG_LONG_SUPPORT__ )
+                } else if( specs._flags & SPF_LONG_LONG ) {
+                    *((FAR_INT64)iptr) = specs._output_count;
+#endif
+                } else {
+                    *iptr = specs._output_count;
+                }
+#endif  /* SAFE_PRINTF */
+            } else {
+#ifdef SAFE_PRINTF
+                if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
+                    FAR_STRING  str;
+                    va_list     args_copy;
+
+                    /* Make sure %s argument is not NULL. Note that near pointers
+                     * in segmented models need special handling because only
+                     * offset will be NULL, not segment.
+                     */
+                    va_copy( args_copy, args );
+#if defined( __FAR_SUPPORT__ )
+                    if( specs._flags & SPF_FAR ) {
+                        str = va_arg( args_copy, CHAR_TYPE _WCFAR * );
+                    } else if( specs._flags & SPF_NEAR ) {
+                        CHAR_TYPE _WCNEAR   *ptr;
+
+                        ptr = va_arg( args_copy, CHAR_TYPE _WCNEAR * );
+                        if( ptr == NULL ) {
+                            str = NULL;
+                        } else {
+                            str = ptr;
+                        }
+                    } else {
+                        CHAR_TYPE   *ptr;
+
+                        ptr = va_arg( args_copy, CHAR_TYPE * );
+                        if( ptr == NULL ) {
+                            str = NULL;
+                        } else {
+                            str = ptr;
+                        }
+                    }
+#else
+                    str = va_arg( args_copy, CHAR_TYPE * );
+#endif
+                    va_end( args_copy );
+                    if( str == NULL ) {
+                        *msg = "%s -> NULL";
+                        break;  /* bail out */
+                    }
+                }
+#endif  /* SAFE_PRINTF */
+
+                {
+                    my_va_list  pargs;
+                    pargs = MY_VA_LIST( args );
+                    arg = formstring( buffer, &pargs, &specs, &null_char );
+                    MY_VA_LIST( args ) = pargs;
+                }
+                specs._fld_width -= specs._n0  +
+                                    specs._nz0 +
+                                    specs._n1  +
+                                    specs._nz1 +
+                                    specs._n2  +
+                                    specs._nz2;
+                if( !(specs._flags & SPF_LEFT_ADJUST) ) {
+                    if( specs._pad_char == STRING( ' ' ) ) {
+                        while( specs._fld_width > 0 ) {
+                            (out_putc)( &specs, STRING( ' ' ) );
+                            --specs._fld_width;
+                        }
+                    }
+                }
+                a = buffer;
+                while( specs._n0 > 0 ) {
+                    (out_putc)( &specs, *a );
+                    ++a;
+                    --specs._n0;
+                }
+                while( specs._nz0 > 0 ) {
+                    (out_putc)( &specs, STRING( '0' ) );
+                    --specs._nz0;
+                }
+                if( specs._character == STRING( 's' ) ) {
+#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+                    if( specs._flags & SPF_SHORT ) {
+                        write_skinny_string( (FAR_ASCII_STRING)arg, &specs, out_putc );
+                    } else
+#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+                    if( specs._flags & SPF_LONG ) {
+                        write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
+                    } else
+#endif
+                    {
+                        while( specs._n1 > 0 ) {
+                            (out_putc)( &specs, *arg++ );
+                            --specs._n1;
+                        }
+                    }
+                }
+#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+                else if( specs._character == WIDE_CHAR_STRING ) {
+                    write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
+                } else
+#elif !defined( __WIDECHAR__ ) && defined( __NETWARE__ )
+                else if( specs._character == WIDE_CHAR_STRING ) {
+                } else
+#endif
+                {
+                    while( specs._n1 > 0 ) {
+                        (out_putc)( &specs, *arg++ );
+                        --specs._n1;
+                    }
+                }
+                while( specs._nz1 > 0 ) {
+                    (out_putc)( &specs, STRING( '0' ) );
+                    --specs._nz1;
+                }
+                while( specs._n2 > 0 ) {
+                    (out_putc)( &specs, *arg );
+                    ++arg;
+                    --specs._n2;
+                }
+                while( specs._nz2 > 0 ) {
+                    (out_putc)( &specs, STRING( '0' ) );
+                    --specs._nz2;
+                }
+                if( specs._flags & SPF_LEFT_ADJUST ) {
+                    while( specs._fld_width > 0 ) {
+                        (out_putc)( &specs, STRING( ' ' ) );
+                        --specs._fld_width;
+                    }
+                }
+            }
+        }
+    }
+    return( specs._output_count );
 }
 
 #endif

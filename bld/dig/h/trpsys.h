@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,16 +30,17 @@
 ****************************************************************************/
 
 
+/*
+ * Trap interface function/pointer macros
+ */
+#define TRAP_EXTFUNC(n)         trap_ ## n
+#define TRAP_EXTFUNC_PTR(n)     ptr_ ## n
+#define TRAP_EXTFUNC_TYPE(n)    type_ ## n
+#define TRAPENTRY_FUNC(n)       TRAPENTRY Trap ## n
+
 #if defined( __OS2__ )
 
 extern bool     IsTrapFilePumpingMessageQueue( void );
-extern char     TrapTellHardMode( char hard );
-
-  #if defined( _M_I86 )
-extern bool     TrapTellHandles( void __far *hab, void __far *hwnd );
-  #else
-extern bool     TrapTellHandles( HAB hab, HWND hwnd );
-  #endif
 
 #elif defined( __DOS__ )
   #if !defined( _M_I86 )
@@ -48,17 +50,16 @@ extern void     SaveOrigVectors( void );
 extern void     RestoreOrigVectors( void );
 
   #endif
-#elif defined( __NT__ )
-
-extern bool     TrapTellHWND( HWND hwnd );
-
 #elif defined( __WINDOWS__ )
 
 extern bool     TrapHardModeRequired;
-extern bool     TrapTellHWND( HWND hwnd );
-extern void     TrapSetHardMode( bool mode );
-extern void     TrapHardModeCheck( void );
-extern void     TrapInputHook( event_hook_fn * );
-extern void     TrapUnLockInput( void );
 
 #endif
+
+#define pick(n,r,p,ar,ap)   extern ar TRAP_EXTFUNC( n ) ## ap;
+#include "_trpextf.h"
+#undef pick
+
+#define pick(n,r,p,ar,ap)   extern r TRAPENTRY_FUNC( n ) ## p;
+#include "_trpextf.h"
+#undef pick

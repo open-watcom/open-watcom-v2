@@ -37,6 +37,7 @@
 #include <direct.h>
 #include <windows.h>
 #include "ntext.h"
+#include "ntinfo.h"
 #include "_dtaxxx.h"
 
 

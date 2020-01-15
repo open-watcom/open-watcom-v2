@@ -1,6 +1,6 @@
 eng_objs = &
     $(trmem_objs) &
-    $(dip_objs) $(mad_objs) $(trap_objs) $(dig_objs) &
+    $(dip_objs) $(mad_objs) $(trp_objs) $(dig_objs) &
     $(_subdir_)dumb.obj &
     $(_subdir_)spawn.obj &
     $(_subdir_)dbgchain.obj &
@@ -219,5 +219,5 @@ sys_objs_nt       =
 sys_objs_win      = 
 
 engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(host_os)$(host_cpu))
-ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(host_os)$(host_cpu)) $(objs_$(host_os)_$(host_cpu))
-sys_objs = $(sys_objs_$(host_os)) $(sys_objs_$(host_os)$(host_cpu))
+ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(host_os)$(host_cpu)) #$(objs_$(host_os)_$(host_cpu))
+#sys_objs = $(sys_objs_$(host_os)) $(sys_objs_$(host_os)$(host_cpu))

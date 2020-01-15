@@ -303,7 +303,7 @@ typedef enum {
     GUI_NO_CURSOR,
     GUI_NORMAL_CURSOR,
     GUI_INSERT_CURSOR
-} gui_char_cursor;
+} gui_cursor_type;
 
 typedef enum {
     GUI_FRAME_TOP,
@@ -699,8 +699,8 @@ extern void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check );
 
 extern bool GUIGetCursorPos( gui_window *wnd, gui_point *point );
 extern bool GUISetCursorPos( gui_window *wnd, gui_point *point );
-extern bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor );
-extern bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor );
+extern bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor );
+extern bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor );
 
 extern gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type );
 extern void GUIResetMouseCursor( gui_mcursor_handle old_cursor );

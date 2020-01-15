@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,10 +43,10 @@ WPI_MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PAR
 /*
  * imgEditInit - initialization
  */
-static BOOL imgEditInit( HAB hab )
+static bool imgEditInit( HAB hab )
 {
     ULONG       flags;
-    BOOL        maximized;
+    bool        maximized;
     HWND        frame;
     char        clientclass[] = { "IMGEDClientClass" };
     HWND        hwnd;
@@ -66,70 +67,70 @@ static BOOL imgEditInit( HAB hab )
                            (PFNWP)ImgEdFrameProc,
                            CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPCHILDREN,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            clientclass,
                            (PFNWP)ClientProc,
                            CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPCHILDREN,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            PaletteClass,
                            (PFNWP)ColourPalWinProc,
                            CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPCHILDREN,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            CURRENT_CLASS,
                            (PFNWP)CurrentWndProc,
                            CS_SIZEREDRAW | CS_SYNCPAINT,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            AVAIL_CLASS,
                            (PFNWP)ColoursWndProc,
                            CS_SIZEREDRAW | CS_SYNCPAINT,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            SCREEN_CLASS,
                            (PFNWP)ScreenWndProc,
                            CS_SIZEREDRAW,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            DrawAreaClassB,
                            (PFNWP)DrawAreaWinProc,
                            CS_SIZEREDRAW | CS_SYNCPAINT | CS_CLIPSIBLINGS,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            DrawAreaClassI,
                            (PFNWP)DrawAreaWinProc,
                            CS_SIZEREDRAW | CS_SYNCPAINT | CS_CLIPSIBLINGS,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            DrawAreaClassC,
                            (PFNWP)DrawAreaWinProc,
                            CS_SIZEREDRAW | CS_SYNCPAINT | CS_CLIPSIBLINGS,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
     if (!WinRegisterClass( hab,
                            ViewWinClass,
                            (PFNWP)ViewWindowProc,
                            CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPCHILDREN,
                            0 )) {
-        return( FALSE );
+        return( false );
     }
 
     LoadImgedConfig();
@@ -186,7 +187,7 @@ static BOOL imgEditInit( HAB hab )
     }
     SetHintText("Open Watcom Image Editor.");
     WinSetFocus( HWND_DESKTOP, _wpi_getframe(HMainWindow) );
-    return( TRUE );
+    return( true );
 } /* imgEditInit */
 
 /*
@@ -245,7 +246,7 @@ int main( int argc, char *argv[] )
         // never return
     }
 
-    IEEnableMenuInput( TRUE );
+    IEEnableMenuInput( true );
 
     if( argc > 1 ) {
         parseCmdLine( argc, argv );

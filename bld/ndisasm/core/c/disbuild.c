@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -645,36 +646,42 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num, char 
         best_bit = 0;
         for( i = 0; i < 32; ++i ) {
             /* find the bit position that occurs in the most masks */
-            if( bit_count[i] > bit_count[best_bit] ) best_bit = i;
+            if( bit_count[i] > bit_count[best_bit] ) {
+                best_bit = i;
+            }
         }
         shift = best_bit;
         if( bit_count[shift] != 0 ) {
             shifted_mask = 0;
             i = shift;
             for( ;; ) {
-                if( i >= 32 ) break;
+                if( i >= 32 )
+                    break;
                 /*
                     Don't include in range if less than 3/4ths of the
                     masks use the bit.
                 */
-                if( (head->check & (1UL << i))
-                 && (bit_count[i] < (3 * bit_count[best_bit]) / 4) ) break;
+                if( (head->check & (1UL << i)) && (bit_count[i] < (3 * bit_count[best_bit]) / 4) )
+                    break;
                 shifted_mask <<= 1;
                 shifted_mask |= 1;
-                if( shifted_mask == 0xff ) break;
+                if( shifted_mask == 0xff )
+                    break;
                 ++i;
             }
             // now try to grow it the other way
             if( shift != 0 && shifted_mask != 0xff ) {
                 i = shift - 1;
                 for( ;; ) {
-                    if( i == 0 ) break;
-                    if( (head->check & (1UL << i))
-                        && (bit_count[i] < (3 * bit_count[best_bit]) / 4) ) break;
+                    if( i == 0 )
+                        break;
+                    if( (head->check & (1UL << i)) && (bit_count[i] < (3 * bit_count[best_bit]) / 4) )
+                        break;
                     shifted_mask <<= 1;
                     shifted_mask |= 1;
                     --shift;
-                    if( shifted_mask == 0xff ) break;
+                    if( shifted_mask == 0xff )
+                        break;
                     --i;
                 }
             }
@@ -729,7 +736,9 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num, char 
         new = head->next;
         free( head );
         head = new;
-        if( head == NULL ) break;
+        if( head == NULL ) {
+            break;
+        }
     }
     if( !dumped_entries ) {
         dumped_entries++;
@@ -820,13 +829,16 @@ int main( void )
     BuildStringTable();
     fprintf( fp, "\nconst unsigned char DisStringTable[] = {\n" );
     for( i = 0; i < StringIndex; ++i ) {
-        if( (i % 16) == 0 ) fprintf( fp, "/*%4.4x*/ ", i );
+        if( (i % 16) == 0 )
+            fprintf( fp, "/*%4.4x*/ ", i );
         if( StringTable[i] < ' ' || (StringTable[i] & LENGTH_BIT) ) {
             fprintf( fp, "%-3u,", StringTable[i] );
         } else {
             fprintf( fp, "'%c',", StringTable[i] );
         }
-        if( (i % 16) == 15 ) fprintf( fp, "\n" );
+        if( (i % 16) == 15 ) {
+            fprintf( fp, "\n" );
+        }
     }
     fprintf( fp, "};\n\n" );
     fprintf( fp, "\nconst dis_ins_descript DisInstructionTable[] = {\n" );

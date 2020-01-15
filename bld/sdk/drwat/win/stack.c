@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 
             addr.seg = std.ste.wCS;
             addr.offset = std.ste.wIP;
-            if( FindWatSymbol( &addr, &si, TRUE ) == FOUND ) {
+            if( FindWatSymbol( &addr, &si, true ) ) {
                 RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
             } else {
                 RCsprintf( buff, STR_N_A );

@@ -33,7 +33,13 @@
 
 #include "tixstatu.h"
 
+#ifdef __QNX__
+#define MB_MAP_MAX  1
+#else
+#define MB_MAP_MAX  4
+#endif
+
 // array of char mappings (up to 3 UTF-8 characters followed by a 0)
-extern char         ti_char_map[256][4];
+extern char         ti_char_map[256][MB_MAP_MAX];
 
 extern tix_status   ti_read_tix( const char *termname );

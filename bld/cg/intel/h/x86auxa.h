@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ typedef unsigned long long      call_class;
 #define BYTE_SEQ_OFF    unsigned
 
 typedef enum {
-    #define pick_fp(enum,name,alt_name) FIX_ ## enum,
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) FIX_ ## enum,
     #include "fppatche.h"
     #undef pick_fp
     FIX_SYM_OFFSET,     /* followed by a long */

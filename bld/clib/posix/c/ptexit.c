@@ -44,6 +44,8 @@ _WCRTLINK void pthread_exit( void *value_ptr )
 {
     pthread_t myself;
 
+    /* unused parameters */ (void)value_ptr;
+
     /* Call the thread cleanup routines */
     __call_all_pthread_cleaners();
 

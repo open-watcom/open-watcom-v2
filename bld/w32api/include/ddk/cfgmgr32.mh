@@ -1202,8 +1202,6 @@ CMAPI CONFIGRET WINAPI  CM_Write_UserPowerKey( CONST GUID *, CONST GUID *, CONST
     #define CM_Get_Device_ID_Ex                     CM_Get_Device_ID_ExW
     #define CM_Get_Device_ID_List                   CM_Get_Device_ID_ListW
     #define CM_Get_Device_ID_List_Ex                CM_Get_Device_ID_List_ExW
-    #define CM_Get_Device_ID_Size                   CM_Get_Device_ID_SizeW
-    #define CM_Get_Device_ID_Size_Ex                CM_Get_Device_ID_Size_ExW
     #define CM_Get_Device_Interface_Alias           CM_Get_Device_Interface_AliasW
     #define CM_Get_Device_Interface_Alias_Ex        CM_Get_Device_Interface_Alias_ExW
     #define CM_Get_Device_Interface_List            CM_Get_Device_Interface_ListW
@@ -1269,8 +1267,6 @@ CMAPI CONFIGRET WINAPI  CM_Write_UserPowerKey( CONST GUID *, CONST GUID *, CONST
     #define CM_Get_Device_ID_Ex                     CM_Get_Device_ID_ExA
     #define CM_Get_Device_ID_List                   CM_Get_Device_ID_ListA
     #define CM_Get_Device_ID_List_Ex                CM_Get_Device_ID_List_ExA
-    #define CM_Get_Device_ID_Size                   CM_Get_Device_ID_SizeA
-    #define CM_Get_Device_ID_Size_Ex                CM_Get_Device_ID_Size_ExA
     #define CM_Get_Device_Interface_Alias           CM_Get_Device_Interface_AliasA
     #define CM_Get_Device_Interface_Alias_Ex        CM_Get_Device_Interface_Alias_ExA
     #define CM_Get_Device_Interface_List            CM_Get_Device_Interface_ListA

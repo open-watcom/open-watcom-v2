@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,9 @@
 
 #include "asmglob.h"
 #include <ctype.h>
+#if defined( __WATCOMC__ ) && defined( DEBUG_OUT )
+    #include <malloc.h>
+#endif
 #include "asmalloc.h"
 #include "directiv.h"
 #include "queues.h"
@@ -42,6 +46,7 @@
 #include "asmeval.h"
 #include "myassert.h"
 #include "asmdefs.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -314,7 +319,7 @@ static bool AddPredefinedConstant( char *name, const_info *info )
     } else if( dir->sym.state == SYM_UNDEFINED ) {
         dir_change( dir, TAB_CONST );
     } else if( dir->sym.state != SYM_CONST ) {
-        AsmError( LABEL_ALREADY_DEFINED );
+        AsmErr( LABEL_ALREADY_DEFINED, dir->sym.name );
         return( RC_ERROR );
     }
     if( !dir->e.constinfo->predef ) {
@@ -2156,13 +2161,12 @@ void ModuleFini( void )
 static void get_module_name( void )
 /*********************************/
 {
-    char dummy[_MAX_EXT];
-    char fname[_MAX_FNAME];
+    PGROUP2     pg;
     char        *p;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );
-    _splitpath( AsmFiles.fname[ASM], NULL, NULL, fname, dummy );
-    ModuleInfo.name = AsmStrDup( fname );
+    _splitpath2( AsmFiles.fname[ASM], pg.buffer, NULL, NULL, &pg.fname, NULL );
+    ModuleInfo.name = AsmStrDup( pg.fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
             || ( *p == '@' ) || ( *p == '?') ) ) {

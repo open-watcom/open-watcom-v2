@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,21 +49,21 @@ void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod ) {
 
 static mad_disasm_data  *MDData=NULL;
 
-RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo )
+bool FindWatSymbol( address *addr, syminfo *si, bool getsrcinfo )
 {
     DWORD       symoff;
     DWORD       line;
 
     if( !GetSymbolName( addr, si->name, &symoff ) ) {
-        return( NOT_FOUND );
+        return( false );
     }
     si->symoff = symoff;
     if( getsrcinfo ) {
         if( !GetLineNum( addr, si->filename, MAX_FILE_NAME, &line ) )
-            return( NOT_FOUND );
+            return( false );
         si->linenum = line;
     }
-    return( FOUND );
+    return( true );
 }
 
 bool AllocMadDisasmData(void)
@@ -89,7 +90,7 @@ static unsigned FormatAddr( address *a, char *buffer, unsigned max )
     unsigned_8          item[16];
     int                 i;
     syminfo     si;
-    if( StatShowSymbols && FindWatSymbol( a, &si, FALSE ) == FOUND) {
+    if( StatShowSymbols && FindWatSymbol( a, &si, false ) ) {
         if( si.symoff == 0L ) {
             sprintf( buffer, "%s ", si.name );
         } else {

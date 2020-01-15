@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -100,13 +102,21 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static void updateNHStuff( FILE *fp, const char *modname, const char *desc )
+static void updateNHStuff( FILE *fp, const char *fname, const char *desc )
 {
     dos_exe_header      dh;
     os2_exe_header      nh;
     long                off;
     size_t              len;
+    char                modname[8];
 
+    len = strlen( fname );
+    if( len < 8 ) {
+        memcpy( modname, fname, len );
+        memset( modname + len, ' ', 8 - len );
+    } else {
+        memcpy( modname, fname, 8 );
+    }
     fseek( fp, 0, SEEK_SET );
     fread( &dh, 1, sizeof( dh ), fp );
     off = dh.file_size * 512L - (-dh.mod_size & 0x1ff);
@@ -278,8 +288,7 @@ int main( int argc, char *argv[] )
     bool            dllflag = false;
     char            *wext = NULL;
     unsigned_32     exelen = 0;
-    char            drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME];
-    char            ext[_MAX_EXT];
+    PGROUP2         pg;
     char            rex[_MAX_PATH];
     char            exe[_MAX_PATH];
     char            dll[_MAX_PATH];
@@ -360,19 +369,19 @@ int main( int argc, char *argv[] )
      * get files to use
      */
     normalizeFName( path, strlen( path ) + 1, path );
-    _splitpath( path, drive, dir, fname, ext );
-    _makepath( rex, drive, dir, fname, ".rex" );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( rex, pg.drive, pg.dir, pg.fname, "rex" );
     if( dllflag ) {
-        _makepath( dll, drive, dir, fname, ".dll" );
+        _makepath( dll, pg.drive, pg.dir, pg.fname, "dll" );
     }
-    _makepath( exe, drive, dir, fname, ".exe" );
-    _makepath( res, drive, dir, fname, "" );
+    _makepath( exe, pg.drive, pg.dir, pg.fname, "exe" );
+    _makepath( res, pg.drive, pg.dir, pg.fname, NULL );
 
     /*
      * do the unbind
      */
     if( uflag ) {
-        if( ext[0] == 0 ) {
+        if( pg.ext[0] == '\0' ) {
             path = exe;
         }
         in = fopen( path, "rb" );
@@ -503,11 +512,7 @@ int main( int argc, char *argv[] )
      */
     fseek( out, NH_MAGIC_REX, SEEK_SET );
     fwrite( &exelen, 1, sizeof( exelen ), out );
-    len = strlen( fname );
-    if( len < 8 ) {
-        memset( &fname[len], ' ', 8 - len );
-    }
-    updateNHStuff( out, fname, desc );
+    updateNHStuff( out, pg.fname, desc );
     fclose( out );
     if( dllflag ) {
         remove( dll );

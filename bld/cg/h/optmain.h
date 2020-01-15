@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 extern void     InputOC( any_oc *oc );
 extern void     OutputOC( any_oc *, any_oc * );
-extern bool     ShrinkQueue( pointer_int size );
+extern bool     ShrinkQueue( pointer_uint size );
 extern void     InitQueue( void );
 extern void     EmptyQueue( void );
 extern void     FlushQueue( void );

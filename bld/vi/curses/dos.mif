@@ -5,13 +5,16 @@ objdossizeroot = &
     dosmain.obj
 
 objdossize = &
-    doscmds.obj &
     dosmouse.obj &
     dossys.obj &
     dosdir.obj &
     time.obj  &
     spawn.obj &
     uicurse.c
+
+!ifeq host_cpu i86
+objdossize += getspcmd.obj
+!endif
 
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)

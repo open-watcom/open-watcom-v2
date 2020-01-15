@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +122,7 @@
 
 typedef void *(*realloc_fn_t)( void *, size_t );
 
-typedef void (*outfunPtr)(void **, dm_pts, pointer_int, char const *);
+typedef void (*outfunPtr)(void **, dm_pts, pointer_uint, char const *);
 
 #define MAX_REPLICATE   10
 
@@ -149,11 +150,11 @@ typedef struct output_desc {
     size_t          scope_len;
     int             suppress_output;
     unsigned        scope_index;
-    bool            ctdt_pending : 1;
-    bool            cv_pending : 1;
-    bool            scope_name : 1;
-    bool            base_name : 1;
-    bool            dllimport : 1;
+    boolbit         ctdt_pending    : 1;
+    boolbit         cv_pending      : 1;
+    boolbit         scope_name      : 1;
+    boolbit         base_name       : 1;
+    boolbit         dllimport       : 1;
 } output_desc;
 
 // the simple demangler uses these to output & count chars in the output buffer
@@ -165,7 +166,7 @@ typedef struct output_desc {
 typedef struct state_desc {
     size_t          prefix;
     size_t          suffix;
-    bool            right : 1;
+    boolbit         right : 1;
 } state_desc;
 
 #ifdef _M_I86
@@ -512,7 +513,7 @@ static void unforceSuppression( output_desc *data )
     }
 }
 
-static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char const *ptr )
+static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char const *ptr )
 {
     output_desc *data = *((output_desc **)cookie);
     size_t      idx = (size_t)value;

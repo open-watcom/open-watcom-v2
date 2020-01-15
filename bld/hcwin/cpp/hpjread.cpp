@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "topic.h"
 #include "phrase.h"
 #include "bmx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -50,8 +52,6 @@
 #define NB_FILES    10
 #define LINE_BLOCK  128
 
-
-char const  HpjExt[] = ".HPJ";
 
 // Other string resources.
 static char const   SBaggage[]      = "BAGGAGE";
@@ -407,17 +407,14 @@ void HPJReader::parseFile()
 
         _theFiles->_phrFile = new HFPhrases( _dir, &firstFile, &nextFile );
 
-        char    full_path[_MAX_PATH];
-        char    drive[_MAX_DRIVE];
-        char    dir[_MAX_DIR];
-        char    fname[_MAX_FNAME];
-        char    ext[_MAX_EXT];
+        char        full_path[_MAX_PATH];
+        PGROUP2     pg;
 
         _fullpath( full_path, _scanner.name(), _MAX_PATH );
-        _splitpath( full_path, drive, dir, fname, ext );
-        _makepath( full_path, drive, dir, fname, PhExt );
+        _splitpath2( full_path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( full_path, pg.drive, pg.dir, pg.fname, PH_EXT );
 
-        if( !_oldPhrases || !_theFiles->_phrFile->oldTable(full_path) ) {
+        if( !_oldPhrases || !_theFiles->_phrFile->oldTable( full_path ) ) {
             _theFiles->_phrFile->readPhrases();
             _theFiles->_phrFile->createQueue( full_path );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +197,7 @@ static void NegImage( char _WCI86HUGE *pic, long size )
 #if defined( _M_I86 )
     long                max;
 
-    max = _64_K - FP_OFF( pic );      // max before pointer overflows
+    max = _64_K - _FP_OFF( pic );       // max before pointer overflows
     if( size > max ) {
         NegSome( (char _WCI86FAR *) pic, max );      // bring to 64K boundary
         pic += max;

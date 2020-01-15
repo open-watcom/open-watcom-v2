@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,9 +100,9 @@ WINEXPORT FNCALLBACK DdeCallBack;
 /* static function prototypes                                               */
 /****************************************************************************/
 
-extern BOOL     IEHData2Mem( HDDEDATA, void **, uint_32 * );
-extern BOOL     IEStartDDEEditSession( void );
-extern HDDEDATA IECreateResData( img_node *node );
+static bool     IEHData2Mem( HDDEDATA, void **, uint_32 * );
+static bool     IEStartDDEEditSession( void );
+static HDDEDATA IECreateResData( img_node *node );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -149,66 +149,70 @@ static bool         GotEndSession = false;
 /*
  * IEDDEStart
  */
-BOOL IEDDEStart( HINSTANCE inst )
+bool IEDDEStart( HINSTANCE inst )
 {
     WORD        ret;
     DWORD       flags;
     int         i;
+    bool        ok;
 
     _imged_touch( inst ); /* MakeProcInstance vanishes in NT */
 
-    if( IdInst != 0 ) {
-        return( FALSE );
-    }
+    ok = ( IdInst == 0 );
 
-    for( i = 0; i < NUM_FORMATS; i++ ) {
-        IEClipFormats[i].format = RegisterClipboardFormat( IEClipFormats[i].str );
-        if( IEClipFormats[i].format == 0 ) {
-            return( FALSE );
+    if( ok ) {
+
+        for( i = 0; i < NUM_FORMATS; i++ ) {
+            IEClipFormats[i].format = RegisterClipboardFormat( IEClipFormats[i].str );
+            if( IEClipFormats[i].format == 0 ) {
+                ok = false;
+                break;
+            }
         }
-    }
 
-    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProcInst == NULL ) {
-        return( FALSE );
-    }
-
-    flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
-            CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
-            CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
-
-    ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
-    if( ret != DMLERR_NO_ERROR ) {
-        return( FALSE );
-    }
-
-    for( i = 0; i < NUM_FORMATS; i++ ) {
-        IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service, CP_WINANSI );
-        IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic, CP_WINANSI );
-    }
-
-    hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
-    if( hFileItem == (HSZ)NULL ) {
-        return( FALSE );
-    }
-
-    hNameItem = DdeCreateStringHandle( IdInst, WRE_NAME_ITEM, CP_WINANSI );
-    if( hNameItem == (HSZ)NULL ) {
-        return( FALSE );
-    }
-
-    hDataItem = DdeCreateStringHandle( IdInst, WRE_DATA_ITEM, CP_WINANSI );
-    if( hDataItem == (HSZ)NULL ) {
-        return( FALSE );
-    }
-
-    for( i = 0; i < NUM_FORMATS; i++ ) {
-        if( IEServices[i].hservice != (HSZ)NULL ) {
-            DdeNameService( IdInst, IEServices[i].hservice, (HSZ)NULL, DNS_REGISTER );
+        if( ok ) {
+            DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+            ok = ( DdeProcInst != NULL );
         }
-    }
+        if( ok ) {
+            flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
+                    CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
+                    CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    return( TRUE );
+            ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
+            ok = ( ret == DMLERR_NO_ERROR );
+        }
+
+        if( ok ) {
+            for( i = 0; i < NUM_FORMATS; i++ ) {
+                IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service, CP_WINANSI );
+                IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic, CP_WINANSI );
+            }
+
+            hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
+            ok = ( hFileItem != (HSZ)NULL );
+        }
+
+        if( ok ) {
+            hNameItem = DdeCreateStringHandle( IdInst, WRE_NAME_ITEM, CP_WINANSI );
+            ok = ( hNameItem != (HSZ)NULL );
+        }
+
+        if( ok ) {
+            hDataItem = DdeCreateStringHandle( IdInst, WRE_DATA_ITEM, CP_WINANSI );
+            ok = ( hDataItem != (HSZ)NULL );
+        }
+
+        if( ok ) {
+            for( i = 0; i < NUM_FORMATS; i++ ) {
+                if( IEServices[i].hservice != (HSZ)NULL ) {
+                    DdeNameService( IdInst, IEServices[i].hservice, (HSZ)NULL, DNS_REGISTER );
+                }
+            }
+        }
+
+    }
+    return( ok );
 
 } /* IEDDEStart */
 
@@ -250,12 +254,12 @@ void IEDDEEnd( void )
 /*
  * IEDDEDumpConversation
  */
-BOOL IEDDEDumpConversation( HINSTANCE inst )
+bool IEDDEDumpConversation( HINSTANCE inst )
 {
     HCONV       hconv;
     HSZ         hservice;
     HSZ         htopic;
-    BOOL        ok;
+    bool        ok;
 
     ok = IEDDEStart( inst );
 
@@ -289,8 +293,7 @@ BOOL IEDDEDumpConversation( HINSTANCE inst )
     IEDDEEnd();
 
     if( !ok ) {
-        IEDisplayErrorMsg( WIE_DDEINITTITLE, WIE_DDETERMINATIONMSG,
-                           MB_OK | MB_ICONINFORMATION );
+        IEDisplayErrorMsg( WIE_DDEINITTITLE, WIE_DDETERMINATIONMSG, MB_OK | MB_ICONINFORMATION );
     }
 
     return( ok );
@@ -300,27 +303,27 @@ BOOL IEDDEDumpConversation( HINSTANCE inst )
 /*
  * IEDDEStartConversation
  */
-BOOL IEDDEStartConversation( void )
+bool IEDDEStartConversation( void )
 {
     if( IdInst == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     hService = DdeCreateStringHandle( IdInst, WRE_SERVICE_NAME, CP_WINANSI );
     if( hService == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     IEClientConv = DdeConnect( IdInst, hService, (HSZ)NULL, (LPVOID)NULL );
     if( IEClientConv == (HCONV)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !IEStartDDEEditSession() ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 
 } /* IEDDEStartConversation */
 
@@ -347,29 +350,28 @@ void IEDDEEndConversation( void )
 /*
  * IEHData2Mem
  */
-BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
+bool IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 {
-    if( hData == NULL || mem == NULL || size == NULL ) {
-        return( FALSE );
-    }
+    bool    ok;
 
-    *size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
-    if( *size == 0 ) {
-        return( FALSE );
-    }
+    ok = ( hData != NULL && mem != NULL && size != NULL );
 
-    *mem = MemAlloc( *size );
-    if( *mem == NULL ) {
-        return( FALSE );
-    }
+    if( ok ) {
+        *size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
+        ok = ( *size != 0 );
 
-    if( (DWORD)*size != DdeGetData( hData, *mem, (DWORD)*size, 0 ) ) {
-        MemFree( *mem );
-        *mem = NULL;
-        return( FALSE );
-    }
+        if( ok ) {
+            *mem = MemAlloc( *size );
+            ok = ( *mem != NULL );
+        }
 
-    return( TRUE );
+        if( ok && (DWORD)*size != DdeGetData( hData, *mem, (DWORD)*size, 0 ) ) {
+            MemFree( *mem );
+            *mem = NULL;
+            ok = false;
+        }
+    }
+    return( ok );
 
 } /* IEHData2Mem */
 
@@ -381,7 +383,7 @@ HDDEDATA IECreateResData( img_node *node )
     HDDEDATA    hdata;
     BYTE        *data;
     size_t      size;
-    BOOL        ok;
+    bool        ok;
 
     data = NULL;
     hdata = NULL;
@@ -439,11 +441,11 @@ static img_node *IEGetCurrentImageNode( void )
 /*
  * IEUpdateDDEEditSession
  */
-BOOL IEUpdateDDEEditSession( void )
+bool IEUpdateDDEEditSession( void )
 {
     img_node            *node;
     HDDEDATA            hdata;
-    BOOL                ok;
+    bool                ok;
 
     hdata = NULL;
     node = IEGetCurrentImageNode();
@@ -465,7 +467,7 @@ BOOL IEUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
     }
 
     return( ok );
@@ -475,14 +477,14 @@ BOOL IEUpdateDDEEditSession( void )
 /*
  * IEStartDDEEditSession
  */
-BOOL IEStartDDEEditSession( void )
+bool IEStartDDEEditSession( void )
 {
     char                *filename;
     HDDEDATA            hData;
     void                *data;
     DWORD               ret;
     uint_32             size;
-    BOOL                ok;
+    bool                ok;
 
     data = NULL;
     filename = NULL;

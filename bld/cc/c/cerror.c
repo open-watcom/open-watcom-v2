@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,16 +45,15 @@ typedef enum {
     POSTLIST_TWOTYPES_2  /* type mismatch between two types ( first/second ) - print them */
 } postlist_type;
 
-typedef struct ErrPostList
-{
+typedef struct ErrPostList {
     struct ErrPostList  *next;
     postlist_type       type;
 
     union {
         /* POSTLIST_SYMBOL */
         struct {
-            char        *sym_name;
-            char        *sym_file;
+            const char  *sym_name;
+            const char  *sym_file;
             unsigned    sym_line;
         } s;
         /* POSTLIST_TWOTYPES */
@@ -64,19 +64,18 @@ typedef struct ErrPostList
     } u;
 } ErrPostList;
 
+msg_level_info      msg_level[MESSAGE_COUNT] = {
+    #define MSG_DEF( name, group, kind, level, group_index ) { MSG_TYPE_##kind, level, true },
+        MSG_DEFS
+    #undef MSG_DEF
+};
+
 static ErrPostList  *PostList;
 static unsigned     error_line = 0;
 static char         *error_fname = NULL;
 
-#if 0
-static char const WngLvls[] = {
-#define warn(code,level) level,
-#include "cwngs.h"
-#undef warn
-};
-#endif
-
 void OpenErrFile( void )
+/**********************/
 {
     char        *name;
 
@@ -91,14 +90,38 @@ void OpenErrFile( void )
     }
 }
 
-static bool MsgDisabled( int msgnum )
+static bool okToPrintMsg( msg_codes msgnum, int *plevel )
+/*******************************************************/
+/* See if OK to print message */
 {
-    if( MsgFlags != NULL ) {
-        if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
-            return( true );
+    bool    ok;
+    int     level;
+    int     msg_index;
+
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 )
+        return( false );
+    ok = msg_level[msg_index].enabled;
+    level = msg_level[msg_index].level;
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_INFO :
+        level = WLEVEL_NOTE;
+        break;
+    case MSG_TYPE_ANSIERR :
+    case MSG_TYPE_ANSIWARN :
+        ok = !CompFlags.extensions_enabled;
+        break;
+    case MSG_TYPE_ANSI :
+        if( !CompFlags.extensions_enabled ) {
+            level = WLEVEL_ERROR;
         }
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ERROR :
+        break;
     }
-    return( false );
+    *plevel = level;
+    return( ok );
 }
 
 // fill cmsg_info struct
@@ -144,21 +167,21 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
 
 static char const *MsgClassPhrase( cmsg_class class )
 {
-    msg_codes       msgcode = PHRASE_ERROR;     // just for init.
+    msg_codes       msgnum = PHRASE_ERROR;     // just for init.
     char const      *phrase;
 
     switch( class ) {
     case CMSG_INFO:
-        msgcode = PHRASE_NOTE;
+        msgnum = PHRASE_NOTE;
         break;
     case CMSG_WARN:
-        msgcode = PHRASE_WARNING;
+        msgnum = PHRASE_WARNING;
         break;
     case CMSG_ERRO:
-        msgcode = PHRASE_ERROR;
+        msgnum = PHRASE_ERROR;
         break;
     }
-    phrase = CGetMsgStr( msgcode );
+    phrase = CGetMsgStr( msgnum );
     return( phrase );
 }
 
@@ -189,7 +212,7 @@ static void OutMsg( cmsg_info  *info )
 
     if( ErrFile == NULL )
         OpenErrFile();
-    if( !CompFlags.no_conmsg )
+    if( !CompFlags.eq_switch_used )
         ConsErrMsg( info );
     if( ErrFile != NULL ) {
         FmtCMsg( pre, info );
@@ -200,7 +223,7 @@ static void OutMsg( cmsg_info  *info )
     }
 }
 
-static void PrintType( int msg, TYPEPTR typ )
+static void PrintType( msg_codes msgnum, TYPEPTR typ )
 {
     char    *text;
 
@@ -208,7 +231,7 @@ static void PrintType( int msg, TYPEPTR typ )
         return;
 
     text = DiagGetTypeName( typ );
-    CInfoMsg( msg, text );
+    CInfoMsg( msgnum, text );
     CMemFree( text );
 }
 
@@ -234,16 +257,14 @@ static void PrintPostNotes( void )
 }
 
 // Output error message
-static void CErr( int parmno, int msgnum, ... )
+static void CErr( int parmno, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
 
-    if( CompFlags.cpp_output )
-        return;
     info.class = CMSG_ERRO;
     va_start( args1, msgnum );
-    if( ErrLimit == -1 || ErrCount < ErrLimit ) {
+    if( ErrLimit == ERRLIMIT_NOMAX || ErrCount < ErrLimit ) {
         CMsgInfo( &info, parmno, msgnum, args1 );
         OutMsg( &info );
         ++ErrCount;
@@ -257,46 +278,47 @@ static void CErr( int parmno, int msgnum, ... )
     }
 }
 
-void CErr1( int msgnum )
+void CErr1( msg_codes msgnum )
 {
     CErr( 0, msgnum );
 }
 
-void CErr2( int msgnum, int p1 )
+void CErr2( msg_codes msgnum, int p1 )
 {
     CErr( 0, msgnum, p1 );
 }
 
-void CErr2p( int msgnum, const char *p1 )
+void CErr2p( msg_codes msgnum, const char *p1 )
 {
     CErr( 0, msgnum, p1 );
 }
 
-void CErr3p( int msgnum, const char *p1, const char *p2 )
+void CErr3p( msg_codes msgnum, const char *p1, const char *p2 )
 {
     CErr( 0, msgnum, p1, p2 );
 }
 
-void CErr4p( int msgnum, const char *p1, const char *p2, const char *p3 )
+void CErr4p( msg_codes msgnum, const char *p1, const char *p2, const char *p3 )
 {
     CErr( 0, msgnum, p1, p2, p3 );
 }
 
-void CErrP1( int parmno, int msgnum )
+void CErrP1( int parmno, msg_codes msgnum )
 {
     CErr( parmno, msgnum );
 }
 
 
 // Out warning message
-static void CWarn( int parmno, int level, int msgnum, ... )
+static void CWarn( int parmno, int levelx, msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
+    int         level;
 
-    if( CompFlags.cpp_output )
-        return;
-    if( ! MsgDisabled( msgnum ) ) {
+    /* unused parameters */ (void)levelx;
+
+    if( okToPrintMsg( msgnum, &level ) ) {
         if( level <= WngLevel ) {
             info.class = CMSG_WARN;
             va_start( args1, msgnum );
@@ -309,46 +331,47 @@ static void CWarn( int parmno, int level, int msgnum, ... )
     }
 }
 
-void CWarn1( int level, int msgnum )
+void CWarn1( int level, msg_codes msgnum )
 {
     CWarn( 0, level, msgnum );
 }
 
-void CWarn2( int level, int msgnum, int p1 )
+void CWarn2( int level, msg_codes msgnum, int p1 )
 {
     CWarn( 0, level, msgnum, p1 );
 }
 
-void CWarn2p( int level, int msgnum, const char *p1 )
+void CWarn2p( int level, msg_codes msgnum, const char *p1 )
 {
     CWarn( 0, level, msgnum, p1 );
 }
 
-void CWarnP1( int parmno, int level, int msgnum )
+void CWarnP1( int parmno, int level, msg_codes msgnum )
 {
     CWarn( parmno, level, msgnum );
 }
 
 
-void CInfoMsg( int msgnum, ... )
+void CInfoMsg( msg_codes msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
+    int         level;
 
-    if( CompFlags.cpp_output )
-        return;
-    if( MsgDisabled( msgnum ) )
-        return;
-    info.class = CMSG_INFO;
-    va_start( args1, msgnum );
-    CMsgInfo( &info, 0, msgnum, args1 );
-    OutMsg( &info );
-    va_end( args1 );
+    if( okToPrintMsg( msgnum, &level ) ) {
+        if( level <= WngLevel ) {
+            info.class = CMSG_INFO;
+            va_start( args1, msgnum );
+            CMsgInfo( &info, 0, msgnum, args1 );
+            OutMsg( &info );
+            va_end( args1 );
+        }
+    }
 }
 
 
 // Output pre-compiled header Note
-void PCHNote( int msgnum, ... )
+void PCHNote( msg_codes msgnum, ... )
 {
     va_list     args1;
     char        msgbuf[MAX_MSG_LEN];
@@ -390,22 +413,22 @@ void CSuicide( void )
 //doesn't work in general as phases are used in both errror and warnings
 static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
 {
-    msgtype     kind;
+    msg_type    kind;
     cmsg_class  class;
 
     kind = CGetMsgType( msgnum );
     switch( kind ) {
-    case msgtype_ERROR:
-    case msgtype_ANSIERR:
+    case MSG_TYPE_ERROR:
+    case MSG_TYPE_ANSIERR:
         class = CMSG_ERRO;
         break;
-    case msgtype_WARNING:
-    case msgtype_ANSIWARN:
+    case MSG_TYPE_WARNING:
+    case MSG_TYPE_ANSIWARN:
         class = CMSG_WARN;
         break;
-    case msgtype_INFO:
-    case msgtype_ANSI:
-    case msgtype_STYLE:
+    case MSG_TYPE_INFO:
+    case MSG_TYPE_ANSI:
+    case MSG_TYPE_STYLE:
         class = CMSG_INFO;
         break;
     }

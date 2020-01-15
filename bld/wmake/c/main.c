@@ -432,18 +432,16 @@ STATIC void parseFiles( void )
     const char  *p;
     NODE        *cur;
     NODE        *newhead;
-    RET_T       ret;
+    bool        ok;
 
     Glob.preproc = true;            /* turn on preprocessor */
-
-                                    /* process makeinit */
-    if( !Glob.nomakeinit ) {
+    if( !Glob.nomakeinit ) {        /* process makeinit */
         if( Glob.compat_nmake ) {
-            ret = InsFile( TOOLSINI_NAME, true );
+            ok = InsFile( TOOLSINI_NAME, true );
         } else {
-            ret = InsFile( MAKEINIT_NAME, true );
+            ok = InsFile( MAKEINIT_NAME, true );
         }
-        if( ret == RET_SUCCESS ) {
+        if( ok ) {
             setFirstTarget( Parse() );
             if( firstTargFound != NULL ) {
                 PrtMsg( WRN | MAKEINIT_HAS_TARGET );
@@ -452,12 +450,15 @@ STATIC void parseFiles( void )
     }
 
     if( filesToDo == NULL ) {
-        ret = InsFile( MAKEFILE_NAME, false );
-        if( ret == RET_SUCCESS ) {
+        ok = InsFile( MAKEFILE_NAME, false );
+        if( ok ) {
             setFirstTarget( Parse() );
 #ifdef MAKEFILE_ALT
-        } else if( (ret = InsFile( MAKEFILE_ALT, false )) == RET_SUCCESS ) {
-            setFirstTarget( Parse() );
+        } else {
+            ok = InsFile( MAKEFILE_ALT, false );
+            if( ok ) {
+                setFirstTarget( Parse() );
+            }
 #endif
         }
     } else {
@@ -477,11 +478,11 @@ STATIC void parseFiles( void )
             FreeSafe( cur );
             if( p[0] == '-' && p[1] == NULLCHAR ) { /* handle -f - */
                 InsOpenFile( stdin );
-                ret = RET_SUCCESS;
+                ok = true;
             } else {
-                ret = InsFile( p, false );
+                ok = InsFile( p, false );
             }
-            if( ret == RET_SUCCESS ) {
+            if( ok ) {
                 setFirstTarget( Parse() );
             } else {
                 PrtMsg( ERR | UNABLE_TO_INCLUDE, p );
@@ -491,8 +492,8 @@ STATIC void parseFiles( void )
 
     if( !Glob.nomakeinit ) {
         if( !Glob.compat_nmake ) {
-            ret = InsFile( MAKEFINI_NAME, true );
-            if( ret == RET_SUCCESS ) {
+            ok = InsFile( MAKEFINI_NAME, true );
+            if( ok ) {
                 setFirstTarget( Parse() );
             }
         }
@@ -518,10 +519,10 @@ STATIC void ignoreNoCommands( const TLIST *tlist )
     }
 }
 
-STATIC RET_T doMusts( void )
-/**************************/
+STATIC bool doMusts( void )
+/*************************/
 {
-    RET_T   ret;
+    bool    ok;
 
     if( firstTargFound == NULL && mustTargs == NULL ) {
         PrtMsg( FTL | NO_TARGETS_SPECIFIED );
@@ -540,14 +541,14 @@ STATIC RET_T doMusts( void )
 
     if( mustTargs == NULL ) {
         ignoreNoCommands( firstTargFound );
-        ret = MakeList( firstTargFound );
+        ok = MakeList( firstTargFound );
     } else {
         ignoreNoCommands( mustTargs );
-        ret = MakeList( mustTargs );
+        ok = MakeList( mustTargs );
     }
 
     UpdateFini();
-    return( ret );
+    return( ok );
 }
 
 
@@ -634,8 +635,8 @@ static int ExitSafe( int rc )
         PutEnvFini();
         DLLFini();
 #endif
-        MemFini();
         MsgFini();
+        MemFini();
         LogFini();
     }
 
@@ -661,13 +662,15 @@ void ExitOK( void )
 }
 
 int main( int argc, char **argv )
-/*********************************************/
+/*******************************/
 {
-    assert( argv[argc] == NULL );       /* part of ANSI standard */
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc;
 #endif
+
     InitSignals();
     InitHardErr();
     init( (const char **)argv );        /* initialize, process cmdline */
@@ -680,7 +683,7 @@ int main( int argc, char **argv )
     if( Glob.erroryet ) {
         return( ExitSafe( EXIT_ERROR ) );
     }
-    if( doMusts() != RET_SUCCESS ) {
+    if( !doMusts() ) {
         return( ExitSafe( EXIT_ERROR ) );
     }
     ParseFini();

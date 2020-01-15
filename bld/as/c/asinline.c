@@ -42,26 +42,26 @@
 const char *AsmInStr;
 
 
-extern void AsmInit( void ) {
-//***************************
-
+void AsmInit( void )
+//******************
+{
     SymInit();
     InsInit();
     DirInit();
     ObjInit();
 }
 
-extern void AsmFini( void ) {
-//***************************
-
+void AsmFini( void )
+//******************
+{
     ObjFini();
     DirFini();
     InsFini();
     SymFini();
 }
 
-extern void AsmFiniRelocs( void )
-//*******************************
+void AsmFiniRelocs( void )
+//************************
 {
     asmreloc    *reloc;
     asmreloc    *reloc_next;

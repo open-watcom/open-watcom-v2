@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,6 @@ typedef struct file_parse {
     char            path[MAX_PATH + 1];
     char            name[MAX_NAME + 1];
     char            ext[MAX_EXT + 1];
-    bool            slash   : 1;
-    bool            device  : 1;
+    boolbit         slash   : 1;
+    boolbit         device  : 1;
 } file_parse;

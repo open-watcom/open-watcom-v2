@@ -41,9 +41,9 @@
 #include "watcom.h"
 #include "builder.h"
 #include "memutils.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
-#include "bldstruc.h"
 
 
 #define DEFCTLNAME      "builder.ctl"
@@ -55,22 +55,34 @@
 
 #define DOS_EOF_CHAR    0x1a
 
+typedef struct include_entry {
+    struct include_entry    *prev;
+    FILE                    *fp;
+    unsigned                skipping;
+    unsigned                ifdefskipping;
+    unsigned                lineno;
+    char                    name[_MAX_PATH];
+    char                    cwd[_MAX_PATH];
+    copy_entry              reset_abit;
+} include_entry;
+
 typedef struct ctl_file {
     struct ctl_file     *next;
     char                name[_MAX_PATH];
 } ctl_file;
 
-bool               Quiet;
-include            *IncludeStk;
-FILE               *LogFile = NULL;
-static ctl_file    *CtlList;
-static char        Line[MAX_LINE];
-static char        ProcLine[MAX_LINE];
-static unsigned    VerbLevel;
-static bool        UndefWarn;
-static bool        IgnoreErrors;
-static unsigned    ParmCount;
-static unsigned    LogBackup;
+bool                    Quiet;
+FILE                    *LogFile = NULL;
+
+static include_entry    *includeStk;
+static ctl_file         *CtlList;
+static char             Line[MAX_LINE];
+static char             ProcLine[MAX_LINE];
+static unsigned         VerbLevel;
+static bool             UndefWarn;
+static bool             IgnoreErrors;
+static unsigned         ParmCount;
+static unsigned         LogBackup;
 
 static void PutNumber( const char *src, char *dst, unsigned num )
 {
@@ -91,11 +103,7 @@ static void PutNumber( const char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
+    PGROUP2     pg;
     char        old_name[_MAX_PATH];
     char        new_name[_MAX_PATH];
     char        temp_ext[5];
@@ -106,16 +114,16 @@ static void BackupLog( const char *log_name, unsigned copies )
         remove( log_name );
         return;
     }
-    _splitpath2( log_name, path_buffer, &drive, &dir, &fn, &ext );
+    _splitpath2( log_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     while( copies != 0 ) {
-        PutNumber( ext, temp_ext, copies );
-        _makepath( new_name, drive, dir, fn, temp_ext );
+        PutNumber( pg.ext, temp_ext, copies );
+        _makepath( new_name, pg.drive, pg.dir, pg.fname, temp_ext );
         remove( new_name );
         if( copies == 1 ) {
             strcpy( old_name, log_name );
         } else {
-            PutNumber( ext, temp_ext, copies - 1 );
-            _makepath( old_name, drive, dir, fn, temp_ext );
+            PutNumber( pg.ext, temp_ext, copies - 1 );
+            _makepath( old_name, pg.drive, pg.dir, pg.fname, temp_ext );
         }
         rename( old_name, new_name );
         --copies;
@@ -305,58 +313,54 @@ static bool ProcessEnv( bool opt_end )
 
 static void PushInclude( const char *name )
 {
-    include     *new;
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
-    char        dir_name[_MAX_PATH];
+    include_entry   *new;
+    PGROUP2         pg;
+    char            dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
-    new->prev = IncludeStk;
+    new->prev = includeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
     new->lineno = 0;
     new->reset_abit = NULL;
-    IncludeStk = new;
+    includeStk = new;
     new->fp = fopen( name, "rb" );      // We will cook (handle \r) internally
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
     strcpy( new->name, name );
-    _splitpath2( name, path_buffer, &drive, &dir, &fn, &ext );
-    _makepath( dir_name, drive, dir, NULL, NULL );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( dir_name, pg.drive, pg.dir, NULL, NULL );
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
     }
-    (void)getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    SetIncludeCWD();
 }
 
 static bool PopInclude( void )
 {
-    include     *curr;
+    include_entry   *curr;
 
-    curr = IncludeStk;
+    curr = includeStk;
     fclose( curr->fp );
-    IncludeStk = curr->prev;
+    includeStk = curr->prev;
     ResetArchives( curr->reset_abit );
     MFree( curr );
-    if( IncludeStk == NULL )
+    if( includeStk == NULL )
         return( false );
-    SysChdir( IncludeStk->cwd );
+    SysChdir( GetIncludeCWD() );
     return( true );
 }
 
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        (void)fgets( line, max_len, IncludeStk->fp );
-        if( ferror( IncludeStk->fp ) ) {
-            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
+        (void)fgets( line, max_len, includeStk->fp );
+        if( ferror( includeStk->fp ) ) {
+            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
         }
-        if( !feof( IncludeStk->fp ) ) {
-            IncludeStk->lineno++;
+        if( !feof( includeStk->fp ) ) {
+            includeStk->lineno++;
             break;
         }
         if( !PopInclude() ) {
@@ -403,7 +407,7 @@ static char *SubstOne( const char **inp, char *out )
                 *out = '\0';
                 return( out );
             } else if( stricmp( out, "CWD" ) == 0 ) {
-                rep = IncludeStk->cwd;
+                rep = GetIncludeCWD();
             } else {
                 rep = getenv( out );
             }
@@ -421,7 +425,7 @@ static char *SubstOne( const char **inp, char *out )
             p = SubstOne( &in, p );
             break;
         case '\0':
-            Fatal( "Missing '>' in '%s' line %d\n", IncludeStk->name, IncludeStk->lineno );
+            Fatal( "Missing '>' in '%s' line %d\n", includeStk->name, includeStk->lineno );
             break;
         default:
             *p++ = *in++;
@@ -576,12 +580,12 @@ static int ProcessCtlFile( const char *name )
             /* a directive */
             p = GetWord( p + 1, &word );
             if( stricmp( word, "INCLUDE" ) == 0 ) {
-                if( !IncludeStk->skipping && !IncludeStk->ifdefskipping ) {
+                if( !includeStk->skipping && !includeStk->ifdefskipping ) {
                     p = GetWord( p, &word );
                     PushInclude( word );
                 }
             } else if( stricmp( word, "LOG" ) == 0 ) {
-                if( IncludeStk->skipping == 0 ) {
+                if( includeStk->skipping == 0 ) {
                     p = GetWord( p, &log_name );
                     p = GetWord( p, &word );
                     if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
@@ -594,23 +598,23 @@ static int ProcessCtlFile( const char *name )
                     }
                 }
             } else if( stricmp( word, "BLOCK" ) == 0 ) {
-                IncludeStk->skipping = 0;   // New block: reset skip flags
-                IncludeStk->ifdefskipping = 0;
+                includeStk->skipping = 0;   // New block: reset skip flags
+                includeStk->ifdefskipping = 0;
                 if( !MatchFound( p ) )
-                    IncludeStk->skipping++;
+                    includeStk->skipping++;
                 break;
             } else if( stricmp( word, "IFDEF" ) == 0 ) {
-                if( IncludeStk->ifdefskipping != 0 )
-                    IncludeStk->ifdefskipping--;
+                if( includeStk->ifdefskipping != 0 )
+                    includeStk->ifdefskipping--;
                 if( !MatchFound( p ) )
-                    IncludeStk->ifdefskipping++;
+                    includeStk->ifdefskipping++;
                 break;
             } else if( stricmp( word, "ENDIF" ) == 0 ) {
-                if( IncludeStk->ifdefskipping != 0 )
-                    IncludeStk->ifdefskipping--;
+                if( includeStk->ifdefskipping != 0 )
+                    includeStk->ifdefskipping--;
                 break;
             } else {
-                Fatal( "Unknown directive '%s' in '%s' line %d\n", word, IncludeStk->name, IncludeStk->lineno );
+                Fatal( "Unknown directive '%s' in '%s' line %d\n", word, includeStk->name, includeStk->lineno );
             }
             break;
         default:
@@ -621,7 +625,7 @@ static int ProcessCtlFile( const char *name )
                 SKIP_BLANKS( p );
                 logit = false;
             }
-            if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
+            if( includeStk->skipping == 0 && includeStk->ifdefskipping == 0 ) {
                 if( logit ) {
                     Log( false, "+++<%s>+++\n", p );
                 }
@@ -650,11 +654,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
-    char        path_buffer[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fn;
-    char        *ext;
+    PGROUP2     pg;
     char        *end;
     FILE        *fp;
 
@@ -665,11 +665,11 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             fclose( fp );
             return( true );
         }
-        _splitpath2( result, path_buffer, &drive, &dir, &fn, &ext );
-        if( *dir == '\0' )
+        _splitpath2( result, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.dir[0] == '\0' )
             return( false );
-        end = dir + strlen( dir ) - 1;
-        if( end == dir )
+        end = pg.dir + strlen( pg.dir ) - 1;
+        if( end == pg.dir )
             return( false );
         switch( *end ) {
         case '\\':
@@ -677,7 +677,7 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             --end;
         }
         for( ;; ) {
-            if( end == dir ) {
+            if( end == pg.dir ) {
                 *end++ = '/';
                 break;
             }
@@ -686,7 +686,7 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             --end;
         }
         *end = '\0';
-        _makepath( result, drive, dir, fn, ext );
+        _makepath( result, pg.drive, pg.dir, pg.fname, pg.ext );
     }
 }
 
@@ -724,4 +724,24 @@ int main( int argc, char *argv[] )
     CloseLog();
     MClose();
     return( rc );
+}
+
+const char *GetIncludeCWD( void )
+{
+    return( includeStk->cwd );
+}
+
+void SetIncludeCWD( void )
+{
+    getcwd( includeStk->cwd, sizeof( includeStk->cwd ) );
+}
+
+void SetArchive( copy_entry entry )
+{
+    includeStk->reset_abit = entry;
+}
+
+copy_entry GetArchive( void )
+{
+    return( includeStk->reset_abit );
 }

@@ -4,7 +4,9 @@ model=mf
 system=winnt
 linkage=dynamic
 profile=1
-clib_rtdll=1
 convention=register
+mthreaded=1
+
+clib_rtdll=1
 
 !include $(clib_dir)/mklib.mif

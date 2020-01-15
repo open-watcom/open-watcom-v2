@@ -3,6 +3,7 @@ __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)alias$(__sfx) &
+    $(pfx__)cgsupp$(__sfx) &
     $(pfx__)char$(__sfx) &
     $(pfx__)conio$(__sfx) &
     $(pfx__)convert$(__sfx) &
@@ -31,8 +32,3 @@ libs = $+ &
 
 pfx__ =
 __sfx =
-
-libs += $+ &
-    ../../../cgsupp/library/generic.$(processor)/$(libsubdir)/$(libname).lib &
-    $-
-

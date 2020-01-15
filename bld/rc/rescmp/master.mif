@@ -2,13 +2,15 @@ proj_name = rescmp
 
 rescmp_autodepends = .AUTODEPEND
 
+rescmp_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
 !include wres.mif
+!include trmem.mif
 
-inc_dirs = -I"../h" $(wres_inc_dirs) -I"$(trmem_dir)"
+inc_dirs = -I"../h" $(wres_inc_dirs)
 
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
@@ -20,9 +22,16 @@ objs = &
     global.obj &
     layer0.obj &
     param.obj &
-    rescmp.obj
+    rescmp.obj &
+    trmemcvr.obj $(trmem_objs)
 
-objs += trmemcvr.obj trmem.obj
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+
+extra_c_flags_cmpres   = $(trmem_cflags)
+extra_c_flags_layer0   = $(trmem_cflags)
+extra_c_flags_rescmp   = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 libs = $(wres_lib)
 

@@ -63,7 +63,7 @@ STATIC bool     largeNearSeg;    /* have we done a _nheapgrow() ? */
 
 STATIC struct scarce {
     struct scarce   *next;
-    RET_T           (*func)( void );
+    bool            (*func)( void );
 } *scarceHead;
 
 #endif
@@ -84,17 +84,16 @@ STATIC FILE         *trkfile = NULL;
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h; (void)size;
+
     if( trkfile == NULL ) {
         trkfile = fopen( "mem.trk", "w" );
     }
     if( trkfile != NULL ) {
-        fwrite( buf, 1, size, trkfile );
-        fwrite( "\n", 1, 1, trkfile );
+        fprintf( trkfile, "%s\n", buf );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
-        fwrite( buf, 1, size, stdout );
-        fwrite( "\n", 1, 1, stdout );
+        fprintf( stdout, "%s\n", buf );
     }
 }
 
@@ -155,7 +154,7 @@ STATIC void MemCheck( void )
 #endif  /* TRMEM */
 
 #ifdef USE_SCARCE
-void IfMemScarce( RET_T (*func)( void ) )
+void IfMemScarce( bool (*func)( void ) )
 /***********************************************
  * post:    function registered in scarce list
  * remarks: The function *func must return SUCCESS if it manages to deallocate
@@ -176,8 +175,8 @@ void IfMemScarce( RET_T (*func)( void ) )
 }
 
 
-STATIC RET_T tryScarce( void )
-/*****************************
+STATIC bool tryScarce( void )
+/****************************
  * returns: true if a scarce routine managed to deallocate memory.
  */
 {
@@ -187,11 +186,11 @@ STATIC RET_T tryScarce( void )
     did = false;
     cur = scarceHead;
     while( cur != NULL && !did ) {
-        did = (cur->func)() == RET_SUCCESS;
+        did = (cur->func)();
         cur = cur->next;
     }
 
-    return( did ? RET_SUCCESS : RET_ERROR );
+    return( did );
 }
 #endif
 
@@ -208,7 +207,7 @@ void MemFini( void )
 #ifdef USE_SCARCE
     struct scarce *cur;
 
-    while( tryScarce() == RET_SUCCESS ) /* call all scarce routines */
+    while( tryScarce() ) /* call all scarce routines */
         ;
 
     while( scarceHead != NULL ) {   /* free all scarce trackers */
@@ -306,7 +305,7 @@ STATIC void *doAlloc( size_t size )
         if( ptr != NULL ) {
             break;
         }
-        if( tryScarce() != RET_SUCCESS ) {
+        if( !tryScarce() ) {
             break;
         }
     }

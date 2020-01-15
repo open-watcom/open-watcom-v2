@@ -43,20 +43,6 @@ char *codefilename;
 char *headerfilename;
 char *descfilename;
 
-char lineflag;
-char bigflag;
-char fastflag;
-char denseflag;
-char enumflag;
-char default_shiftflag;
-char compactflag;
-char eliminateunitflag;
-char showflag;
-char translateflag;
-char defaultwarnflag = 1;
-char verbosefileflag;
-char headerfileflag = 1;
-
 char *symprefix = "yy";
 
 char param_requested;
@@ -65,8 +51,23 @@ index_n RR_conflicts;
 index_n SR_conflicts;
 index_n nstate_1_reduce;
 
-static int warnings;
-static int proflag;
+bool lineflag           = false;
+bool bigflag            = false;
+bool fastflag           = false;
+bool denseflag          = false;
+bool enumflag           = false;
+bool default_shiftflag  = false;
+bool compactflag        = false;
+bool showflag           = false;
+bool translateflag      = false;
+bool defaultwarnflag    = true;
+
+static bool eliminateunitflag   = false;
+static bool verbosefileflag     = false;
+static bool headerfileflag      = true;
+static bool proflag             = false;
+
+static int warnings = 0;
 
 static FILE *openr( char *filename )
 {
@@ -100,49 +101,49 @@ static void setoptions( char *p )
         case 'd':
             if( p[1] == 'b' ) {
                 ++p;
-                bigflag = 1;
+                bigflag = true;
             } else if( p[1] == 'c' ) {
                 ++p;
-                compactflag = 1;
+                compactflag = true;
             } else if( p[1] == 'd' ) {
                 ++p;
-                denseflag = 1;
+                denseflag = true;
             } else if( p[1] == 'e' ) {
                 ++p;
-                enumflag = 1;
+                enumflag = true;
             } else if( p[1] == 'f' ) {
                 ++p;
-                fastflag = 1;
+                fastflag = true;
             } else if( p[1] == 'h' ) {
                 ++p;
-                default_shiftflag = 1;
+                default_shiftflag = true;
             } else if( p[1] == 'p' ) {
                 ++p;
-                proflag = 1;
+                proflag = true;
             } else if( p[1] == 's' ) {
                 ++p;
-                showflag = 1;
+                showflag = true;
             } else if( p[1] == 't' ) {
                 ++p;
-                translateflag = 1;
+                translateflag = true;
             } else if( p[1] == 'u' ) {
                 ++p;
-                eliminateunitflag = 1;
+                eliminateunitflag = true;
             } else if( p[1] == 'w' ) {
                 ++p;
-                defaultwarnflag = 0;
+                defaultwarnflag = false;
             } else {
-                headerfileflag = 1;
+                headerfileflag = true;
             }
             break;
         case 'l':
-            lineflag = 1;
+            lineflag = true;
             break;
         case 'p':
             param_requested = 'p';
             break;
         case 'v':
-            verbosefileflag = 1;
+            verbosefileflag = true;
             break;
         default:
             msg( "Unknown option '%c'\n", *p );

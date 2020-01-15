@@ -43,6 +43,7 @@
 #include "getopt.h"
 #include "fnutils.h"
 #include "argvenv.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -177,50 +178,48 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     long                ii,jj,kk;
     unsigned long       csum,ssum;
     char                fname[_MAX_PATH];
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
     size_t              len;
     struct stat         sb;
-    char                drive[_MAX_DRIVE],directory[_MAX_DIR];
-    char                extin[_MAX_EXT],name[_MAX_FNAME];
+    PGROUP              pg;
 
     /*
      * initialize for file scan
      */
-    _splitpath( dir, drive, directory, name, extin );
+    _splitpath( dir, pg.drive, pg.dir, pg.fname, pg.ext );
     if( stat( dir, &sb ) != -1 ) {
         if( S_ISDIR( sb.st_mode ) ) {
-            strcat( directory, name );
-            strcat( directory, extin );
-            name[0] = 0;
-            extin[0] = 0;
+            strcat( pg.dir, pg.fname );
+            strcat( pg.dir, pg.ext );
+            pg.fname[0] = 0;
+            pg.ext[0] = 0;
         }
     }
 
-    if( name[0] == 0 ) {
-        strcpy( name,"*" );
+    if( pg.fname[0] == 0 ) {
+        strcpy( pg.fname, "*" );
     }
-    if( extin[0] == 0 ) {
-        strcpy( extin,".*" );
-    } else if( extin[0] == '.' && extin[1] == 0 ) {
-        strcpy( extin,".*" );
+    if( pg.ext[0] == 0 ) {
+        strcpy( pg.ext, ".*" );
+    } else if( pg.ext[0] == '.' && pg.ext[1] == 0 ) {
+        strcpy( pg.ext, ".*" );
     }
-    _makepath( filename, drive, directory, name, extin );
+    _makepath( filename, pg.drive, pg.dir, pg.fname, pg.ext );
 
-    d = opendir( filename );
-    if( d == NULL )
+    dirp = opendir( filename );
+    if( dirp == NULL )
         return;
 
     /*
      * run until carry is set (no more matches)
      */
-    while( (nd = readdir( d )) != NULL ) {
-
-        if( (nd->d_attr & _A_SUBDIR) && IsDotOrDotDot( nd->d_name ) )
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) )
             continue;               // skip special directory entries
         if( (temp = malloc( sizeof( dfs ) )) == NULL )
             break;
-        temp->df = *nd;
+        temp->df = *dire;
         temp->next = NULL;
         FNameLower( temp->df.d_name );
         if( head == NULL ) {
@@ -229,9 +228,8 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
             tail->next = temp;
             tail = temp;
         }
-
     }
-    closedir( d );
+    closedir( dirp );
 
     /*
      * descend the subdirectories
@@ -239,21 +237,21 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     temp = head;
     while( temp != NULL ) {
         if( temp->df.d_attr & _A_SUBDIR ) {
-            strcpy( filename, directory );
+            strcpy( filename, pg.dir );
             len = strlen( filename );
             if( filename[len - 1] != '\\' ) {
                 filename[len++] = '\\';
                 filename[len] = '\0';
             }
             strcpy( filename + len, temp->df.d_name );
-            if( strcmp( name, "*" ) == 0 && strcmp( extin, ".*" ) == 0 ) {
-                _makepath( fname, drive, filename, NULL, NULL );
+            if( strcmp( pg.fname, "*" ) == 0 && strcmp( pg.ext, ".*" ) == 0 ) {
+                _makepath( fname, pg.drive, filename, NULL, NULL );
                 len = strlen( fname ) - 1;
                 if( fname[len] == '\\' ) {
                     fname[len] = 0;
                 }
             } else {
-                _makepath( fname, drive, filename, name, extin );
+                _makepath( fname, pg.drive, filename, pg.fname, pg.ext );
             }
             csum = 0;
             ssum = 0;

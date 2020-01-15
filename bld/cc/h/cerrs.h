@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,26 +32,52 @@
 
 
 #include "msgattr.gh"
-enum warning_codes {
-#define warn(code,level) code = level,
- #include "cwngs.h"
- #undef warn
-};
-enum group_levels {
-#define GRP_DEF( name,prefix,num,index,eindex ) name##_level = num,
-    GRP_DEFS
-#undef GRP_DEF
-};
-#include  "msgdefs.gh"
-typedef enum msg_codes {
-#define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
-    MSG_DEFS
-#undef MSG_DEF
+#include "msgdefs.gh"
+
+
+#define WLEVEL_MAX      5
+#define WLEVEL_ERROR    0
+#define WLEVEL_DEFAULT  1
+#define WLEVEL_WX       (WLEVEL_MAX - 1)
+#define WLEVEL_ENABLE   1
+#define WLEVEL_DISABLE  15
+#define WLEVEL_NOTE     -1
+
+enum {
+    #define MSG_DEF( name, group, kind, level, group_index ) DUMMY_##name,
+        MSG_DEFS
+    #undef MSG_DEF
     MESSAGE_COUNT
-}msg_codes;
-typedef enum msgtype{
-#define MSGTYPES_DEF( name )   msgtype_##name,
-    MSGTYPES_DEFS
-#undef MSGTYPES_DEF
-    msgtype_err
-}msgtype;
+};
+
+enum warning_codes {
+    #define warn(code,level) code = level,
+    #include "cwngs.h"
+    #undef warn
+};
+
+enum group_levels {
+    #define GRP_DEF( name,prefix,num,index,eindex ) name##_level = num,
+        GRP_DEFS
+    #undef GRP_DEF
+};
+
+typedef enum msg_codes {
+    #define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
+        MSG_DEFS
+    #undef MSG_DEF
+} msg_codes;
+
+typedef enum msg_type {
+    #define MSGTYPES_DEF( name )   MSG_TYPE_##name,
+        MSGTYPES_DEFS
+    #undef MSGTYPES_DEF
+} msg_type;
+
+typedef struct msg_level_info {
+    unsigned    type        : 4;
+    unsigned    level       : 4;
+    unsigned    enabled     : 1;
+} msg_level_info;
+
+extern msg_level_info   msg_level[MESSAGE_COUNT];

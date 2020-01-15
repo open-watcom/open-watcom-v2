@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,31 +60,31 @@ static void drawgadget( p_gadget g )
     int                 i;
     int                 length;
 
-    uiunprotect( g->win );
+    uiunprotect( g->vs );
     length = g->end - g->start - 1;
     for( i=g->start; i <= g->end; ++i ) {
         if( g->dir == VERTICAL ) {
-            uivtextput( g->win, row(g,i), col(g,i), _ATTR, VertScrollFrame, 0 );
+            uivtextput( g->vs, row(g,i), col(g,i), _ATTR, VertScrollFrame, 0 );
         } else {
-            uivtextput( g->win, row(g,i), col(g,i), _ATTR, HorzScrollFrame, 0 );
+            uivtextput( g->vs, row(g,i), col(g,i), _ATTR, HorzScrollFrame, 0 );
         }
     }
     /* don't draw scroll thumb in g->total_size <= page_size */
     if( ( g->total_size > g->page_size ) && ( length > 1 ) ) {
         if( g->dir == HORIZONTAL ) {
-            uivtextput( g->win, g->anchor, g->linear, _ATTR_SLIDER, SliderChar, 0 );
+            uivtextput( g->vs, g->anchor, g->linear, _ATTR_SLIDER, SliderChar, 0 );
         } else {
-            uivtextput( g->win, g->linear, g->anchor, _ATTR_SLIDER, SliderChar, 0 );
+            uivtextput( g->vs, g->linear, g->anchor, _ATTR_SLIDER, SliderChar, 0 );
         }
     }
     if( g->dir == HORIZONTAL ) {
-        uivtextput( g->win, g->anchor, g->start, _ATTR, LeftPoint, 0 );
-        uivtextput( g->win, g->anchor, g->end, _ATTR, RightPoint, 0 );
+        uivtextput( g->vs, g->anchor, g->start, _ATTR, LeftPoint, 0 );
+        uivtextput( g->vs, g->anchor, g->end, _ATTR, RightPoint, 0 );
     } else {
-        uivtextput( g->win, g->start, g->anchor, _ATTR, UpPoint, 0 );
-        uivtextput( g->win, g->end, g->anchor, _ATTR, DownPoint, 0 );
+        uivtextput( g->vs, g->start, g->anchor, _ATTR, UpPoint, 0 );
+        uivtextput( g->vs, g->end, g->anchor, _ATTR, DownPoint, 0 );
     }
-    uiprotect( g->win );
+    uiprotect( g->vs );
 }
 
 static void setlinear( p_gadget g )
@@ -164,9 +164,9 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
     int         pos = 0;
 
     if( uimouseinstalled() ) {
-        uiunprotect( g->win );
-        uimousepos( g->win, &m_anchor, &m_linear );
-        uiprotect( g->win );
+        uiunprotect( g->vs );
+        uimousepos( g->vs, &m_anchor, &m_linear );
+        uiprotect( g->vs );
         if( g->dir == VERTICAL ) {
             tmp = m_linear;
             m_linear = m_anchor;

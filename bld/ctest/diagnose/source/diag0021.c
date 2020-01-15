@@ -7,5 +7,7 @@ const char *F;
 
 void TestDisk( unsigned short *sector )
 {
+    (void)sector;
+
     VERIFY( sector[255] == 0xAA55;  /* <-- missing closing parenthesis */
 }

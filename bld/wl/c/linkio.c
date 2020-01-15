@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,8 +70,8 @@ void LnkFilesInit( void )
     CaughtBreak = NOT_HIT;
     if( !AuxFilesClosed ) {
         OpenFiles = 2;      // will be 0 when done closing stdaux & stdprn.
-        QClose( STDAUX_HANDLE, "stdaux" );
-        QClose( STDPRN_HANDLE, "stdprn" );
+        QClose( STDAUX_FILENO, "stdaux" );
+        QClose( STDPRN_FILENO, "stdprn" );
         AuxFilesClosed = true;
         OpenFiles = 0;
     }
@@ -198,7 +199,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     return( TINY_INFO(h) );
 }
 
-#define QWRITE_BLOCK_SIZE   (16*1024)
+#define QWRITE_BLOCK_SIZE   _16KB
 
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/
@@ -236,11 +237,11 @@ void QClose( f_handle file, const char *name )
 long QLSeek( f_handle file, long position, int start, const char *name )
 /**********************************************************************/
 {
-    tiny_ret_t  rc;
-    long        pos;
+    tiny_ret_t      rc;
+    uint_32         pos;
 
     CheckBreak();
-    rc = TinyLSeek( file, position, start, (u32_stk_ptr)&pos );
+    rc = TinyLSeek( file, position, start, &pos );
     if( TINY_ERROR( rc ) ) {
         if( name != NULL )
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( rc ) ) );
@@ -258,10 +259,10 @@ void QSeek( f_handle file, unsigned long position, const char *name )
 unsigned long QPos( f_handle file )
 /*********************************/
 {
-    unsigned long pos;
+    uint_32     pos;
 
     CheckBreak();
-    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, (u32_stk_ptr)&pos ) ) ) {
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, &pos ) ) ) {
         return( -1UL );
     }
     return( pos );
@@ -270,13 +271,13 @@ unsigned long QPos( f_handle file )
 unsigned long QFileSize( f_handle file )
 /**************************************/
 {
-    unsigned long   curpos;
-    unsigned long   size;
+    uint_32         curpos;
+    uint_32         size;
 
     CheckBreak();
     size = 0;
-    if( TINY_OK( TinyLSeek( file, 0L, TIO_SEEK_CUR, (u32_stk_ptr)&curpos ) ) ) {
-        TinyLSeek( file, 0UL, TIO_SEEK_END, (u32_stk_ptr)&size );
+    if( TINY_OK( TinyLSeek( file, 0L, TIO_SEEK_CUR, &curpos ) ) ) {
+        TinyLSeek( file, 0UL, TIO_SEEK_END, &size );
         TinySeek( file, curpos, TIO_SEEK_START );
     }
     return( size );
@@ -376,12 +377,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, TIO_READ ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
-{
-    cmd_ptr = cmd_ptr;
-    return( false );
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -406,12 +401,6 @@ int WaitForKey( void )
 /****************************/
 {
     return( getch() );
-}
-
-void GetCmdLine( char *buff )
-/**********************************/
-{
-    getcmd( buff );
 }
 
 void TrapBreak( int sig_num )

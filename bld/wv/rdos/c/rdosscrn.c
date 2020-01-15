@@ -145,6 +145,8 @@ void SetNumColumns( int num )
 
 bool ScreenOption( const char *start, unsigned len, int pass )
 {
+    /* unused parameters */ (void)start; (void)len; (void)pass;
+
     return( false );
 }
 

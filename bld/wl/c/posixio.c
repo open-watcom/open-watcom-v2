@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ static int DoOpen( const char *name, unsigned mode, bool isexe )
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        if ( (mode & O_CREAT) && !stat( name, &st) )
+        if( (mode & O_CREAT) && !stat( name, &st ) )
             unlink( name );
         h = open( name, mode, pmode );
         if( h != -1 ) {
@@ -115,7 +116,7 @@ f_handle QOpenR( const char *name )
     h = DoOpen( name, O_RDONLY, false );
     if( h != -1 )
         return( h );
-    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
+    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
@@ -302,9 +303,9 @@ unsigned long QFileSize( f_handle file )
 
     CheckBreak();
     size = 0;
-    curpos = lseek( file, 0L, SEEK_CUR  );
+    curpos = lseek( file, 0L, SEEK_CUR );
     if( curpos != -1L ) {
-        size = lseek( file, 0L, SEEK_END  );
+        size = lseek( file, 0L, SEEK_END );
         if( size == -1L ) {
             size = 0;
         }
@@ -385,24 +386,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
-/*****************************/
-{
-#if defined( _M_I86 ) && defined( __QNX__ )
-//    extern  struct _proc_spawn *__cmd;
-    char    *p;
-
-    cmd_ptr = cmd_ptr;
-    p = __cmd->data;
-    while( *p ) ++p; /* skip over executable name */
-    return( p[1] == '?' );
-#else
-    /* unused parameters */ (void)cmd_ptr;
-
-    return false;
-#endif
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -442,12 +425,6 @@ int WaitForKey( void )
     return( result );
 }
 
-void GetCmdLine( char *buff )
-/***************************/
-{
-    getcmd( buff );
-}
-
 void TrapBreak( int sig_num )
 /***************************/
 {
@@ -460,7 +437,7 @@ void CheckBreak( void )
 /****************************/
 {
     if( CaughtBreak ) {
-        CaughtBreak = false;        /* prevent recursion */
+        CaughtBreak = false;                  /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
 }

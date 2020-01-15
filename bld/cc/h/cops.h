@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ typedef enum condition_codes {
     #undef pick1
 } cond_code;
 
-typedef enum{
+typedef enum {
     OPFLAG_NONE        = 0x00,          // nothing
     OPFLAG_CONST       = 0x01,          // this node contains a const
     OPFLAG_VOLATILE    = 0x02,          // this node contains a volatile
@@ -57,37 +58,38 @@ typedef enum{
     // RISC machines only have one kind of pointer,
     // but can have pointers to unaligned data
     OPFLAG_UNALIGNED   = 0x80,          // pointer points to unaligned data
-    OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR
-              | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
-}op_flags;
+    OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
+} op_flags;
 #define Far16Pointer(flags)   ((flags & OPFLAG_FAR16PTR) == OPFLAG_FAR16PTR)
 
-typedef enum    pointer_class{
-    PTR_NEAR = 0,
-    PTR_BASED,
-    PTR_FAR,
-    PTR_FAR16,
-    PTR_HUGE,
-    PTR_INTERRUPT = PTR_HUGE,
-    PTR_FUNC,
-    PTR_FUNC_BASED,
-    PTR_FUNC_FAR,
-    PTR_FUNC_FAR16,
-    PTR_FUNC_INTERRUPT,
-    PTR_NOT,
-}pointer_class;
+typedef enum    pointer_class {
+    PTRCLS_NEAR = 0,
+    PTRCLS_BASED,
+    PTRCLS_FAR,
+    PTRCLS_FAR16,
+    PTRCLS_HUGE,
+    PTRCLS_INTERRUPT,
+    PTRCLS_FUNC_NEAR,
+    PTRCLS_FUNC_BASED,
+    PTRCLS_FUNC_FAR,
+    PTRCLS_FUNC_FAR16,
+    PTRCLS_FUNC_HUGE,
+    PTRCLS_FUNC_INTERRUPT,
+    PTRCLS_NOT,
+} pointer_class;
 
-#define FAR16_PTRCLASS(cls)     ((cls == PTR_FAR16) || (cls == PTR_FUNC_FAR16))
+#define PTRCLS_FUNC             PTRCLS_FUNC_NEAR
+#define FAR16_PTRCLASS(cls)     ((cls == PTRCLS_FAR16) || (cls == PTRCLS_FUNC_FAR16))
 
 #define MAX_INLINE_DEPTH  3             // how deep to inline
-typedef enum{
+typedef enum {
     FUNC_NONE         = 0x00,
     FUNC_OK_TO_INLINE = 0x01,           // can inline this node
     FUNC_INUSE        = 0x02,           // inuse as inline or gen
     FUNC_USES_SEH     = 0x04,           // uses structure exceptions
     FUNC_USED         = 0x08,           // function should really be emitted
     FUNC_MARKED       = 0x10,           // function marked for emit investigation
-}func_flags;
+} func_flags;
 
 typedef unsigned short  LABEL_INDEX;
 

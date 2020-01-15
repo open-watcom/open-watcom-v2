@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,11 @@
 #define DIRBLKSIZ       DEV_BSIZE
 #define MAXNAMLEN       255
 
-struct direct
-{
-                long d_ino;                             /* inode number of entry */
-                short d_reclen;                 /* length of this record */
-                short d_namlen;                 /* length of string in d_name */
-                char d_name[MAXNAMLEN + 1];             /* name must be no longer than this */
+struct direct {
+    long d_ino;                     /* inode number of entry */
+    short d_reclen;                 /* length of this record */
+    short d_namlen;                 /* length of string in d_name */
+    char d_name[MAXNAMLEN + 1];     /* name must be no longer than this */
 };
 
 /*
@@ -54,32 +54,29 @@ struct direct
 
 #ifdef DIRSIZ
 #undef DIRSIZ
-#endif                                                  /* DIRSIZ */
-#define DIRSIZ(dp) \
-    ((sizeof (struct direct) - (MAXNAMLEN+1)) + (((dp)->d_namlen+1 + 3) &~ 3))
+#endif  /* DIRSIZ */
+#define DIRSIZ(dp) ((sizeof( struct direct ) - ( MAXNAMLEN + 1 )) + (((dp)->d_namlen + 1 + 3) &~ 3))
 
 /*
  * Definitions for library routines operating on directories.
  */
-typedef struct _dirdesc
-{
-        char whichdir[256]; /* pathname used to open directory */
+typedef struct _dirdesc {
+    char whichdir[256]; /* pathname used to open directory */
 
-        struct dosdir           /* DOS directory-search structure  */
-        {
-                char    doshdr[21];
-                char    attrib;
-                short   time;
-                short   date;
-                short   size_l;
-                short   size_h;
-                char    name[13];
-        } dosdir;
+    struct dosdir {     /* DOS directory-search structure  */
+        char    doshdr[21];
+        char    attrib;
+        short   time;
+        short   date;
+        short   size_l;
+        short   size_h;
+        char    name[13];
+    } dosdir;
 } DIR;
 
 #ifndef NULL
 #define NULL 0
 #endif
-extern DIR *opendir();
-extern struct direct *readdir();
-extern void closedir();
+extern DIR              *opendir( char * );
+extern struct direct    *readdir( DIR * );
+extern void             closedir( DIR * );

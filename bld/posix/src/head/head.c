@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 char *OptEnvVar="head";
 
@@ -74,17 +77,17 @@ static void DumpHead( FILE *fp )
     fclose( fp );
 }
 
-void main( int argc, char **argv )
-/********************************/
+int main( int argc, char **argv )
+/*******************************/
 {
     FILE        *fp;
     int         ch;
-    int         rxflag;
+    bool        rxflag;
 
     argv = ExpandEnv( &argc, argv );
 
     head = 10;
-    rxflag = 0;
+    rxflag = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "#X", usageMsg );
         if( ch == -1 ) {
@@ -95,7 +98,7 @@ void main( int argc, char **argv )
             head = atoi( OptArg );
             break;
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
     }
@@ -118,4 +121,5 @@ void main( int argc, char **argv )
             argv++;
         }
     }
+    return( 0 );
 }

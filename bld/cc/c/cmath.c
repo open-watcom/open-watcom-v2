@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,7 +372,7 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /* LCX */ { CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 };
 
-static  char    Operator[] = {
+static opr_code Operator[] = {
     #define OPERATORS_ONLY
     #define pick(token,string,class,oper) oper,
     #include "_ctokens.h"
@@ -445,20 +446,20 @@ static pointer_class PointerClass( TYPEPTR typ )
     flags = typ->u.p.decl_flags;
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
-    class = PTR_NEAR;                   // assume NEAR
+    class = PTRCLS_NEAR;                // assume NEAR
     if( (flags & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
-        class = PTR_INTERRUPT;          // can't have huge functions
+        class = PTRCLS_INTERRUPT;       // can't have huge functions
     } else if( flags & FLAG_BASED ) {
-        class = PTR_BASED;
+        class = PTRCLS_BASED;
     } else if( flags & FLAG_FAR ) {
-        class = PTR_FAR;
+        class = PTRCLS_FAR;
     } else if( flags & FLAG_FAR16 ) {
-        class = PTR_FAR16;
+        class = PTRCLS_FAR16;
     } else if( flags & FLAG_HUGE ) {
-        class = PTR_HUGE;
+        class = PTRCLS_HUGE;
     }
     if( typ->decl_type == TYPE_FUNCTION )
-        class += PTR_FUNC;
+        class += PTRCLS_FUNC;
     return( class );
 }
 
@@ -471,7 +472,7 @@ pointer_class ExprTypeClass( TYPEPTR typ )
     if( typ->decl_type == TYPE_POINTER ) {
         return( PointerClass( savtyp ) );
     }
-    return( PTR_NOT );               // indicate not a pointer type
+    return( PTRCLS_NOT );           // indicate not a pointer type
 }
 
 
@@ -682,7 +683,7 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
             if( typ2_flags & FLAG_BASED ) {
 #endif
                 op2 = BasedPtrNode( typ2, op2 );
-//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_NULL ), true );
             }
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
@@ -1107,8 +1108,8 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     case T_PLUS_PLUS:
     case T_MINUS_EQUAL:
     case T_MINUS_MINUS:
-        if( (op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR)
-         && CompFlags.extensions_enabled ) {
+        if( ( op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR )
+          && CompFlags.extensions_enabled ) {
             op1 = LCastAdj( op1 );
         }
         LValue( op1 );
@@ -1388,8 +1389,8 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
         }
     }
-    if( (op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR)
-     && CompFlags.extensions_enabled ) {
+    if( ( op1->op.opr == OPR_CONVERT || op1->op.opr == OPR_CONVERT_PTR )
+      && CompFlags.extensions_enabled ) {
         op1 = LCastAdj( op1 );
     }
     isLValue = LValue( op1 );
@@ -1417,13 +1418,14 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op1_class = ExprTypeClass( typ );
         op2_class = ExprTypeClass( op2->u.expr_type );
         if( op1_class != op2_class ) {
-            if( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) {  // if far16 pointer
+            if( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) {
+                // if far16 pointer
                 op2 = ExprNode( NULL, OPR_CONVERT_PTR, op2 );
                 op2->op.u2.sp.oldptr_class = op2_class;
                 op2->op.u2.sp.newptr_class = op1_class;
             } else {
-                 op2 = ExprNode( NULL, OPR_CONVERT, op2 );
-                 op2->op.u2.result_type = typ;
+                op2 = ExprNode( NULL, OPR_CONVERT, op2 );
+                op2->op.u2.result_type = typ;
             }
             op2->u.expr_type = typ;
         }
@@ -1575,7 +1577,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
                     break;
                 /* NYI: This could be smarter and check other based types. */
                 default:
-                    new_segid = SEG_UNKNOWN;
+                    new_segid = SEG_NULL;
                 }
             } else if( IsFuncPtr( newtyp ) ) {
                 new_segid = SEG_CODE;
@@ -1591,7 +1593,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
                     break;
                 /* NYI: This could be smarter and check other based types. */
                 default:
-                    old_segid = SEG_UNKNOWN;
+                    old_segid = SEG_NULL;
                 }
             } else {
                 old_segid = oldtyp->u.p.segid;
@@ -1747,13 +1749,14 @@ convert:                                /* moved here */
 
                     new_class = ExprTypeClass( newtyp );
                     old_class = ExprTypeClass( typ );
-                    if( new_class != old_class &&
-                    (FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class )) ) { // foreign pointers
+                    if( new_class != old_class
+                      && ( FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class ) ) ) {
+                        // foreign pointers
                         opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
                         opnd->op.u2.sp.oldptr_class = old_class;
                         opnd->op.u2.sp.newptr_class = new_class;
 #if _CPU == 8086
-                    } else if( cnv == P2A && newtyp->type_flags & TF2_TYPE_SEGMENT ) {
+                    } else if( cnv == P2A && (newtyp->type_flags & TF2_TYPE_SEGMENT) ) {
                         // getting segment value of pointer
                         opnd = BasedPtrNode( typ, opnd );
                         opnd = ExprNode( NULL, OPR_CONVERT_SEG, opnd );
@@ -1814,7 +1817,9 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
 
         new_class = ExprTypeClass( newtyp );
         old_class = ExprTypeClass( typ );
-        if( new_class != old_class ) {
+        if( new_class != old_class
+          && ( FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class ) ) ) {
+            // if far16 pointer
             opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
             opnd->op.u2.sp.oldptr_class = old_class;
             opnd->op.u2.sp.newptr_class = new_class;

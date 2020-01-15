@@ -96,6 +96,33 @@ static void InitOS2DialogBoxHeader( DialogHeaderOS2 *header, uint_32 codepage )
     header->OffsetPresParams = 0;
 }
 
+static bool WriteOS2DialogBoxHeader( DialogHeaderOS2 *header, FILE *fp )
+/**********************************************************************/
+{
+    bool    error;
+
+    error = ResWriteUint16( header->Size, fp );
+    if( !error ) {
+        error = ResWriteUint16( header->Type, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( header->Codepage, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( header->OffsetFirstTmpl, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( header->TemplateStatus, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( header->ItemFocus, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( header->OffsetPresParams, fp );
+    }
+    return( error );
+}
+
 static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
 /*********************************************************/
 {
@@ -567,7 +594,7 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
         }
         ctrl->tmpl = tmpl;  // Save the pointer to DLGTITEM so we can update it later
 
-        ptr += sizeof( *tmpl );
+        ptr += sizeof( DialogTemplateItemOS2 );
         if( ctrl->children != NULL ) {   // Process all children
             ptr = SemOS2BuildTemplateArray( ptr, ctrl->children );
             tmpl->cChildren = ctrl->children->numctrls;
@@ -661,42 +688,42 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     int                      err_code;
     bool                     error;
     size_t                   size;
-    DialogHeaderOS2          *head = NULL;
+    DialogHeaderOS2          head;
     char                     *tmpl;
     char                     *ptr;
 
-    size = sizeof( DialogHeaderOS2 ) + SemOS2CalcControlSize( ctrls );
+    size = SemOS2CalcControlSize( ctrls );
 #if !defined( _M_I86 )
-    if( size > 65536 ) {
+    if( size + DialogHeaderOS2_FILESIZE > 65536 ) {
         // TODO: Error, template is too big
     }
 #endif
-    tmpl = RESALLOC( size );
+    InitOS2DialogBoxHeader( &head, codepage );
+    head.Size = size + DialogHeaderOS2_FILESIZE;
+    error = WriteOS2DialogBoxHeader( &head, CurrResFile.fp );
+    if( !error ) {
+        ptr = tmpl = RESALLOC( size );
 
-    head = (DialogHeaderOS2 *)tmpl;
-    InitOS2DialogBoxHeader( head, codepage );
-    head->Size = size;
-    ptr = tmpl + sizeof( DialogHeaderOS2 );
+        // Create the DLGTITEM array in memory
+        ptr = SemOS2BuildTemplateArray( ptr, ctrls );
 
-    // Create the DLGTITEM array in memory
-    ptr = SemOS2BuildTemplateArray( ptr, ctrls );
+        // Dump all other data into memory and update the offsets
+        SemOS2DumpTemplateData( ptr - DialogHeaderOS2_FILESIZE, ptr, ctrls );
 
-    // Dump all other data into memory and update the offsets
-    SemOS2DumpTemplateData( tmpl, ptr, ctrls );
+        // Write the resource to file
+        loc.start = SemStartResource();
 
-    // Write the resource to file
-    loc.start = SemStartResource();
-
-    error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fp );
-    if( error ) {
-        err_code = LastWresErr();
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
-        ErrorHasOccured = true;
-    } else {
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+        error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fp );
+        if( error ) {
+            err_code = LastWresErr();
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+        }
+        RESFREE( tmpl );
     }
-    RESFREE( tmpl );
     SemOS2FreeDiagCtrlList( ctrls );
 
 } /* SemOS2WriteDialogTemplate */

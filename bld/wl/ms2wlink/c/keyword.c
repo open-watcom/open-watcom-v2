@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,8 @@
 #include "clibext.h"
 
 
+#define _64KB           (64 * 1024UL)
+
 #define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);memcpy(x,s,l);p=x;}
 
 static void             (*MultiLine)( void ) = NULL;
@@ -53,7 +56,7 @@ typedef struct {
     const char          *keyword;
     void                (*rtn)( void );
     unsigned char       minlen;
-} parse_entry;
+} word_entry;
 
 /* An entry for parsing command line switches. */
 typedef struct {
@@ -82,7 +85,7 @@ static void ProcStackSize( void );
 static void ProcStub( void );
 static void ProcVirtual( void );
 
-static  parse_entry     DefStatements[] = {
+static  word_entry      DefStatements[] = {
     "apploader",        ProcAppLoader,      9,
     "code",             ProcCode,           4,
     "data",             ProcData,           4,
@@ -118,7 +121,7 @@ static void ProcFixed( void );
 static void ProcDiscardable( void );
 static void ProcNonDiscardable( void );
 
-static  parse_entry     CodeAttributes[] = {
+static  word_entry      CodeAttributes[] = {
     "preload",          ProcPreload,        7,
     "loadoncall",       ProcLoadOnCall,     10,
     "executeonly",      ProcExecuteOnly,    11,
@@ -140,7 +143,7 @@ static void ProcReadWrite( void );
 static void ProcShared( void );
 static void ProcNonShared( void );
 
-static  parse_entry     SegAttributes[] = {
+static  word_entry      SegAttributes[] = {
     "preload",          ProcPreload,        7,
     "loadoncall",       ProcLoadOnCall,     10,
     "executeonly",      ProcExecuteOnly,    11,
@@ -164,7 +167,7 @@ static void ProcNone( void );
 static void ProcSingle( void );
 static void ProcMultiple( void );
 
-static  parse_entry     DataAttributes[] = {
+static  word_entry      DataAttributes[] = {
     "none",             ProcNone,           4,
     "single",           ProcSingle,         6,
     "multiple",         ProcMultiple,       8,
@@ -186,7 +189,7 @@ static  parse_entry     DataAttributes[] = {
 static void ProcClass( void );
 static void ProcOvl( void );
 
-static  parse_entry     SegOptions[] = {
+static  word_entry      SegOptions[] = {
     "class",            ProcClass,      5,
     "ovl",              ProcOvl,        3,
     NULL
@@ -197,7 +200,7 @@ static void SetWindowsVxD( void );
 static void SetWindowsVxDDyn( void );
 static void SetOS2( void );
 
-static  parse_entry     ExeTypeKeywords[] = {
+static  word_entry      ExeTypeKeywords[] = {
     "os2",              SetOS2,             3,
     "windows",          SetWindows,         7,
     "dos4",             NullRoutine,        4,
@@ -212,7 +215,7 @@ static void ProcWindowCompat( void );
 static void ProcNotWindowCompat( void );
 static void ProcNewFiles( void );
 
-static  parse_entry     ApplicationTypes[] = {
+static  word_entry      ApplicationTypes[] = {
     "windowapi",        ProcWindowApi,      9,
     "windowcompat",     ProcWindowCompat,   12,
     "notwindowcompat",  ProcNotWindowCompat,15,
@@ -222,14 +225,14 @@ static  parse_entry     ApplicationTypes[] = {
 
 static void ProcPrivateLib( void );
 
-static  parse_entry     LibraryTypes[] = {
+static  word_entry      LibraryTypes[] = {
     "privatelib",       ProcPrivateLib,     10,
     NULL
 };
 
 static void ProcDevice( void );
 
-static  parse_entry     DeviceKeyword[] = {
+static  word_entry      DeviceKeyword[] = {
     "device",           ProcDevice,         6,
     NULL
 };
@@ -375,8 +378,8 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
     return( true );
 }
 
-extern bool GetNumber( unsigned long *val )
-/*****************************************/
+bool GetNumber( unsigned long *val )
+/**********************************/
 {
     return( GetNumberStr( val, CmdFile->token, CmdFile->len ) );
 }
@@ -393,8 +396,8 @@ static void CheckNum( const char *arg )
     }
 }
 
-static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len )
-/*******************************************************************************/
+static bool ProcessKeyList( word_entry *entry, const char *arg, size_t arg_len )
+/******************************************************************************/
 {
     const char          *key;
     const char          *ptr;
@@ -406,7 +409,7 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len 
         ptr = arg;
         len = 0;
         plen = arg_len;
-        for(;;) {
+        for( ;; ) {
             if( plen == 0 && len >= entry->minlen ) {
                 MultiLine = NULL;               // for processdefcommand.
                 (*entry->rtn)();
@@ -425,8 +428,8 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len 
     return( false );
 }
 
-static bool ProcessKeyword( parse_entry *entry )
-/**********************************************/
+static bool ProcessKeyword( word_entry *entry )
+/*********************************************/
 // returns true if keyword found.
 {
     bool    ret;
@@ -443,8 +446,8 @@ static bool ProcessKeyword( parse_entry *entry )
 
 // the microsoft definitions file.
 
-extern void ProcessDefCommand( void )
-/***********************************/
+void ProcessDefCommand( void )
+/****************************/
 {
     if( !ProcessKeyword( DefStatements ) ) {
         if( MultiLine != NULL ) {
@@ -502,7 +505,7 @@ static void ProcAppLoader( void )
 static void ProcCode( void )
 /**************************/
 {
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     size_t  len;
 
@@ -528,7 +531,7 @@ static void ProcData( void )
 /**************************/
 // NYI: serious copied code from ProcCode.  Should be united into one routine.
 {
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     size_t  len;
 
@@ -738,7 +741,7 @@ static void GetExport( void )
     }
     value = 0xFFFFF; // arbitrary >64K.
     if( MakeToken( SEP_AT, true ) ) {                               // got an ordinal.
-        if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
+        if( !GetNumber( &value ) || value > _64KB ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
         } else {
@@ -786,7 +789,7 @@ static void GetExport( void )
     currloc = command + 7;
     memcpy( currloc, name, namelen );
     currloc += namelen;
-    if( value <= (64*1024UL) ) {   // if an ordinal was specified....
+    if( value <= _64KB ) {   // if an ordinal was specified....
         *currloc++ = '.';
         ultoa( value, currloc, 10 );
         while( *currloc != '\0' ) {    // find end of string.
@@ -843,7 +846,7 @@ static void ProcHeapsize( void )
         Warning( "argument for heapsize not recognized", OPTION_SLOT );
     } else if( memicmp( CmdFile->token, "maxval", 6 ) == 0 ) {
         AddNumOption( "heapsize", 0xFFFF );
-    } else if( !GetNumber( &value ) || value >= (64*1024UL) ) {
+    } else if( !GetNumber( &value ) || value >= _64KB ) {
         Warning( "argument for heapsize not valid", OPTION_SLOT );
     } else {
         AddNumOption( "heapsize", value );
@@ -884,7 +887,7 @@ static void GetImport( void )
         if( second == NULL ) {
             Warning("must have an internal name when an ordinal is specified", OPTION_SLOT );
             return;
-        } else if( value >= (64*1024UL) ) {
+        } else if( value >= _64KB ) {
             Warning( "import ordinal out of range", OPTION_SLOT );
             return;
         }
@@ -908,7 +911,7 @@ static void GetImport( void )
     *currloc++ = ' ';
     memcpy( currloc, first, firstlen );   // module name
     currloc += firstlen;
-    if( value < (64*1024UL) ) {
+    if( value < _64KB ) {
         *currloc++ = '.';
         ultoa( value, currloc, 10 );
     } else {
@@ -945,7 +948,7 @@ static bool IsInitType( void )
     if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 ) == 0 ) {
         FmtInfo = DLL_INITGLOBAL;
         return( true );
-    } else if ( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
+    } else if( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
         FmtInfo = DLL_INITINSTANCE;
         return( true );
     }
@@ -1086,7 +1089,7 @@ static void GetSegments( void )
 {
     char    *segname;
     size_t  seglen;
-    char    buffer[ CODE_BUFFER_LEN ];
+    char    buffer[CODE_BUFFER_LEN];
     char    *result;
     char    *currloc;
     size_t  len;
@@ -1144,7 +1147,7 @@ static void ProcStackSize( void )
 
     if( !MakeToken( SEP_NO, true ) ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
-    } else if( !GetNumber( &value ) || value >= (64*1024UL) ) {
+    } else if( !GetNumber( &value ) || value >= _64KB ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
     } else {
         AddNumOption( "stack", value );
@@ -1488,7 +1491,7 @@ static void ProcNoVIO( void )
 }
 
 
-static  parse_entry     PMTypes[] = {
+static  word_entry      PMTypes[] = {
     "pm",               ProcWindowApi,      1,
     "vio",              ProcWindowCompat,   1,
     "novio",            ProcNoVIO,          1,
@@ -1556,8 +1559,8 @@ static void ProcWarnFixup( const char *arg )
     NotSupported( "warnfixup" );
 }
 
-extern void ProcessOption( const char *opt )
-/******************************************/
+void ProcessOption( const char *opt )
+/***********************************/
 {
     switch_entry        *entry;
     const char          *key;

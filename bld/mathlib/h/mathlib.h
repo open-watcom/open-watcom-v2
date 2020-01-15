@@ -39,13 +39,13 @@
 
 
 #if !defined(_M_IX86) || defined(__FLAT__)
-    typedef double                                      *m_dbl_arg;
-    typedef int                                         *m_int_arg;
-    typedef char                                        *m_char_arg;
+    typedef double                                      *m_dbl_stk_ptr;
+    typedef int                                         *m_int_stk_ptr;
+    typedef char                                        *m_char_stk_ptr;
 #else
-    typedef double __based( __segname( "_STACK" ) )     *m_dbl_arg;
-    typedef int    __based( __segname( "_STACK" ) )     *m_int_arg;
-    typedef char   __based( __segname( "_STACK" ) )     *m_char_arg;
+    typedef double __based( __segname( "_STACK" ) )     *m_dbl_stk_ptr;
+    typedef int    __based( __segname( "_STACK" ) )     *m_int_stk_ptr;
+    typedef char   __based( __segname( "_STACK" ) )     *m_char_stk_ptr;
 #endif
 
 #if defined(_M_IX86)
@@ -58,8 +58,8 @@
     extern  double  _tan87( double );
     extern  double  __sqrt87( double );
     extern  double  __sqrtd( double );
-    extern  void    _ModF( m_dbl_arg, m_dbl_arg );
-    extern  void    _ZBuf2F( m_char_arg, m_dbl_arg );
+    extern  void    _ModF( m_dbl_stk_ptr, m_dbl_stk_ptr );
+    extern  void    _ZBuf2F( m_char_stk_ptr, m_dbl_stk_ptr );
 
     extern  double  __pow87_err( double, double, unsigned char );
     extern  double  __math87_err( double, unsigned char );
@@ -93,7 +93,7 @@
 
 #endif
 
-extern  void    __fprem( double, double, m_int_arg, m_dbl_arg );
+extern  void    __fprem( double, double, m_int_stk_ptr, m_dbl_stk_ptr );
 extern  int     __sgn( double );
 extern  double  _EvalPoly( double x, const double *poly, int degree );
 extern  double  _OddPoly( double x, const double *poly, int degree );

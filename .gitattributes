@@ -51,11 +51,13 @@
 *.ssl text
 *.tix text
 *.txt text
+*.ucm text
 *.vbs text
 *.vi  text
 *.xml text
 *.xsl text
 *.y   text
+*.yml text
 
 .gitattributes text
 .gitignore text

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,30 +39,33 @@
 #include "getopt.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
-static int foundAFile;
-static int findAll;
-static char drive[ _MAX_DRIVE ];
-static char dir[ _MAX_DIR ];
-static char fname[ _MAX_FNAME ];
-static char ext[ _MAX_EXT ];
-static char path[ _MAX_PATH ];
-static char open_path[ _MAX_PATH ];
+char    *OptEnvVar = "which";
+
+static int          foundAFile;
+static int          findAll;
+static PGROUP2      pg;
+static char         path[_MAX_PATH];
+static char         open_path[_MAX_PATH];
 
 static const char * usageTxt[] = {
-"Usage: which [-?a] [-e env_name] filename",
-"-?\t\tdisplay this help",
-"-a\t\tdisplay all matches, not just the first",
-"-e env_name\tuse value of env_name instead of PATH for searching",
-"returns 0 if a file found, 1 if no files found or error.",
-NULL
+    "Usage: which [-?a] [-e env_name] filename",
+    "-?\t\tdisplay this help",
+    "-a\t\tdisplay all matches, not just the first",
+    "-e env_name\tuse value of env_name instead of PATH for searching",
+    "returns 0 if a file found, 1 if no files found or error.",
+    NULL
 };
 
-char *OptEnvVar = "which";
-
+static int skip_entry( const char *p )
+{
+    /* skip '.' and '..' entries */
+    return( p[0] == '.' && ( p[1] == '\0' || p[1] == '.' && p[2] == '\0' ) );
+}
 
 static void writeNL( const char *buf )
 {
@@ -69,32 +73,27 @@ static void writeNL( const char *buf )
     write( 1, "\n", 1 );
 }
 
-
 static void checkDir( void )
 {
-    DIR                 *parent;
-    struct dirent       *entry;
-    char                *p;
+    DIR                 *dirp;
+    struct dirent       *dire;
 
-    _makepath( open_path, NULL, path, fname, ext );
-    parent = opendir( open_path );
-    if( parent == NULL ) {
-        return;
-    }
-    entry = readdir( parent );
-    while( entry != NULL ) {
-        p = entry->d_name;
-        if( p[0] != '.' || ( p[1] != 0 && ( p[1] != '.' || p[2] != 0 ) ) ) {
-            _makepath( open_path, NULL, path, p, NULL );
+    _makepath( open_path, NULL, path, pg.fname, pg.ext );
+    dirp = opendir( open_path );
+    if( dirp != NULL ) {
+        while( (dire = readdir( dirp )) != NULL ) {
+            if( skip_entry( dire->d_name ) )
+                continue;
+            _makepath( open_path, NULL, path, dire->d_name, NULL );
             FNameLower( open_path );
             writeNL( open_path );
             foundAFile = 1;
-            if( !findAll ) break;
+            if( !findAll ) {
+                break;
+            }
         }
-        entry = readdir( parent );
+        closedir( dirp );
     }
-
-    closedir( parent );
 }
 
 
@@ -103,9 +102,9 @@ static void work( const char *path_list, const char *name )
     char    *end_path;
     size_t  path_len;
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( drive[0] != 0 || dir[0] != 0 ) {
-            /* absolute path, so we just check the abs path */
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
+        /* absolute path, so we just check the abs path */
         if( access( name, 0 ) == 0 ) {
             strcpy( path, name );
             FNameLower( path );
@@ -114,17 +113,18 @@ static void work( const char *path_list, const char *name )
         }
         return;
     }
-    if( ext[0] == 0 ) {
-        strcpy( ext, ".*" );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = "*";
     }
 
-    path[0] = 0;    /* check current directory first */
+    path[0] = '\0';    /* path to search, check current directory first */
     checkDir();
-    if( foundAFile && !findAll ) return;
+    if( foundAFile && !findAll )
+        return;
     while( path_list != NULL ) {
         end_path = strchr( path_list, ';' );
         if( end_path == NULL ) {
-            end_path = strchr( path_list, 0 );  /* find null terminator */
+            end_path = strchr( path_list, '\0' );  /* find null terminator */
         }
         path_len = end_path - path_list;
         if( path_len > _MAX_PATH - 1 ) {
@@ -132,12 +132,16 @@ static void work( const char *path_list, const char *name )
             exit( 1 );
         }
         memcpy( path, path_list, path_len );
-        path[ path_len ] = 0;
+        path[path_len] = '\0';      /* path to search */
         checkDir();
-        if( foundAFile && !findAll ) return;
-        if( *end_path != ';' ) break;
+        if( foundAFile && !findAll )
+            return;
+        if( *end_path != ';' )
+            break;
         path_list = end_path + 1;
-        if( *path_list == 0 ) break;
+        if( *path_list == '\0' ) {
+            break;
+        }
     }
 }
 
@@ -147,11 +151,14 @@ int main( int argc, char **argv )
     int     i;
     char    *env_value;
 
+    findAll = 0;
     env_value = getenv( "PATH" );
-    for(;;) {
+    for( ;; ) {
         i = GetOpt( &argc, argv, "ae:", usageTxt );
-        if( i == -1 ) break;
-        if( i == 'a' ) findAll = 1;
+        if( i == -1 )
+            break;
+        if( i == 'a' )
+            findAll = 1;
         if( i == 'e' ) {
             if( OptArg[0] == '=' ) {
                 env_value = getenv( OptArg+1 );
@@ -167,8 +174,8 @@ int main( int argc, char **argv )
 
     foundAFile = 0;
     for( i = 1; i < argc; ++i ) {
-        work( env_value, argv[ i ] );
+        work( env_value, argv[i] );
     }
 
-    return( foundAFile == 0 );
+    return( ( foundAFile ) ? EXIT_SUCCESS : EXIT_FAILURE );
 }

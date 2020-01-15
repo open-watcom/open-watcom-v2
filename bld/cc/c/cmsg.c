@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,7 @@ static char const  * const EMsgArray[] = {
 
 //Enumerate groups
 enum grp_index {
+    grp_index_err = -1,
     #define GRP_DEF( name,prefix,num,index,eindex ) grp_index_##name,
     GRP_DEFS
     #undef GRP_DEF
@@ -57,6 +59,13 @@ static int const LevelIndex[grp_index_max] = {
     #undef GRP_DEF
 };
 
+//msg  index end
+static int const LevelIndexEnd[grp_index_max] = {
+    #define GRP_DEF( name,prefix,num,index,eindex )  num + eindex - index,
+    GRP_DEFS
+    #undef GRP_DEF
+};
+
 //msg ordinal base
 static int const GroupBase[grp_index_max] = {
     #define GRP_DEF( name,prefix,num,index,eindex ) index,
@@ -64,8 +73,8 @@ static int const GroupBase[grp_index_max] = {
     #undef GRP_DEF
 };
 
-static msgtype const MsgType[] = {
-    #define MSG_DEF( name, group, kind, level, group_index )  msgtype_##kind,
+static msg_type const MsgType[] = {
+    #define MSG_DEF( name, group, kind, level, group_index )  MSG_TYPE_##kind,
     MSG_DEFS
     #undef MSG_DEF
 };
@@ -112,64 +121,71 @@ char const *UsageText(void)      // GET INTERNATIONAL USAGE TEXT
     return( usage_text );
 }
 
-static enum grp_index  GetGrpIndex( msg_codes msgcode )
+static enum grp_index  GetGrpIndex( msg_codes msgnum )
 {
     enum grp_index   index;
 
     index = grp_index_max;
-    while( --index > 0 ) {
-        if( msgcode >= LevelIndex[index] ) {
+    while( index-- > 0 ) {
+        if( msgnum >= LevelIndex[index] ) {
+            if( msgnum < LevelIndexEnd[index] )
+                return( index );
             break;
         }
     }
-    return( index );
+    return( grp_index_err );
 }
 
-char const *CGetMsgPrefix( msg_codes msgcode )
+int GetMsgIndex( msg_codes msgnum )
 {
     enum grp_index   index;
-    char   const    *value;
 
-    index = GetGrpIndex( msgcode );
-    value = MsgPrefix[index];
-    return( value );
+    index = GetGrpIndex( msgnum );
+    if( index == grp_index_err )
+        return( -1 );
+    return( msgnum - LevelIndex[index] + GroupBase[index] );
 }
 
-msgtype CGetMsgType( msg_codes msgcode )
+char const *CGetMsgPrefix( msg_codes msgnum )
 {
-    int              msgnum;
-    msgtype          kind;
-    enum grp_index   index;
+    enum grp_index  index;
 
-    index = GetGrpIndex( msgcode );
-    msgnum = msgcode - LevelIndex[index] + GroupBase[index];
-    kind = MsgType[msgnum];
+    index = GetGrpIndex( msgnum );
+    if( index == grp_index_err )
+        return( "" );
+    return( MsgPrefix[index] );
+}
+
+msg_type CGetMsgType( msg_codes msgnum )
+{
+    int              msg_index;
+    msg_type         kind;
+
+    msg_index = GetMsgIndex( msgnum );
+    kind = MsgType[msg_index];
     return( kind );
 }
 
-char const *CGetMsgStr(  msg_codes msgcode )
+char const *CGetMsgStr( msg_codes msgnum )
 {
     char const      *p;
-    int             msgnum;
-    enum grp_index  index;
+    int             msg_index;
 
-    index = GetGrpIndex( msgcode );
-    msgnum = msgcode - LevelIndex[index] + GroupBase[index];
-    if( internationalData != NULL ) {
-        if( msgnum < internationalData->errors_count ) {
-            p = internationalData->errors_text[msgnum];
-        } else {
-            p = NULL;   // this might be a bug, but otherwise its random.
+    msg_index = GetMsgIndex( msgnum );
+    p = NULL;
+    if( msg_index >= 0 ) {
+        if( internationalData == NULL ) {
+            p = EMsgArray[msg_index];
+        } else if( msg_index < internationalData->errors_count ) {
+            p = internationalData->errors_text[msg_index];
         }
-    } else {
-        p = EMsgArray[msgnum];
     }
     return( p );
 }
 
-void CGetMsg( char *msgbuf, msg_codes msgcode )
+void CGetMsg( char *msgbuf, msg_codes msgnum )
 {
-    char const *p = CGetMsgStr( msgcode );
+    char const *p = CGetMsgStr( msgnum );
     while( (*msgbuf++ = *p++) != '\0' )
         /* empty */;
 }

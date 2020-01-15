@@ -8,7 +8,6 @@ builder_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include exerule.mif
-
 !include trmem.mif
 
 full_commands = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe diff.exe builder.exe wgrep.exe cdsay.exe
@@ -24,8 +23,8 @@ all_commands    += builder.exe
 !ifndef __WATCOM_TOOLS__
 !ifdef bootstrap
 !ifndef %LOGFNAME
-cl_extra_libs_gen =
-cl_extra_objs_gen = clibext.obj
+bld_cl_extra_libs_gen =
+bld_cl_extra_objs_gen = clibext.obj
 !endif
 !endif
 !endif
@@ -43,16 +42,18 @@ sys_objs = $(sys_$(host_os))
 sys_objs = sysposix.obj
 !endif
 
-builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj $(cl_extra_objs_gen) $(trmem_objs)
-sweep_objs   = sweep.obj $(cl_extra_objs_gen)
-wsplice_objs = wsplice.obj $(cl_extra_objs_gen)
-diff_objs    = diff.obj $(cl_extra_objs_gen)
+builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj $(bld_cl_extra_objs_gen) $(trmem_objs)
+sweep_objs   = sweep.obj $(bld_cl_extra_objs_gen)
+wsplice_objs = wsplice.obj $(bld_cl_extra_objs_gen)
+diff_objs    = diff.obj $(bld_cl_extra_objs_gen)
 cdsay_objs   = cdsay.obj
-wgrep_objs   = wgrep.obj $(cl_extra_objs_gen)
+wgrep_objs   = wgrep.obj $(bld_cl_extra_objs_gen)
 
 extra_cpp_flags = -DSTANDALONE_RX
 
-extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
+extra_cpp_flags_genverrc = -D_VERSION=$(bld_ver)
+extra_cpp_flags_utils = $(trmem_cpp_flags)
+
 extra_c_flags_utils = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 
@@ -69,7 +70,11 @@ wgrep.exe :   $(wgrep_objs)
 builder.exe : $(builder_objs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(builder_objs) $(bld_ldflags)
+! else
     $(cl) $(clflags) $(builder_objs) $(ldflags)
+! endif
 !else
     $(linker) name $@ $(lflags) file {$(builder_objs)}
 !endif

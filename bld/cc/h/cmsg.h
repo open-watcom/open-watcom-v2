@@ -38,7 +38,7 @@ typedef enum{
 } cmsg_class;
 
 typedef struct {
-    int         msgnum;
+    msg_codes   msgnum;
     unsigned    line;
     unsigned    col;
     char const  *fname;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,10 @@
 #include "chbffile.h"
 #include "cmdparse.h"
 #include "util.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 enum TokenVal {
     TOK_EOF         = '\0',
@@ -52,14 +57,6 @@ enum TokenVal {
     TOK_At          = '@',
     TOK_NotATok
 };
-
-typedef struct fullName {
-    char        path[ _MAX_PATH + 1 ];
-    char        drive[ _MAX_DRIVE + 1 ];
-    char        dir[ _MAX_DIR + 1 ];
-    char        fname[ _MAX_FNAME + 1 ];
-    char        ext[ _MAX_EXT + 1 ];
-} FullName;
 
 CommandParser::CommandParser( char * cmdLine, bool optAllowed )
                 : _cmdLine( cmdLine )
@@ -95,7 +92,7 @@ void CommandParser::setCommand( const char * name )
     if( _command ) {
         errMessage( "Warning:  ignoring nested include @%s.", name );
     } else {
-        setExtension( nameStr, ".cbr" );
+        setExtension( nameStr, "cbr" );
         _command = new CheckedBufferedFile( nameStr );
         _command->open( CheckedFile::ReadText, CheckedFile::UserReadWrite );
 
@@ -110,7 +107,7 @@ void CommandParser::setDatabase( const char * dbs )
 //-------------------------------------------------
 {
     _database = dbs;
-    setExtension( _database, ".dbr" );
+    setExtension( _database, "dbr" );
 }
 
 void CommandParser::setSearchPath( const char * path )
@@ -123,7 +120,7 @@ void CommandParser::setOptions( const char * opt )
 //------------------------------------------------
 {
     _options = opt;
-    setExtension( _options, ".obr" );
+    setExtension( _options, "obr" );
 }
 
 
@@ -353,40 +350,35 @@ void CommandParser::addFile( const char * fname )
 // return true if successful, false on error
 {
     DIR *           dirp;
-    struct dirent * direntp;
+    struct dirent * dire;
     String          file( fname );
-    FullName        dirName;
+    PGROUP2         pg;
 
-    setExtension( file, ".mbr" );
+    setExtension( file, "mbr" );
 
     // FIXME -- these error messages have to do something smarter!
     if( ( strchr( file, '?' ) != NULL ) || ( strchr( file, '*' ) != NULL ) ) {
 
-        _splitpath( file, dirName.drive, dirName.dir,
-                    dirName.fname, dirName.ext );
-
+        _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         dirp = opendir( file );
         if( dirp == NULL ) {
             errMessage( "No files found matching \"%s\".", fname );
             return;
         }
 
-        for(;;) {
-            const char AvoidAttribs = _A_HIDDEN | _A_SYSTEM | _A_VOLID |
-                                      _A_SUBDIR;
+        const char AvoidAttribs = _A_HIDDEN | _A_SYSTEM | _A_VOLID | _A_SUBDIR;
 
-            direntp = readdir( dirp );
-            if( direntp == NULL ) break;
-
+        for( ; (dire = readdir( dirp )) != NULL; ) {
             if( (dirp->d_attr & AvoidAttribs) == 0 ) {
                 String addFile;
-                addFile = dirName.drive;
-                addFile += dirName.dir;
+
+                addFile = pg.drive;
+                addFile += pg.dir;
                 addFile += dirp->d_name;
 
                 // do NOT do a setExtension here as we only get here
                 // if user did *.* or *. something.
-                // setExtension( addFile, ".mbr" );
+                // setExtension( addFile, "mbr" );
 
                 if( !ListContains( _files, addFile ) ) {
                     _files->append( addFile );
@@ -412,20 +404,17 @@ void CommandParser::setExtension( String & str, const char * ext )
 // split a path apart, set its extension to ext if it is blank,
 // stick it back together and return the full path name.
 {
-    FullName    name;
-    char        newDir[ _MAX_PATH ];
+    PGROUP2     pg;
+    char        path[_MAX_PATH];
+    char        newDir[_MAX_PATH];
     char *      res;
-    String      retStr;
 
-    _splitpath( str, name.drive, name.dir, name.fname, name.ext );
+    _splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] != '\0' )
+        ext = pg.ext;
+    _makepath( path, pg.drive, pg.dir, pg.fname, ext );
 
-    if( *name.ext == '\0' ) {
-        strcpy( name.ext, ext );
-    }
-
-    _makepath( name.path, name.drive, name.dir, name.fname, name.ext );
-
-    res = _fullpath( newDir, name.path, _MAX_PATH );
+    res = _fullpath( newDir, path, _MAX_PATH );
 
     if( res == NULL ) {
         FileExcept oops( FileExcept::Read, errno, str );

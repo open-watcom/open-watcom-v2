@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 struct blk {
     blk_t       *next;
     unsigned    index;
-    bool        modified    : 1;
+    boolbit     modified    : 1;
     char        data[1];
 };
 
@@ -123,7 +124,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     cv->free_list = NULL;
     cv->blk_map = NULL;
     cv->size_chg = false;
-    DbgAssert( cv->elm_size >= 2 * sizeof(void *) );
+    DbgAssert( cv->elm_size >= 2 * sizeof( void * ) );
     DbgAssert( cv->elm_count != 0 );
     DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
     return( cv );
@@ -143,10 +144,12 @@ void CarveVerifyAllGone( carve_t cv, const char *node_name )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         compare = block->data + cv->blk_top;
         do {
-            compare = (char *)compare - cv->elm_size;
+            compare -= cv->elm_size;
             /* verify every block has been freed */
             for( check = cv->free_list; check != NULL; check = check->next_free ) {
-                if( compare == (char *)check ) break;
+                if( compare == (char *)check ) {
+                    break;
+                }
             }
             if( check == NULL ) {
                 if( ! some_unfreed ) {
@@ -207,8 +210,8 @@ void *CarveZeroAlloc( carve_t cv )
     }
     _REMOVE_FROM_FREE( cv, v );
     p = v;
-    DbgAssert( ( cv->elm_size / sizeof(*p) ) <= 16 );
-    switch( cv->elm_size / sizeof(*p) ) {
+    DbgAssert( ( cv->elm_size / sizeof( *p ) ) <= 16 );
+    switch( cv->elm_size / sizeof( *p ) ) {
     case 16:
         p[15] = 0;
     case 15:
@@ -249,11 +252,11 @@ void *CarveZeroAlloc( carve_t cv )
 #ifndef NDEBUG
 static void CarveDebugFree( carve_t cv, void *elm )
 {
-    free_t *check;
-    blk_t *block;
-    char *compare;
-    char *start;
-    unsigned esize;
+    free_t      *check;
+    blk_t       *block;
+    char        *compare;
+    char        *start;
+    unsigned    esize;
 
     /* make sure object hasn't been freed before */
     for( check = cv->free_list; check != NULL; check = check->next_free ) {
@@ -272,12 +275,17 @@ static void CarveDebugFree( carve_t cv, void *elm )
         }
 #endif
         esize = cv->elm_size;
-        for(;;) {
-            if( compare == start ) break;
-            compare = compare - esize;
-            if( elm == compare ) break;
+        for( ;; ) {
+            if( compare == start )
+                break;
+            compare -= esize;
+            if( (char *)elm == compare ) {
+                break;
+            }
         }
-        if( elm == compare ) break;
+        if( (char *)elm == compare ) {
+            break;
+        }
     }
     if( block == NULL ) {
         LnkFatal( "carve: freed object was never allocated" );
@@ -416,7 +424,7 @@ void CarveRestart( carve_t cv, unsigned num )
     _ChkAlloc( cv->blk_map, numblks * sizeof( blk_t * ) );
     index = numblks - 1;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
-        cv->blk_map[ index ] = block;
+        cv->blk_map[index] = block;
         index -= 1;
     }
     remainder = num % cv->elm_count;
@@ -461,7 +469,7 @@ void CarveInsertFree( carve_t cv, void *data )
 void *CarveMapIndex( carve_t cv, void *aindex )
 /*********************************************/
 {
-    unsigned    index = (unsigned)(pointer_int)aindex;
+    unsigned    index = (unsigned)(pointer_uint)aindex;
     blk_t *     block;
     blk_t **    block_map;
     unsigned    block_index;
@@ -474,6 +482,6 @@ void *CarveMapIndex( carve_t cv, void *aindex )
     block_index = GET_BLOCK( index );
     block_offset = GET_OFFSET( index );
     block_map = cv->blk_map;
-    block = block_map[ block_index - 1 ];
-    return( &(block->data[ block_offset ]) );
+    block = block_map[block_index - 1];
+    return( &(block->data[block_offset]) );
 }

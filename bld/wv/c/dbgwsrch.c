@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ typedef struct {
     char        *source_line;
     mod_handle  mod;
     cue_fileid  file_id;
-    bool        open : 1;
+    boolbit     open : 1;
 } found_item;
 
 typedef struct srch_window      srch_window;
@@ -83,8 +84,8 @@ struct srch_window {
     SRCH_WALKER *walk;
     void        *cookie;
     a_cue       *file_list;
-    bool        ignore_case : 1;
-    bool        use_rx      : 1;
+    boolbit     ignore_case : 1;
+    boolbit     use_rx      : 1;
 };
 
 static gui_menu_struct SrchMenu[] = {

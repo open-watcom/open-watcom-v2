@@ -59,15 +59,6 @@ void InitGMLLine( char *text )
     firstNonWS = text;
 }
 
-static void getWhiteSpace( ss_block *ss_new, char *start )
-{
-    char    *end = start + 1;
-
-    SKIP_SPACES( end );
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = end - start;
-}
-
 static void getText( ss_block *ss_new, char *start )
 {
     char    *end = start + 1;
@@ -94,12 +85,6 @@ static void getSymbol( ss_block *ss_new )
 {
     ss_new->type = SE_SYMBOL;
     ss_new->len = 1;
-}
-
-static void getBeyondText( ss_block *ss_new )
-{
-    ss_new->type = SE_WHITESPACE;
-    ss_new->len = BEYOND_TEXT;
 }
 
 static void getGMLComment( ss_block *ss_new, char *start, int skip )
@@ -186,7 +171,7 @@ void GetGMLBlock( ss_block *ss_new, char *start, int line )
             // with an unterminated "
             flags.inString = false;
         }
-        getBeyondText( ss_new );
+        SSGetBeyondText( ss_new );
         return;
     }
 
@@ -204,7 +189,7 @@ void GetGMLBlock( ss_block *ss_new, char *start, int line )
     }
 
     if( isspace( start[0] ) ) {
-        getWhiteSpace( ss_new, start );
+        SSGetWhiteSpace( ss_new, start );
         return;
     }
 

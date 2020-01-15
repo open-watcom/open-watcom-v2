@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +42,6 @@
 
 #include "clibext.h"
 
-
-char  Fname[ _MAX_FNAME ];
 
 /*
  * parse the executable
@@ -151,22 +150,11 @@ static void dmp_exe( void )
     }
 }
 
-static bool find_file( char * file_path )
-/***************************************/
+static bool find_file( const char * file_path )
+/*********************************************/
 {
-    int     access_rc;
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
-    char    given_ext[ _MAX_EXT ];
-
-    _splitpath( file_path, drive, dir, Fname, given_ext );
     /* check if the given file name exists */
-    access_rc = access( file_path, R_OK );
-    if( access_rc == 0 ) {
-        return( true );
-    } else {
-        return( false );
-    }
+    return( access( file_path, R_OK ) == 0 );
 }
 
 /*

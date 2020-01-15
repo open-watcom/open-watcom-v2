@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,10 @@
 #include "filefilt.h"
 #include "viewmgr.h"
 #include "wbrwin.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define FNAMECHARCMP( a, b ) ( tolower( (int) a ) - tolower( (int) b ) )
 
@@ -61,26 +66,18 @@ int FFiltPattern::operator==( const FFiltPattern & o ) const
     return _pattern == o._pattern;
 }
 
-struct FullName {
-    char drive[ _MAX_DRIVE ];
-    char dir[ _MAX_DIR ];
-    char fname[ _MAX_FNAME ];
-    char ext[ _MAX_EXT ];
-};
-
 bool FFiltPattern::match( String & s )
 //------------------------------------
 {
-    FullName pat;
-    FullName file;
-    int      i;
+    PGROUP2     pat;
+    PGROUP2     file;
 
     if( (_type == FFIncludeAll) || (_type == FFExcludeAll) ) {
         return true;
     }
 
-    _splitpath( s, file.drive, file.dir, file.fname, file.ext );
-    _splitpath( _pattern, pat.drive, pat.dir, pat.fname, pat.ext );
+    _splitpath2( s, file.buffer, &file.drive, &file.dir, &file.fname, &file.ext );
+    _splitpath2( _pattern, pat.buffer, &pat.drive, &pat.dir, &pat.fname, &pat.ext );
 
     if( stricmp( file.drive, pat.drive ) ) {
         return false;
@@ -90,31 +87,35 @@ bool FFiltPattern::match( String & s )
         return false;
     }
 
-    for( i = 0; i < _MAX_FNAME; i += 1 ) {
-        if( pat.fname[ i ] == '*' ) {
+    for( ;; ) {
+        if( *pat.fname == '*' ) {
             break;
         }
-        if( pat.fname[ i ] != '?' &&
-            FNAMECHARCMP( pat.fname[ i ], file.fname[ i ] ) ) {
+        if( *pat.fname != '?' &&
+            FNAMECHARCMP( *pat.fname, *file.fname ) ) {
 
             return false;
         }
-        if( pat.fname[ i ] == '\0' ) {
+        if( *pat.fname == '\0' ) {
             break;
         }
+        pat.fname++;
+        file.fname++;
     }
 
-    for( i = 0; i < _MAX_EXT; i += 1 ) {
-        if( pat.ext[ i ] == '*' ) {
+    for( ;; ) {
+        if( *pat.ext == '*' ) {
             break;
         }
-        if( pat.ext[ i ] != '?' &&
-            FNAMECHARCMP( pat.ext[ i ], file.ext[ i ] ) ) {
+        if( *pat.ext != '?' &&
+            FNAMECHARCMP( *pat.ext, *file.ext ) ) {
             return false;
         }
-        if( pat.ext[ i ] == '\0' ) {
+        if( *pat.ext == '\0' ) {
             break;
         }
+        pat.ext++;
+        file.ext++;
     }
 
     return true;
@@ -206,11 +207,11 @@ FileFilter & FileFilter::operator=( const FileFilter & o )
     _patterns->clearAndDestroy();
 
     for( i = 0; i < o._entries->entries(); i += 1 ) {
-        _entries->insert( new FFiltEntry( *(*o._entries)[ i ] ) );
+        _entries->insert( new FFiltEntry( *(*o._entries)[i] ) );
     }
 
     for( i = 0; i < o._patterns->entries(); i += 1 ) {
-        _patterns->append( new FFiltPattern( *(*o._patterns)[ i ] ) );
+        _patterns->append( new FFiltPattern( *(*o._patterns)[i] ) );
     }
 
     return *this;
@@ -241,7 +242,7 @@ void FileFilter::loadFiles()
     DRGetFileNameList( fileHook, this );
 
     for( i = 0; i < _patterns->entries(); i += 1 ) {
-        applyPattern( (*_patterns)[ i ] );
+        applyPattern( (*_patterns)[i] );
     }
 }
 
@@ -252,8 +253,8 @@ void FileFilter::applyPattern( FFiltPattern * pat )
     bool enabled = (pat->_type == FFIncludeAll) || (pat->_type == FFInclude);
 
     for( i = 0; i < _entries->entries(); i += 1 ) {
-        if( pat->match( (*_entries)[ i ]->_name ) ) {
-            (*_entries)[ i ]->_enabled = enabled;
+        if( pat->match( (*_entries)[i]->_name ) ) {
+            (*_entries)[i]->_enabled = enabled;
         }
     }
 }
@@ -292,7 +293,7 @@ void FileFilter::write( CheckedFile & file )
     file.write( &numPatterns, sizeof( uint_16 ) );
 
     for( i = 0; i < numPatterns; i += 1 ) {
-        FFiltPattern * pat = (*_patterns)[ i ];
+        FFiltPattern * pat = (*_patterns)[i];
 
         type = (uint_8)pat->_type;
 
@@ -312,7 +313,7 @@ FFiltEntry * FileFilter::entry( uint idx )
 {
     ASSERTION( idx < _entries->entries() );
 
-    return (*_entries)[ idx ];
+    return (*_entries)[idx];
 }
 
 uint FileFilter::numPatterns()
@@ -326,7 +327,7 @@ FFiltPattern * FileFilter::pattern( uint idx )
 {
     ASSERTION( idx < _patterns->entries() );
 
-    return (*_patterns)[ idx ];
+    return (*_patterns)[idx];
 }
 
 
@@ -350,7 +351,7 @@ bool FileFilter::enabled( const char * file )
             WString msg;
             msg.printf( "No file found for \"%s\" -- files are:\n", file ? file : "NULL" );
             for( int i = 0; i < _entries->entries(); i += 1 ) {
-                msg.concatf( " %s", (const char *) (*_entries)[ i ]->_name );
+                msg.concatf( " %s", (const char *) (*_entries)[i]->_name );
             }
             errMessage( msg );
         }
@@ -383,7 +384,7 @@ uint FileFilter::matchesAll()
     int i;
 
     for( i = _entries->entries(); i > 0; i -= 1 ) {
-        FFiltEntry * entry = (*_entries)[ i ];
+        FFiltEntry * entry = (*_entries)[i];
 
         if( !entry->_enabled ) {
             return FFMDontMatchAll;

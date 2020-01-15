@@ -136,6 +136,8 @@ cdsay .
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
 # running on the host platform, but not necessarily anything else.
+# If necessary, build clibext library (64-bit)
+[ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
 # Start with language and API headers
 [ INCLUDE <OWSRCDIR>/hdr/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/os2api/builder.ctl ]
@@ -276,8 +278,8 @@ cdsay .
 [ INCLUDE <OWDISTRDIR>/ow/builder.ctl ]
 [ ENDIF ]
 
-[ BLOCK <BLDRULE> docsclean docs webdocs cpwebdocs ]
-#===================================================
+[ BLOCK <BLDRULE> docsclean docs ]
+#=================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <BLDRULE> install missing instclean ]
@@ -291,6 +293,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/mathtest/builder.ctl ]
 
 [ BLOCK <1> relclean passclean ]
 #===============================

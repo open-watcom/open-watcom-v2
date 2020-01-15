@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ static bool cm_init( init_mode install )
                 MouseInstalled = true;
 
                 qnx_osinfo( 0, &osinfo );
-                _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
+                _SysTime = (struct _timesel __far *)_MK_FP( osinfo.timesel, 0 );
 
                 UIData->mouse_xscale = 1;
                 UIData->mouse_yscale = 1;

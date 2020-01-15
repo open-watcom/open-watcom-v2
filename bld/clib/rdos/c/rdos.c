@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,33 +57,33 @@ typedef struct RdosParam
     TRdosPtr48 env;
 } TRdosParam;
 
-int RdosCarryToBool();
+int RdosCarryToBool( void );
 
 #pragma aux RdosCarryToBool = \
         CarryToBool \
     __value [__eax]
 
-void RdosBlitBase();
+void RdosBlitBase( void );
 
 #pragma aux RdosBlitBase = \
     CallGate_blit;
 
-void RdosDrawMaskBase();
+void RdosDrawMaskBase( void );
 
 #pragma aux RdosDrawMaskBase = \
     CallGate_draw_mask;
 
-void RdosGetBitmapInfoBase();
+void RdosGetBitmapInfoBase( void );
 
 #pragma aux RdosGetBitmapInfoBase = \
     CallGate_get_bitmap_info;
 
-void RdosReadDirBase();
+void RdosReadDirBase( void );
 
 #pragma aux RdosReadDirBase = \
     CallGate_read_dir;
 
-void RdosGetModuleResourceBase();
+void RdosGetModuleResourceBase( void );
 
 #pragma aux RdosGetModuleResourceBase = \
     CallGate_get_module_resource;
@@ -98,17 +98,17 @@ void RdosCreatePrioThread( void (*Start)(void *Param), int Prio, const char *Nam
     _beginthread( Start, Prio, Name, StackSize, Param );
 }
 
-void RdosExecBase();
+void RdosExecBase( void );
 
 #pragma aux RdosExecBase = \
     CallGate_load_exe;
 
-void RdosSpawnBase();
+void RdosSpawnBase( void );
 
 #pragma aux RdosSpawnBase = \
     CallGate_spawn_exe;
 
-void RdosAttachBase();
+void RdosAttachBase( void );
 
 #pragma aux RdosAttachBase = \
     CallGate_attach_debugger;
@@ -562,7 +562,7 @@ int RdosAttachDebugger( int pid )
 static slib_callback_t mem_putc;
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct TRdosPrintfCallback  *callback = (struct TRdosPrintfCallback*) specs->_dest;
+    struct TRdosPrintfCallback  *callback = SLIB2CLIB( struct TRdosPrintfCallback, specs->_dest );
 
     specs->_output_count++;
     callback->outproc( callback->param, op_char );

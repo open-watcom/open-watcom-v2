@@ -53,7 +53,7 @@ void WriteNewLib( void )
     char *bak,*lib,*out;
 
     lib = Options.input_name;
-    if( Options.output_name != NULL && !SameFile( lib, Options.output_name ) ) {
+    if( Options.output_name != NULL && !IsSameFile( lib, Options.output_name ) ) {
         out = Options.output_name;
     } else {
         out = MakeTmpName( tmp );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ static struct __sigtable {
 } _SignalTable;
 
 
-_WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
+_WCRTLINK void (_WCCALLBACK *signal( int sig, void (_WCCALLBACK *func)(int) ))(int)
 {
     struct sigaction act;
 
@@ -79,7 +80,7 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     if( sigaction(sig, &act, &act) )
         return( SIG_ERR );
 #if defined( __SMALL_CODE__ )
-    return( (__sig_func)act.sa_handler );
+    return( (__sig_func)(unsigned)act.sa_handler );
 #else
     return( act.sa_handler );
 #endif
@@ -108,8 +109,8 @@ _WCRTLINK int sigaction(
         _SignalTable.stub = (void (__far *)())&__sigstub;
         msg.s.type = _PROC_SIGNAL;
         msg.s.subtype = _SIGTABLE;
-        msg.s.segment = FP_SEG( &_SignalTable );
-        msg.s.offset = (long)FP_OFF( &_SignalTable );
+        msg.s.segment = _FP_SEG( &_SignalTable );
+        msg.s.offset = (long)_FP_OFF( &_SignalTable );
         msg.s.zero1 = 0;
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
         first = 0;
@@ -130,8 +131,8 @@ _WCRTLINK int sigaction(
         msg.s.type = _PROC_SIGNAL;
         msg.s.subtype = _SIGACT;
         msg.s.signum = sig;
-        msg.s.segment = FP_SEG( act->sa_handler );
-        msg.s.offset = (long)FP_OFF( act->sa_handler );
+        msg.s.segment = _FP_SEG( act->sa_handler );
+        msg.s.offset = (long)_FP_OFF( act->sa_handler );
         msg.s.mask = act->sa_mask;
         msg.s.zero1 = 0;
     }

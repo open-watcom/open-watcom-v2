@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +66,7 @@ static void GraphicsMode( void )
     for( i = 0; i < 12; i++ ) {                     // load CRT registers
         outpw( CRT_INDEX, ( GTable[i] << 8 ) + i );
     }
-    _fmemset( MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );   // clear screen
+    _fmemset( _MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );   // clear screen
     outp( CRT_CNTRL, 0x0A );                        // turn screen back on
 
     _BIOS_data( CRT_MODE, char ) = _HERCMONO;// set mode
@@ -120,7 +121,7 @@ static void _HercSetup( short x, short y, grcolor colour )
     char                rotate;
 
     pixel_offset = _wror( y & 3, 3 ) + 90 * ( y >> 2 ) + ( x >> 3 );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
+    _Screen.mem = _MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
     rotate = _Screen.bit_pos + 1;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -391,24 +392,27 @@ static int ReadNextChar( prompt_slot slot )
             if( c == '\0' /*EOF*/ || c == '\x1a' )
                 break;  /* Quit if end of stream. */
             if( is_new_line ) {
-                if( slot != OPTION_SLOT && !no_prompt )
+                if( slot != OPTION_SLOT && !no_prompt ) {
                     ; //OutPutPrompt( slot );
+                }
                 is_new_line = false;
             }
             if( slot != OPTION_SLOT && !no_prompt ) {
-                if( c == '\r' )
+                if( c == '\r' ) {
                     continue;
+                }
                 //@TODO: output 'c' here?
             }
-            if( c == ';' )
+            if( c == ';' ) {
                 ;//@TODO: output newline?
-            else if( c == '\n' )
+            } else if( c == '\n' ) {
                 is_new_line = true;
-            else if( c == '\t' )
+            } else if( c == '\t' ) {
                 c = ' ';    /* Tabs to spaces. */
-
-            if( c == '\n' || c >= ' ' )
+            }
+            if( c == '\n' || c >= ' ' ) {
                 return( c );
+            }
         }
         RestoreCmdLine();
     }

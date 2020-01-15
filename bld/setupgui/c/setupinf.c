@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "guiutil.h"
-#include "guistat.h"
+#include "guistats.h"
 #include "setupinf.h"
 #include "genvbl.h"
 #include "gendlg.h"
@@ -100,12 +100,12 @@ typedef struct a_file_info {
     unsigned long       disk_date;
     unsigned long       size;
     unsigned long       date;
-    bool                in_old_dir  : 1;
-    bool                in_new_dir  : 1;
-    bool                read_only   : 1;
-    bool                is_nlm      : 1;
-    bool                is_dll      : 1;
-    bool                executable  : 1;
+    boolbit             in_old_dir  : 1;
+    boolbit             in_new_dir  : 1;
+    boolbit             read_only   : 1;
+    boolbit             is_nlm      : 1;
+    boolbit             is_dll      : 1;
+    boolbit             executable  : 1;
 } a_file_info;
 
 typedef enum {
@@ -167,9 +167,9 @@ typedef enum {
     RS_ASSOCIATIONS
 } read_state;
 
-typedef struct dialog_info {    // structure used when parsing a dialog
-    array_info          controls;
-    array_info          controls_ext;
+typedef struct dialog_parser_info { // structure used when parsing a dialog
+    array_info          controls_array;
+    array_info          controls_ext_array;
     int                 num_push_buttons;
     int                 num_variables;
     int                 num_radio_buttons;
@@ -178,7 +178,7 @@ typedef struct dialog_info {    // structure used when parsing a dialog
     a_dialog_header     *curr_dialog;
     int                 row_num;
     int                 col_num;
-} DIALOG_INFO;
+} DIALOG_PARSER_INFO;
 
 #define defvar( x, y ) vhandle x;
 MAGICVARS( defvar, 0 )
@@ -215,7 +215,7 @@ static struct dir_info {
     int                 parent;
     int                 num_files;
     int                 num_existing;
-    bool                used            : 1;
+    boolbit             used            : 1;
 } *DirInfo = NULL;
 
 
@@ -224,8 +224,8 @@ static struct target_info {
     disk_ssize          space_needed;
     int                 num_files;
     char                *temp_disk;
-    bool                supplemental    : 1;
-    bool                needs_update    : 1;
+    boolbit             supplemental    : 1;
+    boolbit             needs_update    : 1;
 } *TargetInfo = NULL;
 
 static struct label_info {
@@ -259,10 +259,10 @@ static struct file_info {
         file_cond_info  *p;
         int             i;
     } condition;
-    bool                add             : 1;
-    bool                remove          : 1;
-    bool                supplemental    : 1;
-    bool                core_component  : 1;
+    boolbit             add             : 1;
+    boolbit             remove          : 1;
+    boolbit             supplemental    : 1;
+    boolbit             core_component  : 1;
 } *FileInfo = NULL;
 
 static struct pm_info {
@@ -272,8 +272,8 @@ static struct pm_info {
     char                *iconfile;
     int                 iconindex;
     char                *condition;
-    bool                group           : 1;
-    bool                shadow          : 1;
+    boolbit             group           : 1;
+    boolbit             shadow          : 1;
 } *PMInfo = NULL;
 
 static struct profile_info {
@@ -332,16 +332,25 @@ static vhandle GetTokenHandle( const char *p );
 static void ZeroAutoSetValues( void );
 static void InitAutoSetValues( void );
 
-static void InitDlgArrays( DIALOG_INFO *dlg )
+static void InitDlgArrays( DIALOG_PARSER_INFO *parse_dlg )
 {
-    InitArray( (void **)&dlg->curr_dialog->controls, sizeof( gui_control_info ), &dlg->controls );
-    InitArray( (void **)&dlg->curr_dialog->controls_ext, sizeof( control_info_ext ), &dlg->controls_ext );
+    InitArray( (void **)&parse_dlg->curr_dialog->controls, sizeof( gui_control_info ), &parse_dlg->controls_array );
+    InitArray( (void **)&parse_dlg->curr_dialog->controls_ext, sizeof( control_info_ext ), &parse_dlg->controls_ext_array );
 }
 
-static bool BumpDlgArrays( DIALOG_INFO *dlg )
+static bool BumpDlgArrays( DIALOG_PARSER_INFO *parse_dlg )
 {
-    return( BumpArray( &dlg->controls ) && BumpArray( &dlg->controls_ext ) );
+    return( BumpArray( &parse_dlg->controls_array ) && BumpArray( &parse_dlg->controls_ext_array ) );
 }
+
+#ifndef __UNIX__
+static void toBackSlash( char *name )
+{
+    while( (name = strchr( name, '/' )) != NULL ) {
+        *name = '\\';
+    }
+}
+#endif
 
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
@@ -365,7 +374,6 @@ static tree_node *BuildExprTree( const char *str )
     int                 stack_top;
     tree_node           *stack[16];
     char                *str2;
-    char                *p;
     tree_node           *tree;
 
     #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
@@ -395,13 +403,13 @@ static tree_node *BuildExprTree( const char *str )
         } else if( token[0] == '!' ) { // not top value
             stack[stack_top] = TreeNode( OP_NOT, stack[stack_top], NULL );
         } else if( token[0] == '?' ) {  // check for file existence
-            p = GUIStrDup( token + 1, NULL );
             ++stack_top;
             if( stack_top > STACK_SIZE - 1 ) {
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                stack[stack_top] = TreeNode( OP_EXIST, p, NULL );
+                token = GUIStrDup( token + 1, NULL );
+                stack[stack_top] = TreeNode( OP_EXIST, token, NULL );
             }
         } else {                // push current value
             ++stack_top;
@@ -441,7 +449,7 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     case OP_EXIST:
         return( stricmp( (char *)a->u.left, (char *)b->u.left ) == 0 );
     case OP_VAR:
-        return( (vhandle)(pointer_int)a->u.left == (vhandle)(pointer_int)b->u.left );
+        return( (vhandle)(pointer_uint)a->u.left == (vhandle)(pointer_uint)b->u.left );
         break;
     case OP_TRUE:
     case OP_FALSE:
@@ -564,7 +572,7 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         VbufFree( &tmp );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
+        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left, is_minimal );
         break;
     case OP_TRUE:
         value = !is_minimal;
@@ -620,7 +628,7 @@ static void PropagateValue( tree_node *tree, bool value )
         break;
     case OP_VAR:
         if( value ) {
-            var_handle = (vhandle)(pointer_int)tree->u.left;
+            var_handle = (vhandle)(pointer_uint)tree->u.left;
             if( VarGetAutoSetCond( var_handle ) != NULL ) {
                 if( !VarIsRestrictedFalse( var_handle ) ) {
                     SetBoolVariableByHandle( PreviousInstall, true );
@@ -780,8 +788,8 @@ static bool valid_last_char( char *p )
     }
 }
 
-static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
-/*******************************************************************/
+static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth )
+/********************************************************************************/
 {
     char            *e;
     char            *n;
@@ -796,20 +804,20 @@ static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
     while( *s && (*s != '\r') && (*s != '\n') ) s++;
     len = s - text;
 
-    winwidth = dlg->wrap_width * CharWidth;
+    winwidth = parse_dlg->wrap_width * CharWidth;
     // Use string length as cutoff to avoid overflow on width
-    if( len < 2 * dlg->wrap_width ) {
+    if( len < 2 * parse_dlg->wrap_width ) {
         width = GUIGetExtentX( MainWnd, text, len );
         if( width < winwidth ) {
             *chwidth = (width / CharWidth) + 1;
-            if( dlg->max_width < *chwidth )
-                dlg->max_width = *chwidth;
+            if( parse_dlg->max_width < *chwidth )
+                parse_dlg->max_width = *chwidth;
             return( text + len );
         }
     }
-    if( dlg->max_width < dlg->wrap_width )
-        dlg->max_width = dlg->wrap_width;
-    *chwidth = dlg->max_width;
+    if( parse_dlg->max_width < parse_dlg->wrap_width )
+        parse_dlg->max_width = parse_dlg->wrap_width;
+    *chwidth = parse_dlg->max_width;
     br = text;
     for( e = text;; ) {
         if( *e == '\0' )
@@ -833,8 +841,8 @@ static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
     return( br );
 }
 
-static bool dialog_static( char *next, DIALOG_INFO *dlg )
-/*******************************************************/
+static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/********************************************************************/
 {
     char                *line;
     int                 len;
@@ -853,7 +861,7 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         // dummy_var allows control to have an id - used by dynamic visibility feature
         var_handle = MakeDummyVar();
         len = VbufLen( &text );
@@ -861,11 +869,11 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
             AddInstallName( &text );
             len = VbufLen( &text );
         }
-        set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-            VbufString( &text ), VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
+        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
+            VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, parse_dlg->col_num + len );
         if( len > 0 ) {
-            if( dlg->max_width < dlg->col_num + len ) {
-                dlg->max_width = dlg->col_num + len;
+            if( parse_dlg->max_width < parse_dlg->col_num + len ) {
+                parse_dlg->max_width = parse_dlg->col_num + len;
             }
         }
     } else {
@@ -875,8 +883,8 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     return( rc );
 }
 
-static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline, bool license_file )
-/***************************************************************************************************/
+static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool convert_newline, bool license_file )
+/****************************************************************************************************************/
 // Makes newline chars into a string into \r\n combination.
 // For license file remove single \r\n combination to revoke paragraphs.
 // Frees passed in string and allocates new one.
@@ -939,7 +947,7 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
     }
     orig_index = text;
     new_index = big_buffer;
-    break_candidate = find_break( orig_index, dlg, &chwidth );
+    break_candidate = find_break( orig_index, parse_dlg, &chwidth );
     for( ; *orig_index != '\0'; orig_index++ ) {
         if( new_line ) {
             while( *orig_index == '\t' || *orig_index == ' ' ) {
@@ -951,17 +959,17 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             orig_index++;
-            break_candidate = find_break( orig_index + 1, dlg, &chwidth );
+            break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
         } else if( !convert_newline && *orig_index == '\r' ) {
         } else if( !convert_newline && *orig_index == '\n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
-            break_candidate = find_break( orig_index + 1, dlg, &chwidth );
+            break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
         } else if( break_candidate != NULL && orig_index == break_candidate ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             *(new_index++) = *break_candidate;
-            break_candidate = find_break( orig_index + 1, dlg, &chwidth );
+            break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
             new_line = true;
             continue;
         } else if( *orig_index == '\t' ) {
@@ -979,8 +987,8 @@ static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline
     return( text );
 }
 
-static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
-/******************************************************************************/
+static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool license_file )
+/*******************************************************************************************/
 {
     char                *line;
     char                *text;
@@ -1018,10 +1026,10 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
             VbufFree( &file_name );
             //VERY VERY SLOW!!!!  Don't use large files!!!
             // bottleneck is the find_break function
-            text = textwindow_wrap( text, dlg, false, license_file );
+            text = textwindow_wrap( text, parse_dlg, false, license_file );
         } else {
             text = GUIStrDup( line, NULL );
-            text = textwindow_wrap( text, dlg, true, false );
+            text = textwindow_wrap( text, parse_dlg, true, false );
         }
 
         line = next; next = NextToken( line, ',' );
@@ -1029,17 +1037,17 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
         if( EvalCondition( line ) && text != NULL ) {
             line = next; next = NextToken( line, ',' );
             // condition for visibility (dynamic)
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_textwindow( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                text, VarGetId( var_handle ), C0, dlg->row_num, dlg->max_width + 2,
+            set_dlg_textwindow( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
+                text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2,
                 rows, GUI_VSCROLL );
-            dlg->curr_dialog->rows += rows;
-            dlg->row_num += rows;
+            parse_dlg->curr_dialog->rows += rows;
+            parse_dlg->row_num += rows;
 #if defined( __DOS__ )
-            dlg->curr_dialog->rows += 2;
-            dlg->row_num += 2;
+            parse_dlg->curr_dialog->rows += 2;
+            parse_dlg->row_num += 2;
 #endif
         } else {
             rc = false;
@@ -1049,8 +1057,8 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
     return( rc );
 }
 
-static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
-/********************************************************/
+static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/*********************************************************************/
 {
     int                 len;
     char                *line;
@@ -1071,21 +1079,21 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
         if( text != NULL ) {
             SetVariableByHandle( var_handle, text );
         }
-        dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
-        dlg->num_variables++;
+        parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
+        parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
+        parse_dlg->num_variables++;
         len = strlen( text );
         line = next;
         next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        if( dlg->max_width < len )
-            dlg->max_width = len;
-        if( dlg->max_width < 60 )
-            dlg->max_width = 60;
-        set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                             text, VarGetId( var_handle ), C0, dlg->row_num,
-                             C0 + dlg->max_width );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        if( parse_dlg->max_width < len )
+            parse_dlg->max_width = len;
+        if( parse_dlg->max_width < 60 )
+            parse_dlg->max_width = 60;
+        set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
+                             text, VarGetId( var_handle ), C0, parse_dlg->row_num,
+                             C0 + parse_dlg->max_width );
     } else {
         rc = false;
     }
@@ -1095,8 +1103,8 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
 }
 
 
-static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
-/***********************************************************/
+static bool dialog_pushbutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/************************************************************************/
 {
     char                *line;
     char                *line_start;
@@ -1108,32 +1116,32 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
     line_start = next; next = NextToken( line_start, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
-        dlg->num_push_buttons += 1;
+        parse_dlg->num_push_buttons += 1;
         def_ret = false;
         if( *line_start == '.' ) {
             ++line_start;
             def_ret = true;
         }
         var_handle = GetVariableByName( line_start );
-        id = set_dlg_push_button( var_handle, line_start, dlg->curr_dialog->controls,
-                                  dlg->controls.num - 1, dlg->row_num,
-                                  dlg->num_push_buttons, W / BW - 1, W, BW );
+        id = set_dlg_push_button( var_handle, line_start, parse_dlg->curr_dialog->controls,
+                                  parse_dlg->controls_array.num - 1, parse_dlg->row_num,
+                                  parse_dlg->num_push_buttons, W / BW - 1, W, BW );
         if( def_ret ) {
-            dlg->curr_dialog->ret_val = IdToDlgState( id );
+            parse_dlg->curr_dialog->ret_val = IdToDlgState( id );
         }
-        if( dlg->max_width < dlg->num_push_buttons * ( ( 3 * BW ) / 2 ) )
-            dlg->max_width = dlg->num_push_buttons * ( ( 3 * BW ) / 2 );
+        if( parse_dlg->max_width < parse_dlg->num_push_buttons * ( ( 3 * BW ) / 2 ) )
+            parse_dlg->max_width = parse_dlg->num_push_buttons * ( ( 3 * BW ) / 2 );
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
     } else {
         rc = false;
     }
     return( rc );
 }
 
-static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
-/************************************************************/
+static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/*************************************************************************/
 {
 //    int                 len;
     char                *line;
@@ -1205,32 +1213,32 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
 
     if( EvalCondition( line ) ) {
-        dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
-        dlg->num_variables++;
+        parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
+        parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
+        parse_dlg->num_variables++;
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         var_handle_2 = MakeDummyVar();
         SetVariableByHandle( var_handle_2, dialog_name );
-        set_dlg_push_button( var_handle_2, button_text, dlg->curr_dialog->controls,
-                             dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
-        BumpDlgArrays( dlg );
+        set_dlg_push_button( var_handle_2, button_text, parse_dlg->curr_dialog->controls,
+                             parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
+        BumpDlgArrays( parse_dlg );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
-                      VarGetId( var_handle ), C0, dlg->row_num, C0 + BW - 1 );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
+        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
+                      VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + BW - 1 );
         if( VbufLen( &buff ) > 0 ) {
-            BumpDlgArrays( dlg );
+            BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 2].pVisibilityConds = GUIStrDup( line, NULL );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 2].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + VbufLen( &buff ) );
+            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
         }
-        if( dlg->max_width < 2 * VbufLen( &buff ) ) {
-            dlg->max_width = 2 * VbufLen( &buff );
+        if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
+            parse_dlg->max_width = 2 * VbufLen( &buff );
         }
     } else {
         rc = false;
@@ -1240,8 +1248,8 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
     return( rc );
 }
 
-static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
-/*************************************************************/
+static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/**************************************************************************/
 {
     char                *line;
     char                *button_text;
@@ -1266,16 +1274,16 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
     if( EvalCondition( condition ) ) {
         var_handle = MakeDummyVar();
         SetVariableByHandle( var_handle, dialog_name );
-        set_dlg_push_button( var_handle, button_text, dlg->curr_dialog->controls,
-                             dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
+        set_dlg_push_button( var_handle, button_text, parse_dlg->curr_dialog->controls,
+                             parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         if( text != NULL ) {
-            BumpDlgArrays( dlg );
+            BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
-            dlg->col_num = 1;
-            dialog_static( next_copy, dlg );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
+            parse_dlg->col_num = 1;
+            dialog_static( next_copy, parse_dlg );
         }
     } else {
         rc = false;
@@ -1285,14 +1293,14 @@ static bool dialog_other_button( char *next, DIALOG_INFO *dlg )
 }
 
 
-static vhandle dialog_set_variable( DIALOG_INFO *dlg, const char *vbl_name,
+static vhandle dialog_set_variable( DIALOG_PARSER_INFO *parse_dlg, const char *vbl_name,
                                     const char *init_cond )
-/*******************************************************************/
+/**************************************************************************************/
 {
     vhandle     var_handle;
 
     var_handle = AddVariable( vbl_name );
-    dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
+    parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
     if( init_cond != NULL ) {
         if( *init_cond == '\0' ) {
             init_cond = NULL;
@@ -1308,14 +1316,14 @@ static vhandle dialog_set_variable( DIALOG_INFO *dlg, const char *vbl_name,
             }
         }
     }
-    dlg->curr_dialog->pConditions[dlg->num_variables] = GUIStrDup( init_cond, NULL );
-    dlg->num_variables++;
+    parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = GUIStrDup( init_cond, NULL );
+    parse_dlg->num_variables++;
     return( var_handle );
 }
 
 
-static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
-/************************************************************/
+static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/*************************************************************************/
 {
     int                 len;
     char                *line;
@@ -1335,16 +1343,16 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
-        var_handle = dialog_set_variable( dlg, vbl_name, init_cond );
-        dlg->num_radio_buttons += 1;
+        var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
+        parse_dlg->num_radio_buttons += 1;
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_radio( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                       dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, dlg->row_num, C0 + len );
-        if( dlg->max_width < len ) {
-            dlg->max_width = len;
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
+                       parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + len );
+        if( parse_dlg->max_width < len ) {
+            parse_dlg->max_width = len;
         }
     } else {
         rc = false;
@@ -1356,8 +1364,8 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
 }
 
 
-static bool dialog_checkbox( char *next, DIALOG_INFO *dlg, bool detail_button )
-/*****************************************************************************/
+static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool detail_button )
+/******************************************************************************************/
 {
     int                 len;
     char                *line;
@@ -1393,32 +1401,32 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg, bool detail_button )
             dlg_var_handle = MakeDummyVar();
             SetVariableByHandle( dlg_var_handle, dialog_name );
         }
-        var_handle = dialog_set_variable( dlg, vbl_name, init_cond );
+        var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
         len = strlen( text ) + 4; // room for button
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_check( dlg->curr_dialog->controls, dlg->controls.num - 1, text,
-                       VarGetId( var_handle ), dlg->col_num, dlg->row_num,
-                       dlg->col_num + len );
-        if( dlg->col_num == C0 ) {
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, text,
+                       VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num,
+                       parse_dlg->col_num + len );
+        if( parse_dlg->col_num == C0 ) {
             // 1st check-box on line
-            if( dlg->max_width < len )
-                dlg->max_width = len;
-            dlg->col_num += len + 1;    // update col_num for next time
+            if( parse_dlg->max_width < len )
+                parse_dlg->max_width = len;
+            parse_dlg->col_num += len + 1;    // update col_num for next time
         } else {
             // 2nd check-box
-            if( len < dlg->col_num - 1 )
-                len = dlg->col_num - 1;
-            if( dlg->max_width < 2 * len + 1 ) {    // add 1 for space
-                dlg->max_width = 2 * len + 1;
+            if( len < parse_dlg->col_num - 1 )
+                len = parse_dlg->col_num - 1;
+            if( parse_dlg->max_width < 2 * len + 1 ) {    // add 1 for space
+                parse_dlg->max_width = 2 * len + 1;
             }
         }
         if( detail_button ) {
-            BumpDlgArrays( dlg );
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
-            set_dlg_push_button( dlg_var_handle, button_text, dlg->curr_dialog->controls,
-                                 dlg->controls.num - 1, dlg->row_num, 4, 4, W, BW );
+            BumpDlgArrays( parse_dlg );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
+            set_dlg_push_button( dlg_var_handle, button_text, parse_dlg->curr_dialog->controls,
+                                 parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         }
     } else {
         rc = false;
@@ -1437,8 +1445,8 @@ void SimSetNeedGetDiskSizes( void )
 }
 
 
-static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
-/************************************************************/
+static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/*************************************************************************/
 {
     char                *line;
     char                *vbl_name;
@@ -1498,25 +1506,25 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
-        dlg->curr_dialog->pVariables[dlg->num_variables] = var_handle;
-        dlg->curr_dialog->pConditions[dlg->num_variables] = NULL;
-        dlg->num_variables++;
+        parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
+        parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
+        parse_dlg->num_variables++;
         line = next; next = NextToken( line, ',' );
         // condition for visibility (dynamic)
-        dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
-        set_dlg_edit( dlg->curr_dialog->controls, dlg->controls.num - 1,
-                      VbufString( &buff ), VarGetId( var_handle ), C0, dlg->row_num, C0 + W - 1 );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
+        set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
+                      VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + W - 1 );
         if( VbufLen( &buff ) > 0 ) {
-            BumpDlgArrays( dlg );
+            BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
-            dlg->curr_dialog->controls_ext[dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
-            set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->controls.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, dlg->row_num, C0 + VbufLen( &buff ) );
+            set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
         }
-        if( dlg->max_width < 2 * VbufLen( &buff ) ) {
-            dlg->max_width = 2 * VbufLen( &buff );
+        if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
+            parse_dlg->max_width = 2 * VbufLen( &buff );
         }
     } else {
         rc = false;
@@ -1551,6 +1559,7 @@ static bool ProcLine( char *line, pass_type pass )
 {
     char                *next;
     int                 num;
+    VBUF                buff;
 
     // Remove leading and trailing white-space.
     line = StripBlanks( line );
@@ -1640,87 +1649,87 @@ static bool ProcLine( char *line, pass_type pass )
     switch( State ) {
     case RS_DIALOG:
         {
-            static DIALOG_INFO  dlg;
-            bool                added = false;
+            static DIALOG_PARSER_INFO   parse_dlg;
+            bool                        added = false;
 
             next = NextToken( line, '=' );
             if( stricmp( line, "name" ) == 0 ) {
                 // new dialog
-                memset( &dlg, 0, sizeof( DIALOG_INFO ) );
-                dlg.curr_dialog = AddNewDialog( next );
-                InitDlgArrays( &dlg );
-                dlg.wrap_width = MaxWidthChars;
+                memset( &parse_dlg, 0, sizeof( DIALOG_PARSER_INFO ) );
+                parse_dlg.curr_dialog = AddNewDialog( next );
+                InitDlgArrays( &parse_dlg );
+                parse_dlg.wrap_width = MaxWidthChars;
             } else if( stricmp( line, "condition" ) == 0 ) {
-                dlg.curr_dialog->condition = CompileCondition( next );
+                parse_dlg.curr_dialog->condition = CompileCondition( next );
             } else if( stricmp( line, "title" ) == 0 ) {
-                dlg.curr_dialog->title = GUIStrDup( next, NULL );
+                parse_dlg.curr_dialog->title = GUIStrDup( next, NULL );
             } else if( stricmp( line, "any_check" ) == 0 ) {
-                dlg.curr_dialog->any_check = AddVariable( next );
+                parse_dlg.curr_dialog->any_check = AddVariable( next );
             } else if( stricmp( line, "width" ) == 0 ) {
                 int         wrap_width;
                 wrap_width = atoi( next );
                 if( wrap_width > 0 && wrap_width <= MaxWidthChars ) {
-                    dlg.wrap_width = wrap_width;
+                    parse_dlg.wrap_width = wrap_width;
                 }
             } else if( stricmp( line, "vis_condition" ) == 0 ) {
                 line = next; next = NextToken( line, ',' );
                 if( !EvalCondition( next ) ) {
                     line = NULL;
                 }
-                dlg.curr_dialog->controls_ext[dlg.curr_dialog->num_controls - 1].pVisibilityConds = GUIStrDup( line, NULL );
+                parse_dlg.curr_dialog->controls_ext[parse_dlg.curr_dialog->num_controls - 1].pVisibilityConds = GUIStrDup( line, NULL );
             } else {
                 // add another control to current dialog
-                if( !BumpDlgArrays( &dlg ) ) {
+                if( !BumpDlgArrays( &parse_dlg ) ) {
                     SetupError( "IDS_NOMEMORY" );
                     exit( 1 );
                 }
                 if( stricmp( line, "static_text" ) == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_static( next, &dlg );
+                    parse_dlg.col_num = C0;
+                    added = dialog_static( next, &parse_dlg );
                 } else if( stricmp( line, "dynamic_text" ) == 0 ) {
-                    added = dialog_dynamic( next, &dlg );
+                    added = dialog_dynamic( next, &parse_dlg );
                 } else if( stricmp( line, "other_button" ) == 0 ) {
-                    added = dialog_other_button( next, &dlg );
+                    added = dialog_other_button( next, &parse_dlg );
                 } else if( stricmp( line, "edit_button" ) == 0 ) {
-                    added = dialog_edit_button( next, &dlg );
+                    added = dialog_edit_button( next, &parse_dlg );
                 } else if( stricmp( line, "push_button" ) == 0 ) {
-                    added = dialog_pushbutton( next, &dlg );
+                    added = dialog_pushbutton( next, &parse_dlg );
                     if( added ) {
-                        dlg.row_num -= 1;
+                        parse_dlg.row_num -= 1;
                     }
                 } else if( stricmp( line, "radio_button" ) == 0 ) {
-                    added = dialog_radiobutton( next, &dlg );
+                    added = dialog_radiobutton( next, &parse_dlg );
                 } else if( stricmp(line, "check_box") == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_checkbox( next, &dlg, false );
+                    parse_dlg.col_num = C0;
+                    added = dialog_checkbox( next, &parse_dlg, false );
                 } else if( stricmp(line, "detail_check") == 0 ) {
-                    dlg.col_num = C0;
-                    added = dialog_checkbox( next, &dlg, true );
+                    parse_dlg.col_num = C0;
+                    added = dialog_checkbox( next, &parse_dlg, true );
                 } else if( stricmp(line, "check_box_continue") == 0 ) {
-                    dlg.row_num -= 1;
-                    added = dialog_checkbox( next, &dlg, false );
+                    parse_dlg.row_num -= 1;
+                    added = dialog_checkbox( next, &parse_dlg, false );
                 } else if( stricmp(line, "edit_control") == 0 ) {
-                    added = dialog_editcontrol( next, &dlg );
+                    added = dialog_editcontrol( next, &parse_dlg );
                 } else if( stricmp(line, "text_window") == 0 ) {
-                    added = dialog_textwindow( next, &dlg, false );
+                    added = dialog_textwindow( next, &parse_dlg, false );
                 } else if( stricmp(line, "text_window_license") == 0 ) {
-                    added = dialog_textwindow( next, &dlg, true );
+                    added = dialog_textwindow( next, &parse_dlg, true );
                 }
                 if( added ) {
-                    dlg.row_num += 1;
+                    parse_dlg.row_num += 1;
                     // in case this was the last control, set some values
-                    dlg.curr_dialog->pVariables[dlg.num_variables] = NO_VAR;
-                    dlg.curr_dialog->pConditions[dlg.num_variables] = NULL;
-                    dlg.curr_dialog->num_controls = dlg.controls.num;
-                    dlg.curr_dialog->num_push_buttons = dlg.num_push_buttons;
-                    dlg.curr_dialog->rows = dlg.row_num  + HEIGHT_BORDER;
-                    if( dlg.num_push_buttons != 0 ) {
-                        dlg.curr_dialog->rows += 1;
+                    parse_dlg.curr_dialog->pVariables[parse_dlg.num_variables] = NO_VAR;
+                    parse_dlg.curr_dialog->pConditions[parse_dlg.num_variables] = NULL;
+                    parse_dlg.curr_dialog->num_controls = parse_dlg.controls_array.num;
+                    parse_dlg.curr_dialog->num_push_buttons = parse_dlg.num_push_buttons;
+                    parse_dlg.curr_dialog->rows = parse_dlg.row_num  + HEIGHT_BORDER;
+                    if( parse_dlg.num_push_buttons != 0 ) {
+                        parse_dlg.curr_dialog->rows += 1;
                     }
-                    dlg.curr_dialog->cols = dlg.max_width + WIDTH_BORDER;
+                    parse_dlg.curr_dialog->cols = parse_dlg.max_width + WIDTH_BORDER;
                 } else {
-                    dlg.controls.num--;
-                    dlg.controls_ext.num--;
+                    parse_dlg.controls_array.num--;
+                    parse_dlg.controls_ext_array.num--;
                 }
             }
         }
@@ -1729,14 +1738,29 @@ static bool ProcLine( char *line, pass_type pass )
         next = NextToken( line, '=' );
         if( stricmp( line, "DefPMGroup" ) == 0 ) {
             line = next; next = NextToken( line, ',' );
+            if( SetupInfo.pm_group_file != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_file );
+                SetupInfo.pm_group_file = NULL;
+            }
             SetupInfo.pm_group_file = GUIStrDup( line, NULL );
             line = next; next = NextToken( line, ',' );
-            SetupInfo.pm_group_name = GUIStrDup( line, NULL );
+            if( SetupInfo.pm_group_name != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_name );
+                SetupInfo.pm_group_name = NULL;
+            }
+            VbufInit( &buff );
+            ReplaceVars( &buff, line );
+            SetupInfo.pm_group_name = GUIStrDup( VbufString( &buff ), NULL );
+            VbufFree( &buff );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
-            AllPMGroups[num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[num].group_name = GUIStrDup( SetupInfo.pm_group_name, NULL );
             AllPMGroups[num].group_file = GUIStrDup( SetupInfo.pm_group_file, NULL );
+            if( SetupInfo.pm_group_iconfile != NULL ) {
+                GUIMemFree( SetupInfo.pm_group_iconfile );
+                SetupInfo.pm_group_iconfile = NULL;
+            }
             SetupInfo.pm_group_iconfile = GUIStrDup( next, NULL );
         } else {
             if( line[0] == '$' ) {
@@ -1762,13 +1786,15 @@ static bool ProcLine( char *line, pass_type pass )
         if( DirInfo[num].parent != -1 ) {
             DirInfo[num].parent--;
         }
+#ifndef __UNIX__
+        toBackSlash( DirInfo[num].desc );
+#endif
         break;
     case RS_FILES:
         {
             int         num_files;
             a_file_info *file;
             char        *p;
-            VBUF        fext;
 
             num = SetupInfo.files.num;
             if( !BumpArray( &SetupInfo.files ) )
@@ -1792,16 +1818,16 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].supplemental = false;
             FileInfo[num].core_component = false;
             FileInfo[num].num_files = num_files;
-            VbufInit( &fext );
+            VbufInit( &buff );
             file = FileInfo[num].files;
             for( ; num_files-- > 0; ) {
                 line = next; next = NextToken( line, ',' );
                 p = NextToken( line, '!' );
                 VbufInit( &file->name );
                 VbufConcStr( &file->name, line );
-                VbufSplitpath( &file->name, NULL, NULL, NULL, &fext );
-                file->is_nlm = VbufCompStr( &fext, ".nlm", true ) == 0;
-                file->is_dll = VbufCompStr( &fext, ".dll", true ) == 0;
+                VbufSplitpath( &file->name, NULL, NULL, NULL, &buff );
+                file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
+                file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
                 file->size = GET36( line ) * 512UL;
                 if( p != NULL && *p != '\0' && *p != '!' ) {
@@ -1832,7 +1858,7 @@ static bool ProcLine( char *line, pass_type pass )
                 }
                 file++;
             }
-            VbufFree( &fext );
+            VbufFree( &buff );
             line = next; next = NextToken( line, ',' );
             FileInfo[num].dir_index = GET36( line ) - 1;
             line = next; next = NextToken( line, ',' );
@@ -1902,9 +1928,12 @@ static bool ProcLine( char *line, pass_type pass )
         line = next; next = NextToken( line, ',' );
         PMInfo[num].parameters = GUIStrDup( line, NULL );
         line = next; next = NextToken( line, ',' );
-        PMInfo[num].desc = GUIStrDup( line, NULL );
+        VbufInit( &buff );
+        ReplaceVars( &buff, line );
+        PMInfo[num].desc = GUIStrDup( VbufString( &buff ), NULL );
+        VbufFree( &buff );
         if( PMInfo[num].group ) {
-            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = GUIStrDup( line, NULL );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = GUIStrDup( PMInfo[num].desc, NULL );
             AllPMGroups[SetupInfo.all_pm_groups.num].group_file = GUIStrDup( PMInfo[num].parameters, NULL );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
                 return( false );
@@ -3143,7 +3172,7 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
 
         VbufInit( &ext );
         VbufSplitpath( filename, NULL, NULL, NULL, &ext );
-        if( VbufCompStr( &ext, ".DLL", true ) == 0 ) {
+        if( VbufCompExt( &ext, "dll", true ) == 0 ) {
             VBUF        file_desc;
             VBUF        dir;
             VBUF        dst_path;
@@ -3360,9 +3389,18 @@ bool SimCalcTargetSpaceNeeded( void )
 static void FreeSetupInfoVal( void )
 /**********************************/
 {
-    GUIMemFree( SetupInfo.pm_group_file );
-    GUIMemFree( SetupInfo.pm_group_name );
-    GUIMemFree( SetupInfo.pm_group_iconfile );
+    if( SetupInfo.pm_group_file != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_file );
+        SetupInfo.pm_group_file = NULL;
+    }
+    if( SetupInfo.pm_group_name != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_name );
+        SetupInfo.pm_group_name = NULL;
+    }
+    if( SetupInfo.pm_group_iconfile != NULL ) {
+        GUIMemFree( SetupInfo.pm_group_iconfile );
+        SetupInfo.pm_group_iconfile = NULL;
+    }
 }
 
 
@@ -3371,13 +3409,15 @@ static void FreeTargetVal( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.target.num; i++ ) {
-        GUIMemFree( TargetInfo[i].name );
-        GUIMemFree( TargetInfo[i].temp_disk );
+    if( TargetInfo != NULL ) {
+        for( i = 0; i < SetupInfo.target.num; i++ ) {
+            GUIMemFree( TargetInfo[i].name );
+            GUIMemFree( TargetInfo[i].temp_disk );
+        }
+        GUIMemFree( TargetInfo );
+        TargetInfo = NULL;
+        SetupInfo.target.num = 0;
     }
-    GUIMemFree( TargetInfo );
-    TargetInfo = NULL;
-    SetupInfo.target.num = 0;
 }
 
 
@@ -3385,12 +3425,15 @@ static void FreeDirInfo( void )
 /*****************************/
 {
     int i;
-    for( i = 0; i < SetupInfo.dirs.num; i++ ) {
-        GUIMemFree( DirInfo[i].desc );
+
+    if( DirInfo != NULL ) {
+        for( i = 0; i < SetupInfo.dirs.num; i++ ) {
+            GUIMemFree( DirInfo[i].desc );
+        }
+        GUIMemFree( DirInfo );
+        DirInfo = NULL;
+        SetupInfo.dirs.num = 0;
     }
-    GUIMemFree( DirInfo );
-    DirInfo = NULL;
-    SetupInfo.dirs.num = 0;
 }
 
 
@@ -3464,13 +3507,15 @@ static void FreeSpawnInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.spawn.num; i++ ) {
-        GUIMemFree( SpawnInfo[i].command );
-        GUIMemFree( SpawnInfo[i].condition );
+    if( SpawnInfo != NULL ) {
+        for( i = 0; i < SetupInfo.spawn.num; i++ ) {
+            GUIMemFree( SpawnInfo[i].command );
+            GUIMemFree( SpawnInfo[i].condition );
+        }
+        GUIMemFree( SpawnInfo );
+        SpawnInfo = NULL;
+        SetupInfo.spawn.num = 0;
     }
-    GUIMemFree( SpawnInfo );
-    SpawnInfo = NULL;
-    SetupInfo.spawn.num = 0;
 }
 
 
@@ -3479,12 +3524,14 @@ static void FreeDeleteInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.delete.num; i++ ) {
-        GUIMemFree( DeleteInfo[i].name );
+    if( DeleteInfo != NULL ) {
+        for( i = 0; i < SetupInfo.delete.num; i++ ) {
+            GUIMemFree( DeleteInfo[i].name );
+        }
+        GUIMemFree( DeleteInfo );
+        DeleteInfo = NULL;
+        SetupInfo.delete.num = 0;
     }
-    GUIMemFree( DeleteInfo );
-    DeleteInfo = NULL;
-    SetupInfo.delete.num = 0;
 }
 
 
@@ -3493,16 +3540,18 @@ static void FreePMInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
-        GUIMemFree( PMInfo[i].desc );
-        GUIMemFree( PMInfo[i].filename );
-        GUIMemFree( PMInfo[i].parameters );
-        GUIMemFree( PMInfo[i].iconfile );
-        GUIMemFree( PMInfo[i].condition );
+    if( PMInfo != NULL ) {
+        for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
+            GUIMemFree( PMInfo[i].desc );
+            GUIMemFree( PMInfo[i].filename );
+            GUIMemFree( PMInfo[i].parameters );
+            GUIMemFree( PMInfo[i].iconfile );
+            GUIMemFree( PMInfo[i].condition );
+        }
+        GUIMemFree( PMInfo );
+        PMInfo = NULL;
+        SetupInfo.pm_files.num = 0;
     }
-    GUIMemFree( PMInfo );
-    PMInfo = NULL;
-    SetupInfo.pm_files.num = 0;
 }
 
 
@@ -3511,17 +3560,19 @@ static void FreeProfileInfo( void )
 {
     int i;
 
-    for( i = 0; i < SetupInfo.profile.num; i++ ) {
-        GUIMemFree( ProfileInfo[i].hive_name );
-        GUIMemFree( ProfileInfo[i].app_name );
-        GUIMemFree( ProfileInfo[i].key_name );
-        GUIMemFree( ProfileInfo[i].value );
-        GUIMemFree( ProfileInfo[i].file_name );
-        GUIMemFree( ProfileInfo[i].condition );
+    if( ProfileInfo != NULL ) {
+        for( i = 0; i < SetupInfo.profile.num; i++ ) {
+            GUIMemFree( ProfileInfo[i].hive_name );
+            GUIMemFree( ProfileInfo[i].app_name );
+            GUIMemFree( ProfileInfo[i].key_name );
+            GUIMemFree( ProfileInfo[i].value );
+            GUIMemFree( ProfileInfo[i].file_name );
+            GUIMemFree( ProfileInfo[i].condition );
+        }
+        GUIMemFree( ProfileInfo );
+        ProfileInfo = NULL;
+        SetupInfo.profile.num = 0;
     }
-    GUIMemFree( ProfileInfo );
-    ProfileInfo = NULL;
-    SetupInfo.profile.num = 0;
 }
 
 

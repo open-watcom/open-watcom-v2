@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@ int __HeapSet( __segment seg, unsigned int fill )
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
         frl = BHEAP( seg )->freehead.next.nptr;
-        while( FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
+        while( _FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
             _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
             frl = frl->next.nptr;
         }

@@ -35,15 +35,16 @@
     #include <malloc.h>
 #endif
 #include "bool.h"
+#include "watcom.h"
 #include "dumpmem.h"
 
 
 #define LOCSIZE     1
 
 #ifdef _M_I86
-#define FAR     __far
+#define PTRDIFF(a,b)    ((char __far *)a - (char __far *)b)
 #else
-#define FAR
+#define PTRDIFF(a,b)    ((char *)(pointer_uint)a - (char *)(pointer_uint)b)
 #endif
 
 /*
@@ -103,9 +104,10 @@ void DumpMem( void )
     total = 0;
     for( ;; ) {
         heap_status = _heapwalk( &h_info );
-        if( heap_status != _HEAPOK ) break;
+        if( heap_status != _HEAPOK )
+            break;
         if( start_size == 0 ) {
-            start_size = (char FAR *)h_info._pentry - (char FAR *)0;
+            start_size = PTRDIFF( h_info._pentry, 0 );
         }
         printf( "  %s block at %Fp of size %4.4X-%d\n",
                   (h_info._useflag == _USEDENTRY ? "USED" : "FREE"),
@@ -122,7 +124,7 @@ void DumpMem( void )
         } else {
             loc_mark = '\xF9';
         }
-        curr_addr = (char FAR *)h_info._pentry - (char FAR *)0;
+        curr_addr = PTRDIFF( h_info._pentry, 0 );
         loc_size = h_info._size;
         for( ;; ) {
             if( loc_count == 60 ) {

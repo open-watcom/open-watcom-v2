@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include "buffer.h"
 #include "disdwarf.h"
 #include "memfuncs.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -56,10 +58,10 @@ static enum {
 } line_type;
 
 static const char * const src_exts[] = {
-    ".c",
-    ".cpp",
-    ".for",
-    ".asm"
+    "c",
+    "cpp",
+    "for",
+    "asm"
 };
 
 static void NoSource( char *file )
@@ -75,25 +77,21 @@ static void NoSource( char *file )
 
 static void OpenSourceFileExts( const char *fname )
 {
-    char        path[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *file_name;
-    char        *extension;
+    PGROUP2     pg;
     char        *src_filename;
     int         i;
 
-    _splitpath2( fname, path, &drive, &dir, &file_name, &extension );
-    src_filename = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    src_filename = MemAlloc( strlen( pg.drive ) + strlen( pg.dir ) + strlen( pg.fname ) + 5 );
     for( i = 0; i < sizeof( src_exts ) / sizeof( src_exts[0] ); i++ ) {
-        _makepath( src_filename, drive, dir, file_name, src_exts[i] );
+        _makepath( src_filename, pg.drive, pg.dir, pg.fname, src_exts[i] );
         SourceFile = fopen( src_filename, "r" );
         if( SourceFile != NULL ) {
             MemFree( src_filename );
             return;
         }
     }
-    _makepath( src_filename, drive, dir, file_name, ".*" );
+    _makepath( src_filename, pg.drive, pg.dir, pg.fname, "*" );
     NoSource( src_filename );
     MemFree( src_filename );
 }

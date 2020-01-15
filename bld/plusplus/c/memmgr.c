@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include "pragdefn.h"
 #include "codegen.h"
 
-#ifdef TRACKER
+#ifdef TRMEM
     #include "trmem.h"
 #endif
 
@@ -69,16 +70,16 @@ static PERMPTR permList;
 static void *deferredFreeList;
 #endif
 
-#ifdef TRACKER
+#ifdef TRMEM
 
 static _trmem_hdl   trackerHdl;
 
 static void printLine( void *dummy, const char *buf, size_t len )
 /***************************************************************/
 {
-    /* unused parameters */ (void)dummy;
+    /* unused parameters */ (void)dummy; (void)len;
 
-    fwrite( buf, 1, len, stdout );
+    fprintf( stdout, "%s\n", buf );
 }
 
 #define alloc_mem( size ) _trmem_alloc( size, _trmem_guess_who(), trackerHdl )
@@ -155,7 +156,7 @@ void *CMemAlloc( size_t size )
     return( p );
 }
 
-#ifdef TRACKER
+#ifdef TRMEM
     #define _doFree( p )    _trmem_free( p, _trmem_guess_who(), trackerHdl );
 #else
   #ifdef USE_CG_MEMMGT
@@ -273,7 +274,7 @@ static void cmemInit(           // INITIALIZATION
 {
     /* unused parameters */ (void)defn;
 
-#ifdef TRACKER
+#ifdef TRMEM
     {
         unsigned trmem_flags;
 
@@ -281,7 +282,7 @@ static void cmemInit(           // INITIALIZATION
         if( CppGetEnv( "TRQUIET" ) == NULL ) {
             trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
         }
-        trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL,printLine, trmem_flags );
+        trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL, printLine, trmem_flags );
     }
 #elif defined( USE_CG_MEMMGT )
     BEMemInit();
@@ -303,7 +304,7 @@ static void cmemFini(           // COMPLETION
 #ifndef NDEBUG
     RingFree( &deferredFreeList );
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
  #ifndef NDEBUG
     if( PragDbgToggle.dump_memory ) {
         _trmem_prt_list( trackerHdl );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,11 @@ typedef enum {
 #define MAX_LINE                150
 #define MAX_STRUCT_DEPTH        64
 
-#define SKIP_SPACES(s)          while( isspace( *s ) ) s++
 #define SKIP_DIGITS(s)          while( isdigit( *s ) ) s++
-#define SKIP_NOTSPACE(s)        while( !isspace( *s ) && *s != '\0' ) s++
+#define SKIP_SPACES(s)          while( isspace( *s ) ) s++
+#define SKIP_NOSPACES(s)        while( !isspace( *s ) && *s != '\0' ) s++
+#define SKIP_LIST_WS(s)         while( isspace( *s ) || *s == ',' ) s++
+#define SKIP_LIST_NOWS(s)       while( !isspace( *s ) && *s != ',' && *s != '\0' ) s++
 
 /* global variables */
 extern bool     WantTypedefs;

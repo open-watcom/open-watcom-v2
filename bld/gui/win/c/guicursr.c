@@ -30,6 +30,8 @@
 
 
 #include "guiwind.h"
+#include "watcom.h"
+
 
 gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
 {
@@ -56,6 +58,6 @@ gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
 void GUIResetMouseCursor( gui_mcursor_handle old )
 {
     if( old != NULL ) {
-        _wpi_setcursor( (HCURSOR)old );
+        _wpi_setcursor( (HCURSOR)(pointer_uint)old );
     }
 }

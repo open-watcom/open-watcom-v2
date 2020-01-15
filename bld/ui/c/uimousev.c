@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,18 +219,18 @@ ui_event intern mouseevent( void )
     return( ui_ev );
 }
 
-VSCREEN * UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
-/*******************************************************************/
+VSCREEN * UIAPI uimousepos( VSCREEN *vs, int *rowptr, int *colptr )
+/*****************************************************************/
 {
-    VSCREEN         *owner;
+    VSCREEN         *owner_vs;
     int             row;
     int             col;
 
-    owner = findvscreen( MouseRow / UIData->mouse_yscale, MouseCol / UIData->mouse_xscale );
+    owner_vs = findvscreen( MouseRow / UIData->mouse_yscale, MouseCol / UIData->mouse_xscale );
 
-    if( vptr != NULL ) {
-        row = MouseRow - (int)vptr->area.row * UIData->mouse_yscale;
-        col = MouseCol - (int)vptr->area.col * UIData->mouse_xscale;
+    if( vs != NULL ) {
+        row = MouseRow - (int)vs->area.row * UIData->mouse_yscale;
+        col = MouseCol - (int)vs->area.col * UIData->mouse_xscale;
     } else {
         row = MouseRow;
         col = MouseCol;
@@ -244,31 +244,31 @@ VSCREEN * UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
     *rowptr = row / UIData->mouse_yscale;
     *colptr = col / UIData->mouse_xscale;
 
-    return( owner );
+    return( owner_vs );
 }
 
-VSCREEN * UIAPI uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
-/********************************************************************/
+VSCREEN * UIAPI uivmousepos( VSCREEN *vs, ORD *rowptr, ORD *colptr )
+/******************************************************************/
 {
-    VSCREEN     *owner;
+    VSCREEN     *owner_vs;
     int         row;
     int         col;
 
-    owner = uimousepos( vptr, &row, &col );
-    if( vptr != NULL ) {
+    owner_vs = uimousepos( vs, &row, &col );
+    if( vs != NULL ) {
         if( row < 0 )
             row = 0;
         if( col < 0 )
             col = 0;
-        if( row >= vptr->area.height )
-            row = vptr->area.height - 1;
-        if( col >= vptr->area.width ) {
-            col = vptr->area.width - 1;
+        if( row >= vs->area.height )
+            row = vs->area.height - 1;
+        if( col >= vs->area.width ) {
+            col = vs->area.width - 1;
         }
     }
     *rowptr = (ORD)row;
     *colptr = (ORD)col;
-    return( owner );
+    return( owner_vs );
 }
 
 void UIAPI uiswapmouse( void )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,21 +50,23 @@
 #endif
 
 #ifdef __UNIX__
-#define OBJ_EXT             ".o"
-#define OBJ_EXT_SECONDARY   ".obj"
-#define EXE_EXT             ""
+#define OBJ_EXT             "o"
+#define OBJ_EXT_SECONDARY   "obj"
+#define TOOL_EXE_EXT        ""
 #else
-#define OBJ_EXT             ".obj"
-#define OBJ_EXT_SECONDARY   ".o"
-#define EXE_EXT             ".exe"
+#define OBJ_EXT             "obj"
+#define OBJ_EXT_SECONDARY   "o"
+#define TOOL_EXE_EXT        ".exe"
 #endif
-#define LIB_EXT             ".lib"
-#define LIB_EXT_SECONDARY   ".a"
+#define LIB_EXT             "lib"
+#define LIB_EXT_SECONDARY   "a"
 
-#define ASM_EXT             ".asm"
-#define ASMS_EXT            ".s"
+#define ASM_EXT             "asm"
+#define ASMS_EXT            "s"
 
-#define LNK_EXT             ".lnk"
+#define RES_EXT             "res"
+
+#define TOOL_LNK_EXT        ".lnk"
 
 #define IS_OBJ(x)           (HasFileExtension( x, OBJ_EXT ) || HasFileExtension( x, OBJ_EXT_SECONDARY ))
 

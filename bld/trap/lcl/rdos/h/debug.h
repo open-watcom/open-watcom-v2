@@ -33,7 +33,7 @@
 
 #include "rdos.h"
 
-struct TDebug *GetCurrentDebug();
+struct TDebug *GetCurrentDebug( void );
 void SetCurrentDebug( struct TDebug *obj );
 
 // TDebugBreak data
@@ -108,7 +108,7 @@ struct TDebugThread
     int FHasBreak;
     int FHasTrace;
     int FHasException;
-    int FWasTrace;        
+    int FWasTrace;
 };
 
 // TDebugThread methods
@@ -185,7 +185,7 @@ struct TDebugModule *GetMainModule( struct TDebug *obj );
 
 int GetNextThread( struct TDebug *obj, int ThreadID );
 int GetNextModule( struct TDebug *obj, int Module );
-    
+
 struct TDebugThread *GetCurrentThread( struct TDebug *obj );
 void SetCurrentThread( struct TDebug *obj, int ThreadID );
 struct TDebugThread *GetNewThread( struct TDebug *obj );
@@ -202,8 +202,8 @@ void ClearBreak( struct TDebug *obj, int Sel, long Offset );
 void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size );
 void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size );
 
-void SetDebugScreen();
-void SetUserScreen();
+void SetDebugScreen( void );
+void SetUserScreen( void );
 
 void WaitForLoad( struct TDebug *obj );
 void Go( struct TDebug *obj );

@@ -342,8 +342,6 @@
 #define    MSG_GENERAL_HELP_39                  379 + MSG_BASE
 #define    MSG_GENERAL_HELP_40                  380 + MSG_BASE
 #define    MSG_GENERAL_HELP_41                  381 + MSG_BASE
-#define    MSG_GENERAL_HELP_40                  380 + MSG_BASE
-#define    MSG_GENERAL_HELP_41                  381 + MSG_BASE
 #define    MSG_GENERAL_HELP_42                  382 + MSG_BASE
 #define    MSG_GENERAL_HELP_43                  383 + MSG_BASE
 #define    MSG_GENERAL_HELP_44                  384 + MSG_BASE

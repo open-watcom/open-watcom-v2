@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,9 @@ typedef struct vbuffer {
     char            *content;
     unsigned        length;
     unsigned        index;
-    bool            insert      :1;
-    bool            dirty       :1;
-    bool            auto_clear  :1;
+    boolbit         insert      :1;
+    boolbit         dirty       :1;
+    boolbit         auto_clear  :1;
 } VBUFFER;
 
 extern void         UIAPI uipadblanks( char *, unsigned );

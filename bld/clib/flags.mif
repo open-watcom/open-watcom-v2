@@ -37,10 +37,17 @@ clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(proce
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = -za99-w8-zl-x-xx-zam-j-wpx
+sw_c_common = $(watcom_common_cflags)-w8-we-j-za99-zl-x-xx-zam-wpx
 !ifeq release 0
 !else
-sw_c_common += -we
+sw_c_common += -s
+!endif
+!ifeq processor 086
+sw_c_common += -oax
+!else ifeq processor 286
+sw_c_common += -oax
+!else
+sw_c_common += -oaxt
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
@@ -52,20 +59,18 @@ sw_c_common += -hd-etp
 sw_c_common += -of
 !endif
 !ifdef dll16
-sw_c_common += -bd-bm
+sw_c_common += -bm-bd
+!else ifdef mthreaded
+sw_c_common += -bm
 !endif
 !ifdef debug
 sw_c_common += -en
-!endif
-!ifdef mthreaded
-sw_c_common += -bm
 !endif
 
 # sw_c_(processor)_(model)
 sw_c_bigcode  = -nt=_TEXT
 sw_c_bigdata  = -zu
 
-sw_c_386_ms_generic = -r
 sw_c_386_ms_msdos   = -r
 sw_c_386_ms_qnx     = -r
 sw_c_386_ms_osi     = -r
@@ -107,35 +112,31 @@ sw_c_ppc = $(sw_c_fi_nonx86)
 sw_c_mps = $(sw_c_fi_nonx86)
 
 # sw_c_(system)_(processor)
-sw_c_generic_086  = -oax
-sw_c_generic_286  = -oax
-sw_c_generic_386  = -oaxt
-sw_c_msdos_086    = -oax
-sw_c_msdos_286    = -oax
-sw_c_msdos_386    = -oaxt
-sw_c_rdos_386     = -oaxt
-sw_c_rdosdev_386  = -oaxt
-sw_c_nw_clib_386  = -oaxt-bm
-sw_c_nw_clibl_386 = -oaxt-bm
-sw_c_nw_libc_386  = -oaxt-bm
-sw_c_nw_libcl_386 = -oaxt-bm
-sw_c_os2_286      = -oax
-sw_c_os2_386      = -oaxt-bm
-sw_c_os2_ppc      = -oaxt-bm
-sw_c_osi_386      = -oaxt
-sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-bm
-sw_c_windows_086  = -oax
-sw_c_windows_386  = -oaxt
-sw_c_winnt_386    = -oaxt
-sw_c_winnt_axp    = -oaxt
-sw_c_winnt_ppc    = -oaxt
-sw_c_linux_386    = -oaxt
-sw_c_linux_ppc    = -oaxt
-sw_c_linux_mps    = -oaxt -eoe
+sw_c_msdos_086    =
+sw_c_msdos_286    =
+sw_c_msdos_386    =
+sw_c_rdos_386     =
+sw_c_rdosdev_386  =
+sw_c_nw_clib_386  =
+sw_c_nw_clibl_386 =
+sw_c_nw_libc_386  =
+sw_c_nw_libcl_386 =
+sw_c_os2_286      =
+sw_c_os2_386      =
+sw_c_os2_ppc      =
+sw_c_osi_386      =
+sw_c_qnx_286      =
+sw_c_qnx_386      =
+sw_c_windows_086  =
+sw_c_windows_386  =
+sw_c_winnt_386    =
+sw_c_winnt_axp    =
+sw_c_winnt_ppc    =
+sw_c_linux_386    =
+sw_c_linux_ppc    =
+sw_c_linux_mps    = -eoe
 
 # sw_c_(system)
-sw_c_generic    = -bt=dos
 sw_c_msdos      = -bt=dos
 sw_c_nw_clib    = -bt=netware
 sw_c_nw_clibl   = -bt=netware
@@ -145,10 +146,10 @@ sw_c_os2        = -bt=os2
 sw_c_osi        = -bt=dos
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows
-sw_c_winnt      = -bt=nt -bm
-sw_c_linux      = -bt=linux -bm
-sw_c_rdos       = -bt=rdos -bm
-sw_c_rdosdev    = -bt=rdosdev -bm
+sw_c_winnt      = -bt=nt
+sw_c_linux      = -bt=linux
+sw_c_rdos       = -bt=rdos
+sw_c_rdosdev    = -bt=rdosdev
 
 #make bug
 !ifndef extra_clib_c_flags
@@ -164,8 +165,7 @@ sw_a_common += -fo=.obj
 !endif
 !ifdef dll16
 sw_a_common += -D__MT__
-!endif
-!ifdef mthreaded
+!else ifdef mthreaded
 sw_a_common += -D__MT__
 !endif
 !ifdef profile
@@ -208,9 +208,6 @@ sw_a_ppc =
 sw_a_mps =
 
 # sw_a_(system)_(processor)
-sw_a_generic_086  =
-sw_a_generic_286  =
-sw_a_generic_386  =
 sw_a_msdos_086    =
 sw_a_msdos_286    =
 sw_a_msdos_386    =
@@ -221,11 +218,11 @@ sw_a_nw_clibl_386 =
 sw_a_nw_libc_386  =
 sw_a_nw_libcl_386 =
 sw_a_os2_286      =
-sw_a_os2_386      = -D__MT__
-sw_a_os2_ppc      = -D__MT__
+sw_a_os2_386      =
+sw_a_os2_ppc      =
 sw_a_osi_386      =
 sw_a_qnx_286      =
-sw_a_qnx_386      = -D__MT__
+sw_a_qnx_386      =
 sw_a_windows_086  =
 sw_a_windows_386  = -D__CALL21__
 sw_a_winnt_386    =
@@ -236,20 +233,19 @@ sw_a_linux_ppc    =
 sw_a_linux_mps    =
 
 # sw_a_(system)
-sw_a_generic    = -bt=dos
 sw_a_msdos      = -bt=dos
-sw_a_nw_clib    = -bt=netware -D_NETWARE_CLIB -D__MT__
-sw_a_nw_clibl   = -bt=netware -D_NETWARE_CLIB -D__MT__ -D_THIN_LIB
-sw_a_nw_libc    = -bt=netware5 -D_NETWARE_LIBC -D__MT__
-sw_a_nw_libcl   = -bt=netware5 -D_NETWARE_LIBC -D__MT__ -D_THIN_LIB
+sw_a_nw_clib    = -bt=netware -D_NETWARE_CLIB
+sw_a_nw_clibl   = -bt=netware -D_NETWARE_CLIB -D_THIN_LIB
+sw_a_nw_libc    = -bt=netware5 -D_NETWARE_LIBC
+sw_a_nw_libcl   = -bt=netware5 -D_NETWARE_LIBC -D_THIN_LIB
 sw_a_os2        = -bt=os2
 sw_a_osi        = -bt=dos -D__CALL21__ -D__OSI__
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows -DSTRICT
-sw_a_winnt      = -bt=nt -D__MT__ $(win32ver)
-sw_a_linux      = -bt=linux -D__MT__
-sw_a_rdos       = -bt=rdos -D__MT__
-sw_a_rdosdev    = -bt=rdosdev -D__MT__
+sw_a_winnt      = -bt=nt $(win32ver)
+sw_a_linux      = -bt=linux
+sw_a_rdos       = -bt=rdos
+sw_a_rdosdev    = -bt=rdosdev
 
 #make bug
 !ifndef extra_clib_a_flags

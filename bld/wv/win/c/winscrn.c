@@ -71,7 +71,7 @@ static const char ScreenOptNameTab[] = {
 
 void InitHookFunc( void )
 {
-    TrapInputHook( win_uihookrtn );
+    TRAP_EXTFUNC( InputHook )( win_uihookrtn );
 }
 
 void FiniHookFunc( void )

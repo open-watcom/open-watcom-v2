@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,29 +36,39 @@
 extern "C" {
 #endif
 
-#ifdef STANDALONE_RX
-enum {
-    ERR_NO_ERR,
-    ERR_RE_INTERNAL_FOULUP,
-    ERR_RE_CORRUPTED_POINTER,
-    ERR_RE_MEMORY_CORRUPTION,
-    ERR_RE_TRAILING_SLASH,
-    ERR_RE_OPERAND_FOLLOWS_NOTHING,
-    ERR_RE_UNMATCHED_SQUARE_BRACKET,
-    ERR_RE_INVALID_SB_RANGE,
-    ERR_RE_NESTED_OPERAND,
-    ERR_RE_EMPTY_OPERAND,
-    ERR_RE_UNMATCHED_ROUND_BRACKETS,
-    ERR_RE_TOO_MANY_ROUND_BRACKETS,
-    ERR_RE_NULL_ARGUMENT,
-    ERR_RE_INVALID_CASETOGGLE
-};
-
-#define MAX_STR 256
-
 #include "bool.h"
 
-extern int      RegExpError;
+#define MAGIC       '\x9C'
+
+#ifdef STANDALONE_RX
+
+#define MAX_STR     256
+
+#define REGEXPR_ERRORS() \
+    pick( ERR_NO_ERR,                       NULL ) \
+    pick( ERR_RE_INTERNAL_FOULUP,           "Internal err: Regexp foulup" ) \
+    pick( ERR_RE_CORRUPTED_POINTER,         "Internal err: Regexp corrupted pointer" ) \
+    pick( ERR_RE_MEMORY_CORRUPTION,         "Internal err: Regexp memory corruption" ) \
+    pick( ERR_RE_TRAILING_SLASH,            "Trailing \\\\" ) \
+    pick( ERR_RE_OPERAND_FOLLOWS_NOTHING,   "?+* follows nothing" ) \
+    pick( ERR_RE_UNMATCHED_SQUARE_BRACKET,  "Unmatched []" ) \
+    pick( ERR_RE_INVALID_SB_RANGE,          "invalid [] range" ) \
+    pick( ERR_RE_NESTED_OPERAND,            "nested *?+" ) \
+    pick( ERR_RE_EMPTY_OPERAND,             "*+ operand could be empty" ) \
+    pick( ERR_RE_UNMATCHED_ROUND_BRACKETS,  "Unmatched ()" ) \
+    pick( ERR_RE_TOO_MANY_ROUND_BRACKETS,   "Too many ()" ) \
+    pick( ERR_RE_NULL_ARGUMENT,             "NULL argument" ) \
+    pick( ERR_RE_INVALID_CASETOGGLE,        "Invalid case toggle" )
+
+typedef enum regex_error {
+    #define pick(e,t)       e,
+        REGEXPR_ERRORS()
+    #undef pick
+} regex_error;
+
+extern regex_error  RegExpError;
+
+#endif /* STANDALONE_RX */
 
 #ifndef REALTABS
 extern bool     RealTabs;
@@ -74,8 +84,6 @@ extern bool     MagicFlag;
 
 #ifndef MAGICSTR
 extern char     *MagicString;
-#endif
-
 #endif
 
 #define NSUBEXP  21
@@ -94,7 +102,6 @@ extern regexp   *RegComp( const char * );
 extern int      RegExec( regexp *, const char *, bool );
 extern void     RegAnchor( regexp * );
 
-#define         MAGIC   '\x9C'
 #ifdef __cplusplus
 };
 #endif

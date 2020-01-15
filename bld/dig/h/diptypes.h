@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,8 +234,8 @@ typedef struct {
     lookup_token        scope;
     lookup_token        source;
     symbol_type         type;
-    bool                file_scope      : 1;
-    bool                case_sensitive  : 1;
+    boolbit             file_scope      : 1;
+    boolbit             case_sensitive  : 1;
 } lookup_item;
 
 #include "digunpck.h"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -559,9 +560,9 @@ static void ITMemB( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
                   _Mem_Func( table->funccode ) );
 }
 
-static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, uint_32 hint, asm_reloc *reloc ) {
-//**************************************************************************************************************************************
-
+static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, int_32 hint, asm_reloc *reloc )
+//***********************************************************************************************************************************
+{
     // Note that addr_op maybe NULL. If not, addr_op->constant == hint.
     assert( addr_op == NULL || addr_op->constant == hint );
     assert( addr_op == NULL || addr_op->type == OP_IMMED );

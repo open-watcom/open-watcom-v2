@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,8 +76,8 @@ static seg_name Predefined_Segs[] = {
 static user_seg     *userSegments;
 static segment_id   userSegId;
 
-static segment_id   import_segid      = SEG_UNKNOWN;    /* next segment # for import sym */
-static segment_id   import_near_segid = SEG_UNKNOWN;    /* data seg # for -nd option */
+static segment_id   import_segid      = SEG_NULL;       /* next segment # for import sym */
+static segment_id   import_near_segid = SEG_NULL;       /* data seg # for -nd option */
 
 void AssignSeg( SYMPTR sym )
 {
@@ -84,10 +85,10 @@ void AssignSeg( SYMPTR sym )
     if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */
-        sym->u.var.segid = SEG_UNKNOWN;
+        sym->u.var.segid = SEG_NULL;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
-            if( sym->u.var.segid == SEG_UNKNOWN ) {
+            if( sym->u.var.segid == SEG_NULL ) {
                 SetSegment( sym );
             }
             if( sym->u.var.segid == SEG_DATA ) {
@@ -98,7 +99,7 @@ void AssignSeg( SYMPTR sym )
         }
     } else if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         sym->u.var.segid = import_segid--;
-    } else if( (import_near_segid != SEG_UNKNOWN) && (sym->mods & FLAG_NEAR) ) {  // imported and near
+    } else if( (import_near_segid != SEG_NULL) && (sym->mods & FLAG_NEAR) ) {  // imported and near
         sym->u.var.segid = import_near_segid;
     }
 }
@@ -542,7 +543,7 @@ SYM_HANDLE SegSymHandle( segment_id segid )
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->segid == segid ) {
             if( useg->sym_handle == SYM_NULL ) {
-                useg->sym_handle = SegSymbol( useg->name, SEG_UNKNOWN );
+                useg->sym_handle = SegSymbol( useg->name, SEG_NULL );
             }
             return( useg->sym_handle );
         }
@@ -721,20 +722,28 @@ void FEMessage( int class, CGPOINTER parm )
         }
         break;
     case MSG_BLIP:
-        if( !CompFlags.quiet_mode ) {
-            ConBlip();
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                ConBlip();
+            }
         }
         break;
     case MSG_INFO:
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
-        NoteMsg( parm );
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                NoteMsg( parm );
+            }
+        }
         break;
     case MSG_CODE_SIZE:
-        if( !CompFlags.quiet_mode ) {
-            CGetMsg( msgtxt, PHRASE_CODE_SIZE );
-            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_int)parm );
-            NoteMsg( msgbuf );
+        if( GlobalCompFlags.ide_console_output ) {
+            if( !CompFlags.quiet_mode ) {
+                CGetMsg( msgtxt, PHRASE_CODE_SIZE );
+                sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_uint)parm );
+                NoteMsg( msgbuf );
+            }
         }
         break;
     case MSG_DATA_SIZE:
@@ -749,7 +758,7 @@ void FEMessage( int class, CGPOINTER parm )
         break;
     case MSG_BAD_PARM_REGISTER:
         /* this will be issued after a call to CGInitCall or CGProcDecl */
-        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_int)parm );
+        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
@@ -766,16 +775,14 @@ void FEMessage( int class, CGPOINTER parm )
         break;
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-            if( WngLevel >= 4 ) {
-                if( !CompFlags.low_on_memory_printed ) {
-                    CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
-                    CompFlags.low_on_memory_printed = true;
-                }
+            if( !CompFlags.low_on_memory_printed ) {
+                CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
+                CompFlags.low_on_memory_printed = true;
             }
         }
         break;
     case MSG_BACK_END_ERROR:
-        CErr2( ERR_BACK_END_ERROR, (int)(pointer_int)parm );
+        CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (CGSYM_HANDLE)parm ) );
@@ -840,7 +847,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
                     }
                 }
             }
-        } else if( sym->u.var.segid != SEG_UNKNOWN ) {
+        } else if( sym->u.var.segid != SEG_NULL ) {
             segid = sym->u.var.segid;
         } else if( attr & FE_GLOBAL ) {
             segid = SEG_DATA;
@@ -997,7 +1004,7 @@ void ImportNearSegIdInit( void )
 
 void ImportSegIdInit( void )
 {
-    if( import_near_segid != SEG_UNKNOWN ) {
+    if( import_near_segid != SEG_NULL ) {
         import_segid = import_near_segid - 1;
     } else {
         import_segid = -1;

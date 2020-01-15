@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@
 
 #if _INTEL_CPU
 
-void    AsmError( int msg ) {
-//===========================
-
+void    AsmError( unsigned msg )
+//==============================
+{
     char        buff[LIST_BUFF_SIZE+1];
 
     MsgBuffer( msg, buff );

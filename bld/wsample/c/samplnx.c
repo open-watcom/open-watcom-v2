@@ -586,6 +586,8 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
  */
 static void alarm_handler( int signo )
 {
+    /* unused parameters */ (void)signo;
+
     TimerTicked = true;
 }
 
@@ -754,7 +756,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     pid_t           pid;
     int             status;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     MaxThread = 0;
     GrowArrays( 1 );

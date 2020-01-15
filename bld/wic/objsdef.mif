@@ -1,24 +1,24 @@
-OBJS = &
-        cmdline.obj &
-        cparse.obj &
-        ctree.obj &
-        dupzap.obj &
-        exptok.obj &
-        gentypes.obj &
-        globals.obj &
-        hash.obj &
-        main.obj &
-        outfort.obj &
-        outasm.obj &
-        output.obj &
-        preparse.obj &
-        symtab.obj &
-        tables.obj &
-        token.obj &
-        trandecl.obj &
-        wicgener.obj &
-        wicstr.obj &
-                   &
-        fmem.obj &
-        carver.obj
-
+objs = &
+    cmdline.obj &
+    cparse.obj &
+    ctree.obj &
+    dupzap.obj &
+    exptok.obj &
+    gentypes.obj &
+    globals.obj &
+    hash.obj &
+    main.obj &
+    outfort.obj &
+    outasm.obj &
+    output.obj &
+    preparse.obj &
+    symtab.obj &
+    tables.obj &
+    token.obj &
+    trandecl.obj &
+    wicgener.obj &
+    wicstr.obj &
+	       &
+    fmem.obj &
+    carver.obj &
+    $(trmem_objs)

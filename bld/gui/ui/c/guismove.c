@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static void StartMoveResize( gui_window *wnd, resize_dir dir )
 {
     SAREA       area;
 
-    area = wnd->screen.area;
+    area = wnd->vs.area;
     area.width--;
     area.height--;
     uimenudisable( true );
@@ -100,7 +101,7 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y, bool finish
 
     start_delta_x = delta_x;
     start_delta_y = delta_y;
-    area = wnd->screen.area;
+    area = wnd->vs.area;
     new = area;
     if( Direction == RESIZE_NONE ) {
         if( delta_y < 0 && -delta_y > area.row ) {
@@ -161,11 +162,11 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y, bool finish
     }
     GUICheckArea( &new, Direction );
     if( Direction == RESIZE_NONE ) {
-        delta_x = new.col - wnd->screen.area.col;
-        delta_y = new.row - wnd->screen.area.row;
+        delta_x = new.col - wnd->vs.area.col;
+        delta_y = new.row - wnd->vs.area.row;
         GUICheckMove( wnd, &delta_y, &delta_x );
-        new.row = wnd->screen.area.row + delta_y;
-        new.col = wnd->screen.area.col + delta_x;
+        new.row = wnd->vs.area.row + delta_y;
+        new.col = wnd->vs.area.col + delta_x;
     } else { /* resize */
         GUICheckResizeAreaForChildren( wnd, &new, Direction );
         GUICheckResizeAreaForParent( wnd, &new, Direction );

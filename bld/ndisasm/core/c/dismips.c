@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,10 +179,11 @@ dis_handler_return MIPSCode( dis_handle *h, void *d, dis_dec_ins *ins )
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
     ins->op[0].value.s._32[I64LO32] = code.break_t.code;
-    if( code.break_t.code )     // hide zero "opcode"
+    if( code.break_t.code ) {   // hide zero "opcode"
         ins->num_ops = 1;
-    else
+    } else {
         ins->num_ops = 0;
+    }
     return( DHR_DONE );
 }
 
@@ -569,10 +571,11 @@ dis_handler_return MIPSFPUMemory( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[1].value.s._32[I64LO32] = DisSEX( code.itype.immediate, 15 );
     ins->op[1].base = code.itype.rs + DR_MIPS_r0;
     ins->num_ops = 2;
-    if( (ins->type == DI_MIPS_LDC1) || (ins->type == DI_MIPS_SDC1) )
+    if( (ins->type == DI_MIPS_LDC1) || (ins->type == DI_MIPS_SDC1) ) {
         ins->op[1].ref_type = DRT_MIPS_DFLOAT;
-    else
+    } else {
         ins->op[1].ref_type = DRT_MIPS_SFLOAT;
+    }
     return( DHR_DONE );
 }
 
@@ -666,11 +669,18 @@ static size_t MIPSFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     p = name;
     if( ins->flags.u.mips & DIF_MIPS_FF_FLAGS ) {
         *p++ = '.';
-        if( ins->flags.u.mips & DIF_MIPS_FF_S ) *p++ = 's';
-        if( ins->flags.u.mips & DIF_MIPS_FF_D ) *p++ = 'd';
-        if( ins->flags.u.mips & DIF_MIPS_FF_W ) *p++ = 'w';
-        if( ins->flags.u.mips & DIF_MIPS_FF_L ) *p++ = 'l';
-        if( ins->flags.u.mips & DIF_MIPS_FF_PS ) { *p++ = 'p'; *p++ = 's'; }
+        if( ins->flags.u.mips & DIF_MIPS_FF_S )
+            *p++ = 's';
+        if( ins->flags.u.mips & DIF_MIPS_FF_D )
+            *p++ = 'd';
+        if( ins->flags.u.mips & DIF_MIPS_FF_W )
+            *p++ = 'w';
+        if( ins->flags.u.mips & DIF_MIPS_FF_L )
+            *p++ = 'l';
+        if( ins->flags.u.mips & DIF_MIPS_FF_PS ) {
+            *p++ = 'p';
+            *p++ = 's';
+        }
         *p = '\0';
     }
     return( p - name );

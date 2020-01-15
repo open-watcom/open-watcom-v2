@@ -56,7 +56,7 @@ static size_t ppRead( char *buffer, size_t numchar ) {
 
         int count2;
 
-        printf( "Read in lexer buffer (%d characters):\n", count );
+        printf( "Read in lexer buffer (%u characters):\n", (unsigned)count );
         for( count2 = 0; count2 < count; ++count2 ) putchar( buffer[count2] );
         printf( "**END**\n" );
     }

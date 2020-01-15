@@ -37,29 +37,27 @@
 #else
  #include <direct.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "misc.h"
 #include "argvrx.h"
 #include "fnutils.h"
+#include "filerx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
-char **ExpandArgv( int *oargc, char *oargv[], int isrx )
+char **ExpandArgv( int *oargc, char *oargv[], bool isrx )
 {
     int                 argc, i;
     char                *err;
     char                **argv;
-    DIR                 *directory;
-    struct dirent       *nextdirentry;
+    DIR                 *dirp;
+    struct dirent       *dire;
     char                wild[_MAX_PATH];
-    char                sp_buf[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
-    char                *name;
-    char                *extin;
+    PGROUP2             pg;
     char                path[_MAX_PATH];
     void                *crx = NULL;
 
@@ -74,11 +72,11 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             continue;
         }
         if( isrx ) {
-            directory = OpenDirAll( oargv[i], wild );
+            dirp = opendir( FileMatchDirAll( oargv[i], path, wild ) );
         } else {
-            directory = opendir( oargv[i] );
+            dirp = opendir( oargv[i] );
         }
-        if( directory == NULL ) {
+        if( dirp == NULL ) {
             argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
             argv[argc] = oargv[i];
             argc++;
@@ -90,27 +88,27 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
                 Die( "\"%s\": %s\n", err );
             }
         }
-        _splitpath2( oargv[i], sp_buf, &drive, &dir, &name, &extin );
-        while( ( nextdirentry = readdir( directory ) ) != NULL ) {
-            FNameLower( nextdirentry->d_name );
+        _splitpath2( oargv[i], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        while( (dire = readdir( dirp )) != NULL ) {
+            FNameLower( dire->d_name );
             if( isrx ) {
-                if( !FileMatch( crx, nextdirentry->d_name ) ) {
+                if( !FileMatch( crx, dire->d_name ) ) {
                     continue;
                 }
             }
 #if defined( __QNX__ )
-            if( S_ISREG( nextdirentry->d_stat.st_mode ) ) {
+            if( S_ISREG( dire->d_stat.st_mode ) ) {
 #else
-            if( (nextdirentry->d_attr & _A_SUBDIR) == 0 ) {
+            if( (dire->d_attr & _A_SUBDIR) == 0 ) {
 #endif
-                _makepath( path, drive, dir, nextdirentry->d_name, NULL );
+                _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
                 argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
                 argv[argc] = MemAlloc( strlen( path ) + 1 );
                 strcpy( argv[argc], path );
                 argc++;
             }
         }
-        closedir( directory );
+        closedir( dirp );
         if( isrx ) {
             FileMatchFini( crx );
         }

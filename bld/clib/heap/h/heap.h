@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,14 @@
 #define __DOS_EXT__
 #endif
 
+#define FAR2NEAR(t,f)   ((t __near *)(long)(f))
+
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
 #if defined( __DOS_EXT__ )
-#define DPMI2BLK(h)    ((heapblk_nptr)(h + 1))
-#define BLK2DPMI(h)    (((dpmi_hdr *)h) - 1)
+#define DPMI2BLK(h)     ((heapblk_nptr)(h + 1))
+#define BLK2DPMI(h)     (((dpmi_hdr *)h) - 1)
 #endif
 
 #define TAG_SIZE        (sizeof( tag ))
@@ -63,7 +65,7 @@
 #define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelist ), HEAP_ROUND_SIZE )
 
 #if defined( _M_IX86 )
- #define _DGroup()          FP_SEG((&__nheapbeg))
+ #define _DGroup()          _FP_SEG((&__nheapbeg))
 #else
  #define _DGroup()          0
 #endif

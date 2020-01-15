@@ -272,18 +272,10 @@ bool do_parse( void )
                 }
 #else
                 } else if( tok == TT_CODE ) {
-#ifdef __QNX__
-                    ti_char_map[code] = set_ti_alt_map( code, buff[0] );
-#else
                     ti_char_map[code][0] = set_ti_alt_map( code, buff[0] );
-#endif
                 }
             } else if( tok == TT_CODE ) {
-#ifdef __QNX__
-                ti_char_map[code] = buff[0];
-#else
                 ti_char_map[code][0] = buff[0];
-#endif
 #endif
             }
             if( tok == TT_EOF )

@@ -79,6 +79,7 @@
 #endif
 #include "bool.h"
 #include "watcom.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -255,7 +256,8 @@ static void *GetMem( size_t size )
     return( block );
 }
 
-static SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
+static SEGSTK *PushSegStack( void )
+// PUSH THE SEGMENT STACK
 {
     SEGSTK      *stk;           // - new stack entry
 
@@ -353,26 +355,22 @@ static FILE *OpenFileTruncate(
     if( new != NULL )
         AddDepDep( file_name );
     if( new == NULL ) {
-        char    path_buffer[FILENAME_MAX + 3];
+        PGROUP2 pg;
         char    new_name[FILENAME_MAX];
-        char    *drive;
-        char    *dir;
-        char    *fname;
-        char    *ext;
         bool    truncated;
 
         truncated = false;
-        _splitpath2( file_name, path_buffer, &drive, &dir, &fname, &ext );
-        if( fname != NULL && strlen( fname ) > 8 ) {
-            fname[8] = '\0';
+        _splitpath2( file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( strlen( pg.fname ) > 8 ) {
+            pg.fname[8] = '\0';
             truncated = true;
         }
-        if( ext != NULL && strlen( ext ) > 4 ) {
-            ext[4] = '\0';
+        if( strlen( pg.ext ) > 4 ) {
+            pg.ext[4] = '\0';
             truncated = true;
         }
         if( truncated ) {
-            _makepath( new_name, drive, dir, fname, ext );
+            _makepath( new_name, pg.drive, pg.dir, pg.fname, pg.ext );
             new = fopen( new_name, mode );
             if( new != NULL ) {
                 AddDepDep( new_name );

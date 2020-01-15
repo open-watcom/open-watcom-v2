@@ -153,11 +153,11 @@ static int emitCode( int argcnt, int bytecnt, char *array,
      */
     offset = bytecnt + 6;
     if( is_cdecl ) {
-        i = argcnt-1;
+        i = argcnt - 1;
     } else {
         i = 0;
     }
-    while( argcnt > 0 ) {
+    while( argcnt-- > 0 ) {
         if( array[i] == CB_DWORD ) {
             offset -= 4;
             emitMOV_EAX_DWORD( offset );
@@ -171,7 +171,6 @@ static int emitCode( int argcnt, int bytecnt, char *array,
         } else {
             i++;
         }
-        --argcnt;
     }
     emitByte( PUSH_ES );
     emitByte( POP_DS );
@@ -311,8 +310,9 @@ void *SetProc( FARPROC fp, int type )
 
 FARPROC PASCAL _Cover_MakeProcInstance( REALFARPROC proc, HINSTANCE inst )
 {
-    inst;
-    return( (FARPROC)proc );
+    /* unused parameters */ (void)inst;
+
+    return( (FARPROC)(long)proc );
 }
 
 void PASCAL _Cover_FreeProcInstance( FARPROC fp )

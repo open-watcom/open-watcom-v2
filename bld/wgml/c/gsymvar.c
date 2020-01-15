@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -357,8 +357,7 @@ static bool add_symvar_sub( symvar * var, char * val, sub_index sub, symsub * * 
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = sub;
-        newsub->value     = mem_alloc( strlen( val ) + 1 );
-        strcpy( newsub->value, val );
+        newsub->value     = mem_dupstr( val );
 
 /*
  * insert subscript in ascending sort order

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,13 +219,13 @@ static void _printLine( void *parm, const char *buf, size_t len )
     /* unused parameters */ (void)parm; (void)len;
 
     if( _memOutput == _MEMOUT_NORMAL ) {
-        debugOut( "%s", buf );
+        debugOut( "%s\n", buf );
         NumMessages++;
         if( strstr( buf, "overrun" ) != NULL ) {
-            printf( "%s", buf );
+            printf( "%s\n", buf );
         }
     } else {
-        printf( "%s", buf );
+        printf( "%s\n", buf );
     }
 }
 

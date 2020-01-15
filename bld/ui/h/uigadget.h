@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ typedef enum a_gadget_direction {
 #define GADGET_TRACK    0x01
 
 typedef struct a_gadget{
-    VSCREEN             *win;
+    VSCREEN             *vs;
     a_gadget_direction  dir;
     ORD                 anchor;
     ORD                 start;

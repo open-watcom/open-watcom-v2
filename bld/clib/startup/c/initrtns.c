@@ -39,6 +39,8 @@
 #define PFAR  ((__type_rtp)1)
 #define PDONE ((__type_rtp)2)
 
+#define FAR2NEAR(t,f)   ((t _WCNEAR *)(long)(f))
+
 #if ( COMP_CFG_COFF == 1 ) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     // following is an attempt to drop the need for an assembler
     // segment definitions file
@@ -63,16 +65,9 @@
     #error unsupported platform
 #endif
 
-typedef void (*pfn)(void);
-#ifdef _M_I86
-typedef void (_WCI86FAR * _WCI86FAR fpfn)(void);
-typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
-typedef struct rt_init _WCI86NEAR   *struct_rt_init_ptr;
-#else
-typedef void (* fpfn)(void);
-typedef void (* npfn)(void);
-typedef struct rt_init              *struct_rt_init_ptr;
-#endif
+typedef void (_WCFAR * _WCNEAR fpfn)(void);
+typedef void (_WCNEAR * _WCNEAR npfn)(void);
+typedef struct rt_init _WCNEAR      *struct_rt_init_ptr;
 
 #if defined( _M_I86 )
     extern void save_dx( void );
@@ -83,18 +78,11 @@ typedef struct rt_init              *struct_rt_init_ptr;
     #pragma aux restore_ds = "pop ds" __modify __exact [__sp]
     #define save_es()
     #define restore_es()
-#elif defined(__WINDOWS_386__)
-    #define __GETDS()
-    #define save_ds()
-    #define restore_ds()
-    #define save_es()
-    #define restore_es()
-    #define setup_es()
 #elif defined(_M_IX86)
     #define __GETDS()
     #define save_ds()
     #define restore_ds()
-  #if defined(__FLAT__)
+  #if defined(__FLAT__) || defined(__RDOSDEV__)
     #define save_es()
     #define restore_es()
     #define setup_es()
@@ -133,7 +121,7 @@ static void callit_near( npfn *f )
     }
 }
 
-static void callit_far( fpfn _WCI86NEAR *f )
+static void callit_far( fpfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -144,7 +132,7 @@ static void callit_far( fpfn _WCI86NEAR *f )
     }
 }
 #else
-static void callit( pfn *f )
+static void callit( npfn *f )
 {
     // don't call a null pointer
     if( *f ) {
@@ -164,7 +152,7 @@ static void callit( pfn *f )
 ;
 */
 #if defined( _M_I86 )
-void _WCI86FAR __FInitRtns( unsigned limit )
+void _WCFAR __FInitRtns( unsigned limit )
 {
     __InitRtns( limit );
 }
@@ -183,15 +171,15 @@ void __InitRtns( unsigned limit )
             __type_rtp working_limit;
             struct_rt_init_ptr  pcur;
 
-            pcur = (struct_rt_init_ptr)&_Start_XI;
-            pnext = (struct_rt_init_ptr)&_End_XI;
+            pcur = FAR2NEAR( struct rt_init, &_Start_XI );
+            pnext = FAR2NEAR( struct rt_init, &_End_XI );
             working_limit = local_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
 
             // walk list of routines
-            while( pcur < (struct_rt_init_ptr)&_End_XI ) {
+            while( pcur < FAR2NEAR( struct rt_init, &_End_XI ) ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -206,7 +194,7 @@ void __InitRtns( unsigned limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct_rt_init_ptr)&_End_XI ) {
+            if( pnext == FAR2NEAR( struct rt_init, &_End_XI ) ) {
                 break;
             }
         }
@@ -214,10 +202,10 @@ void __InitRtns( unsigned limit )
         if( pnext->rtn_type == PNEAR ) {
             callit_near( (npfn *)&pnext->rtn );
         } else {
-            callit_far( (fpfn _WCI86NEAR *)&pnext->rtn );
+            callit_far( (fpfn *)&pnext->rtn );
         }
 #else
-        callit( &pnext->rtn );
+        callit( (npfn *)&pnext->rtn );
 #endif
         // mark entry as invoked
         pnext->rtn_type = PDONE;
@@ -234,7 +222,7 @@ void __InitRtns( unsigned limit )
 ;       eax==16, edx=40  -> run fini routines in range 16..40
 */
 #if defined( _M_I86 )
-void _WCI86FAR __FFiniRtns( unsigned min_limit, unsigned max_limit )
+void _WCFAR __FFiniRtns( unsigned min_limit, unsigned max_limit )
 {
     __FiniRtns( min_limit, max_limit );
 }
@@ -255,15 +243,15 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             __type_rtp working_limit;
             struct_rt_init_ptr  pcur;
 
-            pcur = (struct_rt_init_ptr)&_Start_YI;
-            pnext = (struct_rt_init_ptr)&_End_YI;
+            pcur = FAR2NEAR( struct rt_init, &_Start_YI );
+            pnext = FAR2NEAR( struct rt_init, &_End_YI );
             working_limit = local_min_limit;
 #if defined(COMP_CFG_COFF)
             pcur++;
 #endif
 
             // walk list of routines
-            while( pcur < (struct_rt_init_ptr)&_End_YI ) {
+            while( pcur < FAR2NEAR( struct rt_init, &_End_YI ) ) {
                 // if this one hasn't been called
                 if( pcur->rtn_type != PDONE ) {
                     // if the priority is better than best so far
@@ -278,7 +266,7 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             }
             // check to see if all done, if we didn't find any
             // candidates then we can return
-            if( pnext == (struct_rt_init_ptr)&_End_YI ) {
+            if( pnext == FAR2NEAR( struct rt_init, &_End_YI ) ) {
                 break;
             }
         }
@@ -287,10 +275,10 @@ void __FiniRtns( unsigned min_limit, unsigned max_limit )
             if( pnext->rtn_type == PNEAR ) {
                 callit_near( (npfn *)&pnext->rtn );
             } else {
-                callit_far( (fpfn _WCI86NEAR *)&pnext->rtn );
+                callit_far( (fpfn *)&pnext->rtn );
             }
 #else
-            callit( &pnext->rtn );
+            callit( (npfn *)&pnext->rtn );
 #endif
         }
         // mark entry as invoked even if we don't call it

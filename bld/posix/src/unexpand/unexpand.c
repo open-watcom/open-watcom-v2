@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 char *OptEnvVar="unexpand";
 
@@ -62,9 +65,11 @@ static void unexpandFile( FILE *fp, mode m )
 {
     int         ch;
     unsigned    col = 0, spc = 0, i;
-    char        notab = 0, flag = 0;
+    bool        notab;
+    bool        flag;
 
-
+    notab = false;
+    flag = false;
     for( ;; ) {
         ch = fgetc( fp );
 
@@ -72,7 +77,7 @@ static void unexpandFile( FILE *fp, mode m )
             if( !notab ) {
                 if( !flag ) {
                     spc = col;
-                    flag = 1;
+                    flag = true;
                 }
             } else {
                 fputc( ch, stdout );
@@ -84,7 +89,7 @@ static void unexpandFile( FILE *fp, mode m )
             }
         } else {
             if( m == LEADING ) {
-                notab = 1;
+                notab = true;
             }
             if( flag ) {
                 if( spc / 8 == col / 8 ) {
@@ -99,14 +104,14 @@ static void unexpandFile( FILE *fp, mode m )
                         fputc( ' ', stdout );
                     }
                 }
-                flag = 0;
+                flag = false;
             }
 
             if( ch == EOF ) {
                 break;
             } else if( (char) ch == '\n' ) {
                 col = 0;
-                notab = 0;
+                notab = false;
             } else {
                 col++;
             }
@@ -115,15 +120,16 @@ static void unexpandFile( FILE *fp, mode m )
     }
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
-    int         regexp = 0;
+    bool        regexp;
     mode        m = LEADING;
 
     argv = ExpandEnv( &argc, argv );
 
+    regexp = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "Xa", usageMsg );
         if( ch == -1 ) {
@@ -131,7 +137,7 @@ void main( int argc, char **argv )
         } else if( ch == 'a' ) {
             m = ALWAYS;
         } else if( ch == 'X' ) {
-            regexp = 1;
+            regexp = true;
         }
     }
 
@@ -155,4 +161,5 @@ void main( int argc, char **argv )
             argv++;
         }
     }
+    return( 0 );
 }

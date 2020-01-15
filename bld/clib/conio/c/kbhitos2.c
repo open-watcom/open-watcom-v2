@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ _WCRTLINK int kbhit( void )
     }
 #endif
 #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return( _dos( DOS_INPUT_STATUS ) != 0 );
     }
     KbdPeek( &info, 0 );

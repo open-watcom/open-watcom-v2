@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,31 +48,29 @@
 #include "clibext.h"
 
 
-#define IDEFN(x)        (*IdeCbs->x)
+#define IDEFN(x)        IdeCbs->x
 
 static   IDECBHdl       IdeHdl;      // - handle for this instantiation
 static   IDECallBacks   *IdeCbs;       // - call backs into IDE
 //static   IDEInitInfo   Info;
 
-extern void ConsMsg( char const  *line ) {
+void ConsMsg( char const  *line )
 // C compiler call back to do a  console print to stdout
-
+{
     IDEFN( PrintMessage )( IdeHdl, line );
     // we are ignoring return for now
 }
 
-extern void ConBlip( void ) {
+void ConBlip( void )
 // C compiler do a blip to console
+{
+    IDEFN( PrintWithCRLF )( IdeHdl, "." );
+    // we are ignoring return for now
 }
 
-extern bool ConTTY( void ) {
-// C compiler do a blip to console
-    return( GlobalCompFlags.ide_console_output );
-}
-
-extern void ConsErrMsg( cmsg_info  *cinfo ) {
+void ConsErrMsg( cmsg_info  *cinfo )
 // C compiler call back to do a  console print to stderr
-
+{
     IDEMsgInfo  info;
     IDEMsgSeverity severity;
 
@@ -100,9 +99,9 @@ extern void ConsErrMsg( cmsg_info  *cinfo ) {
     // we are ignoring return for now
 }
 
-extern void ConsErrMsgVerbatim( char const  *line ) {
+void ConsErrMsgVerbatim( char const  *line )
 // C compiler call back to a console print to stderr
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_ERROR, line );
@@ -110,9 +109,9 @@ extern void ConsErrMsgVerbatim( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void BannerMsg( char const  *line ) {
+void BannerMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
@@ -120,9 +119,9 @@ extern void BannerMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void DebugMsg( char const  *line ) {
+void DebugMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
@@ -130,9 +129,9 @@ extern void DebugMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern void NoteMsg( char const  *line ) {
+void NoteMsg( char const  *line )
 // C compiler call back to print a banner type msg
-
+{
     IDEMsgInfo info;
 
     IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
@@ -140,8 +139,9 @@ extern void NoteMsg( char const  *line ) {
     // we are ignoring return for now
 }
 
-extern const char *FEGetEnv( char const *name ) {
+const char *FEGetEnv( char const *name )
 // get enviorment variable
+{
     const char *ret;
 
     ret = NULL;
@@ -154,15 +154,18 @@ extern const char *FEGetEnv( char const *name ) {
 }
 
 static   jmp_buf *FatalEnv;
-extern void MyExit( int ret ) {
+
+void MyExit( int ret )
+{
     longjmp( *FatalEnv, ret );
 }
 
 // IDE INTERFACE
 
 
-unsigned IDEAPI IDEGetVersion ( void ) {
- // GET IDE VERSION
+unsigned IDEAPI IDEGetVersion ( void )
+// GET IDE VERSION
+{
     return IDE_CUR_DLL_VER;
 }
 
@@ -188,7 +191,7 @@ IDEBool IDEAPI IDEInitDLL
     HeapFreeHi = 0;
 #endif
     FrontEndInit( true );
-    return false;
+    return( false );
 }
 
 void IDEAPI IDEFreeHeap( void ) {
@@ -266,12 +269,15 @@ static int heap_size( struct heap_stat *stat ) {
 
 static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 {
+    char    *p;
+
     if( !GlobalCompFlags.ide_cmd_line_has_files ) {
         infile[0] = '\0';
-        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
+        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&infile );
         *argv++ = infile;
         outfile[0] = '\0';
-        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
+        p = outfile + 4;
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
             outfile[0] = '-';
             outfile[1] = 'f';
             outfile[2] = 'o';
@@ -295,7 +301,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     char        infile[_MAX_PATH];      // - input file name
     char        outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char        *argv[4];
-    int         ret;
+    IDEBool     ret;
 
     /* unused parameters */ (void)hdl;
 
@@ -306,8 +312,9 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     argv[0] = (char *)opts;
     argv[1] = NULL;
     getFrontEndArgv( argv + 1, infile, outfile );
-    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
+    if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
+        ret = true;
     } else {
         ret = FrontEnd( argv );
     }
@@ -317,7 +324,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
 #ifdef __OS2__
    _heapmin();
 #endif
-    return( ret != 0 );
+    return( ret );
 }
 
 #ifdef __UNIX__
@@ -355,15 +362,18 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     char                infile[_MAX_PATH];      // - input file name
     char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
     char                **argv;
-    int                 ret;
+    IDEBool             ret;
+
+    /* unused parameters */ (void)hdl;
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = &env;
     /* allocate and initialize argv array */
     argv = init_argv( args, argc, infile, outfile );
-    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
+    if( setjmp( env ) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
+        ret = true;
     } else {
         ret = FrontEnd( argv );
     }
@@ -371,7 +381,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
 #if HEAP_CHK  == 1
     heap_check();
 #endif
-    return( ret != 0 );
+    return( ret );
 }
 #endif
 
@@ -405,18 +415,16 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
         GlobalCompFlags.ignore_environment = true;
         GlobalCompFlags.ignore_current_dir = true;
     }
-    if( info->ver >= 2 ) {
-        if( info->cmd_line_has_files ) {
-            GlobalCompFlags.ide_cmd_line_has_files = true;
+    if( info->cmd_line_has_files ) {
+        GlobalCompFlags.ide_cmd_line_has_files = true;
+    }
+    if( info->ver > 2 ) {
+        if( info->console_output ) {
+            GlobalCompFlags.ide_console_output = true;
         }
-        if( info->ver >= 3 ) {
-            if( info->console_output ) {
-                GlobalCompFlags.ide_console_output = true;
-            }
-            if( info->ver >= 4 ) {
-                if( info->progress_messages ) {
-                    GlobalCompFlags.progress_messages = true;
-                }
+        if( info->ver > 3 ) {
+            if( info->progress_messages ) {
+                GlobalCompFlags.progress_messages = true;
             }
         }
     }

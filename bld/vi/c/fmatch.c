@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,8 @@
 #include "walloca.h"
 #include "rxsupp.h"
 
-static regexp  *cRx;
+
+static regexp  *cRx = NULL;
 
 /*
  * FileMatch - check if a file matches a wild card
@@ -97,11 +99,7 @@ vi_rc FileMatchInit( const char *wild )
     tomatch[j] = '\0';
 
     cRx = RegComp( tomatch );
-    if( RegExpError ) {
-        FileMatchFini();
-        return( RegExpError );
-    }
-    return( ERR_NO_ERR );
+    return( RegExpError );
 
 } /* FileMatchInit */
 
@@ -111,6 +109,9 @@ vi_rc FileMatchInit( const char *wild )
 void FileMatchFini( void )
 {
     RegExpAttrRestore();
-    MemFree( cRx );
+    if( cRx != NULL ) {
+        MemFree( cRx );
+        cRx = NULL;
+    }
 
 } /* FileMatchFini */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +175,7 @@ static bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
     case INP_RTN_FINI:
         return( true );
     case INP_RTN_EOL:
-        NewCurrRadix( (mad_radix)(pointer_int)parm );
+        NewCurrRadix( (mad_radix)(pointer_uint)parm );
         return( false );
     default:
         return( false );
@@ -184,7 +185,7 @@ static bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
 
 static void PushRadixChange( mad_radix radix )
 {
-    PushInpStack( (inp_data_handle)(pointer_int)radix, DoneRadix, false );
+    PushInpStack( (inp_data_handle)(pointer_uint)radix, DoneRadix, false );
     TypeInpStack( INP_NO_CMD );
 }
 

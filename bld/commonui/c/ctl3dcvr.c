@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,6 +99,9 @@ static HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
   #if 0
     return( Ctl3dCtlColorEx( wm, wp, lp ) );
   #else
+
+    /* unused parameters */ (void)wm; (void)wp; (void)lp;
+
     return( (HBRUSH)NULL );
   #endif
 }
@@ -169,19 +173,19 @@ static int CvrCtl3DDLLInit( void )
         return( FALSE );
     }
 
-    cvrCtl3dSubclassDlg     = (LPFN_Ctl3dSubclassDlg)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)2 );
-    cvrCtl3dSubclassDlgEx   = (LPFN_Ctl3dSubclassDlgEx)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)21 );
-    cvrCtl3dGetVer          = (LPFN_Ctl3dGetVer)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)1 );
-    cvrCtl3dEnabled         = (LPFN_Ctl3dEnabled)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)5 );
-    cvrCtl3dCtlColor        = (LPFN_Ctl3dCtlColor)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)4 );
-    cvrCtl3dCtlColorEx      = (LPFN_Ctl3dCtlColorEx)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)18 );
-    cvrCtl3dColorChange     = (LPFN_Ctl3dColorChange)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)6 );
-    cvrCtl3dSubclassCtl     = (LPFN_Ctl3dSubclassCtl)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)3 );
-    cvrCtl3dDlgFramePaint   = (LPFN_Ctl3dDlgFramePaint)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)20 );
-    cvrCtl3dAutoSubclass    = (LPFN_Ctl3dAutoSubclass)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)16 );
-    cvrCtl3dRegister        = (LPFN_Ctl3dRegister)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)12 );
-    cvrCtl3dUnregister      = (LPFN_Ctl3dUnregister)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)13 );
-    cvrCtl3dWinIniChange    = (LPFN_Ctl3dWinIniChange)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_int)22 );
+    cvrCtl3dSubclassDlg     = (LPFN_Ctl3dSubclassDlg)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)2 );
+    cvrCtl3dSubclassDlgEx   = (LPFN_Ctl3dSubclassDlgEx)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)21 );
+    cvrCtl3dGetVer          = (LPFN_Ctl3dGetVer)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)1 );
+    cvrCtl3dEnabled         = (LPFN_Ctl3dEnabled)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)5 );
+    cvrCtl3dCtlColor        = (LPFN_Ctl3dCtlColor)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)4 );
+    cvrCtl3dCtlColorEx      = (LPFN_Ctl3dCtlColorEx)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)18 );
+    cvrCtl3dColorChange     = (LPFN_Ctl3dColorChange)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)6 );
+    cvrCtl3dSubclassCtl     = (LPFN_Ctl3dSubclassCtl)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)3 );
+    cvrCtl3dDlgFramePaint   = (LPFN_Ctl3dDlgFramePaint)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)20 );
+    cvrCtl3dAutoSubclass    = (LPFN_Ctl3dAutoSubclass)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)16 );
+    cvrCtl3dRegister        = (LPFN_Ctl3dRegister)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)12 );
+    cvrCtl3dUnregister      = (LPFN_Ctl3dUnregister)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)13 );
+    cvrCtl3dWinIniChange    = (LPFN_Ctl3dWinIniChange)GetProcAddress( ctlDLLLib, (LPCSTR)(pointer_uint)22 );
 
     if( cvrCtl3dSubclassDlg == NULL || cvrCtl3dSubclassDlgEx == NULL ||
         cvrCtl3dGetVer == NULL || cvrCtl3dEnabled == NULL || cvrCtl3dCtlColor == NULL ||

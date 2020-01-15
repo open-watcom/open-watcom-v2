@@ -43,10 +43,7 @@
 #include "utility.h"
 #include "cspawn.h"
 #include "wresmem.h"
-
-#if defined( TRMEM )
 #include "trmemcvr.h"
-#endif
 
 
 void    FMemInit( void ) {

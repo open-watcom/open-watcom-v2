@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +125,8 @@ static int              Num;
 static bool             EvalSubstring;
 static struct {
     lookup_item         li;
-    bool                multi_module    : 1;
-    bool                any_image       : 1;
+    boolbit             multi_module    : 1;
+    boolbit             any_image       : 1;
     enum { GET_NAME, GET_OPERATOR, GET_LNUM }   kind;
 }                       CurrGet;
 
@@ -918,8 +918,8 @@ typedef struct cue_find {
     cue_fileid          id;
     const char          *name;
     unsigned            len;
-    bool                ambig           : 1;
-    bool                found_a_file    : 1;
+    boolbit             ambig           : 1;
+    boolbit             found_a_file    : 1;
     enum {
         CMP_NONE,
         CMP_INSENSITIVE,

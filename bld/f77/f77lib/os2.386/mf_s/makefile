@@ -4,4 +4,5 @@ system     = os2
 model      = mf
 convention = stack
 linkage    = dynamic
+mthreaded  = 1
 !include ../../master.mif

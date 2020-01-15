@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +48,15 @@
 #include "stats.h"
 #include "fnbody.h"
 #include "tgtenv.h"
+#include "compinfo.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #endif
 
 #define CS_LABEL_BLOCK  4       // number of CS labels to allocate at a time
 
-#define CGFilePCHRead()     CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() )
-#define CGFilePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex(x) )
+#define CGFilePCHRead()     CGFileMapIndex( (CGFILE *)(pointer_uint)PCHReadCVIndex() )
+#define CGFilePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_uint)CGFileGetIndex(x) )
 
 static CGFILE *dataCGFILE;      // file for data
 static CGFILE *codeCGFILE;      // file for code
@@ -417,7 +419,7 @@ void CgFrontDataPtr(            // EMIT (code,ptr) TO DATA SEGMENT
 static void cgSetupSegment(     // SET UP DATA SEGMENT, EMIT INSTRUCTION
     unsigned seg_number )       // - segment number
 {
-    if( seg_number != ins_def_seg.value.ivalue ) {
+    if( seg_number != ins_def_seg.value.uvalue ) {
         ins_def_seg.value.uvalue = seg_number;
         cgEmitData( &ins_def_seg );
     }

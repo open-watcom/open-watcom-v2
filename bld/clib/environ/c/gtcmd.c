@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@
         if( DosGetEnv( &envseg, &cmdoff) )
             return( NULL );
 
-        cmd = MK_FP( envseg, 0 );
+        cmd = _MK_FP( envseg, 0 );
         if( !*cmd ) ++cmd;      /* adjust if null environment space */
         while( *cmd ) {         /* skip over environment space */
             while( *cmd ) ++cmd;

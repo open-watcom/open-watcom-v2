@@ -80,10 +80,15 @@
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
 
-#if defined( _M_I86 ) || defined( __QNX__ )
+#if defined( _M_I86 )
     #define _FARC       __far
+    #define QNXFAR2NEAR(t,f)    ((t *)(f))
+#elif defined( __QNX__ )
+    #define _FARC       __far
+    #define QNXFAR2NEAR(t,f)    ((t *)(unsigned)(f))
 #else
     #define _FARC
+    #define QNXFAR2NEAR(t,f)    ((t *)(f))
 #endif
 
 #if defined( _M_I86 )

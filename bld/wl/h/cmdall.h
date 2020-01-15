@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,12 +118,14 @@ extern bool     ProcVersion( void );
 extern bool     ProcImplib( void );
 extern bool     ProcImpFile( void );
 extern bool     ProcRuntime( void );
+#ifdef _RAW
 extern bool     ProcOutput( void );
 extern bool     ProcOutputRaw( void );
 extern bool     ProcOutputHex( void );
-extern bool     ProcOutputOfs( void );
+extern bool     ProcOutputOffset( void );
 extern bool     ProcOutputStart( void );
 extern bool     ProcOutputHshift( void );
+#endif
 extern bool     ProcHshift( void );
 extern bool     ProcFillchar( void );
 extern bool     ProcOrder( void );
@@ -136,6 +139,9 @@ extern bool     ProcOrdSegSegAdr( void );
 extern bool     ProcOrdSegOfsAdr( void );
 extern bool     ProcOrdSegCopy( void );
 extern bool     ProcOrdSegNoEmit( void );
+extern bool     ProcDescription( void );
+extern bool     ProcObjAlign( void );
 extern void     ResetCmdAll( void );
 
-extern sysblock *       FindSysBlock( char * );
+extern sysblock *FindSysBlock( const char * );
+extern void     ChkBase( offset align );

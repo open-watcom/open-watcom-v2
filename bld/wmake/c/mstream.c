@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,17 +86,17 @@ typedef struct streamEntry {
         } file;                     /* for SENT_FILE                        */
 
         struct {
-            const char    *cur;     /* current position in string           */
-            const char    *str;     /* beginning of string                  */
+            const char  *cur;       /* current position in string           */
+            const char  *str;       /* beginning of string                  */
         } str;                      /* for SENT_STR                         */
 
-        STRM_T s;                   /* for SENT_CHAR                        */
+        STRM_T          s;          /* for SENT_CHAR                        */
     } data;
 
-    struct streamEntry *next;       /* linked list representation of stack  */
+    struct streamEntry  *next;      /* linked list representation of stack  */
 
-    BIT     type : 2;               /* must hold an STYPE_T                 */
-    BIT     free : 1;               /* should we free resources?            */
+    STYPE_T             type;       /* must hold an STYPE_T                 */
+    bool                free;       /* should we free resources?            */
 
 } SENT;
 
@@ -152,11 +153,11 @@ STATIC void popSENT( void )
             PrtMsg( DBG | INF | LOC | FINISHED_FILE, tmp->data.file.name );
         }
         FreeSafe( tmp->data.file.buf );
-        FreeSafe( (void *)headSent->data.file.name );
+        FreeSafe( (void *)tmp->data.file.name );
         break;
     case SENT_STR:
         if( tmp->free ) {
-            FreeSafe( (void *)headSent->data.str.str );
+            FreeSafe( (void *)tmp->data.str.str );
         }
         break;
     case SENT_CHAR:
@@ -229,8 +230,8 @@ STATIC bool fillBuffer( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-RET_T InsFile( const char *name, bool envsearch )
-/************************************************
+bool InsFile( const char *name, bool envsearch )
+/***********************************************
  * Open file named name, and push it into stream.  If can't find name, it
  * tries an implicit suffix search (possibly using the env variable PATH)
  */
@@ -241,30 +242,27 @@ RET_T InsFile( const char *name, bool envsearch )
 
     assert( name != NULL );
 
-    if( TrySufPath( path, name, NULL, envsearch ) == RET_SUCCESS ) {
+    if( TrySufPath( path, name, NULL, envsearch ) ) {
         PrtMsg( DBG | INF | LOC | ENTERING_FILE, path );
 
         fp = fopen( path, "rb" );
-        if( fp == NULL ) {
-            return( RET_ERROR );
+        if( fp != NULL ) {
+            tmp = getSENT( SENT_FILE );
+            tmp->free = true;
+            tmp->data.file.name = StrDupSafe( path );
+
+            pushFP( tmp, fp );
+
+            if( !Glob.overide ) {
+                UnGetCHR( '\n' );
+                InsString( path, false );
+                InsString( "$+$(__MAKEFILES__)$- ", false );
+                DefMacro( "__MAKEFILES__" );
+            }
+            return( true );
         }
-
-        tmp = getSENT( SENT_FILE );
-        tmp->free = true;
-        tmp->data.file.name = StrDupSafe( path );
-
-        pushFP( tmp, fp );
-
-        if( !Glob.overide ) {
-            UnGetCHR( '\n' );
-            InsString( path, false );
-            InsString( "$+$(__MAKEFILES__)$- ", false );
-            DefMacro( "__MAKEFILES__" );
-        }
-
-        return( RET_SUCCESS );
     }
-    return( RET_ERROR );
+    return( false );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
@@ -326,13 +324,7 @@ STRM_T GetCHR( void )
     STRM_T  s;
 
     flagEOF = false;
-    for( ;; ) {
-        head = headSent;
-
-        if( head == NULL ) {
-            return( STRM_END ); /* the big mama ending! no more stream! */
-        }
-
+    for( ; (head = headSent) != NULL; ) {
         switch( head->type ) {
         case SENT_FILE:
             /* GetFileLine() depends on the order of execution here */
@@ -373,28 +365,28 @@ STRM_T GetCHR( void )
             return( s );
         case SENT_STR:
             s = *(head->data.str.cur++);
-            if( s == NULLCHAR ) {
-                popSENT();
-                continue;   /* try again */
+            if( s != NULLCHAR ) {
+                return( s );
             }
-            return( s );
+            popSENT();
+            break;              /* try again */
         case SENT_CHAR:
             s = head->data.s;
             popSENT();
             return( s );
         }
-        assert( false );    /* should never get here */
     }
+    return( STRM_END ); /* the big mama ending! no more stream! */
 }
 
 #ifdef USE_SCARCE
-STATIC RET_T streamScarce( void )
-/*******************************/
+STATIC bool streamScarce( void )
+/******************************/
 {
     SENT    *cur;
 
     if( freeSent == NULL ) {
-        return( RET_ERROR );
+        return( false );
     }
 
     while( freeSent != NULL ) {
@@ -403,7 +395,7 @@ STATIC RET_T streamScarce( void )
         FreeSafe( cur );
     }
 
-    return( RET_SUCCESS );
+    return( true );
 }
 #endif
 
@@ -437,8 +429,8 @@ void StreamInit( void )
 }
 
 
-RET_T GetFileLine( const char **pname, UINT16 *pline )
-/************************************************************
+bool GetFileLine( const char **pname, UINT16 *pline )
+/****************************************************
  * get filename, and line number of file closest to top of stack
  * false - no files in stack; true - returned data from top file
  */
@@ -447,30 +439,23 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
 
     for( cur = headSent; cur != NULL; cur = cur->next ) {
         if( cur->type == SENT_FILE ) {
-            break;
+            /*
+             * Because we do a line++ when we return a {nl}, we have to check if
+             * the last character returned was a {nl}.  We check the last character
+             * if any characters have been read - it is just at cur[-1].  The only
+             * time that cur > buf == false is when nothing has been read.  (Check
+             * the code for reading - even after filling the buffer this doesn't
+             * evaluate improperly).
+             */
+            *pline = cur->data.file.line;
+            if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
+                --(*pline);
+            }
+            *pname = cur->data.file.name;
+            return( true );
         }
     }
-
-    if( cur == NULL ) {
-        return( RET_ERROR );
-    }
-
-    /*
-     * Because we do a line++ when we return a {nl}, we have to check if
-     * the last character returned was a {nl}.  We check the last character
-     * if any characters have been read - it is just at cur[-1].  The only
-     * time that cur > buf == false is when nothing has been read.  (Check
-     * the code for reading - even after filling the buffer this doesn't
-     * evaluate improperly).
-     */
-    *pline = cur->data.file.line;
-    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
-        --(*pline);
-    }
-
-    *pname = cur->data.file.name;
-
-    return( RET_SUCCESS );
+    return( false );
 }
 
 

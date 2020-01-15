@@ -32,10 +32,10 @@
 
 #include "as.h"
 
-extern uint_32 AsHashVal( const char *string, uint_32 size ) {
-//************************************************************
+uint_32 AsHashVal( const char *string, uint_32 size )
+//***************************************************
 // Standard hashPJW from the Dragon Book
-
+{
     const char          *p;
     unsigned long       g, h;
 

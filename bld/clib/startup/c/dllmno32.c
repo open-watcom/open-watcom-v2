@@ -37,6 +37,8 @@
 
 unsigned APIENTRY DllMain( unsigned hmod, unsigned termination )
 {
+    /* unused parameters */ (void)hmod;
+
     if( termination != 0 ) {
         return( __dll_terminate() );
     }

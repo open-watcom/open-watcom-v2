@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include "bool.h"
 #include "wio.h"
 #include "misc.h"
 #include "fnutils.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "console.h"
+
+
+#define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
 char *OptEnvVar = "more";
 static const char *usageMsg[] = {
@@ -75,12 +80,12 @@ static const char *usageMsg[] = {
 #define CTRL( a )       (a-'A'+1)
 
 static char     *workBuff;
-static char     *promptString="--more--";
+static char     *promptString = "--more--";
 static int      screenHeight;
 static int      screenWidth;
 static int      lineCount;
 static long     startLine;
-static char     clearScreen=0;
+static bool     clearScreen = false;
 static char     foldLines=1;
 static long     BufferPos;
 static long     FilePos;        // actually BUFF_HIGH(current file position)
@@ -105,7 +110,7 @@ static int getChar( void )
     return( GetRawChar() );
 #else
 #if defined( __OS2__ ) && defined( _M_I86 )
-    if( _osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         return GetRawChar();
     }
 #endif
@@ -190,7 +195,7 @@ static void doMore( char *name, FILE *f )
 {
     int         ch;
     long        file_size;
-    int         done;
+    bool        done;
     long        curr_line;
     long        tline;
     int         char_cnt;
@@ -243,9 +248,9 @@ static void doMore( char *name, FILE *f )
                 }
                 fprintf( stdout,"%s(%d%%)", promptString, percent );
                 fflush( stdout );
-                done = 0;
+                done = false;
                 while( !done ) {
-                    done = 1;
+                    done = true;
                     ch = getChar();
                     fputs( "\r                                                                        \r", stdout );
                     fflush( stdout );
@@ -263,7 +268,7 @@ static void doMore( char *name, FILE *f )
                     case '=':
                         fputs( ltoa( curr_line, buff, 10 ), stdout );
                         fflush( stdout );
-                        done = 0;
+                        done = false;
                         break;
                     case 'q':
                         fclose( f );
@@ -273,7 +278,7 @@ static void doMore( char *name, FILE *f )
                             BufSeek( 0 );
                             curr_line = 0;
                         } else {
-                            done = 0;
+                            done = false;
                         }
                         break;
                     case '$':
@@ -281,7 +286,7 @@ static void doMore( char *name, FILE *f )
                             BufSeek( file_size );
                             curr_line -= backUpLines( f, screenHeight );
                         } else {
-                            done = 0;
+                            done = false;
                         }
                         break;
                     case CTRL( 'B' ):
@@ -292,21 +297,21 @@ static void doMore( char *name, FILE *f )
                         if( f != stdin ) {
                             curr_line -= backUpLines( f, 2*screenHeight-1 );
                         } else {
-                            done = 0;
+                            done = false;
                         }
                         break;
                     case '-':
                         if( f != stdin ) {
                             curr_line -= backUpLines( f, screenHeight+1 );
                         } else {
-                            done = 0;
+                            done = false;
                         }
                         break;
                     case '?':
                         fprintf( stdout, "\"%s\", %ld of %ld bytes", name,
                                 BufferPos, file_size );
                         fflush( stdout );
-                        done = 0;
+                        done = false;
                         break;
                     case 'v':
                         tline = curr_line - screenHeight+2;
@@ -325,7 +330,7 @@ static void doMore( char *name, FILE *f )
                     default:
                         fputs( "use ENTER,SPACE,?,0,$,+,-,=,q,v,^F,b,^B", stdout );
                         fflush( stdout );
-                        done = 0;
+                        done = false;
                         break;
                     }
                 }
@@ -340,8 +345,8 @@ int main( int argc, char *argv[] )
 {
     int         i;
     FILE        *f;
-    int         rxflag;
-    int         buff_stdin;
+    bool        rxflag;
+    bool        buff_stdin;
     int         ch;
     size_t      read_bytes;
 
@@ -349,8 +354,8 @@ int main( int argc, char *argv[] )
     screenWidth = GetConsoleWidth();
 
     workBuff = MemAlloc( BUFF_SIZE );
-    buff_stdin = 1;
-    rxflag = 0;
+    buff_stdin = true;
+    rxflag = false;
 
     for( ;; ) {
         ch = GetOpt( &argc, argv, "#cftXp:n:", usageMsg );
@@ -359,13 +364,13 @@ int main( int argc, char *argv[] )
         }
         switch( ch ) {
         case 'c':
-            clearScreen = 1;
+            clearScreen = true;
             break;
         case 'f':
             foldLines = 0;
             break;
         case 't':
-            buff_stdin = 0;
+            buff_stdin = false;
             break;
         case 'n':
             screenHeight = atoi( OptArg )+1;
@@ -377,14 +382,14 @@ int main( int argc, char *argv[] )
             startLine = atol( OptArg )-1;
             break;
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
     }
 
     argv = ExpandArgv( &argc, argv, rxflag );
 
-    lineCount = screenHeight-1;
+    lineCount = screenHeight - 1;
 
     if( argc == 1 ) {
         if( buff_stdin ) {

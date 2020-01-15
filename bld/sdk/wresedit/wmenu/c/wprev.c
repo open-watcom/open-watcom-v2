@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +206,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 #ifdef __NT__
             hpopup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
 #else
-            hpopup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+            hpopup = (HMENU)(pointer_uint)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, hpopup );
         } else {

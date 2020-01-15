@@ -1104,7 +1104,7 @@ bool Child1WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     gui_point           point;
     gui_key             key;
     gui_ctl_id          id;
-    gui_char_cursor     cursor;
+    gui_cursor_type     cursor;
     char                Buffer[80];
 
     switch( gui_ev ) {

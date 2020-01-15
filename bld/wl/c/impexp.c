@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ static entry_export *FindPlace( entry_export *exp )
                 exp->ordinal = 0;       // if duplicate, assign a new one later
                 break;
             }
-            if ( place->ordinal > exp->ordinal ) {
+            if( place->ordinal > exp->ordinal ) {
                 ret = exp->next;        // note: this can't happen 1st time
                 exp->next = place;
                 prev->next = exp;
@@ -145,7 +146,7 @@ void AddToExportList( entry_export *exp )
                 LnkMsg( WRN+MSG_DUP_EXP_ORDINAL, NULL );
                 exp->ordinal = 0;    // if duplicate, assign a new one later
                 place = &FmtData.u.os2.exports;
-            } else if ( curr->ordinal > exp->ordinal ) {
+            } else if( curr->ordinal > exp->ordinal ) {
                 place = owner;
             }
         }

@@ -248,11 +248,15 @@ _WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__p
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );
 
+:segment BITS16
+:include far2.sp
 _WCRTLINK extern int        _fmbrlen( const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern int        _fmbrtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern __w_size_t _fmbsrtowcs( wchar_t _WCFAR *__dst, const char _WCFAR * _WCFAR *__src, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern int        _fwcrtomb( char _WCFAR *__s, wchar_t __wc, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern __w_size_t _fwcsrtombs( char _WCFAR *__dst, const wchar_t _WCFAR * _WCFAR *__src, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
+:include farepi.sp
+:endsegment
 _WCRTLINK extern int        _swprintf( wchar_t *__s, const wchar_t *__format, ... );
 :segment CNAME
 _WCRTLINK extern int        _vswprintf( wchar_t *__s, const wchar_t *__format, std::va_list __arg );
@@ -305,9 +309,13 @@ _WCRTLINK extern errno_t    _wctime_s( wchar_t * __restrict s, rsize_t __maxsize
 _WCRTLINK extern errno_t    mbsrtowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * * __restrict __src, rsize_t __len, mbstate_t * __restrict __ps );
 _WCRTLINK extern errno_t    wcrtomb_s( size_t * __restrict __retval, char * __restrict __s,  rsize_t __smax, wchar_t __wc, mbstate_t * __restrict __ps );
 _WCRTLINK extern errno_t    wcsrtombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t ** __restrict __src, rsize_t __len, mbstate_t * __restrict __ps );
+:segment BITS16
+:include far2.sp
 _WCRTLINK extern errno_t    _fmbsrtowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * _WCFAR * __restrict __src, rsize_t __len, mbstate_t _WCFAR * __restrict __ps );
 _WCRTLINK extern errno_t    _fwcrtomb_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc, mbstate_t _WCFAR * __restrict __ps );
 _WCRTLINK extern errno_t    _fwcsrtombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * _WCFAR * __restrict __src, rsize_t __len, mbstate_t _WCFAR * __restrict __ps );
+:include farepi.sp
+:endsegment
 
 :include saferepi.sp
 

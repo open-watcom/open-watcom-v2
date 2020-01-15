@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,7 +212,7 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
         if( *src == '#' ) {
             unsigned    size;
 
-            size = (unsigned)(pointer_int)FEExtName( sym, EXTN_PRMSIZE );
+            size = (unsigned)(pointer_uint)FEExtName( sym, EXTN_PRMSIZE );
             if( size != (unsigned)-1 ) {
                 *(dst++) = '@';
                 dst = xtoa( dst, size );

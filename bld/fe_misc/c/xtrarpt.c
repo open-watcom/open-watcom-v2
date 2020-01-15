@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,10 @@
 #include "ringfns.h"
 #include "ringcarv.h"
 #include "vbuf.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define printf  @use outputLine@
 #define puts    @use outputLine@
@@ -184,12 +189,11 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
 {
     RPTREG *reg;
     FILE *fp;
-    char *base;
-    auto char make_buff[_MAX_PATH];
-    auto char split_buff[_MAX_PATH2];
+    PGROUP2 pg;
+    char make_buff[_MAX_PATH];
 
-    _splitpath2( name, split_buff, NULL, NULL, &base, NULL );
-    _makepath( make_buff, NULL, NULL, base, ".rpt" );
+    _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    _makepath( make_buff, NULL, NULL, pg.fname, "rpt" );
     fp = fopen( make_buff, "w" );
     if( fp == NULL ) {
         return;

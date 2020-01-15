@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,10 @@
 #include "memory.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -73,11 +78,14 @@
  * Various flags to keep in mind while translating options.
  */
 static struct XlatStatus {
-    int     dll                 : 1;    /* we're building a DLL */
-    int     exp                 : 1;    /* there is an .exp file */
+    boolbit     dll             : 1;    /* we're building a DLL */
+    boolbit     exp             : 1;    /* there is an .exp file */
 } xlat_status;
 
 
+
+#define NO_CLEAN_STRING
+#include "parseext.c"
 
 /*
  * Initialize a struct XlatStatus.
@@ -135,31 +143,6 @@ static void unsupported_opts( const OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
  * Parse a .def file if necessary.
  */
 static void def_file_opts( OPT_STORAGE *cmdOpts )
@@ -179,70 +162,70 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
         if( info != NULL ) {
             strList = info->description;
             while( strList != NULL ) {
-                add_string( &cmdOpts->comment_value, strList->str );
+                add_string( &cmdOpts->comment_value, strList->str, '\0' );
                 strList = strList->next;
             }
 
             strList = info->exports;
             while( strList != NULL ) {
-                add_string( &cmdOpts->export_value, strList->str );
-                cmdOpts->export = 1;
+                add_string( &cmdOpts->export_value, strList->str, '\0' );
+                cmdOpts->export = true;
                 strList = strList->next;
             }
 
             if( !cmdOpts->dll ) {
                 if( info->makeDll ) {
-                    cmdOpts->dll = 1;
+                    cmdOpts->dll = true;
                 }
             }
             if( !cmdOpts->base ) {
                 if( info->baseAddr != NULL ) {
-                    add_string( &cmdOpts->base_value, info->baseAddr );
-                    cmdOpts->base = 1;
+                    add_string( &cmdOpts->base_value, info->baseAddr, '\0' );
+                    cmdOpts->base = true;
                 }
             }
 
             if( !cmdOpts->heap ) {
                 if( info->heapsize != NULL ) {
-                    add_string( &cmdOpts->heap_value, info->heapsize );
-                    cmdOpts->heap = 1;
+                    add_string( &cmdOpts->heap_value, info->heapsize, '\0' );
+                    cmdOpts->heap = true;
                 }
             }
 
 
             if( !cmdOpts->internaldllname ) {
                 if( info->internalDllName != NULL ) {
-                    add_string( &cmdOpts->internaldllname_value, info->internalDllName );
-                    cmdOpts->internaldllname = 1;
+                    add_string( &cmdOpts->internaldllname_value, info->internalDllName, '\0' );
+                    cmdOpts->internaldllname = true;
                 }
             }
 
             if( !cmdOpts->out ) {
                 if( info->name != NULL ) {
                     newstr = PathConvert( info->name, '\'' );
-                    add_string( &cmdOpts->out_value, newstr );
-                    cmdOpts->out = 1;
+                    add_string( &cmdOpts->out_value, newstr, '\0' );
+                    cmdOpts->out = true;
                 }
             }
 
             if( !cmdOpts->stack ) {
                 if( info->stacksize != NULL ) {
-                    add_string( &cmdOpts->stack_value, info->stacksize );
-                    cmdOpts->stack = 1;
+                    add_string( &cmdOpts->stack_value, info->stacksize, '\0' );
+                    cmdOpts->stack = true;
                 }
             }
 
             if( !cmdOpts->stub ) {
                 if( info->stub != NULL ) {
-                    add_string( &cmdOpts->stub_value, info->stub );
-                    cmdOpts->stub = 1;
+                    add_string( &cmdOpts->stub_value, info->stub, '\0' );
+                    cmdOpts->stub = true;
                 }
             }
 
             if( !cmdOpts->version ) {
                 if( info->version != NULL ) {
-                    add_string( &cmdOpts->version_value, info->version );
-                    cmdOpts->version = 1;
+                    add_string( &cmdOpts->version_value, info->version, '\0' );
+                    cmdOpts->version = true;
                 }
             }
             FreeDefInfo(info);
@@ -483,19 +466,13 @@ static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
                                  char *executable )
 /**************************************************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2     pg;
 
     if( cmdOpts->out ) {
         strcpy( executable, cmdOpts->out_value->data );
     } else {
-        _splitpath( firstObj, drive, dir, fname, NULL );
-        if( !cmdOpts->dll ) {
-            _makepath( executable, drive, dir, fname, ".exe" );
-        } else {
-            _makepath( executable, drive, dir, fname, ".dll" );
-        }
+        _splitpath2( firstObj, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( executable, pg.drive, pg.dir, pg.fname, ( cmdOpts->dll ) ? "dll" : "exe" );
     }
 }
 
@@ -541,7 +518,7 @@ static void linker_opts( struct XlatStatus *status,
         filename = GetNextFile( &fileType, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
         if( cmdOpts->export || cmdOpts->entry ) {
-            add_string( &objs, filename );
+            add_string( &objs, filename, '\0' );
         }
         newstr = PathConvert( filename, '\'' );
         if( firstObj == NULL )  firstObj = newstr;
@@ -562,7 +539,7 @@ static void linker_opts( struct XlatStatus *status,
         filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
         if( cmdOpts->export || cmdOpts->entry ) {
-            add_string( &libs, filename );
+            add_string( &libs, filename, '\0' );
         }
         newstr = PathConvert( filename, '\'' );
         AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "LIBRARY %s", newstr );
@@ -572,7 +549,7 @@ static void linker_opts( struct XlatStatus *status,
     for( ;; ) {
         filename = GetNextFile( &fileType, TYPE_EXP_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
-        status->exp=1;
+        status->exp = true;
         newstr = PathConvert( filename, '\'' );
         AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "@ %s", newstr );
     }

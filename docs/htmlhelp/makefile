@@ -1,4 +1,4 @@
-#pmake: build docs os_nt htmlhelp
+#pmake: build docs os_nt dochtmlhelp
 
 dotarget=htmlhelp
 

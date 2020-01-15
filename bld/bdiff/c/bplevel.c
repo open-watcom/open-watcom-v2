@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,10 @@
 
 
 #include "bdiff.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 static void Usage( const char *name )
 {
@@ -48,6 +53,7 @@ void main( int argc, char **argv )
     static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
+    PGROUP2         pg;
 
     if( argc != 3 )
         Usage( argv[0] );
@@ -63,12 +69,13 @@ void main( int argc, char **argv )
         exit( EXIT_FAILURE );
     }
     pos = ftell( fd );
-    if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ||
-        memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
+    if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL )
+      || memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
         pos += sizeof( PATCH_LEVEL );
     }
     fseek( fd, pos, SEEK_SET );
-    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff + PATCH_LEVEL_HEAD_SIZE );
+    _splitpath2( argv[2], pg.buffer, NULL, NULL, NULL, &pg.ext );
+    strcpy( LevelBuff + PATCH_LEVEL_HEAD_SIZE, pg.ext );
     fwrite( LevelBuff, 1, sizeof( LevelBuff ), fd );
     fclose( fd );
     uinfo.actime = info.st_atime;

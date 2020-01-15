@@ -55,6 +55,7 @@
 #include "genphar.h"
 #include "turbodbg.h"
 #include "deflib.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -107,8 +108,8 @@
 #define SWCHAR          '/'
 #define INCCHAR         '@'
 #define CMTCHAR         '#'
-#define WMP_EXTENSION   ".WMP"
-#define OBJ_EXTENSION   ".OBJ"
+#define WMP_EXTENSION   "WMP"
+#define OBJ_EXTENSION   "OBJ"
 #define WILD_CARDS      "*?"    /* wild cards that may appear in filenames */
 
 /*
@@ -361,11 +362,9 @@ STATIC const char *doToggle( const char *str ) {
 
 STATIC const char *addFile( const char *str ) {
 
-    DIR                 *parent;
-    struct dirent       *direntp;
-    char                sp_buf[ _MAX_PATH2 ];
-    char                *drive;
-    char                *dir;
+    DIR                 *dirp;
+    struct dirent       *dire;
+    PGROUP2             pg;
     char                path[ _MAX_PATH ];
     char                *p;
     size_t              len;
@@ -382,8 +381,8 @@ STATIC const char *addFile( const char *str ) {
         return( str );
     }
     /* process a wildcarded name */
-    parent = opendir( p );
-    if( parent == NULL ) {
+    dirp = opendir( p );
+    if( dirp == NULL ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
     /*
@@ -392,37 +391,34 @@ STATIC const char *addFile( const char *str ) {
         we count the number of files in the directory.
     */
     files_in_dir = 0;
-    for(;;) {           /* count number of directory entries */
-        direntp = readdir( parent );
-        if( direntp == NULL ) break;
+    for( ; (dire = readdir( dirp )) != NULL; ) {    /* count number of directory entries */
         ++files_in_dir;
     }
-    closedir( parent );
+    closedir( dirp );
     if( files_in_dir == 0 ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
     curAct = MemRealloc( curAct, sizeof( act_grp_t ) +
         sizeof( const char * ) * ( curAct->num_files + files_in_dir - 1 ) );
-    parent = opendir( p );
-    if( parent == NULL ) {
+    dirp = opendir( p );
+    if( dirp == NULL ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, p );
     }
-    _splitpath2( p, sp_buf, &drive, &dir, NULL, NULL );
+    _splitpath2( p, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     MemFree( p );               /* no longer need this */
-    for(;;) {
+    for( ; (dire = readdir( dirp )) != NULL; ) {
         /* we ignore any difference between the number of times we can
           loop here, and file_in_dir calc'd above */
-        direntp = readdir( parent );
-        if( direntp == NULL ) break;
-        _makepath( path, drive, dir, direntp->d_name, NULL );
+        _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
         len = strlen( path ) + 1;
-        curAct->files[ curAct->num_files ] =
-                                        memcpy( MemAlloc( len ), path, len );
+        curAct->files[ curAct->num_files ] = memcpy( MemAlloc( len ), path, len );
         ++curAct->num_files;
         --files_in_dir;
-        if( files_in_dir == 0 ) break;
+        if( files_in_dir == 0 ) {
+            break;
+        }
     }
-    closedir( parent );
+    closedir( dirp );
     return( str );
 }
 
@@ -437,18 +433,14 @@ STATIC const char *doComment( const char *str ) {
     The next three functions (openIncludeFile, readIncludeFile, doInclude)
     require stack checking.
 */
-STATIC int openIncludeFile( const char * file_name ) {
-
-    char        buffer[ _MAX_PATH2 ];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
+STATIC int openIncludeFile( const char * file_name )
+{
+    PGROUP2     pg;
     char        path[ _MAX_PATH ];
     int         fh;
 
-    _splitpath2( file_name, buffer, &drive, &dir, &fname, &ext );
-    _makepath( path, drive, dir, fname, ( ext[0] == 0 ) ? WMP_EXTENSION : ext );
+    _splitpath2( file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( path, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? WMP_EXTENSION : pg.ext );
     fh = open( path, O_RDONLY | O_TEXT );
     if( fh == -1 ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, path );
@@ -751,26 +743,19 @@ void ActionFini( cmdline_t *cmd ) {
 void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /***********************************************************/
 
-    char        buffer[ _MAX_PATH2 ];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
+    PGROUP2     pg;
 
 /**/myassert( cmd != NULL );
 /**/myassert( cmd->action != NULL );
 /**/myassert( file_num < cmd->action->num_files );
-    _splitpath2( cmd->action->files[ file_num ], buffer,
-        &drive, &dir, &fname, &ext );
-    _makepath( buf, drive, dir, fname, ( ext[0]==0 ) ? OBJ_EXTENSION : ext );
+    _splitpath2( cmd->action->files[ file_num ], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( buf, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? OBJ_EXTENSION : pg.ext );
 }
 
 void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /************************************************************/
 
-    char        sp_buf[ _MAX_PATH2 ];
-    char        *drive;
-    char        *dir;
+    PGROUP2     pg;
     char        fname[ _MAX_FNAME ];
     const char *output;
 
@@ -779,14 +764,13 @@ void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /**/myassert( cmd->action != NULL );
 /**/myassert( file_num < cmd->action->num_files );
     output = cmd->action->output;
-    _splitpath2( ( output == NULL || output[0] == 0 ) ?
-                cmd->action->files[ file_num ] : output,
-                sp_buf, &drive, &dir, NULL, NULL );
+    _splitpath2( ( output == NULL || output[0] == 0 ) ? cmd->action->files[file_num] : output,
+                pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     fname[0] = '_';
     fname[1] = 'W';
-    for(;;) {
-        StrDec( &fname[2], tempFileNum++ );
-        _makepath( buf, drive, dir, fname, "TMP" );
+    for( ;; ) {
+        StrDec( &pg.fname[2], tempFileNum++ );
+        _makepath( buf, pg.drive, pg.dir, pg.fname, "TMP" );
         if( access( buf, 0 ) == -1 ) {
             break;
         }
@@ -797,14 +781,11 @@ void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
     FIXME: this is an ugly function!
 */
 void ActionRename( cmdline_t *cmd, const char *in, const char *out,
-    uint file_num, int make_lib, size_t page_size ) {
-/***************************************************/
-    char        sp_buf[ _MAX_PATH2 ];
-    char        sp_buf2[ _MAX_PATH2 ];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
+    uint file_num, int make_lib, size_t page_size )
+/*************************************************/
+{
+    PGROUP2     pg1;
+    PGROUP2     pg2;
     char        buf[ _MAX_PATH ];
     const char  *output;
     act_grp_t   *cur;
@@ -818,28 +799,32 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
     output = cur->output;
     if( output == NULL || output[0] == 0 ) {
         /* get the drive and directory of input file */
-        _splitpath2( in, sp_buf, &drive, &dir, NULL, NULL );
-        fname = "";
-        ext = "";
+        _splitpath2( in, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+        pg1.fname = "";
+        pg1.ext = "";
     } else {
         /* split up the output spec */
-        _splitpath2( output, sp_buf, &drive, &dir, &fname, &ext );
+        _splitpath2( output, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
     }
     /* If the output spec was like '/o=.mbj' or '/o=f:\tmp\.mbj' then
        we have to use the filename and/or the extension from the input. */
-    _splitpath2( cur->files[ file_num ], sp_buf2, NULL, NULL,
-        ( fname[0] == 0 ) ? &fname : NULL,      /* get filename from input */
-        ( ext[0] == 0 ) ? &ext : NULL );        /* get extension from input */
-    if( ext[0] == 0 ) {                 /* use default extension if necessary */
-        ext = OBJ_EXTENSION;
+    _splitpath2( cur->files[file_num], pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+
+    if( pg1.fname[0] == '\0' )
+        pg1.fname = pg2.fname;      /* get filename from input */
+    if( pg1.ext[0] == '\0' )
+        pg1.ext = pg2.ext;          /* get extension from input */
+    if( pg1.ext[0] == '\0' ) {      /* use default extension if necessary */
+        pg1.ext = OBJ_EXTENSION;
     }
-    _makepath( buf, drive, dir, fname, ext );
+    _makepath( buf, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
     if( make_lib ) {
         if( cur->batch ) {
-            PrtFmt( "wlib %s /b/n/p=%u +%s\n", buf, page_size, out );
+            PrtFmt( "wlib %s -b-n-p=%u +%s\n", buf, page_size, out );
             PrtFmt( "del %s\n", out );
         } else {
-            char pbuf[ sizeof( size_t ) * 3 ];
+            char pbuf[sizeof( size_t ) * 3];
+
             StrDec( pbuf, page_size );
 #ifdef __WATCOMC__
     #ifdef _M_I86
@@ -847,7 +832,7 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
     #endif
             _nheapshrink();
 #endif
-            rc = (int)spawnlp(P_WAIT,"wlib","wlib",buf,"/b/n/p=",pbuf,"+",out,NULL);
+            rc = (int)spawnlp( P_WAIT, "wlib", "wlib", buf, "/b/n/p=", pbuf, "+", out, NULL );
             if( rc < 0 ) {
                 Fatal( MSG_DISK_ERROR, "spawnlp( , \"wlib\", ... )" );
             } else if( rc > 0 ) {

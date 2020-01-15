@@ -81,9 +81,9 @@ int     main( int argc, char *argv[] ) {
     _argc = argc;
     _argv = argv;
 #else
-    argc = argc;
-    argv = argv;
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
 #if defined( __INCL_ERRMSGS__ )
     __InitError();
     __ErrorInit( NULL );

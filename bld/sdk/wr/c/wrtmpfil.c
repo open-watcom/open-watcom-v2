@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,10 @@
 #include "wio.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -174,17 +179,17 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
 
 bool WRAPI WRRenameFile( const char *new, const char *old )
 {
-    char     new_drive[_MAX_DRIVE];
-    char     old_drive[_MAX_DRIVE];
+    PGROUP2     pg1;    /* old */
+    PGROUP2     pg2;    /* new */
 
     if( new == NULL || old == NULL ) {
         return( false );
     }
 
-    _splitpath( new, new_drive, NULL, NULL, NULL );
-    _splitpath( old, new_drive, NULL, NULL, NULL );
+    _splitpath2( old, pg1.buffer, &pg1.drive, NULL, NULL, NULL );
+    _splitpath2( new, pg2.buffer, &pg2.drive, NULL, NULL, NULL );
 
-    if( stricmp( new_drive, old_drive ) ) {
+    if( stricmp( pg2.drive, pg1.drive ) ) {
         if( WRCopyFile( new, old ) ) {
             return( WRDeleteFile( old ) );
         } else {
@@ -201,32 +206,28 @@ bool WRAPI WRRenameFile( const char *new, const char *old )
 
 bool WRAPI WRBackupFile( const char *name, bool use_rename )
 {
-    char     fn_path[_MAX_PATH];
-    char     fn_drive[_MAX_DRIVE];
-    char     fn_dir[_MAX_DIR];
-    char     fn_name[_MAX_FNAME];
-    char     fn_ext[_MAX_EXT + 1];
-    size_t   len;
-    bool     ret;
+    char        fn_path[_MAX_PATH];
+    char        ext[_MAX_EXT + 1];
+    PGROUP2     pg;
+    size_t      len;
+    bool        ret;
 
     if( name == NULL ) {
         return( false );
     }
 
-    _splitpath( name, fn_drive, fn_dir, fn_name, fn_ext );
-
-    len = strlen( fn_ext );
-
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    strcpy( ext, pg.ext );
+    len = strlen( ext );
     if( len == 4 ) { // this case is special because in NT _MAX_EXT != 5
-        fn_ext[3] = WR_BACKUP_CHAR;
+        ext[3] = WR_BACKUP_CHAR;
     } else if( len == _MAX_EXT - 1 ) {
-        fn_ext[len - 1] = WR_BACKUP_CHAR;
+        ext[len - 1] = WR_BACKUP_CHAR;
     } else {
-        fn_ext[len] = WR_BACKUP_CHAR;
-        fn_ext[len + 1] = '\0';
+        ext[len] = WR_BACKUP_CHAR;
+        ext[len + 1] = '\0';
     }
-
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, fn_ext );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, ext );
 
     if( use_rename ) {
         ret = WRRenameFile( fn_path, name );
@@ -253,10 +254,8 @@ char * WRAPI WRGetTempFileName( const char *ext )
     const char  *dir;
     size_t      len;
     char        fn_path[_MAX_PATH + 1];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
-    char        fn_ext[_MAX_EXT];
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 
     if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
         (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {
@@ -275,21 +274,19 @@ char * WRAPI WRGetTempFileName( const char *ext )
     }
 
     if( dir != NULL ) {
-        _splitpath( fn_path, fn_drive, fn_dir, NULL, NULL );
+        _splitpath2( fn_path, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
     } else {
-        fn_drive[0] = '\0';
-        fn_dir[0] = '\0';
+        pg1.drive = "";
+        pg1.dir = "";
     }
 
     tmpnam( tname );
 
-    _splitpath( tname, NULL, NULL, fn_name, fn_ext );
-
+    _splitpath2( tname, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
     if( ext == NULL ) {
-        ext = fn_ext;
+        ext = pg2.ext;
     }
-
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, ext );
+    _makepath( fn_path, pg1.drive, pg1.dir, pg2.fname, ext );
 
     len = strlen( fn_path ) + 1;
 

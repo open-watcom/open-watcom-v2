@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-
 #include "ovlstd.h"
 
-extern tiny_ret_t __near __OvlOpen__( const char __far *fname )
-/*************************************************************/
+
+tiny_ret_t __near __OvlOpen__( const char __far *fname )
+/******************************************************/
 {
     open_attr   openmode;
 
@@ -44,20 +45,20 @@ extern tiny_ret_t __near __OvlOpen__( const char __far *fname )
     return( TinyFarOpen( fname, __OVLSHARE__ | openmode ) );
 }
 
-extern tiny_ret_t __near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
-/************************************************************************/
+tiny_ret_t __near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
+/*******************************************************************/
 {
     return( TinySeek( hdl, pos, TIO_SEEK_START ) );
 }
 
-extern tiny_ret_t __near __OvlRead__(tiny_handle_t hdl, void __far *buff, unsigned len)
-/*********************************************************************************/
+tiny_ret_t __near __OvlRead__( tiny_handle_t hdl, void __far *buff, unsigned len )
+/********************************************************************************/
 {
     return( TinyFarRead( hdl, buff, len ) );
 }
 
-extern void __near __OvlClose__( tiny_handle_t hdl )
-/************************************************/
+void __near __OvlClose__( tiny_handle_t hdl )
+/*******************************************/
 {
     TinyClose( hdl );
 }

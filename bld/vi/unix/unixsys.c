@@ -40,6 +40,8 @@ extern int  PageCnt;
 
 int FileSysNeedsCR( int handle )
 {
+    /* unused parameters */ (void)handle;
+
     return( false );
 }
 
@@ -48,6 +50,8 @@ int FileSysNeedsCR( int handle )
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
+    /* unused parameters */ (void)wid; (void)ct;
+
     // could do a curs_set() here
 
 } /* NewCursor */

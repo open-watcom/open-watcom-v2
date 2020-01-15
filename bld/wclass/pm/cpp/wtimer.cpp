@@ -57,7 +57,8 @@ void APIENTRY timerThread( WTimer *t ) {
     QMSG        qmsg;
 
     t->_anchorBlock = WinInitialize( 0 );
-    if( t->_anchorBlock == 0 ) return;
+    if( t->_anchorBlock == 0 )
+        return;
     t->_msgQueue = WinCreateMsgQueue( t->_anchorBlock, 0 );
     if( t->_msgQueue == 0 ) {
         WinTerminate( t->_anchorBlock );

@@ -485,7 +485,7 @@ inserted.
 :MSGSYM. ERR_DIV_BY_ZERO
 :MSGTXT. Divisor for modulo or division operation is zero
 :MSGJTXT. Divisor for modulo or division operation is zero
-:WARNING. 2
+:WARNING. 1
 .np
 The right operand of a division or modulo operation is zero. The result
 of this operation is undefined and you should rewrite the offending code
@@ -496,6 +496,15 @@ int foo( void )
     return( 7 / 0 );
 }
 :eerrbad.
+:MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
+:MSGTXT. Definition of macro '%s' not identical to previous definition
+:MSGJTXT. マクロ'%s'の定義が前の定義と一致しません
+:WARNING. 1
+.np
+If a macro is defined more than once, the definitions must be identical.
+If you want to redefine a macro to have a different definition, you must
+.id #undef
+it before you can define it with a new definition.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2
@@ -563,7 +572,7 @@ for the previous comment.
 :MSGSYM. ERR_UNUSED_2
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
-:WARNING. 2
+:WARNING. 3
 unused message
 :MSGSYM. ERR_USEFUL_SIDE_EFFECT
 :MSGTXT. Expression is only useful for its side effects
@@ -634,7 +643,7 @@ Their use is dangerous and discouraged.
 int func();
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED
-:MSGTXT. Unprototyped function '%s' called
+:MSGTXT. The function '%s' without prototyped parameters called
 :MSGJTXT. 非プロトタイプの関数'%s'が呼ばれました
 :WARNING. 3
 .np
@@ -650,7 +659,7 @@ void bar( void )
 }
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED_INDIRECT
-:MSGTXT. Unprototyped function indirectly called
+:MSGTXT. The function without prototyped parameters indirectly called
 :MSGJTXT. 非プロトタイプの関数が間接的に呼ばれました
 :WARNING. 3
 .np
@@ -668,7 +677,7 @@ void bar( void )
 :MSGSYM. ERR_CAST_POINTER_TRUNCATION
 :MSGTXT. Pointer truncated during cast
 :MSGJTXT. ポインタは切り詰められました
-:WARNING. 1
+:WARNING. 3
 .np
 A far pointer is being cast to a near pointer, losing segment information
 in the process.
@@ -688,7 +697,7 @@ char __near *foo( char __far *fs )
 :MSGSYM. ERR_PLAIN_CHAR_SUBSCRIPT
 :MSGTXT. Array subscript is of type plain char
 :MSGJTXT. jNeedTranslation
-:WARNING. 3
+:WARNING. 4
 .np
 Array subscript expression is of plain char type. Such expression may be
 interpreted as either signed or unsigned, depending on compiler settings.
@@ -1521,14 +1530,10 @@ The compiler has detected a statement such as
 etc., which must be inside a function.
 You either have too many closing braces "}" or you are missing an
 opening brace "{" earlier in the function.
-:MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
-:MSGTXT. Definition of macro '%s' not identical to previous definition
-:MSGJTXT. マクロ'%s'の定義が前の定義と一致しません
-.np
-If a macro is defined more than once, the definitions must be identical.
-If you want to redefine a macro to have a different definition, you must
-.id #undef
-it before you can define it with a new definition.
+:MSGSYM. ERR_UNUSED_3
+:MSGTXT. not used
+:MSGJTXT. このメッセージは使用されません
+unused message
 :MSGSYM. ERR_CANT_UNDEF_THESE_NAMES
 :MSGTXT. Cannot #undef '%s'
 :MSGJTXT. '%s'は#undefできません
@@ -1777,7 +1782,7 @@ An error was encountered trying to read information from the work file.
 :MSGJTXT. ワーク・ファイルのシーク・エラー：エラーコード = %d
 .np
 An error was encountered trying to seek to a position in the work file.
-:MSGSYM. ERR_UNUSED_3
+:MSGSYM. ERR_UNUSED_4
 :MSGTXT. not used
 :MSGJTXT. このメッセージは使用されません
 unused message
@@ -2168,6 +2173,23 @@ void foo( int a )
     int j = 3;
 }
 .eerrbad
+:MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
+:MSGTXT. message number '%d' is invalid
+:MSGJTXT. メッセージ番号'%d'は不適切です
+The message number used in the #pragma does not match the message number
+for any warning message.  This message can also indicate that a number
+or '*' (meaning all warnings) was not found when it was expected.
+.
+:MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
+:MSGTXT. warning level must be an integer in range 0 to 5
+:MSGJTXT. 警告レベルは，0～5の範囲の整数でなければなりません
+The new warning level that can be used for the warning can be in the range
+0 to 5.  The level 0 means that the warning will be treated as an error
+(compilation will not succeed).  Levels 1 up to 5 are used to classify
+warnings.  The -w option sets an upper limit on the level for warnings.
+By setting the level above the command line limit, you effectively
+ignore all cases where the warning shows up.
+.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info

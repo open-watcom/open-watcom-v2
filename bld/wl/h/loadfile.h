@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,8 @@ typedef struct {
     mod_entry           *mod;
     targ_addr           addr;
     start_type          type;
-    bool                user_specd  : 1;
-    bool                from_inc    : 1;
+    boolbit             user_specd  : 1;
+    boolbit             from_inc    : 1;
 } startinfo;
 
 extern seg_leader       *StackSegPtr;
@@ -64,7 +65,7 @@ extern bool             CompareDosSegments( targ_addr *, targ_addr * );
 extern bool             CompareOffsets( targ_addr *, targ_addr * );
 extern bool             CompareProtSegments( targ_addr *, targ_addr * );
 extern void             OrderGroups( bool (*)(targ_addr *, targ_addr *) );
-extern bool             WriteDOSGroup( group_entry * );
+extern bool             WriteGroup( group_entry * );
 extern unsigned_32      MemorySize( void );
 extern unsigned_32      AppendToLoadFile( const char * );
 extern void             AddImpLibEntry( const char *, const char *, ordinal_t ordinal );
@@ -90,8 +91,7 @@ extern void             SeekLoad( unsigned long );
 extern void             SeekEndLoad( unsigned long );
 extern unsigned long    PosLoad( void );
 extern void             WriteLeaderLoad( void * );
-extern offset           WriteGroupLoad( group_entry * );
-extern offset           WriteDOSGroupLoad( group_entry *, bool );
+extern offset           WriteGroupLoad( group_entry *, bool );
 extern unsigned_32      CopyToLoad( f_handle, const char * );
 extern unsigned long    NullAlign( unsigned );
 extern unsigned long    OffsetAlign( unsigned long, unsigned long );

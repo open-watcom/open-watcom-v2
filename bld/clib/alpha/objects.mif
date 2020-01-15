@@ -1,10 +1,11 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
-#==========================================================================================
-!inject align.obj                           nta
-!inject divdat.obj                          nta
-!inject fpcraxp.obj                         nta
-!inject fclexaxp.obj                        nta
-!inject otsdiv.obj                          nta
-!inject pdreg.obj                           nta
+#                    d16 d32 dpm nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
+#===================================================================================
+!inject align.obj                   nta
+!inject divdat.obj                  nta
+#!inject floatu8.obj                 nta
+!inject fpcraxp.obj                 nta
+!inject fclexaxp.obj                nta
+!inject otsdiv.obj                  nta
+!inject pdreg.obj                   nta
 
 !include ../../../../objlist.mif

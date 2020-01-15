@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
     _curbrk = _dynend = (unsigned)&end;
     stklow = NULL;
 #else
-    _STACKTOP = FP_OFF( stktop );
+    _STACKTOP = _FP_OFF( stktop );
     _curbrk = _dynend = _STACKTOP;
 #endif
     DosGetHugeShift( (PUSHORT)&shftval );
@@ -147,7 +147,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
         char    __far *src;
         char    __far *pgmp;
 
-        src = MK_FP( envseg, cmdoff );
+        src = _MK_FP( envseg, cmdoff );
         _LpPgmName = stklow;
         /* back up from the ao: pointer to the eo: pointer (see OS/2 2.0 docs)*/
         for( pgmp = src - 1; *--pgmp != '\0'; )
@@ -171,7 +171,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
         SEL             localseg;
 
         DosGetInfoSeg( &globalseg, &localseg );
-        _threadid = MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
+        _threadid = _MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
         if( __InitThreadProcessing() == NULL ) {
             __fatal_runtime_error( "Not enough memory", 1 );
             // never return
@@ -200,7 +200,7 @@ int _OS2Main( char __far *stklow, char __far *stktop,
 //      // this needs to be done before the InitRtns
 //      extern  void    __grow_iomode(int);
 
-//      if( _RWD_osmode == OS2_MODE ) {
+//      if( _osmode_PROTMODE() ) {
 //          __grow_iomode( 100 );
 //      }
 //  }
@@ -220,8 +220,8 @@ int _OS2Main( char __far *stklow, char __far *stktop,
 }
 
 
-_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
-/****************************************************/
+_WCRTLINK _WCNORETURN void __exit( int ret_code )
+/***********************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD

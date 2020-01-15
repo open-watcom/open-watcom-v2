@@ -5,6 +5,8 @@ name = wbrw
 browse_autodepends = .AUTODEPEND
 !endif
 
+browse_trmem = 1
+
 doc_path_dos = $(docs_dir)/dos
 doc_path_nt  = $(docs_dir)/nt
 doc_path_os2 = $(docs_dir)/os2
@@ -24,6 +26,7 @@ sys_windowed = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(dwarfr_dir)/client.mif
 !include $(wclass_dir)/client.mif
@@ -33,21 +36,17 @@ sys_windowed = 1
 
 !include ../template.mif
 
-.c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c
+.c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c;$(trmem_dir)
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
 .rc: ../res
 
 ext = obj
-objs = $+$(template)$-
+objs = $+$(template)$- rxwrap.obj
 
+objs += brmem.obj $(trmem_objs)
 !ifeq release 0
 objs += debuglog.obj
-!endif
-!ifeq browse_trmem 1
-objs += dbrmem.obj trmem.obj
-!else
-objs += brmem.obj
 !endif
 
 !ifdef gen_browse_file
@@ -62,12 +61,20 @@ doc_inc_dirs_win    = -I"$(doc_path_win)"
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os)) $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
-extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
+extra_cpp_flags = -DNOPERSIST=1
 !ifeq release 0
 extra_cpp_flags += -DDEBUG=1 -DDEBUG_ASSERT=1 -DDEBUGTREE=1
 !endif
 !ifeq use_virtmem 1
 extra_cpp_flags += -DUSE_VIRTMEM
+!endif
+
+extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
+extra_cpp_flags_brmem  = $(trmem_cpp_flags)
+
+extra_cxx_flags = -ew -xs
+!ifdef gen_browse_file
+extra_cxx_flags += -db
 !endif
 
 extra_c_flags_i86 = -zc -zm
@@ -77,20 +84,10 @@ extra_c_flags_i86 += -zw
 extra_c_flags_i86 += -zW
 !endif
 
-extra_cxx_flags = -ew -xs
-!ifdef gen_browse_file
-extra_cxx_flags += -db
-!endif
-
-extra_c_flags_trmem = -I"$(trmem_dir)"
-extra_c_flags_regexp = -I"$(posix_dir)/h" -DALLOC=WBRAlloc -fi="../h/brmem.h"
+extra_c_flags_rxwrap = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
 extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
-!ifneq host_os axp
-brmem_flags = -of+
-!endif
-!ifeq browse_trmem 1
-extra_c_flags_dbrmem = $(brmem_flags) -I"$(trmem_dir)"
-!endif
+extra_c_flags_brmem = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 
 #linker
 libs_dos = $(ui_lib)
@@ -131,9 +128,7 @@ $(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cp
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-
-dbrmem.obj : brmem.cpp
+    $(cxx) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 !ifdef wbrw_h_$(host_os)
 curr_dir=$+$(%__CWD__)$-
@@ -142,11 +137,7 @@ $(doc_path_$(host_os)) : .SYMBOLIC
     $(noecho)cd $@
 
 $(wbrw_h_$(host_os)): $(doc_path_$(host_os)) .ALWAYS
-!ifeq verbose 0
     $(noecho)!wmake -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
-!else
-    $(noecho)!wmake -h -sn -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
-!endif
     $(noecho)cd $(curr_dir)
 !endif
 

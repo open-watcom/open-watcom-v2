@@ -168,41 +168,6 @@ static char *addPath( char *old_list, const char *path_list )
     return( new_list );
 }
 
-static FILE *findFileOpenRead( char *fullname, char *name, char *path_list )
-/**************************************************************************/
-{
-    char        *p;
-    char        c;
-    FILE                *fp;
-
-    fp = fopen( name, "rb" );
-    if( fp != NULL ) {
-        strcpy( fullname, name );
-        return( fp );
-    }
-    if( path_list != NULL ) {
-        while( (c = *path_list) != '\0' ) {
-            p = fullname;
-            do {
-                ++path_list;
-                if( IS_PATH_LIST_SEP( c ) )
-                    break;
-                *p = c;
-            } while( (c = *path_list) != '\0' );
-            c = p[-1];
-            if( !IS_PATH_SEP( c ) ) {
-                *p++ = DIR_SEP;
-            }
-            strcat( p, name );
-            fp = fopen( fullname, "rb" );
-            if( fp != NULL ) {
-                return( fp );
-            }
-        }
-    }
-    return( NULL );
-}
-
 void PathInit( void )
 /*******************/
 {
@@ -236,19 +201,51 @@ void PathFini( void )
 FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 /************************************************************************************************************/
 {
-    char        realname[_MAX_PATH2];
-    char        *filename;
+    char        fullname[_MAX_PATH2];
+    char        filename[_MAX_PATH2];
     FILE        *fp;
+    char        *p;
+    char        c;
 
-    /* unused parameters */ (void)max_result;
-
-    memcpy( realname, name, name_len );
-    realname[name_len] = '\0';
+    memcpy( filename, name, name_len );
+    filename[name_len] = '\0';
     if( ext != NULL && *ext != '\0' ) {
-        _splitpath2( realname, result, NULL, NULL, &filename, NULL );
-        _makepath( realname, NULL, NULL, filename, ext );
+        _splitpath2( filename, fullname, NULL, NULL, &p, NULL );
+        _makepath( filename, NULL, NULL, p, ext );
     }
-    return( findFileOpenRead( result, realname, FilePathList ) );
+    strcpy( fullname, filename );
+    fp = fopen( fullname, "rb" );
+    if( fp == NULL ) {
+        if( path_list != NULL ) {
+            while( (c = *path_list) != '\0' ) {
+                p = fullname;
+                do {
+                    ++path_list;
+                    if( IS_PATH_LIST_SEP( c ) )
+                        break;
+                    *p = c;
+                } while( (c = *path_list) != '\0' );
+                c = p[-1];
+                if( !IS_PATH_SEP( c ) ) {
+                    *p++ = DIR_SEP;
+                }
+                strcat( p, filename );
+                fp = fopen( fullname, "rb" );
+                if( fp != NULL ) {
+                    break;
+                }
+            }
+        }
+    }
+    if( result != NULL && max_result > 0 ) {
+        max_result--;
+        result[0] = '\0';
+        if( fp != NULL ) {
+            strncpy( result, fullname, max_result );
+            result[max_result] = '\0';
+        }
+    }
+    return( fp );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,38 +63,38 @@ typedef struct {
 } RetCodeInfo;
 
 msglist ThreadWaitMsgs[] = {
-    0,      (char *)(pointer_int)STR_WAIT_4_EXECUTIVE,
-    1,      (char *)(pointer_int)STR_WAIT_4_FREE_PAGE,
-    2,      (char *)(pointer_int)STR_WAIT_4_PAGE_IN,
-    3,      (char *)(pointer_int)STR_WAIT_4_POOL_ALLOC,
-    4,      (char *)(pointer_int)STR_WAIT_4_EXEC_DELAY,
-    5,      (char *)(pointer_int)STR_WAIT_4_SUSP_COND,
-    6,      (char *)(pointer_int)STR_WAIT_4_USER_REQUEST,
-    7,      (char *)(pointer_int)STR_WAIT_4_EXECUTIVE,
-    8,      (char *)(pointer_int)STR_WAIT_4_FREE_PAGE,
-    9,      (char *)(pointer_int)STR_WAIT_4_PAGE_IN,
-    10,     (char *)(pointer_int)STR_WAIT_4_POOL_ALLOC,
-    11,     (char *)(pointer_int)STR_WAIT_4_EXEC_DELAY,
-    12,     (char *)(pointer_int)STR_WAIT_4_SUSP_COND,
-    13,     (char *)(pointer_int)STR_WAIT_4_USER_REQUEST,
-    14,     (char *)(pointer_int)STR_WAIT_4_EVENT_PR_HIGH,
-    15,     (char *)(pointer_int)STR_WAIT_4_EVENT_PR_LOW,
-    16,     (char *)(pointer_int)STR_WAIT_4_LPC_RECIEVE,
-    17,     (char *)(pointer_int)STR_WAIT_4_LPC_REPLY,
-    18,     (char *)(pointer_int)STR_WAIT_4_VIRTUAL_MEMORY,
-    19,     (char *)(pointer_int)STR_WAIT_4_PAGE_OUT,
+    0,      (char *)(pointer_uint)STR_WAIT_4_EXECUTIVE,
+    1,      (char *)(pointer_uint)STR_WAIT_4_FREE_PAGE,
+    2,      (char *)(pointer_uint)STR_WAIT_4_PAGE_IN,
+    3,      (char *)(pointer_uint)STR_WAIT_4_POOL_ALLOC,
+    4,      (char *)(pointer_uint)STR_WAIT_4_EXEC_DELAY,
+    5,      (char *)(pointer_uint)STR_WAIT_4_SUSP_COND,
+    6,      (char *)(pointer_uint)STR_WAIT_4_USER_REQUEST,
+    7,      (char *)(pointer_uint)STR_WAIT_4_EXECUTIVE,
+    8,      (char *)(pointer_uint)STR_WAIT_4_FREE_PAGE,
+    9,      (char *)(pointer_uint)STR_WAIT_4_PAGE_IN,
+    10,     (char *)(pointer_uint)STR_WAIT_4_POOL_ALLOC,
+    11,     (char *)(pointer_uint)STR_WAIT_4_EXEC_DELAY,
+    12,     (char *)(pointer_uint)STR_WAIT_4_SUSP_COND,
+    13,     (char *)(pointer_uint)STR_WAIT_4_USER_REQUEST,
+    14,     (char *)(pointer_uint)STR_WAIT_4_EVENT_PR_HIGH,
+    15,     (char *)(pointer_uint)STR_WAIT_4_EVENT_PR_LOW,
+    16,     (char *)(pointer_uint)STR_WAIT_4_LPC_RECIEVE,
+    17,     (char *)(pointer_uint)STR_WAIT_4_LPC_REPLY,
+    18,     (char *)(pointer_uint)STR_WAIT_4_VIRTUAL_MEMORY,
+    19,     (char *)(pointer_uint)STR_WAIT_4_PAGE_OUT,
     0,      NULL
 };
 
 msglist ThreadStateMsgs[] = {
-    0,      (char *)(pointer_int)STR_INITIALIZED,
-    1,      (char *)(pointer_int)STR_READY,
-    2,      (char *)(pointer_int)STR_RUNNING,
-    3,      (char *)(pointer_int)STR_STANDING_BY,
-    4,      (char *)(pointer_int)STR_TERMINATED,
-    5,      (char *)(pointer_int)STR_WAITING,
-    6,      (char *)(pointer_int)STR_TRANSITION,
-    7,      (char *)(pointer_int)STR_UNKNOWN,
+    0,      (char *)(pointer_uint)STR_INITIALIZED,
+    1,      (char *)(pointer_uint)STR_READY,
+    2,      (char *)(pointer_uint)STR_RUNNING,
+    3,      (char *)(pointer_uint)STR_STANDING_BY,
+    4,      (char *)(pointer_uint)STR_TERMINATED,
+    5,      (char *)(pointer_uint)STR_WAITING,
+    6,      (char *)(pointer_uint)STR_TRANSITION,
+    7,      (char *)(pointer_uint)STR_UNKNOWN,
     0,      NULL
 };
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,6 +56,7 @@
 #include "cmdlnprs.gh"
 #include "cmdlnprs.h"
 #include "cmdlnsys.h"
+#include "compinfo.h"
 
 #include "clibext.h"
 
@@ -1062,13 +1064,13 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->wcd ) {
         OPT_NUMBER *n;
         for( n = data->wcd_value; n != NULL; n = n->next ) {
-            WarnChangeLevel( WLEVEL_DISABLE, n->number );
+            WarnEnableDisable( false, n->number );
         }
     }
     if( data->wce ) {
         OPT_NUMBER *n;
         for( n = data->wce_value; n != NULL; n = n->next ) {
-            WarnChangeLevel( WLEVEL_ENABLE, n->number );
+            WarnEnableDisable( true, n->number );
         }
     }
     if( data->we ) {

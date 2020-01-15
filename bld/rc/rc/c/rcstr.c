@@ -361,8 +361,8 @@ int CompareStringItems32( const StringItem32 *item1,
     }
 }
 
-extern int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
-/******************************************************************/
+int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
+/***********************************************************/
 /* if the return code is -1 the name was not found, otherwise it is the */
 /* number of bytes into the StringBlock at which to find the name. */
 {

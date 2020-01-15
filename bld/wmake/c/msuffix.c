@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +40,12 @@
 #include "mtarget.h"
 #include "mvecstr.h"
 #include "msuffix.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
 #define HASH_PRIME      13
-#define CASESENSITIVE   false       // Is suffix name case insensitive
 
 STATIC HASHTAB          *sufTab;
 STATIC UINT16           nextId;
@@ -149,7 +149,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
     FixName( sufname );
 
-    return( (SUFFIX *)FindHashNode( sufTab, sufname, CASESENSITIVE ) );
+    return( (SUFFIX *)FindHashNode( sufTab, sufname, NOCASESENSITIVE ) );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
@@ -491,28 +491,23 @@ void PrintSuffixes( void )
 }
 
 
-STATIC RET_T chkOneName( char *buffer, TARGET **chktarg )
-/*******************************************************/
+STATIC bool chkOneName( const char *buffer, TARGET **chktarg )
+/************************************************************/
 {
     TARGET  *tmp;
-
-    FixName( buffer );
 
     if( chktarg != NULL ) {
         tmp = FindTarget( buffer );
         if( tmp != NULL ) {
             *chktarg = tmp;
-            return( RET_SUCCESS );
+            return( true );
         }
     }
-    if( CacheExists( buffer ) ) {
-        return( RET_SUCCESS );
-    }
-    return( RET_ERROR );
+    return( CacheExists( buffer ) );
 }
 
 
-STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
+STATIC bool findInPathRing( PATHRING *pathring, char *buffer,
     const char *dir, const char *fname, const char *ext, TARGET **chktarg )
 /**************************************************************************
  * walk a path ring, and attempt to find fname.ext using different paths
@@ -523,7 +518,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
 
     assert( pathring != NULL );
     if( *pathring == NULL ) {
-        return( RET_ERROR );
+        return( false );
     }
     if( dir[0] == NULLCHAR ) {
         dir = NULL;
@@ -532,21 +527,22 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
     pathnode = *pathring;
     do {
         _makepath( buffer, NULL, pathnode->name, fake_name, NULL );
-        if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
+        FixName( buffer );
+        if( chkOneName( buffer, chktarg ) ) {
             if( Glob.optimize ) {       /* nail down pathring here */
                 *pathring = pathnode;
             }
-            return( RET_SUCCESS );
+            return( true );
         }
         pathnode = pathnode->next;
     } while( pathnode != *pathring );
 
-    return( RET_ERROR );
+    return( false );
 }
 
 
-RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv )
-/************************************************************************************
+bool TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv )
+/***********************************************************************************
  * it is NOT necessary that filename != buffer
  * the contents of buffer may be destroyed even if RET_ERROR is returned
  * first checks current directory, then any in suffix path
@@ -554,11 +550,11 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
  * then buffer, and filename do not overlap
  */
 {
-    PGROUP      pg;
+    PGROUP2     pg;
     SUFFIX      *suffix;
     char        *env;
     PATHRING    envpathring;
-    RET_T       ret;
+    bool        ok;
 
     if( chktarg != NULL ) { /* always NULL the chktarg before working */
         *chktarg = NULL;
@@ -567,9 +563,11 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
     /* check if filename given exists */
     if( filename != buffer ) {
         strcpy( buffer, filename );
+        FixName( buffer );
     }
-    if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
-        return( RET_SUCCESS );
+
+    if( chkOneName( buffer, chktarg ) ) {
+        return( true );
     }
 
     /* split up filename */
@@ -577,13 +575,12 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
 
     if( pg.drive[0] != NULLCHAR || cisdirc( pg.dir[0] ) ) {
         /* is an absolute path name */
-        return( RET_ERROR );
+        return( false );
     }
 
     suffix = FindSuffix( pg.ext );
 
-    ret = RET_ERROR;
-
+    ok = false;
     if( suffix == NULL || suffix->currpath == NULL ) {
         if( tryenv ) {
             /* no suffix info - use %PATH */
@@ -592,19 +589,23 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
                 envpathring = NULL;
                 addPathToPathRing( &envpathring, env );
 
+#ifdef USE_DIR_CACHE
                 /* never cache %path */
                 Glob.cachedir = false;
-                ret = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+#endif
+                ok = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+#ifdef USE_DIR_CACHE
                 Glob.cachedir = true;
+#endif
 
                 freePathRing( envpathring );
             }
         }
     } else {
-        ret = findInPathRing( &suffix->currpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+        ok = findInPathRing( &suffix->currpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
     }
 
-    return( ret );
+    return( ok );
 }
 
 

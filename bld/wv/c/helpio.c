@@ -34,6 +34,8 @@
 #include "dbgio.h"
 #include "dbgerr.h"
 #include "helpio.h"
+#include "posixfp.h"
+
 
 static const seek_method    stream_seek_method[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
@@ -42,35 +44,35 @@ HELPIO long int HelpFileLen( FILE *fp )
     unsigned long   old;
     long            len;
 
-    old = SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR );
-    len = SeekStream( FP2FH( fp ), 0, DIO_SEEK_END );
-    SeekStream( FP2FH( fp ), old, DIO_SEEK_ORG );
+    old = SeekStream( FP2POSIX( fp ), 0, DIO_SEEK_CUR );
+    len = SeekStream( FP2POSIX( fp ), 0, DIO_SEEK_END );
+    SeekStream( FP2POSIX( fp ), old, DIO_SEEK_ORG );
     return( len );
 }
 
 HELPIO size_t HelpRead( FILE *fp, void *buf, size_t len )
 {
-    return( ReadStream( FP2FH( fp ), buf, len ) );
+    return( ReadStream( FP2POSIX( fp ), buf, len ) );
 }
 
 HELPIO long int HelpSeek( FILE *fp, long int offset, HelpSeekType where ) {
 
-    return( SeekStream( FP2FH( fp ), offset, stream_seek_method[where] ) );
+    return( SeekStream( FP2POSIX( fp ), offset, stream_seek_method[where] ) );
 }
 
 HELPIO long int HelpTell( FILE *fp )
 {
-    return( SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR ) );
+    return( SeekStream( FP2POSIX( fp ), 0, DIO_SEEK_CUR ) );
 }
 
 HELPIO FILE *HelpOpen( const char *path )
 {
-    return( FH2FP( FileOpen( path, OP_READ ) ) );
+    return( POSIX2FP( FileOpen( path, OP_READ ) ) );
 }
 
 HELPIO int HelpClose( FILE *fp )
 {
-    FileClose( FP2FH( fp ) );
+    FileClose( FP2POSIX( fp ) );
     return( 0 );
 }
 

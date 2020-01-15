@@ -468,7 +468,7 @@ static bool LoadPmdHeader( char *name )
     return( true );
 }
 
-static void ReadSegData()
+static void ReadSegData( void )
 {
     int                 i;
     seg_data            *ptr;
@@ -746,6 +746,8 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
     char                *name;
+    const char          *p;
+    size_t              max_len;
 
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
@@ -866,6 +868,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     return( ver );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
 }

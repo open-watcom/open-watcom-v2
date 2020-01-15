@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "watcom.h"
 
 typedef struct _IntlData {
-    int                 errors_count;
+    unsigned            errors_count;
     char                **errors_text;
     char                *usage_text;
 } IntlData;

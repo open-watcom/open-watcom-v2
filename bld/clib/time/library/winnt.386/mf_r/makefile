@@ -4,6 +4,7 @@ model=mf
 system=winnt
 convention=register
 linkage=dynamic
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
 !include ../../../deps.mif

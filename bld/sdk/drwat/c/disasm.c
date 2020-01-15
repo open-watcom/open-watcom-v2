@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +113,7 @@ static char * ConvertAddress( ADDRESS *addr, char *buff, int blen, int neartest 
         for( i = 0; i < MinAddrSpaces - len; i++ ) {
             buff[len + i] = ' ';
         }
-        buff[len + i] = 0;
+        buff[len + i] = '\0';
         len += i;
     }
     return( buff+len );
@@ -179,7 +180,7 @@ static char *DrWatToBrStr( DWORD value, DWORD  off )
     disasmBuf[0] = '[';
     len = LongToHex( &disasmBuf[1], value, 4 );
     disasmBuf[len + 1] = ']';
-    disasmBuf[len + 2] = 0;
+    disasmBuf[len + 2] = '\0';
     return( disasmBuf );
 
 } /* DrWatToBrString */
@@ -296,37 +297,37 @@ static bool IsSeg32( WORD seg )
     return( true );
 }
 
-static BOOL FindSymbol( ADDRESS *addr, syminfo *si )
+static bool FindSymbol( ADDRESS *addr, syminfo *si )
 {
     DWORD       symoff;
 
     si->segnum = -1;
-    si->name[0] = 0;
+    si->name[0] = '\0';
     if( !StatShowSymbols || curModule == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( !GetSymbolName( curModule, addr->offset, si->name, &symoff ) ) {
-        return( FALSE );
+        return( false );
     }
     si->symoff = symoff;
-    return( TRUE );
+    return( true );
 }
 
-RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
+bool FindWatSymbol( ADDRESS *addr, syminfo *si, bool getsrcinfo )
 {
     DWORD       symoff;
     DWORD       line;
 
     if( !GetSymbolName( curModule, addr->offset, si->name, &symoff ) ) {
-        return( NOT_FOUND );
+        return( false );
     }
     si->symoff = symoff;
     if( getsrcinfo ) {
         if( !GetLineNum( curModule, addr->offset, si->filename, MAX_FILE_NAME, &line ) )
-            return( NOT_FOUND );
+            return( false );
         si->linenum = line;
     }
-    return( FOUND );
+    return( true );
 }
 #else
 
@@ -552,7 +553,7 @@ static void doFormatIns( char *buff, instruction *ins )
 {
     unsigned    format;
 
-    buff[0] = 0;
+    buff[0] = '\0';
     format = 0;
     format |= FORM_REG_UPPER | FORM_NAME_UPPER;
     format |= FORM_INDEX_IN;

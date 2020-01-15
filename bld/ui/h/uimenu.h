@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,18 +76,18 @@ typedef struct vbarmenu {
     UIMENUITEM      *titles;            /* titles for pull down menus        */
     ui_event        event;              /* current menu item event           */
     int             currmenu;           /* current menu index (base 0)       */
-    bool            inlist       :1;    /* selection will lead to the event  */
-    bool            active       :1;    /* the user is browsing the menus    */
-    bool            draginmenu   :1;    /* drag operation began in menus     */
-    bool            indicators   :1;    /* keyboard indicators               */
-    bool            scroll       :1;    /* scroll indicator                  */
-    bool            caps         :1;    /* caps indicator                    */
-    bool            num          :1;    /* num indicator                     */
-    bool            altpressed   :1;    /* alt key has been pressed not rel  */
-    bool            movedmenu    :1;    /* have dragged to diff item or menu */
-    bool            ignorealt    :1;    /* ignore 1 alt press                */
-    bool            popuppending :1;    /* need to open popup                */
-    bool            disabled     :1;    /* menu has been disabled            */
+    boolbit         inlist       :1;    /* selection will lead to the event  */
+    boolbit         active       :1;    /* the user is browsing the menus    */
+    boolbit         draginmenu   :1;    /* drag operation began in menus     */
+    boolbit         indicators   :1;    /* keyboard indicators               */
+    boolbit         scroll       :1;    /* scroll indicator                  */
+    boolbit         caps         :1;    /* caps indicator                    */
+    boolbit         num          :1;    /* num indicator                     */
+    boolbit         altpressed   :1;    /* alt key has been pressed not rel  */
+    boolbit         movedmenu    :1;    /* have dragged to diff item or menu */
+    boolbit         ignorealt    :1;    /* ignore 1 alt press                */
+    boolbit         popuppending :1;    /* need to open popup                */
+    boolbit         disabled     :1;    /* menu has been disabled            */
 } VBARMENU;
 
 #ifdef __cplusplus

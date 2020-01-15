@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,12 +69,12 @@ static unsigned reserveDepth;
 static unsigned internalErrCount;
 static unsigned suppressCount;
 
-static FILE *err_file;              // ERROR FILE
-static TOKEN_LOCN err_locn;         // error location
-static TOKEN_LOCN notes_locn;       // notes location
-static unsigned char* orig_err_levs;// original error levels
-static bool errLimitExceeded;       // have exceeded error limit
-static IntlData *internationalData; // translated messages
+static FILE *err_file;                  // ERROR FILE
+static TOKEN_LOCN err_locn;             // error location
+static TOKEN_LOCN notes_locn;           // notes location
+static msg_level_info* orig_msg_level;  // original message levels
+static bool errLimitExceeded;           // have exceeded error limit
+static IntlData *internationalData;     // translated messages
 
 static SUICIDE_CALLBACK *suicideCallbacks;
 
@@ -149,8 +150,8 @@ static void fmt_inf_hdr         // FORMAT THE INFORMATION HDR
 
 
 static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
-    ( char const *hdr_str             // - header name
-    , char const *sw_val )            // - switch
+    ( char const *hdr_str       // - header name
+    , char const *sw_val )      // - switch
 {
     CompFlags.log_note_msgs = true;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
@@ -161,7 +162,7 @@ static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
 }
 
 static void fmt_inf_hdr_sym     // FORMAT THE INFORMATION HDR, WITH SYMBOL
-    ( char const *hdr_str             // - header name
+    ( char const *hdr_str       // - header name
     , SYMBOL sym )              // - symbol in question
 {
     CompFlags.log_note_msgs = true;
@@ -230,7 +231,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         fputs( buffer, err_file );
         fputc( '\n', err_file );
     }
-    return( 0 );
+    return( false );
 }
 
 
@@ -278,11 +279,11 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
     }
     if( goes_in_err_file ) {
         if( ! ( CompFlags.eq_switch_used && CompFlags.ide_console_output ) ) {
-            IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
+            IDEFN( PrintWithInfo )( CompInfo.idehdl, &inf );
         }
         idePrt( CompInfo.idehdl, &inf );
     } else {
-        IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
+        IDEFN( PrintWithInfo )( CompInfo.idehdl, &inf );
     }
 }
 
@@ -388,17 +389,14 @@ void MsgDisplay                 // DISPLAY A MESSAGE
         msg_locn = NULL;
         break;
     }
-    ideDisplay( severity
-              , msgnum
-              , VbufString( &buffer )
-              , msg_locn );
+    ideDisplay( severity, msgnum, VbufString( &buffer ), msg_locn );
+    VbufFree( &buffer );
     if( context_changed && !CompFlags.ew_switch_used
      && ( severity == IDEMSGSEV_ERROR || severity == IDEMSGSEV_WARNING )
      && ( context == CTX_PREINCL || context == CTX_SOURCE || context == CTX_FORCED_INCS )
       ) {
         build_file_nesting();
     }
-    VbufFree( &buffer );
     --reserveDepth;
     if( NULL != sym ) {
         notes_locn = sym->locn->tl;
@@ -431,6 +429,13 @@ void MsgDisplayLine             // DISPLAY A BARE LINE
 }
 
 
+void MsgDisplayLineVbuf         // DISPLAY A BARE LINE, FROM VBUF
+    ( VBUF* vbuf )              // - the VBUF
+{
+    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( vbuf ), NULL );
+}
+
+
 void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     ( char* seg                 // - the line segments
     , ... )
@@ -444,14 +449,14 @@ void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     for( str = seg; str != NULL; str = va_arg( args, char* ) ) {
         VbufConcStr( &buffer, str );
     }
-    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( &buffer ), NULL );
+    MsgDisplayLineVbuf( &buffer );
     va_end( args );
     VbufFree( &buffer );
 }
 
 
 void MsgDisplayBanner           // DISPLAY A BANNER LINE
-    ( const char *line )              // - the line
+    ( const char *line )        // - the line
 {
     ideDisplay( IDEMSGSEV_BANNER, 0, line, NULL );
 }
@@ -477,8 +482,6 @@ static void prtMsg(             // PRINT A MESSAGE
 {
     IDEMsgSeverity severity;    // - message severity
 
-    if( CompFlags.cpp_output )
-        return;
     if( warn_level == WLEVEL_NOTE ) {
         err_locn = notes_locn;
         severity = IDEMSGSEV_NOTE;
@@ -591,18 +594,18 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     ( MSG_NUM msgnum            // - message number
     , int *plevel )             // - addr[ level ]
 {
-    bool print_err;
+    bool ok;
     int level;
 
-    print_err = true;
-    level = msg_level[msgnum] & 0x0F;
-    switch( msg_level[msgnum] >> 4 ) {
+    ok = msg_level[msgnum].enabled;
+    level = msg_level[msgnum].level;
+    switch( msg_level[msgnum].type ) {
     case MSG_TYPE_INFO :
         level = WLEVEL_NOTE;
         break;
     case MSG_TYPE_ANSIERR :
     case MSG_TYPE_ANSIWARN :
-        print_err = !CompFlags.extensions_enabled;
+        ok = !CompFlags.extensions_enabled;
         break;
     case MSG_TYPE_ANSI :
         if( !CompFlags.extensions_enabled ) {
@@ -614,7 +617,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
     }
     *plevel = level;
-    return( print_err );
+    return( ok );
 }
 
 bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
@@ -636,7 +639,7 @@ static msg_status_t doError(    // ISSUE ERROR
     msg_status_t retn;              // - message status
     int level;                      // - warning level of message
     struct {
-        unsigned print_err  : 1;    // - true ==> print the message
+        unsigned print_msg  : 1;    // - true ==> print the message
         unsigned too_many   : 1;    // - true ==> too many messages
     } flag;
 
@@ -648,14 +651,14 @@ static msg_status_t doError(    // ISSUE ERROR
     retn = MS_NULL;
     if( ! errLimitExceeded ) {
         flag.too_many = true;
-        flag.print_err = okToPrintMsg( msgnum, &level );
+        flag.print_msg = okToPrintMsg( msgnum, &level );
         if( suppressCount > 0 ) {
             /* suppressed message */
-            if( flag.print_err && ( level == WLEVEL_ERROR ) ) {
+            if( flag.print_msg && ( level == WLEVEL_ERROR ) ) {
                 internalErrCount++;
             }
             return( MS_NULL );
-        } else if( ErrLimit == -1 ) {
+        } else if( ErrLimit == ERRLIMIT_NOMAX ) {
             /* unlimited messages */
             flag.too_many = false;
         } else if( ErrCount < ErrLimit ) {
@@ -666,13 +669,13 @@ static msg_status_t doError(    // ISSUE ERROR
             flag.too_many = false;
         } else if( ErrCount == ErrLimit ) {
             /* have hit the limit */
-            if( !flag.print_err || level != WLEVEL_ERROR ) {
+            if( !flag.print_msg || level != WLEVEL_ERROR ) {
                 /* this message isn't an error; it's a warning or info */
                 flag.too_many = false;
             }
         }
         if( ! flag.too_many ) {
-            if( flag.print_err && ( level <= WngLevel ) ) {
+            if( flag.print_msg && ( level <= WngLevel ) ) {
                 prtMsg( level, msgnum, args, warn_inc );
                 retn |= MS_PRINTED;
             }
@@ -811,42 +814,86 @@ bool CErrOccurred(
     return( false );
 }
 
-static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
-    int level )                 // - level to be validated
+static void save_msg_levels( void )
 {
-    bool ok;                    // - return: true ==> good level
-
-    if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    } else {
-        ok = true;
+    if( NULL == orig_msg_level ) {
+        orig_msg_level = CMemAlloc( sizeof( msg_level ) );
+        memcpy( orig_msg_level, msg_level, sizeof( msg_level ) );
     }
-    return( ok );
 }
 
+static void restore_msg_levels( void )
+{
+    if( NULL != orig_msg_level ) {
+        memcpy( msg_level, orig_msg_level, sizeof( msg_level ) );
+        CMemFreePtr( &orig_msg_level );
+    }
+}
 
 static void changeLevel(        // EFFECT A LEVEL CHANGE
-    int level,                  // - new level
+    unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 {
     DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
-    if( NULL == orig_err_levs ) {
-        orig_err_levs = CMemAlloc( sizeof( msg_level ) );
-        memcpy( orig_err_levs, msg_level, sizeof( msg_level ) );
+    if( msg_level[msgnum].level != level ) {
+        save_msg_levels();
+        msg_level[msgnum].level = level;
+        if( level < WLEVEL_MAX ) {
+            if( !msg_level[msgnum].enabled ) {
+                /* enable message */
+                msg_level[msgnum].enabled = true;
+            }
+        } else {
+            if( msg_level[msgnum].enabled ) {
+                /* disable message */
+                msg_level[msgnum].enabled = false;
+            }
+        }
     }
-    msg_level[msgnum] = ( msg_level[msgnum] & 0xF0 ) + level;
+}
+
+static void changeStatus(       // EFFECT A STATUS CHANGE
+    bool enabled,               // - new status
+    MSG_NUM msgnum )            // - message number
+{
+    DbgAssert( msgnum < ARRAY_SIZE( msg_level ) );
+    if( msg_level[msgnum].enabled != enabled ) {
+        save_msg_levels();
+        msg_level[msgnum].enabled = enabled;
+    }
+}
+
+void WarnEnableDisable(     // ENABLE/DISABLE A MESSAGE
+    bool enabled,           // - new status
+    MSG_NUM msgnum )        // - message number
+{
+    if( msgnum >= ARRAY_SIZE( msg_level ) ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msgnum].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        changeStatus( enabled, msgnum );
+        break;
+    }
 }
 
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
-    int level,                  // - new level
+    unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 {
     if( msgnum >= ARRAY_SIZE( msg_level ) ) {
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
-    switch( msg_level[msgnum] >> 4 ) {
+    switch( msg_level[msgnum].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
@@ -861,21 +908,17 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
 }
 
 void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
-    int level )                 // - new level
+    unsigned level )            // - new level
 {
-    MSG_NUM index;              // - index for number
+    MSG_NUM msgnum;             // - index for number
 
-    if( warnLevelValidate( level ) ) {
-        for( index = 0
-           ; index < ARRAY_SIZE( msg_level )
-           ; ++ index ) {
-            switch( msg_level[index] >> 4 ) {
-            case MSG_TYPE_WARNING :
-            case MSG_TYPE_ANSI :
-            case MSG_TYPE_ANSIWARN :
-                changeLevel( level, index );
-                break;
-            }
+    for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
+        switch( msg_level[msgnum].type ) {
+        case MSG_TYPE_WARNING :
+        case MSG_TYPE_ANSI :
+        case MSG_TYPE_ANSIWARN :
+            changeLevel( level, msgnum );
+            break;
         }
     }
 }
@@ -994,7 +1037,7 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
     err_file = NULL;
     err_locn.src_file = NULL;
     suicideCallbacks = NULL;
-    orig_err_levs = NULL;
+    orig_msg_level = NULL;
     reserveSize = RESERVE_MAX;
     reserveMem = CMemAlloc( reserveSize );
     CMemRegisterCleanup( reserveRelease );
@@ -1014,10 +1057,7 @@ static void errFileFini(        // CLOSE ERROR FILE
     }
     CMemFree( ErrorFileName );
     CMemFreePtr( &reserveMem );
-    if( NULL != orig_err_levs ) {
-        memcpy( msg_level, orig_err_levs, sizeof( msg_level ) );
-        CMemFreePtr( &orig_err_levs );
-    }
+    restore_msg_levels();
     FreeInternationalData( internationalData );
 }
 
@@ -1026,23 +1066,21 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    unsigned char   tmp_buff[sizeof( msg_level )];
-    unsigned char   *orig_levels;
-    unsigned char   *p;
-    unsigned char   *o;
-    unsigned char   *stop;
+    msg_level_info  pch_levels[ARRAY_SIZE( msg_level )];
+    msg_level_info  *orig_levels;
+    MSG_NUM         msgnum;
 
-    PCHReadVar( tmp_buff );
-    if( NULL != orig_err_levs ) {
-        orig_levels = orig_err_levs;
+    PCHReadVar( pch_levels );
+    if( NULL != orig_msg_level ) {
+        orig_levels = orig_msg_level;
     } else {
         orig_levels = msg_level;
     }
-    stop = &tmp_buff[sizeof( msg_level )];
-    for( p = tmp_buff, o = orig_levels; p < stop; ++p, ++o ) {
-        if( *p != *o ) {
+    for( msgnum = 0; msgnum < ARRAY_SIZE( msg_level ); msgnum++ ) {
+        if( memcmp( pch_levels + msgnum, orig_levels + msgnum, sizeof( *orig_levels ) ) ) {
             // reflect a change from the header file into current levels
-            changeLevel( *p & 0x0f, p - tmp_buff );
+            changeLevel( pch_levels[msgnum].level, msgnum );
+            changeStatus( pch_levels[msgnum].enabled, msgnum );
         }
     }
     return( PCHCB_OK );

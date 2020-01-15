@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,9 @@
 #include "cmdline.h"
 #include "cmdzdos.h"
 
-extern bool ProcZdos( void )
-/*************************/
+
+bool ProcZdos( void )
+/*******************/
 {
     FmtData.base = 0x1000;                          // assume user application
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
@@ -56,24 +58,24 @@ extern bool ProcZdos( void )
     return( true );
 }
 
-extern bool ProcZdosSYS( void )
-/*************************/
+bool ProcZdosSYS( void )
+/**********************/
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_SYS;
     return( true );
 }
 
-extern bool ProcZdosHWD( void )
-/*************************/
+bool ProcZdosHWD( void )
+/**********************/
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_HWD;
     return( true );
 }
 
-extern bool ProcZdosFSD( void )
-/*************************/
+bool ProcZdosFSD( void )
+/**********************/
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_FSD;

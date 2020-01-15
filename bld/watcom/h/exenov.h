@@ -38,6 +38,7 @@
 #define MAX_THREAD_NAME_LENGTH          17
 #define OLD_THREAD_NAME_LENGTH          5
 #define NLM_SIGNATURE                   "NetWare Loadable Module\x01a"
+#define NLM_SIGNATURE_LENGTH            (sizeof(NLM_SIGNATURE)-1)
 #define NLM_VERSION                     4
 #define VERSION_SIGNATURE               "VeRsIoN#"
 #define VERSION_SIGNATURE_LENGTH        8
@@ -62,7 +63,7 @@
 /* the first "fixed chunk" of the header */
 
 typedef struct nlm_header {
-    char            signature[ sizeof( NLM_SIGNATURE ) - 1 ];
+    char            signature[ NLM_SIGNATURE_LENGTH ];
     unsigned_32     version;
     char            moduleName[14];     /* 1st character is a length byte.*/
     unsigned_32     codeImageOffset;

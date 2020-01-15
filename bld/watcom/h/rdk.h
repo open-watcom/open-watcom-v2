@@ -207,8 +207,6 @@
 #define osgate_stop_disc 202
 #define osgate_set_disc_param 203
 #define osgate_wait_for_disc_request 204
-#define osgate_get_disc_request 205
-#define osgate_poll_disc_request 206
 #define osgate_disc_request_completed 207
 #define osgate_new_disc_request 208
 #define osgate_get_disc_request_array 209
@@ -769,6 +767,62 @@
 #define osgate_delete_env_sel 672
 #define osgate_clone_env_sel 673
 
+#define osgate_init_process 674
+
+#define osgate_send_debug_event 675
+#define osgate_kernel_debug_event 676
+
+#define osgate_close_tcp_socket 677
+#define osgate_read_tcp_socket 678
+#define osgate_write_tcp_socket 679
+
+#define osgate_close_udp_socket 680
+#define osgate_read_udp_socket 681
+#define osgate_write_udp_socket 682
+
+#define osgate_allocate_c_proc_handle 683
+
+#define osgate_connect_udp_socket 684
+#define osgate_connect_tcp_socket 685
+
+#define osgate_tcp_socket_read_count 686
+#define osgate_udp_socket_read_count 687
+
+#define osgate_tcp_socket_write_space 688
+#define osgate_has_tcp_socket_exc 689
+
+#define osgate_start_read_tcp_socket 690
+#define osgate_stop_read_tcp_socket 691
+#define osgate_start_read_udp_socket 692
+#define osgate_stop_read_udp_socket 693
+
+#define osgate_start_write_tcp_socket 694
+#define osgate_stop_write_tcp_socket 695
+
+#define osgate_start_exc_tcp_socket 696
+#define osgate_stop_exc_tcp_socket 697
+
+#define osgate_signal_read_handle 698
+#define osgate_signal_write_handle 699
+#define osgate_signal_exc_handle 700
+
+#define osgate_start_read_stdin 701
+#define osgate_stop_read_stdin 702
+
+#define osgate_start_read_c_file 703
+#define osgate_stop_read_c_file 704
+
+#define osgate_poll_udp_socket 705
+#define osgate_poll_tcp_socket 706
+
+#define osgate_register_custom_hid 707
+
+#define osgate_find_hid_feature_report 708
+#define osgate_get_hid_report_size 709
+#define osgate_get_hid_report_buf 710
+#define osgate_read_hid_feature 711
+#define osgate_write_hid_feature 712
+
 
 
 
@@ -968,8 +1022,6 @@
 #define OsGate_stop_disc 0x3E 0x67 0x9a 202 0 0 0 2 0
 #define OsGate_set_disc_param 0x3E 0x67 0x9a 203 0 0 0 2 0
 #define OsGate_wait_for_disc_request 0x3E 0x67 0x9a 204 0 0 0 2 0
-#define OsGate_get_disc_request 0x3E 0x67 0x9a 205 0 0 0 2 0
-#define OsGate_poll_disc_request 0x3E 0x67 0x9a 206 0 0 0 2 0
 #define OsGate_disc_request_completed 0x3E 0x67 0x9a 207 0 0 0 2 0
 #define OsGate_new_disc_request 0x3E 0x67 0x9a 208 0 0 0 2 0
 #define OsGate_get_disc_request_array 0x3E 0x67 0x9a 209 0 0 0 2 0
@@ -1529,4 +1581,60 @@
 #define OsGate_create_env_sel 0x3E 0x67 0x9a 159 2 0 0 2 0
 #define OsGate_delete_env_sel 0x3E 0x67 0x9a 160 2 0 0 2 0
 #define OsGate_clone_env_sel 0x3E 0x67 0x9a 161 2 0 0 2 0
+
+#define OsGate_init_process 0x3E 0x67 0x9a 162 2 0 0 2 0
+
+#define OsGate_send_debug_event 0x3E 0x67 0x9a 163 2 0 0 2 0
+#define OsGate_kernel_debug_event 0x3E 0x67 0x9a 164 2 0 0 2 0
+
+#define OsGate_close_tcp_socket 0x3E 0x67 0x9a 165 2 0 0 2 0
+#define OsGate_read_tcp_socket 0x3E 0x67 0x9a 166 2 0 0 2 0
+#define OsGate_write_tcp_socket 0x3E 0x67 0x9a 167 2 0 0 2 0
+
+#define OsGate_close_udp_socket 0x3E 0x67 0x9a 168 2 0 0 2 0
+#define OsGate_read_udp_socket 0x3E 0x67 0x9a 169 2 0 0 2 0
+#define OsGate_write_udp_socket 0x3E 0x67 0x9a 170 2 0 0 2 0
+
+#define OsGate_allocate_c_proc_handle 0x3E 0x67 0x9a 171 2 0 0 2 0
+
+#define OsGate_connect_udp_socket 0x3E 0x67 0x9a 172 2 0 0 2 0
+#define OsGate_connect_tcp_socket 0x3E 0x67 0x9a 173 2 0 0 2 0
+
+#define OsGate_tcp_socket_read_count 0x3E 0x67 0x9a 174 2 0 0 2 0
+#define OsGate_udp_socket_read_count 0x3E 0x67 0x9a 175 2 0 0 2 0
+
+#define OsGate_tcp_socket_write_space 0x3E 0x67 0x9a 176 2 0 0 2 0
+#define OsGate_has_tcp_socket_exc 0x3E 0x67 0x9a 177 2 0 0 2 0
+
+#define OsGate_start_read_tcp_socket 0x3E 0x67 0x9a 178 2 0 0 2 0
+#define OsGate_stop_read_tcp_socket 0x3E 0x67 0x9a 179 2 0 0 2 0
+#define OsGate_start_read_udp_socket 0x3E 0x67 0x9a 180 2 0 0 2 0
+#define OsGate_stop_read_udp_socket 0x3E 0x67 0x9a 181 2 0 0 2 0
+
+#define OsGate_start_write_tcp_socket 0x3E 0x67 0x9a 182 2 0 0 2 0
+#define OsGate_stop_write_tcp_socket 0x3E 0x67 0x9a 183 2 0 0 2 0
+
+#define OsGate_start_exc_tcp_socket 0x3E 0x67 0x9a 184 2 0 0 2 0
+#define OsGate_stop_exc_tcp_socket 0x3E 0x67 0x9a 185 2 0 0 2 0
+
+#define OsGate_signal_read_handle 0x3E 0x67 0x9a 186 2 0 0 2 0
+#define OsGate_signal_write_handle 0x3E 0x67 0x9a 187 2 0 0 2 0
+#define OsGate_signal_exc_handle 0x3E 0x67 0x9a 188 2 0 0 2 0
+
+#define OsGate_start_read_stdin 0x3E 0x67 0x9a 189 2 0 0 2 0
+#define OsGate_stop_read_stdin 0x3E 0x67 0x9a 190 2 0 0 2 0
+
+#define OsGate_start_read_c_file 0x3E 0x67 0x9a 191 2 0 0 2 0
+#define OsGate_stop_read_c_file 0x3E 0x67 0x9a 192 2 0 0 2 0
+
+#define OsGate_poll_udp_socket 0x3E 0x67 0x9a 193 2 0 0 2 0
+#define OsGate_poll_tcp_socket 0x3E 0x67 0x9a 194 2 0 0 2 0
+
+#define OsGate_register_custom_hid 0x3E 0x67 0x9a 195 2 0 0 2 0
+
+#define OsGate_find_hid_feature_report 0x3E 0x67 0x9a 196 2 0 0 2 0
+#define OsGate_get_hid_report_size 0x3E 0x67 0x9a 197 2 0 0 2 0
+#define OsGate_get_hid_report_buf 0x3E 0x67 0x9a 198 2 0 0 2 0
+#define OsGate_read_hid_feature 0x3E 0x67 0x9a 199 2 0 0 2 0
+#define OsGate_write_hid_feature 0x3E 0x67 0x9a 200 2 0 0 2 0
 

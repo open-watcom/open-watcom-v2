@@ -74,10 +74,10 @@ void TermSetCursor( CURSORORD crow, CURSORORD ccol )
 {
     CATTR           cattr;
     CURSOR_TYPE     ctype;
-    CURSORORD       oldrow;
-    CURSORORD       oldcol;
+    CURSORORD       old_crow;
+    CURSORORD       old_ccol;
 
-    _uigetcursor( &oldrow, &oldcol, &ctype, &cattr );
+    _uigetcursor( &old_crow, &old_ccol, &ctype, &cattr );
     _uisetcursor( crow, ccol, ctype, cattr );
 }
 

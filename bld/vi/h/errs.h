@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +194,8 @@ typedef enum vi_rc {
     ERR_INVALID_LOCATE,
     ERR_NO_MORE_REDOS,
     ERR_SAVE_CANCELED,
-    ERR_SPECIFIC_FILE_NOT_FOUND
+    ERR_SPECIFIC_FILE_NOT_FOUND,
+    ERR_INTERNAL_FCBSIZE
 } vi_rc;
 
 #endif

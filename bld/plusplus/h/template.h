@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,10 +50,10 @@ struct template_data {
     SCOPE               template_scope;         // conaining scope of the template
     TOKEN_LOCN          locn;                   // location of class template id
     error_state_t       errors;                 // error state at beginning
-    bool                all_generic     : 1;    // all args are generic types
-    bool                defn_found      : 1;    // a template defn has been found
-    bool                member_found    : 1;    // a class template member has been found
-    bool                defn_added      : 1;    // class template defn has just been added
+    boolbit             all_generic     : 1;    // all args are generic types
+    boolbit             defn_found      : 1;    // a template defn has been found
+    boolbit             member_found    : 1;    // a class template member has been found
+    boolbit             defn_added      : 1;    // class template defn has just been added
 };
 
 // these structures are private to TEMPLATE.C but they are exposed
@@ -65,7 +66,7 @@ PCH_struct member_inst {
     SCOPE               scope;
     SCOPE               class_parm_scope;
     SCOPE               class_parm_enclosing;
-    bool                is_inline       : 1;
+    boolbit             is_inline       : 1;
 };
 
 #ifndef CLASS_INST_DEFINED
@@ -78,12 +79,12 @@ PCH_struct class_inst {
     SCOPE               scope;                  // scope containing instantiation
     MEMBER_INST         *members;               // ring of pending member functions
     TOKEN_LOCN          locn;                   // location of first instantiation
-    bool                must_process    : 1;    // must be post-processed
-    bool                dont_process    : 1;    // should not be post-processed
-    bool                processed       : 1;    // has been post-processed
-    bool                specific        : 1;    // specific instantiation provided
-    bool                locn_set        : 1;    // locn field has been set
-    bool                free            : 1;    // used for precompiled headers
+    boolbit             must_process    : 1;    // must be post-processed
+    boolbit             dont_process    : 1;    // should not be post-processed
+    boolbit             processed       : 1;    // has been post-processed
+    boolbit             specific        : 1;    // specific instantiation provided
+    boolbit             locn_set        : 1;    // locn field has been set
+    boolbit             free            : 1;    // used for precompiled headers
 };
 
 typedef struct template_member TEMPLATE_MEMBER; // class template member
@@ -107,8 +108,8 @@ PCH_struct template_specialization {
     NAME                    *arg_names;         // argument names
     PTREE                   spec_args;          // template specialization arguments
     unsigned char           *ordering;          // "at least as specialized as" bitmask
-    bool                    corrupted   : 1;    // template def'n contained errors
-    bool                    defn_found  : 1;    // a template defn has been found
+    boolbit                 corrupted   : 1;    // template def'n contained errors
+    boolbit                 defn_found  : 1;    // a template defn has been found
 };
 
 typedef struct unbound_template UNBOUND_TEMPLATE; // unbound template class
@@ -125,7 +126,7 @@ PCH_struct template_info {
     REWRITE                 **defarg_list;      // default arguments
     SYMBOL                  sym;                // template symbol
     unsigned                nr_specs;           // number of template specializations (including the primary template)
-    bool                    free        : 1;    // used for precompiled headers
+    boolbit                 free        : 1;    // used for precompiled headers
 };
 
 typedef struct fn_template_inst FN_TEMPLATE_INST; // function template instantiation
@@ -135,7 +136,7 @@ PCH_struct fn_template_inst {
     TOKEN_LOCN              locn;               // instantiation location
     SCOPE                   parm_scope;         // template parameter scope
     SCOPE                   inst_scope;         // template instantiation scope
-    bool                    processed   : 1;    // already processed instantiation
+    boolbit                 processed   : 1;    // already processed instantiation
 };
 
 #ifndef FN_TEMPLATE_DEFINED
@@ -148,8 +149,8 @@ PCH_struct fn_template {
     SYMBOL                  sym;                // template function
     SCOPE                   decl_scope;         // template declaration scope
     REWRITE                 *defn;              // always non-NULL
-    bool                    has_defn    : 1;    // declaration or definition?
-    bool                    free        : 1;    // used for precompiled headers
+    boolbit                 has_defn    : 1;    // declaration or definition?
+    boolbit                 free        : 1;    // used for precompiled headers
 };
 
 typedef enum tc_directive {

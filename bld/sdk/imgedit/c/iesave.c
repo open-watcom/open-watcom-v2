@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,9 @@
 #include "wrselft.h"
 #include "wresdefn.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
@@ -61,7 +64,7 @@ static char     initialDir[_MAX_PATH];
 /*
  * writeDataInPieces - writes the XOR data for the bitmap in chunks
  */
-static BOOL writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
+static bool writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -108,14 +111,14 @@ static BOOL writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
     fwrite( buffer, sizeof( BYTE ), one_scanline_size * scanline_count, fp );
     MemFree( buffer );
     DeleteDC( memdc );
-    return( TRUE );
+    return( true );
 
 } /* writeDataInPieces */
 
 /*
  * writeDataInPiecesData
  */
-static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, img_node *node )
+static bool writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -127,7 +130,7 @@ static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
     long        byte_count;
 
     if( data == NULL || *data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hdc = GetDC( NULL );
@@ -163,61 +166,9 @@ static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
     GetDIBits( memdc, node->hxorbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
     *size += scanline_count * one_scanline_size;
     DeleteDC( memdc );
-    return( TRUE );
+    return( true );
 
 } /* writeDataInPiecesData */
-
-/*
- * checkForExt - if no extension is given, use the default for the given type
- */
-static void checkForExt( img_node *node )
-{
-    char        drive[_MAX_PATH];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-    char        *fullpath;
-    img_node    *next_icon;
-    char        default_ext[3][4] = { "bmp", "ico", "cur" };
-
-    next_icon = node;
-    while( next_icon != NULL ) {
-        fullpath = next_icon->fname;
-        _splitpath( fullpath, drive, dir, fname, ext );
-
-        if( strlen( ext ) > 1 ) {
-            return;
-        }
-
-        if( fullpath[strlen( fullpath ) - 1] != '.' ) {
-            strcat( fullpath, "." );
-        }
-        strcat( fullpath, default_ext[next_icon->imgtype - 1] );
-        next_icon = next_icon->nexticon;
-    }
-
-} /* checkForExt */
-
-/*
- * checkForPalExt - if no extension is given, use the default palette
- *                  extension of .pal.
- */
-static void checkForPalExt( char *filename )
-{
-    char        ext[_MAX_EXT];
-
-    _splitpath( filename, NULL, NULL, NULL, ext );
-
-    if( strlen( ext ) > 1 ) {
-        return;
-    }
-
-    if( filename[strlen( filename ) - 1] != '.' ) {
-        strcat( filename, "." );
-    }
-    strcat( filename, "pal" );
-
-} /* checkForPalExt */
 
 /*
  * SaveOFNHookProc - hook used called by common dialog for 3D controls
@@ -248,16 +199,36 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 } /* SaveOFNHookProc */
 
 /*
+ * updateSaveFileInfo
+ */
+static bool updateSaveFileInfo( const char *fname )
+{
+    PGROUP2     pg;
+    size_t      len;
+
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len > 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
+    }
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    return( true );
+
+} /* updateSaveFileInfo */
+
+/*
  * getSaveFName - get the name of the file to be saved
  */
-static bool getSaveFName( char *fname, int imgtype )
+static bool getSaveFName( char *fname, image_type img_type )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                path[_MAX_PATH];
     bool                ok;
     long                of_size;
+
+    fname[0] = '\0';
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
@@ -268,13 +239,11 @@ static bool getSaveFName( char *fname, int imgtype )
     }
   #endif
 #endif
-
-    fname[0] = '\0';
     memset( &of, 0, of_size );
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
     of.lpstrFilter = (LPSTR)IEImageFilter;
-    of.nFilterIndex = (long)imgtype;
+    of.nFilterIndex = (long)img_type;
     of.lpstrFile = fname;
     of.nMaxFile = _MAX_PATH;
     of.lpstrFileTitle = szFileTitle;
@@ -293,10 +262,7 @@ static bool getSaveFName( char *fname, int imgtype )
 #endif
 
     if( ok ) {
-        _splitpath( fname, drive, path, NULL, NULL );
-        strcpy( initialDir, drive );
-        strcat( initialDir, path );
-        initialDir[strlen( initialDir ) - 1] = '\0';
+        ok = updateSaveFileInfo( fname );
     }
     return( ok );
 
@@ -365,7 +331,7 @@ static bool saveBitmapFile( img_node *node )
     FreeDIBitmapInfo( bmi );
     if( ok ) {
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
         PrintHintTextByID( WIE_BITMAPSAVEDTO, filename );
     } else {
         WImgEditError( WIE_ERR_SAVE_FAIL, filename );
@@ -588,7 +554,7 @@ static bool saveImgFile( img_node *node )
     MemFree( imginfo );
     if( ok ) {
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
         if( node->imgtype == ICON_IMG ) {
             PrintHintTextByID( WIE_ICONSAVEDTO, filename );
         } else {
@@ -782,7 +748,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
     MemFree( imginfo );
     if( ok ) {
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
     }
     return( ok );
 
@@ -793,7 +759,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
  */
 static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
-    char                fn[_MAX_FNAME];
+    PGROUP2             pg;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -819,8 +785,8 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
     }
 
     if( ok ) {
-        _splitpath( node->fname, NULL, NULL, fn, NULL );
-        rname = WResIDFromStr( fn );
+        _splitpath2( node->fname, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        rname = WResIDFromStr( pg.fname );
         ok = (rname != NULL);
     }
 
@@ -855,13 +821,13 @@ static bool saveResourceFile( img_node *node )
     size_t          size = 0;
     uint_16         type;
     WRFileType      save_type = 0;
-    BOOL            info_created;
+    bool            info_created;
     bool            was32bit;
     bool            is32bit;
     bool            ok;
     HELP_CALLBACK   hcb;
 
-    info_created = FALSE;
+    info_created = false;
     data = NULL;
     type = 0;
     ok = (node != NULL);
@@ -886,7 +852,7 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         if( node->wrinfo == NULL ) {
             node->wrinfo = WRAllocWRInfo();
-            info_created = TRUE;
+            info_created = true;
             ok = (node->wrinfo != NULL);
         }
     }
@@ -895,7 +861,9 @@ static bool saveResourceFile( img_node *node )
         if( info_created ) {
             ok = createNewImageLNODE( node, type );
         }
-        ok = (ok && node->lnode != NULL);
+        if( ok ) {
+            ok = ( node->lnode != NULL );
+        }
     }
 
     if( ok ) {
@@ -908,15 +876,13 @@ static bool saveResourceFile( img_node *node )
             if( was32bit ) {
                 if( is32bit ) {
                     break;
-                } else {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16, MB_ICONSTOP | MB_OK );
                 }
+                IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16, MB_ICONSTOP | MB_OK );
             } else {
-                if( is32bit ) {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32, MB_ICONSTOP | MB_OK );
-                } else {
+                if( !is32bit ) {
                     break;
                 }
+                IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32, MB_ICONSTOP | MB_OK );
             }
         }
         ok = (save_type != WR_DONT_KNOW);
@@ -981,7 +947,7 @@ static bool saveResourceFile( img_node *node )
 
     if( ok ) {
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
         PrintHintTextByID( WIE_IMAGESAVEDTO, node->fname );
     }
 
@@ -1002,50 +968,46 @@ bool SaveFileFromNode( img_node *node, int how )
 {
     img_node    *rootnode;
     char        new_name[_MAX_PATH];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
     bool        ok;
+    image_type  img_type;
 
-    ok = false;
-    if( node == NULL ) {
-        return( ok );
+    ok = ( node != NULL );
+    if( ok ) {
+        rootnode = GetImageNode( node->hwnd );
+        ok = ( rootnode != NULL );
     }
-    rootnode = GetImageNode( node->hwnd );
-
-    if( rootnode == NULL ) {
-        return( ok );
-    }
-
-    if( strnicmp( rootnode->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
-        how = SB_SAVE_AS;
-    }
-
-    if( how == SB_SAVE_AS ) {
-        if( !getSaveFName( new_name, rootnode->imgtype ) ) {
-            return( ok );
+    if( ok ) {
+        if( strnicmp( rootnode->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
+            how = SB_SAVE_AS;
         }
-        node = rootnode;
-        while( node != NULL ) {
-            strcpy( node->fname, new_name );
-            node = node->nexticon;
+
+        if( how == SB_SAVE_AS ) {
+            ok = getSaveFName( new_name, rootnode->imgtype );
+            if( ok ) {
+                for( node = rootnode; node != NULL; node = node->nexticon ) {
+                    strcpy( node->fname, new_name );
+                }
+            }
         }
     }
+    if( ok ) {
+        CheckForExt( rootnode );
 
-    checkForExt( rootnode );
-
-    _splitpath( rootnode->fname, NULL, NULL, NULL, ext );
-    if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
-        stricmp( ext, ".dll" ) == 0 ) {
-        return( saveResourceFile( rootnode ) );
-    }
-
-    switch( rootnode->imgtype ) {
-    case BITMAP_IMG:
-        ok = saveBitmapFile( rootnode );
-        break;
-    case ICON_IMG:
-    case CURSOR_IMG:
-        ok = saveImgFile( rootnode );
-        break;
+        _splitpath2( rootnode->fname, pg.buffer, NULL, NULL, NULL, &pg.ext );
+        img_type = GetImageFileType( pg.ext, true );
+        if( img_type == RESOURCE_IMG ) {
+            return( saveResourceFile( rootnode ) );
+        }
+        switch( rootnode->imgtype ) {
+        case BITMAP_IMG:
+            ok = saveBitmapFile( rootnode );
+            break;
+        case ICON_IMG:
+        case CURSOR_IMG:
+            ok = saveImgFile( rootnode );
+            break;
+        }
     }
     return( ok );
 
@@ -1074,6 +1036,8 @@ static bool getSavePalName( char *fname )
     bool                ok;
     long                of_size;
 
+    fname[0] = '\0';
+
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
   #if defined( __NT__ ) && (_WIN32_WINNT >= 0x0500)
@@ -1083,8 +1047,6 @@ static bool getSavePalName( char *fname )
     }
   #endif
 #endif
-
-    fname[0] = '\0';
     memset( &of, 0, of_size );
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
@@ -1125,21 +1087,19 @@ bool SaveColorPalette( void )
         return( true );                     // Just return ... no error
     }
 
-    ok = false;
-    if( !getSavePalName( fname ) ) {
-        return( ok );
-    }
-    checkForPalExt( fname );
+    ok = getSavePalName( fname );
+    if( ok ) {
+        CheckForPalExt( fname );
 
-    GetFnameFromPath( fname, filename );
-    fp = fopen( fname, "wb" );
-    if( fp != NULL ) {
-        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
-            if( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) == 1 ) {
-                ok = true;
+        GetFnameFromPath( fname, filename );
+        ok = false;
+        fp = fopen( fname, "wb" );
+        if( fp != NULL ) {
+            if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+                ok = ( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) == 1 );
             }
+            fclose( fp );
         }
-        fclose( fp );
     }
     if( ok ) {
         PrintHintTextByID( WIE_PALETTESAVEDTO, filename );

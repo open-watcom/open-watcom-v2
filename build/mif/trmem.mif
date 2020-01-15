@@ -3,12 +3,11 @@ trmem_cover_cflags = -I"$(trmem_dir)"
 !ifdef __WATCOM_TOOLS__
 trmem_cflag_i86 = -of+
 trmem_cflag_386 = -of+
-trmem_cflags += -s
-trmem_cover_cflags += -s
 !endif
 !ifeq $(proj_name)_trmem 1
 !ifeq release 0
-trmem_cover_cflags += -DTRMEM $(trmem_cflag_$(host_cpu))
+trmem_cpp_flags = -DTRMEM
+trmem_cover_cflags += $(trmem_cflag_$(host_cpu))
 trmem_objs = $(_subdir_)trmem.obj
 trmemcvr_objs = $(_subdir_)trmemcvr.obj
 !endif

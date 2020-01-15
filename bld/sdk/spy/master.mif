@@ -11,11 +11,10 @@ sys_windowed = 1
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
-
-!include trmem.mif
 
 .EXTENSIONS: .res .rc
 
@@ -36,10 +35,11 @@ dll_objs = $(dll_subdir)/spydll.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_c_flags     = -s -fh
+extra_cpp_flags_spydll = -DSPYDLL
+
+extra_c_flags     = -fh
 extra_c_flags_i86 = -zu -2 -zW
 extra_c_flags_386 = -4
-extra_c_flags_spydll = -DSPYDLL
 !ifdef __WATCOM_TOOLS__
 !ifeq host_os win
 extra_c_flags_spydll += -mc

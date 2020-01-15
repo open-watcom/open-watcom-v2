@@ -43,27 +43,32 @@
 
 /* Test macros */
 
-#define VERIFY( expr ) ++tests; if( !(expr) ) {                         \
-                      printf( "***FAILURE*** Condition failed.\n" );    \
-                      printf( "   %s, line %u.\n", #expr, __LINE__ );   \
-                          ++failures;                                   \
-                      exit( -1 );                                       \
-                }
+#define VERIFY( expr ) \
+    ++tests;                                            \
+    if( !(expr) ) {                                     \
+        printf( "***FAILURE*** Condition failed.\n" );  \
+        printf( "   %s, line %u.\n", #expr, __LINE__ ); \
+        ++failures;                                     \
+        exit( EXIT_FAILURE );                           \
+    }
 
-#define EXPECT( expr ) ++tests; if( !(expr) ) {                         \
-                      printf( "***WARNING*** Condition failed.\n" );    \
-                      printf( "   %s, line %u.\n", #expr, __LINE__ );   \
-                      ++warnings;                                       \
-                      exit( -1 );                                       \
-                }
+#define EXPECT( expr ) \
+    ++tests;                                            \
+    if( !(expr) ) {                                     \
+        printf( "***WARNING*** Condition failed.\n" );  \
+        printf( "   %s, line %u.\n", #expr, __LINE__ ); \
+        ++warnings;                                     \
+        exit( EXIT_FAILURE );                           \
+    }
 
-#define VERIFYS( exp )   if( !(exp) ) {                                     \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            NumErrors++;                                    \
-                            exit( -1 );                                     \
-                        }
+#define VERIFYS( exp ) \
+    if( !(exp) ) {                                          \
+        printf( "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__,                      \
+                strlwr(__FILE__) );                         \
+        NumErrors++;                                        \
+        exit( EXIT_FAILURE );                               \
+    }
 
 
 #define QSORT_SIZE  300
@@ -95,6 +100,8 @@ int floatcmp_s( void const *_a, void const *_b, void *context )
     float   *a = (float *)_a;
     float   *b = (float *)_b;
 
+    /* unused parameters */ (void)context;
+
     if( *a == *b ) {
         return 0;
     } else if( *a < *b ) {
@@ -110,6 +117,8 @@ int longintcmp_s( void const *_a, void const *_b, void *context )
     unsigned long   *a = (unsigned long *)_a;
     unsigned long   *b = (unsigned long *)_b;
 
+    /* unused parameters */ (void)context;
+
     if( (*a) == (*b) ) {
         return 0;
     } else if( (*a) < (*b) ) {
@@ -122,6 +131,11 @@ int longintcmp_s( void const *_a, void const *_b, void *context )
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifndef DEBUG_MSG
+    /* unused parameters */ (void)msg;
+#endif
+    /* unused parameters */ (void)ptr; (void)error;
+
 #ifdef DEBUG_MSG
     fprintf( stderr, "Runtime-constraint in %s", msg );
 #endif
@@ -238,9 +252,11 @@ int main( int argc, char *argv[] )
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        exit( -1 );
+        return( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
@@ -266,5 +282,5 @@ int main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    return( 0 );
+    return( EXIT_SUCCESS );
 }

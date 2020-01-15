@@ -298,7 +298,7 @@ void GUISetGUIHint( gui_window *wnd )
     GUIInitHint( wnd, &menu_GUIHint, GUI_HINT );
 }
 
-HMENU   GUIHFloatingPopup       = NULLHANDLE;
+HMENU   GUIHFloatingPopup = NULLHANDLE;
 
 /*
  * GUIGetHMENU -- return the HMENU that the user can change

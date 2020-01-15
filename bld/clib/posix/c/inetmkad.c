@@ -38,16 +38,15 @@ _WCRTLINK struct in_addr inet_makeaddr( int net, int __host )
 {
     unsigned long addr;
 
-    if (net < 128)
+    if (net < 128) {
         addr = (net << IN_CLASSA_NSHIFT) | (__host & IN_CLASSA_HOST);
-
-    else if (net < 65536)
+    } else if (net < 65536) {
         addr = (net << IN_CLASSB_NSHIFT) | (__host & IN_CLASSB_HOST);
-
-    else if (net < 16777216L)
+    } else if (net < 16777216L) {
         addr = (net << IN_CLASSC_NSHIFT) | (__host & IN_CLASSC_HOST);
-
-    else addr = (net | __host);
+    } else {
+        addr = (net | __host);
+    }
 
     addr = htonl( addr );
     return( *(struct in_addr*) &addr );

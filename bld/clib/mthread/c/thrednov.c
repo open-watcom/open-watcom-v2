@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ static void begin_thread_helper( void *the_arg )
         // tdata->__allocated = 0;
         tdata->__data_size = __ThreadDataSize;
         tdata->__randnext = 1;
-        _RWD_stacklow = FP_OFF( stack_bottom );
+        _RWD_stacklow = _FP_OFF( stack_bottom );
         (*start_addr)( arglist );
         _endthread();
     } else {

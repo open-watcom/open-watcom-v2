@@ -35,7 +35,7 @@
 #include <process.h>
 #include <dos.h>
 
-#ifdef DOS
+#ifdef __DOS__
     char __far * __far AliasList;
 #else
     char __far *AliasList;

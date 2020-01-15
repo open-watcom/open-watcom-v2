@@ -718,13 +718,13 @@ static void     Pragma( void ) {
 #endif
 
     struct {
-        unsigned f_far    : 1;
-        unsigned f_far16  : 1;
-        unsigned f_loadds : 1;
-        unsigned f_export : 1;
-        unsigned f_parm   : 1;
-        unsigned f_value  : 1;
-        unsigned f_modify : 1;
+        boolbit f_far    : 1;
+        boolbit f_far16  : 1;
+        boolbit f_loadds : 1;
+        boolbit f_export : 1;
+        boolbit f_parm   : 1;
+        boolbit f_value  : 1;
+        boolbit f_modify : 1;
     } have;
 
     if( RecFnToken( "LIBRARY" ) ) {
@@ -774,50 +774,50 @@ static void     Pragma( void ) {
             ProcessAlias();
             ObjectName();
 
-            have.f_far    = 0;
-            have.f_loadds = 0;
-            have.f_export = 0;
-            have.f_value  = 0;
-            have.f_modify = 0;
-            have.f_parm   = 0;
+            have.f_far    = false;
+            have.f_loadds = false;
+            have.f_export = false;
+            have.f_value  = false;
+            have.f_modify = false;
+            have.f_parm   = false;
             for( ;; ) {
                 if( !have.f_parm && RecToken( "PARM" ) ) {
                     GetParmInfo();
-                    have.f_parm = 1;
+                    have.f_parm = true;
                 } else if( !have.f_far && RecToken( "=" ) ) {
                     GetByteSeq();
 #if _INTEL_CPU
-                    have.f_far = 1;
+                    have.f_far = true;
                 } else if( !have.f_far && RecToken( "FAR" ) ) {
                     CurrAux->cclass |= FAR_CALL;
-                    have.f_far = 1;
+                    have.f_far = true;
 #if _CPU == 386
                 } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
                     CurrAux->cclass |= FAR16_CALL;
-                    have.f_far16 = 1;
+                    have.f_far16 = true;
 #endif
                 } else if( !have.f_far && RecToken( "NEAR" ) ) {
                     CurrAux->cclass &= ~FAR_CALL;
-                    have.f_far = 1;
+                    have.f_far = true;
                 } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
                     CurrAux->cclass |= LOAD_DS_ON_ENTRY;
-                    have.f_loadds = 1;
+                    have.f_loadds = true;
 #endif
                 } else if( !have.f_export && RecToken( "EXPORT" ) ) {
                     CurrAux->cclass |= DLL_EXPORT;
-                    have.f_export = 1;
+                    have.f_export = true;
 #if _INTEL_CPU
                 } else if( !have.f_value && RecToken( "VALUE" ) ) {
                     GetRetInfo();
-                    have.f_value = 1;
+                    have.f_value = true;
 #endif
                 } else if( !have.f_value && RecToken( "ABORTS" ) ) {
                     CurrAux->cclass |= SUICIDAL;
-                    have.f_value = 1;
+                    have.f_value = true;
 #if _INTEL_CPU
                 } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
                     GetSaveInfo();
-                    have.f_modify = 1;
+                    have.f_modify = true;
 #endif
                 } else {
                     break;
@@ -1403,7 +1403,7 @@ static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
     struct asmfixup     *fix;
 
     fix = FMemAlloc( sizeof( *fix ) );
-    fix->external = 1;
+    fix->external = true;
     fix->fixup_loc = i;
     fix->name = name;
     fix->u_offset = off;
@@ -1548,50 +1548,50 @@ static  void            GetParmInfo( void ) {
 
     struct {
 #if _INTEL_CPU
-        unsigned f_pop           : 1;
-        unsigned f_reverse       : 1;
-        unsigned f_loadds        : 1;
-        unsigned f_nomemory      : 1;
-        unsigned f_list          : 1;
+        boolbit f_pop           : 1;
+        boolbit f_reverse       : 1;
+        boolbit f_loadds        : 1;
+        boolbit f_nomemory      : 1;
+        boolbit f_list          : 1;
 #endif
-        unsigned f_args          : 1;
+        boolbit f_args          : 1;
     } have;
 
 #if _INTEL_CPU
-    have.f_pop           = 0;
-    have.f_reverse       = 0;
-    have.f_loadds        = 0;
-    have.f_nomemory      = 0;
-    have.f_list          = 0;
+    have.f_pop           = false;
+    have.f_reverse       = false;
+    have.f_loadds        = false;
+    have.f_nomemory      = false;
+    have.f_list          = false;
 #endif
-    have.f_args          = 0;
+    have.f_args          = false;
     for(;;) {
         if( !have.f_args && RecToken( "(" ) ) {
             GetArgList();
-            have.f_args = 1;
+            have.f_args = true;
 #if _INTEL_CPU
         } else if( !have.f_pop && RecToken( "CALLER" ) ) {
             CurrAux->cclass |= CALLER_POPS;
-            have.f_pop = 1;
+            have.f_pop = true;
         } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
             CurrAux->cclass &= ~CALLER_POPS;
-            have.f_pop = 1;
+            have.f_pop = true;
         } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
             // arguments are processed in reverse order by default
             CurrAux->cclass |= REVERSE_PARMS;
-            have.f_reverse = 1;
+            have.f_reverse = true;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
             CurrAux->cclass |= NO_MEMORY_READ;
-            have.f_nomemory = 1;
+            have.f_nomemory = true;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
             CurrAux->cclass |= LOAD_DS_ON_CALL;
-            have.f_loadds = 1;
+            have.f_loadds = true;
         } else if( !have.f_list && CurrToken( "[" ) ) {
             if( CurrAux->parms != DefaultInfo.parms ) {
                 FMemFree( CurrAux->parms );
             }
             CurrAux->parms = RegSets();
-            have.f_list = 1;
+            have.f_list = true;
 #endif
         } else {
             break;
@@ -1696,14 +1696,14 @@ static  void            GetRetInfo( void ) {
 //====================================
 
     struct {
-        unsigned f_no8087        : 1;
-        unsigned f_list          : 1;
-        unsigned f_struct        : 1;
+        boolbit f_no8087        : 1;
+        boolbit f_list          : 1;
+        boolbit f_struct        : 1;
     } have;
 
-    have.f_no8087  = 0;
-    have.f_list    = 0;
-    have.f_struct  = 0;
+    have.f_no8087  = false;
+    have.f_list    = false;
+    have.f_struct  = false;
     // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
     // flag so that "3s" model programs can use 387 pragmas
     CurrAux->cclass &= ~NO_8087_RETURNS;
@@ -1711,14 +1711,14 @@ static  void            GetRetInfo( void ) {
         if( !have.f_no8087 && RecToken( "NO8087" ) ) {
             CurrAux->cclass |= NO_8087_RETURNS;
             HW_CTurnOff( CurrAux->returns, HW_FLTS );
-            have.f_no8087 = 1;
+            have.f_no8087 = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
             CurrAux->cclass |= SPECIAL_RETURN;
             CurrAux->returns = RegSet();
-            have.f_list = 1;
+            have.f_list = true;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
             GetSTRetInfo();
-            have.f_struct = 1;
+            have.f_struct = true;
         } else {
             break;
         }
@@ -1730,33 +1730,33 @@ static  void    GetSTRetInfo( void ) {
 //==============================
 
     struct {
-        unsigned f_float        : 1;
-        unsigned f_struct       : 1;
-        unsigned f_allocs       : 1;
-        unsigned f_list         : 1;
+        boolbit f_float        : 1;
+        boolbit f_struct       : 1;
+        boolbit f_allocs       : 1;
+        boolbit f_list         : 1;
     } have;
 
-    have.f_float  = 0;
-    have.f_struct = 0;
-    have.f_allocs = 0;
-    have.f_list   = 0;
+    have.f_float  = false;
+    have.f_struct = false;
+    have.f_allocs = false;
+    have.f_list   = false;
     for(;;) {
         if( !have.f_float && RecToken( "FLOAT" ) ) {
             CurrAux->cclass |= NO_FLOAT_REG_RETURNS;
-            have.f_float = 1;
+            have.f_float = true;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
             CurrAux->cclass |= NO_STRUCT_REG_RETURNS;
-            have.f_struct = 1;
+            have.f_struct = true;
         } else if( !have.f_allocs && RecToken( "ROUTINE" ) ) {
             CurrAux->cclass |= ROUTINE_RETURN;
-            have.f_allocs = 1;
+            have.f_allocs = true;
         } else if( !have.f_allocs && RecToken( "CALLER" ) ) {
             CurrAux->cclass &= ~ROUTINE_RETURN;
-            have.f_allocs = 1;
+            have.f_allocs = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
             CurrAux->cclass |= SPECIAL_STRUCT_RETURN;
             CurrAux->streturn = RegSet();
-            have.f_list = 1;
+            have.f_list = true;
         } else {
             break;
         }
@@ -1772,24 +1772,24 @@ static  void            GetSaveInfo( void ) {
     hw_reg_set  flt_n_seg;
 
     struct {
-        unsigned f_exact        : 1;
-        unsigned f_nomemory     : 1;
-        unsigned f_list         : 1;
+        boolbit f_exact        : 1;
+        boolbit f_nomemory     : 1;
+        boolbit f_list         : 1;
     } have;
 
-    have.f_exact    = 0;
-    have.f_nomemory = 0;
-    have.f_list     = 0;
+    have.f_exact    = false;
+    have.f_nomemory = false;
+    have.f_list     = false;
     for(;;) {
         if( !have.f_exact && RecToken( "EXACT" ) ) {
             CurrAux->cclass |= MODIFY_EXACT;
-            have.f_exact = 1;
+            have.f_exact = true;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
             CurrAux->cclass |= NO_MEMORY_CHANGED;
-            have.f_nomemory = 1;
+            have.f_nomemory = true;
         } else if( !have.f_list && RecToken( "[" ) ) {
             modlist = RegSet();
-            have.f_list = 1;
+            have.f_list = true;
         } else {
             break;
         }

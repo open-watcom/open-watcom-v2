@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,12 +49,15 @@
 
 #include "clibext.h"
 
+
+#define PAGES_IN_CACHE  0x40U
+
 typedef struct {
-    void            **cache;        /* for extra memory store of dictionary */
-    long            start;          /* recno of start of dictionary         */
-    unsigned        pages;          /* number of pages in dictionary        */
-    long            rec_length;     /* record alignment of obj recs         */
-    unsigned_8      *buffer;
+    void                **cache;        /* for extra memory store of dictionary */
+    long                start;          /* recno of start of dictionary         */
+    unsigned            pages;          /* number of pages in dictionary        */
+    long                rec_length;     /* record alignment of obj recs         */
+    unsigned_8          *buffer;
 } omf_dict_entry;
 
 typedef struct {
@@ -67,15 +71,6 @@ typedef union dict_entry {
     omf_dict_entry      o;
     ar_dict_entry       a;
 } dict_entry;
-
-#define PAGES_IN_CACHE      0x40U
-
-static  bool            OMFSearchExtLib( file_list *, const char *, unsigned long * );
-static  bool            ARSearchExtLib( file_list *, const char *, unsigned long * );
-static  unsigned        OMFCompName( const char *, const unsigned_8 *, unsigned );
-static  void            **AllocDict( unsigned, unsigned );
-static  void            SetDict( file_list *, unsigned );
-
 
 static void BadLibrary( file_list *list )
 /***************************************/
@@ -368,44 +363,109 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     return( reclength );
 }
 
-mod_entry *SearchLib( file_list *lib, const char *name )
-/********************************************************/
-/* Search the specified library file for the specified name & make a module */
+static void FreeDictCache( void **cache, unsigned buckets )
+/*********************************************************/
 {
-    mod_entry           *obj;
-    unsigned long       pos;
-    unsigned long       dummy;
-    bool                retval;
+    while( buckets-- > 0 ) {
+        _LnkFree( cache[buckets] );
+    }
+    _LnkFree( cache );
+}
 
-    pos = 0;
-    if( lib->u.dict == NULL ) {
-        if( CheckLibraryType( lib, &pos, true ) == -1 )
-            return( NULL );
-        if( (lib->flags & STAT_IS_LIB) == 0 ) {
-            BadLibrary( lib );
+static void **AllocDict( unsigned num_buckets, unsigned residue )
+/***************************************************************/
+/* allocate a chunk of dict memory, down from the top */
+{
+    void            **cache;
+    unsigned        bucket;
+
+    _LnkAlloc( cache, sizeof( void * ) * ( num_buckets + 1 ) );
+    if( cache == NULL )
+        return( NULL );
+    for( bucket = 0; bucket < num_buckets; ++bucket ) {
+        _LnkAlloc( cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE );
+        if( cache[bucket] == NULL ) {
+            FreeDictCache( cache, bucket );
             return( NULL );
         }
     }
-    if( lib->flags & STAT_OMF_LIB ) {
-        retval = OMFSearchExtLib( lib, name, &pos );
-    } else {
-        retval = ARSearchExtLib( lib, name, &pos );
-    }
-    if( !retval )
-        return( NULL );
 
-/*
-    update lib struct since we found desired object file
-*/
-    obj = NewModEntry();
-    obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
-    obj->location = pos;
-    obj->f.source = lib;
-    obj->modtime = lib->infile->modtime;
-    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
-    return( obj );
+    if( residue != 0 ) {
+        _LnkAlloc( cache[bucket], residue * DIC_REC_SIZE );
+        if( cache[bucket] == NULL ) {
+            FreeDictCache( cache, bucket );
+            return( NULL );
+        }
+    } else {
+       cache[bucket] = NULL;
+    }
+    return( cache );
 }
 
+static void SetDict( file_list *lib, unsigned dict_page )
+/*******************************************************/
+/* set lib->buffer to the dict_page th page in lib 's dictionary */
+{
+    unsigned        pages;
+    unsigned        num_buckets;
+    unsigned        residue;
+    unsigned        bucket;
+    long            off;
+    long            dictoff;
+    omf_dict_entry  *dict;
+
+    dict = &lib->u.dict->o;
+    if( dict->cache == NULL ) {
+        pages = dict->pages;
+        num_buckets = pages / PAGES_IN_CACHE;
+        residue = pages - num_buckets * PAGES_IN_CACHE;
+        dict->cache = AllocDict( num_buckets, residue );
+        if( dict->cache != NULL ) {
+            QSeek( lib->infile->handle, dict->start, lib->infile->name.u.ptr );
+            for( bucket = 0; bucket < num_buckets; ++bucket ) {
+                QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
+            }
+            QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->infile->name.u.ptr );
+            lib->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
+        }
+    }
+    if( dict->cache == NULL ) {
+        off = dict_page * DIC_REC_SIZE;
+        dictoff = dict->start + off;
+        dict->buffer = (unsigned_8 *)TokBuff;
+        QSeek( lib->infile->handle, dictoff, lib->infile->name.u.ptr );
+        QRead( lib->infile->handle, dict->buffer, DIC_REC_SIZE, lib->infile->name.u.ptr );
+        lib->infile->currpos = dictoff + DIC_REC_SIZE;
+    } else {
+        bucket = dict_page / PAGES_IN_CACHE;
+        residue = dict_page - bucket * PAGES_IN_CACHE;
+        dict->buffer = (unsigned_8 *)dict->cache[bucket] + residue * DIC_REC_SIZE;
+    }
+}
+
+static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned index )
+/*************************************************************************************/
+/* Compare name. */
+{
+    size_t      len;
+    unsigned    off;
+    unsigned    returnval;
+    int         result;
+
+    returnval = 0;
+    off = buff[index];
+    buff += off * 2;
+    len = *buff++;
+    if( LinkFlags & LF_CASE_FLAG ) {
+        result = memcmp( buff, name, len );
+    } else {
+        result = memicmp( buff, name, len );
+    }
+    if( result == 0 && name[len] == '\0' ) {
+        returnval = _ReadLittleEndian16UN( buff + len );
+    }
+    return( returnval );
+}
 
 static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *off )
 /*********************************************************************************/
@@ -448,88 +508,6 @@ static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *of
     }
     return( false );
 }
-
-static void SetDict( file_list *lib, unsigned dict_page )
-/*******************************************************/
-/* set lib->buffer to the dict_page th page in lib 's dictionary */
-{
-    unsigned        pages;
-    unsigned        num_buckets;
-    unsigned        residue;
-    unsigned        bucket;
-    long            off;
-    long            dictoff;
-    omf_dict_entry  *dict;
-
-    dict = &lib->u.dict->o;
-    if( dict->cache == NULL ) {
-        pages = dict->pages;
-        num_buckets = pages / PAGES_IN_CACHE;
-        residue = pages - num_buckets * PAGES_IN_CACHE;
-        dict->cache = AllocDict( num_buckets, residue );
-        if( dict->cache != NULL ) {
-            QSeek( lib->infile->handle, dict->start, lib->infile->name.u.ptr );
-            for( bucket = 0; bucket < num_buckets; ++bucket ) {
-                QRead( lib->infile->handle, dict->cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
-            }
-            QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->infile->name.u.ptr );
-            lib->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
-        }
-    }
-    if( dict->cache == NULL ) {
-        off = dict_page * DIC_REC_SIZE;
-        dictoff = dict->start + off;
-        dict->buffer = (unsigned_8 *)TokBuff;
-        QSeek( lib->infile->handle, dictoff, lib->infile->name.u.ptr );
-        QRead( lib->infile->handle, dict->buffer, DIC_REC_SIZE, lib->infile->name.u.ptr );
-        lib->infile->currpos = dictoff + DIC_REC_SIZE;
-    } else {
-        bucket = dict_page / PAGES_IN_CACHE;
-        residue = dict_page - bucket * PAGES_IN_CACHE;
-        dict->buffer = (unsigned_8 *)dict->cache[bucket] + residue * DIC_REC_SIZE;
-    }
-}
-
-
-static void FreeDictCache( void **cache, unsigned buckets )
-/*********************************************************/
-{
-    while( buckets-- > 0 ) {
-        _LnkFree( cache[buckets] );
-    }
-    _LnkFree( cache );
-}
-
-static void **AllocDict( unsigned num_buckets, unsigned residue )
-/***************************************************************/
-/* allocate a chunk of dict memory, down from the top */
-{
-    void            **cache;
-    unsigned        bucket;
-
-    _LnkAlloc( cache, sizeof( void * ) * ( num_buckets + 1 ) );
-    if( cache == NULL )
-        return( NULL );
-    for( bucket = 0; bucket < num_buckets; ++bucket ) {
-        _LnkAlloc( cache[ bucket ], DIC_REC_SIZE * PAGES_IN_CACHE );
-        if( cache[ bucket ] == NULL ) {
-            FreeDictCache( cache, bucket );
-            return( NULL );
-        }
-    }
-
-    if( residue != 0 ) {
-        _LnkAlloc( cache[bucket], residue * DIC_REC_SIZE );
-        if( cache[bucket] == NULL ) {
-            FreeDictCache( cache, bucket );
-            return( NULL );
-        }
-    } else {
-       cache[bucket] = NULL;
-    }
-    return( cache );
-}
-
 
 bool DiscardDicts( void )
 /******************************/
@@ -585,30 +563,6 @@ void BurnLibs( void )
     }
 }
 
-static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned index )
-/*************************************************************************************/
-/* Compare name. */
-{
-    size_t      len;
-    unsigned    off;
-    unsigned    returnval;
-    int         result;
-
-    returnval = 0;
-    off = buff[index];
-    buff += off * 2;
-    len = *buff++;
-    if( LinkFlags & LF_CASE_FLAG ) {
-        result = memcmp( buff, name, len );
-    } else {
-        result = memicmp( buff, name, len );
-    }
-    if( result == 0 && name[len] == '\0' ) {
-        returnval = _ReadLittleEndian16UN( buff + len );
-    }
-    return( returnval );
-}
-
 static int ARCompName( const void *key, const void *vbase )
 /**********************************************************/
 {
@@ -651,6 +605,44 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
         return( true );
     }
     return( false );
+}
+
+mod_entry *SearchLib( file_list *lib, const char *name )
+/********************************************************/
+/* Search the specified library file for the specified name & make a module */
+{
+    mod_entry           *obj;
+    unsigned long       pos;
+    unsigned long       dummy;
+    bool                retval;
+
+    pos = 0;
+    if( lib->u.dict == NULL ) {
+        if( CheckLibraryType( lib, &pos, true ) == -1 )
+            return( NULL );
+        if( (lib->flags & STAT_IS_LIB) == 0 ) {
+            BadLibrary( lib );
+            return( NULL );
+        }
+    }
+    if( lib->flags & STAT_OMF_LIB ) {
+        retval = OMFSearchExtLib( lib, name, &pos );
+    } else {
+        retval = ARSearchExtLib( lib, name, &pos );
+    }
+    if( !retval )
+        return( NULL );
+
+/*
+    update lib struct since we found desired object file
+*/
+    obj = NewModEntry();
+    obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
+    obj->location = pos;
+    obj->f.source = lib;
+    obj->modtime = lib->infile->modtime;
+    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    return( obj );
 }
 
 char *GetARName( const ar_header *header, file_list *list, unsigned long *loc )

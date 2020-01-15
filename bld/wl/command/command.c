@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,8 +82,8 @@ void            FillOutFilePtrs( void ) {}
 void            FreeImpNameTab( void ) {}
 void            FreeExportList( void ) {}
 
-extern void FreeList( void *parm )
-/*******************************/
+void FreeList( void *parm )
+/*************************/
 /* Free a list of nodes. */
 {
     node *      curr;
@@ -95,10 +95,10 @@ extern void FreeList( void *parm )
     }
 }
 
-extern void FreeSegFlags( seg_flags * curr )
-/******************************************/
+void FreeSegFlags( xxx_seg_flags *curr )
+/**************************************/
 {
-    seg_flags * next;
+    xxx_seg_flags   *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
@@ -288,36 +288,33 @@ static void ProcessInfo( void )
 /*****************************/
 /* the "mainline" routine, protected from suiciding things */
 {
-    char *      fname;
     f_handle    file;
     sysblock *  sys;
 
     Root = NewSection();
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME, NULL );
-    if( file == NIL_FHANDLE )
-        return;   /* NO WLINK.LNK */
-    _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
-    memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
-    SetCommandFile( file, fname );
-    ParseDirectives();
-    Burn();   /* clean up everything but the system list */
-    FreeLinkStruct();
-    for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-        LnkMsg( WRN+MSG_INTERNAL, "s", sys->name );
-        SetUpCommands();
-        NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
-        sys->name = NULL;   /* see note 1 at end of function */
+    if( file != NIL_FHANDLE ) {
+        SetCommandFile( file, INIT_FILE_NAME );
         ParseDirectives();
-        Burn();
+        Burn();   /* clean up everything but the system list */
         FreeLinkStruct();
+        for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
+            LnkMsg( WRN+MSG_INTERNAL, "s", sys->name );
+            SetUpCommands();
+            NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
+            if( sys->name != NULL ) {
+                _LnkFree( sys->name );
+                sys->name = NULL;
+            }
+            ParseDirectives();
+            Burn();
+            FreeLinkStruct();
+        }
+        BurnSystemList();
     }
-    BurnSystemList();
     _LnkFree( Root );
 }
-/* NOTE for above function. This needs to be done, since the name will
- * automatically be freed by the linker's command parser. To save the name,
- * pass an allocated copy of it to NewCommandSource */
 
 void main( int argc, char * argv[] )
 /**********************************/

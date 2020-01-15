@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #include "wio.h"
 #include "diskos.h"
 #include "clcommon.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #ifdef TRMEM
 #include "trmem.h"
 #endif
@@ -77,10 +78,11 @@ static char *DebugOptions[] = {
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
 
-static void memLine( void *fh, const char *buf, size_t size )
+static void memPrintLine( void *fh, const char *buf, size_t len )
 {
-    fh=fh;size=size;
-    PrintMsg( buf );
+    /* unused parameters */ (void)fh; (void)len;
+
+    PrintMsg( "%s\n", buf );
 }
 #endif
 
@@ -175,7 +177,7 @@ void  MemInit( void )
 /*******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memLine,
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
@@ -309,8 +311,8 @@ void  AddNameObj( const char *name )
     list        *last_name;
     list        *new_name;
     char        path[_MAX_PATH];
-    PGROUP      pg1;
-    PGROUP      pg2;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 
     last_name = NULL;
     for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
@@ -382,7 +384,7 @@ char  *GetName( const char *path, char *buffer )
     const char      *p;
 #ifndef __UNIX__
     static DIR      *dirp;
-    struct dirent   *direntp;
+    struct dirent   *dire;
 
     if( path != NULL ) {                /* if given a filespec to open,  */
         if( *path == '\0' ) {           /*   but filespec is empty, then */
@@ -404,9 +406,9 @@ char  *GetName( const char *path, char *buffer )
         }
     }
 
-    while( (direntp = readdir( dirp )) != NULL ) {
-        if( ( direntp->d_attr & ATTR_MASK ) == 0 ) {    /* valid file? */
-            return( direntp->d_name );
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ( dire->d_attr & ATTR_MASK ) == 0 ) {    /* valid file? */
+            return( dire->d_name );
         }
     }
     closedir( dirp );
@@ -510,7 +512,7 @@ int HasFileExtension( const char *p, const char *ext )
     const char  *dot;
 
     if( (dot = strrchr( p, '.' )) != NULL ) {
-        if( fname_cmp( dot, ext ) == 0 ) {
+        if( fname_cmp( dot + 1, ext ) == 0 ) {
             return( 1 );                /* indicate file extension matches */
         }
     }

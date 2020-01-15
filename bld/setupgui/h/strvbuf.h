@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +66,11 @@ int VbufCompVbuf(               // COMPARE A VBUF
 int VbufCompStr(                // COMPARE A VBUFs
     const VBUF *vbuf1,          // - VBUF structure
     const char *str,            // - string
+    bool igncase )              // - bool ignore case
+;
+int VbufCompExt(                // COMPARE A VBUFs
+    const VBUF *vbuf1,          // - VBUF structure
+    const char *str,            // - file name extension
     bool igncase )              // - bool ignore case
 ;
 int VbufCompBuffer(             // COMPARE A VBUFs
@@ -181,7 +187,7 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
 void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 ;
-void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF END
+void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF END
     VBUF *vbuf )                // - VBUF structure
 ;
 void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
@@ -247,7 +253,7 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 // libzip functions (setupio.c)
 #define zip_open_vbuf(n,f,e)        zip_open(VbufString(n), f, e)
 
-// status window functions (guistat.c)
+// status window functions (guistats.c)
 #define StatusLinesVbuf(m,p)        StatusLines(m, VbufString(p))
 
 // message box functions (utils.c)

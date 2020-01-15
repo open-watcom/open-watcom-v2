@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,9 +124,11 @@ typedef struct {
 typedef unsigned_64     signed_64;
 
 #if defined( _WIN64 )
-typedef unsigned __int64    pointer_int;
+typedef __int64             pointer_int;
+typedef unsigned __int64    pointer_uint;
 #else
-typedef unsigned long       pointer_int;
+typedef long                pointer_int;
+typedef unsigned long       pointer_uint;
 #endif
 
 /* Macros for low/high end access on little and big endian machines */
@@ -163,8 +166,8 @@ typedef unsigned long       pointer_int;
  *  assembler where instructions to byte swap data in registers or read/write
  *  memory access with byte swapping is available.
  *
- *  NOTE:   The SWAP_XX macros will swap data in place. If you only want to take a 
- *          a copy of the data and leave the original intact, then use the SWAPNC_XX 
+ *  NOTE:   The SWAP_XX macros will swap data in place. If you only want to take a
+ *          a copy of the data and leave the original intact, then use the SWAPNC_XX
  *          macros.
  */
 #define SWAPNC_16(w)    (\
@@ -186,7 +189,7 @@ typedef unsigned long       pointer_int;
                             (((w) & 0x0000FF0000000000ULL) >> 24) |\
                             (((w) & 0x00FF000000000000ULL) >> 40) |\
                             (((w) & 0xFF00000000000000ULL) >> 56)\
-                        )   
+                        )
 
 #if defined( __BIG_ENDIAN__ )
     /* Macros to get little endian data */

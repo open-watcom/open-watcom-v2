@@ -92,15 +92,21 @@ static  hw_reg_set RegTab[] = {
 
 static  hw_reg_set SegTab[] = {
 #define SEGS 6
-        HW_D( HW_ES ),          HW_D( HW_CS ),
-        HW_D( HW_SS ),          HW_D( HW_DS ),
-        HW_D( HW_FS ),          HW_D( HW_GS )
+        HW_D( HW_ES ),
+        HW_D( HW_CS ),
+        HW_D( HW_SS ),
+        HW_D( HW_DS ),
+        HW_D( HW_FS ),
+        HW_D( HW_GS )
 };
 
 static  fp_patches SegPatchTab[] = {
-        FPP_ES,         FPP_CS,
-        FPP_SS,         FPP_DS,
-        FPP_FS,         FPP_GS
+        FPP_ES,
+        FPP_CS,
+        FPP_SS,
+        FPP_DS,
+        FPP_FS,
+        FPP_GS
 };
 
 hw_reg_set FPRegs[] = {

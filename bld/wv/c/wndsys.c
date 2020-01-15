@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -490,7 +490,7 @@ void InitGadget( void )
     WndGadgetInit();
     MaxGadgetLength = 0;
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[i] );
+        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_uint)WndGadgetHint[i] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
         if( GUIGetHotSpotSize( i, &size ) && size.x > MaxGadgetLength ) {

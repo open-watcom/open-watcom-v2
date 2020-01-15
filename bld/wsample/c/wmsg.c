@@ -51,6 +51,7 @@
 #include "smpstuff.h"
 #include "wreslang.h"
 #include "wmsg.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -98,25 +99,23 @@ static bool MsgReadErrArray( void )
 bool MsgInit( void )
 {
     char        buffer[_MAX_PATH];
-#if defined(_PLS)
-    char        *fname;
-    char        fullpath[_MAX_PATH];
-#endif
     bool        rc;
 
     hInstance.status = 0;
     if( _cmdname( buffer ) != NULL ) {
         rc = OpenResFile( &hInstance, buffer );
-#if defined(_PLS)
+  #if defined(_PLS)
         if( !rc ) {
-            _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
-            _makepath( buffer, NULL, NULL, fname, ".exp" );
-            _searchenv( buffer, "PATH", fullpath );
-            if( fullpath[0] != '\0' ) {
-                rc = OpenResFile( &hInstance, fullpath );
+            PGROUP2     pg;
+
+            _splitpath2( buffer, pg.buffer, NULL, NULL, &pg.fname, NULL );
+            _makepath( buffer, NULL, NULL, pg.fname, "exp" );
+            _searchenv( buffer, "PATH", pg.buffer );
+            if( pg.buffer[0] != '\0' ) {
+                rc = OpenResFile( &hInstance, pg.buffer );
             }
         }
-#endif
+  #endif
         if( rc ) {
             MsgReadErrArray();
             CloseResFile( &hInstance );

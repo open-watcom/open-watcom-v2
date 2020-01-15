@@ -942,6 +942,8 @@ static int null_arg( PTR_SCNF_SPECS specs, my_va_list *arg )
     FAR_STRING      str;
     va_list         args_copy;
 
+    /* unused parameters */ (void)specs;
+
     str = NULL;
     va_copy( args_copy, arg->v );
 #if defined( __FAR_SUPPORT__ )

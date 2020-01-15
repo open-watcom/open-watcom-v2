@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,6 @@ typedef union {
     long        val;
 } ScanValue;
 
-extern BOOL     ScanInit( char *fname );
+extern bool     ScanInit( char *fname );
 extern int      Scan( ScanValue *val );
 extern void     ScanFini( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ typedef struct wp_srcfile {
     int                         samp_line;
     size_t                      src_buff_len;
     int                         src_rows;
-    bool                        src_eof         : 1;
+    boolbit                     src_eof         : 1;
 } wp_srcfile;
 
 #endif

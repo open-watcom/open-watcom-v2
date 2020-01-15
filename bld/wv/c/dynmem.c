@@ -255,11 +255,13 @@ static bool         Closing = false;
 static void DbgMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
     if( !Closing )
         PopErrBox( buff );
-    fwrite( buff, 1, len, TrackFile );
+    if( TrackFile != NULL ) {
+        fprintf( TrackFile, "%s\n", buff );
+    }
 }
 
 static unsigned DbgMemPrtList( void )
@@ -306,6 +308,7 @@ static void MemTrackFini( void )
             PopErrBox( UnFreed );
         }
         fclose( TrackFile );
+        TrackFile = NULL;
     }
     DbgMemClose();
 }
@@ -373,7 +376,9 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 {
     /* unused parameters */ (void)parm;
 
-    fwrite( buff, 1, len, TrackFile );
+    if( TrackFile != NULL && len > 0 ) {
+        fprintf( TrackFile, "%s\n", buff );
+    }
 }
 
 #endif  /* TRMEM */
@@ -434,6 +439,7 @@ void GUIMemClose( void )
     _trmem_close( DbgMemHandle );
     if( TrackFile != stderr ) {
         fclose( TrackFile );
+        TrackFile = NULL;
     }
 #endif
 }

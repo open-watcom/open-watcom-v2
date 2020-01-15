@@ -79,7 +79,7 @@ extra_cpp_flags = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
-extra_c_flags = -s -fh
+extra_c_flags = -fh
 
 extra_c_flags_axp = -ai -aq
 extra_c_flags_i86 = -zu

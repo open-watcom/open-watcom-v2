@@ -43,7 +43,7 @@
 /*
  * How we get our registers:
  *
- * INT.ASM has a routine, IntHandler, that is invoked for all faults.
+ * int.asm has a routine, IntHandler, that is invoked for all faults.
  * In that routine, all registers are pushed on the stack, and
  * we can manipulte those.  This is what is done for a fault in a 16-bit
  * application.
@@ -171,12 +171,12 @@ static void restoreState( volatile fault_frame *ff )
 /*
  * newStack:
  *
- * set a new SS:ESP for us to reload in INT.ASM.  Again, we put it in
+ * set a new SS:ESP for us to reload in int.asm.  Again, we put it in
  * the code segment because we lack data segment addressability when we
  * need it.
  *
  * Because of all the misc. crap on the stack, we need to do some magical
- * junk in IntHandler (INT.ASM) to handle changing SS or ESP.  We load
+ * junk in IntHandler (int.asm) to handle changing SS or ESP.  We load
  * up the new stack, and then re-push all of the crap (the int_frame struct).
  *
  * Note that this new stack is only used if we are not processing

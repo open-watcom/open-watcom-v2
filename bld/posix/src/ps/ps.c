@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,11 @@
 
 #include <stdio.h>
 #if defined(__NT__)
-void main( void ) { printf( "Not implemented for NT\n" ); }
+int main( void ) { printf( "Not implemented for NT\n" ); return( 0 ); }
 #elif defined(__OS2__)
-void main( void ) { printf( "Not implemented for OS/2\n" ); }
+int main( void ) { printf( "Not implemented for OS/2\n" ); return( 0 ); }
 #elif defined(__QNX__)
-void main( void ) { printf( "Not implemented for QNX\n" ); }
+int main( void ) { printf( "Not implemented for QNX\n" ); return( 0 ); }
 #else
 #include <stdlib.h>
 #include <dos.h>
@@ -166,8 +167,9 @@ static void do_ps( void )
     }
 }
 
-void main( void )
+int main( void )
 {
     do_ps();
+    return( 0 );
 }
 #endif

@@ -730,7 +730,7 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
     default:
         return( DS_FAIL );
     }
-    if( memcmp( head.signature, NLM_SIGNATURE, sizeof( head.signature ) ) != 0 ) {
+    if( memcmp( head.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) != 0 ) {
         return( DS_FAIL );
     }
     if( head.version > NLM_VERSION ) {

@@ -20,8 +20,6 @@ cpp_dir_win  = $(wclass_dir)/win/cpp
 
 inc_dirs = $(inc_dir_$(host_os)) -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 
-extra_c_flags = -s
-
 extra_c_flags_i86 = -zc -zm
 
 objs = &

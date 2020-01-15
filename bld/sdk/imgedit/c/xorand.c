@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ static img_node         *activeImage = NULL;
 /*
  * MakeBitmap - make the bitmap
  */
-void MakeBitmap( img_node *node, BOOL isnew )
+void MakeBitmap( img_node *node, bool isnew )
 {
     HDC                 hdc;
     WPI_PRES            pres;
@@ -72,7 +73,7 @@ void MakeBitmap( img_node *node, BOOL isnew )
 /*
  * MakeIcon - create the AND and XOR bitmaps and draw the icon (or cursor)
  */
-void MakeIcon( img_node *node, BOOL isnew )
+void MakeIcon( img_node *node, bool isnew )
 {
     if( !isnew ) {
         activeImage = node;
@@ -140,7 +141,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
  *                the view window
  */
 void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
-                   BOOL fFillRgn, WPI_RECT *r, BOOL is_rect )
+                   bool fFillRgn, WPI_RECT *r, bool is_rect )
 {
     HBRUSH      oldbrush;
     HBRUSH      hbrush;
@@ -231,7 +232,7 @@ void FillXorAnd( COLORREF brushcolor, WPI_POINT *pt, wie_clrtype colortype )
 {
     fill_info_struct    fillinfo;
 
-    fillinfo.img_type = activeImage->imgtype;
+    fillinfo.imgtype = activeImage->imgtype;
     fillinfo.colortype = colortype;
     fillinfo.pt = *pt;
 
@@ -269,7 +270,7 @@ void FocusOnImage( HWND hwnd )
 
     if( activeImage != NULL  ) {
         RedrawPrevClip( activeImage->hwnd );
-        SetRectExists( FALSE );
+        SetRectExists( false );
     }
 
     activeImage = SelectImage( hwnd );

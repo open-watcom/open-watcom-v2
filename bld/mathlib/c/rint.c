@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    Portions Copyright (c) 2014 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -28,36 +28,38 @@
 * Description:  Rounds the argument to a nearby integer without possibility
 *               of an exception base don the current rounding direction
 *
-* Notes: This function should throw an exception if the result of rounding 
-*        will be either inexact or overflow the double.  It currently does 
+* Notes: This function should throw an exception if the result of rounding
+*        will be either inexact or overflow the double.  It currently does
 *        neither.
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <math.h>
 #include <fenv.h>
 
-_WMRTLINK double rint(double x)
+
+_WMRTLINK double rint( double x )
 {
-int roundmode;
+    int roundmode;
 
     roundmode = fegetround();
-    switch(roundmode) {
-        case FE_DOWNWARD:
-            return floor(x);
-        case FE_UPWARD:
-            return ceil(x);
-        case FE_TOWARDZERO:
-            if(x < 0)
-                return ceil(x);
-            else
-                return floor(x);
-        case FE_TONEAREST:
-        default:
-            return round(x);
+    switch( roundmode ) {
+    case FE_DOWNWARD:
+        return( floor( x ) );
+    case FE_UPWARD:
+        return( ceil( x ) );
+    case FE_TOWARDZERO:
+        if( x < 0 ) {
+            return( ceil( x ) );
+        } else {
+            return( floor( x ) );
+        }
+    case FE_TONEAREST:
+    default:
+        return( round( x ) );
     }
-
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,9 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "preproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 typedef struct {
@@ -134,7 +138,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         ok = (name != NULL);
     }
 
-    WSetWaitCursor( parent, TRUE );
+    WSetWaitCursor( parent, true );
 
     if( ok ) {
         flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
@@ -175,7 +179,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 
     PP_Fini();
 
-    WSetWaitCursor( parent, FALSE );
+    WSetWaitCursor( parent, false );
 
     return( name );
 }
@@ -201,19 +205,17 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     return( ret );
 }
 
-char *WCreateSymName( char *fname )
+char *WCreateSymFileName( const char *fname )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WStrDup( fn_path ) );
 }

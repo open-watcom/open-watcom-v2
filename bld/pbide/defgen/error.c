@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,10 +49,10 @@ void SemLine( char *fname, char *lineno ) {
     CurLine = lineno;
 }
 
-void ReportError( char *msg, ... ) {
+void ReportError( const char *msg, ... ) {
     va_list     al;
 
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     if( CurFile != NULL && CurLine != NULL ) {
         printf( "%s(%s): ", CurFile, CurLine, msg );
     }
@@ -61,7 +62,7 @@ void ReportError( char *msg, ... ) {
     va_end( al );
 }
 
-void ReportWarning( char *msg, ... ) {
+void ReportWarning( const char *msg, ... ) {
     va_list     al;
 
     if( CurFile != NULL && CurLine != NULL ) {
@@ -73,7 +74,7 @@ void ReportWarning( char *msg, ... ) {
     va_end( al );
 }
 
-void DebugOut( char *msg, ... ) {
+void DebugOut( const char *msg, ... ) {
     va_list     al;
 
     va_start( al, msg );

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -186,7 +185,7 @@ _WCRTLINK struct hostent *gethostbyname( const char *name )
     ret.h_addrtype = AF_INET;
     ret.h_length = sizeof( uint32_t );
     list[0] = &ip;
-    list[1] = 0;    
+    list[1] = 0;
     ret.h_addr_list = (char **)list;
     return( &ret );
 #else

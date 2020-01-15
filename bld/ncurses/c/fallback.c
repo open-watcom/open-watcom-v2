@@ -5,8 +5,10 @@
 #include <curses_p.h>
 #include <term.h>
 
-NCURSES_EXPORT(const TERMTYPE *) _nc_fallback (const char *name GCC_UNUSED)
+NCURSES_EXPORT(const TERMTYPE *) _nc_fallback (const char *name)
 {
-	/* the fallback list is empty */
-	return((TERMTYPE *)0);
+        /* unused parameters */ (void)name;
+
+        /* the fallback list is empty */
+        return((TERMTYPE *)0);
 }

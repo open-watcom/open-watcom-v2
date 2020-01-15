@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,13 +325,11 @@ void DlgCmd( void )
             if( _IsOn( SW_REMOTE_LINK ) ) {
                 printf( "Can't break remote task!\n" );
             } else {
-                HMODULE hmod;
-                PFN     proc = NULL;
-
-                DosQueryModuleHandle( TrapParms, &hmod );
-                DosQueryProcAddr( hmod, 5, 0, &proc );
-//                if( proc != NULL )
-//                    proc();
+//
+// NYI  OS/2 InterruptProgram must be implemented and exported from TRAP DLL
+//          TRAP_EXTFUNC( InterruptProgram )() procedure must call this export
+//
+//                TRAP_EXTFUNC( InterruptProgram )();
             }
             // break the task
             break;
@@ -349,6 +347,8 @@ int main( int argc, char **argv )
     char        buff[256];
     TID         tid;
     APIRET      rc;
+
+    /* unused parameters */ (void)argc; (void)argv;
 
     MemInit();
     getcmd( buff );
@@ -424,12 +424,16 @@ void DUIStatusText( const char *text )
 
 bool DUIDlgGivenAddr( const char *title, address *value )
 {
+    /* unused parameters */ (void)title; (void)value;
+
     // needed when segment's don't map (from new/sym command)
     return( false );
 }
 
 bool DlgNewWithSym( const char *title, char *buff, size_t buff_len )
 {
+    /* unused parameters */ (void)title; (void)buff; (void)buff_len;
+
     // used by print command with no arguments
     return( true );
 }
@@ -442,14 +446,17 @@ bool DlgUpTheStack( void )
 
 bool DlgAreYouNuts( unsigned long mult )
 {
+    /* unused parameters */ (void)mult;
+
     // used when too many break on write points are set
     return( false );
 }
 
 bool DlgBackInTime( bool warn )
 {
+    /* unused parameters */ (void)warn;
+
     // used when trying to trace, but we've backed up over a call or asynch
-    warn = warn;
     return( false );
 }
 
@@ -461,6 +468,8 @@ bool DlgIncompleteUndo( void )
 
 bool DlgBreak( address addr )
 {
+    /* unused parameters */ (void)addr;
+
     // used when an error occurs in the break point expression or it is entered wrong
     return( false );
 }
@@ -473,6 +482,8 @@ bool DUIInfoRelease( void )
 
 void DUIUpdate( update_flags flags )
 {
+    /* unused parameters */ (void)flags;
+
     // flags indicates what conditions have changed.  They should be saved
     // until an appropriate time, then windows updated accordingly
 }
@@ -500,6 +511,8 @@ void DUIFreshAll( void )
 
 bool DUIStopRefresh( bool stop )
 {
+    /* unused parameters */ (void)stop;
+
     // temporarily turn off/on screen refreshing, cause we're going to run a
     // big command file and we don't want flashing.
     return( false );
@@ -561,11 +574,15 @@ void DUIFlushKeys( void )
 
 void DUIPlayDead( bool dead )
 {
+    /* unused parameters */ (void)dead;
+
     // the app is about to run - make the debugger play dead
 }
 
 void DUISysEnd( bool pause )
 {
+    /* unused parameters */ (void)pause;
+
     // done calling system();
 }
 
@@ -581,6 +598,8 @@ void DUIRingBell( void )
 
 bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
+    /* unused parameters */ (void)ambig; (void)num_items;
+
     // the expression processor detected an ambiguous symbol.  Ask user which one
     *choice = 0;
     return( true );
@@ -699,6 +718,8 @@ int TabIntervalGet( void )
 }
 void TabIntervalSet( int new )
 {
+    /* unused parameters */ (void)new;
+
     // stub for old UI
 }
 
@@ -766,6 +787,7 @@ void ModChangeOptions( void )
 
 void WndVarInspect( const char *buff )
 {
+    /* unused parameters */ (void)buff;
 }
 
 //void *WndAsmInspect( address addr )
@@ -789,24 +811,31 @@ void WndAsmInspect( address addr )
 //void *WndSrcInspect( address addr )
 void WndSrcInspect( address addr )
 {
+    /* unused parameters */ (void)addr;
+
     // used by examine/source command
 //    return( NULL );
 }
 
 void WndMemInspect( address addr, char *next, unsigned len, mad_type_handle mth )
 {
+    /* unused parameters */ (void)addr; (void)next; (void)len; (void)mth;
+
     // used by examine/byte/word/etc command
 }
 
 void WndIOInspect( address *addr, mad_type_handle mth )
 {
+    /* unused parameters */ (void)addr; (void)mth;
+
     // used by examine/iobyte/ioword/etc command
 }
 
 void WndTmpFileInspect( const char *file )
 {
+    /* unused parameters */ (void)file;
+
     // used by capture command
-    file = file;
 }
 
 void GraphicDisplay( void )
@@ -816,14 +845,16 @@ void GraphicDisplay( void )
 
 void VarUnMapScopes( image_entry *img )
 {
+    /* unused parameters */ (void)img;
+
     // unmap variable scopes - prog about to restart
-    img = img;
 }
 
 void VarReMapScopes( image_entry *img )
 {
+    /* unused parameters */ (void)img;
+
     // remap variable scopes - prog about to restart
-    img = img;
 }
 
 void VarFreeScopes( void )
@@ -833,8 +864,9 @@ void VarFreeScopes( void )
 
 void SetLastExe( const char *name )
 {
+    /* unused parameters */ (void)name;
+
     // remember last exe debugged name
-    name = name;
 }
 
 void DUIProcPendingPaint( void )
@@ -897,10 +929,12 @@ void DUIDirty( void )
 
 void DUISrcOrAsmInspect( address addr )
 {
+    /* unused parameters */ (void)addr;
 }
 
 void DUIAddrInspect( address addr )
 {
+    /* unused parameters */ (void)addr;
 }
 
 void DUIRemoveBreak( brkp *bp )
@@ -949,21 +983,20 @@ bool DUIImageLoaded( image_entry *image, bool load,
 void DUICopySize( void *cookie, unsigned long size )
 /**************************************************/
 {
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)cookie; (void)size;
 }
 
 void DUICopyCopied( void *cookie, unsigned long size )
 /****************************************************/
 {
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)cookie; (void)size;
 }
 
 bool DUICopyCancelled( void * cookie )
 /************************************/
 {
-    cookie = cookie;
+    /* unused parameters */ (void)cookie;
+
     return( false );
 }
 
@@ -975,12 +1008,12 @@ unsigned DUIDlgAsyncRun( void )
 
 void DUISetNumLines( int num )
 {
-    num = num;
+    /* unused parameters */ (void)num;
 }
 
 void DUISetNumColumns( int num )
 {
-    num = num;
+    /* unused parameters */ (void)num;
 }
 
 void DUIInitRunThreadInfo( void )
@@ -993,7 +1026,8 @@ void DUIScreenOptInit( void )
 
 bool DUIScreenOption( const char *start, unsigned len, int pass )
 {
-    start=start;len=len;pass=pass;
+    /* unused parameters */ (void)start; (void)len; (void)pass;
+
     return( true );
 }
 

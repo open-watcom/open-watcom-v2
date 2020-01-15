@@ -11,6 +11,7 @@ qnx_qlib = ../../../qnx/qlib/$(qlib)
 
 libs = $+ &
     $(pfx__)alias$(__sfx) &
+    $(pfx__)cgsupp$(__sfx) &
     $(pfx__)char$(__sfx) &
     $(pfx__)conio$(__sfx) &
     $(pfx__)convert$(__sfx) &
@@ -40,6 +41,5 @@ pfx__ =
 __sfx =
 
 libs += $+ &
-    ../../../cgsupp/library/generic.$(processor)/$(libsubdir)/$(libname).lib &
     $(qnx_qlib) &
     $-

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +114,7 @@ static unsigned char expandChar( char **str ) {
     case '5':
     case '6':
     case '7':   return( (unsigned char)strtol( *str, str, 8 ) );
-    case 'x':   return( (unsigned char)strtol( *str + 1, str, 16 ) );
+    case 'x':   return( (unsigned char)strtol( *str, str, 16 ) );
     default:    return( ch );
     }
 }
@@ -240,8 +241,8 @@ static void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) 
 }
 
 
-void main( int argc, char **argv ) {
-
+int main( int argc, char **argv )
+{
     int             ch;
     unsigned char   string1[MAX_STR];
     size_t          string1_len;
@@ -278,5 +279,5 @@ void main( int argc, char **argv ) {
     setmode( fileno( stdin ), O_BINARY );
     setmode( fileno( stdout ), O_BINARY );
     doTranslate( string1_len, string1, string2_len, string2 );
-    exit( 0 );
+    return( 0 );
 }

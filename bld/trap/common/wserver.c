@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,7 +170,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
     if( !hwndMain ) return( FALSE );
 
 #ifdef __NT__
-    TrapTellHWND( hwndMain );
+    TRAP_EXTFUNC( InfoFunction )( hwndMain );
 #endif
 
     /*

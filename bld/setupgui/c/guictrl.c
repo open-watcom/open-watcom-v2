@@ -179,51 +179,52 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
     gui_control_info    *control;
     gui_ctl_id          id;
     char                *str;
+    char                *p;
 
     control = &gui_controls[num_controls];
     control->control_class = GUI_PUSH_BUTTON;
 
-    str = GUIStrDup( text, NULL );
-    switch( *str ) {
+    p = str = GUIStrDup( text, NULL );
+    switch( *p ) {
     case '0':
         id = CTL_FIRST;
-        ++str;
+        p++;
         break;
     case '-':
         id = CTL_PREVIOUS;
-        ++str;
+        p++;
         break;
     case '+':
         id = CTL_OK;
-        ++str;
+        p++;
         break;
     case '^':
         id = CTL_CANCEL;
-        ++str;
+        p++;
         break;
     case '*':
         id = CTL_DONE;
-        ++str;
+        p++;
         break;
     case '?':
         id = CTL_HELP;
-        ++str;
+        p++;
         break;
     case '>':
         id = CTL_SKIP;
-        ++str;
+        p++;
         break;
     default:
-        str = TrimQuote( str );
-        if( stricmp( str, "Cancel" ) == 0 ) {
+        p = TrimQuote( p );
+        if( stricmp( p, "Cancel" ) == 0 ) {
             id = CTL_CANCEL;
-        } else if( stricmp( str, "Done" ) == 0 ) {
+        } else if( stricmp( p, "Done" ) == 0 ) {
             id = CTL_DONE;
-        } else if( stricmp( str, "OK" ) == 0 ) {
+        } else if( stricmp( p, "OK" ) == 0 ) {
             id = CTL_OK;
-        } else if( stricmp( str, "Options" ) == 0 ) {
+        } else if( stricmp( p, "Options" ) == 0 ) {
             id = CTL_OPTIONS;
-        } else if( stricmp( str, "Help" ) == 0 ) {
+        } else if( stricmp( p, "Help" ) == 0 ) {
             id = CTL_HELP;
         } else {
             id = VarGetId( var_handle );
@@ -234,8 +235,12 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
         }
         break;
     }
-    str = TrimQuote( str );
-    control->text = str;
+    p = TrimQuote( p );
+    if( p != str ) {
+        p = GUIStrDup( p, NULL );
+        GUIMemFree( str );
+    }
+    control->text = p;
     but_pos = BUTTON_POS( num_buttons, of, cols, bwidth );
 
     DLG_SET_RECT( *control, but_pos, row, but_pos + BW, row );

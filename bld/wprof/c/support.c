@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,11 @@
 #include "ovltab.h"
 #include "msg.h"
 #include "memutil.h"
-#include "clibext.h"
 #include "support.h"
 #include "wpdata.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 #define BYTE_SIZE       (8)      /* Number of bits in a byte */
@@ -63,10 +65,10 @@
 #endif
 
 static struct {
-    bool                end_of_file     : 1;    /* EOF was reached */
-    bool                end_of_segment  : 1;    /* EOS was reached */
-    bool                is_32_bit       : 1;    /* 386/486 application */
-    bool                segment_split   : 1;    /* cached seg isnt continuous */
+    boolbit             end_of_file     : 1;    /* EOF was reached */
+    boolbit             end_of_segment  : 1;    /* EOS was reached */
+    boolbit             is_32_bit       : 1;    /* 386/486 application */
+    boolbit             segment_split   : 1;    /* cached seg isnt continuous */
 } exeFlags;
 
 static uint_16          cacheSegment;
@@ -975,16 +977,12 @@ STATIC bool LoadOverlayInfo( void )
     ovl_entry               *entry;
     ovl_entry               *entry_ptr;
     char                    *ovl_name;
-    char                    buffer[_MAX_PATH];
-    char                    buffer1[_MAX_PATH2];
+    char                    buffer1[_MAX_PATH];
     char                    buffer2[_MAX_PATH2];
-    char                    buffer3[_MAX_PATH2];
-    char                    *drive;
-    char                    *dir;
-    char                    *name;
-    char                    *ext;
     int                     count;
     size_t                  len;
+    PGROUP2                 pg1;
+    PGROUP2                 pg2;
 
     image = CurrSIOData->curr_image;
     fp = ExeOpen( image->name );
@@ -1050,21 +1048,21 @@ STATIC bool LoadOverlayInfo( void )
                 ErrorMsg( LIT( Cannot_Process_Ovly ), image->name );
                 return( false );
             }
-            if( fread( buffer, 1, _MAX_PATH, fp ) != _MAX_PATH ) {
+            if( fread( buffer1, 1, _MAX_PATH, fp ) != _MAX_PATH ) {
                 ErrorMsg( LIT( Cannot_Process_Ovly ), image->name );
                 return( false );
             }
             /* find overlay file */
-            if( access( buffer, 0 ) != 0 ) {
-                strcpy( buffer3, buffer );
-                _searchenv( buffer3, "PATH", buffer );
-                if( buffer[0] == '\0' ) {
-                    _splitpath2( image->name, buffer1, &drive, &dir, NULL, NULL );
-                    _splitpath2( buffer3, buffer2, NULL, NULL, &name, &ext );
-                    _makepath( buffer, drive, dir, name, ext );
+            if( access( buffer1, 0 ) != 0 ) {
+                strcpy( buffer2, buffer1 );
+                _searchenv( buffer2, "PATH", buffer1 );
+                if( buffer1[0] == '\0' ) {
+                    _splitpath2( image->name, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+                    _splitpath2( buffer2, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+                    _makepath( buffer1, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
                 }
             }
-            ovl_name = buffer;
+            ovl_name = buffer1;
             entry->separate_overlay = true;
             /* restore current posn */
             if( fseek( fp, fileoffset, SEEK_SET ) ) {

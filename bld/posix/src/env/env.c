@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,12 @@
 #include <process.h>
 #include <ctype.h>
 #include <errno.h>
-
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 char *OptEnvVar="env";
 
@@ -120,7 +122,7 @@ static void printEnv( char **env )
     }
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     char       **envptr, **cmdptr;
     char         alloc;
@@ -130,7 +132,7 @@ void main( int argc, char **argv )
 
     if( argc == 1 ) {
         printEnv( environ );
-        return;
+        return( 0 );
     } else if( !strcmp( argv[1], "-" ) ) {
         envptr  = (char **) malloc( argc * sizeof( char * ) );
         *envptr = NULL;
@@ -186,4 +188,5 @@ void main( int argc, char **argv )
     if( alloc ) {
         free( envptr );
     }
+    return( 0 );
 }

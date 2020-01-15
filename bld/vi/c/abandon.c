@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,9 @@
 #include "vi.h"
 
 /*
- * AbandonHopeAllYeWhoEnterHere - death for the masses
+ * AbandonHopeAllYesWhoEnterHere - death for the masses
  */
-void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
+void AbandonHopeAllYesWhoEnterHere( vi_rc rc )
 {
 
     EditVars.AutoSaveInterval = 0;
@@ -48,4 +49,4 @@ void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
     }
     QuitEditor( rc );
 
-} /* AbandonHopeAllYeWhoEnterHere */
+} /* AbandonHopeAllYesWhoEnterHere */

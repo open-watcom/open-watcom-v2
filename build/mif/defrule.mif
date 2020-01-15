@@ -1,10 +1,10 @@
 .c.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cxx
-    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .asm.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_as

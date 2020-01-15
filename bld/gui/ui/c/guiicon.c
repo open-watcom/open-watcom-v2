@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,22 +43,22 @@ void GUIDrawIcon( gui_window * wnd )
     ATTR        attr;
     const char  *str;
 
-    COPYAREA( wnd->screen.area, area );
+    COPYAREA( wnd->vs.area, area );
     area.row = 0;
     area.col = 0;
     attr = WNDATTR( wnd, GUI_ICON );
-    uivfill( &wnd->screen, area, attr, ' ' );
-    uidrawbox( &wnd->screen, &area, attr, NULL );
+    uivfill( &wnd->vs, area, attr, ' ' );
+    uidrawbox( &wnd->vs, &area, attr, NULL );
     if( wnd->icon_name != NULL ) {
         str = wnd->icon_name;
     } else {
-        str = wnd->screen.title;
+        str = wnd->vs.title;
     }
     if( str != NULL ) {
         length = strlen( str );
         if( length > ( area.width - 2 ) ) {
             length = area.width - 2;
         }
-        uivtextput( &wnd->screen, ( area.height / 2 ), 1, attr, str, length );
+        uivtextput( &wnd->vs, ( area.height / 2 ), 1, attr, str, length );
     }
 }

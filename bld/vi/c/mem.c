@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -207,7 +207,7 @@ void *MemAlloc( size_t size )
     tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
@@ -370,7 +370,7 @@ void *MemRealloc( void *ptr, size_t size )
     tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
@@ -480,7 +480,7 @@ void * UIAPI uimalloc( size_t size )
     tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 }
@@ -499,7 +499,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
     tmp = doMemReallocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
-        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 }
@@ -521,12 +521,13 @@ void UIAPI uifree( void *ptr )
 
 #ifdef TRMEM
 
-extern void trmemPrint( void *handle, const char *buff, size_t len )
-/******************************************************************/
+extern void trmemPrintLine( void *handle, const char *buff, size_t len )
+/**********************************************************************/
 {
-    handle = handle;
+    /* unused parameters */ (void)handle; (void)len;
+
     if( trmemOutput != NULL ) {
-        fwrite( buff, 1, len, trmemOutput );
+        fprintf( trmemOutput, "%s\n", buff );
     }
 }
 
@@ -539,6 +540,7 @@ void FiniMem( void )
     _trmem_close( trmemHandle );
     if( trmemOutput != NULL ) {
         fclose( trmemOutput );
+        trmemOutput = NULL;
     }
 #endif
 }
@@ -548,7 +550,7 @@ void InitMem( void )
 #ifdef TRMEM
     trmemOutput = fopen( "trmem.out", "w" );
     trmemHandle = _trmem_open( malloc, free, realloc, NULL,
-        NULL, trmemPrint,
+        NULL, trmemPrintLine,
         _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
     // atexit( DumpTRMEM );

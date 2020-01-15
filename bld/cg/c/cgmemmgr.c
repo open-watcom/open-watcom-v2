@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ extern short    __psp;
 
 #endif
 
-typedef pointer_int     tag;
+typedef pointer_uint    tag;
 
 #define _1K             1024L
 #define _4K             (4 * _1K)
@@ -101,11 +101,11 @@ typedef pointer_int     tag;
 
 static  pointer     MemFromSys( size_t );
 
-static pointer_int  AllocSize = 0;
-static pointer_int  MemorySize;
+static pointer_uint AllocSize = 0;
+static pointer_uint MemorySize;
 static int          Initialized = 0;
 #ifdef MEMORY_STATS
-static pointer_int  PeakAlloc    = 0;
+static pointer_uint PeakAlloc    = 0;
 #endif
 
 
@@ -190,11 +190,11 @@ static int myatoi( char *p )
 static  void    CalcMemSize( void )
 /*********************************/
 {
-    bool        max_size_queried;
-    bool        size_queried;
-    pointer_int size_requested;
-    pointer_int memory_available;
-    char        buff[80];
+    bool            max_size_queried;
+    bool            size_queried;
+    pointer_uint    size_requested;
+    pointer_uint    memory_available;
+    char            buff[80];
 
     Initialized = 2;
     size_requested = 0;
@@ -457,7 +457,7 @@ void     MemCoalesce( void )
 }
 
 
-pointer_int      MemInUse( void )
+pointer_uint     MemInUse( void )
 /*******************************/
 {
     if( !Initialized )
@@ -466,7 +466,7 @@ pointer_int      MemInUse( void )
 }
 
 
-pointer_int      MemSize( void )
+pointer_uint     MemSize( void )
 /******************************/
 {
     switch( Initialized ) {

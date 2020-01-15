@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,32 +38,20 @@
 #else
 #include <direct.h>
 #endif
-
 #include "watcom.h"
-#define STANDALONE
 #include "regexp.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "filerx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 static char *rxErrorStrings[] = {
-    NULL,
-    "Internal err: Regexp foulup",
-    "Internal err: Regexp corrupted pointer",
-    "Internal err: Regexp memory corruption",
-    "Trailing \\\\",
-    "?+* follows nothing",
-    "Unmatched []",
-    "invalid [] range",
-    "nested *?+",
-    "*+ operand could be empty",
-    "Unmatched ()",
-    "Too many ()",
-    "NULL argument"
-    "Invalid case toggle"
+    #define pick(e,t)       t,
+        REGEXPR_ERRORS()
+    #undef pick
 };
 
 /* FileMatch - check if a file matches a wild card */
@@ -78,7 +67,7 @@ int FileMatch( void *crx, const char *name )
 }
 
 /* FileNameWild - determine if a file name has a wild card */
-int FileNameWild( const char *wild, int isrx )
+bool FileNameWild( const char *wild, bool isrx )
 {
     size_t      len, i;
     int         ch;
@@ -147,11 +136,11 @@ char *FileMatchInit( void **crx, const char *wild )
     tomatch[j] = 0;
 
     rx = RegComp( tomatch );
-    if( RegExpError ) {
+    if( RegExpError == ERR_NO_ERR ) {
+        *crx = rx;
+    } else {
         MemFree( rx );
         *crx = NULL;
-    } else {
-        *crx = rx;
     }
     MemFree( tomatch );
     return( rxErrorStrings[RegExpError] );
@@ -163,11 +152,9 @@ void FileMatchFini( void *crx )
     MemFree( crx );
 }
 
-/* OpenDirAll */
-DIR *OpenDirAll( const char *filename, char *wild )
+char *FileMatchDirAll( const char *filename, char *npath, char *wild )
 {
     size_t      i, j, len;
-    char        npath[_MAX_PATH];
     char        ch;
 
     len = strlen( filename );
@@ -186,8 +173,7 @@ DIR *OpenDirAll( const char *filename, char *wild )
     }
 
     strcat( npath, "*.*" );
-
-    return( opendir( npath ) );
+    return( npath );
 }
 
 /* FileMatchNoRx - match file name vs a wild card, the old dos way */
@@ -195,9 +181,7 @@ int FileMatchNoRx( const char *name, const char *wild )
 {
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
-    char        sp_buf[_MAX_PATH2];
-    char        *cfname;
-    char        *cext;
+    PGROUP2     pg;
     unsigned    j, elen, flen;
     size_t      i, k, len;
 
@@ -235,26 +219,25 @@ int FileMatchNoRx( const char *name, const char *wild )
     }
     ext[elen] = 0;
 
-    memset( sp_buf, 0, sizeof( sp_buf ) );
-    _splitpath2( name, sp_buf, NULL, NULL, &cfname, &cext );
-    if( cext[0] == '.' ) {
-        ++cext;
+    _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '.' ) {
+        pg.ext++;
     }
 
-    len = strlen( cfname );
+    len = strlen( pg.fname );
     if( len < flen )
         len = flen;
     for( i = 0; i < len; i++ ) {
-        if( FNameCharCmp( cfname[i], fname[i] ) != 0 && fname[i] != '?' ) {
+        if( FNameCharCmp( pg.fname[i], fname[i] ) != 0 && fname[i] != '?' ) {
             return( false );
         }
     }
 
-    len = strlen( cext );
+    len = strlen( pg.ext );
     if( len < elen )
         len = elen;
     for( i = 0; i < len; i++ ) {
-        if( FNameCharCmp( cext[i], ext[i] ) != 0 && ext[i] != '?' ) {
+        if( FNameCharCmp( pg.ext[i], ext[i] ) != 0 && ext[i] != '?' ) {
             return( false );
         }
     }

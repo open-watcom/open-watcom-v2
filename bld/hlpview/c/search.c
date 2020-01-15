@@ -38,6 +38,7 @@
 #include "helpmem.h"
 #include "helpio.h"
 #include "search.h"
+#include "help.h"
 
 #include "clibext.h"
 
@@ -113,7 +114,7 @@ static char *doFindEntry( const char *name, unsigned *entry_num )
         }
         if( cmpret > 0 ) {
             if( i > 0 ) {
-                i --;
+                i--;
             }
             break;
         }
@@ -246,27 +247,24 @@ unsigned long HelpFindTopicOffset( HelpHdl hdl, const char *topic )
     PageIndexEntry      *entry;
     char                *foundtopic;
 
-    if( hdl == NULL )
-        return( (unsigned long)-1 );
-    loadPage( hdl, 0 );
-    while( pageHeader->type != PAGE_DATA ) {
-        loadNextPage( hdl, topic );
+    if( hdl != NULL ) {
+        loadPage( hdl, 0 );
+        while( pageHeader->type != PAGE_DATA ) {
+            loadNextPage( hdl, topic );
+        }
+        foundtopic = findEntry( hdl, topic, &entry_num );
+        if( stricmp( foundtopic, topic ) == 0 ) {
+            entry = pageIndex;
+            return( entry[ entry_num ].entry_offset );
+        }
     }
-    foundtopic = findEntry( hdl, topic, &entry_num );
-    if( !stricmp( foundtopic, topic ) ) {
-        entry = pageIndex;
-        return( entry[ entry_num ].entry_offset );
-    } else {
-        return( (unsigned long)-1 );
-    }
+    return( (unsigned long)-1 );
 }
 
 HelpHdl InitHelpSearch( FILE *fp )
 {
     HelpHdl     hdl;
     size_t      len;
-    char        *topic;
-    char        *description;
     uint_16     *str_len;
     char        *ptr;
     char        *buffer;
@@ -276,8 +274,8 @@ HelpHdl InitHelpSearch( FILE *fp )
     hdl->fp = fp;
     HelpRead( fp, &( hdl->header ), sizeof( HelpHeader ) );
     if( hdl->header.sig[0] != HELP_SIG_1
-        || hdl->header.sig[1] != HELP_SIG_2
-        || hdl->header.ver_min != HELP_MIN_VER ) {
+      || hdl->header.sig[1] != HELP_SIG_2
+      || hdl->header.ver_min != HELP_MIN_VER ) {
         HelpMemFree( hdl );
         hdl = NULL;
     } else if( hdl->header.ver_maj != HELP_MAJ_VER ) {
@@ -286,9 +284,7 @@ HelpHdl InitHelpSearch( FILE *fp )
             hdl = NULL;
         } else {
             HelpSeek( fp, -sizeof( uint_16 ), SEEK_CUR ); // no str_size in header
-            topic = HelpMemAlloc( strlen( DEFAULTTOPIC ) + 1 );
-            strcpy( topic, DEFAULTTOPIC );
-            hdl->def_topic = topic;
+            hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
             hdl->desc_str = NULL;
             hdl->header.str_size = 0;   // no str_size in old header format
             len = hdl->header.datapagecnt * sizeof( uint_16 );
@@ -298,24 +294,19 @@ HelpHdl InitHelpSearch( FILE *fp )
     } else {
         buffer = HelpMemAlloc( hdl->header.str_size );
         HelpRead( fp, buffer, hdl->header.str_size );
-        ptr = buffer + ( *(uint_16 *)buffer + 1 ) * sizeof( uint_16 );
-        str_len = (uint_16 *)buffer + 1;
-        if( str_len[0] != 0 ) {
-            topic = HelpMemAlloc( str_len[0] );
-            strcpy( topic, ptr );        // assume topic is first string
-        } else {
-            topic = HelpMemAlloc( strlen( DEFAULTTOPIC ) + 1 );
-            strcpy( topic, DEFAULTTOPIC );
-        }
+        str_len = (uint_16 *)buffer;
+        ptr = buffer + ( str_len[0] + 1 ) * sizeof( uint_16 );
         if( str_len[1] != 0 ) {
-            description = HelpMemAlloc( str_len[1] );
-            strcpy( description, ptr + str_len[0] );
+            hdl->def_topic = HelpDupStr( ptr );     // assume topic is first string
         } else {
-            description = NULL;
+            hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
+        }
+        if( str_len[2] != 0 ) {
+            hdl->desc_str = HelpDupStr( ptr + str_len[1] );
+        } else {
+            hdl->desc_str = NULL;
         }
         HelpMemFree( buffer );
-        hdl->def_topic = topic;
-        hdl->desc_str = description;
         len = ( hdl->header.datapagecnt ) * ( sizeof( uint_16 ) );
         hdl->itemindex = HelpMemAlloc( len );
         HelpRead( fp, hdl->itemindex, len );
@@ -392,7 +383,7 @@ void main( int argc, char *argv[] )
         gets( name );
         if( !strcmp( name, "bob" ) ) break;
         cur = HelpFindFirst( hdl, name, &cursor );
-        for( i=0; i < 5; i++ ) {
+        for( i = 0; i < 5; i++ ) {
             if( cur == NULL ) break;
             printf( "     %s\n", cur );
             HelpMemFree( cur );

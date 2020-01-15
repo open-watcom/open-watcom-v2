@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,31 +55,13 @@
 #include "impexp.h"
 #include "objomf.h"
 
-enum dll_entry_type { DLL_RELOC_NAME, DLL_RELOC_ORDINAL };
 
-/* forward declarations */
+enum dll_entry_type {
+    DLL_RELOC_NAME,
+    DLL_RELOC_ORDINAL
+};
 
-static void     Pass1Cmd( byte );
-static void     ProcTHEADR( void );
-static void     Comment( void );
-static void     AddNames( void );
-static void     ProcSegDef( void );
-static void     ProcPubdef( bool static_sym );
-static void     UseSymbols( bool static_sym, bool iscextdef );
-static void     DefineGroup( void );
-static void     ProcLinnum( void );
-static void     ProcLxdata( bool islidata );
-static void     ProcLxdata( bool islidata );
-static void     ProcModuleEnd( void );
-static void     ProcAlias( void );
-static void     DoLazyExtdef( bool isweak );
-static void     ProcVFTableRecord( bool ispure );
-static void     ProcVFReference( void );
-static void     GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata );
-
-byte            OMFAlignTab[] = {0,0,1,4,8,2,12};
-
-
+byte        OMFAlignTab[] = {0,0,1,4,8,2,12};
 
 void ResetObjOMF( void )
 /**********************/
@@ -141,166 +124,6 @@ static void CheckUninit( void *_seg, void *dummy )
     }
 }
 
-unsigned long OMFPass1( void )
-/***********************************/
-// do pass 1 for OMF object files
-{
-    unsigned long retval;
-
-    PermStartMod( CurrMod );
-    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) ) {
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name);
-    } else {
-        LinkState |= LS_HAVE_I86_CODE;
-    }
-    CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
-    retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
-    IterateNodelist( SegNodes, CheckUninit, NULL );
-    ResolveComdats();
-    return( retval );
-}
-
-static void Pass1Cmd( byte cmd )
-/******************************/
-/* Process an object record for pass 1 */
-{
-    bool isstatic;
-
-    isstatic = false;
-    switch( cmd ) {
-    case CMD_THEADR:
-        ProcTHEADR();
-        break;
-    case CMD_COMENT:
-        Comment();
-        break;
-    case CMD_LLNAMES:
-    case CMD_LNAMES:
-        AddNames();
-        break;
-    case CMD_SEGD32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_SEGDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        ProcSegDef();
-        break;
-    case CMD_STATIC_PUBD32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_STATIC_PUBDEF:
-        ProcPubdef( true );
-        break;
-    case CMD_PUBD32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_PUBDEF:
-        ProcPubdef( false );
-        break;
-    case CMD_STATIC_EXTDEF:
-    case CMD_STATIC_EXTD32:
-        isstatic = true;
-    case CMD_EXTDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        UseSymbols( isstatic, false );
-        break;
-    case CMD_CEXTDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        UseSymbols( false, true );
-        break;
-    case CMD_GRPDEF:
-        DefineGroup();
-        break;
-    case CMD_LINN32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_LINNUM:
-        if (CurrMod->omfdbg == OMF_DBG_CODEVIEW)
-            ProcLinnum();
-        break;
-    case CMD_LINS32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_LINSYM:
-        ProcLinsym();
-        break;
-    case CMD_STATIC_COMDEF:
-        isstatic = true;
-    case CMD_COMDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        ProcComdef( isstatic );
-        break;
-    case CMD_COMD32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_COMDAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        ProcComdat();
-        break;
-    case CMD_LEDA32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_LEDATA:
-        ProcLxdata( false );
-        break;
-    case CMD_LIDA32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_LIDATA:
-        ProcLxdata( true );
-        break;
-    case CMD_FIXU32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_FIXUPP:        /* count the fixups for each seg_leader */
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        DoRelocs();
-        ObjFormat &= ~FMT_UNSAFE_FIXUPP;
-        break;
-    case CMD_MODE32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_MODEND:
-        ProcModuleEnd();
-        break;
-    case CMD_ALIAS:
-        ProcAlias();
-        break;
-    case CMD_BAKP32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_BAKPAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        ProcBakpat();
-        break;
-    case CMD_NBKP32:
-        ObjFormat |= FMT_MS_386;
-    case CMD_NBKPAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
-        ProcNbkpat();
-        break;
-    case CMD_VERNUM:
-    case CMD_VENDEXT:
-    case CMD_LOCSYM:
-    case CMD_TYPDEF:
-    case CMD_DEBSYM:
-    case CMD_BLKDEF:
-    case CMD_BLKD32:
-    case CMD_BLKEND:
-    case CMD_BLKE32:
-        /* ignore the Intel debugging records */
-        break;
-    case CMD_RHEADR:
-    case CMD_REGINT:
-    case CMD_REDATA:
-    case CMD_RIDATA:
-    case CMD_OVLDEF:
-    case CMD_ENDREC:
-    case CMD_LHEADR:
-    case CMD_PEDATA:
-    case CMD_PIDATA:
-    case CMD_LIBHED:
-    case CMD_LIBNAM:
-    case CMD_LIBLOC:
-    case CMD_LIBDIC:
-        LnkMsg( LOC_REC+WRN+MSG_REC_NOT_DONE, "x", cmd );
-        break;
-    default:
-        CurrMod->f.source->infile->status |= INSTAT_IOERR;
-        LnkMsg( LOC_REC+ERR+MSG_BAD_REC_TYPE, "x", cmd );
-        break;
-    }
-}
-
 bool IsOMF( file_list *list, unsigned long loc )
 /**********************************************/
 {
@@ -349,53 +172,6 @@ static void ProcTHEADR( void )
         }
         memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
-    }
-}
-
-static void LinkDirective( void )
-/*******************************/
-{
-    unsigned        directive;
-    lib_priority    priority;
-    segnode         *seg;
-
-    directive = *ObjBuff++;
-    switch( directive ) {
-    case LDIR_DEFAULT_LIBRARY:
-        if( ObjBuff < EOObjRec ) {
-            priority = *ObjBuff++ - '0';
-            AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, priority );
-        }
-        break;
-    case LDIR_SOURCE_LANGUAGE:
-        DBIP1Source( ObjBuff, EOObjRec );
-        break;
-    case LDIR_VF_PURE_DEF:
-        ProcVFTableRecord( true );
-        break;
-    case LDIR_VF_TABLE_DEF:
-        ProcVFTableRecord( false );
-        break;
-    case LDIR_VF_REFERENCE:
-        ProcVFReference();
-        break;
-    case LDIR_PACKDATA:
-        if( (LinkFlags & LF_PACKDATA_FLAG) == 0 ) {
-            PackDataLimit = _GetU32UN( ObjBuff );
-            LinkFlags |= LF_PACKDATA_FLAG;
-        }
-        break;
-    case LDIR_OPT_FAR_CALLS:
-        seg = (segnode *)FindNode( SegNodes, GetIdx() );
-        seg->entry->canfarcall = true;
-        seg->entry->iscode = true;
-        break;
-    case LDIR_FLAT_ADDRS:
-        CurrMod->modinfo |= MOD_FLATTEN_DBI;
-        break;
-    case LDIR_OPT_UNSAFE:
-        ObjFormat |= FMT_UNSAFE_FIXUPP;
-        break;
     }
 }
 
@@ -457,9 +233,9 @@ static void DoMSOMF( void )
 /***********************************/
 /* Figure out debug info type and handle it accordingly later. */
 {
-    if( ObjBuff == EOObjRec )
+    if( ObjBuff == EOObjRec ) {
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
-    else {
+    } else {
 //        unsigned_8  version;
 
         /* version = * */ ObjBuff++;
@@ -470,81 +246,6 @@ static void DoMSOMF( void )
         } else {
             CurrMod->omfdbg = OMF_DBG_UNKNOWN;
         }
-    }
-}
-
-static void Comment( void )
-/*************************/
-/* Process a comment record. */
-{
-    unsigned char       attribute;
-    unsigned char       class;
-    int                 proc;
-    unsigned char       which;
-
-    attribute = *ObjBuff++;
-    class = *ObjBuff++;
-
-    switch( class ) {
-    case CMT_DLL_ENTRY:
-        which = *ObjBuff++;
-        switch( which ) {
-        case MOMF_IMPDEF:
-        case MOMF_EXPDEF:
-            if( SeenDLLRecord() ) {
-                if( which == MOMF_EXPDEF ) {
-                    ProcExportKeyword();
-                } else {
-                    ProcImportKeyword();
-                }
-            }
-            break;
-        case MOMF_PROT_LIB:
-            if( FmtData.type & MK_WINDOWS ) {
-                FmtData.u.os2.is_private_dll = true;
-            }
-            break;
-        }
-        break;
-    case CMT_WAT_PROC_MODEL:
-    case CMT_MS_PROC_MODEL:
-        proc = *ObjBuff - '0';
-        if( proc > FmtData.cpu_type )
-            FmtData.cpu_type = proc;
-        break;
-    case CMT_DOSSEG:
-        LinkState |= LS_DOSSEG_FLAG;
-        break;
-    case CMT_DEFAULT_LIBRARY:
-        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 2 );
-        break;
-    case CMT_LINKER_DIRECTIVE:
-        LinkDirective();
-        break;
-    case CMT_WKEXT:
-        DoLazyExtdef( true );
-        break;
-    case CMT_LZEXT:
-        DoLazyExtdef( false );
-        break;
-    case CMT_EASY_OMF:
-        if( memcmp( ObjBuff, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
-            ObjFormat |= FMT_EASY_OMF;
-        }
-        break;
-    case CMT_SOURCE_NAME:
-        DBIComment();
-        break;
-    case CMT_MS_OMF:
-        DoMSOMF();
-        break;
-    case 0x80:      /* Code Gen used to put bytes out in wrong order */
-        if( attribute == CMT_SOURCE_NAME ) {    /* no longer generated */
-            DBIComment();
-        } else if( attribute == CMT_LINKER_DIRECTIVE ) {  /* linker directive */
-            LinkDirective();
-        }
-        break;
     }
 }
 
@@ -660,6 +361,8 @@ static void ProcSegDef( void )
         sdata->combine = COMBINE_INVALID;
     } else if( comb == COMB_COMMON ) {
         sdata->combine = COMBINE_COMMON;
+    } else if( comb == COMB_STACK ) {
+        sdata->combine = COMBINE_STACK;
     } else {
         sdata->combine = COMBINE_ADD;
     }
@@ -971,31 +674,6 @@ list_of_names *FindName( unsigned_16 index )
     return( *((list_of_names **)FindNode( NameNodes, index ) ) );
 }
 
-static void ProcLxdata( bool islidata )
-/*************************************/
-/* process ledata and lidata records */
-{
-    segnode     *seg;
-    unsigned_32 obj_offset;
-
-    seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    seg->entry->u.leader->info |= SEG_LXDATA_SEEN;
-    seg->info |= SEG_LXDATA_SEEN;
-    if( ObjFormat & FMT_32BIT_REC ) {
-        _TargU32toHost( _GetU32UN( ObjBuff ), obj_offset );
-        ObjBuff += sizeof( unsigned_32 );
-    } else {
-        _TargU16toHost( _GetU16UN( ObjBuff ), obj_offset );
-        ObjBuff += sizeof( unsigned_16 );
-    }
-#ifdef _DEVELOPMENT
-    if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
-        LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
-    }
-#endif
-    GetObject( seg->entry, obj_offset, islidata );
-}
-
 static void ProcLinnum( void )
 /****************************/
 /* do some processing for the linnum record */
@@ -1042,7 +720,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 inner = count;
                 do {
                     _TargU32toHost( _GetU32UN(buffer), rep );
-                    buffer += sizeof(unsigned_32);
+                    buffer += sizeof( unsigned_32 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
             } while( --iterate != 0 );
@@ -1052,7 +730,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 inner = count;
                 do {
                     _TargU16toHost( _GetU16UN(buffer), rep );
-                    buffer += sizeof(unsigned_16);
+                    buffer += sizeof( unsigned_16 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
             } while( --iterate != 0 );
@@ -1108,4 +786,311 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
         }
     }
     SetCurrSeg( seg, obj_offset, NULL );
+}
+
+static void ProcLxdata( bool islidata )
+/*************************************/
+/* process ledata and lidata records */
+{
+    segnode     *seg;
+    unsigned_32 obj_offset;
+
+    seg = (segnode *) FindNode( SegNodes, GetIdx() );
+    seg->entry->u.leader->info |= SEG_LXDATA_SEEN;
+    seg->info |= SEG_LXDATA_SEEN;
+    if( ObjFormat & FMT_32BIT_REC ) {
+        _TargU32toHost( _GetU32UN( ObjBuff ), obj_offset );
+        ObjBuff += sizeof( unsigned_32 );
+    } else {
+        _TargU16toHost( _GetU16UN( ObjBuff ), obj_offset );
+        ObjBuff += sizeof( unsigned_16 );
+    }
+#ifdef _DEVELOPMENT
+    if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
+        LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
+    }
+#endif
+    GetObject( seg->entry, obj_offset, islidata );
+}
+
+static void LinkDirective( void )
+/*******************************/
+{
+    unsigned        directive;
+    lib_priority    priority;
+    segnode         *seg;
+
+    directive = *ObjBuff++;
+    switch( directive ) {
+    case LDIR_DEFAULT_LIBRARY:
+        if( ObjBuff < EOObjRec ) {
+            priority = *ObjBuff++ - '0';
+            AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, priority );
+        }
+        break;
+    case LDIR_SOURCE_LANGUAGE:
+        DBIP1Source( ObjBuff, EOObjRec );
+        break;
+    case LDIR_VF_PURE_DEF:
+        ProcVFTableRecord( true );
+        break;
+    case LDIR_VF_TABLE_DEF:
+        ProcVFTableRecord( false );
+        break;
+    case LDIR_VF_REFERENCE:
+        ProcVFReference();
+        break;
+    case LDIR_PACKDATA:
+        if( (LinkFlags & LF_PACKDATA_FLAG) == 0 ) {
+            PackDataLimit = _GetU32UN( ObjBuff );
+            LinkFlags |= LF_PACKDATA_FLAG;
+        }
+        break;
+    case LDIR_OPT_FAR_CALLS:
+        seg = (segnode *)FindNode( SegNodes, GetIdx() );
+        seg->entry->canfarcall = true;
+        seg->entry->iscode = true;
+        break;
+    case LDIR_FLAT_ADDRS:
+        CurrMod->modinfo |= MOD_FLATTEN_DBI;
+        break;
+    case LDIR_OPT_UNSAFE:
+        ObjFormat |= FMT_UNSAFE_FIXUPP;
+        break;
+    }
+}
+
+static void Comment( void )
+/*************************/
+/* Process a comment record. */
+{
+    unsigned char       attribute;
+    unsigned char       class;
+    int                 proc;
+    unsigned char       which;
+
+    attribute = *ObjBuff++;
+    class = *ObjBuff++;
+
+    switch( class ) {
+    case CMT_DLL_ENTRY:
+        which = *ObjBuff++;
+        switch( which ) {
+        case MOMF_IMPDEF:
+        case MOMF_EXPDEF:
+            if( SeenDLLRecord() ) {
+                if( which == MOMF_EXPDEF ) {
+                    ProcExportKeyword();
+                } else {
+                    ProcImportKeyword();
+                }
+            }
+            break;
+        case MOMF_PROT_LIB:
+            if( FmtData.type & MK_WINDOWS ) {
+                FmtData.u.os2.is_private_dll = true;
+            }
+            break;
+        }
+        break;
+    case CMT_WAT_PROC_MODEL:
+    case CMT_MS_PROC_MODEL:
+        proc = *ObjBuff - '0';
+        if( proc > FmtData.cpu_type )
+            FmtData.cpu_type = proc;
+        break;
+    case CMT_DOSSEG:
+        LinkState |= LS_DOSSEG_FLAG;
+        break;
+    case CMT_DEFAULT_LIBRARY:
+        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 2 );
+        break;
+    case CMT_LINKER_DIRECTIVE:
+        LinkDirective();
+        break;
+    case CMT_WKEXT:
+        DoLazyExtdef( true );
+        break;
+    case CMT_LZEXT:
+        DoLazyExtdef( false );
+        break;
+    case CMT_EASY_OMF:
+        if( memcmp( ObjBuff, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
+            ObjFormat |= FMT_EASY_OMF;
+        }
+        break;
+    case CMT_SOURCE_NAME:
+        DBIComment();
+        break;
+    case CMT_MS_OMF:
+        DoMSOMF();
+        break;
+    case 0x80:      /* Code Gen used to put bytes out in wrong order */
+        if( attribute == CMT_SOURCE_NAME ) {    /* no longer generated */
+            DBIComment();
+        } else if( attribute == CMT_LINKER_DIRECTIVE ) {  /* linker directive */
+            LinkDirective();
+        }
+        break;
+    }
+}
+
+static void Pass1Cmd( byte cmd )
+/******************************/
+/* Process an object record for pass 1 */
+{
+    bool isstatic;
+
+    isstatic = false;
+    switch( cmd ) {
+    case CMD_THEADR:
+        ProcTHEADR();
+        break;
+    case CMD_COMENT:
+        Comment();
+        break;
+    case CMD_LLNAMES:
+    case CMD_LNAMES:
+        AddNames();
+        break;
+    case CMD_SEGD32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_SEGDEF:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcSegDef();
+        break;
+    case CMD_STATIC_PUBD32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_STATIC_PUBDEF:
+        ProcPubdef( true );
+        break;
+    case CMD_PUBD32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_PUBDEF:
+        ProcPubdef( false );
+        break;
+    case CMD_STATIC_EXTDEF:
+    case CMD_STATIC_EXTD32:
+        isstatic = true;
+    case CMD_EXTDEF:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        UseSymbols( isstatic, false );
+        break;
+    case CMD_CEXTDEF:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        UseSymbols( false, true );
+        break;
+    case CMD_GRPDEF:
+        DefineGroup();
+        break;
+    case CMD_LINN32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_LINNUM:
+        if( CurrMod->omfdbg == OMF_DBG_CODEVIEW )
+            ProcLinnum();
+        break;
+    case CMD_LINS32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_LINSYM:
+        ProcLinsym();
+        break;
+    case CMD_STATIC_COMDEF:
+        isstatic = true;
+    case CMD_COMDEF:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcComdef( isstatic );
+        break;
+    case CMD_COMD32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_COMDAT:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcComdat();
+        break;
+    case CMD_LEDA32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_LEDATA:
+        ProcLxdata( false );
+        break;
+    case CMD_LIDA32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_LIDATA:
+        ProcLxdata( true );
+        break;
+    case CMD_FIXU32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_FIXUPP:        /* count the fixups for each seg_leader */
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        DoRelocs();
+        ObjFormat &= ~FMT_UNSAFE_FIXUPP;
+        break;
+    case CMD_MODE32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_MODEND:
+        ProcModuleEnd();
+        break;
+    case CMD_ALIAS:
+        ProcAlias();
+        break;
+    case CMD_BAKP32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_BAKPAT:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcBakpat();
+        break;
+    case CMD_NBKP32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_NBKPAT:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcNbkpat();
+        break;
+    case CMD_VERNUM:
+    case CMD_VENDEXT:
+    case CMD_LOCSYM:
+    case CMD_TYPDEF:
+    case CMD_DEBSYM:
+    case CMD_BLKDEF:
+    case CMD_BLKD32:
+    case CMD_BLKEND:
+    case CMD_BLKE32:
+        /* ignore the Intel debugging records */
+        break;
+    case CMD_RHEADR:
+    case CMD_REGINT:
+    case CMD_REDATA:
+    case CMD_RIDATA:
+    case CMD_OVLDEF:
+    case CMD_ENDREC:
+    case CMD_LHEADR:
+    case CMD_PEDATA:
+    case CMD_PIDATA:
+    case CMD_LIBHED:
+    case CMD_LIBNAM:
+    case CMD_LIBLOC:
+    case CMD_LIBDIC:
+        LnkMsg( LOC_REC+WRN+MSG_REC_NOT_DONE, "x", cmd );
+        break;
+    default:
+        CurrMod->f.source->infile->status |= INSTAT_IOERR;
+        LnkMsg( LOC_REC+ERR+MSG_BAD_REC_TYPE, "x", cmd );
+        break;
+    }
+}
+
+unsigned long OMFPass1( void )
+/***********************************/
+// do pass 1 for OMF object files
+{
+    unsigned long retval;
+
+    PermStartMod( CurrMod );
+    if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) ) {
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name);
+    } else {
+        LinkState |= LS_HAVE_I86_CODE;
+    }
+    CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
+    retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
+    IterateNodelist( SegNodes, CheckUninit, NULL );
+    ResolveComdats();
+    return( retval );
 }

@@ -1115,7 +1115,7 @@ void defs( FILE *fp )
                                 tlist_remove( sym->name );
                             }
                         }
-                        sym->token = value.number;
+                        sym->token = (token_n)value.number;
                         scan( 0 );
                     }
                     if( sym->token == 0 ) {

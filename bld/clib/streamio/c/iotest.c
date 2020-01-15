@@ -696,6 +696,8 @@ int main( int argc, char *argv[] )
     int         old_stdout_fd;
     FILE        *old_stdout;
 
+    /* unused parameters */ (void)argc;
+
 #ifdef __SW_BW
     con = fopen( "tmp.log", "a" );
 #else

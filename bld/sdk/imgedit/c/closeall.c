@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ static void IECheckIfActiveWindow( void )
  *                - returns FALSE if CANCEL is selected
  *                - otherwise, returns TRUE
  */
-static BOOL lastChanceSave( img_node *node )
+static bool lastChanceSave( img_node *node )
 {
     int         retcode;
     int         how;
@@ -71,7 +72,7 @@ static BOOL lastChanceSave( img_node *node )
     char        filename[_MAX_PATH];
 
     if( node == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     IECheckIfActiveWindow();
@@ -108,29 +109,29 @@ static BOOL lastChanceSave( img_node *node )
         if( ImgedIsDDE ) {
 #ifndef __OS2_PM__
             if( IEUpdateDDEEditSession() ) {
-                SetIsSaved( node->hwnd, TRUE );
+                SetIsSaved( node->hwnd, true );
             } else {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-                return( FALSE );
+                return( false );
             }
 #else
             PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-            return( FALSE );
+            return( false );
 #endif
         } else {
             if( !SaveFile( how ) ) {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-                return( FALSE );
+                return( false );
             } else {
                 hmenu = _wpi_getmenu( HMainWindow );
                 _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
-                SetIsSaved( node->hwnd, TRUE );
+                SetIsSaved( node->hwnd, true );
             }
         }
     } else if( retcode == IDCANCEL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* lastChanceSave */
 

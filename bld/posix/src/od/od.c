@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,13 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
+#include "bool.h"
 #include "wio.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 #define  M_BYTES        0x01            // Binary output modes.
 #define  M_WORDS        0x02
@@ -310,7 +313,7 @@ static void parseOffset( char *str, format *fmt )
     }
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
@@ -391,4 +394,5 @@ void main( int argc, char **argv )
         dumpFile( fp, &fmt );
         fclose( fp );
     }
+    return( 0 );
 }

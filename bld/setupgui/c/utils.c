@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@
 #include "utils.h"
 #include "setupio.h"
 #include "iopath.h"
-#include "guistat.h"
+#include "guistats.h"
 
 #include "clibext.h"
 
@@ -189,16 +189,20 @@ bool ModifyStartup( bool uninstall )
 
 //        if( !uninstall ) {
 #if defined( __NT__ )
-#ifdef __AXP__
+  #ifdef __AXP__
         ret = ModifyConfiguration( uninstall );
-#else
+  #else
         if( GetVariableBoolVal( "IsWin95" ) ) {
             ret = ModifyAutoExec( uninstall );
         } else {
             ret = ModifyConfiguration( uninstall );
         }
-#endif
+  #endif
 #elif defined( __UNIX__ )
+  #if !defined( GUI_IS_GUI )
+    /* unused parameters */ (void)uninstall;
+  #endif
+
 //        ret = ModifyAutoExec( uninstall );
 #else
         ret = ModifyAutoExec( uninstall );
@@ -213,6 +217,8 @@ bool ModifyAssociations( bool uninstall )
 #ifdef __NT__
     return( ModifyRegAssoc( uninstall ) );
 #else
+    /* unused parameters */ (void)uninstall;
+
     return( true );
 #endif
 }
@@ -223,6 +229,8 @@ bool ModifyUninstall( bool uninstall )
 #ifdef __NT__
     return( AddToUninstallList( uninstall ) );
 #else
+    /* unused parameters */ (void)uninstall;
+
     return( true );
 #endif
 }
@@ -529,7 +537,11 @@ static int GetDriveInfo( char drive, bool removable )
 #else
     drive_info  *info;
     int         drive_num;
+#endif
 
+#if defined( __UNIX__ )
+    /* unused parameters */ (void)drive; (void)removable;
+#else
     drive_num = GetDriveNum( drive );
     info = &Drives[drive_num];
     if( (info->cluster_size == 0 || removable /* recheck - could have been replaced */) ) {
@@ -751,6 +763,8 @@ unsigned GetClusterSize( char drive )
 /***********************************/
 {
 #if defined( __UNIX__ )
+    /* unused parameters */ (void)drive;
+
     return( 1 );
 #else
     if( drive == '\0' )
@@ -1108,7 +1122,7 @@ static bool FindUpgradeFile( char *path )
 /***************************************/
 {
     DIR                 *dirp;
-    struct dirent       *info;
+    struct dirent       *dire;
     char                *path_end;
     int                 upgrades;
     int                 i;
@@ -1126,15 +1140,15 @@ static bool FindUpgradeFile( char *path )
             upgrades = SimNumUpgrades();
             ConcatDirSep( path );
             path_end = path + strlen( path );
-            while( !ok && (info = readdir( dirp )) != NULL ) {
-                strcpy( path_end, info->d_name );
+            while( !ok && (dire = readdir( dirp )) != NULL ) {
+                strcpy( path_end, dire->d_name );
 #if defined( __UNIX__ )
                 stat( path, &statbuf );
                 if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-                if( info->d_attr & _A_SUBDIR ) {
+                if( dire->d_attr & _A_SUBDIR ) {
 #endif
-                    if( IS_VALID_DIR( info ) ) {
+                    if( IS_VALID_DIR( dire ) ) {
                         if( FindUpgradeFile( path ) ) {
                             ok = true;
                         }
@@ -1186,7 +1200,7 @@ bool CheckUpgrade( void )
     }
 #endif
     return_state = DoDialog( "UpgradeNotQualified" );
-    return( return_state != DLG_CAN && return_state != DLG_DONE );
+    return( return_state != DLG_CANCEL && return_state != DLG_DONE );
 }
 
 static void free_disks( char **disks, int max_targs )
@@ -1224,6 +1238,10 @@ bool CheckDrive( bool issue_message )
 #ifdef UNC_SUPPORT
     VBUF                UNC_root1;
     VBUF                UNC_root2;
+#endif
+
+#if defined( UNC_SUPPORT ) || defined( __UNIX__ )
+    /* unused parameters */ (void)issue_message;
 #endif
 
     if( !SimCalcTargetSpaceNeeded() )
@@ -1736,13 +1754,13 @@ static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
 
     if( SimSubFileIsNLM( filenum, subfilenum ) ) {
         NewFileToCheck( name, false );
-        VbufSetStr( &ext, "._N_" );
+        VbufSetStr( &ext, "_N_" );
         VbufSetPathExt( name, &ext );
         rc = true;
     } else if( SimSubFileIsDLL( filenum, subfilenum ) ) {
         NewFileToCheck( name, true );
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        VbufSetStr( &ext, "._D_" );
+        VbufSetStr( &ext, "_D_" );
         VbufSetPathExt( name, &ext );
 #endif
         rc = true;
@@ -2119,7 +2137,7 @@ static bool NukePath( VBUF *path, int status )
 /********************************************/
 {
     DIR                 *dirp;
-    struct dirent       *info;
+    struct dirent       *dire;
     bool                ok;
     size_t              path_len;
 #if defined( __UNIX__ )
@@ -2131,15 +2149,15 @@ static bool NukePath( VBUF *path, int status )
     if( dirp != NULL ) {
         VbufAddDirSep( path );
         path_len = VbufLen( path );
-        while( (info = readdir( dirp )) != NULL ) {
-            VbufSetStrAt( path, info->d_name, path_len );
+        while( (dire = readdir( dirp )) != NULL ) {
+            VbufSetStrAt( path, dire->d_name, path_len );
 #if defined( __UNIX__ )
             stat_vbuf( path, &statbuf );
             if( S_ISDIR( statbuf.st_mode ) ) {
 #else
-            if( info->d_attr & _A_SUBDIR ) {
+            if( dire->d_attr & _A_SUBDIR ) {
 #endif
-                if( IS_VALID_DIR( info ) ) {
+                if( IS_VALID_DIR( dire ) ) {
                     if( !NukePath( path, status ) ) {
                         ok = false;
                         break;
@@ -2150,7 +2168,7 @@ static bool NukePath( VBUF *path, int status )
 #if defined( __UNIX__ )
                 if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
 #else
-                if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
+                if( dire->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
                     chmod_vbuf( path, PMODE_USR_W );
                 }
@@ -2396,7 +2414,7 @@ bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char
     if( !GetVariableBoolVal( skip ) ) {
         for( ;; ) {
             return_state = DoDialog( dlg );
-            if( return_state != DLG_DONE && return_state != DLG_CAN )
+            if( return_state != DLG_DONE && return_state != DLG_CANCEL )
                 break;
             if( MsgBox( NULL, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
                 CancelSetup = true;
@@ -2626,7 +2644,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
         VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
         VbufMakepath( src_path, &drive, &dir, NULL, NULL );
     }
-    VbufRemDirSep( src_path );
+    VbufRemEndDirSep( src_path );
     VbufFree( &dir );
     VbufFree( &drive );
     return( true );

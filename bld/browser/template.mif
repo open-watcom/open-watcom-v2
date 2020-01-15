@@ -62,7 +62,6 @@ template = &
 	querycfg.$(ext) &
 	queryflt.$(ext) &
 	referenc.$(ext) &
-	regexp.$(ext)	&
 	rxcfg.$(ext)	&
 	screendv.$(ext) &
 	symbol.$(ext)	&

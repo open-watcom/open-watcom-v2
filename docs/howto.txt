@@ -152,14 +152,14 @@ printer.
 
 You can run command  
 
-builder rel ps
+    builder rel docps
 
 from documentation main directory to build all books.
 
 If you want only one or a few books then you must go into ps sub-directory and
 run command
 
-wmake hbook=<bn>
+    wmake hbook=<bn>
 
 where <bn> is one of
 
@@ -202,26 +202,34 @@ whatever it is you do with PostScript files.
 How to Build Online Help Versions of the Documentation
 ======================================================
 
-For Microsoft Help format (both old and new help formats):
+For Microsoft Windows Help formats:
 
-    All help files can be created by command
+    All help files can be created by following commands.
+    
+    For win16 .hlp format by
 
-    builder rel os_win (for old win16 format only)
+        builder rel docwin
 
-    or by
+    files are created in the docs\win directory.
 
-    builder rel os_nt (for new win32 format only).
+    or for win32 .hlp format by
 
+        builder rel docnt
 
-    The Win16 format help files (*.hlp) are created in the
-    docs\win directory. The Win32 format help files (*.hlp,
-    *.cnt) are cerated in the docs\nt directory.
+    files are created in the docs\nt directory.
+
+    or for win32 .chm format by
+
+        builder rel dochtmlhelp
+
+    files are created in the docs\htmlhelp directory.
+
 
 For Watcom Help format (for Watcom WHELP command):
 
     Run 
 
-    builder rel os_dos
+        builder rel docdos
 
     to create all online help.
 
@@ -233,7 +241,7 @@ For OS/2 Help format:
 
     Run 
 
-    builder rel os_os2
+        builder rel docos2
 
     to create all online help.
 
@@ -244,7 +252,7 @@ Note:
     If you want build only one book than you must change current directory to
     appropriate sub-directory and you can use command
 
-    wmake hbook=<book>
+        wmake hbook=<book>
 
     where <book> is book code.
 

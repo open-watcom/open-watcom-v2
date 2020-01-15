@@ -396,6 +396,9 @@ int AddPathTree( char *path, int target )
     if( path == NULL )
         return( -1 );
     parent = AddPath( ".", target, -1 );
+    for( p = path; (p = strchr( p, '\\' )) != NULL; ) {
+        *p = '/';
+    }
     p = strchr( path, '/' );
     while( p != NULL ) {
         *p = '\0';
@@ -427,17 +430,17 @@ static int mkdir_nested( const char *path )
 
 #ifndef __UNIX__
     /* special case for drive letters */
-    if( p[0] && p[1] == ':' ) {
+    if( p[0] != '\0' && p[1] == ':' ) {
         p += 2;
     }
 #endif
     /* skip initial path separator if present */
-    if( (p[0] == '/') || (p[0] == '\\') )
+    if( p[0] == DIR_SEP )
         ++p;
 
     /* find the next path component */
     while( p < end ) {
-        while( (p < end) && (*p != '/') && (*p != '\\') )
+        while( (p < end) && ( *p != DIR_SEP ) )
             ++p;
         c = *p;     // save path separator
         *p = '\0';  // terminate path by NULL character
@@ -510,6 +513,13 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
         }
         ConcatDirElem( src, file );
     }
+#ifdef __UNIX__
+    for( p = src; (p = strchr( p, '\\' )) != NULL; ) {
+#else
+    for( p = src; (p = strchr( p, '/' )) != NULL; ) {
+#endif
+        *p = DIR_SEP;
+    }
     remove = ( stricmp( cond, "false" ) == 0 );
     if( remove ) {
         act_size = 0;
@@ -527,7 +537,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
             fp = fopen( src, "w" );
             if( fp == NULL ) {
                 for( p = src + strlen( src ); p > src; p-- ) {
-                    if( (*(p - 1) == '\\') || (*(p - 1) == '/') ) {
+                    if( *(p - 1) == DIR_SEP ) {
                         c = *p;
                         *p = '\0';
                         mkdir_nested( src );
@@ -569,7 +579,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
         path = p + 1;
         if( *path == '\0' ) {
             path = ".";
-        } else if( (*path == '\\') || (*path == '/') ) {
+        } else if( ( *path == '\\' ) || ( *path == '/' ) ) {
             ++path;
         } else {
             printf( "Invalid path (%s)\n", path );
@@ -584,20 +594,20 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
 
     // handle sub-directories in path before full path
     path_dir = AddPathTree( path, target );
-    old_path_dir = AddPathTree( old_path, target );
     if( path_dir == 0 ) {
         return( false );
     }
-    root_file = p = file;
-    while( *p != '\0' ) {
-        switch( *p ) {
-        case '/':
-        case ':':
-        case '\\':
+    old_path_dir = AddPathTree( old_path, target );
+    p = file;
+#ifndef __UNIX__
+    if( p[0] != '\0' && p[1] == ':' ) {
+        p += 2;
+    }
+#endif
+    for( root_file = p; *p != '\0'; p++ ) {
+        if( ( *p == '\\' ) || ( *p == '/' ) ) {
             root_file = p + 1;
-            break;
         }
-        ++p;
     }
 
     // see if the pack_file has been seen already
@@ -610,8 +620,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
         if( curr->path != path_dir ) {
             sprintf( archive_name, "pck%05d", pack_num++ );
             if( Verbose ) {
-                printf( "\nPath for archive '%s' changed to '%s'\n",
-                    curr->pack, path );
+                printf( "\nPath for archive '%s' changed to '%s'\n", curr->pack, path );
                 printf( "Changing archive to '%s'\n", archive_name );
             }
             continue;

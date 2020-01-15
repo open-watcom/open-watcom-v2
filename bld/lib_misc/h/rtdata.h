@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,6 +159,8 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
 #if defined( _M_I86 )
     #define _RWD_HShift         _HShift
     #define _RWD_osmode         _osmode
+    #define _osmode_REALMODE()  (_RWD_osmode == 0)
+    #define _osmode_PROTMODE()  (_RWD_osmode)
 #endif
 #if !defined( __NETWARE__ )
     #define _RWD_osmajor        _osmajor

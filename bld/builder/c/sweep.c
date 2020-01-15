@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,38 +46,39 @@
 #endif
 #include "wio.h"
 #include "watcom.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
-char    *Help[] = {
-"Usage: SWEEP [options] cmd",
-"     Execute 'cmd' in the each subdirectory of the current working directory.",
-"",
-"Options:",
-"     -a execute command once for each file in each directory",
-"     -v verbose mode -- print directory headers",
-"     -p print mode -- print all commands as executed",
-"     -n don't really execute commands, (turns on -p)",
-"     -d perform depth-first traversal, (default is breadth-first)",
-"     -ln only descend n directory levels (n defaults to 1)",
-"",
-"In 'cmd', the following substitutions are made:",
-"     %f name relative to starting directory.   ie: 'SUBDIR\\C\\NEW\\FOO.BAR'",
-"     %p path relative to starting directory.   ie: 'SUBDIR\\C\\NEW'",
-"     %l full name of current file if -a used.  ie: 'FOO.BAR'",
-"     %n name of current file if -a used.       ie: 'FOO'",
-"     %e extension of current file if -a used.  ie: '.BAR'",
-"     %% a percent charater",
-"",
-"Note:",
-"     SWEEP sets the current working directory to each directory as it proceeds.",
-"     The command 'SWEEP -a type %f' will not work, since %f is relative to",
-"     the starting directory. The command 'SWEEP -a type %l' will work.",
-"",
-"     The special command 'COMPARE' (must be upper case) is handled internally:",
-"         SWEEP -a -v COMPARE %l x:\\dir\\%f",
-"     will compare two trees and make sure all the files are the same.",
+const char  *Help[] = {
+    "Usage: SWEEP [options] cmd",
+    "     Execute 'cmd' in the each subdirectory of the current working directory.",
+    "",
+    "Options:",
+    "     -a execute command once for each file in each directory",
+    "     -v verbose mode -- print directory headers",
+    "     -p print mode -- print all commands as executed",
+    "     -n don't really execute commands, (turns on -p)",
+    "     -d perform depth-first traversal, (default is breadth-first)",
+    "     -ln only descend n directory levels (n defaults to 1)",
+    "",
+    "In 'cmd', the following substitutions are made:",
+    "     %f name relative to starting directory.   ie: 'SUBDIR\\C\\NEW\\FOO.BAR'",
+    "     %p path relative to starting directory.   ie: 'SUBDIR\\C\\NEW'",
+    "     %l full name of current file if -a used.  ie: 'FOO.BAR'",
+    "     %n name of current file if -a used.       ie: 'FOO'",
+    "     %e extension of current file if -a used.  ie: '.BAR'",
+    "     %% a percent charater",
+    "",
+    "Note:",
+    "     SWEEP sets the current working directory to each directory as it proceeds.",
+    "     The command 'SWEEP -a type %f' will not work, since %f is relative to",
+    "     the starting directory. The command 'SWEEP -a type %l' will work.",
+    "",
+    "     The special command 'COMPARE' (must be upper case) is handled internally:",
+    "         SWEEP -a -v COMPARE %l x:\\dir\\%f",
+    "     will compare two trees and make sure all the files are the same.",
     NULL
 };
 
@@ -244,10 +246,9 @@ static void Compare( char *buff )
 static void SubstituteAndRun( char *fname )
 {
     char        *src, *dst, *start;
-    char        name[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2     pg;
 
-    _splitpath( fname, NULL, NULL, name, ext );
+    _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
     dst = Buff;
     for( src = CmdLine; *src != '\0';++src ) {
         if( *src != '%' ) {
@@ -260,16 +261,16 @@ static void SubstituteAndRun( char *fname )
         case 'f':
         case 'F':
             dst = StringCopy( dst, CurrPath() );
-            if( name[0] || ext[0] ) {
+            if( pg.fname[0] != '\0' || pg.ext[0] != '\0' ) {
                 dst = StringCopy( dst, "\\" );
             }
-            dst = StringCopy( dst, name );
-            dst = StringCopy( dst, ext );
+            dst = StringCopy( dst, pg.fname );
+            dst = StringCopy( dst, pg.ext );
             break;
         case 'l':
         case 'L':
-            dst = StringCopy( dst, name );
-            dst = StringCopy( dst, ext );
+            dst = StringCopy( dst, pg.fname );
+            dst = StringCopy( dst, pg.ext );
             break;
         case 'p':
         case 'P':
@@ -277,11 +278,11 @@ static void SubstituteAndRun( char *fname )
             break;
         case 'n':
         case 'N':
-            dst = StringCopy( dst, name );
+            dst = StringCopy( dst, pg.fname );
             break;
         case 'e':
         case 'E':
-            dst = StringCopy( dst, ext );
+            dst = StringCopy( dst, pg.ext );
             break;
         case '\0':
             *dst++ = '%';
@@ -319,8 +320,8 @@ static void SubstituteAndRun( char *fname )
 
 static void ExecuteCommands( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
 
     if( Options.verbose )
         printf( "\n>>> SWEEP >>> %s\n", CurrPath() );
@@ -328,67 +329,63 @@ static void ExecuteCommands( void )
         SubstituteAndRun( "" );
         return;
     }
-    dirh = opendir( "." );
-    if( dirh != NULL ) {
-        while( !DoneFlag ) {
-            dp = readdir( dirh );
-            if( dp == NULL )
-                break;
+    dirp = opendir( "." );
+    if( dirp != NULL ) {
+        while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
 #ifdef __UNIX__
             {
                 struct stat buf;
-                stat( dp->d_name, &buf );
+
+                stat( dire->d_name, &buf );
                 if( S_ISDIR( buf.st_mode ) ) {
                     continue;
                 }
             }
 #else
-            if( dp->d_attr & _A_SUBDIR )
+            if( dire->d_attr & _A_SUBDIR )
                 continue;
 #endif
-            SubstituteAndRun( dp->d_name );
+            SubstituteAndRun( dire->d_name );
         }
-        closedir( dirh );
+        closedir( dirp );
     }
 }
 
 
 static void ProcessCurrentDirectory( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     dirstack            *stack;
 
     if( !Options.depthfirst ) {
         ExecuteCommands();
     }
     if( Options.levels != 0 ) {
-        dirh = opendir( "." );
-        if( dirh != NULL ) {
+        dirp = opendir( "." );
+        if( dirp != NULL ) {
             --Options.levels;
-            while( !DoneFlag ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+            while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
 #ifdef __UNIX__
                 {
                     struct stat buf;
-                    stat( dp->d_name, &buf );
+
+                    stat( dire->d_name, &buf );
                     if( !S_ISDIR( buf.st_mode ) ) {
                         continue;
                     }
                 }
 #else
-                if( !( dp->d_attr & _A_SUBDIR ) )
+                if( !( dire->d_attr & _A_SUBDIR ) )
                     continue;
 #endif
-                if( dp->d_name[0] == '.' ) {
-                    if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' )
+                if( dire->d_name[0] == '.' ) {
+                    if( dire->d_name[1] == '.' || dire->d_name[1] == '\0' )
                         continue;
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
-                stack->name_len = (unsigned short)strlen( dp->d_name );
-                memcpy( stack->name, dp->d_name, stack->name_len + 1 );
+                stack->name_len = (unsigned short)strlen( dire->d_name );
+                memcpy( stack->name, dire->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
                 Stack = stack;
                 chdir( stack->name );
@@ -398,7 +395,7 @@ static void ProcessCurrentDirectory( void )
                 free( stack );
             }
             ++Options.levels;
-            closedir( dirh );
+            closedir( dirp );
             if( DoneFlag ) {
                 return;
             }

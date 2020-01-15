@@ -51,12 +51,13 @@ WCLASS WClient : public WObject {
         bool WEXPORT connected() { return( _connected ); }
         bool WEXPORT connect( const char *service, const char *topic );
         void WEXPORT disconnect();
-        WString* WEXPORT sendMsg( const char *msg,
-                                  WClientFlags flags=CS_NOFLAGS );
+        WString* WEXPORT sendMsg( const char *msg, WClientFlags flags=CS_NOFLAGS );
         bool WEXPORT xtDisconnect();
         void setTimeOut( unsigned long t ) {
             _timeout = t;
-            if( t == 0 ) _timeout = TIMEOUT_ASYNC;
+            if( t == 0 ) {
+                _timeout = TIMEOUT_ASYNC;
+            }
         }
         static WObjectMap WEXPORT _convMap;
     private:

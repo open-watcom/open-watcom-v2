@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,6 +140,8 @@ char DrawingChars[DRAW_LAST];
 void GUIInitDrawingChars( bool dbcs )
 {
 #ifdef __LINUX__
+    /* unused parameters */ (void)dbcs;
+
     #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
     #include "_guidraw.h"
     #undef pick
@@ -176,13 +179,13 @@ void GUISetCharacter( gui_draw_char draw_char, int ch )
 
 static void DrawChar( gui_window *wnd, int row, int col, ATTR attr, char chr )
 {
-    uivtextput( &wnd->screen, row, col, attr, &chr, 1 );
+    uivtextput( &wnd->vs, row, col, attr, &chr, 1 );
 }
 
 static void DrawText( gui_window *wnd, int row, int col, ATTR attr, char *buff, int length )
 {
     if( length > 0 ) {
-        uivtextput( &wnd->screen, row, col, attr, buff, length );
+        uivtextput( &wnd->vs, row, col, attr, buff, length );
     }
 }
 
@@ -223,44 +226,44 @@ static void DrawFrame( gui_window *wnd )
     }
     inact_gadgets = GUIGetWindowStyles() & GUI_INACT_GADGETS;
     if( wnd->flags & FRAME_INVALID ) {
-        DrawChar( wnd, wnd->screen.area.height - 1, 0, attr, LL_CORNER( inact ) );
+        DrawChar( wnd, wnd->vs.area.height - 1, 0, attr, LL_CORNER( inact ) );
         DrawChar( wnd, 0, 0, attr, UL_CORNER( inact ) );
-        DrawChar( wnd, 0, wnd->screen.area.width - 1, attr, UR_CORNER( inact ) );
-        DrawChar( wnd, wnd->screen.area.height - 1, wnd->screen.area.width - 1, attr, LR_CORNER( inact ) );
+        DrawChar( wnd, 0, wnd->vs.area.width - 1, attr, UR_CORNER( inact ) );
+        DrawChar( wnd, wnd->vs.area.height - 1, wnd->vs.area.width - 1, attr, LR_CORNER( inact ) );
         /* bottom border */
         if( GUIUseGadget( wnd, wnd->hgadget ) ) {
             if( GUIDrawGadgetLine( wnd->hgadget ) ) {
-                DrawChar( wnd, wnd->screen.area.height - 1,
-                            wnd->screen.area.width - 1 - GUIGetScrollOffset(),
+                DrawChar( wnd, wnd->vs.area.height - 1,
+                            wnd->vs.area.width - 1 - GUIGetScrollOffset(),
                             attr, LRV_BAR( inact ) );
             }
         } else {
             area.col = 1;
-            area.row = wnd->screen.area.height - 1;
+            area.row = wnd->vs.area.height - 1;
             area.height = 1;
-            area.width = wnd->screen.area.width - 2;
-            uivfill( &wnd->screen, area, attr, BOTTOM( inact ) );
+            area.width = wnd->vs.area.width - 2;
+            uivfill( &wnd->vs, area, attr, BOTTOM( inact ) );
         }
         /* right border */
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( GUIDrawGadgetLine( wnd->vgadget ) ) {
-                DrawChar( wnd, wnd->screen.area.height - 1 - GUIGetScrollOffset(),
-                            wnd->screen.area.width - 1, attr, LRH_BAR( inact ) );
+                DrawChar( wnd, wnd->vs.area.height - 1 - GUIGetScrollOffset(),
+                            wnd->vs.area.width - 1, attr, LRH_BAR( inact ) );
             }
         } else {
             area.row = 1;
-            area.height = wnd->screen.area.height - 2;
-            area.col = wnd->screen.area.width - 1;
+            area.height = wnd->vs.area.height - 2;
+            area.col = wnd->vs.area.width - 1;
             area.width = 1;
-            uivfill( &wnd->screen, area, attr, RIGHT( inact ) );
+            uivfill( &wnd->vs, area, attr, RIGHT( inact ) );
         }
 
         /* left border */
         area.row = 1;
         area.col = 0;
-        area.height = wnd->screen.area.height - 2;
+        area.height = wnd->vs.area.height - 2;
         area.width = 1;
-        uivfill( &wnd->screen, area, attr, LEFT( inact ) );
+        uivfill( &wnd->vs, area, attr, LEFT( inact ) );
 
         wnd->flags &= ~FRAME_INVALID;
     }
@@ -289,7 +292,7 @@ static void DrawFrame( gui_window *wnd )
         }
         if( GUI_RESIZE_GADGETS_USEABLE( wnd ) ) {
             width -= 2 * GADGET_WIDTH;
-            indent = wnd->screen.area.width - GADGET_WIDTH - 1;
+            indent = wnd->vs.area.width - GADGET_WIDTH - 1;
             if( wnd->style & GUI_MAXIMIZE ) {
                 lgadget = LG_MARK( inact );
                 if( wnd->flags & MAXIMIZED ) {
@@ -305,7 +308,7 @@ static void DrawFrame( gui_window *wnd )
             DrawChar( wnd, 0, indent + 1, attr, mgadget );
             DrawChar( wnd, 0, indent + 2, attr, rgadget );
 
-            indent = wnd->screen.area.width - 2 * GADGET_WIDTH - 1;
+            indent = wnd->vs.area.width - 2 * GADGET_WIDTH - 1;
             if( wnd->style & GUI_MINIMIZE ) {
                 lgadget = LG_MARK( inact );
                 if( GUI_WND_MINIMIZED( wnd ) ) {
@@ -323,11 +326,11 @@ static void DrawFrame( gui_window *wnd )
         }
     }
 
-    buffer = alloca( wnd->screen.area.width + 1 );
+    buffer = alloca( wnd->vs.area.width + 1 );
     buff = buffer;
     memset( buff, TOP( inact ), width ); /* width at least 1 */
-    if( wnd->screen.title != NULL && *wnd->screen.title != '\0' ) {
-        str_length = strlen( wnd->screen.title );
+    if( wnd->vs.title != NULL && *wnd->vs.title != '\0' ) {
+        str_length = strlen( wnd->vs.title );
         if( ( str_length + TITLE_EXTRA_AMOUNT ) > width ) {
             title_extra = 0;
             if( str_length > width ) {
@@ -351,7 +354,7 @@ static void DrawFrame( gui_window *wnd )
             buff[len] = TITLE_SP( inact );
             len++;
         }
-        memcpy( buff + len, wnd->screen.title, str_length );
+        memcpy( buff + len, wnd->vs.title, str_length );
         len += str_length;
         if( title_extra != 0 ) {
             buff[len] = TITLE_SP( inact );
@@ -422,17 +425,17 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
             }
             COPYAREA( *area, wnd->dirty );
             if( ( wnd->dirty.col + wnd->dirty.width ) >
-                ( wnd->screen.area.col + wnd->screen.area.width ) ) {
-                wnd->dirty.width = wnd->screen.area.col + wnd->screen.area.width -
+                ( wnd->vs.area.col + wnd->vs.area.width ) ) {
+                wnd->dirty.width = wnd->vs.area.col + wnd->vs.area.width -
                                    wnd->dirty.col;
             }
             if( ( wnd->dirty.row + wnd->dirty.height ) >
-                ( wnd->screen.area.row + wnd->screen.area.height ) ) {
-                wnd->dirty.height = wnd->screen.area.row + wnd->screen.area.height -
+                ( wnd->vs.area.row + wnd->vs.area.height ) ) {
+                wnd->dirty.height = wnd->vs.area.row + wnd->vs.area.height -
                                     wnd->dirty.row;
             }
         }
-        uivfill( &wnd->screen, wnd->dirty, WNDATTR( wnd, GUI_BACKGROUND ),
+        uivfill( &wnd->vs, wnd->dirty, WNDATTR( wnd, GUI_BACKGROUND ),
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {

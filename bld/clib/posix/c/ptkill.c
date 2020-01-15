@@ -47,6 +47,11 @@ _WCRTLINK int pthread_kill(pthread_t thread, int sig)
     pid_t tpid;
     pid_t ppid;
 
+#ifndef __LINUX__
+
+    /* unused parameters */ (void)sig;
+
+#endif
     tpid = __get_thread_id( thread );
     ppid = getpid();
     if(tpid != 0 && ppid != 0) {

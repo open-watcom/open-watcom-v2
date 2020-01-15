@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,11 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "getopt.h"
 #include "misc.h"
 #include "argvrx.h"
+
 
 char *OptEnvVar = "fold";
 
@@ -77,20 +80,21 @@ static void fold( FILE *fh ) {
 }
 
 
-void main( int argc, char **argv ) {
-
+int main( int argc, char **argv )
+{
     int         ch;
     FILE        *fh;
     int         i;
-    int         rxflag;
+    bool        rxflag;
 
     lineWidth = 70;
-    rxflag = 0;
+    rxflag = false;
     for(;;) {
         ch = GetOpt( &argc, argv, "#", usageTxt );
-        if( ch == -1 ) break;
+        if( ch == -1 )
+            break;
         if( ch == 'X' ) {
-            rxflag = 1;
+            rxflag = true;
         }
         if( ch == '#' ) {
             lineWidth = strtoul( OptArg, NULL, 10 );
@@ -99,7 +103,7 @@ void main( int argc, char **argv ) {
             }
         }
     }
-    lineBuffer = malloc( lineWidth+1 );
+    lineBuffer = malloc( lineWidth + 1 );
     if( lineBuffer == NULL ) {
         Die( "not enough memory to hold a line\n" );
     }
@@ -118,4 +122,5 @@ void main( int argc, char **argv ) {
             fclose( fh );
         }
     }
+    return( 0 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,10 @@
 #endif
 
 
-bool intern isdialogue( VSCREEN *vptr )
-/*************************************/
+bool intern isdialogue( VSCREEN *vs )
+/***********************************/
 {
-    return( ( vptr != NULL ) && ( (vptr->flags & V_DIALOGUE) != 0 ) );
+    return( ( vs != NULL ) && ( (vs->flags & V_DIALOGUE) != 0 ) );
 }
 
 
@@ -49,7 +50,7 @@ bool intern isscreen( BUFFER * bptr )
 #if defined( HAVE_FAR )
     // Short cut when using far pointers. Just check segment:
 
-    return( FP_SEG( bptr->origin ) == FP_SEG( UIData->screen.origin ) );
+    return( _FP_SEG( bptr->origin ) == _FP_SEG( UIData->screen.origin ) );
 
 #else
     // No far pointers. Check range:

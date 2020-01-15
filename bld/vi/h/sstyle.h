@@ -58,5 +58,7 @@ syntax_element  SSGetStyle( int, int );
 void            SSInitBeforeConfig( void );
 void            SSInitAfterConfig( void );
 void            SSFini( void );
+void            SSGetBeyondText( ss_block * );
+void            SSGetWhiteSpace( ss_block *ss_new, const char *start );
 
 #endif

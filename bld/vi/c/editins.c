@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "menu.h"
 #include "win.h"
 #include "rxsupp.h"
+
 
 static bool     currLineRepUndo;
 static bool     overStrike;
@@ -1110,8 +1112,8 @@ vi_rc InsertLikeLast( void )
 
 typedef struct mode {
     struct mode *prev;
-    bool        wasinsert       : 1;
-    bool        wasoverstrike   : 1;
+    boolbit     wasinsert       : 1;
+    boolbit     wasoverstrike   : 1;
 } mode;
 
 static mode     *modeTail;

@@ -54,9 +54,9 @@
 #include "pmake.h"
 #include "wio.h"
 #include "memutils.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
-#include "bldstruc.h"
 
 
 #define WILD_METAS      "*?"
@@ -81,6 +81,12 @@
 #endif
 
 #define COPY_BUFF_SIZE  (32 * 1024)
+
+typedef struct struct_copy {
+    struct struct_copy  *next;
+    char                src[_MAX_PATH];
+    char                dst[_MAX_PATH];
+} struct_copy;
 
 typedef struct dd {
     struct dd   *next;
@@ -175,9 +181,9 @@ static int ProcSet( const char *cmd )
     return( setenv( tmp_buf, rep, 1 ) );
 }
 
-void ResetArchives( copy_entry *list )
+void ResetArchives( copy_entry list )
 {
-    copy_entry  *next;
+    copy_entry  next;
 #ifndef __UNIX__
     unsigned    attr;
 #endif
@@ -200,9 +206,9 @@ static int IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
-static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
+static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 {
-    copy_entry  *entry;
+    copy_entry  entry;
 
     entry = MAlloc( sizeof( *entry ) );
     entry->next = NULL;
@@ -212,17 +218,13 @@ static copy_entry **add_copy_entry( copy_entry **list, char *src, char *dst )
     return( &entry->next );
 }
 
-static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
+static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry *list )
 {
     char                *dst_end;
-    char                path_buffer[_MAX_PATH2];
+    PGROUP2             pg;
     char                full[_MAX_PATH];
-    char                *drive;
-    char                *dir;
-    char                *fn;
-    char                *ext;
-    DIR                 *directory;
-    struct dirent       *dent;
+    DIR                 *dirp;
+    struct dirent       *dire;
 #ifdef __UNIX__
     char                pattern[_MAX_PATH];
 #endif
@@ -243,8 +245,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         case '\\':
         case '/':
             /* need to append source file name */
-            _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
-            _makepath( full, NULL, dst, fn, ext );
+            _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( full, NULL, dst, pg.fname, pg.ext );
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
             break;
         default:
@@ -256,20 +258,20 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         }
         return( 0 );
     }
-    _splitpath2( src, path_buffer, &drive, &dir, &fn, &ext );
+    _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #ifdef __UNIX__
-    _makepath( src, drive, dir, NULL, NULL );
-    _makepath( pattern, NULL, NULL, fn, ext );
+    _makepath( src, pg.drive, pg.dir, NULL, NULL );
+    _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
     if( src[0] == '\0' ) {
-        directory = opendir( "." );
+        dirp = opendir( "." );
     } else {
-        directory = opendir( src );
+        dirp = opendir( src );
     }
 #else
-    directory = opendir( src );
+    dirp = opendir( src );
 #endif
     rc = 1;
-    if( directory == NULL ) {
+    if( dirp == NULL ) {
         if( !cond_copy ) {
             Log( false, "Can not open source directory '%s': %s\n", src, strerror( errno ) );
         }
@@ -277,35 +279,35 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
 #ifdef __UNIX__
         char *src_end = src + strlen( src );
 #endif
-        while( (dent = readdir( directory )) != NULL ) {
-            if( ENTRY_INVALID1( dent ) )
+        while( (dire = readdir( dirp )) != NULL ) {
+            if( ENTRY_INVALID1( dire ) )
                 continue;
             rc = 0;
 #ifdef __UNIX__
-            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+            if( fnmatch( pattern, dire->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
                 continue;
-            strcpy( src_end, dent->d_name );
+            strcpy( src_end, dire->d_name );
             if( chk_is_dir( src ) )
                 continue;
 #else
-            if( dent->d_attr & _A_SUBDIR )
+            if( dire->d_attr & _A_SUBDIR )
                 continue;
 #endif
-            _makepath( full, drive, dir, dent->d_name, NULL );
+            _makepath( full, pg.drive, pg.dir, dire->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
             switch( *dst_end ) {
             case '\\':
             case '/':
-                strcat( full, dent->d_name );
+                strcat( full, dire->d_name );
                 break;
             }
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
-            if( !test_abit || ENTRY_CHANGED2( entry_src, dent, entry_dst ) ) {
+            if( !test_abit || ENTRY_CHANGED2( entry_src, dire, entry_dst ) ) {
                 list = add_copy_entry( list, entry_src, entry_dst );
             }
         }
-        closedir( directory );
+        closedir( dirp );
     }
     if( cond_copy ) {
         return( 0 );
@@ -443,8 +445,8 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
 static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
 {
     char        *p;
-    copy_entry  *list;
-    copy_entry  *next;
+    copy_entry  list;
+    copy_entry  next;
     int         res;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
@@ -477,8 +479,8 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
                     res = rc;
 #ifndef __UNIX__
                 } else if( test_abit ) {
-                    list->next = IncludeStk->reset_abit;
-                    IncludeStk->reset_abit = list;
+                    list->next = GetArchive();
+                    SetArchive( list );
                     continue;
 #endif
                 }
@@ -517,9 +519,9 @@ static int DoPMake( pmake_data *data )
             rc = res;
             continue;
         }
-        getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+        SetIncludeCWD();
         if( data->display )
-            LogDir( IncludeStk->cwd );
+            LogDir( GetIncludeCWD() );
         PMakeCommand( data, cmd );
         res = SysRunCommand( cmd );
         if( res != 0 ) {
@@ -547,11 +549,11 @@ static int ProcPMake( const char *cmd, bool ignore_errors )
         return( 2 );
     }
     data->ignore_errors = ignore_errors;
-    strcpy( save, IncludeStk->cwd );
+    strcpy( save, GetIncludeCWD() );
     res = DoPMake( data );
     PMakeCleanup( data );
     SysChdir( save );
-    getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    SetIncludeCWD();
     return( res );
 }
 
@@ -605,8 +607,8 @@ static int DoRM( const char *f )
     size_t              i;
     size_t              j;
     size_t              len;
-    DIR                 *d;
-    struct dirent       *nd;
+    DIR                 *dirp;
+    struct dirent       *dire;
     int                 rc;
     int                 retval = 0;
 
@@ -638,20 +640,20 @@ static int DoRM( const char *f )
         memcpy( fname, f + j, len - j + 1 );
     }
 #endif
-    d = opendir( fpath );
-    if( d == NULL ) {
+    dirp = opendir( fpath );
+    if( dirp == NULL ) {
         Log( false, "File (%s) not found.\n", f );
         return( ENOENT );
     }
 
-    while( (nd = readdir( d )) != NULL ) {
-        if( ENTRY_INVALID2( fname, nd ) )
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ENTRY_INVALID2( fname, dire ) )
             continue;
         /* set up file name, then try to delete it */
-        len = strlen( nd->d_name );
-        memcpy( fpathend, nd->d_name, len );
+        len = strlen( dire->d_name );
+        memcpy( fpathend, dire->d_name, len );
         fpathend[len] = '\0';
-        if( ENTRY_SUBDIR( fpath, nd ) ) {
+        if( ENTRY_SUBDIR( fpath, dire ) ) {
             /* process a directory */
             if( rflag ) {
                 /* build directory list */
@@ -669,7 +671,7 @@ static int DoRM( const char *f )
                 Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
-        } else if( !fflag && ENTRY_RDONLY( fpath, nd ) ) {
+        } else if( !fflag && ENTRY_RDONLY( fpath, dire ) ) {
             Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
@@ -679,7 +681,7 @@ static int DoRM( const char *f )
             }
         }
     }
-    closedir( d );
+    closedir( dirp );
     /* process any directories found */
     for( tmp = dhead; tmp != NULL; tmp = dhead ) {
         dhead = tmp->next;
@@ -812,13 +814,13 @@ int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
     if( BUILTIN( cmd, "CD" ) ) {
         res = SysChdir( SKIP_CMD( cmd, "CD" ) );
         if( res == 0 ) {
-            getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+            SetIncludeCWD();
         }
     } else if( BUILTIN( cmd, "CDSAY" ) ) {
         res = SysChdir( SKIP_CMD( cmd, "CDSAY" ) );
         if( res == 0 ) {
-            getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
-            LogDir( IncludeStk->cwd );
+            SetIncludeCWD();
+            LogDir( GetIncludeCWD() );
         }
     } else if( BUILTIN( cmd, "SET" ) ) {
         res = ProcSet( SKIP_CMD( cmd, "SET" ) );

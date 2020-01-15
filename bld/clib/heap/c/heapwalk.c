@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +83,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
         return( _HEAPEMPTY );
     frl = entry->_pentry;
     if( frl != NULL ) {
-        seg = FP_SEG( entry->_pentry );
+        seg = _FP_SEG( entry->_pentry );
     } else if( one_heap == _NULLSEG ) {
         /* we are starting a multi-heap walk */
         if( verifyHeapList( seg ) != _HEAPOK ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct buf_limit    *bufinfo;
 
-    bufinfo = (struct buf_limit *)specs->_dest;
+    bufinfo = SLIB2CLIB( struct buf_limit, specs->_dest );
     if( specs->_output_count < bufinfo->bufsize ) {
         *( bufinfo->bufptr++ ) = op_char;
     }
@@ -61,6 +62,8 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 static slib_callback_t buf_count_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_count_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
+    /* unused parameters */ (void)op_char;
+
     specs->_output_count++;
 }
 

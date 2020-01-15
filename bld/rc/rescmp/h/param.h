@@ -37,12 +37,12 @@
 #include "types.h"
 
 struct ResCmpParams {
-    int     CheckAll    : 1;
-    int     PrintHelp   : 1;
-    int     Quiet       : 1;
-    int     NoCounts    : 1;        /* suppress "Number of types differ." */
-    char    FileName1[ _MAX_PATH ];
-    char    FileName2[ _MAX_PATH ];
+    boolbit     CheckAll    : 1;
+    boolbit     PrintHelp   : 1;
+    boolbit     Quiet       : 1;
+    boolbit     NoCounts    : 1;        /* suppress "Number of types differ." */
+    char        FileName1[ _MAX_PATH ];
+    char        FileName2[ _MAX_PATH ];
 };
 
 extern bool ScanParams( int argc, char * argv[] );

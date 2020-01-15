@@ -49,6 +49,8 @@ static ovl_dbg_req_func     NoOvlsHdlr;
 static int __far NoOvlsHdlr( int req, void __far *data )
 /******************************************************/
 {
+    /* unused parameters */ (void)req; (void)data;
+
     return( 0 );
 }
 

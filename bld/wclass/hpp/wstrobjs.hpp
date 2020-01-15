@@ -104,12 +104,14 @@ template<class T> const char *WStringObjectList<T>::cString( int first,
 
     static T str;
     str = "";
-    if( last < 0 ) last = 32767;
+    if( last < 0 )
+        last = 32767;
     int icount = count();
     for( int i = 0; i < icount; ++i ) {
         T* s = (T *)(*this)[i];
         if( (i >= first) && (i <= last) ) {
-            if( str.size() > 0 ) str.concat( ' ' );
+            if( str.size() > 0 )
+                str.concat( ' ' );
             str.concat( s->gets() );
         }
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "vi.h"
 #include "posix.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -39,13 +41,13 @@
  * ExpandFileNames - take a file name, and expand it out to a list of dos
  *                   file names
  */
-list_linenum ExpandFileNames( const char *p, char ***argv )
+list_linenum ExpandFileNames( const char *fullmask, char ***argv )
 {
     list_linenum    argc;
     list_linenum    i;
-    char            drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
-    char            extin[_MAX_EXT], pathin[FILENAME_MAX];
-    const char      *start;
+    PGROUP2         pg;
+    char            pathin[FILENAME_MAX];
+    const char      *p;
     char            *new;
     bool            wildcard;
     vi_rc           rc;
@@ -53,13 +55,12 @@ list_linenum ExpandFileNames( const char *p, char ***argv )
 
     argc = 0;
     wildcard = false;
-    start = p;
     *argv = NULL;
 
     /*
      * check if there is anything to expand
      */
-    for( ; (c = *p) != '\0'; ) {
+    for( p = fullmask; (c = *p) != '\0'; ) {
         if( c == '?' || c == '*' || c == '|' || c == '(' || c == '[' ) {
             wildcard = true;
             break;
@@ -69,26 +70,26 @@ list_linenum ExpandFileNames( const char *p, char ***argv )
 
     if( !wildcard ) {
         // don't change to lowercase any more
-        //FileLower( start );
+        //FileLower( fullmask );
         *argv = _MemReallocList( *argv, argc + 1 );
-        new = MemAlloc( strlen( start ) + 1 );
+        new = MemAlloc( strlen( fullmask ) + 1 );
         (*argv)[argc++] = new;
-        strcpy( new, start );
+        strcpy( new, fullmask );
         return( argc );
     }
 
     /*
      * get all matches
      */
-    rc = GetSortDir( start, false );
+    rc = GetSortDir( fullmask, false );
     if( rc != ERR_NO_ERR ) {
         *argv = _MemReallocList( *argv, argc + 1 );
-        new = MemAlloc( strlen( start ) + 1 );
+        new = MemAlloc( strlen( fullmask ) + 1 );
         (*argv)[argc++] = new;
-        strcpy( new, start );
+        strcpy( new, fullmask );
         return( argc );
     }
-    _splitpath( start, drive, directory, name, extin );
+    _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     /*
      * run through matches
@@ -96,8 +97,7 @@ list_linenum ExpandFileNames( const char *p, char ***argv )
     for( i = 0; i < DirFileCount; i++ ) {
         if( IS_SUBDIR( DirFiles[i] ) )
             continue;
-        _splitpath( DirFiles[i]->name, NULL, NULL, name, extin );
-        _makepath( pathin, drive, directory, name, extin );
+        _makepath( pathin, pg.drive, pg.dir, DirFiles[i]->name, NULL );
         *argv = _MemReallocList( *argv, argc + 1 );
         new = MemAlloc( strlen( pathin ) + 1 );
         (*argv)[argc++] = new;

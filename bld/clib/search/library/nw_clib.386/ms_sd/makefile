@@ -4,6 +4,7 @@ model=ms
 system=nw_clib
 linkage=static
 convention=stack
+mthreaded=1
 
 clib_release = 0
 

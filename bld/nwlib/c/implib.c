@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,6 @@ static orl_return FindHelper( orl_sec_handle sec )
     return( ORL_OKAY );
 }
 
-
 static orl_rva      export_table_rva;
 
 static orl_return FindExportTableHelper( orl_sec_handle sec )
@@ -77,7 +77,6 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
             found_sec_handle = sec;
         }
     }
-
     return( ORL_OKAY );
 }
 
@@ -150,12 +149,9 @@ static bool elfAddImport( arch_header *arch, libfile io )
     }
 
     oldname = arch->name;
-    arch->ffname = arch->name;
-    arch->name = MemAlloc( _MAX_FNAME + _MAX_EXT );
-    _splitpath( oldname, NULL, NULL, arch->name, NULL );
-    DLLname = DupStr( arch->name );
-    _splitpath( oldname, NULL, NULL, NULL, arch->name + strlen( arch->name ) );
-
+    arch->ffname = oldname;
+    DLLname = DupStr( MakeFName( oldname ) );
+    arch->name = DupStr( TrimPath( oldname ) );
     export_sec = FindSec( ofile, ".exports" );
     ORLSecGetContents( export_sec, (unsigned_8 **)&export_table );
     export_size = ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
@@ -251,22 +247,18 @@ static void os2AddImport( arch_header *arch, libfile io )
 
 static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
 {
-    char *buffer;
-
-    buffer = MemAlloc( 100 );
+    char    buffer[100];
 
     memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
-    _splitpath( DLLName, NULL, NULL, buffer + 20, NULL );
+    strcpy( buffer + 20, MakeFName( DLLName ) );
     CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
 
     CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
 
     buffer[0] = 0x7f;
-    _splitpath( DLLName, NULL, NULL, buffer + 1, NULL );
+    strcpy( buffer + 1, MakeFName( DLLName ) );
     strcat( buffer, "_NULL_THUNK_DATA" );
     CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
-
-    MemFree( buffer );
 }
 
 static void os2FlatAddImport( arch_header *arch, libfile io )
@@ -308,7 +300,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
 
     LibSeek( io, 0x00, SEEK_SET );
     LibRead( io, &nlm, sizeof( nlm ) );
-    if( memcmp( nlm.signature, NLM_SIGNATURE, sizeof( nlm.signature ) ) != 0 ) {
+    if( memcmp( nlm.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) != 0 ) {
         return( false );
     }
     LibSeek( io, offsetof( nlm_header, moduleName ) , SEEK_SET );

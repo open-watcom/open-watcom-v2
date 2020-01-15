@@ -111,19 +111,19 @@ static void set_dbcs_table( void )
 
 int __mbinit( int codepage )
 {
-#ifdef __NT__
+#if defined( __NT__ )
     CPINFO                  cpInfo;
     BOOL                    rc;
-#elif defined __OS2__
+#elif defined( __OS2__ )
     COUNTRYCODE             countryInfo;
     unsigned short          leadBytes[6];
     APIRET                  rc;
     OS_UINT                 buf[8];
     OS_UINT                 bytes;
-#elif defined __OSI__
-#elif defined __DOS__
+#elif defined( __OSI__ )
+#elif defined( __DOS__ )
     unsigned short          __far *leadBytes;
-#elif defined __WINDOWS__
+#elif defined( __WINDOWS__ )
     DWORD                   version;
 #elif defined __LINUX__
 #elif defined __RDOS__

@@ -133,7 +133,7 @@ _WCRTLINK int _nheapchk( void )
     hi._pentry = NULL;
     while( (heap_status = __NHeapWalk( &hi, __nheapbeg )) == _HEAPOK ) {
         if( hi._useflag == _FREEENTRY ) {
-            heap_status = checkFree( (freelist_nptr)hi._pentry );
+            heap_status = checkFree( FAR2NEAR( void, hi._pentry ) );
             if( heap_status != _HEAPOK )
                 break;
             free_size -= hi._size;

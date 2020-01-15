@@ -42,9 +42,9 @@
 #include "cp.h"
 #include "getopt.h"
 #include "iopath.h"
+#include "filerx.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 char *OptEnvVar="cp";

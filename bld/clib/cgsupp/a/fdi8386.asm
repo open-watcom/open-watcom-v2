@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -49,7 +50,7 @@ include struct.inc
         defpe   __FDU8
         push    ECX             ; save ECX
         mov     CX,3ffh+64      ; maximum number 2^64-1
-        call    __FDU           ; convert float to unsigned __int64
+        call    __FD8           ; convert float to unsigned __int64
         pop     ECX             ; restore ECX
         ret                     ; return
         endproc __FDU8
@@ -62,13 +63,12 @@ include struct.inc
         defpe   __FDI8
         push    ECX             ; save ECX
         mov     CX,3ffh+63      ; maximum number 2^63-1
-        call    __FDI           ; convert float to signed __int64
+        call    __FD8           ; convert float to signed __int64
         pop     ECX             ; restore ECX
         ret                     ; return
         endproc __FDI8
 
-__FDI   proc    near
-__FDU:                          ; what? they both do the same thing
+__FD8   proc    near
         or      EDX,EDX         ; check sign bit
         jns     short __FDAbs   ; treat as unsigned if positive
         call    __FDAbs         ; otherwise convert number
@@ -76,7 +76,7 @@ __FDU:                          ; what? they both do the same thing
         neg     EAX             ;
         sbb     EDX,0           ;
         ret                     ; return
-        endproc __FDI
+        endproc __FD8
 
 __FDAbs proc near
         or      EAX,EAX         ; check if number 0

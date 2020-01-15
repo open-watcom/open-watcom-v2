@@ -287,6 +287,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     WriteDbgRegs();
     first_time = true;
     es = ES_NORMAL;
+    conditions = 0;
     run_conditions = 0;
     if( !HaveRemoteAsync() ) {
         DUIPlayDead( true );

@@ -52,17 +52,17 @@ WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam,
 typedef struct {
     int         AutoSaveInterval;
     // int         MaxLineLen;
-    bool        Undo                : 1;
-    bool        AutoSave            : 1;
-    bool        LastEOL             : 1;
-    bool        SaveConfig          : 1;
-    bool        SaveOnBuild         : 1;
-    bool        BeepFlag            : 1;
-    bool        QuitMovesForward    : 1;
-    bool        SameFileCheck       : 1;
-    bool        Modal               : 1;
-    bool        CaseIgnore          : 1;
-    bool        SearchWrap          : 1;
+    boolbit     Undo                : 1;
+    boolbit     AutoSave            : 1;
+    boolbit     LastEOL             : 1;
+    boolbit     SaveConfig          : 1;
+    boolbit     SaveOnBuild         : 1;
+    boolbit     BeepFlag            : 1;
+    boolbit     QuitMovesForward    : 1;
+    boolbit     SameFileCheck       : 1;
+    boolbit     Modal               : 1;
+    boolbit     CaseIgnore          : 1;
+    boolbit     SearchWrap          : 1;
     char        Word[WORDWIDTH];
     char        WordAlt[WORDWIDTH];
     char        TmpDir[TMPDIRWIDTH];

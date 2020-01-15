@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -443,38 +444,30 @@ static unsigned load32BitLiteral( uint_32 *buffer, ins_operand *op0, ins_operand
 static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt )
 //*******************************************************************************
 {
-    ins_operand     *op0, *op1;
+    ins_operand     *op0;
+    ins_operand     *op1;
     uint_32         extra;
-    uint_32         abs_val;
-    bool            ready = true;
 
     op0 = operands[0];
     op1 = operands[1];
     if( op0->type == OP_GPR ) {
         extra = _Rt( RegIndex( op0->reg ) );
+        doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, MIPS_ZERO_SINK, RegIndex( op1->reg ), extra );
     } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
         extra = _LIT( op0->constant ); // this lit is between 0..255
-        (void)ensureOpAbsolute( op0, 0 );
-    } else if( m_opt == DOMOV_ABS ) {
-        abs_val = abs( op0->constant );
-        if( ( abs_val & 0xff ) == abs_val ) {
-            extra = _LIT( abs_val ); // this lit is between 0..255
-            // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
-        } else {
-            ready = false;
-        }
+        ensureOpAbsolute( op0, 0 );
+        doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, MIPS_ZERO_SINK, RegIndex( op1->reg ), extra );
+    } else if( ( -op0->constant & 0xff ) == -op0->constant && m_opt == DOMOV_ABS ) { // -255..0
+        extra = _LIT( -op0->constant ); // this lit is between 0..255
+        // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+        doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS, MIPS_ZERO_SINK, RegIndex( op1->reg ), extra );
     } else {
-        ready = false;
+        // Otherwise it's OP_IMMED with a greater than 8-bit literal.
+        // We'll then use multiple LDA, LDAH instructions to load the literal.
+        if( ensureOpAbsolute( op0, 0 ) ) {
+            numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
+        }
     }
-    if( ready ) {
-        doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS,
-                        MIPS_ZERO_SINK, RegIndex( op1->reg ), extra );
-        return;
-    }
-    // Otherwise it's OP_IMMED with a greater than 8-bit literal.
-    // We'll then use multiple LDA, LDAH instructions to load the literal.
-    if( !ensureOpAbsolute( op0, 0 ) ) return;
-    numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
 }
 
 
@@ -638,8 +631,8 @@ static void ITMemB( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 }
 
 
-static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, uint_32 hint, asm_reloc *reloc )
-//************************************************************************************************************************************
+static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, ins_operand *addr_op, int_32 hint, asm_reloc *reloc )
+//***********************************************************************************************************************************
 {
     // Note that addr_op maybe NULL. If not, addr_op->constant == hint.
     assert( addr_op == NULL || addr_op->constant == hint );
@@ -688,7 +681,9 @@ static void opError( instruction *ins, op_type actual, op_type wanted, int i )
 static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, unsigned num_var )
 //************************************************************************************************
 {
-    int             ctr, var, lasterr;
+    int             ctr;
+    unsigned        var;
+    int             lasterr;
     op_type         actual = 0;
     op_type         wanted = 0;
 
@@ -1447,7 +1442,7 @@ void MIPSEmit( instruction *ins )
 // relocs to the appropriate places), and emit the code
 // to the given section.
 {
-    int             ctr;
+    unsigned        ctr;
     ins_table       *table;
     asm_reloc       reloc = { NULL, NULL };
     reloc_list      curr_reloc;

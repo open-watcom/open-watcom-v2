@@ -113,6 +113,11 @@ int     NumViolations = 0;  /* runtime-constraint violation counter */
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifndef DEBUG_MSG
+    /* unused parameters */ (void)msg;
+#endif
+    /* unused parameters */ (void)ptr; (void)error;
+
 #ifdef DEBUG_MSG
     fprintf( stderr, "Runtime-constraint in %s", msg );
 #endif
@@ -764,9 +769,10 @@ int main( int argc, char *argv[] )
     int         old_stdout_fd;
     FILE        *old_stdout;
 
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
-
 
 #ifdef __SW_BW
     con = fopen( "tmp.log", "a" );

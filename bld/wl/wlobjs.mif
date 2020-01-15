@@ -71,7 +71,6 @@ common_objs = &
     $(_subdir_)loadrdv.obj &
     $(_subdir_)lsymtab.obj &
     $(_subdir_)mapio.obj &
-    $(_subdir_)mem.obj &
     $(_subdir_)mixcache.obj &
     $(_subdir_)msg.obj &
     $(_subdir_)objio.obj &
@@ -100,6 +99,7 @@ common_objs = &
     $(_subdir_)symtrace.obj &
     $(_subdir_)toc.obj &
     $(_subdir_)wlink.obj &
+    $(_subdir_)wlmem.obj &
     $(_subdir_)wlnkmsg.obj &
     $(_subdir_)demangle.obj &
     $(_subdir_)pathlist.obj &

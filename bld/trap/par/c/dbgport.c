@@ -188,7 +188,6 @@
  */
 
 #include <ntddk.h>
-#pragma disable_message ( 202 )
 #include "parallel.h"
 #include "dbgioctl.h"
 

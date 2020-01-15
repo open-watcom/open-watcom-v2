@@ -9,6 +9,8 @@ proj_name   = wmake
 wmake_autodepends = .AUTODEPEND
 !endif
 
+wmake_trmem = 1
+
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
 #!ifeq host_cpu i86
@@ -16,26 +18,21 @@ wmake_autodepends = .AUTODEPEND
 #!endif
 #!endif
 
-wmake_trmem = 1
-
 wmake_dos_extender = causeway
 
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
-
-!include wres.mif
-
-!include trmem.mif
 
 !include ../wmkobjs.mif                     #   get our objs macro
 
 .h      : ../h
 .h      : $(watcom_dir)/h
-.h      : $(trmem_dir)
 .c      : ../c
 .c      : $(watcom_dir)/c
 .c      : $(trmem_dir)
@@ -59,6 +56,8 @@ extra_cpp_flags += -DCACHE_STATS
 !ifdef wmake_causeway
 extra_cpp_flags_dos_386 = -DCAUSEWAY
 !endif
+
+extra_cpp_flags_memory = $(trmem_cpp_flags)
 
 extra_c_flags_i86 = -zt32
 

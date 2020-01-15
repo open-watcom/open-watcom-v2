@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,8 @@
 
 #include "clibext.h"
 
+
+#define IDEFN(x)    IdeCbs->x
 
 static IDECBHdl     IdeHdl;
 static IDECallBacks *IdeCbs;
@@ -118,7 +121,7 @@ char *WlibGetEnv( const char *name )
     char *env;
 
     if( !ideInfo->ignore_env && IdeCbs != NULL ) {
-        if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
             return( env );
         }
     }
@@ -130,12 +133,8 @@ void FatalResError( char *msg )
     IDEMsgInfo          msg_info;
 
     if( IdeCbs != NULL ) {
-        msg_info.severity = IDEMSGSEV_ERROR;
-        msg_info.flags = 0;
-        msg_info.helpfile = NULL;
-        msg_info.helpid = 0;
-        msg_info.msg = msg;
-        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+        IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
     longjmp( Env, 1 );
 }
@@ -152,7 +151,7 @@ void FatalError( int str, ... )
     vsnprintf( msg, 512, buff, arglist );
     if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
-        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
     va_end( arglist );
     longjmp( Env, 1 );
@@ -172,7 +171,7 @@ void Warning( int str, ... )
     vsnprintf( msg, 512, buff, arglist );
     if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_WARNING, msg );
-        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
     va_end( arglist );
 }
@@ -189,7 +188,7 @@ void Message( char *buff, ... )
     vsnprintf( msg, 512, buff, arglist );
     if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_NOTE_MSG, msg );
-        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
     va_end( arglist );
 }
@@ -198,9 +197,12 @@ void Message( char *buff, ... )
 
 static void ConsoleMessage( const char *msg )
 {
-    static IDEMsgInfo   msg_info = { IDEMSGSEV_BANNER, 0, NULL, 0, NULL };
-    msg_info.msg = msg;
-    IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+    IDEMsgInfo          msg_info;
+
+    if( IdeCbs != NULL ) {
+        IdeMsgInit( &msg_info, IDEMSGSEV_BANNER, msg );
+        IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
+    }
 }
 
 static bool Wait_for_return( void )

@@ -77,6 +77,8 @@ void UpdateRegString( HWND string, HWND list, int x, int y, int width, int heigh
     char    *cmp;
     DWORD   flags;
 
+    /* unused parameters */ (void)list;
+
     len = GetWindowTextLength( string ) + 1;
     cmp = alloca( len );
     GetWindowText( string, cmp, len );

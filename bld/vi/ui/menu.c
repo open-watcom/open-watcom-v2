@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,9 @@ typedef struct menu {
     char            **list;
     hichar          *hi_list;
     hichar          hi_char;
-    bool            has_file_list   : 1;
-    bool            need_hook       : 1;
-    bool            has_last_files  : 1;
+    boolbit         has_file_list   : 1;
+    boolbit         need_hook       : 1;
+    boolbit         has_last_files  : 1;
     unsigned char   maxwidth;
     unsigned char   orig_maxwidth;
     unsigned char   slen;

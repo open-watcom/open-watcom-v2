@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,17 +84,22 @@ static res_language_enumeration check_code_page( void )
         }
     }
 #else
+    #define NO_CODEPAGE
     codepage = 0;
 #endif
 
+#ifdef NO_CODEPAGE
+    return( RLE_ENGLISH );
+#else
     /*** Try to match the returned code page to known ones ***/
     switch( codepage ) {
         case 932:   return( RLE_JAPANESE );
         default:    return( RLE_ENGLISH );
     }
+#endif
 }
 
-_WCRTLINK res_language_enumeration _WResLanguage(void)
+_WCRTLINK res_language_enumeration _WResLanguage( void )
 {
     char        *env;
 

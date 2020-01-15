@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,17 @@
 #else
     #include <direct.h>
 #endif
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <fnmatch.h>
+#endif
+#include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"
 
 #include "clibext.h"
 
+
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 static const char       *usageMsg[] = {
     "Usage: ctags [-?adempstqvxy] [-z[a,c,f]] [-f<fname>] [files] [@optfile]",
@@ -84,27 +91,33 @@ static char             *fileName = "tags";
 static char             tmpFileName[_MAX_PATH];
 static file_type        fileType = TYPE_NONE;
 
-static bool skipEntry( struct dirent *dire )
+#if defined( __UNIX__ )
+static int _stat2( const char *path, const char *name, struct stat *st )
+{
+    char        full_name[_MAX_PATH];
+
+    _makepath( full_name, NULL, path, name, NULL );
+    return( stat( full_name, st ) );
+}
+#endif
+
+static bool skipEntry( const char *path, const char *mask, struct dirent *dire )
 {
 #ifdef __UNIX__
-    return( false );
-#else
-    return( (dire->d_attr & _A_VOLID) != 0 );
-#endif
-}
-
-static bool isDirectory( struct dirent *dire )
-{
-#if defined( __QNX__ )
+  #if defined( __QNX__ )
     if( (dire->d_stat.st_status & _FILE_USED) == 0 )
-        stat( dire->d_name, &dire->d_stat );
-    return( S_ISDIR( dire->d_stat.st_mode ) );
-#elif defined( __UNIX__ )
-    struct stat buf;
-    stat( dire->d_name, &buf );
-    return( S_ISDIR( buf.st_mode ) );
+        _stat2( path, dire->d_name, &dire->d_stat );
+    return( S_ISDIR( dire->d_stat.st_mode ) || fnmatch( mask, dire->d_name, FNM_NOESCAPE ) != 0 );
+  #else
+    struct stat     st;
+
+    _stat2( path, dire->d_name, &st );
+    return( S_ISDIR( st.st_mode ) || fnmatch( mask, dire->d_name, FNM_NOESCAPE ) != 0 );
+  #endif
 #else
-    return( (dire->d_attr & _A_SUBDIR) != 0 );
+    /* unused parameters */ (void)path; (void)mask;
+
+    return( (dire->d_attr & (_A_VOLID | _A_SUBDIR)) != 0 );
 #endif
 }
 
@@ -232,24 +245,23 @@ static void doOption( int ch )
  */
 static void processFile( const char *arg )
 {
-    char        buff[_MAX_EXT + 5];
-    char        *ext;
+    PGROUP2     pg;
     file_type   ftype;
     unsigned    tag_count;
 
     StartFile( arg );
-    _splitpath2( arg, buff, NULL, NULL, NULL, &ext );
+    _splitpath2( arg, pg.buffer, NULL, NULL, NULL, &pg.ext );
     if( fileType == TYPE_NONE ) {
         ftype = TYPE_C;
-        if( stricmp( ext, ".for" ) == 0 ) {
+        if( CMPFEXT( pg.ext, "for" ) ) {
             ftype = TYPE_FORTRAN;
-        } else if( stricmp( ext, ".fi" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "fi" ) ) {
             ftype = TYPE_FORTRAN;
-        } else if( stricmp( ext, ".pas" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "pas" ) ) {
             ftype = TYPE_PASCAL;
-        } else if( stricmp( ext, ".cpp" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "cpp" ) ) {
             ftype = TYPE_CPLUSPLUS;
-        } else if( stricmp( ext, ".asm" ) == 0 ) {
+        } else if( CMPFEXT( pg.ext, "asm" ) ) {
             ftype = TYPE_ASM;
         }
     } else {
@@ -288,21 +300,20 @@ static void processFile( const char *arg )
 /*
  * processFileList - process a possible file list
  */
-static void processFileList( const char *ptr )
+static void processFileList( const char *fullmask )
 {
     DIR                 *dirp;
     struct dirent       *dire;
     const char          *tmp;
-    bool                has_wild = false;
-    char                buff1[_MAX_PATH2];
-    char                buff2[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
-    char                *fname;
-    char                *ext;
+    bool                has_wild;
+    char                fullname[_MAX_PATH];
     char                path[_MAX_PATH];
+    char                mask[_MAX_PATH];
+    PGROUP2             pg1;
+    PGROUP2             pg2;
 
-    for( tmp = ptr; *tmp != '\0'; tmp++ ) {
+    has_wild = false;
+    for( tmp = fullmask; *tmp != '\0'; tmp++ ) {
         if( *tmp == '*' || *tmp == '?' ) {
             has_wild = true;
             break;
@@ -310,28 +321,27 @@ static void processFileList( const char *ptr )
     }
 
     if( !has_wild ) {
-        processFile( ptr );
+        processFile( fullmask );
         return;
     }
 
-    _splitpath2( ptr, buff1, &drive, &dir, &fname, &ext );
-    dirp = opendir( ptr );
-    if( dirp == NULL ) {
-        return;
-    }
-    while( (dire = readdir( dirp )) != NULL ) {
-        if( skipEntry( dire ) )
-            continue;
-        if( isDirectory( dire ) )
-            continue;
-        _splitpath2( dire->d_name, buff2, NULL, NULL, &fname, &ext );
-        _makepath( path, drive, dir, fname, ext );
+    _splitpath2( fullmask, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    _makepath( path, pg1.drive, pg1.dir, NULL, NULL );
+    _makepath( mask, NULL, NULL, pg1.fname, pg1.ext );
+    dirp = opendir( fullmask );
+    if( dirp != NULL ) {
+        while( (dire = readdir( dirp )) != NULL ) {
+            if( skipEntry( path, mask, dire ) )
+                continue;
+            _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+            _makepath( fullname, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
 #ifndef __UNIX__
-        strlwr( path );
+            strlwr( fullname );
 #endif
-        processFile( path );
+            processFile( fullname );
+        }
+        closedir( dirp );
     }
-    closedir( dirp );
 
 } /* processFileList */
 
@@ -349,70 +359,64 @@ static void processOptionFile( const char *fname )
     optfile = fopen( fname, "r" );
     if( optfile == NULL ) {
         printf( "Could not open option file %s\n", fname );
-        return;
-    }
-    while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
-        SKIP_SPACES( ptr );
-        if( *ptr == '#' || *ptr == '\0' ) {
-            continue;
-        }
-        cmd = ptr;
-        SKIP_NOTSPACE( ptr );
-        if( *ptr == '\0' ) {
-            continue;
-        }
-        *ptr = '\0';
-        ptr++;
-        SKIP_SPACES( ptr );
-        if( *ptr == '\0' ) {
-            continue;
-        }
-        if( stricmp( cmd, "file" ) == 0 ) {
-            for( ;; ) {
-                arg = ptr;
-                while( !isspace( *ptr ) && *ptr != ',' && *ptr != '\0' ) {
-                    ptr++;
-                }
-                ch = *ptr;
-                *ptr = '\0';
-                processFileList( arg );
-                if( ch == '\0' ) {
-                    break;
-                }
-                ptr++;
-                while( isspace( *ptr ) || *ptr == ',' ) {
-                    ptr++;
-                }
-                if( *ptr == '\0' ) {
-                    break;
-                }
+    } else {
+        while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
+            SKIP_SPACES( ptr );
+            if( *ptr == '#' || *ptr == '\0' ) {
+                continue;
             }
-        } else if( stricmp( cmd, "option" ) == 0 ) {
-            WantTypedefs = false;
-            WantMacros = false;
-            WantAllDefines = false;
-            WantUSE = false;
-            for( ; *ptr != '\0'; ptr++ ) {
-                if( *ptr == 'f' ) {
+            cmd = ptr;
+            SKIP_NOSPACES( ptr );
+            if( *ptr == '\0' ) {
+                continue;
+            }
+            *ptr = '\0';
+            ptr++;
+            SKIP_SPACES( ptr );
+            if( *ptr == '\0' ) {
+                continue;
+            }
+            if( stricmp( cmd, "file" ) == 0 ) {
+                for( ;; ) {
+                    arg = ptr;
+                    SKIP_LIST_NOWS( ptr );
+                    ch = *ptr;
+                    *ptr = '\0';
+                    processFileList( arg );
+                    if( ch == '\0' ) {
+                        break;
+                    }
                     ptr++;
-                    SKIP_SPACES( ptr );
+                    SKIP_LIST_WS( ptr );
                     if( *ptr == '\0' ) {
                         break;
                     }
-                    strcpy( tmpFileName, ptr );
-                    ptr = tmpFileName;
-                    SKIP_NOTSPACE( ptr );
-                    *ptr = '\0';
-                    optarg = tmpFileName;
-                    doOption( 'f' );
-                    break;
                 }
-                doOption( *ptr );
+            } else if( stricmp( cmd, "option" ) == 0 ) {
+                WantTypedefs = false;
+                WantMacros = false;
+                WantAllDefines = false;
+                WantUSE = false;
+                for( ; *ptr != '\0'; ptr++ ) {
+                    if( *ptr == 'f' ) {
+                        ptr++;
+                        SKIP_SPACES( ptr );
+                        if( *ptr != '\0' ) {
+                            strcpy( tmpFileName, ptr );
+                            ptr = tmpFileName;
+                            SKIP_NOSPACES( ptr );
+                            *ptr = '\0';
+                            optarg = tmpFileName;
+                            doOption( 'f' );
+                        }
+                        break;
+                    }
+                    doOption( *ptr );
+                }
             }
         }
-
+        fclose( optfile );
     }
-    fclose( optfile );
 
 } /* processOptionFile */
 
@@ -460,13 +464,7 @@ int main( int argc, char *argv[] )
  */
 bool IsTokenChar( int ch )
 {
-    if( isalnum( ch ) ) {
-        return( true );
-    }
-    if( ch == '_' ) {
-        return( true );
-    }
-    return( false );
+    return( isalnum( ch ) || ch == '_' );
 
 } /* IsTokenChar */
 

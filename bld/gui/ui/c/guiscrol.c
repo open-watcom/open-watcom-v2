@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ void GUIScroll( int change, p_gadget gadget )
     int         pos;
 
     if( gadget != NULL ) {
-        wnd = (gui_window *)gadget->win;
+        wnd = (gui_window *)(gadget->vs);
         if( wnd != NULL ) {
             if( ( gadget->pos + change ) < 0 ) {
                 pos = 0;

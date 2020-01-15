@@ -42,18 +42,17 @@
 #include "trperr.h"
 #include "packet.h"
 
-bhandle ConnHdl;
-bhandle ReadHdl;
-bhandle WriteHdl;
-bhandle BindHdl;
-
-extern          void SetLinkName( char* );
 
 #ifdef DEBUG
     #define dbg(a) mywrite(BHANDLE_STDERR,a,strlen(a))
 #else
     #define dbg(x)
 #endif
+
+bhandle ConnHdl;
+bhandle ReadHdl;
+bhandle WriteHdl;
+bhandle BindHdl;
 
 static char     MachBuff[ MACH_NAME+1 ];
        char     NameBuff[ MAX_PIPE_NAME+1 ];

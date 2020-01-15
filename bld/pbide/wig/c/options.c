@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,10 @@
 #include "global.h"
 #include "options.h"
 #include "error.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 /* required constants */
 #ifndef MAX_PATH
@@ -54,8 +58,6 @@ unsigned long Options;
 typedef struct wig_opts {
     char        basename[CPP_ID_LEN];           // user object name
     char        libname[MAX_PATH];              // DLL name
-    char        outputdrive[_MAX_DRIVE];        // output drive
-    char        outputdir[_MAX_DIR];            // output directory
     char        infile[MAX_PATH];               // input SRU file
     char        outfile[MAX_PATH];              // output SRU file
     char        codefile[MAX_PATH];             // C++ file
@@ -70,11 +72,6 @@ typedef struct wig_opts {
 static wig_opts wigOpts;
 
 /* text prefixxes and suffixxes */
-#define HPP_EXT         ".hpp"
-#define CPP_EXT         ".cpp"
-#define C_EXT           ".c"
-#define DLL_EXT         ".dll"
-#define ERR_EXT         ".err"
 #define LIBMAIN_FNAME   "lmain"
 
 char    *GetInputFile( void ) {
@@ -217,10 +214,11 @@ static void getFname( const char *uoname, char prefix, char *fname )
     }
 }
 
-void    SetBaseName( const char *src ) {
-/**************************************/
-
+void    SetBaseName( const char *src )
+/************************************/
+{
     char        fname[_MAX_FNAME];
+    PGROUP2     pg;
 
     assert( src );
     getFname( src, 0, fname );
@@ -229,48 +227,44 @@ void    SetBaseName( const char *src ) {
 
     strncpy( wigOpts.basename, src, MAX_PATH );
 
+    _splitpath2( wigOpts.infile, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+
     if( !( Options & OPT_LIBRARY_NAME_SET ) ) {
-        _makepath( wigOpts.libname, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, DLL_EXT );
+        _makepath( wigOpts.libname, pg.drive, pg.dir, fname, DLL_EXT );
     }
     if( !( Options & OPT_HEADER_FILE_SET ) ) {
-        _makepath( wigOpts.headerfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, HPP_EXT );
+        _makepath( wigOpts.headerfile, pg.drive, pg.dir, fname, HPP_EXT );
     }
     if( !( Options & OPT_ERROR_FILE_SET ) ) {
-        _makepath( wigOpts.errfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, ERR_EXT );
+        _makepath( wigOpts.errfile, pg.drive, pg.dir, fname, ERR_EXT );
     }
     if( !( Options & OPT_CODE_FILE_SET ) ) {
         if( Options & OPT_GEN_C_CODE ) {
-            _makepath( wigOpts.codefile, wigOpts.outputdrive,
-                        wigOpts.outputdir, fname, C_EXT );
+            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, C_EXT );
         } else {
-            _makepath( wigOpts.codefile, wigOpts.outputdrive,
-                        wigOpts.outputdir, fname, CPP_EXT );
+            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, CPP_EXT );
         }
     }
     if( !( Options & OPT_COVER_FILE_SET ) ) {
         getFname( src, 'c', fname );
-        _makepath( wigOpts.coverfile, wigOpts.outputdrive, wigOpts.outputdir,
-                    fname, CPP_EXT );
+        _makepath( wigOpts.coverfile, pg.drive, pg.dir, fname, CPP_EXT );
     }
 }
 
-void PostProcessOptions( void ) {
-/********************************/
-    char        fname[ _MAX_FNAME ];
+void PostProcessOptions( void )
+/*****************************/
+{
+    char        fname[_MAX_FNAME];
+    PGROUP2     pg;
 
     if( Options & OPT_PARENT_SET ) {
-        if( !( Options & OPT_PARENT_HEADER_SET ) ) {
+        if( (Options & OPT_PARENT_HEADER_SET) == 0 ) {
             getFname( wigOpts.parentclass, 0, fname );
             _makepath( wigOpts.parentheader, NULL, NULL, fname, HPP_EXT );
         }
     }
-    _splitpath( wigOpts.infile, wigOpts.outputdrive, wigOpts.outputdir,
-                NULL, NULL );
-    _makepath( wigOpts.lmainfile, wigOpts.outputdrive, wigOpts.outputdir,
-                LIBMAIN_FNAME, CPP_EXT );
+    _splitpath2( wigOpts.infile, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( wigOpts.lmainfile, pg.drive, pg.dir, LIBMAIN_FNAME, CPP_EXT );
 }
 
 static void showUsage( void ) {
@@ -295,13 +289,13 @@ static void showUsage( void ) {
 #endif
 }
 
-BOOL    ProcessOptions( int argc, char **argv ) {
-/***********************************************/
-
+bool    ProcessOptions( int argc, char **argv )
+/*********************************************/
+{
     int         count = 1;
-    BOOL        err = FALSE;
-    BOOL        stop = FALSE;
-    BOOL        multi_ch = FALSE;
+    bool        err = false;
+    bool        stop = false;
+    bool        multi_ch = false;
 
     assert( argc );
     assert( argv );
@@ -311,7 +305,7 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 
     if( !argc ) {
         showUsage();
-        return( TRUE );
+        return( true );
     }
 
     /* loop through all options and record them, and issue errors if necessary*/
@@ -325,14 +319,14 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                                 // the new PB C++ UO painter is complete
                 if( argv[count][2] == 's' ) {
                     Options |= OPT_MODIFY_SRU;
-                    multi_ch = TRUE;
+                    multi_ch = true;
                 }
                 break;
             case( 'f' ):
             case( 'F' ):
-                multi_ch = TRUE;
+                multi_ch = true;
                 if( ( argv[count][3] != '=' ) || !strlen(&(argv[count][4]) ) ) {
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 switch( argv[count][2] ) {
@@ -362,7 +356,7 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 //                  Options |= OPT_OUTPUT_FILE_SET;
 //                  break;
                 default:
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 break;
@@ -371,9 +365,9 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                 switch( argv[count][2] ) {
                 case( 'n' ):
                 case( 'N' ):
-                    multi_ch = TRUE;
+                    multi_ch = true;
                     if( argv[count][3] != '=' || !strlen( &(argv[count][4]) ) ){
-                        err = TRUE;
+                        err = true;
                     } else {
                         strcpy( wigOpts.parentclass, argv[count] + 4 );
                         Options |= OPT_PARENT_SET;
@@ -381,16 +375,16 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                     break;
                 case( 'h' ):
                 case( 'H' ):
-                    multi_ch = TRUE;
+                    multi_ch = true;
                     if( argv[count][3] != '=' || !strlen( &(argv[count][4]) ) ){
-                        err = TRUE;
+                        err = true;
                     } else {
                         strcpy( wigOpts.parentheader, argv[count] + 4 );
                         Options |= OPT_PARENT_HEADER_SET;
                     }
                     break;
                 default:
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 break;
@@ -404,9 +398,9 @@ BOOL    ProcessOptions( int argc, char **argv ) {
 //              break;
             case( 'L' ):
             case( 'l' ):
-                multi_ch = TRUE;
+                multi_ch = true;
                 if( ( argv[count][2] != '=' ) || !strlen( &(argv[count][3]) ) ){
-                    err = TRUE;
+                    err = true;
                     break;
                 }
                 strncpy( wigOpts.libname, &(argv[count][3]), MAX_PATH );
@@ -416,19 +410,19 @@ BOOL    ProcessOptions( int argc, char **argv ) {
             case( 'H' ):
             case( '?' ):
                 showUsage();
-                stop = TRUE;
+                stop = true;
                 break;
             default:
-                err = TRUE;
+                err = true;
             }
             if( err || ( ( strlen( argv[count] ) > 2 ) && !multi_ch ) ) {
                 Error( CLI_BAD_CMD_OPT, argv[ count ] );
-                stop = TRUE;
+                stop = true;
             }
         } else {
             if( Options & OPT_INPUT_FILE_SET ) {
                 Error( CLI_MULTI_INPUTS, argv[count] );
-                stop = TRUE;
+                stop = true;
             } else {
                 strncpy( wigOpts.infile, argv[count], MAX_PATH );
                 Options |= OPT_INPUT_FILE_SET;
@@ -437,16 +431,17 @@ BOOL    ProcessOptions( int argc, char **argv ) {
                 }
             }
         }
-        err = FALSE;
-        multi_ch = FALSE;
+        err = false;
+        multi_ch = false;
         count++;
         argc--;
     }
     if( !stop && !(Options & OPT_INPUT_FILE_SET) ) {
         Error( CLI_NO_INPUT_FILE );
-        stop = TRUE;
+        stop = true;
     }
-    if( stop ) return( TRUE );
+    if( stop )
+        return( true );
     PostProcessOptions();
-    return( FALSE );
+    return( false );
 }

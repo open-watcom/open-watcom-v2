@@ -66,19 +66,19 @@ extern int                              MaxBaud;
 
 #define GET_MSECS (SysTime->nsec / NSecScale + (SysTime->seconds-StartSecs) * 1000)
 
-void ZeroWaitCount()
+void ZeroWaitCount( void )
 {
     MSecsAtZero = GET_MSECS;
 }
 
 
-unsigned WaitCount()
+unsigned WaitCount( void )
 {
     return( ( GET_MSECS - MSecsAtZero ) / MILLISEC_PER_TICK );
 }
 
 
-void ClearCom()
+void ClearCom( void )
 {
     tcflush( ComPort, TCIOFLUSH );
 }
@@ -94,12 +94,12 @@ void SendByte( int value )
     }
 }
 
-void StartBlockTrans()
+void StartBlockTrans( void )
 {
     BlockIndex = 0;
 }
 
-void StopBlockTrans()
+void StopBlockTrans( void )
 {
     if( BlockIndex > 0 ) {
         write( ComPort, BlockBuff, BlockIndex );
@@ -134,7 +134,7 @@ int WaitByte( unsigned ticks )
 }
 
 
-int GetByte()
+int GetByte( void )
 {
     return( WaitByte( 0 ) );
 }
@@ -258,7 +258,7 @@ char *ParsePortSpec( const char **spec )
 }
 
 
-void DonePort()
+void DonePort( void )
 {
     if( ComPort != 0 ) {
         tcsetattr( ComPort, TCSADRAIN, &SavePort );
@@ -268,7 +268,7 @@ void DonePort()
 }
 
 
-bool CheckPendingError()
+bool CheckPendingError( void )
 {
     bool    ret;
 
@@ -278,7 +278,7 @@ bool CheckPendingError()
 }
 
 
-void ClearLastChar()
+void ClearLastChar( void )
 {
 }
 

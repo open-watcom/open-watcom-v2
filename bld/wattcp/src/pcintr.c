@@ -119,7 +119,7 @@ void wintr_disable(void) { on_isr8 = 0; }
   }
 
 #elif defined (__WATCOM386__) && (DOSX & (DOS4GW|WDOSX))
-  static void (__interrupt __far *oldint)();
+  static void (__interrupt __far *oldint)(void);
 
   static void __interrupt __far NewTimer (void)
   {
@@ -184,7 +184,7 @@ void wintr_disable(void) { on_isr8 = 0; }
   #ifdef __TURBOC__
     void interrupt (*oldint)(void);
   #else
-    void (interrupt *oldint)();
+    void (interrupt *oldint)(void);
   #endif
 
   static void interrupt NewTimer(void)

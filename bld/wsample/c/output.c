@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#include "sample.h"
 #ifdef __WINDOWS__
 #include "commonui.h"
 #endif
+#include "sample.h"
 #include "smpstuff.h"
 #include "sysio.h"
 #include "wmsg.h"

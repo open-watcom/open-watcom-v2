@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1028,8 +1029,10 @@ int main( int argc, char *argv[] )
     hash_key            h_key;
 
 #if !defined( __WATCOMC__ )
-    _argv = argv;
     _argc = argc;
+    _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 
     error = Init();

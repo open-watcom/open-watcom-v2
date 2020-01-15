@@ -196,6 +196,8 @@ static VOID APIENTRY DoDebugRequests(ULONG arg)
 {
     ULONG   ulCount;
 
+    /* unused parameters */ (void)arg;
+
     for ( ; ; ) {
         DosWaitEventSem(DebugReqSem, SEM_INDEFINITE_WAIT);
         DosResetEventSem(DebugReqSem, &ulCount);

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +163,7 @@ static void CUnknown( void )
 static void CInclude( void )
 {
     struct {
-        bool    in_macro    : 1;
+        boolbit     in_macro    : 1;
     } flags;
 
     auto char   buf[_MAX_PATH];
@@ -293,6 +294,8 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     TOKEN prev_token;
     TOKEN prev_non_ws_token;
 
+    /* unused parameters */ (void)name_len;
+
     // MacroReallocOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR)MacroOffset;
     DbgAssert( ( MacroReallocOverflow( mlen, 0 ), MacroOffset == (void *)mentry ) );
@@ -345,7 +348,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
-                if( HasVarArgs( mflags ) && parm_index == ( parm_count - 1 ) ) {
+                if( HasVarArgs( mflags ) && ( parm_index + 1 ) == parm_count ) {
                     CurToken = T_MACRO_VAR_PARM;
                 } else {
                     CurToken = T_MACRO_PARM;

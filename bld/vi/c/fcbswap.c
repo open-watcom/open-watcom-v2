@@ -65,7 +65,7 @@ void FetchFcb( fcb *fb )
     }
 
     if( rc != ERR_NO_ERR ) {
-        AbandonHopeAllYeWhoEnterHere( rc );
+        AbandonHopeAllYesWhoEnterHere( rc );
     }
 
 } /* FetchFcb */
@@ -105,7 +105,7 @@ void SwapFcb( fcb *fb )
     }
 
     if( rc != ERR_NO_ERR ) {
-        AbandonHopeAllYeWhoEnterHere( rc );
+        AbandonHopeAllYesWhoEnterHere( rc );
     }
 
 } /* SwapFcb */

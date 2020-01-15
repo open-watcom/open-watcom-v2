@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ WPI_INST        Instance;
 int             ColorPlanes;
 int             BitsPerPixel;
 config_info     ImgedConfigInfo;
-BOOL            ImgedIsDDE = FALSE;
+bool            ImgedIsDDE = false;
 char            *IEAppTitle             = NULL;
 char            *IEImageFilter          = NULL;
 char            *IEPaletteFilter        = NULL;
@@ -100,9 +101,9 @@ void IEFiniGlobalStrings( void )
 /*
  * IEInitGlobalStrings
  */
-BOOL IEInitGlobalStrings( void )
+bool IEInitGlobalStrings( void )
 {
-    BOOL        ok;
+    bool    ok;
 
     IEAppTitle = IEAllocRCString( WIE_APPNAME );
     ok = (IEAppTitle != NULL);

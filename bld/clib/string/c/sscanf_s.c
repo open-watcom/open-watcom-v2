@@ -55,6 +55,8 @@ static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 
 static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
+    /* unused parameters */ (void)c;
+
     --specs->ptr;
 }
 

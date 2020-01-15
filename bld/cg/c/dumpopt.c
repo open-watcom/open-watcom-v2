@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +122,7 @@ static  bool    LblName( label_handle lbl, bool no_prefix )
         DumpXString( AskRTName( SYM2RTIDX( lbl->lbl.sym ) ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
-        DumpUInt( (unsigned)(pointer_int)lbl->lbl.sym );
+        DumpUInt( (unsigned)(pointer_uint)lbl->lbl.sym );
         DumpLiteral( "] " );
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );
@@ -269,7 +269,7 @@ void    DumpOc( ins_entry *ins )
         break;
 #if _TARGET & _TARG_RISC
     case OC_RCODE:
-        DumpPtr( (pointer)(pointer_int)ins->oc.oc_rins.opcode );
+        DumpPtr( (pointer)(pointer_uint)ins->oc.oc_rins.opcode );
         if( _HasReloc( &ins->oc.oc_rins ) ) {
             DumpLiteral( " [ " );
             LblName( ins->oc.oc_rins.sym, false );
@@ -428,5 +428,5 @@ void    UpOpt( ins_entry *ins, uint last )
 void    DumpOpt( void )
 /*********************/
 {
-    DownOpt( FirstIns, ~0 );
+    DownOpt( FirstIns, ~0U );
 }

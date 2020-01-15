@@ -541,7 +541,7 @@ orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callback
 
     EatWhite( &contents, &len );
     while( len > 0 ) {
-        if( *contents != '-' )
+        if( *contents != '-' && *contents != '/' )
             break;   // - should be start of token
         contents++; len--;
         cmd = contents;

@@ -74,7 +74,7 @@ void CheckBreak( void )
     }
 #else
     if( CaughtBreak ) {
-        CaughtBreak = false;        /* prevent recursion */
+        CaughtBreak = false;                  /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
 #endif
@@ -139,7 +139,7 @@ f_handle QOpenR( const char *name )
     h = DoOpen( name, O_RDONLY, false );
     if( h != -1 )
         return( h );
-    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
+    LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
@@ -410,12 +410,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
-{
-    cmd_ptr = cmd_ptr;
-    return( false );
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -440,10 +434,4 @@ int WaitForKey( void )
 /********************/
 {
     return( getch() );
-}
-
-void GetCmdLine( char *buff )
-/***************************/
-{
-    getcmd( buff );
 }

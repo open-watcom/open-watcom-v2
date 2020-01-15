@@ -42,18 +42,18 @@ unsigned keyword_id_high;
 unsigned nStates;
 unsigned nActions;
 
-static int okToConsider( a_sym *sym )
+static bool okToConsider( a_sym *sym )
 {
     if( sym->pro != NULL )
-        return( 0 );
+        return( false );
     if( sym->token < keyword_id_low )
-        return( 0 );
+        return( false );
     if( sym->token > keyword_id_high )
-        return( 0 );
-    return( 1 );
+        return( false );
+    return( true );
 }
 
-static void doState( a_state *state, unsigned *state_freq, char *all_used, unsigned range_size )
+static void doState( a_state *state, unsigned *state_freq, bool *all_used, unsigned range_size )
 {
     unsigned        i;
     unsigned        max;
@@ -73,17 +73,17 @@ static void doState( a_state *state, unsigned *state_freq, char *all_used, unsig
         return;
     }
     memset( state_freq, 0, nstate * sizeof( *state_freq ) );
-    memset( all_used, 0, range_size );
+    memset( all_used, 0, range_size * sizeof( bool ) );
     /* find shift state frequencies */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) )
             continue;
-        all_used[shift_sym->token - keyword_id_low] = 1;
+        all_used[shift_sym->token - keyword_id_low] = true;
         ++state_freq[saction->state->sidx];
     }
     /* verify entire range of tokens shift somewhere */
     for( i = 0; i < range_size; ++i ) {
-        if( ! all_used[i] ) {
+        if( !all_used[i] ) {
             return;
         }
     }
@@ -106,7 +106,7 @@ static void doState( a_state *state, unsigned *state_freq, char *all_used, unsig
         if( ! okToConsider( shift_sym ) )
             continue;
         if( saction->state->sidx == max_sidx ) {
-            saction->is_default = 1;
+            saction->is_default = true;
             ++nActions;
         }
     }
@@ -117,12 +117,12 @@ void MarkDefaultShifts( void )
 {
     unsigned range_size;
     unsigned *state_freq;
-    char *all_used;
+    bool *all_used;
     int i;
 
     state_freq = MALLOC( nstate, unsigned );
     range_size = ( keyword_id_high - keyword_id_low ) + 1;
-    all_used = MALLOC( range_size, char );
+    all_used = MALLOC( range_size, bool );
     for( i = 0; i < nstate; ++i ) {
         doState( statetab[i], state_freq, all_used, range_size );
     }

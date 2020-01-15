@@ -52,4 +52,6 @@
 #define UINT16STRLEN    5
 #define UINT8STRLEN     3
 
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+
 #endif

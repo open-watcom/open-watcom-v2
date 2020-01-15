@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,13 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-SAREA *uisetarea( SAREA *area, VSCREEN *s )
-/*****************************************/
+SAREA *uisetarea( SAREA *area, VSCREEN *vs )
+/******************************************/
 {
     area->row = 0;
     area->col = 0;
-    area->height = s->area.height;
-    area->width = s->area.width;
+    area->height = vs->area.height;
+    area->width = vs->area.width;
     return( area );
 }
 

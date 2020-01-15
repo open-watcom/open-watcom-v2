@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -41,9 +43,12 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
+#include "pathgrp2.h"
 #ifdef __WINDOWS__
 #include "sampwin.h"
 #endif
+
+#include "clibext.h"
 
 
 #if defined( __WINDOWS__ )
@@ -54,37 +59,30 @@ void GetProg( char *cmd, char *eoc )
 {
     char        save;
     char        prog_name[_MAX_PATH];
-    char        buff1[_MAX_PATH2];
-    char        buff2[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
-    char        *sfname;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 #ifdef __WINDOWS__
+    PGROUP2     pg3;
     unsigned    a,b;
-    char        **drivep;
-    char        **dirp;
-    char        buff3[_MAX_DRIVE+MAX_PATH+5];
 #endif
 
     save = *eoc;
     *eoc = '\0';
-    _splitpath2( cmd, buff1, &drive, &dir, &fname, &ext );
+    _splitpath2( cmd, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
     *eoc = save;
 #ifdef __NETWARE__
-    if( ext[0] == '\0' )
-        ext = ".nlm";
+    if( pg1.ext[0] == '\0' )
+        pg1.ext = "nlm";
 #elif defined( __DOS__ ) && defined( _PLS )
-    if( ext[0] == '\0' )
-        ext = ".exp";
+    if( pg1.ext[0] == '\0' )
+        pg1.ext = "exp";
 #elif !defined( __UNIX__ )
-    if( ext[0] == '\0' )
-        ext = ".exe";
+    if( pg1.ext[0] == '\0' )
+        pg1.ext = "exe";
 #endif
-    _makepath( prog_name, drive, dir, fname, ext );
+    _makepath( prog_name, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
 
-    if( drive[0] == '\0' && dir[0] == '\0' ) {
+    if( pg1.drive[0] == '\0' && pg1.dir[0] == '\0' ) {
         _searchenv( prog_name, "PATH", ExeName );
     } else if( access( prog_name, R_OK ) == 0 ) {
         strcpy( ExeName, prog_name );
@@ -101,30 +99,32 @@ void GetProg( char *cmd, char *eoc )
      * same as that for the EXE, since windows moves our current directory
      * to that of the sampler
      */
-    _splitpath2( ExeName, buff2, &drive, &dir, NULL, NULL );
-    a = tolower( drive[0] ) - 'a' + 1;
+    _splitpath2( ExeName, pg3.buffer, &pg3.drive, &pg3.dir, NULL, NULL );
+    a = tolower( pg3.drive[0] ) - 'a' + 1;
     _dos_setdrive( a, &b );
-    dir[strlen( dir ) - 1] = '\0';
-    chdir( dir );
+    pg3.dir[strlen( pg3.dir ) - 1] = '\0';
+    chdir( pg3.dir );
 #endif
 
-    _splitpath2( SampName, buff2, &drive, &dir, &sfname, &ext );
+    _splitpath2( SampName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
 
+    if( pg2.fname[0] == '\0' )
+        pg2.fname = pg1.fname;
+    if( pg2.ext[0] == '\0' )
+        pg2.ext = "smp";
     /*
      * for windows, we need to give the sample file an absolute
      * path name so that both threads of the sampler can write
      * to the sample file
      */
 #ifdef __WINDOWS__
-    drivep = (drive[0] == '\0') ? &drive : NULL;
-    dirp   = (dir[0]   == '\0') ? &dir   : NULL;
-    if( drivep != NULL || dirp != NULL ) {
-        _splitpath2( ExeName, buff3, drivep, dirp, NULL, NULL );
-    }
+    if( pg2.drive[0] == '\0' )
+        pg2.drive = pg3.drive;
+    if( pg2.dir[0] == '\0' )
+        pg2.dir = pg3.dir;
 #endif
 
-    _makepath( SampName, (char *)drive, (char *)dir, (char *)(sfname[0] == '\0' ? fname : sfname),
-               ext[0] == '\0' ? (char *)"smp" : (char *)ext );
+    _makepath( SampName, (char *)pg2.drive, (char *)pg2.dir, (char *)pg2.fname, (char *)pg2.ext );
 
 #ifdef __WINDOWS__
     _fstrcpy( SharedMemory->SampName, SampName );

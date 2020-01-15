@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,8 @@
 #include "di386cli.h"
 #include "dosextx.h"
 #include "dosfile.h"
+#include "pathgrp2.h"
+
 
 #define SIG_OFF         0
 #define SIG_SIZE        4
@@ -97,7 +99,7 @@ typedef struct
 trap_retval ReqProg_load( void )
 {
     char                exe_name[_MAX_PATH];
-    char                drive[_MAX_DRIVE],directory[_MAX_DIR];
+    PGROUP2             pg;
     char                buff[256];
     lm_parms            loadp;
     word_struct         cmdshow;
@@ -171,11 +173,11 @@ trap_retval ReqProg_load( void )
         if( TINY_ERROR( FindProgFile( parm, exe_name, DosExtList ) ) ) {
             exe_name[0] = 0;
         } else {
-            _splitpath( exe_name, drive, directory, NULL, NULL );
-            a = tolower( drive[0] ) - 'a' + 1;
+            _splitpath2( exe_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+            a = tolower( pg.drive[0] ) - 'a' + 1;
             _dos_setdrive( a, &b );
-            directory[ strlen( directory ) - 1 ] = 0;
-            chdir( directory );
+            pg.dir[strlen( pg.dir ) - 1] = 0;
+            chdir( pg.dir );
         }
 
         /*
@@ -201,7 +203,7 @@ trap_retval ReqProg_load( void )
         if( dst > &buff[1] )
             --dst;
         *dst = '\0';
-        buff[0] = dst-buff-1;
+        buff[0] = dst - buff - 1;
 
         /*
          * get starting point in task
@@ -221,7 +223,7 @@ trap_retval ReqProg_load( void )
          */
         loadp.cmdshow = &cmdshow;
         loadp.wEnvSeg = 0;
-        loadp.lpCmdLine = (LPSTR) buff;
+        loadp.lpCmdLine = (LPSTR)buff;
         loadp.cmdshow->mustbe2 = 2;
         loadp.cmdshow->cmdshow = SW_NORMAL;
         loadp.reserved = 0L;

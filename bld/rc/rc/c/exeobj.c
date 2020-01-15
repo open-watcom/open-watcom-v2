@@ -244,8 +244,8 @@ bool CopyExeObjects( void )
     return( false );
 } /* CopyExeObjects */
 
-extern uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
-/******************************************************/
+uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
+/***********************************************/
 /* This routine assumes the num_objects in the header include one for the */
 /* resource object */
 {
@@ -266,8 +266,8 @@ extern uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )
     return( ALIGN_VALUE( next_off, file_align ) );
 } /* GetNextObjPhysOffset */
 
-extern pe_va GetNextObjRVA( PEExeInfo *peinfo )
-/*********************************************/
+pe_va GetNextObjRVA( PEExeInfo *peinfo )
+/**************************************/
 /* This routine assumes the num_objects in the header include one for the */
 /* resource object */
 {

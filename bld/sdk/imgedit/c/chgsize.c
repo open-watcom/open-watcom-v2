@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ WPI_EXPORT WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI
 
 static int      imgHeight;
 static int      imgWidth;
-static BOOL     stretchImage;
+static bool     stretchImage;
 
 /*
  * ChangeSizeDlgProc - change the size of the image being edited
@@ -81,9 +82,9 @@ WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpa
             }
 
             if( _wpi_isbuttonchecked( hwnd, SIZE_STRETCH ) ) {
-                stretchImage = TRUE;
+                stretchImage = true;
             } else {
-                stretchImage = FALSE;
+                stretchImage = false;
             }
             _wpi_enddialog( hwnd, DLGID_OK );
             break;
@@ -194,7 +195,7 @@ void ChangeImageSize( void )
     new_node.bitcount = node->bitcount;
     new_node.imgtype = BITMAP_IMG;
 
-    MakeBitmap( &new_node, TRUE );
+    MakeBitmap( &new_node, true );
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
@@ -247,7 +248,7 @@ void ChangeImageSize( void )
     node->width = (short)imgWidth;
     node->height = (short)imgHeight;
 
-    SetIsSaved( node->hwnd, FALSE );
+    SetIsSaved( node->hwnd, false );
     ResetUndoStack( node );
 
     RePositionViewWnd( node );

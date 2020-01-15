@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +191,7 @@ id_hash_idx CalcHash( const char *id, size_t len )
 
 TOKEN KwLookup( const char *buf, size_t len )
 {
-    char        *keyword;
+    const char  *keyword;
     TOKEN       token;
 
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;

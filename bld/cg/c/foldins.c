@@ -266,11 +266,11 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         fold = Fold1sComp( left, tipe );
         break;
     case OP_CONVERT:
-        // look out for CNV PT U2 t1 type instructions; if sizeof( PT ) is greater
-        // than sizeof( U2 ), we don't want to fold or we'll screw up based pointers
+        /* look out for CNV PT U2 t1 type instructions; if sizeof( PT ) is greater */
+        /* than sizeof( U2 ), we don't want to fold or we'll screw up based pointers */
         if( IsTrickyPointerConv( ins ) )
             return( NULL );
-        // fall through!
+        /* fall through */
     case OP_ROUND:
         fold = FoldCnvRnd( (cg_op)ins->head.opcode, left, tipe );
         break;
@@ -312,11 +312,11 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         result = TGetName( fold );
         if( result != NULL && !NeedConvert( fold_tipe, tipe ) ) {
             ins->table = NULL;
-            // look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions
+            /* look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions */
             if( result->n.class != N_CONSTANT &&
                 result->n.size != TypeClassSize[ins->type_class] )
                 return( NULL );
-            // look out for scary MUL U4 EDX:EAX, c1 -> t1 type instructions
+            /* look out for scary MUL U4 EDX:EAX, c1 -> t1 type instructions */
             if( result->n.class != N_CONSTANT &&
                 ins->result->n.size != TypeClassSize[ins->type_class] )
                 return( NULL );
@@ -336,7 +336,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     }
     switch( ins->head.opcode ) {
     case OP_SUB:
-        // change sub t1, k -> add t1, -k
+        /* change sub t1, k -> add t1, -k */
         if( ins->operands[1]->n.class == N_CONSTANT &&
             ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
             value = OkToNegate( ins->operands[1]->c.value, tipe );
@@ -357,7 +357,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     case OP_OR:
     case OP_AND:
     case OP_XOR:
-        // for commutative op's prefer constant on right
+        /* for commutative op's prefer constant on right */
         if( _IsPointer( ins->type_class ) )
             break;
         tmp = ins->operands[0];

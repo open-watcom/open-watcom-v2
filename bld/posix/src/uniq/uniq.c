@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -194,7 +196,7 @@ static int isNumber( char *s )
     return( 1 );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *in, *out;
     int         ch;
@@ -258,4 +260,5 @@ void main( int argc, char **argv )
         }
         fclose( in );
     }
+    return( 0 );
 }

@@ -1,0 +1,92 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: release
+    displayName: "${{ parameters.title }}"
+    variables:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        owtools:        $(owtools_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        owtools:        $(owtools_nt)
+      owtag:            Current-build
+    pool:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        vmImage: $(owimage_nt)
+    steps:
+    - template: gituser.yml
+    - checkout: self
+      persistCredentials: true
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     build\$(owobjdir)
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     build/$(owobjdir)
+        artifname:  build-${{ parameters.arch }}
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     distrib\ow\bin
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     distrib/ow/bin
+        artifname:  distrib-nt
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     distrib\ow\bin
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     distrib/ow/bin
+        artifname:  distrib-lnx
+    - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
+      displayName: "Get current timestamp"
+    - bash: echo "##vso[task.setvariable variable=owgitstamp;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/${{ variables.owtag }}^{}:\1:p\"`"
+      displayName: "Get 'Current-build' tag commit"
+    - script: |
+        if [ ! "$OWGITSTAMP" = "$BUILD_SOURCEVERSION" ]; then
+          git tag -d $OWTAG
+          git push --delete origin $OWTAG
+          git tag -a -m "$OWTAGSTAMP" $OWTAG $BUILD_SOURCEVERSION
+          git push $(owgitverbose) origin $OWTAG
+        else
+          echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
+        fi
+      displayName: "Recreate 'Current-build' tag"
+    - task: GitHubRelease@0
+      name: releasedel
+      displayName: "Delete Release"
+      continueOnError: true
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        action: 'delete'
+        tag: '$(owtag)'
+    - task: GitHubRelease@0
+      name: releaseadd
+      displayName: "Add Release"
+      condition: succeededOrFailed()
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'manual'
+        tag: '$(owtag)'
+        title: '$(owtag)'
+        releaseNotesSource: 'input'
+        releaseNotes: 'Last updated $(owtagstamp)'
+        ${{ if eq(parameters.arch, 'nt') }}:
+          assets: |
+            distrib\ow\bin\open-watcom-*
+            distrib\ow\bin\ow-snapshot.tar.gz
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          assets: |
+            distrib/ow/bin/open-watcom-*
+            distrib/ow/bin/ow-snapshot.tar.gz
+        isPreRelease: true
+        addChangeLog: false

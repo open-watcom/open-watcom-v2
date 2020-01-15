@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ extern char *WGetInitialDir( void );
 extern void WSetInitialDir( char * );
 extern char *WGetOpenFileName( HWND parent, WGetFileStruct * );
 extern char *WGetSaveFileName( HWND parent, WGetFileStruct * );
-extern bool WGetInternalRESName( char *filename, char *newname );
+extern bool WGetInternalRESName( const char *filename, char *newname );
 extern void WMassageFilter( char *filter );
 
 #endif

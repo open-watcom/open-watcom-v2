@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1425,7 +1426,7 @@ pch_status PCHReadSegments( void )
         RingAppend( &seg_list, curr );
     }
     RingIterBeg( seg_list, curr ) {
-        sib_segid = (fe_seg_id)(pointer_int)curr->sibling;
+        sib_segid = (fe_seg_id)(pointer_uint)curr->sibling;
         if( sib_segid != curr->segid ) {
             curr->sibling = segIdLookup( sib_segid );
         } else {
@@ -1457,7 +1458,7 @@ pch_status PCHWriteSegments( void )
             class_name_len = strlen( curr->class_name ) + 1;
         }
         save_sibling = curr->sibling;
-        curr->sibling = (PC_SEGMENT *)(pointer_int)save_sibling->segid;
+        curr->sibling = (PC_SEGMENT *)(pointer_uint)save_sibling->segid;
         save_label = curr->label;
         curr->label = SymbolGetIndex( save_label );
         save_class_name = curr->class_name;

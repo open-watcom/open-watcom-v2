@@ -47,14 +47,15 @@
 #include "trmem.h"
 
 STATIC _trmem_hdl   memHandle;
-STATIC int          memFile;     /* file handle we'll write() to */
+STATIC FILE         *memFile = NULL;
 
-STATIC void memLine( void *fh, const char *buf, unsigned size ) {
+STATIC void memPrintLine( void *fh, const char *buf, unsigned size )
+{
+    /* unused parameters */ (void)fh; (void)size;
 
-    write( 2, "***", 3 );
-    write( 2, buf, size );
-    if( *(int *)fh != -1 ) {
-        write( *(int *)fh, buf, size );
+    fprintf( stderr, "***%s\n", buf );
+    if( memFile != NULL ) {
+        fprintf( memFile, "%s\n", buf );
     }
 }
 #endif  /* TRACK */
@@ -62,9 +63,9 @@ STATIC void memLine( void *fh, const char *buf, unsigned size ) {
 void MemInit( void ) {
 
 #ifdef TRACK
-    memFile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, 0 );
+    memFile = fopen( "mem.trk", "wt" );
     memHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
-        &memFile, memLine,
+        memFile, memPrintLine,
         _TRMEM_ALLOC_SIZE_0 |
         _TRMEM_FREE_NULL |
         _TRMEM_OUT_OF_MEMORY |
@@ -82,8 +83,9 @@ void MemFini( void ) {
     if( memHandle != NULL ) {
         _trmem_prt_list( memHandle );
         _trmem_close( memHandle );
-        if( memFile != -1 ) {
-            close( memFile );
+        if( memFile != NULL ) {
+            fclose( memFile );
+            memFile = NULL;
         }
         memHandle = NULL;
     }

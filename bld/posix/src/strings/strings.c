@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "getopt.h"
 #include "misc.h"
 #include "argvrx.h"
@@ -57,7 +59,7 @@ STATIC const char *usageTxt[] = {
 
 STATIC  unsigned        threshold;
 STATIC  char            *thresholdBuf;
-STATIC  int             gimmeHexOffsets;
+STATIC  bool            gimmeHexOffsets;
 
 
 STATIC void doStrings( FILE *fp ) {
@@ -110,19 +112,20 @@ STATIC void doStrings( FILE *fp ) {
 }
 
 
-void main( int argc, char **argv ) {
-
-    int         rxflag;
+int main( int argc, char **argv )
+{
+    bool        rxflag;
     int         ch;
     int         i;
     FILE        *fp;
 
-    rxflag = 0;
+    rxflag = false;
     threshold = 4;
-    gimmeHexOffsets = 0;
+    gimmeHexOffsets = false;
     for(;;) {
         ch = GetOpt( &argc, argv, "#xX", usageTxt );
-        if( ch == -1 ) break;
+        if( ch == -1 )
+            break;
         switch( ch ) {
         case '#':
             threshold = strtoul( OptArg, NULL, 0 );
@@ -131,10 +134,10 @@ void main( int argc, char **argv ) {
             }
             break;
         case 'x':
-            gimmeHexOffsets = 1;
+            gimmeHexOffsets = true;
             break;
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         }
     }
@@ -163,5 +166,5 @@ void main( int argc, char **argv ) {
             }
         }
     }
-    exit( 0 );
+    return( 0 );
 }

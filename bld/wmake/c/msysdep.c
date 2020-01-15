@@ -149,8 +149,8 @@ int OSCorrupted( void )
     return( 0 );
 }
 
-RET_T TouchFile( const char *name )
-/*********************************/
+bool TouchFile( const char *name )
+/********************************/
 {
 #if defined( __DOS__ )
     tiny_date_t     dt;
@@ -172,27 +172,25 @@ RET_T TouchFile( const char *name )
         p_hms.twosecs = tm.seconds / 2;
 
         TinySetFileStamp( TINY_INFO( ret ), p_hms, p_ymd );
-        TinyClose( TINY_INFO( ret ) );
     } else {
         ret = TinyCreate( name, TIO_NORMAL );
-        if( TINY_OK( ret ) ) {
-            TinyClose( TINY_INFO( ret ) );
-        } else {
-            return( RET_ERROR );
+        if( TINY_ERROR( ret ) ) {
+            return( false );
         }
     }
+    TinyClose( TINY_INFO( ret ) );
 #else
     int     fh;
 
-    if( utime( name, 0 ) < 0 ) {
+    if( utime( name, NULL ) == -1 ) {
         fh = creat( name, PMODE_RW );
-        if( fh < 0 ) {
-            return( RET_ERROR );
+        if( fh == -1 ) {
+            return( false );
         }
         close( fh );
     }
 #endif
-    return( RET_SUCCESS );
+    return( true );
 }
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
@@ -301,6 +299,7 @@ int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
     setmode( STDOUT_FILENO, O_TEXT );
     return( retcode );
 }
+
 #else
 
 DLL_CMD *OSFindDLL( char const *cmd_name )

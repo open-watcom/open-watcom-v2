@@ -45,6 +45,8 @@ static USHORT        action;
 
 static void _WCFAR __pascal break_handler( USHORT sigarg, USHORT signum )
 {
+    /* unused parameters */ (void)sigarg; (void)signum;
+
     if( __int23_exit != __null_int23_exit ) {
         raise( SIGINT );
     }

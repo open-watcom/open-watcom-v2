@@ -37,7 +37,7 @@
 
 /* This routine is called from C++ iostream class */
 
-FLTSUPPFUNC void __cnvd2ld( dbl_arg src, ld_arg dst )
+FLTSUPPFUNC void __cnvd2ld( dbl_stk_ptr src, ld_stk_ptr dst )
 {
     __iFDLD( src, dst );
 }

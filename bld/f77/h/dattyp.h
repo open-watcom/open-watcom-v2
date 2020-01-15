@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ typedef struct xcomplex {           // extended precision complex
 typedef struct arr_desc {
     char                *data;
     unsigned long       num_elmts;
-    unsigned int        elmt_size;
+    uint                elmt_size;
     PTYPE               typ;
 } arr_desc;
 

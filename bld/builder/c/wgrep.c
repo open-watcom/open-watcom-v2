@@ -732,35 +732,33 @@ static void extendPath( char *path, char *ext )
 
 static void executeWgrep( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     size_t              i;
-    char                exp[_MAX_EXT];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg1;
+    PGROUP2             pg2;
 
     extendPath( PathBuff, CurrPattern );
 
-    _splitpath( PathBuff, NULL, NULL, NULL, exp );
+    _splitpath2( PathBuff, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
 
     if( strcmp( CurrPattern, "@@" ) == 0 ) {
         performSearch( CurrPattern );
     } else {
-        dirh = opendir( PathBuff );
-        if( dirh != NULL ) {
-            for( ; !DoneFlag; ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+        dirp = opendir( PathBuff );
+        if( dirp != NULL ) {
+            for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( dp->d_attr & _A_SUBDIR ) {
+                if( dire->d_attr & _A_SUBDIR ) {
                     continue;
                 }
 #else
                 {
                     struct stat sblk;
                     char tmp_path[_MAX_PATH + 1];
+
                     strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dp->d_name );
+                    extendPath( tmp_path, dire->d_name );
                     if( stat( tmp_path, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
@@ -768,10 +766,10 @@ static void executeWgrep( void )
 #endif
 
                 if( IgnoreListCnt > 0 ) {
-                    _splitpath( dp->d_name, NULL, NULL, NULL, ext );
-                    if( stricmp( ext, exp ) != 0 ) {
+                    _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, NULL, &pg2.ext );
+                    if( stricmp( pg1.ext, pg2.ext ) != 0 ) {
                         for( i = 0; i < IgnoreListCnt; i++ ) {
-                            if( stricmp( ext, IgnoreList[i] ) == 0 ) {
+                            if( stricmp( pg2.ext, IgnoreList[i] ) == 0 ) {
                                 break;
                             }
                         }
@@ -780,31 +778,28 @@ static void executeWgrep( void )
                         }
                     }
                 }
-                extendPath( PathBuff, dp->d_name );
+                extendPath( PathBuff, dire->d_name );
                 performSearch( PathBuff );
             }
-            closedir( dirh );
+            closedir( dirp );
         }
     }
 }
 
 static void processDirectory( void )
 {
-    DIR                 *dirh;
-    struct dirent       *dp;
+    DIR                 *dirp;
+    struct dirent       *dire;
     dirstack            *tmp;
 
     if( RecurLevels != 0 ) {
         extendPath( PathBuff, "*.*" );
-        dirh = opendir( PathBuff );
-        if( dirh != NULL ) {
+        dirp = opendir( PathBuff );
+        if( dirp != NULL ) {
             --RecurLevels;
-            for( ; !DoneFlag; ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+            for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( (dp->d_attr & _A_SUBDIR) == 0 ) {
+                if( (dire->d_attr & _A_SUBDIR) == 0 ) {
                     continue;
                 }
 #else
@@ -812,26 +807,26 @@ static void processDirectory( void )
                     struct stat sblk;
                     char tmp_path[_MAX_PATH + 1];
                     strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dp->d_name );
+                    extendPath( tmp_path, dire->d_name );
                     if( stat( tmp_path, &sblk ) == 0 && !S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
                 }
 #endif
-                if( IsDotOrDotdot( dp->d_name ) ) {
+                if( IsDotOrDotdot( dire->d_name ) ) {
                     continue;
                 }
                 if( DoneFlag )
                     break;
                 tmp = (dirstack *)SafeMalloc( sizeof( dirstack ) );
-                extendPath( tmp->name, dp->d_name );
+                extendPath( tmp->name, dire->d_name );
                 tmp->prev = Stack;
                 Stack = tmp;
                 processDirectory();
                 Stack = tmp->prev;
                 free( tmp );
             }
-            closedir( dirh );
+            closedir( dirp );
             ++RecurLevels;
             if( DoneFlag ) {
                 return;
@@ -841,31 +836,11 @@ static void processDirectory( void )
     executeWgrep();
 }
 
-static void splitPath( char *path, char *d, char *f )
-{
-    char       *dir  = d + _MAX_DRIVE;
-    char       *ext  = f + _MAX_FNAME;
-    int         dirlen;
-
-    _splitpath( path, d, dir, f, ext );
-
-    dirlen = (int)strlen( dir );
-    if( dirlen ) {
-        if( dir[dirlen - 1] == '\\'  ||  dir[dirlen - 1] == '/' ) {
-            dir[dirlen] = '.';
-            dir[dirlen + 1] = '\0';
-        }
-    } else {
-        dir[0] = '.';
-        dir[1] = '\0';
-    }
-    strcat( d, dir );
-    strcat( f, ext );
-}
-
 static void nextWgrep( char **paths )
 {
     struct stat     sblk;
+    PGROUP2         pg;
+    int             dirlen;
 
     Stack = (dirstack *)SafeMalloc( sizeof( dirstack ) );
 
@@ -874,9 +849,21 @@ static void nextWgrep( char **paths )
             strcpy( Stack->name, *paths );
             strcpy( CurrPattern, "*.*" );
         } else {
-            splitPath( *paths, Stack->name, CurrPattern );
+            _splitpath2( *paths, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            if( pg.dir[0] != '\0' ) {
+                dirlen = (int)strlen( pg.dir );
+                if( pg.dir[dirlen - 1] == '\\' || pg.dir[dirlen - 1] == '/' ) {
+                    pg.dir[dirlen] = '.';
+                    pg.dir[dirlen + 1] = '\0';
+                }
+            } else {
+                pg.dir[0] = '.';
+                pg.dir[1] = '\0';
+            }
+            _makepath( Stack->name, pg.drive, pg.dir, NULL, NULL );
+            _makepath( CurrPattern, NULL, NULL, pg.fname, pg.ext );
         }
-        processDirectory( );
+        processDirectory();
     }
 
     free( Stack );

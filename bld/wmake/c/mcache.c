@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,15 +46,14 @@
 #include "mmemory.h"
 #include "mmisc.h"
 #include "dostimet.h"
+#include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #include "mcache.h"
 
+#include "clibext.h"
 
-#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-#define USE_DIR_CACHE
-#endif
 
 #ifdef USE_DIR_CACHE
 
@@ -185,8 +185,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
  */
 {
     CENTRYPTR       cnew;       /* new cacheEntry struct */
-    DIR             *parent;    /* parent directory entry */
-    struct dirent   *entry;     /* current directory entry */
+    DIR             *dirp;      /* parent directory entry */
+    struct dirent   *dire;      /* current directory entry */
     HASH_T          h;          /* hash value */
     size_t          len;
     char            *name_ptr;
@@ -218,8 +218,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
     memcpy( name_ptr, "*.*", 4 );
 #endif
-    parent = opendir( path );
-    if( parent == NULL ) {
+    dirp = opendir( path );
+    if( dirp == NULL ) {
 #ifdef CACHE_STATS
         if( Glob.cachestat ) {
             PrtMsg( INF | NEOL | CACHE_FILES_BYTES, files, bytes, hits );
@@ -228,16 +228,16 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         return( CACHE_OK );     /* an empty, or nonexistent directory */
     }
 
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
-        if( entry->d_attr & IGNORE_MASK )
+        if( dire->d_attr & IGNORE_MASK )
             continue;
 #endif
         /* we tromp on entry, and get hash value */
-        h = Hash( FixName( entry->d_name ), HASH_PRIME );
+        h = Hash( FixName( dire->d_name ), HASH_PRIME );
         cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
-            closedir( parent );
+            closedir( dirp );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
@@ -254,8 +254,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         bytes += sizeof( *cnew );
         ++files;
 #endif
-        cnew->ce_tt = get_direntry_timestamp( entry );
-        ConstMemCpy( cnew->ce_name, entry->d_name, NAME_MAX + 1 );
+        cnew->ce_tt = get_direntry_timestamp( dire );
+        ConstMemCpy( cnew->ce_name, dire->d_name, NAME_MAX + 1 );
         cnew->ce_next = (*pdhead)->dh_table[h];
         (*pdhead)->dh_table[h] = cnew;
 #ifdef CACHE_STATS
@@ -265,7 +265,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         }
 #endif
     }
-    closedir( parent );
+    closedir( dirp );
 
 #ifdef CACHE_STATS
     if( Glob.cachestat ) {
@@ -340,7 +340,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     DHEADPTR        dcur;
     CENTRYPTR       centry;
     enum cacheRet   ret;
-    PGROUP          pg;
+    PGROUP2         pg;
     char const      *ext;
 
     assert( fullpath != NULL );
@@ -395,6 +395,9 @@ void CacheInit( void )
  * Called at the beginning of the program
  */
 {
+#ifdef USE_DIR_CACHE
+    Glob.cachedir = true;
+#endif
 }
 
 
@@ -404,11 +407,11 @@ void CacheRelease( void )
  */
 {
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_STATS
+  #ifdef CACHE_STATS
     if( Glob.cachestat ) {
         PrtMsg( INF | CACHERELEASE );
     }
-#endif
+  #endif
     freeDirectList( cacheHead );
     cacheHead = NULL;
     MemShrink();
@@ -423,20 +426,21 @@ void CacheFini( void )
  */
 {
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_STATS
-    Glob.cachestat = 0;
-#endif
-#ifndef NDEBUG
+    Glob.cachedir = false;
+  #ifdef CACHE_STATS
+    Glob.cachestat = false;
+  #endif
+  #ifndef NDEBUG
     CacheRelease();
-#endif
+  #endif
 #endif
 }
 
 
-RET_T CacheTime( const char *fullpath, time_t *ptime )
-/************************************************************
+bool CacheTime( const char *fullpath, time_t *ptime )
+/****************************************************
  * Given a full path to a file, get the st_mtime for that file.  If there
- * are no errors, return 0, otherwise 1.  If the file is in directory not
+ * are no errors, return true, otherwise false.  If the file is in directory not
  * cached yet, then cache it first.
  */
 {
@@ -448,11 +452,11 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
     assert( fullpath != NULL && ptime != NULL );
 
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_DELAY_CHECK
+  #ifdef CACHE_DELAY_CHECK
     if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
-#else
+  #else
     if( Glob.cachedir ) {
-#endif
+  #endif
         switch( maybeCache( fullpath, &centry ) ) {
         case CACHE_OK:
             if( centry->ce_tt == YOUNGEST_DATE ) {
@@ -461,19 +465,19 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
                 }
             }
             *ptime = centry->ce_tt;
-            return( RET_SUCCESS );
+            return( true );
         case CACHE_NOT_ENUF_MEM:
             break;
         default:
-            return( RET_ERROR );
+            return( false );
         }
     }
 #endif
     if( stat( fullpath, &buf ) == 0 ) {
         *ptime = buf.st_mtime;
-        return( RET_SUCCESS );
+        return( true );
     }
-    return( RET_ERROR );
+    return( false );
 }
 
 
@@ -485,11 +489,11 @@ bool CacheExists( const char *fullpath )
     assert( fullpath != NULL );
 
 #ifdef USE_DIR_CACHE
-#ifdef CACHE_DELAY_CHECK
+  #ifdef CACHE_DELAY_CHECK
     if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
-#else
+  #else
     if( Glob.cachedir ) {
-#endif
+  #endif
         switch( maybeCache( fullpath, NULL ) ) {
         case CACHE_OK:
             return( true );
@@ -500,5 +504,5 @@ bool CacheExists( const char *fullpath )
         }
     }
 #endif
-    return( access( fullpath, F_OK ) == 0 );
+    return( ExistFile( fullpath ) );
 }

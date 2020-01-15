@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +132,7 @@ _WCRTLINK void_fptr _fmalloc( size_t amt )
     }
 release_heap:
     _ReleaseFHeap();
-    return( MK_FP( seg, cstg ) );
+    return( _MK_FP( seg, cstg ) );
 }
 
 #if defined(__DOS__) && defined(__BIG_DATA__)

@@ -40,7 +40,7 @@
 !  else ifdef mathtest_name
 !    ifdef %MATHTEST_LOG_FILE
 !      define log_file $+$(%MATHTEST_LOG_FILE)$-
-!    else ifdef %PLUSTEST_NAME
+!    else ifdef %MATHTEST_NAME
 !      define log_file $(mathtest_dir)/$+$(%MATHTEST_NAME)$-.log
 !    else
 !      define log_file $(mathtest_dir)/$(mathtest_name).log

@@ -55,11 +55,13 @@ YYSTYPE *yyvp, yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
-static void yyerror( char *str ) {
+static void yyerror( char *str )
+{
     ReportError( str );
 }
 
-static int yylex() {
+static int yylex( void )
+{
     int         curtoken;
     ScanValue   value;
 
@@ -67,114 +69,114 @@ static int yylex() {
     yylval.String = NULL;
     if( Config.debug ) {
         switch( curtoken ) {
-            case T_NUM:
-                printf( "T_NUM\n" );
-                break;
-            case T_NAME:
-                printf( "T_NAME\n" );
-                break;
-            case T_CHAR:
-                printf( "T_CHAR\n" );
-                break;
-            case T_SHORT:
-                printf( "T_SHORT\n" );
-                break;
-            case T_INT:
-                printf( "T_INT\n" );
-                break;
-            case T_LONG:
-                printf( "T_LONG\n" );
-                break;
-            case T_SIGNED:
-                printf( "T_SIGNED\n" );
-                break;
-            case T_UNSIGNED:
-                printf( "T_UNSIGNED\n" );
-                break;
-            case T_FLOAT:
-                printf( "T_FLOAT\n" );
-                break;
-            case T_DOUBLE:
-                printf( "T_DOUBLE\n" );
-                break;
-            case T_VOID:
-                printf( "T_VOID\n" );
-                break;
-            case T_CONST:
-                printf( "T_CONST\n" );
-                break;
-            case T_STRUCT:
-                printf( "T_STRUCT\n" );
-                break;
-            case T_UNION:
-                printf( "T_UNION\n" );
-                break;
-            case T_NEAR:
-                printf( "T_NEAR\n" );
-                break;
-            case T_FAR:
-                printf( "T_FAR\n" );
-                break;
-            case T_HUGE:
-                printf( "T_HUGE\n" );
-                break;
-            case T_CDECL:
-                printf( "T_CDECL\n" );
-                break;
-            case T_PASCAL:
-                printf( "T_PASCAL\n" );
-                break;
-            case T_FORTRAN:
-                printf( "T_FORTRAN\n" );
-                break;
-            case T_SYSCALL:
-                printf( "T_SYSCALL\n" );
-                break;
-            case T_EXPORT:
-                printf( "T_EXPORT\n" );
-                break;
-            case T_EXTERN:
-                printf( "T_EXTERN\n" );
-                break;
-            case T_LPAREN:
-                printf( "T_LPAREN\n" );
-                break;
-            case T_RPAREN:
-                printf( "T_RPAREN\n" );
-                break;
-            case T_LSQ_BRACKET:
-                printf( "T_LSQ_BRACKET\n" );
-                break;
-            case T_RSQ_BRACKET:
-                printf( "T_RSQ_BRACKET\n" );
-                break;
-            case T_SEMICOLON:
-                printf( "T_SEMICOLON\n" );
-                break;
-            case T_STAR:
-                printf( "T_STAR\n" );
-                break;
-            case T_COMMA:
-                printf( "T_COMMA\n" );
-                break;
-            case T_POUND:
-                printf( "T_POUND\n" );
-                break;
-            case T_SLASH:
-                printf( "T_SLASH\n" );
-                break;
-            case T_LINE:
-                printf( "T_LINE\n" );
-                break;
-            case T_STRING:
-                printf( "T_STRING\n" );
-                break;
-            case T_FNAME:
-                printf( "T_FNAME\n" );
-                break;
-            case T_PERIOD:
-                printf( "T_PERIOD\n" );
-                break;
+        case T_NUM:
+            printf( "T_NUM\n" );
+            break;
+        case T_NAME:
+            printf( "T_NAME\n" );
+            break;
+        case T_CHAR:
+            printf( "T_CHAR\n" );
+            break;
+        case T_SHORT:
+            printf( "T_SHORT\n" );
+            break;
+        case T_INT:
+            printf( "T_INT\n" );
+            break;
+        case T_LONG:
+            printf( "T_LONG\n" );
+            break;
+        case T_SIGNED:
+            printf( "T_SIGNED\n" );
+            break;
+        case T_UNSIGNED:
+            printf( "T_UNSIGNED\n" );
+            break;
+        case T_FLOAT:
+            printf( "T_FLOAT\n" );
+            break;
+        case T_DOUBLE:
+            printf( "T_DOUBLE\n" );
+            break;
+        case T_VOID:
+            printf( "T_VOID\n" );
+            break;
+        case T_CONST:
+            printf( "T_CONST\n" );
+            break;
+        case T_STRUCT:
+            printf( "T_STRUCT\n" );
+            break;
+        case T_UNION:
+            printf( "T_UNION\n" );
+            break;
+        case T_NEAR:
+            printf( "T_NEAR\n" );
+            break;
+        case T_FAR:
+            printf( "T_FAR\n" );
+            break;
+        case T_HUGE:
+            printf( "T_HUGE\n" );
+            break;
+        case T_CDECL:
+            printf( "T_CDECL\n" );
+            break;
+        case T_PASCAL:
+            printf( "T_PASCAL\n" );
+            break;
+        case T_FORTRAN:
+            printf( "T_FORTRAN\n" );
+            break;
+        case T_SYSCALL:
+            printf( "T_SYSCALL\n" );
+            break;
+        case T_EXPORT:
+            printf( "T_EXPORT\n" );
+            break;
+        case T_EXTERN:
+            printf( "T_EXTERN\n" );
+            break;
+        case T_LPAREN:
+            printf( "T_LPAREN\n" );
+            break;
+        case T_RPAREN:
+            printf( "T_RPAREN\n" );
+            break;
+        case T_LSQ_BRACKET:
+            printf( "T_LSQ_BRACKET\n" );
+            break;
+        case T_RSQ_BRACKET:
+            printf( "T_RSQ_BRACKET\n" );
+            break;
+        case T_SEMICOLON:
+            printf( "T_SEMICOLON\n" );
+            break;
+        case T_STAR:
+            printf( "T_STAR\n" );
+            break;
+        case T_COMMA:
+            printf( "T_COMMA\n" );
+            break;
+        case T_POUND:
+            printf( "T_POUND\n" );
+            break;
+        case T_SLASH:
+            printf( "T_SLASH\n" );
+            break;
+        case T_LINE:
+            printf( "T_LINE\n" );
+            break;
+        case T_STRING:
+            printf( "T_STRING\n" );
+            break;
+        case T_FNAME:
+            printf( "T_FNAME\n" );
+            break;
+        case T_PERIOD:
+            printf( "T_PERIOD\n" );
+            break;
         }
     }
     switch( curtoken ) {

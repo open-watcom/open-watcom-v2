@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ static unsigned long __ibm_bios_get_ticks( void )
     volatile unsigned short _WCFAR  *tick_count_ptr;
     unsigned short                  lo_word, hi_word;
 
-    tick_count_ptr = (unsigned short _WCFAR *)MK_FP( 0x40, 0x6c );
+    tick_count_ptr = (unsigned short _WCFAR *)_MK_FP( 0x40, 0x6c );
     // Read tick count in a loop to ensure the value is consistent
     do {
         lo_word = tick_count_ptr[0];

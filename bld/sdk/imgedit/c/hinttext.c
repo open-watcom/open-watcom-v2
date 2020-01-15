@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,38 +155,38 @@ void InitMenus( HMENU hmenu )
     helpmenu = GetSubMenu( hmenu, 6 );
     if( ImgedIsDDE ) {
         // shift menu
-        hintText[POPUP_START + 2].id = (int)(pointer_int)GetSubMenu( editmenu, 9 );
+        hintText[POPUP_START + 2].id = (int)(pointer_uint)GetSubMenu( editmenu, 9 );
         // flip menu
-        hintText[POPUP_START + 3].id = (int)(pointer_int)GetSubMenu( editmenu, 10 );
+        hintText[POPUP_START + 3].id = (int)(pointer_uint)GetSubMenu( editmenu, 10 );
         // rotate menu
-        hintText[POPUP_START + 4].id = (int)(pointer_int)GetSubMenu( editmenu, 11 );
+        hintText[POPUP_START + 4].id = (int)(pointer_uint)GetSubMenu( editmenu, 11 );
     } else {
         // shift menu
-        hintText[POPUP_START + 2].id = (int)(pointer_int)GetSubMenu( editmenu, 11 );
+        hintText[POPUP_START + 2].id = (int)(pointer_uint)GetSubMenu( editmenu, 11 );
         // flip menu
-        hintText[POPUP_START + 3].id = (int)(pointer_int)GetSubMenu( editmenu, 12 );
+        hintText[POPUP_START + 3].id = (int)(pointer_uint)GetSubMenu( editmenu, 12 );
         // rotate menu
-        hintText[POPUP_START + 4].id = (int)(pointer_int)GetSubMenu( editmenu, 13 );
+        hintText[POPUP_START + 4].id = (int)(pointer_uint)GetSubMenu( editmenu, 13 );
     }
 
     // File menu option
-    hintText[POPUP_START].id = (int)(pointer_int)filemenu;
+    hintText[POPUP_START].id = (int)(pointer_uint)filemenu;
     // Edit menu option
-    hintText[POPUP_START + 1].id = (int)(pointer_int)editmenu;
+    hintText[POPUP_START + 1].id = (int)(pointer_uint)editmenu;
     // options menu
-    hintText[POPUP_START + 5].id = (int)(pointer_int)optionsmenu;
+    hintText[POPUP_START + 5].id = (int)(pointer_uint)optionsmenu;
     // brush size menu
-    hintText[POPUP_START + 6].id = (int)(pointer_int)GetSubMenu( optionsmenu, 6 );
+    hintText[POPUP_START + 6].id = (int)(pointer_uint)GetSubMenu( optionsmenu, 6 );
     // palette menu
-    hintText[POPUP_START + 7].id = (int)(pointer_int)palettemenu;
+    hintText[POPUP_START + 7].id = (int)(pointer_uint)palettemenu;
     // tools menu
-    hintText[POPUP_START + 8].id = (int)(pointer_int)toolsmenu;
+    hintText[POPUP_START + 8].id = (int)(pointer_uint)toolsmenu;
     // ellipse menu
-    hintText[POPUP_START + 9].id = (int)(pointer_int)GetSubMenu( toolsmenu, 2 );
+    hintText[POPUP_START + 9].id = (int)(pointer_uint)GetSubMenu( toolsmenu, 2 );
     // rectangle menu
-    hintText[POPUP_START + 10].id = (int)(pointer_int)GetSubMenu( toolsmenu, 3 );
+    hintText[POPUP_START + 10].id = (int)(pointer_uint)GetSubMenu( toolsmenu, 3 );
     // help menu
-    hintText[POPUP_START + 11].id = (int)(pointer_int)helpmenu;
+    hintText[POPUP_START + 11].id = (int)(pointer_uint)helpmenu;
 
 } /* InitMenus */
 

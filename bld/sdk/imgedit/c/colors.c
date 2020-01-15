@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -471,7 +472,7 @@ void ReplacePaletteEntry( COLORREF newcolor )
         palette[currentPalIndex][index].rgbBlue = GetBValue( newcolor );
         palette[currentPalIndex][index].rgbReserved = 0;
 
-        ShowNewColor( index, newcolor, TRUE );
+        ShowNewColor( index, newcolor, true );
         pres = _wpi_getpres( HWND_DESKTOP );
         _wpi_torgbmode( pres );
         SetColor( LMOUSEBUTTON, newcolor, _wpi_getnearestcolor( pres, newcolor ), NORMAL_CLR );
@@ -528,7 +529,7 @@ void ResetColorPalette( void )
         palette[currentPalIndex][i] = restorePalette[i];
         ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                               palette[currentPalIndex][i].rgbGreen,
-                              palette[currentPalIndex][i].rgbBlue ), FALSE );
+                              palette[currentPalIndex][i].rgbBlue ), false );
     }
     /*
      * We do the last one separately to invalidate the window.
@@ -536,7 +537,7 @@ void ResetColorPalette( void )
     palette[currentPalIndex][i] = restorePalette[i];
     ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                           palette[currentPalIndex][i].rgbGreen,
-                          palette[currentPalIndex][i].rgbBlue ), TRUE );
+                          palette[currentPalIndex][i].rgbBlue ), true );
 
     if( lefttype == NORMAL_CLR ) {
         color = RGB( palette[currentPalIndex][leftindex].rgbRed,
@@ -563,7 +564,7 @@ void ResetColorPalette( void )
  * SetCurrentColors - set the current color selection (we need to be
  *                    careful that the image supports the current palette)
  */
-void SetCurrentColors( BOOL fshowscreenclrs )
+void SetCurrentColors( bool fshowscreenclrs )
 {
     COLORREF    leftcolor;
     COLORREF    rightcolor;
@@ -693,12 +694,12 @@ void InitFromColorPalette( palette_box *screen, palette_box *inverse,
  *                - since it isn't documented (?!), I got this from a hex dump of a file
  *                  created by other image editors (MS)
  */
-BOOL GetPaletteFile( a_pal_file *pal_file )
+bool GetPaletteFile( a_pal_file *pal_file )
 {
     int                 i;
 
     if( currentPalIndex != COLOR_16 && currentPalIndex != COLOR_256 ) {
-        return( FALSE );
+        return( false );
     }
 
     pal_file->file_id = PALETTE_FILE;
@@ -716,7 +717,7 @@ BOOL GetPaletteFile( a_pal_file *pal_file )
         pal_file->rgbqs[i].rgbReserved = 0;
     }
 
-    return( TRUE );
+    return( true );
 
 } /* GetPaletteFile */
 
@@ -742,7 +743,7 @@ void SetNewPalette( a_pal_file *pal_file )
         palette[currentPalIndex][i].rgbBlue = pal_file->rgbqs[i].rgbRed;
         ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                               palette[currentPalIndex][i].rgbGreen,
-                              palette[currentPalIndex][i].rgbBlue ), FALSE );
+                              palette[currentPalIndex][i].rgbBlue ), false );
         restorePalette[i] = palette[currentPalIndex][i];
     }
     palette[currentPalIndex][i].rgbRed = pal_file->rgbqs[i].rgbBlue;
@@ -752,8 +753,8 @@ void SetNewPalette( a_pal_file *pal_file )
 
     ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                           palette[currentPalIndex][i].rgbGreen,
-                          palette[currentPalIndex][i].rgbBlue ), TRUE );
-    SetCurrentColors( TRUE );
+                          palette[currentPalIndex][i].rgbBlue ), true );
+    SetCurrentColors( true );
 
     if( HMainWindow != NULL ) {
         hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
@@ -793,14 +794,14 @@ void RestoreColorPalette( void )
     for( i = 0; i < PALETTE_SIZE - 1; i++ ) {
         ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                               palette[currentPalIndex][i].rgbGreen,
-                              palette[currentPalIndex][i].rgbBlue ), FALSE );
+                              palette[currentPalIndex][i].rgbBlue ), false );
     }
     /*
      * We do the last one separately to invalidate the window.
      */
     ShowNewColor( i, RGB( palette[currentPalIndex][i].rgbRed,
                           palette[currentPalIndex][i].rgbGreen,
-                          palette[currentPalIndex][i].rgbBlue ), TRUE );
+                          palette[currentPalIndex][i].rgbBlue ), true );
 
     if( lefttype == NORMAL_CLR ) {
         color = RGB( palette[currentPalIndex][leftindex].rgbRed,

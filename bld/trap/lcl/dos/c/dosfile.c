@@ -98,11 +98,11 @@ trap_retval ReqFile_seek( void )
     tiny_ret_t      rc;
     file_seek_req   *acc;
     file_seek_ret   *ret;
-    unsigned long   pos;
+    uint_32         pos;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyLSeek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode], (u32_stk_ptr)&pos );
+    rc = TinyLSeek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode], &pos );
     ret->pos = pos;
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );

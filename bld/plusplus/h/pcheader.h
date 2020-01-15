@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,8 +195,8 @@ typedef enum {
 #define PCHReadVar(m)           PCHRead( &(m), sizeof( m ) )
 #define PCHWriteVar(m)          PCHWrite( &(m), sizeof( m ) )
 
-#define PCHGetUInt(p)           ((unsigned)(pointer_int)(p))
-#define PCHSetUInt(v)           ((void *)(pointer_int)(unsigned)(v))
+#define PCHGetUInt(p)           ((unsigned)(pointer_uint)(p))
+#define PCHSetUInt(v)           ((void *)(pointer_uint)(unsigned)(v))
 
 #define PCHReadCVIndex()        PCHReadUInt()
 #define PCHWriteCVIndex( x )    PCHWriteUInt( x )

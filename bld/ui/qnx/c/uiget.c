@@ -72,7 +72,7 @@ static ui_event doget( bool update )
 {
     static   short      ReturnIdle = 1;
     ui_event            ui_ev;
-    SAREA               screen;
+    SAREA               area;
 
     for( ;; ) {
         ui_ev = forcedevent();
@@ -97,13 +97,13 @@ static ui_event doget( bool update )
     ReturnIdle = 1;
     switch( ui_ev ) {
     case EV_REDRAW_SCREEN:
-        screen.row = 0;
-        screen.col = 0;
-        screen.height = UIData->height;
-        screen.width = UIData->width;
-        uidirty( screen );
+        area.row = 0;
+        area.col = 0;
+        area.height = UIData->height;
+        area.width = UIData->width;
+        uidirty( area );
         UserForcedTermRefresh = true;
-        physupdate( &screen );
+        physupdate( &area );
         break;
     case EV_MOUSE_HOLD:
     case EV_MOUSE_HOLD_R:

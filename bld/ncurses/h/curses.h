@@ -436,7 +436,6 @@ extern NCURSES_EXPORT(int) wgetnstr_events(WINDOW *,char *,int,_nc_eventlist *);
 #undef GCC_NORETURN
 #undef GCC_PRINTF
 #undef GCC_SCANF
-#undef GCC_UNUSED
 #endif
 
 /*
@@ -461,10 +460,6 @@ extern NCURSES_EXPORT(int) wgetnstr_events(WINDOW *,char *,int,_nc_eventlist *);
 
 #ifndef GCC_NORETURN
 #define GCC_NORETURN /* nothing */
-#endif
-
-#ifndef GCC_UNUSED
-#define GCC_UNUSED /* nothing */
 #endif
 
 /*

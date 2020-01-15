@@ -84,14 +84,12 @@
 /*/
 !/bld/
 !/build/
+!/ci/
+!/ci/nt386/*
+!/ci/ntx64/*
 !/contrib/
 !/distrib/
 !/docs/
-!/travis/
-!/travis/dosbox/*
-!/travis/gs927w64/*
-!/travis/hcw/*
-!/travis/hhc/*
 
 !/contrib/**
 

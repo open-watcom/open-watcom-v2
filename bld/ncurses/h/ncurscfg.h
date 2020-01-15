@@ -67,7 +67,6 @@
 #define USE_HASHMAP 1
 #define GCC_SCANF 1
 #define GCC_PRINTF 1
-#define GCC_UNUSED __attribute__((unused))
 #define GCC_NORETURN __attribute__((noreturn))
 #define NDEBUG 1
 #define HAVE_NC_ALLOC_H 1

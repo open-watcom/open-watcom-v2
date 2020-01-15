@@ -59,9 +59,7 @@ static IDEDRV info =
 {   DLL_NAME_STR
 };
 
-int main                        // MAIN-LINE FOR DLL DRIVER
-    ( int argc                  // - # args
-    , char *argv[] )            // - arguments
+int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
 {
     int retcode;                // - return code
 #ifndef __UNIX__
@@ -70,10 +68,13 @@ int main                        // MAIN-LINE FOR DLL DRIVER
     char *p;
 #endif
 
-#ifndef __WATCOMC__
-    _argv = argv;
+#if !defined( __WATCOMC__ )
     _argc = argc;
+    _argv = argv;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc;
 #endif
+
 #ifndef __UNIX__
     len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = malloc( len );

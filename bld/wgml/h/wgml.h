@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -229,6 +229,7 @@ extern  unsigned long   mem_get_peak_usage( void );
 extern  void            mem_prt_curr_usage( void );
 extern  void            *mem_realloc( void * p, size_t size );
 extern  int             mem_validate( void );
+extern  void            *mem_dupstr( const char *str );
 
 
 /* gnestut.c                            */

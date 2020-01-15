@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,7 +319,7 @@ toolbar *ToolBarInit( HWND parent )
             wc.hInstance = instance;
             wc.hIcon = NULL;
             wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-            wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_3DFACE + 1);
+            wc.hbrBackground = (HBRUSH)(pointer_uint)(COLOR_3DFACE + 1);
             wc.lpszMenuName = NULL;
             wc.lpszClassName = containerClassName;
             RegisterClass( &wc );

@@ -44,13 +44,20 @@ _WCRTLINK int getsockname( int s , struct sockaddr *name , socklen_t *namelen )
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)name;
     args[2] = (unsigned long)namelen;
     return( __socketcall( SYS_GETSOCKNAME, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)s; (void)name; (void)namelen;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)name; (void)namelen;
+
     return( -1 );
 #endif
 }

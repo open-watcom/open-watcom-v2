@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@ typedef struct edgelist {
         segdata     *seg;
         symbol      *sym;
     } u;
-    bool            issym       : 1;    // true if contains a symbol
-    bool            reverse_dir : 1;    // true if edge points in the opposite direction
+    boolbit         issym       : 1;    // true if contains a symbol
+    boolbit         reverse_dir : 1;    // true if edge points in the opposite direction
 } edgelist;
 
 static edgelist * FreedEdges;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1217,7 +1217,7 @@ void    FPInit( void )
     Initialize.
 */
 {
-    Max87Stk = (int)(pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
+    Max87Stk = (int)(pointer_uint)FEAuxInfo( NULL, STACK_SIZE_8087 );
     if( Max87Stk > 8 )
         Max87Stk = 8;
     if( Max87Stk < 4 )

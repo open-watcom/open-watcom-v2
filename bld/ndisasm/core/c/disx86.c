@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,7 +238,8 @@ dis_handler_return X86PrefixFwait( dis_handle *h, void *d, dis_dec_ins *ins )
 
     for( ;; ) {
         code = GetUByte( d, instruct_size );
-        if( ( code & 0xf8 ) == 0xd8 ) break;
+        if( ( code & 0xf8 ) == 0xd8 )
+            break;
         // Look Ahead for Prefixes
         switch( code ) {
         case 0x67:
@@ -699,7 +701,7 @@ static void X86GetModRM_S( WBIT w, MOD mod, RM rm, void * d,
 
     switch( mod ) {
     case MOD_0:
-        if(rm == RM_6) {
+        if( rm == RM_6 ) {
             ins->op[oper].base = DR_NONE;
             ins->op[oper].op_position = ins->size;
             ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
@@ -935,13 +937,20 @@ static void X86XMMGetModRM( WBIT w, MOD mod, RM rm, void * d,
 
 static dis_ref_type X86RegRefType( dis_register reg )
 {
-    if( reg <= DR_X86_bl ) return( DRT_X86_BYTE );
-    if( reg <= DR_X86_di ) return( DRT_X86_WORD );
-    if( reg <= DR_X86_edi ) return( DRT_X86_DWORD );
-    if( reg <= DR_X86_st7 ) return( DRT_X86_TBYTE );
-    if( reg <= DR_X86_mm7 ) return( DRT_X86_MM64 );
-    if( reg <= DR_X86_xmm7 ) return( DRT_X86_XMM128 );
-    if( reg <= DR_X86_dr7 ) return( DRT_X86_DWORD );
+    if( reg <= DR_X86_bl )
+        return( DRT_X86_BYTE );
+    if( reg <= DR_X86_di )
+        return( DRT_X86_WORD );
+    if( reg <= DR_X86_edi )
+        return( DRT_X86_DWORD );
+    if( reg <= DR_X86_st7 )
+        return( DRT_X86_TBYTE );
+    if( reg <= DR_X86_mm7 )
+        return( DRT_X86_MM64 );
+    if( reg <= DR_X86_xmm7 )
+        return( DRT_X86_XMM128 );
+    if( reg <= DR_X86_dr7 )
+        return( DRT_X86_DWORD );
     return( DRT_X86_WORD );
 }
 
@@ -1731,7 +1740,7 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 
             char intno = GetUByte( d, ins->size );
 
-            if( ( intno >= 0x34 ) && ( intno <= 0x3D ) ) {
+            if( (ins->flags.u.x86 & DIF_X86_FPU_EMU) && ( intno >= 0x34 ) && ( intno <= 0x3D ) ) {
                 ins->flags.u.x86 |= DIF_X86_EMU_INT;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = intno;
                 ins->op[ MAX_NUM_OPERANDS - 1 ].type = DO_IMMED;
@@ -2840,7 +2849,7 @@ dis_handler_return X86FType3( dis_handle *h, void *d, dis_dec_ins *ins )
     code.full = ins->opcode;
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
 
     // If the POP bit is set change the instruction to the pop instruction
     if( code.type3.p ) {
@@ -2900,7 +2909,7 @@ dis_handler_return X86FType3B( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     X86FGetST( code.type3.st, ins );
     return( DHR_DONE );
 }
@@ -2917,7 +2926,7 @@ dis_handler_return X86FType3C( dis_handle *h, void *d, dis_dec_ins *ins )
     code.full = ins->opcode;
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     X86FGetST( RM_0, ins );
     X86FGetST( code.type3.st, ins );
     return( DHR_DONE );
@@ -2936,7 +2945,7 @@ dis_handler_return X86FType2( dis_handle *h, void *d, dis_dec_ins *ins )
     /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     ins->num_ops = 0;
     ins->size += 2;
 
@@ -2957,7 +2966,7 @@ dis_handler_return X86FTypeFSTSWAX( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 0;
 
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     if( ins->flags.u.x86 & DIF_X86_FWAIT ) {
         ins->type = DI_X86_fstsw2;
     }
@@ -2977,7 +2986,7 @@ dis_handler_return X86FType4( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 0;
 
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     if( ins->flags.u.x86 & DIF_X86_FWAIT ) {
         switch( ins->type ) {
         /* Instructions with FWAIT names */
@@ -3011,7 +3020,7 @@ dis_handler_return X86FType1( dis_handle *h, void *d, dis_dec_ins *ins )
 
     ins->size += 2;
     ins->num_ops = 0;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
     code.full = ins->opcode;
 
     switch( ins->type ) {
@@ -3087,7 +3096,7 @@ dis_handler_return X86FTypeEnv( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->num_ops = 0;
 
     code.full = ins->opcode;
-    ins->flags.u.x86 |= DIF_X86_FP_INS;
+    ins->flags.u.x86 |= DIF_X86_FPU_INS;
 
     if( code.type1.mod == MOD_3 ) {
         return ( DHR_INVALID );
@@ -3837,11 +3846,16 @@ static dis_ref_type GetRefType( dis_dec_ins *ins, unsigned op )
     switch( ins->op[op].type & DO_MASK ) {
     case DO_REG:
         reg = ins->op[op].base;
-        if(                      reg <= DR_X86_bl ) return( DRT_X86_BYTE );
-        if( reg >= DR_X86_ax  && reg <= DR_X86_di ) return( DRT_X86_WORD );
-        if( reg >= DR_X86_eax && reg <= DR_X86_edi ) return( DRT_X86_DWORD );
-        if( reg >= DR_X86_cr0 && reg <= DR_X86_dr7 ) return( DRT_X86_DWORD );
-        if( reg >= DR_X86_es  && reg <= DR_X86_gs ) return( DRT_X86_WORD );
+        if( reg <= DR_X86_bl )
+            return( DRT_X86_BYTE );
+        if( reg >= DR_X86_ax  && reg <= DR_X86_di )
+            return( DRT_X86_WORD );
+        if( reg >= DR_X86_eax && reg <= DR_X86_edi )
+            return( DRT_X86_DWORD );
+        if( reg >= DR_X86_cr0 && reg <= DR_X86_dr7 )
+            return( DRT_X86_DWORD );
+        if( reg >= DR_X86_es  && reg <= DR_X86_gs )
+            return( DRT_X86_WORD );
         break;
     case DO_MEMORY_ABS:
         return( ins->op[op].ref_type );
@@ -3937,7 +3951,9 @@ static size_t UnixMangleName( dis_dec_ins *ins, char *p, size_t len )
     default:
         for( i = 0; i < ins->num_ops; ++i ) {
             ref_type = GetRefType( ins, i );
-            if( ref_type != DRT_NONE ) break;
+            if( ref_type != DRT_NONE ) {
+                break;
+            }
         }
         break;
     }
@@ -3956,16 +3972,19 @@ static size_t X86InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     /* unused parameters */ (void)h; (void)d;
 
-    if( name == NULL ) name = temp_buff;
+    if( name == NULL )
+        name = temp_buff;
     p = name;
     if( ins->flags.u.x86 & DIF_X86_LOCK ) {
         p += DisGetString( DisInstructionTable[DI_X86_lock_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x86 & DIF_X86_REPNE ) {
         p += DisGetString( DisInstructionTable[DI_X86_repne_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x86 & DIF_X86_REPE ) {
@@ -3978,7 +3997,8 @@ static size_t X86InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             p += DisGetString( DisInstructionTable[DI_X86_rep_pr].name, p, false );
             break;
         }
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     len = DisGetString( DisInstructionTable[ins->type].name, p, false );
@@ -4237,7 +4257,8 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 break;
             }
             ins_flags.u.x86 &= ~SEGOVER;
-            if( flags & DFF_UNIX ) *p++ = '%';
+            if( flags & DFF_UNIX )
+                *p++ = '%';
             if( flags & DFF_REG_UP ) {
                 *p++ = (char)toupper( over );
                 *p++= 'S';
@@ -4360,20 +4381,36 @@ static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 
 static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
-/**********************************************************************/
+/*******************************************************************************/
 {
-    size_t      len = 0;
+    size_t      len;
 
     /* unused parameters */ (void)h; (void)op_num;
 
     if( ins->flags.u.x86 & DIF_X86_EMU_INT ) {
-        len = sizeof( EMU_INT ) - 1;
-        memcpy( op_buff, EMU_INT, len );
-        op_buff[len] = 0;
-        if( flags & DFF_INS_UP )
-            strupr( op_buff );
-        len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
+    } else if( ins->flags.u.x86 & DIF_X86_FPU_EMU ) {
+        if( (ins->opcode & 0xFFFF) == 0x9B90 ) {
+            ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3D;
+        } else if( (ins->flags.u.x86 & DIF_X86_FWAIT) && (ins->flags.u.x86 & DIF_X86_FPU_INS) ) {
+            if( X86SegmentOverride( ins ) ) {
+                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = 0x3C;
+            } else {
+                ins->op[ MAX_NUM_OPERANDS - 1 ].value.s._32[I64LO32] = (ins->opcode & 0xFF) - 0xA4;
+            }
+        } else {
+            return( 0 );
+        }
+        ins->op[ MAX_NUM_OPERANDS - 1 ].type = DO_IMMED;
+        ins->op[ MAX_NUM_OPERANDS - 1 ].ref_type = DRT_X86_BYTE;
+    } else {
+        return( 0 );
     }
+    len = sizeof( EMU_INT ) - 1;
+    memcpy( op_buff, EMU_INT, len );
+    op_buff[len] = 0;
+    if( flags & DFF_INS_UP )
+        strupr( op_buff );
+    len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
     return( len );
 }
 

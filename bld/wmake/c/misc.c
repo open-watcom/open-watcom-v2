@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #include "mlex.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -87,22 +88,22 @@ STATIC bool is_ws_or_equal( char c )
 
 STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 /******************************************************************
- * Finds next free separator character, allowing doublequotes to
+ * Finds next free separator character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {
-    bool    string_open;
+    bool    dquote;
     char    c;
 
-    string_open = false;
+    dquote = false;
     while( (c = *str) != NULLCHAR ) {
         if( c == '\\' ) {
-            if( string_open && str[1] != NULLCHAR ) {
+            if( dquote && str[1] != NULLCHAR ) {
                 ++str;
             }
         } else if( c == '\"' ) {
-            string_open = !string_open;
-        } else if( !string_open && chk_sep( c ) ) {
+            dquote = !dquote;
+        } else if( !dquote && chk_sep( c ) ) {
             break;
         }
         str++;
@@ -113,7 +114,7 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 
 char *FindNextWS( const char *str )
 /***********************************
- * Finds next free white space character, allowing doublequotes to
+ * Finds next free white space character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {
@@ -122,7 +123,7 @@ char *FindNextWS( const char *str )
 
 char *FindNextWSorEqual( const char *str )
 /*****************************************
- * Finds next free white space or equal character, allowing doublequotes to
+ * Finds next free white space or equal character, allowing double quotes to
  * be used to specify strings with white spaces.
  */
 {
@@ -293,15 +294,15 @@ static bool __fnmatch( const char *pattern, const char *string )
  *
  */
 
-static DIR  *parent = NULL;  /* we need this across invocations */
+static DIR  *dirp = NULL;  /* we need this across invocations */
 static char *path = NULL;
 static char *pattern = NULL;
 
 const char *DoWildCard( const char *base )
 /***********************************************/
 {
-    PGROUP          pg;
-    struct dirent   *entry;
+    PGROUP2         pg;
+    struct dirent   *dire;
 
     if( base != NULL ) {
         /* clean up from previous invocation */
@@ -320,35 +321,35 @@ const char *DoWildCard( const char *base )
         // create file name pattern
         _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
 
-        parent = opendir( path );
-        if( parent == NULL ) {
+        dirp = opendir( path );
+        if( dirp == NULL ) {
             DoWildCardClose();
             return( base );
         }
     }
 
-    if( parent == NULL ) {
+    if( dirp == NULL ) {
         return( NULL );
     }
 
-    assert( path != NULL && parent != NULL );
+    assert( path != NULL && dirp != NULL );
 
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 #if !defined( __UNIX__ )
-        if( entry->d_attr & IGNORE_MASK )
+        if( dire->d_attr & IGNORE_MASK )
             continue;
 #endif
-        if( __fnmatch( pattern, entry->d_name ) ) {
+        if( __fnmatch( pattern, dire->d_name ) ) {
             break;
         }
     }
-    if( entry == NULL ) {
+    if( dire == NULL ) {
         DoWildCardClose();
         return( base );
     }
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+    _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
 
     return( path );
 }
@@ -365,9 +366,9 @@ void DoWildCardClose( void )
         FreeSafe( pattern );
         pattern = NULL;
     }
-    if( parent != NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( dirp != NULL ) {
+        closedir( dirp );
+        dirp = NULL;
     }
 }
 

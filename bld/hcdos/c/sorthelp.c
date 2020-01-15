@@ -46,6 +46,7 @@
 #include "helpchar.h"
 #include "helpmem.h"
 #include "helpscan.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -53,22 +54,19 @@
 #define DEFTOPIC        "DEFTOPIC::::"
 #define DESCRIPTION     "DESCRIPTION::::"
 
-a_helpnode      *HelpNodes;
+a_helpnode          *HelpNodes;
 
-static bool     Verbose = false;
-static bool     GenIndex = true;
-static bool     GenStrings = true;
+static bool         Verbose = false;
+static bool         GenIndex = true;
+static bool         GenStrings = true;
 
-static bool     pass1( FILE *fin, char **helpstr );
-static bool     pass2( FILE *fin, int fout, char **helpstr );
-static void     fgetstring( char *buffer, int max_len, FILE *f );
-static ScanCBfunc lineLenCB;
-static ScanCBfunc checkBufCB;
+static ScanCBfunc   lineLenCB;
+static ScanCBfunc   checkBufCB;
 
-static int      MaxCol = 78;
-static int      MaxRow = 21;
-static int      Width = 0;
-static int      Height = 0;
+static int          MaxCol = 78;
+static int          MaxRow = 21;
+static int          Width = 0;
+static int          Height = 0;
 
 #define BUFFER_SIZE     400
 
@@ -100,15 +98,13 @@ static void Usage( void )
 }
 
 
-static void InitError( char *target )
+static void InitError( const char *target )
 {
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    fname[_MAX_FNAME];
+    PGROUP2     pg;
 
     errHasOccurred = false;
-    _splitpath( target, drive, dir, fname, NULL );
-    _makepath( errFileName, drive, dir, fname, ".err" );
+    _splitpath2( target, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( errFileName, pg.drive, pg.dir, pg.fname, "err" );
 }
 
 
@@ -137,131 +133,6 @@ static void PrintError( char *fmt, ... )
         fputs( errBuffer, errFile );
     }
     va_end( al );
-}
-
-int main( int argc, char **argv )
-{
-    char        **nargv;
-    char        **sargv;
-    FILE        *fin;
-    int         fout;
-    char        *helpstr[2];
-    bool        f_swtch;
-
-    f_swtch = false;
-    helpstr[0] = NULL;
-    helpstr[1] = NULL;
-    for( argc=1, sargv=nargv=argv+1; *sargv; ++sargv ) {
-        if( ! _IsCmdSwitch( *sargv ) ) {
-            *nargv++ = *sargv;
-            argc++;
-        } else {
-            switch( (*sargv)[1] ) {
-            case 'n':
-                GenIndex = false;
-                if( f_swtch ) {
-                    PrintError( "More than one format switch found in command line\n" );
-                    Usage();
-                }
-                f_swtch = true;
-                break;
-            case 'v':
-                Verbose = true;
-            break;
-            case 'c':
-                if( (*sargv)[2] != '\0' ) {
-                    MaxCol = atoi( &(*sargv)[2] );
-                } else {
-                    if( *++sargv == NULL )
-                        Usage();
-                    MaxCol = atoi( *sargv );
-                }
-                break;
-            case 'r':
-                if( (*sargv)[2] != '\0' ) {
-                    MaxRow = atoi( &(*sargv)[2] );
-                } else {
-                    if( *++sargv == NULL )
-                        Usage();
-                    MaxRow = atoi( *sargv );
-                }
-                break;
-            case 'h':
-                if( (*sargv)[2] != '\0' ) {
-                    Height = atoi( &(*sargv)[2] );
-                } else {
-                    if( *++sargv == NULL )
-                        Usage();
-                    Height = atoi( *sargv );
-                }
-                break;
-            case 'w':
-                if( (*sargv)[2] != '\0' ) {
-                    Width = atoi( &(*sargv)[2] );
-                } else {
-                    if( *++sargv == NULL )
-                        Usage();
-                    Width = atoi( *sargv );
-                }
-                break;
-            case 'f':
-                if( f_swtch ) {
-                    PrintError( "More than one format switch found in command line\n" );
-                    Usage();
-                }
-                f_swtch = true;
-                if( (*sargv)[2] == '0' ) {
-                    GenIndex = false;
-                } else if( (*sargv)[2] == '1' ) {
-                    GenStrings = false;
-                } else if( (*sargv)[2] == '2' ) {
-                    GenStrings = true;
-                } else {
-                    Usage();
-                }
-                break;
-            default:
-                Usage();
-            break;
-            }
-        }
-    }
-
-    if( argc > 1  &&  strcmp( argv[1], "?" ) == 0 ) {
-        Usage();
-    }
-
-    if( argc != 3 ) {
-        Usage();
-    }
-
-    InitError( argv[1] );
-    fin = fopen( argv[1], "rt" );
-    if( fin == NULL ) {
-        PrintError( "Unable to open '%s' for input\n", argv[1] );
-        return( -1 );
-    }
-
-    fout = open( argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
-    if( fout == -1 ) {
-        PrintError( "Unable to open '%s' for output\n", argv[2] );
-        return( -1 );
-    }
-
-    pass1( fin, helpstr );
-    pass2( fin, fout, helpstr );
-
-    fclose( fin );
-    close( fout );
-    if( GenIndex ) {
-        fout = open( argv[2], O_WRONLY | O_BINARY );
-        WriteIndex( fout, helpstr, GenStrings );
-        close( fout );
-    }
-    FiniError();
-    HelpMemFree( helpstr[0] );
-    HelpMemFree( helpstr[1] );
-    return( 0 );
 }
 
 static void lineLenCB( HelpTokenType type, Info *info, void *_len )
@@ -339,6 +210,49 @@ static char *find_str( char *buf )
     len = buf - str;
     str[len] = '\0';
     return( str );
+}
+
+static void fgetstring( char *buffer, int max_len, FILE *f )
+{
+    int         curr;
+    int         offset;
+    int         ch;
+
+    max_len--;
+    curr = 0;
+    offset = 0;
+    for( ;; ) {
+        ch = fgetc( f );
+        switch( ch ) {
+        case EOF:
+        case '\n':
+            *buffer++ = '\r';       /* ignore trailing spaces */
+            *buffer++ = '\n';
+            *buffer = '\0';
+            return;
+        case ' ':
+            ++ offset;
+            break;
+        case '\t':
+            offset = (offset + 8) & (-8);
+            break;
+        default:
+            while( ++curr <= offset ) {
+                *buffer++ = ' ';
+            }
+            *buffer++ = ch;
+            ++offset;
+        }
+        if( offset >= max_len ) {
+            *buffer = '\0';
+            for( ;; ) {
+                ch = fgetc( f );
+                if( ch == EOF || ch == '\n' )
+                    break;
+            }
+            return;
+        }
+    }
 }
 
 static bool pass1( FILE *fin, char **helpstr )
@@ -518,49 +432,6 @@ static void lookup_name( a_helpnode *h, char *name )
     PrintError( "Unknown help topic '%s' found in '%s'\n", name, h->name );
 }
 
-static void fgetstring( char *buffer, int max_len, FILE *f )
-{
-    int         curr;
-    int         offset;
-    int         ch;
-
-    max_len--;
-    curr = 0;
-    offset = 0;
-    for( ;; ) {
-        ch = fgetc( f );
-        switch( ch ) {
-        case EOF:
-        case '\n':
-            *buffer++ = '\r';       /* ignore trailing spaces */
-            *buffer++ = '\n';
-            *buffer = '\0';
-            return;
-        case ' ':
-            ++ offset;
-            break;
-        case '\t':
-            offset = (offset + 8) & (-8);
-            break;
-        default:
-            while( ++curr <= offset ) {
-                *buffer++ = ' ';
-            }
-            *buffer++ = ch;
-            ++offset;
-        }
-        if( offset >= max_len ) {
-            *buffer = '\0';
-            for( ;; ) {
-                ch = fgetc( f );
-                if( ch == EOF || ch == '\n' )
-                    break;
-            }
-            return;
-        }
-    }
-}
-
 static char         *nameBuf;
 static unsigned     nameBufLen;
 
@@ -651,4 +522,129 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
         }
     }
     return( true );
+}
+
+int main( int argc, char **argv )
+{
+    char        **nargv;
+    char        **sargv;
+    FILE        *fin;
+    int         fout;
+    char        *helpstr[2];
+    bool        f_swtch;
+
+    f_swtch = false;
+    helpstr[0] = NULL;
+    helpstr[1] = NULL;
+    for( argc=1, sargv=nargv=argv+1; *sargv; ++sargv ) {
+        if( ! _IsCmdSwitch( *sargv ) ) {
+            *nargv++ = *sargv;
+            argc++;
+        } else {
+            switch( (*sargv)[1] ) {
+            case 'n':
+                GenIndex = false;
+                if( f_swtch ) {
+                    PrintError( "More than one format switch found in command line\n" );
+                    Usage();
+                }
+                f_swtch = true;
+                break;
+            case 'v':
+                Verbose = true;
+            break;
+            case 'c':
+                if( (*sargv)[2] != '\0' ) {
+                    MaxCol = atoi( &(*sargv)[2] );
+                } else {
+                    if( *++sargv == NULL )
+                        Usage();
+                    MaxCol = atoi( *sargv );
+                }
+                break;
+            case 'r':
+                if( (*sargv)[2] != '\0' ) {
+                    MaxRow = atoi( &(*sargv)[2] );
+                } else {
+                    if( *++sargv == NULL )
+                        Usage();
+                    MaxRow = atoi( *sargv );
+                }
+                break;
+            case 'h':
+                if( (*sargv)[2] != '\0' ) {
+                    Height = atoi( &(*sargv)[2] );
+                } else {
+                    if( *++sargv == NULL )
+                        Usage();
+                    Height = atoi( *sargv );
+                }
+                break;
+            case 'w':
+                if( (*sargv)[2] != '\0' ) {
+                    Width = atoi( &(*sargv)[2] );
+                } else {
+                    if( *++sargv == NULL )
+                        Usage();
+                    Width = atoi( *sargv );
+                }
+                break;
+            case 'f':
+                if( f_swtch ) {
+                    PrintError( "More than one format switch found in command line\n" );
+                    Usage();
+                }
+                f_swtch = true;
+                if( (*sargv)[2] == '0' ) {
+                    GenIndex = false;
+                } else if( (*sargv)[2] == '1' ) {
+                    GenStrings = false;
+                } else if( (*sargv)[2] == '2' ) {
+                    GenStrings = true;
+                } else {
+                    Usage();
+                }
+                break;
+            default:
+                Usage();
+            break;
+            }
+        }
+    }
+
+    if( argc > 1  &&  strcmp( argv[1], "?" ) == 0 ) {
+        Usage();
+    }
+
+    if( argc != 3 ) {
+        Usage();
+    }
+
+    InitError( argv[1] );
+    fin = fopen( argv[1], "rt" );
+    if( fin == NULL ) {
+        PrintError( "Unable to open '%s' for input\n", argv[1] );
+        return( -1 );
+    }
+
+    fout = open( argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
+    if( fout == -1 ) {
+        PrintError( "Unable to open '%s' for output\n", argv[2] );
+        return( -1 );
+    }
+
+    pass1( fin, helpstr );
+    pass2( fin, fout, helpstr );
+
+    fclose( fin );
+    close( fout );
+    if( GenIndex ) {
+        fout = open( argv[2], O_WRONLY | O_BINARY );
+        WriteIndex( fout, helpstr, GenStrings );
+        close( fout );
+    }
+    FiniError();
+    HelpMemFree( helpstr[0] );
+    HelpMemFree( helpstr[1] );
+    return( 0 );
 }

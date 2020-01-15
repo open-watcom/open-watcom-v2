@@ -46,9 +46,10 @@
 #include "getopt.h"
 #include "fnutils.h"
 #include "console.h"
+#include "filerx.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
-#include "filerx.h"
 
 
 #define LINE_WIDTH      80
@@ -114,7 +115,7 @@ static int IsX( char *file );
  */
 int main( int argc, char *argv[] )
 {
-    DIR         *d;
+    DIR         *dirp;
     char        filebuff[_MAX_PATH];
     char        **todo = NULL;
     int         todocnt = 0;
@@ -191,13 +192,13 @@ int main( int argc, char *argv[] )
      */
     for( i = 1 ; i < argc ; i++ ) {
         if( FileNameWild( argv[i], rxflag ) ) {
-            d = NULL;
+            dirp = NULL;
         } else if( IsSpecialRoot( argv[i] ) ) {
-            d = opendir( strcat( strcpy( filebuff, argv[i] ), "\\" ) );
+            dirp = opendir( strcat( strcpy( filebuff, argv[i] ), "\\" ) );
         } else {
-            d = opendir( argv[i] );
+            dirp = opendir( argv[i] );
         }
-        if( d != NULL && (d->d_attr & _A_SUBDIR) ) {
+        if( dirp != NULL && (dirp->d_attr & _A_SUBDIR) ) {
             printf( "%s:\n", argv[i] );
             if( rxflag ) {
                 DoLS( argv[i], "*" );
@@ -206,15 +207,15 @@ int main( int argc, char *argv[] )
             }
             printf( "\n" );
         } else {
-            todo = realloc( todo, (todocnt+1)*sizeof( char * ) );
+            todo = realloc( todo, ( todocnt + 1 ) * sizeof( char * ) );
             if( todo == NULL ) {
                 printf( "Out of memory!\n" );
                 exit( 1 );
             }
             todo[todocnt++] = argv[i];
         }
-        if( d != NULL ) {
-            closedir( d );
+        if( dirp != NULL ) {
+            closedir( dirp );
         }
     }
 
@@ -298,16 +299,15 @@ static int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 static void DoLS( char *path, char *name )
 {
     char                filename[_MAX_PATH];
-    char                filebuff[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
+    PGROUP2             pg;
     int                 filecnt = 0;
-    DIR                 *directory;
+    DIR                 *dirp;
     struct dirent       **files = NULL;
-    struct dirent       *nextdirentry;
+    struct dirent       *dire;
     struct dirent       *file;
     int                 (*fn)(struct dirent **, struct dirent **);
     int                 i;
+    char                tmppath[_MAX_PATH];
     char                wild[_MAX_PATH];
     char                *err;
     void                *crx = NULL;
@@ -329,7 +329,7 @@ static void DoLS( char *path, char *name )
             strcat( filename, "\\" );
         }
     }
-    _splitpath2( filename, filebuff, &drive, &dir, NULL, NULL );
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     if( lflag ) {
         i = 0;
@@ -340,13 +340,13 @@ static void DoLS( char *path, char *name )
     }
 
     if( rxflag ) {
-        directory = OpenDirAll( filename, wild );
+        dirp = opendir( FileMatchDirAll( filename, tmppath, wild ) );
     } else {
-        directory = opendir( filename );
+        dirp = opendir( filename );
     }
 
 
-    if( directory == NULL ) {
+    if( dirp == NULL ) {
         printf( "File (%s) not found.\n", filename );
         return;
     }
@@ -360,20 +360,20 @@ static void DoLS( char *path, char *name )
             Die( "\"%s\": %s\n", err, wild );
         }
     }
-    while( ( nextdirentry = readdir( directory ) ) != NULL ) {
+    while( (dire = readdir( dirp )) != NULL ) {
 
-        FNameLower( nextdirentry->d_name );
+        FNameLower( dire->d_name );
         if( rxflag ) {
-            if( !FileMatch( crx, nextdirentry->d_name ) ) {
+            if( !FileMatch( crx, dire->d_name ) ) {
                 continue;
             }
         }
         if( hflag ) {
-            if( nextdirentry->d_attr & (_A_HIDDEN | _A_SYSTEM) ) {
+            if( dire->d_attr & (_A_HIDDEN | _A_SYSTEM) ) {
                 continue;
             }
         }
-        if( (nextdirentry->d_attr & _A_SUBDIR) && IsDotOrDotDot( nextdirentry->d_name ) ) {
+        if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) ) {
             continue;
         }
         files = realloc( files, ( filecnt + 1 ) * sizeof( struct dirent * ) );
@@ -385,14 +385,14 @@ static void DoLS( char *path, char *name )
         if( files[filecnt] == NULL ) {
             break;
         }
-        fname_len = (unsigned)strlen( nextdirentry->d_name );
+        fname_len = (unsigned)strlen( dire->d_name );
         if( max_fname_len < fname_len ) {
             max_fname_len = fname_len;
         }
-        memcpy( files[filecnt++], nextdirentry, sizeof( struct dirent ) );
+        memcpy( files[filecnt++], dire, sizeof( struct dirent ) );
 
     }
-    closedir( directory );
+    closedir( dirp );
     if( rxflag ) {
         FileMatchFini( crx );
     }
@@ -445,7 +445,7 @@ static void DoLS( char *path, char *name )
         maxfileperline = line_width / columnwidth;
         fileperlinecnt = 0;
         for( i = 0 ; i < filecnt ; i++ ) {
-            PrintFile( drive, dir, files[i] );
+            PrintFile( pg.drive, pg.dir, files[i] );
         }
         if( fileperlinecnt != 0 ) {
             printf( "\n" );
@@ -454,7 +454,7 @@ static void DoLS( char *path, char *name )
         if( Rflag ) {
             for( i = 0 ; i < filecnt ; i++ ) {
                 if( files[i]->d_attr & _A_SUBDIR ) {
-                    _makepath( filename, drive, dir, files[i]->d_name, NULL );
+                    _makepath( filename, pg.drive, pg.dir, files[i]->d_name, NULL );
                     printf( "\n%s:\n", filename );
                     DoLS( filename, name );
                 }
@@ -592,13 +592,11 @@ static int IsX( char *file )
 } /* IsX */
 
 static int IsSpecialRoot( char * filename )
-/**********************************/
+/*****************************************/
 // Check if 'filename' is of the form 'd:'
 {
-    char                filebuff[_MAX_PATH2];
-    char                *drive;
-    char                *dir;
+    PGROUP2     pg;
 
-    _splitpath2( filename, filebuff, &drive, &dir, NULL, NULL );
-    return( drive[0] != '\0' && dir[0] == '\0' );
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    return( pg.drive[0] != '\0' && pg.dir[0] == '\0' );
 } /* IsSpecialRoot */

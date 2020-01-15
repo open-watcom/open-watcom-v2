@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
             l = i + 1;
         }
     }
-    UIEdit->edit_screen = vs;
+    UIEdit->edit_vs = vs;
     UIEdit->edit_buffer = buffer;
     uiveditinit( vs, &UIEdit->edit_eline, UIEdit->edit_buffer, used, row, col, len );
     UIEdit->edit_eline.index = i;
@@ -175,7 +175,7 @@ void uieditpoplist( void )
 
 static int mouse( int *row, int *col )
 {
-    return( uimousepos( UIEdit->edit_screen, row, col ) == UIEdit->edit_screen
+    return( uimousepos( UIEdit->edit_vs, row, col ) == UIEdit->edit_vs
             && *row == UIEdit->edit_eline.row
             && *col >= UIEdit->edit_eline.col
             && *col - UIEdit->edit_eline.col < UIEdit->edit_eline.fldlen );
@@ -198,7 +198,7 @@ ui_event uiledit( ui_event ui_ev )
         uipushlist( full );
     }
     before = UIEdit->edit_eline.index;
-    ui_ev = uiveditevent( UIEdit->edit_screen, &UIEdit->edit_eline, ui_ev );
+    ui_ev = uiveditevent( UIEdit->edit_vs, &UIEdit->edit_eline, ui_ev );
     if( ui_ev != EV_NO_EVENT )
         UIEdit->edit_eline.update = true; // causes lots of flashing!
     if( UIEdit->edit_maxlen == 0 ) {
@@ -267,9 +267,9 @@ unsigned uiendedit( void )
     a_ui_edit           *edit;
 
     uiedittrim( UIEdit->edit_buffer );
-    UIEdit->edit_screen = NULL;
+    UIEdit->edit_vs = NULL;
     i = UIEdit->edit_eline.index - UIEdit->edit_eline.scroll;
-    uiveditfini( UIEdit->edit_screen, &UIEdit->edit_eline );
+    uiveditfini( UIEdit->edit_vs, &UIEdit->edit_eline );
     edit = UIEdit;
     UIEdit = UIEdit->next;
     uifree( edit );

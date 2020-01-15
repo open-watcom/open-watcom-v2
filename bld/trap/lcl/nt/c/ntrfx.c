@@ -283,7 +283,7 @@ trap_retval ReqRfx_getcwd( void )
 static void makeDTARFX( LPWIN32_FIND_DATA ffd, rfx_find *info, HANDLE h, unsigned nt_attribs )
 /********************************************************************************************/
 {
-    DTARFX_HANDLE_OF( info ) = (pointer_int)h;
+    DTARFX_HANDLE_OF( info ) = (pointer_uint)h;
     DTARFX_ATTRIB_OF( info ) = nt_attribs;
     info->attr = NT2DOSATTR( ffd->dwFileAttributes );
     __MakeDOSDT( &ffd->ftLastWriteTime, &info->date, &info->time );

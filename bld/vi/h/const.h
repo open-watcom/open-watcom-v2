@@ -32,9 +32,6 @@
 #ifndef _CONST_INCLUDED
 #define _CONST_INCLUDED
 
-#include "bool.h"
-
-
 #ifdef __WIN__
     #define CFG_NAME            "weditor.ini"
 #else
@@ -50,6 +47,8 @@
 #define GET_BOOL_PREFIX(b)      ((b) ? "" : "no")
 
 #define ROUNDUP( size, word )   (((size)+((word)-1)) & ~((word)-1))
+
+#define CONST_NEAR_STRING(s)    ((const char _NEAR *)(long)(s))
 
 typedef enum {
     DRIVE_TYPE_NONE,

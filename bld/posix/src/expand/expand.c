@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -135,18 +137,19 @@ static int parseList( char *list, unsigned **tabs )
     return( 0 );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
-    int         ch, arg;
+    int         ch;
     char       *list;                   // List of tab stops specified
     unsigned   *tabs;                   // List of fields to be retained.
-    int         regexp;
+    bool        arg;
+    bool        regexp;
 
     tabs   = NULL;
     list   = NULL;                      // Setup for realloc.
-    arg    = 0;                         // Flag for finding # parameter
-    regexp = 0;
+    arg    = false;                     // Flag for finding # parameter
+    regexp = false;
 
     argv = ExpandEnv( &argc, argv );
 
@@ -157,9 +160,9 @@ void main( int argc, char **argv )
         } else if( ch == '#' ) {
             list = (char *) realloc( list, strlen( OptArg )*sizeof( char ) + 1);
             strcpy( list, OptArg );
-            arg = 1;
+            arg = true;
         } else if( ch == 'X' ) {
-            regexp = 1;
+            regexp = true;
         }
     }
 
@@ -194,4 +197,5 @@ void main( int argc, char **argv )
     }
     free( tabs );
     free( list );
+    return( 0 );
 }

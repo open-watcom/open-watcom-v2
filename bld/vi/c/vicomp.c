@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include "posix.h"
 #include "specio.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -187,7 +188,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
 {
     sfile       *curr;
     FILE        *foo;
-    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    PGROUP2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
     int         token;
@@ -198,8 +199,8 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
      * get compiled file name, and make error file
      */
     if( vn[0] == '\0' ) {
-        _splitpath( fn, drive, directory, name, NULL );
-        _makepath( path, drive, directory, name, "._vi" );
+        _splitpath2( fn, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( path, pg.drive, pg.dir, pg.fname, "_vi" );
     } else {
         strcpy( path, vn );
     }

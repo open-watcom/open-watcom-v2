@@ -12,7 +12,7 @@ suppress_zc = 1
 
 objs_wini86 = mkssi.obj objcycle.obj
 objs_win386 = mkssi.obj objcycle.obj
-objs_ntaxp  = mkssi.obj
+objs_ntaxp  = mkssi.obj objcycle.obj
 objs_ntppc  = mkssi.obj
 objs_nt386  = mkssi.obj objcycle.obj
 objs_ntx64  = mkssi.obj objcycle.obj

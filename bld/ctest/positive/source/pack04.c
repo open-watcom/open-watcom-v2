@@ -30028,7 +30028,7 @@ static void test( register struct T (*f)( struct T x ) )
     if( data.q != -1 ) _fail;
 }
 
-int main() {
+int main( void ) {
     test( foo );
     _PASS;
 }

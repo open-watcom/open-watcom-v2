@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,15 +84,15 @@ typedef struct {
     size_t      bufsize;
     char        *module_name;
     size_t      module_name_len;
-    bool        didone  : 1;
+    boolbit     didone  : 1;
 } implibinfo;
 
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
     group_entry *lastgrp;       // used only for copy classes
-    bool        repos   : 1;
-    bool        copy    : 1;
+    boolbit     repos   : 1;
+    boolbit     copy    : 1;
 } grpwriteinfo;
 
 typedef void *writebuffer_fn(void *, const void *, size_t);
@@ -212,18 +213,20 @@ void FiniLoadFile( void )
     FreeSavedRelocs();
     OpenOutFiles();
     SetupImpLib();
-    if ( FmtData.output_raw ) {         // These must come first because
+    if( FmtData.output_raw ) {          // These must come first because
         BinOutput();                    //    they apply to all formats
-    } else if ( FmtData.output_hex ) {  //    and override native output
+    } else if( FmtData.output_hex ) {   //    and override native output
         HexOutput();
+#ifdef _EXE
     } else if( FmtData.type & MK_DOS ) {
         FiniDOSLoadFile();
+#endif
 #ifdef _OS2
-#if 0
+  #if 0
     } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // development temporarly on hold:
         // FiniELFLoadFile();
-#endif
+  #endif
     } else if( FmtData.type & MK_OS2_FLAT ) {
         FiniOS2FlatLoadFile();
     } else if( FmtData.type & MK_PE ) {
@@ -243,7 +246,7 @@ void FiniLoadFile( void )
     } else if( FmtData.type & MK_DOS16M ) {
         Fini16MLoadFile();
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     } else if( FmtData.type & MK_QNX ) {
         FiniQNXLoadFile();
 #endif
@@ -273,10 +276,21 @@ static seg_leader *FindStack( section *sect )
 /*******************************************/
 {
     class_entry *class;
+    seg_leader  *seg;
 
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
         if( class->flags & CLASS_STACK ) {
             return( RingFirst( class->segs ) );
+        }
+    }
+    if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+        seg = NULL;
+        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+            while( (seg = RingStep( class->segs, seg )) != NULL ) {
+                if( seg->combine == COMBINE_STACK ) {
+                    return( seg );
+                }
+            }
         }
     }
     return( NULL );
@@ -290,9 +304,11 @@ static seg_leader *StackSegment( void )
 
     seg = FindStack( Root );
     if( seg == NULL ) {
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             seg = FindStack( NonSect );
         }
+#endif
     }
     return( seg );
 }
@@ -346,9 +362,11 @@ static void DefABSSSym( const char *name )
     sym = RefISymbol( name );
     if( (sym->info & SYM_DEFINED) == 0 || (sym->info & SYM_LINK_GEN) ) {
         sym->info |= SYM_DEFINED | SYM_LINK_GEN;
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             sym->u.d.ovlstate |= OVL_NO_VECTOR | OVL_FORCE;
         }
+#endif
         SET_ADDR_UNDEFINED( sym->addr );
     }
  }
@@ -650,8 +668,8 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     }
 }
 
-bool WriteDOSGroup( group_entry *group )
-/**************************************/
+bool WriteGroup( group_entry *group )
+/***********************************/
 /* write the data for group to the loadfile */
 /* returns true if the file should be repositioned */
 {
@@ -672,12 +690,14 @@ bool WriteDOSGroup( group_entry *group )
             SeekLoad( file_loc );
             repos = true;
         }
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
-            SetOvlTableLoc( group, file_loc );
+            OvlSetTableLoc( group, file_loc );
         }
+#endif
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
-        file_loc += WriteDOSGroupLoad( group, repos );
+                &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
+        file_loc += WriteGroupLoad( group, repos );
         if( file_loc > finfo->file_loc ) {
             finfo->file_loc = file_loc;
         }
@@ -964,7 +984,7 @@ static bool WriteSegData( void *_sdata, void *_info )
     unsigned long   newpos;
     unsigned long   oldpos;
 
-    if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
+    if( !sdata->isuninit && !sdata->isdead && ( sdata->length > 0 ) ) {
         newpos = info->seg_start + sdata->a.delta;
         if( info->repos ) {
             SeekLoad( newpos );
@@ -1044,8 +1064,8 @@ static bool WriteCopyGroups( void *_seg, void *_info )
     return( false );
 }
 
-offset  WriteDOSGroupLoad( group_entry *group, bool repos )
-/*********************************************************/
+offset  WriteGroupLoad( group_entry *group, bool repos )
+/******************************************************/
 {
     grpwriteinfo     info;
     class_entry      *class;
@@ -1065,12 +1085,6 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
         Ring2Lookup( group->leaders, DoGroupLeader, &info );
     }
     return( PosLoad() - grp_start );
-}
-
-offset  WriteGroupLoad( group_entry *group )
-/******************************************/
-{
-    return( WriteDOSGroupLoad( group, false ) );
 }
 
 void FreeOutFiles( void )
@@ -1096,7 +1110,7 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
     return( (void *)dummy );
 }
 
-#define BUFF_BLOCK_SIZE (16*1024)
+#define BUFF_BLOCK_SIZE _16KB
 
 static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
 /************************************************************************************************/

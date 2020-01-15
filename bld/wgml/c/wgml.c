@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -41,12 +41,13 @@
 #else
 #include <io.h>
 #endif
-
 #include "wgml.h"
 #include "findfile.h"
 #include "banner.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*  Usage info and end program                                             */
@@ -107,16 +108,14 @@ char *get_filename_full_path( char *buff, char const * name, size_t max )
 
 static  void    set_default_extension( const char * masterfname )
 {
-    char        buff[FILENAME_MAX];
-    char    *   ext;
+    PGROUP2     pg;
 
-    _splitpath2( masterfname, buff, NULL, NULL, NULL, &ext );
-    if( strlen( ext ) > 0) {
-        if( strlen( ext ) > strlen( def_ext ) ) {
+    _splitpath2( masterfname, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    if( pg.ext[0] != '\0' ) {
+        pg.ext++;   /* skip dot character */
+        if( def_ext != NULL )
             mem_free( def_ext);
-            def_ext = mem_alloc( 1 + strlen( ext ) );
-        }
-        strcpy( def_ext, ext );
+        def_ext = mem_dupstr( pg.ext );
     }
     return;
 }

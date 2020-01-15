@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,8 +72,11 @@ static const char *FingerMsg[] = {
     banner2a( 1992 ),
     banner3,
     banner3a,
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
 #ifdef D32_NAME
     "DOS4/G Run-Time " D32_VERSION " " D32_COPYRIGHT,
+#endif
 #endif
     0
 };
@@ -107,7 +111,7 @@ void PrintfUsage( void )
     char        msg_buff[MAX_MESSAGE_SIZE];
     unsigned    count;
     char        page_text[MAX_MESSAGE_SIZE];
-    int         first_ln;
+    unsigned    first_ln;
 
     count = PrintBanner();
 #ifdef __OSI__
@@ -132,7 +136,7 @@ void PrintfUsage( void )
     }
 }
 
-void MsgPrintf( int resourceid )
+void MsgPrintf( unsigned resourceid )
 {
     char        msgbuf[MAX_MESSAGE_SIZE];
 
@@ -141,7 +145,7 @@ void MsgPrintf( int resourceid )
     printf( "%s", msgbuf );
 }
 
-void MsgPrintf1( int resourceid, const char *token )
+void MsgPrintf1( unsigned resourceid, const char *token )
 {
     char        msgbuf[MAX_MESSAGE_SIZE];
 
@@ -182,10 +186,10 @@ void MsgFini( void )
 #define TXT_WASM_BASE   (TXT_WOMP_BASE + MSG_WOMP_LAST - MSG_WOMP_BASE)
 #define TXT_USAGE_BASE  (TXT_WASM_BASE + MSG_WASM_LAST - MSG_WASM_BASE)
 
-bool MsgGet( int id, char *buffer )
+bool MsgGet( unsigned id, char *buffer )
 {
 #if defined( USE_TEXT_MSGS )
-    int index;
+    unsigned    index;
 
     if( id >= MSG_SHARE_BASE && id < MSG_SHARE_LAST ) {
         index = id - MSG_SHARE_BASE + TXT_SHARE_BASE;

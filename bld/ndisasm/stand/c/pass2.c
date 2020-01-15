@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,6 +285,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             /* fall through */
         case ORL_RELOC_TYPE_WORD_16:
         case ORL_RELOC_TYPE_WORD_32:
+        case ORL_RELOC_TYPE_WORD_32_NB:
         case ORL_RELOC_TYPE_WORD_64:
             if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
@@ -578,31 +580,6 @@ static void processDataInCode( section_ptr section, unsigned_8 *contents, struct
     data->loop = offset;
 }
 
-static ref_entry processFpuEmulatorFixup( ref_entry r_entry, dis_sec_offset loop, const char **pfixup )
-{
-    const char  *fpu_fixup;
-
-    if( r_entry != NULL && r_entry->offset == loop ) {
-        fpu_fixup = SkipRef( r_entry );
-        if( fpu_fixup != NULL ) {
-            r_entry = r_entry->next;
-            // there can be second fixup per instruction with 1 byte offset
-            // it must be skipped too, displayed is first only
-            // first one is significant, second one is segment override only
-            if( r_entry != NULL && SkipRef( r_entry ) != NULL && ( r_entry->offset == loop + 1 ) ) {
-                r_entry = r_entry->next;
-            }
-            if( (Options & PRINT_FPU_EMU_FIXUP) == 0 ) {
-                fpu_fixup = NULL;
-            }
-        }
-    } else {
-        fpu_fixup = NULL;
-    }
-    *pfixup = fpu_fixup;
-    return( r_entry );
-}
-
 num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size,
                     label_list sec_label_list, ref_list sec_ref_list )
 // perform pass 2 on one section
@@ -661,6 +638,9 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     } else {
         is_intel = IsIntelx86();
     }
+    if( is_intel ) {
+        flags.u.x86 |= DIF_X86_FPU_EMU;
+    }
     is32bit = ( size >= 0x10000 );
     for( data.loop = 0; data.loop < size; data.loop += decoded.size ) {
 
@@ -683,7 +663,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
                 break;
             }
         }
-        data.r_entry = processFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
+        data.r_entry = ProcessFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
@@ -698,6 +678,9 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
+        if( FPU_fixup == NULL ) {
+            decoded.flags.u.all &= ~DIF_X86_FPU_EMU;
+        }
         sds.offs = data.loop;
         DisDecode( &DHnd, &sds, &decoded );
         if( sec_label_list ) {
@@ -717,7 +700,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             }
         }
         DisFormat( &DHnd, &data, &decoded, DFormat, name, sizeof( name ), ops, sizeof( ops ) );
-        if( FPU_fixup != NULL ) {
+        if( FPU_fixup != NULL && (Options & PRINT_FPU_EMU_FIXUP) ) {
             if( (DFormat & DFF_ASM) == 0 ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }

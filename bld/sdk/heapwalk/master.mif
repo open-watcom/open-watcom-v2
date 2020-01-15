@@ -12,15 +12,15 @@ sys_windowed=1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include trmem.mif
 
 !include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
-!include trmem.mif
+extra_cpp_flags_ldstr = -dSPECIAL_STRING_LOADING
 
-extra_c_flags_i86   = -s-zu-zW
+extra_c_flags_i86   = -zu-zW
 
-extra_c_flags_ldstr    = -dSPECIAL_STRING_LOADING
 extra_c_flags_heapwalk = -3
 extra_c_flags_segmem2  = -3
 

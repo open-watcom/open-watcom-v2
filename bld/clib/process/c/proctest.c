@@ -55,11 +55,13 @@ int main( int argc, char **argv )
 {
     FILE                *my_stdout;
 
+    /* unused parameters */ (void)argc;
+
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
 
     printf( "Tests completed (%s).\n", ProgramName );
@@ -71,12 +73,13 @@ int main( int argc, char **argv )
 
 #else
 
-#define VERIFY( exp )   if( !(exp) ) {                                      \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
-                                    ProgramName, __LINE__, myfile );        \
-                            NumErrors++;                                    \
-                            exit( -1 );                                     \
-                        }
+#define VERIFY( exp ) \
+    if( !(exp) ) {                                          \
+        printf( "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__, myfile );            \
+        NumErrors++;                                        \
+        exit( EXIT_FAILURE );                               \
+    }
 
 
 /*
@@ -290,7 +293,7 @@ int main( int argc, char * const argv[] )
         printf( "Tests completed (%s).\n", ProgramName );
     }
 
-    return( 0 );
+    return( EXIT_SUCCESS );
 }
 
 #endif

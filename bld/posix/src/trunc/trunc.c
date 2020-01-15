@@ -39,6 +39,7 @@
 #else
     #include <sys/utime.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "argvenv.h"
 #include "getopt.h"
@@ -62,15 +63,18 @@ static const char *usageMsg[] = {
 
 int main( int argc, char **argv )
 {
-    int             i,rxflag,quietflag,ch;
+    int             i;
+    bool            rxflag;
+    bool            quietflag;
+    int             ch;
     int             fh;
     struct stat     statbuf;
     struct utimbuf  utb;
     mode_t          st_mode;
 
     argv = ExpandEnv( &argc, argv );
-    rxflag = 0;
-    quietflag = 0;
+    rxflag = false;
+    quietflag = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "qX", usageMsg );
         if( ch == -1 ) {
@@ -78,10 +82,10 @@ int main( int argc, char **argv )
         }
         switch( ch ) {
         case 'X':
-            rxflag = 1;
+            rxflag = true;
             break;
         case 'q':
-            quietflag = 1;
+            quietflag = true;
             break;
         }
     }

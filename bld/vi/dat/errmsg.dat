@@ -1,4 +1,4 @@
-140
+141
 $
 Out of memory
 File not found
@@ -139,3 +139,4 @@ Invalid Location
 No more redos
 Save Canceled
 File '%s' not found
+Internal err: FCB size corruption

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +64,11 @@ typedef struct {
     unsigned_32         column;
     unsigned_16         segment;
     unsigned_16         col;
-    bool                is_stmt         : 1;
-    bool                is_32           : 1;
-    bool                has_seg         : 1;
-    bool                basic_block     : 1;
-    bool                end_sequence    : 1;
+    boolbit             is_stmt         : 1;
+    boolbit             is_32           : 1;
+    boolbit             has_seg         : 1;
+    boolbit             basic_block     : 1;
+    boolbit             end_sequence    : 1;
 } line_state_info;
 
 typedef struct symrecinfo {
@@ -297,8 +298,7 @@ void WriteSegs( section *sect )
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
-                seg = NULL;
-                while( (seg = RingStep( class->segs, seg )) != NULL ) {
+                for( seg = NULL; (seg = RingStep( class->segs, seg )) != NULL; ) {
                     segs[count].idx = count;
                     segs[count].seg = seg;
                     count++;
@@ -342,7 +342,7 @@ void WritePubModHead( void )
 {
     char        full_name[PATH_MAX];
 
-    if ( CurrMod->f.source == NULL ) {
+    if( CurrMod->f.source == NULL ) {
         strcpy( full_name, CurrMod->name.u.ptr );
     } else {
         MakeFileName( CurrMod->f.source->infile, full_name );
@@ -484,7 +484,7 @@ static void dump_state( line_state_info *state )
         }
     }
     state->col++;
-    if( state->col == 4) {
+    if( state->col == 4 ) {
         WriteMapNL( 1 );
         state->col = 0;
     }
@@ -605,7 +605,7 @@ void WriteMapLines( void )
         }
 
         if( p - input >= length ) {
-            _LnkFree( opcode_lengths  );
+            _LnkFree( opcode_lengths );
             _LnkFree( input );
             return;
         }
@@ -613,7 +613,7 @@ void WriteMapLines( void )
         while( *p != 0 ) {
             p += strlen( (char *)p ) + 1;
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths  );
+                _LnkFree( opcode_lengths );
                 _LnkFree( input );
                 return;
             }
@@ -628,7 +628,7 @@ void WriteMapLines( void )
             p = SkipLEB128( p );
             p = SkipLEB128( p );
             if( p - input >= length ) {
-                _LnkFree( opcode_lengths  );
+                _LnkFree( opcode_lengths );
                 _LnkFree( input );
                 return;
             }
@@ -738,7 +738,7 @@ void WriteMapLines( void )
             }
         }
         WriteMapNL( 1 );
-        _LnkFree( opcode_lengths  );
+        _LnkFree( opcode_lengths );
     }
     _LnkFree( input );
 }
@@ -879,11 +879,13 @@ void MapSizes( void )
     Write32( msg_buff, StackSize );
     Msg_Get( MSG_MAP_MEM_SIZE, msg_buff );
     Write32( msg_buff, MemorySize() );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.dynamic ) {
         Msg_Get( MSG_MAP_OVL_SIZE, msg_buff );
-        Write32( msg_buff, (unsigned long)AreaSize * 16 );
+        Write32( msg_buff, (unsigned long)OvlAreaSize * 16 );
     }
-    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
+#endif
+    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
     if( FmtData.u.os2.no_stub ) {

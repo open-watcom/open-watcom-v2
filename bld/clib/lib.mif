@@ -19,7 +19,11 @@ libname_386 = $(clib_suffix_$(convention))
 !ifdef base_libname
 libname = $(base_libname)$(libname_$(processor))
 !else ifdef mthreaded
+!ifeq processor 286
 libname = clibmt$(libname_$(processor))
+!else
+libname = clib$(libname_$(processor))
+!endif
 !else ifdef dll16
 libname = clibdl$(libname_$(processor))
 !else

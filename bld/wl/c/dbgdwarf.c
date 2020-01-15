@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +241,7 @@ static void DwarfAddLines( lineinfo *info )
 {
     ln_off_pair _WCUNALIGNED *lineptr;
     unsigned_32         dwsize;
-    unsigned_8          buff[ 3 + 2 * MAX_LEB128 ];
+    unsigned_8          buff[3 + 2 * MAX_LEB128];
     dw_linenum_delta    linedelta;
     dw_addr_delta       addrdelta;
     ln_off_386          prevline;
@@ -549,7 +549,7 @@ void DwarfGenLines( lineinfo *info )
     virt_mem            vmem_addr;
     ln_off_386          prevline;
     offset              off;
-    unsigned_8          buff[ 3 + 2 * MAX_LEB128 ];
+    unsigned_8          buff[3 + 2 * MAX_LEB128];
     unsigned            size;
     segdata             *seg;
     unsigned            item_size;
@@ -686,12 +686,20 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
             tup_size = sizeof( segmented_arange_tuple );
             if( sdata->u.leader->class->flags & CLASS_STACK ) {
                 tuple->s.v2.length = StackSize;
+            } else if( sdata->u.leader->combine == COMBINE_STACK ) {
+                if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                    tuple->s.v2.length = StackSize;
+                }
             }
         } else {
             tuple->f.length = size;
             tup_size = sizeof( flat_arange_tuple );
             if( sdata->u.leader->class->flags & CLASS_STACK ) {
                 tuple->f.length = StackSize;
+            } else if( sdata->u.leader->combine == COMBINE_STACK ) {
+                if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                    tuple->f.length = StackSize;
+                }
             }
         }
         PutInfo( mod->d.d->arange.u.vm_ptr, tuple, tup_size );
@@ -766,8 +774,7 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
     unsigned_32 addsize;
 
     if( DBIClass != NULL ) {
-        for( seg = (seg_leader *)RingStep( DBIClass->segs, NULL ); seg != NULL;
-          seg = (seg_leader *)RingStep( DBIClass->segs, seg ) ) {
+        for( seg = NULL; (seg = RingStep( DBIClass->segs, seg )) != NULL; ) {
             addsize = 0;
             addidx = seg->dbgtype - DWARF_DEBUG_INFO;
             if( addidx < SECT_NUM_SECTIONS ) {
@@ -822,9 +829,11 @@ int DwarfCountDebugSections( void )
             num++;
         }
     }
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         num++;
     }
+#endif
     return( num );
 }
 

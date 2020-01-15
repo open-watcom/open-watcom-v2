@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,27 @@
 ****************************************************************************/
 
 
+#ifndef _INCLUDE_STANDARD_H
+#define _INCLUDE_STANDARD_H
+
 #include <stddef.h>
 #include <stdarg.h>
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
 #include "iopath.h"
+
+/* linker configured output formats */
+#define _EXE            0
+#define _QNX            1
+#define _OS2            2
+#define _PHARLAP        3
+#define _NOVELL         4
+#define _DOS16M         5
+#define _ELF            6
+#define _ZDOS           7
+#define _RAW            8
+#define _RDOS           9
 
 #define NLCHAR          '\n'
 #define CTRLZ           '\32'
@@ -44,6 +60,17 @@
 #else
 #define CONSTU32(x)     x ## U
 #endif
+
+#define _1KB            CONSTU32( 1024 )
+#define _2KB            (2 * _1KB)
+#define _4KB            (4 * _1KB)
+#define _5KB            (5 * _1KB)
+#define _8KB            (8 * _1KB)
+#define _16KB           (16 * _1KB)
+#define _32KB           (32 * _1KB)
+#define _64KB           (64 * _1KB)
+#define _1MB            (_1KB * _1KB)
+#define _256MB          (256 * _1MB)
 
 /* round up by a power of 2 */
 #define ROUND_UP( x, r )        (((x)+((r)-1))&~((r)-1))
@@ -98,23 +125,4 @@ typedef union {
     virt_mem_size   vm_offs;
 } virt_mem_ptr;
 
-#if defined( __QNX__ )
-    #define _EXE       0
-    #define _QNXLOAD   1
-    #define _OS2       2
-    #define _PHARLAP   3
-    #define _NOVELL    4
-    #define _DOS16M    5
-//    #define _ELF       6
-#else
-    #define _EXE       0
-    #define _QNXLOAD   1
-    #define _OS2       2
-    #define _PHARLAP   3
-    #define _NOVELL    4
-    #define _DOS16M    5
-    #define _ELF       6
-    #define _ZDOS      7
-    #define _RAW       8
-    #define _RDOS      9
- #endif
+#endif

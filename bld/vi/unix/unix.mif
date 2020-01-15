@@ -2,8 +2,7 @@ objunixtimeroot = &
     int.obj
 
 objunixsizeroot = &
-    unixcmds.obj &
-    biosunix.obj &
+    biosunix.obj
 
 objunixsize = &
     unixsys.obj &
@@ -11,7 +10,8 @@ objunixsize = &
     unixmous.obj &
     unixmain.obj &
     time.obj &
-    spawn.obj
+    spawn.obj &
+    stat2.obj
 
 extraobjs = $(objunixsize)
 extraobjsroot = $(objunixtimeroot) $(objunixsizeroot)

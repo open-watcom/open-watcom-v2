@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +135,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
                     cp = memcpy( p, text+col, length );
                     p[0] = ' ';
                 }
-                uivtextput( &wnd->screen, my_pos.y - vscroll + frame_adjust,
+                uivtextput( &wnd->vs, my_pos.y - vscroll + frame_adjust,
                             pos, WNDATTR( wnd, attr ), cp, length );
             } else {
                 length = 0;
@@ -174,7 +175,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
             }
             if( width > 0 )  {
                 area.width = width;
-                uivfill( &wnd->screen, area, WNDATTR( wnd, attr ), ' ' );
+                uivfill( &wnd->vs, area, WNDATTR( wnd, attr ), ' ' );
             }
         }
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +60,8 @@
 #define FORCE_C_COMPILE         1
 #define FORCE_CPP_COMPILE       2
 
+
+#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 /*
  * Function prototypes.

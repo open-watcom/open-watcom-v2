@@ -58,99 +58,99 @@
 static a_dialog_header *FirstDialog = NULL;
 static a_dialog_header *LastDialog = NULL;
 
-a_dialog_header *FindDialogByName( const char *dlg_name )
-/*******************************************************/
+a_dialog_header *FindDialogByName( const char *name )
+/***************************************************/
 {
-    a_dialog_header *d;
+    a_dialog_header *dlg;
 
-    for( d = FirstDialog; d != NULL; d = d->next ) {
-        if( stricmp( d->name, dlg_name ) == 0 ) {
+    for( dlg = FirstDialog; dlg != NULL; dlg = dlg->next ) {
+        if( stricmp( dlg->name, name ) == 0 ) {
             break;
         }
     }
-    return( d );
+    return( dlg );
 }
 
-static void FreeDialog( a_dialog_header *tmp_dialog )
-/***************************************************/
+static void FreeDialog( a_dialog_header *dlg )
+/********************************************/
 {
     int i;
 
-    GUIMemFree( tmp_dialog->name );
-    GUIMemFree( tmp_dialog->condition );
-    GUIMemFree( tmp_dialog->title );
-    if( !tmp_dialog->def_dlg ) {            /* free non-default controls */
-        for( i = 0; tmp_dialog->pVariables[i] != NO_VAR; ++i ) {
-            if( tmp_dialog->pConditions[i] != NULL ) {
-                GUIMemFree( tmp_dialog->pConditions[i] );
+    GUIMemFree( dlg->name );
+    GUIMemFree( dlg->condition );
+    GUIMemFree( dlg->title );
+    if( !dlg->def_dlg ) {            /* free non-default controls */
+        for( i = 0; dlg->pVariables[i] != NO_VAR; ++i ) {
+            if( dlg->pConditions[i] != NULL ) {
+                GUIMemFree( dlg->pConditions[i] );
             }
         }
-        for( i = 0; i < tmp_dialog->num_controls; i++ ) {
-            GUIMemFree( (void *)tmp_dialog->controls[i].text );
-            if( tmp_dialog->controls_ext[i].pVisibilityConds != NULL ) {
-                GUIMemFree( tmp_dialog->controls_ext[i].pVisibilityConds );
+        for( i = 0; i < dlg->num_controls; i++ ) {
+            GUIMemFree( (void *)dlg->controls[i].text );
+            if( dlg->controls_ext[i].pVisibilityConds != NULL ) {
+                GUIMemFree( dlg->controls_ext[i].pVisibilityConds );
             }
         }
-        GUIMemFree( tmp_dialog->controls_ext );
-        GUIMemFree( tmp_dialog->controls );
+        GUIMemFree( dlg->controls_ext );
+        GUIMemFree( dlg->controls );
     }
-    GUIMemFree( tmp_dialog );
+    GUIMemFree( dlg );
 }
 
-a_dialog_header *AddNewDialog( const char *dlg_name )
-/***************************************************/
+a_dialog_header *AddNewDialog( const char *name )
+/***********************************************/
 // Add new dialogs to front of linked list.
 // Delete default dialogs if specified.
 {
-    a_dialog_header *tmp_dialog;
-    a_dialog_header *new_dialog;
+    a_dialog_header *old_dlg;
+    a_dialog_header *new_dlg;
 
-    new_dialog = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
-    memset( new_dialog, '\0', sizeof( *new_dialog ) );
-    new_dialog->name = GUIStrDup( dlg_name, NULL );
-    new_dialog->adjusted = false;
-    new_dialog->def_dlg = false;
-    new_dialog->defaults_set = false;
-    new_dialog->ret_val = DLG_NEXT;
-    new_dialog->any_check = NO_VAR;
-    new_dialog->pVariables[0] = NO_VAR;
-    new_dialog->pConditions[0] = NULL;
+    new_dlg = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
+    memset( new_dlg, '\0', sizeof( *new_dlg ) );
+    new_dlg->name = GUIStrDup( name, NULL );
+    new_dlg->adjusted = false;
+    new_dlg->def_dlg = false;
+    new_dlg->defaults_set = false;
+    new_dlg->ret_val = DLG_NEXT;
+    new_dlg->any_check = NO_VAR;
+    new_dlg->pVariables[0] = NO_VAR;
+    new_dlg->pConditions[0] = NULL;
 
     /* check if old dialog existed */
-    tmp_dialog = FindDialogByName( dlg_name );
-    if( tmp_dialog != NULL ) {
-        new_dialog->next = tmp_dialog->next;
-        new_dialog->prev = tmp_dialog->prev;
-        if( new_dialog->next != NULL ) {
-            new_dialog->next->prev = new_dialog;
+    old_dlg = FindDialogByName( name );
+    if( old_dlg != NULL ) {
+        new_dlg->next = old_dlg->next;
+        new_dlg->prev = old_dlg->prev;
+        if( new_dlg->next != NULL ) {
+            new_dlg->next->prev = new_dlg;
         }
-        if( new_dialog->prev != NULL ) {
-            new_dialog->prev->next = new_dialog;
+        if( new_dlg->prev != NULL ) {
+            new_dlg->prev->next = new_dlg;
         }
         if( FirstDialog == NULL ) {
-            FirstDialog = new_dialog;
-            LastDialog = new_dialog;
+            FirstDialog = new_dlg;
+            LastDialog = new_dlg;
         }
-        if( FirstDialog == tmp_dialog ) {
-            FirstDialog = new_dialog;
+        if( FirstDialog == old_dlg ) {
+            FirstDialog = new_dlg;
         }
-        if( LastDialog == tmp_dialog ) {
-            LastDialog = new_dialog;
+        if( LastDialog == old_dlg ) {
+            LastDialog = new_dlg;
         }
-        FreeDialog( tmp_dialog );        // replace old default dialog
+        FreeDialog( old_dlg );        // replace old default dialog
     } else {
-        new_dialog->prev = LastDialog;
-        new_dialog->next = NULL;
+        new_dlg->prev = LastDialog;
+        new_dlg->next = NULL;
         if( FirstDialog == NULL ) {
-            FirstDialog = new_dialog;
-            LastDialog = new_dialog;
+            FirstDialog = new_dlg;
+            LastDialog = new_dlg;
         } else {
-            LastDialog->next = new_dialog;
+            LastDialog->next = new_dlg;
         }
-        LastDialog = new_dialog;
+        LastDialog = new_dlg;
     }
 
-    return( new_dialog );
+    return( new_dlg );
 }
 
 bool CheckDialog( const char *name )
@@ -182,10 +182,10 @@ dlg_state DoDialogWithParent( gui_window *parent, const char *name )
 
     dlg = FindDialogByName( name );
     if( dlg == NULL ) {
-        return( DLG_CAN );
+        return( DLG_CANCEL );
     }
     return_state = DoDialogByPointer( parent, dlg );
-    if( return_state == DLG_CAN ) {
+    if( return_state == DLG_CANCEL ) {
         // This block is a kludgy hack which allows a dialog to
         // return DLG_DONE when the ESC key is pressed, if it has a
         // DONE button rather than a CANCEL button.
@@ -225,12 +225,12 @@ dlg_state DoDialog( const char *name )
 void FreeDefaultDialogs( void )
 /*****************************/
 {
-    a_dialog_header *d;
+    a_dialog_header *dlg;
     a_dialog_header *next;
 
-    for( d = FirstDialog; d != NULL; d = next ) {
-        next = d->next;
-        FreeDialog( d );
+    for( dlg = FirstDialog; dlg != NULL; dlg = next ) {
+        next = dlg->next;
+        FreeDialog( dlg );
     }
     FirstDialog = NULL;
     LastDialog = NULL;

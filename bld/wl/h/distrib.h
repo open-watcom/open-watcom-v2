@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,16 @@
 ****************************************************************************/
 
 
-extern section **       SectOvlTab;
-
-extern void             InitModTable( void );
-extern void             AddModTable( mod_entry *, unsigned_16 );
-extern void             InitArcBuffer( mod_entry * );
-extern void             SetSegments( void );
-extern void             FreeDistStuff( void );
-extern void             ProcDistMods( void );
-extern unsigned_16      LowestAncestor( unsigned_16, section * );
+extern void             DistribInitMods( void );
+extern void             DistribAddMod( mod_entry *, overlay_ref );
+extern void             InitArcList( mod_entry * );
+extern void             DistribSetSegments( void );
+extern void             FreeDistribSupp( void );
+extern void             DistribProcMods( void );
+extern overlay_ref      LowestAncestor( overlay_ref, section * );
 extern void             DefDistribSym( symbol * );
 extern void             RefDistribSym( symbol * );
-extern void             FinishArcs( mod_entry * );
-extern void             DistIndCall( symbol * );
-extern void             ResetDistrib( void );
+extern void             DistribFinishMod( mod_entry * );
+extern void             DistribIndirectCall( symbol * );
+extern void             ResetDistribSupp( void );
+extern void             DistribNumberSections( void );

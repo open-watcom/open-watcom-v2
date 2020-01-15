@@ -13,6 +13,7 @@ target_os  = os2v2
 srv     = lcl
 name    = core
 which   = TRAP
+core_only = 1
 
 extra_cppflags = -DELFCORE
 extra_cflags = -bd
@@ -25,7 +26,7 @@ extra_objs = &
     supp.obj &
     core.obj
 
-inc_dirs = -I"$(trap_dir)/lcl/elfcore/h"
+inc_dirs = -I"../h" -I"$(trap_dir)/lcl/elfcore/h"
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

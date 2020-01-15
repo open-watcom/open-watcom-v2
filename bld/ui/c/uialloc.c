@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,11 @@ static int  UIMemOpened = 0;
 
 static void UIMemPrintLine( void *parm, const char *buff, size_t len )
 {
-    fwrite( buff, 1, len, UIMemFileHandle );
+    /* unused parameters */ (void)parm; (void)len;
+
+    if( UIMemFileHandle != NULL ) {
+        fprintf( UIMemFileHandle, "%s\n", buff );
+    }
 }
 #endif
 
@@ -72,7 +77,7 @@ void UIAPI UIMemOpen( void )
     if( !UIMemOpened ) {
         UIMemFileHandle = stderr;
         UIMemHandle = _trmem_open( malloc, free, realloc, NULL,
-            &UIMemFileHandle, UIMemPrintLine,
+            UIMemFileHandle, UIMemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 
@@ -92,6 +97,7 @@ void UIAPI UIMemClose( void )
     _trmem_close( UIMemHandle );
     if( UIMemFileHandle != stderr ) {
         fclose( UIMemFileHandle );
+        UIMemFileHandle = NULL;
     }
 #endif
 }

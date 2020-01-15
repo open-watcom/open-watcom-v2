@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
         if( lib->flags & STAT_LIB_FIXED ) {
             lp->modinfo |= MOD_FIXED;
         }
-        AddModTable( lp, lib->ovlref );
+        DistribAddMod( lp, lib->ovlref );
     } else {
         for( prev = &LibModules; *prev != NULL; ) { /*  find end of list */
             prev = &(*prev)->n.next_mod;
@@ -78,7 +79,7 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
     ObjPass1();
     CacheClose( lib, 1 );
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        FinishArcs( lp );
+        DistribFinishMod( lp );
     }
     if( FindLibTrace( lp ) ) {
         TraceSymList( lp->publist );
@@ -86,7 +87,7 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
     return( true );
 }
 
-#define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
+#define PREFIX_LEN (sizeof( ImportSymPrefix ) - 1)
 
 bool LibFind( const char *name, bool old_sym )
 /*********************************************/

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,8 @@
 #include "cmdlnprs.h"
 
 
+#include "parseext.c"
+
 /*
  * Initialize the OPT_STORAGE structure.
  */
@@ -63,51 +66,6 @@ void FiniParse( OPT_STORAGE *cmdOpts )
 /************************************/
 {
     OPT_FINI( cmdOpts );
-}
-
-
-/*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str, char quote )
-/*************************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-    size_t              len;
-    bool                add_quote = false;
-
-    len = strlen(str);
-    if( quote != '\0' ) {
-        for( ;; ) {
-            if( str[0] == '"'  && str[len - 1] == '"'  )
-                break;
-            if( str[0] == '\'' && str[len - 1] == '\'' )
-                break;
-            len += 2;
-            add_quote = true;
-        }
-    }
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + len );
-    if( add_quote ) {
-        buf->data[0] = quote;
-        strcpy( &(buf->data[1]), str );
-        buf->data[len - 1] = quote;
-        buf->data[len] = '\0';
-    } else {
-        strcpy( buf->data, str );
-    }
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
 }
 
 
@@ -168,7 +126,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
             UngetCharContext();
             str = CmdScanString();
             add_string( &(cmdOpts->t010101010101_value), str, '\0' );
-            cmdOpts->t010101010101 = 1;
+            cmdOpts->t010101010101 = true;
         }
         (*itemsParsed)++;
     }
@@ -182,8 +140,8 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     DisableWarnings( true );
 }
 
@@ -192,26 +150,11 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*
  * Takes care of the t010101010101 option.
  */
-static int parse_t010101010101( OPT_STRING **p )
-/**********************************************/
+static bool parse_t010101010101( OPT_STRING **p )
+/***********************************************/
 {
     p = p;
-    return( 1 );
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-void OPT_CLEAN_STRING( OPT_STRING **p )
-/*************************************/
-{
-    OPT_STRING *        s;
-
-    while( (s = *p) != NULL ) {
-        *p = s->next;
-        FreeMem( s );
-    }
+    return( true );
 }
 
 
@@ -221,9 +164,9 @@ void OPT_CLEAN_STRING( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
                             char quote )
-/**********************************************************************/
+/***********************************************************************/
 {
     char *              str;
 
@@ -231,19 +174,20 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s option requires a filename", optName );
-        return( 0 );
+        return( false );
     }
-    if( onlyOne ) OPT_CLEAN_STRING( p );
+    if( onlyOne )
+        OPT_CLEAN_STRING( p );
     add_string( p, str, quote );
-    return( 1 );
+    return( true );
 }
 
 
 /*
  * Parse the /F option.
  */
-static int parse_F( OPT_STRING **p )
-/******************************************/
+static bool parse_F( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "F", true, '\0' ) );
 }
@@ -251,8 +195,8 @@ static int parse_F( OPT_STRING **p )
 /*
  * Parse the /X option.
  */
-static int parse_X( OPT_STRING **p )
-/******************************************/
+static bool parse_X( OPT_STRING **p )
+/***********************************/
 {
     return( do_string_parse( p, "X", true, '\0' ) );
 }
@@ -260,19 +204,19 @@ static int parse_X( OPT_STRING **p )
 /*
  * Parse combining parameters
  */
-static int parse_combining( OPT_STORAGE *cmdOpts, int x )
-/******************************************/
+static bool parse_combining( OPT_STORAGE *cmdOpts, int x )
+/********************************************************/
 {
     char    ch;
 
-    x = x;
+    /* unused parammeters */ (void)x;
 
     /*
      * Make sure -L is translated correctly to -NOLOGO if it is
      * a first (or the only) parameter
      */
     if( cmdOpts->l ) {
-        cmdOpts->nologo = 1;
+        cmdOpts->nologo = true;
     }
 
     /* scan for combined options */
@@ -281,40 +225,41 @@ static int parse_combining( OPT_STORAGE *cmdOpts, int x )
         ch = (char)toupper( (unsigned char)GetCharContext() );
 
         switch( ch ) {
-        case 'A':  cmdOpts->a = 1; break;      /* gml-option: A */
-        case 'B':  cmdOpts->b = 1; break;      /* gml-option: B */
-        case 'C':  cmdOpts->c = 1; break;      /* gml-option: C */
-        case 'D':  cmdOpts->d = 1; break;      /* gml-option: D */
-        case 'E':  cmdOpts->e = 1; break;      /* gml-option: E */
-        case 'I':  cmdOpts->i = 1; break;      /* gml-option: I */
-        case 'K':  cmdOpts->k = 1; break;      /* gml-option: K */
-        case 'L':  cmdOpts->nologo = 1; break; /* gml-option: L */
-        case 'N':  cmdOpts->n = 1; break;      /* gml-option: N */
-        case 'P':  cmdOpts->p = 1; break;      /* gml-option: P */
-        case 'Q':  cmdOpts->q = 1; break;      /* gml-option: Q */
-        case 'R':  cmdOpts->r = 1; break;      /* gml-option: R */
-        case 'S':  cmdOpts->s = 1; break;      /* gml-option: S */
-        case 'T':  cmdOpts->t = 1; break;      /* gml-option: T */
-        case 'U':  cmdOpts->u = 1; break;      /* gml-option: U */
-        case 'Y':  cmdOpts->y = 1; break;      /* gml-option: Y */
+        case 'A':  cmdOpts->a = true; break;      /* gml-option: A */
+        case 'B':  cmdOpts->b = true; break;      /* gml-option: B */
+        case 'C':  cmdOpts->c = true; break;      /* gml-option: C */
+        case 'D':  cmdOpts->d = true; break;      /* gml-option: D */
+        case 'E':  cmdOpts->e = true; break;      /* gml-option: E */
+        case 'I':  cmdOpts->i = true; break;      /* gml-option: I */
+        case 'K':  cmdOpts->k = true; break;      /* gml-option: K */
+        case 'L':  cmdOpts->nologo = true; break; /* gml-option: L */
+        case 'N':  cmdOpts->n = true; break;      /* gml-option: N */
+        case 'P':  cmdOpts->p = true; break;      /* gml-option: P */
+        case 'Q':  cmdOpts->q = true; break;      /* gml-option: Q */
+        case 'R':  cmdOpts->r = true; break;      /* gml-option: R */
+        case 'S':  cmdOpts->s = true; break;      /* gml-option: S */
+        case 'T':  cmdOpts->t = true; break;      /* gml-option: T */
+        case 'U':  cmdOpts->u = true; break;      /* gml-option: U */
+        case 'Y':  cmdOpts->y = true; break;      /* gml-option: Y */
         case '\0': break;
         default:
             /* if character is space, return without an error */
             if( isspace( ch ) )
-                return 1;
+                return( true );
 
-            return 0;
+            return( false );
         }
     } while( ch != '\0' );
 
     /* all went nicely, return success */
-    return 1;
+    return( true );
 }
 
 /*
  * Parse the /passwopts option.
  */
-static int parse_passwopts( OPT_STRING **p )
+static bool parse_passwopts( OPT_STRING **p )
+/*******************************************/
 {
     char *str;
     char *src;
@@ -323,14 +268,14 @@ static int parse_passwopts( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
-        return 0;
+        return( false );
     }
 
     str = CmdScanString();
     if (str == NULL)
     {
         FatalError("/passwopts requires an argument");
-        return 0;
+        return( false );
     }
 
     /*
@@ -346,14 +291,14 @@ static int parse_passwopts( OPT_STRING **p )
         if (*src != '\"')
         {
             FatalError("/passwopts argument is missing closing quote");
-            return 0;
+            return( false );
         }
 
         *dst = 0x00;
     }
 
-    add_string(p, str, '\0');
-    return 1;
+    add_string( p, str, '\0' );
+    return( true );
 } /* parse_passwopts() */
 
 

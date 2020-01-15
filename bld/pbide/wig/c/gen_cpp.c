@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +48,12 @@
 #include "list.h"
 #include "filelist.h"
 #include "gen_cpp.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
-static BOOL generateHeaderFile( sru_file *sru );
+static bool generateHeaderFile( sru_file *sru );
 static void generateCoverFile( sru_file *sru );
 static void generateCodeFile( sru_file *sru );
 
@@ -111,7 +114,7 @@ static void generateCodeFile( sru_file *sru );
 "                    \"jmp short L1\" \\\n"\
 "                    'W' 'V' 'I' 'D' 'E' 'O' \\\n"\
 "                    \"L1:\"\n"\
-"            Int3WithSignature( \"DLL Loaded\" );\n"\
+"           Int3WithSignature( \"DLL Loaded\" );\n"\
 "        }\n"\
 "    }\n"\
 "    return( 1 );\n"\
@@ -201,19 +204,20 @@ typedef struct {
 static char     lineBuffer[LINE_SIZE];
 static char     lineBuffer2[LINE_SIZE];
 
-static void genTmpFName( char *file, char *buf ) {
-/*************************************************/
-
-    char        fname[ _MAX_FNAME ];
-    char        dir[ _MAX_DIR ];
-    char        drive[ _MAX_DRIVE ];
+static void genTmpFName( const char *file, char *buf )
+/****************************************************/
+{
+    PGROUP2     pg;
+    char        fname[9];
     unsigned    i;
 
-    _splitpath( file, drive, dir, NULL, NULL );
-    for( i=0 ; i < 0x1000; i++ ) {
-        sprintf( fname, "TMP%03X", i );
-        _makepath( buf, drive, dir, fname, ".tmp" );
-        if( access( buf, F_OK ) ) break;
+    _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    for( i = 0 ; i < 0x1000; i++ ) {
+        sprintf( fname, "tmp%03x", i );
+        _makepath( buf, pg.drive, pg.dir, fname, TMP_EXT );
+        if( access( buf, F_OK ) ) {
+            break;
+        }
     }
 }
 
@@ -229,17 +233,24 @@ static void generateLibMain( void ) {
         return;
     }
     fp = WigOpenFile( fname, "wt" );
-    if( !fp ) {
+    if( fp == NULL ) {
         Error( FILE_OPEN_ERR, fname );
     }
 
-    if( fputs( LIBMAIN_HEADER, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( IF_NT, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( DLLMAIN_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( ELSE, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( LIBMAIN_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( WEP_FUNC, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
-    if( fputs( END_IF, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
+    if( fputs( LIBMAIN_HEADER, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( IF_NT, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( DLLMAIN_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( ELSE, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( LIBMAIN_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( WEP_FUNC, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
+    if( fputs( END_IF, fp ) == EOF )
+        Error( FILE_WRITE_ERR, fname );
     WigCloseFile( fp );
 }
 
@@ -250,28 +261,28 @@ void GenerateCPPFiles( sru_file *sru ) {
     assert( sru );
 
     generateLibMain();
-    if( !(Options & OPT_GEN_C_CODE) ) {
-        if( !generateHeaderFile( sru ) ) return;
+    if( (Options & OPT_GEN_C_CODE) == 0 ) {
+        if( !generateHeaderFile( sru ) )
+            return;
         generateCoverFile( sru );
     }
     generateCodeFile( sru );
 }
 
 
-static void outInclude( FileInfo *fp ) {
-/**************************************/
-
-    char fname[ _MAX_FNAME ];
-    char ext[ _MAX_EXT ];
+static void outInclude( FileInfo *fp )
+/************************************/
+{
+    PGROUP2     pg;
 
     assert( fp );
 
     if( fprintf( fp->fp, SYSTEM_INCLUDE, PBDLL_H ) < 0 ) {
         Error( FILE_WRITE_ERR, fp->name );
     }
-    if( !(Options & OPT_GEN_C_CODE ) ) {
-        _splitpath( GetHeaderFile(), NULL, NULL, fname, ext );
-        if( fprintf( fp->fp, "\n#include \"%s%s\"\n", fname, ext ) < 0 ) {
+    if( (Options & OPT_GEN_C_CODE) == 0 ) {
+        _splitpath2( GetHeaderFile(), pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        if( fprintf( fp->fp, "\n#include \"%s%s\"\n", pg.fname, pg.ext ) < 0 ) {
             Error( FILE_WRITE_ERR, fp->name );
         }
     }
@@ -280,9 +291,9 @@ static void outInclude( FileInfo *fp ) {
 #define MANGLE_LEN      4
 #define NON_MANGLE_LEN  ( PB_NAME_LEN - MANGLE_LEN )
 
-void GenerateCoverFnName( char *uoname, char *fnname, char *buf ) {
-/******************************************************************/
-
+void GenerateCoverFnName( const char *uoname, const char *fnname, char *buf )
+/***************************************************************************/
+{
     unsigned    len1;
     unsigned    len2;
     char        mangle[MANGLE_LEN + 1];
@@ -304,8 +315,8 @@ void GenerateCoverFnName( char *uoname, char *fnname, char *buf ) {
     }
 }
 
-static void outPutFunc( const sp_header *sp, FileInfo *fp, char *class, int typ, char *line )
-/*******************************************************************************************/
+static void outPutFunc( const sp_header *sp, FileInfo *fp, const char *class, int typ, char *line )
+/*************************************************************************************************/
 /* Construct and spit out an appropriate function header */
 {
     var_rec     *parm;
@@ -326,31 +337,27 @@ static void outPutFunc( const sp_header *sp, FileInfo *fp, char *class, int typ,
     parm = sp->parm_list;
     switch( typ ) {
     case( O_CLASS_PROTO ):
-        sprintf( buffer, "virtual %s %s( ", ConvertRetType( sp->typ_id ),
-                 sp->name );
+        sprintf( buffer, "virtual %s %s( ", ConvertRetType( sp->typ_id ), sp->name );
         break;
     case( O_PROTOTYPE ):
     case( O_FULL_FUNC ):
         GenerateCoverFnName( class, sp->name, fnname );
         if( Options & OPT_GEN_C_CODE ) {
-            sprintf( buffer, "%s PB_EXPORT %s( ",
-                        ConvertRetType( sp->typ_id ), fnname );
+            sprintf( buffer, "%s PB_EXPORT %s( ", ConvertRetType( sp->typ_id ), fnname );
         } else {
-            len = sprintf( buffer, "%s PB_EXPORT %s( %s *this_hdl",
-                           ConvertRetType( sp->typ_id ), fnname, class );
+            len = sprintf( buffer, "%s PB_EXPORT %s( %s *this_hdl", ConvertRetType( sp->typ_id ), fnname, class );
             if( parm && ( strcmp( parm->name, THIS_HDL ) || parm->next ) ) {
                 sprintf( buffer + len, COMMA_DELIM );
             }
         }
         break;
     case( O_CLASS_FUNC ):
-        sprintf( buffer, "%s %s::%s( ", ConvertRetType( sp->typ_id ), class,
-                 sp->name);
+        sprintf( buffer, "%s %s::%s( ", ConvertRetType( sp->typ_id ), class, sp->name);
         break;
     default:
-        assert( FALSE );
+        assert( false );
     }
-    if( line ) {
+    if( line != NULL ) {
         strcpy( line, buffer );
     }
     if( fprintf( fp->fp, buffer ) < 0 ) {
@@ -358,19 +365,19 @@ static void outPutFunc( const sp_header *sp, FileInfo *fp, char *class, int typ,
     }
 
     /* remove the this_hdl parm from the list if necessary */
-    if( parm && !strcmp( parm->name, THIS_HDL ) ) {
+    if( parm != NULL && strcmp( parm->name, THIS_HDL ) == 0 ) {
         parm = parm->next;
     }
 
     /* process the parameters */
-    while( parm ) {
+    while( parm != NULL ) {
         ConvertParmType( buffer, parm->name, parm->typ_id, parm->array );
         len = strlen( buffer );
         parm = parm->next;
-        if( parm ) {
+        if( parm != NULL ) {
             sprintf( buffer + len, COMMA_DELIM );
         }
-        if( line ) {
+        if( line != NULL ) {
             strcat( line, buffer );
         }
         if( fprintf( fp->fp, buffer ) < 0 ) {
@@ -389,9 +396,9 @@ static void outPutFunc( const sp_header *sp, FileInfo *fp, char *class, int typ,
         sprintf( buffer, TERM_START_FUNC );
         break;
     default:
-        assert( FALSE );
+        assert( false );
     }
-    if( line ) {
+    if( line != NULL ) {
         strcat( line, buffer );
     }
     if( fprintf( fp->fp, buffer ) < 0 ) {
@@ -425,7 +432,8 @@ static void outCoverCall( sp_header *sp, FileInfo *fp ) {
     }
 
     /* indent code and begin start of call */
-    if( fputs( INDENT, fp->fp ) == EOF )  Error( FILE_WRITE_ERR, fp->name );
+    if( fputs( INDENT, fp->fp ) == EOF )
+        Error( FILE_WRITE_ERR, fp->name );
     if( _BaseType( sp->typ_id ) ) {
         if( fputs( START_RETURN, fp->fp ) == EOF ) {
             Error( FILE_WRITE_ERR, fp->name );
@@ -439,17 +447,17 @@ static void outCoverCall( sp_header *sp, FileInfo *fp ) {
     parm = sp->parm_list;
 
     /* remove the this_hdl parm from the list if necessary */
-    if( parm && !strcmp( parm->name, THIS_HDL ) ) {
+    if( parm != NULL && strcmp( parm->name, THIS_HDL ) == 0 ) {
         parm = parm->next;
     }
 
     /* dump the parms */
-    while( parm ) {
+    while( parm != NULL ) {
         if( fprintf( fp->fp, "%s", parm->name ) < 0 ) {
             Error( FILE_WRITE_ERR, fp->name );
         }
         parm = parm->next;
-        if( parm ) {
+        if( parm != NULL ) {
             if( fprintf( fp->fp, COMMA_DELIM ) < 0 ) {
                 Error( FILE_WRITE_ERR, fp->name );
             }
@@ -483,10 +491,9 @@ static void generateCoverFile( sru_file *sru ) {
     /* Open file */
     fpd.name = GetCoverFile();
     fpd.fp = WigOpenFile( fpd.name, "wt" );
-    if( !fpd.fp ) {
+    if( fpd.fp == NULL ) {
         Error( FILE_OPEN_ERR, fpd.name );
     }
-    curr = sru->cpp_prots;
 
     /* dump preliminary data */
     outHeader( &fpd );
@@ -500,13 +507,12 @@ static void generateCoverFile( sru_file *sru ) {
     classname = GetClass();
 
     /* dump prototypes */
-    while( curr ) {
+    for( curr = sru->cpp_prots; curr != NULL; curr = curr->link ) {
         if( !curr->data.sp.fake ) {
             outPutFunc( &(curr->data.sp), &fpd, classname, O_PROTOTYPE, NULL );
         }
-        curr = curr->link;
     }
-    if( !(Options & OPT_GEN_C_CODE) ) {
+    if( (Options & OPT_GEN_C_CODE) == 0 ) {
         if( fprintf( fpd.fp, CONS_DECL_TMPLT, classname, sru->con_name ) < 0 ) {
             Error( FILE_WRITE_ERR, fpd.name );
         }
@@ -520,17 +526,15 @@ static void generateCoverFile( sru_file *sru ) {
     }
 
     /* dump function calls */
-    curr = sru->cpp_prots;
-    while( curr ) {
+    for( curr = sru->cpp_prots; curr != NULL; curr = curr->link ) {
         if( !curr->data.sp.fake ) {
             outPutFunc( &(curr->data.sp), &fpd, classname, O_FULL_FUNC, NULL );
             outCoverCall( &(curr->data.sp), &fpd );
         }
-        curr = curr->link;
     }
 
     /* generate constructors if necessary */
-    if( !(Options & OPT_GEN_C_CODE) ) {
+    if( (Options & OPT_GEN_C_CODE) == 0 ) {
         rc = fprintf( fpd.fp, "%s *PB_EXPORT %s() {\n"
                               "    return( new %s );\n"
                               "}\n\n", classname, sru->con_name, classname );
@@ -550,14 +554,12 @@ static void generateCoverFile( sru_file *sru ) {
 }
 
 
-static void transferUserData( FileInfo *fpi, FileInfo *fpo, BOOL look,
-                              char *name ) {
-/***************************************************************************/
-
+static void transferUserData( FileInfo *fpi, FileInfo *fpo, bool look, char *name )
+/*********************************************************************************/
 /* transfers user code from input file to output file and stops if necessary
    at WIG code begin labels
 */
-
+{
     char        *cmp;
 
     assert( fpi );
@@ -577,8 +579,8 @@ static void transferUserData( FileInfo *fpi, FileInfo *fpo, BOOL look,
             }
             break;
         }
-        if( look && !strcmp( lineBuffer, cmp ) ) {
-                break;
+        if( look && strcmp( lineBuffer, cmp ) == 0 ) {
+            break;
         }
         if( fputs( lineBuffer, fpo->fp ) == EOF ) {
             Error( FILE_WRITE_ERR, fpo->name );
@@ -586,7 +588,7 @@ static void transferUserData( FileInfo *fpi, FileInfo *fpo, BOOL look,
     }
 }
 
-static BOOL doOutputDataMembers( FileInfo *fpo, statement *curr, char *prefix,
+static bool doOutputDataMembers( FileInfo *fpo, statement *curr, char *prefix,
                                 id_type access, char *header ) {
 /**********************************************************************/
 
@@ -594,37 +596,37 @@ static BOOL doOutputDataMembers( FileInfo *fpo, statement *curr, char *prefix,
     VarInfo     *info;
     unsigned    var_cnt;
     unsigned    i;
-    BOOL        need_header;
+    bool        need_header;
     char        arraydesc[30];
     int         rc;
 
-    need_header = TRUE;
+    need_header = true;
     type_fmt_len = 30;
     type_fmt_len -= strlen( prefix );
-    if( type_fmt_len < 0 ) type_fmt_len = 0;
+    if( type_fmt_len < 0 )
+        type_fmt_len = 0;
     while( curr != NULL ) {
         if( !curr->data.vars.fake && curr->data.vars.access_id == access ) {
             if( need_header && header != NULL ) {
                 if( fputs( header, fpo->fp ) == EOF ) {
                     Error( FILE_WRITE_ERR, fpo->name );
                 }
-                need_header = FALSE;
+                need_header = false;
             }
             var_cnt = GetListCount( curr->data.vars.varlist );
-            for( i=0; i < var_cnt; i++ ) {
+            for( i = 0; i < var_cnt; i++ ) {
                 info = GetListItem( curr->data.vars.varlist, i );
                 if( !info->fake ) {
                     if( info->flags & VAR_ARRAY ) {
-                        ConvertVarType( lineBuffer, arraydesc,
-                                        curr->data.vars.typ_id,
-                                        &info->array );
+                        ConvertVarType( lineBuffer, arraydesc, curr->data.vars.typ_id, &info->array );
                     } else {
-                        ConvertVarType( lineBuffer, arraydesc,
-                                        curr->data.vars.typ_id, NULL );
+                        ConvertVarType( lineBuffer, arraydesc, curr->data.vars.typ_id, NULL );
                     }
-                    rc = fprintf( fpo->fp, "%s%-*s %s%s;\n", prefix, type_fmt_len,
-                             lineBuffer, info->name, arraydesc );
-                    if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+                    rc = fprintf( fpo->fp, "%s%-*s %s%s;\n",
+                                    prefix, type_fmt_len, lineBuffer, info->name, arraydesc );
+                    if( rc < 0 ) {
+                        Error( FILE_WRITE_ERR, fpo->name );
+                    }
                 }
             }
         }
@@ -638,26 +640,26 @@ typedef struct {
     char        *header;
 } AccessInfo;
 
-static AccessInfo accessNames[] = {     ST_PROTECTED,   "protected:\n",
-                                        ST_PRIVATE,     "private:\n",
-                                        0,              NULL
+static AccessInfo accessNames[] = {
+    ST_PROTECTED,   "protected:\n",
+    ST_PRIVATE,     "private:\n",
+    0,              NULL
 };
 
 
-static void outPutDataMembers( FileInfo *fpo, sru_file *sru ) {
-/******************************************************/
-
+static void outPutDataMembers( FileInfo *fpo, sru_file *sru )
+/***********************************************************/
+{
     unsigned            i;
     char                *header;
-    BOOL                rc;
+    bool                rc;
 
-    for( i=0; accessNames[i].header != NULL; i++ ) {
+    for( i = 0; accessNames[i].header != NULL; i++ ) {
         header = accessNames[i].header;
-        rc = doOutputDataMembers( fpo, sru->obj_vars, INDENT,
-                                  accessNames[i].type, header );
-        if( rc ) header = NULL;
-        doOutputDataMembers( fpo, sru->shared_vars, INDENT"static ",
-                           accessNames[i].type, header );
+        rc = doOutputDataMembers( fpo, sru->obj_vars, INDENT, accessNames[i].type, header );
+        if( rc )
+            header = NULL;
+        doOutputDataMembers( fpo, sru->shared_vars, INDENT "static ", accessNames[i].type, header );
     }
 }
 
@@ -678,33 +680,38 @@ static void dumpNewClassDef( sru_file *sru, FileInfo *fpo ) {
     classname = GetClass();
     parent = GetParentClass();
     rc = fprintf( fpo->fp, WIG_BEG_HEADER, classname );
-    if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+    if( rc < 0 )
+        Error( FILE_WRITE_ERR, fpo->name );
     if( parent != NULL ) {
         rc = fprintf( fpo->fp, "class %s : public %s {\n", classname, parent );
     } else {
         rc = fprintf( fpo->fp, "class %s {\n", classname );
     }
-    if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+    if( rc < 0 )
+        Error( FILE_WRITE_ERR, fpo->name );
 
     /* dump methods */
-    curr = sru->cpp_prots;
-    if( curr != NULL ) {
+    if( sru->cpp_prots != NULL ) {
         rc = fprintf( fpo->fp, "public:\n" );
-        if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+        if( rc < 0 ) {
+            Error( FILE_WRITE_ERR, fpo->name );
+        }
     }
-    while( curr != NULL ) {
+    for( curr = sru->cpp_prots; curr != NULL; curr = curr->link ) {
         if( !curr->data.sp.fake ) {
             rc = fprintf( fpo->fp, INDENT );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             outPutFunc( &(curr->data.sp), fpo, classname, O_CLASS_PROTO, NULL );
         }
-        curr = curr->link;
     }
 
     outPutDataMembers( fpo, sru );
 
     rc = fprintf( fpo->fp, WIG_END_HEADER, classname );
-    if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+    if( rc < 0 ) {
+        Error( FILE_WRITE_ERR, fpo->name );
+    }
 }
 
 
@@ -729,19 +736,19 @@ static void skipToEndToken( FileInfo *fpi, char *name ) {
             }
             break;
         }
-        if( !strcmp( lineBuffer, cmp ) ) {
-                break;
+        if( strcmp( lineBuffer, cmp ) == 0 ) {
+            break;
         }
     }
 }
 
-static BOOL isInclude( FileInfo *fpi ) {
-/***************************************/
-
+static bool isInclude( FileInfo *fpi )
+/************************************/
+{
     if( !fgets( lineBuffer, sizeof( lineBuffer ), fpi->fp ) ) {
         Error( FILE_READ_ERR, fpi->name );
     }
-    return( !strncmp( lineBuffer, "#include", 8 ) );
+    return( strncmp( lineBuffer, "#include", 8 ) == 0 );
 }
 
 static void putParentInclude( FileInfo *fpo ) {
@@ -759,27 +766,28 @@ static void putParentInclude( FileInfo *fpo ) {
     }
 }
 
-static BOOL filesAreTheSame( char *fname, FileInfo *fp1 ) {
-/**********************************************************/
-
+static bool filesAreTheSame( char *fname, FileInfo *fp1 )
+/*******************************************************/
+{
     FILE        *fp2;
     size_t      ret1;
     size_t      ret2;
-    BOOL        ret;
+    bool        ret;
 
     fp2 = WigOpenFile( fname, "rt" );
     if( fp2 == NULL ) {
         Error( FILE_OPEN_ERR, fname );
     }
     fseek( fp1->fp, 0, SEEK_SET );
-    ret = FALSE;
+    ret = false;
     for( ;; ) {
         ret1 = fread( lineBuffer, 1, LINE_SIZE, fp1->fp );
         ret2 = fread( lineBuffer2, 1, LINE_SIZE, fp2 );
         if( ret1 == ret2 ) {
-            if( memcmp( lineBuffer, lineBuffer2, ret1 ) ) break;
+            if( memcmp( lineBuffer, lineBuffer2, ret1 ) )
+                break;
             if( ret1 < LINE_SIZE ) {
-                ret = TRUE;
+                ret = true;
                 break;
             }
         } else {
@@ -790,7 +798,7 @@ static BOOL filesAreTheSame( char *fname, FileInfo *fp1 ) {
     return( ret );
 }
 
-static BOOL generateHeaderFile( sru_file *sru ) {
+static bool generateHeaderFile( sru_file *sru ) {
 /***********************************************/
 
 /* generate the HPP file which has the class declaration */
@@ -801,7 +809,7 @@ static BOOL generateHeaderFile( sru_file *sru ) {
     char        outfilebuf[MAX_PATH+1];
     char        *classname;
     char        *parent;
-    BOOL        same;
+    bool        same;
 
     assert( sru );
 
@@ -837,17 +845,17 @@ static BOOL generateHeaderFile( sru_file *sru ) {
             Error( FILE_WRITE_ERR, fpo.name );
         }
     } else {
-        transferUserData( &fpi, &fpo, TRUE, classname );
+        transferUserData( &fpi, &fpo, true, classname );
         if( isInclude( &fpi ) ) {
             putParentInclude( &fpo );
             skipToEndToken( &fpi, classname );
-            transferUserData( &fpi, &fpo, TRUE, classname );
+            transferUserData( &fpi, &fpo, true, classname );
         } else {
             putParentInclude( &fpo );
         }
         dumpNewClassDef( sru, &fpo );
         skipToEndToken( &fpi, classname );
-        transferUserData( &fpi, &fpo, FALSE, classname );
+        transferUserData( &fpi, &fpo, false, classname );
     }
 
     /* compare the generated header to the current one.  If they are
@@ -859,18 +867,20 @@ static BOOL generateHeaderFile( sru_file *sru ) {
         same = filesAreTheSame( outfilebuf, &fpi );
         WigCloseFile( fpi.fp );
         if( !same ) {
-            if( remove( infile ) ) Error( FILE_RM_ERR, infile );
+            if( remove( infile ) ) {
+                Error( FILE_RM_ERR, infile );
+            }
         } else {
             if( remove( outfilebuf ) ) {
                 Error( FILE_RM_ERR, infile );
             }
-            return( FALSE );
+            return( false );
         }
     }
     if( rename( outfilebuf, infile ) ) {
         Error( FILE_REN_ERR, outfilebuf, infile );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -887,34 +897,40 @@ static void addAdditionalMethods( statement *curr, FileInfo *fpo ) {
     classname = GetClass();
 
     /* loop through a linked list of methods until all are dumped */
-    while( curr ) {
+    while( curr != NULL ) {
         if( !curr->data.sp.fake ) {
             /* dump stub function */
             rc = fprintf( fpo->fp, WIG_BEG_HEADER, classname );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             rc = fprintf( fpo->fp, IF_TRUE );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             if( Options & OPT_GEN_C_CODE ) {
-                outPutFunc( &(curr->data.sp), fpo, classname, O_FULL_FUNC,
-                            NULL);
+                outPutFunc( &(curr->data.sp), fpo, classname, O_FULL_FUNC, NULL);
             } else {
-                outPutFunc( &(curr->data.sp), fpo, classname,
-                            O_CLASS_FUNC, NULL);
+                outPutFunc( &(curr->data.sp), fpo, classname, O_CLASS_FUNC, NULL);
             }
             rc = fprintf( fpo->fp, WIG_END_HEADER, classname );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             rc = fprintf( fpo->fp, PLACE_USER_CODE_HERE );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 )
+                Error( FILE_WRITE_ERR, fpo->name );
             if( (Options & OPT_GEN_RETURN) && !curr->data.sp.subroutine ) {
                 if( IsPtrType( curr->data.sp.typ_id ) ) {
                      rc = fprintf( fpo->fp, RETURN_NULL );
                 } else {
                      rc = fprintf( fpo->fp, RETURN_ZERO );
                 }
-                if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+                if( rc < 0 ) {
+                    Error( FILE_WRITE_ERR, fpo->name );
+                }
             }
             rc = fprintf( fpo->fp, "%s%s\n\n", CLOSE_SCOPE, END_IF );
-            if( rc < 0 ) Error( FILE_WRITE_ERR, fpo->name );
+            if( rc < 0 ) {
+                Error( FILE_WRITE_ERR, fpo->name );
+            }
         }
         curr = curr->link; /* next one in the additional chain */
     }
@@ -925,30 +941,26 @@ static void removeFromMethodChain( statement **curr, statement *func )
 /********************************************************************/
 {
     statement   **finger;
+
     assert( curr );
     assert( func );
 
-    finger = curr;
-
-    while( *finger ) {
+    for( finger = curr; *finger != NULL; finger = &((*finger)->link) ) {
         if( *finger == func ) {
             *finger = func->link;
             func->link = NULL;
             return;
         }
-        finger = &((*finger)->link);
     }
 }
 
 
-static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
-                              FileInfo *fpo ) {
-/*****************************************/
-
+static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi, FileInfo *fpo )
+/*******************************************************************************************/
 /* moves through a WIG/user main CPP file avoiding user code, and modifying
    its own
 */
-
+{
     statement   *func;
     char        *cmp_str;
     char        *ptr;
@@ -975,7 +987,7 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
     /* loop through the file */
     for( ;; ) {
         /* pass through user code */
-        transferUserData( fpi, fpo, TRUE, classname );
+        transferUserData( fpi, fpo, true, classname );
         if( feof( fpi->fp ) ) {
             break;
         }
@@ -991,12 +1003,12 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
 
         /* Get function name */
         ptr = strstr( lineBuffer, cmp_str );
-        if( !ptr ) {
+        if( ptr == NULL ) {
             Error( FILE_FORMAT_ERR, NULL );
         }
         ptr += cmp_len;
         qtr = strchr( ptr, '(' );
-        if( !qtr ) {
+        if( qtr == NULL ) {
             Error( FILE_FORMAT_ERR, NULL );
         }
         *qtr = 0;
@@ -1009,11 +1021,9 @@ static void traverseCodeFile( statement **curr, sru_file *sru, FileInfo *fpi,
                 Error( FILE_WRITE_ERR, fpo->name );
             }
             if( Options & OPT_GEN_C_CODE ) {
-                outPutFunc( &(func->data.sp), fpo, classname,
-                            O_FULL_FUNC, lineBuffer2 );
+                outPutFunc( &(func->data.sp), fpo, classname, O_FULL_FUNC, lineBuffer2 );
             } else {
-                outPutFunc( &(func->data.sp), fpo, classname,
-                            O_CLASS_FUNC, lineBuffer2 );
+                outPutFunc( &(func->data.sp), fpo, classname, O_CLASS_FUNC, lineBuffer2 );
             }
             removeFromMethodChain( curr, func );
             *qtr = '(';
@@ -1057,14 +1067,14 @@ static void generateCodeFile( sru_file *sru ) {
     errno = 0;
     genTmpFName( infile, outfilebuf );
     fpo.fp = WigOpenFile( outfilebuf, "wt" );
-    if( !fpo.fp ) {
+    if( fpo.fp == NULL ) {
         Error( FILE_OPEN_ERR, outfilebuf );
     }
     fpo.name = outfilebuf;
 
     curr = sru->cpp_prots;
     /* go through file */
-    if( fpi.fp ) {
+    if( fpi.fp != NULL ) {
         traverseCodeFile( &curr, sru, &fpi, &fpo );
         WigCloseFile( fpi.fp );
         if( remove( infile ) ) {

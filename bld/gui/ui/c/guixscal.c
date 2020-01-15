@@ -66,8 +66,8 @@ int GUIMulDiv( int a, int b, int c )
  *                from == SCALE,   to == SCREEN implies rect -> area
  */
 
-static bool ConvertRectArea( SAREA *area, gui_rect *rect, gui_systems from,
-                             gui_systems to, bool rel )
+static bool ConvertRectArea( SAREA *area, gui_rect *rect, gui_coord_systems from,
+                             gui_coord_systems to, bool rel )
 {
     gui_rect    my_rect;
     gui_rect    *convert;

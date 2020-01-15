@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include <stdlib.h>
 #include "setup.h"
 #include "iopath.h"
-#include "pathgrp.h"
 
 #include "clibext.h"
 
@@ -117,6 +117,26 @@ int VbufCompStr(            // COMPARE A VBUFs
         return( stricmp( vbuf1->buf, str ) );
     } else {
         return( strcmp( vbuf1->buf, str ) );
+    }
+}
+
+int VbufCompExt(            // COMPARE A VBUFs
+    const VBUF *vbuf1,      // - VBUF structure
+    const char *str,        // - file name extension
+    bool igncase )          // - bool ignore case
+{
+    if( vbuf1->buf[0] == '.' ) {
+        if( str[0] == '.' )
+            str++;
+        if( igncase ) {
+            return( stricmp( vbuf1->buf + 1, str ) );
+        } else {
+            return( strcmp( vbuf1->buf + 1, str ) );
+        }
+    } else if( vbuf1->buf[0] < '.' ) {
+        return( -1 );
+    } else {
+        return( 1 );
     }
 }
 
@@ -443,7 +463,7 @@ void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     }
 }
 
-void VbufRemDirSep(             // REMOVE DIR_SEP FROM A VBUF AS PATH
+void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF AS PATH
     VBUF *vbuf )                // - VBUF structure
 {
     size_t  len;

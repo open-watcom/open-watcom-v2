@@ -628,7 +628,7 @@ static CGPOINTER NextLibrary( int index, aux_class request )
     if( request == LIBRARY_NAME || name == NULL )
         return( (CGPOINTER)name );
     /* library index */
-    return( (CGPOINTER)(pointer_int)index );
+    return( (CGPOINTER)(pointer_uint)index );
 }
 
 //    NextAlias
@@ -684,7 +684,7 @@ static CGPOINTER NextAlias( int index, aux_class request )
     } else if( request == ALIAS_SUBST_SYMBOL ) {
         return( (CGPOINTER)subst_sym );
     } else {    // this had better be a NEXT_ALIAS request
-        return( (CGPOINTER)(pointer_int)index );
+        return( (CGPOINTER)(pointer_uint)index );
     }
 }
 
@@ -789,7 +789,7 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     case EXTN_PATTERN:
         return( GetNamePattern( (SYM_HANDLE)sym_handle ) );
     case EXTN_PRMSIZE:
-        return( (const char *)(pointer_int)GetParmsSize( (SYM_HANDLE)sym_handle ) );
+        return( (const char *)(pointer_uint)GetParmsSize( (SYM_HANDLE)sym_handle ) );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -998,7 +998,7 @@ static CGPOINTER NextImport( int index, aux_class request )
     if( request == IMPORT_NAME || name == NULL )
         return( (CGPOINTER)name );
     /* return the index */
-    return( (CGPOINTER)(pointer_int)index );
+    return( (CGPOINTER)(pointer_uint)index );
 }
 
 static CGPOINTER NextImportS( int index, aux_class request )
@@ -1029,7 +1029,7 @@ static CGPOINTER NextImportS( int index, aux_class request )
     if( request == IMPORT_NAME_S || symbol == NULL )
         return( (CGPOINTER)symbol );
     /* return the index */
-    return( (CGPOINTER)(pointer_int)index );
+    return( (CGPOINTER)(pointer_uint)index );
 }
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -1051,7 +1051,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case SOURCE_LANGUAGE:
         return( (CGPOINTER)"C" );
     case STACK_SIZE_8087:
-        return( (CGPOINTER)(pointer_int)Stack87 );
+        return( (CGPOINTER)(pointer_uint)Stack87 );
     case CODE_GROUP:
         return( (CGPOINTER)GenCodeGroup );
     case DATA_GROUP:
@@ -1059,11 +1059,11 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
     case REVISION_NUMBER:
-        return( (CGPOINTER)(pointer_int)II_REVISION );
+        return( (CGPOINTER)(pointer_uint)II_REVISION );
     case AUX_LOOKUP:
         return( req_handle );
     case PROEPI_DATA_SIZE:
-        return( (CGPOINTER)(pointer_int)ProEpiDataSize );
+        return( (CGPOINTER)(pointer_uint)ProEpiDataSize );
     case DBG_PREDEF_SYM:
         return( (CGPOINTER)SymDFAbbr );
     case P5_CHIP_BUG_SYM:
@@ -1078,7 +1078,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)Alignment );
         }
     case CLASS_NAME:
-        return( (CGPOINTER)SegClassName( (segment_id)(pointer_int)req_handle ) );
+        return( (CGPOINTER)SegClassName( (segment_id)(pointer_uint)req_handle ) );
     case USED_8087:
         CompFlags.pgm_used_8087 = true;
         return( NULL );
@@ -1086,7 +1086,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case P5_PROF_DATA:
         return( (CGPOINTER)FunctionProfileBlock );
     case P5_PROF_SEG:
-        return( (CGPOINTER)(pointer_int)FunctionProfileSegId );
+        return( (CGPOINTER)(pointer_uint)FunctionProfileSegId );
   #endif
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {
@@ -1105,21 +1105,21 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( NULL );
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_int)req_handle, request ) );
+        return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)(pointer_int)req_handle, request ) );
+        return( NextImport( (int)(pointer_uint)req_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_int)req_handle, request ) );
+        return( NextImportS( (int)(pointer_uint)req_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_int)req_handle, request ) );
+        return( NextAlias( (int)(pointer_uint)req_handle, request ) );
     case TEMP_LOC_NAME:
-        return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
+        return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
     case NEXT_DEPENDENCY:
@@ -1131,7 +1131,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     case PEGGED_REGISTER:
-        return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_int)req_handle ) );
+        return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
     case DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
     default:
@@ -1213,7 +1213,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case OBJECT_FILE_NAME:
         return( (CGPOINTER)ObjFileName() );
     case REVISION_NUMBER:
-        return( (CGPOINTER)(pointer_int)II_REVISION );
+        return( (CGPOINTER)(pointer_uint)II_REVISION );
     case AUX_LOOKUP:
         return( req_handle );
     case SOURCE_NAME:
@@ -1231,23 +1231,23 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         }
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_int)req_handle, request ) );
+        return( NextLibrary( (int)(pointer_uint)req_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)(pointer_int)req_handle, request ) );
+        return( NextImport( (int)(pointer_uint)req_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_int)req_handle, request ) );
+        return( NextImportS( (int)(pointer_uint)req_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_int)req_handle, request ) );
+        return( NextAlias( (int)(pointer_uint)req_handle, request ) );
     case FREE_SEGMENT:
         return( NULL );
     case TEMP_LOC_NAME:
-        return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
+        return( (CGPOINTER)(pointer_uint)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
     case NEXT_DEPENDENCY:

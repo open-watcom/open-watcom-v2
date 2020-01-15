@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ int StatusWidth = INIT_STATUS_WIDTH;
 /*
  * InitStatusLine - initializes the status line ...
  */
-BOOL InitStatusLine( HWND parent )
+bool InitStatusLine( HWND parent )
 {
     WPI_RECT            client;
     WPI_RECT            rcsize;
@@ -192,7 +192,7 @@ BOOL InitStatusLine( HWND parent )
     GetWindowRect( statusBarWnd, &rcsize );
     StatusWidth = rcsize.bottom - rcsize.top;
 
-    return( TRUE );
+    return( true );
 
 } /* InitStatusLine */
 

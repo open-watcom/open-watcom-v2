@@ -157,14 +157,9 @@ private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task,
             } else {
                 HardModeRequired = false;
             }
-            if( DebuggerWindow != NULL && !InputLocked && msg.wParam != TASK_ENDED && DebugeeTask != NULL ) {
+            if( msg.wParam != TASK_ENDED && DebugeeTask != NULL ) {
                 if( HardModeRequired || ForceHardMode ) {
-                    Out((OUT_SOFT,"Locking input to debugger"));
-                    if( !LockInput( NULL, DebuggerWindow, TRUE ) ) {
-                        Out((OUT_SOFT,"LockInput returned FALSE"));
-                    } else {
-                        InputLocked = TRUE;
-                    }
+                    SetInputLock( true );
                 }
             }
             break;

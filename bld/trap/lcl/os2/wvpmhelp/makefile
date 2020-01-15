@@ -50,7 +50,7 @@ wdpmhelp.exe: wdpmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
 .c: ../c
 .asm: ../asm
 
-extra_c_flags = -s -zu -fpc
+extra_c_flags = -zu -fpc
 
 extra_c_flags_pmhook = -mc -oais
 extra_c_flags_pmhelp = -ml

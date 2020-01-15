@@ -83,8 +83,8 @@ static UI_WINDOW **findspot( int priority, UI_WINDOW **prev )
 }
 
 
-static void insert( UI_WINDOW *wptr, int priority )
-/*************************************************/
+static void insertwindow( UI_WINDOW *wptr, int priority )
+/*******************************************************/
 {
     UI_WINDOW           **spot;
     UI_WINDOW           *prev;
@@ -123,7 +123,7 @@ bool intern openwindow( UI_WINDOW *wptr )
 /***************************************/
 {
     wptr->dirty_area = wptr->area;
-    insert( wptr, wptr->priority );
+    insertwindow( wptr, wptr->priority );
     if( wptr->prev == NULL ) {
         return( false );
     } else {
@@ -160,7 +160,7 @@ void intern frontwindow( UI_WINDOW *wptr )
             wptr->dirty_area = wptr->area;
             /* we really only need to dirty what is covered */
             /* using a similar algorithm to dirtynext */
-            insert( wptr, wptr->priority );
+            insertwindow( wptr, wptr->priority );
         }
     }
 }

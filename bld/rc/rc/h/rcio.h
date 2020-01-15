@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,8 @@ typedef struct RcResFileID {
     char                    *filename;
     FullStringTable         *StringTable;
     FullStringTable         *ErrorTable;
-    bool                    IsWatcomRes     : 1;
-    bool                    IsOpen          : 1;
+    boolbit                 IsWatcomRes     : 1;
+    boolbit                 IsOpen          : 1;
     uint_16                 NextCurOrIcon;
     WResDir                 dir;                    /* don't write this if !IsWatcomRes */
     FILE                    *fp;                    /* file I/O handle */

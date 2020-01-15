@@ -66,7 +66,7 @@ _WCRTLINK int   _dwSetAppTitle( const char *title )
 
 _WCRTLINK int   _dwSetConTitle( int handle, const char *title )
 {
-    /* unused parameters */ (void)handle;
+    /* unused parameters */ (void)handle; (void)title;
 
     return( 0 );
 }

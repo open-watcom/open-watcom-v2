@@ -37,7 +37,7 @@
 #include "uicurshk.h"
 
 
-#define _swap(a,b)      {int i; i=a; a=b; b=i;}
+#define _swap(t,a,b)    {t i; i=a; a=b; b=i;}
 
 static CATTR            OldCursorAttr;
 static CURSORORD        OldCursorRow;
@@ -141,10 +141,10 @@ void intern newcursor( void )
 static void swapcursor( void )
 /****************************/
 {
-    _swap( UIData->cursor_type, OldCursorType );
-    _swap( UIData->cursor_col, OldCursorCol );
-    _swap( UIData->cursor_row, OldCursorRow );
-    _swap( UIData->cursor_attr, OldCursorAttr );
+    _swap( CURSOR_TYPE, UIData->cursor_type, OldCursorType );
+    _swap( CURSORORD, UIData->cursor_col, OldCursorCol );
+    _swap( CURSORORD, UIData->cursor_row, OldCursorRow );
+    _swap( CATTR, UIData->cursor_attr, OldCursorAttr );
     UIData->cursor_on = true;
 }
 

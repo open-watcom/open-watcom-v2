@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ typedef struct a_stack {
     HBITMAP                     original_and;
     HBITMAP                     firstxor;
     HBITMAP                     firstand;
-    BOOL                        modified;
+    bool                        modified;
     an_undo_node                *top_undo;
     an_undo_node                *bottom_undo;
     an_undo_node                *top_redo;

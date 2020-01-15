@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +144,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         if( CompFlags.ide_console_output ) {
             if( !CompFlags.quiet_mode ) {
                 char buffer[30];
-                sprintf( buffer, "\rCode size: %u", (unsigned)(pointer_int)parm );
+                sprintf( buffer, "\rCode size: %u", (unsigned)(pointer_uint)parm );
                 MsgDisplayLine( buffer );
             }
         }
@@ -158,7 +159,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         CppExit( 1 );         /* exit to DOS do not pass GO */
         break;
     case MSG_BAD_PARM_REGISTER:
-        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_int)parm );
+        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (SYMBOL)parm ) );
@@ -182,7 +183,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         }
         break;
     case MSG_BACK_END_ERROR:
-        CErr2( ERR_BACK_END_ERROR, (int)(pointer_int)parm );
+        CErr2( ERR_BACK_END_ERROR, (int)(pointer_uint)parm );
         break;
     case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (SYMBOL)parm ) );
@@ -726,7 +727,7 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
-        return( (const char *)(pointer_int)GetParmsSize( sym ) );
+        return( (const char *)(pointer_uint)GetParmsSize( sym ) );
     case EXTN_CALLBACKNAME:
         return( CallbackName( sym ) );
     default:
@@ -1189,7 +1190,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
-        retn = (void *)(pointer_int)Stack87;
+        retn = (void *)(pointer_uint)Stack87;
         break;
 #endif
 #if _INTEL_CPU
@@ -1237,7 +1238,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case PROEPI_DATA_SIZE:
         DbgNotSym();
         DbgNotRetn();
-        retn = (void *)(pointer_int)ProEpiDataSize;
+        retn = (void *)(pointer_uint)ProEpiDataSize;
         break;
   #if _CPU != 8086
     case P5_PROF_DATA:
@@ -1264,10 +1265,10 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case CLASS_NAME:
         DbgNotSym();
         DbgNotRetn();
-        if( ((fe_seg_id)(pointer_int)sym) == SEG_CODE ) {
+        if( ((fe_seg_id)(pointer_uint)sym) == SEG_CODE ) {
             retn = CodeClassName;
         } else {
-            retn = SegmentClassName( (fe_seg_id)(pointer_int)sym );
+            retn = SegmentClassName( (fe_seg_id)(pointer_uint)sym );
         }
         break;
 #endif
@@ -1415,7 +1416,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case TEMP_LOC_TELL :
         DbgNotSym();
         DbgNotRetn();
-        CgBackDtorAutoOffset( dtor_sym, (unsigned)(pointer_int)sym );
+        CgBackDtorAutoOffset( dtor_sym, (unsigned)(pointer_uint)sym );
         break;
     case DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
@@ -1499,7 +1500,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case PEGGED_REGISTER :
         DbgNotSym();
         DbgNotRetn();
-        retn = SegmentBoundReg( (fe_seg_id)(pointer_int)sym );
+        retn = SegmentBoundReg( (fe_seg_id)(pointer_uint)sym );
         break;
 #endif
     case CLASS_APPENDED_NAME :

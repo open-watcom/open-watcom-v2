@@ -190,7 +190,7 @@ bool DoObjOpen( infilelist *infile )
     char                *name;
     f_handle            fp;
     unsigned            err;
-    char                new_name[ PATH_MAX ];
+    char                new_name[PATH_MAX];
     const path_entry    *searchpath;
 
     name = infile->name.u.ptr;

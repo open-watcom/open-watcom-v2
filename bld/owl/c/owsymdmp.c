@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,9 +82,9 @@ static void dumpSym( owl_file_handle file, owl_symbol_handle sym ) {
 
     char        buffer[ MAX_LINE_LEN ];
 
-    sprintf( &buffer[ 0 ], "%s[%lx]:\n", symbolName( sym ), (unsigned long)(pointer_int)sym );
+    sprintf( &buffer[ 0 ], "%s[%lx]:\n", symbolName( sym ), (unsigned long)(pointer_uint)sym );
     DumpString( &buffer[ 0 ] );
-    sprintf( &buffer[ 0 ], "\tsection\t\t%s[%lx]\n", sectionName( file, sym ), (unsigned long)(pointer_int)sym->section );
+    sprintf( &buffer[ 0 ], "\tsection\t\t%s[%lx]\n", sectionName( file, sym ), (unsigned long)(pointer_uint)sym->section );
     DumpString( &buffer[ 0 ] );
     sprintf( &buffer[ 0 ], "\ttype\t\t%s[%x]\n", symbolType( sym ), sym->type );
     DumpString( &buffer[ 0 ] );

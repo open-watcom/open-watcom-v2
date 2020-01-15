@@ -752,14 +752,13 @@ static MONITOR ui_data = {
 
 
 static LP_PIXEL shadow;
-static int      save_cursor_type;
 
 static bool setupscrnbuff( uisize srows, uisize scols )
 /*****************************************************/
 {
     LP_PIXEL            scrn;
-    size_t              size;
-    size_t              i;
+    unsigned            size;
+    unsigned            i;
     struct winsize      wsize;
     int                 rows, cols;
 
@@ -796,20 +795,18 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
 
-    scrn = uirealloc( scrn, size );
+    scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
     if( scrn == NULL )
         return( false );
-    shadow = uirealloc( shadow, size );
+    shadow = uirealloc( shadow, size * sizeof( PIXEL ) );
     if( shadow == NULL ) {
         uifree( scrn );
         return( false );
     }
 
-    save_cursor_type = -1; /* C_NORMAL; */
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
@@ -1103,7 +1100,7 @@ static void update_shadow( void )
 /*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    unsigned    incr = UIData->screen.increment;
+    int         incr = UIData->screen.increment;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
@@ -1127,7 +1124,7 @@ static int ti_refresh( bool must )
 /********************************/
 {
     int         i;
-    unsigned    incr;               // chars per line
+    int         incr;               // chars per line
     LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete

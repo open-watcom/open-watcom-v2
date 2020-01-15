@@ -46,9 +46,11 @@ static FILE         *TRFileFP = NULL;       /* stream to put output on */
 static void MemPrintLine( void *parm, const char *buff, size_t len )
 /******************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buff, 1, len, TRFileFP );
+    if( TRFileFP != NULL ) {
+        fprintf( TRFileFP, "%s\n", buff );
+    }
 }
 #endif
 

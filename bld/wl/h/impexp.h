@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,12 @@ typedef struct entry_export {
     name_strtab             name;
     ordinal_t               ordinal;
     unsigned_16             iopl_words;
-    bool                    isresident  : 1;
-    bool                    isexported  : 1;
-    bool                    ismovable   : 1;
-    bool                    isanonymous : 1;
-    bool                    isfree      : 1;
-    bool                    isprivate   : 1;
+    boolbit                 isresident  : 1;
+    boolbit                 isexported  : 1;
+    boolbit                 ismovable   : 1;
+    boolbit                 isanonymous : 1;
+    boolbit                 isfree      : 1;
+    boolbit                 isprivate   : 1;
     symbol                  *sym;
     char                    *impname;
     targ_addr               addr;

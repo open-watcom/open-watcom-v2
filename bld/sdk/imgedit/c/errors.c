@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -283,13 +284,10 @@ void IEFiniErrors( void )
 /*
  * IEInitErrors
  */
-BOOL IEInitErrors( HINSTANCE inst )
+bool IEInitErrors( HINSTANCE inst )
 {
     IEInitDisplayError( inst );
     ErrorMsgTitle = IEAllocRCString( WIE_ERRORMSGTITLE );
-    if( ErrorMsgTitle == NULL ) {
-        return( FALSE );
-    }
-    return( TRUE );
+    return( ErrorMsgTitle != NULL );
 
 } /* IEInitErrors */

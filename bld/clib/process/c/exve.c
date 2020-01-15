@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  16-bit DOS implementation of execve().
+* Description:  DOS implementation of execve().
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -57,7 +58,6 @@
 
 #define _swap(i)        (((i&0xff) << 8)|((i&0xff00) >> 8))
 
-
 #pragma on(check_stack);
 
 #pragma pack( __push, 1 )
@@ -73,6 +73,8 @@ typedef struct a_blk {
     unsigned            next;
 } a_blk;
 #pragma pack( __pop )
+
+typedef char __based( __segname( "_STACK" ) ) *char_stk_ptr;
 
 #define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
 #define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
@@ -92,9 +94,10 @@ extern unsigned doslowblock( void );
     __value             [__ax] \
     __modify __nomemory [__bx __es]
 
-extern execveaddr_type      __Exec_addr;
-extern void _WCFAR __cdecl  _doexec( char _WCI86NEAR *, char _WCI86NEAR *, int, unsigned, unsigned, unsigned, unsigned );
-extern unsigned             __exec_para;
+extern void         __cdecl __far _doexec( char_stk_ptr, char_stk_ptr, int, unsigned, unsigned, unsigned, unsigned );
+extern void         __init_execve( void );
+
+extern unsigned     __exec_para;
 
 static void dosexpand( unsigned block )
 {
@@ -106,8 +109,8 @@ static void dosexpand( unsigned block )
 
 static unsigned dosalloc( unsigned num_of_paras )
 {
-    tiny_ret_t rc;
-    unsigned block;
+    tiny_ret_t  rc;
+    unsigned    block;
 
     rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) ) {
@@ -139,23 +142,27 @@ static void resetints( void )
 
 static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
-    unsigned            p, q, free, dosseg, envseg;
+    unsigned            p;
+    unsigned            q;
+    unsigned            free;
+    unsigned            dosseg;
+    unsigned            envseg;
 
-    dosseg = envseg = 0;
-    for( free = 0; (p = dosalloc( 1 )) != 0; free = p ) {
+    dosseg = envseg = _NULLSEG;
+    for( free = _NULLSEG; (p = dosalloc( 1 )) != _NULLSEG; free = p ) {
         _blkptr( p )->next = free;
     }
     if( _RWD_osmajor == 2 ) {
-        if( free == 0 || (dosseg = doscalve( free, DOS2SIZE )) == 0 ) {
+        if( free == _NULLSEG || (dosseg = doscalve( free, DOS2SIZE )) == _NULLSEG ) {
             goto error;
         }
     }
-    for( p = free; p != 0; p = _blkptr( p )->next ) {
-        if( (envseg = doscalve( p, envsize_paras )) != 0 ) {
+    for( p = free; p != _NULLSEG; p = _blkptr( p )->next ) {
+        if( (envseg = doscalve( p, envsize_paras )) != _NULLSEG ) {
             break;
         }
     }
-    if( envseg == 0 )
+    if( envseg == _NULLSEG )
         goto error;
     for( p = _RWD_psp; p < envseg && _mcbptr( p )->owner == _RWD_psp; p = q + 1 ) {
         q = p + _mcbptr( p )->size;
@@ -186,11 +193,11 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
         }
     }
 error: /* if we get an error */
-    if( dosseg != 0 )
+    if( dosseg != _NULLSEG )
         TinyFreeBlock( dosseg );
-    if( envseg != 0 )
+    if( envseg != _NULLSEG )
         TinyFreeBlock( envseg );
-    for( p = free; p != 0; p = q ) {
+    for( p = free; p != _NULLSEG; p = q ) {
         q = _blkptr( p )->next;
         TinyFreeBlock( p );
     }
@@ -199,8 +206,8 @@ error: /* if we get an error */
 
 static void save_file_handles( void )
 {
-    int i;
-    _byte _WCFAR *handle_table;
+    int             i;
+    handle_tab_ptr  handle_table;
 
     handle_table = _pspptr( _RWD_psp )->handle_table;
     if( handle_table != _pspptr( _RWD_psp )->sft_indices ) {
@@ -290,7 +297,7 @@ _WCRTLINK int execve( path, argv, envp )
     __ccmdline( pgmname, (const char * const *)argvv, cmdline, 0 );
     if( doalloc( para, envseg, envpara ) )
         save_file_handles();
-    _doexec( (char _WCI86NEAR *)pgmname, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
+    _doexec( pgmname, cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
     free( _envptr );
     free( argvv );

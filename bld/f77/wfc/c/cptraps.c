@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,6 @@
 #include "ftnstd.h"
 #include <signal.h>
 #include <float.h>
-#include "frtdata.h"
-#include "xfflags.h"
 #include "errcod.h"
 #include "ferror.h"
 #if defined( __OSI__ )
@@ -82,7 +81,6 @@ static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
 void    FTrapInit( void ) {
 //==================
 
-    _RWD_XcptFlags = 0;
 #if !defined( __WATCOMC__ )
 #elif defined( __QNX__ )
 #elif defined( __OSI__ )

@@ -912,13 +912,13 @@ int     main( int argc, char **argv )
 {
     char        cmd[128+1];
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
 #else
-    argc = argc;
-    argv = argv;
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     ProcArgs( getcmd( cmd ) );
     if( Initialize() != 0 ) {
         return( 1 );

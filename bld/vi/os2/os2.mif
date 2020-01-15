@@ -5,6 +5,7 @@ objos2sizeroot = &
     biosos2.obj
 
 objos2size = &
+    getspcmd.obj &
     os2sys.obj &
     os2main.obj &
     os2mouse.obj &

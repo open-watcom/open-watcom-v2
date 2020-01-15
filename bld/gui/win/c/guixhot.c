@@ -129,6 +129,10 @@ void GUIDrawBitmap( int hot_spot, WPI_PRES hdc,
     COLORREF    cr;
 #endif
 
+#ifndef __NT__
+    /* unused parameters */ (void)bkcolour;
+#endif
+
     bitmap = GUIHotSpots[hot_spot - 1].bitmap;
     size.x = GUIHotSpots[hot_spot - 1].size.x;
     size.y = GUIHotSpots[hot_spot - 1].size.y;

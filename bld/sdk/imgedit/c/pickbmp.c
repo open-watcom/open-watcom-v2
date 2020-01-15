@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 static UINT     prevState;
 static RECT     bmpRegion;
-static BOOL     notDestroyed = TRUE;
+static bool     notDestroyed = true;
 #ifdef __NT__
 static HWND     deskTopWindow;
 #endif
@@ -79,7 +80,7 @@ static void checkRectBounds( RECT *rect )
 /*
  * SelectDynamicBitmap - let the user select the bitmap from the screen
  */
-BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
+bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 {
     HDC         hdc;
     HDC         memdc;
@@ -117,7 +118,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
         NULL );             /* Create parameters */
 
     if( bitmappickwindow == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     while( notDestroyed && GetMessage( &msg, bitmappickwindow, 0, 0 ) ) {
@@ -147,8 +148,8 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 #endif
         IEDisplayErrorMsg( WIE_APPNAME, WIE_INVALIDREGIONSELECTED,
                            MB_OK | MB_ICONINFORMATION );
-        notDestroyed = TRUE;
-        return( FALSE );
+        notDestroyed = true;
+        return( false );
     }
 
     node->imgtype = BITMAP_IMG;
@@ -159,7 +160,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
     node->hotspot.y = 0;
     node->num_of_images = 1;
     node->nexticon = NULL;
-    node->issaved = FALSE;
+    node->issaved = false;
     node->next = NULL;
     if( filename != NULL ) {
         strcpy( node->fname, filename );
@@ -167,7 +168,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
         sprintf( node->fname, "%s (%d)", IEImageUntitled, imgcount );
     }
 
-    MakeBitmap( node, TRUE );
+    MakeBitmap( node, true );
 
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
@@ -186,8 +187,8 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 #ifdef __NT__
     DestroyWindow( deskTopWindow );
 #endif
-    notDestroyed = TRUE;
-    return( TRUE );
+    notDestroyed = true;
+    return( true );
 
 } /* SelectDynamicBitmap */
 
@@ -201,7 +202,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     static POINT        bottomright;
     static RECT         prevpos;
     static bool         firsttime = true;
-    static BOOL         buttondown;
+    static bool         buttondown;
     static HCURSOR      prevcursor;
     static HCURSOR      crosshairs;
     HDC                 hdc;
@@ -217,7 +218,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
     case WM_LBUTTONDOWN:
         GetCursorPos( &topleft );
-        buttondown = TRUE;
+        buttondown = true;
         break;
 
     case WM_LBUTTONUP:
@@ -227,7 +228,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         hdc = GetDC( NULL );
         OutlineRectangle( true, hdc, &prevpos, &bmpRegion );
         ReleaseDC( NULL, hdc );
-        buttondown = FALSE;
+        buttondown = false;
         ReleaseCapture();
         SendMessage( hwnd, WM_CLOSE, 0, 0L );
         break;
@@ -246,7 +247,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         break;
 
     case WM_DESTROY:
-        notDestroyed = FALSE;
+        notDestroyed = false;
         SetCursor( prevcursor );
         DestroyCursor( crosshairs );
         break;

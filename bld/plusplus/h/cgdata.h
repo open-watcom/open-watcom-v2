@@ -94,7 +94,7 @@ global proc_revision        CpuSwitches;    /* - hardware info.                 
 global char     *GenCodeGroup;          /* pointer to code group name */
 global int      ProEpiDataSize;         /* data to be alloc'd for pro/epi hook */
 
-global int      DataThreshold;          /* sizeof(obj) > this ==> separate segment */
+global unsigned DataThreshold;          /* sizeof(obj) > this ==> separate segment */
 
 global int      DataPtrSize;
 global int      CodePtrSize;

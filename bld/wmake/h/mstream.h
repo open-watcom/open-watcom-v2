@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,14 +59,14 @@ typedef enum {
 /*
  * prototypes
  */
-extern RET_T    InsFile( const char *namem, bool envsearch );
+extern bool     InsFile( const char *namem, bool envsearch );
 extern void     InsOpenFile( FILE *fp );
 extern void     InsString( const char *str, bool weFree );
 extern void     UnGetCHR( STRM_T s );
 extern STRM_T   GetCHR( void );
 extern void     StreamInit( void );
 extern void     StreamFini( void );
-extern RET_T    GetFileLine( const char **pname, UINT16 *pline );
+extern bool     GetFileLine( const char **pname, UINT16 *pline );
 extern bool     IsStreamEOF( void );
 
 #endif /* !_MSTREAM_H */

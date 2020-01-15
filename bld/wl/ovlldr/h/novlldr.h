@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,18 +47,28 @@ extern  unsigned __near __OVLSCANCALLCHAIN__( void );
 extern  void     __far  __OVLRETTRAP__( void );
 
 #ifdef OVL_MULTITHREAD
-
-extern  unsigned __near __OVLUNDORETTRAP__( unsigned rt_seg,
-                                                unsigned new_handle );
+extern  unsigned __near __OVLUNDORETTRAP__( unsigned rt_seg, unsigned new_handle );
 #else
-
-extern  void     __near __OVLUNDORETTRAP__( unsigned stack_trap, unsigned ret_offset,
-                                unsigned ret_list, unsigned new_handle );
+extern  void     __near __OVLUNDORETTRAP__( unsigned stack_trap, unsigned ret_offset, unsigned ret_list, unsigned new_handle );
 #endif
 
 extern  void     __near __NOVLLDR__( void );
 extern  unsigned __near __WhichArea__( unsigned seg );
 extern  void     __near __OVLINITAREA__( unsigned seg, unsigned size );
+
+/*
+ * Prototypes called from assembly code
+ */
+extern  dos_addr      __near __NOVLTINIT__( void );
+extern  unsigned long __far  __FINDOVLADDR__( unsigned unused, unsigned segment );
+#ifdef OVL_MULTITHREAD
+extern  unsigned_32   __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment );
+#else
+extern  unsigned_32   __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment, unsigned bp_chain );
+#endif
+#ifdef OVL_DEBUG
+extern  void          __far  __NOVLDUMP__( void );
+#endif
 
 /*
     NOVLLDR data
@@ -101,7 +112,7 @@ extern  unsigned_16     _CODE_BASED __OVLSTARTPARA__;
     14-jun-91 DJG
 */
 
-#define OVL_ACCESSES( __o )     (*(unsigned_8 _CODE_BASED *)&__o->flags_anc)
+#define OVL_ACCESSES( __o )     (*(unsigned_8 _CODE_BASED *)(long)&__o->flags_anc)
 
 /********************* memory management info *****************************/
 
@@ -252,7 +263,7 @@ typedef struct {
     unsigned_16 end_of_list;    /* End of list if all threads used */
 } ret_trap;
 
-#define RET_TRAP_PARA   ((sizeof(ret_trap)+sizeof(unsigned_16)+15)/16)
+#define RET_TRAP_PARA   ((sizeof( ret_trap ) + sizeof( unsigned_16 ) + 15)/16)
 
 #else
 

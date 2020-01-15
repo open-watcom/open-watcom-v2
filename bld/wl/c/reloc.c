@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,8 +206,8 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
     group->section->relocs++;
 }
 
-#ifdef _QNXLOAD
-void FloatReloc( reloc_item *item )
+#ifdef _QNX
+void QNXFloatReloc( reloc_item *item )
 /****************************************/
 {
     DoWriteReloc( &FloatFixups, item, sizeof( qnx_reloc_item ) );

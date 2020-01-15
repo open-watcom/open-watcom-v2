@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +52,7 @@
 #include "procfile.h"
 #include "spillio.h"
 #include "virtmem.h"
+#include "load16m.h"
 #include "loados2.h"
 #include "loadpe.h"
 #include "loadqnx.h"
@@ -61,7 +63,6 @@
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
-#include "distrib.h"
 #include "objorl.h"
 #include "strtab.h"
 #include "carve.h"
@@ -82,201 +83,22 @@
 #include "wlink.h"
 #include "ideentry.h"
 
-#define DEF_STACK_SIZE  (4 * 1024UL)
 
-static void     PreAddrCalcFormatSpec( void );
-static void     PostAddrCalcFormatSpec( void );
-static void     DoDefaultSystem( void );
-static void     FindLibPaths( void );
-static void     ResetMisc( void );
-static void     ResetSubSystems( void );
-static void     DoLink( char * );
-static void     CleanSubSystems( void );
+#define DEF_STACK_SIZE  _4KB
 
-#ifdef _INT_DEBUG
+#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
 /*
- *  I have temporarily left these as extern as they are internal data. On the final pass, either find
- *  a library header that defines these or create one!
+ *  Following symbols are specific for Open Watcom Linker generated executables
+ *  and appropriate code can be used only if this program is linked by OW Linker
  */
 extern char     *_edata;
 extern char     *_end;
 #endif
 
-static char     *ArgSave;
+static const char   *ArgSave;
 
 // Not sure what this is for - doesn't seem to be referenced
 //extern int              __nheapblk;
-
-static void LinkMeBaby( void )
-/****************************/
-{
-    ResetSubSystems();
-    DoLink( ArgSave );
-}
-
-void LinkMainLine( char *cmds )
-/************************************/
-{
-    for(;;) {
-        ArgSave = cmds;         // bogus way to pass args to spawn
-        Spawn( &LinkMeBaby );
-        CleanSubSystems();
-        cmds = GetNextLink();
-        if( cmds == NULL ) break;
-    }
-#if defined( __WATCOMC__ )
-    _heapshrink();
-#endif
-}
-
-void InitSubSystems( void )
-/********************************/
-{
-#ifdef _INT_DEBUG
-    memset( _edata, 0xA5, _end - _edata );      // don't rely on BSS == 0
-#endif
-    LnkMemInit();
-    LnkFilesInit();
-    InitMsg();
-    InitNodes();
-    InitTokBuff();
-    InitSpillFile();
-    InitSym();
-    InitObjORL();
-    InitCmdFile();
-}
-
-static void ResetSubSystems( void )
-/*********************************/
-{
-    ResetPermData();
-    ResetMsg();
-    VirtMemInit();
-    ResetMisc();
-    Root = NewSection();
-    ResetDBI();
-    ResetMapIO();
-    ResetCmdAll();
-    ResetOvlSupp();
-    ResetComdef();
-    ResetDistrib();
-    ResetLoadNov();
-    ResetLoadPE();
-    ResetObj2Supp();
-    ResetObjIO();
-    ResetObjOMF();
-    ResetObjPass1();
-//    ResetDistrib(); // duplicate call
-    ResetObjStrip();
-    ResetOMFReloc();
-    ResetReloc();
-    ResetSymTrace();
-    ResetLoadFile();
-    ResetAddr();
-    ResetToc();
-}
-
-static void CleanSubSystems( void )
-/*********************************/
-{
-    if( MapFile != NIL_FHANDLE ) {
-        QClose( MapFile, MapFName );
-        MapFile = NIL_FHANDLE;
-    }
-    FreeOutFiles();
-    _LnkFree( MapFName );
-    BurnSystemList();
-    FreeList( UsrLibPath );
-    CloseSpillFile();
-    CleanTraces();
-    FreePaths();
-    FreeUndefs();
-    FreeLocalImports();
-    CleanLoadFile();
-    CleanLinkStruct();
-    FreeFormatStuff();
-    FreeObjInfo();
-    FreeVirtMem();
-    CleanToc();
-    CleanSym();
-    CleanPermData();
-}
-
-void FiniSubSystems( void )
-/********************************/
-{
-    FiniLinkStruct();
-    FiniMsg();
-    FiniSym();
-    LnkMemFini();
-}
-
-static void DoLink( char *cmdline )
-/**********************************/
-// cmdline is only used when we are running under watfor.
-{
-#ifndef __OSI__
-  #ifdef __ZDOS__
-    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
-  #else
-    signal( SIGINT, &TrapBreak );   /* so we can clean up */
-  #endif
-#endif
-    StartTime();
-    InitEnvVars();
-    DoCmdFile( cmdline );
-    CheckErr();
-    MapInit();
-    SetupFakeModule();
-    ProcObjFiles(); /* ObjPass1 */
-    CheckErr();
-    DoDefaultSystem();
-    if( LinkState & LS_LIBRARIES_ADDED ) {
-        FindLibPaths();
-        LinkState |= LS_SEARCHING_LIBRARIES;
-        ResolveUndefined();
-        LinkState &= ~LS_SEARCHING_LIBRARIES;
-        LinkState |= LS_GENERATE_LIB_LIST;
-    }
-    ProcLocalImports();
-    DecideFormat();
-    SetFormat();
-    ConvertLazyRefs();
-    SetSegments();
-    CheckErr();
-    DefBSSSyms();
-    LinkFakeModule();
-    PreAddrCalcFormatSpec();
-    ReportUndefined();
-    CheckClassOrder();
-    CalcSegSizes();
-    SetStkSize();
-    AutoGroup();
-    CalcAddresses();
-    GetBSSSize();
-    GetStkAddr();
-    GetStartAddr();
-    PostAddrCalcFormatSpec();
-#ifdef _RDOS
-    if( FmtData.type & MK_RDOS )
-        GetRdosSegs();
-#endif
-    CheckErr();
-    InitLoadFile();
-    ObjPass2();
-    FiniMap();
-    CheckErr();
-    FiniLoadFile();
-    WritePermData();
-    BuildImpLib();
-    FiniEnvVars();
-    EndTime();
-#ifdef __ZDOS__
-    signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
-#elif !defined( __OSI__ )
-    signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
-#endif
-}
 
 static void PreAddrCalcFormatSpec( void )
 /***************************************/
@@ -284,18 +106,21 @@ static void PreAddrCalcFormatSpec( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
+        SetOS2SegFlags();
         ChkPEData();
-    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
-#if 0
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        SetOS2SegFlags();
+    } else if( FmtData.type & MK_OS2 ) {
+  #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
-            ChkOS2Data();
+            SetOS2SegFlags();
         }
-#else
-        ChkOS2Data();
-#endif
+  #else
+        SetOS2SegFlags();
+  #endif
     }
 #endif
 #ifdef _NOVELL
@@ -316,25 +141,36 @@ static void PostAddrCalcFormatSpec( void )
 {
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
+        SetOS2GroupFlags();
+        ChkOS2Exports();
         AllocPETransferTable();
-    } else if( FmtData.type & MK_ELF ) {
-        ChkElfData();
-    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
-#if 0
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        SetOS2GroupFlags();
+        ChkOS2Exports();
+    } else if( FmtData.type & MK_OS2 ) {
+  #if 0
         if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
+            SetOS2GroupFlags();
             ChkOS2Exports();
         }
-#else
+  #else
+        SetOS2GroupFlags();
         ChkOS2Exports();
-#endif
+  #endif
     }
 #endif
-#ifdef _QNXLOAD
-    else if( FmtData.type & MK_QNX ) {
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        ChkElfData();
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
         SetQNXSegFlags();
+        SetQNXGroupFlags();
     }
 #endif
 }
@@ -355,11 +191,6 @@ static void ResetMisc( void )
     LibModules = NULL;
     Groups = NULL;
     SET_ADDR_UNDEFINED( CurrLoc );
-    OvlClasses = NULL;
-    OvlVectors = NULL;
-    VecNum = 0;
-    OvlNum = 0;
-    OvlFName = NULL;
     CurrMod = NULL;
     StackSize = DEF_STACK_SIZE;
     // set case sensitivity for symbols
@@ -413,4 +244,203 @@ static void FindLibPaths( void )
         HintFormat( MK_16BIT );
     }
     AddLibPathsToEndList( LibPath );
+}
+
+static void ResetSubSystems( void )
+/*********************************/
+{
+    ResetPermData();
+    ResetMsg();
+    VirtMemInit();
+    ResetMisc();
+    ResetDBI();
+    ResetMapIO();
+    ResetCmdAll();
+    ResetOverlaySupp();
+    ResetComdef();
+    ResetLoadNov();
+    ResetLoadPE();
+    ResetObj2Supp();
+    ResetObjIO();
+    ResetObjOMF();
+    ResetObjPass1();
+    ResetObjStrip();
+    ResetOMFReloc();
+    ResetReloc();
+    ResetSymTrace();
+    ResetLoadFile();
+    ResetAddr();
+    ResetToc();
+    Root = NewSection();
+}
+
+void InitSubSystems( void )
+/********************************/
+{
+#if defined( _INT_DEBUG ) && defined( __WATCOMC__ )
+    memset( _edata, 0xA5, _end - _edata );      // don't rely on BSS == 0
+#endif
+    LnkMemInit();
+    LnkFilesInit();
+    InitMsg();
+    InitNodes();
+    InitTokBuff();
+    InitSpillFile();
+    InitSym();
+    InitObjORL();
+    InitCmdFile();
+}
+
+static void CleanSubSystems( void )
+/*********************************/
+{
+    if( MapFile != NIL_FHANDLE ) {
+        QClose( MapFile, MapFName );
+        MapFile = NIL_FHANDLE;
+    }
+    FreeOutFiles();
+    _LnkFree( MapFName );
+    BurnSystemList();
+    FreeList( UsrLibPath );
+    CloseSpillFile();
+    CleanTraces();
+    FreePaths();
+    FreeUndefs();
+    FreeLocalImports();
+    CleanLoadFile();
+    CleanLinkStruct();
+    FreeFormatStuff();
+    FreeObjInfo();
+    FreeVirtMem();
+    CleanToc();
+    CleanSym();
+    CleanPermData();
+}
+
+void FiniSubSystems( void )
+/********************************/
+{
+    FiniLinkStruct();
+    FiniMsg();
+    FiniSym();
+    LnkMemFini();
+}
+
+static void SetSegments( void )
+/*****************************/
+// now that we know where everything is, do all the processing that has been
+// postponed until now.
+{
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        MakeDos16PM();
+    }
+#endif
+#ifdef _EXE
+    OvlSetSegments();
+#endif
+}
+
+static void set_signal( void )
+{
+#if defined( __OSI__ )
+#elif defined( __ZDOS__ )
+    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
+#else
+    signal( SIGINT, &TrapBreak );   /* so we can clean up */
+#endif
+}
+
+static void ignore_signal( void )
+{
+#if defined( __OSI__ )
+#elif defined( __ZDOS__ )
+    signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
+#else
+    signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
+#endif
+}
+
+static void DoLink( const char *cmdline )
+/***************************************/
+// cmdline is only used when we are running under watfor.
+{
+    set_signal();
+
+    StartTime();
+    InitEnvVars();
+    DoCmdFile( cmdline );
+    CheckErr();
+    MapInit();
+    SetupFakeModule();
+    ProcObjFiles(); /* ObjPass1 */
+    CheckErr();
+    DoDefaultSystem();
+    if( LinkState & LS_LIBRARIES_ADDED ) {
+        FindLibPaths();
+        LinkState |= LS_SEARCHING_LIBRARIES;
+        ResolveUndefined();
+        LinkState &= ~LS_SEARCHING_LIBRARIES;
+        LinkState |= LS_GENERATE_LIB_LIST;
+    }
+    ProcLocalImports();
+    DecideFormat();
+    SetFormat();
+    ConvertLazyRefs();
+    SetSegments();
+    CheckErr();
+    DefBSSSyms();
+    LinkFakeModule();
+    PreAddrCalcFormatSpec();
+    ReportUndefined();
+    CheckClassOrder();
+    CalcSegSizes();
+    SetStkSize();
+    AutoGroup();
+    CalcAddresses();
+    GetBSSSize();
+    GetStkAddr();
+    GetStartAddr();
+    PostAddrCalcFormatSpec();
+#ifdef _RDOS
+    if( FmtData.type & MK_RDOS ) {
+        GetRdosSegs();
+    }
+#endif
+    CheckErr();
+    InitLoadFile();
+    ObjPass2();
+    FiniMap();
+    CheckErr();
+    FiniLoadFile();
+    WritePermData();
+    BuildImpLib();
+    FiniEnvVars();
+    EndTime();
+
+    ignore_signal();
+}
+
+static void LinkMeBaby( void )
+/****************************/
+{
+    ResetSubSystems();
+    DoLink( ArgSave );
+}
+
+void LinkMainLine( const char *cmds )
+/***********************************/
+{
+    for( ;; ) {
+        ArgSave = cmds;         // bogus way to pass args to spawn
+        Spawn( &LinkMeBaby );
+        CleanSubSystems();
+        cmds = GetNextLink();
+        if( cmds == NULL ) {
+            break;
+        }
+    }
+#if defined( __WATCOMC__ )
+    _heapshrink();
+#endif
 }

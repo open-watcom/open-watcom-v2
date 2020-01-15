@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,21 +45,21 @@ void intern bframe( BUFFER *bptr )
 }
 
 
-bool intern balloc( BUFFER *bptr, uisize rows, uisize cols )
-/**********************************************************/
-{
-    bptr->increment = cols;
-    bptr->origin = faralloc( rows * cols );
-    return( bptr->origin != NULL );
-}
-
-
 void intern bunframe( BUFFER *bptr )
-/********************************/
+/**********************************/
 {
     /* this must be called before bfree for all framed buffers */
 
     bptr->origin -= bptr->increment + 1;
+}
+
+
+bool intern balloc( BUFFER *bptr, uisize height, uisize width )
+/*************************************************************/
+{
+    bptr->increment = width;
+    bptr->origin = faralloc( height * width );
+    return( bptr->origin != NULL );
 }
 
 

@@ -26,7 +26,7 @@
 #define ValidateDisc 0x73 2 0xB0 0xFF 0xF 0xBE 0xC0
 
 #pragma aux RdosTestGate = \
-    CallGate_test_gate;
+    CallGate_test_gate
 
 #pragma aux RdosLoad32 = \
     CallGate_load_device32  \
@@ -800,10 +800,10 @@
     __value [__eax]
 
 #pragma aux RdosSoftReset = \
-    CallGate_soft_reset;
+    CallGate_soft_reset
 
 #pragma aux RdosHardReset = \
-    CallGate_hard_reset;
+    CallGate_hard_reset
 
 #pragma aux RdosPowerFailure = \
     CallGate_power_failure \
@@ -866,7 +866,7 @@
     __value [__eax]
 
 #pragma aux RdosTerminateThread = \
-    CallGate_terminate_thread;
+    CallGate_terminate_thread
 
 #pragma aux RdosGetThreadHandle = \
     CallGate_get_thread \
@@ -1419,7 +1419,7 @@
     __parm [__es __edi]
 
 #pragma aux RdosClearKeyboard = \
-    CallGate_flush_keyboard;
+    CallGate_flush_keyboard
 
 #pragma aux RdosPollKeyboard = \
     CallGate_poll_keyboard  \
@@ -1483,10 +1483,10 @@
     __modify [__dx]
 
 #pragma aux RdosHideMouse = \
-    CallGate_hide_mouse;
+    CallGate_hide_mouse
 
 #pragma aux RdosShowMouse = \
-    CallGate_show_mouse;
+    CallGate_show_mouse
 
 #pragma aux RdosGetMousePosition = \
     CallGate_get_mouse_position \
@@ -1556,7 +1556,7 @@
     __modify [__ecx __edx]
 
 #pragma aux RdosClearText = \
-    CallGate_clear_text;
+    CallGate_clear_text
 
 #pragma aux RdosGetTextSize = \
     CallGate_get_text_size \
@@ -1955,27 +1955,27 @@
     __value [__eax]
 
 #pragma aux RdosEnableStatusLED = \
-    CallGate_enable_status_led;
+    CallGate_enable_status_led
 
 #pragma aux RdosDisableStatusLED = \
-    CallGate_disable_status_led;
+    CallGate_disable_status_led
 
 #pragma aux RdosStartWatchdog = \
     CallGate_start_watchdog \
     __parm [__eax]
 
 #pragma aux RdosKickWatchdog = \
-    CallGate_kick_watchdog;
+    CallGate_kick_watchdog
 
 #pragma aux RdosStopWatchdog = \
-    CallGate_stop_watchdog;
+    CallGate_stop_watchdog
 
 #pragma aux RdosStartNetCapture = \
     CallGate_start_net_capture \
     __parm [__ebx]
 
 #pragma aux RdosStopNetCapture = \
-    CallGate_stop_net_capture;
+    CallGate_stop_net_capture
 
 #pragma aux RdosGetUsbDevice = \
     CallGate_get_usb_device \

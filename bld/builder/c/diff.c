@@ -40,6 +40,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "diff.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -178,8 +179,7 @@ INT main( int argc, char **argv )
     register char       *ap;
     struct stat         st;
     char                path[_MAX_PATH];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
 
     while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
         while( *ap != EOS ) {
@@ -252,8 +252,8 @@ INT main( int argc, char **argv )
         } else {
             strcpy( path, argv[i] );
             if( i == 1 && stat( argv[i], &st ) == 0 && S_ISDIR( st.st_mode ) ) {
-                _splitpath( argv[i - 1], NULL, NULL, fname, ext );
-                _makepath( path, NULL, argv[i], fname, ext );
+                _splitpath2( argv[i - 1], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+                _makepath( path, NULL, argv[i], pg.fname, pg.ext );
             }
             infd[i] = fopen( path, "r" );
             if( !infd[i] ) {

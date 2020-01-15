@@ -44,17 +44,22 @@ _WCRTLINK int recv( int s, void *buf, size_t len, int flags )
 {
 #if defined( __LINUX__ )
     unsigned long args[4];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)buf;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
     return( __socketcall( SYS_RECV, args ) );
 #elif defined( __RDOS__ )
-    if( flags & MSG_PEEK )
+    if( flags & MSG_PEEK ) {
         return( RdosPollHandle( s, buf, len) );
-    else
+    } else {
         return( RdosReadHandle( s, buf, len) );
+    }
 #else
+
+    /* unused parameters */ (void)s; (void)buf; (void)len; (void)flags;
+
     return( -1 );
 #endif
 }

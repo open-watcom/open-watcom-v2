@@ -134,6 +134,10 @@ struct linger {
 
 #define SOMAXCONN 1024
 
+/* Cmds for ioctlsocket() */
+
+#define FIONBIO         0x1
+
 :endsegment
 
 
@@ -155,6 +159,10 @@ _WCRTLINK extern int getpeername( int __s, struct sockaddr *__name, socklen_t *_
 _WCRTLINK extern int getsockname( int __s , struct sockaddr *__name, socklen_t *__namelen );
 _WCRTLINK extern int connect( int __sockfd, const struct sockaddr *__serv_addr, socklen_t __addrlen );
 _WCRTLINK extern int shutdown( int __s, int __how );
+
+:segment RDOS
+_WCRTLINK extern int ioctlsocket (int s, long cmd, char *argp);
+:endsegment
 
 :segment LINUX
 :include poppack.sp

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,15 +42,10 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include "bool.h"
+#include "pathgrp2.h"
 
+#include "clibext.h"
 
-typedef struct PathGroup {
-    char    *drive;
-    char    *dir;
-    char    *fname;
-    char    *ext;
-    char    buffer[FILENAME_MAX + 4];
-} PGROUP;
 
 struct {                        // Program switches
     unsigned sort_date  :1;     // - sort by date
@@ -227,11 +223,10 @@ static int processSwitch        // PROCESS SWITCH
 #define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
 #if defined( __UNIX__ )
 #define FNAMECMPCHAR(a,b)   (a-b)
-#define ISVALIDENTRY(e)     (1)
+#define ISVALIDENTRY(e)     (true)
 #else
 #define FNAMECMPCHAR(a,b)   (tolower(a)-tolower(b))
 #define ISVALIDENTRY(e)     ((e->d_attr & _A_VOLID) == 0)
-
 #endif
 
 static int __fnmatch( char *pattern, char *string )
@@ -324,10 +319,10 @@ static int processFilePattern   // PROCESS FILE PATTERN
     , void* data )              // - not used
 {
     int             retn;       // - return code
-    DIR             *dp;        // - directory stuff
-    struct dirent   *entry;
+    DIR             *dirp;      // - directory stuff
+    struct dirent   *dire;
     struct stat     buf;
-    PGROUP          pg;
+    PGROUP2         pg;
     char            path[ _MAX_PATH ];
     char            pattern[ _MAX_PATH ]; // - file pattern
 
@@ -335,15 +330,15 @@ static int processFilePattern   // PROCESS FILE PATTERN
     _splitpath2( tp->text, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( path, pg.drive, pg.dir, ".", NULL );
     _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
-    dp = opendir( path );
-    if( dp == NULL ) {
+    dirp = opendir( path );
+    if( dirp == NULL ) {
         retn = errMsg( "opening directory:", path, NULL );
     } else {
         retn = 0;
-        for( entry = readdir( dp ); entry != NULL; entry = readdir( dp ) ) {
-            if( ISVALIDENTRY( entry ) ) {
-                if( __fnmatch( pattern, entry->d_name ) ) {
-                    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            if( ISVALIDENTRY( dire ) ) {
+                if( __fnmatch( pattern, dire->d_name ) ) {
+                    _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
                     if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
                         Text* tp;           // - current entry
                         retn = textAlloc( strlen( path ) + 1, &tp );
@@ -552,7 +547,7 @@ static int processCmdLine       // PROCESS COMMAND LINE
             any_options = 1;
             retn = processSwitch( cmd );
         } else {
-            Text *tp;           // - text entry
+            Text *tp;           // - text dire
             retn = textAlloc( strlen( cmd ), &tp );
             if( retn == 0 ) {
                 textInsert( tp, &file_patterns );

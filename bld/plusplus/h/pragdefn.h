@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ global AUX_INFO         *CurrInfo;
 global AUX_INFO         *DftCallConv;
 
 struct pragma_dbg_toggles  {
-    #define toggle_pick( id )   bool    id : 1;
+    #define toggle_pick( id )   boolbit     id : 1;
     #include "dbgtogg.h"
     #undef toggle_pick
 };

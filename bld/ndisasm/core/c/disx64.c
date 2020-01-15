@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,7 +365,8 @@ dis_handler_return X64PrefixGS( dis_handle *h, void *d , dis_dec_ins *ins )
 
     for( ;; ) {
         code = GetUByte( d, instruct_size );
-        if( ( code & 0xf8 ) == 0xd8 ) break;
+        if( ( code & 0xf8 ) == 0xd8 )
+            break;
         // Look Ahead for Prefixes
         switch( code ) {
         case 0x67:
@@ -568,7 +570,7 @@ static dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
     /* unused parameters */ (void)rw; (void)ins;
 
-    // If a REX prefix is present then AH, BH, CH, CH are not accessible
+    // If a REX prefix is present then AH, BH, CH, DH are not accessible
     // they represent the new SIL/DIL/BPL/SPL registers!
     if( ins->flags.u.x64 & DIF_X64_PEX_PR ) {
         switch( reg ) {
@@ -1138,10 +1140,11 @@ static dis_ref_type  X64GetRefType( REGWIDTH rw, dis_dec_ins *ins )
     case DI_X64_lss:
     case DI_X64_call4:
     case DI_X64_jmp4:
-        if( rw == RW_32BIT )
+        if( rw == RW_32BIT ) {
             return( DRT_X64_FARPTR48 );
-        else
+        } else {
             return( DRT_X64_FARPTR32 );
+        }
     case DI_X64_lgdt:
     case DI_X64_lidt:
     case DI_X64_sgdt:
@@ -1794,6 +1797,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
     code_8      code;
     REGWIDTH    rw = RW_64BIT;
     unsigned    oper;
+    RM          reg;
 
     /* unused parameters */ (void)h; (void)d;
 
@@ -1805,9 +1809,14 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
         rw = RW_16BIT;
     }
 
+    reg = code.type2.reg;
+    if( DIF_X64_REX_B & ins->flags.u.x64 ) {
+        reg += X64_EXTENDED_REG_OFFSET;
+    }
+
     switch( ins->type ) {
     case DI_X64_xchg2:
-        if( code.type2.reg == REG_RAX ) {
+        if( reg == REG_RAX ) {
 //            if( ins->flags.u.x64 & DIF_X64_REPE ) {
 //                ins->type = DI_X64_pause;
 //                ins->flags.u.x64 &= ~DIF_X64_REPE;
@@ -1816,7 +1825,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
 //            }
         } else {
             X64GetReg( RW_DEFAULT, REG_RAX, ins );
-            X64GetReg( RW_DEFAULT, code.type2.reg, ins );
+            X64GetReg( RW_DEFAULT, reg, ins );
         }
         return( DHR_DONE );
 
@@ -1831,7 +1840,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
         break;
     }
 
-    X64GetReg( rw, code.type2.reg, ins );
+    X64GetReg( rw, reg, ins );
 
     switch( ins->type ) {
     case DI_X64_pop:
@@ -2744,12 +2753,18 @@ static dis_ref_type GetRefType( dis_dec_ins *ins, unsigned op )
     switch( ins->op[op].type & DO_MASK ) {
     case DO_REG:
         reg = ins->op[op].base;
-        if(                      reg <= DR_X64_bh ) return( DRT_X64_BYTE );
-        if( reg >= DR_X64_ax  && reg <= DR_X64_r15w ) return( DRT_X64_WORD );
-        if( reg >= DR_X64_eax && reg <= DR_X64_eflags ) return( DRT_X64_DWORD );
-        if( reg >= DR_X64_rax && reg <= DR_X64_rip ) return( DRT_X64_QWORD );
-        if( reg >= DR_X64_cr0 && reg <= DR_X64_dr7 ) return( DRT_X64_DWORD );
-        if( reg >= DR_X64_es  && reg <= DR_X64_gs ) return( DRT_X64_WORD );
+        if( reg <= DR_X64_bh )
+            return( DRT_X64_BYTE );
+        if( reg >= DR_X64_ax  && reg <= DR_X64_r15w )
+            return( DRT_X64_WORD );
+        if( reg >= DR_X64_eax && reg <= DR_X64_eflags )
+            return( DRT_X64_DWORD );
+        if( reg >= DR_X64_rax && reg <= DR_X64_rip )
+            return( DRT_X64_QWORD );
+        if( reg >= DR_X64_cr0 && reg <= DR_X64_dr7 )
+            return( DRT_X64_DWORD );
+        if( reg >= DR_X64_es  && reg <= DR_X64_gs )
+            return( DRT_X64_WORD );
         break;
     case DO_MEMORY_ABS:
         return( ins->op[op].ref_type );
@@ -2845,7 +2860,9 @@ static size_t UnixMangleName( dis_dec_ins *ins, char *p, size_t len )
     default:
         for( i = 0; i < ins->num_ops; ++i ) {
             ref_type = GetRefType( ins, i );
-            if( ref_type != DRT_NONE ) break;
+            if( ref_type != DRT_NONE ) {
+                break;
+            }
         }
         break;
     }
@@ -2864,16 +2881,19 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     /* unused parameters */ (void)h; (void)d;
 
-    if( name == NULL ) name = temp_buff;
+    if( name == NULL )
+        name = temp_buff;
     p = name;
     if( ins->flags.u.x64 & DIF_X64_LOCK ) {
         p += DisGetString( DisInstructionTable[DI_X64_lock_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x64 & DIF_X64_REPNE ) {
         p += DisGetString( DisInstructionTable[DI_X64_repne_pr].name, p, false );
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x64 & DIF_X64_REPE ) {
@@ -2886,7 +2906,8 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             p += DisGetString( DisInstructionTable[DI_X64_rep_pr].name, p, false );
             break;
         }
-        if( flags & DFF_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX )
+            *p++ = ';';
         *p++ = ' ';
     }
     len = DisGetString( DisInstructionTable[ins->type].name, p, false );
@@ -3030,7 +3051,8 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
             *p++ = '[';
             p = DisAddReg( ins->op[i].base, p, flags );
             if( ins->op[i].index != DR_NONE ) {
-                if( ins->op[i].base != DR_NONE ) *p++ = '+';
+                if( ins->op[i].base != DR_NONE )
+                    *p++ = '+';
                 p = DisAddReg( ins->op[i].index, p, flags );
                 if( ins->op[i].scale != 1 ) {
                     *p++ = '*';
@@ -3145,7 +3167,8 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 over = '\0';
             }
             ins_flags.u.x64 &= ~SEGOVER;
-            if( flags & DFF_UNIX ) *p++ = '%';
+            if( flags & DFF_UNIX )
+                *p++ = '%';
             if( flags & DFF_REG_UP ) {
                 *p++ = (char)toupper( over );
                 *p++= 'S';

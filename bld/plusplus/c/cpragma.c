@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +51,7 @@
 #include "asmstmt.h"
 #include "ialias.h"
 #include "cgfront.h"
+#include "compinfo.h"
 // from \watcom\h
 #include "rtprior.h"
 
@@ -429,6 +431,21 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 }
 
 
+static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
+    unsigned level )            // - level to be validated
+{
+    bool ok;                    // - return: true ==> good level
+
+    if( level > WLEVEL_MAX ) {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        ok = false;
+    } else {
+        ok = true;
+    }
+    return( ok );
+}
+
+
 // forms: #pragma warning # level   (change message # to have level "level)
 //      : #pragma warning * level   (change all messages to have level "level)
 //
@@ -439,19 +456,19 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
     void )
 {
     unsigned msgnum;            // - message number
-    int level;                  // - new level
+    unsigned level;             // - new level
     bool change_all;            // - true ==> change all levels
     bool ignore;
 
     ignore = false;
+    change_all = false;
+    msgnum = 0;
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( CurToken == T_TIMES ) {
-        msgnum = 0;
         change_all = true;
     } else if( CurToken == T_CONSTANT ) {
         msgnum = U32Fetch( Constant64 );
-        change_all = false;
     } else {
         // ignore; MS or other vendor's #pragma
         ignore = true;
@@ -461,10 +478,12 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
         if( CurToken == T_CONSTANT ) {
             level = U32Fetch( Constant64 );
             NextToken();
-            if( change_all ) {
-                WarnChangeLevels( level );
-            } else {
-                WarnChangeLevel( level, msgnum );
+            if( warnLevelValidate( level ) ) {
+                if( change_all ) {
+                    WarnChangeLevels( level );
+                } else {
+                    WarnChangeLevel( level, msgnum );
+                }
             }
         } else {
             CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
@@ -498,7 +517,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
 
         // Enable message by setting its level to the lowest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( WLEVEL_ENABLE, msgnum );
+            WarnEnableDisable( true, msgnum );
         }
 
         if( CurToken != T_COMMA ) {
@@ -533,7 +552,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 
         // Disable message by setting its level to the highest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( WLEVEL_DISABLE, msgnum );
+            WarnEnableDisable( false, msgnum );
         }
 
         if( CurToken != T_COMMA ) {
@@ -1016,7 +1035,7 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
 //
 // #pragma break
 //
-static void pragBreak()
+static void pragBreak( void )
 {
     PPCTL_ENABLE_MACROS();
     NextToken();

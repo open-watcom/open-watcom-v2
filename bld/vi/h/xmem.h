@@ -69,7 +69,7 @@ typedef struct {
     long            amount_left;
     long            allocated;
     void            *xtd_vector;
-    bool            inuse   : 1;
+    boolbit         inuse   : 1;
 } xtd_struct;
 
 /* extd. mem pragmas */
@@ -124,8 +124,8 @@ typedef struct {
     unsigned char       max_logical;
     unsigned char       handles[EMS_MAX_HANDLES];
     physical_descriptor physical[EMS_MAX_PHYSICAL_PAGES];
-    bool                inuse       : 1;
-    bool                exhausted   : 1;
+    boolbit             inuse       : 1;
+    boolbit             exhausted   : 1;
 } ems_struct;
 
 /* ems pragmas */
@@ -205,9 +205,9 @@ typedef struct {
     unsigned long       size;
     unsigned short      handles[XMS_MAX_HANDLES];
     unsigned short      next_handle;
-    bool                inuse       : 1;
-    bool                exhausted   : 1;
-    bool                small_block : 1;
+    boolbit             inuse       : 1;
+    boolbit             exhausted   : 1;
+    boolbit             small_block : 1;
 } xms_struct;
 
 #include "pushpck1.h"

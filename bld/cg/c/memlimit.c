@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,11 +52,11 @@
 #include "feprotos.h"
 
 
-static    pointer_int   MemLimit;
+static    pointer_uint  MemLimit;
 static    bool          IckyWicky;
 
-static  bool    FlushSomeOpt( pointer_int size )
-/**********************************************/
+static  bool    FlushSomeOpt( pointer_uint size )
+/***********************************************/
 {
     segment_id  old_segid;
     bool        freed;
@@ -76,8 +76,8 @@ static  bool    FlushSomeOpt( pointer_int size )
 }
 
 
-static  bool    ChkMemLimit( pointer_int limit )
-/**********************************************/
+static  bool    ChkMemLimit( pointer_uint limit )
+/***********************************************/
 {
     if( _IsModel( MEMORY_LOW_FAILS ) )
         return( false );
@@ -93,7 +93,8 @@ static  bool    ChkMemLimit( pointer_int limit )
 void    CalcMemLimit( void )
 /**************************/
 {
-    pointer_int size;
+    pointer_uint    size;
+
     size = MemSize();
     MemLimit = size - size / 4;
     IckyWicky = false;
@@ -103,7 +104,7 @@ void    CalcMemLimit( void )
 void    FlushOpt( void )
 /**********************/
 {
-    FlushSomeOpt( (pointer_int)-1 );
+    FlushSomeOpt( (pointer_uint)-1 );
 }
 
 

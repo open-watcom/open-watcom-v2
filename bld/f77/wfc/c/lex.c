@@ -93,9 +93,9 @@ static  itnode  *NewITNode( void ) {
         new->list = NULL;
         new->flags = 0;
         new->typ = FT_NO_TYPE;
-        new->chsize = 0;
-        new->is_unsigned = 0;
-        new->is_catparen = 0;
+//        new->chsize = 0;
+        new->is_unsigned = false;
+        new->is_catparen = false;
     }
     return( new );
 }

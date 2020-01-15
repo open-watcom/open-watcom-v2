@@ -59,19 +59,19 @@ hextab  db      "0123456789ABCDEF"
 
         defpe   __STK
         _guess                          ; guess: no overflow
-          cmp   ax,sp                   ; - quit if user asking for too much
-          _quif ae                      ; - . . .
+          cmp   ax,sp                   ; - check if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub   ax,sp                   ; - calculate new low point
           neg   ax                      ; - calc what new SP would be
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
           push  ds                      ; - save ds
           mov   ds,cs:dgroupp           ; - load ds from DGROUP
 endif
-          cmp   ax,ds:_STACKLOW         ; - quit if too much
+          cmp   ax,ds:_STACKLOW         ; - check if too much
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
           pop   ds                      ; - restore ds
 endif
-          _quif be                      ; - . . .
+        _quif be                        ; quit if too much
           ret                           ; - return
         _endguess                       ; endguess
 
@@ -118,19 +118,20 @@ endif                                   ; dx:ax points at retaddr
         mov     bx,1
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
+
         endproc __STK
 
 _putw proc near
         mov     dx,bx                   ; save value
         mov     cl,12                   ; setup shift count
-_lup:
-        mov     bx,dx                   ; get value
-        shr     bx,cl                   ; put in bottom 4 bits.
-        and     bx,0fh
-        mov     al,cs:hextab[bx]
-        stosb
-        sub     cl,4
-        jns     _lup
+        _loop
+          mov   bx,dx                   ; get value
+          shr   bx,cl                   ; put in bottom 4 bits.
+          and   bx,0fh
+          mov   al,cs:hextab[bx]
+          stosb
+          sub   cl,4
+        _loopif ns
         ret
 _putw   endp
 

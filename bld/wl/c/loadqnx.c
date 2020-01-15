@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,8 +54,8 @@ static lmf_rw_end       RWEndRec;
 static group_entry *    CurrGroup;
 
 
-#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof(lmf_data))
-#define VERIFY_END (VERIFY_OFFSET + sizeof(RWEndRec.verify))
+#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
+#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
 
 static void WriteLoadRec( void )
 /******************************/
@@ -67,7 +68,7 @@ static void WriteLoadRec( void )
     if( CurrGroup->size - AmountWritten > QNX_MAX_DATA_SIZE ){
         record.data_nbytes = QNX_MAX_REC_SIZE;
     } else {
-        record.data_nbytes = CurrGroup->size - AmountWritten + sizeof(lmf_data);
+        record.data_nbytes = CurrGroup->size - AmountWritten + sizeof( lmf_data );
     }
     WriteLoad( &record, sizeof( lmf_record ) );
     data.segment = QNX_SEL_NUM( CurrGroup->grp_addr.seg );
@@ -222,9 +223,9 @@ static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg
     }
     pos = PosLoad();    /* get current position */
     while( head != NULL ) {
-        SeekLoad( pos + sizeof(lmf_record) );
+        SeekLoad( pos + sizeof( lmf_record ) );
         if( islinear ) {
-            WriteLoad( &seg, sizeof(unsigned_16) );
+            WriteLoad( &seg, sizeof( unsigned_16 ) );
         }
         size = DumpMaxRelocList( &head, QNX_MAX_FIXUPS - adjust ) + adjust;
         SeekLoad( pos );
@@ -275,8 +276,8 @@ static void WriteQNXData( unsigned_32 * segments )
 }
 
 
-static bool CheckQNXGrpFlag( void *_seg, void *_grp )
-/**************************************************************/
+static bool checkGroupFlags( void *_seg, void *_grp )
+/***************************************************/
 {
     seg_leader     *seg = _seg;
     group_entry    *grp = _grp;
@@ -284,27 +285,28 @@ static bool CheckQNXGrpFlag( void *_seg, void *_grp )
 
     sflags = seg->segflags;
 
-// the default value for segflags is set to SEG_LEVEL_3 (0xC00) for OS/2
-// and SEG_MOVABLE (0x10) for windows. Since the highest value that can be
-// specified for a QNX seg flag is 4, if sflags >= 0x10, there was no QNX value
-// specified.
+    // the default value for segflags is set to SEG_LEVEL_3 (0xC00) for OS/2
+    // and SEG_MOVABLE (0x10) for windows. Since the highest value that can be
+    // specified for a QNX seg flag is 4, if sflags >= 0x10, there was no QNX value
+    // specified.
 
     if( sflags < 0x10 ) {
-        if( (sflags & 1) == 0 ) {     // if can read/write or exec/read
-            grp->u.qnxflags &= ~1;       // can for all segments.
+        if( (sflags & 1) == 0 ) {       // if can read/write or exec/read
+            grp->u.qnxflags &= ~1;      // can for all segments.
             return true;                // no need to check others
         }
     } else {
-// make segments read/write or exec/read unless every segment is specifically
-// set otherwise.
+        // make segments read/write or exec/read unless every segment is specifically
+        // set otherwise.
+
         grp->u.qnxflags &= ~1;
         return true;
     }
     return false;
 }
 
-static void SetQNXGroupFlags( void )
-/**********************************/
+void SetQNXGroupFlags( void )
+/***************************/
 // This goes through the groups, setting the flag word to be compatible with
 // the flag words that are specified in the segments.
 {
@@ -316,16 +318,15 @@ static void SetQNXGroupFlags( void )
         } else {
             group->u.qnxflags = QNX_EXEC_ONLY;     // 3
         }
-        Ring2Lookup( group->leaders, CheckQNXGrpFlag, group );
+        Ring2Lookup( group->leaders, checkGroupFlags, group );
     }
 }
 
 void SetQNXSegFlags( void )
-/********************************/
+/*************************/
 {
-    SetSegFlags( (seg_flags *) FmtData.u.qnx.seg_flags );
+    SetSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
     FmtData.u.qnx.seg_flags = NULL;        // segsegflags frees the list.
-    SetQNXGroupFlags();
 }
 
 static void WriteQNXResource( void )
@@ -349,7 +350,7 @@ static void WriteQNXResource( void )
                 return;
             }
             len = QFileSize( file );
-            if( len + sizeof(lmf_resource) > QNX_MAX_REC_SIZE ) {
+            if( len + sizeof( lmf_resource ) > QNX_MAX_REC_SIZE ) {
                 LnkMsg( WRN+MSG_RESOURCE_TOO_BIG, "s", FmtData.resource );
                 return;
             }
@@ -391,7 +392,7 @@ void FiniQNXLoadFile( void )
     }
     nbytes = NumGroups * sizeof( unsigned_32 );
     segments = (unsigned_32 *) alloca( nbytes );
-    SeekLoad( sizeof(lmf_header) + nbytes + sizeof(lmf_record) );
+    SeekLoad( sizeof( lmf_header ) + nbytes + sizeof( lmf_record ) );
     WriteQNXResource();
     WriteQNXData( segments );
     WriteQNXRelocs( Root->reloclist, LMF_FIXUP_REC, 0 );

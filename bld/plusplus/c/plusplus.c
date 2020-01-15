@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +60,8 @@
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
+#include "ideentry.h"
+#include "pathgrp2.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "enterdb.h"
@@ -116,14 +119,10 @@ static void resetHandlers( void )
 static void MakePgmName(        // MAKE CANONICAL FILE NAME
     char *argv )                // - input name
 {
-    char buff[_MAX_PATH2];
-    char *drv;                  // - drive
-    char *dir;                  // - directory
-    char *fnm;                  // - file name
-    char *ext;                  // - extension
+    PGROUP2     pg;
 
-    _splitpath2( argv, buff, &drv, &dir, &fnm, &ext );
-    SrcFName = FNameAdd( fnm );
+    _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    SrcFName = FNameAdd( pg.fname );
     if( ModuleName == NULL ) {
         ModuleName = strsave( SrcFName );
     }
@@ -309,7 +308,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     MsgDisplayLineArgs( "Compiling: ", WholeFName, NULL );
                 }
             }
-            if( 0 < ErrCount ) {
+            if( ErrCount != 0 ) {
                 CompFlags.cmdline_error = true;
             }
             PTypeCheckInit();       /* must come after command line parsing */
@@ -424,11 +423,11 @@ static int doCCompile(          // COMPILE C++ PROGRAM
 static void initCompFlags( void )
 {
     struct {
-        bool    ignore_environment : 1;
-        bool    ignore_current_dir : 1;
-        bool    ide_cmd_line       : 1;
-        bool    ide_console_output : 1;
-        bool    dll_active         : 1;
+        boolbit     ignore_environment      : 1;
+        boolbit     ignore_current_dir      : 1;
+        boolbit     ide_cmd_line_has_files  : 1;
+        boolbit     ide_console_output      : 1;
+        boolbit     dll_active              : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;
@@ -436,13 +435,13 @@ static void initCompFlags( void )
 
     __save_flag( ignore_environment );
     __save_flag( ignore_current_dir );
-    __save_flag( ide_cmd_line );
+    __save_flag( ide_cmd_line_has_files );
     __save_flag( ide_console_output );
     __save_flag( dll_active );
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     __restore_flag( ignore_environment );
     __restore_flag( ignore_current_dir );
-    __restore_flag( ide_cmd_line );
+    __restore_flag( ide_cmd_line_has_files );
     __restore_flag( ide_console_output );
     __restore_flag( dll_active );
     CompFlags.dll_subsequent = true;
@@ -471,7 +470,7 @@ static int front_end(           // FRONT-END PROCESSING
 #endif
         CompInfo.exit_jmpbuf = exit_jmpbuf;
         CtxSetCurrContext( CTX_INIT );
-//printf( "ErrLimit = %d\n", ErrLimit );
+//printf( "ErrLimit = %u\n", ErrLimit );
         ExitPointAcquire( cpp );
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );

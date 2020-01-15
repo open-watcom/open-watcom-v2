@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     HBITMAP     newbitmap;
     HWND        hwnd;
     img_node    *node;
-    BOOL        new_pres;
+    bool        new_pres;
 
     if( hmdiwnd != NULL ) {
         hwnd = hmdiwnd;
@@ -146,10 +146,10 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         return;
     }
 
-    new_pres = FALSE;
+    new_pres = false;
     if( pres == (WPI_PRES)NULL ) {
         pres = _wpi_getpres( hwnd );
-        new_pres = TRUE;
+        new_pres = true;
     }
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
@@ -309,7 +309,7 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
     wie_clrtype type;
     WPI_PRES    pres;
     int         brushsize;
-    BOOL        gridvisible;
+    bool        gridvisible;
 
     GetClientRect( hwnd, &rcclient );
     wndwidth = _wpi_getwidthrect( rcclient );
@@ -448,7 +448,7 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
     WPI_RECT    rcclient;
     wie_clrtype type;
     int         brushsize;
-    BOOL        gridvisible;
+    bool        gridvisible;
 
     hwnd = (HWND)GET_HWND_PARAM2( lparam );
     mousebutton = currentMouseButton;
@@ -681,8 +681,8 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     WPI_POINT   imgstart_pt;
     WPI_POINT   imgend_pt;
     WPI_RECT    rect;
-    BOOL        dofillrgn;
-    BOOL        is_rect;
+    bool        dofillrgn;
+    bool        is_rect;
     wie_clrtype type;
     img_node    *node;
     WPI_RECTDIM tmps;
@@ -724,26 +724,26 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     dithered = GetSelectedColor( mousebutton, &solid, &type );
     switch( toolType ) {
     case IMGED_RECTO:
-        dofillrgn = FALSE;
-        is_rect = TRUE;
+        dofillrgn = false;
+        is_rect = true;
         color = solid;
         break;
 
     case IMGED_RECTF:
-        dofillrgn = TRUE;
-        is_rect = TRUE;
+        dofillrgn = true;
+        is_rect = true;
         color = dithered;
         break;
 
     case IMGED_CIRCLEO:
-        dofillrgn = FALSE;
-        is_rect = FALSE;
+        dofillrgn = false;
+        is_rect = false;
         color = solid;
         break;
 
     case IMGED_CIRCLEF:
-        dofillrgn = TRUE;
-        is_rect = FALSE;
+        dofillrgn = true;
+        is_rect = false;
         color = dithered;
         break;
 
@@ -1010,12 +1010,12 @@ void CheckGridItem( HMENU hmenu )
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
     if( _wpi_isitemchecked( hmenu, IMGED_GRID ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_GRID, MF_UNCHECKED, FALSE );
-        ImgedConfigInfo.grid_on = FALSE;
+        ImgedConfigInfo.grid_on = false;
         BlowupImage( NULL, NULL );
         PrintHintTextByID( WIE_GRIDTURNEDOFF, NULL );
     } else {
         _wpi_checkmenuitem( hmenu, IMGED_GRID, MF_CHECKED, FALSE );
-        ImgedConfigInfo.grid_on = TRUE;
+        ImgedConfigInfo.grid_on = true;
         BlowupImage( NULL, NULL );
         PrintHintTextByID( WIE_GRIDTURNEDON, NULL );
     }
@@ -1253,11 +1253,11 @@ void CheckSquareGrid( HMENU hmenu )
 {
     if( _wpi_isitemchecked( hmenu, IMGED_SQUARE ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_SQUARE, MF_UNCHECKED, FALSE );
-        ImgedConfigInfo.square_grid = FALSE;
+        ImgedConfigInfo.square_grid = false;
         PrintHintTextByID( WIE_SQUAREGRIDOFF, NULL );
     } else {
         _wpi_checkmenuitem( hmenu, IMGED_SQUARE, MF_CHECKED, FALSE );
-        ImgedConfigInfo.square_grid = TRUE;
+        ImgedConfigInfo.square_grid = true;
         PrintHintTextByID( WIE_SQUAREGRIDON, NULL );
     }
 

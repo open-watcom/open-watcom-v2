@@ -244,6 +244,10 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
 {
     bool        ret;
 
+#ifndef __NT__
+    /* unused parameters */ (void)inst; (void)wnd; (void)act; (void)file; (void)topic;
+#endif
+
     ret = false;
 
 #ifdef __OS2_PM__

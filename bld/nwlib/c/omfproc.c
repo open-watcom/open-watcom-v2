@@ -391,7 +391,8 @@ static void trimOmfHeader( void )
 
     len = GET_LE_16( omfRec->basic.len );
     omfRec->basic.contents[len - 1] = '\0';
-    len = (unsigned_16)strlen( TrimPath( (char *)omfRec->basic.contents + 1 ) );
+    TrimPathInPlace( (char *)omfRec->basic.contents + 1 );
+    len = (unsigned_16)strlen( (char *)omfRec->basic.contents + 1 );
     omfRec->basic.contents[0] = len;
     omfRec->basic.len = GET_LE_16( len + 2 );
     CalcOmfRecordCheckSum( omfRec );

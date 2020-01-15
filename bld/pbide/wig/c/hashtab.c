@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,24 +39,25 @@
 #include "pbmem.h"
 #include "hashtab.h"
 
+
 typedef struct hash_entry {
-        struct hash_entry       *next;
-        int                     keylen;
-        const char              *key;
-        void                    *value;
+    struct hash_entry   *next;
+    int                 keylen;
+    const char          *key;
+    void                *value;
 } hash_entry;
 
 typedef struct hash_table {
-        int             size;
-        hash_entry      *tab[1];
+    int                 size;
+    hash_entry          *tab[1];
 } hash_table;
 
 
-hash_tab NewHashTable( int size ) {
-/*********************************/
-
-    hash_table          *table;
-    long                tabsize;
+hash_tab NewHashTable( int size )
+/*******************************/
+{
+    hash_table      *table;
+    long            tabsize;
 
     assert( size > 0 );
 
@@ -68,12 +69,12 @@ hash_tab NewHashTable( int size ) {
 }
 
 
-void DestroyHashTable( hash_tab tab ) {
-/*************************************/
-
-    long        x;
-    hash_table  *htable = tab;
-    hash_entry  *htemp;
+void DestroyHashTable( hash_tab tab )
+/***********************************/
+{
+    long            x;
+    hash_table      *htable = tab;
+    hash_entry      *htemp;
 
     if( tab != NULL ) {
         for( x = 0; x < htable->size; x++ ) {
@@ -88,14 +89,14 @@ void DestroyHashTable( hash_tab tab ) {
 }
 
 
-void InsertHashValue( hash_tab tab, const char *key, int len, void *value ) {
-/***************************************************************************/
-
-    long                x;
-    unsigned long       hash = 0;
-    hash_table          *htable = tab;
-    hash_entry          *htmp;
-    hash_entry          *hfinger;
+void InsertHashValue( hash_tab tab, const char *key, int len, void *value )
+/*************************************************************************/
+{
+    long            x;
+    unsigned long   hash = 0;
+    hash_table      *htable = tab;
+    hash_entry      *htmp;
+    hash_entry      *hfinger;
 
     assert( tab );
     assert( key );
@@ -124,9 +125,9 @@ void InsertHashValue( hash_tab tab, const char *key, int len, void *value ) {
 }
 
 
-long HashByte(long hash, char  byte ) {
-/*************************************/
-
+long HashByte( long hash, char byte )
+/***********************************/
+{
     /* hash byte, and incorporate it into the following hash */
 
     hash = ( hash << 4 ) + tolower( byte );
@@ -137,10 +138,10 @@ long HashByte(long hash, char  byte ) {
 }
 
 
-long HashString(char *string, long len ) {
-/*****************************************/
-
-    long        hash = 0;
+long HashString( const char *string, long len )
+/*********************************************/
+{
+    long            hash = 0;
 
     assert( string );
     assert( len > 0 );
@@ -154,12 +155,12 @@ long HashString(char *string, long len ) {
 }
 
 
-void *FindHashEntry( hash_tab tab, long hash, const char *key, int len ) {
-/************************************************************************/
-
-    hash_table          *htable = tab;
-    hash_entry          *htmp;
-    unsigned long       cell;
+void *FindHashEntry( hash_tab tab, long hash, const char *key, int len )
+/**********************************************************************/
+{
+    hash_table      *htable = tab;
+    hash_entry      *htmp;
+    unsigned long   cell;
 
     assert( tab );
     assert( key );
@@ -167,12 +168,10 @@ void *FindHashEntry( hash_tab tab, long hash, const char *key, int len ) {
 
     cell = (unsigned long)hash % htable->size;
 
-    htmp = htable->tab[cell];
-    while( htmp ) {
+    for( htmp = htable->tab[cell]; htmp != NULL; htmp = htmp->next ) {
         if( ( len == htmp->keylen ) && !strnicmp( htmp->key, key, len ) ) {
             return( htmp->value );
         }
-        htmp = htmp->next;
     }
     return( NULL );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,46 +45,63 @@
 #include "specials.h"
 #include "load16m.h"
 
-static unsigned_16  CurrModThere;
-static arcdata *    ArcBuffer;
-static unsigned_32  ArcBufLen;
-static mod_entry ** ModTable;
-static unsigned_16  CurrModHandle;
 
-section **          SectOvlTab;
+#define INITIAL_MOD_ALLOC   32
+#define INITIAL_ARC_ALLOC   32
+#define MAX_NUM_MODULES     _8KB
+
+static section      **SectOvlTab;
+static arcdata      *ArcList;
+static unsigned_32  ArcListMaxLen;
+static mod_entry    **ModTable;
+static unsigned_16  ModTableMaxLen;
+static unsigned_16  CurrModHandle;
 
 /* forward declarations */
 
-static bool NewRefVector( symbol *, unsigned_16, unsigned_16 );
-static void ScanArcs( mod_entry *mod );
+static void     ScanArcs( mod_entry *mod );
 
-#define MOD_DEREF( x )  (ModTable[(x)])
-#define INITIAL_MOD_ALLOC 32
-#define INITIAL_ARC_ALLOC 32
-#define MAX_NUM_MODULES   (8 * 1024)
-
-void ResetDistrib( void )
-/******************************/
+static void DistribNumASect( section *sect )
+/******************************************/
 {
-    ArcBuffer = NULL;
+    SectOvlTab[OvlSectNum++] = sect;
+}
+
+void DistribNumberSections( void )
+/********************************/
+{
+    _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlSectNum + 1 ) );
+    /* OvlSectNum value 0 is reserved for Root */
+    /* Overlayed sections start at 1 */
+    OvlSectNum = 0;
+    DistribNumASect( Root );
+    WalkAreas( Root->areas, DistribNumASect );
+}
+
+void ResetDistribSupp( void )
+/***************************/
+{
+    ArcList = NULL;
+    ArcListMaxLen = 0;
     ModTable = NULL;
+    ModTableMaxLen = 0;
     SectOvlTab = NULL;
 }
 
-void InitModTable( void )
-/******************************/
+void DistribInitMods( void )
+/**************************/
 {
-    CurrModThere = INITIAL_MOD_ALLOC;
+    ModTableMaxLen = INITIAL_MOD_ALLOC;
     _ChkAlloc( ModTable, INITIAL_MOD_ALLOC * sizeof( mod_entry * ) );
     CurrModHandle = 0;
-    ArcBufLen = INITIAL_ARC_ALLOC;
-    _ChkAlloc( ArcBuffer, sizeof(arcdata)
-                          + (INITIAL_ARC_ALLOC - 1) * sizeof(dist_arc));
-    MakePass1Blocks();
+    ArcListMaxLen = INITIAL_ARC_ALLOC;
+    _ChkAlloc( ArcList, offsetof( arcdata, arcs ) + INITIAL_ARC_ALLOC * sizeof( dist_arc ) );
+    ArcList->numarcs = 0;
+    ResetPass1Blocks();
 }
 
-void AddModTable( mod_entry * lp, unsigned_16 libspot )
-/************************************************************/
+void DistribAddMod( mod_entry * lp, overlay_ref ovlref )
+/******************************************************/
 /* add this module to the table, and make the arclist field point to a
  * scratch buffer */
 // NYI: segdata changes have completely broken distributing libraries.
@@ -92,32 +110,32 @@ void AddModTable( mod_entry * lp, unsigned_16 libspot )
     mod_entry **    new;
 
     CurrModHandle++;
-    if( CurrModHandle == CurrModThere ) {
-        if( CurrModThere > MAX_NUM_MODULES ) {
+    if( CurrModHandle == ModTableMaxLen ) {
+        if( ModTableMaxLen > MAX_NUM_MODULES ) {
             LnkMsg( FTL+MSG_TOO_MANY_LIB_MODS, NULL );
         }
-        _ChkAlloc( new, sizeof( mod_entry * ) * CurrModThere * 2 );
-        memcpy( new, ModTable, sizeof( mod_entry * ) * CurrModThere );
+        _ChkAlloc( new, sizeof( mod_entry * ) * ModTableMaxLen * 2 );
+        memcpy( new, ModTable, sizeof( mod_entry * ) * ModTableMaxLen );
         _LnkFree( ModTable );
         ModTable = new;
-        CurrModThere *= 2;
+        ModTableMaxLen *= 2;
     }
-    ModTable[ CurrModHandle ] = lp;
-    lp->x.arclist = ArcBuffer;
-    ArcBuffer->numarcs = 0;
+    ModTable[CurrModHandle] = lp;
+    lp->x.arclist = ArcList;
+    ArcList->numarcs = 0;
     if( lp->modinfo & MOD_FIXED ) {
-        ArcBuffer->ovlref = libspot;
+        ArcList->ovlref = ovlref;
     } else {
-        ArcBuffer->ovlref = NO_ARCS_YET;
+        ArcList->ovlref = NO_ARCS_YET;
     }
 }
 
-void InitArcBuffer( mod_entry * mod )
-/******************************************/
+void InitArcList( mod_entry * mod )
+/*********************************/
 /* set up the mod_entry arcdata field for dead code elimination */
 {
     if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
-        _PermAlloc( mod->x.arclist, sizeof(arcdata) - DIST_ONLY_SIZE );
+        _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
     }
 }
 
@@ -178,21 +196,18 @@ static void DefineOvlSegments( mod_entry *mod )
     Ring2Walk( mod->publist, KillUnrefedSyms );
 }
 
-void SetSegments( void )
+void DistribSetSegments( void )
 /*****************************/
 // now that we know where everything is, do all the processing that has been
 // postponed until now.
 {
-    if( FmtData.type & MK_DOS16M ) {
-        MakeDos16PM();
-    }
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
     ObjFormat |= FMT_DEBUG_COMENT;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _LnkFree( ArcBuffer );
-        ArcBuffer = NULL;
+        _LnkFree( ArcList );
+        ArcList = NULL;
     }
     if( LinkFlags & LF_STRIP_CODE ) {
         WalkMods( DefineOvlSegments );
@@ -200,19 +215,19 @@ void SetSegments( void )
 #if 0           // NYI: distributing libraries completely broken.
     unsigned        index;
     mod_entry *     mod;
-    unsigned_16     ovlref;
+    overlay_ref     ovlref;
     mod_entry **    currmod;
     unsigned        num_segdefs;
 
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         for( index = 1; index <= CurrModHandle; index++ ) {
-            mod = ModTable[ index ];
+            mod = ModTable[index];
             CurrMod = mod;
             ovlref = mod->x.arclist->ovlref;
             if( ovlref == NO_ARCS_YET ) {       // only data referenced
                 CurrSect = Root;
             } else {
-                CurrSect = SectOvlTab[ ovlref ];
+                CurrSect = SectOvlTab[ovlref];
             }
             DefModSegments( mod );
             mod->x.next = NULL;
@@ -230,56 +245,84 @@ void SetSegments( void )
         SectOvlTab = NULL;
     }
 #endif
-    ReleasePass1();
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+        _LnkFree( SectOvlTab );
+        SectOvlTab = NULL;
+    }
+    ReleasePass1Blocks();
 }
 
-void FreeDistStuff( void )
-/*******************************/
+void FreeDistribSupp( void )
+/**************************/
 {
     unsigned    index;
 
     for( index = 1; index <= CurrModHandle; index++ ) {
-        FreeAMod( ModTable[ index ] );
+        FreeAMod( ModTable[index] );
     }
     _LnkFree( ModTable );
-    _LnkFree( ArcBuffer );
+    _LnkFree( ArcList );
     _LnkFree( SectOvlTab );
-    ReleasePass1();
+    ReleasePass1Blocks();
 }
 
-void ProcDistMods( void )
-/******************************/
+void DistribProcMods( void )
+/**************************/
 {
     unsigned_16 index;
     mod_entry * mod;
 
     for( index = 1; index <= CurrModHandle; index++ ) {
-        mod = ModTable[ index ];
+        mod = ModTable[index];
         CurrSect = mod->n.sect;
         PModule( mod );
     }
 }
 
-#define SECT_VISITED 0x8000
-
-unsigned_16 LowestAncestor( unsigned_16 ovl1, section * sect )
-/*******************************************************************/
+overlay_ref LowestAncestor( overlay_ref ovlref, section * sect )
+/**************************************************************/
 /* find the lowest common ancestor of the two overlay values by marking all of
  * the ancestors of the first overlay, and then looking for marked ancestors
  * of the other overlay */
 {
-    section *   list;
+    section     *list;
 
     for( list = sect; list != NULL; list = list->parent ) {
-        list->ovl_num |= SECT_VISITED;
+        // set visited flag
+        list->next_sect = (void *)((pointer_int)list->next_sect | 1);
     }
-    for( list = SectOvlTab[ ovl1 ]; (list->ovl_num & SECT_VISITED) == 0 ; ) {
-        list = list->parent;
+    for( list = SectOvlTab[ovlref]; list != NULL; list = list->parent ) {
+        // check visited flag
+        if( (pointer_int)list->next_sect & 1 ) {
+            break;
+        }
     }
     for( ; sect != NULL; sect = sect->parent ) {
-        sect->ovl_num &= ~SECT_VISITED;
+        // reset visited flag
+        sect->next_sect = (void *)((pointer_int)sect->next_sect & ~1);
     }
-    return( list->ovl_num );
+    return( list->ovlref );
+}
+
+static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlref )
+/*********************************************************************************/
+/* sometimes there can be an overlay vector generated to a routine specified
+ * in an .OBJ file caused by a call from a library routine. this checks for
+ * this case.*/
+{
+    if( ( sym->p.seg == NULL )
+        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+        return( true );
+    }
+    /*
+     * at this point, we know it has already been defined, but does not have an
+     * overlay vector, and is not data
+     */
+    if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
+        OvlVectorize( sym );
+        return( true );
+    }
+    return( false );
 }
 
 void DefDistribSym( symbol * sym )
@@ -288,25 +331,24 @@ void DefDistribSym( symbol * sym )
  * and make the symbol point to the current module. All symbols which get
  * passed to this routine are in an overlay class. */
 {
-    arcdata *   arcs;
-    segdata *   seg;
+    arcdata     *arclist;
+    segdata     *seg;
 
     if( sym->info & SYM_REFERENCED ) {
-        arcs = CurrMod->x.arclist;
+        arclist = CurrMod->x.arclist;
         if( CurrMod->modinfo & MOD_FIXED ) {
             seg = sym->p.seg;
             if( seg->iscode ) {      // if code..
-                NewRefVector( sym, sym->u.d.ovlref, arcs->ovlref );
+                NewRefVector( sym, sym->u.d.ovlref, arclist->ovlref );
             } else if( (sym->u.d.ovlstate & OVL_FORCE) == 0 ) {
                 // don't generate a vector.
                 sym->u.d.ovlstate |= OVL_FORCE | OVL_NO_VECTOR;
             }
         } else {
-            if( arcs->ovlref == NO_ARCS_YET ) {
-                arcs->ovlref = sym->u.d.ovlref;
+            if( arclist->ovlref == NO_ARCS_YET ) {
+                arclist->ovlref = sym->u.d.ovlref;
             } else {
-                arcs->ovlref = LowestAncestor( arcs->ovlref,
-                                               SectOvlTab[sym->u.d.ovlref] );
+                arclist->ovlref = LowestAncestor( arclist->ovlref, SectOvlTab[sym->u.d.ovlref] );
             }
         }
     }
@@ -317,18 +359,16 @@ static void AddArc( dist_arc arc )
 /********************************/
 /* add an arc to the arclist for the current module */
 {
-    arcdata *   arclist;
+    arcdata     *arclist;
 
     arclist = CurrMod->x.arclist;
-    if( arclist->numarcs >= ArcBufLen ) {
-        _ChkAlloc( arclist, sizeof(arcdata)
-                             + (ArcBufLen * 2 - 1) * sizeof(dist_arc) );
-        memcpy( arclist, ArcBuffer, sizeof(arcdata)
-                                       + (ArcBufLen-1) * sizeof(dist_arc));
-        _LnkFree( ArcBuffer );
+    if( arclist->numarcs >= ArcListMaxLen ) {
+        _ChkAlloc( arclist, offsetof( arcdata, arcs ) + 2 * ArcListMaxLen * sizeof( dist_arc ) );
+        memcpy( arclist, ArcList, offsetof( arcdata, arcs ) + ArcListMaxLen * sizeof( dist_arc ) );
+        _LnkFree( ArcList );
         CurrMod->x.arclist = arclist;
-        ArcBuffer = arclist;
-        ArcBufLen *= 2;
+        ArcList = arclist;
+        ArcListMaxLen *= 2;
     }
     arclist->arcs[arclist->numarcs] = arc;
     arclist->numarcs++;
@@ -339,7 +379,7 @@ static bool NotAnArc( dist_arc arc )
 /* return true if this is not an arc in the current module */
 {
     unsigned    index;
-    arcdata *   arclist;
+    arcdata     *arclist;
 
     arclist = CurrMod->x.arclist;
     for( index = arclist->numarcs; index-- > 0; ) {
@@ -351,7 +391,7 @@ static bool NotAnArc( dist_arc arc )
 }
 
 void RefDistribSym( symbol * sym )
-/***************************************/
+/********************************/
 /* add an arc to the reference graph if it is not already in the graph */
 {
     mod_entry * mod;
@@ -361,7 +401,7 @@ void RefDistribSym( symbol * sym )
     arc.sym = sym;
     if( sym->info & SYM_DEFINED ) {
         if( sym->info & SYM_DISTRIB ) {
-            mod = ModTable[ sym->u.d.modnum ];
+            mod = ModTable[sym->u.d.modnum];
             if( mod->modinfo & MOD_FIXED ) {        // add reference, as long
                 seg = sym->p.seg;                   // as it is a code ref.
                 if( seg->iscode ) {
@@ -383,66 +423,43 @@ void RefDistribSym( symbol * sym )
     }
 }
 
-static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
-                                                   unsigned_16 sym_ovlnum )
-/*************************************************************************/
-/* sometimes there can be an overlay vector generated to a routine specified
- * in an .OBJ file caused by a call from a library routine. this checks for
- * this case.*/
-{
-    if( ( sym->p.seg == NULL )
-        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
-        return( true );
-    }
-/*
- * at this point, we know it has already been defined, but does not have an
- * overlay vector, and is not data
-*/
-    if( LowestAncestor( sym_ovlnum, SectOvlTab[ ovlnum ] ) != sym_ovlnum ) {
-        Vectorize( sym );
-        return( true );
-    }
-    return( false );
-}
-
-static void DoRefGraph( unsigned_16 ovlnum, mod_entry * mod )
+static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )
 /***********************************************************/
 /* checks to see if the mod has changed position, and if it has, check all
  * of the routines that mod references */
 {
-    arcdata *   arcs;
-    unsigned_16 ancestor;
+    arcdata     *arclist;
+    overlay_ref anc_ovlref;
 
-    arcs = mod->x.arclist;
-/*
- * this next line is necessary to break cycles in the graph.
-*/
-    if( (mod->modinfo & MOD_VISITED) && ( ovlnum == arcs->ovlref )
-        || (mod->modinfo & MOD_FIXED) )
+    arclist = mod->x.arclist;
+    /*
+     * this next line is necessary to break cycles in the graph.
+     */
+    if( (mod->modinfo & MOD_VISITED) && ( ovlref == arclist->ovlref ) || (mod->modinfo & MOD_FIXED) )
         return;
-    if( arcs->ovlref == NO_ARCS_YET ) {
-        arcs->ovlref = 0;
-        ancestor = 0;
+    if( arclist->ovlref == NO_ARCS_YET ) {
+        arclist->ovlref = 0;
+        anc_ovlref = 0;
         ScanArcs( mod );
     } else {
-        ancestor = LowestAncestor( ovlnum, SectOvlTab[arcs->ovlref] );
-        if( ancestor != arcs->ovlref ) {
-            arcs->ovlref = ancestor;
+        anc_ovlref = LowestAncestor( ovlref, SectOvlTab[arclist->ovlref] );
+        if( anc_ovlref != arclist->ovlref ) {
+            arclist->ovlref = anc_ovlref;
             ScanArcs( mod );
         }
     }
-    if( ancestor == 0 ) {   // it's at the root, so pull it out of the graph
-        arcs->numarcs = 0;
+    if( anc_ovlref == 0 ) {   // it's at the root, so pull it out of the graph
+        arclist->numarcs = 0;
     }
 }
 
-static void DeleteArc( arcdata *arc, unsigned_16 index )
-/******************************************************/
+static void DeleteArc( arcdata *arclist, unsigned_16 index )
+/**********************************************************/
 /* delete an arc from the specified arc list */
 {
-    arc->numarcs--;
-    if( arc->numarcs > 0 ) {
-        arc->arcs[index] = arc->arcs[arc->numarcs];
+    arclist->numarcs--;
+    if( arclist->numarcs > 0 ) {
+        arclist->arcs[index] = arclist->arcs[arclist->numarcs];
     }
 }
 
@@ -451,95 +468,91 @@ static void ScanArcs( mod_entry *mod )
 /* go through all modules referenced by mod, and see if they need to change
  * position because of the position of mod */
 {
-    arcdata *   arcs;
-    symbol *    sym;
-    mod_entry * refmod;
+    arcdata     *arclist;
+    symbol      *sym;
+    mod_entry   *refmod;
     unsigned_16 index;
-    unsigned_16 ovlnum;
+    overlay_ref ovlref;
     dist_arc    currarc;
 
     mod->modinfo |= MOD_VISITED;
-    arcs = mod->x.arclist;
-    ovlnum = arcs->ovlref;
-    if( ovlnum != NO_ARCS_YET ) {
-        for( index = arcs->numarcs; index-- > 0; ) {
-            currarc = arcs->arcs[index];
+    arclist = mod->x.arclist;
+    ovlref = arclist->ovlref;
+    if( ovlref != NO_ARCS_YET ) {
+        for( index = arclist->numarcs; index-- > 0; ) {
+            currarc = arclist->arcs[index];
             if( currarc.test <= MAX_NUM_MODULES ) {     // GIANT KLUDGE!
-                DoRefGraph( ovlnum, MOD_DEREF( currarc.mod ) );
+                DoRefGraph( ovlref, ModTable[currarc.mod] );
             } else {
                 sym = currarc.sym;
                 if( sym->info & SYM_DEFINED ) {
                     if( sym->info & SYM_DISTRIB ) {
                         currarc.test = sym->u.d.modnum;
-                        refmod = MOD_DEREF( currarc.mod );
+                        refmod = ModTable[currarc.mod];
                         if( refmod->modinfo & MOD_FIXED ) {
-                            if( NewRefVector( sym, ovlnum,
-                                              refmod->x.arclist->ovlref ) ) {
-                                DeleteArc( arcs, index );
+                            if( NewRefVector( sym, ovlref, refmod->x.arclist->ovlref ) ) {
+                                DeleteArc( arclist, index );
                             }
                         } else {
-                            DoRefGraph( ovlnum, refmod );
+                            DoRefGraph( ovlref, refmod );
                             if( !NotAnArc( currarc ) ) {
-                                DeleteArc( arcs, index );
+                                DeleteArc( arclist, index );
                             } else {
-                                arcs->arcs[index] = currarc;
+                                arclist->arcs[index] = currarc;
                             }
                         }
                     } else {
                         if( ( sym->p.seg == NULL )
-                            || NewRefVector( sym, ovlnum,
-                               sym->p.seg->u.leader->class->section->ovl_num ) ) {
-                            DeleteArc( arcs, index );
+                          || NewRefVector( sym, ovlref, sym->p.seg->u.leader->class->section->ovlref ) ) {
+                            DeleteArc( arclist, index );
                         }
                     }
                 } else {
                     if( (sym->u.d.ovlstate & OVL_REF) == 0 ) {
-                        sym->u.d.ovlref = ovlnum;
+                        sym->u.d.ovlref = ovlref;
                         sym->u.d.ovlstate |= OVL_REF;
                     } else {
-                        sym->u.d.ovlref = LowestAncestor( ovlnum,
-                                                 SectOvlTab[sym->u.d.ovlref] );
+                        sym->u.d.ovlref = LowestAncestor( ovlref, SectOvlTab[sym->u.d.ovlref] );
                     }
                 }
-            } /* if (a module) */
-        } /* for (arcs left) */
-    } /* if (an ovlnum defined) */
+            } /* if( a module ) */
+        } /* for( arcs left ) */
+    } /* if( an ovlnum defined ) */
     mod->modinfo &= ~MOD_VISITED;
 }
 
-void FinishArcs( mod_entry *mod )
-/**************************************/
+void DistribFinishMod( mod_entry *mod )
+/*************************************/
 /* check the position of the modules referenced by mod, and then make a
  * more permanent copy of the arclist for this module. */
 {
-    arcdata *   newarcs;
+    arcdata     *arclist;
     unsigned    allocsize;
 
     ScanArcs( mod );
-    if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module
-        mod->x.arclist->numarcs = 0;        // more than once
+    if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module more than once
+        mod->x.arclist->numarcs = 0;
     }
-    allocsize = mod->x.arclist->numarcs * sizeof(dist_arc)
-                                 + sizeof(arcdata) - sizeof(dist_arc);
-    _Pass1Alloc( newarcs, allocsize );
-    memcpy( newarcs, mod->x.arclist, allocsize );
-    mod->x.arclist = newarcs;
+    allocsize = offsetof( arcdata, arcs ) + mod->x.arclist->numarcs * sizeof( dist_arc );
+    _Pass1Alloc( arclist, allocsize );
+    memcpy( arclist, mod->x.arclist, allocsize );
+    mod->x.arclist = arclist;
 }
 
-void DistIndCall( symbol *sym )
-/************************************/
+void DistribIndirectCall( symbol *sym )
+/*************************************/
 // handle indirect calls and their effect on distributed libs.
 {
-    arcdata *   arcs;
-    unsigned_16 ovlsave;
+    arcdata         *arclist;
+    overlay_ref     save_ovlref;
 
-    arcs = CurrMod->x.arclist;
-    ovlsave = arcs->ovlref;
-    arcs->ovlref = 0;           // make sure current module isn't
-    CurrMod->modinfo |= MOD_VISITED;        // visited
-    DoRefGraph( 0, MOD_DEREF( sym->u.d.modnum ) );
+    arclist = CurrMod->x.arclist;
+    save_ovlref = arclist->ovlref;
+    arclist->ovlref = 0;                   // make sure current module isn't
+    CurrMod->modinfo |= MOD_VISITED;    // visited
+    DoRefGraph( 0, ModTable[sym->u.d.modnum] );
     CurrMod->modinfo &= ~MOD_VISITED;
-    arcs->ovlref = ovlsave;
+    arclist->ovlref = save_ovlref;
     sym->u.d.ovlstate |= OVL_REF;
-    sym->u.d.ovlref = 0;        // make sure current symbol put in root.
+    sym->u.d.ovlref = 0;                // make sure current symbol put in root.
 }

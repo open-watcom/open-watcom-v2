@@ -68,6 +68,11 @@ int     NumViolations = 0;  /* runtime-constraint violation counter */
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifndef DEBUG_FMT
+    /* unused parameters */ (void)msg;
+#endif
+    /* unused parameters */ (void)ptr; (void)error;
+
 #ifdef DEBUG_FMT
     fprintf( stderr, "Runtime-constraint in %s", msg );
 #endif
@@ -555,19 +560,21 @@ void TestAddendum( void )
 ***** Program entry point.
 ****/
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
-    int             exitcode;
-
     /*** Initialize ***/
 #ifdef __SW_BW
     FILE            *my_stdout;
+
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
         exit( EXIT_FAILURE );
     }
 #endif
+
+    /* unused parameters */ (void)argc;
+
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store executable filename */
     if( _setmbcp( 932 ) != 0 ) {
         printf( "Cannot initialize code page.\n\n" );
@@ -588,24 +595,22 @@ void main( int argc, char *argv[] )
 
 
     /*** Print a pass/fail message and quit ***/
-    if( NumErrors == 0 ) {
-        printf( "%s: SUCCESS.\n", ProgramName );
-#ifdef __SW_BW
-        fprintf( stderr, "%s: SUCCESS.\n", ProgramName );
-#endif
-        exitcode = EXIT_SUCCESS;
-    } else {
+    if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-#ifdef __SW_BW
-        fprintf( stderr, "%s: FAILURE (%d errors).\n",
-                 ProgramName, NumErrors );
-#endif
-        exitcode = EXIT_FAILURE;
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-
 #ifdef __SW_BW
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    }
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    exit( exitcode );
+
+    if( NumErrors != 0 )
+        exit( EXIT_FAILURE );
+    exit( EXIT_SUCCESS );
 }

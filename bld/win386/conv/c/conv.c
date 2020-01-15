@@ -554,7 +554,7 @@ static FILE *objFile = NULL;
 static int objBufIndex;
 static char objBuf[OBJBUF_SIZE];
 
-static void writeObjBuf()
+static void writeObjBuf( void )
 {
     if( objBufIndex != 0 ) {
         fwrite( objBuf, 1, objBufIndex, objFile );

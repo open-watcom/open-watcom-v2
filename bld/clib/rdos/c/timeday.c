@@ -41,6 +41,8 @@ _WCRTLINK int gettimeofday( struct timeval *tv, struct timezone *tz )
     long long basetime;
     unsigned long msb;
 
+    /* unused parameters */ (void)tz;
+
     msb = RdosCodeMsbTics( 2010, 1, 1, 0 );
     basetime = (long long)msb;
     basetime = basetime << 32;

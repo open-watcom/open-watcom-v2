@@ -64,7 +64,7 @@
 #include "doparse.h"
 
 
-char            ti_char_map[256][4];
+char            ti_char_map[256][MB_MAP_MAX];
 
 static tix_status init_tix_scanner( const char *termname )
 /********************************************************/

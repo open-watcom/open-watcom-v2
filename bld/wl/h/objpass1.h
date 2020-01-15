@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ typedef struct cdat_piece {
     struct cdat_piece   *next;
     unsigned_8          *data;
     offset              length;
-    bool                free_data : 1;
+    boolbit             free_data : 1;
 } comdat_piece;
 
 typedef struct cdat_info {

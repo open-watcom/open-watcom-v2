@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "global.h"
 #include "param.h"
 #include "types.h"
 #include "swchar.h"
 #include "wresdefn.h"
+#include "trmemcvr.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 static int CheckPredefType( const char * restype )
@@ -157,14 +161,11 @@ static bool ScanOptionsArg( const char * arg )
 
 static void CheckExtention( char * path )
 {
-    char    name[ _MAX_FNAME ];
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
-    char    ext[ _MAX_EXT ];
+    PGROUP2     pg;
 
-    _splitpath( path, drive, dir, name, ext );
-    if (*ext == '\0') {
-        _makepath( path, drive, dir, name, "RES" );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        _makepath( path, pg.drive, pg.dir, pg.fname, "res" );
     }
 }
 

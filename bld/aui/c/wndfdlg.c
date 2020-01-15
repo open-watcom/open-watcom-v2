@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wnddlg.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -52,21 +54,17 @@ int DlgGetFileName( open_file_name *ofn )
 bool DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags )
 {
     open_file_name      ofn;
-    char                buff[_MAX_PATH2];
     char                fname[_MAX_PATH];
     char                cd[_MAX_DRIVE+_MAX_PATH];
-    char                *drive;
-    char                *dir;
-    char                *name;
-    char                *ext;
+    PGROUP2             pg;
     int                 rc;
 
     memset( &ofn, 0, sizeof( ofn ) );
     ofn.flags = flags;
     ofn.title = title;
-    _splitpath2( path, buff, &drive, &dir, &name, &ext );
-    _makepath( cd, drive, dir, ".", NULL );
-    _makepath( fname, NULL, NULL, name, ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( cd, pg.drive, pg.dir, ".", NULL );
+    _makepath( fname, NULL, NULL, pg.fname, pg.ext );
     ofn.initial_dir = cd;
     ofn.file_name = fname;
     ofn.max_file_name = len;

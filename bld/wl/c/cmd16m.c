@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,42 +43,42 @@
 #include "clibext.h"
 
 
-extern bool ProcMemory16M( void )
-/*******************************/
+bool ProcMemory16M( void )
+/************************/
 {
     return( ProcOne( Strategies, SEP_NO, false ) );
 }
 
-extern bool ProcTryExtended( void )
-/*********************************/
+bool ProcTryExtended( void )
+/**************************/
 {
     FmtData.u.d16m.strategy = MPreferExt;
     return( true );
 }
 
-extern bool ProcTryLow( void )
-/****************************/
+bool ProcTryLow( void )
+/*********************/
 {
     FmtData.u.d16m.strategy = MPreferLow;
     return( true );
 }
 
-extern bool ProcForceExtended( void )
-/***********************************/
+bool ProcForceExtended( void )
+/****************************/
 {
     FmtData.u.d16m.strategy = MForceExt;
     return( true );
 }
 
-extern bool ProcForceLow( void )
-/******************************/
+bool ProcForceLow( void )
+/***********************/
 {
     FmtData.u.d16m.strategy = MForceLow;
     return( true );
 }
 
-extern bool ProcTransparent( void )
-/*********************************/
+bool ProcTransparent( void )
+/**************************/
 {
     if( FmtData.u.d16m.flags & TRANS_SPECD ) {
         LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
@@ -87,15 +88,15 @@ extern bool ProcTransparent( void )
     }
 }
 
-extern bool ProcTStack( void )
-/****************************/
+bool ProcTStack( void )
+/*********************/
 {
     FmtData.u.d16m.flags |= TRANS_STACK;
     return( true );
 }
 
-extern bool ProcTData( void )
-/***************************/
+bool ProcTData( void )
+/********************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
@@ -105,58 +106,58 @@ extern bool ProcTData( void )
     return( true );
 }
 
-extern bool ProcKeyboard( void )
-/******************************/
+bool ProcKeyboard( void )
+/***********************/
 {
     FmtData.u.d16m.options |= OPT_KEYBOARD;
     return( true );
 }
 
-extern bool ProcOverload( void )
-/******************************/
+bool ProcOverload( void )
+/***********************/
 {
     FmtData.u.d16m.options |= OPT_OVERLOAD;
     return( true );
 }
 
-extern bool ProcInt10( void )
-/***************************/
+bool ProcInt10( void )
+/********************/
 {
     FmtData.u.d16m.options |= OPT_INT10;
     return( true );
 }
 
-extern bool ProcInit00( void )
-/****************************/
+bool ProcInit00( void )
+/*********************/
 {
     FmtData.u.d16m.options |= OPT_INIT00;
     return( true );
 }
 
-extern bool ProcInitFF( void )
-/****************************/
+bool ProcInitFF( void )
+/*********************/
 {
     FmtData.u.d16m.options |= OPT_INITFF;
     return( true );
 }
 
-extern bool ProcRotate( void )
-/****************************/
+bool ProcRotate( void )
+/*********************/
 {
     FmtData.u.d16m.options |= OPT_ROTATE;
     return( true );
 }
 
-extern bool ProcSelectors( void )
-/*******************************/
+bool ProcSelectors( void )
+/************************/
 // force selectors to be assigned at load time.
 {
     FmtData.u.d16m.options |= OPT_AUTO;
     return( true );
 }
 
-extern bool ProcAuto( void )
-/**************************/
+bool ProcAuto( void )
+/*******************/
 // force selectors to be assigned at load time, and force relocs as well.
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
@@ -167,14 +168,14 @@ extern bool ProcAuto( void )
     return( true );
 }
 
-extern bool ProcBuffer( void )
-/****************************/
+bool ProcBuffer( void )
+/*********************/
 {
     unsigned_32 value;
 
     if( !GetLong( &value ) )
         return( false );
-    if( value < 1024 || value > 32768 ) {
+    if( value < _1KB || value > _32KB ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "buffer" );
     } else {
         FmtData.u.d16m.buffer = value;
@@ -182,8 +183,8 @@ extern bool ProcBuffer( void )
     return( true );
 }
 
-extern bool ProcGDTSize( void )
-/*****************************/
+bool ProcGDTSize( void )
+/**********************/
 {
     unsigned_32 value;
 
@@ -193,7 +194,7 @@ extern bool ProcGDTSize( void )
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "gdtsize" );
         value &= -8;
     }
-    if( value > 65536 ) {
+    if( value > 0x10000 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "gdtsize" );
     } else {
         FmtData.u.d16m.gdtsize = --value;
@@ -201,8 +202,8 @@ extern bool ProcGDTSize( void )
     return( true );
 }
 
-extern bool ProcRelocs( void )
-/****************************/
+bool ProcRelocs( void )
+/*********************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
@@ -211,8 +212,8 @@ extern bool ProcRelocs( void )
     return( true );
 }
 
-extern bool Proc16MNoRelocs( void )
-/*********************************/
+bool Proc16MNoRelocs( void )
+/**************************/
 {
     if( LinkState & LS_MAKE_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
@@ -222,8 +223,8 @@ extern bool Proc16MNoRelocs( void )
     return( true );
 }
 
-extern bool ProcSelStart( void )
-/******************************/
+bool ProcSelStart( void )
+/***********************/
 {
     unsigned_32 value;
 
@@ -233,7 +234,7 @@ extern bool ProcSelStart( void )
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "selstart" );
         value &= -8;
     }
-    if( value > 65536 || value < D16M_USER_SEL ) {
+    if( value >= 0x10000 || value < D16M_USER_SEL ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "selstart" );
     } else {
         FmtData.u.d16m.selstart = value;
@@ -241,15 +242,15 @@ extern bool ProcSelStart( void )
     return( true );
 }
 
-extern bool ProcExtended( void )
-/******************************/
+bool ProcExtended( void )
+/***********************/
 {
     unsigned_32 value;
 
     if( !GetLong( &value ) )
         return( false );
     value >>= 10;      // value should be in K.
-    if( value > 65535 ) {
+    if( value >= 0x10000 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "extended" );
     } else {
         FmtData.u.d16m.extended = value;
@@ -257,8 +258,8 @@ extern bool ProcExtended( void )
     return( true );
 }
 
-extern bool ProcExpName( void )
-/*****************************/
+bool ProcExpName( void )
+/**********************/
 {
     if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
         return( false );
@@ -270,14 +271,14 @@ extern bool ProcExpName( void )
     return( true );
 }
 
-extern bool ProcDataSize( void )
-/******************************/
+bool ProcDataSize( void )
+/***********************/
 {
     unsigned_32 value;
 
     if( !GetLong( &value ) )
         return( false );
-    if( value > 65536 ) {
+    if( value > _64KB ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "datasize" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;
@@ -286,8 +287,8 @@ extern bool ProcDataSize( void )
     return( true );
 }
 
-extern void SetD16MFmt( void )
-/****************************/
+void SetD16MFmt( void )
+/*********************/
 {
     LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
     Extension = E_PROTECT;
@@ -303,15 +304,15 @@ extern void SetD16MFmt( void )
     FmtData.u.d16m.stub = NULL;
 }
 
-extern void FreeD16MFmt( void )
-/*****************************/
+void FreeD16MFmt( void )
+/**********************/
 {
     _LnkFree( FmtData.u.d16m.exp_name );
     _LnkFree( FmtData.u.d16m.stub );
 }
 
-extern bool Proc16M( void )
-/*************************/
+bool Proc16M( void )
+/******************/
 {
     return( true );
 }

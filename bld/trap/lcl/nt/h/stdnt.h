@@ -161,7 +161,7 @@ struct msg_list {
     char        msg[1]; /* variable size */
 };
 
-typedef unsigned		myconditions;
+typedef unsigned        myconditions;
 
 #if !defined( WOW ) || defined( MD_x64 )
 typedef void            IMAGE_NOTE;

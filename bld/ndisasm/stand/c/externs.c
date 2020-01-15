@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,8 @@ externs CreateExterns( ref_list list ) {
     externs             sec_externs;
 
     sec_externs = (externs) MemAlloc( sizeof( externs_struct ) );
-    if( !sec_externs) return( NULL );
+    if( !sec_externs )
+        return( NULL );
     memset( sec_externs, 0, sizeof( externs_struct ) );
     sec_externs->number = 0;
     for( entry = list->first; entry != NULL; entry = entry->next ) {

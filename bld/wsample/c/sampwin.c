@@ -55,6 +55,12 @@
 unsigned short win386sig[] = { 0xDEAD,0xBEEF };
 unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
 
+volatile WORD           __near WaitForFirst=0;
+volatile WORD           __near IsSecondOK=0;
+seg_offset              CommonAddr = { 0, 0 };
+bool                    WDebug386 = false;
+samp_save               __far * __near SampSave;
+
 /*
  * FlushSamples - flush the contents of the sample buffer
  */
@@ -231,7 +237,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     FARPROC             fault_fn;
     char                buffer[10];
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     /*
      * initialize sampler VxD

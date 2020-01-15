@@ -9,6 +9,8 @@ wprof_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
@@ -16,9 +18,6 @@ wprof_trmem = 1
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
-
-!include wres.mif
-!include trmem.mif
 
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
@@ -44,9 +43,11 @@ extra_cpp_flags += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
-extra_c_flags   = -s
+extra_cpp_flags_memutil = $(trmem_cpp_flags)
+extra_cpp_flags_wpdriver = $(trmem_cpp_flags)
+
 !ifdef check
-extra_c_flags   += -zs
+extra_c_flags  	= -zs
 !endif
 
 extra_c_flags_qnx_i86 = -zt32
@@ -54,13 +55,7 @@ extra_c_flags_win_i86 = -zW
 
 extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 extra_c_flags_memutil = $(trmem_cover_cflags)
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
-!ifeq wprof_trmem 1
-!ifeq release 0
-extra_c_flags_wpdriver = -DTRMEM
-!endif
-!endif
 
 # lflags stuff
 ###############

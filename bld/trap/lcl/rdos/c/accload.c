@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "debug.h"
 #include "trperr.h"
 #include "srvcdbg.h"
+#include "pathgrp2.h"
 
 
 /*
@@ -52,10 +53,7 @@ trap_retval ReqProg_load( void )
     prog_load_ret   *ret;
     struct TDebug   *obj;
     char            name[256];
-    char            drive[10];
-    char            dir[256];
-    char            fname[100];
-    char            ext[10];
+    PGROUP2         pg;
     char            curdir[256];
     char            argstr[256];
     char            *src;
@@ -67,14 +65,13 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
     parm = GetInPtr( sizeof( *acc ) );
 
-    _splitpath( parm, drive, dir, fname, ext );
-
-    if( strlen( ext ) ) {
-        _makepath( name, drive, dir, fname, ext );
+    _splitpath2( parm, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] != '\0' ) {
+        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
     } else {
-        _makepath( name, drive, dir, fname, "com" );
+        _makepath( name, pg.drive, pg.dir, pg.fname, "com" );
         if( access( name, 0 ) != 0 ) {
-            _makepath( name, drive, dir, fname, "exe" );
+            _makepath( name, pg.drive, pg.dir, pg.fname, "exe" );
         }
     }
 

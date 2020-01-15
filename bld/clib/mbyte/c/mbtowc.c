@@ -69,8 +69,7 @@ _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *c
     buflen = len = _NEARFAR(_mbclen,_fmbclen)( (unsigned char _FFAR *)ch );
     if( buflen > n  )
         buflen = n;
-    rc = MultiByteToWideChar( __MBCodePage, MB_ERR_INVALID_CHARS,
-                              (LPCSTR)ch, buflen, (LPWSTR)&wch, 1 );
+    rc = MultiByteToWideChar( __MBCodePage, MB_ERR_INVALID_CHARS, (LPCSTR)ch, buflen, (LPWSTR)&wch, 1 );
     if( rc != 0 ) {
         if( pwc != NULL )
             *pwc = wch;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +106,7 @@ static struct                   // printing control information
 static void printIDE            // CALL IDE FOR PRINTING
     ( char const *line )        // - print line
 {
-    IDEFN(PrintMessage)( CompInfo.idehdl, line );
+    IDEFN( PrintMessage )( CompInfo.idehdl, line );
     // we are ignoring return for now
 }
 
@@ -203,24 +204,26 @@ void IDEAPI IDEFiniDLL   // DLL COMPLETION
 {
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "FiniDLL -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "FiniDLL -- handle mismatch" );
 }
 
 static void fillInputOutput( char *input, char *output )
 {
-    size_t len;                 // - length of string
+    size_t  len;                // - length of string
+    char    *p;
 
     input[0] = '\0';
     output[0] = '\0';
-    if( !CompFlags.ide_cmd_line ) {
-        if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
+    if( !CompFlags.ide_cmd_line_has_files ) {
+        p = input + 1;
+        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
             input[1 + len] = '"';
             input[1 + len + 1] = '\0';
         }
-        if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
+        p = output + 5;
+        if( ! IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
             output[0] = '-';
             output[1] = 'f';
             output[2] = 'o';
@@ -256,8 +259,7 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "RunYourSelf -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
     dllinfo.cmd_line = (char*)opts;
@@ -280,8 +282,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
 
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "RunYourSelf -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
     dllinfo.argc = argc;
@@ -312,8 +313,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     , char const* msg )         // - message
 {
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.idehdl
-             , "ProvideHelp -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "ProvideHelp -- handle mismatch" );
     msg = msg;
     return( true );
 }
@@ -519,8 +519,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
     NUMBER_STR number;          // - used for number scanning
 
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.idehdl
-             , "ParseMessage -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "ParseMessage -- handle mismatch" );
     scan_info.scan = msg;
     scan_info.tgt = err->filename;
     scan_info.left = sizeof( err->filename ) - 1;
@@ -562,8 +561,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     /* unused parameters */ (void)hdl;
 
-    DbgVerify( hdl == CompInfo.idehdl
-             , "PassInitInfo -- handle mismatch" );
+    DbgVerify( hdl == CompInfo.idehdl, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
         return( true );
     }
@@ -571,18 +569,16 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
         CompFlags.ignore_environment = true;
         CompFlags.ignore_current_dir = true;
     }
-    if( info->ver >= 2 ) {
-        if( info->cmd_line_has_files ) {
-            CompFlags.ide_cmd_line = true;
+    if( info->cmd_line_has_files ) {
+        CompFlags.ide_cmd_line_has_files = true;
+    }
+    if( info->ver > 2 ) {
+        if( info->console_output ) {
+            CompFlags.ide_console_output = true;
         }
-        if( info->ver >= 3 ) {
-            if( info->console_output ) {
-                CompFlags.ide_console_output = true;
-            }
-            if( info->ver >= 4 ) {
-                if( info->progress_messages ) {
-                    CompFlags.progress_messages = true;
-                }
+        if( info->ver > 3 ) {
+            if( info->progress_messages ) {
+                CompFlags.progress_messages = true;
             }
         }
     }
@@ -600,7 +596,7 @@ const char *CppGetEnv           // COVER FOR getenv
     const char *env_val = NULL; // - NULL or value of environment variable
 
     if( !CompFlags.ignore_environment ) {
-        if( IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
+        if( IDEFN( GetInfo )( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }
@@ -619,7 +615,7 @@ void CppStartFuncMessage( SYMBOL sym )
 
     DbgAssert( CompFlags.progress_messages );
     if( sym != NULL ) {
-        IDEFN(ProgressMessage)( CompInfo.idehdl, FormatSymWithTypedefs( sym, &buff ) );
+        IDEFN( ProgressMessage )( CompInfo.idehdl, FormatSymWithTypedefs( sym, &buff ) );
         VbufFree( &buff );
     }
 #else

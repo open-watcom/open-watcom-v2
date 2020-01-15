@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +49,11 @@
 #define STUB_ALIGN 16
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
-#define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof(map_entry) * (unsigned long)OSF_DEF_PAGE_SIZE)
+#define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof( map_entry ) * (unsigned long)OSF_DEF_PAGE_SIZE)
 
 
-static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
-                           map_entry *buf )
-/**************************************************************/
+static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf )
+/********************************************************************************/
 /* fill a buffer with consecutive numbers */
 {
     unsigned    size;
@@ -62,7 +61,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
     unsigned    shift;
 
     num = PAGE_COUNT(limit);
-    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         size = num * sizeof( le_map_entry );
         while( num-- > 0 ) {
             *start += 1;
@@ -70,7 +69,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             buf->le.page_num[1] = *start >> 8;
             buf->le.page_num[0] = *start >> 16;
             buf->le.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            buf = (map_entry *)((char *)buf + sizeof(le_map_entry));
+            buf = (map_entry *)((char *)buf + sizeof( le_map_entry ));
         }
     } else {
         shift = FmtData.u.os2.segment_shift;
@@ -86,7 +85,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             }
             *start += buf->lx.data_size;
             buf->lx.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            buf = (map_entry *)((char *)buf + sizeof(lx_map_entry));
+            buf = (map_entry *)((char *)buf + sizeof( lx_map_entry ));
         }
     }
     return( size );
@@ -116,7 +115,8 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         header->autodata_obj = 0;
     }
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         if( group->grp_addr.seg == StackAddr.seg ) {
             header->stack_obj = StackAddr.seg;
             header->esp = StackAddr.off - group->grp_addr.off;
@@ -133,7 +133,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         leader = Ring2First( group->leaders );
         if( leader->info & USE_32 ) {
             objrec.flags |= OBJ_BIG;
-        } else { //if( group->u.miscflags & SEG_16_ALIAS ) {
+        } else { //if( group->u.os2flags & SEG_16_ALIAS ) {
             objrec.flags |= OBJ_ALIAS_REQUIRED;
         }
         if( (group->segflags & SEG_LEVEL_MASK) != SEG_LEVEL_3 ) {
@@ -175,12 +175,13 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     }
     header->num_objects = numobjects;
     header->num_pages = numpages;
-    size = numobjects * sizeof(object_record);
+    size = numobjects * sizeof( object_record );
     loc += size;
     header->objmap_off = loc;
     start = 0;
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         for( sizeleft = group->size; sizeleft > PAGEMAP_BUF_SIZE; sizeleft -= PAGEMAP_BUF_SIZE ) {
             map_size = NumberBuf( &start, PAGEMAP_BUF_SIZE, (map_entry *)TokBuff );
             size += map_size;
@@ -240,8 +241,10 @@ static unsigned long DumpFlatEntryTable( void )
             entries = 1;
             prev = start = place;
             for( place = place->next; place != NULL; place = place->next ) {
-                if( entries >= 0xff ) break;
-                if( place->addr.seg != start->addr.seg ) break;
+                if( entries >= 0xff )
+                    break;
+                if( place->addr.seg != start->addr.seg )
+                    break;
                 if( place->ordinal - prev->ordinal > 1 ) {
                     break;    // ordinal can't be put in this bundle.
                 }
@@ -249,7 +252,7 @@ static unsigned long DumpFlatEntryTable( void )
                 prev = place;
             }
             prefix.real.b32_cnt = entries;
-            if (start->addr.seg == 0xFFFF) {
+            if( start->addr.seg == 0xFFFF ) {
                 // Forwarder entry
                 prefix.real.b32_type = FLT_BNDL_ENTRYFWD;
                 prefix.real.b32_obj = 0;
@@ -264,7 +267,7 @@ static unsigned long DumpFlatEntryTable( void )
             WriteLoad( &prefix.real, sizeof( prefix.real ) );
             size += sizeof( prefix.real );
             for( ; entries > 0; --entries, start = start->next ) {
-                if (start->addr.seg == 0xFFFF) {
+                if( start->addr.seg == 0xFFFF ) {
                     // Forwarder entry
                     dll_sym_info   *dll = start->sym->p.import;
 
@@ -368,7 +371,7 @@ static unsigned WriteDataPages( unsigned long loc )
     for( group = Groups; group != NULL; group = group->next_group) {
         if( group->size != 0 ) {
             if( last_page != 0 ) {
-                if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
+                if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
                     size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift) - last_page;
@@ -376,14 +379,14 @@ static unsigned WriteDataPages( unsigned long loc )
                 PadLoad( size );
                 loc += size;
             }
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             loc += group->size;
             last_page = group->size & (OSF_DEF_PAGE_SIZE-1);
         }
     }
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
-    } else if( (FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) == 0 ) {
+    } else if( (FmtData.type & (MK_OS2_LE | MK_WIN_VXD)) == 0 ) {
         PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift ) - last_page );
     }
     return( last_page );
@@ -397,7 +400,7 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
     vxd_ddb      ddb;
 
     exp = FmtData.u.os2.exports;
-    if(( exp != NULL ) && ( exp->sym != NULL )) {
+    if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
         ReadInfo( (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
         exe_head->r.vxd.device_ID = ddb.req_device_number;
         exe_head->r.vxd.DDK_version = ddb.SDK_version;
@@ -418,8 +421,8 @@ void FiniOS2FlatLoadFile( void )
 
     memset( &exe_head, 0, sizeof( exe_head ) ); /* zero all header fields */
     stub_len = WriteStubFile( STUB_ALIGN );
-    curr_loc  = sizeof(os2_flat_header);
-    SeekLoad( stub_len + sizeof(os2_flat_header) );
+    curr_loc  = sizeof( os2_flat_header );
+    SeekLoad( stub_len + sizeof( os2_flat_header ) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );
     exe_head.resname_off = curr_loc;
     curr_loc += ResNonResNameTable( true );  // true - do resident table.
@@ -447,25 +450,26 @@ void FiniOS2FlatLoadFile( void )
         SetHeaderVxDInfo(&exe_head);
     }
     last_page = WriteDataPages( curr_loc );
-    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         exe_head.l.last_page = last_page;
     } else {
         exe_head.l.page_shift = FmtData.u.os2.segment_shift;
     }
     exe_head.nonres_off = PosLoad();
     exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
-    if( exe_head.nonres_size == 0 ) exe_head.nonres_off = 0;
+    if( exe_head.nonres_size == 0 )
+        exe_head.nonres_off = 0;
     curr_loc = PosLoad();
     DBIWrite();
 /* If debug info was written, we want to mark it in the header so that
  * RC doesn't throw it away! */
     SeekEndLoad( 0 );
     debug_size =  PosLoad() - curr_loc;
-    if (debug_size) {
+    if( debug_size ) {
         exe_head.debug_off = curr_loc;
         exe_head.debug_len = debug_size;
     }
-    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         exe_head.signature = OSF_FLAT_SIGNATURE;
     } else {
         exe_head.signature = OSF_FLAT_LX_SIGNATURE;
@@ -483,7 +487,8 @@ void FiniOS2FlatLoadFile( void )
     } else {
         exe_head.os_type = OSF_OS_LEVEL;
     }
-    if( FmtData.minor < 10 ) FmtData.minor *= 10;
+    if( FmtData.minor < 10 )
+        FmtData.minor *= 10;
     exe_head.version = FmtData.major * 100 + FmtData.minor;
     if( FmtData.type & MK_WIN_VXD ) { // VxD flags settings
         if( FmtData.u.os2.flags & VIRT_DEVICE ) {
@@ -503,7 +508,7 @@ void FiniOS2FlatLoadFile( void )
             exe_head.flags |= OSF_IS_DLL;
             // The OS/2 loader REALLY doesn't like to have these flags set if there
             // is no entrypoint!
-            if (exe_head.start_obj != 0) {
+            if( exe_head.start_obj != 0 ) {
                 if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
                     exe_head.flags |= OSF_INIT_INSTANCE;
                 }

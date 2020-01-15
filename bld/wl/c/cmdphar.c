@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "cmdphar.h"
-#include "cmdos2.h"
+#include "cmdall.h"
 
 
 bool ProcPharLap( void )
@@ -74,7 +75,7 @@ void SetPharFmt( void )
     FmtData.u.phar.params->istksize = 1;
     FmtData.u.phar.params->extender_flags = 0;
     FmtData.u.phar.params->unpriv = 0;
-    ChkBase(4*1024);
+    ChkBase( _4KB );
 }
 
 void FreePharFmt( void )

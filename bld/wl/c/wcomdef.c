@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ static unsigned         CDatSegNum;     /* for making the comdat seg. name */
 #define CDAT_SEG_NAME "COMDAT_SEG\0\0\0\0\0\0\0\0"
 static char     CDatSegName[] = CDAT_SEG_NAME;
 
-#define CDAT_SEG_NAME_LEN sizeof(CDatSegName)
+#define CDAT_SEG_NAME_LEN sizeof( CDatSegName )
 #define CDAT_SEG_NUM_OFF  10
 #endif
 
@@ -108,7 +109,7 @@ static comdat_info * AllocCDatInfo( void )
         info = FreedInfos;
         FreedInfos = info->next;
     } else {
-        _Pass1Alloc( info, sizeof(comdat_info) );
+        _Pass1Alloc( info, sizeof( comdat_info ) );
     }
     info->pieces = NULL;
     return( info );
@@ -130,9 +131,9 @@ static comdat_piece * AllocCDatPiece( void )
         piece = FreedPieces;
         FreedPieces = piece->next;
     } else {
-        _Pass1Alloc( piece, sizeof(comdat_piece) );
+        _Pass1Alloc( piece, sizeof( comdat_piece ) );
     }
-    memset( piece, 0, sizeof(comdat_piece) );
+    memset( piece, 0, sizeof( comdat_piece ) );
     return( piece );
 }
 
@@ -158,14 +159,14 @@ static unsigned_32 GetLeaf( void )
     if( leaf <= COMDEF_LEAF_SIZE ) {
         value = leaf;
     } else if( leaf == COMDEF_LEAF_2 ) {
-        value = GET_U16_UN(ObjBuff);
+        value = GET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     } else if( leaf == COMDEF_LEAF_3 ) {
-        value = GET_U16_UN(ObjBuff);
+        value = GET_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
         value += ( (unsigned_32)*ObjBuff++ ) << 16;
     } else if( leaf == COMDEF_LEAF_4 ) {
-        value = GET_U32_UN(ObjBuff);
+        value = GET_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     }
     return( value );
@@ -177,9 +178,10 @@ static bool isCOMDEF32( void )
     SEGDATA *segs = CurrMod->segs;
     SEGDATA *seg = NULL;
 
-    for(;;) {
+    for( ;; ) {
         seg = Ring2Step( segs, seg );
-        if( seg == NULL ) break;
+        if( seg == NULL )
+            break;
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {
@@ -353,7 +355,7 @@ static offset CountIDBlock( unsigned_8 **buffptr )
         buff += sizeof( unsigned_16 );
     }
     _TargU16toHost( _GetU16( buff ), count );
-    buff += sizeof(unsigned_16);
+    buff += sizeof( unsigned_16 );
     if( count == 0 ) {  // this is followed by actual data
         repeat *= *buff;
         buff += *buff + 1;

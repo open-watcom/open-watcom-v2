@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +102,7 @@ static void AssignFileLocs( section *sect )
     sect->outfile->file_loc += MAKE_PARA( sect->size )
                             + MAKE_PARA( sect->relocs * sizeof( dos_addr ) );
     DEBUG((DBG_LOADDOS, "section %d assigned to %l in %s",
-            sect->ovl_num, sect->u.file_loc, sect->outfile->fname ));
+            sect->ovlref, sect->u.file_loc, sect->outfile->fname ));
 }
 
 static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
@@ -123,8 +124,8 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
     Root->u.file_loc = header_size;
     if( Root->areas != NULL ) {
         Root->outfile->file_loc = header_size + Root->size;
-        WalkAllOvl( &AssignFileLocs );
-        EmitOvlTable();
+        WalkAreas( Root->areas, AssignFileLocs );
+        OvlEmitTable();
     }
 
 // keep track of positions within the file.
@@ -140,7 +141,7 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
         sect = group->section;
         CurrSect = sect;
         fnode = sect->outfile;
-        repos = WriteDOSGroup( group );
+        repos = WriteGroup( group );
         group = group->next_group;
         if( ( group == NULL ) || ( sect != group->section ) ) {
             if( sect == Root ) {
@@ -181,7 +182,9 @@ static bool WriteSegData( void *_sdata, void *_start )
                 COMAmountWritten += sdata->length + pad;
             } else {
                 pad = COMAmountWritten - newpos;
-                WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+                if( sdata->length > 0 ) {
+                    WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+                }
                 COMAmountWritten += sdata->length - pad;
             }
         }
@@ -222,7 +225,7 @@ static bool WriteCOMGroup( group_entry *group, soffset chop )
         repos = true;
     }
     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-            &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
+            &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
     COMAmountWritten = 0;
     Ring2Lookup( group->leaders, DoCOMGroup, &chop );
     file_loc += COMAmountWritten;
@@ -267,7 +270,7 @@ static void WriteCOMFile( void )
             }
         }
     }
-    if( fnode->file_loc > (64 * 1024L - 0x200) ) {
+    if( fnode->file_loc > (_64KB - 0x200) ) {
         LnkMsg( ERR+MSG_COM_TOO_LARGE, NULL );
     }
     DBIWrite();
@@ -296,7 +299,7 @@ void FiniDOSLoadFile( void )
     SeekLoad( mz_hdr_size );
     root_size = WriteDOSData( mz_hdr_size );
     if( FmtData.type & MK_OVERLAYS ) {
-        PadOvlFiles();
+        OvlPadOvlFiles();
     }
     // output debug info into root main output file
     CurrSect = Root;

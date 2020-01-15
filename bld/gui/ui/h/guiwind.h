@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ typedef enum {
 #define GUI_WND_MAXIMIZED( wnd ) ( wnd->flags & MAXIMIZED )
 #define GUI_WND_VISIBLE( wnd )   ( wnd->style & GUI_VISIBLE )
 #define GUI_HAS_CLOSER( wnd ) ( ( wnd->style & GUI_CLOSEABLE ) || ( wnd->menu != NULL ) )
-#define GUI_RESIZE_GADGETS_USEABLE( wnd ) ( wnd->screen.area.width >= MINMAX_WIDTH )
+#define GUI_RESIZE_GADGETS_USEABLE( wnd ) ( wnd->vs.area.width >= MINMAX_WIDTH )
 #define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & DIALOG ) != 0 )
 
 #define COPYAREA( old, new ) { (new).row = (old).row; (new).height = (old).height; \
@@ -118,7 +118,7 @@ typedef struct statusinfo {
 } statusinfo;
 
 struct gui_window {
-    VSCREEN             screen;         /* must be first field - see call to uivopen */
+    VSCREEN             vs;             /* must be first field - see call to uivopen */
     gui_create_styles   style;          // style window was created with
     int                 num_attrs;      // number of colours
     ATTR                *attrs;         // colours for window

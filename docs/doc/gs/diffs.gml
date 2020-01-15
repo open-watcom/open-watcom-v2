@@ -22,7 +22,62 @@ recompile your application.
 Following is a list of changes made in &product 2.0:
 .begbull
 .bull
-OW tools were ported to 64-bit host platform (Linux and Windows)
+OW tools ported to 64-bit host platform (Linux and Windows)
+.bull
+OW installer for 64-bit host platform (Linux and Windows)
+.endbull 
+.np
+C compiler changes:
+.begbull
+.bull
+C99 preprocessor _Pragma() operator was added
+.bull
+pragma "warning" was added
+.bull
+new option -zam was added to supress predefined macros non-conforming 
+ISO standard naming convention (macros without leading underscore)
+.bull
+Warning W303 "Parameter '%s' has been defined, but not referenced" was enabled by default.
+.bull
+Warning W308 "Unprototyped function '%s' called" was enabled by default.
+.bull
+Warning W309 "Unprototyped function indirectly called" was enabled by default.
+.bull
+predefined macro NO_EXT_KEYS was replaced by _NO_EXT_KEYS, old one is defined if -zam option is not used
+.endbull
+.np
+C++ compiler changes:
+.begbull
+.bull
+C99 preprocessor _Pragma() operator was added
+.bull
+fix pragmas "enable_message" and "disable_message" to not change warning level
+.bull
+new option -zam was added to supress predefined macros non-conforming 
+ISO standard naming convention (macros without leading underscore)
+.bull
+predefined macro NO_EXT_KEYS was replaced by _NO_EXT_KEYS, old one is defined if -zam option is not used
+.endbull 
+.np
+Linker changes:
+.begbull
+.bull
+added support for 64-bit COFF objects and 64-bit PE executable
+.bull
+default stack size for Windows NT was changed to 1 MB for better
+compatibility with Microsoft linker
+.endbull 
+.np
+C run-time library changes:
+.begbull
+.bull
+POSIX threads implementation was added for Linux target
+.endbull 
+Wmake utility changes:
+.begbull
+.bull
+add interception for rm, mkdir and rmdir commands
+to be processed by wmake (POSIX simplified implementation)
 .endbull 
 .*
 .*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,11 +171,11 @@ vi_rc FcbThreadDump( void )
         if( cfcb->dead ) {
             strcpy( msg, "** dead fcb **" );
         } else {
-                if( cfile != NULL ) {
-                    strcpy( msg, cfile->name );
-                } else {
-                    strcpy( msg, "** no file **" );
-                }
+            if( cfile != NULL ) {
+                strcpy( msg, cfile->name );
+            } else {
+                strcpy( msg, "** no file **" );
+            }
         }
         WPrintfLine( wid, lc++, "%d) %d bytes, belongs to %s, lock=%d%d%d, mem=%d%d%d%d%d",
             fcbcnt, cfcb->byte_cnt, msg, abs( cfcb->globalmatch ),

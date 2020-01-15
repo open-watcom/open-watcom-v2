@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 char *OptEnvVar="dirname";
 
@@ -49,10 +54,9 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
-    char        *dir, *drive;
-    size_t      len;
+    PGROUP2     pg;
 
     argv = ExpandEnv( &argc, argv );
     GetOpt( &argc, argv, "", usageMsg );
@@ -60,20 +64,13 @@ void main( int argc, char **argv )
     if( argc != 2 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
-        len    = strlen( argv[1] );
+        _splitpath2( argv[1], pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
-        dir    = (char *)malloc( len * sizeof( char ) );
-        drive  = (char *)malloc( len * sizeof( char ) );
-
-        _splitpath( argv[1], drive, dir, NULL, NULL );
-
-        if( *dir == '\0'  &&  *drive == '\0' ) {
+        if( pg.dir[0] == '\0' && pg.drive[0] == '\0' ) {
             fprintf( stdout, ".\\\n" );
         } else {
-            fprintf( stdout, "%s%s\n", drive, dir );
+            fprintf( stdout, "%s%s\n", pg.drive, pg.dir );
         }
-
-        free( dir );
-        free( drive );
     }
+    return( 0 );
 }

@@ -45,7 +45,7 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
     HANDLE              h;
     WIN32_FIND_DATA     ffd;
 
-    h = __fixed_FindFirstFile( path, &ffd );
+    h = __lib_FindFirstFile( path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt_reterr() );
     }

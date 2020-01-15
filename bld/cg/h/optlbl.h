@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +38,11 @@
 #endif
 
 
-#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_int)((i) + 1))
-#define SYM2RTIDX(s)    ((rt_class)(pointer_int)(s) - 1)
+#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_uint)((i) + 1))
+#define SYM2RTIDX(s)    ((rt_class)(pointer_uint)(s) - 1)
 
-#define SYM2IMPHDL(s)   ((import_handle)(pointer_int)(s))
-#define IMPHDL2SYM(i)   ((cg_sym_handle)(pointer_int)(i))
+#define SYM2IMPHDL(s)   ((import_handle)(pointer_uint)(s))
+#define IMPHDL2SYM(i)   ((cg_sym_handle)(pointer_uint)(i))
 
 typedef enum {
     CODELABEL           = 0x0001,

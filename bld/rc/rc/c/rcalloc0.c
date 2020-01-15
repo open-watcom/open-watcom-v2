@@ -81,8 +81,8 @@ static HeapList *RCMemLayer0AddToHeap( size_t heapsize, size_t blocks_per_heap )
     return( data );
 }
 
-extern HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
-/******************************************************************************/
+HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
+/***********************************************************************/
 {
     HeapHandle         *heap;
 
@@ -99,11 +99,11 @@ extern HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
 }
 
 #ifdef RCMEM_DEBUG
-extern void *RCMemLayer0Malloc( HeapHandle *heap, size_t size )
+void *RCMemLayer0Malloc( HeapHandle *heap, size_t size )
 #else
-extern void *RCMemLayer0Malloc( HeapHandle *heap )
+void *RCMemLayer0Malloc( HeapHandle *heap )
 #endif
-/************************************************/
+/*****************************************/
 {
     HeapList           *newheap;
     FreeListInfo       *freemem;
@@ -124,8 +124,8 @@ extern void *RCMemLayer0Malloc( HeapHandle *heap )
     return( freemem->u.data );
 }
 
-extern void RCMemLayer0Free( void *mem, HeapHandle *heap )
-/********************************************************/
+void RCMemLayer0Free( void *mem, HeapHandle *heap )
+/*************************************************/
 {
     FreeListInfo        *freemem;
 
@@ -153,11 +153,11 @@ static void RCMemLayer0CheckUnfreed( HeapHandle *heap, char *freelist )
     size_t          i;
 
     for( i = 0; i < heap->blocksize; i++ ) {
-        if( freelist->dbg.startbyte == RCMEM_STARTBYTE ) {
+        if( ((FreeListInfo *)freelist)->dbg.startbyte == RCMEM_STARTBYTE ) {
             RcMsgFprintf( NULL,
                         "Unfreed Memory Detected (0x%x bytes at 0x%x)\n",
-                        freelist->dbg.size, freelist->u.data );
-            freelist->dbg.startbyte = !RCMEM_STARTBYTE;
+                        ((FreeListInfo *)freelist)->dbg.size, ((FreeListInfo *)freelist)->u.data );
+            ((FreeListInfo *)freelist)->dbg.startbyte = !RCMEM_STARTBYTE;
         }
         freelist += sizeof( DebugMemInfo ) + heap->heapsize + 1;
     }
@@ -165,8 +165,8 @@ static void RCMemLayer0CheckUnfreed( HeapHandle *heap, char *freelist )
 
 #endif
 
-extern void RCMemLayer0ShutDown( HeapHandle *heap )
-/*************************************************/
+void RCMemLayer0ShutDown( HeapHandle *heap )
+/******************************************/
 {
     HeapList         *curnode;
     HeapList         *nextnode;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +194,7 @@ static void NewSymFile( arch_header *arch )
     sfile->full_name = DupStrGlobal( sfile->arch.name );
     sfile->arch.name = DupStrGlobal( sfile->arch.name );
     if( Options.trim_path )
-        TrimPath( sfile->arch.name );
+        TrimPathInPlace( sfile->arch.name );
     sfile->name_length = strlen( sfile->arch.name );
     if( sfile->arch.ffname != NULL ) {
         sfile->arch.ffname = DupStrGlobal( sfile->arch.ffname );
@@ -287,9 +288,7 @@ static void SortSymbols( void )
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
-                sfile->arch.name = MemAllocGlobal( _MAX_FNAME + _MAX_EXT + 1 );
-                _splitpath( sfile->arch.ffname, NULL, NULL, sfile->arch.name, NULL );
-                _splitpath( sfile->arch.ffname, NULL, NULL, NULL, sfile->arch.name + strlen( sfile->arch.name ) );
+                sfile->arch.name = DupStrGlobal( TrimPath( sfile->arch.ffname ) );
                 sfile->name_length = strlen( sfile->arch.name );
             }
             name_length = sfile->name_length;
@@ -1168,7 +1167,7 @@ void ListContents( void )
                 if( cmd->ops & OP_FOUND ) {
                     if( Options.verbose ) {
                         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                            if( SameName( sfile->arch.name, cmd->name ) ) {
+                            if( IsSameFName( sfile->arch.name, cmd->name ) ) {
                                 if( Options.terse_listing ) {
                                     Message( sfile->arch.name );
                                 } else {

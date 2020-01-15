@@ -1,4 +1,4 @@
-#pmake: build docs pdf docpdf webdocs
+#pmake: build docs docpdf wikipdf
 
 dotarget=pdf
 

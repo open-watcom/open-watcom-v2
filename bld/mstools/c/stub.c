@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,13 @@
 #include <process.h>
 #endif
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <windows.h>
 #include "watcom.h"
 #include "memory.h"
 #include "stub.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -86,13 +89,13 @@ int GetCpuTypeStub( void )
     /*** It's a new CPU; check PROCESSOR_ARCHITECTURE ***/
     env = getenv( "PROCESSOR_ARCHITECTURE" );
     if( env != NULL ) {
-        if( !stricmp( env, "x86" ) ) {
+        if( stricmp( env, "x86" ) == 0 ) {
             return( STUB_FOUND_386 );
-        } else if( !stricmp( env, "AMD64" ) ) {
+        } else if( stricmp( env, "AMD64" ) == 0 ) {
             return( STUB_FOUND_X64 );
-        } else if( !stricmp( env, "alpha" ) ) {
+        } else if( stricmp( env, "alpha" ) == 0 ) {
             return( STUB_FOUND_AXP );
-        } else if( !stricmp( env, "ppc" ) ) {
+        } else if( stricmp( env, "ppc" ) == 0 ) {
             return( STUB_FOUND_PPC );
         }
     }
@@ -107,14 +110,12 @@ int GetCpuTypeStub( void )
 void SpawnProgStub( const char *progname )
 /****************************************/
 {
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
-    char                fullPath[_MAX_PATH];
-    size_t              len;
-    char *              argv[3];
-    int                 rc;
+    PGROUP2         pg1;
+    PGROUP2         pg2;
+    char            fullPath[_MAX_PATH];
+    size_t          len;
+    char *          argv[3];
+    int             rc;
 
     /*** Make a copy of the command line ***/
     argv[0] = (char*)progname;
@@ -131,9 +132,9 @@ void SpawnProgStub( const char *progname )
 
     /*** Didn't work; try looking in the same directory as this program ***/
     _fullpath( fullPath, progname, _MAX_PATH );
-    _splitpath( fullPath, drive, dir, NULL, NULL );
-    _splitpath( progname, NULL, NULL, fname, ext );
-    _makepath( fullPath, drive, dir, fname, ext );
+    _splitpath2( fullPath, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+    _splitpath2( progname, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+    _makepath( fullPath, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
     rc = (int)spawnvp( P_WAIT, fullPath, (const char **)argv );
     if( rc != -1 ) {
         exit( rc );

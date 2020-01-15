@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 /******************************************************/
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {
+    if( _osmode_PROTMODE() ) {
 #endif
         APIRET      rc;
         FF_BUFFER   dir_buff;
@@ -114,7 +115,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 /*****************************************************/
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
+    if( _osmode_PROTMODE() ) {          /* protected mode */
 #endif
         APIRET  rc;
 
@@ -152,7 +153,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
     APIRET      rc;
 
 #if defined(__OS2_286__)
-    if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
+    if( _osmode_PROTMODE() ) {          /* protected mode */
 #endif
         if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
             rc = DosFindClose( DTAXXX_HANDLE_OF( buf->reserved ) );

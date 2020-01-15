@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,9 @@
 #include "wrsvres.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -55,7 +59,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     bool                ok;
     FILE                *fp;
     long int            file_length;
-    char                fn[_MAX_FNAME];
+    PGROUP2             pg;
     WResID              *type;
     WResID              *name;
     WResLangType        def_lang;
@@ -83,8 +87,8 @@ bool WRLoadBitmapFile( WRInfo *info )
     }
 
     if( ok ) {
-        _splitpath( info->file_name, NULL, NULL, fn, NULL );
-        name = WResIDFromStr( fn );
+        _splitpath2( info->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        name = WResIDFromStr( pg.fname );
         ok = ( name != NULL );
     }
 
@@ -124,10 +128,10 @@ bool WRLoadIconFile( WRInfo *info )
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
-    char                fn[_MAX_FNAME];
     bool                dup;
     int                 i;
     bool                ok;
+    PGROUP2             pg;
 
     data = NULL;
     rih = NULL;
@@ -160,8 +164,8 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if( ok ) {
-        _splitpath( info->file_name, NULL, NULL, fn, NULL );
-        rname = WResIDFromStr( fn );
+        _splitpath2( info->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        rname = WResIDFromStr( pg.fname );
         ok = ( rname != NULL );
     }
 
@@ -213,10 +217,10 @@ bool WRLoadCursorFile( WRInfo *info )
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
-    char                fn[_MAX_FNAME];
     bool                dup;
     int                 i;
     bool                ok;
+    PGROUP2             pg;
 
     data = NULL;
     rch = NULL;
@@ -249,8 +253,8 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if( ok ) {
-        _splitpath( info->file_name, NULL, NULL, fn, NULL );
-        rname = WResIDFromStr( fn );
+        _splitpath2( info->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        rname = WResIDFromStr( pg.fname );
         ok = ( rname != NULL );
     }
 

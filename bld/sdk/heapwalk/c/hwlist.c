@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,7 +155,7 @@ BOOL GetDGroupItem( char *owner, heap_list *hl ) {
                 if( MyModuleFindHandle( &me, hl->info.ge.hOwner ) ) {
                     if( strcmp( me.szModule, owner ) == 0 ) {
                         strcpy( hl->szModule , owner );
-                        hl->szModule[MAX_MODULE_NAME]=0;
+                        hl->szModule[MAX_MODULE_NAME] = '\0';
                         return( TRUE );
                     }
                 }
@@ -191,7 +191,7 @@ static void FormatSel( char *which, WORD sel, char *buff )
     DWORD       base;
     DWORD       limit;
 
-    buff[ 0 ] = 0;
+    buff[0] = '\0';
     _buff = buff;
     GetADescriptor( sel, &desc );
     if( which != NULL ) {
@@ -256,9 +256,9 @@ BOOL FormatHeapListItem( char *line, unsigned index )
         if( hl->info.ge.hBlock != 0 ) {
             sprintf( handle,"%04x", hl->info.ge.hBlock );
         } else {
-            handle[0] = 0;
+            handle[0] = '\0';
         }
-        lock[0] = 0;
+        lock[0] = '\0';
         if( hl->info.ge.wcLock ) {
             strcat( lock, "L1" );
             if( hl->info.ge.wcPageLock ) strcat( lock,"," );
@@ -299,7 +299,8 @@ static BOOL SaveGlobalListState( HWND boxhwnd, GlobStateStruct *state ) {
 
     int     top, sel;
 
-    if( HeapList == NULL ) return( FALSE );
+    if( HeapList == NULL )
+        return( FALSE );
     top = (int)SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
     sel = (int)SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
     if( sel != LB_ERR && sel < HeapListSize ) {
@@ -308,7 +309,8 @@ static BOOL SaveGlobalListState( HWND boxhwnd, GlobStateStruct *state ) {
     } else {
         state->sel_valid = FALSE;
     }
-    if( top >= HeapListSize ) top = 0;
+    if( top >= HeapListSize )
+        top = 0;
     state->top = *HeapList[top];
     return( TRUE );
 }
@@ -369,7 +371,7 @@ void FreeHeapList( void )
     int i;
 
     if( HeapListSize != 0 ) {
-        for( i=0;i<HeapListSize;i++ ) {
+        for( i = 0; i < HeapListSize; i++ ) {
             MemFree( HeapList[i] );
         }
         MemFree( HeapList );
@@ -494,15 +496,16 @@ void InitHeapList( HWND boxhwnd, BOOL keeppos )
         pos = 0;
         MyGlobalFirst( &hl.info.ge, htype );
         do {
-            hl.szModule[0] = 0;
+            hl.szModule[0] = '\0';
             hl.lru_pos = pos;
             if( hl.info.ge.hOwner != NULL ) {
                 FindModuleName( hl.szModule, hl.info.ge.hOwner );
             }
             hl.flag = GetMemFlag( &hl );
             ret = AddToHeapList( &hl );
-            if( !ret ) break;
-            pos ++;
+            if( !ret )
+                break;
+            pos++;
         } while( MyGlobalNext( &hl.info.ge, htype ) );
     } else {
         ListingDPMI = TRUE;
@@ -517,7 +520,7 @@ void InitHeapList( HWND boxhwnd, BOOL keeppos )
         SendMessage( boxhwnd, LB_RESETCONTENT, 0, 0L );
     } else {
         SortHeapList();
-        ReDisplayHeapList( boxhwnd, keeppos ? &state:NULL );
+        ReDisplayHeapList( boxhwnd, keeppos ? &state : NULL );
     }
     SetCursor( oldcursor );
     ReleaseCapture();

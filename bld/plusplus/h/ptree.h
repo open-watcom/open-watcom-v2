@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 #include "srcfile.h"
 #include "ptreedec.h"
 
-#define PTreePCHRead()      PTreeMapIndex( (PTREE)(pointer_int)PCHReadCVIndex() )
-#define PTreePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)PTreeGetIndex(x) )
+#define PTreePCHRead()      PTreeMapIndex( (PTREE)(pointer_uint)PCHReadCVIndex() )
+#define PTreePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_uint)PTreeGetIndex(x) )
 
 /*
     flags are organized into three classes:

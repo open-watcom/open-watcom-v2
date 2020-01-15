@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ typedef struct {
 
 static i386_transfer    I386Jump = { I386_TRANSFER_OP1, I386_TRANSFER_OP2, 0 };
 
-#define I386_TRANSFER_SIZE (sizeof(i386_transfer))
+#define I386_TRANSFER_SIZE      sizeof( i386_transfer )
 
 #define ALPHA_TRANSFER_OP1      0x277F
 #define ALPHA_TRANSFER_OP2      0xA37B
@@ -118,7 +118,7 @@ static alpha_transfer   AlphaJump = {   0, ALPHA_TRANSFER_OP1,
                                         0, ALPHA_TRANSFER_OP2,
                                         0, ALPHA_TRANSFER_OP3 };
 
-#define ALPHA_TRANSFER_SIZE (sizeof(alpha_transfer))
+#define ALPHA_TRANSFER_SIZE sizeof( alpha_transfer )
 
 static unsigned_32 PPCJump[]= {
     0x81620000,         //   lwz        r11,[tocv]__imp_RtlMoveMemory(rtoc)
@@ -129,7 +129,7 @@ static unsigned_32 PPCJump[]= {
     0x4E800420          //   bctr
 };
 
-#define PPC_TRANSFER_SIZE (sizeof(PPCJump))
+#define PPC_TRANSFER_SIZE   sizeof( PPCJump )
 
 #define X64_TRANSFER_OP1    0xff    /* first byte of a "JMP [FOO]" */
 #define X64_TRANSFER_OP2    0x25    /* second byte of a "JMP [FOO]" */
@@ -146,7 +146,7 @@ static x64_transfer    X64Jump = { X64_TRANSFER_OP1, X64_TRANSFER_OP2, {0} };
 
 #include "poppck.h"
 
-#define X64_TRANSFER_SIZE (sizeof(x64_transfer))
+#define X64_TRANSFER_SIZE sizeof( x64_transfer )
 
 #define TRANSFER_SEGNAME "TRANSFER CODE"
 
@@ -445,7 +445,7 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
         }
         if( size_ph != 0 ) {
             object->physical_offset = NullAlign( file_align );
-            WriteGroupLoad( group );
+            WriteGroupLoad( group, false );
             PadLoad( size_ph - group->size );
         }
         ++object;
@@ -1389,7 +1389,7 @@ void FiniPELoadFile( void )
 
         totalsize = QFileSize( outfile->handle );
 
-#define CRC_BUFF_SIZE   (16 * 1024)
+#define CRC_BUFF_SIZE   _16KB
         _ChkAlloc( buffer, CRC_BUFF_SIZE );
 
         if( buffer ) {
@@ -1667,7 +1667,6 @@ void ChkPEData( void )
 {
     class_entry *class;
 
-    ChkOS2Data();
     /* find the last code class in the program */
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
         if( class->flags & CLASS_CODE ) {
@@ -1700,7 +1699,6 @@ void AllocPETransferTable( void )
     /*
      *  Moved export check here as otherwise flags don't get propagated
      */
-    ChkOS2Exports();
     if( XFerSegData == NULL ) {
         return;
     }
@@ -1740,7 +1738,7 @@ void AllocPETransferTable( void )
     CurrMod = NULL;
 }
 
-#define PREFIX_LEN (sizeof(ImportSymPrefix)-1)
+#define PREFIX_LEN  (sizeof( ImportSymPrefix ) - 1)
 
 void AddPEImportLocalSym( symbol *locsym, symbol *iatsym )
 /********************************************************/

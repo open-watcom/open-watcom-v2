@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -92,13 +93,13 @@ int main( int argc, char **argv )
     int     i;
     FILE    *infile, *outfile;
     int     own_infile = 0, own_outfile = 0;
-	int     ret;
+        int     ret;
 
     infile = NULL;
     outfile = NULL;
     argv = ExpandEnv( &argc, argv );
-	ret = EXIT_SUCCESS;
-	
+        ret = EXIT_SUCCESS;
+
     for( ;; ) {
         ch = GetOpt( &argc, argv, "o:fr", usageMsg );
         if( ch == -1 ) {
@@ -118,7 +119,7 @@ int main( int argc, char **argv )
         }
     }
     argv++;
-		
+
     if( *argv != NULL ) {
         // allways open in binary mode on windows
         infile = fopen( *argv, "rb" );

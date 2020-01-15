@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,57 +52,51 @@
 #define STAT_ALREADY_ALLOC      2
 #define STAT_NOT_ALLOCATED      3
 
-#if defined( _M_I86 )
-  #if defined( __MEDIUM__ )
-    #define __extended_ptype __far
-  #else
-    #define __extended_ptype
-  #endif
-#else
-    #define __extended_ptype __far
+#define FAR2NEAR(f)  ((void *)(pointer_uint)(f))
+
+static unsigned_16 *getFlagsPtr( void **arr, unsigned_16 flags )
+//==============================================================
+{
+    if( flags & ALLOC_STRING )
+        return( (unsigned_16 *)( (string *)arr + 1 ) );
+#if defined( _M_IX86 )
+    if( flags & ALLOC_EXTENDED )
+        return( (unsigned_16 *)((void __far **)arr + 1 ) );
 #endif
+    return( (unsigned_16 *)( arr + 1 ) );
+}
 
-
-static void turnOffFlags( void **arr, unsigned_16 flags, unsigned_16 mask ) {
-//===========================================================================
-
-    if( flags & ALLOC_STRING ) {
-        *((unsigned_16 *)((string *)arr + 1 )) &= ~mask;
-    } else {
-        if( flags & ALLOC_EXTENDED ) {
-            *((unsigned_16 *)((void __far * *)arr + 1 )) &= ~mask;
-        } else {
-            *((unsigned_16 *)(arr + 1)) &= ~mask;
-        }
-    }
+static void turnOffFlags( void **arr, unsigned_16 flags, unsigned_16 mask )
+//=========================================================================
+{
+    *getFlagsPtr( arr, flags ) &= ~mask;
 }
 
 
-static void turnOnFlags( void **arr, unsigned_16 flags, unsigned_16 mask ) {
-//==========================================================================
-
-    if( flags & ALLOC_STRING ) {
-        *((unsigned_16 *)((string *)arr + 1 )) |= mask;
-    } else {
-        if( flags & ALLOC_EXTENDED ) {
-            *((unsigned_16 *)((void __far * *)arr + 1 )) |= mask;
-        } else {
-            *((unsigned_16 *)(arr + 1 )) |= mask;
-        }
-    }
+static void turnOnFlags( void **arr, unsigned_16 flags, unsigned_16 mask )
+//========================================================================
+{
+    *getFlagsPtr( arr, flags ) |= mask;
 }
 
 
-static  bool    Allocated( void **arr, unsigned_16 flags ) {
-//==========================================================
-
+static  bool    Allocated( void **arr, unsigned_16 flags )
+//========================================================
 // Determine allocation status of array.
-
+{
+#if defined( _M_IX86 )
     if( flags & ALLOC_EXTENDED ) {
-        return( (*(void __extended_ptype **)arr) != NULL );
+  #if defined( _M_I86 )
+        return( *(void __far **)arr != NULL );
+  #else
+        return( FAR2NEAR( *(void __far **)arr ) != NULL );
+  #endif
     } else {
+#endif
         return( *arr != NULL );
+#if defined( _M_IX86 )
     }
+#endif
 }
 
 
@@ -153,33 +148,33 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
             dim_cnt = va_arg( args, int );
             elt_size = va_arg( args, unsigned_32 );
         }
-        if( Allocated( item, alloc_flags ) && (alloc_flags & ALLOC_LOC) == 0 ) {
-            if( stat != NULL ) {
-                *stat = STAT_ALREADY_ALLOC;
-                break;
+        if( (alloc_flags & ALLOC_LOC) == 0 ) {
+            if( Allocated( item, alloc_flags ) ) {
+                if( stat != NULL ) {
+                    *stat = STAT_ALREADY_ALLOC;
+                    break;
+                }
+                RTErr( MO_STORAGE_ALLOCATED );
             }
-            RTErr( MO_STORAGE_ALLOCATED );
         }
         if( alloc_type & ALLOC_LOC ) {
-#if defined( __WINDOWS_386__ )
+#if defined( _M_IX86 )
             if( alloc_flags & ALLOC_EXTENDED ) {
+    #if defined( __WINDOWS_386__ )
                 seg = location >> 16;
                 if( ( seg == 0 ) || ( seg == 0xffff ) ) {
                     *(void __far **)item = MK_LOCAL32( (void *)location );
                 } else {
                     *(void __far **)item = MK_FP32( (void *)location );
                 }
-            } else {
-                *item = (void *)location;
-            }
-#elif defined( _M_IX86 )
-            if( alloc_flags & ALLOC_EXTENDED ) {
+    #else
                 *(void __far **)item = MK_FP( location >> 16, location & 0x0000ffff );
+    #endif
             } else {
+#endif
                 *item = (void *)location;
+#if defined( _M_IX86 )
             }
-#else
-            *item = (void *)location;
 #endif
         } else {
             if( alloc_flags & ALLOC_STRING ) {
@@ -192,30 +187,34 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
                     ++adv_ent;
                 }
             }
-#if defined( _M_I86 )
-  #if defined( __MEDIUM__ )
-            if( alloc_flags & ALLOC_EXTENDED ) {
-                if( size * elt_size <= UINT_MAX ) {
-                    *(void __far **)item = _fmalloc( size * elt_size );
-                } else {
+#if defined( _M_I86 ) && !defined( __MEDIUM__ )
+            *item = (void PGM *)halloc( size, elt_size );
+#else
+    #if defined( _M_IX86 )
+        #if defined( _M_I86 )
+            if( size * elt_size > UINT_MAX ) {
+                if( alloc_flags & ALLOC_EXTENDED ) {
                     *(void __far **)item = NULL;
-                }
-            } else {
-                if( size * elt_size <= UINT_MAX ) {
-                    *item = malloc( size * elt_size );
                 } else {
                     *item = NULL;
                 }
-            }
-  #else
-            *item = (void PGM *)halloc( size, elt_size );
-  #endif
-#else
-            if( alloc_flags & ALLOC_EXTENDED ) {
-                *(void __far **)item = malloc( size * elt_size );
             } else {
-                *item = malloc( size * elt_size );
+        #endif
+                if( alloc_flags & ALLOC_EXTENDED ) {
+        #if defined( _M_I86 )
+                    *(void __far **)item = _fmalloc( size * elt_size );
+        #else
+                    *(void __far **)item = malloc( size * elt_size );
+        #endif
+                } else {
+    #endif
+                    *item = malloc( size * elt_size );
+    #if defined( _M_IX86 )
+                }
+        #if defined( _M_I86 )
             }
+        #endif
+    #endif
 #endif
             if( !Allocated( item, alloc_flags ) ) {
                 if( stat != NULL ) {
@@ -248,38 +247,42 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
         if( !Allocated( item, alloc_flags ) ) {
             istat = STAT_NOT_ALLOCATED;
         } else {
+#if defined( _M_IX86 )
             if( (alloc_flags & ALLOC_LOC) == 0 ) {
-#if defined( _M_I86 )
-  #if defined( __MEDIUM__ )
-                if( alloc_flags & ALLOC_EXTENDED ) {
-                    _ffree( *(void __far **)item );
-                } else {
-                    free( *item );
-                }
-  #else
+#endif
+#if defined( _M_I86 ) && !defined( __MEDIUM__ )
                 hfree( *item );
-  #endif
 #else
+    #if defined( _M_IX86 )
                 if( alloc_flags & ALLOC_EXTENDED ) {
-                    free( (void *)(*(void __far **)item) );
+        #if defined( _M_I86 )
+                    _ffree( *(void __far **)item );
+        #else
+                    free( FAR2NEAR( *(void __far **)item ) );
+        #endif
                 } else {
+    #endif
                     free( *item );
+    #if defined( _M_IX86 )
                 }
+    #endif
 #endif
+#if defined( _M_IX86 )
             }
+#endif
+#if defined( _M_IX86 )
             if( alloc_flags & ALLOC_EXTENDED ) {
-#if defined( _M_I86 )
-  #if defined( __MEDIUM__ )
-                (*(void __far **)item) = NULL;
-  #else
+    #if defined( _M_I86 ) && !defined( __MEDIUM__ )
                 *item = NULL;
-  #endif
-#else
+    #else
                 (*(void __far **)item) = NULL;
-#endif
+    #endif
             } else {
+#endif
                 *item = NULL;
+#if defined( _M_IX86 )
             }
+#endif
             turnOffFlags( item, alloc_flags, ALLOC_MASK );
         }
     }
@@ -291,4 +294,3 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
         *stat = istat;
     }
 }
-

@@ -12,8 +12,6 @@ memory_model_i86 = c
 
 .c : ..
 
-extra_c_flags =-s
-
 extra_l_flags_dos = op stack=8k
 extra_l_flags_os2 = op stack=12k,heap=8k,newfile
 
@@ -24,7 +22,11 @@ objs = wbind.obj
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
+! ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
+! else
     $(cl) $(clflags) $(objs) $(ldflags)
+! endif
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif

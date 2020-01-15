@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,6 @@
 #define DEFAULT_S       "DEFAULT"
 
 #define HASH_PRIME      211
-#define CASESENSITIVE   false   // Is Target Name case sensitive
 
 /* just for people to copy in */
 const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
@@ -133,7 +133,7 @@ void RenameTarget( const char *oldname, const char *newname )
 {
     TARGET *targ;
 
-    targ = (TARGET *)RemHashNode( targTab, oldname, CASESENSITIVE );
+    targ = (TARGET *)RemHashNode( targTab, oldname, NOCASESENSITIVE );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
             FreeSafe( targ->node.name );
@@ -168,7 +168,7 @@ TARGET *FindTarget( const char *name )
 {
     assert( name != NULL );
 
-    return( (TARGET *)FindHashNode( targTab, name, CASESENSITIVE ) );
+    return( (TARGET *)FindHashNode( targTab, name, NOCASESENSITIVE ) );
 }
 
 
@@ -464,7 +464,7 @@ void KillTarget( const char *name )
 {
     void    *mykill;
 
-    mykill = RemHashNode( targTab, name, CASESENSITIVE );
+    mykill = RemHashNode( targTab, name, NOCASESENSITIVE );
     if( mykill != NULL ) {
         freeTarget( mykill );
     }
@@ -501,9 +501,8 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 }
 
 
-RET_T WildTList( TLIST **list, const char *base, bool mentioned,
-                 bool expandWildCardPath )
-/***************************************************************
+bool WildTList( TLIST **list, const char *base, bool mentioned, bool expandWildCardPath )
+/****************************************************************************************
  * Build a TLIST using base as a wildcarded path.  Uses DoWildCard().
  * Pushes targets onto list.
  */
@@ -522,7 +521,7 @@ RET_T WildTList( TLIST **list, const char *base, bool mentioned,
         assert( file != NULL );
         if( strpbrk( file, WILD_METAS ) != NULL ) {
             PrtMsg( ERR | LOC | NO_EXISTING_FILE_MATCH, file );
-            return( RET_ERROR );
+            return( false );
         }
     } else {
         file = base;
@@ -559,7 +558,7 @@ RET_T WildTList( TLIST **list, const char *base, bool mentioned,
         }
         endOfList->next = current;
     }
-    return( RET_SUCCESS );
+    return( true );
 }
 
 
@@ -746,8 +745,8 @@ void CheckNoCmds( void )
 
 
 #if defined( USE_SCARCE ) || !defined( NDEBUG )
-STATIC RET_T cleanupLeftovers( void )
-/***********************************/
+STATIC bool cleanupLeftovers( void )
+/**********************************/
 {
     DEPEND      *dep;
     CLIST       *c;
@@ -762,7 +761,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeDepends = dep->next;
             FreeSafe( dep );
         } while( freeDepends != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeTLists != NULL ) {
         do {
@@ -770,7 +769,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeTLists = t->next;
             FreeSafe( t );
         } while( freeTLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeNKLists != NULL ) {
         do {
@@ -778,7 +777,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeNKLists = nk->next;
             FreeSafe( nk );
         } while( freeNKLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeSLists != NULL ) {
         do {
@@ -786,7 +785,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeSLists = slist->next;
             FreeSafe( slist );
         } while( freeSLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeFLists != NULL ) {
         do {
@@ -794,7 +793,7 @@ STATIC RET_T cleanupLeftovers( void )
             freeFLists = f->next;
             FreeSafe( f );
         } while( freeFLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
     if( freeCLists != NULL ) {
         do {
@@ -802,9 +801,9 @@ STATIC RET_T cleanupLeftovers( void )
             freeCLists = c->next;
             FreeSafe( c );
         } while( freeCLists != NULL );
-        return( RET_SUCCESS );
+        return( true );
     }
-    return( RET_ERROR );
+    return( false );
 }
 #endif
 
@@ -812,7 +811,6 @@ STATIC RET_T cleanupLeftovers( void )
 void TargetInit( void )
 /*********************/
 {
-    targTab     = NULL;
     freeDepends = NULL;
     freeTLists  = NULL;
     freeCLists  = NULL;
@@ -845,7 +843,7 @@ void TargetFini( void )
     WalkHashTab( targTab, walkFree, NULL );
     FreeHashTab( targTab );
     targTab = NULL;
-    while( cleanupLeftovers() != RET_ERROR )
+    while( cleanupLeftovers() )
         ;
 #endif
 }

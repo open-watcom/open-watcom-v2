@@ -152,12 +152,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         if( TrapCode->signature == TRAP_SIGNATURE ) {
             init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
+            FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
+            ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
             *trap_ver = init_func( parms, buff, trap_ver->remote );
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {
                     TrapVer = *trap_ver;
-                    FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
-                    ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
                     return( NULL );
                 }
                 strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );

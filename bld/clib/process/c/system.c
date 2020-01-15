@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
   #elif defined( __WARP__ )
     use_cmd = 1;
   #elif defined( __OS2_286__ )
-    use_cmd = ( _RWD_osmode != DOS_MODE );
+    use_cmd = _osmode_PROTMODE();
   #else
     use_cmd = 0;
   #endif

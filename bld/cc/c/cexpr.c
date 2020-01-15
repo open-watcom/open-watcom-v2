@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +141,7 @@ static TREEPTR FarPtr16Cvt( TREEPTR newparm  )
     parmtyp = newparm->u.expr_type;
     SKIP_TYPEDEFS( parmtyp );
     if( parmtyp->decl_type == TYPE_POINTER ) {
-        op1_class = PTR_FAR16;
+        op1_class = PTRCLS_FAR16;
         op2_class = ExprTypeClass( newparm->u.expr_type );
         newparm = ExprNode( NULL, OPR_CONVERT_PTR, newparm );
         newparm->u.expr_type = parmtyp;
@@ -511,6 +512,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
     type_modifiers      decl_flags;
     target_uint         value;
     SYM_ENTRY           sym;
+    segment_id          segid;
 
     if( tree->op.opr == OPR_ERROR )
         return( tree );
@@ -528,7 +530,6 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             return( ErrorNode( tree ) );
         }
     } else if( typ->decl_type == TYPE_ARRAY ) {
-
         if( tree->op.opr == OPR_PUSHSTRING ) {
             if( typ->object->decl_type == TYPE_USHORT ) {
                 typ = PtrNode( typ->object, FLAG_NONE, SEG_DATA );
@@ -538,7 +539,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             }
             tree->u.expr_type = typ;
         } else {
-
+            segid = SEG_DATA;
             decl_flags = FlagOps( tree->op.flags );
             if( tree->op.opr == OPR_PUSHADDR ) {
                 SymGet( &sym, tree->op.u2.sym_handle );
@@ -547,12 +548,21 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                 if( symb_flags != sym.flags ) {
                     SymReplace( &sym, tree->op.u2.sym_handle );
                 }
+                if( sym.attribs.stg_class == SC_AUTO ) {
+                    segid = SEG_STACK;
+                }
             }
             if( IsCallValue( tree ) ) {
                 CErr1( ERR_CANT_TAKE_ADDR_OF_RVALUE );
             }
             tree = ExprNode( NULL, OPR_ADDROF, tree );
-            tree->u.expr_type = PtrNode( typ->object, decl_flags, SEG_DATA );
+            if( segid == SEG_STACK ) {
+                CompFlags.addr_of_auto_taken = true;
+                if( TargetSwitches & FLOATING_SS ) {
+                    decl_flags = (decl_flags & ~FLAG_NEAR) | FLAG_FAR;
+                }
+            }
+            tree->u.expr_type = PtrNode( typ->object, decl_flags, segid );
         }
     } else if( typ->decl_type == TYPE_FUNCTION ) {
 
@@ -570,7 +580,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             decl_flags = FLAG_NONE;
         }
         tree = ExprNode( NULL, OPR_ADDROF, tree );
-        tree->u.expr_type = PtrNode( typ, decl_flags, SEG_UNKNOWN );
+        tree->u.expr_type = PtrNode( typ, decl_flags, SEG_NULL );
     } else if( TypeSize( typ ) == 0 ) {
         SetDiagType1( typ );
         CErr1( ERR_INCOMPLETE_EXPR_TYPE );
@@ -772,7 +782,7 @@ static TREEPTR FarPtrCvt( SYMPTR sym, SYM_HANDLE sym_handle )
             tree->op.opr = OPR_PUSHSYM;
             tree = ExprNode( NULL, OPR_CONVERT, tree );
             tree->u.expr_type = typ;
-            tree->op.u2.result_type = PtrNode( typ->object, FLAG_FAR, SEG_UNKNOWN );
+            tree->op.u2.result_type = PtrNode( typ->object, FLAG_FAR, SEG_NULL );
         }
     } else {
         assert( 0 );
@@ -787,7 +797,7 @@ static TREEPTR MakeFarOp( TREEPTR based_sym, TREEPTR tree )
 
     typ = tree->u.expr_type;
     SKIP_TYPEDEFS( typ );
-    typ = PtrNode( typ->object, FLAG_FAR, SEG_UNKNOWN );
+    typ = PtrNode( typ->object, FLAG_FAR, SEG_NULL );
     tree = ExprNode( based_sym, OPR_FARPTR, tree );
     tree->u.expr_type = typ;
     return( tree );
@@ -832,7 +842,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
             typ = based_sym->u.expr_type;
             SKIP_TYPEDEFS( typ );
         }
-        old = PtrNode( old->object, typ->u.p.decl_flags, SEG_UNKNOWN );
+        old = PtrNode( old->object, typ->u.p.decl_flags, SEG_NULL );
         tree = ExprNode( based_sym, OPR_ADD, tree );
         tree->u.expr_type = old;
         tree->op.u2.result_type = old;
@@ -2673,6 +2683,6 @@ static TREEPTR SegOp( TREEPTR seg, TREEPTR offset )
     if( typ == NULL )
         typ = GetType( TYPE_VOID );
     tree = ExprNode( RValue(seg), OPR_FARPTR, RValue(offset) );
-    tree->u.expr_type = PtrNode( typ, FLAG_FAR, SEG_UNKNOWN );
+    tree->u.expr_type = PtrNode( typ, FLAG_FAR, SEG_NULL );
     return( tree );
 }

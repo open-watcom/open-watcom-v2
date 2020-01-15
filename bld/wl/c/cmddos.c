@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,29 +42,30 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmddos.h"
+#include "distrib.h"
 
-byte            OvlLevel;
 
-#ifdef _INT_DEBUG
-static void             PrintOvl( void );
-static void             PrintAreas( OVL_AREA *ovlarea );
-static void             PrintSect( section *sect );
-#endif
-static bool             AddClass( void );
-static void             NewArea( section *sect );
+static byte             OvlLevel;
 
 void SetDosFmt( void )
-/***************************/
+/********************/
 {
     Extension = E_LOAD;
 }
 
 bool ProcDos( void )
-/*************************/
+/******************/
 {
     OvlLevel = 0;
     ProcOne( DosOptions, SEP_NO, false );
     return( true );
+}
+
+overlay_ref GetOvlRef( void )
+/***************************/
+{
+    /* OvlSectNum value 0 is reserved for Root */
+    return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
 static void SetOvlClasses( void )
@@ -87,7 +89,7 @@ static bool AddClass( void )
 
     _PermAlloc( ovlclass, sizeof( list_of_names ) + Token.len );
     memcpy( ovlclass->name, Token.this, Token.len );
-    ovlclass->name[ Token.len ] = '\0';
+    ovlclass->name[Token.len] = '\0';
     ovlclass->next_name = OvlClasses;
     OvlClasses = ovlclass;
     return( true );
@@ -124,6 +126,30 @@ bool ProcFixedLib( void )
     return( ret );
 }
 
+static section *OvlNewSection( void )
+/***********************************/
+{
+    OvlSectNum++;
+    return( NewSection() );
+}
+
+static void NewArea( section *sect )
+/**********************************/
+/* allocate a new area including this section */
+{
+    ovl_area            *ovl;
+    ovl_area            **owner;
+
+    _PermAlloc( ovl, sizeof( ovl_area ) );
+    ovl->next_area = NULL;
+    ovl->sections = sect;
+    sect->parent = CurrSect;
+    for( owner = &CurrSect->areas; *owner != NULL; ) {
+        owner = &(*owner)->next_area;
+    }
+    *owner = ovl;
+}
+
 // this is an arbitrary non-zero value put in the sect->relocs field to
 // signify that ProcBegin already made a new section, so ProcSection
 // should not.
@@ -146,7 +172,7 @@ bool ProcBegin( void )
     } else {
         oldsect = CurrSect;
         oldflist = CurrFList;
-        sect = NewSection();
+        sect = OvlNewSection();
         if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }
@@ -178,29 +204,12 @@ bool ProcInto( void )
     return( false );
 }
 
-static void NewArea( section *sect )
-/**********************************/
-/* allocate a new area including this section */
-{
-    ovl_area            *ovl;
-    ovl_area            **owner;
-
-    _PermAlloc( ovl, sizeof( ovl_area ) );
-    ovl->next_area = NULL;
-    ovl->sections = sect;
-    sect->parent = CurrSect;
-    for( owner = &CurrSect->areas; *owner != NULL; ) {
-        owner = &(*owner)->next_area;
-    }
-    *owner = ovl;
-}
-
 
 static void MakeNonArea( void )
 /*****************************/
 /* make a new overlay area for non-overlay classes */
 {
-    NonSect = NewSection();   // No debug info in nonsect.
+    NonSect = OvlNewSection();   // No debug info in nonsect.
     NewArea( NonSect );
 }
 
@@ -224,7 +233,7 @@ void MakeNewSection( void )
     section             *sect;
 
     if( CurrSect->relocs != SECT_ALREADY_MADE ) {
-        sect = NewSection();
+        sect = OvlNewSection();
         if( LinkFlags & LF_ANY_DBI_FLAG ) {
             DBISectInit( sect );
         }
@@ -296,7 +305,7 @@ bool ProcNoVector( void )
 static bool AddVector( void )
 /***************************/
 {
-    Vectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
+    OvlVectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
     return(true);
 }
 
@@ -312,7 +321,7 @@ static bool AddForceVector( void )
     symbol  *sym;
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
-    Vectorize( sym );
+    OvlVectorize( sym );
     sym->u.d.ovlstate |= OVL_ALWAYS;
     return(true);
 }
@@ -369,10 +378,54 @@ bool ProcArea( void )
 
     ret = GetLong( &value );
     if( ret ) {
-        AreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
+        OvlAreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
     }
     return( ret );
 }
+
+#ifdef _INT_DEBUG
+static void PrintSect( section *sect );
+
+static void PrintAreas( OVL_AREA *ovlarea )
+{
+    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "Begin OverLay Area" ));
+        PrintSect( ovlarea->sections );
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "End OverLay Area" ));
+    }
+}
+
+static void PrintOvl( void )
+/**************************/
+{
+    OvlLevel = 0;
+    PrintAreas( Root->areas );
+}
+
+static void PrintSect( section *sect )
+/************************************/
+{
+    file_list   *list;
+
+    OvlLevel++;
+    for( ; sect != NULL; sect = sect->next_sect ) {
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovlref, OvlLevel ));
+        DEBUG(( DBG_OLD, "Files:" ));
+        if( sect->files == NULL ) {
+            DEBUG(( DBG_OLD, "\"Non-section\"" ));
+        }
+        for( list = sect->files; list != NULL; list = list->next_file ) {
+            DEBUG(( DBG_OLD, "%s", list->infile->name ));
+        }
+        PrintAreas( sect->areas );
+    }
+    OvlLevel--;
+}
+#endif
 
 void CmdOvlFini( void )
 /****************************/
@@ -392,46 +445,3 @@ void CmdOvlFini( void )
     PrintOvl();
 #endif
 }
-
-#ifdef _INT_DEBUG
-static void PrintOvl( void )
-/**************************/
-{
-    OvlLevel = 0;
-    PrintAreas( Root->areas );
-}
-
-static void PrintAreas( OVL_AREA *ovlarea )
-{
-    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "Begin OverLay Area" ));
-        PrintSect( ovlarea->sections );
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "End OverLay Area" ));
-    }
-}
-
-
-static void PrintSect( section *sect )
-/************************************/
-{
-    file_list   *list;
-
-    OvlLevel++;
-    for( ; sect != NULL; sect = sect->next_sect ) {
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovl_num, OvlLevel ));
-        DEBUG(( DBG_OLD, "Files:" ));
-        if( sect->files == NULL ) {
-            DEBUG(( DBG_OLD, "\"Non-section\"" ));
-        }
-        for( list = sect->files; list != NULL; list = list->next_file ) {
-            DEBUG(( DBG_OLD, "%s", list->infile->name ));
-        }
-        PrintAreas( sect->areas );
-    }
-    OvlLevel--;
-}
-#endif

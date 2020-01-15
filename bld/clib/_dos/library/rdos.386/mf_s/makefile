@@ -4,5 +4,6 @@ model=mf
 system=rdos
 convention=stack
 linkage=static
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif

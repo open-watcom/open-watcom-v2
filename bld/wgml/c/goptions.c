@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -322,16 +322,17 @@ static void set_altext( option * opt )
     } else {
         len = tokennext->toklen;
         p = tokennext->token;
-        if( alt_ext ) {
+        // skip dot on extension start, if entered
+        if( *p == '.' ) {
+            len--;
+            p++;
+        }
+        if( alt_ext != NULL ) {
             mem_free( alt_ext );
         }
-        alt_ext = mem_alloc( len + 2 );
+        alt_ext = mem_alloc( len + 1 );
         pw = alt_ext;
-        if( *p != '.' ) {
-            *pw++ = '.';                // make extension start with .
-        }
-        while( len > 0 ) {
-             len--;
+        while( len-- > 0 ) {
              *pw++ = *p++;
         }
         *pw = '\0';
@@ -933,10 +934,8 @@ static void set_outfile( option * opt )
         out_file[len] = '\0';
 
         split_attr_file( out_file, attrwork, sizeof( attrwork ) );
-        if( attrwork[0] ) {
-            len = 1 + strlen( attrwork );
-            out_file_attr = mem_alloc( len );
-            strcpy( out_file_attr, attrwork );
+        if( attrwork[0] != '\0' ) {
+            out_file_attr = mem_dupstr( attrwork );
         } else {
             out_file_attr = NULL;
         }
@@ -1122,7 +1121,7 @@ static void set_OPTFile( option * opt )
 
             buffers[level + 1] = NULL;
             file_names[level + 1] = NULL;
-            if( search_file_in_dirs( token_buf, OPT_EXT, "", ds_opt_file ) ) {
+            if( search_file_in_dirs( token_buf, OPT_EXT, NULL, ds_opt_file ) ) {
                 bool  skip = false;
 
                 fclose( try_fp );
@@ -1684,11 +1683,10 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
         mem_free( p );
     } else {
         split_attr_file( p , attrwork, sizeof( attrwork ) );
-        if( attrwork[0]  ) {
+        if( attrwork[0] != '\0' ) {
+            master_fname_attr = mem_dupstr( attrwork );
             g_warn( wng_fileattr_ignored, attrwork, p );
             wng_count++;
-            master_fname_attr = mem_alloc( 1 + strlen( attrwork ) );
-            strcpy( master_fname_attr, attrwork );
         } else {
             master_fname_attr = NULL;
         }

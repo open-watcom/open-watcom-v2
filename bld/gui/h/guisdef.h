@@ -36,12 +36,12 @@
 typedef enum {
     SCALE,
     SCREEN,
-    NUM_SYSTEMS
-} gui_systems;
+    NUM_COORD_SYSTEMS
+} gui_coord_systems;
 
-extern bool GUIConvert( gui_systems from, gui_systems to, gui_coord *coord, bool rel );
-extern bool GUIConvertRect( gui_systems from, gui_systems to, gui_rect *rect, bool rel );
-extern void GUIConvertPoint( gui_systems from, gui_systems to, gui_point *point );
+extern bool GUIConvert( gui_coord_systems from, gui_coord_systems to, gui_coord *coord, bool rel );
+extern bool GUIConvertRect( gui_coord_systems from, gui_coord_systems to, gui_rect *rect, bool rel );
+extern void GUIConvertPoint( gui_coord_systems from, gui_coord_systems to, gui_point *point );
 
 #define COPYRECT( old, new ) {                                  \
         (new).x = (old).x; (new).y = (old).y;                   \

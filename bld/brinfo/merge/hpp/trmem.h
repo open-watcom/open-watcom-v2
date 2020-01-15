@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +80,8 @@ enum {
     __prt_parm is passed to __prt_line only.
 
     __prt_line must be supplied.  It is called to output any messages trmem
-        needs to communicate.  __buf is a null-terminated string of length
-        __len (including a trailing '\n').
+        needs to communicate.
+        __buf is a null-terminated string of length __len.
 
     __flags see enum above for more information.
 

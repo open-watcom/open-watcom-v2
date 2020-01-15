@@ -21,7 +21,7 @@
 #include "loader.h"
 
 /* DOS4G Entry points */
-#define INIT_ENTRY                      "INIT"
+#define LOADER_INIT_ENTRY               "INIT"
 #define LOADER_LOAD_ENTRY               "LOADER"
 #define LOADER_UNLOAD_ENTRY             "UNLOAD"
 #define LOADER_FREEMAP_ENTRY            "FREEMAP"
@@ -206,7 +206,7 @@ retry:
     ep.w.off += 2;
     *ep.ip++ = 1;
     while( (*ep.cip++ = *p++) != '\0' && --maxp > 0 )
-            ;
+        ;
     *ep.ip = 0;
 
     /* Update debuggee's descriptor table as well as our own.
@@ -229,7 +229,7 @@ static long             current_cookie = -1L;
 #define MANDATORY_NAMES 7
 
 static char *loader_entry_names[] = {
-    INIT_ENTRY,
+    LOADER_INIT_ENTRY,
     LOADER_LOAD_ENTRY,
     LOADER_RELOCATE_ENTRY,
     LOADER_UNRELOCATE_ENTRY,
@@ -269,12 +269,14 @@ static int loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
 {
     PACKAGE FarPtr p;
 
+    /* unused parameters */ (void)start_pos;
+
     /*** NEEDWORK: should check name before attempting binding */
     for( p = _d16info.package_info_p; p != NULL; p = PackageNext( p ) ) {
         /* Loop over all packages */
         if( !loader_bind_util( p, lv ) ) {
             /* When we find a loader, check it out */
-            if( LOADER_CANLOAD( lv )( filename, (ULONG)0 ) ) {
+            if( LOADER_CANLOAD( lv )( filename, 0 ) ) {
                 return( 0 );
             }
         }
@@ -299,15 +301,15 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
 
     set_program_name( filename );
 
-    if( loader_for( (FDORNAME)filename, 0L, &lv_temp ) )
+    if( loader_for( (FDORNAME)filename, 0, &lv_temp ) )
         return( -1 );
 
-    if( result = (int)LOADER_INIT( &lv_temp )() )
+    if( (result = (int)LOADER_INIT( &lv_temp )()) != 0 )
         return( result );
 
     /* Store the filename in the command line buffer and skip over
         it.  We must construct a command line consisting of two
-        consecutive ASCII strings, with the the second one being the
+        consecutive ASCII strings, with the second one being the
         command tail.
     */
     strcpy( cmdline, filename );
@@ -319,7 +321,7 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
     if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
         D32NullPtrCheck( 1 );
 
-    result = LOADER_LOAD( &lv_temp )( (FDORNAME)filename, (ULONG)0L, tspv, (void FarPtr)&main_cookie, (char FarPtr)cmdline );
+    result = (int)LOADER_LOAD( &lv_temp )( (FDORNAME)filename, 0, tspv, &main_cookie, cmdline );
 
     if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
         nullp_checks = D32NullPtrCheck( 0 );
@@ -369,7 +371,7 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
 /* Unload a loaded executable -- not yet used anywhere */
 int D32DebugUnLoad( void )
 {
-    if( LOADER_UNLOAD( &lv_curr )( (void FarPtr)&current_cookie ) )
+    if( LOADER_UNLOAD( &lv_curr )( &current_cookie ) )
         return( -1 );
     return( 0 );
 }
@@ -438,4 +440,3 @@ int D32Relocate( Fptr32 FarPtr fptrp )
     }
     return( ( fptrp->sel != old.sel ) || ( fptrp->off != old.off ) );
 }
-

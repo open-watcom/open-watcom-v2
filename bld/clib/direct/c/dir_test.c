@@ -88,21 +88,23 @@
 
 #define NUM_OPEN        5
 #ifdef __SW_BW
- #define VERIFY( expr ) if( !(expr) ) {                                     \
-                          printf( "FAIL: %s, line %u\n", #expr, __LINE__ ); \
-                          printf( "Note: make sure "TMPDIRNAME" is removed\n" );\
-                          printf( "Abnormal termination.\n" );              \
-                          exit( 100 );                                      \
-                        }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                             \
+            printf( "FAIL: %s, line %u\n", #expr, __LINE__ );       \
+            printf( "Note: make sure "TMPDIRNAME" is removed\n" );  \
+            printf( "Abnormal termination.\n" );                    \
+            exit( 100 );                                            \
+        }
 #else
- #define VERIFY( expr ) if( !(expr) ) {                                     \
-                          printf( "FAIL: %s, line %u\n", #expr, __LINE__ ); \
-                          printf( "Note: make sure "TMPDIRNAME" is removed\n" );\
-                          abort();                                          \
-                        }
+    #define VERIFY( expr ) \
+        if( !(expr) ) {                                             \
+            printf( "FAIL: %s, line %u\n", #expr, __LINE__ );       \
+            printf( "Note: make sure "TMPDIRNAME" is removed\n" );  \
+            abort();                                                \
+        }
 #endif
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     CHAR_TYPE           *cwd;
     CHAR_TYPE           buffer[256], buffer2[256];
@@ -114,17 +116,20 @@ void main( int argc, char *argv[] )
     unsigned            checkbits = 0;
     unsigned            save_checkbits;
 
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = __F_NAME(freopen,_wfreopen)( STRING( "tmp.log" ), STRING( "a" ), stdout );
-        VERIFY( my_stdout != NULL );
-    #endif
+#ifdef __SW_BW
+    FILE *my_stdout;
+
+    my_stdout = __F_NAME(freopen,_wfreopen)( STRING( "tmp.log" ), STRING( "a" ), stdout );
+    VERIFY( my_stdout != NULL );
+#endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Convert multi-byte name to wide char name ***/
-    #ifdef MBYTE_NAMES
-        mbstowcs( TmpDir, "_TMP\x90\x92\x90\x90", 9 );
-        mbstowcs( TmpFilePrefix, "TMP_\x90\x90\x90\x92", 9 );
-    #endif
+#ifdef MBYTE_NAMES
+    mbstowcs( TmpDir, "_TMP\x90\x92\x90\x90", 9 );
+    mbstowcs( TmpFilePrefix, "TMP_\x90\x90\x90\x92", 9 );
+#endif
 
     VERIFY( ( cwd = __F_NAME(getcwd,_wgetcwd)( NULL, 0 ) ) != NULL );
     VERIFY( __F_NAME(getcwd,_wgetcwd)( buffer, 256 ) != NULL );
@@ -266,6 +271,6 @@ void main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    exit( 0 );
+    return( EXIT_SUCCESS );
 }
 

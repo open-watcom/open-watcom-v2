@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +52,9 @@
 #include "wdesym.h"
 #include "preproc.h"
 #include "wresdefn.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -154,7 +158,7 @@ bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 {
     bool ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( action ) {
     case VIEW_HASH:
@@ -214,7 +218,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
     bool        from_id;
     char        *include;
 
-    include = WdeLoadSymbols( &info->hash_table, NULL, TRUE );
+    include = WdeLoadSymbols( &info->hash_table, NULL, true );
     if( include == NULL ) {
         return( false );
     }
@@ -243,7 +247,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
 bool WdeResourceWriteHash( WdeResInfo *info )
 {
-    return( WdeWriteSymbols( info->hash_table, &info->sym_name, TRUE ) );
+    return( WdeWriteSymbols( info->hash_table, &info->sym_name, true ) );
 }
 
 bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
@@ -382,29 +386,25 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     return( include );
 }
 
-char *WdeCreateSymName( char *fname )
+char *WdeCreateSymName( const char *fname )
 {
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
+    PGROUP2     pg;
 
     if( fname == NULL ) {
         return( NULL );
     }
 
-    _splitpath( fname, fn_drive, fn_dir, fn_name, NULL );
-    _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
 
     return( WdeStrDup( fn_path ) );
 }
 
 bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 {
+    PGROUP2     pg;
     char        fn_path[_MAX_PATH];
-    char        fn_drive[_MAX_DRIVE];
-    char        fn_dir[_MAX_DIR];
-    char        fn_name[_MAX_FNAME];
     char        *include;
     bool        prompt;
     bool        ret;
@@ -412,7 +412,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     include = NULL;
 
     if( rinfo == NULL || rinfo->info->file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     include = WdeFindDLGInclude( rinfo );
@@ -422,14 +422,14 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     }
 
     if( include == NULL ) {
-        _splitpath( rinfo->info->file_name, fn_drive, fn_dir, fn_name, NULL );
-        _makepath( fn_path, fn_drive, fn_dir, fn_name, "h" );
-        prompt = TRUE;
+        _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
+        prompt = true;
     } else {
         strcpy( fn_path, include );
         WRMemFree( include );
         include = NULL;
-        prompt = FALSE;
+        prompt = false;
     }
 
     ret = true;
@@ -465,7 +465,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     unsigned            busy_count;
     char                busy_str[2];
 
-    pop_env = FALSE;
+    pop_env = false;
     name = NULL;
 
     PP_Init( '#' );
@@ -564,11 +564,11 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
     WdeGetFileStruct    gf;
 
     if( table == NULL || file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     WdeSetStatusText( NULL, "", false );
@@ -580,7 +580,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
         gf.filter = WdeSymSaveFilter;
         name = WdeGetSaveFileName( &gf );
         if( name == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( *file_name != NULL ) {
             WRMemFree( *file_name );
@@ -596,7 +596,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )

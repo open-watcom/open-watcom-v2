@@ -51,14 +51,14 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
     return( false );
 }
 
-bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
+bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
     wnd = wnd;
     cursor = cursor;
     return( false );
 }
 
-bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
+bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
     wnd = wnd;
     cursor = cursor;

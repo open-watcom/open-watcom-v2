@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,52 +37,58 @@
 #include "defgen.h"
 #include "scan.h"
 #include "semantic.h"
+#include "pathgrp2.h"
 
+#include "clibext.h"
+
+
+#define DEF_EXT     "def"
+#define PBF_EXT     "pbf"
+#define SRU_EXT     "sru"
 
 CmdLineInfo     Config;
-BOOL            ErrorHasOccured;
+bool            ErrorHasOccured;
 
-static char     outName[ _MAX_FNAME + _MAX_EXT  ];
-static char     nuoName[ _MAX_FNAME + max( _MAX_EXT, 3 ) ];
+static char     outName[_MAX_FNAME + _MAX_EXT];
+static char     nuoName[_MAX_FNAME + _MAX_EXT];
 
-static void SetExtension( char *buf, char *file, char *ext ) {
-    char        dir[ _MAX_DIR ];
-    char        drive[ _MAX_DRIVE ];
-    char        fname[ _MAX_FNAME ];
+static void SetExtension( char *buf, const char *file, const char *ext )
+{
+    PGROUP2     pg;
 
-    _splitpath( file, drive, dir, fname, NULL );
-    _makepath( buf, dir, drive, fname, ext );
+    _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( buf, pg.dir, pg.drive, pg.fname, ext );
 }
 
-static BOOL FillParms( void ) {
-
-    char        fname[ _MAX_FNAME ];
+static bool FillParms( void )
+{
+    PGROUP2     pg;
 
     if( Config.def_file == NULL ) {
         ReportError( "No .def file specified" );
-        return( TRUE );
+        return( true );
     }
     if( Config.dll_name == NULL ) {
         Config.dll_name = "noname.dll";
     }
     if( Config.out_file == NULL ) {
-        SetExtension( outName, Config.dll_name, ".pbf" );
+        SetExtension( outName, Config.dll_name, PBF_EXT );
         Config.out_file = outName;
     }
-    if( Config.nuo_name == NULL && Config.nuo_file != NULL ) {
-        Config.nuo_name = nuoName;
-        _splitpath( Config.dll_name, NULL, NULL, fname, NULL );
-        sprintf( nuoName, "uo_%s", fname );
-    } else if( Config.nuo_file == NULL && Config.nuo_name != NULL ) {
+    if( Config.nu_name == NULL && Config.nuo_file != NULL ) {
+        _splitpath2( Config.dll_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        sprintf( nuoName, "uo_%s", pg.fname );
+        Config.nu_name = nuoName;
+    } else if( Config.nuo_file == NULL && Config.nu_name != NULL ) {
+        strcpy( pg.buffer, Config.nu_name );
+        SetExtension( nuoName, pg.buffer, SRU_EXT );
         Config.nuo_file = nuoName;
-        memset( nuoName, 0, sizeof( nuoName ) );
-        strncpy( nuoName, Config.nuo_name, _MAX_FNAME-1 );
-        strcat( nuoName, ".sru" );
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL ScanParms( int argc, char *argv[] ) {
+static bool ScanParms( int argc, char *argv[] )
+{
     unsigned    i;
     char        *str;
     unsigned    allocated;
@@ -94,7 +101,7 @@ static BOOL ScanParms( int argc, char *argv[] ) {
         if( *str == '-' || *str == '/' ) {
             str++;
             if( *str == 'v' ) {
-                Config.debug = TRUE;
+                Config.debug = true;
             } else if( str[0] == 'd' && str[1] == 'l' && str[2] == 'l'
                         && str[3] == '=' ) {
                 str += 4;
@@ -103,18 +110,17 @@ static BOOL ScanParms( int argc, char *argv[] ) {
                 Config.out_file = str + 3;
             } else if( str[0] == 'n' && str[1] == 'u' ) {
                 if( str[2] == '=' ) {
-                    Config.nuo_name = str + 3;
+                    Config.nu_name = str + 3;
                 } else if( str[2] == 'o' && str[3] == '=' ) {
                     Config.nuo_file = str + 4;
                 }
             } else {
                 ReportError( "Unrecognized Command Line Option" );
-                return( TRUE );
+                return( true );
             }
         } else {
             if( used == allocated ) {
-                Config.def_file = realloc( Config.def_file,
-                                      ( allocated + 10 ) * sizeof( char * ) );
+                Config.def_file = realloc( Config.def_file, ( allocated + 10 ) * sizeof( char * ) );
                 allocated += 10;
             }
             Config.def_file[used] = str;
@@ -126,7 +132,8 @@ static BOOL ScanParms( int argc, char *argv[] ) {
 }
 
 
-static void PrintUsage( void ) {
+static void PrintUsage( void )
+{
     printf( "Usage:\n" );
     printf( "    defgen [options] <list_of_def_files> [options]\n\n" );
     printf( "Options\n" );
@@ -140,11 +147,12 @@ static void PrintUsage( void ) {
     printf( "extension .def regardless of what extension is specified.\n" );
 }
 
-static void Fini( void ) {
+static void Fini( void )
+{
 }
 
-int main( int argc, char *argv[] ) {
-
+int main( int argc, char *argv[] )
+{
     unsigned    i;
     char        *def_file;
 
@@ -154,15 +162,16 @@ int main( int argc, char *argv[] ) {
     }
     if( !ScanParms( argc, argv ) ) {
         def_file = malloc( _MAX_PATH );
-        for( i=0; i < Config.def_cnt; i++ ) {
-            SetExtension( def_file, Config.def_file[i], ".def" );
+        for( i = 0; i < Config.def_cnt; i++ ) {
+            SetExtension( def_file, Config.def_file[i], DEF_EXT );
             if( !ScanInit( def_file ) ) {
                 yyparse();
                 ScanFini();
             }
         }
         free( def_file );
-        if( !ErrorHasOccured ) DoOutput();
+        if( !ErrorHasOccured )
+            DoOutput();
         Fini();
     }
     if( ErrorHasOccured ) {

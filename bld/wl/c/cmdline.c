@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ static bool             ProcNTHelp( void );
 static bool             ProcZdosHelp( void );
 static bool             ProcRdosHelp( void );
 static bool             ProcRawHelp( void );
-static void             WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt );
+static void             WriteHelp( int first_msg, int last_msg, bool prompt );
 
 static  parse_entry   FormatHelp[] = {
     "Dos",          ProcDosHelp,            MK_ALL,     0,
@@ -104,7 +104,7 @@ static  parse_entry   FormatHelp[] = {
 #ifdef _DOS16M
     "DOS16M",       Proc16MHelp,            MK_ALL,     0,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     "QNX",          ProcQNXHelp,            MK_ALL,     0,
 #endif
 #ifdef _ELF
@@ -178,8 +178,33 @@ static void ResetCmdFile( void )
     DBIFlag = 0;        /*  default is only global information */
 }
 
-void DoCmdFile( char *fname )
-/***************************/
+static bool sysHelp( void )
+{
+    const char  *p;
+    bool        help;
+
+    help = true;
+    p = Token.next;
+    while( *p == ' ' ) {
+        p++;
+    }
+    if( p[0] == '?' ) {
+        p++;            // skip '?'
+#if defined( __UNIX__ )
+    } else if( p[0] == '-' && p[1] == '?' ) {
+#else
+    } else if( ( p[0] == '-' || p[0] == '/' ) && p[1] == '?' ) {
+#endif
+        p += 2;         // skip '-?' or '/?'
+    } else {
+        help = false;
+    }
+    Token.next = p;
+    return( help );
+}
+
+void DoCmdFile( const char *fname )
+/*********************************/
 /* start parsing the command */
 {
     exe_format  possible;
@@ -190,48 +215,32 @@ void DoCmdFile( char *fname )
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
-        _ChkAlloc( fname, (10 * 1024) );    // arbitrarily large buffer that won't
-        GetCmdLine( fname );                // be overflowed
-        NewCommandSource( NULL, fname, COMMANDLINE );
+        NewCommandSource( NULL, NULL, COMMANDLINE );
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
     }
     if( IsStdOutConsole() ) {
         CmdFlags |= CF_TO_STDOUT;
     }
-    while( *fname == ' ' ) {
-        fname++;
-    }
-    if( QSysHelp( &Token.next ) ) {
+    if( sysHelp() ) {
         Help();
     }
-    if( *fname == '?' ) {
-        Token.next = fname + 1;       // skip question mark.
-        Help();
-#if defined( __UNIX__ )
-    } else if( *fname == '-' ) {
-#else
-    } else if( *fname == '-' || *fname == '/' ) {
-#endif
-        if( *(fname + 1) == '?' ) {
-            Token.next = fname + 2;     // skip /?
-            Help();
-        }
-    }
-    if( *fname == '\0' ) {       // go into interactive mode.
+    if( *Token.next == '\0' ) {     // go into interactive mode.
         Token.how = INTERACTIVE;
         Token.where = ENDOFLINE;
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
     }
+    file = NIL_FHANDLE;
     namelnk = GetEnvString( INIT_FILE_ENV );
-    file = ( namelnk != NULL ) ? FindPath( namelnk, NULL ) : NIL_FHANDLE;
+    if( namelnk != NULL ) {
+        file = FindPath( namelnk, NULL );
+    }
     if( file == NIL_FHANDLE ) {
         namelnk = INIT_FILE_NAME;
         file = FindPath( namelnk, NULL );
     }
     if( file != NIL_FHANDLE ) {
-        fname = ChkStrDup( namelnk );
-        SetCommandFile( file, fname );
+        SetCommandFile( file, namelnk );
     }
     if( Spawn( DoCmdParse ) ) {
         Ignite();
@@ -269,13 +278,12 @@ void DoCmdFile( char *fname )
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {
         CmdNovFini();
-    } else {
+    }
 #endif
-        if( FmtData.type & MK_OVERLAYS ) {
-            CmdOvlFini();
-            AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
-        }
-#ifdef _NOVELL
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        CmdOvlFini();
+        AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
     }
 #endif
     if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
@@ -305,7 +313,11 @@ void DoCmdFile( char *fname )
     CheckTraces();
     BurnUtils();
     PruneSystemList();
-    NumberSections();
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlNumberSections();
+    }
+#endif
     DBIInit();
 }
 
@@ -315,7 +327,8 @@ char *GetNextLink( void )
     char        *cmd;
 
     cmd = NULL;
-    _LnkFree( PrevCommand );
+    if( PrevCommand != NULL )
+        _LnkFree( PrevCommand );
     if( LinkCommands != NULL ) {
         PrevCommand = LinkCommands;
         LinkCommands = LinkCommands->next;
@@ -330,7 +343,7 @@ void Syntax( void )
     if( Token.this == NULL ) {
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
     } else {
-        Token.this[Token.len] = '\0';
+        ((char *)Token.this)[Token.len] = '\0';
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
     }
 }
@@ -391,8 +404,8 @@ static void DoCmdParse( void )
     }
 }
 
-int DoBuffCmdParse( char *cmd )
-/*****************************/
+int DoBuffCmdParse( const char *cmd )
+/***********************************/
 {
     NewCommandSource( NULL, cmd, COMMANDLINE );
     return( Spawn( DoCmdParse ) );
@@ -415,7 +428,7 @@ static void DisplayOptions( void )
         isout = true;
     }
     WriteGenHelp();
-#if defined( _QNXLOAD ) && defined( __QNX__ )
+#if defined( _QNX ) && defined( __QNX__ )
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _EXE
@@ -436,7 +449,7 @@ static void DisplayOptions( void )
 #ifdef _DOS16M
     WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, isout );
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNX ) && !defined( __QNX__ )
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _ELF
@@ -523,7 +536,7 @@ static bool Proc16MHelp( void )
     return( true );
 }
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
 static bool ProcQNXHelp( void )
 /*******************************/
 {
@@ -573,13 +586,6 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static void WriteMsg( const char *msg_buffer )
-/********************************************/
-{
-    WriteStdOut( msg_buffer );
-    WriteStdOutNL();
-}
-
 static void PressKey( void )
 /**************************/
 {
@@ -596,29 +602,30 @@ static void PressKey( void )
     }
 }
 
-static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
-/***********************************************************************/
+static void WriteHelp( int first_msg, int last_msg, bool prompt )
+/***************************************************************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         previous_null = 0;
+    bool        previous_null;
+    int         msg;
 
     if( prompt ) {
         PressKey();
     }
-    for( ; first_ln <= last_ln; first_ln++ ) {
-        Msg_Get( (int) first_ln, msg_buffer );
-        if( previous_null ) {
-            if( msg_buffer[0] != '\0' ) {
-                PressKey();
-                WriteMsg( msg_buffer );
-                previous_null = 0;
-            } else {
+    previous_null = false;
+    for( msg = first_msg; msg <= last_msg; msg++ ) {
+        Msg_Get( msg, msg_buffer );
+        if( msg_buffer[0] == '\0' ) {
+            if( previous_null ) {
                 break;
             }
-        } else if( msg_buffer[0] == '\0' ) {
-            previous_null = 1;
+            previous_null = true;
+        } else if( previous_null ) {
+            PressKey();
+            WriteStdOutWithNL( msg_buffer );
+            previous_null = false;
         } else {
-            WriteMsg( msg_buffer );
+            WriteStdOutWithNL( msg_buffer );
         }
     }
 }
@@ -676,12 +683,16 @@ void SetFormat( void )
     }
     Root->outfile = NewOutFile( fname );
     Name = NULL;
-    FillOutFilePtrs();   // fill in all unspecified outfile pointers.
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlFillOutFilePtrs();   // fill in all unspecified outfile pointers.
+    }
+#endif
     if( MapFlags & MAP_FLAG ) {
         LnkMsg( MAP+MSG_EXE_NAME, "s", Root->outfile->fname );
         LnkMsg( MAP+MSG_CREATE_EXE, "f" );
     }
-#ifdef _QNXLOAD
+#ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         CmdQNXFini();
     }
@@ -701,7 +712,7 @@ static const select_format PossibleFmt[] = {
 #ifdef _DOS16M
     MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
 #endif
 #ifdef _ELF
@@ -775,7 +786,7 @@ bool HintFormat( exe_format hint )
     }
     if( possible == 0 ) {
 #ifdef _OS2
-        if( (~(MK_OS2|MK_PE|MK_WIN_VXD) & FmtData.type) == 0 ) {
+        if( (~(MK_OS2 | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
             /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
                 want the same structure */
             InitFmt( SetOS2Fmt );
@@ -903,8 +914,8 @@ void AddLibPathsToEndList( const char *path_list )
     }
 }
 
-void ExecSystem( char *name )
-/**********************************/
+void ExecSystem( const char *name )
+/*********************************/
 /* run a system block with the given name (only called once!)
  * (this is called after the parser has already been stopped */
 {
@@ -915,6 +926,7 @@ void ExecSystem( char *name )
         NewCommandSource( NULL, NULL, ENVIRONMENT ); // the "command line"
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
+        _LnkFree( sys->name );
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
             if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
@@ -928,23 +940,24 @@ void ExecSystem( char *name )
     }
 }
 
-static void CleanSystemList( bool check )
-/***************************************/
+static void CleanSystemList( bool burn )
+/**************************************/
 /* clean up the list of system blocks */
 {
-    sysblock    **sys;
-    sysblock    *next;
+    sysblock    **sysown;
+    sysblock    *sys;
     char        *name;
 
-    for( sys = &SysBlocks; *sys != NULL; ) {
-        name = (*sys)->name;
-        if( !check || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4) != 0 ) {
-            next = (*sys)->next;
-            _LnkFree( name );
-            _LnkFree( *sys );
-            *sys = next;
+    for( sysown = &SysBlocks; (sys = *sysown) != NULL; ) {
+        name = sys->name;
+        if( burn || name == NULL || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4 ) != 0 ) {
+            *sysown = sys->next;
+            if( name != NULL ) {
+                _LnkFree( name );
+            }
+            _LnkFree( sys );
         } else {
-            sys = &(*sys)->next;
+            sysown = &(sys->next);
         }
     }
 }
@@ -953,14 +966,14 @@ void PruneSystemList( void )
 /*********************************/
 /* delete all system blocks except for the "286" and "386" records */
 {
-    CleanSystemList( true );
+    CleanSystemList( false );
 }
 
 void BurnSystemList( void )
 /********************************/
 /* delete everything in the system list */
 {
-    CleanSystemList( false );
+    CleanSystemList( true );
 }
 
 bool ProcImport( void )
@@ -981,7 +994,7 @@ bool ProcImport( void )
 #endif
 }
 
-#if defined(_OS2) || defined(_NOVELL)
+#if defined( _OS2 ) || defined( _NOVELL )
 bool ProcExport( void )
 /****************************/
 {
@@ -998,11 +1011,11 @@ bool ProcExport( void )
 }
 #endif
 
-#if defined( _DOS16M ) || defined( _QNXLOAD ) || defined( _OS2 ) || defined( _ELF )
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
 bool ProcNoRelocs( void )
 /******************************/
 {
-#if defined( _QNXLOAD )
+#if defined( _QNX )
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXNoRelocs() );
     }
@@ -1026,7 +1039,7 @@ bool ProcNoRelocs( void )
 }
 #endif
 
-#if defined(_OS2) || defined(_QNXLOAD)
+#if defined( _OS2 ) || defined( _QNX )
 bool ProcSegment( void )
 /*****************************/
 {
@@ -1035,7 +1048,7 @@ bool ProcSegment( void )
         return( ProcOS2Segment() );
     }
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXSegment() );
     }
@@ -1070,7 +1083,7 @@ bool ProcHeapSize( void )
         return( ProcOS2HeapSize() );
     }
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNX ) && !defined( __QNX__ )
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXHeapSize() );
     }
@@ -1078,17 +1091,43 @@ bool ProcHeapSize( void )
     return( true );
 }
 
-#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2) || defined(_RAW)
+#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF ) || defined( _RAW )
 bool ProcOffset( void )
 /****************************/
 {
     if( !GetLong( &FmtData.base ) )
         return( false );
-    if( (FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) == 0 ) {
-        ChkBase( 64 * 1024 );
-    } else if( (FmtData.type & (MK_OS2_FLAT|MK_PE)) == 0 ) {
-        ChkBase( 4 * 1024 );
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
+        ChkBase( _4KB );
+        return( true );
     }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+#ifdef _RAW
+    if( FmtData.type & MK_RAW ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+//#ifdef _OS2
+//    if( FmtData.type & (MK_OS2 | MK_PE) ) {
+//        ChkBase( _64KB );
+//        return( true );
+//    }
+//#endif
+//#ifdef _ELF
+//    if( FmtData.type & MK_ELF ) {
+//        ChkBase( _4KB );
+//        return( true );
+//    }
+//#endif
+    ChkBase( _64KB );
     return( true );
 }
 #endif

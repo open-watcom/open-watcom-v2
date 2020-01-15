@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ typedef struct {
     brkp            *bp;
     brkp            tmpbp;
     gui_ctl_id      last_edit;
-    bool            brand_new       : 1;
-    bool            cancel          : 1;
-    bool            clear           : 1;
-    bool            cmd_error       : 1;
-    bool            cond_error      : 1;
+    boolbit         brand_new       : 1;
+    boolbit         cancel          : 1;
+    boolbit         clear           : 1;
+    boolbit         cmd_error       : 1;
+    boolbit         cond_error      : 1;
 } dlg_brk;
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )

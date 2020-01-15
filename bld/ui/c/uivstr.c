@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "clibext.h"
 
 
-void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
+void UIAPI uitextfield( VSCREEN *vs, ORD row, ORD col, unsigned field_len,
                         ATTR attr, LPC_STRING string, unsigned string_len )
 /**************************************************************************/
 {
@@ -44,49 +45,49 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
     uisize          string_count;
     SAREA           dirty_area;
 
-    if( field_len > 0 && vptr->area.width > col ) {
-        count = vptr->area.width - col;
+    if( field_len > 0 && vs->area.width > col ) {
+        count = vs->area.width - col;
         if( count > field_len )
             count = field_len;
         string_count = count;
         if( string_count > string_len )
             string_count = string_len;
-        okopen( vptr );
-        okline( row, col, count, vptr->area );
+        okopen( vs );
+        okline( row, col, count, vs->area );
         dirty_area.row = row;
         dirty_area.col = col;
         dirty_area.height = 1;
         dirty_area.width = count;
-        uivdirty( vptr, dirty_area );
-        bstring( &(vptr->window.buffer), row, col, attr, string, string_count );
+        uivdirty( vs, dirty_area );
+        bstring( &(vs->window.buffer), row, col, attr, string, string_count );
         if( count > string_count ) {
-            bfill( &(vptr->window.buffer), row, col + string_count, attr, ' ', count - string_count );
+            bfill( &(vs->window.buffer), row, col + string_count, attr, ' ', count - string_count );
         }
     }
 }
 
 
-void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, unsigned field_len )
-/*********************************************************************************************************/
+void UIAPI uivtextput( VSCREEN *vs, ORD row, ORD col, ATTR attr, const char *string, unsigned field_len )
+/*******************************************************************************************************/
 {
     if( field_len == 0 && string != NULL ) {
         field_len = strlen( string );
     }
-    uitextfield( vptr, row, col, field_len, attr, string, field_len );
+    uitextfield( vs, row, col, field_len, attr, string, field_len );
 }
 
 
-void UIAPI uivrawput( VSCREEN *vptr, ORD row, ORD col, LP_PIXEL pixels, unsigned len )
-/************************************************************************************/
+void UIAPI uivrawput( VSCREEN *vs, ORD row, ORD col, LP_PIXEL pixels, unsigned len )
+/**********************************************************************************/
 {
     SAREA           dirty_area;
 
-    okopen( vptr );
-    okline( row, col, len, vptr->area );
+    okopen( vs );
+    okline( row, col, len, vs->area );
     dirty_area.row = row;
     dirty_area.col = col;
     dirty_area.height = 1;
     dirty_area.width = len;
-    uivdirty( vptr, dirty_area );
-    braw( &(vptr->window.buffer), row, col, pixels, len );
+    uivdirty( vs, dirty_area );
+    braw( &(vs->window.buffer), row, col, pixels, len );
 }

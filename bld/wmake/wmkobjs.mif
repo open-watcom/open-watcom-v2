@@ -3,37 +3,36 @@
 #   will cause the wmk.lnk file to be recreated.
 #
 
-objs =          &
-macros.obj      &
-main.obj        &
-mautodep.obj    &
-mautoomf.obj    &
-mautoorl.obj    &
-mautores.obj    &
-mcache.obj      &
-memory.obj      &
-mexec.obj       &
-mglob.obj       &
-mhash.obj       &
-misc.obj        &
-mlex.obj        &
-mlexmac.obj     &
-mlexprs.obj     &
-mparse.obj      &
-mpreproc.obj    &
-mrcmsg.obj      &
-msg.obj         &
-mstream.obj     &
-msuffix.obj     &
-msysdep.obj     &
-mtarget.obj     &
-mupdate.obj     &
-dostimet.obj    &
-mvecstr.obj
+objs = &
+    macros.obj &
+    main.obj &
+    mautodep.obj &
+    mautoomf.obj &
+    mautoorl.obj &
+    mautores.obj &
+    mcache.obj &
+    memory.obj &
+    mexec.obj &
+    mglob.obj &
+    mhash.obj &
+    misc.obj &
+    mlex.obj &
+    mlexmac.obj &
+    mlexprs.obj &
+    mparse.obj &
+    mpreproc.obj &
+    mrcmsg.obj &
+    msg.obj &
+    mstream.obj &
+    msuffix.obj &
+    msysdep.obj &
+    mtarget.obj &
+    mupdate.obj &
+    dostimet.obj &
+    mvecstr.obj &
+    $(trmem_objs)
 
 !ifdef DLLS_IMPLEMENTED
 objs += idedrv.obj
 objs += idemsgfm.obj
 !endif
-
-objs += $(trmem_objs)

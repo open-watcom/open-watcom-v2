@@ -33,11 +33,11 @@
 #include <stdlib.h>
 
 struct Res2ResParams {
-    int     PrintHelp       : 1;
-    int     Quiet           : 1;
-    int     KeepNameTable   : 1;
-    char    InFileName[ _MAX_PATH ];
-    char    OutFileName[ _MAX_PATH ];
+    boolbit     PrintHelp       : 1;
+    boolbit     Quiet           : 1;
+    boolbit     KeepNameTable   : 1;
+    char        InFileName[ _MAX_PATH ];
+    char        OutFileName[ _MAX_PATH ];
 };
 
 extern struct Res2ResParams CmdLineParms;

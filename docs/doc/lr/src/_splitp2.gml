@@ -72,6 +72,14 @@ the drive letter (e.g., A, B, C, etc.) followed by a colon if a drive
 is specified in the full pathname (filled in by
 .id &funcb.
 ).
+.np
+For Netware applications, the
+.arg drive
+argument points to a buffer that will be filled in with
+the volume identifier (e.g., \\NAME_SPACE) if a volume
+is specified in the full pathname (filled in by
+.id &funcb.
+).
 .do end
 .note dir
 The

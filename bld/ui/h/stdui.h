@@ -347,6 +347,9 @@ typedef enum {
 #define ISBUFFERED(f)   (((f) & V_UNBUFFERED) == 0)
 #define ISPROTECTED(f)  (((f) & V_UNPROTECTED) == 0)
 
+#define V_GUIWINDOW     (V_UNFRAMED | V_GUI_WINDOW)
+#define ISGUIWINDOW(f)  (((f)->flags & V_GUI_WINDOW) != 0)
+
 typedef struct ui_event_list {
     int         num_lists;
     ui_event    _FARD *events[MAX_EVENT_LISTS];
@@ -473,13 +476,14 @@ typedef unsigned char   ORD;
 
 #endif
 
+typedef unsigned short  uisize;
+typedef signed short    uiord;
+
 typedef unsigned short  MOUSEORD;
 typedef unsigned long   MOUSETIME;
 
 typedef signed short    CURSORORD;
 #define CURSOR_INVALID  ((CURSORORD)-1)
-
-typedef unsigned short  uisize;
 
 typedef struct sarea {
     ORD             row;
@@ -570,24 +574,17 @@ typedef enum {
 
 typedef struct buffer {
     LP_PIXEL    origin;
-    unsigned    increment;
+    int         increment;
 } BUFFER;
 
-typedef struct image_hld {
-    struct image_hld    __FAR *next_hld;
-    SAREA               area;
-    int                 kill_image;
-    LP_VOID             hld;
-} IMAGE_HLD;
-
-typedef void            (_FAR *update_func)(SAREA, void *);
+typedef void            (_FAR *window_update_func)(SAREA, void *);
 
 typedef struct ui_window {
     SAREA               area;
     SAREA               dirty_area;
     int                 priority;
-    update_func         update_proc;
-    void                _FARD *parm;
+    window_update_func  update_func;
+    void                _FARD *update_parm;
     struct ui_window    _FARD *next;
     struct ui_window    _FARD *prev;
     BUFFER              buffer;
@@ -622,22 +619,22 @@ typedef struct monitor {
     CURSORORD       cursor_row;         /* cursor row                       */
     CURSORORD       cursor_col;         /* cursor column                    */
     CURSOR_TYPE     cursor_type;        /* cursor type                      */
-    UI_WINDOW       blank;              /* blank window                     */
+    UI_WINDOW       blank_window;       /* blank window                     */
     BUFFER          screen;             /* screen                           */
     unsigned        mouse_speed;        /* mouse speed factor               */
     unsigned short  old_shift;          /* status of shift keys             */
     unsigned char   mouse_xscale;       /* factor to divide mouse x posn    */
     unsigned char   mouse_yscale;       /* factor to divide mouse y posn    */
-    bool            no_snow       :1;   /* snow check flag                  */
-    bool            cursor_on     :1;   /* cursor on flag                   */
-    bool            desqview      :1;   /* desqview present flag            */
-    bool            f10menus      :1;   /* F10 active for menus             */
-    bool            busy_wait     :1;   /* SINK, MOUSE_HOLD or NO_EVENT     */
-    bool            mouse_swapped :1;   /* mouse swap flag                  */
-    bool            no_idle_int   :1;   /* disable idle interrupt           */
-    bool            no_refresh    :1;   /* disable refresh on EV_NO_EVENT   */
-    bool            no_graphics   :1;   /* disable character mapping        */
-    bool            dbcs          :1;   /* double-byte character set        */
+    boolbit         no_snow       :1;   /* snow check flag                  */
+    boolbit         cursor_on     :1;   /* cursor on flag                   */
+    boolbit         desqview      :1;   /* desqview present flag            */
+    boolbit         f10menus      :1;   /* F10 active for menus             */
+    boolbit         busy_wait     :1;   /* SINK, MOUSE_HOLD or NO_EVENT     */
+    boolbit         mouse_swapped :1;   /* mouse swap flag                  */
+    boolbit         no_idle_int   :1;   /* disable idle interrupt           */
+    boolbit         no_refresh    :1;   /* disable refresh on EV_NO_EVENT   */
+    boolbit         no_graphics   :1;   /* disable character mapping        */
+    boolbit         dbcs          :1;   /* double-byte character set        */
 } MONITOR;
 
 enum {
@@ -669,8 +666,6 @@ extern bool             UIAPI uiattrs( void );
 extern bool             UIAPI uivgaattrs( void );
 extern void             UIAPI uisetblinkattr( int );
 extern char             UIAPI uigetblinkattr( void );
-extern bool             UIAPI uibackground( const char * );
-extern BUFFER           _FARD * UIAPI uibackgroundbuffer( void );
 extern void             UIAPI uibandinit( SAREA, ATTR );
 extern void             UIAPI uibandmove( SAREA );
 extern void             UIAPI uibandfini( void );
@@ -703,7 +698,6 @@ extern bool             UIAPI uiinitgmouse( init_mode );
 extern bool             UIAPI uiinlist( ui_event, ui_event _FARD * );
 extern bool             UIAPI uiinlists( ui_event );
 extern bool             UIAPI uiintoplist( ui_event );
-extern bool             UIAPI uikeepbackground( void );
 extern void             * UIAPI uimalloc( size_t );
 extern void             UIAPI uimouse( mouse_func );
 extern void             UIAPI uimouseforceoff( void );
@@ -720,13 +714,13 @@ extern void             UIAPI uipushlist( ui_event _FARD * );
 extern void             UIAPI uiputlist( ui_event_list _FARD * );
 extern void             * UIAPI uirealloc( void *, size_t );
 extern void             UIAPI uirefresh( void );
-extern bool             UIAPI uiremovebackground( void );
 extern bool             UIAPI uiset80col( void );
 extern SAREA            * UIAPI uisetarea( SAREA *,  VSCREEN _FARD * );
 extern void             UIAPI uisetmouse( MOUSEORD, MOUSEORD );
 extern void             UIAPI uisetmouseposn( ORD, ORD );
 extern SAREA            * UIAPI uisetscreenarea( SAREA *, bool, bool );
 extern void             UIAPI uisetsnow( bool );
+extern void             UIAPI uiscreeninit( VSCREEN *vs, SAREA *area, screen_flags flags );
 extern void             UIAPI uispawnend( void );
 extern void             UIAPI uispawnstart( void );
 extern bool             UIAPI uistart( void );

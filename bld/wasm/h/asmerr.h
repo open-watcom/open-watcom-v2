@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,22 +45,22 @@
 #endif
 // use DebugMsg((....)) to call it
 
-#define         AsmWarning( errno )             AsmWarn( 0,errno )
+#define AsmWarning( errno )     AsmWarn( 0,errno )
 
-extern void             AsmErr( int msgnum, ... );
-extern void             AsmWarn( int level, int msgnum, ... );
-extern void             AsmNote( int level, int msgnum, ... );
-extern void             _AsmNote( int level, int msgnum, ... );
+extern void             AsmErr( unsigned msgnum, ... );
+extern void             AsmWarn( int level, unsigned msgnum, ... );
+extern void             AsmNote( int level, unsigned msgnum, ... );
+extern void             _AsmNote( int level, unsigned msgnum, ... );
 
 #if !defined( _STANDALONE_ )
     #define DebugCurrLine()
     #define AsmIntErr( x )
 #elif DEBUG_OUT
     #define DebugCurrLine() printf( "%s\n", CurrString );
-    #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %d\n", x )
+    #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )
 #else
     #define DebugCurrLine()
-    #define AsmIntErr( x ) printf( "Internal error = %d\n", x )
+    #define AsmIntErr( x ) printf( "Internal error = %u\n", x )
 #endif
 
 #if defined( _STANDALONE_ )
@@ -67,13 +68,13 @@ extern void             _AsmNote( int level, int msgnum, ... );
 #include "asmrcmsg.h"
 
     extern bool MsgInit( void );
-    extern bool MsgGet( int, char * );
+    extern bool MsgGet( unsigned, char * );
     extern void MsgFini( void );
     extern void OpenLstFile( void );
     extern void LstMsg( const char *format, ... );
     extern void PrintfUsage( void );
-    extern void MsgPrintf( int resourceid );
-    extern void MsgPrintf1( int resourceid, const char *token );
+    extern void MsgPrintf( unsigned resourceid );
+    extern void MsgPrintf1( unsigned resourceid, const char *token );
     extern int  PrintBanner( void );
 
 

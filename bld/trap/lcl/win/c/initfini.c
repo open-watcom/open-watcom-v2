@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,21 +41,29 @@
 #include "winctrl.h"
 #include "trpimp.h"
 #include "trpld.h"
+#include "trpsys.h"
 #include "initfini.h"
 #include "di386cli.h"
 
-
-extern TRAPENTRY_FUNC( InfoFunction );
-extern TRAPENTRY_FUNC( GetHwndFunc );
-extern TRAPENTRY_FUNC( InputHook );
-extern TRAPENTRY_FUNC( HardModeCheck );
-extern TRAPENTRY_FUNC( SetHardMode );
-extern TRAPENTRY_FUNC( UnLockInput );
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 static FARPROC  faultInstance;
 static FARPROC  notifyInstance;
+
+void SetInputLock( bool lock_status )
+{
+    if( DebuggerWindow != NULL ) {
+        if( InputLocked != lock_status ) {
+            Out((OUT_SOFT,( lock_status ) ? "Locking input to debugger" : "Unlocking input from debugger"));
+            if( !LockInput( NULL, DebuggerWindow, lock_status ) ) {
+                Out((OUT_SOFT,"LockInput returned FALSE"));
+            } else {
+                InputLocked = lock_status;
+            }
+        }
+    }
+}
 
 /*
  * InitDebugging:
@@ -133,7 +142,6 @@ void FinishDebugging( void )
 
 } /* FinishDebugging */
 
-
 /*
  * TrapInit - debugger initialization entry point
  */
@@ -149,8 +157,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     Out(( OUT_INIT,"TrapInit entered, debugger task=%04x", DebuggerTask ));
 
 #ifdef DEBUG
-    extern unsigned DbgFlags;
-
     if( *parms == '[' ) {
         unsigned    bit;
         char        c;
@@ -232,20 +238,20 @@ void TRAPENTRY TrapFini( void )
 /*
  * InfoFunction - inform trap file of gui debugger being used
  */
-void TRAPENTRY InfoFunction( HWND hwnd )
+void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
 {
 
     DebuggerWindow = hwnd;
     Out(( OUT_INIT,"DebuggerWindow = %04x", DebuggerWindow ));
     if( hwnd == NULL ) {
-        UnLockInput();
+        SetInputLock( false );
     }
 }
 
 /*
  * GetHwndFunc - inform trap file of gui debugger being used
  */
-HWND TRAPENTRY GetHwndFunc( void )
+HWND TRAPENTRY_FUNC( GetHwndFunc )( void )
 {
     return( DebuggerWindow );
 }
@@ -253,7 +259,7 @@ HWND TRAPENTRY GetHwndFunc( void )
 /*
  * set input hook routine
  */
-void TRAPENTRY InputHook( event_hook_fn *ptr )
+void TRAPENTRY_FUNC( InputHook )( event_hook_fn *ptr )
 {
     HookRtn = ptr;
 }
@@ -261,7 +267,7 @@ void TRAPENTRY InputHook( event_hook_fn *ptr )
 /*
  * HardModeCheck - obsolete
  */
-bool TRAPENTRY HardModeCheck( void )
+bool TRAPENTRY_FUNC( HardModeCheck )( void )
 {
     return( HardModeRequired );
 }
@@ -269,7 +275,7 @@ bool TRAPENTRY HardModeCheck( void )
 /*
  * SetHardMode - force hard mode
  */
-void TRAPENTRY SetHardMode( bool force )
+void TRAPENTRY_FUNC( SetHardMode )( bool force )
 {
     ForceHardMode = force;
 }
@@ -277,14 +283,7 @@ void TRAPENTRY SetHardMode( bool force )
 /*
  * UnLockInput - unlock input from the debugger
  */
-void TRAPENTRY UnLockInput( void )
+void TRAPENTRY_FUNC( UnLockInput )( void )
 {
-    if( DebuggerWindow != NULL && InputLocked ) {
-        Out((OUT_SOFT,"Unlocking input from debugger"));
-        if( !LockInput( NULL, DebuggerWindow, FALSE ) ) {
-            Out((OUT_SOFT,"LockInput returned FALSE"));
-        } else {
-            InputLocked = FALSE;
-        }
-    }
+    SetInputLock( false );
 }

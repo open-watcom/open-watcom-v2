@@ -90,7 +90,7 @@ CMDSTART_       proc    far
         pop     di
         pop     si
         ret
-CMDStart_       endp
+CMDSTART_       endp
 
 
 public  OS2EDIT_
@@ -155,4 +155,4 @@ epi:    pop     cx
 OS2EDIT_        endp
 _TEXT ends
 
-        end CMDStart_
+        end CMDSTART_

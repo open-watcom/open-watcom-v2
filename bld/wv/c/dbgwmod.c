@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +60,8 @@ enum {
 };
 
 typedef struct {
-    bool        open   : 1;
-    bool        source : 1;
+    boolbit     open   : 1;
+    boolbit     source : 1;
 } modinfo;
 
 typedef struct {
@@ -69,7 +69,7 @@ typedef struct {
     mod_handle  handle;
     modinfo     *info;
     gui_ord     max_modlen;
-    bool        all_modules : 1;
+    boolbit     all_modules : 1;
 } mod_window;
 
 static gui_menu_struct ModMenu[] = {

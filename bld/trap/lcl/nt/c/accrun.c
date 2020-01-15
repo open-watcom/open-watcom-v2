@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,7 @@
 #include "trptypes.h"
 #include "trpld.h"
 #include "stdnt.h"
+
 
 typedef enum {
     T_OFF,
@@ -526,12 +528,12 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     a = DebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
 #if 0
 #if defined( MD_x64 )
-                    ultoa( (unsigned long)((pointer_int)a >> 32), buff, 16 );
+                    ultoa( (unsigned long)((pointer_uint)a >> 32), buff, 16 );
                     strcat( new->msg, buff );
                     strcat( new->msg, ":0x" );
 #endif
 #endif
-                    ultoa( (unsigned long)(pointer_int)a, buff, 16 );
+                    ultoa( (unsigned long)(pointer_uint)a, buff, 16 );
                     strcat( new->msg, buff );
                     for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
                     *owner = new;

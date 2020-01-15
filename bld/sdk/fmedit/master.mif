@@ -55,7 +55,6 @@ rc_inc_dirs = -I"../res" -I"../dev"
 
 extra_cpp_flags = -DFMEDITDLL
 
-extra_c_flags = -s
 extra_c_flags_win = -zu -zw
 
 !ifdef __WATCOM_TOOLS__

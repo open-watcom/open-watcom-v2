@@ -131,7 +131,8 @@ int main( void )
         } else if( strcmp( op_buff, "end" ) == 0 ) {
             break;
         } else if( memcmp( op_buff, "cpu", 3 ) == 0 ) {
-            if( cpu != DISCPU_none ) DisFini( &handle );
+            if( cpu != DISCPU_none )
+                DisFini( &handle );
             cpu = strtoul( &op_buff[4], NULL, 16 );
             if( DisInit( cpu, &handle, 0 ) != DR_OK ) {
                 printf("Init Failed\n");
@@ -151,7 +152,8 @@ int main( void )
             datap = data;
             for( ;; ) {
                 hex = strtoul( charp, &out, radix );
-                if( charp == out ) break;
+                if( charp == out )
+                    break;
                 charp = out;
                 switch( DisInsSizeInc( &handle ) ) {
                 case 1:

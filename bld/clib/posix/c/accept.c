@@ -47,20 +47,20 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
 {
 #if defined( __LINUX__ )
     unsigned long args[3];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)addr;
     args[2] = (unsigned long)addrlen;
     return( __socketcall( SYS_ACCEPT, args ) );
 #elif defined( __RDOS__ )
-    struct sockaddr_in *in = (struct sockaddr_in *)addr;
+    struct sockaddr_in *in;
     long ip;
     short int port;
-    if( RdosIsIpv4Socket( s ) )
-    {
-        if( RdosAcceptIpv4Socket( s, &ip, &port) )
-        {
-            if( addr )
-            {
+
+    in = (struct sockaddr_in *)addr;
+    if( RdosIsIpv4Socket( s ) ) {
+        if( RdosAcceptIpv4Socket( s, &ip, &port) ) {
+            if( addr ) {
                 in->sin_family = AF_INET;
                 in->sin_addr.s_addr = ip;
                 in->sin_port = ntohs( port );
@@ -72,6 +72,9 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
     _RWD_errno = ENOTSOCK;
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)addr; (void)addrlen;
+
     return( -1 );
 #endif
 }

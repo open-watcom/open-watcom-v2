@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,9 @@
 #include "wrdll.h"
 #include "wresdefn.h"
 #include "wclbproc.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -1145,17 +1148,19 @@ INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, L
 
 void WdeSetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
 {
-    char info[_MAX_FNAME + 4];
-    char style[_MAX_FNAME + 5];
-    char flags[_MAX_FNAME + 5];
+    PGROUP2     pg;
+    char        info[_MAX_FNAME + 4];
+    char        style[_MAX_FNAME + 5];
+    char        flags[_MAX_FNAME + 5];
 
-    _splitpath( lib->file_name, NULL, NULL, info, NULL );
+    _splitpath2( lib->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
 
-    strlwr( info );
-    info[0] = toupper( info[0] );
+    strlwr( pg.fname );
+    pg.fname[0] = toupper( pg.fname[0] );
 
-    strcpy( style, info );
-    strcpy( flags, info );
+    strcpy( info, pg.fname );
+    strcpy( style, pg.fname );
+    strcpy( flags, pg.fname );
 
     strcat( info, "Info" );
     strcat( style, "Style" );

@@ -120,9 +120,9 @@ STATIC MTOKEN_TYPE  currentToken;   // Contains information for current token
  * invariant( if( curNest.skip2endif ) then curNest.skip )
  */
 struct nestIf {
-    BIT skip2endif : 1;
-    BIT skip : 1;
-    BIT elseFound : 1;
+    boolbit     skip2endif  : 1;
+    boolbit     skip        : 1;
+    boolbit     elseFound   : 1;
 };
 
 #define MAX_NEST    32                  // maximum depth of if nesting
@@ -847,7 +847,7 @@ STATIC void bangInclude( void )
     char    *temp = NULL;
     char    *p;
     char    full_path[_MAX_PATH];
-    RET_T   ret;
+    bool    ok;
 
     assert( !curNest.skip );
 
@@ -872,11 +872,11 @@ STATIC void bangInclude( void )
             for( ;; ) {
                 if( *p == NULLCHAR ) {
                     _searchenv( text, INCLUDE, full_path );
-                    ret = RET_ERROR;
-                    if( *full_path != NULLCHAR ) {
-                        ret = InsFile( full_path, false );
+                    ok = ( *full_path != NULLCHAR );
+                    if( ok ) {
+                        ok = InsFile( full_path, false );
                     }
-                    if( ret == RET_ERROR ) {
+                    if( !ok ) {
                         PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     }
                     break;
@@ -899,7 +899,7 @@ STATIC void bangInclude( void )
             FreeSafe( temp );
             return;
         }
-        if( InsFile( text, false ) != RET_SUCCESS ) {
+        if( !InsFile( text, false ) ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
     }
@@ -1396,8 +1396,8 @@ STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *i
         bool (*is)(const char *);
 
         if( name2function( current, DEFINED, IsMacro,   &is )
-          || name2function( current, EXIST,  existFile, &is )
-          || name2function( current, EXISTS, existFile, &is ) ) {
+          || name2function( current, EXIST,  ExistFile, &is )
+          || name2function( current, EXISTS, ExistFile, &is ) ) {
             if( *probe == '\"' ) {      // Get macro or file name
                 makeStringToken( probe, current, index );
             } else {
@@ -1409,7 +1409,7 @@ STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *i
                 if( *probe != ')' ) {
                     current->type = OP_ERROR;
                 } else {
-                    if( is == existFile ) {
+                    if( is == ExistFile ) {
                         FixName( current->data.string );
                     }
                     current->type          = OP_INTEGER;
@@ -1964,16 +1964,13 @@ STATIC void multExpr( DATAVALUE *leftValue )
 }
 
 
-bool existFile( char const *inPath )
+bool ExistFile( char const *inPath )
 /***********************************
  * This function is to determine whether or not a particular
  * filename / directory exists  (for use with EXIST())
  */
 {
-     if( access( inPath, F_OK ) == 0 ) {
-         return( true );
-     }
-     return( false );
+     return( access( inPath, F_OK ) == 0 );
 }
 
 

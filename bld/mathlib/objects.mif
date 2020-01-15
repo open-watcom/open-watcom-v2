@@ -162,7 +162,7 @@
 !inject rmnder.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
 !inject remquo.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
 !inject round.obj    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
-!inject scalbn.obj   d16c d16i d32c d32i n32c n32i           nta ntp opc lpc lmp
+!inject scalbn.obj   d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
 !inject sgn.obj      d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
 !inject sin087_.obj  d16c                          winc
 !inject sin387_.obj            d32c      n32c

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,23 +38,22 @@
 #include "wio.h"
 #include "common.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-#include <windows.h>
+    #include <windows.h>
 #endif
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
-#if defined( __WATCOMC__ )
-#   include "tinyio.h"
-#endif
+    #if defined( __WATCOMC__ )
+        #include "tinyio.h"
+    #endif
 #elif defined( __OS2__ )
-#   define INCL_DOS
-#   include "os2.h"
+    #define INCL_DOS
+    #include "os2.h"
 #elif defined( __UNIX__ )
-#   if defined( __WATCOMC__ )
-#       include <process.h>
-#   endif
+    #if defined( __WATCOMC__ )
+        #include <process.h>
+    #endif
 #else
-#   error OS not supported
+    #error OS not supported
 #endif
-
 #include "aui.h"
 #include "dip.h"
 #include "wpaui.h"
@@ -68,6 +67,7 @@
 #include "utils.h"
 #include "sampinfo.h"
 #include "wpdata.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -86,19 +86,15 @@ char   *DipExePathList = NULL;
 void ReplaceExt( char * path, char * addext )
 /*******************************************/
 {
-    char        buff[ _MAX_PATH2 ];
-    char *      drive;
-    char *      dir;
-    char *      fname;
-    char *      ext;
+    PGROUP2     pg;
 
-    _splitpath2( path, buff, &drive, &dir, &fname, &ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #if defined(__UNIX__)
-    if( stricmp( ext, addext ) != 0 ) {
+    if( stricmp( pg.ext, addext ) != 0 ) {
         strcat( path, addext );
     }
 #else
-    _makepath( path, drive, dir, fname, addext );
+    _makepath( path, pg.drive, pg.dir, pg.fname, addext );
 #endif
 }
 
@@ -163,8 +159,10 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( ext != NULL && *ext != NULLCHAR ) {
-        _splitpath2( realname, result, NULL, NULL, &filename, NULL );
-        _makepath( realname, NULL, NULL, filename, ext );
+        PGROUP2     pg;
+
+        _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( realname, NULL, NULL, pg.fname, ext );
     }
     filename = findFile( result, realname, FilePathList );
     if( filename == NULL ) {
@@ -290,14 +288,13 @@ void Ring( void )
 void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {
-    char        path[ _MAX_PATH2 ];
+    PGROUP2     pg;
     char        buff[ 13 + _MAX_FNAME ];
-    char        *fname;
     size_t      size;
 
-    _splitpath2( file, path, NULL, NULL, &fname, NULL ); /* _MAX_FNAME */
-    size = strlen( fname );
-    memcpy( buff, fname, size );
+    _splitpath2( file, pg.buffer, NULL, NULL, &pg.fname, NULL ); /* _MAX_FNAME */
+    size = strlen( pg.fname );
+    memcpy( buff, pg.fname, size );
     buff[size] = ' ';                                   /*   1 */
     utoa( line, &buff[size + 1], 10 );                  /*  10 */
                                                         /* '\0' + 1 */

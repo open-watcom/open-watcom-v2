@@ -139,7 +139,7 @@ typedef union {
 #define SEG_LIMIT         32767     // maximum # of branches (leafs * 16)
 
 /* find the node for MEM_ADDR or FILE_ADDR */
-#define NODE( stg )         (&SegTab[ stg.w.high ][ stg.w.low >> OFFSET_SHIFT ])
+#define NODE( stg )         (&SegTab[stg.w.high][stg.w.low >> OFFSET_SHIFT])
 
 #define NODE_OFF( stg )     ( stg.w.low & (MAX_NODE_SIZE-1) )
 
@@ -212,9 +212,9 @@ static virt_struct GetStg( virt_mem_size amt )
         alloc_size = sizeof( seg_table ) * MAX_LEAFS;
         seg_entry = PermAlloc( alloc_size );
         memset( seg_entry, 0, alloc_size ); //set all flags false.
-        SegTab[ CurrBranch ] = seg_entry;
+        SegTab[CurrBranch] = seg_entry;
     } else {
-        seg_entry = &SegTab[ CurrBranch ][ NextLeaf ];
+        seg_entry = &SegTab[CurrBranch][NextLeaf];
     }
     seg_entry->size = amt;
     seg_entry->loc.spill = 0;
@@ -322,6 +322,7 @@ void ReleaseInfo( virt_mem stg )
 /*************************************/
 // can't prematurely release, but no big deal
 {
+    /* unused parameters */ (void)stg;
 }
 
 bool SwapOutVirt( void )
@@ -381,7 +382,7 @@ void FreeVirtMem( void )
     if( SegTab == NULL )
         return;
     for( branch = 0; branch < NumBranches; branch++ ) {
-        seg_entry = SegTab[ branch ];
+        seg_entry = SegTab[branch];
         if( seg_entry != NULL ) {
             for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
                 if( seg_entry->flags & VIRT_INMEM ) {
@@ -393,7 +394,7 @@ void FreeVirtMem( void )
     }
     _LnkFree( SegTab );
     for( index = 0; index < NumHuge; index++ ) {
-        huge_entry = &HugeTab[ index ];
+        huge_entry = &HugeTab[index];
         if( huge_entry->page != NULL ) {
             page = huge_entry->page;
             for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
@@ -446,15 +447,15 @@ static void AllocHugeVMNode( huge_table *node )
      * so that they can be swapped from the start forwards. */
     for( index = node->numthere - 2; index >= 0; index-- ) {
         if( nomem ) {
-            page[ index ].spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
+            page[index].spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
         } else {
             _LnkAlloc( mem, HUGE_SUBPAGE_SIZE );
             if( mem == NULL ) {
                 nomem = true;
                 node->numswapped = index + 1;
-                page[ index ].spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
+                page[index].spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
             } else {
-                page[ index ].addr = mem;
+                page[index].addr = mem;
             }
         }
     }

@@ -20,23 +20,35 @@ debugobjs = dovlboth.obj dovldata.obj
 
 inc_dirs = -I"../h"
 
-extra_c_flags = $(inc_path) -Fo=$^@ -r -s -d1 -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
+extra_cpp_flags_sovlldr  = -DOVL_SMALL
+extra_cpp_flags_dsovlldr = -DOVL_SMALL -DOVL_DEBUG
+extra_cpp_flags_lovlldr  =
+extra_cpp_flags_dlovlldr = -DOVL_DEBUG
+extra_cpp_flags_novlldr  = -DOVL_WHOOSH
+extra_cpp_flags_dnovlldr = -DOVL_WHOOSH -DOVL_DEBUG
+extra_cpp_flags_movlldr  = -DOVL_WHOOSH -DOVL_MULTITHREAD
+extra_cpp_flags_dmovlldr = -DOVL_WHOOSH -DOVL_MULTITHREAD -DOVL_DEBUG
+extra_cpp_flags_sovldbg  = -DOVL_SMALL
+extra_cpp_flags_lovldbg  = 
+extra_cpp_flags_novldbg  = -DOVL_WHOOSH
+extra_cpp_flags_movldbg  = -DOVL_WHOOSH -DOVL_MULTITHREAD
+extra_cpp_flags_dovlboth = -DOVL_DEBUG
 
-extra_c_flags_sovlldr  = -mc -DOVL_SMALL
-extra_c_flags_dsovlldr = -mc -DOVL_SMALL -DOVL_DEBUG
+extra_c_flags = $(inc_path) -Fo=$^@ -r -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
+
+extra_c_flags_sovlldr  = -mc
+extra_c_flags_dsovlldr = -mc
 extra_c_flags_lovlldr  =
-extra_c_flags_dlovlldr = -DOVL_DEBUG
-extra_c_flags_novlldr  = -DOVL_WHOOSH
-extra_c_flags_dnovlldr = -DOVL_WHOOSH -DOVL_DEBUG
-extra_c_flags_movlldr  = -DOVL_WHOOSH -DOVL_MULTITHREAD
-extra_c_flags_dmovlldr = -DOVL_WHOOSH -DOVL_MULTITHREAD -DOVL_DEBUG
-
-extra_c_flags_sovldbg  = -I"$(dig_dir)/h" -mc -DOVL_SMALL
+extra_c_flags_dlovlldr =
+extra_c_flags_novlldr  =
+extra_c_flags_dnovlldr =
+extra_c_flags_movlldr  =
+extra_c_flags_dmovlldr =
+extra_c_flags_sovldbg  = -I"$(dig_dir)/h" -mc
 extra_c_flags_lovldbg  = -I"$(dig_dir)/h"
-extra_c_flags_novldbg  = -I"$(dig_dir)/h" -DOVL_WHOOSH
-extra_c_flags_movldbg  = -I"$(dig_dir)/h" -DOVL_WHOOSH -DOVL_MULTITHREAD
-
-extra_c_flags_dovlboth = -DOVL_DEBUG
+extra_c_flags_novldbg  = -I"$(dig_dir)/h"
+extra_c_flags_movldbg  = -I"$(dig_dir)/h"
+extra_c_flags_dovlboth =
 
 extra_a_flags = -Fo=$^@ -i"$(watcom_h)" -i"../h" -nc=_OVLCODE -nt=_TEXT
 
@@ -84,37 +96,37 @@ dovlmt.lib : dmovlldr.obj $(mtobjs) $(commobjs) $(debugobjs)
 .inc : $(watcom_h)
 
 dsovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 sovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 dlovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 lovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 dnovlldr.obj : novlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 dmovlldr.obj : movlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 dovlboth.obj : ovlboth.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 sovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 lovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 novldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 movldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_cpp_flags_$^&) $(extra_c_flags_$^&) $[@
 
 dovldata.obj : ovldata.asm $($(proj_name)_autodepends)
     $(as) $(aflags) $(extra_a_flags_$^&) $[@

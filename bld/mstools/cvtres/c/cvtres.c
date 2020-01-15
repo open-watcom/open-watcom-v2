@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,9 @@
 #include "message.h"
 #include "pathconv.h"
 #include "parse.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 #include "clibint.h"
 
 
@@ -92,9 +96,7 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
     void *              buf;
     char *              infilename;
     char                outfilename[_MAX_PATH];
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
+    PGROUP2             pg;
     FILE *              in;
     FILE *              out;
     long                bytes;
@@ -123,8 +125,8 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         FreeMem( p );
     }
     if( !strcmp( outfilename, "" ) ) {          /* based on input filename */
-        _splitpath( infilename, drive, dir, fname, NULL );
-        _makepath( outfilename, drive, dir, fname, ".obj" );
+        _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _makepath( outfilename, pg.drive, pg.dir, pg.fname, "obj" );
     }
 
 
@@ -136,11 +138,14 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         /*** Prepare to convert (copy) the file ***/
         buf = AllocMem( BUFSIZE );
         in = fopen( infilename, "rb" );
-        if( in == NULL )  FatalError( "Cannot open '%s'", infilename );
+        if( in == NULL )
+            FatalError( "Cannot open '%s'", infilename );
         out = fopen( outfilename, "wb" );
-        if( out == NULL )  FatalError( "Cannot create '%s'", outfilename );
+        if( out == NULL )
+            FatalError( "Cannot create '%s'", outfilename );
         bytes = filelength( fileno( in ) );
-        if( bytes == -1L )  FatalError( "Cannot get size of '%s'", infilename );
+        if( bytes == -1L )
+            FatalError( "Cannot get size of '%s'", infilename );
 
         /*** Convert (copy) the file ***/
         amount = BUFSIZE;
@@ -148,9 +153,11 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
             if( bytes < BUFSIZE )
                 amount = bytes;
             rc = fread( buf, amount, 1, in );
-            if( rc == 0 )  FatalError( "Cannot read from '%s'", infilename );
+            if( rc == 0 )
+                FatalError( "Cannot read from '%s'", infilename );
             rc = fwrite( buf, amount, 1, out );
-            if( rc == 0 )  FatalError( "Cannot write to '%s'", outfilename );
+            if( rc == 0 )
+                FatalError( "Cannot write to '%s'", outfilename );
             bytes -= amount;
         }
         fclose( in );
@@ -171,10 +178,13 @@ void main( int argc, char *argv[] )
     int                 itemsParsed;
     int                 rc = CVTRES_NOACTION;
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     SetDefaultFile( TYPE_RES_FILE, "res" );

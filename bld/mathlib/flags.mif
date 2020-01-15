@@ -1,4 +1,8 @@
-sw_c_common = -za99-w8-we-x-xx-zam-oax-zl-wpx
+!ifeq release 0
+sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-x-xx-zam-oax-zl-wpx
+!else
+sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-x-xx-zam-s-oax-zl-wpx
+!endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
 !endif

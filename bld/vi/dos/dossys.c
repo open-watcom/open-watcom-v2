@@ -45,6 +45,8 @@ extern int PageCnt;
 
 int FileSysNeedsCR( int handle )
 {
+    /* unused parameters */ (void)handle;
+
     return( true );
 }
 

@@ -250,7 +250,7 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
     default:
         if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
             break;
-        if( ( dd->ins.flags.u.x86 & DIF_X86_FP_INS )
+        if( ( dd->ins.flags.u.x86 & DIF_X86_FPU_INS )
             && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu == X86_EMU ) ) )
             break;
         return( MTRH_STEP );

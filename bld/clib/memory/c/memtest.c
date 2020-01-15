@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +47,14 @@
 #endif
 
 
-#define VERIFY( exp )   if( !(exp) ) {                                      \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
-                                    ProgramName, __LINE__,                  \
-                                    strlwr(__FILE__) );                     \
-                            NumErrors++;                                    \
-                            exit(-1);                                       \
-                        }
+#define VERIFY( exp ) \
+    if( !(exp) ) {                                          \
+        printf( "%s: ***FAILURE*** at line %d of %s.\n",    \
+                ProgramName, __LINE__,                      \
+                strlwr(__FILE__) );                         \
+        NumErrors++;                                        \
+        exit( EXIT_FAILURE );                               \
+    }
 
 void TestCompare( void );
 void TestCompareF( void );
@@ -74,14 +76,16 @@ int NumErrors = 0;                              /* number of errors */
 
 int main( int argc, char *argv[] )
 {
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( EXIT_FAILURE );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
 
     /*** Initialize ***/
     strcpy( ProgramName, strlwr(argv[0]) );     /* store filename */
@@ -92,26 +96,31 @@ int main( int argc, char *argv[] )
     TestOverlap();                              /* test overlapping copy */
     TestMisc();                                 /* other stuff */
 
-    #if defined( _M_IX86 )
-        TestCompareF();
-        TestCopyF();
-        TestOverlapF();
-    #endif
+#if defined( _M_IX86 )
+    TestCompareF();
+    TestCopyF();
+    TestOverlapF();
+#endif
 
     /*** Print a pass/fail message and quit ***/
-    if( NumErrors!=0 ) {
-        printf( "%s: SUCCESS.\n", ProgramName );
-        return( EXIT_SUCCESS );
+    if( NumErrors != 0 ) {
+        printf( "%s: FAILED.\n", ProgramName );
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
-    {
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
+#ifdef __SW_BW
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILED.\n", ProgramName );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
     }
-    #endif
-    return( 0 );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+
+    if( NumErrors != 0 )
+        return( EXIT_FAILURE );
+    return( EXIT_SUCCESS );
 }
 
 
@@ -203,8 +212,8 @@ void TestCopyF( void )
     _fmemcpy( bufA, bufB, strlen(bufB)+1 );     /* copy to bufA */
     VERIFY( !_fstrcmp(bufA, bufB) );            /* ensure copied ok */
 
-    movedata( FP_SEG(bufA), FP_OFF(bufA),       /* copy data */
-              FP_SEG(testStr), FP_OFF(testStr),
+    movedata( _FP_SEG(bufA), _FP_OFF(bufA),     /* copy data */
+              _FP_SEG(testStr), _FP_OFF(testStr),
               _fstrlen(testStr) );
     VERIFY( !_fmemcmp(bufA, testStr, _fstrlen(testStr)) );
 }

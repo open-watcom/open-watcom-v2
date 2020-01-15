@@ -85,15 +85,15 @@ static obj_section_handle doNewSection( char *name, owl_section_type *ptype, owl
     return( sectionCreate( name, SEC_ATTR_DEFAULT, 0 ) );
 }
 
-extern owl_section_handle SectionOwlHandle( obj_section_handle hdl ) {
-//********************************************************************
-
+owl_section_handle SectionOwlHandle( obj_section_handle hdl )
+//***********************************************************
+{
     return( hdl->owl_hdl );
 }
 
-extern obj_section_handle SectionLookup( char *name ) {
-//*****************************************************
-
+obj_section_handle SectionLookup( char *name )
+//********************************************
+{
     obj_section_handle  section;
 
     section = sectionHashTable[ AsHashVal( name, HASH_TABLE_SIZE ) ];
@@ -104,18 +104,18 @@ extern obj_section_handle SectionLookup( char *name ) {
     return( section );
 }
 
-extern void SectionInit( void ) {
-//*******************************
-
+void SectionInit( void )
+//**********************
+{
     // make sure these names are in asdrectv.c (in table asm_directives[])
     #define PICK( a,b,c,d ) SymSetSection( SymLookup( b ) );
     #include "sections.inc"
     #undef PICK
 }
 
-extern void SectionFini( void ) {
-//*******************************
-
+void SectionFini( void )
+//**********************
+{
     obj_section_handle  section, next;
     int                 ctr, n;
 
@@ -132,13 +132,13 @@ extern void SectionFini( void ) {
     }
 }
 
-extern void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment align ) {
-//*************************************************************************************
+void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment align )
+//****************************************************************************
 // Switch to a section with the name, type, and alignment specified.
 // If no such section name exists, we create a new one.
 // If it does exist, we switch to that section given that the type and
 // alignment remains the same. (ptype == NULL if no attr is specified)
-
+{
     obj_section_handle  section;
 
     section = SectionLookup( name );
@@ -156,11 +156,11 @@ extern void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment al
     CurrentSection = section->owl_hdl;
 }
 
-extern void SectionNew( char *name, owl_section_type *ptype, owl_alignment align ) {
-//**********************************************************************************
+void SectionNew( char *name, owl_section_type *ptype, owl_alignment align )
+//*************************************************************************
 // Create a new section regardless of whether a section by this name already
 // exists. The old one is non-accessible from then on.
-
+{
     obj_section_handle  section;
 
     section = SectionLookup( name );

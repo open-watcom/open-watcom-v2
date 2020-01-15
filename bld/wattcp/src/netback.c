@@ -27,7 +27,7 @@
   #ifdef __TURBOC__
     static void interrupt (*oldinterrupt)(void);
   #else
-    static void (interrupt *oldinterrupt)();
+    static void (interrupt *oldinterrupt)(void);
   #endif
 
   static void interrupt newinterrupt(void)
@@ -84,7 +84,7 @@
     setvect (TIMER_INTR, oldinterrupt);
   }
 
-  void backgroundfn (void (*fn)())
+  void backgroundfn (void (*fn)(void))
   {
     userRoutine = fn;
   }

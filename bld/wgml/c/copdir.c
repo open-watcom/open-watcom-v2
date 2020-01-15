@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,7 +222,6 @@ char * get_member_name( char const * in_name )
     cop_file_type   file_type;
     directory_entry current_entry;
     entry_found     entry_status;
-    size_t          member_length;
     uint16_t        entry_type;
 
     /* See if in_name is found in try_file_name. */
@@ -332,11 +332,8 @@ char * get_member_name( char const * in_name )
 
                             /* Return the member name, if found. */
 
-                            if( !stricmp( in_name, current_entry.defined_name ) ) {
-                                member_length = strlen( current_entry.member_name ) + 1;
-                                member_name = mem_alloc( member_length );
-                                strcpy( member_name, current_entry.member_name );
-                                return( member_name );
+                            if( stricmp( in_name, current_entry.defined_name ) == 0 ) {
+                                return( mem_dupstr( current_entry.member_name ) );
                             }
 
                             break;
@@ -378,11 +375,8 @@ char * get_member_name( char const * in_name )
 
                     /* Return the member name, if found. */
 
-                    if( !stricmp( in_name, current_entry.defined_name) ) {
-                        member_length = strlen( current_entry.member_name ) + 1;
-                        member_name = mem_alloc( member_length );
-                        strcpy( member_name, current_entry.member_name );
-                        return( member_name );
+                    if( stricmp( in_name, current_entry.defined_name ) == 0 ) {
+                        return( mem_dupstr( current_entry.member_name ) );
                     }
 
                     break;

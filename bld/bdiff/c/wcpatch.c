@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,18 +106,15 @@ void DirRecurse( const char *srcDir, const char *tgtDir )
 
 void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 {
-    struct dirent   *direntp;
+    struct dirent   *dire;
     int             file = 0;
     int             dir  = 0;
 
-    for( ;; ) {
-        direntp = readdir( dirp );
-        if( direntp == NULL )
-            break;
-        if( ( direntp->d_attr & _A_SUBDIR ) == 0 ) {
+    for( ; (dire = readdir( dirp )) != NULL; ) {
+        if( ( dire->d_attr & _A_SUBDIR ) == 0 ) {
             /* must be a file */
-            Files[file] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );;
-            strcpy( Files[file], direntp->d_name );
+            Files[file] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );;
+            strcpy( Files[file], dire->d_name );
             strlwr( Files[file] );
             file += 1;
             if( file >= 1000 ) {
@@ -124,8 +122,8 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
             }
         } else {
             /* must be a directory */
-            Dirs[dir] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );
-            strcpy( Dirs[dir], direntp->d_name );
+            Dirs[dir] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+            strcpy( Dirs[dir], dire->d_name );
             strlwr( Dirs[dir] );
             if( strcmp( Dirs[dir], "." ) != 0 && strcmp( Dirs[dir], ".." ) != 0 ) {
                 dir += 1;

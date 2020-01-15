@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,10 +52,6 @@
 #include "objpass2.h"
 #include "objfree.h"
 
-static void FreeAreas( OVL_AREA *area );
-static void FreeClasses( class_entry * list );
-static void FreeFiles( file_list *list );
-static void FreeMods( mod_entry *head );
 
 void FiniLinkStruct( void )
 /********************************/
@@ -65,59 +62,6 @@ void FiniLinkStruct( void )
     FreeTokBuffs();
     CacheFini();
     ObjORLFini();
-}
-
-
-static void FreeSections( section *sec )
-/**************************************/
-/* Free sections & classes. */
-{
-    section             *next;
-    ORDER_CLASS         *Class, *NextClass;
-    ORDER_SEGMENT       *Seg, *NextSeg;
-
-    for( ; sec != NULL; sec = next ) {
-        next = sec->next_sect;
-        FreeFiles( sec->files );
-        if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-            FreeMods( sec->mods );
-            FreeClasses( sec->classlist );
-        }
-        DBISectCleanup( sec );
-        FreeAreas( sec->areas );
-        ZapHTable(sec->modFilesHashed, LFree);
-        // Free up any Order Class entries
-        for( Class = sec->orderlist; Class != NULL; Class = NextClass ) {
-            NextClass = Class->NextClass;
-            if( Class->Name != NULL ) {   // Including members and sucessors
-                _LnkFree ( Class->Name );
-            }
-            if( Class->Copy ) {
-                _LnkFree ( Class->SrcName );
-            }
-            // Order Seg entries can also have members and sucessors
-            for( Seg = Class->SegList; Seg != NULL; Seg = NextSeg ) {
-                NextSeg = Seg->NextSeg;
-                if ( Seg->Name != NULL ) {
-                    _LnkFree( Seg->Name );
-                }
-                _LnkFree ( Seg );
-            }
-            _LnkFree ( Class );
-        }
-        _LnkFree( sec );
-    }
-}
-
-static void FreeAreas( OVL_AREA *area )
-/*************************************/
-{
-    OVL_AREA    *next;
-
-    for( ; area != NULL; area = next ) {
-        next = area->next_area;
-        FreeSections( area->sections );
-    }
 }
 
 static void FreeClasses( class_entry * list )
@@ -165,12 +109,67 @@ static void FreeFiles( file_list *list )
     }
 }
 
+static void FreeAreas( OVL_AREA *area );
+
+static void FreeSections( section *sec )
+/**************************************/
+/* Free sections & classes. */
+{
+    section             *next;
+    ORDER_CLASS         *Class, *NextClass;
+    ORDER_SEGMENT       *Seg, *NextSeg;
+
+    for( ; sec != NULL; sec = next ) {
+        next = sec->next_sect;
+        FreeFiles( sec->files );
+        if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
+            FreeMods( sec->mods );
+            FreeClasses( sec->classlist );
+        }
+        DBISectCleanup( sec );
+        FreeAreas( sec->areas );
+        ZapHTable(sec->modFilesHashed, LFree);
+        // Free up any Order Class entries
+        for( Class = sec->orderlist; Class != NULL; Class = NextClass ) {
+            NextClass = Class->NextClass;
+            if( Class->Name != NULL ) {   // Including members and sucessors
+                _LnkFree ( Class->Name );
+            }
+            if( Class->Copy ) {
+                _LnkFree ( Class->SrcName );
+            }
+            // Order Seg entries can also have members and sucessors
+            for( Seg = Class->SegList; Seg != NULL; Seg = NextSeg ) {
+                NextSeg = Seg->NextSeg;
+                if( Seg->Name != NULL ) {
+                    _LnkFree( Seg->Name );
+                }
+                _LnkFree ( Seg );
+            }
+            _LnkFree ( Class );
+        }
+        _LnkFree( sec );
+    }
+}
+
+static void FreeAreas( OVL_AREA *area )
+/*************************************/
+{
+    OVL_AREA    *next;
+
+    for( ; area != NULL; area = next ) {
+        next = area->next_area;
+        FreeSections( area->sections );
+    }
+}
+
 
 void CleanLinkStruct( void )
 /*********************************/
 /* free all structures */
 {
-    if( Root == NULL ) return;  /* haven't finished initializing */
+    if( Root == NULL )
+        return;  /* haven't finished initializing */
     BurnLibs();
     FreeFiles( ObjLibFiles );
     FreeFiles( Root->files );
@@ -185,7 +184,7 @@ void CleanLinkStruct( void )
     if( FmtData.osname != NULL ) {
         _LnkFree( FmtData.osname );
     }
-    if (FmtData.resource != NULL) {
+    if( FmtData.resource != NULL ) {
         _LnkFree( FmtData.resource );
     }
     FreeRelocInfo();
@@ -197,15 +196,15 @@ void CleanLinkStruct( void )
     DBICleanup();
     Root = NULL;
     if( FmtData.type & MK_REAL_MODE ) {
-        FreeOvlStruct();
+        FreeOverlaySupp();
     }
 }
 
-#if defined(_OS2) || defined( _QNXLOAD )
-void FreeSegFlags( seg_flags * curr )
-/******************************************/
+#if defined( _OS2 ) || defined( _QNX )
+void FreeSegFlags( xxx_seg_flags *curr )
+/**************************************/
 {
-    seg_flags * next;
+    xxx_seg_flags   *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;

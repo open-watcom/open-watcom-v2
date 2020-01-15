@@ -269,7 +269,7 @@ extern int      _SetAboutDlg( const char *, const char * );
 extern MRESULT EXPENTRY _MainDriver( HWND, USHORT, MPARAM, MPARAM );
 #else
 /* windrvr.c */
-extern long     CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+extern WINEXPORT LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 #endif
 
 #if defined( __OS2__ )

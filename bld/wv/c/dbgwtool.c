@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +62,8 @@ void    InitToolBar( void )
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
-        ToolBar[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)ToolBar[i].hinttext );
-        ToolBar[i].tip = WndLoadString( (gui_res_id)(pointer_int)ToolBar[i].tip );
+        ToolBar[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)ToolBar[i].hinttext );
+        ToolBar[i].tip = WndLoadString( (gui_res_id)(pointer_uint)ToolBar[i].tip );
     }
 }
 

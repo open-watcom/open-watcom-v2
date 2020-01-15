@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
         attr = EMPTY;
     }
     segid = AskSegID( sym, class );
-    reg = FEAuxInfo( (pointer)(pointer_int)segid, PEGGED_REGISTER );
+    reg = FEAuxInfo( (pointer)(pointer_uint)segid, PEGGED_REGISTER );
     if( reg != NULL && !HW_CEqual( *reg, HW_EMPTY ) ) {
         if( HW_COvlap( *reg, HW_SEGS ) )
             return( *reg );

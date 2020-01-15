@@ -887,6 +887,26 @@
 
 #define usergate_poll_handle 0x000002BB
 
+#define usergate_get_usb_bus_par 0x000002BC
+
+#define usergate_get_tcp_connection_write_space 0x000002BD
+
+#define usergate_get_can_bridge_version 0x000002BE
+#define usergate_program_can_bridge 0x000002BF
+#define usergate_wait_for_can_bridge_programming 0x000002C0
+
+#define usergate_get_usb_cdc_com_par 0x000002C1
+
+#define usergate_supports_full_duplex 0x000002C2
+#define usergate_is_auto_rts_on 0x000002C3
+
+#define usergate_send_com_break 0x000002C4
+#define usergate_get_can_module_restarts 0x000002C5
+
+#define usergate_select 0x000002C6
+#define usergate_set_handle_blocking_mode 0x000002C7
+#define usergate_set_handle_nonblocking_mode 0x000002C8
+
 
 
 #ifdef __FLAT__
@@ -1779,6 +1799,26 @@
 
 #define CallGate_poll_handle 0x55 0x67 0x9a 187 2 0 0 3 0 0x5d
 
+#define CallGate_get_usb_bus_par 0x55 0x67 0x9a 188 2 0 0 3 0 0x5d
+
+#define CallGate_get_tcp_connection_write_space 0x55 0x67 0x9a 189 2 0 0 3 0 0x5d
+
+#define CallGate_get_can_bridge_version 0x55 0x67 0x9a 190 2 0 0 3 0 0x5d
+#define CallGate_program_can_bridge 0x55 0x67 0x9a 191 2 0 0 3 0 0x5d
+#define CallGate_wait_for_can_bridge_programming 0x55 0x67 0x9a 192 2 0 0 3 0 0x5d
+
+#define CallGate_get_usb_cdc_com_par 0x55 0x67 0x9a 193 2 0 0 3 0 0x5d
+
+#define CallGate_supports_full_duplex 0x55 0x67 0x9a 194 2 0 0 3 0 0x5d
+#define CallGate_is_auto_rts_on 0x55 0x67 0x9a 195 2 0 0 3 0 0x5d
+
+#define CallGate_send_com_break 0x55 0x67 0x9a 196 2 0 0 3 0 0x5d
+#define CallGate_get_can_module_restarts 0x55 0x67 0x9a 197 2 0 0 3 0 0x5d
+
+#define CallGate_select 0x55 0x67 0x9a 198 2 0 0 3 0 0x5d
+#define CallGate_set_handle_blocking_mode 0x55 0x67 0x9a 199 2 0 0 3 0 0x5d
+#define CallGate_set_handle_nonblocking_mode 0x55 0x67 0x9a 200 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2668,5 +2708,25 @@
 #define CallGate_has_handle_exception 0x3e 0x67 0x9a 186 2 0 0 3 0
 
 #define CallGate_poll_handle 0x3e 0x67 0x9a 187 2 0 0 3 0
+
+#define CallGate_get_usb_bus_par 0x3e 0x67 0x9a 188 2 0 0 3 0
+
+#define CallGate_get_tcp_connection_write_space 0x3e 0x67 0x9a 189 2 0 0 3 0
+
+#define CallGate_get_can_bridge_version 0x3e 0x67 0x9a 190 2 0 0 3 0
+#define CallGate_program_can_bridge 0x3e 0x67 0x9a 191 2 0 0 3 0
+#define CallGate_wait_for_can_bridge_programming 0x3e 0x67 0x9a 192 2 0 0 3 0
+
+#define CallGate_get_usb_cdc_com_par 0x3e 0x67 0x9a 193 2 0 0 3 0
+
+#define CallGate_supports_full_duplex 0x3e 0x67 0x9a 194 2 0 0 3 0
+#define CallGate_is_auto_rts_on 0x3e 0x67 0x9a 195 2 0 0 3 0
+
+#define CallGate_send_com_break 0x3e 0x67 0x9a 196 2 0 0 3 0
+#define CallGate_get_can_module_restarts 0x3e 0x67 0x9a 197 2 0 0 3 0
+
+#define CallGate_select 0x3e 0x67 0x9a 198 2 0 0 3 0
+#define CallGate_set_handle_blocking_mode 0x3e 0x67 0x9a 199 2 0 0 3 0
+#define CallGate_set_handle_nonblocking_mode 0x3e 0x67 0x9a 200 2 0 0 3 0
 
 #endif

@@ -49,6 +49,8 @@ _WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR 
 {
     int                 rc;
 
+    /* unused parameters */ (void)ps;
+
     /*** Check the simple cases ***/
     if( s == NULL )  return( 0 );           /* always in initial state */
     if( n == 0 )  return( -2 );             /* can't process nothing */

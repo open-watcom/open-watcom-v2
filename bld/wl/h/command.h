@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,14 +71,14 @@ typedef enum {
 typedef struct {
     char        *buff;
     size_t      len;
-    char        *next;
-    char        *this;
+    const char  *next;
+    const char  *this;
     place       where;
     method      how;
-    bool        thumb       : 1;
-    bool        locked      : 1;
-    bool        quoted      : 1;    /* set true if token parsed as a quoted string*/
-    bool        skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
+    boolbit     thumb       : 1;
+    boolbit     locked      : 1;
+    boolbit     quoted      : 1;    /* set true if token parsed as a quoted string*/
+    boolbit     skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
     unsigned_16 line;
 } tok;
 
@@ -207,8 +208,8 @@ extern char             *totext( void );
 extern bool             GetToken( sep_type, tokcontrol );
 extern bool             GetTokenEx( sep_type, tokcontrol ,cmdfilelist *, bool * );
 extern void             RestoreParser( void );
-extern void             NewCommandSource( char *, char *, method );
-extern void             SetCommandFile( f_handle, char * );
+extern void             NewCommandSource( const char *, const char *, method );
+extern void             SetCommandFile( f_handle, const char * );
 extern void             EatWhite( void );
 extern char             *FileName( const char *, size_t, file_defext, bool );
 extern void             RestoreCmdLine( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,23 +84,15 @@ recognized_struct RecognizedName[] = {
 };
 
 static const char * const intelSkipRefList[] = {
-    "FIWRQQ", // boundary relocs
-    "FIDRQQ",
-    "FIERQQ",
-    "FICRQQ",
-    "FISRQQ",
-    "FIARQQ",
-    "FIFRQQ",
-    "FIGRQQ",
-    "FJCRQQ", // boundary + 1 relocs
-    "FJSRQQ",
-    "FJARQQ",
-    "FJFRQQ",
-    "FJGRQQ",
-    NULL
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
+    #include "fppatche.h"
+    #undef pick_fp
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
-#define NUM_ELTS( a )   (sizeof(a) / sizeof((a)[0]))
+#define NUM_ELEMENTS( a )       (sizeof(a) / sizeof((a)[0]))
 
 static orl_sec_handle           symbolTable = ORL_NULL_HANDLE;
 static orl_sec_handle           dynSymTable = ORL_NULL_HANDLE;
@@ -570,7 +563,7 @@ static return_val initHashTables( void )
 
     error = createHashTables();
     if( error == RC_OKAY ) {
-        for( i = 0; i < NUM_ELTS( RecognizedName ); i++ ) {
+        for( i = 0; i < NUM_ELEMENTS( RecognizedName ); i++ ) {
             key_entry.key.u.string = RecognizedName[i].name;
             key_entry.data.u.sec_type = RecognizedName[i].type;
             HashTableInsert( NameRecognitionTable, &key_entry );
@@ -798,7 +791,7 @@ void PrintErrorMsg( return_val exit_code, int where )
 return_val Init( void )
 {
     return_val          error;
-    const char *        const *list;
+    int                 i;
     const char          *name;
     hash_entry_data     key_entry;
 
@@ -809,11 +802,12 @@ return_val Init( void )
 
     relocSections.first = NULL;
     relocSections.last = NULL;
+
+    MemOpen();
     if( !MsgInit() ) {
         // MsgInit does its own error message printing
         return( RC_ERROR );
     }
-    MemOpen();
 
     error = HandleArgs();
     if( error != RC_OKAY ) {
@@ -849,9 +843,11 @@ return_val Init( void )
     if( IsIntelx86() ) {
         SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING_IGNORECASE );
         if( SkipRefTable != NULL ) {
-            for( list = intelSkipRefList; (name = *list) != NULL; ++list ) {
+            for( i = 0; i < NUM_ELEMENTS( intelSkipRefList ); i++ ) {
+                if( (name = intelSkipRefList[i]) == NULL )
+                    continue;
                 key_entry.key.u.string = name;
-                key_entry.data.u.string = *list;
+                key_entry.data.u.string = name;
                 error = HashTableInsert( SkipRefTable, &key_entry );
                 if( error != RC_OKAY ) {
                     break;

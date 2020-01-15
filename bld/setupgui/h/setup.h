@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,11 +83,11 @@
 // Defines used by the SETUP program.
 
 #if defined( __UNIX__ )
-    #define BATCHEXT        ".sh"
+    #define BATCHEXT        "sh"
 #elif defined( __OS2__ )
-    #define BATCHEXT        ".cmd"
+    #define BATCHEXT        "cmd"
 #else
-    #define BATCHEXT        ".bat"
+    #define BATCHEXT        "bat"
 #endif
 
 #if defined( __OS2__ )

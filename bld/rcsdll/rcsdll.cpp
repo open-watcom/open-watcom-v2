@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include "bool.h"
 #include "rcsdll.hpp"
 #include "inifile.hpp"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -287,13 +289,12 @@ int rcsSystem::checkout( userData *d, rcsstring name, rcsstring pj, rcsstring tg
 
 int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt )
 {
-    char MsgBuf[BUFLEN];
-    char Buffer[BUFLEN];
-    char path[_MAX_PATH];
-    char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
-    int i=0;
-    FILE *fp;
+    char        MsgBuf[BUFLEN];
+    char        Buffer[BUFLEN];
+    char        path[_MAX_PATH];
+    PGROUP2     pg;
+    int         i;
+    FILE        *fp;
 
     *MsgBuf = '\0';
     if( d == NULL )
@@ -304,8 +305,8 @@ int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt
             return( true );
         }
     }
-    _splitpath( name, drive, dir, NULL, NULL );
-    _makepath( path, drive, dir, "temp", "___" );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( path, pg.drive, pg.dir, "temp", "___" );
     for( i = 0; i < 10; i++ ) {
         path[strlen(path)-1] = (char)(i + '0');
         if( access( path, W_OK ) ) {

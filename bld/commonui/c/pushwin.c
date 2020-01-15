@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ bool RegPushWin( HANDLE instance )
     wc.hInstance = instance;
     wc.hIcon = NULLHANDLE;
     wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_WINDOW + 1);
+    wc.hbrBackground = (HBRUSH)(pointer_uint)(COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "PushWin";
     return( RegisterClass( &wc ) != 0 );

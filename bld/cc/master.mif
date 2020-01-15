@@ -34,13 +34,12 @@ additional_cleanup = *.int *.u
 !include deftarg.mif
 !include osi.mif
 !include dllbase.mif
+!include trmem.mif
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif
 !include $(wasm_dir)/client.mif
-
-!include trmem.mif
 
 !include ../../ccobjs.mif
 
@@ -69,24 +68,28 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags += -D_CGDLL
 !endif
 
+extra_cpp_flags_cmsg     = -D__msg_file_prefix=$(intname)
+!ifeq cc_dll 1
+! ifeq host_os dos
+extra_cpp_flags_ideentry = -DCAUSEWAY
+! endif
+!else
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+!endif
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+
+
 extra_c_flags_386 = -3r
 
-!ifndef bootstrap
-!ifeq release 1
+!ifdef __WATCOM_TOOLS__
+! ifndef bootstrap
+!  ifeq release 1
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
-!endif
-!endif
-extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
-!ifeq cc_dll 1
-!ifeq host_os dos
-extra_c_flags_ideentry = -DCAUSEWAY
-!endif
-!else
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE
+!  endif
+! endif
 !endif
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 #
 # WLINK .EXE options
@@ -160,7 +163,11 @@ $(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_
 $(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
+! ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(comp_objs_exe) $(libs) $(bld_ldflags)
+! else
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
+! endif
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i

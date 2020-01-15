@@ -63,18 +63,19 @@ msg     db      "Stack Overflow!", 0
         defpe   __STK
         push    eax                     ; save parm for __GRO routine
         _guess                          ; guess: no overflow
-          cmp   eax,esp                 ; - quit if user asking for too much
-          _quif ae                      ; - ...
+          cmp   eax,esp                 ; - check if user asking for too much
+        _quif ae                        ; quit if user asking for too much
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
-          cmp   eax,fs:[08h]            ; compare with stack bottom in TIB
-          _quif be                      ; - ...
-          call  __GRO                   ; - return
-          ret
+          cmp   eax,fs:[08h]            ; - compare with stack bottom in TIB
+        _quif be                        ; quit if too much
+          call  __GRO                   ; - grow stack allocation if necessary
+          ret                           ; - return
         _endguess                       ; endguess
 
+        pop     eax                     ; pop the stack (parm for __GRO routine)
+
 __STKOVERFLOW:
-        pop     eax                     ; pop the stack
 ifdef __STACK__
         push    1                       ; exit code
         push    offset msg              ; the error message
@@ -91,11 +92,11 @@ endif
         push    ebx                     ; ...
         mov     eax,12[esp]             ; get size to grow by
         mov     ebx,-4                  ; initialiaze index
-lup:                                    ; do {
-        mov     [esp+ebx],ebx           ; - touch that stack page
-        sub     ebx,1000H               ; - decrement by 4k
-        sub     eax,1000H               ; - decrement by 4k
-        jg      lup                     ; } while stack left to go
+        _loop                           ; do {
+          mov   [esp+ebx],ebx           ; - touch that stack page
+          sub   ebx,1000H               ; - decrement by 4k
+          sub   eax,1000H               ; - decrement by 4k
+        _loopif g                       ; } while stack left to go
         pop     ebx                     ; restore regs
         pop     eax                     ; ...
         ret     4                       ; return to caller

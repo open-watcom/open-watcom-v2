@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,19 +166,21 @@ static void add_name( DIRECTORY *direct, char *name, char **where )
 }
 #endif
 
-static struct dirent *my_readdir( DIRECTORY *direct, DIR *dp )
+static struct dirent *my_readdir( DIRECTORY *direct, DIR *dirp )
 {
-    struct dirent   *dir;
+    struct dirent   *dire;
 
     direct = direct;
-    dir = readdir( dp );
-    if( dir == NULL ) return( NULL );
+
+    dire = readdir( dirp );
+    if( dire == NULL )
+        return( NULL );
 #ifdef __QNX__
-    if( !(dir->d_stat.st_status & _FILE_USED) ) {
+    if( (dire->d_stat.st_status & _FILE_USED) == 0 ) {
         char            *where;
 
-        add_name( direct, dir->d_name, &where );
-        stat( direct->pathbuff, &dir->d_stat );
+        add_name( direct, dire->d_name, &where );
+        stat( direct->pathbuff, &dire->d_stat );
         *where = '\0';
     }
 #endif
@@ -219,35 +222,35 @@ static bool checkMask( char *name, char *mask )
 #ifndef __QNX__
     register char               *str;
 #endif
-    register DIR                *dptr;
+    register DIR                *dirp;
     register int                add_mask;
-    struct   dirent             *direntp;
+    struct   dirent             *dire;
 
     add_mask = concat( dirptr, mask );
-    dptr = opendir( dirptr->pathbuff );
-    if( dptr != NULL ) {
+    dirp = opendir( dirptr->pathbuff );
+    if( dirp != NULL ) {
         for( ;; ) {
 #ifdef __QNX__
 /* scan for next directory matching mask */
             do {
-                direntp = my_readdir( dirptr, dptr );
-            } while( direntp != NULL && !IS_DIR( direntp )
-                               && !checkMask( direntp->d_name, mask ) );
+                dire = my_readdir( dirptr, dirp );
+            } while( dire != NULL && !IS_DIR( dire )
+                               && !checkMask( dire->d_name, mask ) );
 #else
-            direntp = my_readdir( dirptr, dptr );
+            dire = my_readdir( dirptr, dirp );
 #endif
-            if( direntp == NULL )
+            if( dire == NULL )
                 break;
-            if( IS_DIR( direntp ) == flag ) {
+            if( IS_DIR( dire ) == flag ) {
                 Names[index].dir = flag;
                 len = 0;
 #ifdef __QNX__
 #define NAME_START 6
                 strcpy( &Names[index].str[0], flag ? "<DIR> " : "      " );
-                strcpy( &Names[index].str[NAME_START], direntp->d_name );
+                strcpy( &Names[index].str[NAME_START], dire->d_name );
 #else
 #define NAME_START 0
-                str = direntp->d_name;
+                str = dire->d_name;
                 while( *str != '\0' ) {
                     if( ( *str == '.' ) && ( *( str - len ) != '.' ) ) {
                         ++str;
@@ -275,7 +278,7 @@ static bool checkMask( char *name, char *mask )
                 ++index;
             }
         }
-        closedir( dptr );
+        closedir( dirp );
     }
     if( add_mask ) {
         strip( dirptr, NULL );
@@ -398,9 +401,9 @@ static bool checkMask( char *name, char *mask )
     register int                flag;
 {
     register unsigned           count;
-    register DIR                *dptr;
+    register DIR                *dirp;
     register int                add_mask;
-    struct   dirent             *direntp;
+    struct   dirent             *dire;
 
     count = 0;
     if( mask != NULL ) {
@@ -408,24 +411,27 @@ static bool checkMask( char *name, char *mask )
     } else {
         add_mask = FALSE;
     }
-    dptr = opendir( dirptr->pathbuff );
-    if( dptr == NULL ) {
+    dirp = opendir( dirptr->pathbuff );
+    if( dirp == NULL ) {
         count = INVALID_DIR;
     } else {
         for( ;; ) {
 #ifdef __QNX__
 /* scan for next directory matching mask */
             do {
-                direntp = my_readdir( dirptr, dptr );
-            } while( direntp != NULL && !IS_DIR( direntp )
-                               && !checkMask( direntp->d_name, mask ) );
+                dire = my_readdir( dirptr, dirp );
+            } while( dire != NULL && !IS_DIR( dire )
+                               && !checkMask( dire->d_name, mask ) );
 #else
-            direntp = my_readdir( dirptr, dptr );
+            dire = my_readdir( dirptr, dirp );
 #endif
-            if( direntp == NULL ) break;
-            if( IS_DIR( direntp ) == flag ) ++count;
+            if( dire == NULL )
+                break;
+            if( IS_DIR( dire ) == flag ) {
+                ++count;
+            }
         }
-        closedir( dptr );
+        closedir( dirp );
     }
     if( add_mask ) {
         strip( dirptr, NULL );

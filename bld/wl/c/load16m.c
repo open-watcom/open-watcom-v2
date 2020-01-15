@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ static unsigned_32 Write16MData( unsigned hdr_size )
 
     SeekLoad( hdr_size );
     for( group = Groups; group != NULL; group = group->next_group ) {
-        WriteGroupLoad( group );
+        WriteGroupLoad( group, false );
         NullAlign( 0x10 );          // paragraph alignment.
     }
     return( PosLoad() );
@@ -283,8 +283,8 @@ static unsigned_32 WriteStubProg( void )
     return( size );
 }
 
-extern void Fini16MLoadFile( void )
-/*********************************/
+void Fini16MLoadFile( void )
+/**************************/
 {
     unsigned_32         hdr_size;
     unsigned_32         temp;
@@ -373,8 +373,8 @@ extern void Fini16MLoadFile( void )
     WriteGDT( reloc_size );
 }
 
-extern unsigned ToD16MSel( unsigned seg_num )
-/*******************************************/
+unsigned ToD16MSel( unsigned seg_num )
+/************************************/
 {
     unsigned_32    x;
 
@@ -388,8 +388,8 @@ extern unsigned ToD16MSel( unsigned seg_num )
     return( LastSel );
 }
 
-extern segment Find16MSeg( segment selector )
-/*******************************************/
+segment Find16MSeg( segment selector )
+/************************************/
 // this finds the dos_segment value which corresponds to the given selector.
 {
     group_entry     *currgrp;
@@ -405,8 +405,8 @@ extern segment Find16MSeg( segment selector )
     return( result );
 }
 
-extern void CalcGrpSegs( void )
-/*****************************/
+void CalcGrpSegs( void )
+/**********************/
 // go through group list & calculate what the segment would be if we were
 // running under DOS.
 {

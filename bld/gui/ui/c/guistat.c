@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,13 +108,13 @@ void GUIDrawStatus( gui_window *wnd )
     int length;
 
     if( GUIHasStatus( wnd ) && !GUI_WND_MINIMIZED( wnd ) ) {
-        uivfill( &wnd->screen, wnd->status->area, wnd->status->attr, ' ' );
+        uivfill( &wnd->vs, wnd->status->area, wnd->status->attr, ' ' );
         if( wnd->status->text != NULL ) {
             length = strlen( wnd->status->text );
             if( length > wnd->status->area.width ) {
                 length = wnd->status->area.width;
             }
-            uivtextput( &wnd->screen, wnd->status->area.row,
+            uivtextput( &wnd->vs, wnd->status->area.row,
                         wnd->status->area.col, wnd->status->attr,
                         wnd->status->text, length );
         }

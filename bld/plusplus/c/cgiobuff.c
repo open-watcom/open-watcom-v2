@@ -759,7 +759,7 @@ void CgioBuffInit(              // BUFFERING INITIALIZATION
     allBufs = NULL;
     reusableBufs = NULL;
     directoryOfBufs = NULL;
-    maxDictIndex = -1;
+    maxDictIndex = ~0U;
     newDict();
     CMemRegisterCleanup( cgioBuffReleaseMemory );
     ExtraRptRegisterCtr( &ctr_buffers, "buffers for IC file" );

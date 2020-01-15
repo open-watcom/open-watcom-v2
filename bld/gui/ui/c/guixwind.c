@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,12 +71,12 @@ ui_event GUIAllEvents[] = {
  * GUIWndGetEvent -- get ad event (other than EV_NO_EVENT) from UI
  */
 
-ui_event GUIWndGetEvent( VSCREEN * screen )
+ui_event GUIWndGetEvent( VSCREEN *vs )
 {
     ui_event    ui_ev;
 
     do {
-        ui_ev = uivgetevent( screen );
+        ui_ev = uivgetevent( vs );
         ui_ev = GUIUIProcessEvent( ui_ev );
     } while( ui_ev == EV_NO_EVENT );
     return( ui_ev );
@@ -109,7 +109,7 @@ static void MessageLoop( void )
     uipushlist( GUIAllEvents );
     while( GUIGetFront() != NULL ) {
         if( GUICurrWnd != NULL ) {
-            ui_ev = GUIWndGetEvent( &GUICurrWnd->screen );
+            ui_ev = GUIWndGetEvent( &GUICurrWnd->vs );
         } else {
             ui_ev = GUIWndGetEvent( NULL );
         }
@@ -197,9 +197,7 @@ int GUIXMain( int argc, char * argv[] )
 
 void GUIXSetupWnd( gui_window *wnd )
 {
-    wnd->screen.event = EV_NO_EVENT;
-    wnd->screen.flags = V_UNFRAMED | V_GUI_WINDOW;
-    wnd->screen.cursor_type = C_OFF;
+    uiscreeninit( &wnd->vs, NULL, V_GUIWINDOW );
     wnd->flags = CHECK_CHILDREN_ON_RESIZE;
     wnd->background = ' ';
 }
@@ -214,8 +212,7 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUIXCreateWindow - create a UI window
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
-                       gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
 {
     if( parent != NULL ) {
         wnd->sibling = parent->child;
@@ -231,14 +228,14 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
     }
     GUIFrontOfList( wnd );
     GUISetIcon( wnd, dlg_info->icon );
-    if( uivopen( &wnd->screen ) != NULL ) {
+    if( uivopen( &wnd->vs ) != NULL ) {
         if( dlg_info->style & GUI_INIT_MAXIMIZED ) {
             GUIMaximizeWindow( wnd );
         } else if( dlg_info->style & GUI_INIT_MINIMIZED ) {
             GUIMinimizeWindow( wnd );
         }
         if( dlg_info->style & GUI_INIT_INVISIBLE ) {
-            uivhide( &wnd->screen );
+            uivhide( &wnd->vs );
         }
         if( wnd->vgadget != NULL ) {
             uiinitgadget( wnd->vgadget );
@@ -251,7 +248,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
         }
         GUIBringToFront( wnd );
         GUIWholeWndDirty( wnd );
-        uisetmouse( wnd->screen.area.row, wnd->screen.area.col );
+        uisetmouse( wnd->vs.area.row, wnd->vs.area.col );
         return( true );
     } else {
         return( false );
@@ -260,7 +257,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
 
 void GUIShowWindow( gui_window *wnd )
 {
-    uivshow( &wnd->screen );
+    uivshow( &wnd->vs );
 }
 
 void GUIShowWindowNA( gui_window *wnd )

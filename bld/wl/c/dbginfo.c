@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +56,7 @@
 #include "clibext.h"
 
 
-#define ADDR_INFO_LIMIT ( 63 * 1024U / sizeof( addr_dbg_info ) )
-#define DEMAND_INFO_SPLIT ( 16 * 1024 )
+#define DEMAND_INFO_SPLIT   _16KB
 
 #define NON_SECT_INFO 0x8000
 
@@ -854,7 +854,7 @@ static void WriteDBISecs( section *sec )
         header.mod_offset = dptr->mod.start;
         header.gbl_offset = dptr->global.start;
         header.addr_offset = dptr->addr.start;
-        header.section_id = sec->ovl_num;
+        header.section_id = sec->ovlref;
         DBIWriteLocal( &header, sizeof( section_dbg_header ) );
         DBIWriteInfo( dptr->locallinks.init.u.vm_ptr, dptr->locallinks.size );
         DBIWriteInfo( dptr->typelinks.init.u.vm_ptr, dptr->typelinks.size );

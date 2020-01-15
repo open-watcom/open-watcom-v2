@@ -55,11 +55,10 @@ typedef enum {
     MS_NULL             = 0x00
 } msg_status_t;
 
-#define WLEVEL_MIN      0
 #define WLEVEL_MAX      10
 #define WLEVEL_ERROR    0
 #define WLEVEL_DEFAULT  1
-#define WLEVEL_WX       9
+#define WLEVEL_WX       (WLEVEL_MAX - 1)
 #define WLEVEL_ENABLE   1
 #define WLEVEL_DISABLE  15
 #define WLEVEL_NOTE     -1
@@ -168,6 +167,9 @@ void MsgDisplayBanner           // DISPLAY A BANNER LINE
 void MsgDisplayLine             // DISPLAY A BARE LINE
     ( const char* line )        // - the line
 ;
+void MsgDisplayLineVbuf         // DISPLAY A BARE LINE, FROM VBUF
+    ( VBUF* vbuf )              // - the VBUF
+;
 void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     ( char* seg                 // - the line segments
     , ... )
@@ -178,12 +180,16 @@ void RegisterSuicideCallback(   // REGISTER A FUNCTION TO BE CALLED BEFORE CSuic
 void SetErrLoc(                 // SET ERROR LOCATION
     TOKEN_LOCN *locn )          // - error location
 ;
+void WarnEnableDisable(         // ENABLE/DISABLE A MESSAGE
+    bool enabled,               // - new status
+    MSG_NUM msgnum )            // - message number
+;
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
-    int level,                  // - new level
+    unsigned level,             // - new level
     MSG_NUM msgnum )            // - message number
 ;
 void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
-    int level )                 // - new level
+    unsigned level )            // - new level
 ;
 void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
     SYMBOL fn )                 // - function

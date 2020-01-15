@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ typedef struct call_chain {
     char        *source_line;
     char        *symbol;
     unsigned    sym_len;
-    bool        open : 1;
+    boolbit     open : 1;
 } call_chain;
 
 typedef struct traceback {

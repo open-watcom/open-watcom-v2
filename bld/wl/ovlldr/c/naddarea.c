@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,13 @@
 
 
 #include "novlldr.h"
+#include "naddarea.h"
+
 
 /* this can be called by the app. to add overlay areas */
 
-extern void __far _ovl_addarea( unsigned segment, unsigned size )
-/**************************************************************/
+void __far _ovl_addarea( unsigned segment, unsigned size )
+/********************************************************/
 /* add another area to the overlay manager's list of areas */
 {
     area_list_ptr area;

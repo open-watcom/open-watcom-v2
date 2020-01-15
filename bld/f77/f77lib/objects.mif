@@ -133,11 +133,6 @@ rt += &
     substr.obj
 
 
-# WORKAROUND: Disable pointer truncation warning for aalloc module; this
-# module for some mysterious reason uses far pointers even on flat model
-# platforms, despite the fact that it can't actually allocate far memory!
-aalloc_postopts = -wcd310
-
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
 # both
@@ -211,7 +206,6 @@ dep_rt += &
 #===============================================================================
 
 dep_both += &
-    btraps.obj &
     intarith.obj &
     posback.obj &
     poscc.obj &

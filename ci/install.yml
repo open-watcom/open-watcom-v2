@@ -1,0 +1,102 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: instal${{ parameters.arch }}
+    displayName: "${{ parameters.title }}"
+    variables:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        owtools:        $(owtools_lnx)
+        owscript:       $(owscript_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        owtools:        $(owtools_nt)
+        owscript:       $(owscript_nt)
+      owbuild.stage:    inst
+    pool:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        vmImage: $(owimage_nt)
+    steps:
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     build\$(owobjdir)
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     build/$(owobjdir)
+        artifname:  build-${{ parameters.arch }}
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     bld\setupgui
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     bld/setupgui
+        artifname:  bld-setupgui-nt
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     bld\setupgui
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     bld/setupgui
+        artifname:  bld-setupgui-lnx
+    # consolidate binaries
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        path:       rel
+        artifname:  rel-nt
+    - template: artfload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        path:       rel
+        artifname:  rel-lnx
+    # consolidate documentation
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    docdos
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    dochtml
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    docnt
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    docos2
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    docpdf
+    - template: docload.yml
+      parameters:
+        arch:       ${{ parameters.arch }}
+        doctype:    docwin
+    # run build script
+    - script: $(owscript)
+      displayName: "Build Installers"
+    # create full binary archive
+    - ${{ if eq(parameters.arch, 'lnx') }}:
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(owroot)/rel'
+          includeRootFolder: false
+          archiveType: 'tar'
+          archiveFile: '$(owroot)/distrib/ow/bin/ow-snapshot.tar.gz'
+          replaceExistingArchive: true
+    # save all artifacts for distribution
+    - template: artfsave.yml
+      parameters: 
+        arch:       ${{ parameters.arch }}
+        ${{ if eq(parameters.arch, 'nt') }}:
+          path:     distrib\ow\bin
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          path:     distrib/ow/bin
+        artifname:  distrib-${{ parameters.arch }}

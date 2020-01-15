@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +104,7 @@ static short getIconType( int bitcount, int width, int height )
         } else if( height == 16 ) {
             if( width == 32 ) {
                 return( 2 );           // 2 col, 32x16
-            } else if( width == 16 ) {      
+            } else if( width == 16 ) {
                 return( 4 );           // 2 col, 16x16
             } else {
                 return( -1 );
@@ -146,7 +147,7 @@ void InitIconInfo( void )
     short       i;
 
     for( i = 0; i < NUM_OF_ICONS; i++ ) {
-        iconInfo[i].exists = FALSE;
+        iconInfo[i].exists = false;
         iconInfo[i].width = 32;
         iconInfo[i].height = 32;
     }
@@ -173,7 +174,7 @@ void InitIconInfo( void )
     iconInfo[XX].height = iconInfo[11].width = 16;
     iconInfo[XX].height = iconInfo[12].width = 48;
     */
-    
+
     iconInfo[0].text = IEAllocRCString( WIE_16COLOR32X32 );
     iconInfo[1].text = IEAllocRCString( WIE_2COLOR32X32 );
     iconInfo[2].text = IEAllocRCString( WIE_2COLOR32X16 );
@@ -197,7 +198,7 @@ void InitIconInfo( void )
     iconInfo[XX].text = IEAllocRCString( WIE_TRUECOLOR16X16 );
     iconInfo[XX].text = IEAllocRCString( WIE_TRUECOLOR48X48 );
     */
-    
+
     iconInfo[0].bitcount = 4;
     iconInfo[1].bitcount = 1;
     iconInfo[2].bitcount = 1;
@@ -216,7 +217,7 @@ void InitIconInfo( void )
     iconInfo[13].bitcount = 2;
     iconInfo[14].bitcount = 4;
     iconInfo[15].bitcount = 8;
-    
+
     /*
     iconInfo[XX].bitcount = 24;
     iconInfo[XX].bitcount = 24;
@@ -238,7 +239,7 @@ static void resetIconInfo( void )
     short       i;
 
     for( i = 0; i < NUM_OF_ICONS; i++ ) {
-        iconInfo[i].exists = FALSE;
+        iconInfo[i].exists = false;
         iconNumber[i] = -1;
     }
     numberOfIcons = 0;
@@ -412,7 +413,7 @@ WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
  * CreateNewIcon - select the icon from the listbox (used by FILE.NEW)
  *               - if is_icon is FALSE, then this is a pointer (cursor)
  */
-BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
+bool CreateNewIcon( short *width, short *height, short *bitcount, bool is_icon )
 {
     WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
@@ -429,17 +430,17 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
     _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
-        return( FALSE );
+        return( false );
     }
 
     *width = iconInfo[iconType].width;
     *height = iconInfo[iconType].height;
     *bitcount = iconInfo[iconType].bitcount;
 
-    iconInfo[iconType].exists = TRUE;
+    iconInfo[iconType].exists = true;
     iconNumber[numberOfIcons] = iconType;
     numberOfIcons++;
-    return( TRUE );
+    return( true );
 
 } /* CreateNewIcon */
 
@@ -494,16 +495,16 @@ void AddNewIcon( void )
     /*
      * this will make the XOR and the AND bitmaps
      */
-    MakeIcon( &new_icon, TRUE );
+    MakeIcon( &new_icon, true );
     AddIconToList( &new_icon, node );
 
-    iconInfo[iconType].exists = TRUE;
+    iconInfo[iconType].exists = true;
     iconNumber[numberOfIcons] = iconType;
     numberOfIcons++;
 
     AddIconUndoStack( &new_icon );
     SelectIcon( imagecount );
-    SetIsSaved( new_icon.hwnd, FALSE );
+    SetIsSaved( new_icon.hwnd, false );
 
     hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
     _wpi_enablemenuitem( hmenu, IMGED_SELIMG, TRUE, FALSE );
@@ -548,17 +549,15 @@ void DeleteIconImg( void )
         return;
     }
 
-    iconInfo[iconType].exists = FALSE;
+    iconInfo[iconType].exists = false;
 
-    currentnode = node;
-    while( currentnode ) {
+    for( currentnode = node; currentnode != NULL; currentnode = currentnode->nexticon ) {
         currentnode->num_of_images -= 1;
-        currentnode = currentnode->nexticon;
     }
 
     newnode = RemoveIconFromList( node, icon_index );
     DelIconUndoStack( newnode, icon_index );
-    MakeIcon( newnode, FALSE );         // This will set it as active image
+    MakeIcon( newnode, false );         // This will set it as active image
 
     for( i = icon_index; i < numberOfIcons - 1; i++ ) {
         iconNumber[i] = iconNumber[i + 1];
@@ -635,7 +634,7 @@ void SetIconInfo( img_node *node )
         }
         icon_type = getIconType( icon->bitcount, icon->width, icon->height );
         iconNumber[i] = icon_type;
-        iconInfo[icon_type].exists = TRUE;
+        iconInfo[icon_type].exists = true;
         icon = icon->nexticon;
     }
 

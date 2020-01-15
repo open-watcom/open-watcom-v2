@@ -42,8 +42,9 @@
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR((_mbsinc),(_fmbsinc))( const unsigned char _FFAR *string )
 {
-    if( _ismbblead(*string) && *(string+1)!='\0' )  /* valid DBCS char? */
-        return( (unsigned char _FFAR*) (string+2) );/* yes, skip two bytes */
-    else
-        return( (unsigned char _FFAR*) (string+1) );/* no, just skip one */
+    if( _ismbblead( *string ) && *( string + 1 ) != '\0' ) { /* valid DBCS char? */
+        return( (unsigned char _FFAR*)( string + 2 ) ); /* yes, skip two bytes */
+    } else {
+        return( (unsigned char _FFAR*)( string + 1 ) ); /* no, just skip one */
+    }
 }

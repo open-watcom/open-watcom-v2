@@ -5,6 +5,8 @@ name = wre
 wre_autodepends = .AUTODEPEND
 !endif
 
+wre_trmem = 1
+
 sys_windowed = 1
 
 memory_model_i86 = l
@@ -12,6 +14,8 @@ memory_model_i86 = l
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 .EXTENSIONS: .res .rc
 
@@ -20,21 +24,13 @@ memory_model_i86 = l
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-!include wres.mif
-!include trmem.mif
-
-!ifeq wre_trmem 1
-TRMEM           = -DTRMEM
-!ifneq host_cpu axp
-TRMEM           += -of+
-!endif
-!endif
-
 extra_cpp_flags     = -DWREDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 
-extra_c_flags     = -s -fh
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+
+extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
@@ -45,33 +41,35 @@ extra_c_flags_ppmacro = -zm -fh=preproc.pch
 extra_c_flags_ppenv   = -zm -fh=preproc.pch
 !endif
 
-objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
-        wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
-        wrelist.obj wrenames.obj wreopts.obj wretoolb.obj wreribbn.obj &
-        wreseted.obj wreftype.obj wregcres.obj wrerenam.obj wrefres.obj &
-        wrememf.obj wredel.obj wrewait.obj wresvobj.obj wrectl3d.obj &
-        wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
-        wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
-        wreclip.obj wresym.obj &
-        preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
-!ifeq wre_trmem 1
-objs += trmem.tbj trmemcvr.tbj
-!endif
+objs = &
+    wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
+    wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
+    wrelist.obj wrenames.obj wreopts.obj wretoolb.obj wreribbn.obj &
+    wreseted.obj wreftype.obj wregcres.obj wrerenam.obj wrefres.obj &
+    wrememf.obj wredel.obj wrewait.obj wresvobj.obj wrectl3d.obj &
+    wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
+    wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
+    wreclip.obj wresym.obj &
+    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
+	$(trmem_objs) $(trmemcvr_objs)
 
 # where to look for various files
 .c : ../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(wr_inc_dirs)
-inc_dirs += -I"$(trmem_dir)" $(wres_inc_dirs) $(cpp_inc_dirs)
+inc_dirs += $(wres_inc_dirs) $(cpp_inc_dirs)
 inc_dirs += $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
-libs =  $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &
-        $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
-        $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
-        $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib
+libs = &
+    $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &
+    $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
+    $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
+    $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib
 
 extra_l_flags_nt = op heap=16k commit heap=8k
 extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml

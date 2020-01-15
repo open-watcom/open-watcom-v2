@@ -69,6 +69,7 @@
 #include "ntdbgpb.h"
 #include "dbgstdio.h"
 #include "dlgfile.h"
+#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -498,7 +499,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
         if( priority > end )
             break;
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( FH2FP( fh ), sizeof( image_entry * ), priority );
+        image->dip_handle = DIPLoadInfo( POSIX2FP( fh ), sizeof( image_entry * ), priority );
         if( image->dip_handle != NO_MOD ) {
             *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
             return( true );

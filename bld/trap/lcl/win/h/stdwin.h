@@ -125,7 +125,7 @@ extern WORD                     Win386Sig[];
 extern WORD                     Win386SigRev[];
 extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
-extern BOOL                     InputLocked;
+extern bool                     InputLocked;
 extern bool                     ForceHardMode;
 extern bool                     InSoftMode;
 extern WORD                     CSAlias;
@@ -171,6 +171,9 @@ void ExecuteRedirect( void );
 /* accrun.c */
 void SingleStepMode( void );
 
+/* initfini.c */
+void SetInputLock( bool lock_status );
+
 /* dbgeemsg.c */
 void EnterSoftMode( void );
 void ExitSoftMode( void );
@@ -200,6 +203,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
 /* debug output */
+extern unsigned     DbgFlags;
 #ifdef DEBUG
 #define OUT_BREAK       0x0001
 #define OUT_ERR         0x0002

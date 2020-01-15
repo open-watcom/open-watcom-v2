@@ -34,6 +34,7 @@
 #include "bincpy.h"
 #include "w2mres.h"
 #include "rcrtns.h"
+#include "trmemcvr.h"
 
 
 static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
@@ -67,7 +68,7 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     WResResInfo         *resinfo;
     WResLangInfo        *langinfo;
     MResResourceHeader  outhead;
-    int                 error;
+    bool                error;
 
     typeinfo = WResGetTypeInfo( wind );
     resinfo = WResGetResInfo( wind );
@@ -79,7 +80,7 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
 
     //FIXME! The last argument should be true for Win32 resources
     error = MResWriteResourceHeader( &outhead, out_fp, false );
-    if (!error) {
+    if( !error ) {
         RESSEEK( in_fp, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( in_fp, out_fp, outhead.Size );
     }

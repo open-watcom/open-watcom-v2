@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,6 @@
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
-static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
-
 bool InitMsg( void )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
@@ -110,6 +108,29 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types,
     va_end( args );
 }
 
+static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
+{
+    switch( typech ) {
+    case 's':
+        arginfo->string = va_arg( *args, char * );
+        break;
+    case 'x':
+    case 'd':
+        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
+        break;
+    case 'l':
+        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
+        break;
+    case 'A':
+    case 'a':
+        arginfo->address = va_arg( *args, targ_addr * );
+        break;
+    case 'S':
+        arginfo->symb = va_arg( *args, symbol * );
+        break;
+    }
+}
+
 // Write arguments to put into a message and make it printf-like
 void Msg_Put_Args(
     char                message[],      // Contains %s, etc. or %digit specifiers
@@ -147,29 +168,6 @@ void Msg_Put_Args(
         }
     }
     arg_info->index = 0;
-}
-
-static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
-{
-    switch( typech ) {
-    case 's':
-        arginfo->string = va_arg( *args, char * );
-        break;
-    case 'x':
-    case 'd':
-        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
-        break;
-    case 'l':
-        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
-        break;
-    case 'A':
-    case 'a':
-        arginfo->address = va_arg( *args, targ_addr * );
-        break;
-    case 'S':
-        arginfo->symb = va_arg( *args, symbol * );
-        break;
-    }
 }
 
 void Msg_Write_Map( int resourceid, ... )

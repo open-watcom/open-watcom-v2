@@ -5,6 +5,12 @@
 
 proj_name = wlink
 
+!ifndef wlink_autodepends
+wlink_autodepends = .AUTODEPEND
+!endif
+
+wlink_trmem = 1
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
@@ -13,10 +19,6 @@ dllname     = bwlinkd
 !else
 exename     = wlink
 dllname     = wlinkd
-!endif
-
-!ifndef wlink_autodepends
-wlink_autodepends = .AUTODEPEND
 !endif
 
 additional_cleanup = usage.u
@@ -32,13 +34,11 @@ suppress_zc = 1
 !include dllrule.mif
 !include deftarg.mif
 !include dllbase.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
-
-!include wres.mif
-
-!include trmem.mif
 
 !include ../wlobjs.mif
 
@@ -59,19 +59,18 @@ extra_cpp_flags += -DUSE_VIRTMEM
 !ifndef wlink_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
-!ifdef wlink_trmem
-extra_cpp_flags += -DTRMEM
-!endif
 
-extra_c_flags_idedrv     = -DCHAIN_CALLBACK
-extra_c_flags_ideentry   = -DCHAIN_CALLBACK
-extra_c_flags_maindrv    = -DDLL_NAME=$(dllname)
-extra_c_flags_rcstr      = -DINSIDE_WLINK
-extra_c_flags_exerespe   = -DINSIDE_WLINK
-extra_c_flags_sharedio   = -DINSIDE_WLINK
-extra_c_flags_stidedrv   = -DSTATIC_LINKAGE
-extra_c_flags_trmem      = $(trmem_cflags)
-extra_c_flags_mem        = $(trmem_cover_cflags)
+extra_cpp_flags_idedrv	    = -DCHAIN_CALLBACK
+extra_cpp_flags_ideentry    = -DCHAIN_CALLBACK
+extra_cpp_flags_maindrv     = -DDLL_NAME=$(dllname)
+extra_cpp_flags_rcstr       = -DINSIDE_WLINK
+extra_cpp_flags_exerespe    = -DINSIDE_WLINK
+extra_cpp_flags_sharedio    = -DINSIDE_WLINK
+extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
+extra_cpp_flags_wlmem	    = $(trmem_cpp_flags)
+
+extra_c_flags_trmem         = $(trmem_cflags)
+extra_c_flags_wlmem         = $(trmem_cover_cflags)
 
 #####################
 # linker .EXE options
@@ -132,7 +131,11 @@ $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(
 $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wresui.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
+! ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $(comp_objs_exe) $(libs) $(bld_ldflags)
+! else
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
+! endif
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i

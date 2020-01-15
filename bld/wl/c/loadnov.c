@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -322,7 +323,7 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header *header, unsigned_32 file
     if( FmtData.u.nov.sharednlm != NULL ) {
         handle = QOpenR( FmtData.u.nov.sharednlm );
         QRead( handle, TokBuff, sizeof( fixed_header ), FmtData.u.nov.sharednlm );
-        if( memcmp( TokBuff, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) != 0 ) {
+        if( memcmp( TokBuff, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) != 0 ) {
             LnkMsg( WRN+MSG_INV_SHARED_NLM_FILE, "s", FmtData.u.nov.sharednlm );
         } else {
             sharehdr = (fixed_header *)TokBuff;
@@ -410,7 +411,7 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
             iscode = false;
         }
         if( iscode == docode ) {  // logical XNOR would be better, but...
-            repos = WriteDOSGroup( group );
+            repos = WriteGroup( group );
             if( repos ) {
                 SeekLoad( fnode->file_loc );
             }
@@ -595,7 +596,7 @@ void FiniNovellLoadFile( void )
     nov_header.debugInfoOffset = file_size;
     file_size += WriteNovDBI( &nov_header );
     DBIWrite();
-    memcpy( nov_header.signature, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) );
+    memcpy( nov_header.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH );
     nov_header.version = NLM_VERSION;
     nov_header.moduleName[0] = (char)len;
     memcpy( nov_header.moduleName + 1, module_name, len );

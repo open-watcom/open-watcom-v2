@@ -87,11 +87,8 @@ HDDEDATA __export FAR PASCAL DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
                     HSZ hsz1, HSZ hsz2, HDDEDATA hData, DWORD dwData1,
                     DWORD dwData2 )
 {
-    wFmt = wFmt;
-    hConv = hConv;
-    hData = hData;
-    dwData1 = dwData1;
-    dwData2 = dwData2;
+    /* unused parameters */ (void)wFmt; (void)hConv; (void)hsz1; (void)hsz2;
+    /* unused parameters */ (void)hData; (void)dwData1; (void)dwData2;
 
     switch( wType ) {
     case XTYP_DISCONNECT:
@@ -207,6 +204,8 @@ int __export FAR PASCAL EDITLocateError( long lRow, int iCol, int iLen, int idRe
     char        szCommand[100];
 //    int         len;
     BOOL        rc;
+
+    /* unused parameters */ (void)iLen;
 
     if( !bConnected ) {
         return( FALSE );
@@ -340,8 +339,8 @@ int __export FAR PASCAL EDITDisconnect( void )
 
 BOOL WINAPI DllMain( HINSTANCE hInst, DWORD reason, LPVOID res )
 {
-    res = res;
-    reason = reason;
+    /* unused parameters */ (void)res; (void)reason;
+
     hInstance = hInst;
     return( 1 );
 }
@@ -350,16 +349,16 @@ BOOL WINAPI DllMain( HINSTANCE hInst, DWORD reason, LPVOID res )
 
 int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 {
-    wDataSeg = wDataSeg;
-    wHeapSize = wHeapSize;
-    lpszCmdLine = lpszCmdLine;
+    /* unused parameters */ (void)wDataSeg; (void)wHeapSize; (void)lpszCmdLine;
+
     hInstance = hInst;
     return( 1 );
 }
 
 int WINAPI WEP( int q )
 {
-    q = q;
+    /* unused parameters */ (void)q;
+
     return( 1);
 }
 

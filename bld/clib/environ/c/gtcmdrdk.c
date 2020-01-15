@@ -38,6 +38,8 @@
 
 _WCRTLINK int _bgetcmd( char *buffer, int len )
 {
+    /* unused parameters */ (void)buffer; (void)len;
+
     return( 0 );
 } /* _bgetcmd() */
 

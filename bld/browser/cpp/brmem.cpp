@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,75 +34,78 @@
 #include <malloc.h>
 
 #ifndef STANDALONE_MERGER
-#  include <dr.h>
+    #include <dr.h>
 #endif
 
 #include "death.h"
 #include "brmem.h"
 #include "debuglog.h"
 
-#ifdef TRACKER
-extern "C" {
+#ifdef TRMEM
+
 #include "trmem.h"
 
 #ifndef MINALLOC
 #define MINALLOC 0
 #endif
-}
 
 #ifndef STANDALONE_MERGER
 #include <wmsgdlg.hpp>
 #endif
 
-    _trmem_hdl TrHdl;
+_trmem_hdl TrHdl;
 
-    #pragma initialize 40;
+#pragma initialize 40;
 
-    class Memory : public DebuggingLog
-    {
+class Memory : public DebuggingLog
+{
     public:
-            Memory();
-            ~Memory();
+        Memory();
+        ~Memory();
 
-            unsigned    _numMessages;
-    };
+        unsigned    _numMessages;
+};
 
-    static Memory bogus;        // just need to get the ctor's called
+static Memory bogus;        // just need to get the ctor's called
 
-    void PrintLine( void *parm, const char *buf, size_t len )
-    {
-        /* unused parameters */ (void)parm;
+void PrintLine( void *parm, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)parm; (void)len;
 
-        bogus.write( buf, len );
-        bogus._numMessages++;
-    }
-#endif
+    bogus.printf( "%s\n", buf );
+    bogus._numMessages++;
+}
+
+#endif  // TRMEM
 
 void *operator new( size_t size )
 //-------------------------------
 {
     void *p;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
 #endif
 
+#ifndef STANDALONE_MERGER
     for(;;) {
-#ifdef TRACKER
+#endif
+#ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
 #endif
-        if( p != NULL || size == 0 ) break;     // successful allocation
-
 #ifndef STANDALONE_MERGER
-            if( !DRSwap() ) break;  // dwarf managed to swap out, so try again
-#else
-            break;                  // no recovery we can do, throw except and die.
-#endif
+        if( p != NULL || size == 0 )    // successful allocation
+            break;
+        if( !DRSwap() ) {               // dwarf managed to swap out, so try again
+            break;
+        }
     }
-    if( p == NULL && size != 0 ) throw DEATH_BY_OUT_OF_MEMORY;
+#endif
+    if( p == NULL && size != 0 )
+        throw DEATH_BY_OUT_OF_MEMORY;
     return p;
 }
 
@@ -113,27 +117,30 @@ void * WBRAlloc( size_t size )
 // calling functions when the memory tracker is in.
 {
     void *p;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
 #endif
 
+#ifndef STANDALONE_MERGER
     for(;;) {
-#ifdef TRACKER
+#endif
+#ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
         p = malloc( size );
 #endif
-        if( p != NULL || size == 0 ) break;   // successful allocation
-
 #ifndef STANDALONE_MERGER
-            if( !DRSwap() ) break;  // dwarf managed to swap out, so try again
-#else
-            break;                  // no recovery we can do, throw except and die.
-#endif
+        if( p != NULL || size == 0 )    // successful allocation
+            break;
+        if( !DRSwap() ) {               // dwarf managed to swap out, so try again
+            break;
+        }
     }
-    if( p == NULL && size != 0 ) throw DEATH_BY_OUT_OF_MEMORY;
+#endif
+    if( p == NULL && size != 0 )
+        throw DEATH_BY_OUT_OF_MEMORY;
     return p;
 }
 
@@ -142,90 +149,95 @@ void * WBRRealloc( void * p, size_t size )
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_who  caller;
 
     caller = _trmem_guess_who();
 #endif
 
+#ifndef STANDALONE_MERGER
     for(;;) {
-#ifdef TRACKER
+#endif
+#ifdef TRMEM
         p = _trmem_realloc( p, size, caller, TrHdl );
 #else
         p = realloc( p, size );
 #endif
-        if( p != NULL || size == 0 ) break;         // successful allocation
-
 #ifndef STANDALONE_MERGER
-            if( !DRSwap() ) break;  // dwarf managed to swap out, so try again
-#else
-            break;                  // no recovery we can do, throw except and die.
-#endif
+        if( p != NULL || size == 0 )    // successful allocation
+            break;
+        if( !DRSwap() ) {               // dwarf managed to swap out, so try again
+            break;
+        }
     }
-    if( p == NULL && size != 0 ) throw DEATH_BY_OUT_OF_MEMORY;
+#endif
+    if( p == NULL && size != 0 )
+        throw DEATH_BY_OUT_OF_MEMORY;
     return p;
 }
 
 void WBRFree( void *p )
 //---------------------
 {
-    if( p == NULL ) return;
-#ifdef TRACKER
+    if( p == NULL )
+        return;
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
 }
 
-#ifndef STANDALONE_MERGER
 #if 0
-extern void *GUIAlloc( unsigned a )
-//---------------------------------
+#ifndef STANDALONE_MERGER
+void *GUIAlloc( unsigned a )
+//--------------------------
 {
     return WBRAlloc( a );
 }
 
-extern void *GUIRealloc( void *ptr, unsigned size )
-//-------------------------------------------------
+void *GUIRealloc( void *ptr, unsigned size )
+//------------------------------------------
 {
     return WBRRealloc( ptr, size );
 }
 
-extern void GUIFree( void *p )
-//----------------------------
+void GUIFree( void *p )
+//---------------------
 {
     WBRFree( p );
 }
 
-extern void GUIMemOpen()
+void GUIMemOpen( void )
 {
 }
 
-extern void GUIMemClose( void )
+void GUIMemClose( void )
 {
 }
 
-extern void GUIMemPrtUsage( void )
+void GUIMemPrtUsage( void )
 {
 }
-#endif
-#endif // STANDALONE_MERGER
+#endif  // STANDALONE_MERGER
+#endif  // 0
 
-};  // extern "C"
+}; // extern "C"
 
 
 void operator delete( void *p )
-/*****************************/
+//-----------------------------
 {
-    if( p == NULL ) return;
-#ifdef TRACKER
+    if( p == NULL )
+        return;
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif
 }
 
-#ifdef TRACKER
+#ifdef TRMEM
 
 static void GetOffset()
 //-------------------------
@@ -266,4 +278,4 @@ Memory::~Memory()
     }
 }
 
-#endif // Tracker
+#endif // TRMEM

@@ -47,6 +47,9 @@
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
 
+#define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 trap_retval ReqFile_get_config( void )
@@ -237,10 +240,10 @@ trap_retval ReqFile_open( void )
                       MapAcc[acc->mode - 1], flags );
     if (retval < 0) {
         ret->err = retval;
-        ret->handle = 0;
+        LH2TRPH( ret, 0 );
     } else {
         ret->err = 0;
-        ret->handle = retval;
+        LH2TRPH( ret, retval );
     }
     return( sizeof( *ret ) );
 }
@@ -252,7 +255,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosSetFilePtr( acc->handle, acc->pos, local_seek_method[acc->mode], (PULONG)&ret->pos );
+    ret->err = DosSetFilePtr( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode], (PULONG)&ret->pos );
     return( sizeof( *ret ) );
 }
 
@@ -267,7 +270,7 @@ trap_retval ReqFile_read( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    ret->err = DosRead( acc->handle, buff, acc->len, &read_len );
+    ret->err = DosRead( TRPH2LH( acc ), buff, acc->len, &read_len );
     return( sizeof( *ret ) + read_len );
 }
 
@@ -283,7 +286,7 @@ trap_retval ReqFile_write( void )
     ptr = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr( 0 );
-    ret->err = DosWrite( acc->handle, ptr, len, &written_len );
+    ret->err = DosWrite( TRPH2LH( acc ), ptr, len, &written_len );
     ret->len = written_len;
     return( sizeof( *ret ) );
 }
@@ -295,7 +298,7 @@ trap_retval ReqFile_close( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosClose( acc->handle );
+    ret->err = DosClose( TRPH2LH( acc ) );
     return( sizeof( *ret ) );
 }
 

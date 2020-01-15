@@ -34,9 +34,10 @@
 #include "saferlib.h"
 
 
-_WCHANDLER void ignore_handler_s( const char * __restrict msg,
-                                 void * __restrict ptr, errno_t error )
-/*********************************************************************/
+_WCHANDLER void ignore_handler_s( const char * __restrict msg, void * __restrict ptr, errno_t error )
+/***************************************************************************************************/
 {
+    /* unused parameters */ (void)msg; (void)ptr; (void)error;
+
     /* That was easy! */
 }

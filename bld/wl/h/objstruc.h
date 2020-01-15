@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 #include "orl.h"
 #include "hash.h"
 
+
+typedef unsigned_16             overlay_ref;
 
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
@@ -66,9 +69,9 @@ typedef struct section {
     pHTable             modFilesHashed;
     MOD_ENTRY           *mods;
     CLASS_ENTRY         *classlist;
-    ORDER_CLASS         *orderlist; // Link to data for ordering, if used
+    ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
     targ_addr           sect_addr;
-    unsigned_16         ovl_num;
+    overlay_ref         ovlref;
     OVL_AREA            *areas;
     SECTION             *parent;
     unsigned_32         relocs;
@@ -84,7 +87,7 @@ typedef struct section {
 
 typedef struct path_entry {
     PATH_ENTRY          *next;
-    char                name[ 1 ];
+    char                name[1];
 } path_entry;
 
 typedef struct outfilelist {
@@ -177,10 +180,10 @@ typedef struct file_list {
         union dict_entry    *dict;
         MEMBER_LIST         *member;
     } u;
-    char                *strtab; /* for AR format */
+    char                *strtab;    /* for AR format */
     file_flags          flags;
-    lib_priority        priority;       /* for libraries */
-    unsigned            ovlref   : 16;  /* for fixed libraries */
+    lib_priority        priority;   /* for libraries */
+    overlay_ref         ovlref;     /* for fixed libraries */
     unsigned                     : 0;
 } file_list;
 
@@ -220,7 +223,7 @@ typedef struct member_list {
     char                name[1];
 } member_list;
 
-#define NO_ARCS_YET 0xFFFF
+#define NO_ARCS_YET     ((overlay_ref)-1)
 
 /*
    NOTE: this is an entry for the kludge of the year award, 1993.
@@ -239,12 +242,12 @@ typedef union {
 // remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
 
 typedef struct {
-    unsigned_16         ovlref;     // dist: # of the module
+    overlay_ref         ovlref;     // dist: # of the module
     unsigned_16         numarcs;    // dist: of arcs in the list
     dist_arc            arcs[1];    // dist: the actual arcs.
 } arcdata;
 
-#define DIST_ONLY_SIZE (2*sizeof(unsigned_16)+sizeof(dist_arc))
+#define DIST_ONLY_SIZE (2 * sizeof( unsigned_16 ) + sizeof( dist_arc ))
 
 typedef struct obj_name_list {
     struct obj_name_list    *next;
@@ -340,12 +343,12 @@ typedef struct group_entry {
     } g;
     union {
         unsigned        qnxflags;       // QNX
-        unsigned        miscflags;      // OS/2
+        unsigned        os2flags;       // OS/2
         segment         dos_segment;    // DOS/16M: DOS segment value
     } u;
-    bool                isfree      : 1;
-    bool                isautogrp   : 1;
-    bool                isdup       : 1;
+    boolbit             isfree      : 1;
+    boolbit             isautogrp   : 1;
+    boolbit             isdup       : 1;
     unsigned            num;
 } group_entry;
 
@@ -371,6 +374,7 @@ typedef struct seg_leader {
     group_entry         *group;
     class_entry         *class;
     offset              size;               // total size of segment
+    offset              vsize;              // total virtual size of segment
     SEG_LEADER          *DupSeg;            // Segment to get data from for output
     unsigned_16         info;
     unsigned_16         align   : 5;        // alignment of seg (power of 2)
@@ -443,6 +447,7 @@ enum {
     COMBINE_INVALID     = 0,
     COMBINE_ADD         = 1,
     COMBINE_COMMON      = 2,
+    COMBINE_STACK       = 3,
 };
 
 #define IS_DBG_DWARF( x ) ((x)->dbgtype >= DWARF_DEBUG_INFO)
@@ -480,22 +485,22 @@ typedef struct segdata {
     unsigned            combine    : 2; // how to combine segment with others
     unsigned            alloc      : 2; // comdat: where to allocate segment.
 
-    bool                is32bit    : 1; // true if segment is 32 bits
-    bool                iscode     : 1; // true if a code segment.
-    bool                isabs      : 1; // true if this is an absolute segment.
-    bool                iscdat     : 1; // true if this is a comdat
-    bool                isuninit   : 1; // true if seg is uninitialized
-    bool                isidata    : 1; // true if segment is .idata (ORL only)
-    bool                ispdata    : 1; // true if segment is .pdata
-    bool                isreldata  : 1; // true if segment is .reldata
-    bool                visited    : 1; // dce: true if visited in graph search.
-    bool                isrefd     : 1; // dce: true if this module is referenced.
-    bool                isdead     : 1; // dce: true if segdata or segdef killed.
-    bool                isdefd     : 1; // segdata has been defined
-    bool                isfree     : 1; // segdata is free (used in carver stuff)
-    bool                isprepd    : 1; // has been prepped for inc linking
-    bool                canfarcall : 1; // OK to do far call optimization here
-    bool                hascdatsym : 1; // true if comdat and has a symbol defd
+    boolbit             is32bit    : 1; // true if segment is 32 bits
+    boolbit             iscode     : 1; // true if a code segment.
+    boolbit             isabs      : 1; // true if this is an absolute segment.
+    boolbit             iscdat     : 1; // true if this is a comdat
+    boolbit             isuninit   : 1; // true if seg is uninitialized
+    boolbit             isidata    : 1; // true if segment is .idata (ORL only)
+    boolbit             ispdata    : 1; // true if segment is .pdata
+    boolbit             isreldata  : 1; // true if segment is .reldata
+    boolbit             visited    : 1; // dce: true if visited in graph search.
+    boolbit             isrefd     : 1; // dce: true if this module is referenced.
+    boolbit             isdead     : 1; // dce: true if segdata or segdef killed.
+    boolbit             isdefd     : 1; // segdata has been defined
+    boolbit             isfree     : 1; // segdata is free (used in carver stuff)
+    boolbit             isprepd    : 1; // has been prepped for inc linking
+    boolbit             canfarcall : 1; // OK to do far call optimization here
+    boolbit             hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
 typedef struct {
@@ -517,8 +522,8 @@ typedef struct {
         name_strtab     entname;
         ordinal_t       ordinal;
     } u;
-    bool                isordinal   : 1;
-    bool                isfree      : 1;
+    boolbit             isordinal   : 1;
+    boolbit             isfree      : 1;
     symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
 
@@ -530,19 +535,20 @@ typedef enum {
 } segflag_type;
 
 // this structure used for processing segment flags for various executable types
-typedef struct seg_flags {
-    struct seg_flags    *next;
-    unsigned_16         flags;  // as above.
-    char                *name;
-    segflag_type        type;
-} seg_flags;
+// structures qnx_seg_flags and os2_seg_flags depend on this declaration
+typedef struct xxx_seg_flags {
+    struct xxx_seg_flags    *next;
+    unsigned_16             flags;
+    char                    *name;
+    segflag_type            type;   // as above.
+} xxx_seg_flags;
 
 typedef struct {
     symbol              *entry;
     orl_symbol_handle   handle;         // ORL: handle for the symbol
-    unsigned            ovlref  : 12;
-    unsigned            isweak  : 1;
-    unsigned            isdefd  : 1;    // used in ORL
+    overlay_ref         ovlref;
+    boolbit             isweak  : 1;
+    boolbit             isdefd  : 1;    // used in ORL
 } extnode;
 
 typedef struct {
@@ -558,7 +564,7 @@ typedef struct {
 
 typedef struct list_of_names {
     LIST_OF_NAMES       *next_name;
-    char                name[ 1 ];
+    char                name[1];
 } list_of_names;
 
 typedef struct {
@@ -580,16 +586,16 @@ typedef struct order_class {
     char                *SrcName;
     targ_addr           Base;
     ORDER_SEGMENT       *SegList;
-    bool                FixedAddr   : 1;
-    bool                NoEmit      : 1;
-    bool                Copy        : 1;
+    boolbit             FixedAddr   : 1;
+    boolbit             NoEmit      : 1;
+    boolbit             Copy        : 1;
 } order_class;
 
 typedef struct order_segment {
     ORDER_SEGMENT       *NextSeg;
     char                *Name;
     targ_addr           Base;
-    bool                FixedAddr   : 1;
-    bool                NoEmit      : 1;
+    boolbit             FixedAddr   : 1;
+    boolbit             NoEmit      : 1;
 } order_segment;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,22 +51,20 @@
 #include "clibext.h"
 
 
-#define STDOUT_HANDLE 1
-
 int IOStatus;
 static unsigned long infile_posn;
 
-void WriteMsg( char *msg )
-/*******************************/
+void WriteMsg( const char *msg )
+/******************************/
 {
-    write( STDOUT_HANDLE, msg, strlen( msg ) );
+    write( STDOUT_FILENO, msg, strlen( msg ) );
 }
 
 #if _WPACK
-void WriteLen( char *msg, int len1 )
+void WriteLen( const char *msg, int len1 )
 /****************************************/
 {
-    write( STDOUT_HANDLE, msg, len1 );
+    write( STDOUT_FILENO, msg, len1 );
 }
 
 void IndentLine( int amount )
@@ -74,25 +72,25 @@ void IndentLine( int amount )
 // grossly inefficient, but it doesn't really matter
 {
     while( amount > 0 ) {
-        write( STDOUT_HANDLE, " ", 1 );
+        write( STDOUT_FILENO, " ", 1 );
         amount--;
     }
 }
 
-void WriteNumeric( char *msg, unsigned long num )
-/******************************************************/
+void WriteNumeric( const char *msg, unsigned long num )
+/*****************************************************/
 {
     char    buf[ 11 ];
 
     WriteMsg( msg );
     ultoa( num, buf, 10 );
     WriteMsg( buf );
-    write( STDOUT_HANDLE, "\n", 1 );
+    write( STDOUT_FILENO, "\n", 1 );
 }
 #endif
 
-static void IOError( unsigned errnum, char *name )
-/************************************************/
+static void IOError( unsigned errnum, const char *name )
+/******************************************************/
 // also ineffiecient, but it doesn't matter.
 {
     char errstr[ 160 ];
@@ -136,8 +134,8 @@ int QWrite( int file, void *buffer, int amount )
     return( result );
 }
 
-int QOpenR( char * filename )
-/**********************************/
+int QOpenR( const char *filename )
+/********************************/
 {
     int result;
 
@@ -148,15 +146,15 @@ int QOpenR( char * filename )
     return( result );
 }
 
-int NoErrOpen( char * filename )
-/*************************************/
+int NoErrOpen( const char *filename )
+/***********************************/
 {
     infile_posn = ~0L;
     return( open( filename, O_BINARY | O_RDONLY, 0 ) );
 }
 
-int QOpenW( char * filename )
-/**********************************/
+int QOpenW( const char *filename )
+/********************************/
 {
     int result;
 
@@ -168,8 +166,8 @@ int QOpenW( char * filename )
 }
 
 #if _WPACK
-int QOpenM( char * filename )
-/**********************************/
+int QOpenM( const char *filename )
+/********************************/
 {
     int result;
 
@@ -208,7 +206,7 @@ void QClose( int file )
     close( file );
 }
 
-void QSetDate( char *fname, unsigned long stamp )
+void QSetDate( const char *fname, unsigned long stamp )
 /******************************************************/
 {
     struct stat     statblk;
@@ -487,7 +485,6 @@ byte DecReadByte( void )
 }
 
 #if _WPACK
-void DecWriteByte( byte c );            // DecWriteByte is declared further down in the file
 void EncWriteByte( byte c )
 /********************************/
 {

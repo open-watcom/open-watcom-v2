@@ -130,6 +130,12 @@ bld_cpu = arm
 bld_os = osx
 !endif
 
+watcom_common_cflags   =-wce=310
+watcom_common_cxxflags =-wce=579
+
+bld_dft_oflags = -ox
+dft_oflags     = -oaxt
+
 !ifdef nulldevice_$(bld_os)
 nulldevice = $(nulldevice_$(bld_os))
 !else ifdef __UNIX__

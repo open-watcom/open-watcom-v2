@@ -45,8 +45,8 @@ _WCRTLINK int pthread_once(pthread_once_t *__once_control, void (*__init_routine
             __once_control->executed = 1;
         }
         pthread_mutex_unlock(&__once_control->access);
-    } else
+    } else {
         return( EBUSY );
-    
+    }
     return( 0 );
 }

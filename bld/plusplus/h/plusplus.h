@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,6 +80,15 @@
 #define BITARR_OFFS(x)      ((x) / 8)
 #define BITARR_MASK(x)      (1 << ((x) & 7))
 #define NOT_BITARR_MASK(x)  (255 - (x))
+
+typedef enum                            // DTM -- destruction method
+{   DTM_DIRECT                          // - direct calls
+,   DTM_DIRECT_TABLE                    // - direct calls + table
+,   DTM_DIRECT_SMALL                    // - direct calls + smallness
+,   DTM_TABLE                           // - table
+,   DTM_TABLE_SMALL                     // - table + smallness
+,   DTM_COUNT                           // number of methods
+} DT_METHOD;
 
 typedef struct idname {
     struct idname       *next;
@@ -194,38 +204,38 @@ struct open_file {                      // ACTIVE FILE (BEING READ)
 
 typedef struct _src_file *SRCFILE;
 
-struct _src_file {                          // SOURCE FILE (PERMANENT)
-    struct _src_file    *sister;            // - ring of files for #line directives
-    struct _src_file    *parent;            // - NULL or including source file
-    struct _src_file    *unique;            // - next in unique list
-    struct _src_file    *pch_child;         // - #include to create pchdr for (NULL otherwise)
-    LINE_NO             parent_locn;        // - line no. for inclusion
-    unsigned            index;              // - index of this source file
-    OPEN_FILE           *active;            // - information for open file
-    char                *name;              // - file name
-    char                *full_name;         // - absolute pathname for file
-    char                *ifndef_name;       // - name used when #ifndef
-    size_t              ifndef_len;         // - length of name used when #ifndef
-    unsigned            guard_state;        // - guard state
-    MACRO_STATE         macro_state;        // - state of macro table when opened
-    time_t              time_stamp;         // - time stamp for file
-                                            // - SRCFILE attributes
-    bool                lib_inc       : 1;  // -- library include: #include <file>
-    bool                primary       : 1;  // -- primary source file
-    bool                alias         : 1;  // -- alias'ed source file
-    bool                cmdline       : 1;  // -- command-line file
-    bool                cmdlneol      : 1;  // -- EOL for command-line file
-    bool                cmdlneof      : 1;  // -- EOF for command-line file
-    bool                uncached      : 1;  // -- have to re-open file on read
-    bool                free          : 1;  // -- free SRCFILE
-    bool                pch_create    : 1;  // -- create pchdr when child closes
-    bool                pch_kludge    : 1;  // -- EOF needs 3 ';''s to align parser
-    bool                assume_file   : 1;  // -- handle represents a file not a device
-    bool                found_eof     : 1;  // -- next read will return 0
-    bool                read_only     : 1;  // -- read-only header file
-    bool                once_only     : 1;  // -- read once header file
-    bool                ignore_swend  : 1;  // -- ignore cmdline switch end chars
-    bool                force_include : 1;  // -- force include this header file
+struct _src_file {                              // SOURCE FILE (PERMANENT)
+    struct _src_file    *sister;                // - ring of files for #line directives
+    struct _src_file    *parent;                // - NULL or including source file
+    struct _src_file    *unique;                // - next in unique list
+    struct _src_file    *pch_child;             // - #include to create pchdr for (NULL otherwise)
+    LINE_NO             parent_locn;            // - line no. for inclusion
+    unsigned            index;                  // - index of this source file
+    OPEN_FILE           *active;                // - information for open file
+    char                *name;                  // - file name
+    char                *full_name;             // - absolute pathname for file
+    char                *ifndef_name;           // - name used when #ifndef
+    size_t              ifndef_len;             // - length of name used when #ifndef
+    unsigned            guard_state;            // - guard state
+    MACRO_STATE         macro_state;            // - state of macro table when opened
+    time_t              time_stamp;             // - time stamp for file
+                                                // - SRCFILE attributes
+    boolbit             lib_inc         : 1;    // -- library include: #include <file>
+    boolbit             primary         : 1;    // -- primary source file
+    boolbit             alias           : 1;    // -- alias'ed source file
+    boolbit             cmdline         : 1;    // -- command-line file
+    boolbit             cmdlneol        : 1;    // -- EOL for command-line file
+    boolbit             cmdlneof        : 1;    // -- EOF for command-line file
+    boolbit             uncached        : 1;    // -- have to re-open file on read
+    boolbit             free            : 1;    // -- free SRCFILE
+    boolbit             pch_create      : 1;    // -- create pchdr when child closes
+    boolbit             pch_kludge      : 1;    // -- EOF needs 3 ';''s to align parser
+    boolbit             assume_file     : 1;    // -- handle represents a file not a device
+    boolbit             found_eof       : 1;    // -- next read will return 0
+    boolbit             read_only       : 1;    // -- read-only header file
+    boolbit             once_only       : 1;    // -- read once header file
+    boolbit             ignore_swend    : 1;    // -- ignore cmdline switch end chars
+    boolbit             force_include   : 1;    // -- force include this header file
 };
 
 typedef enum {
@@ -240,19 +250,14 @@ typedef enum {
 #include "compflag.h"
 #include "errdefns.h"
 
-#define LINE_NO_MAX  0xFFFFFFFF     // MAXIMUM LINE NO.
-#define BRINF_SYMBOL ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
+#define LINE_NO_MAX     0xFFFFFFFF      // MAXIMUM LINE NO.
+#define BRINF_SYMBOL    ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
 
-                                    // COMMON DATA
-global int          WngLevel;       // - warning severity level
-global unsigned     TargetSystem;   // - target system
-global COMP_FLAGS   CompFlags;      // - compiler flags
-global comp_info    CompInfo;       // - compiler information
-global void         *Environment;   // - var for Suicide()
-global int          ErrLimit;       // - error limit
+                                        // COMMON DATA
+global int              WngLevel;       // - warning severity level
+global unsigned         TargetSystem;   // - target system
+global COMP_FLAGS       CompFlags;      // - compiler flags
+global void             *Environment;   // - var for Suicide()
 
-int WppCompile(                 // MAIN-LINE (DLL)
-    DLL_DATA* dll_data,         // - data for DLL
-    char *input,                // - input file name argv string
-    char *output )              // - output file name argv string
-;
+global error_state_t    ErrLimit;       // - error limit
+#define ERRLIMIT_NOMAX  ((unsigned)-1)

@@ -48,5 +48,7 @@
 
 _WCRTLINK int _NEARFAR(mbrlen,_fmbrlen)( const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
 {
+    /* unused parameters */ (void)ps;
+
     return( _NEARFAR(mbrtowc,_fmbrtowc)( NULL, s, n, NULL ) );
 }

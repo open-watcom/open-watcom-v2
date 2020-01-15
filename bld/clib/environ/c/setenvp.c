@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static void *(_WCI86NEAR allocate)( size_t amt )
     void _WCI86NEAR     *nptr;
 
   #if defined(__OS2_286__)
-    if( _RWD_osmode == DOS_MODE ) {
+    if( _osmode_REALMODE() ) {
         ptr = nptr = lib_nmalloc( amt );
         if( nptr == NULL ) {
             ptr = lib_malloc( amt );
@@ -138,14 +138,14 @@ void __setenvp( void )
         unsigned short  seg;
 
         DosGetEnv( (PUSHORT)&seg, (PUSHORT)&count );
-        startp = MK_FP( seg, 0 );
+        startp = _MK_FP( seg, 0 );
     }
   #elif defined(__WINDOWS__)
     {
         unsigned long tmp;
 
         tmp = (unsigned long)GetDOSEnvironment();
-        startp = MK_FP( (unsigned short)( tmp >> 16 ), (unsigned long)( tmp & 0xFFFF ) );
+        startp = _MK_FP( (unsigned short)( tmp >> 16 ), (unsigned long)( tmp & 0xFFFF ) );
     }
   #elif defined(__RDOS__)
     {
@@ -193,7 +193,7 @@ void __setenvp( void )
         startp = "";
     }
   #elif defined( _M_I86 )
-    startp = MK_FP( *(unsigned short _WCI86FAR *)( MK_FP( _RWD_psp, 0x2c ) ), 0 );
+    startp = _MK_FP( *(unsigned short _WCI86FAR *)( _MK_FP( _RWD_psp, 0x2c ) ), 0 );
   #else
     startp = _Envptr;
   #endif

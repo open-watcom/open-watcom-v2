@@ -2507,18 +2507,23 @@ void ClassBitfield( DECL_SPEC *dspec, PTREE name_tree, PTREE width_tree )
     SYMBOL sym;
     NAME name;
     target_size_t base_width;
-    target_long safe_width;
+    target_size_t safe_width;
     unsigned width;
     unsigned start;
     CLASS_DATA *data;
 
-    safe_width = width_tree->u.int_constant;
+    width = 0;
+    if( width_tree->u.int_constant < 0 ) {
+        safe_width = 1;
+        width = 1;
+    } else {
+        safe_width = width_tree->u.int_constant;
+    }
     PTreeFree( width_tree );
     base_type = CheckBitfieldType( dspec, safe_width );
     base_width = CgMemorySize( base_type ) * TARGET_BITS_CHAR;
-    if( safe_width < 0 ) {
+    if( width ) {
         CErr1( ERR_WIDTH_NEGATIVE );
-        width = 1;
     } else if( safe_width > base_width ) {
         CErr1( ERR_FIELD_TOO_WIDE );
         width = base_width;

@@ -73,9 +73,9 @@ typedef struct {
     wnd_row             change_row;
     gui_menu_items      menus;
     wnd_macro           *mac;
-    bool                press_key : 1;
-    bool                creating  : 1;
-    bool                changing  : 1;
+    boolbit             press_key : 1;
+    boolbit             creating  : 1;
+    boolbit             changing  : 1;
 } mac_window;
 
 extern const char       MainTab[];

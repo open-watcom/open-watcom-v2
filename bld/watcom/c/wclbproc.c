@@ -45,8 +45,9 @@ DLGPROC MakeProcInstance_DLG( DLGPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (DLGPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (DLGPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (DLGPROC)(long)fn );
 #endif
 }
 FONTENUMPROC MakeProcInstance_FONTENUM( FONTENUMPROCx fn, HINSTANCE instance )
@@ -54,8 +55,9 @@ FONTENUMPROC MakeProcInstance_FONTENUM( FONTENUMPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (FONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (FONTENUMPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (FONTENUMPROC)(long)fn );
 #endif
 }
 OLDFONTENUMPROC MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROCx fn, HINSTANCE instance )
@@ -63,8 +65,9 @@ OLDFONTENUMPROC MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROCx fn, HINSTANCE ins
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (OLDFONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (OLDFONTENUMPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (OLDFONTENUMPROC)(long)fn );
 #endif
 }
 HOOKPROC MakeProcInstance_HOOK( HOOKPROCx fn, HINSTANCE instance )
@@ -72,8 +75,9 @@ HOOKPROC MakeProcInstance_HOOK( HOOKPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (HOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (HOOKPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (HOOKPROC)(long)fn );
 #endif
 }
 LPOFNHOOKPROC MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTANCE instance )
@@ -81,8 +85,9 @@ LPOFNHOOKPROC MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (LPOFNHOOKPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (LPOFNHOOKPROC)(long)fn );
 #endif
 }
 WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE instance )
@@ -90,8 +95,9 @@ WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (WNDENUMPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (WNDENUMPROC)(long)fn );
 #endif
 }
 WNDPROC MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance )
@@ -99,13 +105,18 @@ WNDPROC MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance )
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (WNDPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    instance = instance;
-    return( (WNDPROC)fn );
+    /* unused parameters */ (void)instance;
+
+    return( (WNDPROC)(long)fn );
 #endif
 }
 WNDPROC GetWndProc( WNDPROCx fn )
 {
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     return( (WNDPROC)fn );
+#else
+    return( (WNDPROC)(long)fn );
+#endif
 }
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )

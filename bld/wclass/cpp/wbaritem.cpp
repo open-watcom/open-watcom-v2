@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
     _toolbar.hinttext = (char *)htext;
     _toolbar.tip = (char *)tip;
     _toolbar.id = WWindow::_idMaster++;
-    WWindow::_toolBarIdMap.setThis( this, (WHANDLE)(pointer_int)_toolbar.id );
+    WWindow::_toolBarIdMap.setThis( this, (WHANDLE)(pointer_uint)_toolbar.id );
 }
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +173,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     return( h );
 }
 
-#define QWRITE_BLOCK_SIZE  (16*1024)
+#define QWRITE_BLOCK_SIZE  _16KB
 
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/
@@ -292,10 +293,11 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 bool QIsDevice( f_handle file )
 /*****************************/
 {
-    if ( DosIoctlGetDeviceInfo ( file ) & 0x80 )
+    if( DosIoctlGetDeviceInfo ( file ) & 0x80 ) {
         return( true );
-    else
+    } else {
         return( false );  // don't write the prompt if input not from stdin
+    }
 }
 
 f_handle ExeCreate( const char *name )
@@ -341,12 +343,6 @@ f_handle TempFileOpen( const char *name )
     return( NSOpen( name, MODE_READ_ONLY ) );
 }
 
-bool QSysHelp( char **cmd_ptr )
-{
-    cmd_ptr = cmd_ptr;
-    return( false );
-}
-
 bool QModTime( const char *name, time_t *time )
 /*********************************************/
 {
@@ -371,12 +367,6 @@ int WaitForKey( void )
 /********************/
 {
     return( getch() );
-}
-
-void GetCmdLine( char *buff )
-/***************************/
-{
-    getcmd( buff );
 }
 
 void TrapBreak( int sig_num )

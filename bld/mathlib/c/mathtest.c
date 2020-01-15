@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
  #include <signal.h>
 #endif
 
-#define ENABLE_COMPLEX          1 
+#define ENABLE_COMPLEX          1
 #define ENABLE_TRIG             1
 #define ENABLE_CLASSIFICATION   1
 #define ENABLE_FP               1
@@ -51,21 +52,64 @@
 #define ENABLE_REMAINDER        1
 #define ENABLE_ROUNDING         1
 
-#ifdef FIRSTHALF
-#undef ENABLE_EXP
-#undef ENABLE_CBRT 
-#undef ENABLE_UTILITIES
-#undef ENABLE_REMAINDER
-#undef ENABLE_ROUNDING 
-#endif
-
-#ifdef SECONDHALF
-#undef ENABLE_COMPLEX
-#undef ENABLE_TRIG 
+#ifdef FIRSTPART
+#define BUILDPARTS
+//#define ENABLE_COMPLEX
+//#define ENABLE_TRIG
 #undef ENABLE_CLASSIFICATION
 #undef ENABLE_FP
 #undef ENABLE_GAMMA
 #undef ENABLE_ERF
+#undef ENABLE_EXP
+#undef ENABLE_CBRT
+#undef ENABLE_UTILITIES
+#undef ENABLE_REMAINDER
+#undef ENABLE_ROUNDING
+#endif
+
+#ifdef SECONDPART
+#define BUILDPARTS
+#undef ENABLE_COMPLEX
+#undef ENABLE_TRIG
+//#define ENABLE_CLASSIFICATION
+//#define ENABLE_FP
+#undef ENABLE_GAMMA
+#undef ENABLE_ERF
+#undef ENABLE_EXP
+#undef ENABLE_CBRT
+#undef ENABLE_UTILITIES
+#undef ENABLE_REMAINDER
+#undef ENABLE_ROUNDING
+#endif
+
+#ifdef THIRDPART
+#define BUILDPARTS
+#undef ENABLE_COMPLEX
+#undef ENABLE_TRIG
+#undef ENABLE_CLASSIFICATION
+#undef ENABLE_FP
+//#define ENABLE_GAMMA
+//#define ENABLE_ERF
+//#define ENABLE_EXP
+#undef ENABLE_CBRT
+#undef ENABLE_UTILITIES
+#undef ENABLE_REMAINDER
+#undef ENABLE_ROUNDING
+#endif
+
+#ifdef FORTHPART
+#define BUILDPARTS
+#undef ENABLE_COMPLEX
+#undef ENABLE_TRIG
+#undef ENABLE_CLASSIFICATION
+#undef ENABLE_FP
+#undef ENABLE_GAMMA
+#undef ENABLE_ERF
+#undef ENABLE_EXP
+//#define ENABLE_CBRT
+//#define ENABLE_UTILITIES
+//#define ENABLE_REMAINDER
+//#define ENABLE_ROUNDING
 #endif
 
 #ifndef TRUE
@@ -80,17 +124,29 @@
 #endif
 
 #ifdef TINY_MEMORY
-void print_fail(int line) { printf("FAIL: line %d\n", line); }
-#define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
+    void print_fail(int line) { printf("FAIL: line %d\n", line); failure = 1; }
+    #define VERIFY(expr)    if(!(expr)) print_fail(__LINE__)
+#elif defined( __SW_BW )
+    #include <wdefwin.h>
+    #define VERIFY(expr) \
+        if(!(expr)) { \
+            printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
+            failure = 1; \
+        }
 #else
-#define VERIFY(expr)    if(!(expr)) \
-                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
+    #define VERIFY(expr) \
+        if(!(expr)) { \
+            printf( "FAIL: %s, line %d\n",#expr,__LINE__ ); \
+            failure = 1; \
+        }
 #endif
 
 
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
 #define SQRTPI  1.7724538509055160273
+
+int             failure = 0;
 
 #ifdef __FPI__
 volatile int    sig_count = 0;
@@ -131,7 +187,7 @@ int matherr( struct _exception *err )
 int CompDbl( double n1, double n2 )
 {
     double  num;
-    
+
     if( MYABS( n1 ) < 0.000001 && MYABS( n2 ) < 0.000001 ) return( TRUE );
     if( n1 == 0.0 || n2 == 0.0 ) {
         return( FALSE );
@@ -149,7 +205,7 @@ void test_complex_math( void )
 
     printf( "Testing complex functions...\n" );
     VERIFY( CompDbl( cabs( c ), 13.0 ) );
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping complex functions.\n" );
 #endif /* ENABLE_COMPLEX */
 }
@@ -217,7 +273,7 @@ void test_trig( void )
         tanh(1) = 0.761594155955765
         tanh(0) = 0.000000000000000
     */
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping trigonemetric functions.\n" );
 #endif /* ENABLE_TRIG */
 }
@@ -329,8 +385,8 @@ void test_fp_and_80x87_math( void )
     VERIFY( sig_count == 0 );
     signal( SIGFPE, SIG_DFL );
 #endif
-#else
-    printf( "Skipping other floating point functions." );
+#elif !defined( BUILDPARTS )
+    printf( "Skipping other floating point functions.\n" );
 #endif /* ENABLE_FP */
 }
 
@@ -372,7 +428,7 @@ void test_fp_classification( void )
     VERIFY( !signbit( NAN ) );
     VERIFY( signbit( -INFINITY ) );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 floating-point classification functions.\n" );
 #endif /* ENABLE_CLASSIFICATION */
 }
@@ -380,8 +436,9 @@ void test_fp_classification( void )
 void test_fp_gamma( void )
 {
 #ifdef ENABLE_GAMMA
-int s;
 #if __STDC_VERSION__ >= 199901L
+    int s;
+
     printf( "Testing C99 Gamma functions...\n" );
 
     /* tgamma first */
@@ -393,7 +450,7 @@ int s;
     VERIFY( isnan(tgamma( NAN )) );
     VERIFY( tgamma( INFINITY ) == INFINITY );
     VERIFY( isnan(tgamma( -INFINITY )) );
-    
+
     /* lgamma testing */
     VERIFY( CompDbl( lgamma( 1.0 ), 0.0 ) );
     VERIFY( signgam > 0 );
@@ -404,7 +461,7 @@ int s;
     VERIFY( isnan(lgamma( NAN )) );
     VERIFY( lgamma( INFINITY )  == INFINITY );
     VERIFY( lgamma( -INFINITY ) == INFINITY );
-    
+
     /* lgamma_r testing */
     VERIFY( CompDbl( lgamma_r( 1.0, &s ), 0.0 ) );
     VERIFY( s > 0 );
@@ -413,7 +470,7 @@ int s;
     VERIFY( CompDbl( lgamma_r( -0.5, &s ), log( 2.0*SQRTPI ) ) );
     VERIFY( s < 0 );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 Gamma functions.\n" );
 #endif /* ENABLE_GAMMA */
 }
@@ -429,14 +486,14 @@ void test_fp_erf( void )
     VERIFY( CompDbl( erf( 2.0 ), 0.9953223 ) );
     VERIFY( CompDbl( erf( -1.0 ), -0.8427008 ) );
     VERIFY( CompDbl( erf( -2.0 ), -0.9953223 ) );
-    
+
     VERIFY( CompDbl( erfc( 0.0 ), 1.0 ) );
     VERIFY( CompDbl( erfc( 1.0 ), 0.1572992 ) );
     VERIFY( CompDbl( erfc( 2.0 ), 0.0046777 ) );
     VERIFY( CompDbl( erfc( -1.0 ), 1.8427008 ) );
     VERIFY( CompDbl( erfc( -2.0 ), 1.9953223 ) );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 error functions.\n" );
 #endif /* ENABLE_ERF */
 }
@@ -450,12 +507,12 @@ void test_fp_cbrt( void )
     VERIFY( CompDbl( cbrt( 0.0 ), 0.0 ) );
     VERIFY( CompDbl( cbrt( 27.0 ), 3.0 ) );
     VERIFY( CompDbl( cbrt( -27.0 ), -3.0 ) );
-    
+
     VERIFY( isnan(cbrt( NAN )) );
     VERIFY( cbrt( INFINITY ) == INFINITY );
     VERIFY( cbrt( -INFINITY ) == -INFINITY );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 cube root function.\n" );
 #endif /* ENABLE_CBRT */
 }
@@ -477,14 +534,14 @@ void test_fp_exp( void )
     VERIFY( CompDbl( log1p( 0.02 ), 0.019803 ) );
     VERIFY( CompDbl( log1p( 0.03 ), 0.029559 ) );
     VERIFY( CompDbl( log1p( 0.10 ), 0.095310 ) );
-    
+
     /* logb/ilogb tests */
     VERIFY( logb( 0.0 ) == -INFINITY );
     VERIFY( CompDbl( logb( 1024.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1025.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1.0/1024.0 ), -10.0 ) );
     VERIFY( CompDbl( logb( -1025.0 ), 10.0 ) );
-    
+
     VERIFY( ilogb( 0.0 ) == FP_ILOGB0 );
     VERIFY( ilogb( NAN ) == FP_ILOGBNAN );
     VERIFY( ilogb( 1024.0 ) == 10 );
@@ -492,14 +549,14 @@ void test_fp_exp( void )
     VERIFY( ilogb( 1.0/1024.0 ) == -10 );
     VERIFY( ilogb( -1025.0 ) == 10 );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 exponential/logarithm functions.\n" );
 #endif /* ENABLE_EXP */
 }
 
 void test_fp_utilities( void )
 {
-#ifdef ENABLE_UTILITES
+#ifdef ENABLE_UTILITIES
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 miscellaneous functions...\n" );
 
@@ -507,47 +564,47 @@ void test_fp_utilities( void )
     VERIFY( CompDbl( copysign( -2.0, -1.0), -2.0 ) );
     VERIFY( CompDbl( copysign( 2.0, -1.0), -2.0 ) );
     VERIFY( CompDbl( copysign( 2.0, 1.0), 2.0 ) );
-    
+
     VERIFY( CompDbl( fmax( 2.0, 1.0), 2.0 ) );
     VERIFY( CompDbl( fmax( -2.0, -1.0), -1.0 ) );
     VERIFY( CompDbl( fmin( 2.0, 1.0), 1.0 ) );
     VERIFY( CompDbl( fmin( -2.0, -1.0), -2.0 ) );
-    
+
     VERIFY( CompDbl( fma( 2.0, 3.0, 4.0), 10.0 ) );
     VERIFY( CompDbl( fma( 2.0, 3.0, -4.0), 2.0 ) );
     VERIFY( CompDbl( fma( -2.0, 3.0, 4.0), -2.0 ) );
     VERIFY( CompDbl( fma( -2.0, -3.0, 4.0), 10.0 ) );
-    
+
     VERIFY( CompDbl( fdim( 3.0, 2.0), 1.0 ) );
     VERIFY( CompDbl( fdim( 2.0, 3.0), 0.0 ) );
-    
+
     VERIFY( CompDbl( nextafter( 1.0, 2.0), 1.0+1.0E-16 ) );
     VERIFY( CompDbl( nextafter( 1.0, 0.0), 1.0-1.0E-16 ) );
-    
+
     VERIFY( CompDbl( scalbn( 1.0, 3.0), 8.0 ) );
     VERIFY( CompDbl( scalbn( 4.0, 3.0), 32.0 ) );
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 miscellaneous functions.\n" );
-#endif /* ENABLE_UTILITES */
+#endif /* ENABLE_UTILITIES */
 }
 
 void test_fp_remainder( void )
 {
 #ifdef ENABLE_REMAINDER
 #if __STDC_VERSION__ >= 199901L
-int quo;
+    int quo;
 
     printf( "Testing C99 remainder functions...\n" );
 
     VERIFY( CompDbl( remainder( 2.01, 1.0 ), 0.01 ) );
     VERIFY( CompDbl( remainder( 4.99, 2.0 ), 0.99 ) );
-    
+
     VERIFY( CompDbl( remquo( 88888.0, 3.0, &quo ), 1.0 ) );
     VERIFY( (quo & 7) == 5 ); /* Last three bits are guaranteed by std */
 
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 remainder functions...\n" );
 #endif /* ENABLE_REMAINDER */
 }
@@ -557,12 +614,12 @@ void test_fp_rounding( void )
 #ifdef ENABLE_ROUNDING
 #if __STDC_VERSION__ >= 199901L
     printf( "Testing C99 rounding functions...\n" );
-    
+
     VERIFY( CompDbl( trunc( -2.01), -2.0 ) );
     VERIFY( CompDbl( trunc( 2.01), 2.0 ) );
     VERIFY( CompDbl( trunc( -2.9), -2.0 ) );
     VERIFY( CompDbl( trunc( 2.9), 2.0 ) );
-    
+
     fesetround(FE_TONEAREST);
     VERIFY( CompDbl( rint( 2.9), 3.0 ) );
     VERIFY( CompDbl( rint( 3.1), 3.0 ) );
@@ -572,7 +629,7 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
-    
+
     VERIFY( lrint( 2.9 ) == (long)3 );
     VERIFY( lrint( 3.1 ) == (long)3 );
     VERIFY( lrint( -3.1 ) == (long)(-3) );
@@ -591,7 +648,7 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
     VERIFY( CompDbl( nearbyint( -3.1), -4.0 ) );
     VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
-    
+
     VERIFY( lrint( 2.9 ) == (long)2 );
     VERIFY( lrint( 3.1 ) == (long)3 );
     VERIFY( lrint( -3.1 ) == (long)(-4) );
@@ -647,13 +704,24 @@ void test_fp_rounding( void )
     VERIFY( CompDbl( round( -3.5), -4.0 ) );
 
 #endif
-#else
+#elif !defined( BUILDPARTS )
     printf( "Skipping C99 rounding functions.\n" );
 #endif /* ENABLE_ROUNDING */
 }
 
-int main( void )
+int main( int argc, char *argv[] )
 {
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+
+    /* unused parameters */ (void)argc;
+
     /* Enable Watcom-style math error handling */
     math_errhandling = MATH_ERRWATCOM | MATH_ERREXCEPT;
 
@@ -669,7 +737,15 @@ int main( void )
     test_fp_remainder();
     test_fp_rounding();
 
-    printf( "Tests completed.\n" );
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 
-    return( 0 );
+#ifdef __SW_BW
+    {
+        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+        fclose( my_stdout );
+        _dwShutDown();
+    }
+#endif
+
+    return( failure );
 }

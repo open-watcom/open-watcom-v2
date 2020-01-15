@@ -367,8 +367,8 @@ static void LoadLabels( gui_menu_items *menus )
     for( i = 0; i < menus->num_items; i++ ) {
         LoadLabels( &menus->menu[i].child );
         if( (menus->menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
-            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_int)menus->menu[i].label );
-            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_int)menus->menu[i].hinttext );
+            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].label );
+            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].hinttext );
             menus->menu[i].style |= WND_MENU_ALLOCATED;
         }
     }

@@ -40,8 +40,8 @@ extern bool         DoingUpdate;
 
 extern void         UpdateInit( void );
 extern void         UpdateFini( void );
-extern RET_T        Update( TARGET *targ );
-extern RET_T        MakeList( TLIST *list );
+extern bool         Update( TARGET *targ );
+extern bool         MakeList( TLIST *list );
 
 /* called by macro.c */
 extern char         *GetCurDeps( bool younger, bool IsMacInf );

@@ -32,15 +32,22 @@
 
 #include <windows.h>
 #include "trpimp.h"
+#include "trpsys.h"
+
 
 extern HWND DebuggerHwnd;
 
-void TRAPENTRY InfoFunction( HWND hwnd )
+void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
 {
     DebuggerHwnd = hwnd;
 }
 
-void InterruptProgram( void )
+void TRAPENTRY_FUNC( InterruptProgram )( void )
 {
     //nyi: we can do this somehow - I know we can!
+}
+
+bool TRAPENTRY_FUNC( Terminate )( void )
+{
+    return( false );
 }

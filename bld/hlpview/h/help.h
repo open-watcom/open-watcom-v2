@@ -35,7 +35,7 @@
 #include "search.h"
 #include "helpchar.h"
 
-#define DEF_EXT         ".ihp"
+#define DEF_EXT         "ihp"
 
 #define HELP_NO_MEM     (-4)
 #define HELP_ERROR      (-3)
@@ -52,8 +52,8 @@
 #define EV_HELP         EV_F1
 
 enum {
-        E_UP = EV_FIRST_UNUSED,
-        E_DOWN
+    E_UP = EV_FIRST_UNUSED,
+    E_DOWN
 };
 
 typedef enum {
@@ -85,13 +85,11 @@ typedef struct help_file_info {
     HelpHdl             searchhdl;
 } help_file_info;
 
-#define MAX_HELP_FILES  10
-
-extern help_file_info   HelpFiles[MAX_HELP_FILES + 1];
-
-extern int  helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
-extern int  help_reinit( const char **helpfilenames );
-extern void helpfini( void );
-extern void Free_Stack( void );
-extern int  showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
-extern void SetHelpFileDefExt( const char *name, char *buff );
+extern int              helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
+extern int              help_reinit( const char **helpfilenames );
+extern void             helpfini( void );
+extern void             Free_Stack( void );
+extern int              showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
+extern void             SetHelpFileDefExt( const char *name, char *buff );
+extern help_file_info   *HelpFileInfo( void );
+extern char             *HelpDupStr( const char *str );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -490,7 +491,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     seg_offset  where;
     char        *cmd_tail;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     MaxThread = 0;
     GrowArrays( 1 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +32,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <setjmp.h>
+#include "global.h"
+
 
 extern void _ovl_grablow( unsigned );
-
-extern void ovl1( void );
-
-extern jmp_buf env1;
 
 void main( int argc, char **argv ) {
 

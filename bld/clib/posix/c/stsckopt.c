@@ -42,6 +42,7 @@ _WCRTLINK int setsockopt( int s, int level, int optname, const void *optval, soc
 {
 #if defined( __LINUX__ )
     unsigned long args[5];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)level;
     args[2] = (unsigned long)optname;
@@ -49,8 +50,14 @@ _WCRTLINK int setsockopt( int s, int level, int optname, const void *optval, soc
     args[4] = (unsigned long)optlen;
     return( __socketcall( SYS_SETSOCKOPT, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)s; (void)level; (void)optname; (void)optval; (void)optlen;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)level; (void)optname; (void)optval; (void)optlen;
+
     return( -1 );
 #endif
 }

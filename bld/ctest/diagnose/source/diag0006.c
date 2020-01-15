@@ -13,7 +13,7 @@ int __cdecl cdf( int a ) { return( a ); }
 int __watcall wcf( int a ) { return( a ); }
 int dcf( int a ) { return( a ); }
 
-int main( int argc, char **argv )
+int main( void )
 {
     cdt     cdlv;
     dct     dclv;

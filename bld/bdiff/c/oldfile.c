@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,17 +39,16 @@
 #include "myio.h"
 #include "msg.h"
 #include "installp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
+
 
 MY_FILE         OldFile;
 
 static char     newName[_MAX_PATH];
 static char     oldName[_MAX_PATH];
-static char     old_drive[_MAX_DRIVE];
-static char     old_dir[_MAX_DIR];
-static char     old_fname[_MAX_FNAME];
-static char     old_ext[_MAX_EXT];
+static PGROUP2  pgold;
 
 char *SetOld( const char *name )
 {
@@ -60,16 +60,19 @@ char *SetOld( const char *name )
 char *FindOld( const char *name )
 {
     char        temp[_MAX_PATH];
+    PGROUP2     pg;
 
-    _splitpath( name, old_drive, old_dir, old_fname, old_ext );
-    _makepath( temp, "", "", old_fname, old_ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( temp, NULL, NULL, pg.fname, pg.ext );
 #ifdef INSTALL_PROGRAM
-    if( SecondaryPatchSearch( name, oldName ) && oldName[0] == '\0' ) {
-#else
-    if( oldName[0] == '\0' ) {
+    if( SecondaryPatchSearch( name, oldName ) ) {
 #endif
-        _searchenv( temp, "PATH", oldName );
+        if( oldName[0] == '\0' ) {
+            _searchenv( temp, "PATH", oldName );
+        }
+#ifdef INSTALL_PROGRAM
     }
+#endif
     if( oldName[0] == '\0' ) {
         FilePatchError( ERR_CANT_OPEN, temp );
         return( NULL );
@@ -101,8 +104,8 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
     unsigned long   actual_len;
 
     prompt=prompt;
-    _splitpath( oldName, old_drive, old_dir, old_fname, old_ext );
-    _makepath( newName, old_drive, old_dir, TEMP_FILE_NAME, "" );
+    _splitpath2( oldName, pgold.buffer, &pgold.drive, &pgold.dir, &pgold.fname, &pgold.ext );
+    _makepath( newName, pgold.drive, pgold.dir, TEMP_FILE_NAME, NULL );
     fh = mkstemp( newName );
     if( fh == -1 ) {
         NewName = "";
@@ -168,7 +171,7 @@ PATCH_RET_CODE CloseOld( bool havenew, bool dobackup )
 
     MyClose( &OldFile );
     if( havenew ) {
-        _makepath( bak, old_drive, old_dir, old_fname, "bak" );
+        _makepath( bak, pgold.drive, pgold.dir, pgold.fname, "bak" );
         remove( bak );
         if( rename( oldName, bak ) != 0 ) {
             FilePatchError( ERR_CANT_RENAME, oldName, bak );

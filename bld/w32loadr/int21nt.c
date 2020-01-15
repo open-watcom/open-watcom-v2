@@ -45,6 +45,7 @@
 #include "_dtaxxx.h"
 #include "libwin32.h"
 #include "ntext.h"
+#include "ntinfo.h"
 
 
 #define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ typedef struct  {
     offset      end_addr;
     group_entry *currgrp;
     group_entry *lastgrp;       // used only for copy classes
-    bool        first_time  : 1;
+    boolbit     first_time  : 1;
 } grpaddrinfo;
 
 
@@ -87,23 +88,21 @@ typedef struct {
     symbol      **symarray;
     section     *sect;
     size_t      num;
-    bool        first   : 1;
+    boolbit     first   : 1;
 } pubdefinfo;
 
 
-static struct {
-    char        *name;
-    ffix_type   idx;
-} FloatNames[] = {
-    { "FIWRQQ", FFIX_WR_SYMBOL },
-    { "FIDRQQ", FFIX_DR_SYMBOL },
-    { "FIERQQ", FFIX_ES_OVERRIDE },
-    { "FICRQQ", FFIX_CS_OVERRIDE },
-    { "FISRQQ", FFIX_SS_OVERRIDE },
-    { "FIARQQ", FFIX_DS_OVERRIDE },
-    { "FJCRQQ", FFIX_IGNORE },
-    { "FJSRQQ", FFIX_IGNORE },
-    { "FJARQQ", FFIX_IGNORE }
+static const struct {
+    const char      *name;
+    fix_fpp_type    win_fpp;
+    fix_fpp_type    fpp;
+} FloatPatches[] = {
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) {name, win, others},
+    #include "fppatche.h"
+    #undef pick_fp
+    #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) {alt_name, alt_win, alt_others},
+    #include "fppatche.h"
+    #undef pick_fp
 };
 
 
@@ -179,15 +178,17 @@ static void AddUpSegData( void *_sdata )
         return;
     leader = sdata->u.leader;
     if( leader->info & SEG_ABSOLUTE ) {
-        sdata->a.delta = 0;
+        leader->vsize = sdata->a.delta = 0;
         if( leader->size < sdata->length ) {
-            leader->size = sdata->length;
+            leader->vsize = leader->size = sdata->length;
         }
     } else {
-        sdata->a.delta = CAlign( leader->size, sdata->align );
-        leader->size = sdata->a.delta + sdata->length;
+        leader->vsize = sdata->a.delta = CAlign( leader->vsize, sdata->align );
+        if( sdata->length > 0 ) {
+            leader->vsize = leader->size = sdata->a.delta + sdata->length;
+        }
     }
-    if( sdata->align > leader->align ) {
+    if( leader->align < sdata->align ) {
         leader->align = sdata->align;
     }
 }
@@ -472,9 +473,9 @@ static void CalcGrpAddr( group_entry *currgrp )
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
             if( (FmtData.type & MK_REAL_MODE) && (seg->info & USE_32) == 0
-                && (info.end_addr - info.grp_addr > 64 * 1024L) ) {
+                && (info.end_addr - info.grp_addr > _64KB) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", currgrp->sym->name,
-                        info.end_addr - info.grp_addr - 64 * 1024L );
+                        info.end_addr - info.grp_addr - _64KB );
             }
             currgrp->totalsize = info.end_addr - info.grp_addr;
         }
@@ -539,18 +540,24 @@ void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
 
 static void FindFloatSyms( void )
 /*******************************/
-// this finds the floating point fixup symbols and marks them.
+// this finds the floating point patch symbols and marks them.
 {
     int         index;
     symbol      *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        SET_SYM_FFIX( sym, FFIX_NOT_A_FLOAT );
+        SET_SYM_FPP( sym, FPP_NONE );
     }
-    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
-        sym = FindISymbol( FloatNames[index].name );
-        if( sym != NULL ) {
-            SET_SYM_FFIX( sym, FloatNames[index].idx );
+    for( index = 0; index < ( sizeof( FloatPatches ) / sizeof( FloatPatches[0] ) ); index++ ) {
+        if( FloatPatches[index].name != NULL ) {
+            sym = FindISymbol( FloatPatches[index].name );
+            if( sym != NULL ) {
+                if( FmtData.type & MK_WINDOWS ) {
+                    SET_SYM_FPP( sym, FloatPatches[index].win_fpp );
+                } else {
+                    SET_SYM_FPP( sym, FloatPatches[index].fpp );
+                }
+            }
         }
     }
 }
@@ -572,14 +579,18 @@ static void DefinePublics( void )
     }
     StartMapSort();
     ProcPubs( Root->mods, Root );
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        ProcOvlSectPubs( Root );
+        OvlProcPubsSect( Root );
     }
+#endif
     ProcPubs( LibModules, Root );
     FinishMapSort();
+#ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        ProcOvlPubs();
+        OvlProcPubs();
     }
+#endif
     if( MapFlags & MAP_FLAG ) {
         if( MapFlags & MAP_VERBOSE ) {
             WriteModSegs();
@@ -792,7 +803,7 @@ void CalcAddresses( void )
         if( FmtData.type & MK_PE ) {
             FmtData.base = PE_DEFAULT_BASE;
         } else if( FmtData.type & MK_QNX_FLAT ) {
-            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, 4 * 1024 );
+            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
         } else if( FmtData.type & MK_WIN_VXD ) {
             FmtData.base = 0;
         } else if( FmtData.type & MK_OS2_FLAT ) {
@@ -819,24 +830,24 @@ void CalcAddresses( void )
         if( FmtData.objalign == NO_BASE_SPEC ) {
             if( FmtData.type & MK_PE ) {
                 if( (LinkState & LS_HAVE_I86_CODE) ) {
-                    FmtData.objalign = 4*1024;
+                    FmtData.objalign = _4KB;
                 } else if( (LinkState & LS_HAVE_X64_CODE) ) {
                     // TODO
-                    FmtData.objalign = ( 64 * 1024UL );
+                    FmtData.objalign = _64KB;
                 } else {
-                    FmtData.objalign = ( 64 * 1024UL );
+                    FmtData.objalign = _64KB;
                 }
             } else if( FmtData.type & MK_QNX ) {
                 FmtData.objalign = QNX_GROUP_ALIGN;
 #if 0
             } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
                 // Development temporarly on hold:
-                // FmtData.objalign = 1024;
+                // FmtData.objalign = _1KB;
 #endif
             } else if( FmtData.type & MK_ELF ) {
-                FmtData.objalign = 4*1024;
+                FmtData.objalign = _4KB;
             } else if( FmtData.type & MK_WIN_VXD ) {
-                FmtData.objalign = 4*1024;
+                FmtData.objalign = _4KB;
             } else {
                 FmtData.objalign = FLAT_GRANULARITY;
             }
@@ -848,9 +859,11 @@ void CalcAddresses( void )
     StartMemMap();
     AllocClasses( Root );
     if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+#ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
-            CalcOvl();
+            OvlCalc();
         }
+#endif
         CalcGrpAddr( Groups );
         CalcGrpAddr( AbsGroups );
 #ifdef _DOS16M
@@ -860,10 +873,14 @@ void CalcAddresses( void )
     } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_QNX_FLAT | MK_ELF) ) {
         if( FmtData.output_raw || FmtData.output_hex ) {
             flat = 0;
+#ifdef _OS2
         } else if( FmtData.type & MK_PE ) {
             flat = GetPEHeaderSize();
+#endif
+#ifdef _ELF
         } else if( FmtData.type & MK_ELF ) {
             flat = GetElfHeaderSize();
+#endif
         } else {
             flat = FmtData.base;
         }
@@ -932,12 +949,12 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 }
 
 
-void SetSegFlags( seg_flags *flag_list )
-/**********************************************/
+void SetSegFlags( xxx_seg_flags *flag_list )
+/******************************************/
 {
-    seg_flags       *next_one;
+    xxx_seg_flags   *next_one;
     seg_leader      *leader;
-    seg_flags       *start;
+    xxx_seg_flags   *start;
     class_entry     *class;
 
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
@@ -947,7 +964,7 @@ void SetSegFlags( seg_flags *flag_list )
     // process all class type def'ns first.
     for( ; flag_list != NULL; flag_list = flag_list->next ) {
         if( ( flag_list->type == SEGFLAG_CODE )
-            || ( flag_list->type == SEGFLAG_DATA ) ){
+          || ( flag_list->type == SEGFLAG_DATA ) ){
             FillTypeFlags( flag_list->flags, flag_list->type );
         }
     }
@@ -959,6 +976,7 @@ void SetSegFlags( seg_flags *flag_list )
     }
     // now process individual segments
     for( flag_list = start; flag_list != NULL; flag_list = next_one ) {
+        next_one = flag_list->next;
         if( flag_list->type == SEGFLAG_SEGMENT ) {
             leader = FindSegment( Root, flag_list->name );
             if( leader == NULL ) {
@@ -967,7 +985,6 @@ void SetSegFlags( seg_flags *flag_list )
                 leader->segflags = flag_list->flags;
             }
         }
-        next_one = flag_list->next;
         _LnkFree( flag_list->name );
         _LnkFree( flag_list );
     }
@@ -1251,7 +1268,7 @@ static void SortSegments( void )
             if( foundgroup ) {
                 prev = NULL;
                 foundmatch = false;
-                for( comp = RingStep( newlist, NULL ); comp != NULL; comp = RingStep( newlist, comp ) ) {
+                for( comp = NULL; (comp = RingStep( newlist, comp )) != NULL; ) {
                     complen = strcspn( comp->segname.u.ptr, "$" );
                     if( ( complen == currlen )
                         && ( memcmp( comp->segname.u.ptr, curr->segname.u.ptr, complen ) == 0 ) ) {

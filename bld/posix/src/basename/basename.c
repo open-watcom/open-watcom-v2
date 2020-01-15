@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 char *OptEnvVar = "basename";
 
@@ -50,10 +55,11 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
-    char        *fname, *src, *ext;
-    size_t      len;
+    char        *src, *ext;
+    char        fname[_MAX_PATH];
+    PGROUP2     pg;
 
     argv = ExpandEnv( &argc, argv );
 
@@ -62,11 +68,8 @@ void main( int argc, char **argv )
     if( argc < 2  ||  argc > 3 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
-        len = strlen( argv[1] );
-        fname  = (char *)malloc( 2 * len * sizeof( char ) + 1 );
-
-        _splitpath( argv[1], NULL, NULL, fname, fname + len );
-        strcat( fname, fname + len );
+        _splitpath2( argv[1], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _makepath( fname, NULL, NULL, pg.fname, pg.ext );
 
         if( argc == 3 ) {
             src = fname + strlen( fname );
@@ -79,7 +82,6 @@ void main( int argc, char **argv )
             }
         }
         fprintf( stdout, "%s\n", fname );
-
-        free( fname );
     }
+    return( 0 );
 }

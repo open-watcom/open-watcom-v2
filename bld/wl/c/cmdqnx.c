@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@
 #include "loadqnx.h"
 #include "wlnkmsg.h"
 #include "cmdqnx.h"
-#include "cmdos2.h"     // for ChkBase
+#include "cmdall.h"     // for ChkBase
 
 
 bool ProcQNX( void )
@@ -73,13 +74,13 @@ void SetQNXFmt( void )
     FmtData.u.qnx.heapsize = 4096;
     FmtData.u.qnx.gen_seg_relocs = true;
     FmtData.u.qnx.gen_linear_relocs = false;
-    ChkBase(4*1024);
+    ChkBase( _4KB );
 }
 
 void FreeQNXFmt( void )
 /****************************/
 {
-    FreeSegFlags( (seg_flags *)FmtData.u.qnx.seg_flags );
+    FreeSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
 }
 
 void CmdQNXFini( void )
@@ -90,11 +91,11 @@ void CmdQNXFini( void )
     }
 }
 
-static bool GetQNXSegFlags( void )
-/********************************/
+static bool getSegFlags( void )
+/*****************************/
 {
     bool            isclass;
-    qnx_seg_flags * entry;
+    qnx_seg_flags   *entry;
 
     Token.thumb = true;
     isclass = ProcOne( QNXSegDesc, SEP_NO, false );
@@ -104,7 +105,7 @@ static bool GetQNXSegFlags( void )
     _ChkAlloc( entry, sizeof( qnx_seg_flags ) );
     entry->flags = 0;
     entry->name = tostring();
-    entry->isclass = isclass;
+    entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
     entry->next = FmtData.u.qnx.seg_flags;
     FmtData.u.qnx.seg_flags = entry;
     return( ProcOne( QNXSegModel, SEP_NO, false ) );
@@ -113,7 +114,7 @@ static bool GetQNXSegFlags( void )
 bool ProcQNXSegment( void )
 /********************************/
 {
-    return( ProcArgList( GetQNXSegFlags, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( getSegFlags, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcQNXClass( void )

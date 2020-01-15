@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,7 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
     COLORREF    andpixel;
     COLORREF    xorpixel;
 
-    if( fillinfo->img_type == BITMAP_IMG ) {
+    if( fillinfo->imgtype == BITMAP_IMG ) {
         return( NORMAL_FILL );
     }
 
@@ -208,7 +209,7 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     oldscreen;
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
     COLORREF    fillcolor;
-    BOOL        screenchanged;
+    bool        screenchanged;
     short       x, y;
     bitmap_bits *xorbits;
     bitmap_bits *screenbeforebits;
@@ -274,10 +275,10 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
             }
         }
     }
-    FreeTheBits( andbits, node->handbitmap, TRUE );
-    FreeTheBits( xorbits, node->hxorbitmap, TRUE );
-    FreeTheBits( screenbeforebits, screendup, FALSE );
-    FreeTheBits( screenbits, bigbitmap, FALSE );
+    FreeTheBits( andbits, node->handbitmap, true );
+    FreeTheBits( xorbits, node->hxorbitmap, true );
+    FreeTheBits( screenbeforebits, screendup, false );
+    FreeTheBits( screenbits, bigbitmap, false );
 
     _wpi_deletebitmap( bigbitmap );
     _wpi_deletebitmap( screendup );
@@ -313,8 +314,8 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
     COLORREF    xorcolor;
     COLORREF    fillcolor;
-    BOOL        xorchanged;
-    BOOL        screenchanged;
+    bool        xorchanged;
+    bool        screenchanged;
     short       x, y;
 
     /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,15 +68,15 @@ static ReplaceInfo      convReplace;
 static ReplaceInfo      hwndReplace;
 
 msglist DDEMsgs[] = {
-    WM_DDE_ACK,                 (char *)(pointer_int)STR_ACK,
-    WM_DDE_ADVISE,              (char *)(pointer_int)STR_ADVISE,
-    WM_DDE_DATA,                (char *)(pointer_int)STR_DATA,
-    WM_DDE_EXECUTE,             (char *)(pointer_int)STR_EXECUTE,
-    WM_DDE_INITIATE,            (char *)(pointer_int)STR_INITIATE,
-    WM_DDE_POKE,                (char *)(pointer_int)STR_POKE,
-    WM_DDE_REQUEST,             (char *)(pointer_int)STR_REQUEST,
-    WM_DDE_TERMINATE,           (char *)(pointer_int)STR_TERMINATE,
-    WM_DDE_UNADVISE,            (char *)(pointer_int)STR_UNADVISE,
+    WM_DDE_ACK,                 (char *)(pointer_uint)STR_ACK,
+    WM_DDE_ADVISE,              (char *)(pointer_uint)STR_ADVISE,
+    WM_DDE_DATA,                (char *)(pointer_uint)STR_DATA,
+    WM_DDE_EXECUTE,             (char *)(pointer_uint)STR_EXECUTE,
+    WM_DDE_INITIATE,            (char *)(pointer_uint)STR_INITIATE,
+    WM_DDE_POKE,                (char *)(pointer_uint)STR_POKE,
+    WM_DDE_REQUEST,             (char *)(pointer_uint)STR_REQUEST,
+    WM_DDE_TERMINATE,           (char *)(pointer_uint)STR_TERMINATE,
+    WM_DDE_UNADVISE,            (char *)(pointer_uint)STR_UNADVISE,
     0,                          NULL
 };
 

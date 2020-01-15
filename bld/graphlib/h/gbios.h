@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 /* BIOS Variable Locations */
 #pragma pack(__push, 1);
 
-#define _BIOS_data( p, t ) *(t __far *)MK_FP( _BiosSeg, _BiosOff + p )
+#define _BIOS_data( p, t ) *(t __far *)_MK_FP( _BiosSeg, _BiosOff + p )
 
 #define EQUIP_FLAGS     0x0010      /* equipment flags */
 #define CRT_MODE        0x0049      /* current CRT mode */

@@ -108,8 +108,12 @@ static __inline void msg_eor_close (Socket *socket)
 static int transmit (const char *func, int s, const void *buf, int len,
                      int flags, const struct sockaddr *to, int tolen)
 {
-  Socket *socket = _socklist_find (s);
+  Socket *socket;
   int     rc;
+
+  /* unused parameters */ (void)func;
+
+  socket = _socklist_find (s);
 
   SOCK_DEBUGF ((socket, "\n%s:%d, len=%d", func, s, len));
 

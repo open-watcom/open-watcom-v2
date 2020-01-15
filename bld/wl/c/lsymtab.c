@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +58,11 @@
 #include "clibext.h"
 
 
-#define STATIC_TABSIZE  241  /* should be prime */
-#define GLOBAL_TABSIZE  1789  /* should be prime */
+#define STATIC_TABSIZE  241     /* should be prime */
+#define GLOBAL_TABSIZE  1789    /* should be prime */
 
-#define STATIC_TABALLOC (256 * sizeof(symbol *))  // 1st power of 128 > TABSIZE
-#define GLOBAL_TABALLOC (1792 * sizeof(symbol *)) // 1st power of 128 > TABSIZE
+#define STATIC_TABALLOC (256 * sizeof( symbol * ))  // 1st power of 128 > TABSIZE
+#define GLOBAL_TABALLOC (1792 * sizeof( symbol * )) // 1st power of 128 > TABSIZE
 
 int             (*CmpRtn)( const void *, const void *, size_t );
 size_t          NameLen;
@@ -600,7 +601,7 @@ void ResetSym( void )
     HeadSym = NULL;
     LastSym = NULL;
     CmpRtn = memicmp;
-    GetSymBlock();
+    ResetPermBlocks();
     ClearHashPointers();
 }
 
@@ -633,7 +634,7 @@ static void DumpTable( symbol **table, unsigned tabsize )
             mask |= DBG_NOCRLF;
         }
         val = 0;
-        for( sym = table[ index ]; sym != NULL; sym = sym->hash ) {
+        for( sym = table[index]; sym != NULL; sym = sym->hash ) {
             val++;
         }
         DEBUG(( mask, "%x ", val ));
@@ -703,8 +704,8 @@ void CleanSym( void )
             FreeSymbol( sym );
         }
     }
-    RelSymBlock();
-    ReleasePass1();
+    ReleasePermBlocks();
+    ReleasePass1Blocks();
 }
 
 void FiniSym( void )
@@ -753,8 +754,8 @@ void ReadHashPointers( void *cookie )
 void ClearHashPointers( void )
 /***********************************/
 {
-    memset( GlobalSymPtrs, 0, GLOBAL_TABSIZE * sizeof(symbol *) );
-    memset( StaticSymPtrs, 0, STATIC_TABSIZE * sizeof(symbol *) );
+    memset( GlobalSymPtrs, 0, GLOBAL_TABSIZE * sizeof( symbol * ) );
+    memset( StaticSymPtrs, 0, STATIC_TABSIZE * sizeof( symbol * ) );
 }
 
 void SetSymCase( void )
@@ -967,7 +968,7 @@ static unsigned StaticHashFn( const char *name, size_t len )
     modval >>= 8;
     value = value ^ ScatterTable[modval & 0xff];
     while( len-- > 0 ) {
-        value = (value << 1) ^ ScatterTable[*(unsigned char *)name ];
+        value = (value << 1) ^ ScatterTable[*(unsigned char *)name];
         ++name;
     }
     return( value % STATIC_TABSIZE );
@@ -1106,7 +1107,7 @@ void ReportUndefined( void )
     unsigned    level;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        sym->info &= ~SYM_CLEAR_ON_P2;
+        sym->info &= ~SYM_CLEAR_ON_P2;  // reset also floatin-point patch flags
         if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
             if( LinkFlags & LF_UNDEFS_ARE_OK ) {
                 level = WRN;
@@ -1167,7 +1168,7 @@ void XWriteImports( void )
                     WriteFormat( 0, "%s", sym->name );
                 }
 #ifdef _OS2
-                if( FmtData.type & (MK_OS2|MK_PE|MK_WIN_VXD) ) {
+                if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
                     WriteFormat( 36, "%s", ImpModuleName( sym->p.import ) );
                 }
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,11 +69,9 @@
 #endif
 
 #if defined( __DOS_086__ )
-    #define SPVE_NEAR   __near      //__based( __segname( "_STACK" ) )
     #define ENV_ARG     unsigned
     #define ENVPARM     envseg
 #else
-    #define SPVE_NEAR
     #define ENV_ARG     CHAR_TYPE *
     #define ENVPARM     envptr
 #endif
@@ -87,7 +85,13 @@
 #endif
 
 #if defined( __DOS__ )
-extern int  __dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env );
+    typedef CHAR_TYPE __based( __segname( "_STACK" ) )  *char_type_stk_ptr;
+#else
+    typedef CHAR_TYPE                                   *char_type_stk_ptr;
+#endif
+
+#if defined( __DOS__ )
+extern int  __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env );
 #pragma aux __dospawn "_*" __parm __caller [];
 #endif
 
@@ -96,7 +100,7 @@ extern int  __dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdlin
 
 #define FALSE   0
 
-static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
+static int file_exists( const CHAR_TYPE *filename )
 {
 #if defined( __DOS__ )
     /* should use _dos_findfirst to avoid DOS APPEND bug */
@@ -113,7 +117,7 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
 }
 
 #if defined( __DOS__ )
-static int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
+static int _dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env, const char * const *argv )
 {
     /* do this here instead of in the .asm files */
     __ccmdline( pgmname, argv, cmdline, 0 );
@@ -132,16 +136,16 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *envptr;        /* environment ptr (DOS 16-bit aligned to para) */
     unsigned                envseg;         /* environment segment (DOS 16-bit normalized, zero for others) */
     int                     len;
-    CHAR_TYPE SPVE_NEAR     *np;
-    CHAR_TYPE SPVE_NEAR     *p;
-    CHAR_TYPE SPVE_NEAR     *end_of_p;
+    char_type_stk_ptr       np;
+    char_type_stk_ptr       p;
+    char_type_stk_ptr       end_of_p;
     int                     retval;
 #if defined( __DOS_086__ )
     unsigned                envsize_paras;  /* for environment */
 #endif
     size_t                  cmdline_len;
-    CHAR_TYPE SPVE_NEAR     *cmdline_mem;
-    CHAR_TYPE SPVE_NEAR     *cmdline;
+    char_type_stk_ptr       cmdline_mem;
+    char_type_stk_ptr       cmdline;
     CHAR_TYPE               switch_c[4];
     unsigned char           prot_mode286;
     unsigned char           use_cmd;
@@ -190,7 +194,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 
 #if defined( _M_I86 )
  #if defined( __OS2__ )
-    prot_mode286 = ( _RWD_osmode != DOS_MODE );
+    prot_mode286 = _osmode_PROTMODE();
     if( mode == OLD_P_OVERLAY ) {
         rc = execve(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
@@ -243,7 +247,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
-        p = (CHAR_TYPE SPVE_NEAR *)alloca( len * sizeof( CHAR_TYPE ) );
+        p = alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
             lib_free( _envptr );
             _POSIX_HANDLE_CLEANUP;
@@ -252,29 +256,28 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     } else {
         p = np;
     }
-    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ),
-                                        &drive, &dir, &fname, &ext );
+    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ), &drive, &dir, &fname, &ext );
 #if defined( __DOS__ )
     _RWD_Save8087( &_87save );
 #endif
 #if defined( __DOS_086__ )
-    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( _osmode_PROTMODE() ) {      /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
 
         if( _dos_allocmem( envsize_paras, &segment ) != 0 ) {
-            lib_nfree( np );
+            LIB_FREE( np );
             lib_free( _envptr );
             _POSIX_HANDLE_CLEANUP;
             return( -1 );
         }
         envseg = segment;
-        _fmemcpy( MK_FP( segment, 0 ), envptr, envsize_paras << 4 );
+        _fmemcpy( (void __far *)(((long)(segment))<<16), envptr, envsize_paras << 4 );
     }
 #endif
     /* allocate the cmdline buffer */
     cmdline_mem = LIB_ALLOC( cmdline_len * sizeof( CHAR_TYPE ) );
     if( cmdline_mem == NULL ) {
-        cmdline = (CHAR_TYPE SPVE_NEAR *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
+        cmdline = alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
             _RWD_errno = E2BIG;
@@ -375,7 +378,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     LIB_FREE( np );
     lib_free( _envptr );
 #if defined( __DOS_086__ )
-    if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
+    if( _osmode_PROTMODE() ) {      /* if protect-mode e.g. DOS/16M */
         _dos_freemem( envseg );
     }
 #endif

@@ -123,19 +123,19 @@ typedef struct cvt_info {
  */
 
 #if !defined( _M_IX86 ) || defined( __FLAT__ )
-typedef long_double                                     *ld_arg;
-typedef double                                          *dbl_arg;
-typedef float                                           *flt_arg;
-typedef char                                            *buf_arg;
-typedef void                                            *i8_arg;
-typedef void                                            *u8_arg;
+typedef long_double                                     *ld_stk_ptr;
+typedef double                                          *dbl_stk_ptr;
+typedef float                                           *flt_stk_ptr;
+typedef char                                            *buf_stk_ptr;
+typedef void                                            *i8_stk_ptr;
+typedef void                                            *u8_stk_ptr;
 #else
-typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
-typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
-typedef float       __based( __segname( "_STACK" ) )    *flt_arg;
-typedef char        __based( __segname( "_STACK" ) )    *buf_arg;
-typedef void        __based( __segname( "_STACK" ) )    *i8_arg;
-typedef void        __based( __segname( "_STACK" ) )    *u8_arg;
+typedef long_double __based( __segname( "_STACK" ) )    *ld_stk_ptr;
+typedef double      __based( __segname( "_STACK" ) )    *dbl_stk_ptr;
+typedef float       __based( __segname( "_STACK" ) )    *flt_stk_ptr;
+typedef char        __based( __segname( "_STACK" ) )    *buf_stk_ptr;
+typedef void        __based( __segname( "_STACK" ) )    *i8_stk_ptr;
+typedef void        __based( __segname( "_STACK" ) )    *u8_stk_ptr;
 #endif
 
 _WMRTLINK extern void __LDcvt(
@@ -153,26 +153,26 @@ _WMRTLINK extern int __wStrtold(
                         wchar_t **endptr );
 #endif
 extern  int     __LDClass( long_double * );
-extern  void    __ZBuf2LD( buf_arg, ld_arg );
-extern  void    _LDScale10x( ld_arg, int );
+extern  void    __ZBuf2LD( buf_stk_ptr, ld_stk_ptr );
+extern  void    _LDScale10x( ld_stk_ptr, int );
 #ifdef _LONG_DOUBLE_
-extern  void    __iLDFD( ld_arg, dbl_arg );
-extern  void    __iLDFS( ld_arg, flt_arg );
-extern  void    __iFDLD( dbl_arg, ld_arg );
-extern  void    __iFSLD( flt_arg, ld_arg );
-extern  i4      __LDI4( ld_arg );
-extern  void    __I4LD( i4, ld_arg );
-extern  void    __U4LD( u4, ld_arg);
+extern  void    __iLDFD( ld_stk_ptr, dbl_stk_ptr );
+extern  void    __iLDFS( ld_stk_ptr, flt_stk_ptr );
+extern  void    __iFDLD( dbl_stk_ptr, ld_stk_ptr );
+extern  void    __iFSLD( flt_stk_ptr, ld_stk_ptr );
+extern  i4      __LDI4( ld_stk_ptr );
+extern  void    __I4LD( i4, ld_stk_ptr );
+extern  void    __U4LD( u4, ld_stk_ptr);
 //The 64bit types change depending on what's being built.
 //(u)int64* (un)signed_64* don't seem suitable, and we use void* instead.
-extern  void    __LDI8( ld_arg, i8_arg );
-extern  void    __I8LD( i8_arg, ld_arg );
-extern  void    __U8LD( u8_arg, ld_arg );
-extern  void    __FLDA( ld_arg, ld_arg, ld_arg );
-extern  void    __FLDS( ld_arg, ld_arg, ld_arg );
-extern  void    __FLDM( ld_arg, ld_arg, ld_arg );
-extern  void    __FLDD( ld_arg, ld_arg, ld_arg );
-extern  int     __FLDC( ld_arg, ld_arg );
+extern  void    __LDI8( ld_stk_ptr, i8_stk_ptr );
+extern  void    __I8LD( i8_stk_ptr, ld_stk_ptr );
+extern  void    __U8LD( u8_stk_ptr, ld_stk_ptr );
+extern  void    __FLDA( ld_stk_ptr, ld_stk_ptr, ld_stk_ptr );
+extern  void    __FLDS( ld_stk_ptr, ld_stk_ptr, ld_stk_ptr );
+extern  void    __FLDM( ld_stk_ptr, ld_stk_ptr, ld_stk_ptr );
+extern  void    __FLDD( ld_stk_ptr, ld_stk_ptr, ld_stk_ptr );
+extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 #endif
 
 #ifdef __WATCOMC__

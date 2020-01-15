@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "caux.h"
 
 
-#define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_int)NextSymHandle)
+#define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_uint)NextSymHandle)
 
 unsigned    SymTypedef;
 
@@ -119,7 +120,7 @@ unsigned SymGetNumSyms( void )
 
 unsigned SymGetNumSpecialSyms( void )
 {
-    return( (unsigned)(pointer_int)SpecialSyms );
+    return( (unsigned)(pointer_uint)SpecialSyms );
 }
 
 SYM_HANDLE SymGetFirst( void )
@@ -129,10 +130,10 @@ SYM_HANDLE SymGetFirst( void )
 
 SYM_HANDLE SymGetNext( SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)(pointer_int)sym_handle;
+    unsigned    handle = (unsigned)(pointer_uint)sym_handle;
 
     if( handle < NextSymHandle ) {
-        return( (SYM_HANDLE)(pointer_int)( handle + 1 ) );
+        return( (SYM_HANDLE)(pointer_uint)( handle + 1 ) );
     } else {
         return( SYM_INVALID );
     }
@@ -161,7 +162,7 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segid )
     sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
-    if( segid != SEG_UNKNOWN ) {
+    if( segid != SEG_NULL ) {
         SetSegSymHandle( handle, segid );
     }
     return( handle );
@@ -307,7 +308,7 @@ static void SymAccess( unsigned sym_num )
 
 SYMPTR SymGetPtr( SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)(pointer_int)sym_handle;
+    unsigned    handle = (unsigned)(pointer_uint)sym_handle;
     SYMPTR      symptr;
 
     SymStats.getptr++;
@@ -326,7 +327,7 @@ SYMPTR SymGetPtr( SYM_HANDLE sym_handle )
 
 void SymGet( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)(pointer_int)sym_handle;
+    unsigned    handle = (unsigned)(pointer_uint)sym_handle;
     SYMPTR      symptr;
 
     SymStats.get++;
@@ -346,7 +347,7 @@ void SymGet( SYMPTR sym, SYM_HANDLE sym_handle )
 
 void SymReplace( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)(pointer_int)sym_handle;
+    unsigned    handle = (unsigned)(pointer_uint)sym_handle;
 
     SymStats.replace++;
     if( sym_handle == CurFuncHandle ) {
@@ -771,7 +772,7 @@ static SYM_HASHPTR GetSymList( void )
         }
         for( hsym = sym_list; hsym != NULL; hsym = next_hsymptr ) {
             next_hsymptr = hsym->next_sym;
-            i = (unsigned)(pointer_int)hsym->handle / (SYMS_PER_BUF * SYMBUFS_PER_SEG);
+            i = (unsigned)(pointer_uint)hsym->handle / (SYMS_PER_BUF * SYMBUFS_PER_SEG);
             hsym->next_sym = sym_seglist[i];
             sym_seglist[i] = hsym;
         }
@@ -784,7 +785,7 @@ static SYM_HASHPTR GetSymList( void )
             }
             for( hsym = sym_seglist[i]; hsym != NULL; hsym = next_hsymptr ) {
                 next_hsymptr = hsym->next_sym;
-                j = ((unsigned)(pointer_int)hsym->handle / SYMS_PER_BUF) % SYMBUFS_PER_SEG;
+                j = ((unsigned)(pointer_uint)hsym->handle / SYMS_PER_BUF) % SYMBUFS_PER_SEG;
                 hsym->next_sym = sym_buflist[j];
                 sym_buflist[j] = hsym;
                 if( sym_buftail[j] == NULL ) {

@@ -42,11 +42,6 @@
   #endif
 #endif
 
-global_data unsigned             InsiderTime;
-global_data unsigned             Margin;
-global_data unsigned             Ceiling;
-global_data unsigned             SamplerOff;
-
 #ifdef __WINDOWS__
 global_data shared_data __far    * __near SharedMemory;
 #else
@@ -59,9 +54,19 @@ global_data unsigned long        CurrTick;
 global_data bool                 LostData;
 #endif
 
+#ifdef __WINDOWS__
+global_data samp_block           FAR_PTR * __near Samples;
+#else
+global_data samp_block           FAR_PTR *Samples;
+#endif
+
+global_data unsigned             InsiderTime;
+global_data unsigned             Margin;
+global_data unsigned             Ceiling;
+global_data unsigned             SamplerOff;
+
 global_data bool                 CallGraphMode;
 global_data bool                 FirstSample;
-global_data samp_block           FAR_PTR *Samples;
 global_data samp_block           FAR_PTR *CallGraph;
 global_data off                  CGraphOff;
 global_data seg                  CGraphSeg;
@@ -70,5 +75,18 @@ global_data comm_region          Comm;
 
 global_data char                 ExeName[128];
 global_data char                 SampName[256];
+
+#ifdef __WINDOWS__
+global_data HWND                    __near MainWindowHandle;
+global_data HWND                    __near OutputWindow;
+global_data HANDLE                  InstanceHandle;
+global_data HANDLE                  PrevInstance;
+global_data WORD                    SleepTime;
+global_data DWORD                   TotalTime;
+global_data HINSTANCE               SampledProg;
+global_data interrupt_struct        __near IntData;
+global_data HANDLE                  WaitForInt3;
+global_data HANDLE                  WaitForInt1;
+#endif
 
 #undef global_data

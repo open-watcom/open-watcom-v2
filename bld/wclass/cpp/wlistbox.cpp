@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,14 +93,17 @@ int WListBox::findString( int index, const char *str ) {
     size_t k;
 
     if( icount > 0 ) {
-        if( index < 0 ) index = icount-1;
+        if( index < 0 )
+            index = icount-1;
         int i = index;
         i++;
         for( ; i != index; i++) {
-            if( i >= icount ) i = 0;
+            if( i >= icount )
+                i = 0;
             WString s;
             getString( i, s );
-            for( k = 0; isspace( s[k] ); k++ );
+            for( k = 0; isspace( s[k] ); k++ )
+                ;
             if( strnicmp( str, &s[k], len ) == 0 ) {
                 return( i );
             }
@@ -251,8 +255,7 @@ void* WEXPORT WListBox::tagPtr( int index ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8
-#pragma warning 656 9
+#pragma disable_message( 656 )
 #endif
 
 WEXPORT WListBox::~WListBox() {

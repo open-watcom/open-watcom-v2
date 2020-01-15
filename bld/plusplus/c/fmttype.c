@@ -315,9 +315,8 @@ static void fmtTypeFlag( type_flag flag, VBUF *pvbuf, const FMT_FLAG_INFO *flag_
     }
 }
 
-static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, int num_def,
-    FMT_CONTROL control )
-/*********************************************************************/
+static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, unsigned num_def, FMT_CONTROL control )
+/************************************************************************************************/
 {
     FMT_CONTROL arg_control;
     unsigned    i;
@@ -479,9 +478,8 @@ const char *FormatErrorType( TYPE err_type )
     return( typeName[TYP_ERROR] );
 }
 
-void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
-    FMT_CONTROL control )
-/****************************************************************************/
+void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, unsigned num_def, FMT_CONTROL control )
+/*******************************************************************************************************/
 {
     TYPE        top_type;
     TYPE        class_type;
@@ -491,7 +489,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
     type_flag   flags;
     NAME        name;
     AUX_INFO    *pragma;
-    int         use_def;
+    unsigned    use_def;
     FMT_CONTROL fn_control;
 
     VbufInit( pprefix );

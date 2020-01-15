@@ -265,7 +265,10 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         defineStringMacro( "__INLINE_FUNCTIONS__" );
     }
     if( !CompFlags.extensions_enabled ) {
-        defineStringMacro( "NO_EXT_KEYS" );
+        defineStringMacro( "_NO_EXT_KEYS" );
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            defineStringMacro( "NO_EXT_KEYS" );
+        }
     }
     if( CompFlags.non_iso_compliant_names_enabled ) {
         defineKeywordMacros();

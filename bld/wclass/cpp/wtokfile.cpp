@@ -39,12 +39,15 @@ WString& WTokenFile::token( WString& tok, bool* eol )
     char ch = 0;
     for(;;) {
         ch = getch();
-        if( !isspace( ch ) ) break;
+        if( !isspace( ch ) ) {
+            break;
+        }
     }
     if( ch == '"' ) {
         ch = getch();
         for(;;) {
-            if( ch == '"' ) break;
+            if( ch == '"' )
+                break;
             if( ch == '\\' ) {
                 ch = getch();
                 if( ch == 'n' ) {
@@ -64,8 +67,10 @@ WString& WTokenFile::token( WString& tok, bool* eol )
         }
     } else {
         for(;;) {
-            if( ch == 0 || ch == 10 ) break;
-            if( isspace( ch ) || ch == ',' ) break;
+            if( ch == 0 || ch == 10 )
+                break;
+            if( isspace( ch ) || ch == ',' )
+                break;
             tok.concat( ch );
             ch = getch();
         }
@@ -75,22 +80,25 @@ WString& WTokenFile::token( WString& tok, bool* eol )
         ch = getch();
         if( ch == 0 || ch == 10 ) {
             _eol = true;
-            if( eol != NULL ) *eol = _eol;
+            if( eol != NULL )
+                *eol = _eol;
             return( tok );
         }
-        if( !isspace( ch ) ) break;
+        if( !isspace( ch ) ) {
+            break;
+        }
     }
     if( ch != ',' ) {
         ungetch( ch );
     }
-    if( eol != NULL ) *eol = _eol;
+    if( eol != NULL )
+        *eol = _eol;
     return( tok );
 }
 
 void WTokenFile::flushLine( WString& tok )
 {
-    _eol = false;
-    while( !_eol ) {
+    for( _eol = false; !_eol; ) {
         token( tok );
     }
 }

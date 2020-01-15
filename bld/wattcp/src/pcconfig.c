@@ -260,7 +260,7 @@ int parse_config_table (const struct config_table *tab,
              break;
 
         case ARG_FUNC:
-             (*(void(*)())arg) (value, strlen(value));
+             (*(void(*)(const char *,unsigned))arg) (value, strlen(value));
              break;
 
         case ARG_RESOLVE:

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +30,6 @@
 *
 ****************************************************************************/
 
-#if defined( __WINDOWS__ ) && defined( __DLL__ )
-#pragma library( "ddeml.lib" );
-#endif
 
 #include <windows.h>
 #include <ddeml.h>
@@ -54,7 +51,14 @@
 #include "dllmain.h"
 #include "winexprt.h"
 #include "wig.h"
+#include "pathgrp2.h"
 
+#include "clibext.h"
+
+
+#if defined( __WINDOWS__ ) && defined( __DLL__ )
+#pragma library( "ddeml.lib" );
+#endif
 
 #ifdef __NT__
     #define PBCMD "pbnt"
@@ -126,35 +130,36 @@ unsigned IDE_EXPORT WatIDE_GetVersion( void )
     return( WAT_IDE_DLL_CUR_VER );
 }
 
-static BOOL matchsExist( char *mask )
+static bool matchsExist( const char *mask )
 {
     DIR         *hdl;
 
     hdl = opendir( mask );
-    if( hdl == NULL ) return( FALSE );
+    if( hdl == NULL )
+        return( false );
     closedir( hdl );
-    return( TRUE );
+    return( true );
 }
 
-BOOL IDE_EXPORT WatIDE_DirIsOk( char *dllname )
+BOOL IDE_EXPORT WatIDE_DirIsOk( const char *dllname )
 {
     char        mask[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
+    PGROUP2     pg;
 
     say( "DirIsOk %s", dllname );
-    _splitpath( dllname, drive, dir, NULL, NULL );
-    _makepath( mask, drive, dir, "*", ".cpp" );
-    if( matchsExist( mask ) ) return( FALSE );
-    _makepath( mask, drive, dir, "*", ".hpp" );
-    if( matchsExist( mask ) ) return( FALSE );
+    _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( mask, pg.drive, pg.dir, "*", CPP_EXT );
+    if( matchsExist( mask ) )
+        return( FALSE );
+    _makepath( mask, pg.drive, pg.dir, "*", HPP_EXT );
+    if( matchsExist( mask ) )
+        return( FALSE );
     return( TRUE );
 }
 
 void IDE_EXPORT WatIDE_GetFunctionName(  FunctionRequest type, char *buf,
-                                         char *uoname, char *fnname )
+                                    const char *uoname, const char *fnname )
 {
-
     say( "GetFunctionName %s", uoname );
     switch( type ) {
     case FN_GET_CONSTRUCTOR:
@@ -169,7 +174,7 @@ void IDE_EXPORT WatIDE_GetFunctionName(  FunctionRequest type, char *buf,
     }
 }
 
-BOOL IDE_EXPORT WatIDE_RunWig( char *sruname, char *parentname,
+BOOL IDE_EXPORT WatIDE_RunWig( const char *sruname, const char *parentname,
                                WatIDEErrInfo **info )
 {
 
@@ -180,7 +185,8 @@ BOOL IDE_EXPORT WatIDE_RunWig( char *sruname, char *parentname,
 
     say( "RunWig %s", sruname );
     argv[0] = "";
-    argv[1] = sruname;
+    argv[1] = MemMalloc( strlen( sruname ) + 1 );
+    strcpy( argv[1], sruname );
     argv[2] = "-r";
     argc = 3;
     if( parentname != NULL ) {
@@ -190,6 +196,9 @@ BOOL IDE_EXPORT WatIDE_RunWig( char *sruname, char *parentname,
     }
     rc = Wigmain( argc, argv );
     err = GetErrInfo();
+    if( argc > 3 )
+        MemFree( argv[3] );
+    MemFree( argv[1] );
     if( info != NULL ) {
         *info = err;
     } else {
@@ -228,18 +237,17 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
     return( TRUE );
 }
 
-static void mkProjectName( char *buf, char *dllname ) {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
+static void mkProjectName( char *buf, const char *dllname )
+{
+    PGROUP2     pg;
 
-    _splitpath( dllname, drive, dir, fname, NULL );
-    _makepath( buf, drive, dir, fname, ".wpj" );
+    _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( buf, pg.drive, pg.dir, pg.fname, WPJ_EXT );
 }
 
 static char     CmdBuffer[ _MAX_PATH * 4 ];
 
-static BOOL runIDE( char *dllname )
+static bool runIDE( const char *dllname )
 {
 
     char        path[_MAX_PATH];
@@ -250,11 +258,11 @@ static BOOL runIDE( char *dllname )
     CmdBuffer[0] = '\0';
     if( ptr != NULL ) {
         strcpy( CmdBuffer, ptr );
-        #ifdef __NT__
-            strcat( CmdBuffer, "\\binnt\\" );
-        #else
-            strcat( CmdBuffer, "\\binw\\" );
-        #endif
+#ifdef __NT__
+        strcat( CmdBuffer, "\\binnt\\" );
+#else
+        strcat( CmdBuffer, "\\binw\\" );
+#endif
     }
     strcat( CmdBuffer, "IDE.EXE " );
     mkProjectName( path, dllname );
@@ -281,10 +289,9 @@ WINEXPORT HDDEDATA CALLBACK DdeProc( UINT type, UINT fmt, HCONV conv,
     return( NULL );
 }
 
-static BOOL changeIDEProject( char *dllname )
+static bool changeIDEProject( const char *dllname )
 {
-
-    BOOL        err;
+    bool        err;
     DWORD       ddeinst;
     UINT        rc;
     HCONV       conv;
@@ -294,61 +301,61 @@ static BOOL changeIDEProject( char *dllname )
     char        path[_MAX_PATH + 2]; // 2 characters for the transaction id
     int         err_rc;
 
-    err = FALSE;
     ddeinst = 0;
     conv = NULL;
     rc = DdeInitialize( &ddeinst, DdeProc,
                         APPCMD_CLIENTONLY | CBF_SKIP_ALLNOTIFICATIONS, 0L );
 
-    if( rc != DMLERR_NO_ERROR ) err = TRUE;
+    err = ( rc != DMLERR_NO_ERROR );
     if( !err ) {
         service = DdeCreateStringHandle( ddeinst, "WAT_IDE", 0 );
         topic = DdeCreateStringHandle( ddeinst, "project", 0 );
         if( service == (HSZ)NULL || topic == (HSZ)NULL ) {
-            if( service != (HSZ)NULL ) DdeFreeStringHandle( ddeinst, service );
-            if( topic != (HSZ)NULL ) DdeFreeStringHandle( ddeinst, topic );
-            err = TRUE;
+            if( service != (HSZ)NULL )
+                DdeFreeStringHandle( ddeinst, service );
+            if( topic != (HSZ)NULL )
+                DdeFreeStringHandle( ddeinst, topic );
+            err = true;
         }
     }
     if( !err ) {
         conv = DdeConnect( ddeinst, service, topic, NULL );
-        if( conv == (HSZ)NULL ) err = TRUE;
+        err = ( conv == (HSZ)NULL );
         err_rc = DdeGetLastError( ddeinst );
     }
     if( !err ) {
         strcpy( path, PBDDECMD );
         mkProjectName( path + strlen( path ), dllname );
         project = DdeCreateStringHandle( ddeinst, path, 0 );
-        if( project == (HSZ)NULL ) err = TRUE;
+        err = ( project == (HSZ)NULL );
     }
     if( !err ) {
-        err = !DdeClientTransaction( NULL, 0, conv, project, CF_TEXT,
-                                               XTYP_REQUEST, 60000, NULL );
+        err = ( DdeClientTransaction( NULL, 0, conv, project, CF_TEXT,
+                                               XTYP_REQUEST, 60000, NULL ) == 0 );
     }
-    if( conv != (HSZ)NULL ) DdeDisconnect( conv );
-    if( ddeinst != (DWORD)NULL) DdeUninitialize( ddeinst );
-    #ifdef __NT__
-        if( IsWindow( ideHwnd ) ) SetForegroundWindow( ideHwnd );
-    #endif
+    if( conv != (HSZ)NULL )
+        DdeDisconnect( conv );
+    if( ddeinst != (DWORD)NULL )
+        DdeUninitialize( ddeinst );
+#ifdef __NT__
+    if( IsWindow( ideHwnd ) ) {
+        SetForegroundWindow( ideHwnd );
+    }
+#endif
     return( err );
 }
 
-BOOL IDE_EXPORT WatIDE_RunIDE( char *dllname )
+BOOL IDE_EXPORT WatIDE_RunIDE( const char *dllname )
 {
-
-    BOOL        rc;
-
     say( "RunIDE %s", dllname );
-    rc = TRUE;
     ideHwnd = NULL;
     EnumWindows( FindWatIDEHwnd, 0 );//don't need to MakeProcInstance
                                      // because this is a DLL
     if( ideHwnd != NULL ) {
-        rc = changeIDEProject( dllname );
+        return( changeIDEProject( dllname ) );
     } else {
-        rc = runIDE( dllname );
+        return( runIDE( dllname ) );
     }
-    return( rc );
 }
 
 

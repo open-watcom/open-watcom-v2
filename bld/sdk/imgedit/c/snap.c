@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ static int      prevToolType;
 static int      previousState;
 static HCURSOR  prevCursor;
 static POINT    topLeft;
-static BOOL     rectExists = FALSE;
+static bool     rectExists = false;
 #ifdef __NT__
 static HWND     deskTopWindow;
 #endif
@@ -171,13 +172,13 @@ void SnapPicture( void )
         snapHeight = cliprect.bottom - cliprect.top;
         topLeft.x = cliprect.left;
         topLeft.y = cliprect.top;
-        rectExists = TRUE;
+        rectExists = true;
     } else {
         snapWidth = node->width;
         snapHeight = node->height;
         topLeft.x = 0;
         topLeft.y = 0;
-        rectExists = FALSE;
+        rectExists = false;
     }
 
     if( IsZoomed( HMainWindow ) ) {
@@ -269,7 +270,7 @@ void TransferImage( HWND hwnd )
 
     SetToolType( prevToolType );
     if( !DoKeepRect() ) {
-        SetRectExists( FALSE );
+        SetRectExists( false );
     } else {
         SetRectExists( rectExists );
     }

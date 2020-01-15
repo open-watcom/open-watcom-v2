@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -341,7 +342,7 @@ HWND WinNewDrawPad( img_node *node )
 /*
  * WinCreateViewWin - create the view window for the Windows version
  */
-HWND WinCreateViewWin( HWND hviewwnd, BOOL foneview,
+HWND WinCreateViewWin( HWND hviewwnd, bool foneview,
                        int *showstate, int width, int height )
 {
     HWND        hwnd;

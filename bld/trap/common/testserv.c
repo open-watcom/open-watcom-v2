@@ -58,11 +58,6 @@ void TrapFini( void )
 
 #ifdef __WINDOWS__
 HANDLE  Instance;
-
-void SetLinkName( const char *name )
-{
-    name = name;
-}
 #endif
 
 void Output( const char *p )

@@ -44,14 +44,15 @@ extern int  __cenvarg( const char* const *, const char* const *, char**, char**,
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
 #endif
-#ifndef __DOS__
-#ifdef __WIDECHAR__
-extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
+#ifdef __DOS__
+extern execveaddr_type  __Exec_addr;
 #else
+# ifdef __WIDECHAR__
+extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
+# else
 extern int  _dospawn( int, char *, char *, char *, const char * const * );
-#endif
+# endif
 #endif
 #ifdef __RDOS__
 extern int  _doexec(char *,char *, char *, const char * const *);
 #endif
-extern void __init_execve( void );

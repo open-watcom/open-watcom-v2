@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "hlpuicvr.h"
 
 
-void vvscroll( VSCREEN *win, SAREA use, int scroll )
+void vvscroll( VSCREEN *vs, SAREA use, int scroll )
 {
     SAREA               area;
     ORD                 newrow;
@@ -54,7 +55,7 @@ void vvscroll( VSCREEN *win, SAREA use, int scroll )
         newrow = use.row + use.height;
     }
     if( area.height > 0 ) {
-        uivmoveblock( win, area, -scroll, 0 );
+        uivmoveblock( vs, area, -scroll, 0 );
     }
     if( newrow == use.row ) {
         area.row = newrow + area.height;
@@ -63,6 +64,6 @@ void vvscroll( VSCREEN *win, SAREA use, int scroll )
     }
     area.height = use.height - area.height;
     if( area.height > 0 ) {
-        uivfill( win, area, UIData->attrs[ATTR_NORMAL], ' ' );
+        uivfill( vs, area, UIData->attrs[ATTR_NORMAL], ' ' );
     }
 }

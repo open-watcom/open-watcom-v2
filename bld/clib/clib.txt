@@ -514,8 +514,8 @@ common C flags:         -bt=WINDOWS -ms -ox
 
 ==============================================================================
 RDOS Settings:
-============
-wasm flags:             -bt=rdos
+==============
+wasm flags:             -bt=rdos -d__MT__
                         -3r
                         -3s
 C include:              ..\h \clib\h \hdr\dos
@@ -523,13 +523,15 @@ C include:              ..\h \clib\h \hdr\dos
 C flags:                -bt=rdos -bm
                         -3r
                         -3s
+                        -mf
 
 ==============================================================================
-RDOS dev Settings:
-============
-wasm flags:             -bt=rdosdev
+RDOS device Settings:
+=====================
+wasm flags:             -bt=rdosdev -d__MT__
                         -3r
 C include:              ..\h \clib\h \hdr\dos
                         \watcom\h
-C flags:                -bt=rdosdev -bm -zu
+C flags:                -bt=rdosdev -bm
                         -3r
+                        -mc -zu -zdp-zff-zgf

@@ -43,6 +43,7 @@ _WCRTLINK int sendto( int s, const void *msg, size_t len, int flags, const struc
 {
 #if defined( __LINUX__ )
     unsigned long args[6];
+
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)msg;
     args[2] = (unsigned long)len;
@@ -51,8 +52,14 @@ _WCRTLINK int sendto( int s, const void *msg, size_t len, int flags, const struc
     args[5] = (unsigned long)tolen;
     return( __socketcall( SYS_SENDTO, args ) );
 #elif defined( __RDOS__ )
+
+    /* unused parameters */ (void)s; (void)msg; (void)len; (void)flags; (void)to; (void)tolen;
+
     return( -1 );
 #else
+
+    /* unused parameters */ (void)s; (void)msg; (void)len; (void)flags; (void)to; (void)tolen;
+
     return( -1 );
 #endif
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,11 +268,14 @@ void MiscMacroDefs( void )
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
+    if( !CompFlags.extensions_enabled ) {
+        Define_Macro( "_NO_EXT_KEYS" );
+        if( CompFlags.non_iso_compliant_names_enabled ) {
+            Define_Macro( "NO_EXT_KEYS" );
+        }
+    }
     if( CompFlags.non_iso_compliant_names_enabled ) {
         Define_Macros_Extension();
-    }
-    if( !CompFlags.extensions_enabled ) {
-        Define_Macro( "NO_EXT_KEYS" );
     }
     if( CompFlags.signed_char ) {
         Define_Macro( "__CHAR_SIGNED__" );
@@ -301,7 +305,7 @@ void InitModInfo( void )
     DependForceSlash = 0;
     ModuleName = NULL;
     ErrLimit = 20;
-    WngLevel = 1;
+    WngLevel = WLEVEL_DEFAULT;
 #if _CPU == 8086
     PackAmount = TARGET_INT;     /* pack structs on word boundaries */
 #elif _CPU == 386

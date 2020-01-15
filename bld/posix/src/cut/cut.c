@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -94,7 +96,7 @@ static node *treeNode( int val, node *l, node *r )
 {
     node        *n;
 
-    n = (node *) malloc( sizeof( node ) );
+    n = (node *)malloc( sizeof( node ) );
 
     n->left  = l;
     n->right = r;
@@ -191,54 +193,53 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *) malloc( l->size );
+        l->buff = (char *)malloc( l->size );
     }
 
     for( ;; ) {
         if( os >= l->size - 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *) realloc( l->buff, l->size );
+            l->buff  = (char *)realloc( l->buff, l->size );
         }
         ch = fgetc( fp );
 
         if( ch == EOF ) {
             break;
-        } else if( (char) ch == '\n' ) {
+        } else if( (char)ch == '\n' ) {
             break;
         } else {
-            *(l->buff + os) = (char) ch;
+            *(l->buff + os) = (char)ch;
             os++;
         }
     }
     *(l->buff + os) = '\0';
 
-    return( (ch == EOF)  &&  (os == 0) );
+    return( (ch == EOF) && (os == 0) );
 }
 
-static void getFields( line *ln, node *list, char delim, char supp )
+static void getFields( line *ln, node *list, char delim, bool suppress )
 {
     char        *p, *op;
-    int          f;
-    int          low, high, fld;
+    bool        f;
+    int         low, high, fld;
 
     p  = strchr( ln->buff, delim );
 
-    if( p == NULL  &&  !supp ) {
+    if( p == NULL && !suppress ) {
         fprintf( stdout, "%s\n", ln->buff );
     } else if( p != NULL ) {
-        f = 0;
+        f = false;
         op = ln->buff;
         fld = 0;
-        while( list->right != NULL  &&  p != NULL ) {
+        while( list->right != NULL && p != NULL ) {
             low = list->left->v - 1;
             high = list->right->v - 1;
-
             while( fld <= high ) {
                 if( fld >= low ) {
                     if( f ) {
                         fprintf( stdout, "%c", delim );
                     }
-                    f = 1;
+                    f = true;
                     if( p == NULL ) {
                         fprintf( stdout, "%s", op );
                         break;
@@ -278,7 +279,7 @@ static void getChars( line *ln, node *list )
     fputc( '\n', stdout );
 }
 
-static void cutFile( FILE *fp, node *list, mode m, char delim, char supp )
+static void cutFile( FILE *fp, node *list, mode m, char delim, bool suppress )
 {
     line        ln;
 
@@ -289,14 +290,14 @@ static void cutFile( FILE *fp, node *list, mode m, char delim, char supp )
         if( m == CHAR ) {
             getChars( &ln, list );
         } else if( m == FIELD ) {
-            getFields( &ln, list, delim, supp );
+            getFields( &ln, list, delim, suppress );
         }
     }
 
     free( ln.buff );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
@@ -304,36 +305,38 @@ void main( int argc, char **argv )
     char       *list = NULL;            // List of fields to be retained.
     mode        m = UNDEF;
     char        delim = '\t';
-    char        suppress = 0;
-    char        regexp = 0;             // Don't to reg.exp. file matching.
+    bool        suppress;
+    bool        regexp;                 // Don't to reg.exp. file matching.
+
+    suppress = false;
+    regexp = false;
 
     argv = ExpandEnv( &argc, argv );
-
     for( ;; ) {
         ch = GetOpt( &argc, argv, "f:c:d:sX", usageMsg );
         if( ch == -1 ) {
             break;
         }
         switch( ch ) {
-            case 'f':
-                m = FIELD;
-                list = (char *) realloc( list, strlen(OptArg)*sizeof(char) + 1);
-                strcpy( list, OptArg );
-                break;
-            case 'c':
-                m = CHAR;
-                list = (char *) realloc( list, strlen(OptArg)*sizeof(char) + 1);
-                strcpy( list, OptArg );
-                break;
-            case 'd':
-                delim = *OptArg;
-                break;
-            case 's':
-                suppress = 1;
-                break;
-            case 'X':
-                regexp = 1;
-                break;
+        case 'f':
+            m = FIELD;
+            list = (char *)realloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            strcpy( list, OptArg );
+            break;
+        case 'c':
+            m = CHAR;
+            list = (char *)realloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            strcpy( list, OptArg );
+            break;
+        case 'd':
+            delim = *OptArg;
+            break;
+        case 's':
+            suppress = true;
+            break;
+        case 'X':
+            regexp = true;
+            break;
         }
     }
 
@@ -370,4 +373,5 @@ void main( int argc, char **argv )
     }
     treeFree( head );
     free( list );
+    return( 0 );
 }

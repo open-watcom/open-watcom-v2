@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -899,23 +900,161 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-void EnableDisableMessage( int enable, unsigned msg_num )
-/*******************************************************/
+static bool warnLevelValidate( unsigned level )
+/*********************************************/
+/* VALIDATE WARNING LEVEL, returns true ==> good level */
 {
-    unsigned char       mask;
+    bool ok;
 
-    if( msg_num < MESSAGE_COUNT ) {
-        if( MsgFlags == NULL ) {
-            MsgFlags = CMemAlloc( ( MESSAGE_COUNT + 7 ) / 8 );
-        }
-        mask = 1 << ( msg_num & 7 );
-        msg_num = msg_num >> 3;
-        if( enable ) {
-            MsgFlags[msg_num] &= ~mask;
+    ok = true;
+    if( level > WLEVEL_MAX ) {
+        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        ok = false;
+    }
+    return( ok );
+}
+
+static void changeLevel( unsigned level, int msg_index )
+/******************************************************/
+{
+    if( msg_level[msg_index].level != level ) {
+        msg_level[msg_index].level = level;
+        if( level < WLEVEL_MAX ) {
+            if( !msg_level[msg_index].enabled ) {
+                /* enable message */
+                msg_level[msg_index].enabled = true;
+            }
         } else {
-            MsgFlags[msg_num] |= mask;
+            if( msg_level[msg_index].enabled ) {
+                /* disable message */
+                msg_level[msg_index].enabled = false;
+            }
         }
     }
+}
+
+static void changeStatus( bool enabled, int msg_index )
+/*****************************************************/
+{
+    if( msg_level[msg_index].enabled != enabled ) {
+        msg_level[msg_index].enabled = enabled;
+    }
+}
+
+static void warnChangeLevel( unsigned level, msg_codes msgnum )
+/*************************************************************/
+/* CHANGE WARNING LEVEL FOR A MESSAGE */
+{
+    int     msg_index;
+
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        changeLevel( level, msg_index );
+        break;
+    }
+}
+
+static void warnChangeLevels( unsigned level )
+/********************************************/
+/* CHANGE WARNING LEVELS FOR ALL MESSAGES */
+{
+    int     msg_index;          // - index for number
+
+    for( msg_index = 0; msg_index < MESSAGE_COUNT; msg_index++ ) {
+        switch( msg_level[msg_index].type ) {
+        case MSG_TYPE_WARNING :
+        case MSG_TYPE_ANSI :
+        case MSG_TYPE_ANSIWARN :
+            changeLevel( level, msg_index );
+            break;
+        }
+    }
+}
+
+void WarnEnableDisable( bool enabled, msg_codes msgnum )
+/******************************************************/
+{
+    int     msg_index;
+
+    msg_index = GetMsgIndex( msgnum );
+    if( msg_index < 0 ) {
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        return;
+    }
+    switch( msg_level[msg_index].type ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
+        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        break;
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
+        changeStatus( enabled, msg_index );
+        break;
+    }
+}
+
+/*
+ * forms: #pragma warning # level   (change message # to have level "level)
+ *      : #pragma warning * level   (change all messages to have level "level)
+ *
+ *   "level" must be digit (0-5)
+ *   "level==0" implies warning will be treated as an error
+ */
+static bool pragWarning( void )
+/*****************************/
+/* PROCESS #PRAGMA WARNING */
+{
+    unsigned msgnum;            // - message number
+    unsigned level;             // - new level
+    bool change_all;            // - true ==> change all levels
+    bool ignore;
+
+    ignore = false;
+    change_all = false;
+    msgnum = 0;
+    PPCTL_ENABLE_MACROS();
+    NextToken();
+    if( CurToken == T_TIMES ) {
+        change_all = true;
+    } else if( CurToken == T_CONSTANT ) {
+        msgnum = Constant;
+    } else {
+        // ignore; MS or other vendor's #pragma
+        ignore = true;
+    }
+    if( !ignore ) {
+        NextToken();
+        if( CurToken == T_CONSTANT ) {
+            level = Constant;
+            NextToken();
+            if( warnLevelValidate( level ) ) {
+                if( change_all ) {
+                    warnChangeLevels( level );
+                } else {
+                    warnChangeLevel( level, msgnum );
+                }
+            }
+        } else {
+            CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+            NextToken();
+        }
+    }
+    PPCTL_DISABLE_MACROS();
+    return( ignore );
 }
 
 /* forms:
@@ -925,15 +1064,15 @@ void EnableDisableMessage( int enable, unsigned msg_num )
  *
  * disable/enable display of selected message number
  */
-static void pragEnableDisableMessage( int enable )
-/************************************************/
+static void pragEnableDisableMessage( bool enabled )
+/**************************************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPNextToken();
         while( CurToken == T_CONSTANT ) {
-            EnableDisableMessage( enable, Constant );
+            WarnEnableDisable( enabled, Constant );
             PPNextToken();
             if( CurToken == T_COMMA ) {
                 PPNextToken();
@@ -1116,7 +1255,7 @@ static void pragDataSeg( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( CurToken == T_LEFT_PAREN ) {
-        segid = SEG_UNKNOWN;
+        segid = SEG_NULL;
         PPNextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );
@@ -1499,10 +1638,16 @@ void CPragma( void )
             pragCodeSeg();
         } else if( pragmaNameRecog( "data_seg" ) ) {
             pragDataSeg();
+        } else if( pragmaNameRecog( "warning" ) ) {
+            if( pragWarning() ) {
+                /* ignore #pragma warning */
+                /* skip rest of line */
+                check_end = false;
+            }
         } else if( pragmaNameRecog( "disable_message" ) ) {
-            pragEnableDisableMessage( 0 );
+            pragEnableDisableMessage( false );
         } else if( pragmaNameRecog( "enable_message" ) ) {
-            pragEnableDisableMessage( 1 );
+            pragEnableDisableMessage( true );
         } else if( pragmaNameRecog( "message" ) ) {
             pragMessage();
         } else if( pragmaNameRecog( "intrinsic" ) ) {

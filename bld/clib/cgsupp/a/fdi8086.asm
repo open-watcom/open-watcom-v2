@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -52,15 +53,17 @@ include struct.inc
         defpe   __FDI8
         push    SI                      ; save register
         mov     SI,7FE0h + (63 * 32)    ; maximum exponent 2^63 allowed
-                                        ; shifted and offset
-        jmp     __FD8                   ; continue
+        call    __FD8                   ; convert float to signed __int64
+        pop     SI                      ; restore register
+        ret                             ; return
         endproc __FDI8
 
         defpe   __FDU8
         push    SI                      ; save register
-        mov     SI,7FE0h + (64 * 32)    ; maximum exponent 2^63 allowed
-                                        ; shifted and offset
-;       jmp     __FD8                   ; fall through
+        mov     SI,7FE0h + (64 * 32)    ; maximum exponent 2^64 allowed
+        call    __FD8                   ; convert float to unsigned __int64
+        pop     SI                      ; restore register
+        ret                             ; return
         endproc __FDU8
 
 __FD8   proc    near
@@ -143,7 +146,6 @@ ret_zero:
         xor     bx,bx           ; :
         xor     cx,cx           ; :
         xor     dx,dx           ; :
-        pop     si              ; :
         ret                     ; :
 
 ret_max:
@@ -154,7 +156,6 @@ ret_max:
         mov     cx,ax           ; :
         mov     dx,ax           ; :
         rcr     ax,1            ; 0x7FFF if signed, 0xFFFF if unsigned
-        pop     si              ; restore register
         ret                     ; return
 
 sigbyte_table:
@@ -175,7 +176,6 @@ byte0_significant:
         xor     cx,cx           ; zero bytes 2-3
         xor     bx,bx           ; zero bytes 4-5
         xor     ax,ax           ; zero bytes 6-7
-        pop     si              ; restore register
         ret                     ; return
 
 byte1_significant:
@@ -184,7 +184,6 @@ byte1_significant:
         xor     cx,cx           ; zero bytes 2-3
         xor     bx,bx           ; zero bytes 4-5
         xor     ax,ax           ; zero bytes 6-7
-        pop     si              ; restore register
         ret                     ; return
 
 byte2_significant:
@@ -193,7 +192,6 @@ byte2_significant:
         xor     ch,ch           ; zero byte 3
         xor     ax,ax           ; zero bytes 6-7
         xor     bx,bx           ; zero bytes 4-5
-        pop     si              ; restore register
         ret                     ; return
 
 byte3_significant:
@@ -203,7 +201,6 @@ byte3_significant:
         mov     ch,al           ; move sig byte 3
         xor     bx,bx           ; zero bytes 4-5
         xor     ax,ax           ; zero bytes 6-7
-        pop     si              ; restore register
         ret                     ; return
 
 byte4_significant:
@@ -212,7 +209,6 @@ byte4_significant:
         mov     bl,al           ; move sig byte 4
         xor     bh,bh           ; zero byte 5
         xor     ax,ax           ; zero bytes 6-7
-        pop     si              ; restore register
         ret                     ; return
 
 byte5_significant:
@@ -223,12 +219,10 @@ byte5_significant:
         mov     bl,bh           ; move sig byte 4
         mov     bh,al           ; move sig byte 5
         xor     ax,ax           ; zero bytes 6-7
-        pop     si              ; restore register
         ret                     ; return
 
 byte6_significant:
         xor     ah,ah           ; zero byte 7
-        pop     si              ; restore register
         ret                     ; return
 
 byte7_significant:
@@ -239,7 +233,6 @@ byte7_significant:
         xchg    ch,cl           ; :
         xchg    cl,dh           ; :
         xchg    dh,dl           ; :
-        pop     si              ; restore register
         ret                     ; return
 
         endproc __FDAbs

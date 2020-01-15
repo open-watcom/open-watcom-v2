@@ -37,6 +37,10 @@ _WCRTDATA char volatile __WD_Present = 0;
 
 _WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
 {
+#ifdef __AXP__
+    /* unused parameters */ (void)string;
+#endif
+
     if( __WD_Present ) {
         EnterDebuggerWithSignature( string );
         return( 1 );

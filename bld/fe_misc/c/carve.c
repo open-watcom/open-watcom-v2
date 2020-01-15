@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,7 +462,7 @@ carve_t CarveRestart( carve_t cv )
 void *CarveMapIndex( carve_t cv, void *aindex )
 /*********************************************/
 {
-    unsigned index = (unsigned)(pointer_int)aindex;
+    unsigned index = (unsigned)(pointer_uint)aindex;
     blk_t *block;
     blk_t **block_map;
     unsigned block_index;
@@ -584,7 +585,7 @@ void CarveMapOptimize( carve_t cv, cv_index last_valid_index )
         return;
     }
     // make sure there are enough blocks allocated
-    CarveMapIndex( cv, (void *)(pointer_int)last_valid_index );
+    CarveMapIndex( cv, (void *)(pointer_uint)last_valid_index );
     nmaps = GET_BLOCK( last_valid_index );
     init = _MemoryAllocate( nmaps * sizeof( blk_t * ) );
     cv->blk_map = init;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "argvrx.h"
 #include "getopt.h"
+
 
 typedef struct inpfile {
     struct inpfile *next;
@@ -67,28 +70,28 @@ static void free_list( void )
     }
 }
 
-void main( int argc, char **argv )
-/********************************/
+int main( int argc, char **argv )
+/*******************************/
 {
     FILE        *fp;
     int         c;
     int         ch;
     unsigned    nfiles;
-    int         rxflag;
+    bool        rxflag;
     inpfile     **curr;
     struct {
         int something_read : 1;
         int something_before : 1;
     } flags;
 
-    rxflag = 0;
+    rxflag = false;
     for( ;; ) {
         ch = GetOpt( &argc, argv, "X", usageMsg );
         if( ch == -1 ) {
             break;
         }
         if( ch == 'X' ) {
-            rxflag = 1;
+            rxflag = true;
         }
     }
 
@@ -145,9 +148,10 @@ void main( int argc, char **argv )
                 flags.something_before = 1;
             }
         }
-        if( nfiles == 0 ) break;
+        if( nfiles == 0 )
+            break;
         putchar( '\n' );
     }
     free_list();
-    exit(EXIT_SUCCESS);
+    return(EXIT_SUCCESS);
 }

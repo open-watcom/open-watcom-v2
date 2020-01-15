@@ -116,8 +116,8 @@ static uint_32 FloorLog2( uint_32 value )
     return( log );
 } /* FloorLog2 */
 
-extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
-/***************************************************************/
+uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
+/********************************************************/
 /* filelen is the length of the file without any padding, numobjs is the */
 /* number of objects that must appear on an alignment boundary */
 {
@@ -162,8 +162,8 @@ RcStatus PadExeData( FILE *fp, long length )
     return( RS_OK );
 } /* PadExeData */
 
-extern void CheckDebugOffset( ExeFileInfo * exe )
-/***********************************************/
+void CheckDebugOffset( ExeFileInfo * exe )
+/****************************************/
 {
     uint_32     curroffset;
 
@@ -173,8 +173,8 @@ extern void CheckDebugOffset( ExeFileInfo * exe )
     }
 } /* CheckDebugOffset */
 
-extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
-/*************************************************************/
+unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
+/******************************************************/
 {
     pe_object           *objects;
     unsigned_16         obj_cnt;

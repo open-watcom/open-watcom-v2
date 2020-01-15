@@ -299,7 +299,7 @@ static int cmpName( const void *lp, const void *rp )
 
 pch_status PCHInitNames( bool writing )
 {
-    int i;
+    unsigned i;
     idname *name;
     idname **p;
 
@@ -317,7 +317,6 @@ pch_status PCHInitNames( bool writing )
     qsort( nameTranslateTable, nameCount, sizeof( idname * ), cmpName );
 #ifndef NDEBUG
     {
-        int i;
         for( i = 1; i < nameCount; ++i ) {
             if( nameTranslateTable[i - 1] == nameTranslateTable[i] ) {
                 CFatal( "two identical names in translation table" );
@@ -364,7 +363,7 @@ pch_status PCHReadNames( void )
 pch_status PCHWriteNames( void )
 {
     size_t len;
-    int i;
+    unsigned i;
     idname *name;
     idname **p;
 

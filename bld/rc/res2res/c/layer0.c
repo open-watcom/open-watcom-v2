@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "rcrtns.h"
 #include "reserr.h"
+#include "trmemcvr.h"
 
 #include "clibext.h"
 

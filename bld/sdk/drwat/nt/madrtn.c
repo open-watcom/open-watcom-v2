@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #include "madcli.h"
 
 msglist MADMsgs[] = {
-    #define pick( r, e, j ) MAD_##r,(char *)(pointer_int)r,
+    #define pick( r, e, j ) MAD_##r,(char *)(pointer_uint)r,
     #include "mad.str"
     #undef pick
     0 , NULL
@@ -102,6 +103,8 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle mth,
     addr_ptr            item;
     mad_type_info       host_mti;
 
+    /* unused parameters */ (void)lk;
+
     MADTypeInfo( mth, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeConvert( &host_mti, &a, &mti, &item, 0 );
@@ -111,17 +114,23 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle mth,
 
 mad_status MADCLIENTRY( MemExpr )( const char *expr, mad_radix radix, address *a )
 {
+    /* unused parameters */ (void)expr; (void)radix; (void)a;
+
     //stub
     return( MS_OK );
 }
 
 void MADCLIENTRY( AddrSection )( address *addr )
 {
+    /* unused parameters */ (void)addr;
+
     //stub
 }
 
 mad_status      MADCLIENTRY( AddrOvlReturn )( address *addr )
 {
+    /* unused parameters */ (void)addr;
+
     //stub
     return( MS_FAIL );
 }
@@ -130,13 +139,15 @@ mad_status      MADCLIENTRY( AddrOvlReturn )( address *addr )
 
 mad_status MADCLIENTRY( AddString )( mad_string mstr, const char *str )
 {
+    /* unused parameters */ (void)mstr; (void)str;
+
     //stub
     return( MS_FAIL );
 }
 
 system_config *MADCLIENTRY( SystemConfig )( void )
 {
-    return &SysConfig;
+    return( &SysConfig );
 }
 
 size_t MADCLIENTRY( ReadMem )( address a, size_t size, void *buff )

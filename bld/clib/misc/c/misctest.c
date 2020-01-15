@@ -160,6 +160,8 @@ void TestAssert1( int i )
 #include <assert.h>
 void TestAssert2( int i )
 {
+    /* unused parameters */ (void)i;
+
     assert( i == 0 );                           /* must not do nothing */
 }
 
@@ -178,6 +180,8 @@ void TestAssert( int i )
 /* This signal handler should be called at the end of this program */
 void abort_handler( int sig )
 {
+    /* unused parameters */ (void)sig;
+
     printf( "Note: \"Assertion failed\" message should precede this text.\n" );
 
     /*** Print a pass/fail message and quit ***/
@@ -201,6 +205,8 @@ int main( int argc, char *argv[] )
     }
 #endif
 
+    /* unused parameters */ (void)argc;
+
     /*** Initialize ***/
     strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
 
@@ -216,11 +222,11 @@ int main( int argc, char *argv[] )
 #ifdef __RDOS__ /* RDOS does not support signals! */
     printf( "Tests completed (%s).\n", ProgramName );
     return( 0 );
-#else    
+#else
     signal( SIGABRT, abort_handler );           /* will be called via abort() */
     TestAssert( 1 );
 
     VERIFY( 0 );                                /* should never get here! */
     return( EXIT_FAILURE );
-#endif    
+#endif
 }

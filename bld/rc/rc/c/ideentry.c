@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-	#include <malloc.h>            /* necessary for _heapshrink() */
-#include <process.h>
+    #include <malloc.h>            /* necessary for _heapshrink() */
+    #include <process.h>
 #endif
 #include "global.h"
 #include "errprt.h"
@@ -46,11 +47,14 @@
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
 #define PRINTF_BUF_SIZE         2048
+
+#define IDEFN(x)        IdeCbs->x
 
 extern void InitGlobs( void );
 extern void FiniGlobs( void );
@@ -135,7 +139,7 @@ int RcMsgFprintf( OutPutInfo *info, const char *format, ... )
         if( *end == '\n' ) {
             *end = '\0';
             setPrintInfo( &msginfo, info, start );
-            IdeCbs->PrintWithInfo( IdeHdl, &msginfo );
+            IDEFN( PrintWithInfo )( IdeHdl, &msginfo );
             start = end + 1;
         } else if( *end == '\0' ) {
             len = strlen( start );
@@ -154,7 +158,7 @@ const char *RcGetEnv( const char *name )
     const char  *val;
 
     if( IdeCbs != NULL && !initInfo->ignore_env ) {
-        if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
     }
@@ -220,7 +224,7 @@ static bool console_tty = false;
 static void RcIoPrintUsage( void )
 /********************************/
 {
-    char        progfname[_MAX_FNAME];
+    PGROUP2     pg;
     int         index;
     char        buf[256];
     char        imageName[_MAX_PATH];
@@ -238,12 +242,12 @@ static void RcIoPrintUsage( void )
         ConsoleMessage( "\n" );
         ++count;
     }
-    _splitpath( imageName, NULL, NULL, progfname, NULL );
-    strlwr( progfname );
+    _splitpath2( imageName, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    strlwr( pg.fname );
 
     index = USAGE_MSG_FIRST;
     GetRcMsg( index, buf, sizeof( buf ) );
-    ConsoleMessage( buf, progfname );
+    ConsoleMessage( buf, pg.fname );
     ConsoleMessage( "\n" );
     ++count;
     for( ++index; index <= USAGE_MSG_LAST; index++ ) {
@@ -279,6 +283,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     bool        pass1;
     int         i;
     int         rc;
+    char        *p;
 
     rc = 1;
     curBufPos = formatBuffer;
@@ -300,13 +305,15 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                         break;
                     }
                 }
-                if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
-                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
+                if( initInfo != NULL && initInfo->ver > 1 && !initInfo->cmd_line_has_files ) {
+                    p = infile + 1;
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
                         infile[0] = '\"';
                         strcat( infile, "\"" );
                         argv[argc++] = infile;
                     }
-                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
+                    p = outfile + 5;
+                    if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)&p ) ) {
                         if( pass1 ) {
                             strcpy( outfile, "-fo=\"" );
                         } else {
@@ -361,7 +368,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     /* unused parameters */ (void)hdl;
 
-    if( info == NULL || info->ver < 2 ) {
+    if( info->ver < 2 ) {
         return( true );
     }
     if( info->ignore_env ) {
@@ -369,13 +376,13 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
         IgnoreCWD = true;
     }
     if( info->cmd_line_has_files ) {
-//        CompFlags.ide_cmd_line = true;
+//        CompFlags.ide_cmd_line_has_files = true;
     }
-    if( info->ver >= 3 ) {
+    if( info->ver > 2 ) {
         if( info->console_output ) {
             console_tty = true;
         }
-        if( info->ver >= 4 ) {
+        if( info->ver > 3 ) {
             if( info->progress_messages ) {
 //                CompFlags.progress_messages = true;
             }
@@ -418,6 +425,7 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
     _argc = argc;
     _argv = argv;
 #endif
+
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;

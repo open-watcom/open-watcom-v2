@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,6 +161,28 @@ static void WalkSectModsList( section *sect, void *mods_walk_cb )
 {
     CurrSect = sect;
     WalkModsList( sect->mods, ((mods_walk_data *)mods_walk_cb)->cbfn );
+}
+
+void WalkAllSects( void (*rtn)( section * ) )
+/*******************************************/
+{
+    rtn( Root );
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        WalkAreas( Root->areas, rtn );
+    }
+#endif
+}
+
+void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
+/*******************************************************************/
+{
+    rtn( Root, parm );
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        ParmWalkAreas( Root->areas, rtn, parm );
+    }
+#endif
 }
 
 void WalkMods( mods_walk_fn *cbfn )

@@ -51,7 +51,7 @@ NCURSES_EXPORT_VAR(long) _nc_outchars = 0;
 static FILE *tracefp;           /* default to writing to stderr */
 
 NCURSES_EXPORT(void)
-trace(const unsigned int tracelevel GCC_UNUSED)
+trace(const unsigned int tracelevel)
 {
     static bool been_here = false;
     static char my_name[] = "trace";

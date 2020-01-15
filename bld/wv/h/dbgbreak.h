@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,28 +36,28 @@
 
 typedef struct
 {
-    bool    active              : 1;
-    bool    resume              : 1;
-    bool    silent              : 1;
-    bool    hit                 : 1;
+    boolbit     active              : 1;
+    boolbit     resume              : 1;
+    boolbit     silent              : 1;
+    boolbit     hit                 : 1;
 
-    bool    in_place            : 1;
-    bool    has_value           : 1;
-    bool    has_address         : 1;
-    bool    unmapped            : 1;
+    boolbit     in_place            : 1;
+    boolbit     has_value           : 1;
+    boolbit     has_address         : 1;
+    boolbit     unmapped            : 1;
 
-    bool    cmds_pushed         : 1;
-    bool    expr_true           : 1;
-    bool    expr_error          : 1;
-    bool    cmd_error           : 1;
+    boolbit     cmds_pushed         : 1;
+    boolbit     expr_true           : 1;
+    boolbit     expr_error          : 1;
+    boolbit     cmd_error           : 1;
 
-    bool    source_open         : 1;
-    bool    activate_on_remap   : 1;
-    bool    autodestruct        : 1;
-    bool    use_countdown       : 1;
+    boolbit     source_open         : 1;
+    boolbit     activate_on_remap   : 1;
+    boolbit     autodestruct        : 1;
+    boolbit     use_countdown       : 1;
 
-    bool    use_cmds            : 1;
-    bool    use_condition       : 1;
+    boolbit     use_cmds            : 1;
+    boolbit     use_condition       : 1;
 } brk_status;
 
 #define NullStatus( b ) memset( &((b)->status), 0, sizeof( (b)->status ) )

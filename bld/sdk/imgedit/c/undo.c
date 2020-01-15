@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +195,7 @@ static an_undo_stack *getStack( HWND hwnd )
  */
 static void checkIfSaved( img_node *node )
 {
-    BOOL                issaved_flag;
+    bool                issaved_flag;
     an_undo_stack       *stack;
 
     stack = getTopStack( node->hwnd );
@@ -209,7 +209,7 @@ static void checkIfSaved( img_node *node )
      * it.
      */
     if( node->issaved ) {
-        SetIsSaved( node->hwnd, FALSE );
+        SetIsSaved( node->hwnd, false );
         while( stack != NULL ) {
             stack->modified = true;
             stack = stack->nexticon;
@@ -217,14 +217,14 @@ static void checkIfSaved( img_node *node )
         return;
     }
 
-    issaved_flag = TRUE;
+    issaved_flag = true;
     while( stack != NULL ) {
         if( stack->opcount == 0 && !stack->modified ) {
-            issaved_flag = TRUE & issaved_flag;
+            issaved_flag = issaved_flag;
         } else {
-            issaved_flag = FALSE;
+            issaved_flag = false;
             if( node->issaved ) {
-                SetIsSaved( node->hwnd, FALSE );
+                SetIsSaved( node->hwnd, false );
             }
             break;
         }
@@ -270,7 +270,7 @@ static void deleteFromBottom( an_undo_stack *stack )
  *               bitmaps are the new bitmaps for the active image, so we
  *               don't want to delete them
  */
-static void moveFromTop( an_undo_stack *stack, BOOL add_to_redo )
+static void moveFromTop( an_undo_stack *stack, bool add_to_redo )
 {
     an_undo_node        *new_undo;
 
@@ -376,7 +376,7 @@ void RecordImage( HWND hwnd )
     stack->opcount++;
 
     if( image_node->issaved ) {
-        SetIsSaved( image_node->hwnd, FALSE );
+        SetIsSaved( image_node->hwnd, false );
     }
 
 } /* RecordImage */
@@ -405,7 +405,7 @@ void UndoOp( void )
         return;
     }
 
-    moveFromTop( stack, TRUE );
+    moveFromTop( stack, true );
     if( stack->top_undo == NULL ) {
         copyBitmaps( node, stack->firstxor, stack->firstand );
     } else {
@@ -574,7 +574,7 @@ void DeleteUndoStack( HWND hwnd )
         max_ops = stack->opcount;
         i = 0;
         while( stack->top_undo != NULL ) {
-            moveFromTop( stack, FALSE );
+            moveFromTop( stack, false );
             stack->opcount--;
             percent_complete = (i * 100) / max_ops;
             IEPrintAmtText( WIE_CLOSINGIMAGEPERCENT, percent_complete );
@@ -643,7 +643,7 @@ void RedoOp( void )
     BlowupImage( node->hwnd, NULL );
 
     if( stack->original_xor != NULL && node->issaved ) {
-        SetIsSaved( node->hwnd, FALSE );
+        SetIsSaved( node->hwnd, false );
     }
 
 } /* RedoOp */
@@ -660,7 +660,7 @@ void ResetUndoStack( img_node *node )
     deleteRedoStack( stack );
 
     while( stack->top_undo != NULL ) {
-        moveFromTop( stack, FALSE );
+        moveFromTop( stack, false );
         stack->opcount--;
     }
 
@@ -705,7 +705,7 @@ void RestoreImage( void )
 
     RecordImage( node->hwnd );
     if( node->imgtype == BITMAP_IMG || node->imgtype == CURSOR_IMG ) {
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
     } else {
         checkIfSaved( node );
     }
@@ -801,7 +801,7 @@ void AddIconUndoStack( img_node *node )
      * been modified.  Once this is set, the issaved flag cannot be set to
      * true. (as in the case when an icon is deleted from the current image)
      */
-    SetIsSaved( node->hwnd, FALSE );
+    SetIsSaved( node->hwnd, false );
     stack = getTopStack( node->hwnd );
     while( stack != NULL ) {
         stack->modified = true;
@@ -860,7 +860,7 @@ void DelIconUndoStack( img_node *node, int index )
     deleteRedoStack( stack );
 
     while( stack->top_undo != NULL ) {
-        moveFromTop( stack, FALSE );
+        moveFromTop( stack, false );
         stack->opcount--;
     }
 
@@ -877,7 +877,7 @@ void DelIconUndoStack( img_node *node, int index )
      * been modified.  Once this is set, the issaved flag cannot be set to
      * true (as in the case when an icon is deleted from the current image).
      */
-    SetIsSaved( node->hwnd, FALSE );
+    SetIsSaved( node->hwnd, false );
     stack = getTopStack( node->hwnd );
     while( stack != NULL ) {
         stack->modified = true;
@@ -893,7 +893,7 @@ void DelIconUndoStack( img_node *node, int index )
  *              - also called when the record image routine realizes that memory
  *                is getting low
  */
-BOOL RelieveUndos( void )
+bool RelieveUndos( void )
 {
     an_undo_stack       *stack;
     an_undo_stack       *iconstack;
@@ -920,7 +920,7 @@ BOOL RelieveUndos( void )
     if( max_ops == 0 ) {
         PrintHintTextByID( WIE_NOUNDOSRECORDED, NULL );
         _wpi_setcursor( prevcursor );
-        return( FALSE );
+        return( false );
     }
     if( max_ops > 5 ) {
         for( i = 0; i < 5; i++ ) {
@@ -932,6 +932,6 @@ BOOL RelieveUndos( void )
         delstack->opcount--;
     }
     _wpi_setcursor( prevcursor );
-    return( TRUE );
+    return( true );
 
 } /* RelieveUndos */

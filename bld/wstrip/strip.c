@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,7 @@
 #include "tistrail.h"
 #include "wstrip.h"
 #include "wressetr.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -65,6 +66,8 @@
 #define SEEK_POSBACK(p) (-(long)(p))
 
 #define CopyData(i,o)   CopyDataLen( i, o, ~0UL )
+
+#define ARRAYSIZE(a)    (sizeof( a ) / sizeof( a[0] ))
 
 #include "pushpck1.h"
 typedef struct WResHeader {
@@ -106,15 +109,12 @@ static const char *ExtLst[] = {
 #ifndef __UNIX__
     ".qnx", "",
 #endif
-    NULL
 };
 
 static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
 
 static fdata   finfo, fin, fout, ftmp;
-
-static char    fbuff[_MAX_PATH2];
 
 static bool quiet = false;
 static bool nodebug_ok = false;
@@ -395,11 +395,7 @@ int main( int argc, char *argv[] )
     int                 j;
     size_t              k;
     size_t              argvlen;
-    char                *drive;
-    char                *dir;
-    char                *name;
-    char                *ext;
-    const char          *ext1;
+    PGROUP2             pg;
     int                 add_file;
     struct stat         other_stat;
     struct utimbuf      uptime;
@@ -411,11 +407,11 @@ int main( int argc, char *argv[] )
     _argc = argc;
 #endif
 
+#if !defined( INCL_MSGTEXT )
     if( !Msg_Init() ) {
-#ifndef BOOTSTRAP
         return( EXIT_FAILURE );
-#endif
     }
+#endif
     add_file = 0;
     j = argc - 1;
     while( j > 0 ) {
@@ -459,11 +455,11 @@ int main( int argc, char *argv[] )
     }
     finfo.name[0] = '\0';
     mtime = 0;
-    for( i = 0; (ext1 = ExtLst[i]) != NULL; ++i ) {
+    for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
         struct stat     in_stat;
 
         strcpy( fin.name, argv[1] );
-        has_ext = Suffix( fin.name, ext1 );
+        has_ext = Suffix( fin.name, ExtLst[i] );
         if( stat( fin.name, &in_stat ) == 0 ) {
             mtime = in_stat.st_mtime;
             break;
@@ -472,25 +468,25 @@ int main( int argc, char *argv[] )
             break;
         }
     }
-    if( ext1 == NULL ) {
+    if( i == ARRAYSIZE( ExtLst ) ) {
         Fatal( MSG_CANT_FIND, argv[1] );
     }
     if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
         if( stat( argv[2], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fin.name, fbuff, &drive, &dir, &name, &ext );
-            _makepath( fout.name, NULL, argv[2], name, ext );
+            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( fout.name, NULL, argv[2], pg.fname, pg.ext );
         } else {
             strcpy( fout.name, argv[2] );
-            _splitpath2( fin.name, fbuff, &drive, &dir, &name, &ext );
-            Suffix( fout.name, ext );
+            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            Suffix( fout.name, pg.ext );
         }
     } else {
         strcpy( fout.name, fin.name );
     }
     if( argc >= 4 ) {
         if( stat( argv[3], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fout.name, fbuff, &drive, &dir, &name, &ext );
-            _makepath( finfo.name, NULL, argv[3], name, NULL );
+            _splitpath2( fout.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+            _makepath( finfo.name, NULL, argv[3], pg.fname, NULL );
         } else {
             strcpy( finfo.name, argv[3] );
         }
@@ -530,6 +526,8 @@ int main( int argc, char *argv[] )
     uptime.modtime = mtime;
     utime( fout.name, &uptime );
 
+#if !defined( INCL_MSGTEXT )
     Msg_Fini();
+#endif
     return( EXIT_SUCCESS );
 }

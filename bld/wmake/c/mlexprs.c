@@ -108,7 +108,7 @@ MTOKEN_T LexPath( STRM_T s )
  */
 {
     char        path[_MAX_PATH];
-    bool        string_open;
+    bool        dquote;
     unsigned    pos;
     VECSTR      vec;                /* we'll store file/path here */
 
@@ -144,7 +144,7 @@ MTOKEN_T LexPath( STRM_T s )
          * is checked against sisfilec().
          */
 
-        string_open = false;
+        dquote = false;
 
         while( pos < _MAX_PATH && s != '\n' && s != STRM_END ) {
             if( s == '\\' ) {
@@ -166,9 +166,9 @@ MTOKEN_T LexPath( STRM_T s )
                 }
             } else {
                 if( s == '\"' ) {
-                    string_open = !string_open;
+                    dquote = !dquote;
                 } else {
-                    if( string_open ) {
+                    if( dquote ) {
                         path[pos++] = s;
                     } else if( sisfilec( s ) ) {
                         path[pos++] = s;
@@ -181,7 +181,7 @@ MTOKEN_T LexPath( STRM_T s )
             s = PreGetCHR();
         }
 
-        if( string_open ) {
+        if( dquote ) {
             FreeSafe( FinishVec( vec ) );
             PrtMsg( FTL | LOC | ERROR_STRING_OPEN );
             ExitFatal();
@@ -518,8 +518,8 @@ STATIC bool checkMacro( STRM_T s )
 #endif
 
 
-STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
-/****************************************************
+STATIC char *deMacroDoubleQuote( bool start_dquote )
+/***************************************************
  * This procedure takes care of double quotes in the stream
  * Note: each double quote must be paired with a double quote in the
  * input stream or this will expand until the EOL a backlash double
@@ -532,7 +532,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
     VECSTR  OutString;
     int     pos;
     STRM_T  s;
-    bool    StartDoubleQuote;
+    bool    dquote;
 
 
     s = PreGetCHR();
@@ -560,11 +560,11 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
         p = DeMacro( MAC_WS );
     }
 
-    StartDoubleQuote = IsDoubleQuote;
+    dquote = start_dquote;
 
     for( current = p; *current != NULLCHAR; ++current ) {
         if( *current == '\"' ) {
-            if( !IsDoubleQuote ) {
+            if( !dquote ) {
                 /* Found the start of a Double Quoted String */
                 if( current != p ) {
                     UnGetCHR( STRM_MAGIC );
@@ -573,7 +573,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
                     *current = NULLCHAR;
                     return( p );
                 }
-                IsDoubleQuote = true;
+                dquote = true;
             } else {
                 /* Found the end of the Double Quoted String */
                 if( *(current + 1) != NULLCHAR ) {
@@ -587,7 +587,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
         }
     }
 
-    if( !StartDoubleQuote && !IsDoubleQuote ) {
+    if( !start_dquote && !dquote ) {
         /* there are no double quotes in the text */
         /* so return text as is */
         return( p );
@@ -605,7 +605,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
     WriteVec( OutString, p );
     FreeSafe( p );
     WriteVec( OutString, buffer );
-    p = DeMacroDoubleQuote( true );
+    p = deMacroDoubleQuote( true );
     WriteVec( OutString, p );
     FreeSafe( p );
     return( FinishVec( OutString ) );
@@ -647,7 +647,7 @@ MTOKEN_T LexParser( STRM_T s )
             return( TOK_EOL );
         case STRM_TMP_LEX_START:
         case STRM_MAGIC:
-            p = DeMacroDoubleQuote( false );  /* expand to next white space */
+            p = deMacroDoubleQuote( false );  /* expand to next white space */
             if( *p == NULLCHAR ) {  /* already at ws */
                 FreeSafe( p );
                 s = PreGetCHR();    /* eat the ws */
@@ -663,7 +663,7 @@ MTOKEN_T LexParser( STRM_T s )
                     return( TOK_END );
                 }
                 UnGetCHR( s );
-                p = DeMacroDoubleQuote( false );
+                p = deMacroDoubleQuote( false );
             }
             UnGetCHR( STRM_MAGIC ); /* mark spot we have to expand from nxt */
             InsString( p, true );   /* put expansion in stream */

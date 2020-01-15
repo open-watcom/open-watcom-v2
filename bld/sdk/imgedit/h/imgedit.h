@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
 #include "macros.h"
 #ifdef __OS2_PM__
@@ -46,6 +47,7 @@
 #include "wrdll.h"
 #include "wpi.h"
 #include "img_wpi.h"
+#include "imgtypes.h"
 #include "fill.h"
 #include "bits.h"
 #include "dialogs.rh"
@@ -73,13 +75,7 @@
 
 #define FILE_SAVE       2
 #define DIM_DEFAULT     32              // This is temporarily the default
-#define UNDEF_IMG       0
-#define BITMAP_IMG      1
-#define ICON_IMG        2
-#define CURSOR_IMG      3
-#define RESOURCE_IMG    4
 #define NUMBER_OF_TOOLS 10
-#define MAX_IMAGES      5               // Check this
 #define HINT_TEXT_LEN   40
 
 #define IDM_FIRSTCHILD          100
@@ -91,6 +87,8 @@
 
 #define RGBQ_SIZE( bc )         ((unsigned_32)sizeof( RGBQUAD ) * ((unsigned_32)1 << (bc)))
 #define IMGED_DIM               WPI_RECTDIM
+
+#define CMPFEXT(e,c)            (e[0] == '.' && stricmp(e + 1, c) == 0)
 
 /*
  * typedefs
@@ -111,14 +109,14 @@ typedef struct {
 } palette_box;
 
 typedef struct list_element {
-    wie_imgtype                 imgtype;
+    image_type                  imgtype;
     HWND                        hwnd;
     HWND                        viewhwnd;
     short                       width;
     short                       height;
     short                       bitcount;
     char                        fname[_MAX_PATH];
-    BOOL                        issaved;
+    bool                        issaved;
     WPI_POINT                   hotspot;
     HBITMAP                     hxorbitmap;
     HBITMAP                     handbitmap;
@@ -132,14 +130,13 @@ typedef struct list_element {
 } img_node;
 
 typedef struct {
-    BOOL        ismaximized;
     short       x_pos;
     short       y_pos;
     short       last_xpos;
     short       last_ypos;
     short       width;
     short       height;
-    BOOL        show_state;
+    short       show_state;
     short       tool_xpos;
     short       tool_ypos;
     short       pal_xpos;
@@ -147,9 +144,10 @@ typedef struct {
     short       view_xpos;
     short       view_ypos;
     short       shift;
-    BOOL        square_grid;
     short       brush_size;
-    BOOL        grid_on;
+    boolbit     ismaximized     : 1;
+    boolbit     square_grid     : 1;
+    boolbit     grid_on         : 1;
 } config_info;
 
 typedef struct {
@@ -157,7 +155,7 @@ typedef struct {
     int         paste;
     int         rotate;
     int         viewwnd;
-    BOOL        wrapshift;
+    bool        wrapshift;
     char        opendir[_MAX_PATH];
     char        savedir[_MAX_PATH];
     char        color[10];
@@ -180,7 +178,7 @@ extern WPI_FONT         SmallFont;
 extern int              ColorPlanes;
 extern int              BitsPerPixel;
 extern config_info      ImgedConfigInfo;
-extern BOOL             ImgedIsDDE;
+extern bool             ImgedIsDDE;
 extern char             *IEAppTitle;
 extern char             *IEImageFilter;
 extern char             *IEPaletteFilter;
@@ -197,12 +195,12 @@ extern int              StatusWidth;
 
 /* ieglob.c */
 void    IEFiniGlobalStrings( void );
-BOOL    IEInitGlobalStrings( void );
+bool    IEInitGlobalStrings( void );
 
 /* ieproc.c */
 WPI_EXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void CALLBACK       IEHelpCallBack( void );
-void                IEEnableMenuInput( BOOL enable );
+void                IEEnableMenuInput( bool enable );
 void                IEHelpRoutine( void );
 void                IEHelpSearchRoutine( void );
 void                IEHelpOnHelpRoutine( void );
@@ -217,10 +215,10 @@ void                SetRGBValues( RGBQUAD *argbvals, int upperlimit );
 WPI_EXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 WPI_EXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorControls( HWND hparent );
-void                DisplayScreenClrs( BOOL fdisplay );
+void                DisplayScreenClrs( bool fdisplay );
 void                SetNumColors( int number_of_colors );
 void                SetScreenClr( COLORREF screen_color );
-void                ShowNewColor( int index, COLORREF newcolor, BOOL repaint );
+void                ShowNewColor( int index, COLORREF newcolor, bool repaint );
 void                SetInitScreenColor( COLORREF color );
 
 /* curclr.c */
@@ -241,16 +239,16 @@ void            SetViewBkColor( COLORREF color );
 void            ResetViewWindow( HWND hwnd );
 void            HideViewWindow( HWND hwnd );
 void            RePositionViewWnd( img_node *node );
-void            SetViewWindow( BOOL justone );
+void            SetViewWindow( bool justone );
 void            ShowViewWindows( HWND hwnd );
-BOOL            IsOneViewWindow( void );
+bool            IsOneViewWindow( void );
 
 /* ieutil.c */
 HBITMAP         CreateViewBitmap( img_node *node );
 HBITMAP         DuplicateBitmap( HBITMAP hbitmap);
 HBITMAP         EnlargeImage( HWND hwnd );
 //void            ConvertToDIBitmap( HBITMAP hbitmap );
-void            SetIsSaved( HWND hwnd, BOOL fissaved );
+void            SetIsSaved( HWND hwnd, bool issaved );
 void            OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc );
 void            GetFnameFromPath( const char *fullpath, char *fname );
 void            GrayEditOptions( void );
@@ -262,13 +260,13 @@ bool    ToolBarProc(HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam
 void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );
-void    AddHotSpotTool( BOOL faddhotspot );
+void    AddHotSpotTool( bool faddhotspot );
 void    PushToolButton( ctl_id cmdid );
 
 /* ieopen.c */
 void    SetupMenuAfterOpen( void );
-int     OpenImage( HANDLE hDrop );
-BOOL    LoadColorPalette( void );
+bool    OpenImage( HANDLE hDrop );
+bool    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
 void    OpenFileOnStart( const char *fname );
@@ -292,7 +290,7 @@ WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG m
 #ifndef __OS2_PM__
 WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int         NewImage( int img_type, const char *filename );
+bool        NewImage( image_type img_type, const char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -326,11 +324,11 @@ void                InitializeCursors( void );
 void                CleanupCursors( void );
 
 /* xorand.c */
-void        MakeBitmap( img_node *node, BOOL isnew );
-void        MakeIcon( img_node *node, BOOL isnew );
+void        MakeBitmap( img_node *node, bool isnew );
+void        MakeIcon( img_node *node, bool isnew );
 void        RemoveIcon( short index );
 void        LineXorAnd( COLORREF xorcolor, COLORREF andcolor, WPI_POINT *startpt, WPI_POINT *endpt );
-void        RegionXorAnd( COLORREF xorcolor, COLORREF andcolor, BOOL fFillRgn, WPI_RECT *r, BOOL is_rect );
+void        RegionXorAnd( COLORREF xorcolor, COLORREF andcolor, bool fFillRgn, WPI_RECT *r, bool is_rect );
 void        FillXorAnd( COLORREF brushcolor, WPI_POINT *pt, wie_clrtype colortype );
 void        SetNewHotSpot( WPI_POINT *pt );
 void        FocusOnImage( HWND hwnd );
@@ -343,7 +341,7 @@ void    BeginFreeHand( HWND hwnd );
 void    DrawThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor, WPI_POINT *pt );
 void    BrushThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor, WPI_POINT *pt, int brushsize );
 void    EndFreeHand( HWND hwnd );
-BOOL    GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor );
+bool    GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor );
 
 /* clip.c */
 void    SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT pointsize );
@@ -354,10 +352,10 @@ void    CutImage( void );
 void    DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize );
 void    CheckForClipboard( HMENU hmenu );
 void    RedrawPrevClip( HWND hwnd );
-void    SetRectExists( BOOL does_rect_exist );
+void    SetRectExists( bool does_rect_exist );
 void    CleanupClipboard( void );
 void    DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize );
-BOOL    DoesRectExist( WPI_RECT *rc );
+bool    DoesRectExist( WPI_RECT *rc );
 void    SetDeviceClipRect( WPI_RECT *rect );
 
 /* undo.c */
@@ -373,7 +371,7 @@ void    ResetUndoStack( img_node *node );
 void    SelIconUndoStack( HWND hwnd, short index );
 void    AddIconUndoStack( img_node *node );
 void    DelIconUndoStack( img_node *node, int index );
-BOOL    RelieveUndos( void );
+bool    RelieveUndos( void );
 
 /* colors.c */
 void        InitPalette( void );
@@ -384,9 +382,9 @@ void        ReplacePaletteEntry( COLORREF newcolor );
 void        ResetColorPalette( void );
 COLORREF    GetPaletteColor( int index );
 int         GetColorIndex( COLORREF color );
-void        SetCurrentColors( BOOL fshowscreenclrs );
+void        SetCurrentColors( bool fshowscreenclrs );
 void        InitFromColorPalette( palette_box *screen, palette_box *inverse, palette_box *avail_colors );
-BOOL        GetPaletteFile( a_pal_file *pal_file );
+bool        GetPaletteFile( a_pal_file *pal_file );
 void        SetNewPalette( a_pal_file *pal_file );
 void        RestoreColorPalette( void );
 void        InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap );
@@ -394,7 +392,7 @@ void        InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobi
 /* iconinfo.c */
 void    FiniIconInfo( void );
 void    InitIconInfo( void );
-BOOL    CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon );
+bool    CreateNewIcon( short *width, short *height, short *bitcount,  bool is_icon );
 void    AddNewIcon( void );
 void    DeleteIconImg( void );
 void    SelectIconImg( void );
@@ -421,7 +419,7 @@ void    ChooseBkColor( void );
 /* imgdata.c */
 void        AddImageNode( img_node *node );
 img_node    *SelectImage( HWND hwnd );
-BOOL        DeleteNode( HWND hwnd );
+bool        DeleteNode( HWND hwnd );
 void        DeleteList( void );
 int         DoImagesExist( void );
 img_node    *GetHeadNode( void );
@@ -431,8 +429,14 @@ void        AddIconToList( img_node *icon, img_node *current_node );
 img_node    *RemoveIconFromList( img_node *node, int index );
 img_node    *SelectFromViewHwnd( HWND viewhwnd );
 
+/* imgutil.c */
+const char  *GetImageFileExt( image_type img_type, bool res );
+image_type  GetImageFileType( const char *ext, bool res );
+void        CheckForExt( img_node *node );
+void        CheckForPalExt( char *filename );
+
 /* iestatus.c */
-BOOL    InitStatusLine( HWND parent );
+bool    InitStatusLine( HWND parent );
 void    SetPosInStatus( WPI_POINT *pt, WPI_POINT *pointsize, HWND hwnd );
 void    SetSizeInStatus( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT *pointsize );
 void    ResizeStatusBar( WPI_PARAM2 lparam );
@@ -456,10 +460,10 @@ void    ChangeImageSize( void );
 void    SelectOptions( void );
 int     StretchPastedImage( void );
 int     GetRotateType( void );
-BOOL    DoKeepRect( void );
+bool    DoKeepRect( void );
 void    SetSettingsDlg( settings_info *info );
 void    GetSettings( settings_info *info );
-BOOL    IsShiftWrap( void );
+bool    IsShiftWrap( void );
 
 /* trnsform.c */
 void    FlipImage( WORD whichway );
@@ -480,7 +484,7 @@ void    SaveAllImages( void );
 bitmap_bits *GetTheBits( HBITMAP bitmap );
 COLORREF    MyGetPixel( bitmap_bits *bits, int x, int y );
 void        MySetPixel( bitmap_bits *bits, int x, int y, COLORREF color );
-void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, BOOL setbits );
+void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, bool setbits );
 
 /* iectl3d.c */
 bool    IECtl3dInit( HINSTANCE );
@@ -498,7 +502,7 @@ void    WImgEditError( msg_id error, const char *fname );
 void    Win_CreateColorPal( void );
 HWND    Win_CreateCurrentDisp( HWND hparent );
 void    Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs, HWND *screentxt, HWND *inversetxt );
-HWND    WinCreateViewWin( HWND hviewwnd, BOOL foneview, int *showstate, int width, int height );
+HWND    WinCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width, int height );
 HWND    WinNewDrawPad( img_node *node );
 
 /* winutils.c */
@@ -527,7 +531,7 @@ BITMAPINFO  *GetDIBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO *bmi );
 
 /* pickbmp.c */
-extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
+extern bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
@@ -541,7 +545,7 @@ void    PM_CreateColorPal( void );
 HWND    PM_CreateCurrentDisp( HWND hparent );
 void    PM_CreateColorCtrls( HWND hpar, HWND *colours, HWND *screenclrs, HWND *screentxt, HWND *inversetxt );
 HWND    PMNewDrawPad( img_node *node );
-HWND    PMCreateViewWin( HWND hviewwnd, BOOL foneview, int *showstate, int width, int height );
+HWND    PMCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width, int height );
 
 /* pmutils.c */
 void        InitXorAndBitmaps( img_node *node );

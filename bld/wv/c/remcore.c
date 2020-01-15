@@ -100,11 +100,11 @@ static size_t MemRead( address addr, void *ptr, size_t size )
             piece_len = (trap_elen)left;
         acc.len = piece_len;
         int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
-        if( int_tbl )
-            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
+        if( int_tbl )
+            RestoreHandlers();
         read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece_len, ptr );
         if( int_tbl )
             GrabHandlers();
@@ -197,15 +197,14 @@ size_t ProgPoke( address addr, const void *data, size_t len )
         in[1].len = piece_len;
 
         int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
-        if( int_tbl )
-            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
+        if( int_tbl )
+            RestoreHandlers();
         TrapAccess( 2, in, 1, out );
-        CONV_LE_16( ret.len );
         if( int_tbl )
             GrabHandlers();
-
+        CONV_LE_16( ret.len );
         left -= ret.len;
         if( ret.len != piece_len )
             break;
@@ -390,13 +389,13 @@ bool KillProgOvlay( void )
     RestoreHandlers();
     FiniSuppServices();
     OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    CONV_LE_32( ret.err );
     InitSuppServices();
     _SwitchOff( SW_HAVE_TASK );
     GrabHandlers();
     FreeThreads();
     GetSysConfig();
     ClearMachineDataCache();
+    CONV_LE_32( ret.err );
     return( ( ret.err == 0 ) );
 }
 
@@ -411,13 +410,13 @@ unsigned MakeProgRun( bool single )
     RestoreHandlers();
     DUIExitCriticalSection();
     OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    DUIEnterCriticalSection();
+    GrabHandlers();
     CONV_LE_32( ret.stack_pointer.offset );
     CONV_LE_16( ret.stack_pointer.segment );
     CONV_LE_32( ret.program_counter.offset );
     CONV_LE_16( ret.program_counter.segment );
     CONV_LE_16( ret.conditions );
-    DUIEnterCriticalSection();
-    GrabHandlers();
     if( ret.conditions & COND_CONFIG ) {
         GetSysConfig();
         CheckMADChange();

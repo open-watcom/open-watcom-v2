@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "swchar.h"
 #include "cfeinfo.h"
 #include "pathlist.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 #include "clibint.h"
@@ -51,26 +53,18 @@
 #if defined(__UNIX__)
  #define C_PATH         "../c/"
  #define H_PATH         "../h/"
- #define OBJ_EXT        ".o"
+ #define OBJ_EXT        "o"
 #else
  #define C_PATH         "..\\c\\"
  #define H_PATH         "..\\h\\"
- #define OBJ_EXT        ".obj"
+ #define OBJ_EXT        "obj"
 #endif
-#define DEF_EXT         ".def"
-#define ERR_EXT         ".err"
-#define MBR_EXT         ".mbr"
-#define C_EXT           ".c"
-#define CPP_EXT         ".i"
-#define DEP_EXT         ".d"
-
-typedef struct path_descr {     // path description
-    char buffer[_MAX_PATH2];    // - buffer
-    char *drv;                  // - drive
-    char *dir;                  // - directory
-    char *fnm;                  // - file name
-    char *ext;                  // - extension
-} path_descr;
+#define DEF_EXT         "def"
+#define ERR_EXT         "err"
+#define MBR_EXT         "mbr"
+#define C_EXT           "c"
+#define CPP_EXT         "i"
+#define DEP_EXT         "d"
 
 bool    PrintWhiteSpace;     // also refered from cmac2.c
 
@@ -207,6 +201,30 @@ static void DelDepFile( void )
     }
 }
 
+static char *createFileName( const char *template, const char *ext, bool forceext )
+{
+    PGROUP2     pg;
+    bool        use_defaults;
+
+    use_defaults = ( template == NULL );
+    if( use_defaults )
+        template = WholeFName;
+    _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( use_defaults ) {
+        /* default object file goes in current directory */
+        pg.drive = "";
+        pg.dir = "";
+    }
+    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
+        pg.fname = ModuleName;
+    }
+    if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
+        ext = pg.ext;
+    }
+    _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
+    return( FNameBuf );
+}
+
 static void DumpDepFile( void )
 {
     FNAMEPTR    curr;
@@ -215,7 +233,7 @@ static void DumpDepFile( void )
     if( DepFile != NULL ) {
         curr = NextDependency( NULL );
         if( curr != NULL ) {
-            fprintf( DepFile, "%s :", ForceSlash( CreateFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
+            fprintf( DepFile, "%s :", ForceSlash( createFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
             fprintf( DepFile, " %s", ForceSlash( GetSourceDepName(), DependForceSlash ) );
             for( curr = NextDependency( curr ); curr != NULL; curr = NextDependency( curr ) ) {
                 fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
@@ -322,33 +340,26 @@ static void MakePgmName( void )
 // if stdin a "." then replace with "stdin" don't whack ".c"
 // If no module name make the same as fname
     size_t      len;
-    char        buff[_MAX_PATH2];
-    char        *fname;
-    char        *ext;
+    PGROUP2     pg;
 
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
-        fname = WholeFName;
+        pg.fname = WholeFName;
         len = sizeof( STDIN_NAME );
     } else {
-        _splitpath2( WholeFName, buff, NULL, NULL, &fname, &ext );
-        if( *ext == '\0' ) { // no extension
-            char *new;
-
+        _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( pg.ext[0] == '\0' ) { // no extension
             len = strlen( WholeFName );
-            new = CMemAlloc( len + sizeof( C_EXT ) );
-            memcpy( new, WholeFName, len );
-            memcpy( new + len, C_EXT, sizeof( C_EXT ) );
-            CMemFree( WholeFName );
-            WholeFName = new;
+            WholeFName = CMemRealloc( WholeFName, len + ( 1 + sizeof( C_EXT ) ) + 1 );
+            strcat( WholeFName + len, "." C_EXT );
         }
-        len = strlen( fname ) + 1;
+        len = strlen( pg.fname ) + 1;
     }
     SrcFName = CMemAlloc( len );
-    memcpy( SrcFName, fname, len );
+    memcpy( SrcFName, pg.fname, len );
     if( ModuleName == NULL ) {
         ModuleName = SrcFName;
     }
@@ -473,74 +484,35 @@ static void OpenCppFile( void )
     }
 }
 
-char *CreateFileName( const char *template, const char *extension, bool forceext )
-{
-#if !defined( __CMS__ )
-    char        buff[_MAX_PATH2];
-    char        *drive;
-    char        *dir;
-    char        *fname;
-    char        *ext;
-    const char  *path;
-
-    path = (template == NULL) ? WholeFName : template;
-    _splitpath2( path, buff, &drive, &dir, &fname, &ext );
-    if( !forceext && template != NULL && ext[0] != '\0' ) {
-        extension = ext;
-    }
-    if( fname[0] == '\0' || fname[0] == '*' ) {
-        fname = ModuleName;
-    }
-    if( template == NULL ) {
-        /* default object file goes in current directory */
-        drive = "";
-        dir = "";
-    }
-    _makepath( FNameBuf, drive, dir, fname, extension );
-#else
-    char    *p;
-
-    if( template == NULL )
-        template = WholeFName;
-    strcpy( FNameBuf, template );
-    p = FNameBuf;
-    while( *p != '\0' && *p != ' ' )
-        ++p;
-    strcpy( p, extension );
-#endif
-    return( FNameBuf );
-}
-
 char *GetSourceDepName( void )
 {
-    char buff[_MAX_PATH2];
-    char *ext;
+    PGROUP2     pg;
 
-    _splitpath2( WholeFName, buff, NULL, NULL, NULL, &ext );
-    return( CreateFileName( SrcDepName, ext, false ) );
+    _splitpath2( WholeFName, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    return( createFileName( SrcDepName, pg.ext, false ) );
 }
 
 
 char *ObjFileName( void )
 {
-    return( CreateFileName( ObjectFileName, OBJ_EXT, false ) );
+    return( createFileName( ObjectFileName, OBJ_EXT, false ) );
 }
 
 char *CppFileName( void )
 {
-    return( CreateFileName( ObjectFileName, CPP_EXT, false ) );
+    return( createFileName( ObjectFileName, CPP_EXT, false ) );
 }
 
 char *DepFileName( void )
 {
-    return( CreateFileName( DependFileName, DEP_EXT, false ) );
+    return( createFileName( DependFileName, DEP_EXT, false ) );
 }
 
 char *ErrFileName( void )
 {
     if( ErrorFileName == NULL )
         return( NULL );
-    return( CreateFileName( ErrorFileName, ERR_EXT, false ) );
+    return( createFileName( ErrorFileName, ERR_EXT, false ) );
 }
 
 void CppPrtChar( int c )
@@ -552,14 +524,12 @@ void CppPrtChar( int c )
 
 void OpenDefFile( void )
 {
-#if !defined( __CMS__ )
-    char        buff[_MAX_PATH2];
+    PGROUP2     pg;
     char        name[_MAX_PATH];
-    char        *fname;
 
     if( DefFName == NULL ) {
-        _splitpath2( SrcFName, buff, NULL, NULL, &fname, NULL );
-        _makepath( name, NULL, NULL, fname, DEF_EXT );
+        _splitpath2( SrcFName, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( name, NULL, NULL, pg.fname, DEF_EXT );
         DefFile = fopen( name, "w" );
     } else {
         DefFile = fopen( DefFName, "w" );
@@ -567,23 +537,19 @@ void OpenDefFile( void )
     if( DefFile != NULL ) {
         setvbuf( DefFile, CPermAlloc( 1024 ), _IOFBF, 1024 );
     }
-#else
-    DefFile = fopen( DefFName, "w" );
-#endif
 }
 
 FILE *OpenBrowseFile( void )
 {
-    char        buff[_MAX_PATH2];
+    PGROUP2     pg;
     char        name[_MAX_PATH];
-    char        *fname;
     FILE        *mbr_file;
 
     if( CompFlags.cpp_output_to_file ) {
-        strcpy( name, CreateFileName( ObjectFileName, MBR_EXT, true ) );
+        strcpy( name, createFileName( ObjectFileName, MBR_EXT, true ) );
     } else {
-        _splitpath2( SrcFName, buff, NULL, NULL, &fname, NULL );
-        _makepath( name, NULL, NULL, fname, MBR_EXT );
+        _splitpath2( SrcFName, pg.buffer, NULL, NULL, &pg.fname, NULL );
+        _makepath( name, NULL, NULL, pg.fname, MBR_EXT );
     }
     mbr_file = fopen( name, "wb" );
     if( mbr_file == NULL ) {
@@ -654,15 +620,15 @@ static bool IsFNameOnce( char const *filename )
     return( flist->once );
 }
 
-static bool TryOpen( const char *path, path_descr *ff, src_file_type typ )
+static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
 {
     FILE        *fp;
     char        filename[_MAX_PATH];
     char        *p;
-    path_descr  fd;
+    PGROUP2     fd;
 
-    _splitpath2( path, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
-    if( ff->drv[0] != '\0' && fd.drv[0] != '\0' ) {
+    _splitpath2( path, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
+    if( ff->drive[0] != '\0' && fd.drive[0] != '\0' ) {
         return( false );
     }
     // concatenate fd.dir + sep + fp.dir
@@ -673,7 +639,7 @@ static bool TryOpen( const char *path, path_descr *ff, src_file_type typ )
         }
     }
     strcpy( p, ff->dir );
-    _makepath( filename, ( fd.drv[0] == '\0' ) ? ff->drv : fd.drv, fd.dir, ff->fnm, ff->ext );
+    _makepath( filename, ( fd.drive[0] == '\0' ) ? ff->drive : fd.drive, fd.dir, ff->fname, ff->ext );
     if( IsFNameOnce( filename ) ) {
         return( true );
     }
@@ -1114,11 +1080,10 @@ static void DoCCompile( char **cmdline )
     FreeIncFileList();
 }
 
-static bool try_open_file( const char *path, path_descr *fp, path_descr *fa, src_file_type typ )
+static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
 {
     bool    ok;
-    bool    truncated;
-    char    save_chr_name;
+    char    save_chr_fname;
     char    save_chr_ext;
 
     // try to open regular name
@@ -1134,39 +1099,40 @@ static bool try_open_file( const char *path, path_descr *fp, path_descr *fa, src
         }
     }
     if( CompFlags.check_truncated_fnames ) {
-        save_chr_name = fp->fnm[8];
-        save_chr_ext = fp->ext[4];
-        truncated = false;
-        if( strlen( fp->fnm ) > 8 ) {
-            fp->fnm[8] = '\0';
-            truncated = true;
+        save_chr_fname = '\0';
+        if( strlen( fp->fname ) > 8 ) {
+            save_chr_fname = fp->fname[8];
+            fp->fname[8] = '\0';
         }
+        save_chr_ext = '\0';
         if( strlen( fp->ext ) > 4 ) {
+            save_chr_ext = fp->ext[4];
             fp->ext[4] = '\0';
-            truncated = true;
         }
-        if( truncated ) {
+        if( save_chr_fname != '\0' || save_chr_ext != '\0' ) {
             // try to open truncated name if enabled
             ok = TryOpen( path, fp, typ );
-            if( ok ) {
-                return( ok );
+            if( !ok ) {
+                if( save_chr_fname != '\0' ) {
+                    fp->fname[8] = save_chr_fname;
+                }
+                if( save_chr_ext != '\0' ) {
+                    fp->ext[4] = save_chr_ext;
+                }
             }
-            fp->fnm[8] = save_chr_name;
-            fp->ext[4] = save_chr_ext;
         }
     }
     return( ok );
 }
 
-static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
+static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
 {
     char        *s;
     char        *p;
-    char        buff[_MAX_PATH2];
     char        try[_MAX_PATH];
     FCB         *curr;
     char        c;
-    path_descr  fd;
+    PGROUP2     fd;
 
     if( typ == FT_SRC ) {
         if( try_open_file( "", fp, NULL, typ ) )
@@ -1178,7 +1144,7 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
         }
         return( false );
     }
-    if( fp->drv[0] != '\0' || IS_DIR_SEP( fp->dir[0] ) ) {
+    if( fp->drive[0] != '\0' || IS_DIR_SEP( fp->dir[0] ) ) {
         // try absolute path
         // if drive letter given or path from root given
         if( try_open_file( "", fp, fa, typ ) ) {
@@ -1194,8 +1160,8 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
             if( CompFlags.ignore_default_dirs ) {
                 try[0] = '\0';
                 // physical file name must be used, not logical
-                _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
-                _makepath( try, fd.drv, fd.dir, NULL, NULL );
+                _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
+                _makepath( try, fd.drive, fd.dir, NULL, NULL );
                 if( try_open_file( try, fp, fa, typ ) ) {
                     return( true );
                 }
@@ -1208,8 +1174,8 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
                     // physical file name must be used, not logical
-                    _splitpath2( curr->src_flist->name, fd.buffer, &fd.drv, &fd.dir, NULL, NULL );
-                    _makepath( try, fd.drv, fd.dir, NULL, NULL );
+                    _splitpath2( curr->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
+                    _makepath( try, fd.drive, fd.dir, NULL, NULL );
                     if( try_open_file( try, fp, fa, typ ) ) {
                         return( true );
                     }
@@ -1219,7 +1185,7 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
         }
         s = IncPathList;
         while( (c = *s) != '\0' ) {
-            p = buff;
+            p = fd.buffer;
             do {
                 ++s;
                 if( IS_PATH_LIST_SEP( c ) )
@@ -1231,7 +1197,7 @@ static bool doOpenSrcFile( path_descr *fp, path_descr *fa, src_file_type typ )
                 *p++ = DIR_SEP;
             }
             *p = '\0';
-            if( try_open_file( buff, fp, fa, typ ) ) {
+            if( try_open_file( fd.buffer, fp, fa, typ ) ) {
                 return( true );
             }
         }
@@ -1272,11 +1238,11 @@ static void normalizeSep( char *dir )
 bool OpenSrcFile( const char *filename, src_file_type typ )
 {
     const char  *alias_filename;
-    path_descr  fp;
-    path_descr  fa;
-    path_descr  *fap;
+    PGROUP2     fp;
+    PGROUP2     fa;
+    PGROUP2     *fap;
 
-    _splitpath2( filename, fp.buffer, &fp.drv, &fp.dir, &fp.fnm, &fp.ext );
+    _splitpath2( filename, fp.buffer, &fp.drive, &fp.dir, &fp.fname, &fp.ext );
     normalizeSep( fp.dir );
     fap = NULL;
     switch( typ ) {
@@ -1289,7 +1255,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
         // See if there's an alias for this filename
         alias_filename = IncludeAlias( filename, ( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) );
         if( alias_filename != NULL ) {
-            _splitpath2( alias_filename, fa.buffer, &fa.drv, &fa.dir, &fa.fnm, &fa.ext );
+            _splitpath2( alias_filename, fa.buffer, &fa.drive, &fa.dir, &fa.fname, &fa.ext );
             normalizeSep( fa.dir );
             fap = &fa;
         }
@@ -1403,7 +1369,7 @@ void CloseFiles( void )
 }
 
 
-int FrontEnd( char **cmdline )
+bool FrontEnd( char **cmdline )
 {
 #if defined(__WATCOMC__) && defined( _M_IX86 )
     /* set to 0 in case 8087 is present */
@@ -1423,5 +1389,5 @@ int FrontEnd( char **cmdline )
     FiniMsg();
     CMemFini();
     GlobalCompFlags.cc_first_use = false;
-    return( ErrCount );
+    return( ErrCount != 0 );
 }

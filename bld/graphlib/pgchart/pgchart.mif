@@ -78,7 +78,7 @@ extra_cpp_flags_386 = -D_CGRAPH=
 extra_cpp_flags_386 += -D__STACK
 !endif
 
-extra_c_flags = -os -s -zl -nm=$[&$(suffix_$(convention)) -fo=$@
+extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) -fo=$@
 
 extra_c_flags_386_register = -3r
 extra_c_flags_386_stack = -3s

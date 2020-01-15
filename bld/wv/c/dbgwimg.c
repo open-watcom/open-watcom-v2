@@ -285,6 +285,5 @@ wnd_info ImgInfo = {
 
 a_window WndImgOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
-            NULL, &ImgIcon, TITLE_SIZE, true ) );
+    return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE, NULL, &ImgIcon, TITLE_SIZE, true ) );
 }

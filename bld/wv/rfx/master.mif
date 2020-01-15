@@ -23,8 +23,6 @@ extra_cpp_flags = -DBUILD_RFX
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
-extra_c_flags = -s
-
 objs = rfx.obj        &
        rfxacc.obj     &
        remmisc.obj    &
@@ -33,7 +31,7 @@ objs = rfx.obj        &
        dbgfile.obj    &
        dbgtoggl.obj   &
        local$(host_os).obj &
-       $(trap_objs)
+       $(trp_objs)
 
 objs += $(host_os)filio.obj &
 

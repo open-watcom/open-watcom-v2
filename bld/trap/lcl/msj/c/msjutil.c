@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ static _trmem_hdl       TRMemHandle;
 
 
 
-static  int             TrackFile;
+static FILE             *TrackFile = NULL;
 static _trmem_hdl       TRMemHandle;
 
 /* extern to avoid problems with taking address and overlays */
@@ -59,11 +60,13 @@ static bool Closing = FALSE;
 static void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
     if( !Closing )
         PopErrBox( (void *)buff );
-    fwrite( buff, 1, len, TrackFile );
+    if( TrackFile != NULL ) {
+        fprintf( TrackFile, "%s\n", buff );
+    }
 }
 
 static void TRMemOpen( void )
@@ -131,8 +134,8 @@ extern int TRMemChkRange( void * start, size_t len )
 
 static void MemTrackInit()
 {
-    TrackFile = STDERR_FILENO;
-    TrackFile = open( "track.fil", O_CREAT+O_RDWR+O_TEXT+O_TRUNC );
+    TrackFile = stderr;
+    TrackFile = fopen( "track.fil", "wt" );
     TRMemOpen();
 }
 
@@ -142,13 +145,14 @@ static char TrackErr[] = { "Memory Tracker Errors Detected" };
 static void MemTrackFini()
 {
     Closing = TRUE;
-    if( TrackFile != STDERR_FILENO ) {
-        if( lseek( TrackFile, 0, SEEK_END ) != 0 ) {
+    if( TrackFile != stderr ) {
+        if( fseek( TrackFile, 0, SEEK_END ) != 0 ) {
             PopErrBox( TrackErr );
         } else if( TRMemPrtList() != 0 ) {
             PopErrBox( UnFreed );
         }
-        close( TrackFile );
+        fclose( TrackFile );
+        TrackFile = NULL;
     }
     TRMemClose();
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <dos.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
@@ -52,7 +54,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     unsigned    secs, mins, hours;
     char       *p, *op;
@@ -95,4 +97,5 @@ void main( int argc, char **argv )
         secs += atoi( op ) + 60*mins + 3600*hours;
         sleep( secs );
     }
+    return( 0 );
 }

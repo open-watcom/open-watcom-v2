@@ -22,15 +22,26 @@ f77lib_cpp_flags += $(f77lib_cpp_$(system)) $(f77lib_cpp_$(system)_$(processor))
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = -za99-we-w8-zl-x-xx-zam-j-wpx
-#sw_c_common = -za99-wx-w8 -wce=307 -wce=308 -wce=309 -zl-x-xx-zam
+sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-zl-x-xx-zam-wpx
+!ifeq release 0
+!else
+sw_c_common += -s
+!endif
+sw_c_optimization_086 = -oax
+sw_c_optimization_087 = -oax
+sw_c_optimization_286 = -oax
+sw_c_optimization_287 = -oax
+!ifdef sw_c_optimization_$(processor)
+sw_c_common += $(sw_c_optimization_$(processor))
+!else
+sw_c_common += -oaxt
+!endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
 !endif
 !ifdef dll16
 sw_c_common += -bm-bd
-!endif
-!ifdef mthreaded
+!else ifdef mthreaded
 sw_c_common += -bm
 !endif
 !ifdef debug
@@ -71,30 +82,30 @@ sw_c_axp =
 sw_c_ppc =
 
 # sw_c_(system)_(processor)
-sw_c_msdos_086    = -oax
-sw_c_msdos_286    = -oax
-sw_c_msdos_386    = -oaxt
-sw_c_netware_386  = -oaxt
-sw_c_os2_286      = -oax
-sw_c_os2_386      = -oaxt-bm
-sw_c_os2_ppc      = -oaxt-bm
-sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-bm
-sw_c_windows_086  = -oax
-sw_c_windows_386  = -oaxt
-sw_c_winnt_386    = -oaxt
-sw_c_winnt_axp    = -oaxt
-sw_c_winnt_ppc    = -oaxt
-sw_c_linux_386    = -oaxt
+sw_c_msdos_086    =
+sw_c_msdos_286    =
+sw_c_msdos_386    =
+sw_c_netware_386  =
+sw_c_os2_286      =
+sw_c_os2_386      =
+sw_c_os2_ppc      =
+sw_c_qnx_286      =
+sw_c_qnx_386      =
+sw_c_windows_086  =
+sw_c_windows_386  =
+sw_c_winnt_386    =
+sw_c_winnt_axp    =
+sw_c_winnt_ppc    =
+sw_c_linux_386    =
 
 # sw_c_(system)
 sw_c_msdos      = -bt=dos
-sw_c_netware    = -bt=netware -bm -D_NETWARE_CLIB
+sw_c_netware    = -bt=netware -D_NETWARE_CLIB
 sw_c_os2        = -bt=os2
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows
-sw_c_winnt      = -bt=nt -bm
-sw_c_linux      = -bt=linux -bm
+sw_c_winnt      = -bt=nt
+sw_c_linux      = -bt=linux
 
 #####################
 # ASSEMBLERS SETINGS
@@ -103,10 +114,10 @@ sw_a_common = -we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
 !endif
+sw_a_common += -d__RT__
 !ifdef dll16
 sw_a_common += -d__MT__
-!endif
-!ifdef mthreaded
+!else ifdef mthreaded
 sw_a_common += -d__MT__
 !endif
 !ifeq linkage dynamic
@@ -150,10 +161,10 @@ sw_a_msdos_286    =
 sw_a_msdos_386    =
 sw_a_netware_386  =
 sw_a_os2_286      =
-sw_a_os2_386      = -d__MT__
-sw_a_os2_ppc      = -d__MT__
+sw_a_os2_386      =
+sw_a_os2_ppc      =
 sw_a_qnx_286      =
-sw_a_qnx_386      = -d__MT__
+sw_a_qnx_386      =
 sw_a_windows_086  =
 sw_a_windows_386  =
 sw_a_winnt_386    =
@@ -163,12 +174,12 @@ sw_a_linux_386    =
 
 # sw_a_(system)
 sw_a_msdos      = -bt=dos -D__WATCOM_LFN__
-sw_a_netware    = -bt=netware -d__MT__
+sw_a_netware    = -bt=netware
 sw_a_os2        = -bt=os2
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows
-sw_a_winnt      = -bt=nt $(win32ver) -d__MT__
-sw_a_linux      = -bt=linux -d__MT__
+sw_a_winnt      = -bt=nt $(win32ver)
+sw_a_linux      = -bt=linux
 
 #make bug
 !ifndef extra_flib_c_flags

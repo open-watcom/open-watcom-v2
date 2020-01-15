@@ -1,5 +1,4 @@
 #pmake: build compact 16bit os2 posix ix86 static os_os2 cpu_i86
-
 processor = 286
 model     = mc
 system    = os2

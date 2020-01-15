@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,9 +201,9 @@ static void Scroll( int pos, int num_items, UIMENUITEM *menuitems, DESCMENU *des
     ChangePos( GetNewPos( pos, num_items ), menuitems, desc );
 }
 
-static void DoEnd( UI_WINDOW *window )
+static void DoEnd( UI_WINDOW *wptr )
 {
-    uiclosepopup( window );
+    uiclosepopup( wptr );
 }
 
 /*
@@ -210,11 +211,11 @@ static void DoEnd( UI_WINDOW *window )
  *                  popup menu
  */
 
-static bool SendMenuEvent( int num_items, UIMENUITEM *menuitems, int item, UI_WINDOW *window, ui_event *ui_ev )
+static bool SendMenuEvent( int num_items, UIMENUITEM *menuitems, int item, UI_WINDOW *wptr, ui_event *ui_ev )
 {
     *ui_ev = EV_NO_EVENT;
     if( ( item < num_items ) && ( item >= 0 ) ) {
-        DoEnd( window );
+        DoEnd( wptr );
         if( !MENUGRAYED( menuitems[item] ) ) {
             *ui_ev = menuitems[item].event;
             return( true );
@@ -273,7 +274,7 @@ ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool le
 }
 
 static bool createsubpopup( UIMENUITEM *parentitems, bool left, bool right,
-                            SAREA *keep_inside, ui_event *new_ui_ev, UI_WINDOW *window,
+                            SAREA *keep_inside, ui_event *new_ui_ev, UI_WINDOW *wptr,
                             DESCMENU *parentdesc, bool set_default )
 {
     SAREA       keep_visible;
@@ -335,7 +336,7 @@ static bool createsubpopup( UIMENUITEM *parentitems, bool left, bool right,
             break;
         default :
             if( ui_ev != EV_NO_EVENT ) {
-                DoEnd( window );
+                DoEnd( wptr );
                 *new_ui_ev = ui_ev;
                 return( true );
             }

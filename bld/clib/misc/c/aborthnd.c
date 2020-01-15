@@ -37,10 +37,11 @@
 #include "rterrmsg.h"
 
 
-_WCHANDLER void abort_handler_s( const char * __restrict msg,
-                                void * __restrict ptr, errno_t error )
-/********************************************************************/
+_WCHANDLER void abort_handler_s( const char * __restrict msg, void * __restrict ptr, errno_t error )
+/**************************************************************************************************/
 {
+    /* unused parameters */ (void)ptr; (void)error;
+
     __rterr_msg( "Runtime-constraint violation", msg );
     abort();
 }

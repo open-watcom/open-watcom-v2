@@ -33,7 +33,6 @@
 
 #include "as.h"
 #ifdef _STANDALONE_
-#include "trmem.h"
 #include "trmemcvr.h"
 #include "wresmem.h"
 #else

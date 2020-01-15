@@ -128,21 +128,6 @@ set BLDRULE=
     set LOGFNAME=doc
     echo **** DOC rule
 
-[ BLOCK <1> webdocs ]
-#======================
-    set BLDRULE=webdocs
-    set LOGFNAME=webdocs
-    echo **** WEBDOCS rule
-
-[ BLOCK <1> cpwebdocs ]
-#======================
-    set BLDRULE=cpwebdocs
-    set LOGFNAME=cpwebdoc
-    # with 'cpwebdocs', we want to force the copy to occur
-    set CPCMD=copy
-    set CCCMD=ccopy
-    echo **** CPWEBDOCS rule
-
 [ BLOCK <1> docsclean ]
 #======================
     set BLDRULE=docsclean

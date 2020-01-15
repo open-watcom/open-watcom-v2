@@ -65,9 +65,10 @@ void DoCode( mad_disasm_data *dd, int big )
 {
     DisDecodeInit( &DH, &dd->ins );
     dd->addr = DbgAddr;
-    dd->ins.flags.u.x86 = DIF_X86_NONE;
     if( big ) {
         dd->ins.flags.u.x86 = DIF_X86_USE32_FLAGS;
+    } else {
+        dd->ins.flags.u.x86 = DIF_X86_FPU_EMU;
     }
     DisDecode( &DH, dd, &dd->ins );
 }

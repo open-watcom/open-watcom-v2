@@ -176,7 +176,11 @@
 
 static int recv( int handle, void *buf, int size, int timeout )
 {
-    int count = 0;
+    int count;
+
+    /* unused parameters */ (void)timeout;
+
+    count = 0;
     while( !RdosIsTcpConnectionClosed( handle ) && count == 0 ) {
         count = RdosReadTcpConnection( handle, buf, size );
     }
@@ -185,7 +189,11 @@ static int recv( int handle, void *buf, int size, int timeout )
 
 static int send( int handle, const void *buf, int size, int timeout )
 {
-    int count = RdosWriteTcpConnection( handle, buf, size);
+    int count;
+
+    /* unused parameters */ (void)timeout;
+
+    count = RdosWriteTcpConnection( handle, buf, size);
     return( count );
 }
 
@@ -220,7 +228,7 @@ extern void     ServMessage( const char * );
 #endif
 
 #if !defined( SERVER )
-static bool Terminate( void )
+static bool terminate_connection( void )
 {
 #ifdef __RDOS__
     RdosPushTcpConnection( data_socket );
@@ -599,7 +607,7 @@ void RemoteUnLink( void )
     soclose( control_socket );
   #endif
 #else
-    Terminate();
+    terminate_connection();
 #endif
 
 #if defined(__NT__) || defined(__WINDOWS__)
@@ -742,11 +750,14 @@ static void free_ifi_info( struct ifi_info *ifihead )
 /* Stubbed out */
 static struct ifi_info *get_ifi_info( int family, int doaliases )
 {
+    /* unused parameters */ (void)family; (void)doaliases;
+
     return( NULL );
 }
 
 static void free_ifi_info( struct ifi_info *ifihead )
 {
+    /* unused parameters */ (void)ifihead;
 }
 
     #endif

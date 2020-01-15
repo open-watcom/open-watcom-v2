@@ -52,8 +52,7 @@ static void getEOFText( ss_block *ss_new, char *text )
         ss_new->len = strlen( text ) - 1;
         ss_new->end = ss_new->len;
     } else {
-        ss_new->type = SE_WHITESPACE;
-        ss_new->len = BEYOND_TEXT;
+        SSGetBeyondText( ss_new );
         ss_new->end = ss_new->len;
     }
 }
@@ -63,8 +62,7 @@ static void getText( ss_block *ss_new, char *start )
     char    *end = start;
 
     if( *end == '\0' ) {
-        ss_new->type = SE_WHITESPACE;
-        ss_new->len = BEYOND_TEXT;
+        SSGetBeyondText( ss_new );
         return;
     }
     SKIP_TOEND( end );
@@ -298,6 +296,20 @@ static void fixSelection( ss_block *ss_start, int start_col )
     ss_start->len -= start_col;
 }
 
+void SSGetBeyondText( ss_block *ss_new )
+{
+    ss_new->type = SE_WHITESPACE;
+    ss_new->len = BEYOND_TEXT;
+}
+
+void SSGetWhiteSpace( ss_block *ss_new, const char *start )
+{
+    const char  *end = start + 1;
+
+    SKIP_SPACES( end );
+    ss_new->type = SE_WHITESPACE;
+    ss_new->len = end - start;
+}
 
 // NOTE! for this to work ...
 // ss_old must point the the head of a

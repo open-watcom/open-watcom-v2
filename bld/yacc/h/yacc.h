@@ -143,8 +143,8 @@ struct a_pro {                          /* production: LHS -> RHS1 RHS2 ... */
     a_prec              prec;
     a_sym               *sym;           /* LHS of production */
     a_SR_conflict_list  *SR_conflicts;  /* list of S/R conflicts */
-    unsigned            used : 1;       /* has rule been reduced */
-    unsigned            unit : 1;       /* LHS -> RHS and no action specified */
+    boolbit             used    : 1;    /* has rule been reduced */
+    boolbit             unit    : 1;    /* LHS -> RHS and no action specified */
     an_item             items[2];       /* must be the last field */
 };
 
@@ -155,7 +155,7 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
     char                *min;
     a_pro               *pro;           /* productions with this symbol as LHS*/
     a_state             *enter;
-    unsigned            nullable : 1;
+    boolbit             nullable    : 1;
     a_prec              prec;
     index_n             idx;
     token_n             token;
@@ -164,8 +164,8 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
 typedef struct a_shift_action {
     a_sym               *sym;
     a_state             *state;
-    unsigned            units_checked : 1;
-    unsigned            is_default : 1;
+    boolbit             units_checked   : 1;
+    boolbit             is_default      : 1;
 } a_shift_action;
 
 typedef struct a_look {
@@ -302,16 +302,16 @@ extern index_n  nstate_1_reduce;
 extern index_n  RR_conflicts;
 extern index_n  SR_conflicts;
 
-extern char     lineflag;
-extern char     bigflag;
-extern char     denseflag;
-extern char     enumflag;
-extern char     default_shiftflag;
-extern char     compactflag;
-extern char     fastflag;
-extern char     showflag;
-extern char     translateflag;
-extern char     defaultwarnflag;
+extern bool     lineflag;
+extern bool     bigflag;
+extern bool     denseflag;
+extern bool     enumflag;
+extern bool     default_shiftflag;
+extern bool     compactflag;
+extern bool     fastflag;
+extern bool     showflag;
+extern bool     translateflag;
+extern bool     defaultwarnflag;
 
 extern char     *symprefix;
 

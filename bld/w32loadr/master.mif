@@ -2,7 +2,8 @@ proj_name = w32loadr
 
 w32loadr_autodepends = .autodepend
 
-additional_cleanup = mkdginfo.bat
+# NB: it is disabled due to incompatibility with DOS/4G 2.x
+#additional_cleanup = mkdginfo.bat
 
 !include cproj.mif
 !include defrule.mif
@@ -27,9 +28,6 @@ ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 
 w32bind_objs = w32bind.obj
 
-#extra_cpp_flags = $(build_cppflags)
-#extra_a_flags = $(build_cppflags)
-
 !ifdef bootstrap
 
 all : w32bind.exe .SYMBOLIC
@@ -47,8 +45,8 @@ all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 
 extra_a_flags_cstrtwnt = -I"$(clib_dir)/startup/h"
 
-extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
-extra_c_flags_int21nt = -s -I"$(clib_dir)/h"
+extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN
+extra_c_flags_int21nt = -I"$(clib_dir)/h"
 
 all : w32run.exe .SYMBOLIC
 
@@ -118,9 +116,10 @@ d4grun.obj : loader.c $(__MAKEFILES__) #../loader.h dginfo.gh
 cwsrun.obj : loader.c $(__MAKEFILES__) #../loader.h
   $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 
-dginfo.gh : $(rsi_root)/bin/dos4g.exe
-  @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
-  -mkdginfo
+# NB: it is disabled due to incompatibility with DOS/4G 2.x
+#dginfo.gh : $(rsi_root)/bin/dos4g.exe
+#  @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
+#  -mkdginfo
 
 dpmi.exe : $(dpmi_objs) $(__MAKEFILES__)
     @%make echo_link

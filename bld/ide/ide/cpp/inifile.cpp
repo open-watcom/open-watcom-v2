@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,19 +67,19 @@
         strcat( buff, "\\" IDE_INI_FILENAME);
         _handle = PrfOpenProfile( NULL, (PSZ)buff );
     }
-    
+
     IniFile::~IniFile( )
     {
         PrfCloseProfile( _handle );
     }
-    
+
     int IniFile::read( const char *section, const char *key, const char *deflt,
                   char *buffer, int len )
     {
         return( PrfQueryProfileString( _handle, (PSZ)section, (PSZ)key, (PSZ)deflt,
                                        buffer, len ) );
     }
-    
+
     int IniFile::write( const char *section, const char *key, const char *string)
     {
         return( PrfWriteProfileString( _handle, (PSZ)section, (PSZ)key, (PSZ)string ) );
@@ -113,13 +114,13 @@
         strcat( path, "\\" IDE_INI_FILENAME );
         _path = path;
     }
-    
+
     int IniFile::read( const char *section, const char *key, const char *deflt,
                   char *buffer, int len )
     {
         return( GetPrivateProfileString( section, key, deflt, buffer, len, _path) );
     }
-    
+
     int IniFile::write( const char *section, const char *key, const char *string)
     {
         return( WritePrivateProfileString( section, key, string, _path) );
@@ -127,12 +128,11 @@
 
 #ifdef __WATCOMC__
     // Complain about defining trivial destructor inside class
-    // definition only for warning levels above 8 
-#pragma warning 657 9
+#pragma disable_message( 657 )
 #endif
 
    IniFile::~IniFile( ) { }
-    
+
 #else
     #error UNSUPPORTED OS
 #endif

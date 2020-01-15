@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
     size++;
     while( bytesread != size && size != 0 ) {
         size--;
-        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_int)off, buff, size, &bytesread );
+        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_uint)off, buff, size, &bytesread );
     }
     return( bytesread );
 
@@ -259,23 +259,23 @@ static void MemSave( MemWndInfo *info, HWND hwnd, bool gen_name )
     DWORD       limit;
     int         hdl;
     unsigned    len;
-    bool        ret;
+    bool        ok;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
 
     if( gen_name ) {
-        ret = GenTmpFileName( MemConfigInfo.fname, fname );
-        if( !ret ) {
-            ReportSave( hwnd, fname, MemConfigInfo.appname, ret );
+        ok = GenTmpFileName( MemConfigInfo.fname, fname );
+        if( !ok ) {
+            ReportSave( hwnd, fname, MemConfigInfo.appname, ok );
         }
     } else {
-        ret = GetSaveFName( hwnd, fname );
+        ok = GetSaveFName( hwnd, fname );
     }
-    if( ret ) {
+    if( ok ) {
 //      hdl = OpenFile( fname, &finfo, OF_CREATE | OF_WRITE );
         hdl = open( fname, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE );
         if( hdl == -1 ) {
-            ret = false;
+            ok = false;
         } else {
             hourglass = LoadCursor( NULLHANDLE, IDC_WAIT );
             SetCapture( hwnd );
@@ -298,7 +298,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, bool gen_name )
             SetCursor( oldcursor );
             ReleaseCapture();
         }
-        ReportSave( hwnd, fname, MemConfigInfo.appname, ret );
+        ReportSave( hwnd, fname, MemConfigInfo.appname, ok );
     }
 
 } /* MemSave */
@@ -318,7 +318,7 @@ bool RegMemWndClass( HANDLE instance )
     wc.hInstance = instance;
     wc.hIcon = NULLHANDLE;
     wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_WINDOW + 1);
+    wc.hbrBackground = (HBRUSH)(pointer_uint)(COLOR_WINDOW + 1);
     wc.lpszMenuName = "MEMINFOMENU";
     wc.lpszClassName = MEM_DISPLAY_CLASS;
     return( RegisterClass( &wc ) != 0 );

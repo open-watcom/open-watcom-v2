@@ -1377,7 +1377,7 @@ struct S {
 S<char> v;
 .exam end
 .*
-.section The WARNING Pragma (C++ Only)
+.section The WARNING Pragma
 .*
 .np
 .ix 'pragmas' 'warning'
@@ -1404,8 +1404,9 @@ level.
 Make sure to strip all leading zeroes from the message number (to
 avoid interpretation as an octal constant).
 .note level
-is a number from 0 to 9 and represents the level of the warning message.
+is a number from 0 to 5 (C compiler) or 0 to 9 (C++ compiler) and represents the level of the warning message.
 When a value of zero is specified, the warning becomes an error.
+When a value of 5 (C compiler) or 9 (C++ compiler) is specified, the warning is disabled.
 .esynote
 .*
 .do end

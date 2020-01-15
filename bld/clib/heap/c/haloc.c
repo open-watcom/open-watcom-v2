@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) )
         return( NULL );  /* allocation failed */
-    hp = (void_hptr)MK_FP( TINY_INFO( rc ), 0 );
+    hp = (void_hptr)_MK_FP( TINY_INFO( rc ), 0 );
     for( ;; ) {
         size = 0x8000;
         if( num_of_paras < 0x0800 )
@@ -96,15 +97,15 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
         hp = (char _WCHUGE *)hp + size;
         num_of_paras -= 0x0800;
     }
-    return( (void_hptr)MK_FP( (unsigned short)rc, 0 ) );
+    return( (void_hptr)_MK_FP( (unsigned short)rc, 0 ) );
 #endif
 }
 
 _WCRTLINK void hfree( void_hptr cstg )
 {
 #if defined(__WINDOWS__)
-    __FreeSeg( FP_SEG( cstg ) );
+    __FreeSeg( _FP_SEG( cstg ) );
 #else
-    _TinyFreeBlock( FP_SEG( cstg ) );
+    _TinyFreeBlock( _FP_SEG( cstg ) );
 #endif
 }

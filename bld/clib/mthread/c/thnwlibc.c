@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,10 +115,14 @@ int __LibCAddThread( thread_data *tdata )
 void __LibCRemoveThread( int close_handle )
 /*****************************************/
 {
-    thread_data *tdata = NULL;
+    thread_data *tdata;
+    int         ccode;
+
+    /* unused parameters */ (void)close_handle;
 
     if( __NXSlotID != NO_INDEX ) {
-        int ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
+        tdata = NULL;
+        ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
         if( 0 != ccode ) {
             return;
         }
@@ -184,7 +189,7 @@ static void begin_thread_helper( void *the_arg )
         // tdata->__allocated = 0;
         tdata->__data_size = __ThreadDataSize;
         tdata->__randnext = 1;
-        _RWD_stacklow = FP_OFF( stack_bottom );
+        _RWD_stacklow = _FP_OFF( stack_bottom );
         (*start_addr)( arglist );
         _endthread();
     } else {
@@ -202,6 +207,8 @@ int __CBeginThread(
 {
     begin_thread_data   data;
     int                 error;
+
+    /* unused parameters */ (void)stack_size;
 
     if( __NXSlotID == NO_INDEX ) {
         __InitMultipleThread();

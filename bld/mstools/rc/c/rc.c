@@ -141,10 +141,13 @@ void main( int argc, char *argv[] )
     int                 itemsParsed;
     int                 rc = RC_NOACTION;
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( RC_NUM_SECTIONS );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,11 +157,11 @@ unsigned extra;
 unsigned len_mask;
 
 struct {
-    bool    quiet       : 1;    /* no console output req'd */
-    bool    imperfect   : 1;    /* non-minimal perfect hash function allowed */
-    bool    mask_hash   : 1;    /* use mod 2^n */
-    bool    tiny_output : 1;    /* output .gh file for small lists */
-    bool    align       : 1;    /* output strings length mod 4 */
+    boolbit     quiet       : 1;    /* no console output req'd */
+    boolbit     imperfect   : 1;    /* non-minimal perfect hash function allowed */
+    boolbit     mask_hash   : 1;    /* use mod 2^n */
+    boolbit     tiny_output : 1;    /* output .gh file for small lists */
+    boolbit     align       : 1;    /* output strings length mod 4 */
 } flags;
 
 FILE *outfile;

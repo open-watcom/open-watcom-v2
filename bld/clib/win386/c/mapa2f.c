@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ void *MapAliasToFlat( DWORD alias )
 
     memset( &r, 0, sizeof( r ) );
     r.x.ax = 0x06;
-    r.x.bx = FP_SEG( (void __far *)&r );
+    r.x.bx = _FP_SEG( (void __far *)&r );
     intr( 0x31, &r );
     base_32 = (r.x.cx << 16L) + (DWORD)r.x.dx;
     r.x.ax = 0x06;

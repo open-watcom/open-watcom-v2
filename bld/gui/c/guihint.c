@@ -216,13 +216,12 @@ bool GUIAppendHintText( gui_window *wnd, const gui_menu_struct *menu, hint_type 
     if( GetStructNum( &wnd->hintsinfo, type, &hints ) ) {
         new_num = CountMenus( menu );
         new_hints = (gui_hint_struct *)GUIMemRealloc( hints.hint, ( hints.num_items + new_num ) * sizeof( gui_hint_struct ) );
-        if( new_hints == NULL ) {
-            return( false );
+        if( new_hints != NULL ) {
+            hints.hint = new_hints;
+            InsertHint( menu, &hints );
+            SetStructNum( &wnd->hintsinfo, type, &hints );
+            return( true );
         }
-        hints.hint = new_hints;
-        InsertHint( menu, &hints );
-        SetStructNum( &wnd->hintsinfo, type, &hints );
-        return( true );
     }
     return( false );
 }

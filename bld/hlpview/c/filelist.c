@@ -46,6 +46,7 @@
 #include "index.h"
 #include "search.h"
 #include "filelist.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -134,37 +135,30 @@ static void sortFileList( FileList *list )
 
 static void scanDirectory( char *buf, FileList *list )
 {
-    DIR                 *dirhdl;
-    struct dirent       *dirent;
-    char                fname[_MAX_FNAME];
+    DIR                 *dirp;
+    struct dirent       *dire;
+    PGROUP2             pg;
     unsigned            len;
 
-    dirhdl = opendir( buf );
-    if ( dirhdl == NULL )
-        return;
-    dirent = readdir( dirhdl );
-    while( dirent != NULL ) {
-        len = strlen( dirent->d_name );
-        if ( len < sizeof( DEF_EXT ) || stricmp ( &dirent->d_name[len - ( sizeof( DEF_EXT ) - 1 )], DEF_EXT ) != 0 ) {
-            dirent = readdir( dirhdl );
-            continue;
+    dirp = opendir( buf );
+    if( dirp != NULL ) {
+        while( (dire = readdir( dirp )) != NULL ) {
+            len = strlen( dire->d_name );
+            if ( len < ( sizeof( "." DEF_EXT ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." DEF_EXT ) - 1 )], "." DEF_EXT ) != 0 ) {
+                continue;
+            }
+            list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
+            list->items[list->used]->fpath = HelpDupStr( buf );
+            _splitpath2( dire->d_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+            list->items[list->used]->fname = HelpDupStr( pg.fname );
+            list->used++;
+            if( list->used == list->allocated ) {
+                list->allocated += MAX_HELPFILES;
+                list = HelpMemRealloc( list, sizeof( FileList ) + list->allocated * sizeof( FileInfo * ) );
+            }
         }
-        list->items[list->used] = HelpMemAlloc( sizeof( FileInfo ) );
-        len = strlen( buf ) + 1;
-        list->items[list->used]->fpath = HelpMemAlloc( len );
-        strcpy( list->items[list->used]->fpath, buf );
-        _splitpath( dirent->d_name, NULL, NULL, fname, NULL );
-        len = strlen( fname ) + 1;
-        list->items[list->used]->fname = HelpMemAlloc( len );
-        strcpy( list->items[list->used]->fname, fname );
-        list->used ++;
-        if( list->used == list->allocated ) {
-            list->allocated += MAX_HELPFILES;
-            list = HelpMemRealloc( list, sizeof( FileList ) + list->allocated * sizeof( FileInfo * ) );
-        }
-        dirent = readdir( dirhdl );
+        closedir( dirp );
     }
-    closedir( dirhdl );
 }
 
 static void doFillFileList( const char *path, FileList *list )
@@ -234,7 +228,8 @@ static void fillFileList( HelpSrchPathItem *srch, FileList *list )
             done = 1;
             break;
         }
-        if( done ) break;
+        if( done )
+            break;
         if( cur != NULL ) {
             doFillFileList( cur, list );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "novlldr.h"
 #include "ovlldr.h"
+
 
 /*
  * Here's a nice fast inline memcpy that is used if a 386 or better is
@@ -460,7 +462,7 @@ static unsigned __near DefragmentMem( unsigned amount, unsigned area_seg )
     /* there is enough room, so we move used blocks until we get a
      * free block large enough */
     to_seg = area->fblk.next;
-    for(;;) {
+    for( ;; ) {
         to_block = MK_FP( to_seg, 0 );
         to_block_paras = to_block->num_paras;
         to_block_next = to_block->next;
@@ -527,7 +529,7 @@ static unsigned __near ForceAllocate( unsigned amount )
     */
     call_chain = __OVLSCANCALLCHAIN__();
     rover_save = __OVLROVER__;
-    for(;;) {
+    for( ;; ) {
         area_seg = UnloadNonChained( amount, rover_save );
         if( area_seg != NULL_SEG ) {
             seg = DefragmentMem( amount, area_seg );
@@ -740,8 +742,8 @@ dos_addr __near __NOVLTINIT__( void )
 
 /* these two routines are for the C setjmp/longjmp support */
 
-extern unsigned long __far __FINDOVLADDR__( unsigned unused, unsigned segment )
-/***************************************************************************/
+unsigned long __far __FINDOVLADDR__( unsigned unused, unsigned segment )
+/**********************************************************************/
 /* find the overlay number corresponding to the given segment, and turn the
  * segment into a relative offset from the beginning of the section */
 {
@@ -758,9 +760,9 @@ extern unsigned long __far __FINDOVLADDR__( unsigned unused, unsigned segment )
 
 
 #ifdef OVL_MULTITHREAD
-extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment )
+unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment )
 #else
-extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
+unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
                                                             unsigned bp_chain )
 #endif
 /*****************************************************************************/
@@ -823,8 +825,8 @@ extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
 
 #define CRLF "\r\n"
 
-extern void __far __NOVLDUMP__( void )
-/**********************************/
+void __far __NOVLDUMP__( void )
+/*****************************/
 {
     ovltab_entry_ptr    ovl;
     unsigned_16         fn_off;

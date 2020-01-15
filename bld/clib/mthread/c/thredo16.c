@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ static void _WCFAR begin_thread_helper( void )
     memset( &my_thread_data, 0, sizeof( thread_data ) );
     my_thread_data.__randnext = 1;
     __ThreadData[*_threadid] = &my_thread_data;
-    _STACKLOW = FP_OFF( StackBottom );
+    _STACKLOW = _FP_OFF( StackBottom );
     DosSemClear( &data_sem );
     (*start_addr)( _arg );
     _endthread();
@@ -103,7 +103,7 @@ _WCRTLINK int _WCFAR _beginthread( thread_fn *start_addr,
 _WCRTLINK void _WCFAR *__chkstack( void _WCFAR *ptr )
 /***************************************************/
 {
-    if( FP_SEG( ptr ) != FP_SEG( &Routine ) ) {
+    if( _FP_SEG( ptr ) != _FP_SEG( &Routine ) ) {
         __fatal_runtime_error( "thread stack not in DGROUP", 1 );
         // never return
     }

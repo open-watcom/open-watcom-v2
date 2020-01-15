@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ static  char *          CurrSymName;
 unsigned_32     MaxErrors;
 bool            BannerPrinted;
 
-byte MsgFlags[ MSG_ARRAY_SIZE ];
+byte MsgFlags[MSG_ARRAY_SIZE];
 
 
 static int UseArgInfo( void )
@@ -186,7 +187,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
     int             temp;
 
     dest = buff;
-    for(;;) {
+    for( ;; ) {
         ch = *src++;
         if( ch == '\0' || len == 1 )
             break;
@@ -321,7 +322,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     size = FmtStr( dest, len, "%h", addr->off );
                 } else if( FmtData.type & MK_QNX_FLAT) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr( addr ) );
-                } else if( FmtData.type & (MK_ELF|MK_PE) ) {
+                } else if( FmtData.type & (MK_ELF | MK_PE) ) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr2( addr ) );
                 } else if( FmtData.type & MK_ID_SPLIT ) {
                     if( addr->seg == CODE_SEGMENT ) {
@@ -419,7 +420,7 @@ static void MessageFini( unsigned num, char *buff, size_t len )
 {
     size_t      msgprefixlen;
     unsigned    class;
-    char        msgprefix[ MAX_MSG_SIZE ];
+    char        msgprefix[MAX_MSG_SIZE];
 
     msgprefixlen = 0;
     class = num & CLASS_MSK;
@@ -495,8 +496,8 @@ void LnkMsg(
     va_list     args;
     int         which_file = 0;
     size_t      len;
-    char        rc_buff[ RESOURCE_MAX_SIZE ];
-    char        buff[ MAX_MSG_SIZE ];
+    char        rc_buff[RESOURCE_MAX_SIZE];
+    char        buff[MAX_MSG_SIZE];
 
     if( !TestBit( MsgFlags, num & NUM_MSK ) )
         return;
@@ -550,7 +551,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
 {
     size_t      len;
     char        rc_buff[RESOURCE_MAX_SIZE];
-    char        buff[ MAX_MSG_SIZE ];
+    char        buff[MAX_MSG_SIZE];
 
     num |= ERR;
     len = 0;
@@ -587,15 +588,15 @@ void WLPrtBanner( void )
     const char  *msg;
 
     if( !BannerPrinted ) {
-        msg = MsgStrings[ PRODUCT ];
+        msg = MsgStrings[PRODUCT];
         WriteStdOutInfo( msg, BANNER, NULL );
-        msg = MsgStrings[ COPYRIGHT ];
+        msg = MsgStrings[COPYRIGHT];
         WriteStdOutInfo( msg, BANNER, NULL );
-        msg = MsgStrings[ COPYRIGHT2 ];
+        msg = MsgStrings[COPYRIGHT2];
         WriteStdOutInfo( msg, BANNER, NULL );
-        msg = MsgStrings[ TRADEMARK ];
+        msg = MsgStrings[TRADEMARK];
         WriteStdOutInfo( msg, BANNER, NULL );
-        msg = MsgStrings[ TRADEMARK2 ];
+        msg = MsgStrings[TRADEMARK2];
         WriteStdOutInfo( msg, BANNER, NULL );
         BannerPrinted = true;
     }

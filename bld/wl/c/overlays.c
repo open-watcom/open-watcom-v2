@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,102 +40,80 @@
 #include "objcalc.h"
 #include "distrib.h"
 #include "overlays.h"
+#include "distrib.h"
 
-void WalkAllSects( void (*rtn)( section * ) )
-/**************************************************/
-{
-    rtn( Root );
-    if( FmtData.type & MK_OVERLAYS ) {
-        WalkAreas( Root->areas, rtn );
-    }
-}
 
-void WalkAllOvl( void (*rtn)( section * ) )
-/************************************************/
-{
-    if( FmtData.type & MK_OVERLAYS ) {
-        WalkAreas( Root->areas, rtn );
-    }
-}
-
-void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
-/**************************************************************************/
-{
-    rtn( Root, parm );
-    if( FmtData.type & MK_OVERLAYS ) {
-        ParmWalkAreas( Root->areas, rtn, parm );
-    }
-}
-
-void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
-/************************************************************************/
-{
-    if( FmtData.type & MK_OVERLAYS ) {
-        ParmWalkAreas( Root->areas, rtn, parm );
-    }
-}
-
-static void NumASect( section *sect )
-/***********************************/
-{
-    if( FmtData.u.dos.distribute ) {
-        SectOvlTab[OvlNum] = sect;
-    }
-    sect->ovl_num = OvlNum++;
-}
-
-void NumberSections( void )
-/********************************/
-{
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlNum + 1 ) );
-        SectOvlTab[0] = Root;
-    }
-    OvlNum = 1;
-    WalkAllOvl( &NumASect );
-}
-
-void FillOutFilePtrs( void )
-/*********************************/
-{
-    WalkAllOvl( FillOutPtr );
-}
-
-void TryDefVector( symbol *sym )
+static void OvlNumASect( section *sect )
 /**************************************/
 {
-    if( FmtData.type & MK_OVERLAYS ) {
-        if( sym->info & SYM_DISTRIB ) {
-            DefDistribSym( sym );
+    sect->ovlref = OvlSectNum++;
+}
+
+void OvlNumberSections( void )
+/****************************/
+{
+    if( FmtData.u.dos.distribute ) {
+        DistribNumberSections();
+    }
+    /* OvlSectNum value 0 is reserved for Root */
+    /* Overlayed sections start at 1 */
+    OvlSectNum = 1;
+    WalkAreas( Root->areas, OvlNumASect );
+}
+
+void OvlSetSegments( void )
+/*************************/
+{
+    DistribSetSegments();
+}
+
+static void FillOutPtr( section *sec )
+/************************************/
+{
+    if( sec->outfile == NULL ) {
+        if( sec->parent != NULL ) {
+            sec->outfile = sec->parent->outfile;  //same file as ancestor.
         } else {
-            OvlDefVector( sym );
+            sec->outfile = Root->outfile;
         }
     }
 }
 
-void TryUseVector( symbol *sym, extnode *newnode )
-/********************************************************/
+void OvlFillOutFilePtrs( void )
+/*****************************/
+{
+    WalkAreas( Root->areas, FillOutPtr );
+}
+
+void OvlTryDefVector( symbol *sym )
+/*********************************/
+{
+    if( sym->info & SYM_DISTRIB ) {
+        DefDistribSym( sym );
+    } else {
+        OvlDefVector( sym );
+    }
+}
+
+void OvlTryUseVector( symbol *sym, extnode *newnode )
+/***************************************************/
 {
     if( newnode != NULL ) {
         newnode->ovlref = 0;
-        if( FmtData.type & MK_OVERLAYS ) {
-            OvlUseVector( sym, newnode );
-        }
+        OvlUseVector( sym, newnode );
     }
 }
 
 static void PSection( section *sec )
-/***********************************/
+/**********************************/
 {
     CurrSect = sec;
     PModList( sec->mods );
 }
 
 void OvlPass2( void )
-/**************************/
+/*******************/
 {
-    if( FmtData.type & MK_OVERLAYS ) {
-        EmitOvlVectors();
-        WalkAllOvl( PSection );
-    }
+    OvlEmitVectors();
+    WalkAreas( Root->areas, PSection );
 }

@@ -198,8 +198,11 @@ static void tryanalysis( int line, int hist, const CHAR_TYPE *pgm, const CHAR_TY
 
 int __F_NAME( main, wmain )( int argc, const CHAR_TYPE * const * const argv )
 {
-#ifndef __UNIX__
+#ifdef __UNIX__
+    /* unused parameters */ (void)argc; (void)argv;
 
+    return( EXIT_SUCCESS );
+#else
 #ifdef __SW_BW
     FILE    *my_stdout;
 
@@ -280,15 +283,21 @@ int __F_NAME( main, wmain )( int argc, const CHAR_TYPE * const * const argv )
     /*** Print a pass/fail message and quit ***/
     if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-        return( EXIT_FAILURE );
+    } else {
+        printf( "Tests completed (%s).\n", ProgramName );
     }
-    printf( "Tests completed (%s).\n", ProgramName );
 #ifdef __SW_BW
-    fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    if( NumErrors != 0 ) {
+        fprintf( stderr, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+    } else {
+        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    }
     fclose( my_stdout );
     _dwShutDown();
 #endif
 
-#endif
+    if( NumErrors != 0 )
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
+#endif
 }

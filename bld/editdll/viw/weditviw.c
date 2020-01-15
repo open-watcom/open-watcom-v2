@@ -80,22 +80,17 @@ static char doRequest( char *szCommand )
 HDDEDATA CALLBACK VIW_DdeCallback( UINT wType, UINT wFmt, HCONV hConv, HSZ hszTopic, HSZ hszItem,
                                         HDDEDATA hData, ULONG_PTR dwData1, ULONG_PTR dwData2 )
 {
-    wFmt = wFmt;
-    hConv = hConv;
-    hszTopic = hszTopic;
-    hszItem = hszItem;
-    hData = hData;
-    dwData1 = dwData1;
-    dwData2 = dwData2;
+    /* unused parameters */ (void)wFmt; (void)hConv; (void)hszTopic; (void)hszItem;
+    /* unused parameters */ (void)hData; (void)dwData1; (void)dwData2;
 
     switch( wType ) {
-        case XTYP_DISCONNECT:
-            // user may have killed vi, or maybe this is a response to
-            // our ddeuninitialize.  either way, reset for next connect
-            if( bConnected ) {
-                doReset();
-            }
-            return( NULL );
+    case XTYP_DISCONNECT:
+        // user may have killed vi, or maybe this is a response to
+        // our ddeuninitialize.  either way, reset for next connect
+        if( bConnected ) {
+            doReset();
+        }
+        return( NULL );
     }
     return( NULL );
 }
@@ -193,8 +188,9 @@ int EDITAPI EDITFile( LPSTR szFile, LPSTR szHelpFile )
 {
     char        szCommand[ _MAX_PATH + 15 ];
 
+    /* unused parameters */ (void)szHelpFile;
+
     // don't handle help files yet
-    szHelpFile = szHelpFile;
     if( !bConnected ) {
         return( FALSE );
     }
@@ -213,15 +209,14 @@ int EDITAPI EDITLocateError( long lRow, int iCol,
     char        szCommand[ 100 ];
     BOOL        rc;
 
+    /* unused parameters */ (void)idResource;
+
     if( !bConnected ) {
         return( FALSE );
     }
 
     sprintf( szCommand, "Locate %ld %d %d", lRow, iCol, iLen );
     rc = doRequest( szCommand );
-
-    // can't lookup info in help file yet
-    idResource = idResource;
 
     if( szErrmsg != NULL ) {
         rc |= doRequest( "echo on" );
@@ -296,8 +291,7 @@ int EDITAPI EDITQueryThisFile( const char *filename )
 
 BOOL WINAPI DllMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 {
-    res = res;
-    reason = reason;
+    /* unused parameters */ (void)res; (void)reason;
 
     hInstance = hDll;
 
@@ -308,9 +302,7 @@ BOOL WINAPI DllMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 
 int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 {
-    wDataSeg = wDataSeg;
-    wHeapSize = wHeapSize;
-    lpszCmdLine = lpszCmdLine;
+    /* unused parameters */ (void)wDataSeg; (void)wHeapSize; (void)lpszCmdLine;
 
     hInstance = hInst;
 
@@ -319,7 +311,8 @@ int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCm
 
 int WINAPI WEP( int q )
 {
-    q = q;
+    /* unused parameters */ (void)q;
+
     return( 1);
 }
 

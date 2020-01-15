@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ WINEXPORT BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam );
 static int              showState = SW_SHOWNORMAL;
 static COLORREF         bkgroundColor = BK_WHITE;
 static HWND             hViewWindow;
-static BOOL             fOneViewWindow = TRUE;
+static bool             fOneViewWindow = true;
 
 /*
  * drawBorder - draw the border for the view window
@@ -570,7 +571,7 @@ void RePositionViewWnd( img_node *node )
 /*
  * SetViewWindow - set whether there is a single view window or multiple ones
  */
-void SetViewWindow( BOOL justone )
+void SetViewWindow( bool justone )
 {
     WPI_ENUMPROC        enumproc;
     int                 prev_show_state;
@@ -626,7 +627,7 @@ void ShowViewWindows( HWND hwnd )
 /*
  * IsOneViewWindow - return TRUE if there is only 1 view window or FALSE otherwise
  */
-BOOL IsOneViewWindow( void )
+bool IsOneViewWindow( void )
 {
     return( fOneViewWindow );
 

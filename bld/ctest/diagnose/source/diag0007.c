@@ -6,6 +6,8 @@ int foo( int arg )
     int a = 0;
     int i = 4;
 
+    (void)arg;
+
     for( int i = 2, j = 1; i < 10; ++i )
         a += i + j;     // i in scope opened by 'for'
 
@@ -27,7 +29,7 @@ int bar( int arg )
 }
 
 /* incorrect usage */
-int main( int argc, char **argv )
+int main( int argc )
 {
     int     z = 0;
 
@@ -63,8 +65,8 @@ int main( int argc, char **argv )
     switch( argc ) {
     default:
         ++argc;
-	int yy = 4;                             // OK here
-	--yy;
+        int yy = 4;                             // OK here
+        --yy;
     case 3:
         int zz = 3;                             // no declaration here
         ++zz;

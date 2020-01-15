@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,8 @@
 #include "wdebug.h"
 #include "trpimp.h"
 #include "trpld.h"
+#include "trpsys.h"
 
-
-extern TRAPENTRY_FUNC( UnLockInput );
 
 /*
  * SingleStepMode - allow single stepping
@@ -85,7 +85,8 @@ static trap_elen runProg( bool single_step )
     IntResult.EFlags &= ~TRACE_BIT;
     dowatch = FALSE;
     watch386 = FALSE;
-    UnLockInput();
+
+    SetInputLock( false );
 
     if( single_step ) {
         SingleStepMode();

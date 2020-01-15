@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +38,18 @@
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
     ResMemFlags         flags;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
+    boolbit             loadOptGiven        : 1;
+    boolbit             memOptGiven         : 1;
+    boolbit             purityOptGiven      : 1;
 } FullMemFlags;
 
 typedef struct FullOptFlagsOS2 {
     ResMemFlags         flags;
     uint_32             codePage;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
-    unsigned            cpOptGiven          : 1;
+    boolbit             loadOptGiven        : 1;
+    boolbit             memOptGiven         : 1;
+    boolbit             purityOptGiven      : 1;
+    boolbit             cpOptGiven          : 1;
 } FullOptFlagsOS2;
 
 typedef uint_32 SemOffset;
@@ -62,8 +63,8 @@ typedef struct ResLocation {
 typedef struct IntMask {
     uint_32     Mask;
     uint_32     Value;
-    bool        longVal :1;
-    bool        unsgVal :1;
+    boolbit     longVal :1;
+    boolbit     unsgVal :1;
 } IntMask;
 
 /**** include all the semantic structures and routine prototypes for each ****/

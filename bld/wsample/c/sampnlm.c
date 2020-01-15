@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
+#include "pathgrp2.h"
 
 #include <ownwthrd.h>
 
@@ -160,6 +162,8 @@ static volatile unsigned nModeSwitched = 0;
 
 static void ModeSwitched( LONG dummy )
 {
+    /* unused parameters */ (void)dummy;
+
     nModeSwitched++;
 }
 
@@ -167,6 +171,8 @@ static void WakeMeUp( LONG dummy )
 {
     static bool                     Already = false;
     struct LoadDefinitionStructure  *loaded;
+
+    /* unused parameters */ (void)dummy;
 
     if( Already )
         return;
@@ -248,6 +254,8 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
 static void SaveOutSamples( void *dummy )
 {
+    /* unused parameters */ (void)dummy;
+
     StopAndSave();
     AES.AProcessToCall = NULL;
 }
@@ -298,19 +306,20 @@ int InDOS( void )
 
 void GetProg( char *cmd, char *eoc )
 {
-    char    save;
-    char    volume[_MAX_VOLUME];
-    char    dir[_MAX_DIR];
-    char    fname[_MAX_FNAME];
-    char    ext[_MAX_EXT];
-    char    sfname[_MAX_FNAME];
+    char        save;
+    PGROUP2     pg1;
+    PGROUP2     pg2;
 
     save = *eoc;
     *eoc = '\0';
-    _splitpath( cmd, volume, dir, fname, ext );
+    _splitpath2( cmd, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     *eoc = save;
-    _splitpath( SampName, volume, dir, sfname, ext );
-    _makepath( SampName, volume, dir, sfname[0] == '\0' ? fname : sfname, ext[0] == '\0' ? "SMP" : ext );
+    _splitpath2( SampName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+    if( pg2.fname[0] == '\0' )
+        pg2.fname = pg1.fname;
+    if( pg2.ext[0] == '\0' )
+        pg2.ext = "smp";
+    _makepath( SampName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
 }
 
 

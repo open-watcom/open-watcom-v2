@@ -266,8 +266,15 @@ void DBIAddrInfoScan( seg_leader *seg,
 
     if( IS_DBG_INFO( seg ) )
         return;
-    if( (seg->class->flags & (CLASS_STACK | CLASS_IDATA)) && ( FmtData.dll || (FmtData.type & MK_PE) ) )
-        return;
+    if( FmtData.dll || (FmtData.type & MK_PE) ) {
+        if( seg->class->flags & (CLASS_STACK | CLASS_IDATA) )
+            return;
+        if( seg->combine == COMBINE_STACK ) {
+            if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
+                return;
+            }
+        }
+    }
     prev = RingStep( seg->pieces, NULL );
     for( ;; ) {
         if( prev == NULL )
@@ -278,7 +285,7 @@ void DBIAddrInfoScan( seg_leader *seg,
     }
     initfn( prev, cookie );
     size = 0;
-    for( curr = RingStep( seg->pieces, prev ); curr != NULL; curr = RingStep( seg->pieces, curr ) ) {
+    for( curr = prev; (curr = RingStep( seg->pieces, curr )) != NULL; ) {
         if( !curr->isdead ) {
             size += curr->a.delta - prev->a.delta;
             isnewmod = ( ( curr->o.mod != prev->o.mod ) && ( size != 0 ) );

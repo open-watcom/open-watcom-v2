@@ -757,14 +757,13 @@ static MONITOR ui_data = {
 
 
 static  LP_PIXEL    shadow;
-static  int         save_cursor_type;
 
 static bool setupscrnbuff( uisize srows, uisize scols )
 /*****************************************************/
 {
     LP_PIXEL    scrn;
-    size_t      size;
-    size_t      i;
+    unsigned    size;
+    unsigned    i;
     int         rows;
     int         cols;
 
@@ -793,42 +792,40 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    size = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
     {
 #ifdef _M_I86
         unsigned        seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 )
             return( false );
-        scrn = MK_FP( seg, 0 );
+        scrn = _MK_FP( seg, 0 );
         if( shadow == NULL ) {
-            seg = qnx_segment_alloc( size );
+            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( shadow ), size );
+            seg = qnx_segment_realloc( _FP_SEG( shadow ), size * sizeof( PIXEL ) );
         }
         if( seg == -1 ) {
-            qnx_segment_free( FP_SEG( scrn ) );
+            qnx_segment_free( _FP_SEG( scrn ) );
             return( false );
         }
-        shadow = MK_FP( seg, 0 );
+        shadow = _MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size );
+        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL )
             return( false );
-        if( (shadow = uirealloc( shadow, size )) == NULL ) {
+        if( (shadow = uirealloc( shadow, size * sizeof( PIXEL ) )) == NULL ) {
             uifree( scrn );
             return( false );
         }
 #endif
     }
-    save_cursor_type = -1; /* C_NORMAL; */
-    size /= sizeof( PIXEL );
     for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
@@ -1135,7 +1132,7 @@ static int td_refresh( bool must )
 /********************************/
 {
     int             i;
-    unsigned        incr;
+    int             incr;
     LP_PIXEL        bufp, sbufp;
 
     must |= UserForcedTermRefresh;
@@ -1210,11 +1207,11 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 #define TI_SLURPCHAR( __ch )  \
 {                             \
     unsigned char __c = __ch; \
-    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map_chk( __c ) ) ) \
+    if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS();       \
     rcol = (rcount == 0) ? j : rcol; \
     rcount++;                 \
-    rchar = ti_char_map[__c]; \
+    rchar = ti_char_map[__c][0]; \
     ralt = ti_alt_map_chk( __c ); \
 }
 
@@ -1226,7 +1223,7 @@ static void update_shadow( void )
 /*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    unsigned    incr = UIData->screen.increment;
+    int         incr = UIData->screen.increment;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
@@ -1250,7 +1247,7 @@ static int ti_refresh( bool must )
 /********************************/
 {
     int         i;
-    unsigned    incr;               // chars per line
+    int         incr;               // chars per line
     LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete

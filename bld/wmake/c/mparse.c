@@ -119,6 +119,7 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
                 FreeSafe( targname );
             }
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         case TOK_DOTNAME:
             if( !IsDotWithCmds( CurAttr.u.dotname ) ) {
@@ -131,6 +132,7 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
         case TOK_FILENAME:
             WildTList( dest, CurAttr.u.ptr, true, true );
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         default:
             ignoring( t, true );
@@ -305,6 +307,7 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
         case TOK_FILENAME:
             WildTList( list, CurAttr.u.ptr, true, false );
             FreeSafe( CurAttr.u.ptr );  /* not needed any more */
+            CurAttr.u.ptr = NULL;
             while( *list != NULL ) {    /* find tail again */
                 list = &(*list)->next;
             }
@@ -411,7 +414,7 @@ STATIC void parseTargDep( MTOKEN_T t, TLIST **btlist )
     nodep = ( t == TOK_EOL || t == TOK_END );   /* check if there wasn't a colon */
 
     /* set the scolon attribute for each of these targets */
-    setSColon( *btlist, (int)(t == TOK_SCOLON || nodep) );
+    setSColon( *btlist, ( t == TOK_SCOLON || nodep ) );
 
     if( !nodep ) {
         dep = buildDepend( &attr );
@@ -470,6 +473,7 @@ STATIC void parseExtensions( void )
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.u.ptr );
             }
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             any = true;
         } else {
             ignoring( t, true );
@@ -640,6 +644,7 @@ STATIC void parseSuf( void )
                 cur->next = head;
                 head = cur;
             }
+            CurAttr.u.ptr = NULL;
         } else {
             ignoring( t, true );
         }
@@ -656,6 +661,7 @@ STATIC void parseSuf( void )
             path = NULL;
         } else {
             path = CurAttr.u.ptr;
+            CurAttr.u.ptr = NULL;
             t = LexToken( LEX_PATH ); /* prefetch next token */
         }
     }
@@ -694,44 +700,43 @@ STATIC char *getFileName( const char *intext, size_t *offset )
 {
     VECSTR      tempStr;
     char        *ret;
-    bool        doubleQuote;    //are there double quotes
+    bool        dquote;     //are there double quotes
 
     assert( intext != NULL && offset != NULL );
 
-    *offset     = 0;
-    doubleQuote = false;
+    *offset = 0;
+    dquote = false;
 
     if( intext[*offset] == '\"' ) {
-        doubleQuote = true;
-        *offset     = 1;
+        dquote = true;
+        *offset = 1;
     }
     for( ;; ) {
         if( intext[*offset] == NULLCHAR ) {
             break;
-        } else if( (cisws( intext[*offset] ) || intext[*offset] == '<' || intext[*offset] == '>') && !doubleQuote ) {
+        } else if( (cisws( intext[*offset] ) || intext[*offset] == '<' || intext[*offset] == '>') && !dquote ) {
             break;
-        } else if( doubleQuote && intext[*offset] == '\\' ) {
+        } else if( dquote && intext[*offset] == '\\' ) {
             if( intext[*offset + 1] == '\"' ) {
                 *offset = *offset + 1;
             }
-        } else if( doubleQuote && intext[*offset] == '\"' ) {
+        } else if( dquote && intext[*offset] == '\"' ) {
             ++(*offset);
             break;
         }
         ++(*offset);
     }
 
-    if( (intext[(*offset) - 1] != '\"' && doubleQuote) || (*offset == 1 && doubleQuote) ) {
+    if( ( intext[(*offset) - 1] != '\"' && dquote ) || ( *offset == 1 && dquote ) ) {
         /* error */
         PrtMsg( ERR | LOC | NON_MATCHING_QUOTE );
         ret = NULL;
         return( ret );
     }
 
-    if( ( !doubleQuote && *offset > 0 ) ||
-        ( doubleQuote && *offset > 1 ) ) {
+    if( ( !dquote && *offset > 0 ) || ( dquote && *offset > 1 ) ) {
         tempStr = StartVec();
-        if( doubleQuote ) {
+        if( dquote ) {
             WriteNVec( tempStr, intext + 1, *offset - 2 );
         } else {
             WriteNVec( tempStr, intext, *offset );
@@ -808,7 +813,7 @@ STATIC void getBody( FLIST *head )
             CatVec( buf, bufTemp );
         }
         current->body = FinishVec( buf );
-        current       = current->next;
+        current = current->next;
         --inlineLevel;
     }
     if( inlineLevel > 0 ) {
@@ -864,11 +869,11 @@ STATIC FLIST *GetInlineFile( char **commandIn )
                 ++inlineLevel;
                 if( head == NULL ) {
                     current = NewFList();
-                    head    = current;
+                    head = current;
                 } else {
                     assert( current != NULL );
                     current->next = NewFList();
-                    current       = current->next;
+                    current = current->next;
                 }
 
                 // Add file Name into new command text
@@ -915,7 +920,7 @@ TLIST *Parse( void )
     btlist = NULL;
 
     clist_warning_given = false;
-    token_filename      = false;
+    token_filename = false;
 
     for( ;; ) {
         /*
@@ -954,6 +959,7 @@ TLIST *Parse( void )
             if( *CurAttr.u.ptr == NULLCHAR ) {
                 /* discard blank lines */
                 FreeSafe( CurAttr.u.ptr );
+                CurAttr.u.ptr = NULL;
             } else {
                 if( btlist == NULL ) {
                     if( !clist_warning_given ) {
@@ -961,11 +967,13 @@ TLIST *Parse( void )
                         clist_warning_given = true;
                     }
                     FreeSafe( CurAttr.u.ptr );
+                    CurAttr.u.ptr = NULL;
                 } else {
                     newclist = NewCList();
-                    newclist->text       = CurAttr.u.ptr;
+                    newclist->text = CurAttr.u.ptr;
+                    CurAttr.u.ptr = NULL;
                     /* stack in reverse order */
-                    newclist->next       = bclist;
+                    newclist->next = bclist;
                     /* look at the command text to see if we need
                      * to get inline file if we do then create inline
                      * file information in memory

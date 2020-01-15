@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,45 +31,40 @@
 ****************************************************************************/
 
 
-typedef void walksecs_fn( section * );
-typedef void parmwalksecs_fn( section *, void * );
-
-extern unsigned_16  AreaSize;
+extern seg_leader       *OvlSeg;
+extern unsigned_16      OvlAreaSize;
+extern overlay_ref      OvlSectNum;
+extern list_of_names    *OvlClasses;
 
 /* in ovlsupp.c */
 
 extern void             WalkAreas( OVL_AREA *, walksecs_fn * );
 extern void             ParmWalkAreas( OVL_AREA *, parmwalksecs_fn *, void * );
-extern void             ProcOvlSectPubs( section * );
-extern void             ProcOvlPubs( void );
-extern void             FillOutPtr( section * );
-extern void             CalcOvl( void );
-extern void             FreeOvlStruct( void );
+extern void             OvlProcPubsSect( section * );
+extern void             OvlProcPubs( void );
+extern void             OvlCalc( void );
+extern void             FreeOverlaySupp( void );
 extern void             OvlDefVector( symbol * );
-extern void             Vectorize( symbol * );
-extern void             TryRefVector( symbol * );
+extern void             OvlVectorize( symbol * );
+extern void             OvlTryRefVector( symbol * );
 extern void             OvlUseVector( symbol *, extnode * );
-extern void             IndirectCall( symbol * );
-extern void             GetVecAddr( int, targ_addr * );
-extern bool             CheckOvlClass( const char *, bool * );
-extern section          *CheckOvlSect( const char * );
-extern void             EmitOvlVectors( void );
-extern void             SetOvlStartAddr( void );
+extern void             OvlIndirectCall( symbol * );
+extern void             OvlGetVecAddr( int, targ_addr * );
+extern bool             OvlCheckOvlClass( const char *, bool * );
+extern section          *OvlCheckOvlSection( const char * );
+extern void             OvlEmitVectors( void );
+extern void             OvlSetStartAddr( void );
 extern void             OvlPass1( void );
-extern void             EmitOvlTable( void );
-extern void             PadOvlFiles( void );
-extern void             ResetOvlSupp( void );
-extern void             SetOvlTableLoc( group_entry *, unsigned long );
+extern void             OvlEmitTable( void );
+extern void             OvlPadOvlFiles( void );
+extern void             ResetOverlaySupp( void );
+extern void             OvlSetTableLoc( group_entry *, unsigned long );
 
 /* in overlays.c */
 
-extern void             WalkAllOvl( walksecs_fn * );
-extern void             ParmWalkAllOvl( parmwalksecs_fn *, void * );
-extern void             WalkAllSects( walksecs_fn * );
-extern void             ParmWalkAllSects( parmwalksecs_fn *, void * );
-extern void             NumberSections( void );
-extern void             FillOutFilePtrs( void );
-extern void             TryDefVector( symbol * );
-extern void             TryUseVector( symbol *, extnode * );
+extern void             OvlNumberSections( void );
+extern void             OvlSetSegments( void );
+extern void             OvlFillOutFilePtrs( void );
+extern void             OvlTryDefVector( symbol * );
+extern void             OvlTryUseVector( symbol *, extnode * );
 extern void             OvlPass2( void );
-extern virt_mem         GetLoadObjTarget( segdata * );

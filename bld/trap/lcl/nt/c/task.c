@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,9 @@
 #include "stdnt.h"
 #include "trptypes.h"
 #include "trpld.h"
+#include "trpsys.h"
 #include "globals.h"
 
-
-extern TRAPENTRY_FUNC( InfoFunction );
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
@@ -111,17 +111,27 @@ void TRAPENTRY TrapFini( void )
 /*
  * InfoFunction - inform trap file of gui debugger being used
  */
-void TRAPENTRY InfoFunction( HWND hwnd )
+void TRAPENTRY_FUNC( InfoFunction )( HWND hwnd )
 {
     DebuggerWindow = hwnd;
 }
 
+void TRAPENTRY_FUNC( InterruptProgram )( void )
+{
+    InterruptProgram();
+}
+
+bool TRAPENTRY_FUNC( Terminate )( void )
+{
+    return( Terminate() );
+}
+
 #if 0
 /*
- * TrapListLibs - this is called by the debugger to dump out a list
+ * ListLibs - this is called by the debugger to dump out a list
  *                of DLL's and their associated selectors
  */
-int TRAPENTRY TrapListLibs( char *buff, int is_first, int want_16,
+int TRAPENTRY_FUNC( ListLibs )( char *buff, int is_first, int want_16,
                          int want_32, int verbose, int sel )
 {
     return( DoListLibs( buff, is_first, want_16, want_32, verbose, sel ) );

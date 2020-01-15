@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,12 @@
 #include <commdlg.h>
 #endif
 #include "getfile.h"
-#include "walloca.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
 #include "wclbproc.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -96,19 +96,21 @@ static void checkRemoveButton( HWND hwnd )
     }
 }
 
-static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
+static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
+{
     size_t      len;
-    char        buf[_MAX_PATH];
-    char        drive[_MAX_DRIVE];
+    PGROUP2     pg;
 
-    drive[0] = '\0';
-    _splitpath( fname, drive, NULL, NULL, NULL );
-    if( drive[0] == '\0' ) {
-        hwnd = hwnd;
-        getcwd( buf, _MAX_PATH );
-        *fullname = buf;
-        len = strlen( buf );
-        if( buf[len - 1] != '\\' ) fullname->concat( "\\" );
+    /* unused parameters */ (void)hwnd;
+
+    _splitpath2( fname, pg.buffer, &pg.drive, NULL, NULL, NULL );
+    if( pg.drive[0] == '\0' ) {
+        getcwd( pg.buffer, sizeof( pg.buffer ) );
+        *fullname = pg.buffer;
+        len = strlen( pg.buffer );
+        if( pg.buffer[len - 1] != '\\' ) {
+            fullname->concat( "\\" );
+        }
     }
     fullname->concat( fname );
 }
@@ -148,20 +150,20 @@ static void formRelDir( const char *filedir, const char *tgtdir,WString *dir )
     if( *filedir != '\0' ) dir->concat( filedir + 1 );
 }
 
-static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
-    WString              fullpath;
-    GetFilesInfo        *info;
-    WFileName            tgt;
-    WFileName            filename;
-    char                 drive[_MAX_DRIVE];
-    char                 dir[_MAX_DIR];
+static void getRelFname( HWND hwnd, const char *fname, WString *relname )
+{
+    WString         fullpath;
+    GetFilesInfo    *info;
+    WFileName       tgt;
+    WFileName       filename;
+    PGROUP2         pg;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
     filename = fullpath.gets();
-    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
-    if( !stricmp( drive, filename.drive() ) ) {
-        formRelDir( filename.dir(), dir, relname );
+    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    if( stricmp( pg.drive, filename.drive() ) == 0 ) {
+        formRelDir( filename.dir(), pg.dir, relname );
         relname->concat( filename.fName() );
         relname->concat( filename.ext() );
     } else {
@@ -226,7 +228,8 @@ static void addFileToList( HWND hwnd, char *fname )
     checkRemoveButton( hwnd );
 }
 
-static void addCurrentFile( HWND hwnd  ) {
+static void addCurrentFile( HWND hwnd  )
+{
     char        *fname;
     int          len;
     HWND         ctl;
@@ -234,15 +237,20 @@ static void addCurrentFile( HWND hwnd  ) {
 
     ctl = GetDlgItem( hwnd, FOD_FILENAME );
     len = GetWindowTextLength( ctl );
-    if( len == 0 ) return;
-    fname = (char *)alloca( len + 1 );
-    GetWindowText( ctl, fname, len + 1 );
-    if( fname[strlen( fname ) - 1] == '\\' ) return;
-    stat( fname, &buf );
-    if( S_ISDIR( buf.st_mode ) ) return;
-    if( strpbrk( fname, "?*" ) != NULL ) return;
-    addFileToList( hwnd, fname );
-    SetWindowText( ctl, "" );
+    if( len > 0 ) {
+        fname = new char [len + 1];
+        GetWindowText( ctl, fname, len + 1 );
+        if( fname[strlen( fname ) - 1] != '\\' ) {
+            stat( fname, &buf );
+            if( !S_ISDIR( buf.st_mode ) ) {
+                if( strpbrk( fname, "?*" ) == NULL ) {
+                    addFileToList( hwnd, fname );
+                    SetWindowText( ctl, "" );
+                }
+            }
+        }
+        delete[] fname;
+    }
 }
 
 #ifdef __NT__
@@ -329,7 +337,8 @@ static void addAllFiles95( HWND hwnd )
 }
 #endif
 
-void GetResults( HWND hwnd ) {
+void GetResults( HWND hwnd )
+{
     char                *buf;
     int                 cnt;
     int                 i;
@@ -340,7 +349,7 @@ void GetResults( HWND hwnd ) {
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
     len = getMaxItemLen( lb );
-    buf = (char *)alloca( (size_t)( len + 1 ) );
+    buf = new char [len + 1];
     *info->result = "";
     cnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0 );
     for( i = 0; i < cnt; i++ ) {
@@ -348,9 +357,11 @@ void GetResults( HWND hwnd ) {
         info->result->concat( buf );
         info->result->concat( " " );
     }
+    delete[] buf;
 }
 
-void initFileList( HWND hwnd ) {
+void initFileList( HWND hwnd )
+{
     HWND                lb;
     GetFilesInfo        *info;
 
@@ -545,12 +556,11 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     OPENFILENAME    of;
     int             rc;
     char            fname[256];
-    char            drive[_MAX_DRIVE];
-    char            dir[_MAX_DIR];
+    PGROUP2         pg;
     char            newpath[_MAX_PATH];
 
-    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
-    _makepath( newpath, drive, dir, NULL, NULL );
+    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    _makepath( newpath, pg.drive, pg.dir, NULL, NULL );
     fname[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -560,7 +570,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     of.lpstrDefExt = "";
     of.nFilterIndex = last_filter_index;
     of.lpstrFile = fname;
-    of.nMaxFile = _MAX_PATH;
+    of.nMaxFile = sizeof( fname );
     of.lpstrTitle = caption;
     of.lCustData = (LPARAM)info;
     of.lpstrInitialDir = newpath;

@@ -110,9 +110,8 @@ bool intern initbios( void )
 
     if( initmonitor() ) {
 
-        size = UIData->width * UIData->height * sizeof( PIXEL );
-        UIData->screen.origin = (LP_PIXEL)uimalloc( size );
-        size /= sizeof( PIXEL );
+        size = UIData->width * UIData->height;
+        UIData->screen.origin = (LP_PIXEL)uimalloc( size * sizeof( PIXEL ) );
         for( i = 0; i < size; ++i ) {
             UIData->screen.origin[i].ch = ' ';
             UIData->screen.origin[i].attr = 7;

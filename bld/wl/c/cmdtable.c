@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ parse_entry     PosDbgMods[] = {
     NULL
 };
 
- parse_entry     DbgMods[] = {
+parse_entry     DbgMods[] = {
     "Watcom",       &ProcWatcomDBI,     MK_ALL, 0,
     "Dwarf",        &ProcDwarfDBI,      MK_ALL, 0,
     "Codeview",     &ProcCodeviewDBI,   MK_ALL, 0,
@@ -110,7 +111,9 @@ parse_entry     Directives[] = {
     "STARTLink",    &ProcStartLink,     MK_ALL, 0,
     "OPTLIB",       &ProcOptLib,        MK_ALL, 0,
     "ORDer",        &ProcOrder,         MK_ALL, 0,
+#ifdef _RAW
     "OUTput",       &ProcOutput,        MK_ALL, 0,
+#endif
 #ifdef _OS2
     "RESource",     &ProcResource,      MK_PE, 0,
     "COMmit",       &ProcCommit,        MK_PE, 0,
@@ -120,7 +123,7 @@ parse_entry     Directives[] = {
     "IMPort",       &ProcImport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE), CF_AFTER_INC,
     "EXPort",       &ProcExport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD ), CF_AFTER_INC,
 #endif
-#if defined( _OS2 ) || defined( _QNXLOAD )
+#if defined( _OS2 ) || defined( _QNX )
     "SEGment",      &ProcSegment,       (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
 #endif
 #ifdef _EXE
@@ -141,7 +144,7 @@ parse_entry     Directives[] = {
     "MEMory",       &ProcMemory16M,     MK_DOS16M, 0,
     "TRansparent",  &ProcTransparent,   MK_DOS16M, 0,
 #endif
-#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNXLOAD )
+#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   &ProcNewSegment,    (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
 #endif
 #ifdef _INT_DEBUG
@@ -216,7 +219,7 @@ parse_entry     MainOptions[] = {
 //  "PACKExp",      &ProcPackExp,       MK_PHAR_FLAT, 0,
     "MINData",      &ProcMinData,       MK_PHAR_LAP, 0,
     "MAXData",      &ProcMaxData,       MK_PHAR_LAP, 0,
-    "OFFset",       &ProcOffset,        MK_PHAR_FLAT|MK_OS2_FLAT|MK_PE|MK_QNX_FLAT|MK_ELF|MK_RAW, 0,
+    "OFFset",       &ProcOffset,        MK_PHAR_FLAT | MK_OS2_FLAT | MK_PE | MK_QNX_FLAT | MK_ELF | MK_RAW, 0,
     "SCReenname",   &ProcScreenName,    MK_NOVELL, 0,
     "CHeck",        &ProcCheck,         MK_NOVELL, 0,
     "MULTILoad",    &ProcMultiLoad,     MK_NOVELL, 0,
@@ -234,9 +237,9 @@ parse_entry     MainOptions[] = {
     "SHArelib",     &ProcSharelib,      MK_NOVELL, 0,
     "OSDomain",     &ProcOSDomain,      MK_NOVELL, 0,
     "NLMFlags",     &ProcNLMFlags,      MK_NOVELL, 0,
-    "VERSion",      &ProcVersion,       MK_NOVELL|MK_OS2_FLAT|MK_PE|MK_WINDOWS, 0,
-    "IMPLib",       &ProcImplib,        MK_NOVELL|MK_OS2|MK_PE, 0,
-    "IMPFile",      &ProcImpFile,       MK_NOVELL|MK_OS2|MK_PE, 0,
+    "VERSion",      &ProcVersion,       MK_NOVELL | MK_OS2_FLAT | MK_PE | MK_WINDOWS, 0,
+    "IMPLib",       &ProcImplib,        MK_NOVELL | MK_OS2 | MK_PE, 0,
+    "IMPFile",      &ProcImpFile,       MK_NOVELL | MK_OS2 | MK_PE, 0,
 #ifdef _DOS16M
     "BUFfer",       &ProcBuffer,        MK_DOS16M, 0,
     "GDTsize",      &ProcGDTSize,       MK_DOS16M, 0,
@@ -279,11 +282,13 @@ parse_entry     SysDirectives[] = {
     "DISAble",      &ProcDisable,       MK_ALL, 0,
     "SOrt",         &ProcSort,          MK_ALL, 0,
     "ORDer",        &ProcOrder,         MK_ALL, 0,
+#ifdef _RAW
     "OUTput",       &ProcOutput,        MK_ALL, 0,
+#endif
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
     "RUntime",      &ProcRuntime,       (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
 #endif
-#if defined( _OS2 ) || defined( _QNXLOAD )
+#if defined( _OS2 ) || defined( _QNX )
     "SEGment",      &ProcSegment,       (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
 #endif
 #ifdef _DOS16M
@@ -293,11 +298,11 @@ parse_entry     SysDirectives[] = {
     NULL
 };
 
-parse_entry    Models[] = {
+parse_entry     Models[] = {
     "Dos",          &ProcDos,           MK_DOS, 0,
 #ifdef _OS2
     "OS2",          &ProcOS2,           MK_ONLY_OS2, 0,
-    "WINdows",      &ProcWindows,       MK_WINDOWS|MK_PE|MK_WIN_VXD, 0,
+    "WINdows",      &ProcWindows,       MK_WINDOWS | MK_PE | MK_WIN_VXD, 0,
 #endif
 #ifdef _PHARLAP
     "PHARlap",      &ProcPharLap,       MK_PHAR_LAP, 0,
@@ -305,7 +310,7 @@ parse_entry    Models[] = {
 #ifdef _NOVELL
     "NOVell",       &ProcNovell,        MK_NOVELL, 0,
 #endif
-#ifdef _QNXLOAD
+#ifdef _QNX
     "QNX",          &ProcQNX,           MK_QNX, 0,
 #endif
 #ifdef _DOS16M
@@ -326,18 +331,19 @@ parse_entry    Models[] = {
     NULL
 };
 
-parse_entry    Languages[] = {
+parse_entry     Languages[] = {
     "JApanese",     &ProcJapanese,      MK_ALL, 0,
     "CHinese",      &ProcChinese,       MK_ALL, 0,
     "KOrean",       &ProcKorean,        MK_ALL, 0,
     NULL
 };
 
-parse_entry      EndLinkOpt[] = {
+parse_entry     EndLinkOpt[] = {
     "ENDLink",      &ProcEndLink,       MK_ALL, 0,
+    NULL
 };
 
-parse_entry  RunOptions[] = {
+parse_entry     RunOptions[] = {
 #ifdef _DOS16M
     "KEYboard",     &ProcKeyboard,      MK_DOS16M, 0,
     "OVERload",     &ProcOverload,      MK_DOS16M, 0,
@@ -384,12 +390,7 @@ parse_entry  RunOptions[] = {
 #ifdef _DOS16M
 /* parse tables used in cmd16m.c */
 
-extern bool     ProcTryExtended( void );
-extern bool     ProcTryLow( void );
-extern bool     ProcForceExtended( void );
-extern bool     ProcForceLow( void );
-
-parse_entry  Strategies[] = {
+parse_entry     Strategies[] = {
     "TRYExtended",  &ProcTryExtended,   MK_DOS16M, 0,
     "TRYLow",       &ProcTryLow,        MK_DOS16M, 0,
     "FORCEExtended",&ProcForceExtended, MK_DOS16M, 0,
@@ -397,20 +398,17 @@ parse_entry  Strategies[] = {
     NULL
 };
 
-extern bool     ProcTStack( void );
-extern bool     ProcTData( void );
-
-parse_entry  TransTypes[] = {
+parse_entry     TransTypes[] = {
     "STack",        &ProcTStack,        MK_DOS16M, 0,
     "DAta",         &ProcTData,         MK_DOS16M, 0,
     NULL
 };
 #endif
 
-#ifdef _QNXLOAD
+#ifdef _QNX
 /* parse tables used in CMDQNX.C */
 
-parse_entry QNXSegModel[] = {
+parse_entry     QNXSegModel[] = {
     "EXECUTEOnly",  &ProcQNXExecuteonly,MK_QNX, 0,
     "EXECUTERead",  &ProcQNXExecuteread,MK_QNX, 0,
     "READOnly",     &ProcQNXReadOnly,   MK_QNX, 0,
@@ -418,12 +416,12 @@ parse_entry QNXSegModel[] = {
     NULL
 };
 
-parse_entry QNXSegDesc[] = {
+parse_entry     QNXSegDesc[] = {
     "Class",        &ProcQNXClass,      MK_QNX, 0,
     NULL
 };
 
-parse_entry QNXFormats[] = {
+parse_entry     QNXFormats[] = {
     "FLat",         &ProcQNXFlat,       MK_QNX_FLAT, 0,
     NULL
 };
@@ -432,7 +430,7 @@ parse_entry QNXFormats[] = {
 #ifdef _PHARLAP
 /* parse tables used in CMDPHAR.C */
 
-parse_entry  PharModels[] = {
+parse_entry     PharModels[] = {
     "EXTended",     &ProcPharFlat,      MK_PHAR_FLAT, 0,
     "REX",          &ProcRex,           MK_PHAR_REX, 0,
     "SEGmented",    &ProcPharSegmented, MK_PHAR_MULTISEG, 0,
@@ -467,7 +465,7 @@ parse_entry     NovModels[] = {
     NULL
 };
 
-parse_entry      NovDBIOptions[] = {
+parse_entry     NovDBIOptions[] = {
     "ONLyexports",  &ProcNovDBIExports, MK_NOVELL, 0,
     "REFerenced",   &ProcNovDBIReferenced,MK_NOVELL, 0,
     NULL
@@ -496,7 +494,7 @@ parse_entry     DosOptions[] = {
 #ifdef _OS2
 /* parse tables used in CMDOS2.C */
 
-parse_entry  SubFormats[] = {
+parse_entry     SubFormats[] = {
     "DLl",          &ProcOS2DLL,        MK_OS2 | MK_PE, 0,
     "FLat",         &ProcLX,            MK_OS2_LX, 0,
     "LE",           &ProcLE,            MK_OS2_LE, 0,
@@ -507,7 +505,7 @@ parse_entry  SubFormats[] = {
     NULL
 };
 
-parse_entry OS2FormatKeywords[] = {
+parse_entry     OS2FormatKeywords[] = {
     "PM",           &ProcPM,            MK_ONLY_OS2, 0,
     "PMCompatible", &ProcPMCompatible,  MK_ONLY_OS2, 0,
     "FULLscreen",   &ProcPMFullscreen,  MK_ONLY_OS2, 0,
@@ -516,86 +514,86 @@ parse_entry OS2FormatKeywords[] = {
     NULL
 };
 
-parse_entry WindowsFormatKeywords[] = {
+parse_entry     WindowsFormatKeywords[] = {
     "MEMory",       &ProcMemory,        MK_WINDOWS, 0,
     "FOnt",         &ProcFont,          MK_WINDOWS, 0,
     NULL
 };
 
-parse_entry NTFormatKeywords[] = {
+parse_entry     NTFormatKeywords[] = {
     "TNT",          &ProcTNT,           MK_PE, 0,
     "RDOS",         &ProcRDOS,          MK_PE, 0,
     "EFI",          &ProcEFI,           MK_PE, 0,
     NULL
 };
 
-parse_entry VXDFormatKeywords[] = {
+parse_entry     VXDFormatKeywords[] = {
     "DYNamic",      &ProcDynamicDriver, MK_WIN_VXD, 0,
     "STATic",       &ProcStaticDriver,  MK_WIN_VXD, 0,
     NULL
 };
 
-parse_entry Init_Keywords[] = {
-    "INITGlobal",   &ProcInitGlobal,    MK_OS2|MK_PE, 0,
-    "INITInstance", &ProcInitInstance,  MK_OS2|MK_PE, 0,
+parse_entry     Init_Keywords[] = {
+    "INITGlobal",   &ProcInitGlobal,    MK_OS2 | MK_PE, 0,
+    "INITInstance", &ProcInitInstance,  MK_OS2 | MK_PE, 0,
     "INITThread",   &ProcInitThread,    MK_PE, 0,
     NULL
 };
 
-parse_entry Term_Keywords[] = {
+parse_entry     Term_Keywords[] = {
     "TERMGlobal",   &ProcTermGlobal,    MK_OS2_LE | MK_OS2_LX | MK_PE, 0,
     "TERMInstance", &ProcTermInstance,  MK_OS2_LE | MK_OS2_LX | MK_PE, 0,
     "TERMThread",   &ProcTermThread,    MK_PE, 0,
     NULL
 };
 
-parse_entry Exp_Keywords[] = {
+parse_entry     Exp_Keywords[] = {
     "RESident",     &ProcExpResident,   MK_OS2, 0,
-    "PRIVATE",      &ProcPrivate,       MK_OS2|MK_PE, 0,
+    "PRIVATE",      &ProcPrivate,       MK_OS2 | MK_PE, 0,
     NULL
 };
 
-parse_entry SegDesc[] = {
-    "Class",        &ProcOS2Class,      MK_OS2|MK_PE|MK_WIN_VXD, 0,
-    "TYpe",         &ProcSegType,       MK_OS2|MK_PE|MK_WIN_VXD, 0,
+parse_entry     SegDesc[] = {
+    "Class",        &ProcOS2Class,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "TYpe",         &ProcSegType,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
-parse_entry SegTypeDesc[] = {
-    "CODE",         &ProcSegCode,       MK_OS2|MK_PE|MK_WIN_VXD, 0,
-    "DATA",         &ProcSegData,       MK_OS2|MK_PE|MK_WIN_VXD, 0,
+parse_entry     SegTypeDesc[] = {
+    "CODE",         &ProcSegCode,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "DATA",         &ProcSegData,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
-parse_entry SegModel[] = {
-    "PReload",      &ProcPreload,       MK_OS2|MK_WIN_VXD, 0,
-    "LOadoncall",   &ProcLoadoncall,    MK_OS2|MK_WIN_VXD, 0,
-    "Iopl",         &ProcIopl,          MK_ONLY_OS2|MK_WIN_VXD, 0,
-    "NOIopl",       &ProcNoIopl,        MK_ONLY_OS2|MK_WIN_VXD, 0,
+parse_entry     SegModel[] = {
+    "PReload",      &ProcPreload,       MK_OS2 | MK_WIN_VXD, 0,
+    "LOadoncall",   &ProcLoadoncall,    MK_OS2 | MK_WIN_VXD, 0,
+    "Iopl",         &ProcIopl,          MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "NOIopl",       &ProcNoIopl,        MK_ONLY_OS2 | MK_WIN_VXD, 0,
     "EXECUTEOnly",  &ProcExecuteonly,   MK_OS2, 0,
     "EXECUTERead",  &ProcExecuteread,   MK_OS2, 0,
-    "SHared",       &ProcShared,        MK_OS2|MK_PE|MK_WIN_VXD, 0,
-    "NONShared",    &ProcNonShared,     MK_OS2|MK_PE|MK_WIN_VXD, 0,
+    "SHared",       &ProcShared,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "NONShared",    &ProcNonShared,     MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     "READOnly",     &ProcReadOnly,      MK_OS2, 0,
     "READWrite",    &ProcReadWrite,     MK_OS2, 0,
-    "CONforming",   &ProcConforming,    MK_ONLY_OS2|MK_WIN_VXD, 0,
-    "NONConforming",&ProcNonConforming, MK_ONLY_OS2|MK_WIN_VXD, 0,
+    "CONforming",   &ProcConforming,    MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "NONConforming",&ProcNonConforming, MK_ONLY_OS2 | MK_WIN_VXD, 0,
     "MOVeable",     &ProcMovable,       MK_OS2_16BIT, 0,
     "FIXed",        &ProcFixed,         MK_WINDOWS, 0,
-    "DIScardable",  &ProcDiscardable,   MK_WINDOWS|MK_WIN_VXD, 0,
+    "DIScardable",  &ProcDiscardable,   MK_WINDOWS | MK_WIN_VXD, 0,
     "NONDiscardable",&ProcNonDiscardable,MK_WIN_VXD, 0,
-    "INValid",      &ProcInvalid,       MK_OS2_LE|MK_OS2_LX, 0,
-    "RESident",     &ProcPermanent,     MK_OS2_LE|MK_OS2_LX|MK_WIN_VXD, 0,
-    "CONTiguous",   &ProcContiguous,    MK_OS2_LE|MK_OS2_LX, 0,
-    "DYNamic",      &ProcOS2Dynamic,    MK_OS2_LE|MK_OS2_LX, 0,
-    "NONPERManent", &ProcNonPermanent,  MK_OS2_LE|MK_OS2_LX, 0,
-    "PERManent",    &ProcPermanent,     MK_OS2_LE|MK_OS2_LX, 0,
+    "INValid",      &ProcInvalid,       MK_OS2_LE | MK_OS2_LX, 0,
+    "RESident",     &ProcPermanent,     MK_OS2_LE | MK_OS2_LX | MK_WIN_VXD, 0,
+    "CONTiguous",   &ProcContiguous,    MK_OS2_LE | MK_OS2_LX, 0,
+    "DYNamic",      &ProcOS2Dynamic,    MK_OS2_LE | MK_OS2_LX, 0,
+    "NONPERManent", &ProcNonPermanent,  MK_OS2_LE | MK_OS2_LX, 0,
+    "PERManent",    &ProcPermanent,     MK_OS2_LE | MK_OS2_LX, 0,
     "PAGEable",     &ProcPageable,      MK_PE, 0,
     "NONPageable",  &ProcNonPageable,   MK_PE, 0,
     NULL
 };
 
-parse_entry CommitKeywords[] = {
+parse_entry     CommitKeywords[] = {
     "STack",        &ProcCommitStack,   MK_PE, 0,
     "Heap",         &ProcCommitHeap,    MK_PE, 0,
     NULL
@@ -603,43 +601,46 @@ parse_entry CommitKeywords[] = {
 #endif
 
 #ifdef _ELF
-parse_entry ELFFormatKeywords[] = {
+parse_entry     ELFFormatKeywords[] = {
     "DLl",          &ProcELFDLL,        MK_ELF, 0,
     NULL
 };
 #endif
 
 #ifdef _ZDOS
-parse_entry ZdosOptions[] = {
+parse_entry     ZdosOptions[] = {
     "SYS",          &ProcZdosSYS,           MK_ZDOS, 0,
     "HWD",          &ProcZdosHWD,           MK_ZDOS, 0,
     "FSD",          &ProcZdosFSD,           MK_ZDOS, 0,
-    NULL };
+    NULL
+};
 #endif
 
 #ifdef _RDOS
-parse_entry RdosOptions[] = {
+parse_entry     RdosOptions[] = {
     "DEV16",          &ProcRdosDev16,       MK_RDOS, 0,
     "DEV32",          &ProcRdosDev32,       MK_RDOS, 0,
     "BIN16",          &ProcRdosBin16,       MK_RDOS, 0,
     "BIN32",          &ProcRdosBin32,       MK_RDOS, 0,
     "MBOOT",          &ProcRdosMboot,       MK_RDOS, 0,
-    NULL };
+    NULL
+};
 #endif
 
 #ifdef _RAW
-parse_entry RawOptions[] = {
+parse_entry     RawOptions[] = {
     "BIN",          &ProcRawBIN,            MK_RAW, 0,
     "HEX",          &ProcRawHEX,            MK_RAW, 0,
-    NULL };
+    NULL
+};
 #endif
 
-parse_entry OrderOpts[] = {
+parse_entry     OrderOpts[] = {
     "CLName",       &ProcOrdClass,      MK_ALL, 0,
     NULL
 };
 
-parse_entry OrderClassOpts[] = {
+parse_entry     OrderClassOpts[] = {
     "SEGAddr",      &ProcOrdSegAdr,     MK_ALL, 0,
     "OFFset",       &ProcOrdOfsAdr,     MK_ALL, 0,
     "COpy",         &ProcOrdCopy,       MK_ALL, 0,
@@ -648,18 +649,20 @@ parse_entry OrderClassOpts[] = {
     NULL
 };
 
-parse_entry OrderSegOpts[] = {
+parse_entry     OrderSegOpts[] = {
     "SEGAddr",      &ProcOrdSegSegAdr,  MK_ALL, 0,
     "OFFset",       &ProcOrdSegOfsAdr,  MK_ALL, 0,
     "NOEmit",       &ProcOrdSegNoEmit,  MK_ALL, 0,
     NULL
 };
 
-parse_entry OutputOpts[] = {
+#ifdef _RAW
+parse_entry     OutputOpts[] = {
     "RAW",          &ProcOutputRaw,     MK_ALL, 0,
     "HEX",          &ProcOutputHex,     MK_ALL, 0,
-    "OFFset",       &ProcOutputOfs,     MK_ALL, 0,
+    "OFFset",       &ProcOutputOffset,  MK_ALL, 0,
     "HSHIFT",       &ProcOutputHshift,  MK_ALL, 0,
     "STartrec",     &ProcOutputStart,   MK_ALL, 0,
     NULL
 };
+#endif

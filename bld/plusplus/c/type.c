@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +64,7 @@
 #include "dwarfdbg.h"
 #include "rtti.h"
 #include "dumpapi.h"
+#include "compinfo.h"
 
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
@@ -1102,7 +1104,7 @@ TYPE CheckDupType( TYPE newtype )
             ExtraRptTabIncr( ctr_type_ids, id, 0 );
             ExtraRptTabIncr( ctr_type_ids, RPT_TYP_TOTAL, 0 );
             if( id == TYP_FUNCTION ) {
-                unsigned num_args = newtype->u.f.args->num_args;
+                num_args = newtype->u.f.args->num_args;
                 if( num_args < ARGS_MAX ) {
                     ExtraRptTabIncr( ctr_fn_args, num_args, 0 );
                 } else {
@@ -1552,7 +1554,7 @@ static TYPE* dumpTypeRing(      // DUMP A TYPE RING
     TYPE* ring,
     DUMP_STATS *stats )
 {
-    int length = 0;
+    unsigned length = 0;
     TYPE curr;
 
     ++ stats->chains;
@@ -4892,8 +4894,8 @@ TYPE Integral64Type             // GET 64-BIT TYPE IF POSSIBLE
     ( 1 << TYP_ULONG64 )
 
 
-TYPE CheckBitfieldType( DECL_SPEC *dspec, target_long width )
-/***********************************************************/
+TYPE CheckBitfieldType( DECL_SPEC *dspec, target_size_t width )
+/*************************************************************/
 {
     TYPE base_type;
     TYPE i64_type;
@@ -4922,7 +4924,7 @@ TYPE CheckBitfieldType( DECL_SPEC *dspec, target_long width )
         i64_type = base_type;
         TypeStripTdModEnumChar( i64_type );
         if( TypeIdMasked( i64_type, MASK_TYPE_INT64 ) ) {
-            if( width > (TARGET_LONG*TARGET_BITS_CHAR) ) {
+            if( width > ( TARGET_LONG * TARGET_BITS_CHAR ) ) {
                 CErr1( ERR_64BIT_BITFIELD );
             } else {
                 if( SignedIntType( i64_type ) ) {
@@ -7877,10 +7879,10 @@ static tb_status typesBind( type_bind_info *data, bool is_function )
 
                 // using SYMC_NULL here is a bit dirty...
                 if( ( sym->id == SYMC_NULL ) && ( sym->u.sval == 0 ) ) {
-                    sym->u.sval = (target_int)(pointer_int)(*b_top)->u.id.name;
+                    sym->u.sval = (target_int)(pointer_uint)(*b_top)->u.id.name;
                 }
 
-                if( ( sym->id != SYMC_NULL ) || ( sym->u.sval != (target_int)(pointer_int)(*b_top)->u.id.name ) ) {
+                if( ( sym->id != SYMC_NULL ) || ( sym->u.sval != (target_int)(pointer_uint)(*b_top)->u.id.name ) ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );

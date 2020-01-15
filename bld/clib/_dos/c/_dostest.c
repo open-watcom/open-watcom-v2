@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,11 +59,17 @@
 #define TICK_COUNT              (INTERRUPT_TIME * 18)
 #ifdef __SW_BW
     #include <wdefwin.h>
-    #define PROG_ABORT( num )   { printf( "Line: %d\n"                      \
-                                          "Abnormal termination.\n", num ); \
-                                  exit( -1 ); }
+    #define PROG_ABORT( num ) \
+        { \
+            printf( "Line: %d\nAbnormal termination.\n", num ); \
+            exit( EXIT_FAILURE ); \
+        }
 #else
-    #define PROG_ABORT( num )   { printf( "Line: %d\n", num ); exit(-1); }
+    #define PROG_ABORT( num ) \
+        { \
+            printf( "Line: %d\n", num ); \
+            exit( EXIT_FAILURE ); \
+        }
 #endif
 #define YEAR(t)                 (((t & 0xFE00) >> 9) + 1980 )
 #define MONTH(t)                ((t & 0x01E0) >> 5)
@@ -175,7 +182,7 @@ void TestMemoryOperations( void )
     #if defined(__NT__) || (defined(__OS2__) && (defined(__386__)||defined(__PPC__)))
     cptr = (char *) segment;
     #else
-    cptr = (char __far *) MK_FP(segment,0);
+    cptr = (char __far *)_MK_FP( segment, 0 );
     #endif
     for( ctr = 0; ctr < NUM_PARA * SIZE_PARA; ctr += SIZE_PARA ) {
         cptr[ctr] = '#';
@@ -492,7 +499,7 @@ int main( int argc, char *argv[] )
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        exit( -1 );
+        return( EXIT_FAILURE );
     }
 #endif
     if( argc > 1 )

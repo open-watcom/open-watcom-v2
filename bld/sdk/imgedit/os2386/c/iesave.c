@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,13 @@
 #include "imgedit.h"
 #include <math.h>
 #include "..\h\wbitmap.h"
+#include "pathgrp2.h"
 
 
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
 
-static char     initialDir[ _MAX_PATH ];
+static char     initialDir[_MAX_PATH];
 
 /*
  * writeDataInPieces - writes the xor data for the bitmap in chunks
@@ -181,106 +183,76 @@ static BITMAPFILEHEADER2 *fillFileHeader( img_node *node )
 } /* fillFileHeader */
 
 /*
- * checkForExt - if no extension is given, use the default for the given
- *               type.
+ * initSaveFileInfo
  */
-static void checkForExt( img_node *node )
+static bool initSaveFileInfo( char *fullfile, image_type img_type )
 {
-    char        drive[ _MAX_PATH ];
-    char        dir[ _MAX_DIR ];
-    char        fname[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
-    char        *fullpath;
-    img_node    *next_icon;
-    char        default_ext[3][4] = {
-                                "bmp",
-                                "ico",
-                                "cur" };
+    char        *fname;
+    size_t      len;
 
-    for( next_icon = node; next_icon != NULL; next_icon = next_icon->nexticon ) {
-        fullpath = next_icon->fname;
-        _splitpath( fullpath, drive, dir, fname, ext );
-
-        if( strlen( ext ) > 1 ) {
-            return;
+    fname = "*";
+    if( initialDir[0] != '\0' ) {
+        len = strlen( initialDir ) - 1;
+        if( initialDir[len] != ':' && initialDir[len] != '\\' ) {
+            fname = "\\*";
         }
-
-        if( fullpath[strlen( fullpath ) - 1] != '.' ) {
-            strcat( fullpath, "." );
-        }
-        strcat( fullpath, default_ext[next_icon->imgtype - 1] );
     }
-} /* checkForExt */
+    _makepath( fullfile, NULL, initialDir, fname, GetImageFileExt( img_type, false ) );
+    return( true );
 
-#if 0
+} /* initSaveFileInfo */
+
 /*
- * checkForPalExt - if no extension is given, use the default palette
- *              extension of .pal.
+ * updateSaveFileInfo
  */
-static void checkForPalExt( char *filename )
+static bool updateSaveFileInfo( const char *fname )
 {
-    char        ext[ _MAX_EXT ];
+    PGROUP2             pg;
+    size_t              len;
 
-    _splitpath( filename, NULL, NULL, NULL, ext );
-
-    if( strlen( ext ) > 1 ) {
-        return;
+    _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
+    if( pg.dir[0] != '\0' ) {
+        len = strlen( pg.dir ) - 1;
+        if( len > 0 && pg.dir[len] == '\\' ) {
+            pg.dir[len] = '\0';
+        }
     }
+    _makepath( initialDir, pg.drive, pg.dir, NULL, NULL );
+    return( true );
 
-    if( filename[strlen( filename ) - 1] != '.' ) {
-        strcat( filename, "." );
-    }
-    strcat( filename, "pal" );
-} /* checkForPalExt */
-#endif
+} /* updateSaveFileInfo */
 
 /*
  * getSaveFName - Get the name of the file to be saved.
  */
-static bool getSaveFName( char *fname, int imgtype )
+static bool getSaveFName( char *fname, image_type img_type )
 {
     FILEDLG             filedlg;
-    char                ext[ _MAX_EXT ];
-    char                drive[ _MAX_DRIVE ];
-    char                path[ _MAX_PATH ];
-    HWND                hdlg;
-    char                fullfile[ CCHMAXPATH ];
+    bool                ok;
+    char                fullfile[CCHMAXPATH];
 
-    fname[ 0 ] = 0;
-    memset( &filedlg, 0, sizeof( FILEDLG ) );
-    strcpy( fullfile, initialDir );
-    if( fullfile[strlen( fullfile ) - 1] != '\\' ) {
-        strcat( fullfile, "\\" );
-    }
-    if( imgtype == BITMAP_IMG ) {
-        strcat( fullfile, "*.bmp" );
-    } else if( imgtype == ICON_IMG ) {
-        strcat( fullfile, "*.ico" );
-    } else {
-        strcat( fullfile, "*.ptr" );
-    }
+    fname[0] = '\0';
+
+    initSaveFileInfo( fullfile, img_type );
 
     /*
      * set the values of the filedlg structure ...
      */
+    memset( &filedlg, 0, sizeof( FILEDLG ) );
     filedlg.cbSize = sizeof( FILEDLG );
     filedlg.fl = FDS_SAVEAS_DIALOG | FDS_CENTER;
     filedlg.pszTitle = "Save Image File";
     filedlg.pszOKButton = "Save";
     strcpy( filedlg.szFullFile, fullfile );
 
-    hdlg = WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg );
+    ok = ( WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg ) != NULLHANDLE && filedlg.lReturn == DID_OK );
 
-    if( ( hdlg == NULLHANDLE ) || ( filedlg.lReturn != DID_OK ) ) {
-        return( false );
+    if( ok ) {
+        strcpy( fname, filedlg.szFullFile );
+        ok = updateSaveFileInfo( fname );
     }
+    return( ok );
 
-    strcpy( fname, filedlg.szFullFile );
-    _splitpath( fname, drive, path, NULL, ext );
-    strcpy( initialDir, drive );
-    strcat( initialDir, path );
-    initialDir[strlen( initialDir ) - 1] = '\0';
-    return( true );
 } /* getSaveFName */
 
 /*
@@ -293,8 +265,8 @@ static bool saveBitmapFile( img_node *node )
     long                        clrtable_size;
     RGB2                        *colours;
     FILE                        *fp;
-    char                        text[ HINT_TEXT_LEN ];
-    char                        filename[ _MAX_FNAME ];
+    char                        text[HINT_TEXT_LEN];
+    char                        filename[_MAX_FNAME];
     bool                        ok;
 
     ok = false;
@@ -336,7 +308,7 @@ static bool saveBitmapFile( img_node *node )
         FreeDIBitmapInfo( bmi );
         if( ok ) {
             AllowRestoreOption( node );
-            SetIsSaved( node->hwnd, TRUE );
+            SetIsSaved( node->hwnd, true );
             GetFnameFromPath( node->fname, filename );
             sprintf( text, "Bitmap saved to '%s'", filename );
             SetHintText( text );
@@ -360,8 +332,8 @@ static bool saveImageFile( img_node *node )
     ULONG                       nextoff;
     RGB2                        *colours;
     FILE                        *fp;
-    char                        text[ HINT_TEXT_LEN ];
-    char                        filename[ _MAX_FNAME ];
+    char                        text[HINT_TEXT_LEN];
+    char                        filename[_MAX_FNAME];
     img_node                    *new_image;
     bool                        ok;
 
@@ -442,7 +414,7 @@ static bool saveImageFile( img_node *node )
             return( false );
         }
         AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
+        SetIsSaved( node->hwnd, true );
         GetFnameFromPath( node->fname, filename );
         if( node->imgtype == ICON_IMG ) {
             sprintf( text, "Icon saved to '%s'", filename );
@@ -461,47 +433,46 @@ bool SaveFile( short how )
 {
     img_node    *node;
     img_node    *rootnode;
-    char        new_name[ _MAX_PATH ];
+    char        new_name[_MAX_PATH];
     bool        ok;
 
-    ok = false;
     node = GetCurrentNode();
-    if( node == NULL )
-        return( ok );
-    rootnode = GetImageNode( node->hwnd );
-
-    if( rootnode == NULL )
-        return( ok );
-
-    if( strnicmp(rootnode->fname, "(Untitled)", 10) == 0 ) {
-        how = SB_SAVE_AS;
+    ok = ( node != NULL )
+    if( ok ) {
+        rootnode = GetImageNode( node->hwnd );
+        ok = ( rootnode != NULL )
     }
-
-    if( how == SB_SAVE_AS ) {
-        if( !getSaveFName(new_name, rootnode->imgtype) ) {
-            return( ok );
+    if( ok ) {
+        if( strnicmp( rootnode->fname, "(Untitled)", 10 ) == 0 ) {
+            how = SB_SAVE_AS;
         }
-        for( node = rootnode; node != NULL; node = node->nexticon ) {
-            strcpy( node->fname, new_name );
+        if( how == SB_SAVE_AS ) {
+            ok = getSaveFName( new_name, rootnode->imgtype );
+            if( ok ) {
+                for( node = rootnode; node != NULL; node = node->nexticon ) {
+                    strcpy( node->fname, new_name );
+                }
+            }
         }
     }
+    if( ok ) {
+        CheckForExt( rootnode );
 
-    checkForExt( rootnode );
-
-    switch( rootnode->imgtype ) {
-    case BITMAP_IMG:
-        ok = saveBitmapFile( rootnode );
-        if( !ok )
-            MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-        break;
-    case ICON_IMG:
-    case CURSOR_IMG:
-        ok = saveImageFile( rootnode );
-        if( !ok )
-            MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-        break;
+        switch( rootnode->imgtype ) {
+        case BITMAP_IMG:
+            ok = saveBitmapFile( rootnode );
+            break;
+        case ICON_IMG:
+        case CURSOR_IMG:
+            ok = saveImageFile( rootnode );
+            break;
+        }
+        if( !ok ) {
+            MessageBox( HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION );
+        }
     }
     return( ok );
+
 } /* SaveFile */
 
 #if 0
@@ -510,19 +481,15 @@ bool SaveFile( short how )
  */
 static bool getSavePalName( char *fname )
 {
-    static char         filterList[] = "Palette (*.pal)" \
-                                        "\0" \
-                                        "*.pal" \
-                                        "\0" \
-                                        "All Files (*.*)" \
-                                        "\0" \
-                                        "*.*" \
-                                        "\0\0";
+    static char         filterList[] = "Palette (*.pal)\0*.pal\0" \
+                                        "All Files (*.*)\0*.*\0" \
+                                        "\0";
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
     bool                ok;
 
-    fname[ 0 ] = 0;
+    fname[0] = '\0';
+
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = HMainWindow;
@@ -549,9 +516,9 @@ bool SaveColourPalette( void )
 {
     a_pal_file          pal_file;
     FILE                *fp;
-    char                fname[ _MAX_PATH ];
-    char                filename[ _MAX_FNAME + _MAX_EXT ];
-    char                text[ HINT_TEXT_LEN ];
+    char                fname[_MAX_PATH];
+    char                filename[_MAX_FNAME + _MAX_EXT];
+    char                text[HINT_TEXT_LEN];
     bool                ok;
 
     if( !getSavePalName( fname ) ) {
@@ -559,11 +526,10 @@ bool SaveColourPalette( void )
             sprintf( text, "Error saving '%s'", fname );
             SetHintText( text );
             return( false );
-        } else {
-            return( true );
         }
+        return( true );
     }
-    checkForPalExt( fname );
+    CheckForPalExt( fname );
     if( !GetPaletteFile( &pal_file ) ) {
         sprintf( text, "Current palette not 16 colours!", fname );
         SetHintText( text );

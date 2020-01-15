@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include "wio.h"
@@ -41,24 +43,19 @@
 #include "message.h"
 
 
-#define STDOUT_HANDLE 1
-void LogUnPacking( char *name )
-//=============================
+void Log( const char *start, ... )
+//================================
 {
-    Log( LookupText( NULL, TXT_UNPACK ), "\'", name, "\'", NULL );
-}
+    const char  *curr;
+    va_list     args;
 
-void Log( char *start, ... )
-//==========================
-{
-    char *curr = start;
-    int i = 0;
-
-    while( curr != NULL ) {
-        write( STDOUT_HANDLE, curr, strlen( curr ) );
-        curr = ( &start )[ ++i ];
+    write( STDOUT_FILENO, start, strlen( start ) );
+    va_start( args, start );
+    while( (curr = va_arg( *args, char * )) != NULL ) {
+        write( STDOUT_FILENO, curr, strlen( curr ) );
     }
-    write( STDOUT_HANDLE, "\n", 1 );
+    va_end( args );
+    write( STDOUT_FILENO, "\n", 1 );
 }
 
 void BumpStatus( long by )
@@ -67,41 +64,45 @@ void BumpStatus( long by )
     by=by;
 }
 
-#undef STDOUT_HANDLE
-
 void getinput( char *buffer, int len1 )
-    {
-        while( len1 > 1 ) {
-            *buffer = getchar();
-            if( *buffer == '\n' ) break;
-            --len1;
-            ++buffer;
-        }
-        *buffer = '\0';
-    }
-
-int UnPackHook( char *name )
+//=====================================
 {
-    name=name;
+    while( len1 > 1 ) {
+        *buffer = getchar();
+        if( *buffer == '\n' )
+            break;
+        --len1;
+        ++buffer;
+    }
+    *buffer = '\0';
+}
+
+int UnPackHook( const char *name )
+//================================
+{
+    /* unused parameters */ (void)name;
+
     return( 0 );
 }
 
-int OK_ToReplace( char *name )                          /* 14-sep-91 */
-    {
-        char    reply[10];
+int OK_ToReplace( const char *name )
+//==================================
+{
+    char    reply[10];
 
-        printf( "A newer version of '%s' already exists.\n"
-                "Do you want it replaced (y/n)? ", name );
-        getinput( reply, 10 );
-        return( tolower( reply[0] ) == 'y' );
-    }
+    printf( "A newer version of '%s' already exists.\n"
+            "Do you want it replaced (y/n)? ", name );
+    getinput( reply, 10 );
+    return( tolower( reply[0] ) == 'y' );
+}
 
-int OK_ReplaceRDOnly( char *name )
-    {
-        char    reply[10];
+int OK_ReplaceRDOnly( const char *name )
+//======================================
+{
+    char    reply[10];
 
-        printf( "The file '%s' is marked as read-only.\n"
-                "Do you want it replaced (y/n)? ", name );
-        getinput( reply, 10 );
-        return( tolower( reply[0] ) == 'y' );
-    }
+    printf( "The file '%s' is marked as read-only.\n"
+            "Do you want it replaced (y/n)? ", name );
+    getinput( reply, 10 );
+    return( tolower( reply[0] ) == 'y' );
+}

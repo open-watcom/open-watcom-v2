@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -66,7 +66,7 @@
 typedef struct Macro {
     HASHNODE    node;       /* name is at name.node */
     const char  *value;
-    BIT         readonly;   /* ie: from command line */
+    bool        readonly;   /* ie: from command line */
 } MACRO;
 
 STATIC HASHTAB  *macTab;    /* head for the macro lookup table */
@@ -135,8 +135,8 @@ const char *procPath( const char *fullpath )
  * returns: pointer to a static buffer
  */
 {
-    PGROUP  pg;
-    char    *p;
+    PGROUP2     pg;
+    char        *p;
 
     if( fullpath == NULL ) {
         return( NULL );
@@ -235,9 +235,9 @@ STATIC MACRO *getMacroNode( const char *name )
     assert( name != NULL && *name != ENVVAR_C );
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
-        caseSensitive = true;
+        caseSensitive = CASESENSITIVE;
     } else {
-        caseSensitive = false;
+        caseSensitive = NOCASESENSITIVE;
     }
 
     return( (MACRO *)FindHashNode( macTab, name, caseSensitive ) );
@@ -260,20 +260,20 @@ STATIC char *findEqual( char *inString )
 }
 
 
-STATIC RET_T getOldNewString( char *inString, const char **oldString, const char **newString )
-/********************************************************************************************/
+STATIC bool getOldNewString( char *inString, const char **oldString, const char **newString )
+/*******************************************************************************************/
 {
     char    *equal;
 
     equal = findEqual( inString );
 
     if( equal == NULL ) {
-        return( RET_ERROR );
+        return( false );
     } else {
         *oldString = inString;
         *equal     = NULLCHAR;
         *newString = equal + 1;
-        return( RET_SUCCESS );
+        return( true );
     }
 }
 
@@ -443,7 +443,7 @@ char *GetMacroValue( const char *name )
             if( beforeSub == NULL ) {
                 afterSub = NULL;
             } else {
-                if( getOldNewString( p, &old, &new ) == RET_SUCCESS ) {
+                if( getOldNewString( p, &old, &new ) ) {
                     afterSub = doStringSubstitute( beforeSub, old, new );
                 } else {
                     afterSub = NULL;
@@ -568,6 +568,7 @@ void UnDefMacro( const char *name )
 {
     char    macro[MAX_MAC_NAME];
     MACRO   *dead;
+    bool    caseSensitive;
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
@@ -580,7 +581,13 @@ void UnDefMacro( const char *name )
         return;
     }
 
-    dead = (MACRO *)RemHashNode( macTab, macro, true );
+    if( Glob.compat_nmake || Glob.compat_posix ) {
+        caseSensitive = CASESENSITIVE;
+    } else {
+        caseSensitive = NOCASESENSITIVE;
+    }
+
+    dead = (MACRO *)RemHashNode( macTab, macro, caseSensitive );
 
     assert( dead != NULL );
 
@@ -804,7 +811,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
     case MAC_WS:
     case MAC_PUNC:
         p = CurAttr.u.ptr;
-        CurAttr.u.ptr  = NULL;
+        CurAttr.u.ptr = NULL;
         return( p );
     default:
 #ifdef DEVELOPMENT
@@ -881,6 +888,7 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
     case MAC_PUNC:
     case MAC_WS:
         InsString( CurAttr.u.ptr, true );
+        CurAttr.u.ptr = NULL;
         break;
     case TOK_EOL:
         UnGetCHR( '\n' );
@@ -939,7 +947,7 @@ STATIC char *deMacroText( int depth, MTOKEN_T end1, MTOKEN_T end2 )
          */
 
         result = deMacroToEnd( depth, TOK_MAGIC, TOK_MAGIC );
-        (void)LexToken( LEX_MAC_SUBST );      /* eat STRM_MAGIC */
+        LexToken( LEX_MAC_SUBST );      /* eat STRM_MAGIC */
     }
 
     /*
@@ -1082,6 +1090,7 @@ STATIC char *PartDeMacroProcess( void )
                 WriteVec( wsvec, CurAttr.u.ptr );
             }
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         case MAC_TEXT:
             if( wsvec != NULL && !leadingws ) {
@@ -1091,6 +1100,7 @@ STATIC char *PartDeMacroProcess( void )
             leadingws = false;
             WriteVec( vec, CurAttr.u.ptr );
             FreeSafe( CurAttr.u.ptr );
+            CurAttr.u.ptr = NULL;
             break;
         default:
 #ifdef DEVELOPMENT

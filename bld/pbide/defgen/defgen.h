@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,25 +31,23 @@
 ****************************************************************************/
 
 
-typedef enum {
-    TRUE = (1==1),
-    FALSE = (1==3)
-} BOOL;
+#include "bool.h"
+
 
 typedef struct {
-    BOOL        debug;
+    bool        debug;
     char        **def_file;
     unsigned    def_cnt;
     char        *dll_name;
     char        *out_file;
-    char        *nuo_name;      // non-visual user object name
+    char        *nu_name;       // non-visual user object name
     char        *nuo_file;      // non-visual user object file name
-}CmdLineInfo;
+} CmdLineInfo;
 
-extern CmdLineInfo      Config;
-extern BOOL             ErrorHasOccured;
+extern CmdLineInfo  Config;
+extern bool         ErrorHasOccured;
 
-extern void         ReportError( char *msg, ... );
-extern void         DebugOut( char *msg, ... );
-extern void         ReportWarning( char *msg, ... );
+extern void         ReportError( const char *msg, ... );
+extern void         DebugOut( const char *msg, ... );
+extern void         ReportWarning( const char *msg, ... );
 extern int          yyparse( void );

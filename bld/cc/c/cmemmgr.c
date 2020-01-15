@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +236,7 @@ void *CMemAlloc( size_t size )
         }
     }
     /* make sure pointer is properly aligned */
-    assert( ((unsigned)(pointer_int)p & (MEM_ALIGN - 1)) == 0 );
+    assert( ((unsigned)(pointer_uint)p & (MEM_ALIGN - 1)) == 0 );
 
     return( memset( p, 0, size ) );
 }

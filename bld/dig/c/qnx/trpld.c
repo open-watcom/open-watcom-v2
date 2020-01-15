@@ -118,10 +118,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             if( trap_funcs != NULL ) {
                 *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
                 FiniFunc = trap_funcs->fini_func;
+                ReqFunc = trap_funcs->req_func;
                 if( buff[0] == '\0' ) {
                     if( TrapVersionOK( *trap_ver ) ) {
                         TrapVer = *trap_ver;
-                        ReqFunc = trap_funcs->req_func;
                         return( NULL );
                     }
                     strcpy( buff, TC_ERR_BAD_TRAP_FILE );

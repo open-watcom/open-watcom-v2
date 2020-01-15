@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,9 +102,9 @@ typedef enum {
     SYM_NAME_XLATED     = CONSTU32( 0x01000000 ),   // only used during permdata writing
     SYM_IS_FREE         = CONSTU32( 0x10000000 ),   // only used during permdata writing.
 
-// the top three bits are used for the floating point fixup type during pass 2
+// the top three bits are used for the floating point patch type during pass 2
 // SYM_DCE_REF, SYM_VF_REFS_DONE and SYM_VF_MARKED are only needed during
-// pass 1 and before the floating point syms are checked for.
+// pass 1 and before the syms are checked for.
 // SYM_VF_MARKED can be used at the same time as SYM_DISTRIB since
 // SYM_DISTRIB is only set when SYM_DEFINED is on, and SYM_VF_MARKED is only
 // needed when the symbol is not defined.
@@ -114,56 +115,52 @@ typedef enum {
     SYM_VF_REFS_DONE    = CONSTU32( 0x80000000 ),   // ALL: vf refs added to call graph
 } sym_info;
 
+// values used to keep track of the special floating point patch symbols.
+typedef enum {
+    FPP_NONE = 0,
+    // value 1...6 are encoded FPP patch system values, see bld/watcom/h/fppatche.h
+    FPP_IGNORE = 7
+} fix_fpp_type;
+
+#define FPP_MASK            7           // floating point patch value is 3 bits wide
+
+#define SYM_FPP_SHIFT       (32 - 3)    // floating point patch value is top 3 bits
+#define SYM_FPP_MASK        (FPP_MASK << SYM_FPP_SHIFT)
+#define SYM_FPP_NONE        (FPP_NONE << SYM_FPP_SHIFT)
+
+// some handy macros for checking and setting symbol type bits
+
 #define SYM_CDAT_SEL_MASK   (SYM_CDAT_SEL_NODUP | SYM_CDAT_SEL_ANY | SYM_CDAT_SEL_SIZE | SYM_CDAT_SEL_EXACT)
 #define SYM_CDAT_SEL_SHIFT  16
 
-#define SYM_FFIX        (SYM_VF_MARKED | SYM_DCE_REF | SYM_VF_REFS_DONE)
-
 #define SYM_CLEAR_ON_P2  /* 0xE00000A0 flags to clear before pass 2 starts. */ \
-    (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FFIX)
+    (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FPP_MASK)
 #define SYM_CLEAR_ON_INC /* 0x010404F0 flags to clear when incremental linking. */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
 #define SYM_CLEAR_ON_ALT /* 0x00980010 */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_KILL | SYM_IS_ALTDEF | SYM_HAS_DATA)
 
-// values used to keep track of the special floating point symbols.
-typedef enum {
-    FFIX_NOT_A_FLOAT = 0,
-    FFIX_WR_SYMBOL,
-    FFIX_DR_SYMBOL,
-    FFIX_ES_OVERRIDE,
-    FFIX_CS_OVERRIDE,
-    FFIX_SS_OVERRIDE,
-    FFIX_DS_OVERRIDE,
-    FFIX_IGNORE,          // an overlapping fixup symbol.
-} ffix_type;
-
-// some handy macros for checking and setting symbol type bits
-
 #define SYM_TYPE_MASK       0xF
 
-#define FFIX_SHIFT          29
-#define FFIX_MASK           (7L << FFIX_SHIFT)
-
-#define IS_SYM_COMMUNAL(sym) (((sym)->info & SYM_TYPE_MASK) <= SYM_COMDAT)
-#define IS_SYM_NICOMDEF(sym) (((sym)->info & SYM_TYPE_MASK) <= SYM_COMMUNAL_32)
-#define IS_SYM_COMDAT(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_COMDAT)
-#define IS_SYM_ALIAS(sym)    (((sym)->info & SYM_TYPE_MASK) == SYM_ALIAS)
-#define IS_SYM_IMPORTED(sym) (((sym)->info & SYM_TYPE_MASK) == SYM_IMPORTED)
-#define IS_SYM_GROUP(sym)    (((sym)->info & SYM_TYPE_MASK) == SYM_GROUP)
-#define IS_SYM_REGULAR(sym)  (((sym)->info & SYM_TYPE_MASK) == SYM_REGULAR)
-#define IS_SYM_VF_REF(sym)   (((sym)->info & SYM_TYPE_MASK) >= SYM_VF_REF)
-#define IS_SYM_PURE_REF(sym) (((sym)->info & SYM_TYPE_MASK) == SYM_PURE_REF)
-#define IS_SYM_LAZY_REF(sym) (((sym)->info & SYM_TYPE_MASK) == SYM_LAZY_REF)
-#define IS_SYM_A_REF(sym)    (((sym)->info & SYM_TYPE_MASK) >= SYM_LAZY_REF)
-#define IS_SYM_WEAK_REF(sym) (((sym)->info & SYM_TYPE_MASK) >= SYM_WEAK_REF)
-#define IS_SYM_LINK_WEAK(sym)(((sym)->info & SYM_TYPE_MASK) == SYM_LINK_WEAK_REF)
-#define IS_SYM_COMM32(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
+#define IS_SYM_COMMUNAL(sym)    (((sym)->info & SYM_TYPE_MASK) <= SYM_COMDAT)
+#define IS_SYM_NICOMDEF(sym)    (((sym)->info & SYM_TYPE_MASK) <= SYM_COMMUNAL_32)
+#define IS_SYM_COMDAT(sym)      (((sym)->info & SYM_TYPE_MASK) == SYM_COMDAT)
+#define IS_SYM_ALIAS(sym)       (((sym)->info & SYM_TYPE_MASK) == SYM_ALIAS)
+#define IS_SYM_IMPORTED(sym)    (((sym)->info & SYM_TYPE_MASK) == SYM_IMPORTED)
+#define IS_SYM_GROUP(sym)       (((sym)->info & SYM_TYPE_MASK) == SYM_GROUP)
+#define IS_SYM_REGULAR(sym)     (((sym)->info & SYM_TYPE_MASK) == SYM_REGULAR)
+#define IS_SYM_VF_REF(sym)      (((sym)->info & SYM_TYPE_MASK) >= SYM_VF_REF)
+#define IS_SYM_PURE_REF(sym)    (((sym)->info & SYM_TYPE_MASK) == SYM_PURE_REF)
+#define IS_SYM_LAZY_REF(sym)    (((sym)->info & SYM_TYPE_MASK) == SYM_LAZY_REF)
+#define IS_SYM_A_REF(sym)       (((sym)->info & SYM_TYPE_MASK) >= SYM_LAZY_REF)
+#define IS_SYM_WEAK_REF(sym)    (((sym)->info & SYM_TYPE_MASK) >= SYM_WEAK_REF)
+#define IS_SYM_LINK_WEAK(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_LINK_WEAK_REF)
+#define IS_SYM_COMM32(sym)      (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
 
 #define SET_SYM_TYPE(sym,type)  ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
-#define SET_SYM_FFIX(sym,value) ((sym)->info = ((sym)->info & ~FFIX_MASK)|((value) << FFIX_SHIFT))
+#define SET_SYM_FPP(sym,value)  ((sym)->info = ((sym)->info & ~SYM_FPP_MASK)|((value) << SYM_FPP_SHIFT))
 
-#define GET_SYM_FFIX(sym)       (((sym)->info >> FFIX_SHIFT) & 7)
+#define GET_SYM_FPP(sym)        (((sym)->info >> SYM_FPP_SHIFT) & FPP_MASK)
 
 #define SET_SYM_ADDR(sym,o,s)   (sym)->addr.seg=s;(sym)->addr.off=o
 
@@ -174,7 +171,7 @@ typedef enum {
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 1 means do not generate a vector
 */
 
-enum overlay_info {
+typedef enum overlay_info {
     OVL_UNDECIDED       = 0x0,
     OVL_NO_VECTOR       = 0x1,          // symbol has a vector
     OVL_FORCE           = 0x2,          // force symbol to have a vector
@@ -182,7 +179,7 @@ enum overlay_info {
     OVL_REF             = 0x8,          // reference number assigned
     OVL_MAKE_VECTOR     = OVL_FORCE,
     OVL_VEC_MASK        = (OVL_NO_VECTOR | OVL_FORCE)
-};
+} overlay_info;
 
 typedef struct {
     union {
@@ -192,9 +189,9 @@ typedef struct {
 } name_strtab;
 
 typedef struct {
-    unsigned_16 modnum;         // DOS: idx of module which defines this sym
-    unsigned_16 ovlref   : 12;  // DOS: overlay vector #
-    unsigned_16 ovlstate :  4;  // DOS: overlay vector state
+    unsigned_16     modnum;         // DOS: idx of module which defines this sym
+    unsigned_16     ovlref;         // DOS: overlay vector #
+    overlay_info    ovlstate;       // DOS: overlay vector state
 } dos_sym_data;
 
 typedef struct symbol {
@@ -203,7 +200,7 @@ typedef struct symbol {
     struct symbol       *link;
     targ_addr           addr;
     unsigned_16         namelen_cmp;
-    sym_info            info;       // flags & floating point fixup type.
+    sym_info            info;       // flags & floating point patch type.
     struct mod_entry    *mod;
     union {
         void            *edges;     // for dead code elim. when sym undefd

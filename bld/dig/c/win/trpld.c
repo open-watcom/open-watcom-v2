@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,14 +42,15 @@
 #include "tcerr.h"
 
 
-bool    TrapHardModeRequired = false;
+#define pick(n,r,p,ar,ap)   typedef r TRAPENTRY (*TRAP_EXTFUNC_TYPE(n)) ## p;
+#include "_trpextf.h"
+#undef pick
 
-static TRAPENTRY_FUNC_PTR( InputHook );
-static TRAPENTRY_FUNC_PTR( InfoFunction );
-static TRAPENTRY_FUNC_PTR( UnLockInput );
-static TRAPENTRY_FUNC_PTR( SetHardMode );
-static TRAPENTRY_FUNC_PTR( HardModeCheck );
-static TRAPENTRY_FUNC_PTR( GetHwndFunc );
+#define pick(n,r,p,ar,ap)   static TRAP_EXTFUNC_TYPE(n) TRAP_EXTFUNC_PTR(n);
+#include "_trpextf.h"
+#undef pick
+
+bool    TrapHardModeRequired = false;
 
 static trap_fini_func   *FiniFunc = NULL;
 static HINSTANCE        TrapFile = 0;
@@ -57,12 +59,12 @@ static HINSTANCE        toolhelp = 0;
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    TRAPENTRY_PTR_NAME( InputHook ) = NULL;
-    TRAPENTRY_PTR_NAME( InfoFunction ) = NULL;
-    TRAPENTRY_PTR_NAME( HardModeCheck ) = NULL;
-    TRAPENTRY_PTR_NAME( SetHardMode ) = NULL;
-    TRAPENTRY_PTR_NAME( UnLockInput ) = NULL;
-    TRAPENTRY_PTR_NAME( GetHwndFunc ) = NULL;
+    TRAP_EXTFUNC_PTR( InputHook ) = NULL;
+    TRAP_EXTFUNC_PTR( InfoFunction ) = NULL;
+    TRAP_EXTFUNC_PTR( HardModeCheck ) = NULL;
+    TRAP_EXTFUNC_PTR( SetHardMode ) = NULL;
+    TRAP_EXTFUNC_PTR( UnLockInput ) = NULL;
+    TRAP_EXTFUNC_PTR( GetHwndFunc ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
@@ -141,17 +143,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)3 );
     ReqFunc  = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)4 );
-    TRAPENTRY_PTR_NAME( InputHook ) = TRAPENTRY_PTR_CAST( InputHook )GetProcAddress( TrapFile, (LPSTR)5 );
-    TRAPENTRY_PTR_NAME( InfoFunction ) = TRAPENTRY_PTR_CAST( InfoFunction )GetProcAddress( TrapFile, (LPSTR)6 );
-    TRAPENTRY_PTR_NAME( HardModeCheck ) = TRAPENTRY_PTR_CAST( HardModeCheck )GetProcAddress( TrapFile, (LPSTR)7 );
-    TRAPENTRY_PTR_NAME( GetHwndFunc ) = TRAPENTRY_PTR_CAST( GetHwndFunc )GetProcAddress( TrapFile, (LPSTR)8 );
-    TRAPENTRY_PTR_NAME( SetHardMode ) = TRAPENTRY_PTR_CAST( SetHardMode )GetProcAddress( TrapFile, (LPSTR)12 );
-    TRAPENTRY_PTR_NAME( UnLockInput ) = TRAPENTRY_PTR_CAST( UnLockInput )GetProcAddress( TrapFile, (LPSTR)13 );
+    TRAP_EXTFUNC_PTR( InputHook ) = (TRAP_EXTFUNC_TYPE( InputHook ))GetProcAddress( TrapFile, (LPSTR)5 );
+    TRAP_EXTFUNC_PTR( InfoFunction ) = (TRAP_EXTFUNC_TYPE( InfoFunction ))GetProcAddress( TrapFile, (LPSTR)6 );
+    TRAP_EXTFUNC_PTR( HardModeCheck ) = (TRAP_EXTFUNC_TYPE( HardModeCheck ))GetProcAddress( TrapFile, (LPSTR)7 );
+    TRAP_EXTFUNC_PTR( GetHwndFunc ) = (TRAP_EXTFUNC_TYPE( GetHwndFunc ))GetProcAddress( TrapFile, (LPSTR)8 );
+    TRAP_EXTFUNC_PTR( SetHardMode ) = (TRAP_EXTFUNC_TYPE( SetHardMode ))GetProcAddress( TrapFile, (LPSTR)12 );
+    TRAP_EXTFUNC_PTR( UnLockInput ) = (TRAP_EXTFUNC_TYPE( UnLockInput ))GetProcAddress( TrapFile, (LPSTR)13 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
-      && TRAPENTRY_PTR_NAME( InputHook ) != NULL && TRAPENTRY_PTR_NAME( InfoFunction ) != NULL
-      && TRAPENTRY_PTR_NAME( HardModeCheck ) != NULL && TRAPENTRY_PTR_NAME( GetHwndFunc ) != NULL
-      && TRAPENTRY_PTR_NAME( SetHardMode ) != NULL && TRAPENTRY_PTR_NAME( UnLockInput ) != NULL ) {
+    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL ) {
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
@@ -165,31 +164,47 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     return( buff );
 }
 
-void TrapHardModeCheck( void )
+void TRAP_EXTFUNC( HardModeCheck )( void )
 {
-    TrapHardModeRequired = TRAPENTRY_PTR_NAME( HardModeCheck )();
+    if( TRAP_EXTFUNC_PTR( HardModeCheck ) != NULL ) {
+        TrapHardModeRequired = TRAP_EXTFUNC_PTR( HardModeCheck )();
+    }
 }
 
-bool TrapTellHWND( HWND hwnd )
+HWND TRAP_EXTFUNC( GetHwndFunc )( void )
 {
-    if( TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
-        TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+    if( TRAP_EXTFUNC_PTR( GetHwndFunc ) != NULL ) {
+        return( TRAP_EXTFUNC_PTR( GetHwndFunc )() );
+    }
+    return( (HWND)0 );
+}
+
+bool TRAP_EXTFUNC( InfoFunction )( HWND hwnd )
+{
+    if( TRAP_EXTFUNC_PTR( InfoFunction ) != NULL ) {
+        TRAP_EXTFUNC_PTR( InfoFunction )( hwnd );
         return( true );
     }
     return( false );
 }
 
-void TrapInputHook( event_hook_fn *hookfn )
+void TRAP_EXTFUNC( InputHook )( event_hook_fn *hookfn )
 {
-    TRAPENTRY_PTR_NAME( InputHook )( hookfn );
+    if( TRAP_EXTFUNC_PTR( InputHook ) != NULL ) {
+        TRAP_EXTFUNC_PTR( InputHook )( hookfn );
+    }
 }
 
-void TrapUnLockInput( void )
+void TRAP_EXTFUNC( UnLockInput )( void )
 {
-    TRAPENTRY_PTR_NAME( UnLockInput )();
+    if( TRAP_EXTFUNC_PTR( UnLockInput ) != NULL ) {
+        TRAP_EXTFUNC_PTR( UnLockInput )();
+    }
 }
 
-void  TrapSetHardMode( bool mode )
+void  TRAP_EXTFUNC( SetHardMode )( bool mode )
 {
-    TRAPENTRY_PTR_NAME( SetHardMode )( mode );
+    if( TRAP_EXTFUNC_PTR( SetHardMode ) != NULL ) {
+        TRAP_EXTFUNC_PTR( SetHardMode )( mode );
+    }
 }

@@ -103,6 +103,8 @@ int FileInit( const VBUF *archive )
         srcType = DS_FILE;
     }
 #else
+    /* unused parameters */ (void)archive;
+
     srcType = DS_FILE;
 #endif
     return( 0 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,11 +175,11 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     }
     top = GUIGetTopWnd( wnd );
     COPYAREA( top->use, area );
-    area.row += top->screen.area.row;
-    area.col += top->screen.area.col;
+    area.row += top->vs.area.row;
+    area.col += top->vs.area.col;
 
-    if( !uiposfloatingpopup( menuitems, &desc, wnd->screen.area.row + location->y,
-                            wnd->screen.area.col + location->x, &area, NULL ) ) {
+    if( !uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + location->y,
+                            wnd->vs.area.col + location->x, &area, NULL ) ) {
         return( EV_NO_EVENT );
     }
     ui_ev = uicreatepopupinarea( menuitems, &desc, track & GUI_TRACK_LEFT,

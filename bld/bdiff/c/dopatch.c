@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,10 @@
 #include "myio.h"
 #include "msg.h"
 #include "installp.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 #ifdef BDIFF
 
@@ -97,7 +102,7 @@ static byte     *pat;
 
 #else
 
-static char CurrLevel[sizeof( PATCH_LEVEL )];
+static char CurrLevel[sizeof( PATCH_LEVEL_LEVEL )];
 
 const char      *PatchName;
 const char      *NewName;
@@ -197,19 +202,19 @@ static void AddHole( foff offset, foff diff )
 #ifndef BDIFF
 void GetLevel( const char *name )
 {
-    FILE        *fd;
+    FILE        *fp;
     char        buffer[sizeof( PATCH_LEVEL )];
 
     CurrLevel[0] = '\0';
-    fd = fopen( name, "rb" );
-    if( fd == NULL )
-        return;
-    if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) == 0 &&
-        fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) == sizeof( PATCH_LEVEL ) &&
-        memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
-        strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        if( fseek( fp, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) == 0
+          && fread( buffer, 1, sizeof( PATCH_LEVEL ), fp ) == sizeof( PATCH_LEVEL )
+          && memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+            strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
+        }
+        fclose( fp );
     }
-    fclose( fd );
 }
 #endif
 
@@ -304,9 +309,9 @@ PATCH_RET_CODE Execute( void )
     bool            havenew;
     PATCH_RET_CODE  ret;
 #ifndef BDIFF
-#ifndef BDUMP
+  #ifndef BDUMP
     PATCH_RET_CODE  ret2;
-#endif
+  #endif
 #endif
 #ifdef BDIFF
     const char      *dummy = NULL;
@@ -321,11 +326,11 @@ PATCH_RET_CODE Execute( void )
     ret = OpenOld( old_size, DOPROMPT, new_size, checksum );
     if( ret != PATCH_RET_OKAY )
         goto error1;
-#ifndef BDUMP
+  #ifndef BDUMP
     ret = OpenNew( new_size );
     if( ret != PATCH_RET_OKAY )
         goto error2;
-#endif
+  #endif
 #endif
     InitHoles();
     for( ;; ) {
@@ -412,13 +417,13 @@ PATCH_RET_CODE Execute( void )
 error3:
     FreeHoleArray();
 #ifndef BDIFF
-#ifndef BDUMP
+  #ifndef BDUMP
     ret2 = CloseNew( new_size, checksum, &havenew );
     if( ret == PATCH_RET_OKAY ) {
         ret = ret2;
     }
 error2:
-#endif
+  #endif
     CloseOld( havenew && DOPROMPT, DOBACKUP );
 error1:
     ClosePatch();
@@ -435,8 +440,9 @@ PATCH_RET_CODE DoPatch(
     bool        printlevel,
     const char  *outfilename )
 {
-    char            buffer[sizeof( PATCH_LEVEL )];
+    char            patch_level[sizeof( PATCH_LEVEL_LEVEL )];
     PATCH_RET_CODE  ret;
+    PGROUP2         pg;
   #ifndef _WPATCH
     const char      *target = NULL;
   #endif
@@ -466,7 +472,8 @@ PATCH_RET_CODE DoPatch(
         return( PATCH_RET_OKAY );
     }
   #endif
-    _splitpath( PatchName, NULL, NULL, NULL, buffer );
+    _splitpath2( PatchName, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    strcpy( patch_level, pg.ext );
   #ifndef _WPATCH
     ret = InitPatch( &target );
   #else
@@ -483,7 +490,7 @@ PATCH_RET_CODE DoPatch(
   #endif
   #ifndef _WPATCH
     GetLevel( target );
-    if( stricmp( buffer, CurrLevel ) <= 0 ) {
+    if( stricmp( patch_level, CurrLevel ) <= 0 ) {
         ClosePatch();
     #ifndef INSTALL_PROGRAM
         Message( MSG_ALREADY_PATCHED, target, CurrLevel );
@@ -499,7 +506,7 @@ PATCH_RET_CODE DoPatch(
     }
   #endif
   #if !defined( INSTALL_PROGRAM ) && !defined( _WPATCH )
-    Message( MSG_SUCCESSFULLY_PATCHED, target, buffer );
+    Message( MSG_SUCCESSFULLY_PATCHED, target, patch_level );
   #endif
     return( PATCH_RET_OKAY );
 }

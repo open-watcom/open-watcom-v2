@@ -106,7 +106,7 @@ static int              ThreadArr[MAX_DEBUG_THREADS];
 static char             SelfKey = 0;
 static char             DebugKey = 0;
 
-struct TDebug *GetCurrentDebug()
+struct TDebug *GetCurrentDebug( void )
 {
     int i;
     int handle = RdosGetThreadHandle();
@@ -132,7 +132,7 @@ void SetCurrentDebug( struct TDebug *obj )
         }
     }
 
-    if( obj ) { 
+    if( obj ) {
         for( i = 0; i < MAX_DEBUG_THREADS; i++ ) {
             if( ThreadArr[i] == 0) {
                 ThreadArr[i] = handle;
@@ -1009,7 +1009,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
     struct TDebugThread *Thread;
     int len;
     long diff;
- 
+
     Thread = obj->CurrentThread;
     if( !Thread )
         Thread = obj->ThreadList;
@@ -1399,6 +1399,8 @@ void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
     struct TDebugWatch *w;
     struct TDebugWatch *delw;
 
+    /* unused parameters */ (void)Size;
+
     RdosEnterSection( obj->FSection );
 
     w = obj->WatchList;
@@ -1481,16 +1483,18 @@ static struct TDebugBreak *DoGo( struct TDebug *obj )
     return( bp );
 }
 
-void SetUserScreen()
+void SetUserScreen( void )
 {
-    if( DebugKey )
+    if( DebugKey ) {
         RdosSetFocus( DebugKey );
+    }
 }
 
-void SetDebugScreen()
+void SetDebugScreen( void )
 {
-    if( SelfKey )
+    if( SelfKey ) {
         RdosSetFocus( SelfKey );
+    }
 }
 
 void Go( struct TDebug *obj )
@@ -1622,6 +1626,7 @@ int AsyncPoll( struct TDebug *obj, int ms )
 
 void ExitAsync( struct TDebug *obj )
 {
+    /* unused parameters */ (void)obj;
 }
 
 static void HandleCreateProcess( struct TDebug *obj, struct TCreateProcessEvent *event )
@@ -1642,6 +1647,8 @@ static void HandleTerminateProcess( struct TDebug *obj, int exitcode )
 {
     struct TDebugThread *t;
     struct TDebugModule *m;
+
+    /* unused parameters */ (void)exitcode;
 
     RdosEnterSection( obj->FSection );
 

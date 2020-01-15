@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 
 
 /* abandon.c */
-void    AbandonHopeAllYeWhoEnterHere( vi_rc );
+void    AbandonHopeAllYesWhoEnterHere( vi_rc );
 
 /* addstr.c */
 void    ReplaceString( char **, const char * );
@@ -213,54 +213,54 @@ void    Modified( bool );
 void    ResetDisplayLine( void );
 
 /* editmv.c */
-vi_rc MovePage( int, long, bool );
-vi_rc MovePageUp( void );
-vi_rc MovePageDown( void );
-vi_rc MoveScreenML( linenum );
-vi_rc MoveScreenDown( void );
-vi_rc MoveScreenDownPageML( void );
-vi_rc MoveScreenUp( void );
-vi_rc MoveScreenUpPageML( void );
-vi_rc MovePosition( void );
-vi_rc MoveHalfPageUp( void );
-vi_rc MoveHalfPageDown( void );
-vi_rc MoveScreenLeftPageML( void );
-vi_rc MoveScreenRightPageML( void );
-vi_rc MoveScreenLeftRightML( int );
+vi_rc   MovePage( int, long, bool );
+vi_rc   MovePageUp( void );
+vi_rc   MovePageDown( void );
+vi_rc   MoveScreenML( linenum );
+vi_rc   MoveScreenDown( void );
+vi_rc   MoveScreenDownPageML( void );
+vi_rc   MoveScreenUp( void );
+vi_rc   MoveScreenUpPageML( void );
+vi_rc   MovePosition( void );
+vi_rc   MoveHalfPageUp( void );
+vi_rc   MoveHalfPageDown( void );
+vi_rc   MoveScreenLeftPageML( void );
+vi_rc   MoveScreenRightPageML( void );
+vi_rc   MoveScreenLeftRightML( int );
 
 /* -------- new operators ------------- */
-vi_rc MoveForwardWord( range *, long );
-vi_rc MoveForwardBigWord( range *, long );
-vi_rc MoveForwardWordEnd( range *, long );
-vi_rc MoveForwardBigWordEnd( range *, long );
-vi_rc MoveBackwardsWord( range *, long );
-vi_rc MoveBackwardsBigWord( range *, long );
-vi_rc MoveToLastCharFind( range *, long );
-vi_rc MoveToLastCharFindRev( range *, long );
-vi_rc MoveUpToBeforeChar( range *, long );
-vi_rc MoveUpToChar( range *, long );
-vi_rc MoveBackToAfterChar( range *, long );
-vi_rc MoveBackToChar( range *, long );
-vi_rc DoGo( range *, long );
-vi_rc MoveStartOfFile( range *, long );
-vi_rc MoveEndOfFile( range *, long );
-vi_rc MoveStartNextLine( range *, long );
-vi_rc MoveStartPrevLine( range *, long );
-vi_rc MoveTab( range *, long );
-vi_rc MoveShiftTab( range *, long );
-vi_rc MoveLeft( range *, long );
-vi_rc MoveRight( range *, long );
-vi_rc MoveLineEnd( range *, long );
-vi_rc MoveLineBegin( range *, long );
-vi_rc MoveStartOfLine( range *, long );
-vi_rc MoveToColumn( range *, long );
-vi_rc MoveUp( range *, long );
-vi_rc MoveDown( range *, long );
-vi_rc MovePageTop( range *, long );
-vi_rc MovePageMiddle( range *, long );
-vi_rc MovePageBottom( range *, long );
-vi_rc MoveTopOfPage( range *, long );
-vi_rc MoveBottomOfPage( range *, long );
+vi_rc   MoveForwardWord( range *, long );
+vi_rc   MoveForwardBigWord( range *, long );
+vi_rc   MoveForwardWordEnd( range *, long );
+vi_rc   MoveForwardBigWordEnd( range *, long );
+vi_rc   MoveBackwardsWord( range *, long );
+vi_rc   MoveBackwardsBigWord( range *, long );
+vi_rc   MoveToLastCharFind( range *, long );
+vi_rc   MoveToLastCharFindRev( range *, long );
+vi_rc   MoveUpToBeforeChar( range *, long );
+vi_rc   MoveUpToChar( range *, long );
+vi_rc   MoveBackToAfterChar( range *, long );
+vi_rc   MoveBackToChar( range *, long );
+vi_rc   DoGo( range *, long );
+vi_rc   MoveStartOfFile( range *, long );
+vi_rc   MoveEndOfFile( range *, long );
+vi_rc   MoveStartNextLine( range *, long );
+vi_rc   MoveStartPrevLine( range *, long );
+vi_rc   MoveTab( range *, long );
+vi_rc   MoveShiftTab( range *, long );
+vi_rc   MoveLeft( range *, long );
+vi_rc   MoveRight( range *, long );
+vi_rc   MoveLineEnd( range *, long );
+vi_rc   MoveLineBegin( range *, long );
+vi_rc   MoveStartOfLine( range *, long );
+vi_rc   MoveToColumn( range *, long );
+vi_rc   MoveUp( range *, long );
+vi_rc   MoveDown( range *, long );
+vi_rc   MovePageTop( range *, long );
+vi_rc   MovePageMiddle( range *, long );
+vi_rc   MovePageBottom( range *, long );
+vi_rc   MoveTopOfPage( range *, long );
+vi_rc   MoveBottomOfPage( range *, long );
 
 /* error.c */
 void    StartupError( vi_rc );
@@ -273,7 +273,7 @@ void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
-list_linenum ExpandFileNames( const char *, char *** );
+list_linenum ExpandFileNames( const char *fullmask, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
@@ -314,8 +314,8 @@ void    FetchFcb( fcb * );
 void    SwapBlockFini( void );
 
 /* fgrep.c */
-vi_rc DoFGREP( const char *, const char *, bool );
-vi_rc DoEGREP( const char *, const char * );
+vi_rc   DoFGREP( const char *, const char *, bool );
+vi_rc   DoEGREP( const char *, const char * );
 
 /* file.c */
 void    SaveInfo( info * );
@@ -359,9 +359,9 @@ vi_rc   FancyFileSave( void );
 vi_rc   DoKeyboardSave( void );
 
 /* filesel.c */
-vi_rc SelectFileOpen( const char *, char **, const char *, bool );
-vi_rc SelectFileSave( char * );
-vi_rc SelectLineInFile( selflinedata *sfd );
+vi_rc   SelectFileOpen( const char *, char **, const char *, bool );
+vi_rc   SelectFileSave( char * );
+vi_rc   SelectLineInFile( selflinedata *sfd );
 
 /* filestk.c */
 void    InitFileStack( void );
@@ -385,20 +385,20 @@ void    SetLastFind( const char * );
 void    FindCmdFini( void );
 void    JumpTo( i_mark * );
 
-vi_rc DoFindBackwards( range *, long );
-vi_rc DoNextFindBackwards( range *, long );
-vi_rc DoFindForward( range *, long );
-vi_rc FancyDoFind( range *, long );
-vi_rc FancyDoFindMisc( void );
-vi_rc FancyDoReplace( void );
-vi_rc DoNextFindForward( range *, long );
-vi_rc DoNextFindForwardMisc( void );
-vi_rc DoNextFindBackwardsMisc( void );
-vi_rc ToggleToolbar( void );
-vi_rc ToggleStatusbar( void );
-vi_rc ToggleColorbar( void );
-vi_rc ToggleFontbar( void );
-vi_rc ToggleSSbar( void );
+vi_rc   DoFindBackwards( range *, long );
+vi_rc   DoNextFindBackwards( range *, long );
+vi_rc   DoFindForward( range *, long );
+vi_rc   FancyDoFind( range *, long );
+vi_rc   FancyDoFindMisc( void );
+vi_rc   FancyDoReplace( void );
+vi_rc   DoNextFindForward( range *, long );
+vi_rc   DoNextFindForwardMisc( void );
+vi_rc   DoNextFindBackwardsMisc( void );
+vi_rc   ToggleToolbar( void );
+vi_rc   ToggleStatusbar( void );
+vi_rc   ToggleColorbar( void );
+vi_rc   ToggleFontbar( void );
+vi_rc   ToggleSSbar( void );
 
 /* fini.c */
 #ifdef __WATCOMC__
@@ -421,14 +421,14 @@ vi_rc   GenerateConfiguration( const char *fname, bool is_cmdline );
 int     GetAutoIndentAmount( char *, int, bool );
 
 /* getdir.c */
-vi_rc GetSortDir( const char *, bool );
+vi_rc   GetSortDir( const char *fullmask, bool want_all_dirs );
 
 /* getspcmd.c */
 void    GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds );
 
 /* help.c */
-vi_rc DoHelp( const char *data );
-vi_rc DoHelpOnContext( void );
+vi_rc   DoHelp( const char *data );
+vi_rc   DoHelpOnContext( void );
 
 /* hide.c */
 vi_rc   DoHideCmd( void );
@@ -505,8 +505,8 @@ vi_rc   FindCharOnCurrentLine( bool, int, int *, int );
 vi_rc   FancyGotoLine( void );
 
 /* lineins.c */
-vi_rc InsertLines( linenum, fcb_list *, undo_stack * );
-vi_rc InsertLinesAtCursor( fcb_list *, undo_stack * );
+vi_rc   InsertLines( linenum, fcb_list *, undo_stack * );
+vi_rc   InsertLinesAtCursor( fcb_list *, undo_stack * );
 
 /* linemisc.c */
 int     FindStartOfCurrentLine( void );
@@ -518,16 +518,16 @@ void    RestoreCurrentFilePos( void );
 vi_rc   SaveAndResetFilePos( linenum );
 
 /* lineptr.c */
-vi_rc CGimmeLinePtr( linenum, fcb **, line ** );
-vi_rc CGimmeNextLinePtr( fcb **, line ** );
-vi_rc GimmeLinePtr( linenum, file *, fcb **, line ** );
-vi_rc GimmeNextLinePtr( file *, fcb **, line ** );
-vi_rc GimmePrevLinePtr( fcb **, line ** );
-vi_rc GimmeLinePtrFromFcb( linenum, fcb *, line ** );
-vi_rc CAdvanceToLine( linenum l );
-vi_rc CFindLastLine( linenum * );
-bool  IsPastLastLine( linenum l );
-vi_rc ValidateCurrentLine( void );
+vi_rc   CGimmeLinePtr( linenum, fcb **, line ** );
+vi_rc   CGimmeNextLinePtr( fcb **, line ** );
+vi_rc   GimmeLinePtr( linenum, file *, fcb **, line ** );
+vi_rc   GimmeNextLinePtr( file *, fcb **, line ** );
+vi_rc   GimmePrevLinePtr( fcb **, line ** );
+vi_rc   GimmeLinePtrFromFcb( linenum, fcb *, line ** );
+vi_rc   CAdvanceToLine( linenum l );
+vi_rc   CFindLastLine( linenum * );
+bool    IsPastLastLine( linenum l );
+vi_rc   ValidateCurrentLine( void );
 
 /* linenew.c */
 void    AddNewLineAroundCurrent( const char *, int, insert_dir );
@@ -536,7 +536,7 @@ void    CreateNullLine( fcb * );
 line    *LineAlloc( const char *, int );
 
 /* linenum.c */
-vi_rc LineNumbersSetup( void );
+vi_rc   LineNumbersSetup( void );
 
 /* linework.c */
 void    GetCurrentLine( void );
@@ -686,7 +686,7 @@ bool    GetTextForSpecialKey( vi_key event, char *buff, size_t buffsize );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
 
 /* replace.c */
-vi_rc ReplaceChar( void );
+vi_rc   ReplaceChar( void );
 
 /* savebuf.c */
 vi_rc   InsertSavebufBefore( void );
@@ -743,7 +743,7 @@ void    NormalizeRange( range * );
 vi_rc   SelectAll( void );
 
 /* shove.c */
-vi_rc Shift( linenum, linenum, char, bool );
+vi_rc   Shift( linenum, linenum, char, bool );
 
 /* source.c */
 vi_rc   Source( const char *, const char *, srcline * );
@@ -781,12 +781,11 @@ bool    AddLeadingTabSpace( size_t *, char *, int );
 bool    ConvertSpacesToTabsUpToColumn( size_t, char *, size_t, char *, size_t );
 bool    CursorPositionOffRight( int vc );
 
-
 /* tags.c */
-vi_rc GetCurrentTag( void );
-vi_rc TagHunt( const char * );
-vi_rc FindTag( const char * );
-vi_rc LocateTag( const char *, char *, char * );
+vi_rc   GetCurrentTag( void );
+vi_rc   TagHunt( const char * );
+vi_rc   FindTag( const char * );
+vi_rc   LocateTag( const char *, char *, char * );
 
 /* time.c */
 void    GetTimeString( char *st );
@@ -810,8 +809,8 @@ void    ConditionalCurrentLineReplaceUndoEnd( void );
 void    CurrentLineReplaceUndoEnd( bool );
 
 /* undo_do.c */
-vi_rc DoUndo( void );
-vi_rc DoUndoUndo( void );
+vi_rc   DoUndo( void );
+vi_rc   DoUndoUndo( void );
 
 /* undostks.c */
 undo    *UndoAlloc( undo_stack *stack, int type );

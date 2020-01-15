@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,18 +179,18 @@ void HandleNotify( WORD wparam, DWORD lparam )
             break;
         }
         memcpy( str, outBuff, outPos );
-        str[ outPos ] = 0;
+        str[outPos] = '\0';
         outPos = 0;
         src = str;
         dest = tmpstr;
         while( 1 ) {
-            if( *src == '\r' || *src == 0 ) {
-                *dest = 0;
+            if( *src == '\r' || *src == '\0' ) {
+                *dest = '\0';
                 dest = tmpstr;
-                if( *dest != 0 ) {
+                if( *dest != '\0' ) {
                     LBPrintf( ListBox, STR_DEBUG_OUT, dest );
                 }
-                if( *src == 0 ) {
+                if( *src == '\0' ) {
                     break;
                 }
             } else if( isprint( *src ) ) {

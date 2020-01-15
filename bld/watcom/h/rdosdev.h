@@ -506,8 +506,8 @@ void RdosRegisterSegBimodalUserGate(int gate, int transfer, __rdos_gate_callback
 void RdosRegisterUserGate(int gate, __rdos_gate_callback *callb_proc16, __rdos_gate_callback *callb_proc32, const char *name);
 void RdosRegisterSegUserGate(int gate, int transfer, __rdos_gate_callback *callb_proc16, __rdos_gate_callback *callb_proc32, const char *name);
 
-void RdosReturnOk();
-void RdosReturnFail();
+void RdosReturnOk(void);
+void RdosReturnFail(void);
 
 void RdosReloadSelector(int sel);
 void *RdosSelectorToPointer(int sel);
@@ -516,10 +516,10 @@ void *RdosLinearToPointer(int linear);
 int RdosPointerToSelector(void *ptr);
 int RdosPointerToOffset(void *ptr);
 
-int RdosAllocateGdt();
+int RdosAllocateGdt(void);
 void RdosFreeGdt(int sel);
 
-int RdosAllocateLdt();
+int RdosAllocateLdt(void);
 void RdosFreeLdt(int sel);
 
 int RdosGetSelectorBaseSize(int sel, long *base, long *limit);
@@ -598,9 +598,9 @@ void RdosEnterC3();
 void RdosInitFreq();
 void RdosUpdateFreq(int diff);
 
-void RdosClearSignal();
+void RdosClearSignal(void);
 void RdosSignal(int thread);
-void RdosWaitForSignal();
+void RdosWaitForSignal(void);
 void RdosWaitForSignalWithTimeout(long msb, long lsb);
 
 int RdosAddWait(int space_needed, int wait_handle, struct TWaitHeader *wait_table);
@@ -615,8 +615,8 @@ void RdosEnterKernelSection(struct TKernelSection *section);
 void RdosLeaveKernelSection(struct TKernelSection *section);
 int RdosCondEnterKernelSection(struct TKernelSection *section, int mswait);
 
-void RdosLockScheduler();
-void RdosUnlockScheduler();
+void RdosLockScheduler(void);
+void RdosUnlockScheduler(void);
 
 void RdosCreateKernelThread(
             int prio,
@@ -658,12 +658,12 @@ void RdosFreeHandle(struct THandleHeader *handle_data);
 struct THandleHeader *RdosDerefHandle(short int signature, int handle);
 void RdosRegisterHandle(short int signature, __rdos_handle_delete_callback *delete_proc);
 
-int RdosLockSysEnv();
-void RdosUnlockSysEnv();
-int RdosLockProcEnv();
-void RdosUnlockProcEnv();
+int RdosLockSysEnv(void);
+void RdosUnlockSysEnv(void);
+int RdosLockProcEnv(void);
+void RdosUnlockProcEnv(void);
 
-int RdosGetFocusThread();
+int RdosGetFocusThread(void);
 
 void RdosRegisterNetClass(char class_id, int ads_size, void *broadcast_ads);
 int RdosRegisterNetProtocol(int ads_size, short int packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
@@ -1753,16 +1753,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosWaitForDiscRequest = \
     OsGate_wait_for_disc_request \
     __parm [__ebx]
-
-#pragma aux RdosGetDiscRequest = \
-    OsGate_get_disc_request \
-    __parm [__ebx] \
-    __value [__edi]
-
-#pragma aux RdosPollDiscRequest = \
-    OsGate_poll_disc_request \
-    __parm [__ebx] \
-    __value [__edi]
 
 #pragma aux RdosDiscRequestCompleted = \
     OsGate_disc_request_completed \

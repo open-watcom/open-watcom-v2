@@ -79,20 +79,20 @@
 
 typedef struct dlg_window_set {
     dlg_state           state;
-    a_dialog_header     *current_dialog;     /* stuff needed in future */
+    a_dialog_header     *dlg;       /* stuff needed in future */
 } DLG_WINDOW_SET;
 
 bool    VisibilityCondition = false;
 
-static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dialog )
-/**********************************************************************************/
+static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *dlg )
+/**************************************************************************/
 /* return the control class of a variable based on its id. */
 {
     int                 i;
 
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        if( curr_dialog->controls[i].id == id ) {
-            return( curr_dialog->controls[i].control_class );
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        if( dlg->controls[i].id == id ) {
+            return( dlg->controls[i].control_class );
         }
     }
     SetupError( "IDS_CONTROLCLASSERROR" );
@@ -126,8 +126,8 @@ static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked
 }
 
 
-static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
-/*************************************************************************/
+static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
+/*****************************************************************/
 /* Set the default variable values. Decide how to set these  */
 /* default values based on edit control type. */
 {
@@ -138,9 +138,9 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
     gui_ctl_id          id;
 
     drive_checked = false;
-    for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; ++i ) {
-        cond = curr_dialog->pConditions[i];
-        if( !curr_dialog->defaults_set && cond != NULL && !VarGetBoolVal( var_handle ) ) {
+    for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; ++i ) {
+        cond = dlg->pConditions[i];
+        if( !dlg->defaults_set && cond != NULL && !VarGetBoolVal( var_handle ) ) {
             if( isdigit( *cond ) ) {
                 SetVariableByHandle( var_handle, cond );
             } else if( EvalCondition( cond ) ) {
@@ -148,7 +148,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
             }
         }
         id = VH2ID( var_handle );
-        switch( ControlClass( id, curr_dialog ) ) {
+        switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
             SetDynamic( gui, var_handle, &drive_checked );
             break;
@@ -164,52 +164,52 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
             break;
         }
     }
-    curr_dialog->defaults_set = true;
+    dlg->defaults_set = true;
 }
 
-static void SetFocusCtrl( gui_window *gui, a_dialog_header *curr_dialog )
-/*************************************************************************/
+static void SetFocusCtrl( gui_window *gui, a_dialog_header *dlg )
+/***************************************************************/
 /* Set the default variable values. Decide how to set these  */
 /* default values based on edit control type. */
 {
     int                 i, j;
     gui_control_class   control_class;
 
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        switch( curr_dialog->controls[i].control_class ) {
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        switch( dlg->controls[i].control_class ) {
         case GUI_EDIT_MLE:
         case GUI_EDIT:
-            GUISetFocus( gui, curr_dialog->controls[i].id );
+            GUISetFocus( gui, dlg->controls[i].id );
             return;
         case GUI_RADIO_BUTTON:
         case GUI_CHECK_BOX:
-            for( j = i; j < curr_dialog->num_controls; ++j ) {
-                control_class = curr_dialog->controls[j].control_class;
+            for( j = i; j < dlg->num_controls; ++j ) {
+                control_class = dlg->controls[j].control_class;
                 if( control_class != GUI_RADIO_BUTTON && control_class != GUI_CHECK_BOX ) {
                     break;
                 }
-                if( GUIIsChecked( gui, curr_dialog->controls[j].id ) == GUI_CHECKED ) {
-                    GUISetFocus( gui, curr_dialog->controls[j].id );
+                if( GUIIsChecked( gui, dlg->controls[j].id ) == GUI_CHECKED ) {
+                    GUISetFocus( gui, dlg->controls[j].id );
                     return;
                 }
             }
-            GUISetFocus( gui, curr_dialog->controls[i].id );
+            GUISetFocus( gui, dlg->controls[i].id );
             return;
         default:
             break;
         }
     }
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        if( curr_dialog->controls[i].control_class == GUI_DEFPUSH_BUTTON ) {
-            GUISetFocus( gui, curr_dialog->controls[i].id );
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        if( dlg->controls[i].control_class == GUI_DEFPUSH_BUTTON ) {
+            GUISetFocus( gui, dlg->controls[i].id );
             return;
         }
     }
 }
 
 
-static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool closing )
-/****************************************************************************************/
+static void GetVariableVals( gui_window *gui, a_dialog_header *dlg, bool closing )
+/********************************************************************************/
 /* Get the input variable values. Decide how to set these */
 /* default values based on edit control type. */
 {
@@ -220,9 +220,9 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool
     gui_ctl_id          id;
 
     drive_checked = false;
-    for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; i++ ) {
+    for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
         id = VH2ID( var_handle );
-        switch( ControlClass( id, curr_dialog ) ) {
+        switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
             if( !closing ) {
                 SetDynamic( gui, var_handle, &drive_checked );
@@ -264,40 +264,40 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool
 }
 
 
-static void CheckAnyCheck( gui_window *gui, a_dialog_header *child )
-/******************************************************************/
+static void CheckAnyCheck( gui_window *gui, a_dialog_header *dlg )
+/****************************************************************/
 /* If any of the sub-dialog check boxes are on, turn on the */
 /* 'anycheck' variable */
 {
     int                 i;
     vhandle             var_handle;
 
-    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX && VarGetBoolVal( var_handle ) ) {
-            SetBoolVariableByHandle( child->any_check, true );
-            GUISetChecked( gui, VH2ID( child->any_check ), GUI_CHECKED );
+    for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VH2ID( var_handle ), dlg ) == GUI_CHECK_BOX && VarGetBoolVal( var_handle ) ) {
+            SetBoolVariableByHandle( dlg->any_check, true );
+            GUISetChecked( gui, VH2ID( dlg->any_check ), GUI_CHECKED );
             return;
         }
     }
-    SetBoolVariableByHandle( child->any_check, false );
-    GUISetChecked( gui, VH2ID( child->any_check ), GUI_NOT_CHECKED );
+    SetBoolVariableByHandle( dlg->any_check, false );
+    GUISetChecked( gui, VH2ID( dlg->any_check ), GUI_NOT_CHECKED );
 }
 
 
-static void CheckChildChecks( a_dialog_header *child )
-/******************************************************************/
+static void CheckChildChecks( a_dialog_header *dlg )
+/*********************************************************/
 /* If all child checks are off, set them to the defaults */
 {
     int                 i;
     vhandle             var_handle;
 
-    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX && VarGetBoolVal( var_handle ) ) {
+    for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VH2ID( var_handle ), dlg ) == GUI_CHECK_BOX && VarGetBoolVal( var_handle ) ) {
             return;
         }
     }
-    for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX ) {
+    for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
+        if( ControlClass( VH2ID( var_handle ), dlg ) == GUI_CHECK_BOX ) {
             SetDefaultAutoSetValue( var_handle );
         }
     }
@@ -332,10 +332,10 @@ dlg_state IdToDlgState( gui_ctl_id id )
     case CTL_DONE:
         return( DLG_DONE );
     }
-    return( DLG_CAN );
+    return( DLG_CANCEL );
 }
 
-static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dialog, bool init )
+static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool init )
 /*********************************************************************************************/
 // Hide controls which have the optional visibility condition evaluate to false, and show
 // the ones that have it evaluate to true. (Controls with no vis. condition are always shown.)
@@ -369,7 +369,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
         return;
     if( init ) {
         // How much the height of the dialog has changed from its original value
-        curr_dialog->height_change = 0;
+        dlg->height_change = 0;
 
         // The GUIGetRect below gets the dialog's position so that when it is resized,
         // it can be put back in its original position
@@ -381,15 +381,15 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
         // the dialog is resized with GUIResizeWindow.
         // This way, the dialog will be off by the same amount from the original
         // every time, and not appear to move.
-        GUIGetRect( gui, &curr_dialog->original_rect );
+        GUIGetRect( gui, &dlg->original_rect );
 
         // Make child windows appear in the correct place, since GUIGetRect() gives back
         // a rect that is tranlsated off by the parent's x and y.
         parent = GUIGetParentWindow( gui );
         if( parent != MainWnd && parent != NULL ) {
             GUIGetRect( parent, &parent_rect );
-            curr_dialog->original_rect.x -= parent_rect.x;
-            curr_dialog->original_rect.y -= parent_rect.y;
+            dlg->original_rect.x -= parent_rect.x;
+            dlg->original_rect.y -= parent_rect.y;
         }
 
         // Return if there are radio buttons
@@ -399,23 +399,23 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
         // We do not want to return if there are no radio buttons
         // because UpdateControlVisibility will not be called before showing
         // the dialog in that case.
-        for( i = 0; i < curr_dialog->num_controls; i++ ) {
-            if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON ) {
+        for( i = 0; i < dlg->num_controls; i++ ) {
+            if( dlg->controls[i].control_class == GUI_RADIO_BUTTON ) {
                 return;
             }
         }
     }
-    memcpy( &rect, &curr_dialog->original_rect, sizeof( gui_rect ) );
-    last_height = rect.height + curr_dialog->height_change;
+    memcpy( &rect, &dlg->original_rect, sizeof( gui_rect ) );
+    last_height = rect.height + dlg->height_change;
 
     GUIGetFocus( gui, &focus_id );
 
-    control_on_new_line = GUIMemAlloc( sizeof( bool ) * curr_dialog->num_controls );
+    control_on_new_line = GUIMemAlloc( sizeof( bool ) * dlg->num_controls );
 
     // Figure out which controls are on a separate line from the last control
     control_on_new_line[0] = true;
-    for( i = 1; i < curr_dialog->num_controls; i++ ) {
-        control_on_new_line[i] = ( curr_dialog->controls[i].rect.y > curr_dialog->controls[i - 1].rect.y );
+    for( i = 1; i < dlg->num_controls; i++ ) {
+        control_on_new_line[i] = ( dlg->controls[i].rect.y > dlg->controls[i - 1].rect.y );
     }
 
     // Initialize Variables corresponding to radio buttons and check boxes
@@ -424,16 +424,16 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // Also, figure out which radio button is currently checked.
 
     checked_radio_id = 0;
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        control_class = curr_dialog->controls[i].control_class;
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        control_class = dlg->controls[i].control_class;
         if( control_class == GUI_RADIO_BUTTON || control_class == GUI_CHECK_BOX ) {
-            id_i = curr_dialog->controls[i].id;
+            id_i = dlg->controls[i].id;
             if( GUIIsChecked( gui, id_i ) == GUI_CHECKED ) {
                 vhandle var_handle_i = GetVariableById( id_i );
                 if( control_class == GUI_RADIO_BUTTON ) {
                     checked_radio_id = id_i;
                 }
-                for( j = 0; (var_handle = curr_dialog->pVariables[j]) != NO_VAR; j++ ) {
+                for( j = 0; (var_handle = dlg->pVariables[j]) != NO_VAR; j++ ) {
                     if( var_handle_i == var_handle ) {
                         SetBoolVariableByHandle( var_handle, true );
                     }
@@ -449,15 +449,15 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // SetBoolVariableByName( "_Visibility_Condition_", true );
     VisibilityCondition = true;
 
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
+    for( i = 0; i < dlg->num_controls; i++ ) {
         // Figure out which controls to hide and which to show.
         // Move all the controls below any control in transition
         // either up or down.
 
-        if( curr_dialog->controls_ext[i].pVisibilityConds != NULL ) {
-            id_i = curr_dialog->controls[i].id;
+        if( dlg->controls_ext[i].pVisibilityConds != NULL ) {
+            id_i = dlg->controls[i].id;
             enabled = GUIIsControlEnabled( gui, id_i );
-            if( EvalCondition( curr_dialog->controls_ext[i].pVisibilityConds ) ) {
+            if( EvalCondition( dlg->controls_ext[i].pVisibilityConds ) ) {
                 if( !enabled ) {
                     GUIEnableControl( gui, id_i, true );
                     sign = 1;
@@ -472,16 +472,16 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
                 continue;
             }
             if( control_on_new_line[i] ) {
-                gui_ord height = curr_dialog->controls[i].rect.height * sign;
-                for( j = i + 1; j < curr_dialog->num_controls; j++ ) {
+                gui_ord height = dlg->controls[i].rect.height * sign;
+                for( j = i + 1; j < dlg->num_controls; j++ ) {
                     if( control_on_new_line[j] ) {
                         break;
                     }
                 }
-                for( ; j < curr_dialog->num_controls; j++ ) {
-                    id_j = curr_dialog->controls[j].id;
+                for( ; j < dlg->num_controls; j++ ) {
+                    id_j = dlg->controls[j].id;
                     enabled = GUIIsControlEnabled( gui, id_j );
-                    GUIGetControlRect( gui, curr_dialog->controls[j].id, &control_rect );
+                    GUIGetControlRect( gui, dlg->controls[j].id, &control_rect );
                     control_rect.y += height;
                     if( enabled ) {
                         GUIHideControl( gui, id_j );
@@ -490,7 +490,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
                     }
                     GUIResizeControl( gui, id_j, &control_rect );
                 }
-                curr_dialog->height_change += height;
+                dlg->height_change += height;
             }
         }
     }
@@ -502,12 +502,12 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
 
     visible_checked_radiobutton = false;
     new_check_candidate = CTL_NULL;
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        id_i = curr_dialog->controls[i].id;
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        id_i = dlg->controls[i].id;
 
         // figure out if there are no enabled radio buttons that are checked
         // use this info further down...
-        if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON &&
+        if( dlg->controls[i].control_class == GUI_RADIO_BUTTON &&
             !visible_checked_radiobutton && GUIIsControlEnabled( gui, id_i ) ) {
             if( GUIIsChecked( gui, id_i ) == GUI_CHECKED ) {
                 visible_checked_radiobutton = true;
@@ -536,7 +536,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
         GUISetChecked( gui, new_check_candidate, GUI_CHECKED );
     }
 
-    rect.height += curr_dialog->height_change;
+    rect.height += dlg->height_change;
 
     if( rect.height != last_height ) {
         GUIResizeWindow( gui, &rect );
@@ -551,7 +551,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
 #endif
     gui_ctl_id          id;
     DLG_WINDOW_SET      *result;
-    a_dialog_header     *curr_dialog;
+    a_dialog_header     *dlg;
     static bool         initializing = false;
     char                buff[MAXBUF];
     gui_text_metrics    metrics;
@@ -559,32 +559,32 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
     if( gui == NULL )
         return( false );
     result = GUIGetExtra( gui );
-    curr_dialog = result->current_dialog;
+    dlg = result->dlg;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         initializing = true;
-        UpdateControlVisibility( gui, curr_dialog, true );
-        SetDefaultVals( gui, curr_dialog );
-        SetFocusCtrl( gui, curr_dialog );
+        UpdateControlVisibility( gui, dlg, true );
+        SetDefaultVals( gui, dlg );
+        SetFocusCtrl( gui, dlg );
         GUIGetTextMetrics( gui, &metrics );
-        if( stricmp( curr_dialog->name, "InsertDisk" ) == 0 ) {
+        if( stricmp( dlg->name, "InsertDisk" ) == 0 ) {
             DoBeep();
         }
 #if defined( __OS2__ )
         {
             int         i;
-            for( i = 0; i < curr_dialog->num_controls; i++ ) {
-                if( curr_dialog->controls[i].control_class == GUI_EDIT_MLE ) {
-                    id = curr_dialog->controls[i].id;
+            for( i = 0; i < dlg->num_controls; i++ ) {
+                if( dlg->controls[i].control_class == GUI_EDIT_MLE ) {
+                    id = dlg->controls[i].id;
                     GUILimitEditText( gui, id, -1 );
-                    GUISetText( gui, id, curr_dialog->controls[i].text );
+                    GUISetText( gui, id, dlg->controls[i].text );
                 }
             }
         }
 #endif
 #if !defined( GUI_IS_GUI )
-        if( stricmp( curr_dialog->name, "Welcome" ) == 0 ) {
+        if( stricmp( dlg->name, "Welcome" ) == 0 ) {
             if( GetVariableBoolVal( "AutoOptionsDialog" ) ) {
                 // call Options dialog
                 DoDialogWithParent( gui, "Options" );
@@ -600,7 +600,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
     case GUI_PAINT:
         if( first_time ) {
             first_time = false;
-            if( stricmp( curr_dialog->name, "Welcome" ) == 0 ) {
+            if( stricmp( dlg->name, "Welcome" ) == 0 ) {
                 if( GetVariableBoolVal( "AutoOptionsDialog" ) ) {
                     // call Options dialog
                     DoDialogWithParent( gui, "Options" );
@@ -618,13 +618,13 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
         case CTL_PREVIOUS:
         case CTL_FIRST:
         case CTL_SKIP:
-            GetVariableVals( gui, curr_dialog, true );
+            GetVariableVals( gui, dlg, true );
             GUICloseDialog( gui );
             result->state = IdToDlgState( id );
             return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            result->state = DLG_CAN;
+            result->state = DLG_CANCEL;
             return( true );
         case CTL_DONE:
             GUICloseDialog( gui );
@@ -633,47 +633,47 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
         case CTL_OPTIONS:  // Options button on Welcome dialog
             // call Options dialog
             DoDialogWithParent( gui, "Options" );
-            GetVariableVals( gui, curr_dialog, false );
+            GetVariableVals( gui, dlg, false );
             return( true );
         default:
             {
-                const char      *dlg_name;
-                a_dialog_header *child;
+                const char      *name;
+                a_dialog_header *dlg_child;
                 bool            old_val;
                 dlg_state       return_state;
 
-                dlg_name = VarGetStrVal( GetVariableById( id ) );
-                if( dlg_name != NULL ) {
-                    child = FindDialogByName( dlg_name );
-                    if( child != NULL ) {
-                        GetVariableVals( gui, curr_dialog, false );
-                        if( child->any_check != NO_VAR ) {
-                            old_val = VarGetBoolVal( child->any_check );
-                            SetBoolVariableByHandle( child->any_check, true );
-                            GUISetChecked( gui, VH2ID( child->any_check ), GUI_CHECKED );
-                            CheckChildChecks( child );
-                            return_state = DoDialogByPointer( gui, child );
-                            if( return_state != DLG_CAN &&
+                name = VarGetStrVal( GetVariableById( id ) );
+                if( name != NULL ) {
+                    dlg_child = FindDialogByName( name );
+                    if( dlg_child != NULL ) {
+                        GetVariableVals( gui, dlg, false );
+                        if( dlg_child->any_check != NO_VAR ) {
+                            old_val = VarGetBoolVal( dlg_child->any_check );
+                            SetBoolVariableByHandle( dlg_child->any_check, true );
+                            GUISetChecked( gui, VH2ID( dlg_child->any_check ), GUI_CHECKED );
+                            CheckChildChecks( dlg_child );
+                            return_state = DoDialogByPointer( gui, dlg_child );
+                            if( return_state != DLG_CANCEL &&
                                 return_state != DLG_DONE ) {
-                                CheckAnyCheck( gui, child );
+                                CheckAnyCheck( gui, dlg_child );
                             } else {
-                                SetBoolVariableByHandle( child->any_check, old_val );
-                                GUISetChecked( gui, VH2ID( child->any_check ), old_val ? GUI_CHECKED : GUI_NOT_CHECKED );
+                                SetBoolVariableByHandle( dlg_child->any_check, old_val );
+                                GUISetChecked( gui, VH2ID( dlg_child->any_check ), old_val ? GUI_CHECKED : GUI_NOT_CHECKED );
                             }
                         } else {
-                            DoDialogByPointer( gui, child );
+                            DoDialogByPointer( gui, dlg_child );
                         }
                     }
                 }
                 if( !initializing )
-                    GetVariableVals( gui, curr_dialog, false );
+                    GetVariableVals( gui, dlg, false );
 
-                UpdateControlVisibility( gui, curr_dialog, false );
+                UpdateControlVisibility( gui, dlg, false );
                 return( true );
             }
         case CTL_HELP:
             strcpy( buff, HELP_PREFIX );
-            strncpy( buff + sizeof( HELP_PREFIX ) - 1, curr_dialog->name, MAXBUF - sizeof( HELP_PREFIX ) );
+            strncpy( buff + sizeof( HELP_PREFIX ) - 1, dlg->name, MAXBUF - sizeof( HELP_PREFIX ) );
             buff[MAXBUF - 1] = '\0';
             DoDialogWithParent( gui, buff );
             return( true );
@@ -686,8 +686,8 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
 }
 
 
-static void AdjustDialogControls( a_dialog_header *curr_dialog )
-/**************************************************************/
+static void AdjustDialogControls( a_dialog_header *dlg )
+/******************************************************/
 {
     int                 i,j;
     int                 num_push_buttons, curr_button;
@@ -696,17 +696,17 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
     int                 but_pos;
     int                 max_width;
 
-    if( curr_dialog->def_dlg )
+    if( dlg->def_dlg )
         return;
 
-    if( curr_dialog->adjusted )
+    if( dlg->adjusted )
         return;
 
-    curr_dialog->adjusted = true;
-    width = curr_dialog->cols;
+    dlg->adjusted = true;
+    width = dlg->cols;
 
-    for( i = 0; i < curr_dialog->num_controls; i++ ) {
-        control = &curr_dialog->controls[i];
+    for( i = 0; i < dlg->num_controls; i++ ) {
+        control = &dlg->controls[i];
         switch( control->control_class ) {
         case GUI_RADIO_BUTTON:
 #if defined( GUI_IS_GUI )
@@ -725,7 +725,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 #endif
             // look for another control on this row
             control->rect.width = DLG_COL( width - C0 - 1 );
-            if( i + 1 >= curr_dialog->num_controls )
+            if( i + 1 >= dlg->num_controls )
                 break;
 
             next = control + 1;
@@ -737,8 +737,8 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 break;
 
             num_push_buttons = 1;
-            for( j = i + 1; j < curr_dialog->num_controls; ++j ) {
-                next = curr_dialog->controls + j;
+            for( j = i + 1; j < dlg->num_controls; ++j ) {
+                next = dlg->controls + j;
                 if( next->control_class != GUI_CHECK_BOX || next->rect.y != control->rect.y )
                     break;
                 ++num_push_buttons;
@@ -762,8 +762,8 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
         case GUI_PUSH_BUTTON:
         case GUI_DEFPUSH_BUTTON:
             num_push_buttons = 1;
-            for( j = i + 1; j < curr_dialog->num_controls; ++j ) {
-                next = curr_dialog->controls + j;
+            for( j = i + 1; j < dlg->num_controls; ++j ) {
+                next = dlg->controls + j;
                 if( ( next->control_class != GUI_PUSH_BUTTON &&
                       next->control_class != GUI_DEFPUSH_BUTTON ) ||
                     next->rect.y != control->rect.y ) {
@@ -772,7 +772,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 ++num_push_buttons;
                 ++i;
             }
-            if( j == curr_dialog->num_controls ) {
+            if( j == dlg->num_controls ) {
                 for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
                     max_width = strlen( control->text ) + BUTTON_EXTRA;
 #if defined( GUI_IS_GUI )
@@ -842,7 +842,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                     }
                 }
             }
-            if( control->id == -1 || curr_dialog->controls_ext[i].pVisibilityConds != NULL ) {
+            if( control->id == -1 || dlg->controls_ext[i].pVisibilityConds != NULL ) {
                 if( control->rect.width > DLG_COL( width ) ) {
                     control->rect.width = DLG_COL( width );
                 }
@@ -863,28 +863,28 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 }
 
 
-dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
-/*************************************************************************/
+dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
+/*****************************************************************/
 {
     VBUF                title;
     DLG_WINDOW_SET      result;
     int                 width;
     int                 height;
 
-    if( curr_dialog == NULL ) {
-        return( DLG_CAN );
+    if( dlg == NULL ) {
+        return( DLG_CANCEL );
     }
-    AdjustDialogControls( curr_dialog );
-    result.state = DLG_CAN;
-    result.current_dialog = curr_dialog;
+    AdjustDialogControls( dlg );
+    result.state = DLG_CANCEL;
+    result.dlg = dlg;
     VbufInit( &title );
-    if( curr_dialog->title != NULL ) {
-        VbufConcStr( &title, curr_dialog->title );
+    if( dlg->title != NULL ) {
+        VbufConcStr( &title, dlg->title );
     } else {
         ReplaceVars( &title, GetVariableStrVal( "AppName" ) );
     }
-    width = curr_dialog->cols;
-    height = curr_dialog->rows;
+    width = dlg->cols;
+    height = dlg->rows;
 #if defined( __OS2__ ) && defined( GUI_IS_GUI )
     height -= 1;
 #endif
@@ -894,7 +894,7 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
 
     GUIRefresh();
     GUIModalDlgOpen( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
-                     curr_dialog->controls, curr_dialog->num_controls,
+                     dlg->controls, dlg->num_controls,
                      &GenericGUIEventProc, &result );
     ResetDriveInfo();
     VbufFree( &title );

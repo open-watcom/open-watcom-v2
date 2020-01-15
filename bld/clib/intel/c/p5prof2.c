@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,8 @@
 #include "p5prof.h"
 #include "ljmphdl.h"
 #include "initarg.h"
+#include "pathgrp2.h"
+
 
 #ifdef __UNIX__
     extern char **_argv;
@@ -95,10 +98,7 @@ static union tsc                initial_tsc;
 
 static FILE *OpenPrfFile( int isInit )
 {
-    char                *drive;
-    char                *dir;
-    char                *name;
-    char                fname[ _MAX_PATH2 ];
+    PGROUP2             pg;
     char                pname[ _MAX_PATH2 ];
     FILE                *out;
     int                 already;
@@ -107,12 +107,10 @@ static FILE *OpenPrfFile( int isInit )
     struct stat         exe_stat;
     struct stat         prf_stat;
 
-    if( PGM_NAME != NULL ) {
-        _splitpath2( PGM_NAME, &fname, &drive, &dir, &name, NULL );
-        _makepath( pname, drive, dir, name, ".prf" );
-    } else {
+    if( PGM_NAME == NULL )
         return( NULL );
-    }
+    _splitpath2( PGM_NAME, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    _makepath( pname, pg.drive, pg.dir, pg.fname, "prf" );
     already = access( pname, R_OK ) == 0;
     if( already ) {
         stat( pname, &prf_stat );

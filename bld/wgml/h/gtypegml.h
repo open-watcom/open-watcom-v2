@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -749,8 +749,8 @@ typedef struct tag_cb {
     font_number         font;           // :HPx, :SF
     uint8_t             headhi;         // :dl
     uint8_t             termhi;         // :dl :gl
-    bool                dl_break : 1;   // :dl
-    bool                compact  : 1;   // :dl :gl :ol :sl :ul
+    boolbit             dl_break : 1;   // :dl
+    boolbit             compact  : 1;   // :dl :gl :ol :sl :ul
     gml_tag             gtag;           // enum of tag
 } tag_cb;
 

@@ -35,9 +35,6 @@
 #include "asparser.h"
 #include "clibint.h"
 
-extern bool     OptionsInit( int argc, char *argv[] );
-extern void     OptionsFini( void );
-extern void     OptionsPPDefine( void );
 
 extern bool     DoReport;
 extern int      CurrLineno;

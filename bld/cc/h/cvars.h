@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,7 +202,9 @@ global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
 global int          Toggles;            /* global toggle flags */
+
 global unsigned     ErrLimit;
+#define ERRLIMIT_NOMAX  ((unsigned)-1)
 
 global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
@@ -252,8 +255,6 @@ global dbug_type    B_Bool;
 global int          OptSize;            /* 100 => make pgm small as possible */
 global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
-
-global unsigned char *MsgFlags;         /* Bit mask of disabled messages */
 
 global struct macro_seg_list {
     struct macro_seg_list *next;
@@ -411,7 +412,7 @@ extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool
 /* ccmain.c */
 extern void         FreeRDir( void );
 extern void         FrontEndInit( bool reuse );
-extern int          FrontEnd(char **);
+extern bool         FrontEnd(char **);
 extern void         FrontEndFini( void );
 extern void         CppComment(int);
 extern bool         CppPrinting(void);
@@ -432,7 +433,6 @@ extern char         *DepFileName(void);
 extern char         *ObjFileName(void);
 extern char         *CppFileName(void);
 extern char         *ForceSlash(char *, char );
-extern char         *CreateFileName( const char *template, const char *extension, bool forceext );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
 extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
@@ -506,20 +506,20 @@ extern void         EnumInit(void);
 extern void         FreeEnums(void);
 
 /* cerror.c */
-extern void         CErr1(int msgnum);
-extern void         CErr2(int msgnum,int);
-extern void         CErr2p(int msgnum,const char *);
-extern void         CErr3p(int msgnum,const char *,const char *);
-extern void         CErr4p(int msgnum,const char *,const char *,const char *);
-extern void         CErrP1(int parmno,int msgnum);
+extern void         CErr1(msg_codes msgnum);
+extern void         CErr2(msg_codes msgnum,int);
+extern void         CErr2p(msg_codes msgnum,const char *);
+extern void         CErr3p(msg_codes msgnum,const char *,const char *);
+extern void         CErr4p(msg_codes msgnum,const char *,const char *,const char *);
+extern void         CErrP1(int parmno,msg_codes msgnum);
 extern void         SetErrLoc(source_loc *);
 extern void         InitErrLoc(void);
-extern void         CWarn1(int level,int msgnum);
-extern void         CWarn2(int level,int msgnum,int);
-extern void         CWarn2p(int level,int msgnum,const char *);
-extern void         CWarnP1(int parmno,int level,int msgnum);
-extern void         PCHNote( int msgnum, ... );
-extern void         CInfoMsg(int,...);
+extern void         CWarn1(int level,msg_codes msgnum);
+extern void         CWarn2(int level,msg_codes msgnum,int);
+extern void         CWarn2p(int level,msg_codes msgnum,const char *);
+extern void         CWarnP1(int parmno,int level,msg_codes msgnum);
+extern void         PCHNote( msg_codes msgnum, ... );
+extern void         CInfoMsg(msg_codes msgnum,...);
 extern void         CSuicide(void);
 extern void         OpenErrFile(void);
 extern void         FmtCMsg( char *buff, cmsg_info *info );
@@ -620,7 +620,6 @@ extern void         BannerMsg( char const  *line );
 extern void         DebugMsg( char const  *line );
 extern void         NoteMsg( char const  *line );
 extern void         ConBlip( void );
-extern bool         ConTTY( void );
 extern void         MyExit( int ret );
 
 /* cmac1.c */
@@ -686,13 +685,14 @@ extern void         InitModInfo(void);
 extern void         MiscMacroDefs(void);
 
 /* cmsg.c */
-extern char const   *CGetMsgStr(  msg_codes msgcode );
+extern char const   *CGetMsgStr( msg_codes msgnum );
 extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
-extern msgtype      CGetMsgType( msg_codes msgcode );
-extern char const   *CGetMsgPrefix( msg_codes msgcode );
+extern msg_type     CGetMsgType( msg_codes msgnum );
+extern char const   *CGetMsgPrefix( msg_codes msgnum );
+extern int          GetMsgIndex( msg_codes msgnum );
 
 /* cname */
 extern int          NameCmp(const void *,const void *,size_t);
@@ -728,7 +728,7 @@ extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
 extern void         SetCurrInfo(const char *);
 extern void         XferPragInfo(const char*,const char*);
-extern void         EnableDisableMessage(int,unsigned);
+extern void         WarnEnableDisable(bool enabled,msg_codes msgnum);
 extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );

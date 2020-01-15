@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,13 +90,12 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)(
         }
     }
 
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != NULLCHAR ) {
         if( ( *fname != DIR_SEP ) && ( *path == DIR_SEP ) )
             path++;
 
         __F_NAME(strcpy,wcscpy)( path, fname );
         path = __F_NAME(strchr,wcschr)( path, NULLCHAR );
-
     } else {
         if( *path == DIR_SEP ) {
             path++;
@@ -165,7 +164,7 @@ _WCRTLINK void _makepath( char *path, const char *volume,
     /* if no path separator was specified thus far then pick a default */
     if( first_pc == NULLCHAR )
         first_pc = DIR_SEP;
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != NULLCHAR ) {
         if( ( pickup( *fname, &first_pc ) != first_pc ) && ( *path == first_pc ) )
             path++;
         while( *fname != NULLCHAR ) {
@@ -264,7 +263,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
     /* if no path separator was specified thus far then pick a default */
     if( first_pc == NULLCHAR )
         first_pc = DIR_SEP;
-    if( fname != NULL ) {
+    if( fname != NULL && *fname != NULLCHAR ) {
   #if defined( __WIDECHAR__ ) || defined( __RDOS__ )
         if( pickup( *fname, &first_pc ) != first_pc && *path == first_pc )
             path++;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,6 +121,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     bool                                is_intel;
     int                                 adjusted;
     sa_disasm_struct                    sds;
+    const char                          *FPU_fixup;
 
     sds.data = contents;
     sds.last = size - 1;
@@ -140,9 +142,11 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     } else {
         is_intel = IsIntelx86();
     }
+    if( is_intel ) {
+        flags.u.x86 |= DIF_X86_FPU_EMU;
+    }
 
     for( loop = 0; loop < size; loop += decoded.size ) {
-
         // skip data in code segment
         for( ; stl != NULL; stl = stl->next ) {
             if( stl->end >= loop  ) {
@@ -162,10 +166,11 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
         for( ; r_entry != NULL; r_entry = r_entry->next ) {
-            if( ( r_entry->offset >= loop ) && SkipRef( r_entry ) == NULL ) {
+            if( r_entry->offset >= loop ) {
                 break;
             }
         }
+        r_entry = ProcessFpuEmulatorFixup( r_entry, loop, &FPU_fixup );
         if( r_entry != NULL && ( r_entry->offset == loop ) ) {
             if( is_intel || IsDataReloc( r_entry ) ) {
                 // we just skip the data
@@ -179,6 +184,9 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
 
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
+        if( FPU_fixup == NULL ) {
+            decoded.flags.u.all &= ~DIF_X86_FPU_EMU;
+        }
         sds.offs = loop;
         dr = DisDecode( &DHnd, &sds, &decoded );
         // if an invalid instruction was found, there is nothing we can do.

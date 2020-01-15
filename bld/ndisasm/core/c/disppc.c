@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -415,7 +416,8 @@ static void PPCDoFloat( dis_dec_ins *ins, const int *order )
     code.full = ins->opcode;
 
     for( operand = 0; operand < 4; operand++ ) {
-        if( order[operand] == 0 ) break;
+        if( order[operand] == 0 )
+            break;
         ins->op[operand].type = DO_REG;
         switch( order[operand] ) {
         case 1:
@@ -1393,10 +1395,14 @@ static size_t PPCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     /* unused parameters */ (void)h; (void)d; (void)flags;
 
     p = name;
-    if( ins->flags.u.ppc & DIF_PPC_OE ) *p++ = 'o';
-    if( ins->flags.u.ppc & DIF_PPC_RC ) *p++ = '.';
-    if( ins->flags.u.ppc & DIF_PPC_LK ) *p++ = 'l';
-    if( ins->flags.u.ppc & DIF_PPC_AA ) *p++ = 'a';
+    if( ins->flags.u.ppc & DIF_PPC_OE )
+        *p++ = 'o';
+    if( ins->flags.u.ppc & DIF_PPC_RC )
+        *p++ = '.';
+    if( ins->flags.u.ppc & DIF_PPC_LK )
+        *p++ = 'l';
+    if( ins->flags.u.ppc & DIF_PPC_AA )
+        *p++ = 'a';
     *p = '\0';
     return( p - name );
 }
@@ -1459,10 +1465,11 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             //NYI: have to use client to get numeric prefix right
             *p++ = '0';
             *p++ = 'x';
-            if( val & 0x10 )
+            if( val & 0x10 ) {
                 *p++ = '1';
-            else
+            } else {
                 *p++ = '0';
+            }
             val &= 0x0f;
             if( val > 9 ) {
                 *p++ = val + 'a' - 0xa;

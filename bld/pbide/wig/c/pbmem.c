@@ -37,18 +37,8 @@
 #include "global.h"
 #include "error.h"
 #include "pbmem.h"
-#ifdef TRMEM
 #include "trmemcvr.h"
-#endif
 
-
-#ifdef TRMEM
-
-#define malloc  TRMemAlloc
-#define realloc TRMemRealloc
-#define free    TRMemFree
-
-#endif
 
 void    InitMem( void ) {
 /************************/
@@ -71,7 +61,11 @@ void    *MemMalloc( int size ) {
 
     void        *tmp;
 
+#ifdef TRMEM
+    tmp = TRMemAlloc( size );
+#else
     tmp = malloc( size );
+#endif
 #ifdef MEM_TRACK
     printf( "ALLOC %lX          size %d\n", tmp, size );
 #endif
@@ -87,7 +81,11 @@ void    *MemRealloc( void *old, int size ) {
 
     void        *tmp;
 
+#ifdef TRMEM
+    tmp = TRMemRealloc( old, size );
+#else
     tmp = realloc( old, size );
+#endif
 #ifdef MEM_TRACK
     printf( "FREE %lX\n", old );
     printf( "REALLOC %lX                size %d\n", tmp, size );
@@ -103,7 +101,11 @@ void    MemFree( void *blck ) {
 /*****************************/
 
      if( blck != NULL ) {
+#ifdef TRMEM
+         TRMemFree( blck );
+#else
          free( blck );
+#endif
      }
 #ifdef MEM_TRACK
      printf( "FREE %lX\n", blck );

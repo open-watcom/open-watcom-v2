@@ -5,6 +5,8 @@ name = wde
 wde_autodepends = .AUTODEPEND
 !endif
 
+wde_trmem = 1
+
 .EXTENSIONS: .res .rc
 
 wde_winver =
@@ -16,33 +18,26 @@ memory_model_i86 = l
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include wres.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-!include wres.mif
-!include trmem.mif
-
 extra_cpp_flags   = -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_c_flags     = -s -fh
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+
+extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
-of_386  = -of+
-of_i86  = -of+
-
-TRMEM   = $(of_$(host_cpu))
-!ifeq wde_trmem 1
-TRMEM   += -DTRMEM
-!endif
-
-extra_c_flags_trmem = $(TRMEM)
-extra_c_flags_trmemcvr = $(TRMEM)
+extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_preproc = -zm -fh=preproc.pch

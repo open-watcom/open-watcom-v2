@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,9 +143,9 @@ void _PutChar( short row, short col, short ch )
 
     if( IsTextMode ) {
         if( _CurrState->vc.mode == _TEXTMONO ) {
-            p = MK_FP( _MonoSeg, _MonoOff );
+            p = _MK_FP( _MonoSeg, _MonoOff );
         } else {
-            p = MK_FP( _CgaSeg, _CgaOff );
+            p = _MK_FP( _CgaSeg, _CgaOff );
         }
         p += _CurrActivePage * _BIOS_data( CRT_LEN, short );
         screen = (short __far *)p;

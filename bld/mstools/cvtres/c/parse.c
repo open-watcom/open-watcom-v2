@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,8 @@
 #include "parse.h"
 #include "cmdlnprs.h"
 
+
+#include "parseext.c"
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -122,63 +125,23 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /*
  * Parse the /MACHINE option.
  */
-static int parse_machine( OPT_STRING **p )
-/****************************************/
+static bool parse_machine( OPT_STRING **p )
+/*****************************************/
 {
     char *              str;
 
     p = p;
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/MACHINE requires an argument" );
-        return( 0 );
+        return( false );
     }
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/MACHINE requires an argument" );
-        return( 0 );
+        return( false );
     }
     Warning( "Ignoring option /MACHINE:%s", str );
-    return( 1 );
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-void OPT_CLEAN_STRING( OPT_STRING **p )
-/*************************************/
-{
-    OPT_STRING *        s;
-
-    while( (s = *p) != NULL ) {
-        *p = s->next;
-        FreeMem( s );
-    }
-}
-
-
-/*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
+    return( true );
 }
 
 
@@ -187,8 +150,8 @@ static void add_string( OPT_STRING **p, char *str )
  * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
  * be deleted.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
-/***********************************************************************/
+static bool do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
+/************************************************************************/
 {
     char *              str;
 
@@ -196,32 +159,33 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
     str = CmdScanString();
     if( str == NULL ) {
         FatalError( "/%s requires an argument", optName );
-        return( 0 );
+        return( false );
     }
-    if( onlyOne )  OPT_CLEAN_STRING( p );
-    add_string( p, str );
-    return( 1 );
+    if( onlyOne )
+        OPT_CLEAN_STRING( p );
+    add_string( p, str, '\0' );
+    return( true );
 }
 
 
 /*
  * Parse the /O option.
  */
-static int parse_o( OPT_STRING **p )
-/**********************************/
+static bool parse_o( OPT_STRING **p )
+/***********************************/
 {
-    int                 retcode;
+    bool                retcode;
     char *              newstr;
 
     if( !CmdScanRecogChar( ' ' )  &&  !CmdScanRecogChar( '\t' ) ) {
         FatalError( "Whitespace required after /o" );
-        return( 0 );
+        return( false );
     }
     retcode = do_string_parse( p, "o", true );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
-        add_string( p, newstr );
+        add_string( p, newstr, '\0' );
     }
     return( retcode );
 }
@@ -230,21 +194,21 @@ static int parse_o( OPT_STRING **p )
 /*
  * Parse the /OUT option.
  */
-static int parse_out( OPT_STRING **p )
-/************************************/
+static bool parse_out( OPT_STRING **p )
+/*************************************/
 {
-    int                 retcode;
+    bool                retcode;
     char *              newstr;
 
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/OUT requires an argument" );
-        return( 0 );
+        return( false );
     }
     retcode = do_string_parse( p, "OUT", true );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
-        add_string( p, newstr );
+        add_string( p, newstr, '\0' );
     }
     return( retcode );
 }
@@ -256,8 +220,8 @@ static int parse_out( OPT_STRING **p )
 static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     DisableWarnings( true );
 }
 
@@ -268,8 +232,8 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 static void handle_alpha( OPT_STORAGE *cmdOpts, int x )
 /*****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /ALPHA" );
 }
 
@@ -280,8 +244,8 @@ static void handle_alpha( OPT_STORAGE *cmdOpts, int x )
 static void handle_i386( OPT_STORAGE *cmdOpts, int x )
 /****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /I386" );
 }
 
@@ -292,8 +256,8 @@ static void handle_i386( OPT_STORAGE *cmdOpts, int x )
 static void handle_mips( OPT_STORAGE *cmdOpts, int x )
 /****************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /MIPS" );
 }
 
@@ -304,8 +268,8 @@ static void handle_mips( OPT_STORAGE *cmdOpts, int x )
 static void handle_ppc( OPT_STORAGE *cmdOpts, int x )
 /***************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /PPC" );
 }
 
@@ -316,8 +280,8 @@ static void handle_ppc( OPT_STORAGE *cmdOpts, int x )
 static void handle_r( OPT_STORAGE *cmdOpts, int x )
 /*************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /R" );
 }
 
@@ -328,8 +292,8 @@ static void handle_r( OPT_STORAGE *cmdOpts, int x )
 static void handle_readonly( OPT_STORAGE *cmdOpts, int x )
 /********************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /READONLY" );
 }
 
@@ -340,8 +304,8 @@ static void handle_readonly( OPT_STORAGE *cmdOpts, int x )
 static void handle_v( OPT_STORAGE *cmdOpts, int x )
 /*************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /V" );
 }
 
@@ -352,8 +316,8 @@ static void handle_v( OPT_STORAGE *cmdOpts, int x )
 static void handle_verbose( OPT_STORAGE *cmdOpts, int x )
 /*******************************************************/
 {
-    x = x;
-    cmdOpts = cmdOpts;
+    /* unused parammeters */ (void)cmdOpts; (void)x;
+
     Warning( "Ignoring unsupported option: /VERBOSE" );
 }
 

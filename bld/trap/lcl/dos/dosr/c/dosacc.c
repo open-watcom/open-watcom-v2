@@ -982,6 +982,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
+    /* unused parameters */ (void)remote;
+
 out( "in TrapInit\r\n" );
 out( "    checking environment:\r\n" );
     Flags = 0;

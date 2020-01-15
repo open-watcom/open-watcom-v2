@@ -136,16 +136,16 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 {
     trap_version    ver;
     const char      *err;
-    int             fix_minor;
+    bool            fix_minor;
 
     remote=remote;
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = true;
-    fix_minor = 0;
+    fix_minor = false;
     if( *parms == '!' ) {
         ++parms;
         if( *parms != '!' ) {
-            fix_minor = 1;
+            fix_minor = true;
         }
     }
     err = RemoteLink( parms, false );

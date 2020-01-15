@@ -413,17 +413,20 @@ static int wlib_output( const char *text )
  */
 static IDEBool __stdcall print_message_crlf( IDECBHdl hdl, const char *text )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     return( (IDEBool)wlib_output( text ) );
 }
 static IDEBool __stdcall print_with_info2( IDECBHdl hdl, IDEMsgInfo2 *info )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     return( (IDEBool)wlib_output( info->msg ) );
 }
 static IDEBool __stdcall print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     return( (IDEBool)wlib_output( info->msg ) );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +31,23 @@
 
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#if defined( __WINDOWS__ ) && !defined( SERVER )
+    #include <windows.h>
+#elif defined( ENABLE_TRAP_LOGGING )
+    #include <windows.h>
+#endif
 #include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined( SERVER )
-#include <windows.h>
-#include "trpsys.h"
-#elif defined( ENABLE_TRAP_LOGGING )
-#include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
-#include <winbase.h>    /* For GetSystemTime */
+    #include "trpsys.h"
 #endif
 
 
 trap_version    TrapVer;
-trap_req_func   *ReqFunc;
+trap_req_func   *ReqFunc = NULL;
 #ifdef ENABLE_TRAP_LOGGING
 char            *TrapTraceFileName = NULL;
 bool            TrapTraceFileFlush = false;
@@ -197,7 +199,7 @@ unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out
     }
     Access();
 #if defined( __WINDOWS__ ) && !defined( SERVER )
-    TrapHardModeCheck();
+    TRAP_EXTFUNC( HardModeCheck )();
 #endif
     if( result == REQUEST_FAILED )
         return( (unsigned)-1 );

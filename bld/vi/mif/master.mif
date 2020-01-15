@@ -20,12 +20,12 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 !include defrule.mif
 !include deftarg.mif
 !include win386.mif
+!include trmem.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(ui_dir)/client.mif
 !include $(rcsdll_dir)/client.mif
-!include trmem.mif
 
 !include ../mif/include.mif
 !include ../mif/objects.mif
@@ -108,15 +108,6 @@ rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$^@ $[@
-
-!ifeq host_os win
-!ifeq host_cpu i86
-tags : ../win/tags .SYMBOLIC
-
-../win/tags: vi.tag $(__MAKEFILES__)
-    ctags @vi.tag -f$^@
-!endif
-!endif
 
 edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp

@@ -34,7 +34,7 @@
 
 #define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE-1));
 
-#ifdef DOS
+#ifdef __DOS__
 char SaveArea[SAVE_SIZE];
 #else
 unsigned int SaveArea[SAVE_SIZE];
@@ -44,7 +44,7 @@ unsigned FirstFree;
 unsigned CurrCmd;
 int     LastWasNext;
 
-#ifdef DOS
+#ifdef __DOS__
 #include <dos.h>
 
 static union REGPACK r;

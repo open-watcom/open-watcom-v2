@@ -46,10 +46,10 @@ static FILE *MemFP = NULL;   /* stream to put output on */
 static void MemPrintLine( void *parm, const char *buff, size_t len )
 /******************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
     if( MemFP != NULL ) {
-        fwrite( buff, 1, len, MemFP );
+        fprintf( MemFP, "%s\n", buff );
     }
 }
 #endif
@@ -86,6 +86,7 @@ void MemClose( void )
     _trmem_close( MemHandle );
     if( MemFP != NULL ) {
         fclose( MemFP );
+        MemFP = NULL;
     }
 #endif
 }

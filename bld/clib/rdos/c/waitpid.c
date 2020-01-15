@@ -38,6 +38,8 @@ _WCRTLINK pid_t waitpid( pid_t __pid, int *__stat_loc, int __options )
 {
     int wait;
 
+    /* unused parameters */ (void)__stat_loc; (void)__options;
+
     wait = RdosCreateWait();
     RdosAddWaitForProcessEnd( wait, __pid, (void *)__pid );
     while (RdosIsProcessRunning( __pid )) {

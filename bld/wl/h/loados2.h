@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,14 @@
 
 // linker specific OS/2 load file stuff.
 
+// the first 4 fields must be the same as the xxx_seg_flags structure
+// defined in objstruc.h
+
 typedef struct os2_seg_flags {
-    struct os2_seg_flags *  next;
-    unsigned_16             flags;      // as above.
-    char *                  name;
-    segflag_type            type;    // true if flags for a class.
+    struct os2_seg_flags    *next;
+    unsigned_16             flags;
+    char                    *name;
+    segflag_type            type;
     unsigned_16             specified;  // used for enforcing mutual exclusion
 } os2_seg_flags;
 
@@ -84,7 +87,7 @@ typedef struct os2_seg_flags {
 #define PM_NOT_COMPATIBLE   0x4000
 #define TERM_INSTANCE_FLAG  0x8000
 
-#define FLAT_GRANULARITY    (64UL * 1024)
+#define FLAT_GRANULARITY    _64KB
 #define FLAT_ROUND( x )     ROUND_UP( x, FLAT_GRANULARITY )
 
 #include "exeos2.h"
@@ -102,7 +105,8 @@ extern unsigned long    ImportProcTable( unsigned long * );
 extern unsigned long    ImportModTable( unsigned long * );
 extern void             CheckExport( char *, ordinal_t, exportcompare_fn * );
 extern unsigned long    ResNonResNameTable( bool );
-extern void             ChkOS2Data( void );
+extern void             SetOS2SegFlags( void );
+extern void             SetOS2GroupFlags( void );
 extern void             ChkOS2Exports( void );
 extern void             PhoneyStack( void );
 extern void             FiniOS2LoadFile( void );

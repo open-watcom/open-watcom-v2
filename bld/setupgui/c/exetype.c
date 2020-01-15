@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +47,27 @@
 
 #if defined( EXETYPE_MAIN )
 
+static void CheckFile( const char *path )
+{
+    bool            ok;
+    char            exe_type[3];
+
+    printf( "%s\t", path );
+    ok = ExeType( path, exe_type );
+    if( !ok ) {
+        printf( " not an executable\n" );
+    } else {
+        printf( " executable type is '%s'\n", exe_type );
+    }
+}
+
 int main( int argc, char *argv[] )
 {
-    char                *pattern;
-    char                dir[_MAX_DIR];
-    char                drive[_MAX_DRIVE];
-    DIR                 *dirp;
-    struct dirent       *direntp;
+    char            *pattern;
+    char            path[_MAX_PATH];
+    PGROUP2         pg;
+    DIR             *dirp;
+    struct dirent   *dire;
 
     if( argc != 2 ) {
         printf( "Usage: EXETYPE file-pattern\n" );
@@ -61,32 +76,16 @@ int main( int argc, char *argv[] )
     pattern = argv[1];
     dirp = opendir( pattern );
     if( dirp != NULL ) {
-        _splitpath( pattern, drive, dir, NULL, NULL );
-        for( ; (direntp = readdir( dirp )) != NULL; ) {
-            CheckFile( direntp->d_name, drive, dir );
+        _splitpath2( pattern, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+        for( ; (dire = readdir( dirp )) != NULL; ) {
+            _makepath( path, pg.drive, pg.dir, dire->d_name, NULL );
+            CheckFile( path );
         }
         closedir( dirp );
         return( 0 );
     }
     printf( "No files found matching '%s'\n", pattern );
     return( 1 );
-}
-
-
-static void CheckFile( const char *fname, const char *drive, const char *dir )
-{
-    bool                ok;
-    char                path[_MAX_PATH];
-    char                exe_type[3];
-
-    _makepath( path, drive, dir, fname, NULL );
-    printf( "%s\t", path );
-    ok = ExeType( path, exe_type );
-    if( !ok ) {
-        printf( " not an executable\n" );
-    } else {
-        printf( " executable type is '%s'\n", exe_type );
-    }
 }
 
 #endif

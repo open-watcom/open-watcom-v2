@@ -40,11 +40,14 @@
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
-help_file_info  HelpFiles[MAX_HELP_FILES + 1] = {
+#define MAX_HELP_FILES  10
+
+static help_file_info   helpFiles[MAX_HELP_FILES + 1] = {
     { NULL, NULL, 0 }
 };
 
@@ -52,16 +55,12 @@ static HelpSrchPathItem         *srch_List;
 
 void SetHelpFileDefExt( const char *name, char *buff )
 {
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
+    PGROUP2      pg;
 
-    _splitpath( name, drive, dir, fname, ext );
-    if( *ext == '\0' ) {
-        strcpy( ext, DEF_EXT );
-    }
-    _makepath( buff, drive, dir, fname, ext );
+    _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' )
+        pg.ext = DEF_EXT;
+    _makepath( buff, pg.drive, pg.dir, pg.fname, pg.ext );
 }
 
 static void freeSearchList( void )
@@ -85,10 +84,10 @@ static void freeHelpFiles( void )
     int         count;
 
     for( count = 0; count < MAX_HELP_FILES; ++count ) {
-        if( HelpFiles[count].name == NULL )
+        if( helpFiles[count].name == NULL )
             break;
-        HelpMemFree( HelpFiles[count].name );
-        HelpFiles[count].name = NULL;
+        HelpMemFree( helpFiles[count].name );
+        helpFiles[count].name = NULL;
     }
 }
 
@@ -152,12 +151,7 @@ static void initSearchList(
         srch_List = HelpMemAlloc( count * sizeof( HelpSrchPathItem ) );
         for( i = 0; i < count ; ++i ) {
             srch_List[i].type = srchlist[i].type;
-            if( srchlist[i].info != NULL ) {
-                srch_List[i].info = HelpMemAlloc( strlen( srchlist[i].info ) + 1 );
-                strcpy( srch_List[i].info, srchlist[i].info );
-            } else {
-                srch_List[i].info = NULL;
-            }
+            srch_List[i].info = HelpDupStr( srchlist[i].info );
         }
     }
 }
@@ -175,9 +169,8 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
     for( ; *helpfilenames != NULL; ++helpfilenames ) {
         SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
-            HelpFiles[count].name = HelpMemAlloc( strlen( fullpath ) + 1 );
-            strcpy( HelpFiles[count].name, fullpath );
-            HelpFiles[count].fp = NULL;
+            helpFiles[count].name = HelpDupStr( fullpath );
+            helpFiles[count].fp = NULL;
             ++count;
             if( count >= MAX_HELP_FILES ) {
                 break;
@@ -206,4 +199,9 @@ void helpfini( void )
 {
     freeHelpFiles();
     freeSearchList();
+}
+
+help_file_info  *HelpFileInfo( void )
+{
+    return( helpFiles );
 }

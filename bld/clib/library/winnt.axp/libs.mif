@@ -4,8 +4,8 @@ __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 libs = $+ &
     $(pfx__)alias$(__sfx) &
     $(pfx__)alpha$(__sfx) &
-    $(pfx__)char$(__sfx) &
     $(pfx__)cgsupp$(__sfx) &
+    $(pfx__)char$(__sfx) &
     $(pfx__)conio$(__sfx) &
     $(pfx__)convert$(__sfx) &
     $(pfx__)defwin$(__sfx) &

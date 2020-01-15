@@ -64,7 +64,7 @@ _WCRTLINK extern int _heapshrink( void );
 _WCRTLINK extern int _nheapshrink( void );
 
 :segment BITS16
-#ifdef _M_I86
+:include far1.sp
 _WCRTLINK extern int _fheapchk( void );
 _WCRTLINK extern int _fheapset( unsigned int __fill );
 _WCRTLINK extern int _fheapwalk( struct _heapinfo *__entry );
@@ -72,7 +72,7 @@ _WCRTLINK extern int _fheapwalk( struct _heapinfo *__entry );
 _WCRTLINK extern void _fheapgrow( void );
 _WCRTLINK extern int _fheapmin( void );
 _WCRTLINK extern int _fheapshrink( void );
-#endif
+:include farepi.sp
 
 :endsegment
 _WCRTLINK extern int __nmemneed( size_t );
@@ -85,7 +85,7 @@ _WCRTLINK extern size_t _msize( void *__ptr );
 :remove WINDOWSX_MALLOC
 
 :segment BITS16
-#ifdef _M_I86
+:include far1.sp
 _WCRTLINK extern int __fmemneed( size_t );
 _WCRTLINK extern void _WCFAR *_fcalloc( size_t __n, size_t __size );
 _WCRTLINK extern void _WCFAR *_fexpand( void _WCFAR *__ptr, size_t __size );
@@ -95,7 +95,7 @@ _WCRTLINK extern void _WCHUGE *halloc( long __n, size_t __size );
 _WCRTLINK extern void hfree( void _WCHUGE * );
 _WCRTLINK extern void _WCFAR *_frealloc( void _WCFAR *__ptr, size_t __size );
 _WCRTLINK extern size_t _fmsize( void _WCFAR *__ptr );
-#endif
+:include farepi.sp
 
 :endsegment
 _WCRTLINK extern size_t _memavl( void );
@@ -135,7 +135,7 @@ using std::_os2hmalloc;
 #endif
 
 :segment BITS16
-#ifdef _M_I86
+:include far1.sp
 /* based heap function prototypes */
 
 #define _NULLSEG ((__segment)0)
@@ -154,7 +154,7 @@ _WCRTLINK extern int _bheapwalk( __segment __seg, struct _heapinfo *__entry );
 _WCRTLINK extern void __based(void) *_bmalloc( __segment __seg, size_t __size );
 _WCRTLINK extern size_t _bmsize( __segment __seg, void __based(void) *__mem );
 _WCRTLINK extern void __based(void) *_brealloc( __segment __seg, void __based(void) *__mem, size_t __size );
-#endif
+:include farepi.sp
 
 :endsegment
 :include poppack.sp

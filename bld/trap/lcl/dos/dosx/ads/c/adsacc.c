@@ -885,7 +885,7 @@ void LetACADDie()
     }
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
                                                                           _DBG0(( "TrapFini" ));
     ReleVects();

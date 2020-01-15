@@ -164,7 +164,7 @@ extra_cpp_flags_nov += -DDEBUG_ME
 extra_cpp_flags_nov += -D__NETWARE_LIBC__
 !endif
 
-extra_c_flags += -s $(extra_cflags)
+extra_c_flags += $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
@@ -250,7 +250,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
 !else
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(mode_lflags)
-    @%append $^&.lnk op map, elim
+    @%append $^&.lnk op elim
     @%append $^&.lnk name $^@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP

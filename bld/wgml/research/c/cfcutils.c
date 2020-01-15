@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,19 +45,20 @@
 #else
 #include <direct.h>
 #endif
-#include "clibext.h"
-
 #include "banner.h"
 #include "cfheader.h"
 #include "common.h"
 #include "research.h"
 
+#include "clibext.h"
+
+
 /* Local variables */
 /* Load the usage text array */
 
 static  char const *    usage_text[] = {
-#include "cfcusage.h"
-NULL
+    #include "cfcusage.h"
+    NULL
 };
 
 /*  Function check_directory().
@@ -77,28 +79,26 @@ NULL
 
 int check_directory( void )
 {
-    DIR  *              current_dir     = NULL;
-    struct  dirent  *   dir_entry       = NULL;
-    FILE *              current_file    = NULL;
+    DIR             *   dirp            = NULL;
+    struct  dirent  *   dire            = NULL;
+    FILE            *   current_file    = NULL;
     int                 datafile        = 0; /* counts files of type 03 */
     int                 v3directoryfile = 0; /* counts files of type 02 */
     int                 v4directoryfile = 0; /* counts files of type 04 */
     int                 retval;
     char                type;
 
-    current_dir = opendir( tgt_path );
-    if( current_dir == NULL ) return( FAILURE );
+    dirp = opendir( tgt_path );
+    if( dirp == NULL )
+        return( FAILURE );
 
     chdir( tgt_path );
 
-    for(;;) {
-
-        dir_entry = readdir( current_dir );
-        if( dir_entry == NULL ) break;
+    for( ; (dire = readdir( dirp )) != NULL; ) {
 
         /* Open the file. */
 
-        fopen_s( &current_file, dir_entry->d_name, "rb" );
+        fopen_s( &current_file, dire->d_name, "rb" );
         if( current_file == NULL ) {
             continue;
         }
@@ -106,36 +106,36 @@ int check_directory( void )
         /* Check the file size. */
 
         if( (filelength( fileno( current_file ) ) % 16) != 0)
-            printf_s( "Size of file %s is not a multiple of 16\n", dir_entry->d_name );
+            printf_s( "Size of file %s is not a multiple of 16\n", dire->d_name );
 
         /* Process the file. */
 
         retval = parse_header( current_file, &type );
         if(retval == FAILURE)
         {
-            printf_s( "%s is not a valid .COP file\n", dir_entry->d_name );
+            printf_s( "%s is not a valid .COP file\n", dire->d_name );
             fclose( current_file );
             current_file = NULL;
             continue;
         }
         switch( type ) {
-        case( 0x02 ): 
+        case( 0x02 ):
             v3directoryfile++;
             break;
         case( 0x03 ):
             datafile++;
             break;
-        case( 0x04 ): 
+        case( 0x04 ):
             v4directoryfile++;
             break;
         default:
-            printf_s( "%s: unknown file type: %i\n", dir_entry->d_name, type );
+            printf_s( "%s: unknown file type: %i\n", dire->d_name, type );
         }
         fclose( current_file );
         current_file = NULL;
     }
-    closedir( current_dir );
-   
+    closedir( dirp );
+
     /* Output counts. */
 
     printf_s( "Number of device/driver/font files:  %i\n", datafile );

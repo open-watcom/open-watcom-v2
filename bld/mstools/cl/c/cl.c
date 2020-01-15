@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,9 @@
 #include "message.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
 #include "clibint.h"
 
 
@@ -119,24 +123,21 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
     char *              compiler = NULL;
     int                 rc;
     int                 numCompiled = 0;
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                ext[_MAX_EXT];
+    PGROUP2             pg;
     char                fullPath[_MAX_PATH];
     int                 count;
 
     /*** Process all the source files, in the order they were given ***/
     for( ;; ) {
-        filename = GetNextFile( &fileType, TYPE_C_FILE, TYPE_CPP_FILE,
-                                TYPE_INVALID_FILE );
-        if( filename == NULL )  break;
+        filename = GetNextFile( &fileType, TYPE_C_FILE, TYPE_CPP_FILE, TYPE_INVALID_FILE );
+        if( filename == NULL )
+            break;
 
         /*** Prepare to spawn the compiler ***/
         cloneCmdLine = CloneCmdLine( compCmdLine );
         HandleFileTranslate( filename, cloneCmdLine, NULL );
         switch( fileType ) {
-          case TYPE_C_FILE:
+        case TYPE_C_FILE:
             compiler = C_COMPILER;
             AppendCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION, compiler );
             AppendCmdLine( cloneCmdLine, CL_C_FILENAMES_SECTION, filename );
@@ -148,7 +149,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
                                  CL_C_FILENAMES_SECTION,
                                  INVALID_MERGE_CMDLINE );
             break;
-          case TYPE_CPP_FILE:
+        case TYPE_CPP_FILE:
             compiler = CPP_COMPILER;
             AppendCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION, compiler );
             AppendCmdLine( cloneCmdLine, CL_C_FILENAMES_SECTION, filename );
@@ -158,15 +159,15 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
                                  CL_C_FILENAMES_SECTION,
                                  INVALID_MERGE_CMDLINE );
             break;
-          default:
+        default:
             Zoinks();
         }
 
         /*** Spawn the compiler ***/
-        _splitpath( filename, drive, dir, fname, ext );
-        fprintf( stderr, "%s%s\n", fname, ext ); /* print name of file we're compiling */
+        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        fprintf( stderr, "%s%s\n", pg.fname, pg.ext ); /* print name of file we're compiling */
         if( cmdOpts->showwopts ) {
-            for( count=0; args[count]!=NULL; count++ ) {
+            for( count = 0; args[count] != NULL; count++ ) {
                 fprintf( stderr, "%s ", args[count] );
             }
             fprintf( stderr, "\n" );
@@ -186,7 +187,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
         if( cmdOpts->Fo ) {
             AddFile( TYPE_OBJ_FILE, PathConvert( cmdOpts->Fo_value->data, '"' ) );
         } else {
-            _makepath( fullPath, NULL, NULL, fname, ".obj" );
+            _makepath( fullPath, NULL, NULL, pg.fname, "obj" );
             AddFile( TYPE_OBJ_FILE, fullPath );
         }
 
@@ -271,10 +272,13 @@ void main( int argc, char *argv[] )
     int                 compRc = COMPILE_NOACTION;
     int                 linkRc = LINK_NOACTION;
 
-#ifndef __WATCOMC__
+#if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     compCmdLine = InitCmdLine( CL_C_NUM_SECTIONS );

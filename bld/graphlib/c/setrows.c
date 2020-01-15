@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,7 +314,7 @@ static void Load_MCGA( short rows, short font, short cursor )
 {
     VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
     VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    _fmemset( MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 );  // must do for MCGA 40 rows
+    _fmemset( _MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 ); // must do for MCGA 40 rows
     VideoInt( font & 0xFF0F, 0, 0, 0 );             // load character set
     VideoInt( 0x1103, 0, 0, 0 );
     VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor

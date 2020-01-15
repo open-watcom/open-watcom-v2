@@ -158,6 +158,9 @@ extern bool MIPSValidate( instruction * );
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
+extern void             DumpInsTableEntry( ins_table *table_entry );
+extern void             DumpInsTables( void );
+extern void             DumpInsEnumMethod( ins_enum_method method );
 #endif
 
 #define InsInit                 AsInsInit

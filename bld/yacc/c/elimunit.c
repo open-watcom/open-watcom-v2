@@ -312,7 +312,7 @@ static a_state *onlyShiftsOnTerminals( a_state *state )
     return( state );
 }
 
-static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro )
+static bool immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro )
 {
     a_sym *unit_lhs;
     a_sym *term_sym;
@@ -322,7 +322,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
     a_parent *parent;
     a_word *follow;
     set_size *mp;
-    int change_occurred;
+    bool change_occurred;
 
     /*
         requirements:
@@ -337,7 +337,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
 //    dumpInternalState( state );
     follow = raction->follow;
     unit_lhs = pro->sym;
-    change_occurred = 0;
+    change_occurred = false;
     for( mp = Members( follow ); mp-- != setmembers; ) {
         term_sym = symtab[*mp];
         check_state = NULL;
@@ -363,13 +363,13 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
             /* all shifts in *terminal ended up in the same state! */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
             ClearBit( follow, *mp );
-            change_occurred = 1;
+            change_occurred = true;
             ++changeOccurred;
         }
     }
     if( Empty( follow ) ) {
         state->redun = removeReduceAction( raction, state->redun );
-        change_occurred = 1;
+        change_occurred = true;
     }
     return( change_occurred );
 }
@@ -405,11 +405,11 @@ static int multiUnitReduce( a_state *state, a_reduce_action *raction, a_pro *pro
     return( 0 );
 }
 
-static int shiftToSingleReduce( a_state *state, a_shift_action *saction )
+static bool shiftToSingleReduce( a_state *state, a_shift_action *saction )
 {
     a_state *sub_state;
     a_sym *new_lhs;
-    int made_change;
+    bool made_change;
 
     /*
         requirements:
@@ -421,11 +421,11 @@ static int shiftToSingleReduce( a_state *state, a_shift_action *saction )
         action:
             change shift action for token (t) to shift into state (s3)
     */
-    made_change = 0;
+    made_change = false;
     for( sub_state = saction->state; (new_lhs = onlyOneReduction( sub_state )) != NULL; sub_state = saction->state ) {
         saction->state = findNewShiftState( state, new_lhs );
         removeParent( sub_state, state );
-        made_change = 1;
+        made_change = true;
         ++changeOccurred;
     }
     saction->units_checked = true;

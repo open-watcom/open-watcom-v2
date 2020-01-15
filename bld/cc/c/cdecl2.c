@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ static void         AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ );
 static void         FreeParmList( void );
 static void         GetFuncParmList( void );
 
-static segment_id   thread_segid = SEG_UNKNOWN;
+static segment_id   thread_segid = SEG_NULL;
 
 void Chk_Struct_Union_Enum( TYPEPTR typ )
 {
@@ -90,11 +91,21 @@ static stg_classes SCSpecifier( void )
     stg_class = SC_NONE;        /* assume no storage class specified */
     if( TokenClass[CurToken] == TC_STG_CLASS ) {
         switch( CurToken ) {
-        case T_EXTERN:  stg_class = SC_EXTERN;  break;
-        case T_STATIC:  stg_class = SC_STATIC;  break;
-        case T_TYPEDEF: stg_class = SC_TYPEDEF; break;
-        case T_AUTO:    stg_class = SC_AUTO;    break;
-        case T_REGISTER:stg_class = SC_REGISTER;break;
+        case T_EXTERN:
+            stg_class = SC_EXTERN;
+            break;
+        case T_STATIC:
+            stg_class = SC_STATIC;
+            break;
+        case T_TYPEDEF:
+            stg_class = SC_TYPEDEF;
+            break;
+        case T_AUTO:
+            stg_class = SC_AUTO;
+            break;
+        case T_REGISTER:
+            stg_class = SC_REGISTER;
+            break;
         default:
             break;
         }
@@ -496,7 +507,7 @@ new_var:
         SKIP_DUMMY_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_TYPEDEF ) {
             SymGet( &sym2, typ->u.typedefn );
-            if( sym->u.var.segid == SEG_UNKNOWN && sym2.u.var.segid != SEG_UNKNOWN ) {
+            if( sym->u.var.segid == SEG_NULL && sym2.u.var.segid != SEG_NULL ) {
                 sym->u.var.segid = sym2.u.var.segid;
             }
             SKIP_TYPEDEFS( typ );
@@ -508,11 +519,11 @@ new_var:
         sym->attribs.stg_class = stg_class;
         sym_handle = SymAdd( sym->info.hash, sym );
     }
-    if( sym->u.var.segid == SEG_UNKNOWN
+    if( sym->u.var.segid == SEG_NULL
       && ( stg_class == SC_STATIC
       || stg_class == SC_NONE
       || stg_class == SC_EXTERN ) ) {
-        if( DefDataSegment != SEG_UNKNOWN ) {
+        if( DefDataSegment != SEG_NULL ) {
             sym->u.var.segid = DefDataSegment;
             SymReplace( sym, sym_handle );
         }
@@ -1031,7 +1042,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             flags = info->modifier & ~FLAG_EXPORT;
             typ = BPtrNode( typ, flags, info->segid, sym_handle, info->based_kind );
             sym_handle = SYM_NULL;
-            info->segid = SEG_UNKNOWN;  // start over
+            info->segid = SEG_NULL;  // start over
             info->modifier = (flags & (FLAG_INLINE | FLAG_ABORTS | FLAG_NORETURN)) | TypeQualifier();  // .. * const
             info->based_kind = BASED_NONE;
         } else {
@@ -1072,7 +1083,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
 {
     struct mod_info     info;
 
-    info.segid = SEG_UNKNOWN;
+    info.segid = SEG_NULL;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = SYM_NULL;
@@ -1101,7 +1112,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
     TYPEPTR             parm_type;
     struct mod_info     info;
 
-    info.segid = SEG_UNKNOWN;
+    info.segid = SEG_NULL;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = SYM_NULL;
@@ -1176,7 +1187,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
         if( typ->decl_type == TYPE_FUNCTION ) {
             if( state & DECL_STATE_FORLOOP ) {
                 CErr2p( ERR_DECL_IN_LOOP_NOT_OBJECT, sym->name );
-            } else if( info.segid != SEG_UNKNOWN ) {            // __based( __segname("X"))
+            } else if( info.segid != SEG_NULL ) {           // __based( __segname("X"))
                 SetFuncSegment( sym, info.segid );
             }
         }
@@ -1204,7 +1215,7 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
     FIELDPTR            field;
     struct mod_info     info;
 
-    info.segid = SEG_UNKNOWN;
+    info.segid = SEG_NULL;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = SYM_NULL;

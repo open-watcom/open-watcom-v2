@@ -33,7 +33,7 @@
 #include <string.h>
 #include <dos.h>
 #include <stdarg.h>
-#include <windows.h>
+#include "stdwin.h"
 
 
 unsigned DbgFlags = -1;

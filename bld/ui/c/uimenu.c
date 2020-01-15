@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -314,19 +314,19 @@ void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curritem )
     permit_refresh();
 }
 
-void UIAPI uiclosepopup( UI_WINDOW *window )
+void UIAPI uiclosepopup( UI_WINDOW *wptr )
 {
-    closewindow( window );
-    window->update_proc = NULL;
+    closewindow( wptr );
+    wptr->update_func = NULL;
 }
 
-void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
+void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *wptr )
 {
-    window->area = desc->area;
-    window->priority = P_DIALOGUE;
-    window->update_proc = NULL;
-    window->parm = NULL;
-    openwindow( window );
+    wptr->area = desc->area;
+    wptr->priority = P_DIALOGUE;
+    wptr->update_func = NULL;
+    wptr->update_parm = NULL;
+    openwindow( wptr );
 }
 
 static bool process_menuchar( int ch, int *pmenu )
@@ -404,8 +404,8 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 }
 
 
-static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
-/****************************************************************/
+static ui_event process_menuevent( VSCREEN *vs, ui_event ui_ev )
+/**************************************************************/
 {
     int         i;
     int         oldmenu = NO_SELECT;
@@ -423,7 +423,7 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = false;
     }
-    if( !isdialogue( vptr ) ) {
+    if( !isdialogue( vs ) ) {
         desc = &Describe[Menu->currmenu];
         new_ui_ev = EV_NO_EVENT; /* Moved here from "else" case below */
         if( Menu->popuppending ) {
@@ -633,8 +633,8 @@ ui_event uigeteventfrompos( ORD row, ORD col )
 }
 #endif
 
-ui_event intern menuevent( VSCREEN *vptr )
-/****************************************/
+ui_event intern menuevent( VSCREEN *vs )
+/**************************************/
 {
     ui_event        new_ui_ev;
     ui_event        ui_ev;
@@ -651,8 +651,8 @@ ui_event intern menuevent( VSCREEN *vptr )
     if( new_ui_ev == EV_NO_EVENT ) {
         if( uimenuson() && !uimenuisdisabled() ) {
             uipushlist( menu_list );
-            if( !Menu->active || isdialogue( vptr ) ) {
-                ui_ev = getprime( vptr );
+            if( !Menu->active || isdialogue( vs ) ) {
+                ui_ev = getprime( vs );
             } else {
                 ui_ev = getprime( NULL );
             }
@@ -676,11 +676,11 @@ ui_event intern menuevent( VSCREEN *vptr )
                 Menu->caps = false;
                 break;
             default:
-                new_ui_ev = process_menuevent( vptr, ui_ev );
+                new_ui_ev = process_menuevent( vs, ui_ev );
             }
             uipoplist( /* menu_list */ );
         } else {
-            new_ui_ev = getprime( vptr );
+            new_ui_ev = getprime( vs );
         }
     }
 
@@ -762,8 +762,8 @@ void UIAPI uimenutitlebar( void )
     permit_refresh();
 }
 
-static void drawbar( SAREA area, void *dummy )
-/********************************************/
+static void drawbar_update_fn( SAREA area, void *dummy )
+/******************************************************/
 {
     /* unused parameters */ (void)dummy;
 
@@ -882,8 +882,8 @@ VBARMENU * UIAPI uimenubar( VBARMENU *bar )
         BarWin.area.height = uimenuheight();
         BarWin.area.width = UIData->width;
         BarWin.priority = P_MENU;
-        BarWin.update_proc = drawbar;
-        BarWin.parm = NULL;
+        BarWin.update_func = drawbar_update_fn;
+        BarWin.update_parm = NULL;
         openwindow( &BarWin );
         InitMenuPopupPending = false;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ static void InitStatDialog( HWND hwnd )
      * fill in source information
      */
     GetCurrAddr( &( statdata->curr_addr ), info->regs );
-    if( FindWatSymbol( &( statdata->curr_addr ), &si, TRUE ) == FOUND ) {
+    if( FindWatSymbol( &( statdata->curr_addr ), &si, true ) ) {
         RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
         StatShowSymbols = true;
         CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
@@ -330,7 +330,7 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
 
                 sel = (int)SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
-                str[4] = 0;
+                str[4] = '\0';
                 seg = atoi( str );
                 if( DoGlobalEntryModule( &ge, DTTaskEntry.hModule, seg ) ) {
                     DispMem( Instance, hwnd, ge.hBlock, (ge.dwSize == 1) );

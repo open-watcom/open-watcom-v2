@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,12 +171,12 @@ char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
     return( hotkey );
 }
 
-void uidisplayhotspot( VSCREEN *w, VFIELD *field )
+void uidisplayhotspot( VSCREEN *vs, VFIELD *field )
 {
-    field->u.hs->flags = (field->u.hs->flags & ~0xFF) | (uihotspot( w, field->u.hs->str, &field->area, field->u.hs->flags ) & 0xFF);
+    field->u.hs->flags = (field->u.hs->flags & ~0xFF) | (uihotspot( vs, field->u.hs->str, &field->area, field->u.hs->flags ) & 0xFF);
 }
 
-void uiposnhotspots( VSCREEN *w, VFIELD *field )
+void uiposnhotspots( VSCREEN *vs, VFIELD *field )
 {
     for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
@@ -191,8 +191,8 @@ void uiposnhotspots( VSCREEN *w, VFIELD *field )
             } else {
                 field->area.width = field->u.hs->length;
             }
-            field->area.row = hs_adjust( field->u.hs->row, w->area.height );
-            field->area.col = hs_adjust( field->u.hs->startcol, w->area.width );
+            field->area.row = hs_adjust( field->u.hs->row, vs->area.height );
+            field->area.col = hs_adjust( field->u.hs->startcol, vs->area.width );
             if( field->u.hs->startcol < 0 ) {
                 field->area.col += -field->area.width + 1;
             }
@@ -204,26 +204,26 @@ void uiposnhotspots( VSCREEN *w, VFIELD *field )
     }
 }
 
-void uiprinthotspots( VSCREEN *w, VFIELD *field )
+void uiprinthotspots( VSCREEN *vs, VFIELD *field )
 {
     for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
-            uidisplayhotspot( w, field );
+            uidisplayhotspot( vs, field );
         }
     }
 }
 
-void uioffhotspots( VSCREEN *w, VFIELD *field )
+void uioffhotspots( VSCREEN *vs, VFIELD *field )
 {
     for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
-            uihotspot( w, field->u.hs->str, &field->area, field->u.hs->flags | HOT_ACTIVE );
+            uihotspot( vs, field->u.hs->str, &field->area, field->u.hs->flags | HOT_ACTIVE );
         }
     }
     uirefresh();
 }
 
-ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
+ui_event uihotspotfilter( VSCREEN *vs, VFIELD *fields, ui_event ui_ev )
 {
     int         row, col;
     VFIELD      *field;
@@ -256,28 +256,28 @@ ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
         case EV_MOUSE_DCLICK :
         case EV_MOUSE_REPEAT:
         case EV_MOUSE_DRAG:
-            uimousepos( w, &row, &col );
+            uimousepos( vs, &row, &col );
             if( field->area.row == row && field->u.hs->str != NULL
               && field->area.col <= col
               && field->area.col + field->area.width > col ) {
                 if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
                     ActiveField = field;
                     ActiveField->u.hs->flags |= HOT_ACTIVE;
-                    uidisplayhotspot( w, ActiveField );
+                    uidisplayhotspot( vs, ActiveField );
                     ui_ev = EV_NO_EVENT;
                 } else if( ui_ev == EV_MOUSE_RELEASE && field == ActiveField ) {
                     ActiveField->u.hs->flags &= (~HOT_ACTIVE);
-                    uidisplayhotspot( w, ActiveField );
+                    uidisplayhotspot( vs, ActiveField );
                     ActiveField = NULL;
                     ui_ev = field->u.hs->event;
                 } else if( field == ActiveField && (field->u.hs->flags & HOT_ACTIVE) == 0 ) {
                     field->u.hs->flags |= HOT_ACTIVE;
-                    uidisplayhotspot( w, field );
+                    uidisplayhotspot( vs, field );
                     ui_ev = EV_NO_EVENT;
                 }
             } else if( field->u.hs->flags & HOT_ACTIVE ) {
                 field->u.hs->flags &= (~HOT_ACTIVE);
-                uidisplayhotspot( w, field );
+                uidisplayhotspot( vs, field );
             }
             break;
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,14 +31,16 @@
 ****************************************************************************/
 
 
+#if !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__) && !defined( __NETWARE__ )
+    #define USE_MBCS_TRANSLATION
+#endif
+
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __WIDECHAR__ )
-  #if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
     #include <mbstring.h>
-  #endif
 #endif
 #include "pathmac.h"
 
@@ -51,9 +53,9 @@
  */
 
 
-static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_src, const CHAR_TYPE *e_src ) {
-/*========================================================================*/
-
+static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_src, const CHAR_TYPE *e_src )
+/*=======================================================================================================*/
+{
     unsigned    len;
 
     if( pdst == NULL )
@@ -63,22 +65,22 @@ static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_sr
     if( len >= _MAX_PATH2 ) {
         len = _MAX_PATH2 - 1;
     }
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#if defined( __WIDECHAR__ ) || !defined( USE_MBCS_TRANSLATION )
     memcpy( dst, b_src, len * CHARSIZE );
     dst[len] = NULLCHAR;
     return( dst + len + 1 );
 #else
-    len = _mbsnccnt( (unsigned char *)b_src, len );          /* # chars in len bytes */
-    _mbsncpy( (unsigned char *)dst, (unsigned char *)b_src, len );            /* copy the chars */
+    len = _mbsnccnt( (unsigned char *)b_src, len );                 /* # chars in len bytes */
+    _mbsncpy( (unsigned char *)dst, (unsigned char *)b_src, len );  /* copy the chars */
     dst[_mbsnbcnt( (unsigned char *)dst, len )] = NULLCHAR;
     return( dst + _mbsnbcnt( (unsigned char *)dst, len ) + 1 );
 #endif
 }
 
 _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_TYPE *outp,
-                     CHAR_TYPE **drive, CHAR_TYPE **path, CHAR_TYPE **fn, CHAR_TYPE **ext ) {
-/*=====================================================================*/
-
+                     CHAR_TYPE **drive, CHAR_TYPE **path, CHAR_TYPE **fn, CHAR_TYPE **ext )
+/*=======================================================================================*/
+{
     CHAR_TYPE const *dotp;
     CHAR_TYPE const *fnamep;
     CHAR_TYPE const *startp;
@@ -99,14 +101,19 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
                 break;
             if( *inp == STRING( '.' ) )
                 break;
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#if defined( __WIDECHAR__ ) || !defined( USE_MBCS_TRANSLATION )
             ++inp;
 #else
             inp = (char *)_mbsinc( (unsigned char *)inp );
 #endif
         }
         outp = pcopy( drive, outp, startp, inp );
-#if !defined(__UNIX__)
+#if defined( __NETWARE__ )
+    /* process server/volume specification */
+    } else if( (dotp = strchr( inp, DRV_SEP )) != NULL ) {
+        inp = dotp + 1;
+        outp = pcopy( drive, outp, startp, inp );
+#elif !defined(__UNIX__)
     /* process drive specification */
     } else if( inp[0] != NULLCHAR && inp[1] == DRV_SEP ) {
         if( drive != NULL ) {
@@ -132,7 +139,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
     startp = inp;
 
     for( ;; ) {
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#if defined( __WIDECHAR__ ) || !defined( USE_MBCS_TRANSLATION )
         ch = *inp;
 #else
         ch = _mbsnextc( (unsigned char *)inp );
@@ -144,7 +151,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
             ++inp;
             continue;
         }
-#if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#if defined( __WIDECHAR__ ) || !defined( USE_MBCS_TRANSLATION )
         inp++;
 #else
         inp = (char *)_mbsinc( (unsigned char *)inp );

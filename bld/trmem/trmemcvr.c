@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +55,11 @@ static FILE         *TRFileHandle = NULL;   /* stream to put output on */
 static void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
 {
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)len;
 
-    fwrite( buff, 1, len, TRFileHandle );
+    if( TRFileHandle != NULL ) {
+        fprintf( TRFileHandle, "%s\n", buff );
+    }
 }
 #endif
 
@@ -76,7 +79,7 @@ void TRMemOpen( void )
 #ifdef TRMEM
     TRFileHandle = stderr;
     TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
-            &TRFileHandle, TRPrintLine,
+            TRFileHandle, TRPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif

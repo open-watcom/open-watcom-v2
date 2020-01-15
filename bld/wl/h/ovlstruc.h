@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,5 +58,3 @@ typedef struct vecnode {
 #define _ShortOvlInitRtn "__SOVLINIT__"
 #define _DynamicOvlldr   "__NOVLLDR__"
 #define _DynamicInitRtn  "__NOVLINIT__"
-
-#define _OvlfnameLength strlen( OvlFName )

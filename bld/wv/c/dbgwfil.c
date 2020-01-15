@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,9 +88,9 @@ typedef struct {
     char                *name;
     a_window            asw;
     int                 eof;
-    bool                track           : 1;
-    bool                erase           : 1;
-    bool                toggled_break   : 1;
+    boolbit             track           : 1;
+    boolbit             erase           : 1;
+    boolbit             toggled_break   : 1;
 } file_window;
 
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );

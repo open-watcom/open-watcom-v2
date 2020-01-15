@@ -79,15 +79,16 @@ static bool isTargObsolete( char const *name, time_t stamp,
 
     exists = true, obsolete = false;
     curr->trans_dep( dep, &dep_name, &auto_dep_time );
-    if( CacheTime( dep_name, &curr_dep_time ) != RET_SUCCESS ) {
-        exists = false, obsolete = true;
-    } else {
+    if( CacheTime( dep_name, &curr_dep_time ) ) {
         if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, curr->type ) || (*chk)( stamp, curr_dep_time ) ) {
             obsolete = true;
         }
         if( *pmax_time < curr_dep_time ) {
             *pmax_time = curr_dep_time; // Glob.all should not affect comparison
         }
+    } else {
+        exists = false;
+        obsolete = true;
     }
     if( Glob.debug ) {
         char        time_buff[80] = "?";// for date + flag

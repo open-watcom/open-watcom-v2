@@ -41,11 +41,19 @@
 static bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, FILE *fp )
 /************************************************************************/
 {
-    if( RESWRITE( fp, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
+    bool                error;
+
+    error = ResWriteUint16( currentry->WindowId, fp );
+    if( !error ) {
+        error = ResWriteUint16( currentry->SubtableId, fp );
     }
-    return( false );
+    if( !error ) {
+        error = ResWriteUint16( currentry->Dummy, fp );
+    }
+    if( !error ) {
+        error = ResWriteUint16( currentry->ExtendedId, fp );
+    }
+    return( error );
 }
 
 FullHelpEntryOS2 SemOS2MakeHelpItem( unsigned long winId, unsigned long subId,

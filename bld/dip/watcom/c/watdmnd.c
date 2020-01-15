@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@ int __nullarea;
 
 typedef struct demand_ctrl {
     struct demand_ctrl      *link;
-    pointer_int             *owner;
+    pointer_uint            *owner;
     void                    (*clear)(void *, void *);
-    pointer_int             save;
+    pointer_uint            save;
     unsigned                size;
     unsigned                locks;
     unsigned                time_stamp;
@@ -73,7 +74,7 @@ static unsigned         TimeStamp;
 #define DMND_LINK( p )          (IS_RESIDENT(p)?MK_DMND_PTR(p)->save:(p))
 #define MK_DMND_OFFSET( p )     ((p) >> 1)
 #define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1)) - DMND_LINK(GET_LINK(sect,idx))) >> 1)
-#define STASH_DMND_PTR( p )     ((pointer_int)(p) | RESIDENT)
+#define STASH_DMND_PTR( p )     ((pointer_uint)(p) | RESIDENT)
 
 
 /*
@@ -192,7 +193,7 @@ static walk_result WlkClear( imp_image_handle *iih, imp_mod_handle imh, void *d 
     section_info        *sect;
     word                entry;
     dword               real_entry;
-    pointer_int         *lnk;
+    pointer_uint        *lnk;
 
     /* unused parameters */ (void)d;
 
@@ -243,7 +244,7 @@ void *InfoLoad( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk,
     demand_info         *info;
     section_info        *sect;
     unsigned long       tmpoff;
-    pointer_int         *lnk;
+    pointer_uint        *lnk;
     unsigned            size;
     dword               real_entry;
 

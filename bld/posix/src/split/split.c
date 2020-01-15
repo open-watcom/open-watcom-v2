@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+
 
 extern char *OptEnvVar="split";
 
@@ -113,7 +116,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
     return( 0 );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE       *fp;
     int         ch;
@@ -156,4 +159,5 @@ void main( int argc, char **argv )
             fclose( fp );
         }
     }
+    return( 0 );
 }

@@ -1,5 +1,4 @@
 #pmake: nobuild debug flat register linux merge static os_linux cpu_386
-
 processor  = 386
 convention = register
 model      = mf

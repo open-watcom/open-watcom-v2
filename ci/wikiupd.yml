@@ -1,0 +1,71 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: wikiupd${{ parameters.arch }}
+    displayName: "${{ parameters.title }}"
+    continueOnError: true
+    variables:
+      owwiki_depth:         10
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        owtools:            $(owtools_lnx)
+        owscript:           $(owscript_lnx)
+        owwikipath:         $(owroot)/docs
+      ${{ if eq(parameters.arch, 'nt') }}:
+        owtools:            $(owtools_nt)
+        owscript:           $(owscript_nt)
+        owwikipath:         $(owroot)\docs
+    pool:
+      ${{ if eq(parameters.arch, 'nt') }}:
+        vmImage: $(owimage_nt)
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'osx') }}:
+        vmImage: $(owimage_osx)
+    steps:
+      - checkout: none
+      - template: gituser.yml
+      - ${{ if eq(parameters.arch, 'nt') }}:
+        - script: git clone $(owgitverbose) --depth=1 --branch=master https://%OWGHTOKEN%@github.com/$(owwikiproject).git $(owroot)
+          displayName: "Wiki Docs clone"
+          env:
+            OWGHTOKEN: $(owghtoken)
+        - script: if not exist $(owwikipath)\* mkdir $(owwikipath)
+          displayName: "Create docs subdirectory"
+      - ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+        - script: git clone $(owgitverbose) --depth=1 --branch=master https://$OWGHTOKEN@github.com/$(owwikiproject).git $(owroot)
+          displayName: "Wiki Docs clone"
+          env:
+            OWGHTOKEN: $(owghtoken)
+        - script: mkdir -p $(owwikipath)
+          displayName: "Create docs subdirectory"
+      - task: DownloadPipelineArtifact@2
+        displayName: "Load Artifact wiki-dochtml"
+        inputs:
+          artifactName: wiki-dochtml
+          downloadPath: $(Build.ArtifactStagingDirectory)
+      - task: DownloadPipelineArtifact@2
+        displayName: "Load Artifact wiki-docpdf"
+        inputs:
+          artifactName: wiki-docpdf
+          downloadPath: $(Build.ArtifactStagingDirectory)
+      - task: CopyFiles@2
+        displayName:    "Copy files to wiki"
+        inputs:
+          contents: '*'
+          sourceFolder: $(Build.ArtifactStagingDirectory)
+          targetFolder: $(owwikipath)
+          overWrite: true
+      - ${{ if eq(parameters.arch, 'nt') }}:
+        - script: |
+            del /F /Q $(Build.ArtifactStagingDirectory)\*.*
+          displayName: "Remove temporary files"
+      - ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+        - script: rm -f $(Build.ArtifactStagingDirectory)/*
+          displayName: "Remove temporary files"
+      - script: |
+          git add $(owgitverbose) -f .
+          git commit $(owgitverbose) -m "Azure Pipelines build $(Build.BuildNumber)"
+          git push $(owgitverbose)
+        displayName: "Wiki Docs update"

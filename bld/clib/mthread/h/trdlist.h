@@ -52,7 +52,7 @@
 #elif defined( __RDOS__ )
   extern int                    __TlsIndex;
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
-  extern int __tls_alloc();
+  extern int __tls_alloc(void);
   extern void __tls_free(int index);
   extern void *__tls_get_value(int index);
   extern void __tls_set_value(int index, void *data);

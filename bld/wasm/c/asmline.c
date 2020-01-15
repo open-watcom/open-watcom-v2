@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "standalo.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -364,7 +365,7 @@ bool InputQueueFile( const char *path )
     FILE        *file;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
-    PGROUP      pg;
+    PGROUP2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );

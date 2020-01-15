@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    Portions Copyright (c) 2014 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +37,12 @@
 #include <math.h>
 #include <fenv.h>
 
-_WMRTLINK double nearbyint(double x)
-{
-double r;
 
-    r = rint(x);
-    feclearexcept(FE_INEXACT);
-    return r;
+_WMRTLINK double nearbyint( double x )
+{
+    double r;
+
+    r = rint( x );
+    feclearexcept( FE_INEXACT );
+    return( r );
 }

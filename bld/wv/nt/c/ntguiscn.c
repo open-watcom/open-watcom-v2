@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ void TellWinHandle( void )
 {
     if( _IsOn( SW_POWERBUILDER ) )
         return;
-    TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+    TRAP_EXTFUNC( InfoFunction )( GUIGetSysHandle( WndGui( WndMain ) ) );
 }
 
 void Ring_Bell( void )

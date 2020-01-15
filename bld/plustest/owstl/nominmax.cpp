@@ -56,12 +56,12 @@
 
 #define NOMINMAX
 
-// mmWin16 is used with NO_EXT_KEYS to trap use of -za (strict ANSI
-// compliance) on the compiler command line. 
+// mmWin16 is used with _NO_EXT_KEYS to trap use of -za (strict ANSI
+// compliance) on the compiler command line.
 // win16.h, it appears, is not ANSI-compliant.
 
 #if defined( mmWin16 )
-#if !defined( NO_EXT_KEYS )
+#if !defined( _NO_EXT_KEYS )
 #include <windows.h>
 #endif
 #else
@@ -107,7 +107,7 @@ int main( ) {
 
         if( !heap_ok( "Possible heap problem!\n" ) ) rc = 1;
     }
-    
+
     catch( ... ) {
         error_msg = "Unexpected exception of unexpected type.\n";
         rc = 1;
@@ -115,7 +115,7 @@ int main( ) {
 
 // Because cout uses the heap in outputting a string literal, this test
 // will fail if heap_ok() reports an error. FAIL is not used in
-// some_test() so that my test's failure report will not producing a 
+// some_test() so that my test's failure report will not producing a
 // bogus error report here.
 
 // Since the approach shown here really won't scale well with multiple tests,
@@ -138,7 +138,7 @@ int main( ) {
     if( error_msg != NULL ) {
         std::cout << error_msg;
     }
-    
+
     return( rc );
 }
 

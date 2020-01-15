@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,10 @@
 
 #include "as.h"
 
-static bool insErrFlag = false;    // to tell whether we had problems or not
+
+#define MAX_NAME_LEN    20          // maximum length of an Alpha instruction mnemonic
+
+extern instruction      *AsCurrIns; // from as.y
 
 #define INS( a, b, c, d, e ) { a, b, c, d, e, NULL }
 
@@ -264,7 +268,7 @@ ins_table AlphaTable[] = {
 #endif
 };
 
-#define MAX_NAME_LEN    20  // maximum length of an Alpha instruction mnemonic
+static bool     insErrFlag = false; // to tell whether we had problems or not
 
 static void addInstructionSymbol( qualifier_flags flags, ins_table *table_entry ) {
 //*********************************************************************************
@@ -465,7 +469,8 @@ static char *itStrings[] = {
     #undef PICK
 };
 
-extern void DumpITString( ins_template template ) {
+static void DumpITString( ins_template template )
+{
     printf( itStrings[ template ] );
 }
 
@@ -475,15 +480,15 @@ static char *insEnumStrings[] = {
     #undef PICK
 };
 
-extern void DumpInsEnumMethod( ins_enum_method method ) {
-//*******************************************************
-
+void DumpInsEnumMethod( ins_enum_method method )
+//**********************************************
+{
     printf( insEnumStrings[ method ] );
 }
 
-extern void DumpInsTableEntry( ins_table *table_entry ) {
-//*******************************************************
-
+void DumpInsTableEntry( ins_table *table_entry )
+//**********************************************
+{
     ins_symbol  *symbol;
 
     printf( "%s: 0x%x(0x%x) ", table_entry->name, table_entry->opcode, table_entry->funccode );
@@ -493,15 +498,15 @@ extern void DumpInsTableEntry( ins_table *table_entry ) {
     printf( "\n\tSymbol entries: " );
     symbol = table_entry->symbols;
     while( symbol != NULL ) {
-        printf( " %x", symbol );
+        printf( " %x", (unsigned)(pointer_uint)symbol );
         symbol = symbol->next;
     }
     printf( "\n" );
 }
 
-extern void DumpInsTables() {
-//***************************
-
+void DumpInsTables( void )
+//************************
+{
     ins_table   *curr;
     int         i, n;
 
@@ -513,9 +518,9 @@ extern void DumpInsTables() {
 }
 #endif
 
-extern void InsInit() {
-//*********************
-
+void InsInit( void )
+//******************
+{
     ins_table   *curr;
     int         i, n;
 
@@ -530,10 +535,10 @@ extern void InsInit() {
 #endif
 }
 
-extern instruction *InsCreate( sym_handle op_sym ) {
-//**************************************************
+instruction *InsCreate( sym_handle op_sym )
+//*****************************************
 // Allocate an instruction and initialize it.
-
+{
     instruction *ins;
 
     ins = MemAlloc( sizeof( instruction ) );
@@ -543,10 +548,10 @@ extern instruction *InsCreate( sym_handle op_sym ) {
     return( ins );
 }
 
-extern void InsAddOperand( instruction *ins, ins_operand *op ) {
-//**********************************************************
+void InsAddOperand( instruction *ins, ins_operand *op )
+//*****************************************************
 // Add an operand to the given instruction.
-
+{
     if( ins->num_operands == MAX_OPERANDS ) {
         if( !insErrFlag ) {
             Error( MAX_NUMOP_EXCEEDED );
@@ -560,12 +565,12 @@ extern void InsAddOperand( instruction *ins, ins_operand *op ) {
     ins->operands[ ins->num_operands++ ] = op;
 }
 
-extern void InsEmit( instruction *ins ) {
-//***************************************
+void InsEmit( instruction *ins )
+//******************************
 // Check an instruction to make sure operands match
 // and encode it. The encoded instruction is emitted
 // to the current OWL section.
-
+{
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
     if( _IsOption( DUMP_INSTRUCTIONS ) ) {
         DumpIns( ins );
@@ -580,11 +585,11 @@ extern void InsEmit( instruction *ins ) {
     }
 }
 
-extern void InsDestroy( instruction *ins ) {
-//******************************************
+void InsDestroy( instruction *ins )
+//*********************************
 // Free up an instruction and all operands which
 // are hanging off of it.
-
+{
     int         i;
 
     for( i = 0; i < ins->num_operands; i++ ) {
@@ -593,14 +598,13 @@ extern void InsDestroy( instruction *ins ) {
     MemFree( ins );
 }
 
-extern void InsFini() {
-//*********************
-
+void InsFini( void )
+//******************
+{
     ins_table   *curr;
     ins_symbol  *next;
     ins_symbol  *entry;
     int         i, n;
-    extern instruction *AsCurrIns; // from as.y
 
     if( AsCurrIns != NULL ) {
         InsDestroy( AsCurrIns );
@@ -618,9 +622,9 @@ extern void InsFini() {
 }
 
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
-extern void DumpIns( instruction *ins ) {
-//***************************************
-
+void DumpIns( instruction *ins )
+//******************************
+{
     int         i;
 
     printf( "%-11s", SymName( ins->opcode_sym ) );

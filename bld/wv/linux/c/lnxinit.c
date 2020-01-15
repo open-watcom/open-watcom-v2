@@ -146,6 +146,8 @@ void SetCmdArgStart( int num, char *ptr )
 
 void KillDebugger( int rc )
 {
+    /* unused parameters */ (void)rc;
+
     exit( 0 );
 }
 

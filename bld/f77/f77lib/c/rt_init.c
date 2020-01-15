@@ -94,6 +94,10 @@ void    __InitFThreadData( void *td )
     ftd->__XceptionFlags = 0;
 }
 
+#else
+
+volatile unsigned short __XcptFlags;
+
 #endif
 
 

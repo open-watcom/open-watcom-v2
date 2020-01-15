@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,7 @@
 #include "common.h"
 #include "wpackio.h"
 #include "dtparse.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -174,34 +175,36 @@ static void SetCmdTime( arccmd *cmd )
 }
 
 static wpackfile *AddFileName( wpackfile *list, char *fname, size_t *listlen )
-/******************************************************************************/
+/****************************************************************************/
 {
     char            *packname;
+    size_t          len;
 
-    *listlen += 1;
-    list = realloc( list, (*listlen)*sizeof( *list ) );
+    len = *listlen;
+    list = realloc( list, ( len + 1 ) * sizeof( *list ) );
     if( fname == NULL ) {
-        list[(*listlen)-1].filename = NULL;
-        list[(*listlen)-1].packname = NULL;
+        list[len].filename = NULL;
+        list[len].packname = NULL;
     } else {
         packname = NULL;
         packname = strchr( fname, ';' );
         if( packname == NULL ) {
-            list[(*listlen)-1].packname = NULL;
+            list[len].packname = NULL;
         } else {
             *packname = '\0';
             ++packname;
-            list[(*listlen)-1].packname = strdup( packname );
+            list[len].packname = strdup( packname );
         }
-        list[(*listlen)-1].filename = strdup( fname );
+        list[len].filename = strdup( fname );
     }
+    *listlen = ++len;
     return( list );
 }
 
 static wpackfile *ProcFileName( char **argv )
-/***************************************/
+/*******************************************/
 {
-    unsigned    newlistlen;
+    size_t      newlistlen;
     wpackfile   *newlist;
     char        buff[256];
     char        *curr;
@@ -398,29 +401,25 @@ static int DisplayArchive( arccmd *cmd )
     return( true );
 }
 
-static int HandleError( arccmd *cmd )
-/***********************************/
+static void HandleError( arccmd *cmd )
+/************************************/
 {
-    cmd = cmd;
-    PackExit();
-    return( true );
+    /* unused parameters */ (void)cmd;
 }
 
 static int DeleteEntry( arccmd *cmd )
 /***********************************/
 {
     char            tempname[ L_tmpnam ];
-    char            drive[_MAX_DRIVE];
-    char            directory[_MAX_DIR];
-    char            fname[_MAX_FNAME];
-    char            extin[_MAX_EXT];
-    char *          tmpfname;
+    PGROUP2         pg1;
+    PGROUP2         pg2;
+    char            *tmpfname;
     arc_header      header;         // archive main header.
-    file_info **    filedata;       // block of file infos from old archive.
-    file_info **    currdata;
-    file_info *     nextdata;
-    wpackfile *     currfile;
-    wpackfile *     endfile;
+    file_info       **filedata;     // block of file infos from old archive.
+    file_info       **currdata;
+    file_info       *nextdata;
+    wpackfile       *currfile;
+    wpackfile       *endfile;
     bool            deletethis;
     bool            onedeleted;
     unsigned long   offset;
@@ -440,11 +439,12 @@ static int DeleteEntry( arccmd *cmd )
     tmpnam( tempname );     // get a temporary file name & put in same dir.
     namelen = strlen( tempname ) + strlen( cmd->arcname ) + 1;  // as arcname
     tmpfname = alloca( namelen );
-    _splitpath( cmd->arcname, drive, directory, NULL, NULL );
-    _splitpath( tempname, NULL, NULL, fname, extin );
-    _makepath( tmpfname, drive, directory, fname, extin );
+    _splitpath2( cmd->arcname, pg1.buffer, &pg1.drive, &pg1.dir, NULL, NULL );
+    _splitpath2( tempname, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+    _makepath( tmpfname, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
     outfile = QOpenW( tmpfname );
-    if( outfile < 0 ) PackExit();
+    if( outfile < 0 )
+        PackExit();
     for( endfile = cmd->files; (endfile + 1)->filename != NULL; endfile++ ) {}
     QWrite( outfile, &header, sizeof( arc_header ) );   // reserve space
     offset = sizeof( arc_header );
@@ -521,15 +521,13 @@ static int DeleteEntry( arccmd *cmd )
 }
 
 static int (*CmdJumpTable[])(arccmd *) = {
-    HandleError,
+    NULL,       /* Error */
     Encode,
     Decode,
     DisplayArchive,
     DeleteEntry
 };
 
-
-extern void Log( char *, ... );
 
 #if 0
 static char *StartUp()
@@ -580,7 +578,11 @@ int main( int argc, char **argv )
 #endif
     SetupTextTable();
     InitIO();
-    (*CmdJumpTable[ action  ])( &cmd );
+    if( CmdJumpTable[action] == NULL ) {
+        HandleError( &cmd );
+        return( EXIT_FAILED );
+    }
+    (*CmdJumpTable[action])( &cmd );
 //  CloseDown();
     return( EXIT_OK );
 }
