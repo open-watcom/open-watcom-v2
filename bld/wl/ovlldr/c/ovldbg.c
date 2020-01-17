@@ -113,7 +113,7 @@ static bool SaveOvlState( unsigned char __far *data )
     *data = 1;
     if( __OVLFLAGS__ & DBGAREA_VALID ) {
         savedata += ( __OVLDBGINFO__.section - 1 ) / 8;
-        *savedata |= 1 << ( __OVLDBGINFO__.section - 1 ) % 8;
+        *savedata |= 1 << (( __OVLDBGINFO__.section - 1 ) % 8);
     }
 #endif
     return( true );
@@ -209,7 +209,7 @@ static bool CheckVecAddr( ovl_address __far *data )
         return( false );
     if( !OVLVEC_OK( vect ) )
         return( false );
-    if( ( FP_OFF( vect ) - FP_OFF( __OVLSTARTVEC__ ) ) % sizeof( vector ) != 0 )
+    if( (( FP_OFF( vect ) - FP_OFF( __OVLSTARTVEC__ ) ) % sizeof( vector )) != 0 )
         return( false );
 #ifdef OVL_SMALL
     data->mach.segment = FP_SEG( vect );

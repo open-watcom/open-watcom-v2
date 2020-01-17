@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -452,7 +453,7 @@ rec_status ReadRec( void )
         } else if( Rec1->head.class == MODEND || Rec1->head.class == MODE32 ) {
             if( PageLen != 0 ) {            // skip padding in the library.
                 offset = ftell( InFile );
-                offset = PageLen - offset % PageLen;
+                offset = PageLen - ( offset % PageLen );
                 if( offset == PageLen )
                     offset = 0;
                 QSeek( InFile, offset, SEEK_CUR );
