@@ -864,17 +864,25 @@ void WriteLibsUsed( void )
 static const char *getStubName( void )
 /************************************/
 {
+#ifdef _OS2
     if( FmtData.u.os2.no_stub ) {
         return( "none" );
-    } else if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
-        return( FmtData.u.os2.stub_file_name );
-    } else if( FmtData.type & MK_DOS16M ) {
-        return( FmtData.u.d16m.stub );
-    } else if( FmtData.type & MK_PHAR_LAP ) {
-        return( FmtData.u.phar.stub );
-    } else {
-        return( NULL );
     }
+    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        return( FmtData.u.os2.stub_file_name );
+    }
+#endif
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        return( FmtData.u.d16m.stub );
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
+        return( FmtData.u.phar.stub );
+    }
+#endif
+    return( NULL );
 }
 
 void MapSizes( void )
