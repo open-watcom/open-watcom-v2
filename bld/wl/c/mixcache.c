@@ -59,7 +59,7 @@ static unsigned NumCacheBlocks( unsigned long len )
     unsigned    numblocks;
 
     numblocks = len / CACHE_PAGE_SIZE;
-    if( len % CACHE_PAGE_SIZE != 0 ) {
+    if( (len % CACHE_PAGE_SIZE) != 0 ) {
         numblocks++;
     }
     return( numblocks );

@@ -105,8 +105,8 @@ void StartTime( void )
 static char *PutDec( char *ptr, unsigned num )
 /*********************************************/
 {
-    *ptr++ = ( num / 10 ) % 10 + '0';
-    *ptr++ = num % 10 + '0';
+    *ptr++ = (( num / 10 ) % 10) + '0';
+    *ptr++ = (num % 10) + '0';
     return( ptr );
 }
 

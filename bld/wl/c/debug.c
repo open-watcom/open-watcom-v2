@@ -179,7 +179,7 @@ static void OneLineDumpByte( const unsigned char *p, int size )
         if( len >= max - 4 ) {
             break;
         }
-        if( i % 8 == 0 ) {
+        if( (i % 8) == 0 ) {
             buf[len++] = ' ';
         }
         buf[len++] = Digit2Char( p[i] / 16 );

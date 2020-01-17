@@ -630,7 +630,7 @@ static void DumpTable( symbol **table, unsigned tabsize )
     max = 0;
     for( index = 0; index < tabsize; index++ ) {
         mask = DBG_ALWAYS;
-        if( index % 15 != 14 ) {
+        if( (index % 15) != 14 ) {
             mask |= DBG_NOCRLF;
         }
         val = 0;

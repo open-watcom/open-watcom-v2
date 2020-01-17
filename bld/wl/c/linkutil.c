@@ -108,7 +108,7 @@ bool TestBit( byte *array, unsigned num )
 {
     byte        mask;
 
-    mask = 1 << ( num % 8 );
+    mask = 1 << (num % 8);
     num /= 8;
     return( (*( array + num ) & mask) != 0 );
 }
@@ -119,7 +119,7 @@ void ClearBit( byte *array, unsigned num )
 {
     byte        mask;
 
-    mask = 1 << ( num % 8 );
+    mask = 1 << (num % 8);
     num /= 8;
     array += num;
     *array &= ~mask;
