@@ -1133,20 +1133,26 @@ bool ProcEndLink( void )
     return( true );
 }
 
+static char **getStubNamePtr( void )
+/**********************************/
+{
+    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
+        return( &FmtData.u.os2.stub_file_name );
+    } else if( HintFormat( MK_DOS16M ) ) {
+        return( &FmtData.u.d16m.stub );
+    } else {    /* it must be pharlap */
+        Extension = E_LOAD;     /* want .exe instead of .exp now */
+        return( &FmtData.u.phar.stub );
+    }
+}
+
 bool ProcStub( void )
 /*******************/
 {
     char        *name;
     char        **nameptr;
 
-    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
-        nameptr = &FmtData.u.os2.stub_file_name;
-    } else if( HintFormat( MK_DOS16M ) ) {
-        nameptr = &FmtData.u.d16m.stub;
-    } else {    /* it must be pharlap */
-        nameptr = &FmtData.u.phar.stub;
-        Extension = E_LOAD;     /* want .exe instead of .exp now */
-    }
+    nameptr = getStubNamePtr();
     if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
         return( false );
     name = FileName( Token.this, Token.len, E_LOAD, false );
