@@ -228,6 +228,32 @@ static void CalcInitSize( seg_leader *seg )
     }
 }
 
+static unsigned setGroupSeg( group_entry *currgrp, unsigned seg_num )
+/*******************************************************************/
+{
+    if( FmtData.type & MK_FLAT ) {
+        currgrp->grp_addr.seg = 1;   // only segment 1 in flat mem.model
+#ifdef _DOS16M
+    } else if( FmtData.type & MK_DOS16M ) {
+        currgrp->grp_addr.seg = ToD16MSel( seg_num++ );
+#endif
+    } else if( FmtData.type & MK_ID_SPLIT ) {
+        if( currgrp->segflags & SEG_DATA ) {
+            currgrp->grp_addr.seg = DATA_SEGMENT;
+        } else {
+            currgrp->grp_addr.seg = CODE_SEGMENT;
+        }
+    } else if( FmtData.type & MK_QNX ) {
+        currgrp->grp_addr.seg = ToQNXSel( seg_num++ );
+    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
+        currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
+        seg_num++;
+    } else {
+        currgrp->grp_addr.seg = seg_num++;
+    }
+    return( seg_num );
+}
+
 static void AllocFileSegs( void )
 /*******************************/
 {
@@ -236,26 +262,7 @@ static void AllocFileSegs( void )
 
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
-        if( FmtData.type & MK_FLAT ) {
-            currgrp->grp_addr.seg = 1;   // only segment 1 in flat mem.model
-#ifdef _DOS16M
-        } else if( FmtData.type & MK_DOS16M ) {
-            currgrp->grp_addr.seg = ToD16MSel( seg_num++ );
-#endif
-        } else if( FmtData.type & MK_ID_SPLIT ) {
-            if( currgrp->segflags & SEG_DATA ) {
-                currgrp->grp_addr.seg = DATA_SEGMENT;
-            } else {
-                currgrp->grp_addr.seg = CODE_SEGMENT;
-            }
-        } else if( FmtData.type & MK_QNX ) {
-            currgrp->grp_addr.seg = ToQNXSel( seg_num++ );
-        } else if( FmtData.type & MK_PHAR_MULTISEG ) {
-            currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
-            seg_num++;
-        } else {
-            currgrp->grp_addr.seg = seg_num++;
-        }
+        seg_num = setGroupSeg( currgrp, seg_num );
         currgrp->grp_addr.off = 0;
     }
 }
@@ -790,6 +797,79 @@ static void SetReadOnly( void *_seg )
     }
 }
 
+static void setDefBase( void )
+/****************************/
+{
+    if( FmtData.type & MK_PE ) {
+        FmtData.base = PE_DEFAULT_BASE;
+    } else if( FmtData.type & MK_QNX_FLAT ) {
+        FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        FmtData.base = 0;
+    } else if( FmtData.type & MK_OS2_FLAT ) {
+        FmtData.base = FLAT_GRANULARITY;
+    } else if( FmtData.type & MK_ELF ) {
+        if( LinkState & LS_HAVE_PPC_CODE ) {
+            FmtData.base = 0x10000000;
+        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+            FmtData.base = 0x00400000;
+        } else if( LinkState & LS_HAVE_X64_CODE ) {
+            // TODO
+            FmtData.base = 0x08048000;
+        } else {
+            FmtData.base = 0x08048000;
+        }
+    } else {
+        FmtData.base = 0;
+    }
+}
+
+static void setDefObjAlign( void )
+/********************************/
+{
+    if( FmtData.type & MK_PE ) {
+        if( (LinkState & LS_HAVE_I86_CODE) ) {
+            FmtData.objalign = _4KB;
+        } else if( (LinkState & LS_HAVE_X64_CODE) ) {
+            // TODO
+            FmtData.objalign = _64KB;
+        } else {
+            FmtData.objalign = _64KB;
+        }
+    } else if( FmtData.type & MK_QNX ) {
+        FmtData.objalign = QNX_GROUP_ALIGN;
+#if 0
+    } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        // Development temporarly on hold:
+        // FmtData.objalign = _1KB;
+#endif
+    } else if( FmtData.type & MK_ELF ) {
+        FmtData.objalign = _4KB;
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        FmtData.objalign = _4KB;
+    } else {
+        FmtData.objalign = FLAT_GRANULARITY;
+    }
+}
+
+static offset getFlatOffset( void )
+/*********************************/
+{
+    if( FmtData.output_raw || FmtData.output_hex ) {
+        return( 0 );
+#ifdef _OS2
+    } else if( FmtData.type & MK_PE ) {
+        return( GetPEHeaderSize() );
+#endif
+#ifdef _ELF
+    } else if( FmtData.type & MK_ELF ) {
+        return( GetElfHeaderSize() );
+#endif
+    } else {
+        return( FmtData.base );
+    }
+}
+
 void CalcAddresses( void )
 /*******************************/
 /* Calculate the starting address in the file of each segment. */
@@ -800,57 +880,14 @@ void CalcAddresses( void )
 
     DEBUG(( DBG_OLD, "CalcAddresses()" ));
     if( FmtData.base == NO_BASE_SPEC ) {
-        if( FmtData.type & MK_PE ) {
-            FmtData.base = PE_DEFAULT_BASE;
-        } else if( FmtData.type & MK_QNX_FLAT ) {
-            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
-        } else if( FmtData.type & MK_WIN_VXD ) {
-            FmtData.base = 0;
-        } else if( FmtData.type & MK_OS2_FLAT ) {
-            FmtData.base = FLAT_GRANULARITY;
-        } else if( FmtData.type & MK_ELF ) {
-            if( LinkState & LS_HAVE_PPC_CODE ) {
-                FmtData.base = 0x10000000;
-            } else if( LinkState & LS_HAVE_MIPS_CODE ) {
-                FmtData.base = 0x00400000;
-            } else if( LinkState & LS_HAVE_X64_CODE ) {
-                // TODO
-                FmtData.base = 0x08048000;
-            } else {
-                FmtData.base = 0x08048000;
-            }
-        } else {
-            FmtData.base = 0;
-        }
+        setDefBase();
     }
     DBIPreAddrCalc();
     CurrSect = Root;
     if( FmtData.type & MK_PROT_MODE ) {
         AllocFileSegs();
         if( FmtData.objalign == NO_BASE_SPEC ) {
-            if( FmtData.type & MK_PE ) {
-                if( (LinkState & LS_HAVE_I86_CODE) ) {
-                    FmtData.objalign = _4KB;
-                } else if( (LinkState & LS_HAVE_X64_CODE) ) {
-                    // TODO
-                    FmtData.objalign = _64KB;
-                } else {
-                    FmtData.objalign = _64KB;
-                }
-            } else if( FmtData.type & MK_QNX ) {
-                FmtData.objalign = QNX_GROUP_ALIGN;
-#if 0
-            } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
-                // Development temporarly on hold:
-                // FmtData.objalign = _1KB;
-#endif
-            } else if( FmtData.type & MK_ELF ) {
-                FmtData.objalign = _4KB;
-            } else if( FmtData.type & MK_WIN_VXD ) {
-                FmtData.objalign = _4KB;
-            } else {
-                FmtData.objalign = FLAT_GRANULARITY;
-            }
+            setDefObjAlign();
         }
         if( FmtData.type & MK_SPLIT_DATA ) {
             FindUninitDataStart();
@@ -871,19 +908,7 @@ void CalcAddresses( void )
         CalcGrpSegs();
 #endif
     } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_QNX_FLAT | MK_ELF) ) {
-        if( FmtData.output_raw || FmtData.output_hex ) {
-            flat = 0;
-#ifdef _OS2
-        } else if( FmtData.type & MK_PE ) {
-            flat = GetPEHeaderSize();
-#endif
-#ifdef _ELF
-        } else if( FmtData.type & MK_ELF ) {
-            flat = GetElfHeaderSize();
-#endif
-        } else {
-            flat = FmtData.base;
-        }
+        flat = getFlatOffset();
         for( grp = Groups; grp != NULL; grp = grp->next_group ) {
             size = grp->totalsize;
             if( grp->grp_addr.off > flat + FmtData.base) {
