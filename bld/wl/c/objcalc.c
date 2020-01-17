@@ -228,30 +228,37 @@ static void CalcInitSize( seg_leader *seg )
     }
 }
 
-static unsigned setGroupSeg( group_entry *currgrp, unsigned seg_num )
-/*******************************************************************/
+static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
+/***************************************************************/
 {
     if( FmtData.type & MK_FLAT ) {
         currgrp->grp_addr.seg = 1;   // only segment 1 in flat mem.model
+        return( false );
+    }
 #ifdef _DOS16M
-    } else if( FmtData.type & MK_DOS16M ) {
-        currgrp->grp_addr.seg = ToD16MSel( seg_num++ );
+    if( FmtData.type & MK_DOS16M ) {
+        currgrp->grp_addr.seg = ToD16MSel( seg_num );
+        return( true );
+    }
 #endif
-    } else if( FmtData.type & MK_ID_SPLIT ) {
+    if( FmtData.type & MK_ID_SPLIT ) {
         if( currgrp->segflags & SEG_DATA ) {
             currgrp->grp_addr.seg = DATA_SEGMENT;
         } else {
             currgrp->grp_addr.seg = CODE_SEGMENT;
         }
-    } else if( FmtData.type & MK_QNX ) {
-        currgrp->grp_addr.seg = ToQNXSel( seg_num++ );
-    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
-        currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
-        seg_num++;
-    } else {
-        currgrp->grp_addr.seg = seg_num++;
+        return( false );
     }
-    return( seg_num );
+    if( FmtData.type & MK_QNX ) {
+        currgrp->grp_addr.seg = ToQNXSel( seg_num );
+        return( true );
+    }
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
+        return( true );
+    }
+    currgrp->grp_addr.seg = seg_num;
+    return( true );
 }
 
 static void AllocFileSegs( void )
@@ -262,7 +269,9 @@ static void AllocFileSegs( void )
 
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
-        seg_num = setGroupSeg( currgrp, seg_num );
+        if( setGroupSeg( currgrp, seg_num ) ) {
+            seg_num++;
+        }
         currgrp->grp_addr.off = 0;
     }
 }
@@ -295,15 +304,14 @@ static void ReallocFileSegs( void )
          * segments in map file sorted properly even if they are not emited
          * into load file
          */
-        if( FmtData.type & MK_QNX ) {
-            currgrp->grp_addr.seg = ToQNXSel( seg_num );
-        } else {
-            currgrp->grp_addr.seg = seg_num;
+        if( setGroupSeg( currgrp, seg_num ) ) {
+            // increment segment if possible for target and group is not zero length
+            if( currgrp->totalsize != 0 ) {
+                seg_num++;
+            }
         }
-        if( currgrp->totalsize != 0 ) {
-            seg_num++;
-        } else {
-            /* to make life easier in loadxxx */
+        if( currgrp->totalsize == 0 ) {
+            /* to make life easier in loadxxx remove zero length group from groups count */
             NumGroups--;
         }
     }
