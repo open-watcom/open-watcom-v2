@@ -71,7 +71,7 @@ void SetQNXFmt( void )
     FmtData.u.qnx.flags = 0;
     FmtData.u.qnx.priv_level = 0;
     FmtData.u.qnx.seg_flags = NULL;
-    FmtData.u.qnx.heapsize = 4096;
+    FmtData.u.qnx.heapsize = _4KB;
     FmtData.u.qnx.gen_seg_relocs = true;
     FmtData.u.qnx.gen_linear_relocs = false;
     ChkBase( _4KB );
