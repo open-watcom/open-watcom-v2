@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,17 +71,17 @@ void FreeELFFmt( void )
     FreeList( FmtData.u.elf.exp.module ); Permalloc'd now */
 }
 
-void SetELFImportSymbol( symbol * sym )
-/********************************************/
-{
-    /* unused parameters */ (void)sym;
-}
-
 bool ProcExportAll( void )
 /*******************************/
 {
     FmtData.u.elf.exportallsyms = true;
     return true;
+}
+
+void SetELFImportSymbol( symbol * sym )
+/********************************************/
+{
+    /* unused parameters */ (void)sym;
 }
 
 static bool GetELFImport( void )
@@ -99,9 +100,36 @@ static bool GetELFImport( void )
 }
 
 bool ProcELFImport( void )
-/*******************************/
+/************************/
 {
     return( ProcArgList( GetELFImport, TOK_INCLUDE_DOT ) );
+}
+
+void SetELFExportSymbol( symbol * sym )
+/*************************************/
+{
+    /* unused parameters */ (void)sym;
+}
+
+static bool GetELFExport( void )
+/******************************/
+{
+    symbol      *sym;
+
+    sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
+    if( sym == NULL ) {
+        return( true );
+    }
+    SET_SYM_TYPE( sym, SYM_EXPORTED );
+    sym->info |= SYM_DCE_REF;
+    SetELFExportSymbol( sym );
+    return( true );
+}
+
+bool ProcELFExport( void )
+/*******************************/
+{
+    return( ProcArgList( GetELFExport, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcELFAlignment( void )
@@ -111,14 +139,16 @@ bool ProcELFAlignment( void )
     unsigned_32         value;
     unsigned_32         lessone;        // value without the lowest bit.
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }
     for( ;; ) {
         lessone = value & (value - 1);  // remove the low order bit.
-        if( lessone == 0 ) break;       // until we are at a power of 2.
+        if( lessone == 0 )
+            break;                      // until we are at a power of 2.
         value = lessone;
     }
     FmtData.objalign = value;

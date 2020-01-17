@@ -322,10 +322,12 @@ void FreeRelocInfo( void )
     } else if( Root != NULL ) {
         WalkAllSects( FreeRelocSect );
     }
+#ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         FreeRelocList( FloatFixups );
         FreeRelocSect( Root );
     }
+#endif
 }
 
 unsigned_32 RelocSize( reloc_info *list )
@@ -416,20 +418,30 @@ void SetRelocSize( void )
         FmtRelocSize = sizeof( os2_reloc_item );
     } else if( FmtData.type & MK_PE ) {
         FmtRelocSize = sizeof( pe_reloc_item );
+#ifdef _NOVELL
     } else if( FmtData.type & MK_NOVELL ) {
         FmtRelocSize = sizeof( nov_reloc_item );
+#endif
+#ifdef _PHARLAP
     } else if( FmtData.type & MK_PHAR_REX ) {
         FmtRelocSize = sizeof( rex_reloc_item );
+    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
+        FmtRelocSize = sizeof( pms_reloc_item );
+#endif
+#ifdef _QNX
     } else if( FmtData.type & MK_QNX ) {
         FmtRelocSize = sizeof( qnx_reloc_item );
+#endif
+#ifdef _ELF
     } else if( FmtData.type & MK_ELF ) {
         // elf_reloc_item contains pointer to symbol which gets
         // converted later on into index into symbol table
         FmtRelocSize = sizeof( elf_reloc_item );
-    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
-        FmtRelocSize = sizeof( pms_reloc_item );
+#endif
+#ifdef _ZDOS
     } else if( FmtData.type & MK_ZDOS ) {
         FmtRelocSize = sizeof( zdos_reloc_item );
+#endif
     } else {
         FmtRelocSize = sizeof( dos_addr );
     }
@@ -506,10 +518,12 @@ bool SwapOutRelocs( void )
             return( true );
         }
     }
+#ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         if( SpillRelocList( FloatFixups ) )
             return( true );
         return( SpillRelocList( Root->reloclist ) );
     }
+#endif
     return( false );
 }

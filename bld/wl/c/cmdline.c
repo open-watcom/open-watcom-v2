@@ -976,38 +976,47 @@ void BurnSystemList( void )
     CleanSystemList( true );
 }
 
+#if defined( _OS2 ) || defined( _NOVELL ) || defined( _ELF )
 bool ProcImport( void )
-/****************************/
+/*********************/
 {
-#if defined( _OS2) || defined( _ELF ) || defined( _NOVELL )
+#if defined( _OS2 )
     if( HintFormat( MK_OS2 | MK_PE ) ) {
         return( ProcOS2Import() );
-    } else if( HintFormat( MK_WIN_VXD ) ) {
-        return( false );
-    } else if( HintFormat( MK_ELF ) ) {
+    }
+#endif
+#if defined( _ELF )
+    if( HintFormat( MK_ELF ) ) {
         return( ProcELFImport() );
-    } else {
+    }
+#endif
+#if defined( _NOVELL )
+    if( HintFormat( MK_NOVELL ) ) {
         return( ProcNovImport() );
     }
-#else
-    return( false );
 #endif
+    return( false );
 }
 
-#if defined( _OS2 ) || defined( _NOVELL )
 bool ProcExport( void )
-/****************************/
+/*********************/
 {
 #ifdef _OS2
     if( HintFormat( ( MK_OS2 | MK_PE | MK_WIN_VXD ) ) ) {
         return( ProcOS2Export() );
-    } else
+    }
+#endif
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFExport() );
+    }
 #endif
 #ifdef _NOVELL
-            {
+    if( HintFormat( MK_NOVELL ) ) {
         return( ProcNovExport() );
     }
 #endif
+    return( false );
 }
 #endif
 
@@ -1041,7 +1050,7 @@ bool ProcNoRelocs( void )
 
 #if defined( _OS2 ) || defined( _QNX )
 bool ProcSegment( void )
-/*****************************/
+/**********************/
 {
 #ifdef _OS2
     if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
@@ -1060,10 +1069,13 @@ bool ProcSegment( void )
 bool ProcAlignment( void )
 /*******************************/
 {
-#if defined( _OS2 ) || defined( _ELF )
+#if defined( _OS2 )
     if( HintFormat( MK_OS2_16BIT | MK_OS2_LX | MK_PE ) ) {
         return( ProcOS2Alignment() );
-    } else if( HintFormat( MK_ELF ) ) {
+    }
+#endif
+#if defined( _ELF )
+    if( HintFormat( MK_ELF ) ) {
         return( ProcELFAlignment() );
     }
 #endif
@@ -1073,7 +1085,7 @@ bool ProcAlignment( void )
 bool ProcHeapSize( void )
 /******************************/
 {
-#if defined( __QNX__ )
+#if defined( _QNX ) && defined( __QNX__ )
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXHeapSize() );
     }

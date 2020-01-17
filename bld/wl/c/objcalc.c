@@ -229,18 +229,18 @@ static void CalcInitSize( seg_leader *seg )
 }
 
 static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
-/***************************************************************/
+/****************************************************************
+ * return false if segment number is fixed
+ * return true if segment number should be incremented
+ */
 {
-    if( FmtData.type & MK_FLAT ) {
-        currgrp->grp_addr.seg = 1;   // only segment 1 in flat mem.model
-        return( false );
-    }
 #ifdef _DOS16M
     if( FmtData.type & MK_DOS16M ) {
         currgrp->grp_addr.seg = ToD16MSel( seg_num );
         return( true );
     }
 #endif
+#ifdef _NOVELL
     if( FmtData.type & MK_ID_SPLIT ) {
         if( currgrp->segflags & SEG_DATA ) {
             currgrp->grp_addr.seg = DATA_SEGMENT;
@@ -249,14 +249,29 @@ static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
         }
         return( false );
     }
+#endif
+#ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         currgrp->grp_addr.seg = ToQNXSel( seg_num );
         return( true );
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX) ) {
+        currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
+        return( false );
     }
     if( FmtData.type & MK_PHAR_MULTISEG ) {
         currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
         return( true );
     }
+#endif
+#if defined( _ZDOS ) || defined( _RAW )
+    if( FmtData.type & (MK_ZDOS | MK_RAW) ) {
+        currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
+        return( false );
+    }
+#endif
     currgrp->grp_addr.seg = seg_num;
     return( true );
 }
@@ -269,10 +284,10 @@ static void AllocFileSegs( void )
 
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
+        currgrp->grp_addr.off = 0;
         if( setGroupSeg( currgrp, seg_num ) ) {
             seg_num++;
         }
-        currgrp->grp_addr.off = 0;
     }
 }
 
@@ -808,15 +823,28 @@ static void SetReadOnly( void *_seg )
 static void setDefBase( void )
 /****************************/
 {
+#ifdef _OS2
     if( FmtData.type & MK_PE ) {
         FmtData.base = PE_DEFAULT_BASE;
-    } else if( FmtData.type & MK_QNX_FLAT ) {
-        FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
-    } else if( FmtData.type & MK_WIN_VXD ) {
+        return;
+    }
+    if( FmtData.type & MK_WIN_VXD ) {
         FmtData.base = 0;
-    } else if( FmtData.type & MK_OS2_FLAT ) {
+        return;
+    }
+    if( FmtData.type & MK_OS2_FLAT ) {
         FmtData.base = FLAT_GRANULARITY;
-    } else if( FmtData.type & MK_ELF ) {
+        return;
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT ) {
+        FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
         if( LinkState & LS_HAVE_PPC_CODE ) {
             FmtData.base = 0x10000000;
         } else if( LinkState & LS_HAVE_MIPS_CODE ) {
@@ -827,14 +855,16 @@ static void setDefBase( void )
         } else {
             FmtData.base = 0x08048000;
         }
-    } else {
-        FmtData.base = 0;
+        return;
     }
+#endif
+    FmtData.base = 0;
 }
 
 static void setDefObjAlign( void )
 /********************************/
 {
+#ifdef _OS2
     if( FmtData.type & MK_PE ) {
         if( (LinkState & LS_HAVE_I86_CODE) ) {
             FmtData.objalign = _4KB;
@@ -844,38 +874,60 @@ static void setDefObjAlign( void )
         } else {
             FmtData.objalign = _64KB;
         }
-    } else if( FmtData.type & MK_QNX ) {
-        FmtData.objalign = QNX_GROUP_ALIGN;
-#if 0
-    } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
-        // Development temporarly on hold:
-        // FmtData.objalign = _1KB;
-#endif
-    } else if( FmtData.type & MK_ELF ) {
-        FmtData.objalign = _4KB;
+        return;
     } else if( FmtData.type & MK_WIN_VXD ) {
         FmtData.objalign = _4KB;
-    } else {
+        return;
+    } else if( FmtData.type & MK_OS2 ) {
+#if 0
+        if( (LinkState & LS_HAVE_PPC_CODE) ) {
+            // Development temporarly on hold:
+            FmtData.objalign = _1KB;
+            return;
+        }
+#endif
         FmtData.objalign = FLAT_GRANULARITY;
+        return;
     }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        FmtData.objalign = QNX_GROUP_ALIGN;
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        FmtData.objalign = _4KB;
+        return;
+    }
+#endif
+    FmtData.objalign = _64KB;
 }
 
 static offset getFlatOffset( void )
 /*********************************/
 {
+    /****************************************************
+     * this must be always first to override target value
+     */
+#ifdef _RAW
     if( FmtData.output_raw || FmtData.output_hex ) {
         return( 0 );
+    }
+#endif
+    /****************************************************/
 #ifdef _OS2
-    } else if( FmtData.type & MK_PE ) {
+    if( FmtData.type & MK_PE ) {
         return( GetPEHeaderSize() );
+    }
 #endif
 #ifdef _ELF
-    } else if( FmtData.type & MK_ELF ) {
+    if( FmtData.type & MK_ELF ) {
         return( GetElfHeaderSize() );
-#endif
-    } else {
-        return( FmtData.base );
     }
+#endif
+    return( FmtData.base );
 }
 
 void CalcAddresses( void )
@@ -934,7 +986,7 @@ void CalcAddresses( void )
             flat = ROUND_UP( flat + size, FmtData.objalign );
         }
         ReallocFileSegs();
-    } else if( FmtData.type & (MK_QNX | MK_OS2_16BIT) ) {
+    } else if( FmtData.type & (MK_QNX_16 | MK_OS2_16BIT) ) {
         ReallocFileSegs();
     }
     DBIAddrStart();
@@ -960,7 +1012,7 @@ static void FillClassFlags( char *name, unsigned_16 flags )
             return;
         }
     }
-// if it has made it our here, no class has been found.
+    // if it has made it our here, no class has been found.
     LnkMsg( WRN + MSG_CLASS_NAME_NOT_FOUND, "s", name );
 }
 

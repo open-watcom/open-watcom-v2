@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,13 @@
 extern bool     ProcELF( void );
 extern bool     ProcELFDLL( void );
 extern bool     ProcELFImport( void );
+extern bool     ProcELFExport( void );
 extern bool     ProcELFAlignment( void );
 
 extern void     SetELFFmt( void );
 extern void     FreeELFFmt( void );
 extern void     SetELFImportSymbol( symbol * );
+extern void     SetELFExportSymbol( symbol * );
 
 extern bool     ProcExtraSections( void );
 extern bool     ProcExportAll( void );

@@ -110,9 +110,17 @@ static void DoSavedExport( symbol *sym )
         exp->sym = sym;
         exp->impname = NULL;
         AddToExportList( exp );
-    } else {
+    }
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
         AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.nov.exp.export );
     }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.elf.exp.export );
+    }
+#endif
 }
 
 static bool StoreCDatData( void *_piece, void *_loc )
@@ -459,15 +467,16 @@ unsigned long IncPass1( void )
     return( 0 );
 }
 
+#ifdef _QNX
 static void CheckQNXSegMismatch( stateflag mask )
 /***********************************************/
 {
-    if( (FmtData.type & MK_QNX) && (LinkState & mask)
-                                && !FmtData.u.qnx.seen_mismatch ) {
+    if( (FmtData.type & MK_QNX) && (LinkState & mask) && !FmtData.u.qnx.seen_mismatch ) {
         LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
         FmtData.u.qnx.seen_mismatch = true;
     }
 }
+#endif
 
 class_entry *DuplicateClass( class_entry *class )
 /***********************************************/
@@ -676,10 +685,14 @@ void AddSegment( segdata *sd, class_entry *class )
     if( !IS_DBG_INFO( leader ) ) {
         if( sd->is32bit ) {
             Set32BitMode();
+#ifdef _QNX
             CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
+#endif
         } else {
             Set16BitMode();
+#ifdef _QNX
             CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
+#endif
         }
     }
     if( DBISkip( leader ) ) {
@@ -1287,7 +1300,16 @@ static void ExportSymbol( const length_name *expname )
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
     sym->info |= SYM_EXPORTED;
-    AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
+        AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        AddNameTable( expname->name, expname->len, true, &FmtData.u.elf.exp.export );
+    }
+#endif
 }
 
 void HandleExport( const length_name *expname, const length_name *intname,

@@ -320,8 +320,10 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 MsgArgInfo.index = -1;
                 if( FmtData.type & MK_FLAT ) {
                     size = FmtStr( dest, len, "%h", addr->off );
+#ifdef _QNX
                 } else if( FmtData.type & MK_QNX_FLAT) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr( addr ) );
+#endif
                 } else if( FmtData.type & (MK_ELF | MK_PE) ) {
                     size = FmtStr( dest, len, "%h", FindLinearAddr2( addr ) );
                 } else if( FmtData.type & MK_ID_SPLIT ) {

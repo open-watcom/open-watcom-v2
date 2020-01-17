@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,8 +182,10 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
                 return( index );
             }
         }
+#ifdef _QNX
     } else if( FmtData.type & MK_QNX ) {
         return( ToQNXIndex( seg->seg_addr.seg ) );
+#endif
     } else {
         return( seg->seg_addr.seg );
     }

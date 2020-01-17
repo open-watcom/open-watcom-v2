@@ -983,10 +983,10 @@ static offset FindRealAddr( fix_relo_data *fix )
         && (fix->type & FIX_SEC_REL) == 0 ) {
         if( (FmtData.type & (MK_OS2_LE | MK_WIN_VXD)) && !dbiflat )
             return( off );
-       /*
-            put the correct value in so that internal fixups
-            don't have to be applied if everything loads in the
-            right spot.
+        /*
+         * put the correct value in so that internal fixups
+         * don't have to be applied if everything loads in the
+         * right spot.
         */
         group = FindGroup( fix->tgt_addr.seg );
         if( group == NULL )                  // can happen with dbi relocs
@@ -996,8 +996,10 @@ static offset FindRealAddr( fix_relo_data *fix )
             if( (fix->type & FIX_NO_BASE) == 0 ) {
                 off += FmtData.base;
             }
-            // want dbi addresses relative to 0, but not for ELF
-            // (perhaps absolute for others too, later)
+            /*
+             * want dbi addresses relative to 0, but not for ELF
+             * (perhaps absolute for others too, later)
+             */
             if( dbiflat && (FmtData.type & MK_ELF) == 0 ) {
                 off -= Groups->linear;
             }
@@ -1242,8 +1244,6 @@ static void MakeBase( fix_relo_data *fix )
 
 static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *seg, base_reloc *breloc )
 {
-    bool                save;
-    offset              off;
     targ_addr           target;
     group_entry         *grp;
     byte                *fixptr;
@@ -1251,14 +1251,16 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
     bool                freedll;
     fix_type            ftype;
 
-    save = true;
     ftype = fix->type & (FIX_OFFSET_MASK | FIX_BASE);
-    off = fix->loc_addr.off;
     target = fix->tgt_addr;
+#ifdef _OS2
     if( FmtData.type & MK_PE ) {
-        unsigned_32     reltype;
+        unsigned_32 reltype;
+        bool        save;
+        offset      off;
 
-        off += seg->u.leader->group->linear;
+        save = true;
+        off = fix->loc_addr.off + seg->u.leader->group->linear;
         if( fix->type & FIX_HIGH ) {
             reltype = PE_FIX_HIGHADJ;   // NYI: can be high when objalign ==
             breloc->rel_size = sizeof( high_pe_reloc_item );    // 0x10000
@@ -1272,9 +1274,12 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             reltype = PE_FIX_HIGHLOW;
         }
         breloc->item.pe = ( off & OSF_PAGE_MASK ) | reltype;
+        return( save );
     } else if( FmtData.type & MK_OS2_16BIT ) {
         os2_reloc_item  *os2item;
+        offset          off;
 
+        off = fix->loc_addr.off;
         fixptr = fix->data;
         os2item = &(breloc->item.os2);
         os2item->addr_type = MapOS2FixType( fix->type );
@@ -1311,6 +1316,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         } else {
             PUT_U16( fixptr, 0xffff );          // end of chain indicator
         }
+        return( true );
     } else if( FmtData.type & MK_OS2_FLAT )  {
         segdata *targseg;
         byte    flags;
@@ -1456,7 +1462,16 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             _LnkFree( dll );
         breloc->rel_size = fixptr - breloc->item.os2f.buff;
         breloc->item.os2f.fmt.nr_flags = flags;
-    } else if( FmtData.type & MK_NOVELL ) {
+        return( true );
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
+        bool        save;
+        offset      off;
+
+        save = true;
+        off = fix->loc_addr.off;
         if( fix->imported ) {
             save = false;
             AddNovImpReloc( tthread->u.sym, off, (fix->type & FIX_REL) != 0,
@@ -1470,7 +1485,11 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             }
             breloc->item.novell.reloc_offset = off;
         }
-    } else if( FmtData.type & MK_QNX ) {
+        return( save );
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
         bool    done;
 
         done = false;
@@ -1500,9 +1519,17 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             breloc->item.qnx.reloc_offset = fix->loc_addr.off;
             breloc->item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         }
-    } else if( FmtData.type & MK_ELF ) {
-        symbol *sym;
+        return( true );
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        symbol      *sym;
+        bool        save;
+        offset      off;
 
+        save = true;
+        off = fix->loc_addr.off;
         if( LinkState & LS_HAVE_I86_CODE ) {
             if( fix->type & FIX_REL ) {
                 breloc->item.elf.info = R_386_PC32;
@@ -1561,31 +1588,48 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             breloc->item.elf.info |= FindElfSymIdx( sym ) << 8;
             breloc->item.elf.reloc_offset = off;
         }
-    } else if( FmtData.type & MK_PHAR_REX ) {
+        return( save );
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_REX ) {
+        offset      off;
+
+        off = fix->loc_addr.off;
         if( ftype == FIX_OFFSET_32 ) {
             off |= 0x80000000;
         }
         breloc->item.rex.reloc_offset = off;
-    } else if( FmtData.type & MK_ZDOS ) {
-        breloc->item.zdos.reloc_offset = off;
-    } else if( FmtData.type & MK_COM ) {
-        save = false;
-        LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
-    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
+        return( true );
+    }
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
         MakeBase( fix );
         breloc->item.pms.offset = fix->loc_addr.off;
         grp = seg->u.leader->group;
         breloc->item.pms.segment = grp->grp_addr.seg;
-    } else {
-        MakeBase( fix );
-        breloc->item.dos.addr.off = fix->loc_addr.off;
-        grp = seg->u.leader->group;
-        breloc->item.dos.addr.seg = grp->grp_addr.seg;
-        if( grp->section != Root ) {
-            breloc->item.dos.addr.seg -= grp->section->sect_addr.seg;
-        }
+        return( true );
     }
-    return( save );
+#endif
+#ifdef _ZDOS
+    if( FmtData.type & MK_ZDOS ) {
+        breloc->item.zdos.reloc_offset = fix->loc_addr.off;
+        return( true );
+    }
+#endif
+#ifdef _EXE
+    if( FmtData.type & MK_COM ) {
+        LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
+        return( false );
+    }
+#endif
+    MakeBase( fix );
+    breloc->item.dos.addr.off = fix->loc_addr.off;
+    grp = seg->u.leader->group;
+    breloc->item.dos.addr.seg = grp->grp_addr.seg;
+    if( grp->section != Root ) {
+        breloc->item.dos.addr.seg -= grp->section->sect_addr.seg;
+    }
+    return( true );
 }
 
 static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
@@ -1633,7 +1677,6 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         return;
     }
     DEBUG(( DBG_OLD, "relocation record being output" ));
-    save = true;                /* NOTE: copycat code in QNX section ! */
     InitReloc( &breloc );
     breloc.fix_size = CalcFixupSize( fix->type );
     breloc.fix_off = fix->loc_addr.off;
