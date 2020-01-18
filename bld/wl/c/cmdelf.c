@@ -132,6 +132,19 @@ bool ProcELFExport( void )
     return( ProcArgList( GetELFExport, TOK_INCLUDE_DOT ) );
 }
 
+static bool GetELFModule( void )
+/******************************/
+{
+    AddNameTable( Token.this, Token.len, false, &FmtData.u.elf.exp.module );
+    return( true );
+}
+
+bool ProcELFModule( void )
+/************************/
+{
+    return( ProcArgList( GetELFModule, TOK_INCLUDE_DOT ) );
+}
+
 bool ProcELFAlignment( void )
 /***************************/
 {

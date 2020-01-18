@@ -34,6 +34,7 @@ extern bool     ProcELF( void );
 extern bool     ProcELFDLL( void );
 extern bool     ProcELFImport( void );
 extern bool     ProcELFExport( void );
+extern bool     ProcELFModule( void );
 extern bool     ProcELFAlignment( void );
 
 extern void     SetELFFmt( void );

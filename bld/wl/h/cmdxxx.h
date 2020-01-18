@@ -25,32 +25,28 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for command parser functions
+* Description:  Prototypes for functions which process multiple targets
 *
 ****************************************************************************/
 
 
-extern void             InitCmdFile( void );
-extern void             SetSegMask(void);
-extern char             *GetNextLink( void );
-extern void             DoCmdFile( const char * );
-extern void             Syntax( void );
-extern void             FreePaths( void );
-extern void             Burn( void );
-extern void             Ignite( void );
-extern void             SetFormat( void );
-extern void             AddFmtLibPaths( void );
-extern bool             HintFormat( exe_format );
-extern void             DecideFormat( void );
-extern void             FreeFormatStuff( void );
-extern void             AddCommentLib( const char *, size_t, lib_priority );
-extern void             ExecSystem( const char * );
-extern void             PruneSystemList( void );
-extern void             BurnSystemList( void );
-extern void             AddLibPaths( const char *, size_t, bool );
-extern void             AddLibPathsToEnd( const char * );
-extern void             AddLibPathsToEndList( const char *list );
-extern void             PressKey( void );
-extern file_list        *AllocNewFile( member_list *member );
-extern file_list        *AddObjLib( const char *, lib_priority );
-extern int              DoBuffCmdParse( const char *cmd );
+#if defined( _OS2 ) || defined( _NOVELL ) || defined( _ELF )
+extern bool     ProcImport( void );
+extern bool     ProcExport( void );
+#endif
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
+extern bool     ProcNoRelocs( void );
+#endif
+#if defined( _OS2 ) || defined( _QNX )
+extern bool     ProcSegment( void );
+extern bool     ProcHeapSize( void );
+#endif
+#if defined( _OS2 ) || defined( _ELF )
+extern bool     ProcAlignment( void );
+#endif
+#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF ) || defined( _RAW )
+extern bool     ProcOffset( void );
+#endif
+#if defined( _NOVELL ) || defined( _ELF )
+extern bool     ProcModule( void );
+#endif
