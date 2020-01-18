@@ -59,5 +59,6 @@ extern void             AddLibPaths( const char *, size_t, bool );
 extern void             AddLibPathsToEnd( const char * );
 extern void             AddLibPathsToEndList( const char *list );
 extern void             PressKey( void );
+extern file_list        *AllocNewFile( member_list *member );
 extern file_list        *AddObjLib( const char *, lib_priority );
 extern int              DoBuffCmdParse( const char *cmd );
