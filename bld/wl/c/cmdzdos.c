@@ -49,6 +49,16 @@
 #include "cmdzdos.h"
 
 
+void SetZdosFmt( void )
+/*********************/
+{
+}
+
+void FreeZdosFmt( void )
+/**********************/
+{
+}
+
 bool ProcZdos( void )
 /*******************/
 {

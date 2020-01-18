@@ -62,6 +62,7 @@
 #include "dbgall.h"
 #include "loadfile.h"
 #include "pathlist.h"
+#include "cmdhelp.h"
 
 
 #ifdef BOOTSTRAP
@@ -72,55 +73,6 @@
 #define INIT_FILE_ENV   "WLINK_LNK"
 
 #define HELP_FILE_NAME  "wlink.hlp"
-
-static bool             ProcDosHelp( void );
-static bool             ProcOS2Help( void );
-static bool             ProcPharHelp( void );
-static bool             ProcNovellHelp( void );
-static bool             Proc16MHelp( void );
-static bool             ProcQNXHelp( void );
-static bool             ProcELFHelp( void );
-static bool             ProcWindowsHelp( void );
-static bool             ProcWinVxdHelp( void );
-static bool             ProcNTHelp( void );
-static bool             ProcZdosHelp( void );
-static bool             ProcRdosHelp( void );
-static bool             ProcRawHelp( void );
-
-static  parse_entry   FormatHelp[] = {
-    "Dos",          ProcDosHelp,            MK_ALL,     0,
-#ifdef _OS2
-    "OS2",          ProcOS2Help,            MK_ALL,     0,
-    "WINdows",      ProcWindowsHelp,        MK_ALL,     0,
-    "VXD",          ProcWinVxdHelp,         MK_ALL,     0,
-    "NT",           ProcNTHelp,             MK_ALL,     0,
-#endif
-#ifdef _PHARLAP
-    "PHARlap",      ProcPharHelp,           MK_ALL,     0,
-#endif
-#ifdef _NOVELL
-    "NOVell",       ProcNovellHelp,         MK_ALL,     0,
-#endif
-#ifdef _DOS16M
-    "DOS16M",       Proc16MHelp,            MK_ALL,     0,
-#endif
-#ifdef _QNX
-    "QNX",          ProcQNXHelp,            MK_ALL,     0,
-#endif
-#ifdef _ELF
-    "ELF",          ProcELFHelp,            MK_ALL,     0,
-#endif
-#ifdef _ZDOS
-    "ZDos",         ProcZdosHelp,           MK_ALL,     0,
-#endif
-#ifdef _RDOS
-    "RDos",         ProcRdosHelp,           MK_ALL,     0,
-#endif
-#ifdef _RAW
-    "Raw",          ProcRawHelp,            MK_ALL,     0,
-#endif
-    NULL
-};
 
 file_defext             Extension;
 file_list               **CurrFList;
@@ -221,8 +173,8 @@ void Syntax( void )
     }
 }
 
-static void PressKey( void )
-/**************************/
+void PressKey( void )
+/*******************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
     int         result;
@@ -235,89 +187,6 @@ static void PressKey( void )
         Ignite();
         Suicide();
     }
-}
-
-static void WriteHelp( int first_msg, int last_msg, bool prompt )
-/***************************************************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    bool        previous_null;
-    int         msg;
-
-    if( prompt ) {
-        PressKey();
-    }
-    previous_null = false;
-    for( msg = first_msg; msg <= last_msg; msg++ ) {
-        Msg_Get( msg, msg_buffer );
-        if( msg_buffer[0] == '\0' ) {
-            if( previous_null ) {
-                break;
-            }
-            previous_null = true;
-        } else if( previous_null ) {
-            PressKey();
-            WriteStdOutWithNL( msg_buffer );
-            previous_null = false;
-        } else {
-            WriteStdOutWithNL( msg_buffer );
-        }
-    }
-}
-
-static void WriteGenHelp( void )
-/******************************/
-{
-    WLPrtBanner();
-    WriteHelp( MSG_GENERAL_HELP_0, MSG_GENERAL_HELP_51, false );
-}
-
-static void DisplayOptions( void )
-/********************************/
-{
-    bool    isout;
-
-    isout = false;
-    if( CmdFlags & CF_TO_STDOUT ) {
-        isout = true;
-    }
-    WriteGenHelp();
-#if defined( _QNX ) && defined( __QNX__ )
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
-#endif
-#ifdef _EXE
-    WriteHelp( MSG_DOS_HELP_0, MSG_DOS_HELP_15, isout );
-#endif
-#ifdef _OS2
-    WriteHelp( MSG_OS2_HELP_0, MSG_OS2_HELP_31, isout );
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, isout );
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, isout );
-    WriteHelp( MSG_NT_HELP_0, MSG_NT_HELP_31, isout );
-#endif
-#ifdef _PHARLAP
-    WriteHelp( MSG_PHAR_HELP_0, MSG_PHAR_HELP_15, isout );
-#endif
-#ifdef _NOVELL
-    WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31, isout );
-#endif
-#ifdef _DOS16M
-    WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, isout );
-#endif
-#if defined( _QNX ) && !defined( __QNX__ )
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
-#endif
-#ifdef _ELF
-    WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, isout );
-#endif
-#ifdef _ZDOS
-    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, isout );
-#endif
-#ifdef _RDOS
-    WriteHelp( MSG_RDOS_HELP_0, MSG_RDOS_HELP_15, isout );
-#endif
-#ifdef _RAW
-    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, isout );
-#endif
 }
 
 #define HELPLINE_SIZE   80
@@ -367,126 +236,6 @@ int DoBuffCmdParse( const char *cmd )
     return( Spawn( DoCmdParse ) );
 }
 
-#ifdef _EXE
-static bool ProcDosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_DOS_HELP_0, MSG_DOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _OS2
-static bool ProcOS2Help( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_OS2_HELP_0, MSG_OS2_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcWindowsHelp( void )
-/*********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcWinVxdHelp( void )
-/*********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcNTHelp( void )
-/****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_NT_HELP_0, MSG_NT_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _PHARLAP
-static bool ProcPharHelp( void )
-/******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_PHAR_HELP_0, MSG_PHAR_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _NOVELL
-static bool ProcNovellHelp( void )
-/********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _DOS16M
-static bool Proc16MHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _QNX
-static bool ProcQNXHelp( void )
-/*******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _ELF
-static bool ProcELFHelp( void )
-/*******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _ZDOS
-static bool ProcZdosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _RDOS
-static bool ProcRdosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_RDOS_HELP_0, MSG_RDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _RAW
-static bool ProcRawHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
 void FreePaths( void )
 /***************************/
 // Free paths & filenames.
@@ -529,7 +278,7 @@ static void Help( void )
     EatWhite();
     if( *Token.next == '?' ) {
         Crash( false );
-    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, false ) ) {
+    } else if( *Token.next == '\0' || !DoHelp() ) {
         Crash( true );
     } else {
         Ignite();
@@ -699,7 +448,9 @@ typedef struct {
 } select_format;
 
 static const select_format PossibleFmt[] = {
-    MK_DOS,         "LIBDOS",       NULL,           NULL,
+#ifdef _EXE
+    MK_DOS,         "LIBDOS",       SetDosFmt,      FreeDosFmt,
+#endif
 #ifdef _DOS16M
     MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
 #endif
@@ -725,6 +476,9 @@ static const select_format PossibleFmt[] = {
 #endif
 #ifdef _RDOS
     MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
+#endif
+#ifdef _ZDOS
+    MK_ZDOS,        "LIBZDOS",      SetZdosFmt,     FreeZdosFmt,
 #endif
     0,              NULL,           NULL,           NULL
 };

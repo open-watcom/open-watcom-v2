@@ -45,12 +45,17 @@
 #include "distrib.h"
 
 
-static byte             OvlLevel;
+static byte         OvlLevel;
 
 void SetDosFmt( void )
 /********************/
 {
     Extension = E_LOAD;
+}
+
+void FreeDosFmt( void )
+/*********************/
+{
 }
 
 bool ProcDos( void )

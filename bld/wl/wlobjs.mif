@@ -30,6 +30,7 @@ common_objs = &
     $(_subdir_)cmdall.obj &
     $(_subdir_)cmddos.obj &
     $(_subdir_)cmdelf.obj &
+    $(_subdir_)cmdhelp.obj &
     $(_subdir_)cmdline.obj &
     $(_subdir_)cmdnov.obj &
     $(_subdir_)cmdos2.obj &
