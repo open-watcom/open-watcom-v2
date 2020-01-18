@@ -64,10 +64,14 @@
 #include "pathlist.h"
 
 
-static void             Crash( bool );
-static void             Help( void );
-static void             DoCmdParse( void );
-static void             DisplayOptions( void );
+#ifdef BOOTSTRAP
+#define INIT_FILE_NAME  "bwlink.lnk"
+#else
+#define INIT_FILE_NAME  "wlink.lnk"
+#endif
+#define INIT_FILE_ENV   "WLINK_LNK"
+
+#define HELP_FILE_NAME  "wlink.hlp"
 
 static bool             ProcDosHelp( void );
 static bool             ProcOS2Help( void );
@@ -82,7 +86,6 @@ static bool             ProcNTHelp( void );
 static bool             ProcZdosHelp( void );
 static bool             ProcRdosHelp( void );
 static bool             ProcRawHelp( void );
-static void             WriteHelp( int first_msg, int last_msg, bool prompt );
 
 static  parse_entry   FormatHelp[] = {
     "Dos",          ProcDosHelp,            MK_ALL,     0,
@@ -119,24 +122,15 @@ static  parse_entry   FormatHelp[] = {
     NULL
 };
 
-file_defext     Extension;
-file_list       **CurrFList;
-tok             Token;
-commandflag     CmdFlags;
-char            *Name;
-sysblock        *SysBlocks;
-sysblock        *LinkCommands;
+file_defext             Extension;
+file_list               **CurrFList;
+tok                     Token;
+commandflag             CmdFlags;
+char                    *Name;
+sysblock                *SysBlocks;
+sysblock                *LinkCommands;
 
 static sysblock         *PrevCommand;
-
-#ifdef BOOTSTRAP
-#define INIT_FILE_NAME  "bwlink.lnk"
-#else
-#define INIT_FILE_NAME  "wlink.lnk"
-#endif
-#define INIT_FILE_ENV   "WLINK_LNK"
-
-#define HELP_FILE_NAME  "wlink.hlp"
 
 void InitCmdFile( void )
 /******************************/
@@ -200,124 +194,6 @@ static bool sysHelp( void )
     return( help );
 }
 
-void DoCmdFile( const char *fname )
-/*********************************/
-/* start parsing the command */
-{
-    exe_format  possible;
-    f_handle    file;
-    size_t      namelen;
-    file_defext extension;
-    const char  *namelnk;
-
-    ResetCmdFile();
-    if( fname == NULL || *fname == '\0' ) {
-        NewCommandSource( NULL, NULL, COMMANDLINE );
-    } else {
-        NewCommandSource( NULL, fname, ENVIRONMENT );
-    }
-    if( IsStdOutConsole() ) {
-        CmdFlags |= CF_TO_STDOUT;
-    }
-    if( sysHelp() ) {
-        Help();
-    }
-    if( *Token.next == '\0' ) {     // go into interactive mode.
-        Token.how = INTERACTIVE;
-        Token.where = ENDOFLINE;
-        LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
-    }
-    file = NIL_FHANDLE;
-    namelnk = GetEnvString( INIT_FILE_ENV );
-    if( namelnk != NULL ) {
-        file = FindPath( namelnk, NULL );
-    }
-    if( file == NIL_FHANDLE ) {
-        namelnk = INIT_FILE_NAME;
-        file = FindPath( namelnk, NULL );
-    }
-    if( file != NIL_FHANDLE ) {
-        SetCommandFile( file, namelnk );
-    }
-    if( Spawn( DoCmdParse ) ) {
-        Ignite();
-        Suicide();
-    }
-    GetExtraCommands();
-    if( (LinkState & LS_FMT_DECIDED) == 0 ) {
-        /* restrict set to automatically decided ones */
-#if defined( __QNX__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
-#elif defined( __LINUX__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
-#elif defined( __BSD__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
-#elif defined( __NT__ )
-#define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
-#elif defined( __RDOS__ )
-#define LAST_CHANCE ( MK_RDOS | MK_PE | MK_DOS_EXE)
-#else
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
-#endif
-        HintFormat( LAST_CHANCE );
-    } else {
-        /* restrict to a unique type */
-        for( possible = 1; possible != 0; possible *= 2 ) {
-            if( FmtData.type & possible ) {
-                FmtData.type = possible;
-                break;
-            }
-        }
-    }
-    if( (FmtData.type & (MK_NOVELL | MK_DOS)) && (LinkFlags & LF_INC_LINK_FLAG) ) {
-        LnkMsg( FTL+MSG_FORMAT_BAD_OPTION, "s", "incremental" );
-    }
-#ifdef _NOVELL
-    if( FmtData.type & MK_NOVELL ) {
-        CmdNovFini();
-    }
-#endif
-#ifdef _EXE
-    if( FmtData.type & MK_OVERLAYS ) {
-        CmdOvlFini();
-        AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
-    }
-#endif
-    if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
-        Ignite();
-        LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );
-    }
-    namelen = strlen( Name );
-    if( MapFlags & MAP_FLAG ) {
-        if( MapFName == NULL ) {
-            MapFName = FileName( Name, namelen, E_MAP, true );
-        }
-    } else {
-        MapFlags = 0;   // if main isn't set, don't set anything.
-    }
-    if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM) ||
-                   (LinkFlags & LF_OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
-        SymFileName = FileName( Name, namelen, E_SYM, true );
-    }
-    if( FmtData.make_implib && FmtData.implibname == NULL ) {
-        if( FmtData.make_impfile ) {
-            extension = E_LBC;
-        } else {
-            extension = E_LIBRARY;
-        }
-        FmtData.implibname = FileName( Name, namelen, extension, true );
-    }
-    CheckTraces();
-    BurnUtils();
-    PruneSystemList();
-#ifdef _EXE
-    if( FmtData.type & MK_OVERLAYS ) {
-        OvlNumberSections();
-    }
-#endif
-    DBIInit();
-}
-
 char *GetNextLink( void )
 /***********************/
 {
@@ -345,67 +221,48 @@ void Syntax( void )
     }
 }
 
-#define HELPLINE_SIZE   80
-
-static void Crash( bool check_file )
-/**********************************/
+static void PressKey( void )
+/**************************/
 {
-    char        buff[HELPLINE_SIZE + 1];
-    size_t      len;
-    f_handle    fp;
+    char        msg_buffer[RESOURCE_MAX_SIZE];
+    int         result;
 
-    if( check_file ) {
-        fp = FindPath( HELP_FILE_NAME, NULL );
-        if( fp != NIL_FHANDLE ) {
-            WLPrtBanner();
-            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            for( ; len != 0 && len != IOERROR; ) {
-                buff[len] = '\0';
-                WriteStdOut( buff );
-                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            }
-            QClose( fp, HELP_FILE_NAME );
-            Ignite();
-            Suicide();
-        }
-    }
-    DisplayOptions();
-    Ignite();
-    Suicide();
-}
-
-static void Help( void )
-/**********************/
-// display help, optionally allowing the user to specifiy the format he/she
-// wants the help for.
-{
-    EatWhite();
-    if( *Token.next == '?' ) {
-        Crash( false );
-    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, false ) ) {
-        Crash( true );
-    } else {
+    Msg_Get( MSG_PRESS_KEY, msg_buffer );
+    WriteStdOut( msg_buffer );
+    result = WaitForKey();
+    WriteStdOutNL();
+    if( result == 'q' || result == 'Q' ) {
         Ignite();
         Suicide();
     }
 }
 
-static void DoCmdParse( void )
-/****************************/
+static void WriteHelp( int first_msg, int last_msg, bool prompt )
+/***************************************************************/
 {
-    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-        if( !ProcOne( Directives, SEP_NO, true ) ) {
-            Syntax();
-        }
-        RestoreParser();
-    }
-}
+    char        msg_buffer[RESOURCE_MAX_SIZE];
+    bool        previous_null;
+    int         msg;
 
-int DoBuffCmdParse( const char *cmd )
-/***********************************/
-{
-    NewCommandSource( NULL, cmd, COMMANDLINE );
-    return( Spawn( DoCmdParse ) );
+    if( prompt ) {
+        PressKey();
+    }
+    previous_null = false;
+    for( msg = first_msg; msg <= last_msg; msg++ ) {
+        Msg_Get( msg, msg_buffer );
+        if( msg_buffer[0] == '\0' ) {
+            if( previous_null ) {
+                break;
+            }
+            previous_null = true;
+        } else if( previous_null ) {
+            PressKey();
+            WriteStdOutWithNL( msg_buffer );
+            previous_null = false;
+        } else {
+            WriteStdOutWithNL( msg_buffer );
+        }
+    }
 }
 
 static void WriteGenHelp( void )
@@ -461,6 +318,53 @@ static void DisplayOptions( void )
 #ifdef _RAW
     WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, isout );
 #endif
+}
+
+#define HELPLINE_SIZE   80
+
+static void Crash( bool check_file )
+/**********************************/
+{
+    char        buff[HELPLINE_SIZE + 1];
+    size_t      len;
+    f_handle    fp;
+
+    if( check_file ) {
+        fp = FindPath( HELP_FILE_NAME, NULL );
+        if( fp != NIL_FHANDLE ) {
+            WLPrtBanner();
+            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
+            for( ; len != 0 && len != IOERROR; ) {
+                buff[len] = '\0';
+                WriteStdOut( buff );
+                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
+            }
+            QClose( fp, HELP_FILE_NAME );
+            Ignite();
+            Suicide();
+        }
+    }
+    DisplayOptions();
+    Ignite();
+    Suicide();
+}
+
+static void DoCmdParse( void )
+/****************************/
+{
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !ProcOne( Directives, SEP_NO, true ) ) {
+            Syntax();
+        }
+        RestoreParser();
+    }
+}
+
+int DoBuffCmdParse( const char *cmd )
+/***********************************/
+{
+    NewCommandSource( NULL, cmd, COMMANDLINE );
+    return( Spawn( DoCmdParse ) );
 }
 
 #ifdef _EXE
@@ -583,50 +487,6 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static void PressKey( void )
-/**************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         result;
-
-    Msg_Get( MSG_PRESS_KEY, msg_buffer );
-    WriteStdOut( msg_buffer );
-    result = WaitForKey();
-    WriteStdOutNL();
-    if( result == 'q' || result == 'Q' ) {
-        Ignite();
-        Suicide();
-    }
-}
-
-static void WriteHelp( int first_msg, int last_msg, bool prompt )
-/***************************************************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    bool        previous_null;
-    int         msg;
-
-    if( prompt ) {
-        PressKey();
-    }
-    previous_null = false;
-    for( msg = first_msg; msg <= last_msg; msg++ ) {
-        Msg_Get( msg, msg_buffer );
-        if( msg_buffer[0] == '\0' ) {
-            if( previous_null ) {
-                break;
-            }
-            previous_null = true;
-        } else if( previous_null ) {
-            PressKey();
-            WriteStdOutWithNL( msg_buffer );
-            previous_null = false;
-        } else {
-            WriteStdOutWithNL( msg_buffer );
-        }
-    }
-}
-
 void FreePaths( void )
 /***************************/
 // Free paths & filenames.
@@ -659,6 +519,140 @@ void Ignite( void )
 {
     BurnSystemList();
     Burn();
+}
+
+static void Help( void )
+/**********************/
+// display help, optionally allowing the user to specifiy the format he/she
+// wants the help for.
+{
+    EatWhite();
+    if( *Token.next == '?' ) {
+        Crash( false );
+    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, false ) ) {
+        Crash( true );
+    } else {
+        Ignite();
+        Suicide();
+    }
+}
+
+void DoCmdFile( const char *fname )
+/*********************************/
+/* start parsing the command */
+{
+    exe_format  possible;
+    f_handle    file;
+    size_t      namelen;
+    file_defext extension;
+    const char  *namelnk;
+
+    ResetCmdFile();
+    if( fname == NULL || *fname == '\0' ) {
+        NewCommandSource( NULL, NULL, COMMANDLINE );
+    } else {
+        NewCommandSource( NULL, fname, ENVIRONMENT );
+    }
+    if( IsStdOutConsole() ) {
+        CmdFlags |= CF_TO_STDOUT;
+    }
+    if( sysHelp() ) {
+        Help();
+    }
+    if( *Token.next == '\0' ) {     // go into interactive mode.
+        Token.how = INTERACTIVE;
+        Token.where = ENDOFLINE;
+        LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
+    }
+    file = NIL_FHANDLE;
+    namelnk = GetEnvString( INIT_FILE_ENV );
+    if( namelnk != NULL ) {
+        file = FindPath( namelnk, NULL );
+    }
+    if( file == NIL_FHANDLE ) {
+        namelnk = INIT_FILE_NAME;
+        file = FindPath( namelnk, NULL );
+    }
+    if( file != NIL_FHANDLE ) {
+        SetCommandFile( file, namelnk );
+    }
+    if( Spawn( DoCmdParse ) ) {
+        Ignite();
+        Suicide();
+    }
+    GetExtraCommands();
+    if( (LinkState & LS_FMT_DECIDED) == 0 ) {
+        /* restrict set to automatically decided ones */
+#if defined( __QNX__ )
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
+#elif defined( __LINUX__ )
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#elif defined( __BSD__ )
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#elif defined( __NT__ )
+#define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#elif defined( __RDOS__ )
+#define LAST_CHANCE ( MK_RDOS | MK_PE | MK_DOS_EXE)
+#else
+#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
+#endif
+        HintFormat( LAST_CHANCE );
+    } else {
+        /* restrict to a unique type */
+        for( possible = 1; possible != 0; possible *= 2 ) {
+            if( FmtData.type & possible ) {
+                FmtData.type = possible;
+                break;
+            }
+        }
+    }
+    if( (FmtData.type & (MK_NOVELL | MK_DOS)) && (LinkFlags & LF_INC_LINK_FLAG) ) {
+        LnkMsg( FTL+MSG_FORMAT_BAD_OPTION, "s", "incremental" );
+    }
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
+        CmdNovFini();
+    }
+#endif
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        CmdOvlFini();
+        AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
+    }
+#endif
+    if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
+        Ignite();
+        LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );
+    }
+    namelen = strlen( Name );
+    if( MapFlags & MAP_FLAG ) {
+        if( MapFName == NULL ) {
+            MapFName = FileName( Name, namelen, E_MAP, true );
+        }
+    } else {
+        MapFlags = 0;   // if main isn't set, don't set anything.
+    }
+    if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM) ||
+                   (LinkFlags & LF_OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
+        SymFileName = FileName( Name, namelen, E_SYM, true );
+    }
+    if( FmtData.make_implib && FmtData.implibname == NULL ) {
+        if( FmtData.make_impfile ) {
+            extension = E_LBC;
+        } else {
+            extension = E_LIBRARY;
+        }
+        FmtData.implibname = FileName( Name, namelen, extension, true );
+    }
+    CheckTraces();
+    BurnUtils();
+    PruneSystemList();
+#ifdef _EXE
+    if( FmtData.type & MK_OVERLAYS ) {
+        OvlNumberSections();
+    }
+#endif
+    DBIInit();
 }
 
 void SetFormat( void )
