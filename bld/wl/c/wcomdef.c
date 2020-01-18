@@ -313,11 +313,12 @@ static void AddToLinkerComdat( symbol *sym )
     if( leader == NULL ) {
         sdata->u.name = GetNewName();
         sym->addr.off = 0;
-        if( (FmtData.type & MK_OVERLAYS) == 0 || (alloc & 1) == 0 ) {
-            sect = Root;
-        } else {
+        sect = Root;
+#ifdef _EXE
+        if( (FmtData.type & MK_OVERLAYS) && (alloc & 1) != 0 ) {
             sect = NonSect;             /* data in an overlaid app */
         }
+#endif
         class = FindClass( sect, CDatClassNames[alloc], alloc > 1, alloc & 1 );
     } else {
         class = leader->class;

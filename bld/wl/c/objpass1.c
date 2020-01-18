@@ -103,14 +103,16 @@ static void DoSavedImport( symbol *sym )
 static void DoSavedExport( symbol *sym )
 /**************************************/
 {
-    entry_export        *exp;
-
+#ifdef _OS2
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        entry_export    *exp;
+
         exp = sym->e.export;
         exp->sym = sym;
         exp->impname = NULL;
         AddToExportList( exp );
     }
+#endif
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {
         AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.nov.exp.export );

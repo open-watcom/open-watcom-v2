@@ -121,7 +121,7 @@ parse_entry     Directives[] = {
 #endif
 #if defined( _NOVELL ) || defined( _OS2 ) || defined( _ELF )
     "IMPort",       &ProcImport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE), CF_AFTER_INC,
-    "EXPort",       &ProcExport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD ), CF_AFTER_INC,
+    "EXPort",       &ProcExport,        (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
     "SEGment",      &ProcSegment,       (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,

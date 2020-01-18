@@ -633,9 +633,9 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     if( !retval )
         return( NULL );
 
-/*
-    update lib struct since we found desired object file
-*/
+    /*
+     *  update lib struct since we found desired object file
+     */
     obj = NewModEntry();
     obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
     obj->location = pos;

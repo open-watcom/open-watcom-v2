@@ -421,7 +421,7 @@ static void OvlRefVector( symbol *sym )
 void OvlTryRefVector( symbol *sym )
 /*********************************/
 {
-    if( (LinkState & LS_SEARCHING_LIBRARIES) && FmtData.u.dos.distribute ) {
+    if( FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
         RefDistribSym( sym );
     } else {
         OvlRefVector( sym );

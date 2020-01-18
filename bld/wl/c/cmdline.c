@@ -674,7 +674,7 @@ void SetFormat( void )
         fname = Name;
     } else {
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
-            Extension = E_HEX;       //   has been specified
+            Extension = E_HEX;      //   has been specified
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
@@ -685,7 +685,7 @@ void SetFormat( void )
     Name = NULL;
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        OvlFillOutFilePtrs();   // fill in all unspecified outfile pointers.
+        OvlFillOutFilePtrs();       // fill in all unspecified outfile pointers.
     }
 #endif
     if( MapFlags & MAP_FLAG ) {
@@ -980,17 +980,17 @@ void BurnSystemList( void )
 bool ProcImport( void )
 /*********************/
 {
-#if defined( _OS2 )
+#ifdef _OS2
     if( HintFormat( MK_OS2 | MK_PE ) ) {
         return( ProcOS2Import() );
     }
 #endif
-#if defined( _ELF )
+#ifdef _ELF
     if( HintFormat( MK_ELF ) ) {
         return( ProcELFImport() );
     }
 #endif
-#if defined( _NOVELL )
+#ifdef _NOVELL
     if( HintFormat( MK_NOVELL ) ) {
         return( ProcNovImport() );
     }
@@ -1002,7 +1002,7 @@ bool ProcExport( void )
 /*********************/
 {
 #ifdef _OS2
-    if( HintFormat( ( MK_OS2 | MK_PE | MK_WIN_VXD ) ) ) {
+    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
         return( ProcOS2Export() );
     }
 #endif
@@ -1024,12 +1024,12 @@ bool ProcExport( void )
 bool ProcNoRelocs( void )
 /******************************/
 {
-#if defined( _QNX )
+#ifdef _QNX
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXNoRelocs() );
     }
 #endif
-#if defined( _OS2 )
+#ifdef _OS2
     if( HintFormat( MK_PE ) ) {
         return( ProcPENoRelocs() );
     }
@@ -1039,7 +1039,7 @@ bool ProcNoRelocs( void )
         return( Proc16MNoRelocs() );
     }
 #endif
-#if defined( _ELF )
+#ifdef _ELF
     if( HintFormat( MK_ELF ) ) {
         return( ProcELFNoRelocs() );
     }
@@ -1069,12 +1069,12 @@ bool ProcSegment( void )
 bool ProcAlignment( void )
 /*******************************/
 {
-#if defined( _OS2 )
+#ifdef _OS2
     if( HintFormat( MK_OS2_16BIT | MK_OS2_LX | MK_PE ) ) {
         return( ProcOS2Alignment() );
     }
 #endif
-#if defined( _ELF )
+#ifdef _ELF
     if( HintFormat( MK_ELF ) ) {
         return( ProcELFAlignment() );
     }

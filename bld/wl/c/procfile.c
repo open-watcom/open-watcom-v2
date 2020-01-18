@@ -673,10 +673,12 @@ void ResolveUndefined( void )
     bool        keepgoing;
 
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         LinkState |= LS_CAN_REMOVE_SEGMENTS;
         DistribInitMods();
     }
+#endif
     CurrSect = Root;
     ResolveVFExtdefs();
     do {

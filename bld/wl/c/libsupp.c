@@ -64,23 +64,29 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
         return( false );
     }
     lib->flags |= STAT_LIB_USED;
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         if( lib->flags & STAT_LIB_FIXED ) {
             lp->modinfo |= MOD_FIXED;
         }
         DistribAddMod( lp, lib->ovlref );
     } else {
+#endif
         for( prev = &LibModules; *prev != NULL; ) { /*  find end of list */
             prev = &(*prev)->n.next_mod;
         }
         *prev = lp;
+#ifdef _EXE
     }
+#endif
     CurrMod = lp;
     ObjPass1();
     CacheClose( lib, 1 );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         DistribFinishMod( lp );
     }
+#endif
     if( FindLibTrace( lp ) ) {
         TraceSymList( lp->publist );
     }
