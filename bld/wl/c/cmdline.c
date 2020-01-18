@@ -63,9 +63,6 @@
 #include "loadfile.h"
 #include "pathlist.h"
 
-#ifdef _INT_DEBUG
-unsigned int            Debug;
-#endif
 
 static void             Crash( bool );
 static void             Help( void );
@@ -1140,36 +1137,6 @@ bool ProcOffset( void )
 //    }
 //#endif
     ChkBase( _64KB );
-    return( true );
-}
-#endif
-
-#ifdef _INT_DEBUG
-bool ProcXDbg( void )
-/**************************/
-/* process DEBUG command */
-{
-    char        value[7];
-
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        if( Token.len > 6 ) {
-            return( false );
-        } else {
-            memcpy( value, Token.this, Token.len );
-            value[Token.len] = '\0';
-            Debug = strtoul( value, NULL, 0 );
-            DEBUG(( DBG_BASE, "debugging info type = %x", Debug ));
-        }
-        return( true );
-    } else {
-        return( false );
-    }
-}
-
-bool ProcIntDbg( void )
-/****************************/
-{
-    LinkState |= LS_INTERNAL_DEBUG;
     return( true );
 }
 #endif

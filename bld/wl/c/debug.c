@@ -40,13 +40,13 @@
 #include "ideentry.h"
 #include "alloc.h"
 
-#ifdef _INT_DEBUG
 
-extern int      Debug;
+#ifdef _INT_DEBUG
 
 long unsigned   TrecCount;
 bool            TrecHit = false;
 long unsigned   SpyWrite = -1;
+unsigned        Debug;
 
 static jmp_buf  lj;
 static int      segViolationCount;

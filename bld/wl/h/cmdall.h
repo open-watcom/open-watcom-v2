@@ -141,7 +141,11 @@ extern bool     ProcOrdSegCopy( void );
 extern bool     ProcOrdSegNoEmit( void );
 extern bool     ProcDescription( void );
 extern bool     ProcObjAlign( void );
-extern void     ResetCmdAll( void );
+#ifdef _INT_DEBUG
+extern bool     ProcXDbg( void );
+extern bool     ProcIntDbg( void );
+#endif
 
+extern void     ResetCmdAll( void );
 extern sysblock *FindSysBlock( const char * );
 extern void     ChkBase( offset align );
