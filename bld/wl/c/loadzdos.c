@@ -45,6 +45,8 @@
 #include "loadfile.h"
 
 
+#ifdef _ZDOS
+
 static unsigned_32 WriteZdosData( unsigned file_pos )
 /***************************************************/
 {
@@ -119,3 +121,5 @@ void FiniZdosLoadFile( void )
     SeekLoad( 0 );
     WriteLoad( &header, sizeof( zdos_exe_header ) );
 }
+
+#endif

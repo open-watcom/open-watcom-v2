@@ -73,6 +73,9 @@
 
 #include "clibext.h"
 
+
+#ifdef _OS2
+
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
 #define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
 
@@ -1788,3 +1791,5 @@ void FreePELocalImports( void )
     PELocalImpList = NULL;
     NumLocalImports = 0;
 }
+
+#endif

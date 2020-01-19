@@ -76,6 +76,7 @@
     extern long unsigned    SpyWrite;
 
     extern unsigned         Debug;
+
 #else
 
     #define PRINTLOC

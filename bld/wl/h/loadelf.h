@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,13 @@
 ****************************************************************************/
 
 
+#ifdef _ELF
+
 extern void             FiniELFLoadFile( void );
 extern unsigned_32      AllocELFImport( symbol * );
 extern void             BuildOS2Imports( void );
 extern void             ChkElfData( void );
 extern int              FindElfSymIdx( symbol * );
 extern unsigned         GetElfHeaderSize( void );
+
+#endif

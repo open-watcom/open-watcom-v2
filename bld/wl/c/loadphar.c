@@ -44,6 +44,9 @@
 #include "fileio.h"
 #include "loadfile.h"
 
+
+#ifdef _PHARLAP
+
 #define HEAD_SIZE 0x180
 #define RTP_SIZE  0x080
 
@@ -391,3 +394,5 @@ void FiniPharLapLoadFile( void )
         WritePharSimple( start );
     }
 }
+
+#endif

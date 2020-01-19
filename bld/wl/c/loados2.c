@@ -71,6 +71,8 @@
 #include "clibext.h"
 
 
+#ifdef _OS2
+
 #define STUB_ALIGN 16
 
 typedef struct FullResourceRecord {
@@ -1128,3 +1130,5 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
     }
     return( stub_len );
 }
+
+#endif

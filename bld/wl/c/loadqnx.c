@@ -49,6 +49,8 @@
 #include "newmem.h"
 
 
+#ifdef _QNX
+
 #define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
 #define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
 
@@ -458,3 +460,5 @@ unsigned_16 ToQNXIndex( unsigned_16 sel )
 {
     return( QNX_SEL_NUM( sel ) );
 }
+
+#endif

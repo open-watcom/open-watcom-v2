@@ -49,6 +49,8 @@
 #include "loadrdv.h"
 
 
+#ifdef _RDOS
+
 #define MB_BASE     0x120000
 
 static unsigned_32  CodeSize = 0;
@@ -322,3 +324,5 @@ void FiniRdosLoadFile( void )
     DBIWrite();
     writeHeader();
 }
+
+#endif

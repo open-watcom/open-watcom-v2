@@ -51,6 +51,8 @@
 #include "clibext.h"
 
 
+#ifdef _NOVELL
+
 #define DUMMY_THREAD_NAME " LONG"
 
 static unsigned_32  DbgInfoCount;
@@ -712,3 +714,5 @@ void FindExportedSyms( void )
         }
     }
 }
+
+#endif

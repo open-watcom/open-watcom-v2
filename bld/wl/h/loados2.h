@@ -34,6 +34,8 @@
 #ifndef _LOADOS2_H_
 #define _LOADOS2_H_
 
+#ifdef _OS2
+
 // linker specific OS/2 load file stuff.
 
 // the first 4 fields must be the same as the xxx_seg_flags structure
@@ -92,8 +94,6 @@ typedef struct os2_seg_flags {
 
 #include "exeos2.h"
 
-typedef int exportcompare_fn(const char *, const char *);
-
 /* in loadflat.c */
 
 extern void             FiniOS2FlatLoadFile( void );
@@ -103,7 +103,6 @@ extern bool             FindOS2ExportSym( symbol *, dll_sym_info ** );
 
 extern unsigned long    ImportProcTable( unsigned long * );
 extern unsigned long    ImportModTable( unsigned long * );
-extern void             CheckExport( char *, ordinal_t, exportcompare_fn * );
 extern unsigned long    ResNonResNameTable( bool );
 extern void             SetOS2SegFlags( void );
 extern void             SetOS2GroupFlags( void );
@@ -112,5 +111,7 @@ extern void             PhoneyStack( void );
 extern void             FiniOS2LoadFile( void );
 extern void             FreeImpNameTab( void );
 extern unsigned_32      WriteStubFile( unsigned_32 );
+
+#endif
 
 #endif

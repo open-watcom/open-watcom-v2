@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#ifdef _QNX
+
 // the first 4 fields must be the same as the xxx_seg_flags structure
 // defined in objstruc.h
 
@@ -58,3 +60,5 @@ extern void             SetQNXGroupFlags( void );
 extern void             FiniQNXLoadFile( void );
 extern unsigned_16      ToQNXSel( unsigned_16 );
 extern unsigned_16      ToQNXIndex( unsigned_16 );
+
+#endif

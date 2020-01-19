@@ -47,6 +47,8 @@
 #include "loadfile.h"
 
 
+#ifdef _RAW
+
 typedef offset  hex_offset;
 
 typedef segment hex_segment;
@@ -93,7 +95,7 @@ static bool WriteBinSegGroup( group_entry *group )
 
 
 void BinOutput( void )
-/***************************/
+/********************/
 {
     outfilelist         *fnode;
     group_entry         *group;
@@ -487,3 +489,5 @@ void FiniRawLoadFile( void )
         DBIWrite();
     }
 }
+
+#endif

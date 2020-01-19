@@ -79,6 +79,9 @@ String table for sections
 #include "dbgdwarf.h"
 #include "objcalc.h"
 
+
+#ifdef _ELF
+
 static stringtable      SymStrTab;
 static ElfSymTable *    ElfSymTab;
 
@@ -432,3 +435,4 @@ int FindElfSymIdx( symbol *sym )
     return( FindSymIdxElfSymTable( ElfSymTab, sym ) );
 }
 
+#endif

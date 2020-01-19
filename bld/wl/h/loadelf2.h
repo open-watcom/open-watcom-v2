@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,8 @@
 *
 ****************************************************************************/
 
+
+#ifdef _ELF
 
 #include "strtab.h"
 
@@ -75,3 +78,5 @@ extern void             WriteElfSymTable( ElfSymTable *tab,
                                           unsigned strtabidx );
 extern void             ZapElfSymTable( ElfSymTable *tab);
 extern size_t           AddSecName( ElfHdr *hdr, const char *name );
+
+#endif

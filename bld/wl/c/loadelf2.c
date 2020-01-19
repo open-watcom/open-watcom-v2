@@ -45,6 +45,9 @@
 #include "strtab.h"
 #include <string.h>
 
+
+#ifdef _ELF
+
 static unsigned_8       PrimeNos[] = {
   2,      3,      5,      7,     11,     13,     17,     19,     23,     29,
  31,     37,     41,     43,     47,     53,     59,     61,     67,     71,
@@ -255,3 +258,5 @@ void ZapElfSymTable( ElfSymTable *tab )
     _LnkFree( tab->chains );
     _LnkFree( tab );
 }
+
+#endif

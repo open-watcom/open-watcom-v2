@@ -47,6 +47,8 @@
 #include "vxd_ddb.h"
 
 
+#ifdef _OS2
+
 #define STUB_ALIGN 16
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
@@ -570,3 +572,5 @@ bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
     }
     return false;
 }
+
+#endif

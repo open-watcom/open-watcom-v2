@@ -54,6 +54,8 @@
 #include "clibext.h"
 
 
+#ifdef _DOS16M
+
 /* Notes:
  *  - Currently we only support RSI-1 style relocations (2 segments, one containing
  * fixup segment values and the other offsets, presumably limited to 32K relocs).
@@ -475,3 +477,5 @@ void MakeDos16PM( void )
         SetStartSym( "_cstart_" );
     }
 }
+
+#endif
