@@ -48,14 +48,14 @@
 #include "loadfile.h"
 #include "newmem.h"
 
+
+#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
+#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
+
 static offset           AmountWritten;
 static bool             InVerifySegment;
 static lmf_rw_end       RWEndRec;
 static group_entry *    CurrGroup;
-
-
-#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
-#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
 
 static void WriteLoadRec( void )
 /******************************/

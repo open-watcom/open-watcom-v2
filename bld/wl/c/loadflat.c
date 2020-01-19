@@ -46,6 +46,7 @@
 #include "dbgall.h"
 #include "vxd_ddb.h"
 
+
 #define STUB_ALIGN 16
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
@@ -128,8 +129,10 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         objrec.size = group->totalsize;
         objrec.addr = group->linear;
         objrec.flags = 0;
-        /* segflags are in OS/2 V1.x format, we have to translate them
-            into the appropriate V2.0 bits */
+        /*
+         * segflags are in OS/2 V1.x format, we have to translate them
+         * into the appropriate V2.0 bits
+         */
         leader = Ring2First( group->leaders );
         if( leader->info & USE_32 ) {
             objrec.flags |= OBJ_BIG;
@@ -438,9 +441,11 @@ void FiniOS2FlatLoadFile( void )
     exe_head.num_impmods = count;
     PadLoad( 1 );
     curr_loc += 1;
-/* The minus one following is to allow for the fact that all OS/2 V2 import
- * by name offsets should be one less than the corresponding values in
- * V1.x -- yuck. */
+    /*
+     * The minus one following is to allow for the fact that all OS/2 V2 import
+     * by name offsets should be one less than the corresponding values in
+     * V1.x -- yuck.
+     */
     exe_head.impproc_off = curr_loc - 1;
     curr_loc += ImportProcTable( &count );
     exe_head.fixup_size = curr_loc - exe_head.fixpage_off;
@@ -461,8 +466,10 @@ void FiniOS2FlatLoadFile( void )
         exe_head.nonres_off = 0;
     curr_loc = PosLoad();
     DBIWrite();
-/* If debug info was written, we want to mark it in the header so that
- * RC doesn't throw it away! */
+    /*
+     * If debug info was written, we want to mark it in the header so that
+     * RC doesn't throw it away!
+     */
     SeekEndLoad( 0 );
     debug_size =  PosLoad() - curr_loc;
     if( debug_size ) {
@@ -506,8 +513,10 @@ void FiniOS2FlatLoadFile( void )
             exe_head.flags |= OSF_VIRT_DEVICE;
         } else if( FmtData.dll ) {
             exe_head.flags |= OSF_IS_DLL;
-            // The OS/2 loader REALLY doesn't like to have these flags set if there
-            // is no entrypoint!
+            /*
+             * The OS/2 loader REALLY doesn't like to have these flags set if there
+             * is no entrypoint!
+             */
             if( exe_head.start_obj != 0 ) {
                 if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
                     exe_head.flags |= OSF_INIT_INSTANCE;
@@ -517,7 +526,9 @@ void FiniOS2FlatLoadFile( void )
                 }
             }
         } else {
-            // These are only relevant for EXEs
+            /*
+             * These are only relevant for EXEs
+             */
             exe_head.stacksize = StackSize;
             if( FmtData.u.os2.flags & PM_NOT_COMPATIBLE ) {
                 exe_head.flags |= OSF_NOT_PM_COMPATIBLE;
@@ -537,9 +548,9 @@ void FiniOS2FlatLoadFile( void )
         exe_head.heapsize  = FmtData.u.os2.heapsize;
     }
     exe_head.page_size = OSF_DEF_PAGE_SIZE;
-    exe_head.num_preload = 0;   /* NYI: we should fill in this one correctly */
-    exe_head.num_inst_preload = 0;  /*NYI: should fill in correctly */
-    exe_head.num_inst_demand = 0;   /*NYI: should fill in correctly */
+    exe_head.num_preload = 0;       /* NYI: we should fill in this one correctly */
+    exe_head.num_inst_preload = 0;  /* NYI: should fill in correctly */
+    exe_head.num_inst_demand = 0;   /* NYI: should fill in correctly */
     SeekLoad( stub_len );
     WriteLoad( &exe_head, sizeof( os2_flat_header ) );
 }

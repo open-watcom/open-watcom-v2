@@ -103,6 +103,8 @@ static void DoSavedImport( symbol *sym )
 static void DoSavedExport( symbol *sym )
 /**************************************/
 {
+    /* unused parameters */ (void)sym;
+
 #ifdef _OS2
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         entry_export    *exp;
@@ -793,12 +795,16 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         sym_type = SYM_REGULAR;
         if( IS_SYM_IMPORTED( sym ) ) {
             sym = HashReplace( sym );
-            if( (FmtData.type & MK_PE) && sym->p.import != NULL ) {
-                dll_sym_info  *dll_info = sym->p.import;
-                AddPEImportLocalSym( sym, dll_info->iatsym );
-                sym_type |= SYM_REFERENCED;
-                LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
+#ifdef _OS2
+            if( FmtData.type & MK_PE ) {
+                if( sym->p.import != NULL ) {
+                    dll_sym_info  *dll_info = sym->p.import;
+                    AddPEImportLocalSym( sym, dll_info->iatsym );
+                    sym_type |= SYM_REFERENCED;
+                    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
+                }
             }
+#endif
         } else if( IS_SYM_COMMUNAL( sym ) ) {
             sym = HashReplace( sym );
             sym->p.seg = NULL;
@@ -1275,15 +1281,21 @@ void HandleImport( const length_name *intname, const length_name *modname,
 {
     symbol      *sym;
 
+#ifndef _OS2
+    /* unused parameters */ (void)modname; (void)extname; (void)ordinal;
+#endif
+
     sym = SymOp( ST_CREATE, intname->name, intname->len );
     if( (sym->info & SYM_DEFINED) == 0 ) {
         if( CurrMod != NULL ) {
             Ring2Append( &CurrMod->publist, sym );
             sym->mod = CurrMod;
         }
+#ifdef _OS2
         if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
             MSImportKeyword( sym, modname, extname, ordinal );
         } else {
+#endif
             SET_SYM_TYPE( sym, SYM_IMPORTED );
             sym->info |= SYM_DEFINED | SYM_DCE_REF;
 #ifdef _NOVELL
@@ -1296,7 +1308,9 @@ void HandleImport( const length_name *intname, const length_name *modname,
                 SetELFImportSymbol( sym );
             }
 #endif
+#ifdef _OS2
         }
+#endif
     }
 }
 
@@ -1323,11 +1337,19 @@ void HandleExport( const length_name *expname, const length_name *intname,
                                         unsigned flags, ordinal_t ordinal )
 /*************************************************************************/
 {
+#ifndef _OS2
+    /* unused parameters */ (void)intname; (void)flags; (void)ordinal;
+#endif
+
+#ifdef _OS2
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );
     } else {
+#endif
         ExportSymbol( expname );
+#ifdef _OS2
     }
+#endif
 }
 
 bool CheckVFList( symbol *sym )

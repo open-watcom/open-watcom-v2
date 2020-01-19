@@ -1249,10 +1249,9 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 {
     targ_addr           target;
     group_entry         *grp;
-    byte                *fixptr;
-    dll_sym_info        *dll;
-    bool                freedll;
     fix_type            ftype;
+
+    /* unused parameters */ (void)tthread;
 
     ftype = fix->type & (FIX_OFFSET_MASK | FIX_BASE);
     target = fix->tgt_addr;
@@ -1281,6 +1280,8 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
     } else if( FmtData.type & MK_OS2_16BIT ) {
         os2_reloc_item  *os2item;
         offset          off;
+        byte            *fixptr;
+        dll_sym_info    *dll;
 
         off = fix->loc_addr.off;
         fixptr = fix->data;
@@ -1321,9 +1322,12 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         }
         return( true );
     } else if( FmtData.type & MK_OS2_FLAT )  {
-        segdata *targseg;
-        byte    flags;
-        byte    fixtype;
+        segdata         *targseg;
+        byte            flags;
+        byte            fixtype;
+        byte            *fixptr;
+        dll_sym_info    *dll;
+        bool            freedll;
 
         fixptr = breloc->item.os2f.buff;
         freedll = false;

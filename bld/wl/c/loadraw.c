@@ -98,8 +98,10 @@ void BinOutput( void )
     outfilelist         *fnode;
     group_entry         *group;
     bool                repos;
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     unsigned_32         size;
     signed_32           diff;
+#endif
 
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
@@ -319,12 +321,14 @@ void HexOutput( void )
 {
     outfilelist         *fnode;
     group_entry         *group;
-    group_entry         *wrkgrp;
     section             *sect;
 #ifdef _INT_DEBUG
     outfilelist         *finfo;
 #endif
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
+    group_entry         *wrkgrp;
     unsigned_32         size;
+#endif
     class_entry         *class;
     grpwriteinfo        info;
 //    unsigned long     file_loc;

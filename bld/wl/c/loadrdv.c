@@ -48,15 +48,14 @@
 #include "dbgall.h"
 #include "loadrdv.h"
 
+
+#define MB_BASE     0x120000
+
 static unsigned_32  CodeSize = 0;
 static unsigned_32  DataSize = 0;
 static unsigned_32  HeaderSize = 0;
 
-
-#define MB_BASE 0x120000
-
-struct mb_header
-{
+struct mb_header {
     unsigned_32 mb_magic;
     unsigned_32 mb_flags;
     unsigned_32 mb_checksum;

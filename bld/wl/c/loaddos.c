@@ -48,11 +48,13 @@
 #include "dbgall.h"
 #include "loaddos.h"
 
+
 unsigned_32             OvlTabOffset;
 
 static unsigned_32 WriteDOSRootRelocs( unsigned_32 mz_hdr_size )
-/**************************************************************/
-/* write all relocs to the file */
+/***************************************************************
+ * write all relocs to the file
+ */
 {
     unsigned long       header_size;
 
@@ -64,8 +66,9 @@ static unsigned_32 WriteDOSRootRelocs( unsigned_32 mz_hdr_size )
 }
 
 static void WriteDOSSectRelocs( section *sect, bool repos )
-/*********************************************************/
-/* write all relocs associated with sect to the file */
+/**********************************************************
+ * write all relocs associated with sect to the file
+ */
 {
     unsigned long       file_loc;
     OUTFILELIST         *out;
@@ -106,8 +109,9 @@ static void AssignFileLocs( section *sect )
 }
 
 static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
-/**********************************************************/
-/* copy code from extra memory to loadfile */
+/***********************************************************
+ * copy code from extra memory to loadfile
+ */
 {
     group_entry         *group;
     group_entry         *next_group;
@@ -129,7 +133,7 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
         OvlEmitTable();
     }
 
-    // keep track of positions within the file.
+    /* keep track of positions within the file. */
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->file_loc = 0;
     }
@@ -280,8 +284,9 @@ static void WriteCOMFile( void )
 }
 
 void FiniDOSLoadFile( void )
-/*********************************/
-/* terminate writing of load file */
+/***************************
+ * terminate writing of load file
+ */
 {
     unsigned_32         hdr_size;
     unsigned_32         mz_hdr_size;
@@ -304,7 +309,7 @@ void FiniDOSLoadFile( void )
     if( FmtData.type & MK_OVERLAYS ) {
         OvlPadOvlFiles();
     }
-    // output debug info into root main output file
+    /* output debug info into root main output file */
     CurrSect = Root;
     DBIWrite();
     hdr_size = MAKE_PARA( Root->relocs * sizeof( dos_addr ) + mz_hdr_size );
