@@ -208,9 +208,9 @@ void InitLoadFile( void )
 static void finiLoad( void )
 /**************************/
 {
-	/*******************************************************************
-	 * This must be first of all
-	 */
+    /*******************************************************************
+     * This must be first of all
+     */
 #ifdef _RAW
     if( FmtData.output_raw ) {
         BinOutput();    // apply to all formats and override native output
@@ -223,7 +223,7 @@ static void finiLoad( void )
         return;
     }
 #endif
-	/*******************************************************************/
+    /*******************************************************************/
 #ifdef _EXE
     if( FmtData.type & MK_DOS ) {
         FiniDOSLoadFile();

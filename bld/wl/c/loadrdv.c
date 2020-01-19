@@ -123,9 +123,9 @@ static void WriteRDOSCode( void )
         if( iscode ) {
             CurrSect->u.file_loc = HeaderSize + CodeSize;
             WriteGroup( group );
-            if( group->totalsize > group->size )
+            if( group->totalsize > group->size ) {
                 PadLoad( group->totalsize - group->size );
-
+            }
             CodeSize += group->totalsize;
         }
     }

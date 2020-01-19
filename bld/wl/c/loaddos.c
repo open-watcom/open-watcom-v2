@@ -110,6 +110,7 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
 /* copy code from extra memory to loadfile */
 {
     group_entry         *group;
+    group_entry         *next_group;
     SECTION             *sect;
     unsigned long       header_size;
     outfilelist         *fnode;
@@ -128,22 +129,22 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
         OvlEmitTable();
     }
 
-// keep track of positions within the file.
+    // keep track of positions within the file.
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->file_loc = 0;
     }
     Root->outfile->file_loc = Root->u.file_loc;
     Root->sect_addr = Groups->grp_addr;
 
-/* write groups and relocations */
+    /* write groups and relocations */
     root_size = 0;
-    for( group = Groups; group != NULL; ) {
+    for( group = Groups; group != NULL; group = next_group ) {
+        next_group = group->next_group;
         sect = group->section;
         CurrSect = sect;
         fnode = sect->outfile;
         repos = WriteGroup( group );
-        group = group->next_group;
-        if( ( group == NULL ) || ( sect != group->section ) ) {
+        if( ( next_group == NULL ) || ( sect != next_group->section ) ) {
             if( sect == Root ) {
                 root_size = fnode->file_loc;
             } else {
@@ -204,9 +205,10 @@ static bool DoCOMGroup( void *_seg, void *chop )
 }
 
 static bool WriteCOMGroup( group_entry *group, soffset chop )
-/***********************************************************/
-/* write the data for group to the loadfile */
-/* returns true if the file should be repositioned */
+/************************************************************
+ * write the data for group to the loadfile
+ * returns true if the file should be repositioned
+ */
 {
     unsigned long       file_loc;
     section             *sect;
@@ -236,8 +238,9 @@ static bool WriteCOMGroup( group_entry *group, soffset chop )
 }
 
 static void WriteCOMFile( void )
-/******************************/
-// generate a DOS .COM file.
+/*******************************
+ * generate a DOS .COM file.
+ */
 {
     outfilelist         *fnode;
     group_entry         *group;
