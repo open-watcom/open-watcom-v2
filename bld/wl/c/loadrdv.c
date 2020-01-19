@@ -79,7 +79,7 @@ static void WriteBinData( void )
     Root->outfile->file_loc = Root->u.file_loc;
     Root->sect_addr = Groups->grp_addr;
 
-/* write groups and relocations */
+    /* write groups and relocations */
     for( group = Groups; group != NULL; group = group->next_group ) {
         CurrSect = group->section;  // needed for WriteInfo.
         if( group->totalsize ) {
@@ -104,13 +104,13 @@ static void WriteRDOSCode( void )
     Root->sect_addr = Groups->grp_addr;
     leader = NULL;
 
-/* write groups and relocations */
+    /* write groups and relocations */
     iscode = false;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( leader != group->leaders ) {
             iscode = false;
             leader = group->leaders;
-            if( leader != NULL && leader->size && FmtData.u.rdos.driver ) {
+            if( leader != NULL && leader->size ) {
                 piece = leader->pieces;
                 if( piece != NULL ) {
                     if( piece->iscode && ( leader->seg_addr.seg == FmtData.u.rdos.code_seg ) ) {
@@ -132,8 +132,10 @@ static void WriteRDOSCode( void )
 }
 
 static void WriteRDOSData( void )
-/**********************************************************/
-/* copy code from extra memory to loadfile */
+/********************************
+ * copy code from extra memory
+ * to loadfile
+ */
 {
     group_entry         *group;
     struct seg_leader   *leader;
@@ -142,14 +144,14 @@ static void WriteRDOSData( void )
 
     DEBUG(( DBG_BASE, "Writing data" ));
 
-/* write groups and relocations */
+    /* write groups and relocations */
     leader = NULL;
     isdata = false;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( leader != group->leaders ) {
             isdata = false;
             leader = group->leaders;
-            if( leader != NULL && leader->size && FmtData.u.rdos.driver ) {
+            if( leader != NULL && leader->size ) {
                 piece = leader->pieces;
                 if( piece != NULL ) {
                     if( ( piece->isidata || piece->isuninit ) && ( leader->seg_addr.seg == FmtData.u.rdos.data_seg ) ) {
@@ -185,8 +187,7 @@ void GetRdosSegs( void )
     SEGDATA             *piece;
 
     leader = NULL;
-
-    for( group = Groups; group != NULL; ) {
+    for( group = Groups; group != NULL; group = group->next_group ) {
         if( leader != group->leaders ) {
             leader = group->leaders;
             if( leader != NULL && leader->size ) {
@@ -200,7 +201,6 @@ void GetRdosSegs( void )
                 }
             }
         }
-        group = group->next_group;
     }
 }
 
@@ -266,59 +266,59 @@ static void WriteMbootHeader( void )
     WriteLoad( &mb_head, sizeof( struct mb_header ) );
 }
 
-static void FiniRdosLoadFile16( void )
-/* terminate writing of load file */
+static size_t getHeaderSize( void )
+/**********************************
+ * get header size for appropriate
+ * RDOS target format
+ */
 {
-    if( FmtData.u.rdos.driver ) {
-        HeaderSize = sizeof( rdos_dev16_header );
-        SeekLoad( HeaderSize );
-        Root->u.file_loc = HeaderSize;
-        WriteRDOSCode();
-        WriteRDOSData();
-        DBIWrite();
-        WriteHeader16();
-    } else {
-        if( FmtData.u.rdos.mboot ) {
-            HeaderSize = sizeof( struct mb_header );
-            SeekLoad( HeaderSize );
-            Root->u.file_loc = HeaderSize;
+    size_t  size;
+
+    if( FmtData.u.rdos.mboot ) {
+        size = sizeof( struct mb_header );
+    } else if( FmtData.u.rdos.driver ) {
+        if( FmtData.u.rdos.bitness == 16 ) {
+            size = sizeof( rdos_dev16_header );
         } else {
-            Root->u.file_loc = 0;
-            SeekLoad( 0 );
+            size = sizeof( rdos_dev32_header );
         }
-        WriteBinData();
-        DBIWrite();
-        if( FmtData.u.rdos.mboot )
-            WriteMbootHeader();
+    } else {
+        size = 0;
     }
 }
 
-static void FiniRdosLoadFile32( void )
-/* terminate writing of load file */
+static void writeHeader( void )
+/**********************************
+ * if required then write header for
+ * appropriate RDOS target format
+ */
 {
-    if( FmtData.u.rdos.driver ) {
-        HeaderSize = sizeof( rdos_dev32_header );
-        SeekLoad( HeaderSize );
-        Root->u.file_loc = HeaderSize;
-        WriteRDOSCode();
-        WriteRDOSData();
-        DBIWrite();
-        CodeSize += 0x10;           // this is a fix to make offsets into data segment correct
-        WriteHeader32();
+    if( FmtData.u.rdos.mboot ) {
+        WriteMbootHeader();
+    } else if( FmtData.u.rdos.driver ) {
+        if( FmtData.u.rdos.bitness == 16 ) {
+            WriteHeader16();
+        } else {
+            CodeSize += 0x10;   // this is a fix to make offsets into data segment correct
+            WriteHeader32();
+        }
     } else {
-        SeekLoad( 0 );
-        Root->u.file_loc = 0;
-        WriteBinData();
-        DBIWrite();
+        /* nothing to write */
     }
 }
 
 void FiniRdosLoadFile( void )
 /* terminate writing of load file */
 {
-    if( FmtData.u.rdos.bitness == 16 )
-        FiniRdosLoadFile16();
-    if( FmtData.u.rdos.bitness == 32 ) {
-        FiniRdosLoadFile32();
+    HeaderSize = getHeaderSize();
+    SeekLoad( HeaderSize );
+    Root->u.file_loc = HeaderSize;
+    if( FmtData.u.rdos.driver ) {
+        WriteRDOSCode();
+        WriteRDOSData();
+    } else {
+        WriteBinData();
     }
+    DBIWrite();
+    writeHeader();
 }
