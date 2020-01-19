@@ -182,14 +182,14 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
                 return( index );
             }
         }
-#ifdef _QNX
-    } else if( FmtData.type & MK_QNX ) {
-        return( ToQNXIndex( seg->seg_addr.seg ) );
-#endif
-    } else {
-        return( seg->seg_addr.seg );
+        return( 0 );
     }
-    return( 0 );
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        return( ToQNXIndex( seg->seg_addr.seg ) );
+    }
+#endif
+    return( seg->seg_addr.seg );
 }
 
 static void AddSubSection( bool ismodule )
