@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,9 @@ extern parse_entry SysDirectives[];
 extern parse_entry Models[];
 extern parse_entry Languages[];
 extern parse_entry EndLinkOpt[];
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
 extern parse_entry RunOptions[];
+#endif
 extern parse_entry Strategies[];
 extern parse_entry TransTypes[];
 extern parse_entry QNXSegModel[];

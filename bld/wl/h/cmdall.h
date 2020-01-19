@@ -69,7 +69,9 @@ extern bool     ProcReference( void );
 extern bool     ProcDisable( void );
 extern bool     ProcSort( void );
 extern bool     ProcLanguage( void );
+#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
 extern bool     ProcNewSegment( void );
+#endif
 extern bool     ProcSymTrace( void );
 extern bool     ProcModTrace( void );
 extern bool     ProcStart( void );
@@ -117,7 +119,9 @@ extern bool     ProcNoStub( void );
 extern bool     ProcVersion( void );
 extern bool     ProcImplib( void );
 extern bool     ProcImpFile( void );
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
 extern bool     ProcRuntime( void );
+#endif
 #ifdef _RAW
 extern bool     ProcOutput( void );
 extern bool     ProcOutputRaw( void );

@@ -49,6 +49,8 @@
 #include "cmdzdos.h"
 
 
+#ifdef _ZDOS
+
 void SetZdosFmt( void )
 /*********************/
 {
@@ -91,3 +93,5 @@ bool ProcZdosFSD( void )
     Extension = E_FSD;
     return( true );
 }
+
+#endif

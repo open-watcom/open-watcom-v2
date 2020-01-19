@@ -46,6 +46,8 @@
 #include "load16m.h"
 
 
+#ifdef _EXE
+
 #define LowestAncestorMap(o,i)  LowestAncestor( o, SectOvlTab[i] )
 
 #define INITIAL_MOD_ALLOC   32
@@ -572,3 +574,5 @@ void DistribIndirectCall( symbol *sym )
     sym->u.d.ovlstate |= OVL_REF;
     sym->u.d.ovlref = 0;                // make sure current symbol put in root.
 }
+
+#endif

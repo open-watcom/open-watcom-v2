@@ -49,6 +49,8 @@
 #include "loaddos.h"
 
 
+#ifdef _EXE
+
 unsigned_32             OvlTabOffset;
 
 static unsigned_32 WriteDOSRootRelocs( unsigned_32 mz_hdr_size )
@@ -337,3 +339,5 @@ void FiniDOSLoadFile( void )
     WriteLoad( &exe_head, sizeof( dos_exe_header ) );
     WriteLoadU32( OvlTabOffset );
 }
+
+#endif

@@ -47,6 +47,8 @@
 #include "cmdall.h"
 
 
+#ifdef _PHARLAP
+
 bool ProcPharLap( void )
 /*****************************/
 {
@@ -300,3 +302,5 @@ bool ProcIStkSize( void )
     }
     return( ret );
 }
+
+#endif

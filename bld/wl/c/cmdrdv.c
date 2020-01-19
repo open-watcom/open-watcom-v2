@@ -49,6 +49,8 @@
 #include "cmdrdv.h"
 
 
+#ifdef _RDOS
+
 void SetRdosFmt( void )
 /*********************/
 // set up the structures needed to be able to process something in RDOS mode.
@@ -141,3 +143,5 @@ bool ProcRdosDataSel( void )
 {
     return( GetLong( &FmtData.u.rdos.data_sel ) );
 }
+
+#endif

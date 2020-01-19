@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#ifdef _OS2
+
 extern bool     ProcCommit( void );
 extern bool     ProcAnonExport( void );
 extern bool     ProcSingle( void );
@@ -143,3 +145,5 @@ extern bool     ProcOsVersion( void );
 extern bool     ProcChecksum( void );
 extern bool     ProcLargeAddressAware( void );
 extern bool     ProcNoLargeAddressAware( void );
+
+#endif

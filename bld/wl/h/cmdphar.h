@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,8 @@
 ****************************************************************************/
 
 
+#ifdef _PHARLAP
+
 extern bool     ProcPackExp( void );
 extern bool     ProcMinData( void );
 extern bool     ProcMaxData( void );
@@ -53,3 +56,5 @@ extern bool     ProcPharSegmented( void );
 
 extern void     SetPharFmt( void );
 extern void     FreePharFmt( void );
+
+#endif

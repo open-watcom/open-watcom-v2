@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,6 +29,8 @@
 *
 ****************************************************************************/
 
+
+#ifdef _DOS16M
 
 extern bool     ProcMemory16M( void );
 extern bool     ProcTryExtended( void );
@@ -56,3 +59,5 @@ extern bool     ProcDataSize( void );
 extern void     SetD16MFmt( void );
 extern void     FreeD16MFmt( void );
 extern bool     Proc16M( void );
+
+#endif

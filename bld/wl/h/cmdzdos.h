@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#ifdef _ZDOS
+
 extern bool ProcZdos( void );
 extern bool ProcZdosSYS( void );
 extern bool ProcZdosHWD( void );
@@ -38,3 +40,5 @@ extern bool ProcZdosFSD( void );
 
 extern void SetZdosFmt( void );
 extern void FreeZdosFmt( void );
+
+#endif

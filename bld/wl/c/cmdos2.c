@@ -51,6 +51,8 @@
 #include "cmdall.h"
 
 
+#ifdef _OS2
+
 static void             ParseVersion( void );
 static bool             GetWlibImports( void );
 static bool             getimport( void );
@@ -1255,3 +1257,5 @@ bool ProcNoLargeAddressAware( void )
     FmtData.u.pe.largeaddressaware = false;
     return( true );
 }
+
+#endif

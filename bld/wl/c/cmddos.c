@@ -45,6 +45,8 @@
 #include "distrib.h"
 
 
+#ifdef _EXE
+
 static byte         OvlLevel;
 
 void SetDosFmt( void )
@@ -233,7 +235,7 @@ bool ProcEnd( void )
 }
 
 void MakeNewSection( void )
-/********************************/
+/*************************/
 {
     section             *sect;
 
@@ -450,3 +452,5 @@ void CmdOvlFini( void )
     PrintOvl();
 #endif
 }
+
+#endif

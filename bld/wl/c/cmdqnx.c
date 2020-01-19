@@ -49,6 +49,8 @@
 #include "cmdall.h"     // for ChkBase
 
 
+#ifdef _QNX
+
 bool ProcQNX( void )
 /*************************/
 {
@@ -206,3 +208,5 @@ bool ProcQNXPrivilege( void )
     }
     return( true );
 }
+
+#endif

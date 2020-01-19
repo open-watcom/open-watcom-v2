@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#ifdef _EXE
+
 extern bool         ProcOverlay( void );
 extern bool         ProcBegin( void );
 extern bool         ProcFixedLib( void );
@@ -59,3 +61,5 @@ extern void         FreeDosFmt( void );
 extern void         MakeNewSection( void );
 extern void         CmdOvlFini( void );
 extern overlay_ref  GetOvlRef( void );
+
+#endif

@@ -43,6 +43,8 @@
 #include "clibext.h"
 
 
+#ifdef _DOS16M
+
 bool ProcMemory16M( void )
 /************************/
 {
@@ -316,3 +318,5 @@ bool Proc16M( void )
 {
     return( true );
 }
+
+#endif

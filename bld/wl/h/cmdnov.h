@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#ifdef _NOVELL
+
 extern bool     ProcNovDBI( void );
 extern bool     ProcExportsDBI( void );
 extern bool     ProcNovModule( void );
@@ -78,3 +80,5 @@ extern void     SetNovImportSymbol( symbol * );
 extern void     SetNovFmt( void );
 extern void     FreeNovFmt( void );
 extern void     CmdNovFini( void );
+
+#endif

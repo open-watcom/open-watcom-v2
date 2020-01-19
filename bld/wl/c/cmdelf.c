@@ -39,6 +39,8 @@
 #include "exeelf.h"
 
 
+#ifdef _ELF
+
 bool ProcELF( void )
 /******************/
 {
@@ -273,3 +275,5 @@ bool ProcELFRFBSD( void )
     ParseABIVersion();
     return( true );
 }
+
+#endif

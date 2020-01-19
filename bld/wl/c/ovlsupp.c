@@ -56,6 +56,8 @@
 #include "clibext.h"
 
 
+#ifdef _EXE
+
 overlay_ref         OvlSectNum;         /* OvlSectNum value 0 is reserved for Root */
 seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab */
 unsigned_16         OvlAreaSize;
@@ -68,7 +70,6 @@ static symbol       *OvlVecStart;       /* symbol entry for overlay vector start
 static symbol       *OvlVecEnd;         /* symbol entry for overlay vector end */
 static targ_addr    OvlvecAddr;         /* address of overlay vectors */
 static targ_addr    Stash;
-
 static group_entry  *OvlGroup;          /* pointer to group for overlay table   */
 static targ_addr    OvltabAddr;         /* address of overlay tables            */
 static unsigned     OvltabSize;         /* size of overlay tables               */
@@ -802,3 +803,5 @@ void OvlSetTableLoc( group_entry *group, unsigned long loc )
         OvlTabOffset = loc;
     }
 }
+
+#endif

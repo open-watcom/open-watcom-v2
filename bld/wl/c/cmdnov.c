@@ -46,6 +46,8 @@
 #include "nwpfx.h"
 
 
+#ifdef _NOVELL
+
 static bool IsNetWarePrefix( const char *token, size_t tokenlen )
 {
     if( ( token != NULL ) && ( token[0] == '(' ) && ( token[tokenlen - 1] == ')' ) )
@@ -679,3 +681,5 @@ void CmdNovFini( void )
 /*********************/
 {
 }
+
+#endif

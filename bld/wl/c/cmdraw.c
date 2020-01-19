@@ -49,6 +49,8 @@
 #include "cmdraw.h"
 
 
+#ifdef _RAW
+
 bool ProcRaw( void )
 /******************/
 {
@@ -73,3 +75,5 @@ bool ProcRawHEX( void )
     FmtData.raw_hex_output = true;
     return( true );
 }
+
+#endif

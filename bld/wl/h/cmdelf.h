@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#ifdef _ELF
+
 extern bool     ProcELF( void );
 extern bool     ProcELFDLL( void );
 extern bool     ProcELFImport( void );
@@ -53,3 +55,5 @@ extern bool     ProcELFRNetBSD( void );
 extern bool     ProcELFRLinux( void );
 extern bool     ProcELFRSolrs( void );
 extern bool     ProcELFRFBSD( void );
+
+#endif
