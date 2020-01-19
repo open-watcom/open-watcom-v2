@@ -256,10 +256,16 @@ static void ResetSubSystems( void )
     ResetDBI();
     ResetMapIO();
     ResetCmdAll();
+#ifdef _EXE
     ResetOverlaySupp();
+#endif
     ResetComdef();
+#ifdef _NOVELL
     ResetLoadNov();
+#endif
+#ifdef _OS2
     ResetLoadPE();
+#endif
     ResetObj2Supp();
     ResetObjIO();
     ResetObjOMF();

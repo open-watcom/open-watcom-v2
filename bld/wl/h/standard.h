@@ -40,6 +40,7 @@
 #include "bool.h"
 #include "iopath.h"
 
+
 /* linker configured output formats */
 #define _EXE            0
 #define _QNX            1

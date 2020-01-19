@@ -73,8 +73,9 @@ void ResetCmdAll( void )
 }
 
 bool ProcDosSeg( void )
-/*********************/
-/* process DOSSEG option */
+/**********************
+ * process DOSSEG option
+ */
 {
     LinkState |= LS_DOSSEG_FLAG;
     DEBUG(( DBG_OLD, "dosseg" ));
@@ -228,8 +229,9 @@ bool ProcAll( void )
 }
 
 static bool AddAlias( void )
-/**************************/
-/* add an individual alias */
+/***************************
+ * add an individual alias
+ */
 {
     char        *name;
     size_t      namelen;
@@ -255,7 +257,7 @@ static bool AddReference( void )
     symbol      *sym;
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
-    sym->info |= SYM_DCE_REF;           /* make sure it stays around */
+    sym->info |= SYM_DCE_REF;   /* make sure it stays around */
     return( true );
 }
 
@@ -279,16 +281,19 @@ bool ProcOSName( void )
 }
 
 bool ProcEliminate( void )
-/************************/
-/* turn on dead code elimination */
+/*************************
+ * turn on dead code elimination
+ */
 {
     LinkFlags |= LF_STRIP_CODE;
     return( true );
 }
 
 bool ProcMaxErrors( void )
-/************************/
-/* set a maximum number of errors for the linker to generate */
+/*************************
+ * set a maximum number of errors
+ * for the linker to generate
+ */
 {
     if( !GetLong( &MaxErrors ) )
         return( false );
@@ -365,7 +370,7 @@ static bool AddLibFile( void )
     entry->next_file = *LastLibFile;
     *LastLibFile = entry;
     LastLibFile = &entry->next_file;
-    if( *LastLibFile == NULL ) {        // no file directives found yet
+    if( *LastLibFile == NULL ) {    // no file directives found yet
         CurrFList = LastLibFile;
     }
     entry->infile->status |= INSTAT_USE_LIBPATH;
@@ -374,8 +379,9 @@ static bool AddLibFile( void )
 }
 
 bool ProcLibFile( void )
-/**********************/
-/* process FILE command */
+/***********************
+ * process LIBFILE command
+ */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
@@ -409,13 +415,15 @@ static bool AddFile( void )
     file_list   **temp;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
+#ifdef _EXE
     if( CmdFlags & CF_AUTOSECTION ) {
-        if( CmdFlags & CF_SECTION_THERE ) {     // is section there already?
+        if( CmdFlags & CF_SECTION_THERE ) { // is section there already?
             CmdFlags &= ~CF_SECTION_THERE;
         } else {
             MakeNewSection();
         }
     }
+#endif
     ptr = GetFileName( &membname, true );
     temp = CurrFList;
     if( *CurrFList != NULL ) {
@@ -423,7 +431,7 @@ static bool AddFile( void )
     }
     LastFile.u.file = AddObjFile( ptr, membname, CurrFList );
     if( CmdFlags & CF_MEMBER_ADDED ) {
-        CurrFList = temp;   // go back to previous entry.
+        CurrFList = temp;               // go back to previous entry.
     } else if( membname != NULL ) {     // 1st member added
         LastFile.u.module = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
@@ -433,8 +441,9 @@ static bool AddFile( void )
 }
 
 bool ProcFiles( void )
-/********************/
-/* process FILE command */
+/*********************
+ * process FILE command
+ */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
@@ -458,10 +467,12 @@ static bool AddLib( void )
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
     result = AddObjLib( ptr, LIB_PRIORITY_MAX );
     result->flags |= STAT_USER_SPECD;
+#ifdef _EXE
     if( CmdFlags & CF_SET_SECTION ) {
         result->flags |= STAT_LIB_FIXED;
         result->ovlref = GetOvlRef();
     }
+#endif
     if( CmdFlags & CF_DOING_OPTLIB ) {
         result->infile->status |= INSTAT_NO_WARNING;
     }
@@ -471,8 +482,9 @@ static bool AddLib( void )
 }
 
 bool ProcLibrary( void )
-/**********************/
-/* process LIB command */
+/***********************
+ * process LIB command
+ */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0
         && !IsSystemBlock() ) {
@@ -493,8 +505,9 @@ bool ProcOptLib( void )
 }
 
 bool ProcLibPath( void )
-/**********************/
-/* process libpath command */
+/***********************
+ * process libpath command
+ */
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "libpath" );
@@ -505,8 +518,9 @@ bool ProcLibPath( void )
 }
 
 bool ProcPath( void )
-/*******************/
-/* process PATH option */
+/********************
+ * process PATH option
+ */
 {
     path_entry      *new_path;
     char            *p;
@@ -531,8 +545,9 @@ bool ProcPath( void )
 }
 
 bool ProcMap( void )
-/******************/
-/* process MAP option */
+/*******************
+ * process MAP option
+ */
 {
     MapFlags |= MAP_FLAG;
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -546,16 +561,18 @@ bool ProcMap( void )
 }
 
 bool ProcMapLines( void )
-/***********************/
-/* process MAPLINES option */
+/************************
+ * process MAPLINES option
+ */
 {
     MapFlags |= MAP_LINES;
     return( true );
 }
 
 bool ProcStack( void )
-/********************/
-/* process STACK option */
+/*********************
+ * process STACK option
+ */
 {
     unsigned_32     value;
     bool            ret;
@@ -569,8 +586,9 @@ bool ProcStack( void )
 }
 
 bool ProcNameLen( void )
-/**********************/
-/* process NAMELEN option */
+/***********************
+ * process NAMELEN option
+ */
 {
     unsigned_32     value;
     bool            ret;
@@ -587,8 +605,9 @@ bool ProcNameLen( void )
 }
 
 bool ProcCase( void )
-/*******************/
-/* process CASE option */
+/********************
+ * process CASE option
+ */
 {
     LinkFlags |= LF_CASE_FLAG;
     SetSymCase();
@@ -597,8 +616,9 @@ bool ProcCase( void )
 }
 
 bool ProcNoCaseExact( void )
-/**************************/
-/* process nocaseexact option */
+/***************************
+ * process nocaseexact option
+ */
 {
     LinkFlags &= ~LF_CASE_FLAG;
     SetSymCase();
@@ -630,8 +650,9 @@ bool ProcCache( void )
 }
 
 static bool AddDisable( void )
-/****************************/
-/* disable an error message number */
+/*****************************
+ * disable an error message number
+ */
 {
     unsigned_16     value;
 
@@ -655,8 +676,9 @@ bool ProcDisable( void )
 }
 
 bool ProcNoDefLibs( void )
-/************************/
-/* process CASE option */
+/*************************
+ * process CASE option
+ */
 {
     return( true );
 }
@@ -891,9 +913,12 @@ bool ProcPackdata( void )
     return( false );
 }
 
+#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
 bool ProcNewSegment( void )
-/*************************/
-// force the start of a new auto-group after the previous object file.
+/**************************
+ * force the start of a new auto-group
+ * after the previous object file.
+ */
 {
     if( LastFile.u.file == NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_NEWSEG_BEFORE_OBJ, NULL );
@@ -906,6 +931,7 @@ bool ProcNewSegment( void )
     }
     return( true );
 }
+#endif
 
 sysblock *FindSysBlock( const char *name )
 /****************************************/
@@ -1029,8 +1055,10 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
 }
 
 bool ProcSysBegin( void )
-/***********************/
-/* parse a system begin block and store it somewhere */
+/************************
+ * parse a system begin block
+ * and store it somewhere
+ */
 {
     char        *sysname;
     sysblock    *sys;
@@ -1055,23 +1083,26 @@ bool ProcSysBegin( void )
 }
 
 bool ProcSysEnd( void )
-/*********************/
-/* finished parsing a system block */
+/**********************
+ * finished parsing a system block
+ */
 {
     return( true );
 }
 
 bool ProcStartLink( void )
-/************************/
-/* save up list of commands to process later */
+/*************************
+ * save up list of commands to process later
+ */
 {
     GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
     return( true );
 }
 
 bool ProcEndLink( void )
-/**********************/
-/* finished parsing a link section */
+/***********************
+ * finished parsing a link section
+ */
 {
     return( true );
 }
@@ -1091,7 +1122,7 @@ static char **getStubNamePtr( void )
 #endif
 #ifdef _PHARLAP
     if( HintFormat( MK_PHAR_LAP ) ) {
-        Extension = E_LOAD;             /* want .exe instead of .exp now */
+        Extension = E_LOAD;     /* want .exe instead of .exp now */
         return( &FmtData.u.phar.stub );
     }
 #endif
@@ -1194,6 +1225,7 @@ bool ProcImpFile( void )
     return( true );
 }
 
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
 static bool AddRunTime( void )
 /****************************/
 {
@@ -1206,6 +1238,7 @@ bool ProcRuntime( void )
 {
     return( ProcArgList( AddRunTime, TOK_INCLUDE_DOT ) );
 }
+#endif
 
 static bool AddSymTrace( void )
 /*****************************/
@@ -1557,8 +1590,9 @@ bool ProcOrdSegNoEmit( void )
 }
 
 bool ProcObjAlign( void )
-/******************************/
-/* process ObjAlign option */
+/*************************
+ * process ObjAlign option
+ */
 {
     ord_state           ret;
     unsigned_32         value;
@@ -1574,12 +1608,12 @@ bool ProcObjAlign( void )
         value = _64KB;
     }
     FmtData.objalign = value;
-    ChkBase(value);
+    ChkBase( value );
     return( true );
 }
 
 bool ProcDescription( void )
-/*********************************/
+/**************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1592,8 +1626,9 @@ bool ProcDescription( void )
 }
 
 void ChkBase( offset align )
-/*********************************/
-// Note: align must be a power of 2
+/***************************
+ * Note: align must be a power of 2
+ */
 {
     if( FmtData.objalign != NO_BASE_SPEC && FmtData.objalign > align ) {
         align = FmtData.objalign;
@@ -1606,8 +1641,9 @@ void ChkBase( offset align )
 
 #ifdef _INT_DEBUG
 bool ProcXDbg( void )
-/**************************/
-/* process DEBUG command */
+/********************
+ * process DEBUG command
+ */
 {
     char        value[7];
 
@@ -1627,7 +1663,7 @@ bool ProcXDbg( void )
 }
 
 bool ProcIntDbg( void )
-/****************************/
+/*********************/
 {
     LinkState |= LS_INTERNAL_DEBUG;
     return( true );

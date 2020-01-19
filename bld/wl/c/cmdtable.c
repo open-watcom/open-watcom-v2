@@ -190,6 +190,7 @@ parse_entry     MainOptions[] = {
     "NOREDefsok",   ProcNoRedefs,      MK_ALL, 0,
     "CVPack",       ProcCVPack,        MK_ALL, 0,
     "INCremental",  ProcIncremental,   MK_ALL, 0,
+#ifdef _EXE
     "SMall",        ProcSmall,         MK_OVERLAYS, 0,
     "DIStribute",   ProcDistribute,    MK_OVERLAYS, 0,
     "DYNamic",      ProcDynamic,       MK_OVERLAYS, 0,
@@ -198,10 +199,18 @@ parse_entry     MainOptions[] = {
     "ARea",         ProcArea,          MK_OVERLAYS, 0,
     "PADSections",  ProcPadSections,   MK_OVERLAYS, 0,
     "FULLHeader",   ProcFullHeader,    MK_DOS, 0,
+#endif
+#if defined( _OS2 ) || defined( _EXE ) || defined( _DOS16M ) || defined( _QNX )
     "PACKCode",     ProcPackcode,      (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
     "PACKData",     ProcPackdata,      (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
+#endif
+#if defined( _OS2 ) || defined( _ELF )
     "Alignment",    ProcAlignment,     MK_OS2_16BIT | MK_OS2_LX | MK_PE | MK_ELF, 0,
+#endif
+#if defined( _OS2 ) || defined( _PHARLAP ) || defined( _DOS16M )
     "STUB",         ProcStub,          MK_OS2 | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M, 0,
+#endif
+#ifdef _OS2
     "NOSTUB",       ProcNoStub,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     "ONEautodata",  ProcSingle,        MK_OS2, CF_AUTO_SEG_FLAG,
     "MANYautodata", ProcMultiple,      MK_OS2, CF_AUTO_SEG_FLAG,
@@ -210,17 +219,29 @@ parse_entry     MainOptions[] = {
     "MODName",      ProcModName,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     "NEWFiles",     ProcNewFiles,      MK_ONLY_OS2_16, 0,
     "PROTmode",     ProcProtMode,      MK_OS2_16BIT, 0,
+#endif
+#if defined( _OS2 ) || defined( _NOVELL )
     "DEscription",  ProcDescription,   MK_OS2 | MK_PE | MK_WIN_VXD | MK_NOVELL, 0,
+#endif
+#ifdef _OS2
     "NOSTDCall",    ProcNoStdCall,     MK_PE, 0,
     "RWReloccheck", ProcRWRelocCheck,  MK_WINDOWS, 0,
     "SELFrelative", ProcSelfRelative,  MK_OS2_LX, 0,
     "INTernalrelocs",ProcInternalRelocs,MK_OS2_LX, 0,
     "TOGglerelocsflag",ProcToggleRelocsFlag,MK_OS2_LX, 0,
+#endif
+#if defined( _OS2 ) || defined( _QNX )
     "Heapsize",     ProcHeapSize,      (MK_OS2 | MK_QNX | MK_PE), 0,
+#endif
+#ifdef _PHARLAP
 //  "PACKExp",      ProcPackExp,       MK_PHAR_FLAT, 0,
     "MINData",      ProcMinData,       MK_PHAR_LAP, 0,
     "MAXData",      ProcMaxData,       MK_PHAR_LAP, 0,
+#endif
+#if defined(_PHARLAP) || defined(_QNX) || defined(_OS2) || defined(_RAW)
     "OFFset",       ProcOffset,        MK_PHAR_FLAT | MK_OS2_FLAT | MK_PE | MK_QNX_FLAT | MK_ELF | MK_RAW, 0,
+#endif
+#ifdef _NOVELL
     "SCReenname",   ProcScreenName,    MK_NOVELL, 0,
     "CHeck",        ProcCheck,         MK_NOVELL, 0,
     "MULTILoad",    ProcMultiLoad,     MK_NOVELL, 0,
@@ -238,6 +259,7 @@ parse_entry     MainOptions[] = {
     "SHArelib",     ProcSharelib,      MK_NOVELL, 0,
     "OSDomain",     ProcOSDomain,      MK_NOVELL, 0,
     "NLMFlags",     ProcNLMFlags,      MK_NOVELL, 0,
+#endif
     "VERSion",      ProcVersion,       MK_NOVELL | MK_OS2_FLAT | MK_PE | MK_WINDOWS, 0,
     "IMPLib",       ProcImplib,        MK_NOVELL | MK_OS2 | MK_PE, 0,
     "IMPFile",      ProcImpFile,       MK_NOVELL | MK_OS2 | MK_PE, 0,
@@ -254,20 +276,30 @@ parse_entry     MainOptions[] = {
     "CODESelector", ProcRdosCodeSel,   MK_RDOS, 0,
     "DATASelector", ProcRdosDataSel,   MK_RDOS, 0,
 #endif
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
     "NORelocs",     ProcNoRelocs,      (MK_QNX | MK_DOS16M  | MK_PE | MK_ELF), 0,
+#endif
+#ifdef _QNX
     "LOnglived",    ProcLongLived,     MK_QNX, 0,
     "PRIVilege",    ProcQNXPrivilege,  MK_QNX, 0,
     "LInearrelocs", ProcLinearRelocs,  MK_QNX, 0,
+#endif
+#ifdef _ELF
     "EXTRASections",ProcExtraSections, MK_ELF, 0,
     "EXPORTAll",    ProcExportAll,     MK_ELF, 0,
+#endif
+#ifdef _OS2
     "LINKVersion",  ProcLinkVersion,   MK_PE,  0,
     "OSVersion",    ProcOsVersion,     MK_PE,  0,
     "CHECKSUM",     ProcChecksum,      MK_PE,  0,
     "LARGEaddressaware",ProcLargeAddressAware, MK_PE, 0,
     "NOLARGEaddressaware",ProcNoLargeAddressAware, MK_PE, 0,
+#endif
     "HSHIFT",       ProcHshift,        (MK_DOS | MK_ALLOW_16),  0,
     "FILLchar",     ProcFillchar,      MK_ALL,  0,
+#ifdef _OS2
     "MIXed1632",    ProcMixed1632,     MK_OS2_FLAT, 0,
+#endif
     NULL
 };
 
@@ -300,7 +332,9 @@ parse_entry     SysDirectives[] = {
 };
 
 parse_entry     Models[] = {
+#ifdef _EXE
     "Dos",          ProcDos,           MK_DOS, 0,
+#endif
 #ifdef _OS2
     "OS2",          ProcOS2,           MK_ONLY_OS2, 0,
     "WINdows",      ProcWindows,       MK_WINDOWS | MK_PE | MK_WIN_VXD, 0,
@@ -344,8 +378,9 @@ parse_entry     EndLinkOpt[] = {
     NULL
 };
 
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
 parse_entry     RunOptions[] = {
-#ifdef _DOS16M
+  #ifdef _DOS16M
     "KEYboard",     ProcKeyboard,      MK_DOS16M, 0,
     "OVERload",     ProcOverload,      MK_DOS16M, 0,
     "INIT00",       ProcInit00,        MK_DOS16M, 0,
@@ -354,8 +389,8 @@ parse_entry     RunOptions[] = {
     "AUTO",         ProcAuto,          MK_DOS16M, 0,
     "SELectors",    ProcSelectors,     MK_DOS16M, 0,
     "INT10",        ProcInt10,         MK_DOS16M, 0,
-#endif
-#ifdef _PHARLAP
+  #endif
+  #ifdef _PHARLAP
     "MINReal",      ProcMinReal,       MK_PHAR_FLAT, 0,
     "MAXReal",      ProcMaxReal,       MK_PHAR_FLAT, 0,
     "REALBreak",    ProcRealBreak,     MK_PHAR_FLAT, CF_HAVE_REALBREAK,
@@ -368,25 +403,26 @@ parse_entry     RunOptions[] = {
     "PRIVileged",   ProcPriv,          MK_PHAR_FLAT, 0,
     /* WARNING: do not document the following directive -- for internal use only */
     "FLAGs",        ProcFlags,         MK_PHAR_FLAT, 0,
-#endif
-#ifdef _OS2
+  #endif
+  #ifdef _OS2
     "NATive",       ProcRunNative,     MK_PE, 0,
     "WINdows",      ProcRunWindows,    MK_PE, 0,
     "CONsole",      ProcRunConsole,    MK_PE, 0,
     "POSix",        ProcRunPosix,      MK_PE, 0,
     "OS2",          ProcRunOS2,        MK_PE, 0,
     "DOSstyle",     ProcRunDosstyle,   MK_PE, 0,
-#endif
-#ifdef _ELF
+  #endif
+  #ifdef _ELF
     "ABIver",       ProcELFRNumber,    MK_ELF, 0,
     "SVR4",         ProcELFRSVR4,      MK_ELF, 0,
     "NETbsd",       ProcELFRNetBSD,    MK_ELF, 0,
     "LINux",        ProcELFRLinux,     MK_ELF, 0,
     "FREebsd",      ProcELFRFBSD,      MK_ELF, 0,
     "SOLaris",      ProcELFRSolrs,     MK_ELF, 0,
-#endif
+  #endif
     NULL
 };
+#endif
 
 #ifdef _DOS16M
 /* parse tables used in cmd16m.c */
@@ -473,6 +509,7 @@ parse_entry     NovDBIOptions[] = {
 };
 #endif
 
+#ifdef _EXE
 /* parse tables used in CMDDOS.C */
 
 parse_entry     Sections[] = {
@@ -491,6 +528,7 @@ parse_entry     DosOptions[] = {
     "COM",          ProcCom,           MK_COM, 0,
     NULL
 };
+#endif
 
 #ifdef _OS2
 /* parse tables used in CMDOS2.C */

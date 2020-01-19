@@ -728,6 +728,8 @@ static void MakeQNXFloatReloc( fix_relo_data *fix )
 #endif
 
 
+#ifdef _OS2
+
 /* 00h = Byte fixup (8-bits).
    01h = (undefined).
    02h = 16-bit Selector fixup (16-bits).
@@ -753,7 +755,6 @@ static unsigned MapOS2FixType( fix_type type )
     return( OS2OffsetFixTypeMap[off] );
 }
 
-#ifdef _OS2
 static void MakeWindowsFloatReloc( fix_relo_data *fix )
 /*****************************************************/
 {
