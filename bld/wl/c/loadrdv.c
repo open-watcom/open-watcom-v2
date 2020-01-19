@@ -285,6 +285,7 @@ static size_t getHeaderSize( void )
     } else {
         size = 0;
     }
+    return( size );
 }
 
 static void writeHeader( void )
