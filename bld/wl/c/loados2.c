@@ -647,7 +647,7 @@ static void CheckGrpFlags( void *_leader )
     // if any of these flags are on, turn it on for the entire group.
     leader->group->segflags |= sflags & DEF_SEG_OFF;
     // if any of these flags off, make sure they are off in the group.
-    leader->group->segflags &= sflags & DEF_SEG_ON | ~DEF_SEG_ON;
+    leader->group->segflags &= (sflags & DEF_SEG_ON) | ~DEF_SEG_ON;
     if( (sflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
         /* if any are level 2 then all have to be. */
         leader->group->segflags &= ~SEG_LEVEL_MASK;

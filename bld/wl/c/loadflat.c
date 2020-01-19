@@ -153,8 +153,8 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         if( group->segflags & SEG_DISCARD ) {
             objrec.flags |= OBJ_DISCARDABLE;
         }
-        if( (group->segflags & SEG_PURE) || (group == DataGroup &&
-                         (FmtData.u.os2.flags & SINGLE_AUTO_DATA)) ) {
+        if( (group->segflags & SEG_PURE)
+          || (group == DataGroup && (FmtData.u.os2.flags & SINGLE_AUTO_DATA)) ) {
             objrec.flags |= OBJ_SHARABLE;
         }
         if( group->segflags & SEG_PRELOAD ) {

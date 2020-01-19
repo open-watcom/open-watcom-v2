@@ -1286,11 +1286,16 @@ void HandleImport( const length_name *intname, const length_name *modname,
         } else {
             SET_SYM_TYPE( sym, SYM_IMPORTED );
             sym->info |= SYM_DEFINED | SYM_DCE_REF;
+#ifdef _NOVELL
             if( FmtData.type & MK_NOVELL ) {
                 SetNovImportSymbol( sym );
-            } else {
+            }
+#endif
+#ifdef _ELF
+            if( FmtData.type & MK_ELF ) {
                 SetELFImportSymbol( sym );
             }
+#endif
         }
     }
 }

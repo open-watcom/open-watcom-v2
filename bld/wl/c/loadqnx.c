@@ -319,7 +319,7 @@ void SetQNXGroupFlags( void )
         if( group->segflags & SEG_DATA ) {
             group->u.qnxflags = QNX_READ_ONLY;      // 1
         } else {
-            group->u.qnxflags = QNX_EXEC_ONLY;     // 3
+            group->u.qnxflags = QNX_EXEC_ONLY;      // 3
         }
         Ring2Lookup( group->leaders, checkGroupFlags, group );
     }

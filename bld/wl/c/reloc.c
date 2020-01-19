@@ -214,7 +214,7 @@ void QNXFloatReloc( reloc_item *item )
 }
 
 void QNXLinearReloc( group_entry *group, reloc_item *item )
-/******************************************************************/
+/*********************************************************/
 {
     DoWriteReloc( &group->g.grp_relocs, item, sizeof( qnx_linear_item ) );
 }
@@ -282,12 +282,19 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
 static void FreeGroupRelocs( group_entry *group )
 /***********************************************/
 {
+#ifdef _OS2
     unsigned_32         highidx;
     unsigned_32         index;
     reloc_info ***      reloclist;
+#endif
+
+#if !defined( _OS2 ) && !defined( _ELF ) && !defined( _QNX )
+        /* unused parameters */ (void)group;
+#endif
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
+#ifdef _OS2
     if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
         reloclist = group->g.grp_relocs;
@@ -302,9 +309,15 @@ static void FreeGroupRelocs( group_entry *group )
                 reloclist++;
             }
         }
-    } else if( FmtData.type & (MK_ELF | MK_OS2_16BIT | MK_QNX) ) {
+    } else if( FmtData.type & MK_OS2_16BIT ) {
         FreeRelocList( group->g.grp_relocs );
     }
+#endif
+#if defined( _ELF ) || defined( _QNX )
+    if( FmtData.type & (MK_QNX | MK_ELF) ) {
+        FreeRelocList( group->g.grp_relocs );
+    }
+#endif
 }
 
 void FreeRelocInfo( void )

@@ -160,9 +160,12 @@ static void TraceFixup( fix_type type, target_spec *target )
     overlay = ( (FmtData.type & MK_OVERLAYS) && !FmtData.u.dos.noindirect );
     if( (LinkFlags & LF_STRIP_CODE) || overlay ) {
         isovldata = ( (CurrRec.seg->u.leader->info & SEG_OVERLAYED) == 0 );
-        if( ObjFormat & FMT_UNSAFE_FIXUPP )
+        if( ObjFormat & FMT_UNSAFE_FIXUPP ) {
             isovldata = true;
+        }
 #else
+    /* unused parameters */ (void)type;
+
     if( LinkFlags & LF_STRIP_CODE ) {
 #endif
         if( target->type == FIX_TARGET_SEG ) {
