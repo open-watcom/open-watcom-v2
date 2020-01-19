@@ -139,7 +139,7 @@ static void WriteVectors( void )
     n = 0;
     for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         OvlGetVecAddr( ++n, &addr );
-        sym = vectnode->entry;
+        sym = vectnode->sym;
         WriteMap( "%a section %d : %S",
                   &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
     }
@@ -384,7 +384,7 @@ void OvlVectorize( symbol *sym )
     sym->u.d.ovlstate &= ~OVL_NO_VECTOR;
     sym->u.d.ovlstate |= OVL_FORCE;
     _PermAlloc( vectnode, sizeof( vecnode ) );
-    vectnode->entry = sym;
+    vectnode->sym = sym;
     LinkList( &OvlVectors, vectnode );
     DEBUG(( DBG_OLD, "Vectorize %d %S", VecNum, sym ));
 }
@@ -553,7 +553,7 @@ static void ShortVectors( symbol *loadsym )
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (1)", vecnum );
         }
         _HostU16toTarg( diff, vectdata.ldr_addr );
-        loadsym = vectnode->entry;
+        loadsym = vectnode->sym;
         _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.sec_num );
         temp = vectoff + offsetof( svector, target ) + sizeof( unsigned_16 );
         diff = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off ) - temp;
@@ -593,7 +593,7 @@ static void LongVectors( symbol *loadsym )
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "long", vecnum );
         }
         _HostU16toTarg( diff, vectdata.u.v.ldr_addr );
-        loadsym = vectnode->entry;
+        loadsym = vectnode->sym;
         _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.u.v.sec_num );
         _HostU16toTarg( loadsym->addr.off, vectdata.target.off );
         if( FmtData.u.dos.dynamic ) {
