@@ -366,7 +366,7 @@ parse_entry     RunOptions[] = {
     "ISTKsize",     ProcIStkSize,      MK_PHAR_FLAT, 0,
     "UNPRIVileged", ProcUnpriv,        MK_PHAR_FLAT, 0,
     "PRIVileged",   ProcPriv,          MK_PHAR_FLAT, 0,
-/* WARNING: do not document the following directive -- for internal use only */
+    /* WARNING: do not document the following directive -- for internal use only */
     "FLAGs",        ProcFlags,         MK_PHAR_FLAT, 0,
 #endif
 #ifdef _OS2

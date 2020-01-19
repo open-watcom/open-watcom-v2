@@ -176,7 +176,7 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
     if( ( seg == NULL ) || ( seg->group == NULL ) ) {
         return( 0 );
     }
-    if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+    if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
         for( index = 1, group = Groups; group != NULL; group = group->next_group, ++index ) {
             if( group == seg->group ) {
                 return( index );

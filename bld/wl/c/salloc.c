@@ -128,11 +128,8 @@ void StartMemMap( void )
         DataLoc.seg = DATA_SEGMENT;
         DataLoc.off = 0;
     } else {
-        CurrLoc.seg = (FmtData.type & MK_PROT_MODE) ? 1 : 0;
-        CurrLoc.off = 0;
-        if( FmtData.type & MK_FLAT ) {
-            CurrLoc.off = FmtData.base;
-        }
+        CurrLoc.seg = ( FmtData.type & MK_PROT_MODE ) ? 1 : 0;
+        CurrLoc.off = ( FmtData.type & MK_FLAT_OFFS ) ? FmtData.base : 0;
     }
 }
 
@@ -200,7 +197,7 @@ void NewSegment( seg_leader *seg )
         ChkLocated( &(seg->seg_addr), ( (seg->segflags & SEG_FIXED) != 0 ) );
         AddSize( seg->size );
         group->totalsize += seg->size;
-    } else if( FmtData.type & (MK_FLAT | MK_ID_SPLIT) ) {
+    } else if( FmtData.type & (MK_FLAT_OFFS | MK_ID_SPLIT) ) {
         if( FmtData.type & MK_ID_SPLIT ) {
             loc = GetIDLoc( group );
             CurrLoc = *loc;

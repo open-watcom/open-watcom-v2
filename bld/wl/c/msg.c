@@ -318,7 +318,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 }
                 temp = MsgArgInfo.index;
                 MsgArgInfo.index = -1;
-                if( FmtData.type & MK_FLAT ) {
+                if( FmtData.type & MK_FLAT_OFFS ) {
                     size = FmtStr( dest, len, "%h", addr->off );
 #ifdef _QNX
                 } else if( FmtData.type & MK_QNX_FLAT) {

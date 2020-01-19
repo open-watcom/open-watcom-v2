@@ -820,7 +820,7 @@ static unsigned_16 WriteSegValues( void )
     unsigned_16     *buffer;
     unsigned_16     buflen;
 
-    if( FmtData.type & MK_FLAT ) {
+    if( FmtData.type & MK_FLAT_OFFS ) {
         segarray[0] = 1;
         DBIWriteLocal( segarray, sizeof( unsigned_16 ) );
         return( sizeof( unsigned_16 ) );

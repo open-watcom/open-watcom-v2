@@ -256,20 +256,15 @@ static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
         return( true );
     }
 #endif
-#ifdef _PHARLAP
-    if( FmtData.type & (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX) ) {
+#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+    if( FmtData.type & MK_FLAT_OFFS ) {
         currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
         return( false );
     }
+#ifdef _PHARLAP
     if( FmtData.type & MK_PHAR_MULTISEG ) {
         currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
         return( true );
-    }
-#endif
-#if defined( _ZDOS ) || defined( _RAW )
-    if( FmtData.type & (MK_ZDOS | MK_RAW) ) {
-        currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
-        return( false );
     }
 #endif
     currgrp->grp_addr.seg = seg_num;
@@ -955,7 +950,7 @@ void CalcAddresses( void )
     }
     StartMemMap();
     AllocClasses( Root );
-    if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+    if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
 #ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             OvlCalc();
