@@ -72,25 +72,20 @@ static void WriteBinData( void )
 /* copy code from extra memory to loadfile */
 {
     group_entry         *group;
-    SECTION             *sect;
 
     DEBUG(( DBG_BASE, "Writing data" ));
     OrderGroups( CompareDosSegments );
-    CurrSect = Root;        // needed for WriteInfo.
 
     Root->outfile->file_loc = Root->u.file_loc;
     Root->sect_addr = Groups->grp_addr;
 
 /* write groups and relocations */
-    for( group = Groups; group != NULL; ) {
-        sect = group->section;
-        CurrSect = sect;
-
+    for( group = Groups; group != NULL; group = group->next_group ) {
+        CurrSect = group->section;  // needed for WriteInfo.
         if( group->totalsize ) {
             WriteGroup( group );
             CodeSize += group->totalsize;
         }
-        group = group->next_group;
     }
 }
 
@@ -98,14 +93,12 @@ static void WriteRDOSCode( void )
 /**********************************************************/
 {
     group_entry         *group;
-    SECTION             *sect;
     struct seg_leader   *leader;
     SEGDATA             *piece;
     bool                iscode;
 
     DEBUG(( DBG_BASE, "Writing code" ));
     OrderGroups( CompareDosSegments );
-    CurrSect = Root;        // needed for WriteInfo.
 
     Root->outfile->file_loc = Root->u.file_loc;
     Root->sect_addr = Groups->grp_addr;
@@ -113,11 +106,11 @@ static void WriteRDOSCode( void )
 
 /* write groups and relocations */
     iscode = false;
-    for( group = Groups; group != NULL; ) {
+    for( group = Groups; group != NULL; group = group->next_group ) {
         if( leader != group->leaders ) {
             iscode = false;
             leader = group->leaders;
-            if( leader != NULL && leader->size && Extension == E_RDV ) {
+            if( leader != NULL && leader->size && FmtData.u.rdos.driver ) {
                 piece = leader->pieces;
                 if( piece != NULL ) {
                     if( piece->iscode && ( leader->seg_addr.seg == FmtData.u.rdos.code_seg ) ) {
@@ -126,17 +119,15 @@ static void WriteRDOSCode( void )
                 }
             }
         }
-        sect = group->section;
-        CurrSect = sect;
+        CurrSect = group->section;  // needed for WriteInfo.
         if( iscode ) {
-            sect->u.file_loc = HeaderSize + CodeSize;
+            CurrSect->u.file_loc = HeaderSize + CodeSize;
             WriteGroup( group );
             if( group->totalsize > group->size )
                 PadLoad( group->totalsize - group->size );
 
             CodeSize += group->totalsize;
         }
-        group = group->next_group;
     }
 }
 
@@ -145,7 +136,6 @@ static void WriteRDOSData( void )
 /* copy code from extra memory to loadfile */
 {
     group_entry         *group;
-    SECTION             *sect;
     struct seg_leader   *leader;
     SEGDATA             *piece;
     bool                isdata;
@@ -155,11 +145,11 @@ static void WriteRDOSData( void )
 /* write groups and relocations */
     leader = NULL;
     isdata = false;
-    for( group = Groups; group != NULL; ) {
+    for( group = Groups; group != NULL; group = group->next_group ) {
         if( leader != group->leaders ) {
             isdata = false;
             leader = group->leaders;
-            if( leader != NULL && leader->size && Extension == E_RDV ) {
+            if( leader != NULL && leader->size && FmtData.u.rdos.driver ) {
                 piece = leader->pieces;
                 if( piece != NULL ) {
                     if( ( piece->isidata || piece->isuninit ) && ( leader->seg_addr.seg == FmtData.u.rdos.data_seg ) ) {
@@ -168,10 +158,9 @@ static void WriteRDOSData( void )
                 }
             }
         }
-        sect = group->section;
-        CurrSect = sect;
+        CurrSect = group->section;  // needed for WriteInfo.
         if( isdata ) {
-            sect->u.file_loc = HeaderSize + CodeSize + DataSize;
+            CurrSect->u.file_loc = HeaderSize + CodeSize + DataSize;
             if( StackSegPtr != NULL ) {
                 if( group->totalsize - group->size < StackSize ) {
                     StackSize = group->totalsize - group->size;
@@ -185,7 +174,6 @@ static void WriteRDOSData( void )
                 PadLoad( group->totalsize - group->size );
             DataSize += group->totalsize;
         }
-        group = group->next_group;
     }
 }
 
@@ -281,7 +269,7 @@ static void WriteMbootHeader( void )
 static void FiniRdosLoadFile16( void )
 /* terminate writing of load file */
 {
-    if( Extension == E_RDV ) {
+    if( FmtData.u.rdos.driver ) {
         HeaderSize = sizeof( rdos_dev16_header );
         SeekLoad( HeaderSize );
         Root->u.file_loc = HeaderSize;
@@ -308,7 +296,7 @@ static void FiniRdosLoadFile16( void )
 static void FiniRdosLoadFile32( void )
 /* terminate writing of load file */
 {
-    if( Extension == E_RDV ) {
+    if( FmtData.u.rdos.driver ) {
         HeaderSize = sizeof( rdos_dev32_header );
         SeekLoad( HeaderSize );
         Root->u.file_loc = HeaderSize;

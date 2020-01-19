@@ -225,7 +225,8 @@ struct fmt_rdos_data {
     segment         code_seg;
     segment         data_seg;
     char            bitness;
-    char            mboot;
+    boolbit         driver  : 1;
+    boolbit         mboot   : 1;
 };
 
 #define NO_BASE_SPEC    ((offset)-1L)

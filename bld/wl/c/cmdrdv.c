@@ -61,6 +61,7 @@ void SetRdosFmt( void )
     FmtData.u.rdos.code_sel = 0;
     FmtData.u.rdos.data_sel = 0;
     FmtData.u.rdos.bitness = 16;
+    FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
 }
 
@@ -82,6 +83,7 @@ bool ProcRdosDev16( void )
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 16;
+    FmtData.u.rdos.driver = 1;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
@@ -91,6 +93,7 @@ bool ProcRdosDev32( void )
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 32;
+    FmtData.u.rdos.driver = 1;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
@@ -100,6 +103,7 @@ bool ProcRdosBin16( void )
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
+    FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
@@ -109,6 +113,7 @@ bool ProcRdosBin32( void )
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 32;
+    FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
@@ -118,6 +123,7 @@ bool ProcRdosMboot( void )
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
+    FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 1;
     return( true );
 }
