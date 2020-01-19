@@ -261,6 +261,7 @@ static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
         currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
         return( false );
     }
+#endif
 #ifdef _PHARLAP
     if( FmtData.type & MK_PHAR_MULTISEG ) {
         currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
