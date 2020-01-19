@@ -681,7 +681,7 @@ void ChkOS2Exports( void )
 /*******************************/
 // NOTE: there is a continue in this loop!
 {
-    symbol          *symptr;
+    symbol          *sym;
     entry_export    *exp;
     group_entry     *group;
     unsigned        num_entries;
@@ -690,10 +690,10 @@ void ChkOS2Exports( void )
     // NOTE: there is a continue in this loop!
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
         num_entries++;
-        symptr = exp->sym;
-        if( IS_SYM_ALIAS( symptr ) ) {
-            symptr = UnaliasSym( ST_FIND, symptr );
-            if( symptr == NULL || (symptr->info & SYM_DEFINED) == 0 ) {
+        sym = exp->sym;
+        if( IS_SYM_ALIAS( sym ) ) {
+            sym = UnaliasSym( ST_FIND, sym );
+            if( sym == NULL || (sym->info & SYM_DEFINED) == 0 ) {
                 LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name.u.ptr );
                 continue;               // <----- DANGER weird control flow!
             } else if( exp->sym->info & SYM_WAS_LAZY ) {
@@ -705,22 +705,22 @@ void ChkOS2Exports( void )
                 exp->impname = ChkStrDup( exp->sym->name.u.ptr );
             }
 
-            exp->sym = symptr;
+            exp->sym = sym;
         }
-        if( (symptr->info & SYM_DEFINED) == 0 ) {
-            LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", symptr->name );
+        if( (sym->info & SYM_DEFINED) == 0 ) {
+            LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", sym->name );
         } else {
-            exp->addr = symptr->addr;
-            if( symptr->p.seg == NULL || IS_SYM_IMPORTED(symptr) ) {
+            exp->addr = sym->addr;
+            if( sym->p.seg == NULL || IS_SYM_IMPORTED( sym ) ) {
                 if( FmtData.type & MK_OS2_FLAT ) {
                     // MN: Create a forwarder - add a special flag?
                     // Currently DumpFlatEntryTable() in loadflat.c will
                     // recognize a forwarder by segment == 0xFFFF
                 } else {
-                    LnkMsg( ERR+MSG_CANT_EXPORT_ABSOLUTE, "S", symptr );
+                    LnkMsg( ERR+MSG_CANT_EXPORT_ABSOLUTE, "S", sym );
                 }
             } else {
-                group = symptr->p.seg->u.leader->group;
+                group = sym->p.seg->u.leader->group;
                 if( FmtData.type & MK_OS2_FLAT ) {
                     exp->addr.off -= group->grp_addr.off;
                 } else if( FmtData.type & MK_PE ) {

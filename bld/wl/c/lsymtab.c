@@ -665,7 +665,7 @@ static void DumpHashTable( void )
 static void WipeSym( symbol *sym )
 /********************************/
 {
-    if( IS_SYM_IMPORTED(sym) && (FmtData.type & MK_ELF) == 0 ) {
+    if( IS_SYM_IMPORTED( sym ) && (FmtData.type & MK_ELF) == 0 ) {
         if( FmtData.type & MK_NOVELL ) {
             if( sym->p.import != DUMMY_IMPORT_PTR ) {
                 _LnkFree( sym->p.import );
@@ -674,7 +674,7 @@ static void WipeSym( symbol *sym )
             FreeImport( sym->p.import );
         }
         sym->p.import = NULL;
-    } else if( IS_SYM_ALIAS(sym) ) {
+    } else if( IS_SYM_ALIAS( sym ) ) {
         if( sym->info & SYM_FREE_ALIAS ) {
             _LnkFree( sym->p.alias.u.ptr );
         }
@@ -818,7 +818,7 @@ void ClearSymUnion( symbol * sym )
 /* clear the symbol unions of any possible allocated data */
 {
     sym->info &= ~SYM_LINK_GEN;
-    if( IS_SYM_VF_REF(sym) ) {
+    if( IS_SYM_VF_REF( sym ) ) {
         ClearRefInfo( sym );
     } else {
         WipeSym( sym );
@@ -853,9 +853,9 @@ symbol *FindISymbol( const char *name )
 symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *prefix, size_t prefixlen )
 /*******************************************************************************************************/
 {
-    symbol  *retsym;
+    symbol  *sym;
 
-    if( NULL == (retsym = SymOp( op, name, length )) )
+    if( NULL == (sym = SymOp( op, name, length )) )
         return( NULL );
 
     if( ( NULL != prefix ) && ( 0 != prefixlen ) || ( NULL != CmdFile->symprefix ) ) {
@@ -868,12 +868,12 @@ symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *p
             return( NULL );
         }
 
-        if( NULL == (retsym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) ) {
+        if( NULL == (sym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "no memory for prefix symbol");
             return( NULL );
         }
     }
-    return( retsym );
+    return( sym );
 }
 
 static void SetSymAlias( symbol *sym, const char *target, size_t targetlen )
@@ -1045,7 +1045,7 @@ symbol *UnaliasSym( sym_flags op, symbol *sym )
 /*****************************************************/
 {
     symbol *orig_sym = sym;
-    while( sym != NULL && IS_SYM_ALIAS(sym) ) {
+    while( sym != NULL && IS_SYM_ALIAS( sym ) ) {
         sym = DoSymOp( op, sym->p.alias.u.ptr, sym->u.aliaslen );
         /* circular ref, may be a weak symbol ! */
         if( sym == orig_sym ) {
@@ -1204,7 +1204,7 @@ symbol *HashReplace( symbol *sym )
     if( sym->mod == NULL )
         return sym;
     Ring2Prune( &sym->mod->publist, sym );
-    if( IS_SYM_COMMUNAL(sym) ) {
+    if( IS_SYM_COMMUNAL( sym ) ) {
         sym->p.seg->isdead = true;
     }
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 )
@@ -1216,7 +1216,7 @@ symbol *HashReplace( symbol *sym )
     newsym->info = sym->info | SYM_DEAD | SYM_IS_ALTDEF;
     Ring2Append( &sym->mod->publist, newsym );
     RingAppend( &sym->u.altdefs, newsym );
-    if( IS_SYM_NICOMDEF(sym) ) {
+    if( IS_SYM_NICOMDEF( sym ) ) {
         sym->p.cdefsize = sym->p.seg->length;
     }
     return sym;
@@ -1235,14 +1235,14 @@ static void SetDataSymInfo( symbol *sym, symbol *old )
 static bool SetNewDataSym( void *_dead, void *_sym )
 /**************************************************/
 {
-    symbol *dead = _dead;
+    symbol *deadsym = _dead;
     symbol *sym = _sym;
 
-    if( dead == sym->u.datasym ) {
-        if( dead->u.datasym == NULL ) {
-            SetDataSymInfo( sym, dead );
+    if( deadsym == sym->u.datasym ) {
+        if( deadsym->u.datasym == NULL ) {
+            SetDataSymInfo( sym, deadsym );
         } else {
-            sym->u.datasym = dead->u.datasym;
+            sym->u.datasym = deadsym->u.datasym;
         }
         return true;
     }
@@ -1258,7 +1258,7 @@ static void CleanAltDefs( symbol *sym )
     if( IS_SYM_ALIAS( sym ) || (sym->info & SYM_DEAD) || sym->u.altdefs == NULL )
         return;
     testring = NULL;
-    while( (altsym = RingPop( &sym->u.altdefs)) != NULL ) {
+    while( (altsym = RingPop( &sym->u.altdefs )) != NULL ) {
         if( altsym->info & SYM_KILL ) {
             if( altsym->info & SYM_HAS_DATA ) {
                 altsym->u.datasym = NULL;
@@ -1348,7 +1348,7 @@ void PurgeSymbols( void )
         } else if( sym->info & SYM_IS_ALTDEF ) {
             *list = sym->link;          // gonna get rid of these later
         } else {
-            if( IS_SYM_ALIAS(sym) && (sym->info & SYM_WAS_LAZY) ) {
+            if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_WAS_LAZY) ) {
                 WipeSym( sym );
                 sym->info = SYM_WEAK_REF | SYM_REFERENCED;
             }
@@ -1366,8 +1366,8 @@ void ConvertLazyRefs( void )
     symbol *    sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_A_REF(sym) ) {
-            if( IS_SYM_VF_REF(sym) ) {
+        if( IS_SYM_A_REF( sym ) ) {
+            if( IS_SYM_VF_REF( sym ) ) {
                 defsym = *(sym->e.vfdata);
                 _LnkFree( sym->e.vfdata );
             } else {
@@ -1458,9 +1458,9 @@ group_entry *SymbolGroup( symbol *sym )
 {
     group_entry *group;
 
-    if( IS_SYM_ALIAS(sym) ) {
+    if( IS_SYM_ALIAS( sym ) ) {
         group = NULL;
-    } else if( IS_SYM_GROUP(sym) ) {
+    } else if( IS_SYM_GROUP( sym ) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( sym == group->sym ) {
                 break;

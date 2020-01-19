@@ -754,8 +754,8 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
-/*******************************************************************************************/
+void SetAddPubSym( symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
+/********************************************************************************************/
 {
     sym->mod = mod;
     SET_SYM_TYPE( sym, type );
@@ -1034,8 +1034,8 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
     }
 }
 
-void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
-/************************************************************/
+void DefineLazyExtdef( symbol *sym, symbol *defsym, bool isweak )
+/***************************************************************/
 /* handle the lazy and weak extdef comments */
 {
     symbol      *defaultsym;
@@ -1048,7 +1048,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
             } else {
                 defaultsym = sym->e.def;
             }
-            if( def != defaultsym ) {
+            if( defsym != defaultsym ) {
                 LnkMsg( LOC_REC+WRN+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
             }
         } else if( (sym->info & SYM_OLDHAT) == 0 || IS_SYM_LINK_WEAK( sym ) ) {
@@ -1057,7 +1057,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
             } else {
                 SET_SYM_TYPE( sym, SYM_LAZY_REF );
             }
-            sym->e.def = def;
+            sym->e.def = defsym;
             if( LinkFlags & LF_STRIP_CODE ) {
                 DataRef( sym->e.def );  // default must not be removed
             }
@@ -1139,7 +1139,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
     }
 }
 
-void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
+void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
                                  vflistrtns *rtns )
 /**************************************************************/
 // process the watcom virtual function table information extension
@@ -1153,17 +1153,17 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
          * for dead code elimination */
         if( (LinkFlags & LF_STRIP_CODE)
                         && (sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
-            GetVFList( def, sym, false, rtns );
-            sym->e.def = def;
+            GetVFList( defsym, sym, false, rtns );
+            sym->e.def = defsym;
             sym->info |= SYM_VF_REFS_DONE;
-            DataRef( def );
+            DataRef( defsym );
         }
     } else if( !IS_SYM_IMPORTED( sym ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( IS_SYM_VF_REF( sym ) ) {
             if( IS_SYM_PURE_REF( sym ) ^ ispure ) {
                 LnkMsg( LOC_REC+WRN+MSG_VF_PURE_MISMATCH, "S", sym );
             }
-            symlist = GetVFList( def, NULL, true, rtns );
+            symlist = GetVFList( defsym, NULL, true, rtns );
             if( symlist == NULL ) {
                 if( !CheckVFList( sym ) ) {
                     LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
@@ -1184,7 +1184,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
                 _LnkFree( startlist );
             }
         } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
-            DefineVirtualFunction( sym, def, ispure, rtns );
+            DefineVirtualFunction( sym, defsym, ispure, rtns );
         }
     }
 }

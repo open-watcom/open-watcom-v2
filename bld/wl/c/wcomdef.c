@@ -505,9 +505,9 @@ void ProcComdat( void )
         RingLookup( CDatList, CheckSameComdat, sym );
 #endif
         RingAppend( &CDatList, info );
-        if( IS_SYM_COMDAT(sym) ) {
+        if( IS_SYM_COMDAT( sym ) ) {
             CheckComdatSym( sym, info->flags & ~SYM_DEAD );
-        } else if( !(IS_SYM_REGULAR(sym) && (sym->info & SYM_DEFINED)) ) {
+        } else if( !(IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED)) ) {
             if( sym->info & SYM_DEFINED ) {
                 sym = HashReplace( sym );
             }

@@ -730,34 +730,34 @@ void FinishMapSort( void )
 static bool DefPubSym( void *_pub, void *_info )
 /**********************************************/
 {
-    symbol      *pub = _pub;
+    symbol      *sym = _pub;
     pubdefinfo  *info = _info;
     segdata     *seg;
     seg_leader  *leader;
     offset      temp;
 
-    if( pub->info & (SYM_DEAD | SYM_IS_ALTDEF) )
+    if( sym->info & (SYM_DEAD | SYM_IS_ALTDEF) )
         return( false );
-    if( IS_SYM_ALIAS( pub ) )
+    if( IS_SYM_ALIAS( sym ) )
         return( false );
-    if( IS_SYM_IMPORTED( pub ) )
+    if( IS_SYM_IMPORTED( sym ) )
         return( false );
-    seg = pub->p.seg;
+    seg = sym->p.seg;
     if( seg != NULL ) {
         leader = seg->u.leader;
         /* address in symbol table is actually signed_32 offset
            from segdata zero */
         if( seg->isabs || IS_DBG_INFO( leader ) ) {
-            SET_SYM_ADDR( pub, pub->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
+            SET_SYM_ADDR( sym, sym->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
         } else {
-            temp = pub->addr.off;
+            temp = sym->addr.off;
             temp += seg->a.delta;
             temp += SEG_GROUP_DELTA( leader );
-            SET_SYM_ADDR( pub, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
-            DBIGenGlobal( pub, info->sect );
+            SET_SYM_ADDR( sym, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
+            DBIGenGlobal( sym, info->sect );
         }
     }
-    if( (MapFlags & MAP_FLAG) && !SkipSymbol( pub ) ) {
+    if( (MapFlags & MAP_FLAG) && !SkipSymbol( sym ) ) {
         if( info->first && (MapFlags & MAP_GLOBAL) == 0 ) {
             WritePubModHead();
             info->first = false;
@@ -765,13 +765,13 @@ static bool DefPubSym( void *_pub, void *_info )
         if( MapFlags & MAP_SORT ) {
             if( MapFlags & MAP_GLOBAL ) {
                 NumMapSyms++;
-                pub->info |= SYM_MAP_GLOBAL;
+                sym->info |= SYM_MAP_GLOBAL;
             } else {
-                info->symarray[info->num] = pub;
+                info->symarray[info->num] = sym;
                 info->num++;
             }
         } else {
-            XReportSymAddr( pub );
+            XReportSymAddr( sym );
         }
     }
     return( false );

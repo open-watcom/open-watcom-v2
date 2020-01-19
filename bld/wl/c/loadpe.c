@@ -1765,22 +1765,22 @@ bool ImportPELocalSym( symbol *iatsym )
 /*************************************/
 {
     const char      *name;
-    symbol          *locsym;
+    symbol          *sym;
 
     name = iatsym->name.u.ptr;
     if( memcmp( name, ImportSymPrefix, PREFIX_LEN ) != 0 )
         return( false );
-    locsym = FindISymbol( name + PREFIX_LEN );
-    if( locsym == NULL )
+    sym = FindISymbol( name + PREFIX_LEN );
+    if( sym == NULL )
         return( false );
-    if( IS_SYM_IMPORTED( locsym ) )
+    if( IS_SYM_IMPORTED( sym ) )
         return( false );
-    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name.u.ptr );
+    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
     iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
     if( LinkFlags & LF_STRIP_CODE ) {
         DefStripImpSym( iatsym );
     }
-    AddPEImportLocalSym( locsym, iatsym );
+    AddPEImportLocalSym( sym, iatsym );
     return( true );
 }
 

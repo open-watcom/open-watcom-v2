@@ -165,7 +165,7 @@ void AddEdge( segdata * seg, symbol * sym )
     edgelist *  edge;
 
     if( sym->info & SYM_DEFINED ) {
-        if( !IS_SYM_IMPORTED(sym) && seg != sym->p.seg && sym->p.seg != NULL ) {
+        if( !IS_SYM_IMPORTED( sym ) && seg != sym->p.seg && sym->p.seg != NULL ) {
             if( seg->isrefd || !seg->iscode ) {
                 RefSeg( sym->p.seg );
             } else if( !sym->p.seg->isrefd ) {
@@ -209,13 +209,13 @@ void AddSymEdge( symbol * srcsym, symbol * targsym )
 }
 
 void AddSymSegEdge( symbol *srcsym, segdata *targsdata )
-/*********************************************************/
+/******************************************************/
 /* make a reference from symbol to segment */
 {
     edgelist *  edge;
 
-    if( IS_SYM_IMPORTED(srcsym) ) {
-        RefSeg(targsdata);
+    if( IS_SYM_IMPORTED( srcsym ) ) {
+        RefSeg( targsdata );
         return;
     }
     edge = AllocEdge();

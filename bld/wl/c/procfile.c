@@ -658,7 +658,7 @@ static bool ResolveVFExtdefs( void )
 
     resolved = false;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_VF_REF(sym) ) {
+        if( IS_SYM_VF_REF( sym ) ) {
             resolved |= CheckVFList( sym );
         }
     }
@@ -714,7 +714,7 @@ void ProcLocalImports( void )
 
     if( FmtData.type & MK_PE ) {
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF(sym) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
+            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym ) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 ImportPELocalSym( sym );
             }
         }

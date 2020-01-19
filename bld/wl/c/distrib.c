@@ -175,7 +175,7 @@ static void KillUnrefedSyms( void *_sym )
     segdata     *seg;
 
     seg = sym->p.seg;
-    if( ( seg != NULL ) && !IS_SYM_IMPORTED(sym) && !IS_SYM_ALIAS(sym) && seg->isdead ) {
+    if( ( seg != NULL ) && !IS_SYM_IMPORTED( sym ) && !IS_SYM_ALIAS( sym ) && seg->isdead ) {
         if( seg->u.leader->combine == COMBINE_COMMON ) {
             seg = RingFirst( seg->u.leader->pieces );
             if( !seg->isdead ) {
@@ -408,7 +408,7 @@ void RefDistribSym( symbol *sym )
  */
 {
     mod_entry   *mod;
-    segdata    	*seg;
+    segdata     *seg;
     dist_arc    arc;
 
     arc.sym = sym;
@@ -540,7 +540,7 @@ static void ScanArcs( mod_entry *mod )
 void DistribFinishMod( mod_entry *mod )
 /**************************************
  * check the position of the modules referenced by mod, and then make a
- * more permanent copy of the arclist for this module. 
+ * more permanent copy of the arclist for this module.
  */
 {
     arcdata     *arclist;

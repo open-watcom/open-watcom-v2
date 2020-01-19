@@ -1345,7 +1345,7 @@ bool ProcOutputOffset( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= ( 0xFFFFUL << FmtData.SegShift ) || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
+    if( retval == ST_IS_ORDINAL && (value <= ( 0xFFFFUL << FmtData.SegShift ) || HintFormat( ~MK_SEGMENTED )) ) {
         FmtData.output_offset = value;
         return( true );
     } else {
@@ -1494,7 +1494,7 @@ bool ProcOrdOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED)))) {
+    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~MK_SEGMENTED )) ) {
         CurrOClass->Base.off = value;
         CurrOClass->FixedAddr = true;
         return( true );
@@ -1571,7 +1571,7 @@ bool ProcOrdSegOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
+    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~MK_SEGMENTED )) ) {
         CurrOSeg->Base.off = value;
         CurrOSeg->FixedAddr = true;
         return( true );

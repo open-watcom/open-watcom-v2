@@ -236,16 +236,16 @@ static unsigned_32 WritePharSegData( void )
 static unsigned_32  WriteRTPBlock( void )
 /***************************************/
 {
-    symbol *        symptr;
+    symbol *        sym;
 
     FmtData.u.phar.params->signature = RTP_SIGNATURE;
     if( FmtData.u.phar.breaksym != NULL ) {
-        symptr = FindISymbol( FmtData.u.phar.breaksym );
-        if( symptr == NULL ) {
+        sym = FindISymbol( FmtData.u.phar.breaksym );
+        if( sym == NULL ) {
             LnkMsg( WRN+MSG_BREAKSYM_NOT_FOUND, "s", FmtData.u.phar.breaksym );
             FmtData.u.phar.params->realbreak = 0;
         } else {
-            FmtData.u.phar.params->realbreak = symptr->addr.off;
+            FmtData.u.phar.params->realbreak = sym->addr.off;
         }
     }
     WriteLoad( FmtData.u.phar.params, sizeof( rtpblock ) );

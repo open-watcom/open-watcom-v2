@@ -337,7 +337,7 @@ void ProcNbkpat( void )
     loctype = *ObjBuff++;
     symname = FindName( GetIdx() );
     sym = RefISymbol( symname->name );
-    if( !IS_SYM_COMDAT(sym) )           /* can't handle these otherwise */
+    if( !IS_SYM_COMDAT( sym ) )         /* can't handle these otherwise */
         return;
     if( sym->info & SYM_DEAD )
         return;

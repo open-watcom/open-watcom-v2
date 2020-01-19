@@ -298,7 +298,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
     if( (sym->info & SYM_DEFINED) == 0 ) {
         sym->info |= SYM_DEFINED | SYM_DCE_REF;
         if( LinkFlags & LF_STRIP_CODE ) {
-            DefStripImpSym(sym);
+            DefStripImpSym( sym );
         }
         SET_SYM_TYPE( sym, SYM_IMPORTED );
         dll = AllocDLLInfo();
@@ -538,20 +538,20 @@ char *ImpModuleName( dll_sym_info *dll )
     return( dll->m.modnum->name.u.ptr );
 }
 
-bool IsSymElfImported( symbol *s )
-/********************************/
+bool IsSymElfImported( symbol *sym )
+/**********************************/
 {
-    return( IS_SYM_IMPORTED(s) );
+    return( IS_SYM_IMPORTED( sym ) );
 }
 
-bool IsSymElfExported( symbol *s )
-/********************************/
+bool IsSymElfExported( symbol *sym )
+/**********************************/
 {
-    return( FmtData.u.elf.exportallsyms || (s->info & SYM_EXPORTED) );
+    return( FmtData.u.elf.exportallsyms || (sym->info & SYM_EXPORTED) );
 }
 
-bool IsSymElfImpExp( symbol *s )
-/******************************/
+bool IsSymElfImpExp( symbol *sym )
+/********************************/
 {
-    return( IsSymElfImported(s) || IsSymElfExported(s) );
+    return( IsSymElfImported( sym ) || IsSymElfExported( sym ) );
 }
