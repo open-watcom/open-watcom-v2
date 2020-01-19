@@ -83,7 +83,8 @@ static int DoOpen( const char *name, bool create, unsigned mode )
 
     CheckBreak();
     for( ;; ) {
-        if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if( OpenFiles >= MAX_OPEN_FILES )
+            CleanCachedHandles();
         if( create ) {
             h  = DosCreateFile( mode, name );
         } else {
@@ -95,8 +96,9 @@ static int DoOpen( const char *name, bool create, unsigned mode )
         }
         if( h != -TOOMANY )
             break;
-        if( !CleanCachedHandles() )
+        if( !CleanCachedHandles() ) {
             break;
+        }
     }
     return( h );
 }
@@ -284,7 +286,9 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );

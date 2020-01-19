@@ -79,10 +79,13 @@ void ReleaseInfo( virt_mem v )
 {
     vmemblock * ptr;
 
-    if( v == 0 ) return;
-    if( VMemBlocks == NULL ) return;
+    if( v == 0 )
+        return;
+    if( VMemBlocks == NULL )
+        return;
     ptr = (vmemblock *)( v - offsetof( vmemblock, mem ) );
-    if( ptr->next == ptr ) return;
+    if( ptr->next == ptr )
+        return;
     if( ptr->prev == NULL ) {
         VMemBlocks = ptr->next;
         if( VMemBlocks != NULL ) {

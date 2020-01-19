@@ -1563,7 +1563,8 @@ bool ProcObjAlign( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );

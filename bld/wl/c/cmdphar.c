@@ -196,7 +196,8 @@ bool ProcRealBreak( void )
     unsigned_32     value;
     ord_state       ok;
 
-    if( !HaveEquals( TOK_INCLUDE_DOT ) ) return( false );
+    if( !HaveEquals( TOK_INCLUDE_DOT ) )
+        return( false );
     ok = getatol( &value );
     if( FmtData.u.phar.breaksym != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_REALBREAKS, NULL );

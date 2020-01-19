@@ -317,13 +317,17 @@ bool MakeToken( sep_type separator, bool include_fn )
             }
             break;
         case ')':       // Right paren separates only in overlay, left never
-            if( OverlayLevel == 0 ) break;      // NOTE: possible fall through
+            if( OverlayLevel == 0 )
+                break;      // NOTE: possible fall through
+            /* fall through */
         case '+':              // break a token on any of these.
         case ',':
         case ';':
         case '=':
         case '@':
-            if( separator == SEP_SPACE ) break; // NOTE: possible fall through
+            if( separator == SEP_SPACE )
+                break; // NOTE: possible fall through
+            /* fall through */
         case '/':
         case ' ':
         case '\t':

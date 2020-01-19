@@ -291,7 +291,8 @@ bool ProcOS2Alignment( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
@@ -303,7 +304,8 @@ bool ProcOS2Alignment( void )
 bool ProcModName( void )
 /*****************************/
 {
-    if( !HaveEquals( TOK_INCLUDE_DOT ) ) return( false );
+    if( !HaveEquals( TOK_INCLUDE_DOT ) )
+        return( false );
     FmtData.u.os2.module_name = totext();
     return( true );
 }

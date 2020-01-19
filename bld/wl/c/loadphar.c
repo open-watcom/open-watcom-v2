@@ -120,10 +120,12 @@ static void WritePharSimple( unsigned_32 start )
     _HostU16toTarg( header_size / 16, header.hdr_size );
     extra = MemorySize() - file_size + header_size + 0xfff;
     temp = FmtData.u.phar.mindata + extra;
-    if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
+    if( temp < FmtData.u.phar.mindata )
+        temp = 0xffffffff;
     _HostU16toTarg( temp >> 12, header.min_data );
     temp = FmtData.u.phar.maxdata + extra;
-    if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
+    if( temp < FmtData.u.phar.maxdata )
+        temp = 0xffffffff;
     _HostU16toTarg( temp >> 12, header.max_data );
     _HostU32toTarg( StackAddr.off, header.ESP );
     _HostU16toTarg( 0, header.checksum );
@@ -165,7 +167,8 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
     if( flags & DR_IS_USER ) {
         desc.bits2 |= DESC_GENERAL;
     }
-    if( limit > 0 ) limit--;
+    if( limit > 0 )
+        limit--;
     if( limit >= _1MB ) {
         limit >>= 12;
         desc.bits2 |= DESC_GRANULARITY_BIT;
@@ -352,10 +355,12 @@ static void WritePharExtended( unsigned_32 start )
         _HostU32toTarg( 0, header.tss_size );
         extra = MemorySize() - file_size + image_offset;
         temp = FmtData.u.phar.mindata + extra;
-        if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
+        if( temp < FmtData.u.phar.mindata )
+            temp = 0xffffffff;
         _HostU32toTarg( temp, header.min_extra );
         temp = FmtData.u.phar.maxdata + extra;
-        if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
+        if( temp < FmtData.u.phar.maxdata )
+            temp = 0xffffffff;
         _HostU32toTarg( temp, header.max_extra );
         _HostU16toTarg( 0, header.SS );
         _HostU16toTarg( 0, header.CS );

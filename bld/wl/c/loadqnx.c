@@ -134,8 +134,10 @@ static void SetVerifyInfo( void (*wrfn)(char *, virt_mem, unsigned long),
     offset      newstart;
     char *      targ;
 
-    if( AmountWritten + length <= VERIFY_OFFSET ) return;
-    if( AmountWritten >= VERIFY_END ) return;
+    if( AmountWritten + length <= VERIFY_OFFSET )
+        return;
+    if( AmountWritten >= VERIFY_END )
+        return;
     newstart = AmountWritten;
     if( AmountWritten < VERIFY_OFFSET ) {
         data += VERIFY_OFFSET - AmountWritten;
@@ -198,7 +200,8 @@ static void WriteQNXGroup( group_entry *grp, unsigned_32 *segments )
     if( StackSegPtr != NULL && grp == StackSegPtr->group ) {
         segments[seg] -= StackSize;      // stack size gets
     }                                    // added on by QNX loader.
-    if( grp->size == 0 ) return;
+    if( grp->size == 0 )
+        return;
     AmountWritten = 0;
     CurrGroup = grp;
     WriteLoadRec();

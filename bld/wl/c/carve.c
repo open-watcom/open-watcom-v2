@@ -416,7 +416,8 @@ void CarveRestart( carve_t cv, unsigned num )
     unsigned    index;
     blk_t *     block;
 
-    if( num == 0 ) return;
+    if( num == 0 )
+        return;
     numblks = (num + cv->elm_count - 1) / cv->elm_count;
     for( index = 0; index < numblks; index++ ) {
         newBlk( cv );

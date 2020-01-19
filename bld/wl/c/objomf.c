@@ -407,7 +407,7 @@ static void ProcSegDef( void )
     if( ObjFormat & FMT_EASY_OMF ) {
         SkipIdx();                          // skip overlay name index
         if( ObjBuff < EOObjRec ) {          // the optional attribute field present
-            if( (*ObjBuff & 0x4) == 0 ) {       // if USE32 bit not set;
+            if( (*ObjBuff & 0x4) == 0 ) {   // if USE32 bit not set
                 sdata->is32bit = false;
             }
         }

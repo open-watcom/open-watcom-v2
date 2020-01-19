@@ -42,7 +42,8 @@ void __far _ovl_addarea( unsigned segment, unsigned size )
 {
     area_list_ptr area;
 
-    if( size < 3 ) return;
+    if( size < 3 )
+        return;
     __OVLINITAREA__( segment, size );
     area = MK_FP( segment, 0 );
     area->next = __OVLAREALIST__;

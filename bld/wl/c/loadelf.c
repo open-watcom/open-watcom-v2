@@ -280,7 +280,8 @@ static void WriteELFGroups( ElfHdr *hdr )
     ph = hdr->ph + 1;
     off = hdr->curr_off;
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         SetGroupHeaders( group, off, ph, sh );
         WriteGroupLoad( group, false );
         off = OffsetAlign( off + group->size, FmtData.objalign );

@@ -384,7 +384,8 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
     code_base = 0xFFFFFFFFUL;
     data_base = 0xFFFFFFFFUL;
     for( group = Groups; group != NULL; group = group->next_group) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         name = group->sym->name.u.ptr;
         if( name == NULL || name[0] == 0 ) {
             leader = Ring2First( group->leaders );
@@ -1610,13 +1611,18 @@ static void RegisterImport( dll_sym_info *sym )
     if( os2_imp != NULL ) {
         for( ;; ) {
             chk = *owner;
-            if( chk == NULL ) break;
+            if( chk == NULL )
+                break;
             if( chk->imp != NULL ) {
                 len = chk->imp->len;
-                if( len > os2_imp->len ) len = os2_imp->len;
+                if( len > os2_imp->len )
+                    len = os2_imp->len;
                 cmp = memcmp( chk->imp->name.u.ptr, os2_imp->name.u.ptr, len );
-                if( cmp > 0 ) break;
-                if( cmp == 0 && len > chk->imp->len ) break;
+                if( cmp > 0 )
+                    break;
+                if( cmp == 0 && len > chk->imp->len ) {
+                    break;
+                }
             }
             owner = &chk->next;
         }

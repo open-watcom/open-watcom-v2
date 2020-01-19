@@ -179,7 +179,8 @@ bool ProcQNXHeapSize( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
@@ -195,7 +196,8 @@ bool ProcQNXPrivilege( void )
     ord_state           ret;
     unsigned_16         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( false );
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
     ret = getatoi( &value );
     if( ret != ST_IS_ORDINAL || value > 3 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "privilege" );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,9 @@ void UtilsInit( void )
 void ImplyFormat( format_type typ )
 /*********************************/
 {
-    if( FmtType == FMT_DEFAULT ) FmtType = typ;
+    if( FmtType == FMT_DEFAULT ) {
+        FmtType = typ;
+    }
 }
 
 char *FileName( const char *buff, prompt_slot slot, bool force )

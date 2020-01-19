@@ -215,7 +215,8 @@ void * RINGNAME(Pred)(          // FIND PREVIOUS ELEMENT IN A RING
     } else {
         for( pred = rhdr; ; ) {
             next = pred->next;
-            if( element == next ) break;
+            if( element == next )
+                break;
             pred = next;
             if( pred == rhdr ) {
                 pred = NULL;
@@ -340,7 +341,8 @@ void * RINGNAME(Lookup) (       // LOOKUP IN A RING
         curr = rhdr;
         for( ; ; ) {
             curr = curr->next;
-            if( (*rtn)( curr, comparand ) ) break;
+            if( (*rtn)( curr, comparand ) )
+                break;
             if( curr == rhdr ) {
                 curr = NULL;
                 break;
@@ -393,7 +395,8 @@ void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
     for( ;; ) {
         /* modify ring in an atomic manner */
         elt = RINGNAME(Pop)( hdr );
-        if( elt == NULL ) break;
+        if( elt == NULL )
+            break;
         _LnkFree( elt );
     }
 }
