@@ -43,6 +43,7 @@
 #include "dbgall.h"
 #include "fileio.h"
 #include "loadfile.h"
+#include "command.h"
 
 
 #ifdef _PHARLAP
@@ -392,6 +393,14 @@ void FiniPharLapLoadFile( void )
         WritePharExtended( start );
     } else {
         WritePharSimple( start );
+    }
+}
+
+void CheckPharLapData( void )
+/***************************/
+{
+    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & LS_HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
+        LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
     }
 }
 

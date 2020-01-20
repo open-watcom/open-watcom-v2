@@ -60,6 +60,7 @@
 #include "loadelf.h"
 #include "loadzdos.h"
 #include "loadrdv.h"
+#include "loadphar.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
@@ -129,8 +130,8 @@ static void PreAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _PHARLAP
-    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & LS_HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
-        LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
+    if( FmtData.type & MK_PHAR_LAP ) {
+        CheckPharLapData();
     }
 #endif
 }
