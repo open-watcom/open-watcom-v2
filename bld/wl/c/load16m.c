@@ -49,7 +49,6 @@
 #include "objcalc.h"
 #include "dbgall.h"
 #include "ring.h"
-#include "command.h"
 
 #include "clibext.h"
 
@@ -296,8 +295,6 @@ void Fini16MLoadFile( void )
     unsigned_32         stub_size;
     unsigned_32         reloc_size;
     reloc_addr          *reloc_data;
-    const char          *base_name;
-    size_t              base_name_len;
 
     // TODO: add some parameter for reloc format switching
     // for now it is setup to RSI-2 reloc format
