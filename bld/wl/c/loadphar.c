@@ -32,7 +32,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "exephar.h"
-#include "pharlap.h"
+#include "loadphar.h"
 #include "alloc.h"
 #include "msg.h"
 #include "reloc.h"

@@ -55,7 +55,7 @@
 #include "loadpe.h"
 #include "loados2.h"
 #include "loaddos.h"
-#include "pharlap.h"
+#include "loadphar.h"
 #include "loadnov.h"
 #include "load16m.h"
 #include "loadqnx.h"
