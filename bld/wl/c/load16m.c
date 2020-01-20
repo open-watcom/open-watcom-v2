@@ -363,10 +363,6 @@ void Fini16MLoadFile( void )
     /*
      * add original EXP name
      */
-    if( FmtData.u.d16m.exp_name == NULL ) {
-        base_name = GetBaseName( Root->outfile->fname, strlen( Root->outfile->fname ), &base_name_len );
-        FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
-    }
     strncpy( exe_head.EXP_path, FmtData.u.d16m.exp_name, sizeof( exe_head.EXP_path ) - 1 );
     exe_head.EXP_path[sizeof( exe_head.EXP_path ) - 1] = '\0';
     strupr( exe_head.EXP_path );

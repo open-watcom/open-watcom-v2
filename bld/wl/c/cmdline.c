@@ -364,6 +364,11 @@ void DoCmdFile( const char *fname )
         CmdNovFini();
     }
 #endif
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        CmdD16MFini();
+    }
+#endif
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         CmdOvlFini();

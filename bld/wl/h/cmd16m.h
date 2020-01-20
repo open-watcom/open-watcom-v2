@@ -59,5 +59,6 @@ extern bool     ProcDataSize( void );
 extern void     SetD16MFmt( void );
 extern void     FreeD16MFmt( void );
 extern bool     Proc16M( void );
+extern void     CmdD16MFini( void );
 
 #endif
