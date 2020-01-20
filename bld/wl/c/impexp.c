@@ -335,15 +335,11 @@ static void ReadNameTable( f_handle the_file )
 {
     unsigned_8          len_u8;
     unsigned_16         ordinal;
-    exportcompare_fn    *rtn;
+    bool                cmpcase;
     const char          *fname;
 
     fname = FmtData.u.os2.old_lib_name;
-    if( LinkFlags & LF_CASE_FLAG ) {
-        rtn = strcmp;
-    } else {
-        rtn = stricmp;
-    }                             // skip the module name & ordinal.
+    cmpcase = ( (LinkFlags & LF_CASE_FLAG) != 0 );
     for( ;; ) {
         QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
         if( len_u8 == 0 )
@@ -353,7 +349,7 @@ static void ReadNameTable( f_handle the_file )
         if( ordinal == 0 )
             continue;
         TokBuff[len_u8] = '\0';
-        CheckExport( TokBuff, ordinal, rtn );
+        CheckExport( TokBuff, ordinal, cmpcase );
     }
 }
 
@@ -475,15 +471,17 @@ void AssignOrdinals( void )
     }
 }
 
-void CheckExport( char *name, ordinal_t ordinal, exportcompare_fn *rtn )
-/**********************************************************************/
+void CheckExport( const char *name, ordinal_t ordinal, bool cmpcase )
+/*******************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
     entry_export    *place;
     entry_export    *prev;
+    int             (*rtn)(const char *,const char *);
 
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
+    rtn = ( cmpcase ) ? strcmp : stricmp;
     prev = NULL;
     for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
         if( rtn( place->name.u.ptr, name ) == 0 ) {

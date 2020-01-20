@@ -1496,7 +1496,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     nameptr = TokBuff,
     ordptr = ordbuf;
     for( ; numords > 0; --numords ) {
-        CheckExport( nameptr, *ordptr + ord_base, strcmp );
+        CheckExport( nameptr, *ordptr + ord_base, true );
         while( *nameptr != '\0' )
             nameptr++;
         nameptr++;
