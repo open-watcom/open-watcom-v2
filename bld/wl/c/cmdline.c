@@ -63,6 +63,7 @@
 #include "loadfile.h"
 #include "pathlist.h"
 #include "cmdhelp.h"
+#include "library.h"
 
 
 #ifdef BOOTSTRAP

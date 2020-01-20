@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,3 +40,4 @@ extern char             *GetARName( const ar_header *, file_list *, unsigned lon
 extern unsigned long    GetARValue( const char *, size_t );
 extern bool             LibFind( const char *, bool );
 extern bool             ModNameCompare( const char *, const char * );
+extern file_list        *AddObjLib( const char *, lib_priority );

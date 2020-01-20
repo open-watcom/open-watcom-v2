@@ -51,6 +51,7 @@
 #include "permdata.h"
 #include "pathlist.h"
 #include "cmdall.h"
+#include "library.h"
 
 #include "clibext.h"
 

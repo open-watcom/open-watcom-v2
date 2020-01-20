@@ -631,3 +631,19 @@ offset FindLinearAddr2( targ_addr *addr )
     }
     return( addr->off );
 }
+
+file_list *AllocNewFile( member_list *member )
+/********************************************/
+{
+    file_list       *new_entry;
+
+    _PermAlloc( new_entry, sizeof( file_list ) );
+    new_entry->next_file = NULL;
+    new_entry->flags = DBIFlag;
+    new_entry->strtab = NULL;
+    new_entry->u.member = member;
+    if( member != NULL ) {
+        new_entry->flags |= STAT_HAS_MEMBER;
+    }
+    return( new_entry );
+}

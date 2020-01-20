@@ -52,7 +52,6 @@
 #include "ideentry.h"
 #include "cmdline.h"
 #include "pathgrp2.h"
-#include "objio.h"
 
 #include "clibext.h"
 
@@ -1247,61 +1246,4 @@ char *GetFileName( char **membname, bool setname )
         ptr = FileName( objname, namelen, E_OBJECT, false );
     }
     return( ptr );
-}
-
-file_list *AllocNewFile( member_list *member )
-/********************************************/
-{
-    file_list       *new_entry;
-
-    _PermAlloc( new_entry, sizeof( file_list ) );
-    new_entry->next_file = NULL;
-    new_entry->flags = DBIFlag;
-    new_entry->strtab = NULL;
-    new_entry->u.member = member;
-    if( member != NULL ) {
-        new_entry->flags |= STAT_HAS_MEMBER;
-    }
-    return( new_entry );
-}
-
-file_list *AddObjLib( const char *name, lib_priority priority )
-/*************************************************************/
-{
-    file_list   **owner;
-    file_list   **new_owner;
-    file_list   *lib;
-
-    DEBUG(( DBG_OLD, "Adding Object library name %s", name ));
-    /* search for new library position in linked list */
-    for( owner = &ObjLibFiles; (lib = *owner) != NULL; owner = &lib->next_file ) {
-        if( lib->priority < priority )
-            break;
-        /* end search if library already exists with same or a higher priority */
-        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
-            return( lib );
-        }
-    }
-    new_owner = owner;
-    /* search for library definition with a lower priority */
-    for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
-        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
-            /* remove library entry from linked list */
-            *owner = lib->next_file;
-            break;
-        }
-    }
-    /* if we need to add one */
-    if( lib == NULL ) {
-        lib = AllocNewFile( NULL );
-        lib->infile = AllocUniqueFileEntry( name, UsrLibPath );
-        lib->infile->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
-        LinkState |= LS_LIBRARIES_ADDED;
-    }
-    /* put it to new position and setup priority */
-    lib->next_file = *new_owner;
-    *new_owner = lib;
-    lib->priority = priority;
-
-    return( lib );
 }

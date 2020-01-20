@@ -66,3 +66,4 @@ extern void             VMemQSort( virt_mem, size_t, size_t,
                                     int (*cmpfn)(virt_mem, virt_mem) );
 extern void             InitEnvVars( void );
 extern void             FiniEnvVars( void );
+extern file_list        *AllocNewFile( member_list *member );
