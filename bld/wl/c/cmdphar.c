@@ -61,22 +61,21 @@ void SetPharFmt( void )
 {
     Extension = E_PROTECT;
     LinkState &= ~LS_MAKE_RELOCS;   // do not generate relocations.
-    _ChkAlloc( FmtData.u.phar.params, sizeof( *FmtData.u.phar.params ) );
     FmtData.u.phar.mindata = 0;
     FmtData.u.phar.maxdata = 0xFFFFFFFF;
     FmtData.u.phar.breaksym = NULL;
     FmtData.u.phar.stub = NULL;
-//  FmtData.u.phar.pack = false;
-    FmtData.u.phar.params->minreal = 0;
-    FmtData.u.phar.params->maxreal = 0;
-    FmtData.u.phar.params->callbufs = 0;
-    FmtData.u.phar.params->realbreak = 0;
-    FmtData.u.phar.params->minibuf = 1;
-    FmtData.u.phar.params->maxibuf = 4;
-    FmtData.u.phar.params->nistack = 4;
-    FmtData.u.phar.params->istksize = 1;
-    FmtData.u.phar.params->extender_flags = 0;
-    FmtData.u.phar.params->unpriv = 0;
+    FmtData.u.phar.minreal = 0;
+    FmtData.u.phar.maxreal = 0;
+    FmtData.u.phar.callbufs = 0;
+    FmtData.u.phar.realbreak = 0;
+    FmtData.u.phar.minibuf = 1;
+    FmtData.u.phar.maxibuf = 4;
+    FmtData.u.phar.nistack = 4;
+    FmtData.u.phar.istksize = 1;
+    FmtData.u.phar.extender_flags = 0;
+    FmtData.u.phar.unpriv = false;
+//    FmtData.u.phar.pack = false;
     ChkBase( _4KB );
 }
 
@@ -84,7 +83,6 @@ void FreePharFmt( void )
 /*****************************/
 {
     _LnkFree( FmtData.u.phar.breaksym );
-    _LnkFree( FmtData.u.phar.params );
     _LnkFree( FmtData.u.phar.stub );
 }
 
@@ -135,7 +133,7 @@ bool ProcMaxData( void )
 bool ProcUnpriv( void )
 /****************************/
 {
-    FmtData.u.phar.params->unpriv = 1;
+    FmtData.u.phar.unpriv = true;
     return( true );
 }
 
@@ -152,7 +150,7 @@ bool ProcFlags( void )
     unsigned_32     value;
 
     ret = GetLong( &value );
-    FmtData.u.phar.params->extender_flags = value;
+    FmtData.u.phar.extender_flags = value;
     return( ret );
 }
 
@@ -168,7 +166,7 @@ bool ProcMinReal( void )
         if( value > 0xffff ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "minreal" );
         } else {
-            FmtData.u.phar.params->minreal = value;
+            FmtData.u.phar.minreal = value;
         }
     }
     return( ret );
@@ -186,7 +184,7 @@ bool ProcMaxReal( void )
         if( value > 0xffff ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "maxreal" );
         } else {
-            FmtData.u.phar.params->maxreal = value;
+            FmtData.u.phar.maxreal = value;
         }
     }
     return( ret );
@@ -209,7 +207,7 @@ bool ProcRealBreak( void )
     if( ok != ST_IS_ORDINAL ) {   // must be a symbol name.
         FmtData.u.phar.breaksym = tostring();
     } else {
-        FmtData.u.phar.params->realbreak = value;
+        FmtData.u.phar.realbreak = value;
     }
     return( true );
 }
@@ -226,7 +224,7 @@ bool ProcCallBufs( void )
         if( value > 64 ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "callbufs" );
         } else {
-            FmtData.u.phar.params->callbufs = value;
+            FmtData.u.phar.callbufs = value;
         }
     }
     return( ret );
@@ -244,7 +242,7 @@ bool ProcMiniBuf( void )
         if( value > 64 || value < 1 ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "minibuf" );
         } else {
-            FmtData.u.phar.params->minibuf = value;
+            FmtData.u.phar.minibuf = value;
         }
     }
     return( ret );
@@ -262,7 +260,7 @@ bool ProcMaxiBuf( void )
         if( value > 64 || value < 1 ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "maxibuf" );
         } else {
-            FmtData.u.phar.params->maxibuf = value;
+            FmtData.u.phar.maxibuf = value;
         }
     }
     return( ret );
@@ -279,7 +277,7 @@ bool ProcNIStack( void )
         if( value < 4 || value > 0xFFFF ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "nistack" );
         } else {
-            FmtData.u.phar.params->nistack = value;
+            FmtData.u.phar.nistack = value;
         }
     }
     return( ret );
@@ -297,7 +295,7 @@ bool ProcIStkSize( void )
         if( value > 64 || value < 1 ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "istksize" );
         } else {
-            FmtData.u.phar.params->istksize = value;
+            FmtData.u.phar.istksize = value;
         }
     }
     return( ret );

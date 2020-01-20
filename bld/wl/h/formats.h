@@ -85,21 +85,31 @@ typedef enum {          // there is a corresp. table in MSG.C
 // linker specific phar lap data
 
 struct fmt_dos_data {
-    boolbit         distribute      : 1;
-    boolbit         noindirect      : 1;
-    boolbit         dynamic         : 1;
-    boolbit         ovl_short       : 1;
-    boolbit         pad_sections    : 1;
-    boolbit         full_mz_hdr     : 1;
+    boolbit             distribute      : 1;
+    boolbit             noindirect      : 1;
+    boolbit             dynamic         : 1;
+    boolbit             ovl_short       : 1;
+    boolbit             pad_sections    : 1;
+    boolbit             full_mz_hdr     : 1;
 };
 
 struct fmt_phar_data {
-    unsigned_32     mindata;
-    unsigned_32     maxdata;
-    char            *breaksym;       // name of realbreak symbol
-    struct rtpblock *params;         // run-time parameter block.
-    char            *stub;       // name of stub file.
-//    bool            pack;    needed if/when .exp packing implemented
+    unsigned_32         mindata;
+    unsigned_32         maxdata;
+    // run-time parameter block data
+    char                *breaksym;      // name of realbreak symbol
+    char                *stub;          // name of stub file.
+    unsigned_32         realbreak;
+    unsigned_16         minreal;
+    unsigned_16         maxreal;
+    unsigned_16         nistack;
+    unsigned_16         extender_flags;
+    unsigned_8          minibuf;
+    unsigned_8          maxibuf;
+    unsigned_8          callbufs;
+    unsigned_8          istksize;
+    boolbit             unpriv      : 1;
+//    boolbit             pack        : 1;    needed if/when .exp packing implemented
 };
 
 // linker specific OS/2 data
@@ -151,23 +161,23 @@ struct fmt_pe_data {
 // structures used in processing DOS/16M load files.
 
 struct fmt_d16m_data {
-    unsigned_16     options;
-    unsigned_8      flags;              // in load16m.h
-    unsigned_8      strategy;
-    unsigned_16     buffer;
-    unsigned_16     gdtsize;
-    unsigned_16     selstart;
-    unsigned_16     extended;
-    unsigned_16     datasize;
-    char            *exp_name;          // original EXP file name.
-    char            *stub;              // name of stub file.
+    unsigned_16         options;
+    unsigned_8          flags;              // in load16m.h
+    unsigned_8          strategy;
+    unsigned_16         buffer;
+    unsigned_16         gdtsize;
+    unsigned_16         selstart;
+    unsigned_16         extended;
+    unsigned_16         datasize;
+    char                *exp_name;          // original EXP file name.
+    char                *stub;              // name of stub file.
 };
 
 // stuff common to some file formats which have the concept of an export
 
 struct exp_common {
-    obj_name_list   *export;
-    obj_name_list   *module;
+    obj_name_list       *export;
+    obj_name_list       *module;
 };
 
 // linker specific Novell NLM data
@@ -197,13 +207,13 @@ struct fmt_nov_data {
 // linker specific QNX 4.0 data
 
 struct fmt_qnx_data {
-    struct qnx_seg_flags    *seg_flags;
-    unsigned_32             heapsize;
-    unsigned                flags;
-    unsigned                priv_level;
-    boolbit                 gen_seg_relocs      : 1;
-    boolbit                 gen_linear_relocs   : 1;
-    boolbit                 seen_mismatch       : 1;
+    struct qnx_seg_flags *seg_flags;
+    unsigned_32         heapsize;
+    unsigned            flags;
+    unsigned            priv_level;
+    boolbit             gen_seg_relocs      : 1;
+    boolbit             gen_linear_relocs   : 1;
+    boolbit             seen_mismatch       : 1;
 };
 
 // linker specific ELF data
@@ -220,13 +230,13 @@ struct fmt_elf_data {
 // linker specific RDOS device driver data
 
 struct fmt_rdos_data {
-    unsigned_32     code_sel;
-    unsigned_32     data_sel;
-    segment         code_seg;
-    segment         data_seg;
-    char            bitness;
-    boolbit         driver  : 1;
-    boolbit         mboot   : 1;
+    unsigned_32         code_sel;
+    unsigned_32         data_sel;
+    segment             code_seg;
+    segment             data_seg;
+    char                bitness;
+    boolbit             driver  : 1;
+    boolbit             mboot   : 1;
 };
 
 #define NO_BASE_SPEC    ((offset)-1L)

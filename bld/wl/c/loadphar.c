@@ -237,20 +237,34 @@ static unsigned_32 WritePharSegData( void )
 static unsigned_32  WriteRTPBlock( void )
 /***************************************/
 {
-    symbol *        sym;
+    symbol          *sym;
+    rtpblock        rtpblk;
+    unsigned_32     offset;
 
-    FmtData.u.phar.params->signature = RTP_SIGNATURE;
     if( FmtData.u.phar.breaksym != NULL ) {
         sym = FindISymbol( FmtData.u.phar.breaksym );
         if( sym == NULL ) {
             LnkMsg( WRN+MSG_BREAKSYM_NOT_FOUND, "s", FmtData.u.phar.breaksym );
-            FmtData.u.phar.params->realbreak = 0;
+            offset = 0;
         } else {
-            FmtData.u.phar.params->realbreak = sym->addr.off;
+            offset = sym->addr.off;
         }
+    } else {
+        offset = FmtData.u.phar.realbreak;
     }
-    WriteLoad( FmtData.u.phar.params, sizeof( rtpblock ) );
-    PadLoad( RTP_SIZE - sizeof( rtpblock ) );
+    _HostU16toTarg( RTP_SIGNATURE, rtpblk.signature );
+    _HostU16toTarg( FmtData.u.phar.minreal, rtpblk.minreal );
+    _HostU16toTarg( FmtData.u.phar.maxreal, rtpblk.maxreal );
+    _HostU16toTarg( FmtData.u.phar.minibuf, rtpblk.minibuf );
+    _HostU16toTarg( FmtData.u.phar.maxibuf, rtpblk.maxibuf );
+    _HostU16toTarg( FmtData.u.phar.nistack, rtpblk.nistack );
+    _HostU16toTarg( FmtData.u.phar.istksize, rtpblk.istksize );
+    _HostU16toTarg( FmtData.u.phar.callbufs, rtpblk.callbufs );
+    _HostU32toTarg( offset, rtpblk.realbreak );
+    _HostU16toTarg( FmtData.u.phar.extender_flags, rtpblk.extender_flags );  /* for undocumented "runtime flags" */
+    _HostU16toTarg( FmtData.u.phar.unpriv, rtpblk.unpriv );
+    WriteLoad( &rtpblk, sizeof( rtpblk ) );
+    PadLoad( RTP_SIZE - sizeof( rtpblk ) );
     return( RTP_SIZE );
 }
 
