@@ -157,6 +157,42 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
     return( size );
 }
 
+size_t FmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
+/*********************************************************************/
+{
+#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+    /* only flat offset */
+    if( FmtData.type & MK_FLAT_OFFS ) {
+        return( FmtStr( dest, len, "%h", addr->off ) );
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT) {
+        return( FmtStr( dest, len, "%h", FindLinearAddr( addr ) ) );
+    }
+#endif
+#if defined( _ELF ) || defined( _OS2 )
+    if( FmtData.type & (MK_ELF | MK_PE) ) {
+        return( FmtStr( dest, len, "%h", FindLinearAddr2( addr ) ) );
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_ID_SPLIT ) {
+        if( addr->seg == CODE_SEGMENT ) {
+            return( FmtStr( dest, len, "CODE:%h", addr->off ) );
+        } else {
+            return( FmtStr( dest, len, "DATA:%h", addr->off ) );
+        }
+    }
+#endif
+    /* segmented formats 16:16 or 16:32 */
+    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_QNX_16)) ) {
+        return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
+    } else {
+        return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );
+    }
+}
+
 size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
 /***********************************************************************/
 /* quick vsprintf routine                                           */
@@ -318,25 +354,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 }
                 temp = MsgArgInfo.index;
                 MsgArgInfo.index = -1;
-                if( FmtData.type & MK_FLAT_OFFS ) {
-                    size = FmtStr( dest, len, "%h", addr->off );
-#ifdef _QNX
-                } else if( FmtData.type & MK_QNX_FLAT) {
-                    size = FmtStr( dest, len, "%h", FindLinearAddr( addr ) );
-#endif
-                } else if( FmtData.type & (MK_ELF | MK_PE) ) {
-                    size = FmtStr( dest, len, "%h", FindLinearAddr2( addr ) );
-                } else if( FmtData.type & MK_ID_SPLIT ) {
-                    if( addr->seg == CODE_SEGMENT ) {
-                        size = FmtStr( dest, len, "CODE:%h", addr->off );
-                    } else {
-                        size = FmtStr( dest, len, "DATA:%h", addr->off );
-                    }
-                } else if( (FmtData.type & MK_32BIT) || ch == 'A' ) {
-                    size = FmtStr( dest, len, "%x:%h", addr->seg, addr->off );
-                } else {
-                    size = FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off );
-                }
+                size = FmtAddr( dest, len, addr, ( ch == 'A' ) );
                 dest += size;
                 len -= size;
                 MsgArgInfo.index = temp;

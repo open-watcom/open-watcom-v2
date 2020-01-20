@@ -190,6 +190,7 @@ parse_entry     MainOptions[] = {
     "NOREDefsok",   ProcNoRedefs,      MK_ALL, 0,
     "CVPack",       ProcCVPack,        MK_ALL, 0,
     "INCremental",  ProcIncremental,   MK_ALL, 0,
+    "FILLchar",     ProcFillchar,      MK_ALL, 0,
 #ifdef _EXE
     "SMall",        ProcSmall,         MK_OVERLAYS, 0,
     "DIStribute",   ProcDistribute,    MK_OVERLAYS, 0,
@@ -296,7 +297,6 @@ parse_entry     MainOptions[] = {
     "NOLARGEaddressaware",ProcNoLargeAddressAware, MK_PE, 0,
 #endif
     "HSHIFT",       ProcHshift,        (MK_DOS | MK_ALLOW_16),  0,
-    "FILLchar",     ProcFillchar,      MK_ALL,  0,
 #ifdef _OS2
     "MIXed1632",    ProcMixed1632,     MK_OS2_FLAT, 0,
 #endif
