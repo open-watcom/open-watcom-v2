@@ -43,7 +43,6 @@
 #include "loadnov.h"
 #include "wlnkmsg.h"
 #include "cmdnov.h"
-#include "nwpfx.h"
 
 
 #ifdef _NOVELL
@@ -108,6 +107,56 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
     *name = findAt + 1;
     *namelen = len - 1;
 
+    return( true );
+}
+
+#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
+
+static bool SetCurrentPrefix( const char *str, size_t len )
+{
+    const char  *s;
+    char        *p;
+
+    /*
+    //  Always delete
+    */
+    if( CmdFile->symprefix != NULL ) {
+        _LnkFree( CmdFile->symprefix );
+        CmdFile->symprefix = NULL;
+    }
+
+    if( ( NULL == str ) || ( len == 0 ) ) {
+        return( true );
+    }
+    /* it suppose string format as "(.....)" */
+    str++;  /* skip opening parentheses */
+    len--;  /* and record that */
+
+    for( ; len > 0; --len, ++str ) {
+        if( !IS_WHITESPACE( str ) ) {
+            break;
+        }
+    }
+    if( len == 0 )
+        return( false );
+
+    --len;  /* skip closing parentheses */
+    if( len == 0 )
+        return( false );
+
+    for( s = str + len - 1; len > 0; --len, --s ) {
+        if( !IS_WHITESPACE( s ) ) {
+            break;
+        }
+    }
+    if( len == 0 )
+        return( false );
+
+    /* convert to C string */
+    _LnkAlloc( p, len + 1 );
+    memcpy( p, str, len );
+    p[len] = '\0';
+    CmdFile->symprefix = p;
     return( true );
 }
 
@@ -202,6 +251,11 @@ static bool GetNovImport( void )
         return( false );
     }
 
+    if( ( prefix == NULL || ( 0 == prefixlen ) ) && ( NULL != CmdFile->symprefix ) ) {
+        prefix = CmdFile->symprefix;
+        prefixlen = strlen( prefix );
+    }
+
     sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
     if( sym == NULL || sym->p.import != NULL ) {
         return( true );
@@ -251,6 +305,11 @@ static bool GetNovExport( void )
 
     if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
         return( false );
+    }
+
+    if( ( prefix == NULL || ( 0 == prefixlen ) ) && ( NULL != CmdFile->symprefix ) ) {
+        prefix = CmdFile->symprefix;
+        prefixlen = strlen( prefix );
     }
 
     sym = SymOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );

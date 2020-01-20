@@ -50,8 +50,6 @@
 #include "strtab.h"
 #include "carve.h"
 #include "permdata.h"
-#include "nwpfx.h"
-#include "command.h"
 #include "symtab.h"
 #include "symmem.h"
 
@@ -858,16 +856,11 @@ symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *p
     if( NULL == (sym = SymOp( op, name, length )) )
         return( NULL );
 
-    if( ( NULL != prefix ) && ( 0 != prefixlen ) || ( NULL != CmdFile->symprefix ) ) {
-        if( prefix == NULL ) {
-            prefix = CmdFile->symprefix;
-            prefixlen = strlen( prefix );
-        }
+    if( ( NULL != prefix ) && ( 0 != prefixlen ) ) {
         if( prefixlen > 254 ) {
             LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", prefix );
             return( NULL );
         }
-
         if( NULL == (sym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "no memory for prefix symbol");
             return( NULL );
@@ -1474,54 +1467,4 @@ group_entry *SymbolGroup( symbol *sym )
         }
     }
     return group;
-}
-
-#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
-
-bool SetCurrentPrefix( const char *str, size_t len )
-{
-    const char  *s;
-    char        *p;
-
-    /*
-    //  Always delete
-    */
-    if( CmdFile->symprefix != NULL ) {
-        _LnkFree( CmdFile->symprefix );
-        CmdFile->symprefix = NULL;
-    }
-
-    if( ( NULL == str ) || ( len == 0 ) ) {
-        return( true );
-    }
-    /* it suppose string format as "(.....)" */
-    str++;  /* skip opening parentheses */
-    len--;  /* and record that */
-
-    for( ; len > 0; --len, ++str ) {
-        if( !IS_WHITESPACE( str ) ) {
-            break;
-        }
-    }
-    if( len == 0 )
-        return( false );
-
-    --len;  /* skip closing parentheses */
-    if( len == 0 )
-        return( false );
-
-    for( s = str + len - 1; len > 0; --len, --s ) {
-        if( !IS_WHITESPACE( s ) ) {
-            break;
-        }
-    }
-    if( len == 0 )
-        return( false );
-
-    /* convert to C string */
-    _LnkAlloc( p, len + 1 );
-    memcpy( p, str, len );
-    p[len] = '\0';
-    CmdFile->symprefix = p;
-    return( true );
 }
