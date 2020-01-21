@@ -157,8 +157,8 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
     return( size );
 }
 
-size_t FmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
-/*********************************************************************/
+static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
+/****************************************************************************/
 {
 #if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
     /* only flat offset */
@@ -354,7 +354,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 }
                 temp = MsgArgInfo.index;
                 MsgArgInfo.index = -1;
-                size = FmtAddr( dest, len, addr, ( ch == 'A' ) );
+                size = fmtAddr( dest, len, addr, ( ch == 'A' ) );
                 dest += size;
                 len -= size;
                 MsgArgInfo.index = temp;
