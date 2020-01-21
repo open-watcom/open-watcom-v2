@@ -315,7 +315,7 @@ parse_entry     SysDirectives[] = {
     "DISAble",      ProcDisable,        MK_ALL, 0,
     "SOrt",         ProcSort,           MK_ALL, 0,
     "ORDer",        ProcOrder,          MK_ALL, 0,
-#ifdef _RAW                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 q
+#ifdef _RAW
     "OUTput",       ProcOutput,         MK_ALL, 0,
 #endif
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
