@@ -379,23 +379,28 @@ static void ProcSegDef( void )
         ObjBuff += sizeof( unsigned_16 ) + 1;
         break;
     case ALIGN_LTRELOC:
-// in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
+        /*
+         * in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
+         */
         if( (ObjFormat & FMT_32BIT_REC) || (FmtData.type & MK_RAW) )
             break;
         sdata->align = OMFAlignTab[ALIGN_PARA];
-        ObjBuff += 5;   /*  step over ltldat, max_seg_len, grp_offs fields */
+        /*
+         * step over ltldat, max_seg_len, grp_offs fields
+         */
+        ObjBuff += 5;
         break;
     }
     if( ObjFormat & FMT_32BIT_REC ) {
         if( acbp & 2 ) {
-            BadObject();        // we can't handle 4 GB segments properly
+            BadObject();            // we can't handle 4 GB segments properly
             return;
         }
         _TargU32toHost( _GetU32UN( ObjBuff ), sdata->length );
         ObjBuff += sizeof( unsigned_32 );
     } else {
         if( acbp & 2 ) {
-            sdata->length = 65536;          // 64k segment
+            sdata->length = 65536;  // 64k segment
         } else {
             _TargU16toHost( _GetU16UN( ObjBuff ), sdata->length );
         }

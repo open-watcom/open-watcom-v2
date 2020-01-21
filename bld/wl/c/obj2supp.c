@@ -674,8 +674,10 @@ static void DumpReloc( base_reloc *breloc )
 #ifdef _OS2
         if( FmtData.type & MK_OS2_FLAT ) {
             if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
-                /* stupid relocation has been split across two
-                    pages, have to duplicate the entry */
+                /*
+                 * stupid relocation has been split across two
+                 * pages, have to duplicate the entry
+                 */
                 breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
                 WriteReloc( CurrRec.seg->u.leader->group,
                             breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
@@ -873,8 +875,10 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         return( false );
 #ifdef _OS2
     if( FmtData.type & MK_OS2_FLAT ) {
-        /* OS/2 V2 relative fixups to imported items or other objects
-            require special handling */
+        /*
+         * OS/2 V2 relative fixups to imported items or other objects
+         * require special handling
+         */
         if( fix->imported )
             return( false );
         if( fix->loc_addr.seg != fix->tgt_addr.seg ) {
@@ -909,7 +913,9 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
             } else {                           // true == isrelative.
                 AddNovImpReloc( target->u.sym, fix->loc_addr.off, true,
                                 fix->loc_addr.seg == DATA_SEGMENT );
-// I don't know why the novell linker does this, but it does.
+                /*
+                 * I don't know why the novell linker does this, but it does.
+                 */
                 PatchOffset( fix, (offset)-4, true );
             }
         }
@@ -1040,8 +1046,10 @@ static void PatchData( fix_relo_data *fix )
         fix->value += GET_U32( data );
         break;
     }
-    /* Catch the ELF FIX_NOADJ cases CheckSpecials didn't handle. */
-    /* NB: Other fixup types besides LX imports likely need the same treatment. */
+    /*
+     * Catch the ELF FIX_NOADJ cases CheckSpecials didn't handle.
+     * NB: Other fixup types besides LX imports likely need the same treatment.
+     */
     if( (fix->type & FIX_NOADJ) && fix->imported && (FmtData.type & MK_OS2_FLAT) ) {
         fix->value += CalcFixupSize( fix->type );
         fix->type  &= FIX_NOADJ;    /* This flag isn't interesting anymore. */
@@ -1130,19 +1138,19 @@ static bool FarCallOpt( fix_relo_data *fix )
     byte        instruction;
     bool        is32bit;
 
-/*
- * the sequence of instructions NOP  PUSH CS (near)CALL offset is much
- * faster than (far)CALL segment:offset. So whenever a far call ends up in
- * the same segment as the thing that it is calling, replace the far call
- * with the near call sequence. Note this can potentially wreck jump tables,
- * so rely on the code generator to say when it is safe to do so.
- * this also positions the call so that it returns on an even address
- * to make things go slightly faster. This uses segment overrides rather than
- * NOP's where possible since they are faster, and if there are two far
- * calls in a row, it detects this and uses segment overrides on both the
- * push and the call to avoid the pair of NOP's
- * this also replaces far JMP's with (near) JMP MOV AX,AX
- */
+    /*
+     * the sequence of instructions NOP  PUSH CS (near)CALL offset is much
+     * faster than (far)CALL segment:offset. So whenever a far call ends up in
+     * the same segment as the thing that it is calling, replace the far call
+     * with the near call sequence. Note this can potentially wreck jump tables,
+     * so rely on the code generator to say when it is safe to do so.
+     * this also positions the call so that it returns on an even address
+     * to make things go slightly faster. This uses segment overrides rather than
+     * NOP's where possible since they are faster, and if there are two far
+     * calls in a row, it detects this and uses segment overrides on both the
+     * push and the call to avoid the pair of NOP's
+     * this also replaces far JMP's with (near) JMP MOV AX,AX
+     */
 
     // optimization is valid only for Intel CPU
     if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_I86_CODE) )

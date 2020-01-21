@@ -194,22 +194,22 @@ static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
 }
 
 size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
-/***********************************************************************/
-/* quick vsprintf routine                                           */
-/* assumptions - format string does not end in '%'                  */
-/*             - only use of '%' is as follows                      */
-/*                  %s  : string                                    */
-/*                  %tn : n character string (%ns)                  */
-/*                  %c  : character                                 */
-/*                  %x  : 4 digit hex number (%4x)                  */
-/*                  %h  : 8 digit hex number (%8x)                  */
-/*                  %d  : decimal                                   */
-/*                  %l  : long decimal                              */
-/*                  %a  : address   ( %x:%x or 32 bit, depends on format) */
-/*                  %A  : address   ( %x:%h or 32 bit, depends on format) */
-/*                  %S  : symbol name                               */
-/*                  %f  : an executable format name                 */
-/********************************************************************/
+/************************************************************************
+ * quick vsprintf routine
+ * assumptions - format string does not end in '%'
+ *             - only use of '%' is as follows
+ *                  %s  : string
+ *                  %tn : n character string (%ns)
+ *                  %c  : character
+ *                  %x  : 4 digit hex number (%4x)
+ *                  %h  : 8 digit hex number (%8x)
+ *                  %d  : decimal
+ *                  %l  : long decimal
+ *                  %a  : address ( %x:%x or 32 bit, depends on format)
+ *                  %A  : address ( %x:%h or 32 bit, depends on format)
+ *                  %S  : symbol name
+ *                  %f  : an executable format name
+ ************************************************************************/
 {
     char            ch;
     char            *dest;
