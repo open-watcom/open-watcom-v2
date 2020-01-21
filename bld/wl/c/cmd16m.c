@@ -325,8 +325,8 @@ void CmdD16MFini( void )
     const char          *base_name;
     size_t              base_name_len;
 
-    if( FmtData.u.d16m.exp_name == NULL ) {
-        base_name = GetBaseName( Root->outfile->fname, strlen( Root->outfile->fname ), &base_name_len );
+    if( FmtData.u.d16m.exp_name == NULL && Name != NULL ) {
+        base_name = GetBaseName( Name, strlen( Name ), &base_name_len );
         FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
     }
 }
