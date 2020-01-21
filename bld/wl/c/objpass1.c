@@ -355,7 +355,7 @@ void Set64BitMode( void )
 /***********************/
 // make sure that the executable format is a 64-bit format.
 {
-    LinkState |= LS_FMT_SEEN_64_BIT;
+    LinkState |= LS_FMT_SEEN_64BIT;
     if( !HintFormat( MK_ALLOW_64 ) ) {
         if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= FMT_TOLD_BITNESS;
@@ -369,7 +369,7 @@ void Set32BitMode( void )
 /***********************/
 // make sure that the executable format is a 32-bit format.
 {
-    LinkState |= LS_FMT_SEEN_32_BIT;
+    LinkState |= LS_FMT_SEEN_32BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
         if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= FMT_TOLD_BITNESS;
@@ -695,7 +695,7 @@ void AddSegment( segdata *sd, class_entry *class )
         } else {
             Set16BitMode();
 #ifdef _QNX
-            CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
+            CheckQNXSegMismatch( LS_FMT_SEEN_32BIT );
 #endif
         }
     }

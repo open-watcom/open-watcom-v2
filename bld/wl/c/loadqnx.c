@@ -417,7 +417,7 @@ void FiniQNXLoadFile( void )
     memset( &header, 0, sizeof( header ) );
     header.version = QNX_VERSION;
     header.cflags = (FmtData.u.qnx.flags | (FmtData.u.qnx.priv_level << QNX_PRIV_SHIFT)) & QNX_FLAG_MASK;
-    if( LinkState & LS_FMT_SEEN_32_BIT ) {
+    if( LinkState & LS_FMT_SEEN_32BIT ) {
         header.cflags |= _TCF_32BIT;
     }
     if( FmtData.type & MK_QNX_FLAT ) {
@@ -425,7 +425,7 @@ void FiniQNXLoadFile( void )
     }
     header.fpu = 0;     //NYI: need to set 87, 287, 387
     if( FmtData.cpu_type == 0 ) {        // no model specified, so assume...
-        if( LinkState & LS_FMT_SEEN_32_BIT ) {
+        if( LinkState & LS_FMT_SEEN_32BIT ) {
             header.cpu = 386;
         } else {
             header.cpu = 86;

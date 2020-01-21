@@ -206,9 +206,9 @@ static void DoDefaultSystem( void )
  * system block */
 {
     if( (LinkState & LS_FMT_DECIDED) == 0 ) {
-        if( LinkState & LS_FMT_SEEN_64_BIT ) {
+        if( LinkState & LS_FMT_SEEN_64BIT ) {
             HintFormat( MK_64BIT );
-        } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+        } else if( LinkState & LS_FMT_SEEN_32BIT ) {
             HintFormat( MK_32BIT );
         } else {
             HintFormat( MK_16BIT | MK_QNX );
@@ -217,9 +217,9 @@ static void DoDefaultSystem( void )
             if( LinkState & LS_FMT_SPECIFIED ) {
                 LnkMsg( FTL+MSG_AMBIG_FORMAT, NULL );
             }
-            if( LinkState & LS_FMT_SEEN_64_BIT ) {
+            if( LinkState & LS_FMT_SEEN_64BIT ) {
                 ExecSystem( "64bit" );
-            } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+            } else if( LinkState & LS_FMT_SEEN_32BIT ) {
                 ExecSystem( "386" );
             } else {
                 ExecSystem( "286" ); /* no 386 obj's after this */
@@ -232,9 +232,9 @@ static void FindLibPaths( void )
 /******************************/
 {
     AddFmtLibPaths();
-    if( LinkState & LS_FMT_SEEN_64_BIT ) {
+    if( LinkState & LS_FMT_SEEN_64BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIBX64" ) );
-    } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+    } else if( LinkState & LS_FMT_SEEN_32BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIB386" ) );
     } else {
         AddLibPathsToEnd( GetEnvString( "LIB286" ) );
