@@ -45,6 +45,8 @@
 #include "clibext.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
+
 #define RESOURCE_OBJECT_NAME ".rsrc"
 
 #ifndef MAKELANGID
@@ -912,4 +914,6 @@ bool RcBuildPEResourceObject( void )
     }
     return( error );
 }
+#endif
+
 #endif
