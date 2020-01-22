@@ -104,6 +104,148 @@ typedef struct {
 } ResTable;
 
 
+static void ReadNameTable( f_handle the_file )
+/********************************************/
+// Read a name table & set export ordinal value accordingly.
+{
+    unsigned_8          len_u8;
+    unsigned_16         ordinal;
+    bool                cmpcase;
+    const char          *fname;
+
+    fname = FmtData.u.os2.old_lib_name;
+    cmpcase = ( (LinkFlags & LF_CASE_FLAG) != 0 );
+    for( ;; ) {
+        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
+        if( len_u8 == 0 )
+            break;
+        QRead( the_file, TokBuff, len_u8, fname );
+        QRead( the_file, &ordinal, sizeof( ordinal ), fname );
+        if( ordinal == 0 )
+            continue;
+        TokBuff[len_u8] = '\0';
+        CheckExport( TokBuff, ordinal, cmpcase );
+    }
+}
+
+static void ReadOldLib( void )
+/****************************/
+// Read an old DLL & match ordinals of exports in it with exports in this.
+{
+    f_handle    the_file;
+    long        filepos;
+    union {
+        dos_exe_header  dos;
+        os2_exe_header  os2;
+        os2_flat_header os2f;
+        exe_pe_header   pe;
+    }           head;
+    char        *fname;
+    pe_object   *objects;
+    pe_object   *currobj;
+    unsigned_32 val32;
+
+    fname = FmtData.u.os2.old_lib_name;
+    the_file = QOpenR( fname );
+    QRead( the_file, &head, sizeof( dos_exe_header ), fname );
+    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
+        LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
+    } else {
+        QSeek( the_file, NH_OFFSET, fname );
+        QRead( the_file, &val32, sizeof( val32 ), fname );
+        filepos = val32;
+        QSeek( the_file, filepos, fname );
+        QRead( the_file, &head, sizeof( head ), fname );
+        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
+            QSeek( the_file, filepos + head.os2.resident_off, fname );
+            ReadNameTable( the_file );
+            QSeek( the_file, head.os2.nonres_off, fname );
+            ReadNameTable( the_file );
+        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
+            if( head.os2f.resname_off != 0 ) {
+                QSeek( the_file, filepos + head.os2f.resname_off, fname );
+                ReadNameTable( the_file );
+            }
+            if( head.os2f.nonres_off != 0 ) {
+                QSeek( the_file, head.os2f.nonres_off, fname );
+                ReadNameTable( the_file );
+            }
+        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
+            unsigned            num_objects;
+            pe_hdr_table_entry  *table;
+
+            if( IS_PE64( head.pe ) ) {
+                num_objects = PE64( head.pe ).num_objects;
+                table = PE64( head.pe ).table;
+            } else {
+                num_objects = PE32( head.pe ).num_objects;
+                table = PE32( head.pe ).table;
+            }
+            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
+            currobj = objects;
+            for( ; num_objects > 0; --num_objects ) {
+                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
+                    QSeek( the_file, currobj->physical_offset, fname );
+                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
+                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
+                    break;
+                }
+                currobj++;
+            }
+            _LnkFree( objects );
+            if( num_objects == 0 ) {
+                LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
+            }
+        } else {
+            LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
+        }
+    }
+    QClose( the_file, fname );
+    _LnkFree( fname );
+    FmtData.u.os2.old_lib_name = NULL;
+}
+
+static void AssignOrdinals( void )
+/********************************/
+/* assign ordinal values to entries in the export list */
+{
+    entry_export        *exp;
+    entry_export        *place;
+    entry_export        *prev;
+    bool                isspace;
+
+    if( FmtData.u.os2.exports != NULL ) {
+        if( FmtData.u.os2.old_lib_name != NULL ) {
+            ReadOldLib();
+        }
+        prev = FmtData.u.os2.exports;
+        place = prev->next;
+        isspace = false;
+        for( exp = FmtData.u.os2.exports; exp->ordinal == 0; exp = FmtData.u.os2.exports ) {
+            // while still unassigned values
+            for( ;; ) {             // search for an unassigned value
+                if( place != NULL ) {
+                    isspace = ( ( place->ordinal - prev->ordinal ) > 1 );
+                }
+                if( place == NULL || isspace ) {
+                    if( FmtData.u.os2.exports != prev ) {
+                        FmtData.u.os2.exports = exp->next;
+                        prev->next = exp;
+                        exp->next = place;
+                    }
+                    exp->ordinal = prev->ordinal + 1;
+                    prev = exp;      // now exp is 'previous' to place
+                    break;
+                } else {
+                    prev = place;
+                    place = place->next;
+                }
+            }
+        }
+    }
+}
+
 static unsigned long WriteOS2Relocs( group_entry *group )
 /*******************************************************/
 /* write all relocs associated with group to the file */

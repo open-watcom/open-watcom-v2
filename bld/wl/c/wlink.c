@@ -141,16 +141,9 @@ static void PostAddrCalcFormatSpec( void )
 // format specific routines which need to be called after address calculation
 {
 #ifdef _OS2
-    if( FmtData.type & MK_PE ) {
-        SetOS2GroupFlags();
-        ChkOS2Exports();
-        AllocPETransferTable();
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        SetOS2GroupFlags();
-        ChkOS2Exports();
-    } else if( FmtData.type & MK_OS2 ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2) ) {
   #if 0
-        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
@@ -161,6 +154,9 @@ static void PostAddrCalcFormatSpec( void )
         SetOS2GroupFlags();
         ChkOS2Exports();
   #endif
+    }
+    if( FmtData.type & MK_PE ) {
+        AllocPETransferTable();
     }
 #endif
 #ifdef _ELF
