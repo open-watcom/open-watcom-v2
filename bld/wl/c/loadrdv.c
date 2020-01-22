@@ -69,8 +69,9 @@ struct mb_header {
 };
 
 static void WriteBinData( void )
-/**********************************************************/
-/* copy code from extra memory to loadfile */
+/*******************************
+ * copy code from extra memory to loadfile
+ */
 {
     group_entry         *group;
 
@@ -91,7 +92,7 @@ static void WriteBinData( void )
 }
 
 static void WriteRDOSCode( void )
-/**********************************************************/
+/*******************************/
 {
     group_entry         *group;
     struct seg_leader   *leader;
@@ -173,8 +174,9 @@ static void WriteRDOSData( void )
                 }
             }
             WriteGroup( group );
-            if( group->totalsize > group->size )
+            if( group->totalsize > group->size ) {
                 PadLoad( group->totalsize - group->size );
+            }
             DataSize += group->totalsize;
         }
     }
@@ -299,7 +301,9 @@ static void writeHeader( void )
 }
 
 void FiniRdosLoadFile( void )
-/* terminate writing of load file */
+/****************************
+ * terminate writing of load file
+ */
 {
     HeaderSize = getHeaderSize();
     SeekLoad( HeaderSize );

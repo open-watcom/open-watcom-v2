@@ -578,8 +578,11 @@ void GetStartAddr( void )
     bool        addoff;
     int         deltaseg;
 
-    if( FmtData.type & MK_NOVELL )
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
         return;
+    }
+#endif
     addoff = true;
     switch( StartInfo.type ) {
     case START_UNDEFED:         // NOTE: the possible fall through

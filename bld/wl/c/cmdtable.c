@@ -138,7 +138,7 @@ parse_entry     Directives[] = {
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
     "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
 #endif
-#ifdef _NOVELL
+#if defined( _NOVELL ) || defined( _ELF )
     "MODUle",       ProcModule,         MK_NOVELL | MK_ELF, 0,
 #endif
 #ifdef _DOS16M
@@ -261,9 +261,11 @@ parse_entry     MainOptions[] = {
     "OSDomain",     ProcOSDomain,       MK_NOVELL, 0,
     "NLMFlags",     ProcNLMFlags,       MK_NOVELL, 0,
 #endif
+#if defined( _OS2 ) || defined( _NOVELL )
     "VERSion",      ProcVersion,        MK_NOVELL | MK_OS2_FLAT | MK_PE | MK_WINDOWS, 0,
     "IMPLib",       ProcImplib,         MK_NOVELL | MK_OS2 | MK_PE, 0,
     "IMPFile",      ProcImpFile,        MK_NOVELL | MK_OS2 | MK_PE, 0,
+#endif
 #ifdef _DOS16M
     "BUFfer",       ProcBuffer,         MK_DOS16M, 0,
     "GDTsize",      ProcGDTSize,        MK_DOS16M, 0,
@@ -468,8 +470,8 @@ parse_entry     QNXFormats[] = {
 /* parse tables used in CMDPHAR.C */
 
 parse_entry     PharModels[] = {
-    "EXTended",     ProcPharFlat,       MK_PHAR_FLAT, 0,
-    "REX",          ProcRex,            MK_PHAR_REX, 0,
+    "EXTended",     ProcPharFlat,       MK_PHAR_FLAT,     0,
+    "REX",          ProcRex,            MK_PHAR_REX,      0,
     "SEGmented",    ProcPharSegmented,  MK_PHAR_MULTISEG, 0,
     NULL
 };
