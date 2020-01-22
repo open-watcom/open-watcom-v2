@@ -209,19 +209,14 @@ static void WriteHeader16( void )
 /* write 16-bit device header */
 {
     rdos_dev16_header   exe_head;
-    unsigned_16         temp16;
 
     SeekLoad( 0 );
     _HostU16toTarg( RDOS_SIGNATURE_16, exe_head.signature );
     _HostU16toTarg( StartInfo.addr.off, exe_head.IP );
-    temp16 = (unsigned_16)CodeSize;
-    _HostU16toTarg( temp16, exe_head.code_size );
-    temp16 = (unsigned_16)FmtData.u.rdos.code_sel;
-    _HostU16toTarg( temp16, exe_head.code_sel );
-    temp16 = (unsigned_16)DataSize;
-    _HostU16toTarg( temp16, exe_head.data_size );
-    temp16 = (unsigned_16)FmtData.u.rdos.data_sel;
-    _HostU16toTarg( temp16, exe_head.data_sel );
+    _HostU16toTarg( CodeSize, exe_head.code_size );
+    _HostU16toTarg( FmtData.u.rdos.code_sel, exe_head.code_sel );
+    _HostU16toTarg( DataSize, exe_head.data_size );
+    _HostU16toTarg( FmtData.u.rdos.data_sel, exe_head.data_sel );
     WriteLoad( &exe_head, sizeof( rdos_dev16_header ) );
 }
 
@@ -229,20 +224,14 @@ static void WriteHeader32( void )
 /* write 32-bit device header */
 {
     rdos_dev32_header   exe_head;
-    unsigned_16         temp16;
-    unsigned_32         temp32;
 
     SeekLoad( 0 );
     _HostU16toTarg( RDOS_SIGNATURE_32, exe_head.signature );
     _HostU32toTarg( StartInfo.addr.off, exe_head.EIP );
-    temp32 = (unsigned_32)CodeSize;
-    _HostU32toTarg( temp32, exe_head.code_size );
-    temp16 = (unsigned_16)FmtData.u.rdos.code_sel;
-    _HostU16toTarg( temp16, exe_head.code_sel );
-    temp32 = (unsigned_32)DataSize;
-    _HostU32toTarg( temp32, exe_head.data_size );
-    temp16 = (unsigned_16)FmtData.u.rdos.data_sel;
-    _HostU16toTarg( temp16, exe_head.data_sel );
+    _HostU32toTarg( CodeSize, exe_head.code_size );
+    _HostU16toTarg( FmtData.u.rdos.code_sel, exe_head.code_sel );
+    _HostU32toTarg( DataSize, exe_head.data_size );
+    _HostU16toTarg( FmtData.u.rdos.data_sel, exe_head.data_sel );
     WriteLoad( &exe_head, sizeof( rdos_dev32_header ) );
 }
 
@@ -251,19 +240,19 @@ static void WriteMbootHeader( void )
 {
     struct mb_header   mb_head;
     unsigned_32        temp32;
-    unsigned_32        linear = MB_BASE;
+    unsigned_32        linear;
 
     SeekLoad( 0 );
-    _HostU32toTarg(0x1BADB002, mb_head.mb_magic );
-    _HostU32toTarg(0x00010003, mb_head.mb_flags );
-    _HostU32toTarg(0xE4514FFB, mb_head.mb_checksum );
-    _HostU32toTarg(linear, mb_head.mb_header_addr );
-    _HostU32toTarg(linear, mb_head.mb_load_addr );
-    linear += CodeSize + sizeof( struct mb_header );
-    _HostU32toTarg(linear, mb_head.mb_load_end_addr );
-    _HostU32toTarg(linear, mb_head.mb_bss_end_addr );
+    _HostU32toTarg( 0x1BADB002, mb_head.mb_magic );
+    _HostU32toTarg( 0x00010003, mb_head.mb_flags );
+    _HostU32toTarg( 0xE4514FFB, mb_head.mb_checksum );
+    _HostU32toTarg( MB_BASE, mb_head.mb_header_addr );
+    _HostU32toTarg( MB_BASE, mb_head.mb_load_addr );
+    linear = MB_BASE + CodeSize + sizeof( struct mb_header );
+    _HostU32toTarg( linear, mb_head.mb_load_end_addr );
+    _HostU32toTarg( linear, mb_head.mb_bss_end_addr );
     temp32 = MB_BASE + StartInfo.addr.off + sizeof( struct mb_header );
-    _HostU32toTarg(temp32, mb_head.mb_entry_addr );
+    _HostU32toTarg( temp32, mb_head.mb_entry_addr );
     WriteLoad( &mb_head, sizeof( struct mb_header ) );
 }
 
