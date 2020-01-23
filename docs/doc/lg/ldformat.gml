@@ -10,16 +10,17 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
     FORMAT form
 
     form ::= DOS [COM]
-                | ZDOS [SYS | HWD | FSD]
-                | RAW [BIN | HEX]
-                | WINDOWS [win_dll] [MEMORY] [FONT]
-                | WINDOWS VXD [DYNAMIC]
-                | WINDOWS NT [TNT | RDOS] [dll_attrs]
-                | OS2 [os2_type] [dll_attrs | os2_attrs]
-                | PHARLAP [EXTENDED | REX | SEGMENTED]
-                | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
-                | QNX [FLAT]
-                | ELF [DLL]
+            | ZDOS [SYS | HWD | FSD]
+            | RAW [BIN | HEX]
+            | WINDOWS [win_dll] [MEMORY] [FONT]
+            | WINDOWS VXD [DYNAMIC]
+            | WINDOWS NT [TNT | RDOS] [dll_attrs]
+            | OS2 [os2_type] [dll_attrs | os2_attrs]
+            | PHARLAP [EXTENDED | REX | SEGMENTED]
+            | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
+            | QNX [FLAT]
+            | ELF [DLL]
+            | RDOS [DEV16 | DEV32 | BIN16 | BIN32 | MBOOT]
 
     win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
 
@@ -487,6 +488,24 @@ directive to name the executable file.
 .np
 For more information on QNX executable file formats,
 see the chapter entitled :HDREF refid='qnxchap'..
+.mnote RDOS
+tells the &lnkname to generate a RDOS special executable file.
+.np
+If "DEV16" or "DEV32" is specified, a 16-bit or 32-bit device
+driver file is created.
+.np
+If "BIN16" or "BIN32" is specified, a 16-bit or 32-bit binary 
+executable file is created.
+.np
+If "MBOOT" is specified, a 16-bit multi-boot executable file 
+is created.
+.np
+The name of the executable file will have
+the extension "dev" for device driver or "bin" for binary 
+or multi-boot executable.
+Note that these default extensions can be overridden by using the
+"NAME" directive to name the executable file.
+.*
 .mnote ELF
 tells the &lnkname to generate an ELF format executable file.
 .np
@@ -527,4 +546,14 @@ If 16-bit object files are encountered, a 16-bit Windows executable
 will be created.
 If 32-bit object files are encountered, a 32-bit Win32 executable will
 be created.
+.note RDOS
+If 16-bit object files are encountered, a 16-bit DOS executable will
+be created.
+If 32-bit object files are encountered, a 32-bit RDOS executable
+will be created.
+.note Linux
+If 16-bit object files are encountered, a 16-bit DOS executable will
+be created.
+If 32-bit object files are encountered, a 32-bit ELF executable
+will be created.
 .endnote
