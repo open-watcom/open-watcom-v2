@@ -203,7 +203,7 @@ void ProcComdef( bool isstatic )
     extnode *           ext;
     sym_flags           flags;
 
-    flags = ST_CREATE | ST_REFERENCE;
+    flags = ST_REFERENCE_SYM;
     if( isstatic ) {
         flags |= ST_STATIC;
     }
@@ -404,7 +404,7 @@ static bool CheckSameComdat( void *info, void *sym )
 }
 #endif
 
-#define ST_COMDAT (ST_CREATE | ST_NOALIAS | ST_REFERENCE)
+#define ST_COMDAT (ST_REFERENCE_SYM | ST_NOALIAS)
 
 void ProcComdat( void )
 /****************************/

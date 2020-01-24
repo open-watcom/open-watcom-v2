@@ -64,6 +64,7 @@
 #include "pathlist.h"
 #include "cmdhelp.h"
 #include "library.h"
+#include "sysblock.h"
 
 
 #ifdef BOOTSTRAP

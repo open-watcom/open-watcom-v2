@@ -220,8 +220,14 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
     return( false );
 }
 
-static bool GetNovImport( void )
-/******************************/
+void SetNovImportSymbol( symbol *sym )
+/************************************/
+{
+    sym->p.import = DUMMY_IMPORT_PTR;
+}
+
+static bool GetSymbolImportExport( bool import )
+/**********************************************/
 {
     symbol      *sym;
     const char  *name = NULL;
@@ -255,72 +261,37 @@ static bool GetNovImport( void )
         prefix = CmdFile->symprefix;
         prefixlen = strlen( prefix );
     }
-
-    sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
-    if( sym == NULL || sym->p.import != NULL ) {
-        return( true );
-    }
-
+    if( import ) {
+        sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
+        if( sym == NULL || sym->p.import != NULL ) {
+            return( true );
+        }
 #ifndef NDEBUG
-    printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
+        printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
-
-    SET_SYM_TYPE( sym, SYM_IMPORTED );
-    sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
-    SetNovImportSymbol( sym );
-
+        SET_SYM_TYPE( sym, SYM_IMPORTED );
+        sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
+        SetNovImportSymbol( sym );
+    } else {
+        sym = SymOpNWPfx( ST_REFERENCE_SYM, name, namelen, prefix, prefixlen );
+        sym->info |= SYM_DCE_REF | SYM_EXPORTED;
+        AddNameTable( name, namelen, true, &FmtData.u.nov.exp.export );
+    }
     Token.skipToNext = DoWeNeedToSkipASeparator( true );
 
     return( true );
 }
 
-void SetNovImportSymbol( symbol *sym )
-/************************************/
+static bool GetNovImport( void )
+/******************************/
 {
-    sym->p.import = DUMMY_IMPORT_PTR;
+    return( GetSymbolImportExport( true ) );
 }
 
 static bool GetNovExport( void )
 /******************************/
 {
-    symbol      *sym;
-    const char  *name = NULL;
-    const char  *prefix = NULL;
-    size_t      namelen = 0;
-    size_t      prefixlen = 0;
-    bool        result;
-
-    /*
-    //  we need to trap import/export prefixes here. Unfortunately the prefix context
-    //  is not followed by a valid seperator so the GetToken() call in ProcArgList
-    //  at the end of the do...while loop terminates the loop after we return from
-    //  this call (and WildCard from where we were called of course
-    */
-    if( IsNetWarePrefix( Token.this, Token.len ) ) {
-        result = SetCurrentPrefix( Token.this, Token.len );
-        if( result )
-            Token.skipToNext = DoWeNeedToSkipASeparator( false );
-        return( result );
-    }
-
-    if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
-        return( false );
-    }
-
-    if( ( prefix == NULL || ( 0 == prefixlen ) ) && ( NULL != CmdFile->symprefix ) ) {
-        prefix = CmdFile->symprefix;
-        prefixlen = strlen( prefix );
-    }
-
-    sym = SymOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );
-
-    sym->info |= SYM_DCE_REF | SYM_EXPORTED;
-
-    AddNameTable( name, namelen, true, &FmtData.u.nov.exp.export );
-
-    Token.skipToNext = DoWeNeedToSkipASeparator( true );
-
-    return( true );
+    return( GetSymbolImportExport( false ) );
 }
 
 bool ProcNovImport( void )

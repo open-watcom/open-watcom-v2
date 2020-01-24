@@ -151,5 +151,4 @@ extern bool     ProcIntDbg( void );
 #endif
 
 extern void     ResetCmdAll( void );
-extern sysblock *FindSysBlock( const char * );
 extern void     ChkBase( offset align );

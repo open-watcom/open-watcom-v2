@@ -127,9 +127,9 @@ static entry_export *ProcWlibDLLImportEntry( void )
     exp = AllocExport( symname.name, symname.len );
     exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
     if( internal.name != NULL ) {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, internal.name, internal.len );
+        exp->sym = SymOp( ST_REFERENCE_SYM, internal.name, internal.len );
     } else {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, symname.name, symname.len );
+        exp->sym = SymOp( ST_REFERENCE_SYM, symname.name, symname.len );
     }
     exp->sym->info |= SYM_DCE_REF;      // make sure it isn't removed
     exp->ordinal = ordinal;
@@ -239,7 +239,7 @@ static bool getexport( void )
         exp->ordinal = val32;
     }
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+        exp->sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
         if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
             exp->impname = tostring();
         }

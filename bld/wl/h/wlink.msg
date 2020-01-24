@@ -592,7 +592,7 @@ pick(    MSG_ELF_HELP_13,   " " ,
 
 
 /*
- *  Windows help screen: max 32 lines (from 0 to 31).
+ *  Windows VXD help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
 pick(    MSG_WIN_VXD_HELP_0,    "\ncommands valid for the Microsoft Windows VxD formats only:\n" ,
@@ -675,12 +675,12 @@ pick(    MSG_RAW_HELP_5,        " " ,
  */
 pick(    MSG_RDOS_HELP_0,       " " ,
                                 " " )
-pick(    MSG_RDOS_HELP_1,       "commands valid for the RDOS executable formats only:" ,
+pick(    MSG_RDOS_HELP_1,       "commands valid for the RDOS special executable formats only:" ,
                                 "RDOS 実行可能形式に対してのみ有効なオプション:" )
 pick(    MSG_RDOS_HELP_2,       " " ,
                                 " " )
-pick(    MSG_RDOS_HELP_3,       "form      ::= \"RDos\" [\"DEV\"]" ,
-                                "form      ::= \"RDos\" [\"DEV\"]" )
+pick(    MSG_RDOS_HELP_3,       "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" ,
+                                "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" )
 pick(    MSG_RDOS_HELP_4,       " " ,
                                 " " )
 

@@ -52,6 +52,7 @@
 #include "pathlist.h"
 #include "cmdall.h"
 #include "library.h"
+#include "sysblock.h"
 
 #include "clibext.h"
 
@@ -257,7 +258,7 @@ static bool AddReference( void )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
     sym->info |= SYM_DCE_REF;   /* make sure it stays around */
     return( true );
 }
@@ -1246,7 +1247,7 @@ static bool AddSymTrace( void )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
     sym->info |= SYM_TRACE;
     return( true );
 }
