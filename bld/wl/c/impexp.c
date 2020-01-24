@@ -235,9 +235,9 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     exp->iopl_words = flags & EXPDEF_IOPLMASK;
     exp->isresident = ( (flags & EXPDEF_RESIDENT) != 0 );
     if( intname->len != 0 ) {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, intname->name, intname->len );
+        exp->sym = SymOp( ST_REFERENCE_SYM, intname->name, intname->len );
     } else {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
+        exp->sym = SymOp( ST_REFERENCE_SYM, expname->name, expname->len );
     }
     if( LinkFlags & LF_STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.

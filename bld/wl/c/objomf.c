@@ -626,7 +626,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
     sym_flags           flags;
 
     DEBUG(( DBG_OLD, "UseSymbols()" ));
-    flags = ST_CREATE | ST_REFERENCE;
+    flags = ST_REFERENCE_SYM;
     if( static_sym ) {
         flags |= ST_STATIC;
     }

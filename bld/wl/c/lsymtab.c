@@ -826,7 +826,7 @@ void ClearSymUnion( symbol * sym )
 symbol *RefISymbol( const char *name )
 /************************************/
 {
-    return( SymOp( ST_CREATE | ST_REFERENCE, name, strlen( name ) ) );
+    return( SymOp( ST_REFERENCE_SYM, name, strlen( name ) ) );
 }
 
 symbol *DefISymbol( const char *name )

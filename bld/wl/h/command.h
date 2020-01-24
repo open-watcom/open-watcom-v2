@@ -36,7 +36,7 @@ typedef enum {
     ENDOFLINE,
     ENDOFFILE,
     ENDOFCMD
-}                       place;
+} place;
 
 typedef enum {
     NONBUFFERED,
@@ -45,7 +45,7 @@ typedef enum {
     BUFFERED,
     ENVIRONMENT,
     SYSTEM
-}                       method;
+} method;
 
 typedef enum {
     SEP_NO,
@@ -60,27 +60,13 @@ typedef enum {
     SEP_DOT_EXT,
     SEP_LCURLY,
     SEP_RCURLY
-}                       sep_type;
+} sep_type;
 
 typedef enum {
     ST_IS_ORDINAL,
     ST_NOT_ORDINAL,
     ST_INVALID_ORDINAL
 } ord_state;
-
-typedef struct {
-    char        *buff;
-    size_t      len;
-    const char  *next;
-    const char  *this;
-    place       where;
-    method      how;
-    boolbit     thumb       : 1;
-    boolbit     locked      : 1;
-    boolbit     quoted      : 1;    /* set true if token parsed as a quoted string*/
-    boolbit     skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
-    unsigned_16 line;
-} tok;
 
 typedef enum {
     CF_TO_STDOUT            = CONSTU32( 0x00000001 ),
@@ -107,6 +93,26 @@ typedef enum {
 
 #define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)
 
+typedef enum {
+    TOK_NORMAL          = 0x00,
+    TOK_INCLUDE_DOT     = 0x01,
+    TOK_IS_FILENAME     = 0x02
+} tokcontrol;
+
+typedef struct {
+    char        *buff;
+    size_t      len;
+    const char  *next;
+    const char  *this;
+    place       where;
+    method      how;
+    boolbit     thumb       : 1;
+    boolbit     locked      : 1;
+    boolbit     quoted      : 1;    /* set true if token parsed as a quoted string*/
+    boolbit     skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
+    unsigned_16 line;
+} tok;
+
 typedef struct cmdfilelist {
     struct cmdfilelist *prev;
     struct cmdfilelist *next;
@@ -122,18 +128,6 @@ typedef struct {
     exe_format          format;
     commandflag         flags;
 } parse_entry;
-
-typedef struct sysblock {
-    struct sysblock     *next;
-    char                *name;
-    char                commands[1];
-} sysblock;
-
-typedef enum {
-    TOK_NORMAL          = 0x00,
-    TOK_INCLUDE_DOT     = 0x01,
-    TOK_IS_FILENAME     = 0x02
-} tokcontrol;
 
 /* command parse tables */
 
@@ -186,14 +180,12 @@ extern parse_entry OutputOpts[];
 
 /* handy globals */
 
-extern file_defext  Extension;
-extern file_list    **CurrFList;
-extern tok          Token;
-extern commandflag  CmdFlags;
-extern char         *Name;
-extern sysblock     *SysBlocks;
-extern sysblock     *LinkCommands;
-extern cmdfilelist *CmdFile;
+extern file_defext      Extension;
+extern file_list        **CurrFList;
+extern tok              Token;
+extern commandflag      CmdFlags;
+extern char             *Name;
+extern cmdfilelist      *CmdFile;
 
 /* routines used in command parser */
 

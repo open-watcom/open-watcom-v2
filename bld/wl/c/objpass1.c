@@ -252,7 +252,7 @@ static void DoIncSymbol( void *_sym )
     sym_flags   flags;
 
     if( sym->info & SYM_IS_ALTDEF ) {
-        flags = ST_CREATE | ST_REFERENCE;
+        flags = ST_REFERENCE_SYM;
         if( sym->info & SYM_STATIC ) {
             flags |= ST_STATIC;
         }
@@ -1319,7 +1319,7 @@ static void ExportSymbol( const length_name *expname )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
+    sym = SymOp( ST_REFERENCE_SYM, expname->name, expname->len );
     sym->info |= SYM_EXPORTED;
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {

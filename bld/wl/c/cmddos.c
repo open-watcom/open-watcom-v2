@@ -298,7 +298,7 @@ static bool AddNoVector( void )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
     sym->u.d.ovlstate |= ( OVL_FORCE | OVL_NO_VECTOR );
     return( true );
 }
@@ -312,7 +312,7 @@ bool ProcNoVector( void )
 static bool AddVector( void )
 /***************************/
 {
-    OvlVectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
+    OvlVectorize( SymOp( ST_REFERENCE_SYM, Token.this, Token.len ) );
     return(true);
 }
 
@@ -327,7 +327,7 @@ static bool AddForceVector( void )
 {
     symbol  *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
     OvlVectorize( sym );
     sym->u.d.ovlstate |= OVL_ALWAYS;
     return(true);
