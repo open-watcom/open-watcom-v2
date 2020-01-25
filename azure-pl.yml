@@ -113,6 +113,21 @@ stages:
         parameters:
           arch:     lnx
           title:    Installers Build Linux
+  - stage: release
+    displayName: "GitHub Release"
+    dependsOn:
+      - installnx
+      - instalnt
+    condition: >
+      and(
+        succeeded(), 
+        in( variables['Build.Reason'], 'Schedule', 'Manual' )
+      )
+    jobs:
+      - template: ci/release.yml
+        parameters:
+          arch:     lnx
+          title:    GitHub Release
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
