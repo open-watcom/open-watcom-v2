@@ -58,3 +58,35 @@ jobs:
           echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
         fi
       displayName: "Recreate 'Current-build' tag"
+    - task: GitHubRelease@0
+      name: releasedel
+      displayName: "Delete Release"
+      continueOnError: true
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        action: 'delete'
+        tag: '$(owtag)'
+    - task: GitHubRelease@0
+      name: releaseadd
+      displayName: "Add Release"
+      condition: succeededOrFailed()
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'manual'
+        tag: '$(owtag)'
+        title: '$(owtag)'
+        releaseNotesSource: 'input'
+        releaseNotes: 'Last updated $(owtagstamp)'
+        ${{ if eq(parameters.arch, 'nt') }}:
+          assets: |
+            distrib\ow\bin\open-watcom-*
+            distrib\ow\bin\ow-snapshot.tar.gz
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          assets: |
+            distrib/ow/bin/open-watcom-*
+            distrib/ow/bin/ow-snapshot.tar.gz
+        isPreRelease: true
+        addChangeLog: false
