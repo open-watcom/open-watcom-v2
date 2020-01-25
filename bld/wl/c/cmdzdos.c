@@ -47,6 +47,7 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmdzdos.h"
+#include "cmdtable.h"
 
 
 #ifdef _ZDOS

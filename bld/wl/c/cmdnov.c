@@ -43,6 +43,7 @@
 #include "loadnov.h"
 #include "wlnkmsg.h"
 #include "cmdnov.h"
+#include "cmdtable.h"
 
 
 #ifdef _NOVELL

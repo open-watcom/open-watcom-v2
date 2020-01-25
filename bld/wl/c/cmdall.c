@@ -53,6 +53,7 @@
 #include "cmdall.h"
 #include "library.h"
 #include "sysblock.h"
+#include "cmdtable.h"
 
 #include "clibext.h"
 

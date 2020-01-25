@@ -47,6 +47,7 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmdrdv.h"
+#include "cmdtable.h"
 
 
 #ifdef _RDOS

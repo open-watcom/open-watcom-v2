@@ -39,6 +39,7 @@
 #include "load16m.h"
 #include "cmd16m.h"
 #include "wlnkmsg.h"
+#include "cmdtable.h"
 
 #include "clibext.h"
 

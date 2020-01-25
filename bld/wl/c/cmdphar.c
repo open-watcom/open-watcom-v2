@@ -45,6 +45,7 @@
 #include "wlnkmsg.h"
 #include "cmdphar.h"
 #include "cmdall.h"
+#include "cmdtable.h"
 
 
 #ifdef _PHARLAP

@@ -43,6 +43,7 @@
 #include "cmdline.h"
 #include "cmddos.h"
 #include "distrib.h"
+#include "cmdtable.h"
 
 
 #ifdef _EXE

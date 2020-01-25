@@ -37,6 +37,7 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "exeelf.h"
+#include "cmdtable.h"
 
 
 #ifdef _ELF

@@ -45,6 +45,7 @@
 #include "cmd16m.h"
 #include "cmdline.h"
 #include "cmdxxx.h"
+#include "cmdtable.h"
 
 
 parse_entry     PosDbgMods[] = {
@@ -154,7 +155,6 @@ parse_entry     Directives[] = {
 #endif
     NULL
 };
-
 
 parse_entry     MainOptions[] = {
     "Map",          ProcMap,            MK_ALL, 0,

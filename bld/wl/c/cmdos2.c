@@ -49,6 +49,7 @@
 #include "impexp.h"
 #include "objpass1.h"
 #include "cmdall.h"
+#include "cmdtable.h"
 
 
 #ifdef _OS2

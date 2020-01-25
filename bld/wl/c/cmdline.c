@@ -65,6 +65,7 @@
 #include "cmdhelp.h"
 #include "library.h"
 #include "sysblock.h"
+#include "cmdtable.h"
 
 
 #ifdef BOOTSTRAP

@@ -47,6 +47,7 @@
 #include "wlnkmsg.h"
 #include "cmdqnx.h"
 #include "cmdall.h"     // for ChkBase
+#include "cmdtable.h"
 
 
 #ifdef _QNX
