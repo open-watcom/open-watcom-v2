@@ -1247,3 +1247,101 @@ char *GetFileName( char **membname, bool setname )
     }
     return( ptr );
 }
+
+version_state GetGenVersion( version_block *vb, version_state enq, bool novell_revision )
+/***************************************************************************************/
+{
+    version_state   state;
+    ord_state       retval;
+    unsigned_32     value;
+    unsigned_32     major_limit;
+    unsigned_32     minor_limit;
+    unsigned_32     revision_limit;
+
+    state = GENVER_ERROR;
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
+        return( state );
+    }
+    /* finish if no value is required */
+    if( (enq & (GENVER_MAJOR | GENVER_MINOR | GENVER_REVISION)) == 0 ) {
+        return( state );
+    }
+    /* process major value */
+    retval = getatol( &value );
+    if( retval != ST_IS_ORDINAL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    /* setup component limits */
+    major_limit = vb->major;
+    minor_limit = vb->minor;
+    revision_limit = vb->revision;
+    /* reset output values */
+    vb->major = 0;
+    vb->minor = 0;
+    vb->revision = 0;
+    /*
+     *  From now on, all results are valid despite warnings
+     */
+    state = GENVER_MAJOR;
+    if( enq & GENVER_MAJOR ) {
+        if( ( major_limit ) && ( value > major_limit ) ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+        vb->major = value;
+    }
+    /* finish if no value is required */
+    if( (enq & (GENVER_MINOR | GENVER_REVISION)) == 0 ) {
+        return( state );
+    }
+    /* process minor value */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) { /* if we don't get a minor number */
+        return( state );                        /* that's OK */
+    }
+    retval = getatol( &value );
+    if( retval != ST_IS_ORDINAL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    state |= GENVER_MINOR;
+    if( enq & GENVER_MINOR ) {
+        if( ( minor_limit ) && ( value > minor_limit ) ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+        vb->minor = value;
+    }
+    /* finish if no value is required */
+    if( (enq & GENVER_REVISION) == 0 ) {
+        return( state );
+    }
+    /* process revision value */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) { /* if we don't get a revision */
+        return( state );                        /* that's all right */
+    }
+    retval = getatol( &value );
+    if( novell_revision ) {
+        /*
+         * Netware supports a revision field 0-26 (null or a-z(A-Z))
+         */
+        if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
+            value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
+        } else if( retval == ST_NOT_ORDINAL ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+    } else {
+        if( retval != ST_IS_ORDINAL ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+    }
+    state |= GENVER_REVISION;
+    if( ( revision_limit ) && ( value > revision_limit ) ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    vb->revision = value;
+    return( state );
+}

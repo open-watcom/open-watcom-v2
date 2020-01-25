@@ -185,7 +185,7 @@ bool ProcQNXHeapSize( void )
         return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.qnx.heapsize = value;
     }
@@ -202,7 +202,7 @@ bool ProcQNXPrivilege( void )
         return( false );
     ret = getatoi( &value );
     if( ret != ST_IS_ORDINAL || value > 3 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "privilege" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
     } else {
         FmtData.u.qnx.priv_level = value;
     }

@@ -1109,7 +1109,7 @@ void FiniPELoadFile( void )
          *  in some drivers! Who are we to argue? Never mind it's against the PE spec.
          */
         if( FmtData.u.os2.segment_shift < MINIMUM_SEG_SHIFT ) {
-            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
+            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "ALIGNMENT" );
             FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
         }
 
@@ -1264,7 +1264,7 @@ void FiniPELoadFile( void )
          *  in some drivers! Who are we to argue? Never mind it's against the PE spec.
          */
         if( FmtData.u.os2.segment_shift < MINIMUM_SEG_SHIFT ) {
-            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
+            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "ALIGNMENT" );
             FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
         }
 

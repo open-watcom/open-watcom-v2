@@ -512,7 +512,7 @@ bool ProcLibPath( void )
  */
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "libpath" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
         return( true );
     }
     AddLibPaths( Token.this, Token.len, true );  // true == add to front.
@@ -598,7 +598,7 @@ bool ProcNameLen( void )
     ret = GetLong( &value );
     if( ret ) {
         if( value == 0 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "namelen" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "NAMELEN" );
         } else {
             NameLen = value;
         }
@@ -894,7 +894,7 @@ bool ProcPackcode( void )
 {
     unsigned_32     value;
 
-    if( GetPackValue( &value, "packcode" ) ) {
+    if( GetPackValue( &value, "PACKCODE" ) ) {
         PackCodeLimit = value;
         LinkFlags |= LF_PACKCODE_FLAG;
         return( true );
@@ -907,7 +907,7 @@ bool ProcPackdata( void )
 {
     unsigned_32     value;
 
-    if( GetPackValue( &value, "packdata" ) ) {
+    if( GetPackValue( &value, "PACKDATA" ) ) {
         PackDataLimit = value;
         LinkFlags |= LF_PACKDATA_FLAG;
         return( true );
@@ -1066,7 +1066,7 @@ bool ProcSysBegin( void )
     sysblock    *sys;
 
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "system begin" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
         return( true );
     }
     sysname = tostring();
@@ -1163,44 +1163,22 @@ bool ProcNoStub( void )
 bool ProcVersion( void )
 /**********************/
 {
-    ord_state   retval;
-    unsigned_32 value;
+    version_state   result;
+    version_block   vb;
 
-    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
-        return( false );
-    }
-    FmtData.minor = 0;
-    FmtData.revision = 0;
-    retval = getatol( &value );
-    if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
+    /* set required limits, 0 = no limit */
+    vb.major = 100;
+    vb.minor = 100;
+    vb.revision = 100;
+    vb.message = "VERSION";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR | GENVER_REVISION, true );
+    if( result != GENVER_ERROR ) {
+        FmtData.major = vb.major;
+        FmtData.minor = vb.minor;
+        FmtData.revision = vb.revision;
         return( true );
     }
-    FmtData.major = value;
-    FmtData.ver_specified = true;
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a minor number */
-        return( true );                          /* that's OK */
-    }
-    retval = getatol( &value );
-    if( retval != ST_IS_ORDINAL || value >= 100 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( true );
-    } else {
-        FmtData.minor = value;
-    }
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a revision*/
-        return( true );                 /* that's all right */
-    }
-    retval = getatol( &value );
-    if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
-        FmtData.revision = tolower( *Token.this ) - 'a' + 1;
-    } else if( retval == ST_IS_ORDINAL && value < 100 ) {
-        FmtData.revision = value;
-    } else {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( true );
-    }
-    return( true );
+    return( false );
 }
 
 bool ProcImplib( void )
@@ -1351,7 +1329,7 @@ bool ProcOutputOffset( void )
         FmtData.output_offset = value;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "output segment offset");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OUTPUT OFFSET");
         return( false );
     }
 }
@@ -1371,7 +1349,7 @@ bool ProcOutputHshift( void )
         FmtData.output_hshift = true;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "Hex HSHIFT");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "OUTPUT HSHIFT");
         return( false );
     }
 }
@@ -1412,7 +1390,7 @@ bool ProcFillchar( void )
         FmtData.FillChar = value;
         return( true );
     } else {
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "FillChar");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "FILLCHAR");
         return( false );
     }
 }
@@ -1502,7 +1480,7 @@ bool ProcOrdOfsAdr( void )
         return( true );
     } else {
         CurrOClass->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "output segment offset");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "ORDER CLNAME OFFSET");
         return( false );
     }
 }
@@ -1579,7 +1557,7 @@ bool ProcOrdSegOfsAdr( void )
         return( true );
     } else {
         CurrOSeg->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "output segment offset");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME SEGMENT OFFSET");
         return( false );
     }
 }
@@ -1606,7 +1584,7 @@ bool ProcObjAlign( void )
         return( false );
     }                                            /* value not a power of 2 */
     if( value < 16 || value > _256MB || (value & (value - 1)) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "objalign" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
         value = _64KB;
     }
     FmtData.objalign = value;

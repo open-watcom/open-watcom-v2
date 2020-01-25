@@ -315,7 +315,7 @@ bool ProcScreenName( void )
         return( false );
     }
     if( Token.len > MAX_SCREEN_NAME_LENGTH ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "screenname" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "SCREENNAME" );
     } else {
         if( FmtData.u.nov.screenname != NULL ) {
             _LnkFree( FmtData.u.nov.screenname );  // assume second is correct.
@@ -448,7 +448,7 @@ bool ProcThreadName( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     } else if( Token.len > MAX_THREAD_NAME_LENGTH ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "threadname" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "THREADNAME" );
     } else {
         FmtData.u.nov.threadname = tostring();
     }
@@ -483,7 +483,7 @@ bool ProcCopyright( void )
         }
     } else {
         if( Token.len > MAX_COPYRIGHT_LENGTH ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "copyright" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "COPYRIGHT" );
         } else {
             if( FmtData.u.nov.copyright != NULL ) {
                 _LnkFree( FmtData.u.nov.copyright );  // assume second is correct.

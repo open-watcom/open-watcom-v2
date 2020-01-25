@@ -99,6 +99,20 @@ typedef enum {
     TOK_IS_FILENAME     = 0x02
 } tokcontrol;
 
+typedef enum {
+    GENVER_ERROR        = 0,
+    GENVER_MAJOR        = 0x01,
+    GENVER_MINOR        = 0x02,
+    GENVER_REVISION     = 0x04
+} version_state;
+
+typedef struct version_block {
+    unsigned_32 major;
+    unsigned_32 minor;
+    unsigned_32 revision;
+    const char  *message;
+} version_block;
+
 typedef struct {
     char        *buff;
     size_t      len;
@@ -212,3 +226,4 @@ extern void             BurnUtils( void );
 extern outfilelist      *NewOutFile( char * );
 extern section          *NewSection( void );
 extern char             *GetFileName( char **, bool );
+extern version_state    GetGenVersion( version_block *vb, version_state enq, bool novell_revision );

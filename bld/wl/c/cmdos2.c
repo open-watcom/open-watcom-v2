@@ -53,7 +53,6 @@
 
 #ifdef _OS2
 
-static void             ParseVersion( void );
 static bool             GetWlibImports( void );
 static bool             getimport( void );
 static bool             getexport( void );
@@ -345,7 +344,7 @@ bool ProcOS2HeapSize( void )
         return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.os2.heapsize = value;
     }
@@ -997,6 +996,24 @@ bool ProcNone( void )
     return( true );
 }
 
+static void ParseVersion( void )
+/******************************/
+{
+    version_state   result;
+    version_block   vb;
+
+    /* set required limits, 0 = no limit */
+    vb.major = 0;
+    vb.minor = 0;
+    vb.revision = 0;
+    vb.message = "SUBSYSTEM";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
+    if( result != GENVER_ERROR ) {
+        FmtData.u.pe.submajor = vb.major;
+        FmtData.u.pe.subminor = vb.minor;
+    }
+}
+
 bool ProcRunNative( void )
 /*******************************/
 {
@@ -1080,30 +1097,6 @@ bool ProcEFI( void )
     return( true );
 }
 
-static void ParseVersion( void )
-/******************************/
-{
-    ord_state   retval;
-
-    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) )
-        return;
-    FmtData.u.pe.submajor = 0;
-    FmtData.u.pe.subminor = 0;
-    retval = getatoi( &FmtData.u.pe.submajor );
-    if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "subsystem" );
-        return;
-    }
-    FmtData.u.pe.sub_specd = true;
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
-       return;                          /* that's OK */
-    }
-    retval = getatoi( &FmtData.u.pe.subminor );
-    if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "subsystem" );
-    }
-}
-
 static bool AddResource( void )
 /*****************************/
 {
@@ -1121,120 +1114,46 @@ bool ProcResource( void )
     return( ProcArgList( &AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
-enum{
-    valid_result    = 0x01,
-    major_valid     = 0x02,
-    minor_valid     = 0x04,
-    revision_valid  = 0x08
-};
-
-typedef struct tagVersBlock
+bool ProcLinkVersion( void )
+/**************************/
 {
-    unsigned_32 major;
-    unsigned_32 minor;
-    unsigned_32 revision;
-}VersBlock;
+    version_state   result;
+    version_block   vb;
 
-static unsigned_32 ProcGenericVersion( VersBlock *pVers, unsigned_32 major_limit, unsigned_32 minor_limit, unsigned_32 revision_limit)
-{
-    unsigned_32 state = 0;
-    ord_state   retval;
-    unsigned_32 value;
-
-    if(NULL == pVers) {
-        return( state );
+    /* set required limits, 0 = no limit */
+    vb.major = 255;
+    vb.minor = 255;
+    vb.revision = 0;
+    vb.message = "LINKVERSION";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
+    if( result != GENVER_ERROR ) {
+        FmtData.u.pe.lnk_specd = true;
+        FmtData.u.pe.linkmajor = vb.major;
+        FmtData.u.pe.linkminor = vb.minor;
+        return( true );
     }
-    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
-        return( state );
-    }
-
-    retval = getatol( &value );
-    if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    } else if( ( major_limit ) && ( value > major_limit ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    }
-    /*
-    //  From now on, all results are valid despite warnings
-    */
-    pVers->major = value;
-    pVers->minor = 0;
-    pVers->revision = 0;
-    state |= (valid_result | major_valid);
-
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
-       return( state );                      /* that's OK */
-    }
-    retval = getatol( &value );
-    if( retval != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    } else if( ( minor_limit ) && ( value > minor_limit ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    }
-
-    pVers->minor = value;
-    state |= minor_valid;
-
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a revision*/
-        return( state );                 /* that's all right */
-    }
-
-    /*
-    //  Netware supports a revision field 0-26 (null or a-z(A-Z))
-    */
-    retval = getatol( &value );
-    if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
-        value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
-    } else if( retval == ST_NOT_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    }
-
-    if( ( revision_limit ) && ( value > revision_limit ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "version" );
-        return( state );
-    }
-    pVers->revision = value;
-    state |= revision_valid;
-    return( state );
+    return( false );
 }
 
-bool     ProcLinkVersion( void )
+bool ProcOsVersion( void )
+/************************/
 {
-    unsigned_32 result;
-    VersBlock   vb;
+    version_state   result;
+    version_block   vb;
 
-    result = ProcGenericVersion( &vb , 255, 255, 0);
-    if( (result & valid_result) == 0 ) {
-        return( false );    /* error has occurred */
+    /* set required limits, 0 = no limit */
+    vb.major = 0;
+    vb.minor = 99;          /* from old default of 100 max */
+    vb.revision = 0;
+    vb.message = "OSVERSION";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
+    if( result != GENVER_ERROR ) {
+        FmtData.u.pe.osv_specd = true;
+        FmtData.u.pe.osmajor = vb.major;
+        FmtData.u.pe.osminor = vb.minor;
+        return( true );
     }
-
-    FmtData.u.pe.lnk_specd = true;
-    FmtData.u.pe.linkmajor = (result & major_valid) ? vb.major : 0;
-    FmtData.u.pe.linkminor = (result & minor_valid) ? vb.minor : 0;
-
-    return( true );
-}
-
-bool     ProcOsVersion( void )
-{
-    unsigned_32 result;
-    VersBlock   vb;
-
-    result = ProcGenericVersion( &vb , 0, 99, 0);   /* from old default of 100 max */
-    if( (result & valid_result) == 0 ) {
-        return( false );    /* error has occurred */
-    }
-
-    FmtData.u.pe.osv_specd = true;
-    FmtData.u.pe.osmajor = (result & major_valid) ? vb.major : 0;
-    FmtData.u.pe.osminor = (result & minor_valid) ? vb.minor : 0;
-
-    return( true );
+    return( false );    /* error has occurred */
 }
 
 bool     ProcChecksum( void )

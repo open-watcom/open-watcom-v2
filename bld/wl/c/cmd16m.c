@@ -178,7 +178,7 @@ bool ProcBuffer( void )
     if( !GetLong( &value ) )
         return( false );
     if( value < _1KB || value > _32KB ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "buffer" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "BUFFER" );
     } else {
         FmtData.u.d16m.buffer = value;
     }
@@ -193,11 +193,11 @@ bool ProcGDTSize( void )
     if( !GetLong( &value ) )
         return( false );
     if( (value % 8) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "gdtsize" );
+        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "GDTSIZE" );
         value &= -8;
     }
     if( value > 0x10000 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "gdtsize" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "GDTSIZE" );
     } else {
         FmtData.u.d16m.gdtsize = --value;
     }
@@ -233,11 +233,11 @@ bool ProcSelStart( void )
     if( !GetLong( &value ) )
         return( false );
     if( (value % 8) != 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "selstart" );
+        LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "SELSTART" );
         value &= -8;
     }
     if( value >= 0x10000 || value < D16M_USER_SEL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "selstart" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SELSTART" );
     } else {
         FmtData.u.d16m.selstart = value;
     }
@@ -253,7 +253,7 @@ bool ProcExtended( void )
         return( false );
     value >>= 10;      // value should be in K.
     if( value >= 0x10000 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "extended" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "EXTENDED" );
     } else {
         FmtData.u.d16m.extended = value;
     }
@@ -281,7 +281,7 @@ bool ProcDataSize( void )
     if( !GetLong( &value ) )
         return( false );
     if( value > _64KB ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "datasize" );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "DATASIZE" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;
         FmtData.u.d16m.flags |= DATASIZE_SPECD;

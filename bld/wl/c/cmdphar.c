@@ -164,7 +164,7 @@ bool ProcMinReal( void )
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "minreal" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "MINREAL" );
         } else {
             FmtData.u.phar.minreal = value;
         }
@@ -182,7 +182,7 @@ bool ProcMaxReal( void )
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "maxreal" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "MAXREAL" );
         } else {
             FmtData.u.phar.maxreal = value;
         }
@@ -222,7 +222,7 @@ bool ProcCallBufs( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "callbufs" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "CALLBUFS" );
         } else {
             FmtData.u.phar.callbufs = value;
         }
@@ -240,7 +240,7 @@ bool ProcMiniBuf( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "minibuf" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "MINIBUF" );
         } else {
             FmtData.u.phar.minibuf = value;
         }
@@ -258,7 +258,7 @@ bool ProcMaxiBuf( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "maxibuf" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "MAXIBUF" );
         } else {
             FmtData.u.phar.maxibuf = value;
         }
@@ -275,7 +275,7 @@ bool ProcNIStack( void )
     ret = GetLong( &value );
     if( ret ) {
         if( value < 4 || value > 0xFFFF ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "nistack" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "NISTACK" );
         } else {
             FmtData.u.phar.nistack = value;
         }
@@ -293,7 +293,7 @@ bool ProcIStkSize( void )
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
-            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "istksize" );
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ISTKSIZE" );
         } else {
             FmtData.u.phar.istksize = value;
         }
