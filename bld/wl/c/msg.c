@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "linkstd.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
 #include "ideentry.h"

@@ -35,7 +35,7 @@
 #include "linkstd.h"
 #include "alloc.h"
 #include "walloca.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "cmdos2.h"
 #include "exeos2.h"
 #include "exepe.h"

@@ -31,7 +31,7 @@
 
 
 #include "linkstd.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "cmdall.h"
 #include "cmdline.h"
 #include "msg.h"

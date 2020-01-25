@@ -35,7 +35,7 @@
 #include <ctype.h>
 #include "linkstd.h"
 #include "msg.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "cmdline.h"
 #include "fileio.h"

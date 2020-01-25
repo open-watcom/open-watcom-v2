@@ -43,7 +43,7 @@
 #include "dbgall.h"
 #include "fileio.h"
 #include "loadfile.h"
-#include "command.h"
+#include "cmdutils.h"
 
 
 #ifdef _PHARLAP

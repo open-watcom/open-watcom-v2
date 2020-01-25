@@ -37,7 +37,7 @@
 #include "exeos2.h"
 #include "msg.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "cmdall.h"
 #include "cmdos2.h"

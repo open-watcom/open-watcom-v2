@@ -32,7 +32,7 @@
 
 #include "linkstd.h"
 #include "loadelf.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "cmdelf.h"
 #include "msg.h"
 #include "wlnkmsg.h"

@@ -31,7 +31,7 @@
 
 
 #include "linkstd.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "cmdall.h"
 #include "cmdos2.h"
 #include "cmdqnx.h"

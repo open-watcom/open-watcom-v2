@@ -44,7 +44,7 @@
 #include "walloca.h"
 #include "linkstd.h"
 #include "loadfile.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "alloc.h"
 #include "msg.h"
 #include "wlnkmsg.h"

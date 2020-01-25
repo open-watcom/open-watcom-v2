@@ -32,7 +32,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include <exerdos.h>
-#include "command.h"
+#include "cmdutils.h"
 #include "pcobj.h"
 #include "newmem.h"
 #include "msg.h"
