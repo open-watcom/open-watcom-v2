@@ -1142,24 +1142,6 @@ bool ProcStaticDriver( void )
     return( true );
 }
 
-bool ProcPhysDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= PHYS_DEVICE;
-    return( true );
-}
-
-bool ProcVirtDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= VIRT_DEVICE;
-    return( true );
-}
-
 bool ProcPM( void )
 /************************/
 {
@@ -1178,6 +1160,24 @@ bool ProcPMFullscreen( void )
 /**********************************/
 {
     FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
+    return( true );
+}
+
+bool ProcPhysDevice( void )
+/********************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= PHYS_DEVICE;
+    return( true );
+}
+
+bool ProcVirtDevice( void )
+/********************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= VIRT_DEVICE;
     return( true );
 }
 
