@@ -43,6 +43,16 @@
 #include "strtab.h"
 #include "dbgall.h"
 #include "cmddos.h"
+#include "cmdnov.h"
+#include "cmdos2.h"
+#include "cmd16m.h"
+#include "cmdphar.h"
+#include "cmdrdv.h"
+#include "cmdqnx.h"
+#include "cmdelf.h"
+#include "cmdzdos.h"
+#include "cmdraw.h"
+#include "cmdxxx.h"
 #include "cmdline.h"
 #include "symtrace.h"
 #include "objio.h"
@@ -53,7 +63,6 @@
 #include "cmdall.h"
 #include "library.h"
 #include "sysblock.h"
-#include "cmdtable.h"
 
 #include "clibext.h"
 
@@ -79,8 +88,8 @@ void ResetCmdAll( void )
     UsrLibPath = NULL;
 }
 
-bool ProcDosSeg( void )
-/**********************
+static bool ProcDosSeg( void )
+/*****************************
  * process DOSSEG option
  */
 {
@@ -89,8 +98,8 @@ bool ProcDosSeg( void )
     return( true );
 }
 
-bool ProcName( void )
-/*******************/
+static bool ProcName( void )
+/**************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
         return( false );
@@ -102,8 +111,8 @@ bool ProcName( void )
     return( true );
 }
 
-bool ProcDwarfDBI( void )
-/***********************/
+static bool ProcDwarfDBI( void )
+/******************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_DWARF_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -113,8 +122,8 @@ bool ProcDwarfDBI( void )
     return( true );
 }
 
-bool ProcWatcomDBI( void )
-/************************/
+static bool ProcWatcomDBI( void )
+/*******************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_OLD_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -124,8 +133,8 @@ bool ProcWatcomDBI( void )
     return( true );
 }
 
-bool ProcCodeviewDBI( void )
-/**************************/
+static bool ProcCodeviewDBI( void )
+/*********************************/
 {
     if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_CV_DBI_FLAG) ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
@@ -135,8 +144,8 @@ bool ProcCodeviewDBI( void )
     return( true );
 }
 
-bool ProcLine( void )
-/*******************/
+static bool ProcLine( void )
+/**************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -146,8 +155,8 @@ bool ProcLine( void )
 }
 
 #if 0
-bool ProcDBIStatic( void )
-/************************/
+static bool ProcDBIStatic( void )
+/*******************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -157,8 +166,8 @@ bool ProcDBIStatic( void )
 }
 #endif
 
-bool ProcType( void )
-/*******************/
+static bool ProcType( void )
+/**************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -167,8 +176,8 @@ bool ProcType( void )
     return( true );
 }
 
-bool ProcLocal( void )
-/********************/
+static bool ProcLocal( void )
+/***************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -177,8 +186,8 @@ bool ProcLocal( void )
     return( true );
 }
 
-bool ProcAll( void )
-/******************/
+static bool ProcAll( void )
+/*************************/
 {
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= LF_DWARF_DBI_FLAG;
@@ -204,8 +213,8 @@ static bool AddAlias( void )
     return( true );
 }
 
-bool ProcAlias( void )
-/********************/
+static bool ProcAlias( void )
+/***************************/
 {
     return( ProcArgList( &AddAlias, TOK_INCLUDE_DOT ) );
 }
@@ -220,14 +229,14 @@ static bool AddReference( void )
     return( true );
 }
 
-bool ProcReference( void )
-/************************/
+static bool ProcReference( void )
+/*******************************/
 {
     return( ProcArgList( &AddReference, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcOSName( void )
-/*********************/
+static bool ProcOSName( void )
+/****************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         if( FmtData.osname != NULL ) {
@@ -239,8 +248,8 @@ bool ProcOSName( void )
     return( false );
 }
 
-bool ProcEliminate( void )
-/*************************
+static bool ProcEliminate( void )
+/********************************
  * turn on dead code elimination
  */
 {
@@ -248,8 +257,8 @@ bool ProcEliminate( void )
     return( true );
 }
 
-bool ProcMaxErrors( void )
-/*************************
+static bool ProcMaxErrors( void )
+/********************************
  * set a maximum number of errors
  * for the linker to generate
  */
@@ -260,8 +269,8 @@ bool ProcMaxErrors( void )
     return( true );
 }
 
-bool ProcSymFile( void )
-/**********************/
+static bool ProcSymFile( void )
+/*****************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
@@ -337,8 +346,8 @@ static bool AddLibFile( void )
     return( true );
 }
 
-bool ProcLibFile( void )
-/***********************
+static bool ProcLibFile( void )
+/******************************
  * process LIBFILE command
  */
 {
@@ -399,8 +408,8 @@ static bool AddFile( void )
     return( true );
 }
 
-bool ProcFiles( void )
-/*********************
+static bool ProcFiles( void )
+/****************************
  * process FILE command
  */
 {
@@ -410,8 +419,8 @@ bool ProcFiles( void )
     return( ProcArgList( &AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
-bool ProcModFiles( void )
-/***********************/
+static bool ProcModFiles( void )
+/******************************/
 {
     return( ProcArgList( &AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
@@ -452,8 +461,8 @@ bool ProcLibrary( void )
     return( ProcArgList( &AddLib, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
-bool ProcOptLib( void )
-/*********************/
+static bool ProcOptLib( void )
+/****************************/
 {
     bool    retval;
 
@@ -463,8 +472,8 @@ bool ProcOptLib( void )
     return( retval );
 }
 
-bool ProcLibPath( void )
-/***********************
+static bool ProcLibPath( void )
+/******************************
  * process libpath command
  */
 {
@@ -476,8 +485,8 @@ bool ProcLibPath( void )
     return( true );
 }
 
-bool ProcPath( void )
-/********************
+static bool ProcPath( void )
+/***************************
  * process PATH option
  */
 {
@@ -503,8 +512,8 @@ bool ProcPath( void )
     return( false );
 }
 
-bool ProcMap( void )
-/*******************
+static bool ProcMap( void )
+/**************************
  * process MAP option
  */
 {
@@ -519,8 +528,8 @@ bool ProcMap( void )
     return( true );
 }
 
-bool ProcMapLines( void )
-/************************
+static bool ProcMapLines( void )
+/*******************************
  * process MAPLINES option
  */
 {
@@ -528,8 +537,8 @@ bool ProcMapLines( void )
     return( true );
 }
 
-bool ProcStack( void )
-/*********************
+static bool ProcStack( void )
+/****************************
  * process STACK option
  */
 {
@@ -544,8 +553,8 @@ bool ProcStack( void )
     return( ret );
 }
 
-bool ProcNameLen( void )
-/***********************
+static bool ProcNameLen( void )
+/******************************
  * process NAMELEN option
  */
 {
@@ -563,8 +572,8 @@ bool ProcNameLen( void )
     return( ret );
 }
 
-bool ProcCase( void )
-/********************
+static bool ProcCase( void )
+/***************************
  * process CASE option
  */
 {
@@ -574,8 +583,8 @@ bool ProcCase( void )
     return( true );
 }
 
-bool ProcNoCaseExact( void )
-/***************************
+static bool ProcNoCaseExact( void )
+/**********************************
  * process nocaseexact option
  */
 {
@@ -585,23 +594,23 @@ bool ProcNoCaseExact( void )
     return( true );
 }
 
-bool ProcNoExtension( void )
-/**************************/
+static bool ProcNoExtension( void )
+/*********************************/
 {
     CmdFlags |= CF_NO_EXTENSION;
     return( true );
 }
 
-bool ProcNoCache( void )
-/**********************/
+static bool ProcNoCache( void )
+/*****************************/
 {
     LinkFlags &= ~LF_CACHE_FLAG;
     LinkFlags |= LF_NOCACHE_FLAG;
     return( true );
 }
 
-bool ProcCache( void )
-/********************/
+static bool ProcCache( void )
+/***************************/
 {
     LinkFlags &= ~LF_NOCACHE_FLAG;
     LinkFlags |= LF_CACHE_FLAG;
@@ -628,66 +637,66 @@ static bool AddDisable( void )
     return( true );
 }
 
-bool ProcDisable( void )
-/**********************/
+static bool ProcDisable( void )
+/*****************************/
 {
     return( ProcArgList( &AddDisable, TOK_NORMAL ) );
 }
 
-bool ProcNoDefLibs( void )
-/*************************
+static bool ProcNoDefLibs( void )
+/********************************
  * process CASE option
  */
 {
     return( true );
 }
 
-bool ProcVerbose( void )
-/**********************/
+static bool ProcVerbose( void )
+/*****************************/
 {
     MapFlags |= MAP_VERBOSE;
     DEBUG(( DBG_OLD, "verbose map file" ));
     return( true );
 }
 
-bool ProcUndefsOK( void )
-/***********************/
+static bool ProcUndefsOK( void )
+/******************************/
 {
     LinkFlags |= LF_UNDEFS_ARE_OK;
     DEBUG(( DBG_OLD, "undefined symbols are OK" ));
     return( true );
 }
 
-bool ProcNoUndefsOK( void )
-/*************************/
+static bool ProcNoUndefsOK( void )
+/********************************/
 {
     LinkFlags &= ~LF_UNDEFS_ARE_OK;
     return( true );
 }
 
-bool ProcRedefsOK( void )
-/***********************/
+static bool ProcRedefsOK( void )
+/******************************/
 {
     LinkFlags |= LF_REDEFS_OK;
     return( true );
 }
 
-bool ProcNoRedefs( void )
-/***********************/
+static bool ProcNoRedefs( void )
+/******************************/
 {
     LinkFlags &= ~LF_REDEFS_OK;
     return( true );
 }
 
-bool ProcCVPack( void )
+static bool ProcCVPack( void )
 /*********************/
 {
     LinkFlags |= LF_CVPACK_FLAG;
     return( true );
 }
 
-bool ProcIncremental( void )
-/**************************/
+static bool ProcIncremental( void )
+/*********************************/
 {
 #if !defined( __DOS__ )
     if( CmdFlags & CF_AFTER_INC ) {
@@ -706,22 +715,22 @@ bool ProcIncremental( void )
     return( true );
 }
 
-bool ProcQuiet( void )
-/********************/
+static bool ProcQuiet( void )
+/***************************/
 {
     LinkFlags |= LF_QUIET_FLAG;
     return( true );
 }
 
-bool ProcMangledNames( void )
-/***************************/
+static bool ProcMangledNames( void )
+/**********************************/
 {
     LinkFlags |= LF_DONT_UNMANGLE;
     return( true );
 }
 
-bool ProcOpResource( void )
-/*************************/
+static bool ProcOpResource( void )
+/********************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         FmtData.res_name_only = true;
@@ -734,71 +743,71 @@ bool ProcOpResource( void )
     return( true );
 }
 
-bool ProcStatics( void )
-/**********************/
+static bool ProcStatics( void )
+/*****************************/
 {
     MapFlags |= MAP_STATICS;
     return( true );
 }
 
-bool ProcArtificial( void )
-/*************************/
+static bool ProcArtificial( void )
+/********************************/
 {
     MapFlags |= MAP_ARTIFICIAL;
     return( true );
 }
 
-bool ProcAlphabetical( void )
-/***************************/
+static bool ProcAlphabetical( void )
+/**********************************/
 {
     MapFlags |= MAP_ALPHA;
     return( true );
 }
 
-bool ProcGlobal( void )
-/*********************/
+static bool ProcGlobal( void )
+/****************************/
 {
     MapFlags |= MAP_GLOBAL;
     return( true );
 }
 
-bool ProcJapanese( void )
-/***********************/
+static bool ProcJapanese( void )
+/******************************/
 {
     CmdFlags |= CF_LANGUAGE_JAPANESE;
     return( true );
 }
 
-bool ProcChinese( void )
-/**********************/
+static bool ProcChinese( void )
+/*****************************/
 {
     CmdFlags |= CF_LANGUAGE_CHINESE;
     return( true );
 }
 
-bool ProcKorean( void )
-/*********************/
+static bool ProcKorean( void )
+/****************************/
 {
     CmdFlags |= CF_LANGUAGE_KOREAN;
     return( true );
 }
 
-bool ProcShowDead( void )
-/***********************/
+static bool ProcShowDead( void )
+/******************************/
 {
     LinkFlags |= LF_SHOW_DEAD;
     return( true );
 }
 
-bool ProcVFRemoval( void )
-/************************/
+static bool ProcVFRemoval( void )
+/*******************************/
 {
     LinkFlags |= LF_VF_REMOVAL;
     return( true );
 }
 
-bool ProcStart( void )
-/********************/
+static bool ProcStart( void )
+/***************************/
 {
     char        *name;
 
@@ -810,8 +819,8 @@ bool ProcStart( void )
     return( true );
 }
 
-static bool GetPackValue( unsigned_32 *value, char *name )
-/********************************************************/
+static bool GetPackValue( unsigned_32 *value, const char *message )
+/*****************************************************************/
 {
     ord_state   ret;
 
@@ -819,7 +828,7 @@ static bool GetPackValue( unsigned_32 *value, char *name )
         return( false );
     ret = getatol( value );
     if( ret != ST_IS_ORDINAL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", name );
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", message );
         return( true );
     }
     if( *value == 0 )
@@ -827,8 +836,8 @@ static bool GetPackValue( unsigned_32 *value, char *name )
     return( true );
 }
 
-bool ProcPackcode( void )
-/***********************/
+static bool ProcPackcode( void )
+/******************************/
 {
     unsigned_32     value;
 
@@ -840,8 +849,8 @@ bool ProcPackcode( void )
     return( false );
 }
 
-bool ProcPackdata( void )
-/***********************/
+static bool ProcPackdata( void )
+/******************************/
 {
     unsigned_32     value;
 
@@ -854,8 +863,8 @@ bool ProcPackdata( void )
 }
 
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
-bool ProcNewSegment( void )
-/**************************
+static bool ProcNewSegment( void )
+/*********************************
  * force the start of a new auto-group
  * after the previous object file.
  */
@@ -909,8 +918,8 @@ static sysblock *FindSystemBlock( const char *name )
     return( tmpblk );
 }
 
-bool ProcSysDelete( void )
-/************************/
+static bool ProcSysDelete( void )
+/*******************************/
 {
     return( true );
 }
@@ -952,16 +961,16 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     LinkList( hdr, sys );
 }
 
-bool ProcSysEnd( void )
-/**********************
+static bool ProcSysEnd( void )
+/*****************************
  * finished parsing a system block
  */
 {
     return( true );
 }
 
-bool ProcEndLink( void )
-/***********************
+static bool ProcEndLink( void )
+/******************************
  * finished parsing a link section
  */
 {
@@ -990,8 +999,8 @@ static char **getStubNamePtr( void )
     return( NULL );
 }
 
-bool ProcStub( void )
-/*******************/
+static bool ProcStub( void )
+/**************************/
 {
     char        *name;
     char        **nameptr;
@@ -1012,15 +1021,15 @@ bool ProcStub( void )
     return( true );
 }
 
-bool ProcNoStub( void )
-/*********************/
+static bool ProcNoStub( void )
+/****************************/
 {
     FmtData.u.os2.no_stub = true;
     return( true );
 }
 
-bool ProcVersion( void )
-/**********************/
+static bool ProcVersion( void )
+/*****************************/
 {
     version_state   result;
     version_block   vb;
@@ -1040,8 +1049,8 @@ bool ProcVersion( void )
     return( false );
 }
 
-bool ProcImplib( void )
-/*********************/
+static bool ProcImplib( void )
+/****************************/
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = false;
@@ -1052,8 +1061,8 @@ bool ProcImplib( void )
     return( true );
 }
 
-bool ProcImpFile( void )
-/**********************/
+static bool ProcImpFile( void )
+/*****************************/
 {
     FmtData.make_implib = true;
     FmtData.make_impfile = true;
@@ -1074,8 +1083,8 @@ static bool AddSymTrace( void )
     return( true );
 }
 
-bool ProcSymTrace( void )
-/***********************/
+static bool ProcSymTrace( void )
+/******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT ) );
@@ -1098,23 +1107,23 @@ static bool AddModTrace( void )
     return( true );
 }
 
-bool ProcModTrace( void )
-/***********************/
+static bool ProcModTrace( void )
+/******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
     return( ProcArgList( &AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
-bool ProcFarCalls( void )
-/***********************/
+static bool ProcFarCalls( void )
+/******************************/
 {
     LinkFlags |= LF_FAR_CALLS_FLAG;
     DEBUG(( DBG_OLD, "Far Calls optimization" ));
     return( true );
 }
 
-bool ProcNoFarCalls( void )
-/*************************/
+static bool ProcNoFarCalls( void )
+/********************************/
 {
     LinkFlags &= ~LF_FAR_CALLS_FLAG ;
     DEBUG(( DBG_OLD, "No Far Calls optimization" ));
@@ -1122,29 +1131,29 @@ bool ProcNoFarCalls( void )
 }
 
 #ifdef _RAW
-bool ProcOutputRaw( void )
-/************************/
+static bool ProcOutputRaw( void )
+/*******************************/
 {
    FmtData.output_raw = true;
    return( true );
 }
 
-bool ProcOutputHex( void )
-/************************/
+static bool ProcOutputHex( void )
+/*******************************/
 {
    FmtData.output_hex = true;
    return( true );
 }
 
-bool ProcOutputStart( void )
-/**************************/
+static bool ProcOutputStart( void )
+/*********************************/
 {
    FmtData.output_start = true;
    return( true );
 }
 
-bool ProcOutputOffset( void )
-/***************************/
+static bool ProcOutputOffset( void )
+/**********************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1162,8 +1171,8 @@ bool ProcOutputOffset( void )
     }
 }
 
-bool ProcOutputHshift( void )
-/***************************/
+static bool ProcOutputHshift( void )
+/**********************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1183,8 +1192,8 @@ bool ProcOutputHshift( void )
 }
 #endif
 
-bool ProcHshift( void )
-/*********************/
+static bool ProcHshift( void )
+/****************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1203,8 +1212,8 @@ bool ProcHshift( void )
     }
 }
 
-bool ProcFillchar( void )
-/***********************/
+static bool ProcFillchar( void )
+/******************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1222,8 +1231,8 @@ bool ProcFillchar( void )
     }
 }
 
-bool ProcOrdSegAdr( void )
-/************************/
+static bool ProcOrdSegAdr( void )
+/*******************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1243,8 +1252,8 @@ bool ProcOrdSegAdr( void )
     }
 }
 
-bool ProcOrdOfsAdr( void )
-/************************/
+static bool ProcOrdOfsAdr( void )
+/*******************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1264,8 +1273,8 @@ bool ProcOrdOfsAdr( void )
     }
 }
 
-bool ProcOrdCopy( void )
-/**********************/
+static bool ProcOrdCopy( void )
+/*****************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1275,15 +1284,15 @@ bool ProcOrdCopy( void )
     return( true );
 }
 
-bool ProcOrdNoEmit( void )
-/************************/
+static bool ProcOrdNoEmit( void )
+/*******************************/
 {
     CurrOClass->NoEmit = true;
     return( true );
 }
 
-bool ProcOrdSegSegAdr( void )
-/***************************/
+static bool ProcOrdSegSegAdr( void )
+/**********************************/
 {
     ord_state   ret;
     unsigned_16 value;
@@ -1303,8 +1312,8 @@ bool ProcOrdSegSegAdr( void )
     }
 }
 
-bool ProcOrdSegOfsAdr( void )
-/***************************/
+static bool ProcOrdSegOfsAdr( void )
+/**********************************/
 {
     ord_state   retval;
     unsigned_32 value;
@@ -1324,15 +1333,15 @@ bool ProcOrdSegOfsAdr( void )
     }
 }
 
-bool ProcOrdSegNoEmit( void )
-/***************************/
+static bool ProcOrdSegNoEmit( void )
+/**********************************/
 {
     CurrOSeg->NoEmit = true;
     return( true );
 }
 
-bool ProcObjAlign( void )
-/*************************
+static bool ProcObjAlign( void )
+/*******************************
  * process ObjAlign option
  */
 {
@@ -1354,8 +1363,8 @@ bool ProcObjAlign( void )
     return( true );
 }
 
-bool ProcDescription( void )
-/**************************/
+static bool ProcDescription( void )
+/*********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1382,8 +1391,8 @@ void ChkBase( offset align )
 }
 
 #ifdef _INT_DEBUG
-bool ProcXDbg( void )
-/********************
+static bool ProcXDbg( void )
+/***************************
  * process DEBUG command
  */
 {
@@ -1404,16 +1413,23 @@ bool ProcXDbg( void )
     }
 }
 
-bool ProcIntDbg( void )
-/*********************/
+static bool ProcIntDbg( void )
+/****************************/
 {
     LinkState |= LS_INTERNAL_DEBUG;
     return( true );
 }
 #endif
 
-bool ProcOrdSeg( void )
-/*********************/
+static parse_entry  OrderSegOpts[] = {
+    "SEGAddr",      ProcOrdSegSegAdr,   MK_ALL, 0,
+    "OFFset",       ProcOrdSegOfsAdr,   MK_ALL, 0,
+    "NOEmit",       ProcOrdSegNoEmit,   MK_ALL, 0,
+    NULL
+};
+
+static bool ProcOrdSeg( void )
+/****************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1429,8 +1445,17 @@ bool ProcOrdSeg( void )
     return( true );
 }
 
-bool ProcOrdClass( void )
-/***********************/
+static parse_entry  OrderClassOpts[] = {
+    "SEGAddr",      ProcOrdSegAdr,      MK_ALL, 0,
+    "OFFset",       ProcOrdOfsAdr,      MK_ALL, 0,
+    "COpy",         ProcOrdCopy,        MK_ALL, 0,
+    "NOEmit",       ProcOrdNoEmit,      MK_ALL, 0,
+    "SEGMent",      ProcOrdSeg,         MK_ALL, 0,
+    NULL
+};
+
+static bool ProcOrdClass( void )
+/******************************/
 {
     ORDER_CLASS *LastOClass;
 
@@ -1458,8 +1483,13 @@ bool ProcOrdClass( void )
     return( true );
 }
 
-bool ProcOrder( void )
-/********************/
+static parse_entry  OrderOpts[] = {
+    "CLName",       ProcOrdClass,       MK_ALL, 0,
+    NULL
+};
+
+static bool ProcOrder( void )
+/***************************/
 {
     bool    ret;
 
@@ -1474,9 +1504,19 @@ bool ProcOrder( void )
     return( ret );
 }
 
+
 #ifdef _RAW
-bool ProcOutput( void )
-/*********************/
+static parse_entry  OutputOpts[] = {
+    "RAW",          ProcOutputRaw,      MK_ALL, 0,
+    "HEX",          ProcOutputHex,      MK_ALL, 0,
+    "OFFset",       ProcOutputOffset,   MK_ALL, 0,
+    "HSHIFT",       ProcOutputHshift,   MK_ALL, 0,
+    "STartrec",     ProcOutputStart,    MK_ALL, 0,
+    NULL
+};
+
+static bool ProcOutput( void )
+/****************************/
 {
    bool     ret;
 
@@ -1491,7 +1531,52 @@ bool ProcOutput( void )
 }
 #endif
 
+
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
+static parse_entry  RunOptions[] = {
+  #ifdef _DOS16M
+    "KEYboard",     ProcKeyboard,       MK_DOS16M, 0,
+    "OVERload",     ProcOverload,       MK_DOS16M, 0,
+    "INIT00",       ProcInit00,         MK_DOS16M, 0,
+    "INITFF",       ProcInitFF,         MK_DOS16M, 0,
+    "ROTate",       ProcRotate,         MK_DOS16M, 0,
+    "AUTO",         ProcAuto,           MK_DOS16M, 0,
+    "SELectors",    ProcSelectors,      MK_DOS16M, 0,
+    "INT10",        ProcInt10,          MK_DOS16M, 0,
+  #endif
+  #ifdef _PHARLAP
+    "MINReal",      ProcMinReal,        MK_PHAR_FLAT, 0,
+    "MAXReal",      ProcMaxReal,        MK_PHAR_FLAT, 0,
+    "REALBreak",    ProcRealBreak,      MK_PHAR_FLAT, CF_HAVE_REALBREAK,
+    "CALLBufs",     ProcCallBufs,       MK_PHAR_FLAT, 0,
+    "MINIBuf",      ProcMiniBuf,        MK_PHAR_FLAT, 0,
+    "MAXIBuf",      ProcMaxiBuf,        MK_PHAR_FLAT, 0,
+    "NISTack",      ProcNIStack,        MK_PHAR_FLAT, 0,
+    "ISTKsize",     ProcIStkSize,       MK_PHAR_FLAT, 0,
+    "UNPRIVileged", ProcUnpriv,         MK_PHAR_FLAT, 0,
+    "PRIVileged",   ProcPriv,           MK_PHAR_FLAT, 0,
+    /* WARNING: do not document the following directive -- for internal use only */
+    "FLAGs",        ProcFlags,          MK_PHAR_FLAT, 0,
+  #endif
+  #ifdef _OS2
+    "NATive",       ProcRunNative,      MK_PE, 0,
+    "WINdows",      ProcRunWindows,     MK_PE, 0,
+    "CONsole",      ProcRunConsole,     MK_PE, 0,
+    "POSix",        ProcRunPosix,       MK_PE, 0,
+    "OS2",          ProcRunOS2,         MK_PE, 0,
+    "DOSstyle",     ProcRunDosstyle,    MK_PE, 0,
+  #endif
+  #ifdef _ELF
+    "ABIver",       ProcELFRNumber,     MK_ELF, 0,
+    "SVR4",         ProcELFRSVR4,       MK_ELF, 0,
+    "NETbsd",       ProcELFRNetBSD,     MK_ELF, 0,
+    "LINux",        ProcELFRLinux,      MK_ELF, 0,
+    "FREebsd",      ProcELFRFBSD,       MK_ELF, 0,
+    "SOLaris",      ProcELFRSolrs,      MK_ELF, 0,
+  #endif
+    NULL
+};
+
 static bool AddRunTime( void )
 /****************************/
 {
@@ -1499,15 +1584,20 @@ static bool AddRunTime( void )
     return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
-bool ProcRuntime( void )
-/**********************/
+static bool ProcRuntime( void )
+/*****************************/
 {
     return( ProcArgList( AddRunTime, TOK_INCLUDE_DOT ) );
 }
 #endif
 
-bool ProcStartLink( void )
-/*************************
+static parse_entry  EndLinkOpt[] = {
+    "ENDLink",      ProcEndLink,        MK_ALL, 0,
+    NULL
+};
+
+static bool ProcStartLink( void )
+/********************************
  * save up list of commands to process later
  */
 {
@@ -1515,8 +1605,13 @@ bool ProcStartLink( void )
     return( true );
 }
 
-bool ProcSysBegin( void )
-/************************
+static parse_entry  SysEndOptions[] = {
+    "End",          ProcSysEnd,         MK_ALL, 0,
+    NULL
+};
+
+static bool ProcSysBegin( void )
+/*******************************
  * parse a system begin block
  * and store it somewhere
  */
@@ -1543,9 +1638,20 @@ bool ProcSysBegin( void )
     return( true );
 }
 
-bool ProcSystem( void )
-/*********************/
-/* process the system directive */
+static parse_entry  SysBeginOptions[] = {
+    "Begin",        ProcSysBegin,       MK_ALL, 0,
+    NULL
+};
+
+static parse_entry  SysDeleteOptions[] = {
+    "DELete",       ProcSysDelete,      MK_ALL, 0,
+    NULL
+};
+
+static bool ProcSystem( void )
+/*****************************
+ * process the system directive
+ */
 {
     char        *sysname;
     sysblock    *sys;
@@ -1585,15 +1691,28 @@ bool ProcSystem( void )
     return( true );
 }
 
-bool ProcLanguage( void )
-/***********************/
+static parse_entry  Languages[] = {
+    "JApanese",     ProcJapanese,       MK_ALL, 0,
+    "CHinese",      ProcChinese,        MK_ALL, 0,
+    "KOrean",       ProcKorean,         MK_ALL, 0,
+    NULL
+};
+
+static bool ProcLanguage( void )
+/******************************/
 {
     CmdFlags &= ~CF_LANGUAGE_MASK;
     return( ProcOne( Languages, SEP_NO, false ) );
 }
 
-bool ProcSort( void )
-/*******************/
+static parse_entry  SortOptions[] = {
+    "ALPhabetical", ProcAlphabetical,   MK_ALL, 0,
+    "GLobal",       ProcGlobal,         MK_ALL, 0,
+    NULL
+};
+
+static bool ProcSort( void )
+/**************************/
 {
     MapFlags |= MAP_SORT;
     if( !ProcOne( SortOptions, SEP_NO, false ) )
@@ -1602,8 +1721,30 @@ bool ProcSort( void )
     return( true );
 }
 
-bool ProcDebug( void )
-/********************/
+static parse_entry  PosDbgMods[] = {
+    "LInes",        ProcLine,           MK_ALL, 0,
+    "Types",        ProcType,           MK_ALL, 0,
+    "LOcals",       ProcLocal,          MK_ALL, 0,
+//    "STatic",       ProcDBIStatic,      MK_ALL, 0,
+    "All",          ProcAll,            MK_ALL, 0,
+#ifdef _NOVELL
+    "ONLyexports",  ProcExportsDBI,     MK_NOVELL, 0,
+#endif
+    NULL
+};
+
+static parse_entry  DbgMods[] = {
+    "Watcom",       ProcWatcomDBI,      MK_ALL, 0,
+    "Dwarf",        ProcDwarfDBI,       MK_ALL, 0,
+    "Codeview",     ProcCodeviewDBI,    MK_ALL, 0,
+#ifdef _NOVELL
+    "Novell",       ProcNovDBI,         MK_NOVELL, 0,
+#endif
+    NULL
+};
+
+static bool ProcDebug( void )
+/***************************/
 {
     bool        gotmod;
 
@@ -1625,6 +1766,155 @@ bool ProcDebug( void )
     return( true );
 }
 
+static parse_entry  MainOptions[] = {
+    "Map",          ProcMap,            MK_ALL, 0,
+    "MAPLines",     ProcMapLines,       MK_ALL, 0,
+    "STack",        ProcStack,          MK_ALL, 0,
+    "NODefaultlibs",ProcNoDefLibs,      MK_ALL, CF_NO_DEF_LIBS,
+    "Quiet",        ProcQuiet,          MK_ALL, 0,
+    "Dosseg",       ProcDosSeg,         MK_ALL, 0,
+    "Caseexact",    ProcCase,           MK_ALL, 0,
+    "Verbose",      ProcVerbose,        MK_ALL, 0,
+    "Undefsok",     ProcUndefsOK,       MK_ALL, 0,
+    "NOUndefsok",   ProcNoUndefsOK,     MK_ALL, 0,
+    "NAMELen",      ProcNameLen,        MK_ALL, 0,
+    "SYMFile",      ProcSymFile,        MK_ALL, CF_SEPARATE_SYM,
+    "OSName",       ProcOSName,         MK_ALL, 0,
+    "ELiminate",    ProcEliminate,      MK_ALL, 0,
+    "FARcalls",     ProcFarCalls,       MK_ALL, 0,
+    "MAXErrors",    ProcMaxErrors,      MK_ALL, 0,
+    "NOCASEexact",  ProcNoCaseExact,    MK_ALL, 0,
+    "NOCAChe",      ProcNoCache,        MK_ALL, 0,
+    "NOEXTension",  ProcNoExtension,    MK_ALL, 0,
+    "NOFARcalls",   ProcNoFarCalls,     MK_ALL, 0,
+    "CAChe",        ProcCache,          MK_ALL, 0,
+    "MANGlednames", ProcMangledNames,   MK_ALL, 0,
+    "OBJAlign",     ProcObjAlign,       MK_ALL, 0,
+    "RESource",     ProcOpResource,     MK_ALL, 0,
+    "STATics",      ProcStatics,        MK_ALL, 0,
+    "START",        ProcStart,          MK_ALL, 0,
+    "ARTificial",   ProcArtificial,     MK_ALL, 0,
+    "SHOwdead",     ProcShowDead,       MK_ALL, 0,
+    "VFRemoval",    ProcVFRemoval,      MK_ALL, 0,
+    "REDefsok",     ProcRedefsOK,       MK_ALL, 0,
+    "NOREDefsok",   ProcNoRedefs,       MK_ALL, 0,
+    "CVPack",       ProcCVPack,         MK_ALL, 0,
+    "INCremental",  ProcIncremental,    MK_ALL, 0,
+    "FILLchar",     ProcFillchar,       MK_ALL, 0,
+#ifdef _EXE
+    "SMall",        ProcSmall,          MK_OVERLAYS, 0,
+    "DIStribute",   ProcDistribute,     MK_OVERLAYS, 0,
+    "DYNamic",      ProcDynamic,        MK_OVERLAYS, 0,
+    "STANdard",     ProcStandard,       MK_OVERLAYS, 0,
+    "NOIndirect",   ProcNoIndirect,     MK_OVERLAYS, 0,
+    "ARea",         ProcArea,           MK_OVERLAYS, 0,
+    "PADSections",  ProcPadSections,    MK_OVERLAYS, 0,
+    "FULLHeader",   ProcFullHeader,     MK_DOS, 0,
+#endif
+#if defined( _OS2 ) || defined( _EXE ) || defined( _DOS16M ) || defined( _QNX )
+    "PACKCode",     ProcPackcode,       (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
+    "PACKData",     ProcPackdata,       (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
+#endif
+#if defined( _OS2 ) || defined( _ELF )
+    "Alignment",    ProcAlignment,      (MK_OS2_16BIT | MK_OS2_LX | MK_PE | MK_ELF), 0,
+#endif
+#if defined( _OS2 ) || defined( _PHARLAP ) || defined( _DOS16M )
+    "STUB",         ProcStub,           (MK_OS2 | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M), 0,
+#endif
+#ifdef _OS2
+    "NOSTUB",       ProcNoStub,         MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "ONEautodata",  ProcSingle,         MK_OS2, CF_AUTO_SEG_FLAG,
+    "MANYautodata", ProcMultiple,       MK_OS2, CF_AUTO_SEG_FLAG,
+    "NOAutodata",   ProcNone,           MK_OS2_16BIT, CF_AUTO_SEG_FLAG,
+    "OLDlibrary",   ProcOldLibrary,     MK_OS2 | MK_PE, 0,
+    "MODName",      ProcModName,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "NEWFiles",     ProcNewFiles,       MK_ONLY_OS2_16, 0,
+    "PROTmode",     ProcProtMode,       MK_OS2_16BIT, 0,
+#endif
+#if defined( _OS2 ) || defined( _NOVELL )
+    "DEscription",  ProcDescription,    MK_OS2 | MK_PE | MK_WIN_VXD | MK_NOVELL, 0,
+#endif
+#ifdef _OS2
+    "NOSTDCall",    ProcNoStdCall,      MK_PE, 0,
+    "RWReloccheck", ProcRWRelocCheck,   MK_WINDOWS, 0,
+    "SELFrelative", ProcSelfRelative,   MK_OS2_LX, 0,
+    "INTernalrelocs",ProcInternalRelocs,MK_OS2_LX, 0,
+    "TOGglerelocsflag",ProcToggleRelocsFlag,MK_OS2_LX, 0,
+#endif
+#if defined( _OS2 ) || defined( _QNX )
+    "Heapsize",     ProcHeapSize,       (MK_OS2 | MK_QNX | MK_PE), 0,
+#endif
+#ifdef _PHARLAP
+//    "PACKExp",      ProcPackExp,        MK_PHAR_FLAT, 0,
+    "MINData",      ProcMinData,        MK_PHAR_LAP, 0,
+    "MAXData",      ProcMaxData,        MK_PHAR_LAP, 0,
+#endif
+#if defined(_PHARLAP) || defined(_QNX) || defined(_OS2) || defined(_RAW)
+    "OFFset",       ProcOffset,         MK_PHAR_FLAT | MK_OS2_FLAT | MK_PE | MK_QNX_FLAT | MK_ELF | MK_RAW, 0,
+#endif
+#ifdef _NOVELL
+    "SCReenname",   ProcScreenName,     MK_NOVELL, 0,
+    "CHeck",        ProcCheck,          MK_NOVELL, 0,
+    "MULTILoad",    ProcMultiLoad,      MK_NOVELL, 0,
+    "AUTOUNload",   ProcAutoUnload,     MK_NOVELL, 0,
+    "REentrant",    ProcReentrant,      MK_NOVELL, 0,
+    "SYnchronize",  ProcSynch,          MK_NOVELL, 0,
+    "CUSTom",       ProcCustom,         MK_NOVELL, 0,
+    "EXit",         ProcExit,           MK_NOVELL, 0,
+    "THReadname",   ProcThreadName,     MK_NOVELL, 0,
+    "PSeudopreemption", ProcPseudoPreemption, MK_NOVELL, 0,
+    "COPYRight",    ProcCopyright,      MK_NOVELL, 0,
+    "MESsages",     ProcMessages,       MK_NOVELL, 0,
+    "HElp",         ProcHelp,           MK_NOVELL, 0,
+    "XDCdata",      ProcXDCData,        MK_NOVELL, 0,
+    "SHArelib",     ProcSharelib,       MK_NOVELL, 0,
+    "OSDomain",     ProcOSDomain,       MK_NOVELL, 0,
+    "NLMFlags",     ProcNLMFlags,       MK_NOVELL, 0,
+#endif
+#if defined( _OS2 ) || defined( _NOVELL )
+    "VERSion",      ProcVersion,        MK_NOVELL | MK_OS2_FLAT | MK_PE | MK_WINDOWS, 0,
+    "IMPLib",       ProcImplib,         MK_NOVELL | MK_OS2 | MK_PE, 0,
+    "IMPFile",      ProcImpFile,        MK_NOVELL | MK_OS2 | MK_PE, 0,
+#endif
+#ifdef _DOS16M
+    "BUFfer",       ProcBuffer,         MK_DOS16M, 0,
+    "GDTsize",      ProcGDTSize,        MK_DOS16M, 0,
+    "RELocs",       ProcRelocs,         MK_DOS16M, 0,
+    "SELstart",     ProcSelStart,       MK_DOS16M, 0,
+    "DATASize",     ProcDataSize,       MK_DOS16M, 0,
+    "EXTended",     ProcExtended,       MK_DOS16M, 0,
+    "EXPName",      ProcExpName,        MK_DOS16M, 0,
+#endif
+#ifdef _RDOS
+    "CODESelector", ProcRdosCodeSel,    MK_RDOS, 0,
+    "DATASelector", ProcRdosDataSel,    MK_RDOS, 0,
+#endif
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
+    "NORelocs",     ProcNoRelocs,       (MK_QNX | MK_DOS16M  | MK_PE | MK_ELF), 0,
+#endif
+#ifdef _QNX
+    "LOnglived",    ProcLongLived,      MK_QNX, 0,
+    "PRIVilege",    ProcQNXPrivilege,   MK_QNX, 0,
+    "LInearrelocs", ProcLinearRelocs,   MK_QNX, 0,
+#endif
+#ifdef _ELF
+    "EXTRASections",ProcExtraSections,  MK_ELF, 0,
+    "EXPORTAll",    ProcExportAll,      MK_ELF, 0,
+#endif
+#ifdef _OS2
+    "LINKVersion",  ProcLinkVersion,    MK_PE,  0,
+    "OSVersion",    ProcOsVersion,      MK_PE,  0,
+    "CHECKSUM",     ProcChecksum,       MK_PE,  0,
+    "LARGEaddressaware",ProcLargeAddressAware, MK_PE, 0,
+    "NOLARGEaddressaware",ProcNoLargeAddressAware, MK_PE, 0,
+#endif
+    "HSHIFT",       ProcHshift,         (MK_DOS | MK_ALLOW_16),  0,
+#ifdef _OS2
+    "MIXed1632",    ProcMixed1632,      MK_OS2_FLAT, 0,
+#endif
+    NULL
+};
+
 static bool AddOption( void )
 /***************************/
 {
@@ -1634,14 +1924,49 @@ static bool AddOption( void )
     return( true );
 }
 
-bool ProcOptions( void )
-/**********************/
+static bool ProcOptions( void )
+/*****************************/
 {
     return( ProcArgList( AddOption, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcFormat( void )
-/*********************/
+static parse_entry  Models[] = {
+#ifdef _EXE
+    "Dos",          ProcDos,            MK_DOS, 0,
+#endif
+#ifdef _OS2
+    "OS2",          ProcOS2,            MK_ONLY_OS2, 0,
+    "WINdows",      ProcWindows,        MK_WINDOWS | MK_PE | MK_WIN_VXD, 0,
+#endif
+#ifdef _PHARLAP
+    "PHARlap",      ProcPharLap,        MK_PHAR_LAP, 0,
+#endif
+#ifdef _NOVELL
+    "NOVell",       ProcNovell,         MK_NOVELL, 0,
+#endif
+#ifdef _QNX
+    "QNX",          ProcQNX,            MK_QNX, 0,
+#endif
+#ifdef _DOS16M
+    "DOS16M",       Proc16M,            MK_DOS16M, 0,
+#endif
+#ifdef _ELF
+    "ELF",          ProcELF,            MK_ELF, 0,
+#endif
+#ifdef _ZDOS
+    "ZDos",         ProcZdos,           MK_ZDOS, 0,
+#endif
+#ifdef _RDOS
+    "RDos",         ProcRdos,           MK_RDOS, 0,
+#endif
+#ifdef _RAW
+    "Raw",          ProcRaw,            MK_RAW, 0,
+#endif
+    NULL
+};
+
+static bool ProcFormat( void )
+/****************************/
 {
     if( LinkState & LS_FMT_SPECIFIED ) {
         LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
@@ -1650,11 +1975,104 @@ bool ProcFormat( void )
     return( ProcOne( Models, SEP_NO, true ) );
 }
 
+/* these directives are the only ones that are harmless to run after the files
+ * have been processed in pass 1 */
+
+static parse_entry  SysDirectives[] = {
+    "Library",      ProcLibrary,        MK_ALL, 0,
+    "Name",         ProcName,           MK_ALL, 0,
+    "OPtion",       ProcOptions,        MK_ALL, 0,
+    "LIBPath",      ProcLibPath,        MK_ALL, 0,
+    "FORMat",       ProcFormat,         MK_ALL, 0,
+    "DISAble",      ProcDisable,        MK_ALL, 0,
+    "SOrt",         ProcSort,           MK_ALL, 0,
+    "ORDer",        ProcOrder,          MK_ALL, 0,
+#ifdef _RAW
+    "OUTput",       ProcOutput,         MK_ALL, 0,
+#endif
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
+    "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
+#endif
+#if defined( _OS2 ) || defined( _QNX )
+    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
+#endif
+#ifdef _DOS16M
+    "MEMory",       ProcMemory16M,      MK_DOS16M, 0,
+    "TRansparent",  ProcTransparent,    MK_DOS16M, 0,
+#endif
+    NULL
+};
+
 bool DoParseSysDirective( bool suicide )
 /**************************************/
 {
     return( ProcOne( SysDirectives, SEP_NO, suicide ) );
 }
+
+static parse_entry  Directives[] = {
+    "File",         ProcFiles,          MK_ALL, CF_HAVE_FILES,
+    "MODFile",      ProcModFiles,       MK_ALL, 0,
+    "Library",      ProcLibrary,        MK_ALL, 0,
+    "Name",         ProcName,           MK_ALL, 0,
+    "OPtion",       ProcOptions,        MK_ALL, 0,
+    "Debug",        ProcDebug,          MK_ALL, 0,
+    "SYStem",       ProcSystem,         MK_ALL, 0,
+    "LIBPath",      ProcLibPath,        MK_ALL, 0,
+    "LIBFile",      ProcLibFile,        MK_ALL, CF_HAVE_FILES,
+    "Path",         ProcPath,           MK_ALL, 0,
+    "FORMat",       ProcFormat,         MK_ALL, 0,
+    "MODTrace",     ProcModTrace,       MK_ALL, 0,
+    "SYMTrace",     ProcSymTrace,       MK_ALL, CF_AFTER_INC,
+    "Alias",        ProcAlias,          MK_ALL, CF_AFTER_INC,
+    "REFerence",    ProcReference,      MK_ALL, CF_AFTER_INC,
+    "DISAble",      ProcDisable,        MK_ALL, 0,
+    "SOrt",         ProcSort,           MK_ALL, 0,
+    "LANGuage",     ProcLanguage,       MK_ALL, 0,
+    "STARTLink",    ProcStartLink,      MK_ALL, 0,
+    "OPTLIB",       ProcOptLib,         MK_ALL, 0,
+    "ORDer",        ProcOrder,          MK_ALL, 0,
+#ifdef _RAW
+    "OUTput",       ProcOutput,         MK_ALL, 0,
+#endif
+#ifdef _OS2
+    "RESource",     ProcResource,       MK_PE, 0,
+    "COMmit",       ProcCommit,         MK_PE, 0,
+    "ANONymousexport",ProcAnonExport,   MK_OS2, CF_AFTER_INC,
+#endif
+#if defined( _NOVELL ) || defined( _OS2 ) || defined( _ELF )
+    "IMPort",       ProcImport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE), CF_AFTER_INC,
+    "EXPort",       ProcExport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
+#endif
+#if defined( _OS2 ) || defined( _QNX )
+    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
+#endif
+#ifdef _EXE
+    "OVerlay",      ProcOverlay,        MK_OVERLAYS, 0,
+    "Begin",        ProcBegin,          MK_OVERLAYS, 0,
+    "FIXedlib",     ProcFixedLib,       MK_OVERLAYS, 0,
+    "NOVector",     ProcNoVector,       MK_OVERLAYS, CF_AFTER_INC,
+    "VEctor",       ProcVector,         MK_OVERLAYS, CF_AFTER_INC,
+    "FORCEVEctor",  ProcForceVector,    MK_OVERLAYS, CF_AFTER_INC,
+#endif
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
+    "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
+#endif
+#if defined( _NOVELL ) || defined( _ELF )
+    "MODUle",       ProcModule,         MK_NOVELL | MK_ELF, 0,
+#endif
+#ifdef _DOS16M
+    "MEMory",       ProcMemory16M,      MK_DOS16M, 0,
+    "TRansparent",  ProcTransparent,    MK_DOS16M, 0,
+#endif
+#if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
+    "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
+#endif
+#ifdef _INT_DEBUG
+    "Xdbg",         ProcXDbg,           MK_ALL, 0,
+    "INTDBG",       ProcIntDbg,         MK_ALL, 0,
+#endif
+    NULL
+};
 
 bool DoParseDirective( bool suicide )
 /***********************************/
