@@ -674,28 +674,6 @@ bool ProcExecuteread( void )
     return( true );
 }
 
-bool ProcReadOnly( void )
-/******************************/
-{
-    if( FmtData.u.os2.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.seg_flags->flags |= SEG_READ_ONLY;
-    FmtData.u.os2.seg_flags->specified |= SEG_READ_SPECD;
-    return( true );
-}
-
-bool ProcReadWrite( void )
-/******************************/
-{
-    if( FmtData.u.os2.seg_flags->specified & SEG_RFLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.seg_flags->flags &= ~SEG_READ_ONLY;
-    FmtData.u.os2.seg_flags->specified |= SEG_READ_SPECD;
-    return( true );
-}
-
 bool ProcShared( void )
 /****************************/
 {
@@ -715,6 +693,28 @@ bool ProcNonShared( void )
     }
     FmtData.u.os2.seg_flags->flags &= ~SEG_PURE;
     FmtData.u.os2.seg_flags->specified |= SEG_PURE;
+    return( true );
+}
+
+bool ProcReadOnly( void )
+/******************************/
+{
+    if( FmtData.u.os2.seg_flags->specified & SEG_RFLAG ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+    }
+    FmtData.u.os2.seg_flags->flags |= SEG_READ_ONLY;
+    FmtData.u.os2.seg_flags->specified |= SEG_READ_SPECD;
+    return( true );
+}
+
+bool ProcReadWrite( void )
+/******************************/
+{
+    if( FmtData.u.os2.seg_flags->specified & SEG_RFLAG ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+    }
+    FmtData.u.os2.seg_flags->flags &= ~SEG_READ_ONLY;
+    FmtData.u.os2.seg_flags->specified |= SEG_READ_SPECD;
     return( true );
 }
 
@@ -762,28 +762,6 @@ bool ProcFixed( void )
     return( true );
 }
 
-bool ProcNonPageable( void )
-/*********************************/
-{
-    if( FmtData.u.os2.seg_flags->specified & SEG_NOPAGE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.seg_flags->flags |= SEG_NOPAGE;
-    FmtData.u.os2.seg_flags->specified |= SEG_NOPAGE;
-    return( true );
-}
-
-bool ProcPageable( void )
-/******************************/
-{
-    if( FmtData.u.os2.seg_flags->specified & SEG_NOPAGE ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.seg_flags->flags &= ~SEG_NOPAGE;
-    FmtData.u.os2.seg_flags->specified |= SEG_NOPAGE;
-    return( true );
-}
-
 bool ProcDiscardable( void )
 /*********************************/
 {
@@ -798,17 +776,24 @@ bool ProcNonDiscardable( void )
     return( true );
 }
 
-bool ProcOS2Dynamic( void )
-/********************************/
-{
-//    FmtData.u.os2.seg_flags->flags |= SEG_DISCARD;
-    return( true );
-}
-
 bool ProcInvalid( void )
 /*****************************/
 {
     FmtData.u.os2.seg_flags->flags |= SEG_INVALID;
+    return( true );
+}
+
+bool ProcContiguous( void )
+/********************************/
+{
+    FmtData.u.os2.seg_flags->flags |= SEG_CONTIGUOUS;
+    return( true );
+}
+
+bool ProcOS2Dynamic( void )
+/********************************/
+{
+//    FmtData.u.os2.seg_flags->flags |= SEG_DISCARD;
     return( true );
 }
 
@@ -834,10 +819,25 @@ bool ProcNonPermanent( void )
     return( true );
 }
 
-bool ProcContiguous( void )
-/********************************/
+bool ProcPageable( void )
+/******************************/
 {
-    FmtData.u.os2.seg_flags->flags |= SEG_CONTIGUOUS;
+    if( FmtData.u.os2.seg_flags->specified & SEG_NOPAGE ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+    }
+    FmtData.u.os2.seg_flags->flags &= ~SEG_NOPAGE;
+    FmtData.u.os2.seg_flags->specified |= SEG_NOPAGE;
+    return( true );
+}
+
+bool ProcNonPageable( void )
+/*********************************/
+{
+    if( FmtData.u.os2.seg_flags->specified & SEG_NOPAGE ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SEG_FLAG_MULT_DEFD, NULL );
+    }
+    FmtData.u.os2.seg_flags->flags |= SEG_NOPAGE;
+    FmtData.u.os2.seg_flags->specified |= SEG_NOPAGE;
     return( true );
 }
 
