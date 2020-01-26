@@ -1021,12 +1021,14 @@ static bool ProcStub( void )
     return( true );
 }
 
+#ifdef _OS2
 static bool ProcNoStub( void )
 /****************************/
 {
     FmtData.u.os2.no_stub = true;
     return( true );
 }
+#endif
 
 static bool ProcVersion( void )
 /*****************************/

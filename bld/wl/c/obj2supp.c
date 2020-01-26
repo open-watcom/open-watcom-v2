@@ -846,9 +846,12 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
 #endif
     special = fix->type & FIX_SPECIAL_MASK;
     if( ( special == FIX_TOC ) || ( special == FIX_TOCV ) ) {
+        pos = 0;
         if( special == FIX_TOCV ) {
             DbgAssert( target->type == FIX_TARGET_EXT );
+#ifdef _OS2
             pos = FindSymPosInTocv( target->u.sym );
+#endif
         } else {
             if( target->type  == FIX_TARGET_EXT ) {
                 pos = FindSymPosInToc( target->u.sym );

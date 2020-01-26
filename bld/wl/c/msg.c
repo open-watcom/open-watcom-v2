@@ -566,6 +566,7 @@ void LnkMsg(
     MessageFini( num, buff, len );
 }
 
+#ifdef _OS2
 static void HandleRcMsg( unsigned num, va_list *args )
 /****************************************************/
 /* getting an error message from resource compiler code */
@@ -601,6 +602,7 @@ void RcError( unsigned num, ... )
     HandleRcMsg( num, &args );
     va_end( args );
 }
+#endif
 
 void WLPrtBanner( void )
 /*****************************/

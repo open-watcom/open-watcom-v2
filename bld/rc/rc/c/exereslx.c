@@ -43,6 +43,7 @@
 #include "exereslx.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 static int CompareLXResIdName( const void *e1, const void *e2 )
 /*************************************************************/
 {
@@ -327,7 +328,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 } /* BuildLXResourceObjects */
 
 
-#if !defined( INSIDE_WLINK ) || defined( _OS2 )
+#if !defined( INSIDE_WLINK )
 bool RcBuildLXResourceObjects( void )
 /***************************************/
 {
@@ -366,4 +367,6 @@ RcStatus RcWriteLXResourceObjects( void )
     }
     return( ret );
 }
+#endif
+
 #endif

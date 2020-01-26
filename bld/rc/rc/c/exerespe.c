@@ -685,7 +685,7 @@ static void FreePEResDir( PEResDir * dir )
     }
 }
 
-#if !defined( INSIDE_WLINK ) || defined( _OS2 )
+#if !defined( INSIDE_WLINK )
 bool RcPadFile( FILE *fp, size_t pad )
 /************************************/
 {
@@ -875,7 +875,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 } /* BuildPEResourceObject */
 
 
-#if !defined( INSIDE_WLINK ) || defined( _OS2 )
+#if !defined( INSIDE_WLINK )
 bool RcBuildPEResourceObject( void )
 /**********************************/
 {
