@@ -39,7 +39,6 @@
 #include "load16m.h"
 #include "cmd16m.h"
 #include "wlnkmsg.h"
-#include "cmdtable.h"
 
 #include "clibext.h"
 
@@ -49,8 +48,8 @@
 void SetD16MFmt( void )
 /*********************/
 {
-    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
     Extension = E_PROTECT;
+    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
     FmtData.u.d16m.options = 0;
     FmtData.u.d16m.flags = 0;
     FmtData.u.d16m.strategy = MNoStrategy;
@@ -280,33 +279,41 @@ bool ProcAuto( void )
  * "MEmory" SysDirective
  ****************************************************************/
 
-bool ProcTryExtended( void )
-/**************************/
+static bool ProcTryExtended( void )
+/*********************************/
 {
     FmtData.u.d16m.strategy = MPreferExt;
     return( true );
 }
 
-bool ProcTryLow( void )
-/*********************/
+static bool ProcTryLow( void )
+/****************************/
 {
     FmtData.u.d16m.strategy = MPreferLow;
     return( true );
 }
 
-bool ProcForceExtended( void )
-/****************************/
+static bool ProcForceExtended( void )
+/***********************************/
 {
     FmtData.u.d16m.strategy = MForceExt;
     return( true );
 }
 
-bool ProcForceLow( void )
-/***********************/
+static bool ProcForceLow( void )
+/******************************/
 {
     FmtData.u.d16m.strategy = MForceLow;
     return( true );
 }
+
+static parse_entry  Strategies[] = {
+    "TRYExtended",  ProcTryExtended,    MK_DOS16M, 0,
+    "TRYLow",       ProcTryLow,         MK_DOS16M, 0,
+    "FORCEExtended",ProcForceExtended,  MK_DOS16M, 0,
+    "FORCELow",     ProcForceLow,       MK_DOS16M, 0,
+    NULL
+};
 
 bool ProcMemory16M( void )
 /************************/
@@ -319,15 +326,15 @@ bool ProcMemory16M( void )
  * "TRansparent" SysDirective
  ****************************************************************/
 
-bool ProcTStack( void )
-/*********************/
+static bool ProcTStack( void )
+/****************************/
 {
     FmtData.u.d16m.flags |= TRANS_STACK;
     return( true );
 }
 
-bool ProcTData( void )
-/********************/
+static bool ProcTData( void )
+/***************************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
@@ -336,6 +343,12 @@ bool ProcTData( void )
     LinkState |= LS_MAKE_RELOCS;
     return( true );
 }
+
+static parse_entry  TransTypes[] = {
+    "STack",        ProcTStack,         MK_DOS16M, 0,
+    "DAta",         ProcTData,          MK_DOS16M, 0,
+    NULL
+};
 
 bool ProcTransparent( void )
 /**************************/

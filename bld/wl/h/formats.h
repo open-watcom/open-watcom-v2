@@ -265,8 +265,8 @@ struct fmt_data {
     exe_format      type;
     unsigned        major;
     unsigned        minor;
-    unsigned        def_seg_flags;
     unsigned        revision;
+    unsigned        def_seg_flags;
     unsigned        Hshift;     // Corresponds to huge shift variable used by libr
     unsigned        SegShift;   // 16 - HShift, used to convert a segment to an address
     unsigned_32     SegMask;    // used to extract remainder for segment normalization

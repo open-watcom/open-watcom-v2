@@ -34,7 +34,5 @@
 #ifdef _RAW
 
 extern bool ProcRaw( void );
-extern bool ProcRawBIN( void );
-extern bool ProcRawHEX( void );
 
 #endif

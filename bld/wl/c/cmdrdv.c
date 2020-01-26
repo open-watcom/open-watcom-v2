@@ -47,14 +47,14 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmdrdv.h"
-#include "cmdtable.h"
 
 
 #ifdef _RDOS
 
 void SetRdosFmt( void )
-/*********************/
-// set up the structures needed to be able to process something in RDOS mode.
+/**********************
+ * set up the structures needed to be able to process something in RDOS mode.
+ */
 {
     if( LinkState & LS_FMT_INITIALIZED )
         return;
@@ -74,15 +74,17 @@ void FreeRdosFmt( void )
 }
 
 bool ProcRdosCodeSel( void )
-/***************************/
-/* process CODESelector option */
+/***************************
+ * process CODESelector option
+ */
 {
     return( GetLong( &FmtData.u.rdos.code_sel ) );
 }
 
 bool ProcRdosDataSel( void )
-/***************************/
-/* process DataSelector option */
+/***************************
+ * process DataSelector option
+ */
 {
     return( GetLong( &FmtData.u.rdos.data_sel ) );
 }
@@ -92,8 +94,8 @@ bool ProcRdosDataSel( void )
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-bool ProcRdosDev16( void )
-/************************/
+static bool ProcRdosDev16( void )
+/*******************************/
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 16;
@@ -102,8 +104,8 @@ bool ProcRdosDev16( void )
     return( true );
 }
 
-bool ProcRdosDev32( void )
-/************************/
+static bool ProcRdosDev32( void )
+/*******************************/
 {
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 32;
@@ -112,8 +114,8 @@ bool ProcRdosDev32( void )
     return( true );
 }
 
-bool ProcRdosBin16( void )
-/************************/
+static bool ProcRdosBin16( void )
+/*******************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
@@ -122,8 +124,8 @@ bool ProcRdosBin16( void )
     return( true );
 }
 
-bool ProcRdosBin32( void )
-/************************/
+static bool ProcRdosBin32( void )
+/*******************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 32;
@@ -132,8 +134,8 @@ bool ProcRdosBin32( void )
     return( true );
 }
 
-bool ProcRdosMboot( void )
-/************************/
+static bool ProcRdosMboot( void )
+/*******************************/
 {
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
@@ -141,6 +143,15 @@ bool ProcRdosMboot( void )
     FmtData.u.rdos.mboot = 1;
     return( true );
 }
+
+static parse_entry  RdosOptions[] = {
+    "DEV16",        ProcRdosDev16,      MK_RDOS, 0,
+    "DEV32",        ProcRdosDev32,      MK_RDOS, 0,
+    "BIN16",        ProcRdosBin16,      MK_RDOS, 0,
+    "BIN32",        ProcRdosBin32,      MK_RDOS, 0,
+    "MBOOT",        ProcRdosMboot,      MK_RDOS, 0,
+    NULL
+};
 
 bool ProcRdos( void )
 /*******************/

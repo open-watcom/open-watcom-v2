@@ -37,7 +37,6 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "exeelf.h"
-#include "cmdtable.h"
 
 
 #ifdef _ELF
@@ -145,8 +144,8 @@ bool ProcELFImport( void )
  * "EXPort" Directive
  ****************************************************************/
 
-void SetELFExportSymbol( symbol * sym )
-/*************************************/
+static void SetELFExportSymbol( symbol * sym )
+/********************************************/
 {
     /* unused parameters */ (void)sym;
 }
@@ -284,12 +283,17 @@ bool ProcELFRFBSD( void )
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-bool ProcELFDLL( void )
-/*********************/
+static bool ProcELFDLL( void )
+/****************************/
 {
     FmtData.dll = true;
     return true;
 }
+
+static parse_entry  ELFFormatKeywords[] = {
+    "DLl",          ProcELFDLL,         MK_ELF, 0,
+    NULL
+};
 
 bool ProcELF( void )
 /******************/

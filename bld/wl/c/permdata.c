@@ -38,7 +38,6 @@
 #include "dbgall.h"
 #include "carve.h"
 #include "alloc.h"
-#include "cmdutils.h"
 #include "reloc.h"
 #include "fileio.h"
 #include "virtmem.h"

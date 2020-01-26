@@ -45,13 +45,12 @@
 #include "wlnkmsg.h"
 #include "cmdphar.h"
 #include "cmdall.h"
-#include "cmdtable.h"
 
 
 #ifdef _PHARLAP
 
 void SetPharFmt( void )
-/****************************/
+/*********************/
 {
     Extension = E_PROTECT;
     LinkState &= ~LS_MAKE_RELOCS;   // do not generate relocations.
@@ -74,7 +73,7 @@ void SetPharFmt( void )
 }
 
 void FreePharFmt( void )
-/*****************************/
+/**********************/
 {
     _LnkFree( FmtData.u.phar.breaksym );
     _LnkFree( FmtData.u.phar.stub );
@@ -89,7 +88,7 @@ void FreePharFmt( void )
  .exp packing executables implemented yet.
 
 bool ProcPackExp( void )
-/*****************************/
+/**********************/
 {
     FmtData.u.phar.pack = true;
     return( true );
@@ -97,13 +96,13 @@ bool ProcPackExp( void )
 #endif
 
 bool ProcMinData( void )
-/*****************************/
+/**********************/
 {
     return( GetLong( &FmtData.u.phar.mindata ) );
 }
 
 bool ProcMaxData( void )
-/*****************************/
+/**********************/
 {
     return( GetLong( &FmtData.u.phar.maxdata ) );
 }
@@ -114,20 +113,20 @@ bool ProcMaxData( void )
  ****************************************************************/
 
 bool ProcUnpriv( void )
-/****************************/
+/*********************/
 {
     FmtData.u.phar.unpriv = true;
     return( true );
 }
 
 bool ProcPriv( void )
-/**************************/
+/*******************/
 {
     return( true );
 }
 
 bool ProcFlags( void )
-/****************************/
+/********************/
 {
     bool            ret;
     unsigned_32     value;
@@ -138,7 +137,7 @@ bool ProcFlags( void )
 }
 
 bool ProcMinReal( void )
-/*****************************/
+/**********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -156,7 +155,7 @@ bool ProcMinReal( void )
 }
 
 bool ProcMaxReal( void )
-/*****************************/
+/**********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -174,7 +173,7 @@ bool ProcMaxReal( void )
 }
 
 bool ProcRealBreak( void )
-/*******************************/
+/************************/
 {
     unsigned_32     value;
     ord_state       ok;
@@ -196,7 +195,7 @@ bool ProcRealBreak( void )
 }
 
 bool ProcCallBufs( void )
-/******************************/
+/***********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -214,7 +213,7 @@ bool ProcCallBufs( void )
 }
 
 bool ProcMiniBuf( void )
-/*****************************/
+/**********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -232,7 +231,7 @@ bool ProcMiniBuf( void )
 }
 
 bool ProcMaxiBuf( void )
-/*****************************/
+/**********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -250,7 +249,7 @@ bool ProcMaxiBuf( void )
 }
 
 bool ProcNIStack( void )
-/*****************************/
+/**********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -267,7 +266,7 @@ bool ProcNIStack( void )
 }
 
 bool ProcIStkSize( void )
-/******************************/
+/***********************/
 {
     unsigned_32 value;
     bool        ret;
@@ -289,13 +288,13 @@ bool ProcIStkSize( void )
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-bool ProcPharFlat( void )
+static bool ProcPharFlat( void )
 /******************************/
 {
     return( true );
 }
 
-bool ProcRex( void )
+static bool ProcRex( void )
 /*************************/
 {
     Extension = E_REX;
@@ -303,15 +302,22 @@ bool ProcRex( void )
     return( true );
 }
 
-bool ProcPharSegmented( void )
+static bool ProcPharSegmented( void )
 /***********************************/
 {
     LinkState |= LS_MAKE_RELOCS;    // make relocations;
     return true;
 }
 
+static parse_entry  PharModels[] = {
+    "EXTended",     ProcPharFlat,       MK_PHAR_FLAT,     0,
+    "REX",          ProcRex,            MK_PHAR_REX,      0,
+    "SEGmented",    ProcPharSegmented,  MK_PHAR_MULTISEG, 0,
+    NULL
+};
+
 bool ProcPharLap( void )
-/*****************************/
+/**********************/
 {
     ProcOne( PharModels, SEP_NO, false );
     return( true );

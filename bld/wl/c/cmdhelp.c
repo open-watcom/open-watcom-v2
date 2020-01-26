@@ -215,7 +215,7 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static  parse_entry   FormatHelp[] = {
+static  parse_entry FormatHelp[] = {
 #ifdef _EXE
     "Dos",          ProcDosHelp,            MK_ALL,     0,
 #endif

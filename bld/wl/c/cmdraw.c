@@ -47,7 +47,6 @@
 #include "objcalc.h"
 #include "cmdline.h"
 #include "cmdraw.h"
-#include "cmdtable.h"
 
 
 #ifdef _RAW
@@ -57,21 +56,27 @@
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-bool ProcRawBIN( void )
-/*********************/
+static bool ProcRawBIN( void )
+/****************************/
 {
     Extension = E_BIN;
     FmtData.raw_hex_output = false;
     return( true );
 }
 
-bool ProcRawHEX( void )
-/*********************/
+static bool ProcRawHEX( void )
+/****************************/
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = true;
     return( true );
 }
+
+static parse_entry  RawOptions[] = {
+    "BIN",          ProcRawBIN,         MK_RAW, 0,
+    "HEX",          ProcRawHEX,         MK_RAW, 0,
+    NULL
+};
 
 bool ProcRaw( void )
 /******************/

@@ -53,12 +53,6 @@ extern bool         ProcArea( void );
 extern bool         ProcPadSections( void );
 extern bool         ProcFullHeader( void );
 
-extern bool         ProcSection( void );
-extern bool         ProcEnd( void );
-extern bool         ProcAutoSection( void );
-extern bool         ProcInto( void );
-
-extern bool         ProcCom( void );
 extern bool         ProcDos( void );
 
 #endif

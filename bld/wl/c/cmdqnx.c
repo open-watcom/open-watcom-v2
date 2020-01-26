@@ -47,13 +47,12 @@
 #include "wlnkmsg.h"
 #include "cmdqnx.h"
 #include "cmdall.h"     // for ChkBase
-#include "cmdtable.h"
 
 
 #ifdef _QNX
 
 void SetQNXFmt( void )
-/***************************/
+/********************/
 {
     Extension = E_QNX;
     FmtData.u.qnx.flags = 0;
@@ -66,13 +65,13 @@ void SetQNXFmt( void )
 }
 
 void FreeQNXFmt( void )
-/****************************/
+/*********************/
 {
     FreeSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
 }
 
 void CmdQNXFini( void )
-/****************************/
+/*********************/
 {
     if( !FmtData.u.qnx.gen_linear_relocs && !FmtData.u.qnx.gen_seg_relocs ) {
         LinkState &= ~LS_MAKE_RELOCS;
@@ -85,28 +84,28 @@ void CmdQNXFini( void )
  ****************************************************************/
 
 bool ProcLongLived( void )
-/********************************/
+/************************/
 {
     FmtData.u.qnx.flags |= _TCF_LONG_LIVED;
     return( true );
 }
 
 bool ProcQNXNoRelocs( void )
-/*********************************/
+/**************************/
 {
     FmtData.u.qnx.gen_seg_relocs = false;
     return( true );
 }
 
 bool ProcLinearRelocs( void )
-/*********************************/
+/***************************/
 {
     FmtData.u.qnx.gen_linear_relocs = true;
     return( true );
 }
 
 bool ProcQNXHeapSize( void )
-/*********************************/
+/**************************/
 {
     ord_state           ret;
     unsigned_32         value;
@@ -123,7 +122,7 @@ bool ProcQNXHeapSize( void )
 }
 
 bool ProcQNXPrivilege( void )
-/**********************************/
+/***************************/
 {
     ord_state           ret;
     unsigned_16         value;
@@ -144,40 +143,54 @@ bool ProcQNXPrivilege( void )
  * "SEGment" SysDirective
  ****************************************************************/
 
-bool ProcQNXClass( void )
-/******************************/
-// All processing done for this already.
+static bool ProcQNXClass( void )
+/*******************************
+ * All processing done for this already.
+ */
 {
     return( true );
 }
 
-bool ProcQNXExecuteonly( void )
+static bool ProcQNXExecuteonly( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_ONLY;
     return( true );
 }
 
-bool ProcQNXExecuteread( void )
+static bool ProcQNXExecuteread( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_READ;
     return( true );
 }
 
-bool ProcQNXReadOnly( void )
+static bool ProcQNXReadOnly( void )
 /*********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_ONLY;
     return( true );
 }
 
-bool ProcQNXReadWrite( void )
+static bool ProcQNXReadWrite( void )
 /**********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_WRITE;
     return( true );
 }
+
+static parse_entry  QNXSegDesc[] = {
+    "Class",        ProcQNXClass,       MK_QNX, 0,
+    NULL
+};
+
+static parse_entry  QNXSegModel[] = {
+    "EXECUTEOnly",  ProcQNXExecuteonly, MK_QNX, 0,
+    "EXECUTERead",  ProcQNXExecuteread, MK_QNX, 0,
+    "READOnly",     ProcQNXReadOnly,    MK_QNX, 0,
+    "READWrite",    ProcQNXReadWrite,   MK_QNX, 0,
+    NULL
+};
 
 static bool getSegFlags( void )
 /*****************************/
@@ -200,7 +213,7 @@ static bool getSegFlags( void )
 }
 
 bool ProcQNXSegment( void )
-/********************************/
+/*************************/
 {
     return( ProcArgList( getSegFlags, TOK_INCLUDE_DOT ) );
 }
@@ -210,14 +223,19 @@ bool ProcQNXSegment( void )
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-bool ProcQNXFlat( void )
+static bool ProcQNXFlat( void )
 /*****************************/
 {
     return( true );
 }
 
+static parse_entry  QNXFormats[] = {
+    "FLat",         ProcQNXFlat,        MK_QNX_FLAT, 0,
+    NULL
+};
+
 bool ProcQNX( void )
-/*************************/
+/******************/
 {
     if( !ProcOne( QNXFormats, SEP_NO, false ) ) {
         HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode

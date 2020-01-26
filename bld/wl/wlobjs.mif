@@ -38,7 +38,6 @@ common_objs = &
     $(_subdir_)cmdzdos.obj &
     $(_subdir_)cmdrdv.obj &
     $(_subdir_)cmdraw.obj &
-    $(_subdir_)cmdtable.obj &
     $(_subdir_)cmdutils.obj &
     $(_subdir_)cmdqnx.obj &
     $(_subdir_)cmdxxx.obj &

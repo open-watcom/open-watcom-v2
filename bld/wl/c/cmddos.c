@@ -43,7 +43,6 @@
 #include "cmdline.h"
 #include "cmddos.h"
 #include "distrib.h"
-#include "cmdtable.h"
 
 
 #ifdef _EXE
@@ -121,8 +120,9 @@ static void PrintOvl( void )
 #endif
 
 static void SetOvlClasses( void )
-/*******************************/
-// make sure the overlay loader is always "overlayed".
+/********************************
+ * make sure the overlay loader is always "overlayed".
+ */
 {
     list_of_names       *ovlmgr;
 
@@ -142,8 +142,9 @@ static section *OvlNewSection( void )
 }
 
 static void NewArea( section *sect )
-/**********************************/
-/* allocate a new area including this section */
+/***********************************
+ * allocate a new area including this section
+ */
 {
     ovl_area            *ovl;
     ovl_area            **owner;
@@ -159,15 +160,16 @@ static void NewArea( section *sect )
 }
 
 static void MakeNonArea( void )
-/*****************************/
-/* make a new overlay area for non-overlay classes */
+/******************************
+ * make a new overlay area for non-overlay classes
+ */
 {
     NonSect = OvlNewSection();   // No debug info in nonsect.
     NewArea( NonSect );
 }
 
 void CmdOvlFini( void )
-/****************************/
+/*********************/
 {
     if( OvlLevel != 0 ) {
         Ignite();
@@ -213,35 +215,35 @@ void MakeNewSection( void )
  ****************************************************************/
 
 bool ProcDistribute( void )
-/********************************/
+/*************************/
 {
     FmtData.u.dos.distribute = true;
     return( true );
 }
 
 bool ProcPadSections( void )
-/*********************************/
+/**************************/
 {
     FmtData.u.dos.pad_sections = true;
     return( true );
 }
 
 bool ProcSmall( void )
-/***************************/
+/********************/
 {
     FmtData.u.dos.ovl_short = true;
     return( true );
 }
 
 bool ProcDynamic( void )
-/*****************************/
+/**********************/
 {
     FmtData.u.dos.dynamic = true;
     return( true );
 }
 
 bool ProcNoIndirect( void )
-/********************************/
+/*************************/
 {
     FmtData.u.dos.noindirect = true;
     return( true );
@@ -255,15 +257,16 @@ bool ProcFullHeader( void )
 }
 
 bool ProcStandard( void )
-/******************************/
+/***********************/
 {
     FmtData.u.dos.dynamic = false;
     return( true );
 }
 
 bool ProcArea( void )
-/**************************/
-// process the area size directive.
+/********************
+ * process the area size directive.
+ */
 {
     unsigned_32     value;
     bool            ret;
@@ -294,7 +297,7 @@ static bool AddClass( void )
 }
 
 bool ProcOverlay( void )
-/*****************************/
+/**********************/
 {
     return( ProcArgList( &AddClass, TOK_INCLUDE_DOT ) );
 }
@@ -305,7 +308,7 @@ bool ProcOverlay( void )
  ****************************************************************/
 
 bool ProcFixedLib( void )
-/******************************/
+/***********************/
 {
     bool    ret;
 
@@ -320,8 +323,8 @@ bool ProcFixedLib( void )
  * "Begin" Directive
  ****************************************************************/
 
-bool ProcInto( void )
-/********************
+static bool ProcInto( void )
+/***************************
  * Process the INTO keyword.
  */
 {
@@ -333,8 +336,13 @@ bool ProcInto( void )
     return( false );
 }
 
-bool ProcSection( void )
-/***********************
+static parse_entry  SectOptions[] = {
+    "INto",         ProcInto,           MK_OVERLAYS, 0,
+    NULL
+};
+
+static bool ProcSection( void )
+/******************************
  * process SECTION command
  */
 {
@@ -350,8 +358,8 @@ bool ProcSection( void )
     return( true );
 }
 
-bool ProcAutoSection( void )
-/**************************/
+static bool ProcAutoSection( void )
+/*********************************/
 {
     if( OvlLevel == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
@@ -366,8 +374,8 @@ bool ProcAutoSection( void )
     return( true );
 }
 
-bool ProcEnd( void )
-/*******************
+static bool ProcEnd( void )
+/**************************
  * process the end of an overlay area
  */
 {
@@ -380,9 +388,17 @@ bool ProcEnd( void )
     return( false );    /*  cause loop to be exited in ProcBegin */
 }
 
+static parse_entry  Sections[] = {
+    "Section",      ProcSection,        MK_OVERLAYS, 0,
+    "AUTOSection",  ProcAutoSection,    MK_OVERLAYS, 0,
+    "End",          ProcEnd,            MK_OVERLAYS, 0,
+    NULL
+};
+
 bool ProcBegin( void )
-/***************************/
-/* process a new overlay area */
+/*********************
+ * process a new overlay area
+ */
 {
     section         *oldsect;
     file_list       **oldflist;
@@ -432,7 +448,7 @@ static bool AddNoVector( void )
 }
 
 bool ProcNoVector( void )
-/******************************/
+/***********************/
 {
     return( ProcArgList( AddNoVector, TOK_INCLUDE_DOT ) );
 }
@@ -446,11 +462,11 @@ static bool AddVector( void )
 /***************************/
 {
     OvlVectorize( SymOp( ST_REFERENCE_SYM, Token.this, Token.len ) );
-    return(true);
+    return( true );
 }
 
 bool ProcVector( void )
-/****************************/
+/*********************/
 {
     return( ProcArgList( AddVector, TOK_INCLUDE_DOT ) );
 }
@@ -472,7 +488,7 @@ static bool AddForceVector( void )
 }
 
 bool ProcForceVector( void )
-/*********************************/
+/**************************/
 {
     return( ProcArgList( AddForceVector, TOK_INCLUDE_DOT ) );
 }
@@ -482,12 +498,17 @@ bool ProcForceVector( void )
  * "FORMat" SysDirective/Directive
  ****************************************************************/
 
-bool ProcCom( void )
+static bool ProcCom( void )
 /*************************/
 {
     Extension = E_COM;
     return( true );
 }
+
+static parse_entry  DosOptions[] = {
+    "COM",          ProcCom,            MK_COM, 0,
+    NULL
+};
 
 bool ProcDos( void )
 /******************/

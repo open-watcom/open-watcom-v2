@@ -41,7 +41,6 @@
 #include "msg.h"
 #include "alloc.h"
 #include "wlnkmsg.h"
-#include "cmdutils.h"
 #include "fileio.h"
 #include "objpass2.h"
 #include "cmdline.h"

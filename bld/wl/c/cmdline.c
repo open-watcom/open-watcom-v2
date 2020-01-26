@@ -65,7 +65,6 @@
 #include "cmdhelp.h"
 #include "library.h"
 #include "sysblock.h"
-#include "cmdtable.h"
 
 
 #ifdef BOOTSTRAP
@@ -77,6 +76,13 @@
 
 #define HELP_FILE_NAME  "wlink.hlp"
 
+typedef struct {
+    exe_format      bits;
+    char            *lib_var_name;
+    void            (*set_func)(void);
+    void            (*free_func)(void);
+} select_format;
+
 file_defext             Extension;
 file_list               **CurrFList;
 tok                     Token;
@@ -87,22 +93,59 @@ sysblock                *LinkCommands;
 
 static sysblock         *PrevCommand;
 
+static const select_format PossibleFmt[] = {
+#ifdef _EXE
+    MK_DOS,         "LIBDOS",       SetDosFmt,      FreeDosFmt,
+#endif
+#ifdef _DOS16M
+    MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
+#endif
+#ifdef _QNX
+    MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
+#endif
+#ifdef _ELF
+    MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
+#endif
+#ifdef _OS2
+    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
+    MK_PE,          "LIBPE",        SetOS2Fmt,      FreeOS2Fmt,
+    MK_WIN_VXD,     "LIBVXD",       SetOS2Fmt,      FreeOS2Fmt,
+#endif
+#ifdef _PHARLAP
+    MK_PHAR_LAP,    "LIBPHAR",      SetPharFmt,     FreePharFmt,
+#endif
+#ifdef _NOVELL
+    MK_NOVELL,      "LIBNOV",       SetNovFmt,      FreeNovFmt,
+#endif
+#ifdef _RDOS
+    MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
+#endif
+#ifdef _ZDOS
+    MK_ZDOS,        "LIBZDOS",      SetZdosFmt,     FreeZdosFmt,
+#endif
+    0,              NULL,           NULL,           NULL
+};
+
 void InitCmdFile( void )
-/******************************/
+/**********************/
 {
     PrevCommand = NULL;
 }
 
 void SetSegMask(void)
-/***************************/
+/*******************/
 {
    FmtData.SegShift = 16 - FmtData.Hshift;
    FmtData.SegMask = (1 << FmtData.SegShift) - 1;
 }
 
 static void ResetCmdFile( void )
-/******************************/
-/* do all the initialization necessary for parsing a command file */
+/*******************************
+ * do all the initialization necessary for parsing a command file
+ */
 {
     SysBlocks = NULL;
     Extension = E_LOAD;
@@ -125,6 +168,7 @@ static void ResetCmdFile( void )
 }
 
 static bool sysHelp( void )
+/*************************/
 {
     const char  *p;
     bool        help;
@@ -166,7 +210,7 @@ char *GetNextLink( void )
 }
 
 void Syntax( void )
-/************************/
+/*****************/
 {
     if( Token.this == NULL ) {
         LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
@@ -240,8 +284,9 @@ int DoBuffCmdParse( const char *cmd )
 }
 
 void FreePaths( void )
-/***************************/
-// Free paths & filenames.
+/*********************
+ * Free paths & filenames.
+ */
 {
     FreeList( ObjPath );
     ObjPath = NULL;
@@ -252,9 +297,10 @@ void FreePaths( void )
 }
 
 void Burn( void )
-/**********************/
-// necessary to split this out from Ignite() for the workframe options
-// processor.
+/****************
+ * necessary to split this out from Ignite() for the workframe options
+ * processor.
+ */
 {
     FreePaths();
     if( MapFName != NULL ) {
@@ -266,17 +312,19 @@ void Burn( void )
 }
 
 void Ignite( void )
-/************************/
-/* free local structures */
+/******************
+ * free local structures
+ */
 {
     BurnSystemList();
     Burn();
 }
 
 static void Help( void )
-/**********************/
-// display help, optionally allowing the user to specifiy the format he/she
-// wants the help for.
+/***********************
+ * display help, optionally allowing the user to specifiy the format he/she
+ * wants the help for.
+ */
 {
     EatWhite();
     if( *Token.next == '?' ) {
@@ -290,8 +338,9 @@ static void Help( void )
 }
 
 void DoCmdFile( const char *fname )
-/*********************************/
-/* start parsing the command */
+/**********************************
+ * start parsing the command
+ */
 {
     exe_format  possible;
     f_handle    file;
@@ -413,8 +462,9 @@ void DoCmdFile( const char *fname )
 }
 
 void SetFormat( void )
-/***************************/
-// do final processing now that the executable format has been decided.
+/*********************
+ * do final processing now that the executable format has been decided.
+ */
 {
     char        *fname;
 
@@ -450,52 +500,8 @@ void SetFormat( void )
     SetRelocSize();
 }
 
-typedef struct {
-    exe_format      bits;
-    char            *lib_var_name;
-    void            (*set_func)(void);
-    void            (*free_func)(void);
-} select_format;
-
-static const select_format PossibleFmt[] = {
-#ifdef _EXE
-    MK_DOS,         "LIBDOS",       SetDosFmt,      FreeDosFmt,
-#endif
-#ifdef _DOS16M
-    MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
-#endif
-#ifdef _QNX
-    MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
-#endif
-#ifdef _ELF
-    MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
-#endif
-#ifdef _OS2
-    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_PE,          "LIBPE",        SetOS2Fmt,      FreeOS2Fmt,
-    MK_WIN_VXD,     "LIBVXD",       SetOS2Fmt,      FreeOS2Fmt,
-#endif
-#ifdef _PHARLAP
-    MK_PHAR_LAP,    "LIBPHAR",      SetPharFmt,     FreePharFmt,
-#endif
-#ifdef _NOVELL
-    MK_NOVELL,      "LIBNOV",       SetNovFmt,      FreeNovFmt,
-#endif
-#ifdef _RDOS
-    MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
-#endif
-#ifdef _ZDOS
-    MK_ZDOS,        "LIBZDOS",      SetZdosFmt,     FreeZdosFmt,
-#endif
-    0,              NULL,           NULL,           NULL
-};
-
-
 void AddFmtLibPaths( void )
-/********************************/
+/*************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -523,7 +529,7 @@ static void InitFmt( void (*set)(void) )
 }
 
 bool HintFormat( exe_format hint )
-/***************************************/
+/********************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -557,7 +563,7 @@ bool HintFormat( exe_format hint )
 }
 
 void DecideFormat( void )
-/******************************/
+/***********************/
 {
     exe_format  possible;
     exe_format  allowed;
@@ -579,7 +585,7 @@ void DecideFormat( void )
 }
 
 void FreeFormatStuff( void )
-/***************************/
+/**************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -597,8 +603,9 @@ void FreeFormatStuff( void )
 }
 
 void AddCommentLib( const char *comment, size_t len, lib_priority priority )
-/**************************************************************************/
-//  Add a library from a comment record.
+/***************************************************************************
+ * Add a library from a comment record.
+ */
 {
     file_list   *result;
     char        *ptr;
@@ -670,9 +677,10 @@ void AddLibPathsToEndList( const char *path_list )
 }
 
 void ExecSystem( const char *name )
-/*********************************/
-/* run a system block with the given name (only called once!)
- * (this is called after the parser has already been stopped */
+/**********************************
+ * run a system block with the given name (only called once!)
+ * (this is called after the parser has already been stopped
+ */
 {
     sysblock    *sys;
 
@@ -696,8 +704,9 @@ void ExecSystem( const char *name )
 }
 
 static void CleanSystemList( bool burn )
-/**************************************/
-/* clean up the list of system blocks */
+/***************************************
+ * clean up the list of system blocks
+ */
 {
     sysblock    **sysown;
     sysblock    *sys;
@@ -718,15 +727,17 @@ static void CleanSystemList( bool burn )
 }
 
 void PruneSystemList( void )
-/*********************************/
-/* delete all system blocks except for the "286" and "386" records */
+/***************************
+ * delete all system blocks except for the "286" and "386" records
+ */
 {
     CleanSystemList( false );
 }
 
 void BurnSystemList( void )
-/********************************/
-/* delete everything in the system list */
+/**************************
+ * delete everything in the system list
+ */
 {
     CleanSystemList( true );
 }

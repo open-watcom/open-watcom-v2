@@ -44,7 +44,7 @@
 #include "wlnkmsg.h"
 #include "cmdall.h"
 #include "cmdnov.h"
-#include "cmdtable.h"
+#include "cmdline.h"
 
 
 #ifdef _NOVELL
@@ -79,6 +79,7 @@ void CmdNovFini( void )
 }
 
 static bool IsNetWarePrefix( const char *token, size_t tokenlen )
+/***************************************************************/
 {
     if( ( token != NULL ) && ( token[0] == '(' ) && ( token[tokenlen - 1] == ')' ) )
         return( true );
@@ -92,6 +93,7 @@ static bool IsNetWarePrefix( const char *token, size_t tokenlen )
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char **name, size_t *namelen, const char **prefix, size_t *prefixlen )
+/**********************************************************************************************************************************************/
 {
     const char  *findAt = token;
     size_t      len;
@@ -119,10 +121,10 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
     }
 
     /*
-    //  findAt now points at an @ symbol. this maybe a stdcall designator or a prefixed symbol.
-    //  if the following character is a number then it must be stdcall as it is illegal to start
-    //  a function name with a numeric character (I believe)
-    */
+     *  findAt now points at an @ symbol. this maybe a stdcall designator or a prefixed symbol.
+     *  if the following character is a number then it must be stdcall as it is illegal to start
+     *  a function name with a numeric character (I believe)
+     */
 
     if( IS_NUMBER( &findAt[1] ) ) {
         *name = token;
@@ -144,13 +146,14 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 static bool SetCurrentPrefix( const char *str, size_t len )
+/*********************************************************/
 {
     const char  *s;
     char        *p;
 
     /*
-    //  Always delete
-    */
+     *  Always delete
+     */
     if( CmdFile->symprefix != NULL ) {
         _LnkFree( CmdFile->symprefix );
         CmdFile->symprefix = NULL;
@@ -192,13 +195,14 @@ static bool SetCurrentPrefix( const char *str, size_t len )
 }
 
 /*
-//  Trouble! In files, import and export specifiers may or may not have a trailing comma
-//  so we look ahead to Token.next and see if there is a comma next (after whitespace)
-//  and if there is then we don't set this flag else we do
-//  this also affects us using
-//      IMPORT x, (PREFIX), y, (PREFIX), x
-*/
+ * Trouble! In files, import and export specifiers may or may not have a trailing comma
+ * so we look ahead to Token.next and see if there is a comma next (after whitespace)
+ * and if there is then we don't set this flag else we do
+ * this also affects us using
+ *      IMPORT x, (PREFIX), y, (PREFIX), x
+ */
 static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
+/**********************************************************/
 {
     const char  *parse;
 
@@ -261,18 +265,22 @@ static bool GetSymbolImportExport( bool import )
 /**********************************************/
 {
     symbol      *sym;
-    const char  *name = NULL;
-    const char  *prefix = NULL;
-    size_t      namelen = 0;
-    size_t      prefixlen = 0;
+    const char  *name;
+    const char  *prefix;
+    size_t      namelen;
+    size_t      prefixlen;
     bool        result;
 
+    name = NULL;
+    namelen = 0;
+    prefix = NULL;
+    prefixlen = 0;
     /*
-    //  we need to trap import/export prefixes here. Unfortunately the prefix context
-    //  is not followed by a valid seperator so the GetToken() call in ProcArgList
-    //  at the end of the do...while loop terminates the loop after we return from
-    //  this call (and WildCard from where we were called of course
-    */
+     *  we need to trap import/export prefixes here. Unfortunately the prefix context
+     *  is not followed by a valid seperator so the GetToken() call in ProcArgList
+     *  at the end of the do...while loop terminates the loop after we return from
+     *  this call (and WildCard from where we were called of course
+     */
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         result = SetCurrentPrefix( Token.this, Token.len );
         if( result ) {
@@ -578,19 +586,25 @@ bool ProcExportsDBI( void )
     return( true );
 }
 
-bool ProcNovDBIExports( void )
-/****************************/
+static bool ProcNovDBIExports( void )
+/***********************************/
 {
     FmtData.u.nov.flags |= DO_NOV_EXPORTS;
     return( true );
 }
 
-bool ProcNovDBIReferenced( void )
-/*******************************/
+static bool ProcNovDBIReferenced( void )
+/**************************************/
 {
     FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
     return( true );
 }
+
+static parse_entry  NovDBIOptions[] = {
+    "ONLyexports",  ProcNovDBIExports,  MK_NOVELL, 0,
+    "REFerenced",   ProcNovDBIReferenced,MK_NOVELL, 0,
+    NULL
+};
 
 bool ProcNovDBI( void )
 /*********************/
@@ -617,80 +631,80 @@ static bool ProcModuleTypeN( int n )
     return( true );
 }
 
-bool ProcNLM( void )
-/******************/
+static bool ProcNLM( void )
+/*************************/
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 0;
     return( true );
 }
 
-bool ProcLAN( void )
-/******************/
+static bool ProcLAN( void )
+/*************************/
 {
     Extension = E_LAN;
     FmtData.u.nov.moduletype = 1;
     return( true );
 }
 
-bool ProcDSK( void )
-/******************/
+static bool ProcDSK( void )
+/*************************/
 {
     Extension = E_DSK;
     FmtData.u.nov.moduletype = 2;
     return( true );
 }
 
-bool ProcNAM( void )
-/******************/
+static bool ProcNAM( void )
+/*************************/
 {
     Extension = E_NAM;
     FmtData.u.nov.moduletype = 3;
     return( true );
 }
 
-bool ProcModuleType4( void )
-/**************************/
+static bool ProcModuleType4( void )
+/*********************************/
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 4;
     return( true );
 }
 
-bool ProcModuleType5( void )
-/**************************/
+static bool ProcModuleType5( void )
+/*********************************/
 {
     Extension = E_NOV_MSL;
     FmtData.u.nov.moduletype = 5;
     return( true );
 }
 
-bool ProcModuleType6( void )
-/**************************/
+static bool ProcModuleType6( void )
+/*********************************/
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 6;
     return( true );
 }
 
-bool ProcModuleType7( void )
-/**************************/
+static bool ProcModuleType7( void )
+/*********************************/
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 7;
     return( true );
 }
 
-bool ProcModuleType8( void )
-/**************************/
+static bool ProcModuleType8( void )
+/*********************************/
 {
     Extension = E_NOV_HAM;
     FmtData.u.nov.moduletype = 8;
     return( true );
 }
 
-bool ProcModuleType9( void )
-/**************************/
+static bool ProcModuleType9( void )
+/*********************************/
 {
     Extension = E_NOV_CDM;
     FmtData.u.nov.moduletype = 9;
@@ -700,30 +714,54 @@ bool ProcModuleType9( void )
 #if 0
 /*
 // as I have got tired of writing, module types 10 through 12 are reserved */
-bool ProcModuleType10( void )
-/***************************/
+static bool ProcModuleType10( void )
+/**********************************/
 {
     Extension = ;
     FmtData.u.nov.moduletype = 10;
     return( true );
 }
 
-bool ProcModuleType11( void )
-/***************************/
+static bool ProcModuleType11( void )
+/**********************************/
 {
     Extension = ;
     FmtData.u.nov.moduletype = 11;
     return( true );
 }
 
-bool ProcModuleType12( void )
-/***************************/
+static bool ProcModuleType12( void )
+/**********************************/
 {
     Extension = ;
     FmtData.u.nov.moduletype = 12;
     return( true );
 }
 #endif
+
+static parse_entry  NovModels[] = {
+    "NLM",          ProcNLM,            MK_NOVELL, 0,    /* 0 */
+    "LAN",          ProcLAN,            MK_NOVELL, 0,    /* 1 */
+    "DSK",          ProcDSK,            MK_NOVELL, 0,    /* 2 */
+    "NAM",          ProcNAM,            MK_NOVELL, 0,    /* 3 */
+    "0",            ProcNLM,            MK_NOVELL, 0,    /* 0 again */
+    "1",            ProcLAN,            MK_NOVELL, 0,    /* etc */
+    "2",            ProcDSK,            MK_NOVELL, 0,
+    "3",            ProcNAM,            MK_NOVELL, 0,
+    "4",            ProcModuleType4,    MK_NOVELL, 0,
+    "5",            ProcModuleType5,    MK_NOVELL, 0,
+    "6",            ProcModuleType6,    MK_NOVELL, 0,
+    "7",            ProcModuleType7,    MK_NOVELL, 0,
+    "8",            ProcModuleType8,    MK_NOVELL, 0,
+    "9",            ProcModuleType9,    MK_NOVELL, 0,
+#if 0
+    /* NLM types 10 through 12 are currently reserved */
+    "10",           ProcModuleType10,   MK_NOVELL, 0,
+    "11",           ProcModuleType11,   MK_NOVELL, 0,
+    "12",           ProcModuleType12,   MK_NOVELL, 0,
+#endif
+    NULL
+};
 
 bool ProcNovell( void )
 /*********************/

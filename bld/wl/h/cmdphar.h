@@ -36,10 +36,9 @@
 extern void     SetPharFmt( void );
 extern void     FreePharFmt( void );
 
-extern bool     ProcPackExp( void );
+//extern bool     ProcPackExp( void );
 extern bool     ProcMinData( void );
 extern bool     ProcMaxData( void );
-
 extern bool     ProcMinReal( void );
 extern bool     ProcMaxReal( void );
 extern bool     ProcRealBreak( void );
@@ -52,9 +51,6 @@ extern bool     ProcUnpriv( void );
 extern bool     ProcPriv( void );
 extern bool     ProcFlags( void );
 
-extern bool     ProcPharFlat( void );
-extern bool     ProcRex( void );
-extern bool     ProcPharSegmented( void );
 extern bool     ProcPharLap( void );
 
 #endif

@@ -46,6 +46,7 @@
 
 #include "clibext.h"
 
+
 const char *MsgStrings[] = {
     #define pick( name, string ) string,
     #include "wlbanner.h"

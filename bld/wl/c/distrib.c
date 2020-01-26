@@ -140,7 +140,8 @@ void InitArcList( mod_entry *mod )
  * set up the mod_entry arcdata field for dead code elimination
  */
 {
-    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+    } else {
         _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
     }
 }
@@ -208,17 +209,6 @@ void DistribSetSegments( void )
  * postponed until now.
  */
 {
-    if( (LinkFlags & LF_STRIP_CODE) == 0 )
-        return;
-    LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
-    ObjFormat |= FMT_DEBUG_COMENT;
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        _LnkFree( ArcList );
-        ArcList = NULL;
-    }
-    if( LinkFlags & LF_STRIP_CODE ) {
-        WalkMods( DefineOvlSegments );
-    }
 #if 0           // NYI: distributing libraries completely broken.
     unsigned        index;
     mod_entry       *mod;
@@ -252,6 +242,17 @@ void DistribSetSegments( void )
         SectOvlTab = NULL;
     }
 #endif
+    if( LinkFlags & LF_STRIP_CODE ) {
+        LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
+        ObjFormat |= FMT_DEBUG_COMENT;
+    }
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+        _LnkFree( ArcList );
+        ArcList = NULL;
+    }
+    if( LinkFlags & LF_STRIP_CODE ) {
+        WalkMods( DefineOvlSegments );
+    }
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         _LnkFree( SectOvlTab );
         SectOvlTab = NULL;
@@ -319,8 +320,7 @@ static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlre
  * this case.
  */
 {
-    if( ( sym->p.seg == NULL )
-        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+    if( ( sym->p.seg == NULL ) || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
     /*
