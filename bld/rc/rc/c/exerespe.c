@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -684,7 +685,7 @@ static void FreePEResDir( PEResDir * dir )
     }
 }
 
-#ifndef INSIDE_WLINK
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 bool RcPadFile( FILE *fp, size_t pad )
 /************************************/
 {
@@ -874,7 +875,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 } /* BuildPEResourceObject */
 
 
-#ifndef INSIDE_WLINK
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 bool RcBuildPEResourceObject( void )
 /**********************************/
 {
