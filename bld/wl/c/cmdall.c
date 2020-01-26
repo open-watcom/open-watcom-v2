@@ -1481,7 +1481,7 @@ bool ProcOrdOfsAdr( void )
         return( true );
     } else {
         CurrOClass->FixedAddr = false;
-        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "ORDER CLNAME OFFSET");
+        LnkMsg(LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "ORDER CLNAME OFFSET");
         return( false );
     }
 }
