@@ -58,6 +58,8 @@
 #include "clibext.h"
 
 
+#define DEFAULT_INC_NAME "__wlink.ilk"
+
 static struct {
     union {
         file_list   *file;
@@ -65,7 +67,9 @@ static struct {
     } u;
 } LastFile;
 
-static file_list    **LastLibFile;
+static file_list        **LastLibFile;
+static ORDER_CLASS      *CurrOClass;
+static ORDER_SEGMENT    *CurrOSeg;
 
 void ResetCmdAll( void )
 /**********************/
@@ -95,54 +99,6 @@ bool ProcName( void )
         _LnkFree( Name );
     }
     Name = tostring();   // just keep the name around for now.
-    return( true );
-}
-
-bool ProcFormat( void )
-/*********************/
-{
-    if( LinkState & LS_FMT_SPECIFIED ) {
-        LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
-    }
-    LinkState |= LS_FMT_SPECIFIED;
-    return( ProcOne( Models, SEP_NO, true ) );
-}
-
-static bool AddOption( void )
-/***************************/
-{
-    Token.thumb = true;
-    if( !ProcOne( MainOptions, SEP_NO, false ) )
-        return( false );
-    return( true );
-}
-
-bool ProcOptions( void )
-/**********************/
-{
-    return( ProcArgList( AddOption, TOK_INCLUDE_DOT ) );
-}
-
-bool ProcDebug( void )
-/********************/
-{
-    bool        gotmod;
-
-    if( CmdFlags & CF_FILES_BEFORE_DBI ) {
-        LnkMsg( LOC+LINE+WRN+MSG_DEBUG_AFTER_FILES, NULL );
-    }
-    gotmod = ProcOne( DbgMods, SEP_NO, false );
-    DBIFlag &= ~DBI_MASK;
-    if( ProcOne( PosDbgMods, SEP_NO, false ) ) {
-        while( ProcOne( PosDbgMods, SEP_COMMA, false ) ) {
-            ; /*null loop*/
-        }
-    } else {
-        DBIFlag |= DBI_ALL; //DBI_MASK;
-        if( !gotmod ) {
-            return( false );
-        }
-    }
     return( true );
 }
 
@@ -730,8 +686,6 @@ bool ProcCVPack( void )
     return( true );
 }
 
-#define DEFAULT_INC_NAME "__wlink.ilk"
-
 bool ProcIncremental( void )
 /**************************/
 {
@@ -806,23 +760,6 @@ bool ProcGlobal( void )
 {
     MapFlags |= MAP_GLOBAL;
     return( true );
-}
-
-bool ProcSort( void )
-/*******************/
-{
-    MapFlags |= MAP_SORT;
-    if( !ProcOne( SortOptions, SEP_NO, false ) )
-        return( true );
-    ProcOne( SortOptions, SEP_NO, false );
-    return( true );
-}
-
-bool ProcLanguage( void )
-/***********************/
-{
-    CmdFlags &= ~CF_LANGUAGE_MASK;
-    return( ProcOne( Languages, SEP_NO, false ) );
 }
 
 bool ProcJapanese( void )
@@ -978,48 +915,6 @@ bool ProcSysDelete( void )
     return( true );
 }
 
-bool ProcSystem( void )
-/*********************/
-/* process the system directive */
-{
-    char        *sysname;
-    sysblock    *sys;
-    sysblock    **prev;
-    bool        dodelete;
-
-    if( ProcOne( SysBeginOptions, SEP_NO, false ) )
-        return( true );
-    dodelete = ProcOne( SysDeleteOptions, SEP_NO, false );
-    if( dodelete ) {
-        if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-            return( false );
-        }
-    } else {
-        Token.thumb = false;
-    }
-    sysname = tostring();
-    sys = FindSystemBlock( sysname );
-    if( sys == NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_UNDEFINED, "s", sysname );
-    } else {
-        if( dodelete ) {
-            for( prev = &SysBlocks; *prev != sys; ) {
-                prev = &((*prev)->next);
-            }
-            *prev = sys->next;
-            if( sys->name != NULL ) {
-                _LnkFree( sys->name );
-            }
-            _LnkFree( sys );
-        } else {
-            RestoreParser();
-            NewCommandSource( sys->name, sys->commands, SYSTEM );
-        }
-    }
-    _LnkFree( sysname );
-    return( true );
-}
-
 static void CopyBlocks( void *copyp, const char *data, size_t size )
 /******************************************************************/
 {
@@ -1057,48 +952,11 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     LinkList( hdr, sys );
 }
 
-bool ProcSysBegin( void )
-/************************
- * parse a system begin block
- * and store it somewhere
- */
-{
-    char        *sysname;
-    sysblock    *sys;
-
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
-        return( true );
-    }
-    sysname = tostring();
-    sys = FindSysBlock( sysname );
-    if( sys != NULL ) {
-        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
-        while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
-            Token.thumb = false;
-            RestoreParser();
-        }
-    } else {
-        GetCommandBlock( &SysBlocks, sysname, SysEndOptions );
-    }
-    _LnkFree( sysname );
-    return( true );
-}
-
 bool ProcSysEnd( void )
 /**********************
  * finished parsing a system block
  */
 {
-    return( true );
-}
-
-bool ProcStartLink( void )
-/*************************
- * save up list of commands to process later
- */
-{
-    GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
     return( true );
 }
 
@@ -1206,21 +1064,6 @@ bool ProcImpFile( void )
     return( true );
 }
 
-#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-static bool AddRunTime( void )
-/****************************/
-{
-    Token.thumb = true;         // reparse last token.
-    return( ProcOne( RunOptions, SEP_NO, false ) );
-}
-
-bool ProcRuntime( void )
-/**********************/
-{
-    return( ProcArgList( AddRunTime, TOK_INCLUDE_DOT ) );
-}
-#endif
-
 static bool AddSymTrace( void )
 /*****************************/
 {
@@ -1279,22 +1122,6 @@ bool ProcNoFarCalls( void )
 }
 
 #ifdef _RAW
-
-bool ProcOutput( void )
-/*********************/
-{
-   bool     ret;
-
-   FmtData.output_offset = 0L;
-   FmtData.output_hshift = false;
-   FmtData.output_start = false;
-   ret = false;
-   while( ProcOne( OutputOpts, SEP_NO, false ) ) {
-       ret = true;
-   }
-   return( ret );
-}
-
 bool ProcOutputRaw( void )
 /************************/
 {
@@ -1354,7 +1181,6 @@ bool ProcOutputHshift( void )
         return( false );
     }
 }
-
 #endif
 
 bool ProcHshift( void )
@@ -1394,54 +1220,6 @@ bool ProcFillchar( void )
         LnkMsg(LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "FILLCHAR");
         return( false );
     }
-}
-
-static ORDER_CLASS      *CurrOClass;
-static ORDER_SEGMENT    *CurrOSeg;
-
-bool ProcOrder( void )
-/********************/
-{
-    bool    ret;
-
-    ret = false;
-    CurrOClass = CurrSect->orderlist;
-    if( CurrOClass != NULL) {
-        LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
-    }
-    while( ProcOne( OrderOpts, SEP_NO, false ) ) {
-        ret = true;
-    }
-    return( ret );
-}
-
-bool ProcOrdClass( void )
-/***********************/
-{
-    ORDER_CLASS *LastOClass;
-
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        return( false );
-    }
-    LinkState |= LS_SPEC_ORDER_FLAG;
-    LastOClass = CurrOClass;
-    _ChkAlloc( CurrOClass, sizeof( ORDER_CLASS ) );
-    if( LastOClass == NULL ) {
-        CurrSect->orderlist = CurrOClass;
-    } else {
-        LastOClass->NextClass = CurrOClass;
-    }
-    CurrOClass->Name = tostring();
-    CurrOClass->NextClass = NULL;
-    CurrOClass->Ring = NULL;
-    CurrOClass->SegList = NULL;
-    CurrOSeg = NULL;
-    CurrOClass->FixedAddr = false;
-    CurrOClass->Copy = false;
-    CurrOClass->NoEmit = false;
-    while( ProcOne( OrderClassOpts, SEP_NO, false ) )
-        {};
-    return( true );
 }
 
 bool ProcOrdSegAdr( void )
@@ -1501,23 +1279,6 @@ bool ProcOrdNoEmit( void )
 /************************/
 {
     CurrOClass->NoEmit = true;
-    return( true );
-}
-
-bool ProcOrdSeg( void )
-/*********************/
-{
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        return( false );
-    }
-    _ChkAlloc( CurrOSeg, sizeof( ORDER_SEGMENT ) );
-    CurrOSeg->NextSeg = CurrOClass->SegList;
-    CurrOClass->SegList = CurrOSeg;
-    CurrOSeg->Name = tostring();
-    CurrOSeg->FixedAddr = false;
-    CurrOSeg->NoEmit = false;
-    while( ProcOne( OrderSegOpts, SEP_NO, false ) )
-        {};
     return( true );
 }
 
@@ -1650,3 +1411,259 @@ bool ProcIntDbg( void )
     return( true );
 }
 #endif
+
+bool ProcOrdSeg( void )
+/*********************/
+{
+    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+        return( false );
+    }
+    _ChkAlloc( CurrOSeg, sizeof( ORDER_SEGMENT ) );
+    CurrOSeg->NextSeg = CurrOClass->SegList;
+    CurrOClass->SegList = CurrOSeg;
+    CurrOSeg->Name = tostring();
+    CurrOSeg->FixedAddr = false;
+    CurrOSeg->NoEmit = false;
+    while( ProcOne( OrderSegOpts, SEP_NO, false ) )
+        {};
+    return( true );
+}
+
+bool ProcOrdClass( void )
+/***********************/
+{
+    ORDER_CLASS *LastOClass;
+
+    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+        return( false );
+    }
+    LinkState |= LS_SPEC_ORDER_FLAG;
+    LastOClass = CurrOClass;
+    _ChkAlloc( CurrOClass, sizeof( ORDER_CLASS ) );
+    if( LastOClass == NULL ) {
+        CurrSect->orderlist = CurrOClass;
+    } else {
+        LastOClass->NextClass = CurrOClass;
+    }
+    CurrOClass->Name = tostring();
+    CurrOClass->NextClass = NULL;
+    CurrOClass->Ring = NULL;
+    CurrOClass->SegList = NULL;
+    CurrOSeg = NULL;
+    CurrOClass->FixedAddr = false;
+    CurrOClass->Copy = false;
+    CurrOClass->NoEmit = false;
+    while( ProcOne( OrderClassOpts, SEP_NO, false ) )
+        {};
+    return( true );
+}
+
+bool ProcOrder( void )
+/********************/
+{
+    bool    ret;
+
+    ret = false;
+    CurrOClass = CurrSect->orderlist;
+    if( CurrOClass != NULL) {
+        LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
+    }
+    while( ProcOne( OrderOpts, SEP_NO, false ) ) {
+        ret = true;
+    }
+    return( ret );
+}
+
+#ifdef _RAW
+bool ProcOutput( void )
+/*********************/
+{
+   bool     ret;
+
+   FmtData.output_offset = 0L;
+   FmtData.output_hshift = false;
+   FmtData.output_start = false;
+   ret = false;
+   while( ProcOne( OutputOpts, SEP_NO, false ) ) {
+       ret = true;
+   }
+   return( ret );
+}
+#endif
+
+#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
+static bool AddRunTime( void )
+/****************************/
+{
+    Token.thumb = true;         // reparse last token.
+    return( ProcOne( RunOptions, SEP_NO, false ) );
+}
+
+bool ProcRuntime( void )
+/**********************/
+{
+    return( ProcArgList( AddRunTime, TOK_INCLUDE_DOT ) );
+}
+#endif
+
+bool ProcStartLink( void )
+/*************************
+ * save up list of commands to process later
+ */
+{
+    GetCommandBlock( &LinkCommands, NULL, EndLinkOpt );
+    return( true );
+}
+
+bool ProcSysBegin( void )
+/************************
+ * parse a system begin block
+ * and store it somewhere
+ */
+{
+    char        *sysname;
+    sysblock    *sys;
+
+    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
+        return( true );
+    }
+    sysname = tostring();
+    sys = FindSysBlock( sysname );
+    if( sys != NULL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
+        while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
+            Token.thumb = false;
+            RestoreParser();
+        }
+    } else {
+        GetCommandBlock( &SysBlocks, sysname, SysEndOptions );
+    }
+    _LnkFree( sysname );
+    return( true );
+}
+
+bool ProcSystem( void )
+/*********************/
+/* process the system directive */
+{
+    char        *sysname;
+    sysblock    *sys;
+    sysblock    **prev;
+    bool        dodelete;
+
+    if( ProcOne( SysBeginOptions, SEP_NO, false ) )
+        return( true );
+    dodelete = ProcOne( SysDeleteOptions, SEP_NO, false );
+    if( dodelete ) {
+        if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+            return( false );
+        }
+    } else {
+        Token.thumb = false;
+    }
+    sysname = tostring();
+    sys = FindSystemBlock( sysname );
+    if( sys == NULL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_UNDEFINED, "s", sysname );
+    } else {
+        if( dodelete ) {
+            for( prev = &SysBlocks; *prev != sys; ) {
+                prev = &((*prev)->next);
+            }
+            *prev = sys->next;
+            if( sys->name != NULL ) {
+                _LnkFree( sys->name );
+            }
+            _LnkFree( sys );
+        } else {
+            RestoreParser();
+            NewCommandSource( sys->name, sys->commands, SYSTEM );
+        }
+    }
+    _LnkFree( sysname );
+    return( true );
+}
+
+bool ProcLanguage( void )
+/***********************/
+{
+    CmdFlags &= ~CF_LANGUAGE_MASK;
+    return( ProcOne( Languages, SEP_NO, false ) );
+}
+
+bool ProcSort( void )
+/*******************/
+{
+    MapFlags |= MAP_SORT;
+    if( !ProcOne( SortOptions, SEP_NO, false ) )
+        return( true );
+    ProcOne( SortOptions, SEP_NO, false );
+    return( true );
+}
+
+bool ProcDebug( void )
+/********************/
+{
+    bool        gotmod;
+
+    if( CmdFlags & CF_FILES_BEFORE_DBI ) {
+        LnkMsg( LOC+LINE+WRN+MSG_DEBUG_AFTER_FILES, NULL );
+    }
+    gotmod = ProcOne( DbgMods, SEP_NO, false );
+    DBIFlag &= ~DBI_MASK;
+    if( ProcOne( PosDbgMods, SEP_NO, false ) ) {
+        while( ProcOne( PosDbgMods, SEP_COMMA, false ) ) {
+            ; /*null loop*/
+        }
+    } else {
+        DBIFlag |= DBI_ALL; //DBI_MASK;
+        if( !gotmod ) {
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static bool AddOption( void )
+/***************************/
+{
+    Token.thumb = true;
+    if( !ProcOne( MainOptions, SEP_NO, false ) )
+        return( false );
+    return( true );
+}
+
+bool ProcOptions( void )
+/**********************/
+{
+    return( ProcArgList( AddOption, TOK_INCLUDE_DOT ) );
+}
+
+bool ProcFormat( void )
+/*********************/
+{
+    if( LinkState & LS_FMT_SPECIFIED ) {
+        LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
+    }
+    LinkState |= LS_FMT_SPECIFIED;
+    return( ProcOne( Models, SEP_NO, true ) );
+}
+
+bool DoParseSysDirective( bool suicide )
+/**************************************/
+{
+    return( ProcOne( SysDirectives, SEP_NO, suicide ) );
+}
+
+bool DoParseDirective( bool suicide )
+/***********************************/
+{
+    return( ProcOne( Directives, SEP_NO, suicide ) );
+}
+
+bool DoMatchDirective( const char *parse, size_t len )
+/****************************************************/
+{
+    return( MatchOne( Directives, SEP_NO, parse, len ) );
+}

@@ -225,7 +225,7 @@ static void DoCmdParse( void )
 /****************************/
 {
     while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-        if( !ProcOne( Directives, SEP_NO, true ) ) {
+        if( !DoParseDirective( true ) ) {
             Syntax();
         }
         RestoreParser();
@@ -684,7 +684,7 @@ void ExecSystem( const char *name )
         _LnkFree( sys->name );
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-            if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
+            if( !DoParseSysDirective( false ) ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;

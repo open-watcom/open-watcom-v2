@@ -42,6 +42,7 @@
 #include "exenov.h"
 #include "loadnov.h"
 #include "wlnkmsg.h"
+#include "cmdall.h"
 #include "cmdnov.h"
 #include "cmdtable.h"
 
@@ -241,7 +242,7 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
                 len++;
             }
 
-            if( MatchOne( Directives, SEP_NO, parse, len ) ) {
+            if( DoMatchDirective( parse, len ) ) {
                 return( false );
             }
         }

@@ -343,7 +343,7 @@ bool ProcSection( void )
     } else {
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO, false );      // check for INTO
-        while( ProcOne( Directives, SEP_NO, false ) ) {
+        while( DoParseDirective( false ) ) {
             RestoreParser();
         }
     }
@@ -359,7 +359,7 @@ bool ProcAutoSection( void )
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO, false );      // check for INTO
         CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( ProcOne( Directives, SEP_NO, false ) ) {
+        while( DoParseDirective( false ) ) {
         }
         CmdFlags &= ~CF_AUTOSECTION;
     }
