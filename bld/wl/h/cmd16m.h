@@ -32,6 +32,10 @@
 
 #ifdef _DOS16M
 
+extern void     SetD16MFmt( void );
+extern void     FreeD16MFmt( void );
+extern void     CmdD16MFini( void );
+
 extern bool     ProcMemory16M( void );
 extern bool     ProcTryExtended( void );
 extern bool     ProcTryLow( void );
@@ -56,9 +60,7 @@ extern bool     ProcSelStart( void );
 extern bool     ProcExtended( void );
 extern bool     ProcExpName( void );
 extern bool     ProcDataSize( void );
-extern void     SetD16MFmt( void );
-extern void     FreeD16MFmt( void );
+
 extern bool     Proc16M( void );
-extern void     CmdD16MFini( void );
 
 #endif

@@ -42,20 +42,6 @@
 
 #ifdef _ELF
 
-bool ProcELF( void )
-/******************/
-{
-    ProcOne( ELFFormatKeywords, SEP_NO, false );
-    return true;
-}
-
-bool ProcELFDLL( void )
-/*********************/
-{
-    FmtData.dll = true;
-    return true;
-}
-
 void SetELFFmt( void )
 /********************/
 {
@@ -74,78 +60,16 @@ void FreeELFFmt( void )
     FreeList( FmtData.u.elf.exp.module ); Permalloc'd now */
 }
 
+
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
+
 bool ProcExportAll( void )
 /************************/
 {
     FmtData.u.elf.exportallsyms = true;
     return true;
-}
-
-void SetELFImportSymbol( symbol * sym )
-/*************************************/
-{
-    /* unused parameters */ (void)sym;
-}
-
-static bool GetELFImport( void )
-/******************************/
-{
-    symbol      *sym;
-
-    sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
-    if( sym == NULL ) {
-        return( true );
-    }
-    SET_SYM_TYPE( sym, SYM_IMPORTED );
-    sym->info |= SYM_DCE_REF;
-    SetELFImportSymbol( sym );
-    return( true );
-}
-
-bool ProcELFImport( void )
-/************************/
-{
-    return( ProcArgList( GetELFImport, TOK_INCLUDE_DOT ) );
-}
-
-void SetELFExportSymbol( symbol * sym )
-/*************************************/
-{
-    /* unused parameters */ (void)sym;
-}
-
-static bool GetELFExport( void )
-/******************************/
-{
-    symbol      *sym;
-
-    sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
-    if( sym == NULL ) {
-        return( true );
-    }
-    SET_SYM_TYPE( sym, SYM_EXPORTED );
-    sym->info |= SYM_DCE_REF;
-    SetELFExportSymbol( sym );
-    return( true );
-}
-
-bool ProcELFExport( void )
-/************************/
-{
-    return( ProcArgList( GetELFExport, TOK_INCLUDE_DOT ) );
-}
-
-static bool GetELFModule( void )
-/******************************/
-{
-    AddNameTable( Token.this, Token.len, false, &FmtData.u.elf.exp.module );
-    return( true );
-}
-
-bool ProcELFModule( void )
-/************************/
-{
-    return( ProcArgList( GetELFModule, TOK_INCLUDE_DOT ) );
 }
 
 bool ProcELFAlignment( void )
@@ -183,6 +107,93 @@ bool ProcELFNoRelocs( void )
     LinkState &= ~LS_MAKE_RELOCS;
     return true;
 }
+
+
+/****************************************************************
+ * "IMPort" Directive
+ ****************************************************************/
+
+void SetELFImportSymbol( symbol * sym )
+/*************************************/
+{
+    /* unused parameters */ (void)sym;
+}
+
+static bool GetELFImport( void )
+/******************************/
+{
+    symbol      *sym;
+
+    sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
+    if( sym == NULL ) {
+        return( true );
+    }
+    SET_SYM_TYPE( sym, SYM_IMPORTED );
+    sym->info |= SYM_DCE_REF;
+    SetELFImportSymbol( sym );
+    return( true );
+}
+
+bool ProcELFImport( void )
+/************************/
+{
+    return( ProcArgList( GetELFImport, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "EXPort" Directive
+ ****************************************************************/
+
+void SetELFExportSymbol( symbol * sym )
+/*************************************/
+{
+    /* unused parameters */ (void)sym;
+}
+
+static bool GetELFExport( void )
+/******************************/
+{
+    symbol      *sym;
+
+    sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
+    if( sym == NULL ) {
+        return( true );
+    }
+    SET_SYM_TYPE( sym, SYM_EXPORTED );
+    sym->info |= SYM_DCE_REF;
+    SetELFExportSymbol( sym );
+    return( true );
+}
+
+bool ProcELFExport( void )
+/************************/
+{
+    return( ProcArgList( GetELFExport, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "MODule" Directive
+ ****************************************************************/
+
+static bool GetELFModule( void )
+/******************************/
+{
+    AddNameTable( Token.this, Token.len, false, &FmtData.u.elf.exp.module );
+    return( true );
+}
+
+bool ProcELFModule( void )
+/************************/
+{
+    return( ProcArgList( GetELFModule, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "RUntime" SysDirective
+ ****************************************************************/
 
 static void ParseABITypeAndVersion( void )
 /****************************************/
@@ -266,6 +277,25 @@ bool ProcELFRFBSD( void )
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;
     ParseABIVersion( "SOLARIS" );
     return( true );
+}
+
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
+
+bool ProcELFDLL( void )
+/*********************/
+{
+    FmtData.dll = true;
+    return true;
+}
+
+bool ProcELF( void )
+/******************/
+{
+    ProcOne( ELFFormatKeywords, SEP_NO, false );
+    return true;
 }
 
 #endif

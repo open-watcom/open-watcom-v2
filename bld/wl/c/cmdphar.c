@@ -50,13 +50,6 @@
 
 #ifdef _PHARLAP
 
-bool ProcPharLap( void )
-/*****************************/
-{
-    ProcOne( PharModels, SEP_NO, false );
-    return( true );
-}
-
 void SetPharFmt( void )
 /****************************/
 {
@@ -87,26 +80,10 @@ void FreePharFmt( void )
     _LnkFree( FmtData.u.phar.stub );
 }
 
-bool ProcPharFlat( void )
-/******************************/
-{
-    return( true );
-}
 
-bool ProcRex( void )
-/*************************/
-{
-    Extension = E_REX;
-    LinkState |= LS_MAKE_RELOCS;    // make relocations;
-    return( true );
-}
-
-bool ProcPharSegmented( void )
-/***********************************/
-{
-    LinkState |= LS_MAKE_RELOCS;    // make relocations;
-    return true;
-}
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
 
 #if 0
  .exp packing executables implemented yet.
@@ -130,6 +107,11 @@ bool ProcMaxData( void )
 {
     return( GetLong( &FmtData.u.phar.maxdata ) );
 }
+
+
+/****************************************************************
+ * "RUNtime" Directive
+ ****************************************************************/
 
 bool ProcUnpriv( void )
 /****************************/
@@ -300,6 +282,39 @@ bool ProcIStkSize( void )
         }
     }
     return( ret );
+}
+
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
+
+bool ProcPharFlat( void )
+/******************************/
+{
+    return( true );
+}
+
+bool ProcRex( void )
+/*************************/
+{
+    Extension = E_REX;
+    LinkState |= LS_MAKE_RELOCS;    // make relocations;
+    return( true );
+}
+
+bool ProcPharSegmented( void )
+/***********************************/
+{
+    LinkState |= LS_MAKE_RELOCS;    // make relocations;
+    return true;
+}
+
+bool ProcPharLap( void )
+/*****************************/
+{
+    ProcOne( PharModels, SEP_NO, false );
+    return( true );
 }
 
 #endif

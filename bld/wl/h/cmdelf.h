@@ -32,15 +32,14 @@
 
 #ifdef _ELF
 
-extern bool     ProcELF( void );
-extern bool     ProcELFDLL( void );
+extern void     SetELFFmt( void );
+extern void     FreeELFFmt( void );
+
 extern bool     ProcELFImport( void );
 extern bool     ProcELFExport( void );
 extern bool     ProcELFModule( void );
 extern bool     ProcELFAlignment( void );
 
-extern void     SetELFFmt( void );
-extern void     FreeELFFmt( void );
 extern void     SetELFImportSymbol( symbol * );
 extern void     SetELFExportSymbol( symbol * );
 
@@ -55,5 +54,8 @@ extern bool     ProcELFRNetBSD( void );
 extern bool     ProcELFRLinux( void );
 extern bool     ProcELFRSolrs( void );
 extern bool     ProcELFRFBSD( void );
+
+extern bool     ProcELFDLL( void );
+extern bool     ProcELF( void );
 
 #endif

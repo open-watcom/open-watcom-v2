@@ -33,6 +33,11 @@
 
 #ifdef _NOVELL
 
+extern void     SetNovFmt( void );
+extern void     FreeNovFmt( void );
+extern void     CmdNovFini( void );
+extern void     SetNovImportSymbol( symbol * );
+
 extern bool     ProcNovDBI( void );
 extern bool     ProcExportsDBI( void );
 extern bool     ProcNovModule( void );
@@ -53,7 +58,11 @@ extern bool     ProcHelp( void );
 extern bool     ProcXDCData( void );
 extern bool     ProcSharelib( void );
 extern bool     ProcOSDomain( void );
-extern bool     ProcNovell( void );
+
+extern bool     ProcNovDBIExports( void );
+extern bool     ProcNovDBIReferenced( void );
+extern bool     ProcNovImport( void );
+extern bool     ProcNovExport( void );
 
 extern bool     ProcNLM( void );
 extern bool     ProcLAN( void );
@@ -72,13 +81,6 @@ extern bool     ProcModuleType11( void );
 extern bool     ProcModuleType12( void );
 #endif
 
-extern bool     ProcNovDBIExports( void );
-extern bool     ProcNovDBIReferenced( void );
-extern bool     ProcNovImport( void );
-extern bool     ProcNovExport( void );
-extern void     SetNovImportSymbol( symbol * );
-extern void     SetNovFmt( void );
-extern void     FreeNovFmt( void );
-extern void     CmdNovFini( void );
+extern bool     ProcNovell( void );
 
 #endif

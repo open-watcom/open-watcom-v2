@@ -48,6 +48,35 @@
 
 #ifdef _NOVELL
 
+void SetNovFmt( void )
+/********************/
+{
+    Extension = E_NLM;
+}
+
+void FreeNovFmt( void )
+/*********************/
+{
+    _LnkFree( FmtData.description );
+    _LnkFree( FmtData.u.nov.screenname );
+    _LnkFree( FmtData.u.nov.checkfn );
+    _LnkFree( FmtData.u.nov.exitfn );
+    _LnkFree( FmtData.u.nov.customdata );
+    _LnkFree( FmtData.u.nov.threadname );
+    _LnkFree( FmtData.u.nov.copyright );
+    _LnkFree( FmtData.u.nov.messages );
+    _LnkFree( FmtData.u.nov.help );
+    _LnkFree( FmtData.u.nov.rpcdata );
+    _LnkFree( FmtData.u.nov.sharednlm );
+/*  FreeList( FmtData.u.nov.exp.export );
+    FreeList( FmtData.u.nov.exp.module );  Permalloc'd now */
+}
+
+void CmdNovFini( void )
+/*********************/
+{
+}
+
 static bool IsNetWarePrefix( const char *token, size_t tokenlen )
 {
     if( ( token != NULL ) && ( token[0] == '(' ) && ( token[tokenlen - 1] == ')' ) )
@@ -283,31 +312,10 @@ static bool GetSymbolImportExport( bool import )
     return( true );
 }
 
-static bool GetNovImport( void )
-/******************************/
-{
-    return( GetSymbolImportExport( true ) );
-}
 
-static bool GetNovExport( void )
-/******************************/
-{
-    return( GetSymbolImportExport( false ) );
-}
-
-bool ProcNovImport( void )
-/************************/
-{
-    SetCurrentPrefix( NULL, 0 );
-    return( ProcArgListEx( GetNovImport, TOK_INCLUDE_DOT, CmdFile ) );
-}
-
-bool ProcNovExport( void )
-/************************/
-{
-    SetCurrentPrefix( NULL, 0 );
-    return( ProcArgListEx( GetNovExport, TOK_INCLUDE_DOT, CmdFile ) );
-}
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcScreenName( void )
 /*************************/
@@ -495,55 +503,117 @@ bool ProcCopyright( void )
     return( true );
 }
 
+bool ProcOSDomain( void )
+/***********************/
+{
+    FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
+    return( true );
+}
+
+
+/****************************************************************
+ * "IMPort" Directive
+ ****************************************************************/
+
+static bool GetNovImport( void )
+/******************************/
+{
+    return( GetSymbolImportExport( true ) );
+}
+
+bool ProcNovImport( void )
+/************************/
+{
+    SetCurrentPrefix( NULL, 0 );
+    return( ProcArgListEx( GetNovImport, TOK_INCLUDE_DOT, CmdFile ) );
+}
+
+
+/****************************************************************
+ * "EXPort" Directive
+ ****************************************************************/
+
+static bool GetNovExport( void )
+/******************************/
+{
+    return( GetSymbolImportExport( false ) );
+}
+
+bool ProcNovExport( void )
+/************************/
+{
+    SetCurrentPrefix( NULL, 0 );
+    return( ProcArgListEx( GetNovExport, TOK_INCLUDE_DOT, CmdFile ) );
+}
+
+
+/****************************************************************
+ * "MODule" Directive
+ ****************************************************************/
+
+static bool GetNovModule( void )
+/******************************/
+{
+    AddNameTable( Token.this, Token.len, false, &FmtData.u.nov.exp.module );
+    return( true );
+}
+
+bool ProcNovModule( void )
+/************************/
+{
+    return( ProcArgList( GetNovModule, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "Debug" Directive
+ ****************************************************************/
+
+bool ProcNovDBIExports( void )
+/****************************/
+{
+    FmtData.u.nov.flags |= DO_NOV_EXPORTS;
+    return( true );
+}
+
+bool ProcNovDBIReferenced( void )
+/*******************************/
+{
+    FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
+    return( true );
+}
+
+bool ProcExportsDBI( void )
+/*************************/
+{
+    DBIFlag |= DBI_ONLY_EXPORTS;
+    FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
+    return( true );
+}
+
+bool ProcNovDBI( void )
+/*********************/
+{
+    LinkFlags |= LF_NOVELL_DBI_FLAG;
+    if( ProcOne( NovDBIOptions, SEP_NO, false ) ) {
+        while( ProcOne( NovDBIOptions, SEP_COMMA, false ) ) {
+            ; /*null loop*/
+        }
+    }
+    return( true );
+}
+
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
+
 static bool ProcModuleTypeN( int n )
 /**********************************/
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = n;
     return( true );
-}
-
-bool ProcNovell( void )
-/*********************/
-{
-    if( !ProcOne( NovModels, SEP_NO, false ) ) {    // get file type
-        int     nType = 0;
-
-        if( (nType = atoi( Token.this )) > 0 ) {
-            GetToken( SEP_NO, TOK_INCLUDE_DOT );
-            ProcModuleTypeN( nType );
-        } else {
-            ProcNLM();
-        }
-    }
-    if( GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {  // get description
-        FmtData.description = tostring();
-    }
-    return( true );
-}
-
-void SetNovFmt( void )
-/********************/
-{
-    Extension = E_NLM;
-}
-
-void FreeNovFmt( void )
-/*********************/
-{
-    _LnkFree( FmtData.description );
-    _LnkFree( FmtData.u.nov.screenname );
-    _LnkFree( FmtData.u.nov.checkfn );
-    _LnkFree( FmtData.u.nov.exitfn );
-    _LnkFree( FmtData.u.nov.customdata );
-    _LnkFree( FmtData.u.nov.threadname );
-    _LnkFree( FmtData.u.nov.copyright );
-    _LnkFree( FmtData.u.nov.messages );
-    _LnkFree( FmtData.u.nov.help );
-    _LnkFree( FmtData.u.nov.rpcdata );
-    _LnkFree( FmtData.u.nov.sharednlm );
-/*  FreeList( FmtData.u.nov.exp.export );
-    FreeList( FmtData.u.nov.exp.module );  Permalloc'd now */
 }
 
 bool ProcNLM( void )
@@ -654,63 +724,23 @@ bool ProcModuleType12( void )
 }
 #endif
 
-static bool GetNovModule( void )
-/******************************/
-{
-    AddNameTable( Token.this, Token.len, false, &FmtData.u.nov.exp.module );
-    return( true );
-}
-
-bool ProcNovModule( void )
-/************************/
-{
-    return( ProcArgList( GetNovModule, TOK_INCLUDE_DOT ) );
-}
-
-bool ProcOSDomain( void )
-/***********************/
-{
-    FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
-    return( true );
-}
-
-bool ProcNovDBIExports( void )
-/****************************/
-{
-    FmtData.u.nov.flags |= DO_NOV_EXPORTS;
-    return( true );
-}
-
-bool ProcNovDBIReferenced( void )
-/*******************************/
-{
-    FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
-    return( true );
-}
-
-bool ProcNovDBI( void )
+bool ProcNovell( void )
 /*********************/
 {
-    LinkFlags |= LF_NOVELL_DBI_FLAG;
-    if( ProcOne( NovDBIOptions, SEP_NO, false ) ) {
-        while( ProcOne( NovDBIOptions, SEP_COMMA, false ) ) {
-            ; /*null loop*/
+    if( !ProcOne( NovModels, SEP_NO, false ) ) {    // get file type
+        int     nType = 0;
+
+        if( (nType = atoi( Token.this )) > 0 ) {
+            GetToken( SEP_NO, TOK_INCLUDE_DOT );
+            ProcModuleTypeN( nType );
+        } else {
+            ProcNLM();
         }
     }
+    if( GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {  // get description
+        FmtData.description = tostring();
+    }
     return( true );
-}
-
-bool ProcExportsDBI( void )
-/*************************/
-{
-    DBIFlag |= DBI_ONLY_EXPORTS;
-    FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
-    return( true );
-}
-
-void CmdNovFini( void )
-/*********************/
-{
 }
 
 #endif

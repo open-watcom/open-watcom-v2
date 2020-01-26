@@ -46,130 +46,46 @@
 
 #ifdef _DOS16M
 
-bool ProcMemory16M( void )
-/************************/
-{
-    return( ProcOne( Strategies, SEP_NO, false ) );
-}
-
-bool ProcTryExtended( void )
-/**************************/
-{
-    FmtData.u.d16m.strategy = MPreferExt;
-    return( true );
-}
-
-bool ProcTryLow( void )
+void SetD16MFmt( void )
 /*********************/
 {
-    FmtData.u.d16m.strategy = MPreferLow;
-    return( true );
+    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
+    Extension = E_PROTECT;
+    FmtData.u.d16m.options = 0;
+    FmtData.u.d16m.flags = 0;
+    FmtData.u.d16m.strategy = MNoStrategy;
+    FmtData.u.d16m.buffer = 0;
+    FmtData.u.d16m.gdtsize = 0xFFFF;        // 64 K - 1.
+    FmtData.u.d16m.selstart = D16M_USER_SEL;
+    FmtData.u.d16m.extended = 0x7FFF;
+    FmtData.u.d16m.datasize = 0x1000;
+    FmtData.u.d16m.exp_name = NULL;
+    FmtData.u.d16m.stub = NULL;
 }
 
-bool ProcForceExtended( void )
-/****************************/
+void FreeD16MFmt( void )
+/**********************/
 {
-    FmtData.u.d16m.strategy = MForceExt;
-    return( true );
+    _LnkFree( FmtData.u.d16m.exp_name );
+    _LnkFree( FmtData.u.d16m.stub );
 }
 
-bool ProcForceLow( void )
-/***********************/
+void CmdD16MFini( void )
+/**********************/
 {
-    FmtData.u.d16m.strategy = MForceLow;
-    return( true );
-}
+    const char          *base_name;
+    size_t              base_name_len;
 
-bool ProcTransparent( void )
-/**************************/
-{
-    if( FmtData.u.d16m.flags & TRANS_SPECD ) {
-        LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
-        return( true );
-    } else {
-        return( ProcOne( TransTypes, SEP_NO, false ) );
+    if( FmtData.u.d16m.exp_name == NULL && Name != NULL ) {
+        base_name = GetBaseName( Name, strlen( Name ), &base_name_len );
+        FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
     }
 }
 
-bool ProcTStack( void )
-/*********************/
-{
-    FmtData.u.d16m.flags |= TRANS_STACK;
-    return( true );
-}
 
-bool ProcTData( void )
-/********************/
-{
-    if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
-    }
-    FmtData.u.d16m.flags |= TRANS_DATA;
-    LinkState |= LS_MAKE_RELOCS;
-    return( true );
-}
-
-bool ProcKeyboard( void )
-/***********************/
-{
-    FmtData.u.d16m.options |= OPT_KEYBOARD;
-    return( true );
-}
-
-bool ProcOverload( void )
-/***********************/
-{
-    FmtData.u.d16m.options |= OPT_OVERLOAD;
-    return( true );
-}
-
-bool ProcInt10( void )
-/********************/
-{
-    FmtData.u.d16m.options |= OPT_INT10;
-    return( true );
-}
-
-bool ProcInit00( void )
-/*********************/
-{
-    FmtData.u.d16m.options |= OPT_INIT00;
-    return( true );
-}
-
-bool ProcInitFF( void )
-/*********************/
-{
-    FmtData.u.d16m.options |= OPT_INITFF;
-    return( true );
-}
-
-bool ProcRotate( void )
-/*********************/
-{
-    FmtData.u.d16m.options |= OPT_ROTATE;
-    return( true );
-}
-
-bool ProcSelectors( void )
-/************************/
-// force selectors to be assigned at load time.
-{
-    FmtData.u.d16m.options |= OPT_AUTO;
-    return( true );
-}
-
-bool ProcAuto( void )
-/*******************/
-// force selectors to be assigned at load time, and force relocs as well.
-{
-    if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
-    }
-    FmtData.u.d16m.options |= OPT_AUTO;
-    LinkState |= LS_MAKE_RELOCS;
-    return( true );
-}
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcBuffer( void )
 /*********************/
@@ -290,46 +206,157 @@ bool ProcDataSize( void )
     return( true );
 }
 
-void SetD16MFmt( void )
-/*********************/
+
+/****************************************************************
+ * "RUntime" SysDirective
+ ****************************************************************/
+
+bool ProcKeyboard( void )
+/***********************/
 {
-    LinkState &= ~LS_MAKE_RELOCS;           // assume none being produced.
-    Extension = E_PROTECT;
-    FmtData.u.d16m.options = 0;
-    FmtData.u.d16m.flags = 0;
-    FmtData.u.d16m.strategy = MNoStrategy;
-    FmtData.u.d16m.buffer = 0;
-    FmtData.u.d16m.gdtsize = 0xFFFF;        // 64 K - 1.
-    FmtData.u.d16m.selstart = D16M_USER_SEL;
-    FmtData.u.d16m.extended = 0x7FFF;
-    FmtData.u.d16m.datasize = 0x1000;
-    FmtData.u.d16m.exp_name = NULL;
-    FmtData.u.d16m.stub = NULL;
+    FmtData.u.d16m.options |= OPT_KEYBOARD;
+    return( true );
 }
 
-void FreeD16MFmt( void )
-/**********************/
+bool ProcOverload( void )
+/***********************/
 {
-    _LnkFree( FmtData.u.d16m.exp_name );
-    _LnkFree( FmtData.u.d16m.stub );
+    FmtData.u.d16m.options |= OPT_OVERLOAD;
+    return( true );
 }
+
+bool ProcInt10( void )
+/********************/
+{
+    FmtData.u.d16m.options |= OPT_INT10;
+    return( true );
+}
+
+bool ProcInit00( void )
+/*********************/
+{
+    FmtData.u.d16m.options |= OPT_INIT00;
+    return( true );
+}
+
+bool ProcInitFF( void )
+/*********************/
+{
+    FmtData.u.d16m.options |= OPT_INITFF;
+    return( true );
+}
+
+bool ProcRotate( void )
+/*********************/
+{
+    FmtData.u.d16m.options |= OPT_ROTATE;
+    return( true );
+}
+
+bool ProcSelectors( void )
+/*************************
+ * force selectors to be assigned at load time.
+ */
+{
+    FmtData.u.d16m.options |= OPT_AUTO;
+    return( true );
+}
+
+bool ProcAuto( void )
+/********************
+ * force selectors to be assigned at load time, and force relocs as well.
+ */
+{
+    if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
+        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
+    }
+    FmtData.u.d16m.options |= OPT_AUTO;
+    LinkState |= LS_MAKE_RELOCS;
+    return( true );
+}
+
+
+/****************************************************************
+ * "MEmory" SysDirective
+ ****************************************************************/
+
+bool ProcTryExtended( void )
+/**************************/
+{
+    FmtData.u.d16m.strategy = MPreferExt;
+    return( true );
+}
+
+bool ProcTryLow( void )
+/*********************/
+{
+    FmtData.u.d16m.strategy = MPreferLow;
+    return( true );
+}
+
+bool ProcForceExtended( void )
+/****************************/
+{
+    FmtData.u.d16m.strategy = MForceExt;
+    return( true );
+}
+
+bool ProcForceLow( void )
+/***********************/
+{
+    FmtData.u.d16m.strategy = MForceLow;
+    return( true );
+}
+
+bool ProcMemory16M( void )
+/************************/
+{
+    return( ProcOne( Strategies, SEP_NO, false ) );
+}
+
+
+/****************************************************************
+ * "TRansparent" SysDirective
+ ****************************************************************/
+
+bool ProcTStack( void )
+/*********************/
+{
+    FmtData.u.d16m.flags |= TRANS_STACK;
+    return( true );
+}
+
+bool ProcTData( void )
+/********************/
+{
+    if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
+        LnkMsg( LOC+LINE+WRN+MSG_TRANS_RELOCS_NEEDED, NULL );
+    }
+    FmtData.u.d16m.flags |= TRANS_DATA;
+    LinkState |= LS_MAKE_RELOCS;
+    return( true );
+}
+
+bool ProcTransparent( void )
+/**************************/
+{
+    if( FmtData.u.d16m.flags & TRANS_SPECD ) {
+        LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
+        return( true );
+    } else {
+        return( ProcOne( TransTypes, SEP_NO, false ) );
+    }
+}
+
+
+/****************************************************************
+ * "FORMat" SysDirective/Directive
+ ****************************************************************/
 
 bool Proc16M( void )
 /******************/
 {
     return( true );
-}
-
-void CmdD16MFini( void )
-/**********************/
-{
-    const char          *base_name;
-    size_t              base_name_len;
-
-    if( FmtData.u.d16m.exp_name == NULL && Name != NULL ) {
-        base_name = GetBaseName( Name, strlen( Name ), &base_name_len );
-        FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
-    }
 }
 
 #endif

@@ -59,40 +59,39 @@ static bool             getimport( void );
 static bool             getexport( void );
 static bool             getsegflags( void );
 
-bool ProcOS2Import( void )
-/*******************************/
+void SetOS2Fmt( void )
+/*********************/
+// set up the structures needed to be able to process something in OS/2 mode.
 {
-    return( ProcArgList( &getimport, TOK_NORMAL ) );
-}
-
-bool ProcOS2Export( void )
-/*******************************/
-{
-    bool    retval;
-
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        retval = GetWlibImports();
-    } else {
-        retval =  ProcArgList( &getexport, TOK_NORMAL );
+    if( LinkState & LS_FMT_INITIALIZED )
+        return;
+    LinkState |= LS_FMT_INITIALIZED;
+    FmtData.u.os2.flags = MULTIPLE_AUTO_DATA;
+    FmtData.u.os2.heapsize = 0;
+    FmtData.u.os2.segment_shift = 0;
+    FmtData.u.os2.module_name = NULL;
+    FmtData.u.os2.stub_file_name = NULL;
+    FmtData.u.os2.seg_flags = NULL;
+    FmtData.description = NULL;
+    FmtData.u.os2.exports = NULL;
+    FmtData.u.os2.old_lib_name = NULL;
+    if( FmtData.type & MK_WINDOWS ) {
+        FmtData.def_seg_flags |= SEG_PRELOAD;
     }
-    return( retval );
+    Extension = E_LOAD;
+    ChkBase( _64KB );
 }
 
-bool ProcAnonExport( void )
-/********************************/
+void FreeOS2Fmt( void )
+/**********************/
 {
-    bool    retval;
-
-    CmdFlags |= CF_ANON_EXPORT;
-    retval = ProcOS2Export();
-    CmdFlags &= ~CF_ANON_EXPORT;
-    return( retval );
-}
-
-bool ProcOS2Segment( void )
-/********************************/
-{
-    return( ProcArgList( &getsegflags, TOK_INCLUDE_DOT ) );
+    _LnkFree( FmtData.u.os2.stub_file_name );
+    _LnkFree( FmtData.u.os2.module_name );
+    _LnkFree( FmtData.u.os2.old_lib_name );
+    _LnkFree( FmtData.description );
+    FreeImpNameTab();
+    FreeExportList();
+    FreeSegFlags( (xxx_seg_flags *)FmtData.u.os2.seg_flags );
 }
 
 static entry_export *ProcWlibDLLImportEntry( void )
@@ -180,111 +179,10 @@ static bool GetWlibImports( void )
     return( true );
 }
 
-static bool getimport( void )
-/***************************/
-{
-    length_name         intname;
-    length_name         modname;
-    length_name         extname;
-    unsigned_16         ordinal;
-    ord_state           state;
 
-    DUPSTR_STACK( intname.name, Token.this, Token.len );
-    intname.len = Token.len;
-    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
-        return( false );
-    }
-    DUPSTR_STACK( modname.name, Token.this, Token.len );
-    modname.len = Token.len;
-    ordinal = 0;
-    state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
-    if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
-        state =  getatoi( &ordinal );
-        if( state == ST_NOT_ORDINAL ) {
-            DUPSTR_STACK( extname.name, Token.this, Token.len );
-            extname.len = Token.len;
-        } else if( state == ST_INVALID_ORDINAL ) {
-            LnkMsg( LOC+LINE+MSG_IMPORT_ORD_INVALID + ERR, NULL );
-            return( true );
-        }
-    }
-    if( state == ST_IS_ORDINAL ) {
-        HandleImport( &intname, &modname, &intname, ordinal );
-    } else {
-        if( state == ST_NOT_ORDINAL ) {
-            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
-        } else {
-            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
-        }
-    }
-    return( true );
-}
-
-static bool getexport( void )
-/***************************/
-{
-    entry_export    *exp;
-    unsigned_16     val16;
-    unsigned_32     val32;
-
-    exp = AllocExport( Token.this, Token.len );
-    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
-    if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
-        if( getatol( &val32 ) != ST_IS_ORDINAL ) {
-            LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
-            _LnkFree( exp );
-            GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
-            return( true );
-        }
-        exp->ordinal = val32;
-    }
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        exp->sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
-        if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-            exp->impname = tostring();
-        }
-    } else {
-        exp->sym = RefISymbol( exp->name.u.ptr );
-    }
-    exp->sym->info |= SYM_DCE_REF;      //make sure it is not removed
-    if( exp->ordinal == 0 ) {
-        exp->isresident = true;   // no ordinal spec'd so must be kept resident
-    }
-    exp->next = FmtData.u.os2.exports;    // put in the front of the list for
-    FmtData.u.os2.exports = exp;          // now so ProcResidant can get to it.
-    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {
-        // handle misc options
-    }
-    FmtData.u.os2.exports = exp->next;       // take it off the list
-    exp->iopl_words = 0;
-    if( (FmtData.type & (MK_WINDOWS | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
-            if( val16 > 63 ) {
-                LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
-            } else {
-                exp->iopl_words = val16;
-            }
-        } else {
-            Token.thumb = true;     // reprocess the token.
-        }
-    }
-    AddToExportList( exp );
-    return( true );
-}
-
-bool ProcExpResident( void )
-/*********************************/
-{
-    FmtData.u.os2.exports->isresident = true;
-    return( true );
-}
-
-bool ProcPrivate( void )
-/******************************/
-{
-    FmtData.u.os2.exports->isprivate = true;
-    return( true );
-}
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcOS2Alignment( void )
 /**********************************/
@@ -352,32 +250,6 @@ bool ProcOS2HeapSize( void )
     return( true );
 }
 
-bool ProcCommitStack( void )
-/*********************************/
-{
-    return( GetLong( &FmtData.u.pe.stackcommit ) );
-}
-
-bool ProcCommitHeap( void )
-/********************************/
-{
-    return( GetLong( &FmtData.u.pe.heapcommit ) );
-}
-
-static bool AddCommit( void )
-/***************************/
-{
-    Token.thumb = true;
-    return( ProcOne( CommitKeywords, SEP_NO, false ) );
-}
-
-bool ProcCommit( void )
-/****************************/
-// set NT stack and heap commit sizes.
-{
-    return( ProcArgList( AddCommit, TOK_INCLUDE_DOT ) );
-}
-
 bool ProcRWRelocCheck( void )
 /**********************************/
 // check for segment relocations pointing to read/write data segments
@@ -434,272 +306,279 @@ bool ProcNoStdCall( void )
     return( true );
 }
 
-bool ProcOS2( void )
-/*************************/
-// process the format os2 or format windows directives
-//
-{
-    Extension = E_LOAD;
-    while( ProcOne( SubFormats, SEP_NO, false ) ) {
-        // NOTE NULL loop
-    }
-    if( FmtData.type & MK_WINDOWS ) {
-        if( ProcOne( WindowsFormatKeywords, SEP_NO, false ) ) {
-            ProcOne( WindowsFormatKeywords, SEP_NO, false );
-        }
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        ProcOne( VXDFormatKeywords, SEP_NO, false );
-        FmtData.dll = true;
-    } else {
-        ProcOne( OS2FormatKeywords, SEP_NO, false );
-        if( FmtData.type & MK_OS2_LX ) {
-            if( FmtData.dll ) {
-                FmtData.u.os2.gen_int_relocs = true;
-            }
-        }
-    }
-    if( FmtData.type & MK_ONLY_OS2_16 ) {       // if no 32-bit thing specd
-        HintFormat( MK_ONLY_OS2_16 );   // make sure 16-bit is what we get
-        if( FmtData.dll ) {
-            FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
-            FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
-        }
-    }
-    return( true );
-}
-
-bool ProcPE( void )
-/************************/
-{
-    ProcOne( NTFormatKeywords, SEP_NO, false );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = DEF_VALUE;
-    FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
-    return( true );
-}
-
-bool ProcVXD( void )
-/************************/
-{
-    return( ProcOS2() );
-/*
-    ProcOne( VXDFormatKeywords, SEP_NO, false );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = DEF_VALUE;
-    return( true );
-*/
-}
-
-bool ProcWindows( void )
-/*****************************/
-{
-    return( ProcOS2() );
-}
-
-void SetOS2Fmt( void )
-/*********************/
-// set up the structures needed to be able to process something in OS/2 mode.
-{
-    if( LinkState & LS_FMT_INITIALIZED )
-        return;
-    LinkState |= LS_FMT_INITIALIZED;
-    FmtData.u.os2.flags = MULTIPLE_AUTO_DATA;
-    FmtData.u.os2.heapsize = 0;
-    FmtData.u.os2.segment_shift = 0;
-    FmtData.u.os2.module_name = NULL;
-    FmtData.u.os2.stub_file_name = NULL;
-    FmtData.u.os2.seg_flags = NULL;
-    FmtData.description = NULL;
-    FmtData.u.os2.exports = NULL;
-    FmtData.u.os2.old_lib_name = NULL;
-    if( FmtData.type & MK_WINDOWS ) {
-        FmtData.def_seg_flags |= SEG_PRELOAD;
-    }
-    Extension = E_LOAD;
-    ChkBase( _64KB );
-}
-
-void FreeOS2Fmt( void )
-/**********************/
-{
-    _LnkFree( FmtData.u.os2.stub_file_name );
-    _LnkFree( FmtData.u.os2.module_name );
-    _LnkFree( FmtData.u.os2.old_lib_name );
-    _LnkFree( FmtData.description );
-    FreeImpNameTab();
-    FreeExportList();
-    FreeSegFlags( (xxx_seg_flags *)FmtData.u.os2.seg_flags );
-}
-
-bool ProcLE( void )
-/************************/
-{
-    return( true );
-}
-
-bool ProcLX( void )
-/************************/
-{
-    return( true );
-}
-
-bool ProcOS2DLL( void )
+bool ProcSingle( void )
 /****************************/
 {
-    FmtData.dll = true;
-    Extension = E_DLL;
-    if( FmtData.type & MK_WINDOWS ) {
-        FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
-        FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
-        FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
+    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
+        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
     }
-    if( ProcOne( Init_Keywords, SEP_NO, false ) ) {
-        if( !ProcOne( Term_Keywords, SEP_NO, false ) ) {
-            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
-                FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
-            }
-        }
+    FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
+    FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
+    return( true );
+}
+
+bool ProcMultiple( void )
+/******************************/
+{
+    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
+        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
     }
+    FmtData.u.os2.flags &= ~SINGLE_AUTO_DATA;
+    FmtData.u.os2.flags |= MULTIPLE_AUTO_DATA;
     return( true );
 }
 
-bool ProcPhysDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= PHYS_DEVICE;
-    return( true );
-}
-
-bool ProcVirtDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= VIRT_DEVICE;
-    return( true );
-}
-
-bool ProcPM( void )
-/************************/
-{
-    FmtData.u.os2.flags |= PM_APPLICATION;
-    return( true );
-}
-
-bool ProcPMCompatible( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= PM_COMPATIBLE;
-    return( true );
-}
-
-bool ProcPMFullscreen( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
-    return( true );
-}
-
-bool ProcMemory( void )
-/****************************/
-{
-    FmtData.u.os2.flags |= CLEAN_MEMORY;
-    return( true );
-}
-
-bool ProcFont( void )
+bool ProcNone( void )
 /**************************/
 {
-    FmtData.u.os2.flags |= PROPORTIONAL_FONT;
+    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
+        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
+    }
+    FmtData.u.os2.flags &= ~(SINGLE_AUTO_DATA | MULTIPLE_AUTO_DATA);
     return( true );
 }
 
-bool ProcDynamicDriver( void )
+bool ProcLinkVersion( void )
+/**************************/
+{
+    version_state   result;
+    version_block   vb;
+
+    /* set required limits, 0 = no limit */
+    vb.major = 255;
+    vb.minor = 255;
+    vb.revision = 0;
+    vb.message = "LINKVERSION";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
+    if( result != GENVER_ERROR ) {
+        FmtData.u.pe.lnk_specd = true;
+        FmtData.u.pe.linkmajor = vb.major;
+        FmtData.u.pe.linkminor = vb.minor;
+        return( true );
+    }
+    return( false );
+}
+
+bool ProcOsVersion( void )
+/************************/
+{
+    version_state   result;
+    version_block   vb;
+
+    /* set required limits, 0 = no limit */
+    vb.major = 0;
+    vb.minor = 99;          /* from old default of 100 max */
+    vb.revision = 0;
+    vb.message = "OSVERSION";
+    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
+    if( result != GENVER_ERROR ) {
+        FmtData.u.pe.osv_specd = true;
+        FmtData.u.pe.osmajor = vb.major;
+        FmtData.u.pe.osminor = vb.minor;
+        return( true );
+    }
+    return( false );    /* error has occurred */
+}
+
+bool     ProcChecksum( void )
+{
+    FmtData.u.pe.checksumfile = true;
+    return( true );
+}
+
+bool ProcLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.os2.flags |= VIRT_DEVICE;
+    FmtData.u.pe.largeaddressaware = true;
+    FmtData.u.pe.nolargeaddressaware = false;
     return( true );
 }
 
-bool ProcStaticDriver( void )
+bool ProcNoLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.os2.flags |= PHYS_DEVICE;
+    FmtData.u.pe.nolargeaddressaware = true;
+    FmtData.u.pe.largeaddressaware = false;
     return( true );
 }
 
-bool ProcInitGlobal( void )
-/********************************/
-{
-    FmtData.u.os2.flags &= ~INIT_INSTANCE_FLAG;
-    return( true );
-}
 
-bool ProcInitInstance( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= INIT_INSTANCE_FLAG;
-    return( true );
-}
+/****************************************************************
+ * "RESource" Directive
+ ****************************************************************/
 
-bool ProcInitThread( void )
-/********************************/
-{
-    FmtData.u.os2.flags |= INIT_THREAD_FLAG;
-    return( true );
-}
-
-bool ProcTermGlobal( void )
-/********************************/
-{
-    FmtData.u.os2.flags &= ~TERM_INSTANCE_FLAG;
-    return( true );
-}
-
-bool ProcTermInstance( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
-    return( true );
-}
-
-bool ProcTermThread( void )
-/********************************/
-{
-    FmtData.u.os2.flags |= TERM_THREAD_FLAG;
-    return( true );
-}
-
-static bool getsegflags( void )
+static bool AddResource( void )
 /*****************************/
 {
-    os2_seg_flags   *entry;
+    char    *str;
 
-    Token.thumb = true;
-    _ChkAlloc( entry, sizeof( os2_seg_flags ) );
-    entry->specified = 0;
-    entry->flags = FmtData.def_seg_flags;    // default value.
-    entry->name = NULL;
-    entry->type = SEGFLAG_SEGMENT;
-    entry->next = FmtData.u.os2.seg_flags;
-    FmtData.u.os2.seg_flags = entry;
-    ProcOne( SegDesc, SEP_NO, false );          // look for an optional segdesc
-    if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
-        if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-            FmtData.u.os2.seg_flags = entry->next;
-            _LnkFree( entry );
-            return( false );
-        }
-        entry->name = tostring();
+    str = tostring();
+    DoAddResource( str );
+    _LnkFree( str );
+    return( true );
+}
+
+bool ProcResource( void )
+/******************************/
+{
+    return( ProcArgList( &AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+}
+
+
+/****************************************************************
+ * "IMPort" Directive
+ ****************************************************************/
+
+static bool getimport( void )
+/***************************/
+{
+    length_name         intname;
+    length_name         modname;
+    length_name         extname;
+    unsigned_16         ordinal;
+    ord_state           state;
+
+    DUPSTR_STACK( intname.name, Token.this, Token.len );
+    intname.len = Token.len;
+    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
+        return( false );
     }
-    while( ProcOne( SegModel, SEP_NO, false ) ) {
+    DUPSTR_STACK( modname.name, Token.this, Token.len );
+    modname.len = Token.len;
+    ordinal = 0;
+    state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
+    if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
+        state =  getatoi( &ordinal );
+        if( state == ST_NOT_ORDINAL ) {
+            DUPSTR_STACK( extname.name, Token.this, Token.len );
+            extname.len = Token.len;
+        } else if( state == ST_INVALID_ORDINAL ) {
+            LnkMsg( LOC+LINE+MSG_IMPORT_ORD_INVALID + ERR, NULL );
+            return( true );
+        }
+    }
+    if( state == ST_IS_ORDINAL ) {
+        HandleImport( &intname, &modname, &intname, ordinal );
+    } else {
+        if( state == ST_NOT_ORDINAL ) {
+            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+        } else {
+            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
+        }
     }
     return( true );
 }
+
+bool ProcOS2Import( void )
+/*******************************/
+{
+    return( ProcArgList( &getimport, TOK_NORMAL ) );
+}
+
+
+/****************************************************************
+ * "EXPort" Directive
+ ****************************************************************/
+
+bool ProcExpResident( void )
+/*********************************/
+{
+    FmtData.u.os2.exports->isresident = true;
+    return( true );
+}
+
+bool ProcPrivate( void )
+/******************************/
+{
+    FmtData.u.os2.exports->isprivate = true;
+    return( true );
+}
+
+static bool getexport( void )
+/***************************/
+{
+    entry_export    *exp;
+    unsigned_16     val16;
+    unsigned_32     val32;
+
+    exp = AllocExport( Token.this, Token.len );
+    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
+    if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
+        if( getatol( &val32 ) != ST_IS_ORDINAL ) {
+            LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
+            _LnkFree( exp );
+            GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
+            return( true );
+        }
+        exp->ordinal = val32;
+    }
+    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
+        exp->sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
+        if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
+            exp->impname = tostring();
+        }
+    } else {
+        exp->sym = RefISymbol( exp->name.u.ptr );
+    }
+    exp->sym->info |= SYM_DCE_REF;      //make sure it is not removed
+    if( exp->ordinal == 0 ) {
+        exp->isresident = true;   // no ordinal spec'd so must be kept resident
+    }
+    exp->next = FmtData.u.os2.exports;    // put in the front of the list for
+    FmtData.u.os2.exports = exp;          // now so ProcResidant can get to it.
+    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {
+        // handle misc options
+    }
+    FmtData.u.os2.exports = exp->next;       // take it off the list
+    exp->iopl_words = 0;
+    if( (FmtData.type & (MK_WINDOWS | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+        if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
+            if( val16 > 63 ) {
+                LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
+            } else {
+                exp->iopl_words = val16;
+            }
+        } else {
+            Token.thumb = true;     // reprocess the token.
+        }
+    }
+    AddToExportList( exp );
+    return( true );
+}
+
+bool ProcOS2Export( void )
+/*******************************/
+{
+    bool    retval;
+
+    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
+        retval = GetWlibImports();
+    } else {
+        retval =  ProcArgList( &getexport, TOK_NORMAL );
+    }
+    return( retval );
+}
+
+
+/****************************************************************
+ * "ANONymousexport" Directive
+ ****************************************************************/
+
+bool ProcAnonExport( void )
+/********************************/
+{
+    bool    retval;
+
+    CmdFlags |= CF_ANON_EXPORT;
+    retval = ProcOS2Export();
+    CmdFlags &= ~CF_ANON_EXPORT;
+    return( retval );
+}
+
+
+/****************************************************************
+ * "SEGment" SysDirective
+ ****************************************************************/
 
 bool ProcOS2Class( void )
 /******************************/
@@ -965,40 +844,77 @@ bool ProcContiguous( void )
     return( true );
 }
 
-bool ProcSingle( void )
+static bool getsegflags( void )
+/*****************************/
+{
+    os2_seg_flags   *entry;
+
+    Token.thumb = true;
+    _ChkAlloc( entry, sizeof( os2_seg_flags ) );
+    entry->specified = 0;
+    entry->flags = FmtData.def_seg_flags;    // default value.
+    entry->name = NULL;
+    entry->type = SEGFLAG_SEGMENT;
+    entry->next = FmtData.u.os2.seg_flags;
+    FmtData.u.os2.seg_flags = entry;
+    ProcOne( SegDesc, SEP_NO, false );          // look for an optional segdesc
+    if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
+        if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+            FmtData.u.os2.seg_flags = entry->next;
+            _LnkFree( entry );
+            return( false );
+        }
+        entry->name = tostring();
+    }
+    while( ProcOne( SegModel, SEP_NO, false ) ) {
+    }
+    return( true );
+}
+
+bool ProcOS2Segment( void )
+/********************************/
+{
+    return( ProcArgList( &getsegflags, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "COMmit" Directive
+ ****************************************************************/
+
+bool ProcCommitStack( void )
+/*********************************/
+{
+    return( GetLong( &FmtData.u.pe.stackcommit ) );
+}
+
+bool ProcCommitHeap( void )
+/********************************/
+{
+    return( GetLong( &FmtData.u.pe.heapcommit ) );
+}
+
+static bool AddCommit( void )
+/***************************/
+{
+    Token.thumb = true;
+    return( ProcOne( CommitKeywords, SEP_NO, false ) );
+}
+
+bool ProcCommit( void )
 /****************************/
+// set NT stack and heap commit sizes.
 {
-    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
-    FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
-    return( true );
+    return( ProcArgList( AddCommit, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcMultiple( void )
-/******************************/
-{
-    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.flags &= ~SINGLE_AUTO_DATA;
-    FmtData.u.os2.flags |= MULTIPLE_AUTO_DATA;
-    return( true );
-}
 
-bool ProcNone( void )
-/**************************/
-{
-    if( CmdFlags & CF_AUTO_SEG_FLAG ) {
-        LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
-    }
-    FmtData.u.os2.flags &= ~(SINGLE_AUTO_DATA | MULTIPLE_AUTO_DATA);
-    return( true );
-}
+/****************************************************************
+ * "RUNtime" Directive
+ ****************************************************************/
 
-static void ParseVersion( void )
-/******************************/
+static void GetSubsystemVersion( void )
+/*************************************/
 {
     version_state   result;
     version_block   vb;
@@ -1019,7 +935,7 @@ bool ProcRunNative( void )
 /*******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_NATIVE;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1027,7 +943,7 @@ bool ProcRunWindows( void )
 /********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_GUI;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1035,7 +951,7 @@ bool ProcRunConsole( void )
 /********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_CHAR;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1043,7 +959,7 @@ bool ProcRunPosix( void )
 /******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_POSIX_CHAR;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1051,7 +967,7 @@ bool ProcRunOS2( void )
 /****************************/
 {
     FmtData.u.pe.subsystem = PE_SS_OS2_CHAR;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1061,7 +977,7 @@ bool ProcRunDosstyle( void )
 {
     FmtData.u.pe.subsystem = PE_SS_PL_DOSSTYLE;
     FmtData.u.pe.signature = PL_SIGNATURE;
-    ParseVersion();
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1093,89 +1009,219 @@ bool ProcEFI( void )
 {
     Extension = E_EFI;
     FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
-    ParseVersion();
+    GetSubsystemVersion();
 
     return( true );
 }
 
-static bool AddResource( void )
-/*****************************/
-{
-    char    *str;
 
-    str = tostring();
-    DoAddResource( str );
-    _LnkFree( str );
-    return( true );
-}
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
 
-bool ProcResource( void )
-/******************************/
-{
-    return( ProcArgList( &AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
-}
-
-bool ProcLinkVersion( void )
-/**************************/
-{
-    version_state   result;
-    version_block   vb;
-
-    /* set required limits, 0 = no limit */
-    vb.major = 255;
-    vb.minor = 255;
-    vb.revision = 0;
-    vb.message = "LINKVERSION";
-    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
-    if( result != GENVER_ERROR ) {
-        FmtData.u.pe.lnk_specd = true;
-        FmtData.u.pe.linkmajor = vb.major;
-        FmtData.u.pe.linkminor = vb.minor;
-        return( true );
-    }
-    return( false );
-}
-
-bool ProcOsVersion( void )
+bool ProcPE( void )
 /************************/
 {
-    version_state   result;
-    version_block   vb;
+    ProcOne( NTFormatKeywords, SEP_NO, false );
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
+    FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
+    return( true );
+}
 
-    /* set required limits, 0 = no limit */
-    vb.major = 0;
-    vb.minor = 99;          /* from old default of 100 max */
-    vb.revision = 0;
-    vb.message = "OSVERSION";
-    result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
-    if( result != GENVER_ERROR ) {
-        FmtData.u.pe.osv_specd = true;
-        FmtData.u.pe.osmajor = vb.major;
-        FmtData.u.pe.osminor = vb.minor;
-        return( true );
+bool ProcVXD( void )
+/************************/
+{
+    return( ProcOS2() );
+/*
+    ProcOne( VXDFormatKeywords, SEP_NO, false );
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
+    return( true );
+*/
+}
+
+bool ProcLE( void )
+/************************/
+{
+    return( true );
+}
+
+bool ProcLX( void )
+/************************/
+{
+    return( true );
+}
+
+bool ProcOS2DLL( void )
+/****************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    if( FmtData.type & MK_WINDOWS ) {
+        FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
+        FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
+        FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
     }
-    return( false );    /* error has occurred */
-}
-
-bool     ProcChecksum( void )
-{
-    FmtData.u.pe.checksumfile = true;
+    if( ProcOne( Init_Keywords, SEP_NO, false ) ) {
+        if( !ProcOne( Term_Keywords, SEP_NO, false ) ) {
+            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+                FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
+            }
+        }
+    }
     return( true );
 }
 
-bool ProcLargeAddressAware( void )
+bool ProcPhysDevice( void )
 /********************************/
 {
-    FmtData.u.pe.largeaddressaware = true;
-    FmtData.u.pe.nolargeaddressaware = false;
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= PHYS_DEVICE;
     return( true );
 }
-bool ProcNoLargeAddressAware( void )
+
+bool ProcVirtDevice( void )
 /********************************/
 {
-    FmtData.u.pe.nolargeaddressaware = true;
-    FmtData.u.pe.largeaddressaware = false;
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= VIRT_DEVICE;
     return( true );
+}
+
+bool ProcPM( void )
+/************************/
+{
+    FmtData.u.os2.flags |= PM_APPLICATION;
+    return( true );
+}
+
+bool ProcPMCompatible( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= PM_COMPATIBLE;
+    return( true );
+}
+
+bool ProcPMFullscreen( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
+    return( true );
+}
+
+bool ProcMemory( void )
+/****************************/
+{
+    FmtData.u.os2.flags |= CLEAN_MEMORY;
+    return( true );
+}
+
+bool ProcFont( void )
+/**************************/
+{
+    FmtData.u.os2.flags |= PROPORTIONAL_FONT;
+    return( true );
+}
+
+bool ProcDynamicDriver( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= VIRT_DEVICE;
+    return( true );
+}
+
+bool ProcStaticDriver( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= PHYS_DEVICE;
+    return( true );
+}
+
+bool ProcInitGlobal( void )
+/********************************/
+{
+    FmtData.u.os2.flags &= ~INIT_INSTANCE_FLAG;
+    return( true );
+}
+
+bool ProcInitInstance( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= INIT_INSTANCE_FLAG;
+    return( true );
+}
+
+bool ProcInitThread( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= INIT_THREAD_FLAG;
+    return( true );
+}
+
+bool ProcTermGlobal( void )
+/********************************/
+{
+    FmtData.u.os2.flags &= ~TERM_INSTANCE_FLAG;
+    return( true );
+}
+
+bool ProcTermInstance( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
+    return( true );
+}
+
+bool ProcTermThread( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= TERM_THREAD_FLAG;
+    return( true );
+}
+
+bool ProcOS2( void )
+/*************************/
+// process the format os2 or format windows directives
+//
+{
+    Extension = E_LOAD;
+    while( ProcOne( SubFormats, SEP_NO, false ) ) {
+        // NOTE NULL loop
+    }
+    if( FmtData.type & MK_WINDOWS ) {
+        if( ProcOne( WindowsFormatKeywords, SEP_NO, false ) ) {
+            ProcOne( WindowsFormatKeywords, SEP_NO, false );
+        }
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        ProcOne( VXDFormatKeywords, SEP_NO, false );
+        FmtData.dll = true;
+    } else {
+        ProcOne( OS2FormatKeywords, SEP_NO, false );
+        if( FmtData.type & MK_OS2_LX ) {
+            if( FmtData.dll ) {
+                FmtData.u.os2.gen_int_relocs = true;
+            }
+        }
+    }
+    if( FmtData.type & MK_ONLY_OS2_16 ) {       // if no 32-bit thing specd
+        HintFormat( MK_ONLY_OS2_16 );   // make sure 16-bit is what we get
+        if( FmtData.dll ) {
+            FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
+            FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
+        }
+    }
+    return( true );
+}
+
+bool ProcWindows( void )
+/*****************************/
+{
+    return( ProcOS2() );
 }
 
 #endif
