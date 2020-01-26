@@ -73,13 +73,24 @@ void FreeRdosFmt( void )
 {
 }
 
-bool ProcRdos( void )
-/*******************/
+bool ProcRdosCodeSel( void )
+/***************************/
+/* process CODESelector option */
 {
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( RdosOptions, SEP_NO, false );
-    return( true );
+    return( GetLong( &FmtData.u.rdos.code_sel ) );
 }
+
+bool ProcRdosDataSel( void )
+/***************************/
+/* process DataSelector option */
+{
+    return( GetLong( &FmtData.u.rdos.data_sel ) );
+}
+
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcRdosDev16( void )
 /************************/
@@ -131,18 +142,12 @@ bool ProcRdosMboot( void )
     return( true );
 }
 
-bool ProcRdosCodeSel( void )
-/***************************/
-/* process CODESelector option */
+bool ProcRdos( void )
+/*******************/
 {
-    return( GetLong( &FmtData.u.rdos.code_sel ) );
-}
-
-bool ProcRdosDataSel( void )
-/***************************/
-/* process DataSelector option */
-{
-    return( GetLong( &FmtData.u.rdos.data_sel ) );
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
+    ProcOne( RdosOptions, SEP_NO, false );
+    return( true );
 }
 
 #endif

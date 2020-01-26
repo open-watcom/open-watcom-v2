@@ -54,11 +54,6 @@
 
 #ifdef _OS2
 
-static bool             GetWlibImports( void );
-static bool             getimport( void );
-static bool             getexport( void );
-static bool             getsegflags( void );
-
 void SetOS2Fmt( void )
 /*********************/
 // set up the structures needed to be able to process something in OS/2 mode.
@@ -95,6 +90,7 @@ void FreeOS2Fmt( void )
 }
 
 static entry_export *ProcWlibDLLImportEntry( void )
+/*************************************************/
 {
     unsigned_16     ordinal;
     entry_export    *exp;
@@ -380,7 +376,8 @@ bool ProcOsVersion( void )
     return( false );    /* error has occurred */
 }
 
-bool     ProcChecksum( void )
+bool ProcChecksum( void )
+/***********************/
 {
     FmtData.u.pe.checksumfile = true;
     return( true );
@@ -395,7 +392,7 @@ bool ProcLargeAddressAware( void )
 }
 
 bool ProcNoLargeAddressAware( void )
-/********************************/
+/**********************************/
 {
     FmtData.u.pe.nolargeaddressaware = true;
     FmtData.u.pe.largeaddressaware = false;
@@ -547,14 +544,14 @@ static bool getexport( void )
 }
 
 bool ProcOS2Export( void )
-/*******************************/
+/************************/
 {
     bool    retval;
 
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         retval = GetWlibImports();
     } else {
-        retval =  ProcArgList( &getexport, TOK_NORMAL );
+        retval = ProcArgList( &getexport, TOK_NORMAL );
     }
     return( retval );
 }
@@ -565,7 +562,7 @@ bool ProcOS2Export( void )
  ****************************************************************/
 
 bool ProcAnonExport( void )
-/********************************/
+/*************************/
 {
     bool    retval;
 
@@ -587,15 +584,6 @@ bool ProcOS2Class( void )
     return( true );
 }
 
-bool ProcSegType( void )
-/*****************************/
-{
-    if( !ProcOne( SegTypeDesc, SEP_NO, false ) ) {
-        LnkMsg( LOC+LINE+WRN+MSG_INVALID_TYPE_DESC, NULL );
-    }
-    return( true );
-}
-
 bool ProcSegCode( void )
 /*****************************/
 {
@@ -607,6 +595,15 @@ bool ProcSegData( void )
 /*****************************/
 {
     FmtData.u.os2.seg_flags->type = SEGFLAG_DATA;
+    return( true );
+}
+
+bool ProcSegType( void )
+/*****************************/
+{
+    if( !ProcOne( SegTypeDesc, SEP_NO, false ) ) {
+        LnkMsg( LOC+LINE+WRN+MSG_INVALID_TYPE_DESC, NULL );
+    }
     return( true );
 }
 
@@ -981,166 +978,10 @@ bool ProcRunDosstyle( void )
     return( true );
 }
 
-bool ProcTNT( void )
-/*************************/
-{
-    FmtData.u.pe.signature = PL_SIGNATURE;
-    return( true );
-}
-
-bool ProcRDOS( void )
-/*************************/
-{
-    FmtData.u.pe.subsystem = PE_SS_RDOS;
-
-    FmtData.u.pe.osmajor = 8;
-    FmtData.u.pe.osminor = 8;
-    FmtData.u.pe.osv_specd = true;
-
-    FmtData.u.pe.submajor = 1;
-    FmtData.u.pe.subminor = 0;
-    FmtData.u.pe.sub_specd = true;
-
-    return( true );
-}
-
-bool ProcEFI( void )
-/*************************/
-{
-    Extension = E_EFI;
-    FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
-    GetSubsystemVersion();
-
-    return( true );
-}
-
 
 /****************************************************************
  * "Format" SysDirective/Directive
  ****************************************************************/
-
-bool ProcPE( void )
-/************************/
-{
-    ProcOne( NTFormatKeywords, SEP_NO, false );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = DEF_VALUE;
-    FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
-    return( true );
-}
-
-bool ProcVXD( void )
-/************************/
-{
-    return( ProcOS2() );
-/*
-    ProcOne( VXDFormatKeywords, SEP_NO, false );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = DEF_VALUE;
-    return( true );
-*/
-}
-
-bool ProcLE( void )
-/************************/
-{
-    return( true );
-}
-
-bool ProcLX( void )
-/************************/
-{
-    return( true );
-}
-
-bool ProcOS2DLL( void )
-/****************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    if( FmtData.type & MK_WINDOWS ) {
-        FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
-        FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
-        FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
-    }
-    if( ProcOne( Init_Keywords, SEP_NO, false ) ) {
-        if( !ProcOne( Term_Keywords, SEP_NO, false ) ) {
-            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
-                FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
-            }
-        }
-    }
-    return( true );
-}
-
-bool ProcPhysDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= PHYS_DEVICE;
-    return( true );
-}
-
-bool ProcVirtDevice( void )
-/********************************/
-{
-    FmtData.dll = true;
-    Extension = E_DLL;
-    FmtData.u.os2.flags |= VIRT_DEVICE;
-    return( true );
-}
-
-bool ProcPM( void )
-/************************/
-{
-    FmtData.u.os2.flags |= PM_APPLICATION;
-    return( true );
-}
-
-bool ProcPMCompatible( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= PM_COMPATIBLE;
-    return( true );
-}
-
-bool ProcPMFullscreen( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
-    return( true );
-}
-
-bool ProcMemory( void )
-/****************************/
-{
-    FmtData.u.os2.flags |= CLEAN_MEMORY;
-    return( true );
-}
-
-bool ProcFont( void )
-/**************************/
-{
-    FmtData.u.os2.flags |= PROPORTIONAL_FONT;
-    return( true );
-}
-
-bool ProcDynamicDriver( void )
-/********************************/
-{
-    FmtData.u.os2.flags |= VIRT_DEVICE;
-    return( true );
-}
-
-bool ProcStaticDriver( void )
-/********************************/
-{
-    FmtData.u.os2.flags |= PHYS_DEVICE;
-    return( true );
-}
 
 bool ProcInitGlobal( void )
 /********************************/
@@ -1181,6 +1022,162 @@ bool ProcTermThread( void )
 /********************************/
 {
     FmtData.u.os2.flags |= TERM_THREAD_FLAG;
+    return( true );
+}
+
+bool ProcOS2DLL( void )
+/****************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    if( FmtData.type & MK_WINDOWS ) {
+        FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
+        FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
+        FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
+    }
+    if( ProcOne( Init_Keywords, SEP_NO, false ) ) {
+        if( !ProcOne( Term_Keywords, SEP_NO, false ) ) {
+            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+                FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
+            }
+        }
+    }
+    return( true );
+}
+
+bool ProcLX( void )
+/************************/
+{
+    return( true );
+}
+
+bool ProcLE( void )
+/************************/
+{
+    return( true );
+}
+
+bool ProcTNT( void )
+/*************************/
+{
+    FmtData.u.pe.signature = PL_SIGNATURE;
+    return( true );
+}
+
+bool ProcRDOS( void )
+/*************************/
+{
+    FmtData.u.pe.subsystem = PE_SS_RDOS;
+
+    FmtData.u.pe.osmajor = 8;
+    FmtData.u.pe.osminor = 8;
+    FmtData.u.pe.osv_specd = true;
+
+    FmtData.u.pe.submajor = 1;
+    FmtData.u.pe.subminor = 0;
+    FmtData.u.pe.sub_specd = true;
+
+    return( true );
+}
+
+bool ProcEFI( void )
+/*************************/
+{
+    Extension = E_EFI;
+    FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
+    GetSubsystemVersion();
+
+    return( true );
+}
+
+bool ProcPE( void )
+/************************/
+{
+    ProcOne( NTFormatKeywords, SEP_NO, false );
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
+    FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
+    return( true );
+}
+
+bool ProcVXD( void )
+/************************/
+{
+    return( ProcOS2() );
+/*
+    ProcOne( VXDFormatKeywords, SEP_NO, false );
+    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
+    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.pe.stackcommit = DEF_VALUE;
+    return( true );
+*/
+}
+
+bool ProcMemory( void )
+/****************************/
+{
+    FmtData.u.os2.flags |= CLEAN_MEMORY;
+    return( true );
+}
+
+bool ProcFont( void )
+/**************************/
+{
+    FmtData.u.os2.flags |= PROPORTIONAL_FONT;
+    return( true );
+}
+
+bool ProcDynamicDriver( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= VIRT_DEVICE;
+    return( true );
+}
+
+bool ProcStaticDriver( void )
+/********************************/
+{
+    FmtData.u.os2.flags |= PHYS_DEVICE;
+    return( true );
+}
+
+bool ProcPhysDevice( void )
+/********************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= PHYS_DEVICE;
+    return( true );
+}
+
+bool ProcVirtDevice( void )
+/********************************/
+{
+    FmtData.dll = true;
+    Extension = E_DLL;
+    FmtData.u.os2.flags |= VIRT_DEVICE;
+    return( true );
+}
+
+bool ProcPM( void )
+/************************/
+{
+    FmtData.u.os2.flags |= PM_APPLICATION;
+    return( true );
+}
+
+bool ProcPMCompatible( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= PM_COMPATIBLE;
+    return( true );
+}
+
+bool ProcPMFullscreen( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
     return( true );
 }
 

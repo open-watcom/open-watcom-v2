@@ -570,6 +570,14 @@ bool ProcNovModule( void )
  * "Debug" Directive
  ****************************************************************/
 
+bool ProcExportsDBI( void )
+/*************************/
+{
+    DBIFlag |= DBI_ONLY_EXPORTS;
+    FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
+    return( true );
+}
+
 bool ProcNovDBIExports( void )
 /****************************/
 {
@@ -581,14 +589,6 @@ bool ProcNovDBIReferenced( void )
 /*******************************/
 {
     FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
-    return( true );
-}
-
-bool ProcExportsDBI( void )
-/*************************/
-{
-    DBIFlag |= DBI_ONLY_EXPORTS;
-    FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
     return( true );
 }
 

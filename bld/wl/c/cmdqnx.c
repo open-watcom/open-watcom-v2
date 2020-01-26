@@ -52,21 +52,6 @@
 
 #ifdef _QNX
 
-bool ProcQNX( void )
-/*************************/
-{
-    if( !ProcOne( QNXFormats, SEP_NO, false ) ) {
-        HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode
-    }
-    return( true );
-}
-
-bool ProcQNXFlat( void )
-/*****************************/
-{
-    return( true );
-}
-
 void SetQNXFmt( void )
 /***************************/
 {
@@ -94,66 +79,10 @@ void CmdQNXFini( void )
     }
 }
 
-static bool getSegFlags( void )
-/*****************************/
-{
-    bool            isclass;
-    qnx_seg_flags   *entry;
 
-    Token.thumb = true;
-    isclass = ProcOne( QNXSegDesc, SEP_NO, false );
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
-        return( false );
-    }
-    _ChkAlloc( entry, sizeof( qnx_seg_flags ) );
-    entry->flags = 0;
-    entry->name = tostring();
-    entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
-    entry->next = FmtData.u.qnx.seg_flags;
-    FmtData.u.qnx.seg_flags = entry;
-    return( ProcOne( QNXSegModel, SEP_NO, false ) );
-}
-
-bool ProcQNXSegment( void )
-/********************************/
-{
-    return( ProcArgList( getSegFlags, TOK_INCLUDE_DOT ) );
-}
-
-bool ProcQNXClass( void )
-/******************************/
-// All processing done for this already.
-{
-    return( true );
-}
-
-bool ProcQNXExecuteonly( void )
-/************************************/
-{
-    FmtData.u.qnx.seg_flags->flags = QNX_EXEC_ONLY;
-    return( true );
-}
-
-bool ProcQNXExecuteread( void )
-/************************************/
-{
-    FmtData.u.qnx.seg_flags->flags = QNX_EXEC_READ;
-    return( true );
-}
-
-bool ProcQNXReadOnly( void )
-/*********************************/
-{
-    FmtData.u.qnx.seg_flags->flags = QNX_READ_ONLY;
-    return( true );
-}
-
-bool ProcQNXReadWrite( void )
-/**********************************/
-{
-    FmtData.u.qnx.seg_flags->flags = QNX_READ_WRITE;
-    return( true );
-}
+/****************************************************************
+ * "OPtion" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcLongLived( void )
 /********************************/
@@ -206,6 +135,92 @@ bool ProcQNXPrivilege( void )
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
     } else {
         FmtData.u.qnx.priv_level = value;
+    }
+    return( true );
+}
+
+
+/****************************************************************
+ * "SEGment" SysDirective
+ ****************************************************************/
+
+bool ProcQNXClass( void )
+/******************************/
+// All processing done for this already.
+{
+    return( true );
+}
+
+bool ProcQNXExecuteonly( void )
+/************************************/
+{
+    FmtData.u.qnx.seg_flags->flags = QNX_EXEC_ONLY;
+    return( true );
+}
+
+bool ProcQNXExecuteread( void )
+/************************************/
+{
+    FmtData.u.qnx.seg_flags->flags = QNX_EXEC_READ;
+    return( true );
+}
+
+bool ProcQNXReadOnly( void )
+/*********************************/
+{
+    FmtData.u.qnx.seg_flags->flags = QNX_READ_ONLY;
+    return( true );
+}
+
+bool ProcQNXReadWrite( void )
+/**********************************/
+{
+    FmtData.u.qnx.seg_flags->flags = QNX_READ_WRITE;
+    return( true );
+}
+
+static bool getSegFlags( void )
+/*****************************/
+{
+    bool            isclass;
+    qnx_seg_flags   *entry;
+
+    Token.thumb = true;
+    isclass = ProcOne( QNXSegDesc, SEP_NO, false );
+    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
+        return( false );
+    }
+    _ChkAlloc( entry, sizeof( qnx_seg_flags ) );
+    entry->flags = 0;
+    entry->name = tostring();
+    entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
+    entry->next = FmtData.u.qnx.seg_flags;
+    FmtData.u.qnx.seg_flags = entry;
+    return( ProcOne( QNXSegModel, SEP_NO, false ) );
+}
+
+bool ProcQNXSegment( void )
+/********************************/
+{
+    return( ProcArgList( getSegFlags, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
+
+bool ProcQNXFlat( void )
+/*****************************/
+{
+    return( true );
+}
+
+bool ProcQNX( void )
+/*************************/
+{
+    if( !ProcOne( QNXFormats, SEP_NO, false ) ) {
+        HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode
     }
     return( true );
 }

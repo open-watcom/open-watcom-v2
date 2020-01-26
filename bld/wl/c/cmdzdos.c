@@ -62,14 +62,10 @@ void FreeZdosFmt( void )
 {
 }
 
-bool ProcZdos( void )
-/*******************/
-{
-    FmtData.base = 0x1000;                          // assume user application
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( ZdosOptions, SEP_NO, false );
-    return( true );
-}
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcZdosSYS( void )
 /**********************/
@@ -92,6 +88,15 @@ bool ProcZdosFSD( void )
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_FSD;
+    return( true );
+}
+
+bool ProcZdos( void )
+/*******************/
+{
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
+    FmtData.base = 0x1000;                          // assume user application
+    ProcOne( ZdosOptions, SEP_NO, false );
     return( true );
 }
 

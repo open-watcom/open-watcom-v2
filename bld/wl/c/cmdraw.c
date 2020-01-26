@@ -52,14 +52,10 @@
 
 #ifdef _RAW
 
-bool ProcRaw( void )
-/******************/
-{
-    FmtData.base = 0;                               // Default offset
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
-    ProcOne( RawOptions, SEP_NO, true );
-    return( true );
-}
+
+/****************************************************************
+ * "Format" SysDirective/Directive
+ ****************************************************************/
 
 bool ProcRawBIN( void )
 /*********************/
@@ -74,6 +70,15 @@ bool ProcRawHEX( void )
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = true;
+    return( true );
+}
+
+bool ProcRaw( void )
+/******************/
+{
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
+    FmtData.base = 0;                               // Default offset
+    ProcOne( RawOptions, SEP_NO, true );
     return( true );
 }
 
