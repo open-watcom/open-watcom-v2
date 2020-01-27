@@ -234,7 +234,6 @@ struct fmt_rdos_data {
     unsigned_32         data_sel;
     segment             code_seg;
     segment             data_seg;
-    char                bitness;
     boolbit             driver  : 1;
     boolbit             mboot   : 1;
 };

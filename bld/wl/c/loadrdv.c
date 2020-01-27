@@ -268,10 +268,10 @@ static size_t getHeaderSize( void )
     if( FmtData.u.rdos.mboot ) {
         size = sizeof( struct mb_header );
     } else if( FmtData.u.rdos.driver ) {
-        if( FmtData.u.rdos.bitness == 16 ) {
-            size = sizeof( rdos_dev16_header );
-        } else {
+        if( LinkState & LS_FMT_SEEN_32BIT ) {
             size = sizeof( rdos_dev32_header );
+        } else {
+            size = sizeof( rdos_dev16_header );
         }
     } else {
         size = 0;
@@ -288,11 +288,11 @@ static void writeHeader( void )
     if( FmtData.u.rdos.mboot ) {
         WriteMbootHeader();
     } else if( FmtData.u.rdos.driver ) {
-        if( FmtData.u.rdos.bitness == 16 ) {
-            WriteHeader16();
-        } else {
+        if( LinkState & LS_FMT_SEEN_32BIT ) {
             CodeSize += 0x10;   // this is a fix to make offsets into data segment correct
             WriteHeader32();
+        } else {
+            WriteHeader16();
         }
     } else {
         /* nothing to write */

@@ -94,41 +94,19 @@ bool ProcRdosDataSel( void )
  * "Format" SysDirective/Directive
  ****************************************************************/
 
-static bool ProcRdosDev16( void )
-/*******************************/
+static bool ProcRdosDev( void )
+/*****************************/
 {
     Extension = E_RDV;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 1;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
 
-static bool ProcRdosDev32( void )
-/*******************************/
-{
-    Extension = E_RDV;
-    FmtData.u.rdos.bitness = 32;
-    FmtData.u.rdos.driver = 1;
-    FmtData.u.rdos.mboot = 0;
-    return( true );
-}
-
-static bool ProcRdosBin16( void )
+static bool ProcRdosBin( void )
 /*******************************/
 {
     Extension = E_BIN;
-    FmtData.u.rdos.bitness = 16;
-    FmtData.u.rdos.driver = 0;
-    FmtData.u.rdos.mboot = 0;
-    return( true );
-}
-
-static bool ProcRdosBin32( void )
-/*******************************/
-{
-    Extension = E_BIN;
-    FmtData.u.rdos.bitness = 32;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
     return( true );
@@ -138,17 +116,14 @@ static bool ProcRdosMboot( void )
 /*******************************/
 {
     Extension = E_BIN;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 1;
     return( true );
 }
 
 static parse_entry  RdosOptions[] = {
-    "DEV16",        ProcRdosDev16,      MK_RDOS, 0,
-    "DEV32",        ProcRdosDev32,      MK_RDOS, 0,
-    "BIN16",        ProcRdosBin16,      MK_RDOS, 0,
-    "BIN32",        ProcRdosBin32,      MK_RDOS, 0,
+    "DEV",          ProcRdosDev,        MK_RDOS, 0,
+    "BIN",          ProcRdosBin,        MK_RDOS, 0,
     "MBOOT",        ProcRdosMboot,      MK_RDOS, 0,
     NULL
 };

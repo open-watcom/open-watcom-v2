@@ -20,7 +20,7 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
             | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
             | QNX [FLAT]
             | ELF [DLL]
-            | RDOS [DEV16 | DEV32 | BIN16 | BIN32 | MBOOT]
+            | RDOS [DEV | BIN | MBOOT]
 
     win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
 
