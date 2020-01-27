@@ -60,12 +60,16 @@ typedef struct {
 #define SIZELEFT_MASK   0x7FFF
 
 unsigned        FmtRelocSize;
+#ifdef _QNX
 reloc_info      *FloatFixups;
+#endif
 
 void ResetReloc( void )
 /****************************/
 {
+#ifdef _QNX
     FloatFixups = NULL;
+#endif
 }
 
 static reloc_info *AllocRelocInfo( void )
@@ -158,9 +162,11 @@ static void DoWriteReloc( void *lst, const void *reloc, size_t size )
 }
 
 void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
-/*************************************************************************/
-/* write the given relocation to virtual memory */
+/**************************************************************************
+ * write the given relocation to virtual memory
+ */
 {
+#ifdef _OS2
     os2_reloc_header ** pagelist;
     reloc_info ***      reloclist;
     reloc_info **       header;
@@ -175,7 +181,10 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         idx = ( off - group->grp_addr.off ) >> OSF_PAGE_SHIFT;
         header = &reloclist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )];
         DoWriteReloc( header, reloc, size );
-    } else if( FmtData.type & MK_OS2_FLAT ) {
+        group->section->relocs++;
+        return;
+    }
+    if( FmtData.type & MK_OS2_FLAT ) {
         pagelist = group->g.grp_relocs;
         if( pagelist == NULL ) {
             pagelist = OS2FlatRelocInit( group->totalsize );
@@ -198,11 +207,23 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
             break;
         }
         DoWriteReloc( header, reloc, size );
-    } else if( FmtData.type & (MK_OS2_16BIT | MK_ELF) ) {
-        DoWriteReloc( &group->g.grp_relocs, reloc, size );
-    } else {
-        DoWriteReloc( &group->section->reloclist, reloc, size );
+        group->section->relocs++;
+        return;
     }
+    if( FmtData.type & MK_OS2_16BIT ) {
+        DoWriteReloc( &group->g.grp_relocs, reloc, size );
+        group->section->relocs++;
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        DoWriteReloc( &group->g.grp_relocs, reloc, size );
+        group->section->relocs++;
+        return;
+    }
+#endif
+    DoWriteReloc( &group->section->reloclist, reloc, size );
     group->section->relocs++;
 }
 
@@ -292,8 +313,9 @@ static void FreeGroupRelocs( group_entry *group )
         /* unused parameters */ (void)group;
 #endif
 
-    if( (LinkState & LS_MAKE_RELOCS) == 0 )
+    if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
         return;
+    }
 #ifdef _OS2
     if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
@@ -309,8 +331,10 @@ static void FreeGroupRelocs( group_entry *group )
                 reloclist++;
             }
         }
+        return;
     } else if( FmtData.type & MK_OS2_16BIT ) {
         FreeRelocList( group->g.grp_relocs );
+        return;
     }
 #endif
 #if defined( _ELF ) || defined( _QNX )
@@ -365,10 +389,7 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
     reloc_info          *list;
 
     total = 0;
-    list = *head;
-    for( ;; ) {
-        if( list == NULL )
-            break;
+    for( list = *head; list != NULL; list = list->next ) {
         size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
         if( ( max != 0 ) && ( total != 0 ) && ( ( total + size ) >= max ) )
             break;
@@ -380,7 +401,6 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
                 WriteLoad( list->loc.addr, size );
             }
         }
-        list = list->next;
         total += size;
     }
     *head = list;
@@ -404,9 +424,8 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
     bool                quit = false;
 
     total = 0;
-    list = *head;
-    for( ;; ) {
-        if( (list == NULL) || quit )
+    for( list = *head; list != NULL; list = list->next ) {
+        if( quit )
             break;
         size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
         if( size != 0 ) {
@@ -417,7 +436,6 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
                 quit = fn( list->loc.addr, size, ctx );
             }
         }
-        list = list->next;
         total += (unsigned_32)size;
     }
     *head = list;
@@ -427,37 +445,53 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
 void SetRelocSize( void )
 /******************************/
 {
+#ifdef _OS2
     if( FmtData.type & ( MK_OS2 | MK_WIN_VXD ) ) {
         FmtRelocSize = sizeof( os2_reloc_item );
-    } else if( FmtData.type & MK_PE ) {
+        return;
+    }
+    if( FmtData.type & MK_PE ) {
         FmtRelocSize = sizeof( pe_reloc_item );
+        return;
+    }
+#endif
 #ifdef _NOVELL
-    } else if( FmtData.type & MK_NOVELL ) {
+    if( FmtData.type & MK_NOVELL ) {
         FmtRelocSize = sizeof( nov_reloc_item );
+        return;
+    }
 #endif
 #ifdef _PHARLAP
-    } else if( FmtData.type & MK_PHAR_REX ) {
+    if( FmtData.type & MK_PHAR_REX ) {
         FmtRelocSize = sizeof( rex_reloc_item );
-    } else if( FmtData.type & MK_PHAR_MULTISEG ) {
+        return;
+    }
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
         FmtRelocSize = sizeof( pms_reloc_item );
+        return;
+    }
 #endif
 #ifdef _QNX
-    } else if( FmtData.type & MK_QNX ) {
+    if( FmtData.type & MK_QNX ) {
         FmtRelocSize = sizeof( qnx_reloc_item );
+        return;
+    }
 #endif
 #ifdef _ELF
-    } else if( FmtData.type & MK_ELF ) {
+    if( FmtData.type & MK_ELF ) {
         // elf_reloc_item contains pointer to symbol which gets
         // converted later on into index into symbol table
         FmtRelocSize = sizeof( elf_reloc_item );
+        return;
+    }
 #endif
 #ifdef _ZDOS
-    } else if( FmtData.type & MK_ZDOS ) {
+    if( FmtData.type & MK_ZDOS ) {
         FmtRelocSize = sizeof( zdos_reloc_item );
-#endif
-    } else {
-        FmtRelocSize = sizeof( dos_addr );
+        return;
     }
+#endif
+    FmtRelocSize = sizeof( dos_addr );
 }
 
 static bool SpillRelocList( reloc_info *list )
@@ -506,7 +540,7 @@ static bool SpillAreas( OVL_AREA *ovl )
 }
 
 bool SwapOutRelocs( void )
-/*******************************/
+/************************/
 {
     group_entry         *group;
 

@@ -883,6 +883,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
 #ifdef _OS2
         if( FmtData.type & MK_OS2_16BIT ) {  // can not get at a DLL relatively
             LnkMsg( LOC+ERR+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
+            return( true );
         }
 #endif
 #ifdef _ELF
@@ -1073,10 +1074,14 @@ static void PatchData( fix_relo_data *fix )
         if( FmtData.type & MK_PROT_MODE ) {
             PUT_U16( data, 0 );
         }
+#if defined( _DOS16M ) || defined( _PHARLAP )
         if( FmtData.type & (MK_DOS16M | MK_PHAR_MULTISEG) ) {
             PUT_U16( data, fix->tgt_addr.seg );
+            return;
+        }
+#endif
 #ifdef _RDOS
-        } else if( FmtData.type & MK_RDOS ) {
+        if( FmtData.type & MK_RDOS ) {
             segval = fix->tgt_addr.seg;
             if( segval == FmtData.u.rdos.code_seg ) {
                 segval = FmtData.u.rdos.code_sel;
@@ -1089,8 +1094,10 @@ static void PatchData( fix_relo_data *fix )
                 LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
             }
             PUT_U16( data, segval );
+            return;
+        }
 #endif
-        } else if( fix->done || (FmtData.type & (MK_QNX | MK_DOS)) ) {
+        if( fix->done || (FmtData.type & (MK_QNX | MK_DOS)) ) {
             if( isdbi && (LinkFlags & LF_CV_DBI_FLAG) ) {    // FIXME
                 segval = FindGroupIdx( fix->tgt_addr.seg );
             } else if( fix->type & FIX_ABS ) {
