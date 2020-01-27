@@ -157,14 +157,12 @@ static void ResetCmdFile( void )
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
     FmtData.def_seg_flags = SEG_LEVEL_3;
-    FmtData.output_raw = false;
-    FmtData.output_hex = false;
-    FmtData.Hshift = 12;   // May want different value for some 32 bit segmented modes
-    FmtData.FillChar = 0;  // Default fillchar for segment alignment
+    FmtData.Hshift = 12;    /* May want different value for some 32 bit segmented modes */
+    FmtData.FillChar = 0;   /* Default fillchar for segment alignment */
     SetSegMask();
     CurrSect = Root;
     CurrFList = &Root->files;
-    DBIFlag = 0;        /*  default is only global information */
+    DBIFlag = 0;            /*  default is only global information */
 }
 
 static bool sysHelp( void )

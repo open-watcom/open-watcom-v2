@@ -91,7 +91,10 @@ static void WriteBinData( void )
 }
 
 static void WriteRDOSCode( void )
-/*******************************/
+/********************************
+ * copy driver code from extra memory
+ * to loadfile
+ */
 {
     group_entry         *group;
     struct seg_leader   *leader;
@@ -134,7 +137,7 @@ static void WriteRDOSCode( void )
 
 static void WriteRDOSData( void )
 /********************************
- * copy code from extra memory
+ * copy driver data from extra memory
  * to loadfile
  */
 {
@@ -182,7 +185,9 @@ static void WriteRDOSData( void )
 }
 
 void GetRdosSegs( void )
-/* resolve RDOS code & data segments */
+/***********************
+ * resolve RDOS code & data segments
+ */
 {
     group_entry         *group;
     struct seg_leader   *leader;
@@ -207,7 +212,9 @@ void GetRdosSegs( void )
 }
 
 static void WriteHeader16( void )
-/* write 16-bit device header */
+/********************************
+ * write 16-bit device header
+ */
 {
     rdos_dev16_header   exe_head;
 
@@ -222,7 +229,9 @@ static void WriteHeader16( void )
 }
 
 static void WriteHeader32( void )
-/* write 32-bit device header */
+/********************************
+ * write 32-bit device header
+ */
 {
     rdos_dev32_header   exe_head;
 
@@ -237,7 +246,9 @@ static void WriteHeader32( void )
 }
 
 static void WriteMbootHeader( void )
-/* write multiboot header */
+/***********************************
+ * write multiboot header
+ */
 {
     struct mb_header   mb_head;
     unsigned_32        temp32;
@@ -260,7 +271,7 @@ static void WriteMbootHeader( void )
 static size_t getHeaderSize( void )
 /**********************************
  * get header size for appropriate
- * RDOS target format
+ * RDOS format
  */
 {
     size_t  size;
@@ -282,7 +293,7 @@ static size_t getHeaderSize( void )
 static void writeHeader( void )
 /**********************************
  * if required then write header for
- * appropriate RDOS target format
+ * appropriate RDOS format
  */
 {
     if( FmtData.u.rdos.mboot ) {
@@ -301,7 +312,7 @@ static void writeHeader( void )
 
 void FiniRdosLoadFile( void )
 /****************************
- * terminate writing of load file
+ * finish writing of load file
  */
 {
     HeaderSize = getHeaderSize();
