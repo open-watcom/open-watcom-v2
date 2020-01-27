@@ -114,7 +114,6 @@ typedef struct {
     unsigned        rel_size;       /* actual size of reloc item */
     unsigned        fix_size;       /* size of field being fixed up */
     offset          fix_off;        /* start addr of field being fixed */
-    boolbit         isqnxlinear : 1;
     reloc_item      item;
 } base_reloc;
 
@@ -661,27 +660,17 @@ size_t IncSaveRelocs( void *_save )
 static void DumpReloc( base_reloc *breloc )
 /*****************************************/
 {
-#ifdef _QNX
-    if( breloc->isqnxlinear ) {
-        QNXLinearReloc( CurrRec.seg->u.leader->group, &breloc->item );
-    } else {
-#endif
-        WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off,
-                    &breloc->item, breloc->rel_size );
+    WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off, &breloc->item, breloc->rel_size );
 #ifdef _OS2
-        if( FmtData.type & MK_OS2_FLAT ) {
-            if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
-                /*
-                 * stupid relocation has been split across two
-                 * pages, have to duplicate the entry
-                 */
-                breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
-                WriteReloc( CurrRec.seg->u.leader->group,
-                            breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
-            }
+    if( FmtData.type & MK_OS2_FLAT ) {
+        if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
+            /*
+             * stupid relocation has been split across two
+             * pages, have to duplicate the entry
+             */
+            breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
+            WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
         }
-#endif
-#ifdef _QNX
     }
 #endif
 }
@@ -689,7 +678,6 @@ static void DumpReloc( base_reloc *breloc )
 static void InitReloc( base_reloc *breloc )
 /*****************************************/
 {
-    breloc->isqnxlinear = false;
     breloc->rel_size = FmtRelocSize;
 }
 
@@ -1504,35 +1492,30 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {
-        bool    done;
-
-        done = false;
         if( ( ftype == FIX_OFFSET_32 ) || ( ftype == FIX_BASE_OFFSET_32 ) ) {
             if( FmtData.u.qnx.gen_linear_relocs ) {
-                breloc->isqnxlinear = true;
-                breloc->item.qnxl.reloc_offset = fix->loc_addr.off;
+                qnx_linear_item qnxl_reloc;
+
+                qnxl_reloc.reloc_offset = fix->loc_addr.off;
                 seg = GetTargetSegData( tthread );
                 if( seg->iscode ) {
-                    breloc->item.qnxl.reloc_offset |= 0x80000000;
+                    qnxl_reloc.reloc_offset |= 0x80000000;
                 }
                 if( (fix->type & FIX_ABS) && (fix->type & FIX_REL) ) {
-                    breloc->item.qnxl.reloc_offset |= 0x40000000;
+                    qnxl_reloc.reloc_offset |= 0x40000000;
                 }
-                if( fix->type == FIX_BASE_OFFSET_32 ) {
-                    DumpReloc( breloc );
-                    InitReloc( breloc );
-                    breloc->fix_size = CalcFixupSize( fix->type );
-                    breloc->fix_off = fix->loc_addr.off;
-                } else {
-                    done = true;
+                WriteQNXLinearReloc( CurrRec.seg->u.leader->group, &qnxl_reloc );
+                if( fix->type != FIX_BASE_OFFSET_32 ) {
+                    return( false );
                 }
+                InitReloc( breloc );
+                breloc->fix_size = CalcFixupSize( fix->type );
+                breloc->fix_off = fix->loc_addr.off;
             }
         }
-        if( !done ) {
-            MakeBase( fix );
-            breloc->item.qnx.reloc_offset = fix->loc_addr.off;
-            breloc->item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
-        }
+        MakeBase( fix );
+        breloc->item.qnx.reloc_offset = fix->loc_addr.off;
+        breloc->item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         return( true );
     }
 #endif
