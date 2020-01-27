@@ -299,7 +299,7 @@ static bool AddClass( void )
 bool ProcOverlay( void )
 /**********************/
 {
-    return( ProcArgList( &AddClass, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( AddClass, TOK_INCLUDE_DOT ) );
 }
 
 

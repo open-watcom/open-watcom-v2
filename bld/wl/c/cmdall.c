@@ -216,7 +216,7 @@ static bool AddAlias( void )
 static bool ProcAlias( void )
 /***************************/
 {
-    return( ProcArgList( &AddAlias, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( AddAlias, TOK_INCLUDE_DOT ) );
 }
 
 static bool AddReference( void )
@@ -232,7 +232,7 @@ static bool AddReference( void )
 static bool ProcReference( void )
 /*******************************/
 {
-    return( ProcArgList( &AddReference, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( AddReference, TOK_INCLUDE_DOT ) );
 }
 
 static bool ProcOSName( void )
@@ -357,7 +357,7 @@ static bool ProcLibFile( void )
     if( LastLibFile == NULL ) {
         LastLibFile = &Root->files;
     }
-    return( ProcArgList( &AddLibFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLibFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 static bool AddModFile( void )
@@ -416,13 +416,13 @@ static bool ProcFiles( void )
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( &AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 static bool ProcModFiles( void )
 /******************************/
 {
-    return( ProcArgList( &AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 
@@ -458,7 +458,7 @@ bool ProcLibrary( void )
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( &AddLib, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLib, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 static bool ProcOptLib( void )
@@ -640,7 +640,7 @@ static bool AddDisable( void )
 static bool ProcDisable( void )
 /*****************************/
 {
-    return( ProcArgList( &AddDisable, TOK_NORMAL ) );
+    return( ProcArgList( AddDisable, TOK_NORMAL ) );
 }
 
 static bool ProcNoDefLibs( void )
@@ -1089,7 +1089,7 @@ static bool ProcSymTrace( void )
 /******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
-    return( ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( AddSymTrace, TOK_INCLUDE_DOT ) );
 }
 
 static bool AddModTrace( void )
@@ -1113,7 +1113,7 @@ static bool ProcModTrace( void )
 /******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
-    return( ProcArgList( &AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 static bool ProcFarCalls( void )

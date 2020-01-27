@@ -424,7 +424,7 @@ static bool AddResource( void )
 bool ProcResource( void )
 /***********************/
 {
-    return( ProcArgList( &AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
 }
 
 
@@ -475,7 +475,7 @@ static bool getimport( void )
 bool ProcOS2Import( void )
 /************************/
 {
-    return( ProcArgList( &getimport, TOK_NORMAL ) );
+    return( ProcArgList( getimport, TOK_NORMAL ) );
 }
 
 
@@ -563,7 +563,7 @@ bool ProcOS2Export( void )
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         retval = GetWlibImports();
     } else {
-        retval = ProcArgList( &getexport, TOK_NORMAL );
+        retval = ProcArgList( getexport, TOK_NORMAL );
     }
     return( retval );
 }
@@ -923,7 +923,7 @@ static bool getsegflags( void )
 bool ProcOS2Segment( void )
 /*************************/
 {
-    return( ProcArgList( &getsegflags, TOK_INCLUDE_DOT ) );
+    return( ProcArgList( getsegflags, TOK_INCLUDE_DOT ) );
 }
 
 
@@ -1177,7 +1177,7 @@ static bool ProcPE( void )
     FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
     FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
     FmtData.u.pe.stackcommit = DEF_VALUE;
-    FmtData.u.pe.os2.segment_shift = 9;    			// 512 byte arbitrary rounding
+    FmtData.u.pe.os2.segment_shift = 9;                         // 512 byte arbitrary rounding
     return( true );
 }
 
