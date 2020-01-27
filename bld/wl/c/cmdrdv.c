@@ -63,7 +63,6 @@ void SetRdosFmt( void )
     FmtData.u.rdos.data_seg = 0;
     FmtData.u.rdos.code_sel = 0;
     FmtData.u.rdos.data_sel = 0;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
 }
