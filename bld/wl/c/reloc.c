@@ -207,10 +207,10 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
 }
 
 #ifdef _QNX
-void QNXFloatReloc( reloc_item *item )
-/****************************************/
+void WriteQNXFloatReloc( qnx_reloc_item *item )
+/*********************************************/
 {
-    DoWriteReloc( &FloatFixups, item, sizeof( qnx_reloc_item ) );
+    DoWriteReloc( &FloatFixups, item, sizeof( *item ) );
 }
 
 void QNXLinearReloc( group_entry *group, reloc_item *item )

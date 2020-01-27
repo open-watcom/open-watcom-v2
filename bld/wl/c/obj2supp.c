@@ -114,7 +114,6 @@ typedef struct {
     unsigned        rel_size;       /* actual size of reloc item */
     unsigned        fix_size;       /* size of field being fixed up */
     offset          fix_off;        /* start addr of field being fixed */
-    boolbit         isfloat     : 1;
     boolbit         isqnxlinear : 1;
     reloc_item      item;
 } base_reloc;
@@ -663,9 +662,7 @@ static void DumpReloc( base_reloc *breloc )
 /*****************************************/
 {
 #ifdef _QNX
-    if( breloc->isfloat ) {
-        QNXFloatReloc( &breloc->item );
-    } else if( breloc->isqnxlinear ) {
+    if( breloc->isqnxlinear ) {
         QNXLinearReloc( CurrRec.seg->u.leader->group, &breloc->item );
     } else {
 #endif
@@ -692,7 +689,6 @@ static void DumpReloc( base_reloc *breloc )
 static void InitReloc( base_reloc *breloc )
 /*****************************************/
 {
-    breloc->isfloat = false;
     breloc->isqnxlinear = false;
     breloc->rel_size = FmtRelocSize;
 }
@@ -717,14 +713,12 @@ static unsigned FindGroupIdx( segment seg )
 static void MakeQNXFloatReloc( fix_relo_data *fix )
 /*************************************************/
 {
-    base_reloc  breloc;
+    qnx_reloc_item  qnx_reloc;
 
     if( FmtData.u.qnx.gen_seg_relocs ) {
-        InitReloc( &breloc );
-        breloc.isfloat = true;
-        breloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->fpp_type << 28 );
-        breloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
-        DumpReloc( &breloc );
+        qnx_reloc.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->fpp_type << 28 );
+        qnx_reloc.segment = ToQNXIndex( fix->loc_addr.seg );
+        WriteQNXFloatReloc( &qnx_reloc );
     }
 }
 #endif
@@ -1258,6 +1252,7 @@ static void MakeBase( fix_relo_data *fix )
 }
 
 static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *seg, base_reloc *breloc )
+/*******************************************************************************************************/
 {
     targ_addr           target;
     group_entry         *grp;

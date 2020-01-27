@@ -213,7 +213,7 @@ extern RELOC_INFO       *FloatFixups;
 
 extern void             WriteReloc( group_entry *, offset, void *, size_t );
 #ifdef _QNX
-extern void             QNXFloatReloc( reloc_item * item );
+extern void             WriteQNXFloatReloc( qnx_reloc_item * item );
 extern void             QNXLinearReloc( group_entry *, reloc_item * );
 #endif
 extern bool             TraverseOS2RelocList( group_entry *, bool (*)(RELOC_INFO *));
