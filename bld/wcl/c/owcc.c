@@ -895,13 +895,16 @@ static  int  ParseArgs( int argc, char **argv )
                 strcpy( Word, "2" );
             } else if( !isdigit( Word[0] ) ) {
                 c = 'h';
-                if( strcmp( Word, "w" ) == 0 ) {
+                if( strcmp( Word, "watcom" ) == 0 ) {
                     DebugFormat = DBG_FMT_WATCOM;
-                } else if( strcmp( Word, "c" ) == 0 ) {
+                    Word[1] = '\0';
+                } else if( strcmp( Word, "codeview" ) == 0 ) {
                     Flags.do_cvpack = 1;
                     DebugFormat = DBG_FMT_CODEVIEW;
-                } else if( strcmp( Word, "d" ) == 0 ) {
+                    Word[1] = '\0';
+                } else if( strcmp( Word, "dwarf" ) == 0 ) {
                     DebugFormat = DBG_FMT_DWARF;
+                    Word[1] = '\0';
                 }
                 break;
             }
