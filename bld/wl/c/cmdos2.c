@@ -396,7 +396,7 @@ static parse_entry  MainOptions[] = {
 bool ProcOS2Options( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 bool ProcPENoRelocs( void )
@@ -572,7 +572,7 @@ static bool getexport( void )
     }
     exp->next = FmtData.u.os2.exports;    // put in the front of the list for
     FmtData.u.os2.exports = exp;          // now so ProcResidant can get to it.
-    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {
+    while( ProcOne( Exp_Keywords, SEP_NO ) ) {
         // handle misc options
     }
     FmtData.u.os2.exports = exp->next;       // take it off the list
@@ -656,7 +656,7 @@ static parse_entry  SegTypeDesc[] = {
 static bool ProcSegType( void )
 /*****************************/
 {
-    if( !ProcOne( SegTypeDesc, SEP_NO, false ) ) {
+    if( !ProcOne( SegTypeDesc, SEP_NO ) ) {
         LnkMsg( LOC+LINE+WRN+MSG_INVALID_TYPE_DESC, NULL );
     }
     return( true );
@@ -943,7 +943,7 @@ static bool getsegflags( void )
     entry->type = SEGFLAG_SEGMENT;
     entry->next = FmtData.u.os2.seg_flags;
     FmtData.u.os2.seg_flags = entry;
-    ProcOne( SegDesc, SEP_NO, false );          // look for an optional segdesc
+    ProcOne( SegDesc, SEP_NO );          // look for an optional segdesc
     if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             FmtData.u.os2.seg_flags = entry->next;
@@ -952,7 +952,7 @@ static bool getsegflags( void )
         }
         entry->name = tostring();
     }
-    while( ProcOne( SegModel, SEP_NO, false ) ) {
+    while( ProcOne( SegModel, SEP_NO ) ) {
     }
     return( true );
 }
@@ -990,7 +990,7 @@ static bool AddCommit( void )
 /***************************/
 {
     Token.thumb = true;
-    return( ProcOne( CommitKeywords, SEP_NO, false ) );
+    return( ProcOne( CommitKeywords, SEP_NO ) );
 }
 
 bool ProcCommit( void )
@@ -1086,7 +1086,7 @@ static parse_entry  RunOptions[] = {
 bool ProcOS2Runtime( void )
 /*************************/
 {
-    return( ProcOne( RunOptions, SEP_NO, false ) );
+    return( ProcOne( RunOptions, SEP_NO ) );
 }
 
 
@@ -1160,8 +1160,8 @@ static bool ProcOS2DLL( void )
         FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
         FmtData.def_seg_flags |= SEG_PURE | SEG_MOVABLE;
     }
-    if( ProcOne( Init_Keywords, SEP_NO, false ) ) {
-        if( !ProcOne( Term_Keywords, SEP_NO, false ) ) {
+    if( ProcOne( Init_Keywords, SEP_NO ) ) {
+        if( !ProcOne( Term_Keywords, SEP_NO ) ) {
             if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
                 FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
             }
@@ -1225,7 +1225,7 @@ static parse_entry  NTFormatKeywords[] = {
 static bool ProcPE( void )
 /************************/
 {
-    ProcOne( NTFormatKeywords, SEP_NO, false );
+    ProcOne( NTFormatKeywords, SEP_NO );
     FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
     FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
     FmtData.u.pe.stackcommit = DEF_VALUE;
@@ -1238,7 +1238,7 @@ static bool ProcVXD( void )
 {
     return( ProcOS2() );
 /*
-    ProcOne( VXDFormatKeywords, SEP_NO, false );
+    ProcOne( VXDFormatKeywords, SEP_NO );
     FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
     FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
     FmtData.u.pe.stackcommit = DEF_VALUE;
@@ -1351,18 +1351,18 @@ bool ProcOS2( void )
  */
 {
     Extension = E_LOAD;
-    while( ProcOne( SubFormats, SEP_NO, false ) ) {
+    while( ProcOne( SubFormats, SEP_NO ) ) {
         // NOTE NULL loop
     }
     if( FmtData.type & MK_WINDOWS ) {
-        if( ProcOne( WindowsFormatKeywords, SEP_NO, false ) ) {
-            ProcOne( WindowsFormatKeywords, SEP_NO, false );
+        if( ProcOne( WindowsFormatKeywords, SEP_NO ) ) {
+            ProcOne( WindowsFormatKeywords, SEP_NO );
         }
     } else if( FmtData.type & MK_WIN_VXD ) {
-        ProcOne( VXDFormatKeywords, SEP_NO, false );
+        ProcOne( VXDFormatKeywords, SEP_NO );
         FmtData.dll = true;
     } else {
-        ProcOne( OS2FormatKeywords, SEP_NO, false );
+        ProcOne( OS2FormatKeywords, SEP_NO );
         if( FmtData.type & MK_OS2_LX ) {
             if( FmtData.dll ) {
                 FmtData.u.os2.gen_int_relocs = true;

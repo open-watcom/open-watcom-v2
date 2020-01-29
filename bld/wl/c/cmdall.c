@@ -941,7 +941,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
 
     InitStringTable( &strtab, false );
     AddBufferStringTable( &strtab, &strtab, offsetof( sysblock, commands ) );
-    while( !ProcOne( endtab, SEP_SPACE, false ) ) {
+    while( !ProcOne( endtab, SEP_SPACE ) ) {
         Token.thumb = false;
         AddBufferStringTable( &strtab, Token.this, Token.len );
         AddCharStringTable( &strtab, ' ' );
@@ -1623,7 +1623,7 @@ static bool ProcOrdSeg( void )
     CurrOSeg->Name = tostring();
     CurrOSeg->FixedAddr = false;
     CurrOSeg->NoEmit = false;
-    while( ProcOne( OrderSegOpts, SEP_NO, false ) )
+    while( ProcOne( OrderSegOpts, SEP_NO ) )
         {};
     return( true );
 }
@@ -1661,7 +1661,7 @@ static bool ProcOrdClass( void )
     CurrOClass->FixedAddr = false;
     CurrOClass->Copy = false;
     CurrOClass->NoEmit = false;
-    while( ProcOne( OrderClassOpts, SEP_NO, false ) )
+    while( ProcOne( OrderClassOpts, SEP_NO ) )
         {};
     return( true );
 }
@@ -1681,7 +1681,7 @@ static bool ProcOrder( void )
     if( CurrOClass != NULL) {
         LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
     }
-    while( ProcOne( OrderOpts, SEP_NO, false ) ) {
+    while( ProcOne( OrderOpts, SEP_NO ) ) {
         ret = true;
     }
     return( ret );
@@ -1707,7 +1707,7 @@ static bool ProcOutput( void )
    FmtData.output_hshift = false;
    FmtData.output_start = false;
    ret = false;
-   while( ProcOne( OutputOpts, SEP_NO, false ) ) {
+   while( ProcOne( OutputOpts, SEP_NO ) ) {
        ret = true;
    }
    return( ret );
@@ -1716,7 +1716,6 @@ static bool ProcOutput( void )
 
 
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-
 static bool AddRunTime( void )
 /****************************/
 {
@@ -1787,7 +1786,7 @@ static bool ProcSysBegin( void )
     sys = FindSysBlock( sysname );
     if( sys != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sys->name );
-        while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
+        while( !ProcOne( SysEndOptions, SEP_SPACE ) ) {
             Token.thumb = false;
             RestoreParser();
         }
@@ -1818,9 +1817,9 @@ static bool ProcSystem( void )
     sysblock    **prev;
     bool        dodelete;
 
-    if( ProcOne( SysBeginOptions, SEP_NO, false ) )
+    if( ProcOne( SysBeginOptions, SEP_NO ) )
         return( true );
-    dodelete = ProcOne( SysDeleteOptions, SEP_NO, false );
+    dodelete = ProcOne( SysDeleteOptions, SEP_NO );
     if( dodelete ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             return( false );
@@ -1862,7 +1861,7 @@ static bool ProcLanguage( void )
 /******************************/
 {
     CmdFlags &= ~CF_LANGUAGE_MASK;
-    return( ProcOne( Languages, SEP_NO, false ) );
+    return( ProcOne( Languages, SEP_NO ) );
 }
 
 static parse_entry  SortOptions[] = {
@@ -1875,9 +1874,9 @@ static bool ProcSort( void )
 /**************************/
 {
     MapFlags |= MAP_SORT;
-    if( !ProcOne( SortOptions, SEP_NO, false ) )
+    if( !ProcOne( SortOptions, SEP_NO ) )
         return( true );
-    ProcOne( SortOptions, SEP_NO, false );
+    ProcOne( SortOptions, SEP_NO );
     return( true );
 }
 
@@ -1911,10 +1910,10 @@ static bool ProcDebug( void )
     if( CmdFlags & CF_FILES_BEFORE_DBI ) {
         LnkMsg( LOC+LINE+WRN+MSG_DEBUG_AFTER_FILES, NULL );
     }
-    gotmod = ProcOne( DbgMods, SEP_NO, false );
+    gotmod = ProcOne( DbgMods, SEP_NO );
     DBIFlag &= ~DBI_MASK;
-    if( ProcOne( PosDbgMods, SEP_NO, false ) ) {
-        while( ProcOne( PosDbgMods, SEP_COMMA, false ) ) {
+    if( ProcOne( PosDbgMods, SEP_NO ) ) {
+        while( ProcOne( PosDbgMods, SEP_COMMA ) ) {
             ; /*null loop*/
         }
     } else {
@@ -1996,7 +1995,7 @@ static bool AddOption( void )
 /***************************/
 {
     Token.thumb = true;
-    if( ProcOne( MainOptions, SEP_NO, false ) ) {
+    if( ProcOne( MainOptions, SEP_NO ) ) {
         return( true );
     }
 #ifdef _EXE
@@ -2090,56 +2089,56 @@ static bool ProcFormat( void )
         LnkMsg( LOC+LINE+FTL + MSG_MULTIPLE_MODES_FOUND, NULL );
     }
     LinkState |= LS_FMT_SPECIFIED;
-    return( ProcOne( Models, SEP_NO, true ) );
+    return( ProcOneSuicide( Models, SEP_NO ) );
 }
 
 /* directives with CF_SUBSET are the only ones that are harmless to run after the files
  * have been processed in pass 1 */
 
 static parse_entry  Directives[] = {
-    "File",         ProcFiles,          MK_ALL, CF_HAVE_FILES,
-    "MODFile",      ProcModFiles,       MK_ALL, 0,
-    "Library",      ProcLibrary,        MK_ALL, CF_SUBSET,
-    "Name",         ProcName,           MK_ALL, CF_SUBSET,
-    "OPtion",       ProcOptions,        MK_ALL, CF_SUBSET,
-    "Debug",        ProcDebug,          MK_ALL, 0,
-    "SYStem",       ProcSystem,         MK_ALL, 0,
-    "LIBPath",      ProcLibPath,        MK_ALL, CF_SUBSET,
-    "LIBFile",      ProcLibFile,        MK_ALL, CF_HAVE_FILES,
-    "Path",         ProcPath,           MK_ALL, 0,
-    "FORMat",       ProcFormat,         MK_ALL, CF_SUBSET,
-    "MODTrace",     ProcModTrace,       MK_ALL, 0,
-    "SYMTrace",     ProcSymTrace,       MK_ALL, CF_AFTER_INC,
-    "Alias",        ProcAlias,          MK_ALL, CF_AFTER_INC,
-    "REFerence",    ProcReference,      MK_ALL, CF_AFTER_INC,
-    "DISAble",      ProcDisable,        MK_ALL, CF_SUBSET,
-    "SOrt",         ProcSort,           MK_ALL, CF_SUBSET,
-    "LANGuage",     ProcLanguage,       MK_ALL, 0,
-    "STARTLink",    ProcStartLink,      MK_ALL, 0,
-    "OPTLIB",       ProcOptLib,         MK_ALL, 0,
-    "ORDer",        ProcOrder,          MK_ALL, CF_SUBSET,
+    "File",         ProcFiles,          MK_ALL,             CF_HAVE_FILES,
+    "MODFile",      ProcModFiles,       MK_ALL,             0,
+    "Library",      ProcLibrary,        MK_ALL,             CF_SUBSET,
+    "Name",         ProcName,           MK_ALL,             CF_SUBSET,
+    "OPtion",       ProcOptions,        MK_ALL,             CF_SUBSET,
+    "Debug",        ProcDebug,          MK_ALL,             0,
+    "SYStem",       ProcSystem,         MK_ALL,             0,
+    "LIBPath",      ProcLibPath,        MK_ALL,             CF_SUBSET,
+    "LIBFile",      ProcLibFile,        MK_ALL,             CF_HAVE_FILES,
+    "Path",         ProcPath,           MK_ALL,             0,
+    "FORMat",       ProcFormat,         MK_ALL,             CF_SUBSET,
+    "MODTrace",     ProcModTrace,       MK_ALL,             0,
+    "SYMTrace",     ProcSymTrace,       MK_ALL,             CF_AFTER_INC,
+    "Alias",        ProcAlias,          MK_ALL,             CF_AFTER_INC,
+    "REFerence",    ProcReference,      MK_ALL,             CF_AFTER_INC,
+    "DISAble",      ProcDisable,        MK_ALL,             CF_SUBSET,
+    "SOrt",         ProcSort,           MK_ALL,             CF_SUBSET,
+    "LANGuage",     ProcLanguage,       MK_ALL,             0,
+    "STARTLink",    ProcStartLink,      MK_ALL,             0,
+    "OPTLIB",       ProcOptLib,         MK_ALL,             0,
+    "ORDer",        ProcOrder,          MK_ALL,             CF_SUBSET,
 #ifdef _RAW
-    "OUTput",       ProcOutput,         MK_ALL, CF_SUBSET,
+    "OUTput",       ProcOutput,         MK_ALL,             CF_SUBSET,
 #endif
 #ifdef _OS2
-    "RESource",     ProcResource,       MK_PE, 0,
-    "COMmit",       ProcCommit,         MK_PE, 0,
-    "ANONymousexport",ProcAnonExport,   MK_OS2, CF_AFTER_INC,
+    "RESource",     ProcResource,       MK_PE,              0,
+    "COMmit",       ProcCommit,         MK_PE,              0,
+    "ANONymousexport",ProcAnonExport,   MK_OS2,             CF_AFTER_INC,
 #endif
 #if defined( _NOVELL ) || defined( _OS2 ) || defined( _ELF )
-    "IMPort",       ProcImport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE), CF_AFTER_INC,
+    "IMPort",       ProcImport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE),      CF_AFTER_INC,
     "EXPort",       ProcExport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
     "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), CF_SUBSET,
 #endif
 #ifdef _EXE
-    "OVerlay",      ProcOverlay,        MK_OVERLAYS, 0,
-    "Begin",        ProcBegin,          MK_OVERLAYS, 0,
-    "FIXedlib",     ProcFixedLib,       MK_OVERLAYS, 0,
-    "NOVector",     ProcNoVector,       MK_OVERLAYS, CF_AFTER_INC,
-    "VEctor",       ProcVector,         MK_OVERLAYS, CF_AFTER_INC,
-    "FORCEVEctor",  ProcForceVector,    MK_OVERLAYS, CF_AFTER_INC,
+    "OVerlay",      ProcOverlay,        MK_OVERLAYS,        0,
+    "Begin",        ProcBegin,          MK_OVERLAYS,        0,
+    "FIXedlib",     ProcFixedLib,       MK_OVERLAYS,        0,
+    "NOVector",     ProcNoVector,       MK_OVERLAYS,        CF_AFTER_INC,
+    "VEctor",       ProcVector,         MK_OVERLAYS,        CF_AFTER_INC,
+    "FORCEVEctor",  ProcForceVector,    MK_OVERLAYS,        CF_AFTER_INC,
 #endif
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
     "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), CF_SUBSET,
@@ -2148,15 +2147,15 @@ static parse_entry  Directives[] = {
     "MODUle",       ProcModule,         MK_NOVELL | MK_ELF, 0,
 #endif
 #ifdef _DOS16M
-    "MEMory",       ProcMemory16M,      MK_DOS16M, CF_SUBSET,
-    "TRansparent",  ProcTransparent,    MK_DOS16M, CF_SUBSET,
+    "MEMory",       ProcMemory16M,      MK_DOS16M,          CF_SUBSET,
+    "TRansparent",  ProcTransparent,    MK_DOS16M,          CF_SUBSET,
 #endif
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
 #endif
 #ifdef _INT_DEBUG
-    "Xdbg",         ProcXDbg,           MK_ALL, 0,
-    "INTDBG",       ProcIntDbg,         MK_ALL, 0,
+    "Xdbg",         ProcXDbg,           MK_ALL,             0,
+    "INTDBG",       ProcIntDbg,         MK_ALL,             0,
 #endif
     NULL
 };
@@ -2167,10 +2166,16 @@ bool DoParseDirectiveSubset( void )
     return( ProcOneSubset( Directives, SEP_NO ) );
 }
 
-bool DoParseDirective( bool suicide )
-/***********************************/
+bool DoParseDirective( void )
+/***************************/
 {
-    return( ProcOne( Directives, SEP_NO, suicide ) );
+    return( ProcOne( Directives, SEP_NO ) );
+}
+
+bool DoParseDirectiveSuicide( void )
+/**********************************/
+{
+    return( ProcOneSuicide( Directives, SEP_NO ) );
 }
 
 bool DoMatchDirective( const char *parse, size_t len )

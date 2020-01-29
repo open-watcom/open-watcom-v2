@@ -117,7 +117,7 @@ static parse_entry  MainOptions[] = {
 bool ProcPharOptions( void )
 /**************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 
@@ -315,7 +315,7 @@ static parse_entry  RunOptions[] = {
 bool ProcPharRuntime( void )
 /**************************/
 {
-    return( ProcOne( RunOptions, SEP_NO, false ) );
+    return( ProcOne( RunOptions, SEP_NO ) );
 }
 
 
@@ -354,7 +354,7 @@ static parse_entry  PharModels[] = {
 bool ProcPharLap( void )
 /**********************/
 {
-    ProcOne( PharModels, SEP_NO, false );
+    ProcOne( PharModels, SEP_NO );
     return( true );
 }
 

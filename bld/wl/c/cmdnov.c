@@ -543,7 +543,7 @@ static parse_entry  MainOptions[] = {
 bool ProcNovOptions( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 
@@ -628,8 +628,8 @@ static bool ProcNovDBIReferenced( void )
 }
 
 static parse_entry  NovDBIOptions[] = {
-    "ONLyexports",  ProcNovDBIExports,  MK_NOVELL, 0,
-    "REFerenced",   ProcNovDBIReferenced,MK_NOVELL, 0,
+    "ONLyexports",  ProcNovDBIExports,      MK_NOVELL,  0,
+    "REFerenced",   ProcNovDBIReferenced,   MK_NOVELL,  0,
     NULL
 };
 
@@ -637,8 +637,8 @@ bool ProcNovDBI( void )
 /*********************/
 {
     LinkFlags |= LF_NOVELL_DBI_FLAG;
-    if( ProcOne( NovDBIOptions, SEP_NO, false ) ) {
-        while( ProcOne( NovDBIOptions, SEP_COMMA, false ) ) {
+    if( ProcOne( NovDBIOptions, SEP_NO ) ) {
+        while( ProcOne( NovDBIOptions, SEP_COMMA ) ) {
             ; /*null loop*/
         }
     }
@@ -793,7 +793,7 @@ static parse_entry  NovModels[] = {
 bool ProcNovell( void )
 /*********************/
 {
-    if( !ProcOne( NovModels, SEP_NO, false ) ) {    // get file type
+    if( !ProcOne( NovModels, SEP_NO ) ) {    // get file type
         int     nType = 0;
 
         if( (nType = atoi( Token.this )) > 0 ) {

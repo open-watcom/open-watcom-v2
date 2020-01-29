@@ -102,7 +102,7 @@ static parse_entry  MainOptions[] = {
 bool ProcRdosOptions( void )
 /**************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 
@@ -148,7 +148,7 @@ bool ProcRdos( void )
 /*******************/
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( RdosOptions, SEP_NO, false );
+    ProcOne( RdosOptions, SEP_NO );
     return( true );
 }
 

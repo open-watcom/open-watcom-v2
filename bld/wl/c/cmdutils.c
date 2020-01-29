@@ -233,16 +233,22 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
     return( ret );
 }
 
-bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
-/************************************************************/
+bool ProcOne( parse_entry *entry, sep_type req )
+/**********************************************/
 {
-    return( procOne( entry, req, suicide, false ) );
+    return( procOne( entry, req, false, false ) );
 }
 
 bool ProcOneSubset( parse_entry *entry, sep_type req )
 /****************************************************/
 {
     return( procOne( entry, req, false, true ) );
+}
+
+bool ProcOneSuicide( parse_entry *entry, sep_type req )
+/*****************************************************/
+{
+    return( procOne( entry, req, true, false ) );
 }
 
 bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match_len )

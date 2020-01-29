@@ -124,7 +124,7 @@ static parse_entry  MainOptions[] = {
 bool ProcQNXOptions( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 bool ProcQNXNoRelocs( void )
@@ -212,7 +212,7 @@ static bool getSegFlags( void )
     qnx_seg_flags   *entry;
 
     Token.thumb = true;
-    isclass = ProcOne( QNXSegDesc, SEP_NO, false );
+    isclass = ProcOne( QNXSegDesc, SEP_NO );
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
         return( false );
     }
@@ -222,7 +222,7 @@ static bool getSegFlags( void )
     entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
     entry->next = FmtData.u.qnx.seg_flags;
     FmtData.u.qnx.seg_flags = entry;
-    return( ProcOne( QNXSegModel, SEP_NO, false ) );
+    return( ProcOne( QNXSegModel, SEP_NO ) );
 }
 
 bool ProcQNXSegment( void )
@@ -250,7 +250,7 @@ static parse_entry  QNXFormats[] = {
 bool ProcQNX( void )
 /******************/
 {
-    if( !ProcOne( QNXFormats, SEP_NO, false ) ) {
+    if( !ProcOne( QNXFormats, SEP_NO ) ) {
         HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode
     }
     return( true );

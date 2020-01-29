@@ -157,8 +157,9 @@ extern cmdfilelist      *CmdFile;
 
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
 extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
-extern bool             ProcOne( parse_entry *, sep_type, bool );
-extern bool             ProcOneSubset( parse_entry *, sep_type );
+extern bool             ProcOne( parse_entry *entry, sep_type req );
+extern bool             ProcOneSubset( parse_entry *entry, sep_type req );
+extern bool             ProcOneSuicide( parse_entry *entry, sep_type req );
 extern bool             MatchOne( parse_entry *, sep_type, const char *, size_t );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );

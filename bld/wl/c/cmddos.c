@@ -293,7 +293,7 @@ static parse_entry  MainOptions[] = {
 bool ProcDosOptions( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 
@@ -368,8 +368,8 @@ static bool ProcSection( void )
         LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
-        while( DoParseDirective( false ) ) {
+        ProcOne( SectOptions, SEP_NO );      // check for INTO
+        while( DoParseDirective() ) {
             RestoreParser();
         }
     }
@@ -383,9 +383,9 @@ static bool ProcAutoSection( void )
         LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
+        ProcOne( SectOptions, SEP_NO );      // check for INTO
         CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( DoParseDirective( false ) ) {
+        while( DoParseDirective() ) {
         }
         CmdFlags &= ~CF_AUTOSECTION;
     }
@@ -440,7 +440,7 @@ bool ProcBegin( void )
         CurrFList = &sect->files;
     }
     OvlLevel++;
-    while( ProcOne( Sections, SEP_NO, false ) ) {
+    while( ProcOne( Sections, SEP_NO ) ) {
         // NULL LOOP
     }
     if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
@@ -532,7 +532,7 @@ bool ProcDos( void )
 /******************/
 {
     OvlLevel = 0;
-    ProcOne( DosOptions, SEP_NO, false );
+    ProcOne( DosOptions, SEP_NO );
     return( true );
 }
 

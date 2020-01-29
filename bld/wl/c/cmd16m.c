@@ -208,7 +208,7 @@ static parse_entry  MainOptions[] = {
 bool Proc16MOptions( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 bool Proc16MNoRelocs( void )
@@ -306,7 +306,7 @@ static parse_entry  RunOptions[] = {
 bool Proc16MRuntime( void )
 /*************************/
 {
-    return( ProcOne( RunOptions, SEP_NO, false ) );
+    return( ProcOne( RunOptions, SEP_NO ) );
 }
 
 
@@ -353,7 +353,7 @@ static parse_entry  Strategies[] = {
 bool ProcMemory16M( void )
 /************************/
 {
-    return( ProcOne( Strategies, SEP_NO, false ) );
+    return( ProcOne( Strategies, SEP_NO ) );
 }
 
 
@@ -392,7 +392,7 @@ bool ProcTransparent( void )
         LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
         return( true );
     } else {
-        return( ProcOne( TransTypes, SEP_NO, false ) );
+        return( ProcOne( TransTypes, SEP_NO ) );
     }
 }
 

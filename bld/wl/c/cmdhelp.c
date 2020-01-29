@@ -305,6 +305,6 @@ bool DoHelp( void )
 // display help, optionally allowing the user to specifiy the format he/she
 // wants the help for.
 {
-    return( ProcOne( FormatHelp, SEP_NO, false ) );
+    return( ProcOne( FormatHelp, SEP_NO ) );
 }
 

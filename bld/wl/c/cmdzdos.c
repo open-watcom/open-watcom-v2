@@ -102,7 +102,7 @@ bool ProcZdos( void )
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
     FmtData.base = 0x1000;                          // assume user application
-    ProcOne( ZdosOptions, SEP_NO, false );
+    ProcOne( ZdosOptions, SEP_NO );
     return( true );
 }
 

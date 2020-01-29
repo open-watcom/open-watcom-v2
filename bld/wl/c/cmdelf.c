@@ -86,7 +86,7 @@ static parse_entry  MainOptions[] = {
 bool ProcELFOptions( void )
 /*************************/
 {
-    return( ProcOne( MainOptions, SEP_NO, false ) );
+    return( ProcOne( MainOptions, SEP_NO ) );
 }
 
 bool ProcELFAlignment( void )
@@ -303,7 +303,7 @@ static parse_entry  RunOptions[] = {
 bool ProcELFRuntime( void )
 /*************************/
 {
-    return( ProcOne( RunOptions, SEP_NO, false ) );
+    return( ProcOne( RunOptions, SEP_NO ) );
 }
 
 
@@ -326,7 +326,7 @@ static parse_entry  ELFFormatKeywords[] = {
 bool ProcELF( void )
 /******************/
 {
-    ProcOne( ELFFormatKeywords, SEP_NO, false );
+    ProcOne( ELFFormatKeywords, SEP_NO );
     return true;
 }
 

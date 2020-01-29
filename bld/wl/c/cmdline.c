@@ -267,7 +267,7 @@ static void DoCmdParse( void )
 /****************************/
 {
     while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-        if( !DoParseDirective( true ) ) {
+        if( !DoParseDirectiveSuicide() ) {
             Syntax();
         }
         RestoreParser();

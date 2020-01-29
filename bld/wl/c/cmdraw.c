@@ -83,7 +83,7 @@ bool ProcRaw( void )
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
     FmtData.base = 0;                               // Default offset
-    ProcOne( RawOptions, SEP_NO, true );
+    ProcOneSuicide( RawOptions, SEP_NO );
     return( true );
 }
 

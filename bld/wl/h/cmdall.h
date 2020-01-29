@@ -39,5 +39,6 @@ extern bool     ProcLibrary( void );
 extern void     ChkBase( offset align );
 
 extern bool     DoParseDirectiveSubset( void );
-extern bool     DoParseDirective( bool suicide );
+extern bool     DoParseDirective( void );
+extern bool     DoParseDirectiveSuicide( void );
 extern bool     DoMatchDirective( const char *parse, size_t len );
