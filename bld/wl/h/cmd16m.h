@@ -36,17 +36,9 @@ extern void     SetD16MFmt( void );
 extern void     FreeD16MFmt( void );
 extern void     CmdD16MFini( void );
 
+extern bool     Proc16MOptions( void );
 extern bool     Proc16MNoRelocs( void );
-
 extern bool     Proc16MRuntime( void );
-
-extern bool     ProcBuffer( void );
-extern bool     ProcGDTSize( void );
-extern bool     ProcRelocs( void );
-extern bool     ProcSelStart( void );
-extern bool     ProcDataSize( void );
-extern bool     ProcExtended( void );
-extern bool     ProcExpName( void );
 
 extern bool     ProcMemory16M( void );
 extern bool     ProcTransparent( void );

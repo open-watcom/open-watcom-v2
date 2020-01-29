@@ -1961,16 +1961,6 @@ static parse_entry  MainOptions[] = {
     "CVPack",       ProcCVPack,         MK_ALL, 0,
     "INCremental",  ProcIncremental,    MK_ALL, 0,
     "FILLchar",     ProcFillchar,       MK_ALL, 0,
-#ifdef _EXE
-    "SMall",        ProcSmall,          MK_OVERLAYS, 0,
-    "DIStribute",   ProcDistribute,     MK_OVERLAYS, 0,
-    "DYNamic",      ProcDynamic,        MK_OVERLAYS, 0,
-    "STANdard",     ProcStandard,       MK_OVERLAYS, 0,
-    "NOIndirect",   ProcNoIndirect,     MK_OVERLAYS, 0,
-    "ARea",         ProcArea,           MK_OVERLAYS, 0,
-    "PADSections",  ProcPadSections,    MK_OVERLAYS, 0,
-    "FULLHeader",   ProcFullHeader,     MK_DOS, 0,
-#endif
 #if defined( _OS2 ) || defined( _EXE ) || defined( _DOS16M ) || defined( _QNX )
     "PACKCode",     ProcPackcode,       (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
     "PACKData",     ProcPackdata,       (MK_OS2_16BIT | MK_DOS | MK_QNX | MK_DOS16M), 0,
@@ -1981,97 +1971,24 @@ static parse_entry  MainOptions[] = {
 #if defined( _OS2 ) || defined( _PHARLAP ) || defined( _DOS16M )
     "STUB",         ProcStub,           (MK_OS2 | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M), 0,
 #endif
-#ifdef _OS2
-    "NOSTUB",       ProcOS2NoStub,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "ONEautodata",  ProcSingle,         MK_OS2, CF_AUTO_SEG_FLAG,
-    "MANYautodata", ProcMultiple,       MK_OS2, CF_AUTO_SEG_FLAG,
-    "NOAutodata",   ProcNone,           MK_OS2_16BIT, CF_AUTO_SEG_FLAG,
-    "OLDlibrary",   ProcOldLibrary,     MK_OS2 | MK_PE, 0,
-    "MODName",      ProcModName,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "NEWFiles",     ProcNewFiles,       MK_ONLY_OS2_16, 0,
-    "PROTmode",     ProcProtMode,       MK_OS2_16BIT, 0,
-#endif
 #if defined( _OS2 ) || defined( _NOVELL )
     "DEscription",  ProcDescription,    MK_OS2 | MK_PE | MK_WIN_VXD | MK_NOVELL, 0,
-#endif
-#ifdef _OS2
-    "NOSTDCall",    ProcNoStdCall,      MK_PE, 0,
-    "RWReloccheck", ProcRWRelocCheck,   MK_WINDOWS, 0,
-    "SELFrelative", ProcSelfRelative,   MK_OS2_LX, 0,
-    "INTernalrelocs",ProcInternalRelocs,MK_OS2_LX, 0,
-    "TOGglerelocsflag",ProcToggleRelocsFlag,MK_OS2_LX, 0,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
     "Heapsize",     ProcHeapSize,       (MK_OS2 | MK_QNX | MK_PE), 0,
 #endif
-#ifdef _PHARLAP
-//    "PACKExp",      ProcPackExp,        MK_PHAR_FLAT, 0,
-    "MINData",      ProcMinData,        MK_PHAR_LAP, 0,
-    "MAXData",      ProcMaxData,        MK_PHAR_LAP, 0,
-#endif
 #if defined(_PHARLAP) || defined(_QNX) || defined(_OS2) || defined(_RAW)
     "OFFset",       ProcOffset,         MK_PHAR_FLAT | MK_OS2_FLAT | MK_PE | MK_QNX_FLAT | MK_ELF | MK_RAW, 0,
-#endif
-#ifdef _NOVELL
-    "SCReenname",   ProcScreenName,     MK_NOVELL, 0,
-    "CHeck",        ProcCheck,          MK_NOVELL, 0,
-    "MULTILoad",    ProcMultiLoad,      MK_NOVELL, 0,
-    "AUTOUNload",   ProcAutoUnload,     MK_NOVELL, 0,
-    "REentrant",    ProcReentrant,      MK_NOVELL, 0,
-    "SYnchronize",  ProcSynch,          MK_NOVELL, 0,
-    "CUSTom",       ProcCustom,         MK_NOVELL, 0,
-    "EXit",         ProcExit,           MK_NOVELL, 0,
-    "THReadname",   ProcThreadName,     MK_NOVELL, 0,
-    "PSeudopreemption", ProcPseudoPreemption, MK_NOVELL, 0,
-    "COPYRight",    ProcCopyright,      MK_NOVELL, 0,
-    "MESsages",     ProcMessages,       MK_NOVELL, 0,
-    "HElp",         ProcHelp,           MK_NOVELL, 0,
-    "XDCdata",      ProcXDCData,        MK_NOVELL, 0,
-    "SHArelib",     ProcSharelib,       MK_NOVELL, 0,
-    "OSDomain",     ProcOSDomain,       MK_NOVELL, 0,
-    "NLMFlags",     ProcNLMFlags,       MK_NOVELL, 0,
 #endif
 #if defined( _OS2 ) || defined( _NOVELL )
     "VERSion",      ProcVersion,        MK_NOVELL | MK_OS2_FLAT | MK_PE | MK_WINDOWS, 0,
     "IMPLib",       ProcImplib,         MK_NOVELL | MK_OS2 | MK_PE, 0,
     "IMPFile",      ProcImpFile,        MK_NOVELL | MK_OS2 | MK_PE, 0,
 #endif
-#ifdef _DOS16M
-    "BUFfer",       ProcBuffer,         MK_DOS16M, 0,
-    "GDTsize",      ProcGDTSize,        MK_DOS16M, 0,
-    "RELocs",       ProcRelocs,         MK_DOS16M, 0,
-    "SELstart",     ProcSelStart,       MK_DOS16M, 0,
-    "DATASize",     ProcDataSize,       MK_DOS16M, 0,
-    "EXTended",     ProcExtended,       MK_DOS16M, 0,
-    "EXPName",      ProcExpName,        MK_DOS16M, 0,
-#endif
-#ifdef _RDOS
-    "CODESelector", ProcRdosCodeSel,    MK_RDOS, 0,
-    "DATASelector", ProcRdosDataSel,    MK_RDOS, 0,
-#endif
 #if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
     "NORelocs",     ProcNoRelocs,       (MK_QNX | MK_DOS16M  | MK_PE | MK_ELF), 0,
 #endif
-#ifdef _QNX
-    "LOnglived",    ProcLongLived,      MK_QNX, 0,
-    "PRIVilege",    ProcQNXPrivilege,   MK_QNX, 0,
-    "LInearrelocs", ProcLinearRelocs,   MK_QNX, 0,
-#endif
-#ifdef _ELF
-    "EXTRASections",ProcExtraSections,  MK_ELF, 0,
-    "EXPORTAll",    ProcExportAll,      MK_ELF, 0,
-#endif
-#ifdef _OS2
-    "LINKVersion",  ProcLinkVersion,    MK_PE,  0,
-    "OSVersion",    ProcOsVersion,      MK_PE,  0,
-    "CHECKSUM",     ProcChecksum,       MK_PE,  0,
-    "LARGEaddressaware",ProcLargeAddressAware, MK_PE, 0,
-    "NOLARGEaddressaware",ProcNoLargeAddressAware, MK_PE, 0,
-#endif
     "HSHIFT",       ProcHshift,         (MK_DOS | MK_ALLOW_16),  0,
-#ifdef _OS2
-    "MIXed1632",    ProcMixed1632,      MK_OS2_FLAT, 0,
-#endif
     NULL
 };
 
@@ -2079,9 +1996,50 @@ static bool AddOption( void )
 /***************************/
 {
     Token.thumb = true;
-    if( !ProcOne( MainOptions, SEP_NO, false ) )
-        return( false );
-    return( true );
+    if( ProcOne( MainOptions, SEP_NO, false ) ) {
+        return( true );
+    }
+#ifdef _EXE
+    if( ProcDosOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _ELF
+    if( ProcELFOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _DOS16M
+    if( Proc16MOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _NOVELL
+    if( ProcNovOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _PHARLAP
+    if( ProcPharOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _QNX
+    if( ProcQNXOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _RDOS
+    if( ProcRdosOptions() ) {
+        return( true );
+    }
+#endif
+#ifdef _OS2
+    if( ProcOS2Options() ) {
+        return( true );
+    }
+#endif
+    return( false );
 }
 
 static bool ProcOptions( void )

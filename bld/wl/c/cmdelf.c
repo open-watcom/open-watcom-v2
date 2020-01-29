@@ -61,14 +61,32 @@ void FreeELFFmt( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcExportAll( void )
-/************************/
+static bool ProcExtraSections( void )
+/***********************************/
+{
+    return GetLong( &FmtData.u.elf.extrasects );
+}
+
+static bool ProcExportAll( void )
+/*******************************/
 {
     FmtData.u.elf.exportallsyms = true;
     return true;
+}
+
+static parse_entry  MainOptions[] = {
+    "EXTRASections",    ProcExtraSections,  MK_ELF, 0,
+    "EXPORTAll",        ProcExportAll,      MK_ELF, 0,
+    NULL
+};
+
+bool ProcELFOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
 }
 
 bool ProcELFAlignment( void )
@@ -92,12 +110,6 @@ bool ProcELFAlignment( void )
     }
     FmtData.objalign = value;
     return( true );
-}
-
-bool ProcExtraSections( void )
-/****************************/
-{
-    return GetLong( &FmtData.u.elf.extrasects );
 }
 
 bool ProcELFNoRelocs( void )
@@ -191,7 +203,7 @@ bool ProcELFModule( void )
 
 
 /****************************************************************
- * "RUntime" SysDirective/Directive
+ * "RUntime" Directive
  ****************************************************************/
 
 static void ParseABITypeAndVersion( void )
@@ -296,7 +308,7 @@ bool ProcELFRuntime( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcELFDLL( void )

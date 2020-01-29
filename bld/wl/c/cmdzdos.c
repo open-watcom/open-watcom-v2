@@ -63,7 +63,7 @@ void FreeZdosFmt( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcZdosSYS( void )

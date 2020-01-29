@@ -37,9 +37,7 @@ extern void     SetQNXFmt( void );
 extern void     FreeQNXFmt( void );
 extern void     CmdQNXFini( void );
 
-extern bool     ProcLongLived( void );
-extern bool     ProcQNXPrivilege( void );
-extern bool     ProcLinearRelocs( void );
+extern bool     ProcQNXOptions( void );
 extern bool     ProcQNXNoRelocs( void );
 extern bool     ProcQNXSegment( void );
 extern bool     ProcQNXHeapSize( void );

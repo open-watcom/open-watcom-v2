@@ -211,60 +211,60 @@ void MakeNewSection( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcDistribute( void )
-/*************************/
+static bool ProcDistribute( void )
+/********************************/
 {
     FmtData.u.dos.distribute = true;
     return( true );
 }
 
-bool ProcPadSections( void )
-/**************************/
+static bool ProcPadSections( void )
+/*********************************/
 {
     FmtData.u.dos.pad_sections = true;
     return( true );
 }
 
-bool ProcSmall( void )
-/********************/
+static bool ProcSmall( void )
+/***************************/
 {
     FmtData.u.dos.ovl_short = true;
     return( true );
 }
 
-bool ProcDynamic( void )
-/**********************/
+static bool ProcDynamic( void )
+/*****************************/
 {
     FmtData.u.dos.dynamic = true;
     return( true );
 }
 
-bool ProcNoIndirect( void )
-/*************************/
+static bool ProcNoIndirect( void )
+/********************************/
 {
     FmtData.u.dos.noindirect = true;
     return( true );
 }
 
-bool ProcFullHeader( void )
-/*************************/
+static bool ProcFullHeader( void )
+/********************************/
 {
     FmtData.u.dos.full_mz_hdr = true;
     return( true );
 }
 
-bool ProcStandard( void )
-/***********************/
+static bool ProcStandard( void )
+/******************************/
 {
     FmtData.u.dos.dynamic = false;
     return( true );
 }
 
-bool ProcArea( void )
-/********************
+static bool ProcArea( void )
+/***************************
  * process the area size directive.
  */
 {
@@ -276,6 +276,24 @@ bool ProcArea( void )
         OvlAreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
     }
     return( ret );
+}
+
+static parse_entry  MainOptions[] = {
+    "SMall",        ProcSmall,          MK_OVERLAYS, 0,
+    "DIStribute",   ProcDistribute,     MK_OVERLAYS, 0,
+    "DYNamic",      ProcDynamic,        MK_OVERLAYS, 0,
+    "STANdard",     ProcStandard,       MK_OVERLAYS, 0,
+    "NOIndirect",   ProcNoIndirect,     MK_OVERLAYS, 0,
+    "ARea",         ProcArea,           MK_OVERLAYS, 0,
+    "PADSections",  ProcPadSections,    MK_OVERLAYS, 0,
+    "FULLHeader",   ProcFullHeader,     MK_DOS, 0,
+    NULL
+};
+
+bool ProcDosOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
 }
 
 
@@ -495,7 +513,7 @@ bool ProcForceVector( void )
 
 
 /****************************************************************
- * "FORMat" SysDirective/Directive
+ * "FORMat" Directive
  ****************************************************************/
 
 static bool ProcCom( void )

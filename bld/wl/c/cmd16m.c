@@ -83,11 +83,11 @@ void CmdD16MFini( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcBuffer( void )
-/*********************/
+static bool ProcBuffer( void )
+/****************************/
 {
     unsigned_32 value;
 
@@ -101,8 +101,8 @@ bool ProcBuffer( void )
     return( true );
 }
 
-bool ProcGDTSize( void )
-/**********************/
+static bool ProcGDTSize( void )
+/*****************************/
 {
     unsigned_32 value;
 
@@ -120,8 +120,8 @@ bool ProcGDTSize( void )
     return( true );
 }
 
-bool ProcRelocs( void )
-/*********************/
+static bool ProcRelocs( void )
+/****************************/
 {
     if( FmtData.u.d16m.flags & FORCE_NO_RELOCS ) {
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
@@ -130,19 +130,8 @@ bool ProcRelocs( void )
     return( true );
 }
 
-bool Proc16MNoRelocs( void )
-/**************************/
-{
-    if( LinkState & LS_MAKE_RELOCS ) {
-        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
-    } else {
-        FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
-    }
-    return( true );
-}
-
-bool ProcSelStart( void )
-/***********************/
+static bool ProcSelStart( void )
+/******************************/
 {
     unsigned_32 value;
 
@@ -160,8 +149,8 @@ bool ProcSelStart( void )
     return( true );
 }
 
-bool ProcExtended( void )
-/***********************/
+static bool ProcExtended( void )
+/******************************/
 {
     unsigned_32 value;
 
@@ -176,8 +165,8 @@ bool ProcExtended( void )
     return( true );
 }
 
-bool ProcExpName( void )
-/**********************/
+static bool ProcExpName( void )
+/*****************************/
 {
     if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
         return( false );
@@ -189,8 +178,8 @@ bool ProcExpName( void )
     return( true );
 }
 
-bool ProcDataSize( void )
-/***********************/
+static bool ProcDataSize( void )
+/******************************/
 {
     unsigned_32 value;
 
@@ -205,9 +194,37 @@ bool ProcDataSize( void )
     return( true );
 }
 
+static parse_entry  MainOptions[] = {
+    "BUFfer",       ProcBuffer,         MK_DOS16M, 0,
+    "GDTsize",      ProcGDTSize,        MK_DOS16M, 0,
+    "RELocs",       ProcRelocs,         MK_DOS16M, 0,
+    "SELstart",     ProcSelStart,       MK_DOS16M, 0,
+    "DATASize",     ProcDataSize,       MK_DOS16M, 0,
+    "EXTended",     ProcExtended,       MK_DOS16M, 0,
+    "EXPName",      ProcExpName,        MK_DOS16M, 0,
+    NULL
+};
+
+bool Proc16MOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
+}
+
+bool Proc16MNoRelocs( void )
+/**************************/
+{
+    if( LinkState & LS_MAKE_RELOCS ) {
+        LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
+    } else {
+        FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
+    }
+    return( true );
+}
+
 
 /****************************************************************
- * "RUntime" SysDirective/Directive
+ * "RUntime" Directive
  ****************************************************************/
 
 static bool ProcKeyboard( void )
@@ -294,7 +311,7 @@ bool Proc16MRuntime( void )
 
 
 /****************************************************************
- * "MEmory" SysDirective
+ * "MEmory" Directive
  ****************************************************************/
 
 static bool ProcTryExtended( void )
@@ -341,7 +358,7 @@ bool ProcMemory16M( void )
 
 
 /****************************************************************
- * "TRansparent" SysDirective
+ * "TRansparent" Directive
  ****************************************************************/
 
 static bool ProcTStack( void )
@@ -381,7 +398,7 @@ bool ProcTransparent( void )
 
 
 /****************************************************************
- * "FORMat" SysDirective/Directive
+ * "FORMat" Directive
  ****************************************************************/
 
 bool Proc16M( void )

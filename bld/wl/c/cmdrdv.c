@@ -72,25 +72,42 @@ void FreeRdosFmt( void )
 {
 }
 
-bool ProcRdosCodeSel( void )
-/***************************
+
+/****************************************************************
+ * "OPtion" Directive
+ ****************************************************************/
+
+static bool ProcRdosCodeSel( void )
+/**********************************
  * process CODESelector option
  */
 {
     return( GetLong( &FmtData.u.rdos.code_sel ) );
 }
 
-bool ProcRdosDataSel( void )
-/***************************
+static bool ProcRdosDataSel( void )
+/**********************************
  * process DataSelector option
  */
 {
     return( GetLong( &FmtData.u.rdos.data_sel ) );
 }
 
+static parse_entry  MainOptions[] = {
+    "CODESelector", ProcRdosCodeSel,    MK_RDOS, 0,
+    "DATASelector", ProcRdosDataSel,    MK_RDOS, 0,
+    NULL
+};
+
+bool ProcRdosOptions( void )
+/**************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
+}
+
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcRdosDev( void )

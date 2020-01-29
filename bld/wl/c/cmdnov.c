@@ -323,10 +323,10 @@ static bool GetSymbolImportExport( bool import )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcScreenName( void )
+static bool ProcScreenName( void )
 /*************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -343,7 +343,7 @@ bool ProcScreenName( void )
     return( true );
 }
 
-bool ProcCheck( void )
+static bool ProcCheck( void )
 /********************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -353,14 +353,14 @@ bool ProcCheck( void )
     return( true );
 }
 
-bool ProcMultiLoad( void )
+static bool ProcMultiLoad( void )
 /************************/
 {
     FmtData.u.nov.exeflags |= NOV_MULTIPLE;
     return( true );
 }
 
-bool ProcAutoUnload( void )
+static bool ProcAutoUnload( void )
 /*************************/
 {
     FmtData.u.nov.exeflags |= NOV_AUTOUNLOAD;
@@ -368,28 +368,28 @@ bool ProcAutoUnload( void )
 }
 
 
-bool ProcReentrant( void )
+static bool ProcReentrant( void )
 /************************/
 {
     FmtData.u.nov.exeflags |= NOV_REENTRANT;
     return( true );
 }
 
-bool ProcSynch( void )
+static bool ProcSynch( void )
 /********************/
 {
     FmtData.u.nov.exeflags |= NOV_SYNCHRONIZE;
     return( true );
 }
 
-bool ProcPseudoPreemption( void )
+static bool ProcPseudoPreemption( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_PSEUDOPREEMPTION;
     return( true );
 }
 
-bool ProcNLMFlags( void )
+static bool ProcNLMFlags( void )
 /***********************/
 {
     unsigned_32 value;
@@ -400,7 +400,7 @@ bool ProcNLMFlags( void )
     return( true );
 }
 
-bool ProcCustom( void )
+static bool ProcCustom( void )
 /*********************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -410,7 +410,7 @@ bool ProcCustom( void )
     return( true );
 }
 
-bool ProcMessages( void )
+static bool ProcMessages( void )
 /***********************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -420,7 +420,7 @@ bool ProcMessages( void )
     return( true );
 }
 
-bool ProcHelp( void )
+static bool ProcHelp( void )
 /*******************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -430,7 +430,7 @@ bool ProcHelp( void )
     return( true );
 }
 
-bool ProcXDCData( void )
+static bool ProcXDCData( void )
 /**********************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -440,7 +440,7 @@ bool ProcXDCData( void )
     return( true );
 }
 
-bool ProcSharelib( void )
+static bool ProcSharelib( void )
 /***********************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -450,7 +450,7 @@ bool ProcSharelib( void )
     return( true );
 }
 
-bool ProcExit( void )
+static bool ProcExit( void )
 /*******************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -460,7 +460,7 @@ bool ProcExit( void )
     return( true );
 }
 
-bool ProcThreadName( void )
+static bool ProcThreadName( void )
 /*************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -478,7 +478,7 @@ bool ProcThreadName( void )
 #define DEFAULT_COPYRIGHT_LENGTH (sizeof( DEFAULT_COPYRIGHT ) - 1)
 #define YEAR_OFFSET (sizeof( COPYRIGHT_START ) - 1)
 
-bool ProcCopyright( void )
+static bool ProcCopyright( void )
 /************************/
 {
     struct tm       *currtime;
@@ -512,11 +512,38 @@ bool ProcCopyright( void )
     return( true );
 }
 
-bool ProcOSDomain( void )
+static bool ProcOSDomain( void )
 /***********************/
 {
     FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
     return( true );
+}
+
+static parse_entry  MainOptions[] = {
+    "SCReenname",       ProcScreenName,         MK_NOVELL, 0,
+    "CHeck",            ProcCheck,              MK_NOVELL, 0,
+    "MULTILoad",        ProcMultiLoad,          MK_NOVELL, 0,
+    "AUTOUNload",       ProcAutoUnload,         MK_NOVELL, 0,
+    "REentrant",        ProcReentrant,          MK_NOVELL, 0,
+    "SYnchronize",      ProcSynch,              MK_NOVELL, 0,
+    "CUSTom",           ProcCustom,             MK_NOVELL, 0,
+    "EXit",             ProcExit,               MK_NOVELL, 0,
+    "THReadname",       ProcThreadName,         MK_NOVELL, 0,
+    "PSeudopreemption", ProcPseudoPreemption,   MK_NOVELL, 0,
+    "COPYRight",        ProcCopyright,          MK_NOVELL, 0,
+    "MESsages",         ProcMessages,           MK_NOVELL, 0,
+    "HElp",             ProcHelp,               MK_NOVELL, 0,
+    "XDCdata",          ProcXDCData,            MK_NOVELL, 0,
+    "SHArelib",         ProcSharelib,           MK_NOVELL, 0,
+    "OSDomain",         ProcOSDomain,           MK_NOVELL, 0,
+    "NLMFlags",         ProcNLMFlags,           MK_NOVELL, 0,
+    NULL
+};
+
+bool ProcNovOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
 }
 
 
@@ -620,7 +647,7 @@ bool ProcNovDBI( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcModuleTypeN( int n )

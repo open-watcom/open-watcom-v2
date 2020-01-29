@@ -35,25 +35,12 @@
 extern void     SetOS2Fmt( void );
 extern void     FreeOS2Fmt( void );
 
+extern bool     ProcOS2Options( void );
 extern bool     ProcOS2Runtime( void );
 
 extern bool     ProcCommit( void );
 extern bool     ProcAnonExport( void );
-extern bool     ProcOS2NoStub( void );
-extern bool     ProcSingle( void );
-extern bool     ProcMultiple( void );
-extern bool     ProcNone( void );
-extern bool     ProcOldLibrary( void );
-extern bool     ProcModName( void );
-extern bool     ProcNewFiles( void );
-extern bool     ProcProtMode( void );
-extern bool     ProcRWRelocCheck( void );
-extern bool     ProcSelfRelative( void );
-extern bool     ProcInternalRelocs( void );
-extern bool     ProcToggleRelocsFlag( void );
-extern bool     ProcNoStdCall( void );
 extern bool     ProcResource( void );
-extern bool     ProcMixed1632( void );
 
 extern bool     ProcOS2Import( void );
 extern bool     ProcOS2Export( void );
@@ -64,11 +51,6 @@ extern bool     ProcOS2HeapSize( void );
 /*
  *  These are PE only
  */
-extern bool     ProcLinkVersion( void );
-extern bool     ProcOsVersion( void );
-extern bool     ProcChecksum( void );
-extern bool     ProcLargeAddressAware( void );
-extern bool     ProcNoLargeAddressAware( void );
 extern bool     ProcPENoRelocs( void );
 
 extern bool     ProcOS2( void );

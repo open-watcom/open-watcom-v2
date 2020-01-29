@@ -80,27 +80,57 @@ void CmdQNXFini( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcLongLived( void )
-/************************/
+static bool ProcLongLived( void )
+/*******************************/
 {
     FmtData.u.qnx.flags |= _TCF_LONG_LIVED;
     return( true );
+}
+
+static bool ProcPrivilege( void )
+/*******************************/
+{
+    ord_state           ret;
+    unsigned_16         value;
+
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
+    ret = getatoi( &value );
+    if( ret != ST_IS_ORDINAL || value > 3 ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
+    } else {
+        FmtData.u.qnx.priv_level = value;
+    }
+    return( true );
+}
+
+static bool ProcLinearRelocs( void )
+/**********************************/
+{
+    FmtData.u.qnx.gen_linear_relocs = true;
+    return( true );
+}
+
+static parse_entry  MainOptions[] = {
+    "LOnglived",    ProcLongLived,      MK_QNX, 0,
+    "PRIVilege",    ProcPrivilege,      MK_QNX, 0,
+    "LInearrelocs", ProcLinearRelocs,   MK_QNX, 0,
+    NULL
+};
+
+bool ProcQNXOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
 }
 
 bool ProcQNXNoRelocs( void )
 /**************************/
 {
     FmtData.u.qnx.gen_seg_relocs = false;
-    return( true );
-}
-
-bool ProcLinearRelocs( void )
-/***************************/
-{
-    FmtData.u.qnx.gen_linear_relocs = true;
     return( true );
 }
 
@@ -121,26 +151,9 @@ bool ProcQNXHeapSize( void )
     return( true );
 }
 
-bool ProcQNXPrivilege( void )
-/***************************/
-{
-    ord_state           ret;
-    unsigned_16         value;
-
-    if( !HaveEquals( TOK_NORMAL ) )
-        return( false );
-    ret = getatoi( &value );
-    if( ret != ST_IS_ORDINAL || value > 3 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
-    } else {
-        FmtData.u.qnx.priv_level = value;
-    }
-    return( true );
-}
-
 
 /****************************************************************
- * "SEGment" SysDirective
+ * "SEGment" Directive
  ****************************************************************/
 
 static bool ProcQNXClass( void )
@@ -220,7 +233,7 @@ bool ProcQNXSegment( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcQNXFlat( void )

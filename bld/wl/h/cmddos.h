@@ -38,20 +38,14 @@ extern overlay_ref  GetOvlRef( void );
 extern void         CmdOvlFini( void );
 extern void         MakeNewSection( void );
 
+extern bool         ProcDosOptions( void );
+
 extern bool         ProcOverlay( void );
 extern bool         ProcBegin( void );
 extern bool         ProcFixedLib( void );
 extern bool         ProcNoVector( void );
 extern bool         ProcVector( void );
 extern bool         ProcForceVector( void );
-extern bool         ProcSmall( void );
-extern bool         ProcDistribute( void );
-extern bool         ProcDynamic( void );
-extern bool         ProcStandard( void );
-extern bool         ProcNoIndirect( void );
-extern bool         ProcArea( void );
-extern bool         ProcPadSections( void );
-extern bool         ProcFullHeader( void );
 
 extern bool         ProcDos( void );
 

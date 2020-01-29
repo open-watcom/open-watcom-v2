@@ -81,35 +81,48 @@ void FreePharFmt( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
 #if 0
  .exp packing executables implemented yet.
 
-bool ProcPackExp( void )
-/**********************/
+static bool ProcPackExp( void )
+/*****************************/
 {
     FmtData.u.phar.pack = true;
     return( true );
 }
 #endif
 
-bool ProcMinData( void )
-/**********************/
+static bool ProcMinData( void )
+/*****************************/
 {
     return( GetLong( &FmtData.u.phar.mindata ) );
 }
 
-bool ProcMaxData( void )
-/**********************/
+static bool ProcMaxData( void )
+/*****************************/
 {
     return( GetLong( &FmtData.u.phar.maxdata ) );
 }
 
+static parse_entry  MainOptions[] = {
+//    "PACKExp",      ProcPackExp,        MK_PHAR_FLAT, 0,
+    "MINData",      ProcMinData,        MK_PHAR_LAP, 0,
+    "MAXData",      ProcMaxData,        MK_PHAR_LAP, 0,
+    NULL
+};
+
+bool ProcPharOptions( void )
+/**************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
+}
+
 
 /****************************************************************
- * "RUntime" SysDirective/Directive
+ * "RUntime" Directive
  ****************************************************************/
 
 static bool ProcUnpriv( void )
@@ -307,7 +320,7 @@ bool ProcPharRuntime( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcPharFlat( void )

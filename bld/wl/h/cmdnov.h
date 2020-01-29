@@ -38,26 +38,11 @@ extern void     FreeNovFmt( void );
 extern void     CmdNovFini( void );
 extern void     SetNovImportSymbol( symbol * );
 
+extern bool     ProcNovOptions( void );
+
 extern bool     ProcNovDBI( void );
 extern bool     ProcExportsDBI( void );
 extern bool     ProcNovModule( void );
-extern bool     ProcScreenName( void );
-extern bool     ProcCheck( void );
-extern bool     ProcMultiLoad( void );
-extern bool     ProcAutoUnload( void );
-extern bool     ProcReentrant( void );
-extern bool     ProcSynch( void );
-extern bool     ProcCustom( void );
-extern bool     ProcExit( void );
-extern bool     ProcThreadName( void );
-extern bool     ProcPseudoPreemption( void );
-extern bool     ProcNLMFlags( void );
-extern bool     ProcCopyright( void );
-extern bool     ProcMessages( void );
-extern bool     ProcHelp( void );
-extern bool     ProcXDCData( void );
-extern bool     ProcSharelib( void );
-extern bool     ProcOSDomain( void );
 
 extern bool     ProcNovImport( void );
 extern bool     ProcNovExport( void );

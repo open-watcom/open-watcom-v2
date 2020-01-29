@@ -178,145 +178,18 @@ static bool GetWlibImports( void )
 
 
 /****************************************************************
- * "OPtion" SysDirective/Directive
+ * "OPtion" Directive
  ****************************************************************/
 
-bool ProcOS2Alignment( void )
-/****************************
- * process Alignment option
- */
-{
-    ord_state           ret;
-    unsigned_32         value;
-
-    if( !HaveEquals( TOK_NORMAL ) )
-        return( false );
-    ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
-        return( false );
-    }
-    FmtData.u.os2.segment_shift = blog_32( value - 1 ) + 1;     //round up.
-    return( true );
-}
-
-bool ProcModName( void )
-/**********************/
-{
-    if( !HaveEquals( TOK_INCLUDE_DOT ) )
-        return( false );
-    FmtData.u.os2.module_name = totext();
-    return( true );
-}
-
-bool ProcNewFiles( void )
-/***********************/
-{
-    FmtData.u.os2.flags |= LONG_FILENAMES;
-    return( true );
-}
-
-bool ProcProtMode( void )
-/***********************/
-{
-    FmtData.u.os2.flags |= PROTMODE_ONLY;
-    return( true );
-}
-
-bool ProcOldLibrary( void )
-/*************************/
-{
-    if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) )
-        return( false );
-    FmtData.u.os2.old_lib_name = FileName( Token.this, Token.len, E_DLL, false );
-    return( true );
-}
-
-bool ProcOS2HeapSize( void )
-/**************************/
-{
-    ord_state           ret;
-    unsigned_32         value;
-
-    if( !HaveEquals( TOK_NORMAL ) )
-        return( false );
-    ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
-    } else {
-        FmtData.u.os2.heapsize = value;
-    }
-    return( true );
-}
-
-bool ProcRWRelocCheck( void )
-/****************************
- * check for segment relocations pointing to read/write data segments
- */
-{
-    FmtData.u.os2.chk_seg_relocs = true;
-    return( true );
-}
-
-bool ProcSelfRelative( void )
-/***************************/
-{
-    FmtData.u.os2.gen_rel_relocs = true;
-    return( true );
-}
-
-bool ProcInternalRelocs( void )
-/******************************
- * in case someone wants internal relocs generated.
- */
-{
-    FmtData.u.os2.gen_int_relocs = true;
-    return( true );
-}
-
-bool ProcToggleRelocsFlag( void )
-/********************************
- * Rational wants internal relocs generated, but wants
- * the "no internal relocs" flag set
- */
-{
-    FmtData.u.os2.toggle_relocs = true;
-    return( true );
-}
-
-bool ProcMixed1632( void )
-/*************************
- * Sometimes it's useful to mix 16-bit and 32-bit code/data into one segment
- * specially for OS/2 Device Drivers
- */
-{
-    LinkFlags &= ~LF_FAR_CALLS_FLAG ; // must be turned off for mixed code
-    FmtData.u.os2.mixed1632 = true;
-    return( true );
-}
-
-bool ProcPENoRelocs( void )
-/*************************/
-{
-    LinkState &= ~LS_MAKE_RELOCS;
-    return( true );
-}
-
-bool ProcNoStdCall( void )
-/************************/
-{
-    FmtData.u.pe.no_stdcall = true;
-    return( true );
-}
-
-bool ProcOS2NoStub( void )
-/************************/
+static bool ProcNoStub( void )
+/****************************/
 {
     FmtData.u.os2.no_stub = true;
     return( true );
 }
 
-bool ProcSingle( void )
-/*********************/
+static bool ProcSingle( void )
+/****************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
         LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
@@ -326,8 +199,8 @@ bool ProcSingle( void )
     return( true );
 }
 
-bool ProcMultiple( void )
-/***********************/
+static bool ProcMultiple( void )
+/******************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
         LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
@@ -337,8 +210,8 @@ bool ProcMultiple( void )
     return( true );
 }
 
-bool ProcNone( void )
-/*******************/
+static bool ProcNone( void )
+/**************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
         LnkMsg( LOC+LINE+WRN+MSG_AUTO_SEG_MULT_DEFD, NULL );
@@ -347,8 +220,82 @@ bool ProcNone( void )
     return( true );
 }
 
-bool ProcLinkVersion( void )
-/**************************/
+static bool ProcOldLibrary( void )
+/********************************/
+{
+    if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) )
+        return( false );
+    FmtData.u.os2.old_lib_name = FileName( Token.this, Token.len, E_DLL, false );
+    return( true );
+}
+
+static bool ProcModName( void )
+/*****************************/
+{
+    if( !HaveEquals( TOK_INCLUDE_DOT ) )
+        return( false );
+    FmtData.u.os2.module_name = totext();
+    return( true );
+}
+
+static bool ProcNewFiles( void )
+/******************************/
+{
+    FmtData.u.os2.flags |= LONG_FILENAMES;
+    return( true );
+}
+
+static bool ProcProtMode( void )
+/******************************/
+{
+    FmtData.u.os2.flags |= PROTMODE_ONLY;
+    return( true );
+}
+
+static bool ProcNoStdCall( void )
+/*******************************/
+{
+    FmtData.u.pe.no_stdcall = true;
+    return( true );
+}
+
+static bool ProcRWRelocCheck( void )
+/***********************************
+ * check for segment relocations pointing to read/write data segments
+ */
+{
+    FmtData.u.os2.chk_seg_relocs = true;
+    return( true );
+}
+
+static bool ProcSelfRelative( void )
+/**********************************/
+{
+    FmtData.u.os2.gen_rel_relocs = true;
+    return( true );
+}
+
+static bool ProcInternalRelocs( void )
+/*************************************
+ * in case someone wants internal relocs generated.
+ */
+{
+    FmtData.u.os2.gen_int_relocs = true;
+    return( true );
+}
+
+static bool ProcToggleRelocsFlag( void )
+/***************************************
+ * Rational wants internal relocs generated, but wants
+ * the "no internal relocs" flag set
+ */
+{
+    FmtData.u.os2.toggle_relocs = true;
+    return( true );
+}
+
+static bool ProcLinkVersion( void )
+/*********************************/
 {
     version_state   result;
     version_block   vb;
@@ -368,8 +315,8 @@ bool ProcLinkVersion( void )
     return( false );
 }
 
-bool ProcOsVersion( void )
-/************************/
+static bool ProcOsVersion( void )
+/*******************************/
 {
     version_state   result;
     version_block   vb;
@@ -389,26 +336,108 @@ bool ProcOsVersion( void )
     return( false );    /* error has occurred */
 }
 
-bool ProcChecksum( void )
-/***********************/
+static bool ProcChecksum( void )
+/******************************/
 {
     FmtData.u.pe.checksumfile = true;
     return( true );
 }
 
-bool ProcLargeAddressAware( void )
-/********************************/
+static bool ProcLargeAddressAware( void )
+/***************************************/
 {
     FmtData.u.pe.largeaddressaware = true;
     FmtData.u.pe.nolargeaddressaware = false;
     return( true );
 }
 
-bool ProcNoLargeAddressAware( void )
-/**********************************/
+static bool ProcNoLargeAddressAware( void )
+/*****************************************/
 {
     FmtData.u.pe.nolargeaddressaware = true;
     FmtData.u.pe.largeaddressaware = false;
+    return( true );
+}
+
+static bool ProcMixed1632( void )
+/********************************
+ * Sometimes it's useful to mix 16-bit and 32-bit code/data into one segment
+ * specially for OS/2 Device Drivers
+ */
+{
+    LinkFlags &= ~LF_FAR_CALLS_FLAG ; // must be turned off for mixed code
+    FmtData.u.os2.mixed1632 = true;
+    return( true );
+}
+
+static parse_entry  MainOptions[] = {
+    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_PE | MK_WIN_VXD,        0,
+    "ONEautodata",          ProcSingle,                 MK_OS2,                             CF_AUTO_SEG_FLAG,
+    "MANYautodata",         ProcMultiple,               MK_OS2,                             CF_AUTO_SEG_FLAG,
+    "NOAutodata",           ProcNone,                   MK_OS2_16BIT,                       CF_AUTO_SEG_FLAG,
+    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_PE,                     0,
+    "MODName",              ProcModName,                MK_OS2 | MK_PE | MK_WIN_VXD,        0,
+    "NEWFiles",             ProcNewFiles,               MK_ONLY_OS2_16,                     0,
+    "PROTmode",             ProcProtMode,               MK_OS2_16BIT,                       0,
+    "NOSTDCall",            ProcNoStdCall,              MK_PE,                              0,
+    "RWReloccheck",         ProcRWRelocCheck,           MK_WINDOWS,                         0,
+    "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                          0,
+    "INTernalrelocs",       ProcInternalRelocs,         MK_OS2_LX,                          0,
+    "TOGglerelocsflag",     ProcToggleRelocsFlag,       MK_OS2_LX,                          0,
+    "LINKVersion",          ProcLinkVersion,            MK_PE,                              0,
+    "OSVersion",            ProcOsVersion,              MK_PE,                              0,
+    "CHECKSUM",             ProcChecksum,               MK_PE,                              0,
+    "LARGEaddressaware",    ProcLargeAddressAware,      MK_PE,                              0,
+    "NOLARGEaddressaware",  ProcNoLargeAddressAware,    MK_PE,                              0,
+    "MIXed1632",            ProcMixed1632,              MK_OS2_FLAT,                        0,
+    NULL
+};
+
+bool ProcOS2Options( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO, false ) );
+}
+
+bool ProcPENoRelocs( void )
+/*************************/
+{
+    LinkState &= ~LS_MAKE_RELOCS;
+    return( true );
+}
+
+bool ProcOS2Alignment( void )
+/****************************
+ * process Alignment option
+ */
+{
+    ord_state           ret;
+    unsigned_32         value;
+
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
+    ret = getatol( &value );
+    if( ret != ST_IS_ORDINAL || value == 0 ) {
+        return( false );
+    }
+    FmtData.u.os2.segment_shift = blog_32( value - 1 ) + 1;     //round up.
+    return( true );
+}
+
+bool ProcOS2HeapSize( void )
+/**************************/
+{
+    ord_state           ret;
+    unsigned_32         value;
+
+    if( !HaveEquals( TOK_NORMAL ) )
+        return( false );
+    ret = getatol( &value );
+    if( ret != ST_IS_ORDINAL || value == 0 ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
+    } else {
+        FmtData.u.os2.heapsize = value;
+    }
     return( true );
 }
 
@@ -594,7 +623,7 @@ bool ProcAnonExport( void )
 
 
 /****************************************************************
- * "SEGment" SysDirective
+ * "SEGment" Directive
  ****************************************************************/
 
 static bool ProcOS2Class( void )
@@ -974,7 +1003,7 @@ bool ProcCommit( void )
 
 
 /****************************************************************
- * "RUntime" SysDirective/Directive
+ * "RUntime" Directive
  ****************************************************************/
 
 static void GetSubsystemVersion( void )
@@ -1062,7 +1091,7 @@ bool ProcOS2Runtime( void )
 
 
 /****************************************************************
- * "Format" SysDirective/Directive
+ * "Format" Directive
  ****************************************************************/
 
 static bool ProcInitGlobal( void )
