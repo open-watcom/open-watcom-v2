@@ -38,6 +38,6 @@ extern void     ResetCmdAll( void );
 extern bool     ProcLibrary( void );
 extern void     ChkBase( offset align );
 
-extern bool     DoParseSysDirective( bool suicide );
+extern bool     DoParseDirectiveSubset( void );
 extern bool     DoParseDirective( bool suicide );
 extern bool     DoMatchDirective( const char *parse, size_t len );

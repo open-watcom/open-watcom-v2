@@ -89,6 +89,7 @@ typedef enum {
     CF_AFTER_INC            = CONSTU32( 0x00008000 ),   // option must be specd. after op inc
     CF_DOING_OPTLIB         = CONSTU32( 0x00010000 ),
     CF_NO_EXTENSION         = CONSTU32( 0x00020000 ),   // don't put an extension on exe name
+    CF_SUBSET               = CONSTU32( 0x00040000 ),
 } commandflag;
 
 #define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)
@@ -157,6 +158,7 @@ extern cmdfilelist      *CmdFile;
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
 extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
 extern bool             ProcOne( parse_entry *, sep_type, bool );
+extern bool             ProcOneSubset( parse_entry *, sep_type );
 extern bool             MatchOne( parse_entry *, sep_type, const char *, size_t );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );

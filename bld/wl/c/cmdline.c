@@ -690,7 +690,7 @@ void ExecSystem( const char *name )
         _LnkFree( sys->name );
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-            if( !DoParseSysDirective( false ) ) {
+            if( !DoParseDirectiveSubset() ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;

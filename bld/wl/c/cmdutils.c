@@ -181,8 +181,8 @@ bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
     return( ProcArgListEx( rtn, ctrl ,NULL ) );
 }
 
-bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
-/************************************************************/
+static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset )
+/********************************************************************************/
 /* recognize token out of parse table, with required separator            */
 /* return false if no separator, Suicide if not recognized (if suicide is */
 /* true) otherwise use return code from action routine in matching entry  */
@@ -197,6 +197,9 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
         return( false );
     ret = true;
     for( ; entry->keyword != NULL; ++entry ) {
+        if( subset && (entry->flags & CF_SUBSET) == 0 ) {
+            continue;
+        }
         key = entry->keyword;
         ptr = Token.this;
         len = Token.len;
@@ -204,7 +207,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
             if( len == 0 && !isupper( *key ) ) {
                 if( HintFormat( entry->format ) ) {
                     ret = (*entry->rtn)();
-                    CmdFlags |= entry->flags;
+                    CmdFlags |= entry->flags & ~CF_SUBSET;
                 } else {
                     strcpy( keybuff, entry->keyword );
                     strlwr( keybuff );
@@ -228,6 +231,18 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
         ret = false;
     }
     return( ret );
+}
+
+bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
+/************************************************************/
+{
+    return( procOne( entry, req, suicide, false ) );
+}
+
+bool ProcOneSubset( parse_entry *entry, sep_type req )
+/****************************************************/
+{
+    return( procOne( entry, req, false, true ) );
 }
 
 bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match_len )

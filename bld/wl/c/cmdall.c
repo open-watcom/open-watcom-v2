@@ -2144,64 +2144,33 @@ static bool ProcFormat( void )
     return( ProcOne( Models, SEP_NO, true ) );
 }
 
-/* these directives are the only ones that are harmless to run after the files
+/* directives with CF_SUBSET are the only ones that are harmless to run after the files
  * have been processed in pass 1 */
-
-static parse_entry  SysDirectives[] = {
-    "Library",      ProcLibrary,        MK_ALL, 0,
-    "Name",         ProcName,           MK_ALL, 0,
-    "OPtion",       ProcOptions,        MK_ALL, 0,
-    "LIBPath",      ProcLibPath,        MK_ALL, 0,
-    "FORMat",       ProcFormat,         MK_ALL, 0,
-    "DISAble",      ProcDisable,        MK_ALL, 0,
-    "SOrt",         ProcSort,           MK_ALL, 0,
-    "ORDer",        ProcOrder,          MK_ALL, 0,
-#ifdef _RAW
-    "OUTput",       ProcOutput,         MK_ALL, 0,
-#endif
-#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-    "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
-#endif
-#if defined( _OS2 ) || defined( _QNX )
-    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
-#endif
-#ifdef _DOS16M
-    "MEMory",       ProcMemory16M,      MK_DOS16M, 0,
-    "TRansparent",  ProcTransparent,    MK_DOS16M, 0,
-#endif
-    NULL
-};
-
-bool DoParseSysDirective( bool suicide )
-/**************************************/
-{
-    return( ProcOne( SysDirectives, SEP_NO, suicide ) );
-}
 
 static parse_entry  Directives[] = {
     "File",         ProcFiles,          MK_ALL, CF_HAVE_FILES,
     "MODFile",      ProcModFiles,       MK_ALL, 0,
-    "Library",      ProcLibrary,        MK_ALL, 0,
-    "Name",         ProcName,           MK_ALL, 0,
-    "OPtion",       ProcOptions,        MK_ALL, 0,
+    "Library",      ProcLibrary,        MK_ALL, CF_SUBSET,
+    "Name",         ProcName,           MK_ALL, CF_SUBSET,
+    "OPtion",       ProcOptions,        MK_ALL, CF_SUBSET,
     "Debug",        ProcDebug,          MK_ALL, 0,
     "SYStem",       ProcSystem,         MK_ALL, 0,
-    "LIBPath",      ProcLibPath,        MK_ALL, 0,
+    "LIBPath",      ProcLibPath,        MK_ALL, CF_SUBSET,
     "LIBFile",      ProcLibFile,        MK_ALL, CF_HAVE_FILES,
     "Path",         ProcPath,           MK_ALL, 0,
-    "FORMat",       ProcFormat,         MK_ALL, 0,
+    "FORMat",       ProcFormat,         MK_ALL, CF_SUBSET,
     "MODTrace",     ProcModTrace,       MK_ALL, 0,
     "SYMTrace",     ProcSymTrace,       MK_ALL, CF_AFTER_INC,
     "Alias",        ProcAlias,          MK_ALL, CF_AFTER_INC,
     "REFerence",    ProcReference,      MK_ALL, CF_AFTER_INC,
-    "DISAble",      ProcDisable,        MK_ALL, 0,
-    "SOrt",         ProcSort,           MK_ALL, 0,
+    "DISAble",      ProcDisable,        MK_ALL, CF_SUBSET,
+    "SOrt",         ProcSort,           MK_ALL, CF_SUBSET,
     "LANGuage",     ProcLanguage,       MK_ALL, 0,
     "STARTLink",    ProcStartLink,      MK_ALL, 0,
     "OPTLIB",       ProcOptLib,         MK_ALL, 0,
-    "ORDer",        ProcOrder,          MK_ALL, 0,
+    "ORDer",        ProcOrder,          MK_ALL, CF_SUBSET,
 #ifdef _RAW
-    "OUTput",       ProcOutput,         MK_ALL, 0,
+    "OUTput",       ProcOutput,         MK_ALL, CF_SUBSET,
 #endif
 #ifdef _OS2
     "RESource",     ProcResource,       MK_PE, 0,
@@ -2213,7 +2182,7 @@ static parse_entry  Directives[] = {
     "EXPort",       ProcExport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
-    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), 0,
+    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_PE | MK_WIN_VXD ), CF_SUBSET,
 #endif
 #ifdef _EXE
     "OVerlay",      ProcOverlay,        MK_OVERLAYS, 0,
@@ -2224,14 +2193,14 @@ static parse_entry  Directives[] = {
     "FORCEVEctor",  ProcForceVector,    MK_OVERLAYS, CF_AFTER_INC,
 #endif
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-    "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), 0,
+    "RUntime",      ProcRuntime,        (MK_PHAR_LAP | MK_DOS16M | MK_PE | MK_ELF), CF_SUBSET,
 #endif
 #if defined( _NOVELL ) || defined( _ELF )
     "MODUle",       ProcModule,         MK_NOVELL | MK_ELF, 0,
 #endif
 #ifdef _DOS16M
-    "MEMory",       ProcMemory16M,      MK_DOS16M, 0,
-    "TRansparent",  ProcTransparent,    MK_DOS16M, 0,
+    "MEMory",       ProcMemory16M,      MK_DOS16M, CF_SUBSET,
+    "TRansparent",  ProcTransparent,    MK_DOS16M, CF_SUBSET,
 #endif
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
@@ -2242,6 +2211,12 @@ static parse_entry  Directives[] = {
 #endif
     NULL
 };
+
+bool DoParseDirectiveSubset( void )
+/*********************************/
+{
+    return( ProcOneSubset( Directives, SEP_NO ) );
+}
 
 bool DoParseDirective( bool suicide )
 /***********************************/
