@@ -109,24 +109,24 @@ bool ProcMaxData( void )
 
 
 /****************************************************************
- * "RUNtime" Directive
+ * "RUntime" SysDirective/Directive
  ****************************************************************/
 
-bool ProcUnpriv( void )
-/*********************/
+static bool ProcUnpriv( void )
+/****************************/
 {
     FmtData.u.phar.unpriv = true;
     return( true );
 }
 
-bool ProcPriv( void )
-/*******************/
+static bool ProcPriv( void )
+/**************************/
 {
     return( true );
 }
 
-bool ProcFlags( void )
-/********************/
+static bool ProcFlags( void )
+/***************************/
 {
     bool            ret;
     unsigned_32     value;
@@ -136,8 +136,8 @@ bool ProcFlags( void )
     return( ret );
 }
 
-bool ProcMinReal( void )
-/**********************/
+static bool ProcMinReal( void )
+/*****************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -154,8 +154,8 @@ bool ProcMinReal( void )
     return( ret );
 }
 
-bool ProcMaxReal( void )
-/**********************/
+static bool ProcMaxReal( void )
+/*****************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -172,8 +172,8 @@ bool ProcMaxReal( void )
     return( ret );
 }
 
-bool ProcRealBreak( void )
-/************************/
+static bool ProcRealBreak( void )
+/*******************************/
 {
     unsigned_32     value;
     ord_state       ok;
@@ -194,8 +194,8 @@ bool ProcRealBreak( void )
     return( true );
 }
 
-bool ProcCallBufs( void )
-/***********************/
+static bool ProcCallBufs( void )
+/******************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -212,8 +212,8 @@ bool ProcCallBufs( void )
     return( ret );
 }
 
-bool ProcMiniBuf( void )
-/**********************/
+static bool ProcMiniBuf( void )
+/*****************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -230,8 +230,8 @@ bool ProcMiniBuf( void )
     return( ret );
 }
 
-bool ProcMaxiBuf( void )
-/**********************/
+static bool ProcMaxiBuf( void )
+/*****************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -248,8 +248,8 @@ bool ProcMaxiBuf( void )
     return( ret );
 }
 
-bool ProcNIStack( void )
-/**********************/
+static bool ProcNIStack( void )
+/*****************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -265,8 +265,8 @@ bool ProcNIStack( void )
     return( ret );
 }
 
-bool ProcIStkSize( void )
-/***********************/
+static bool ProcIStkSize( void )
+/******************************/
 {
     unsigned_32 value;
     bool        ret;
@@ -281,6 +281,28 @@ bool ProcIStkSize( void )
         }
     }
     return( ret );
+}
+
+static parse_entry  RunOptions[] = {
+    "MINReal",      ProcMinReal,        MK_PHAR_FLAT, 0,
+    "MAXReal",      ProcMaxReal,        MK_PHAR_FLAT, 0,
+    "REALBreak",    ProcRealBreak,      MK_PHAR_FLAT, CF_HAVE_REALBREAK,
+    "CALLBufs",     ProcCallBufs,       MK_PHAR_FLAT, 0,
+    "MINIBuf",      ProcMiniBuf,        MK_PHAR_FLAT, 0,
+    "MAXIBuf",      ProcMaxiBuf,        MK_PHAR_FLAT, 0,
+    "NISTack",      ProcNIStack,        MK_PHAR_FLAT, 0,
+    "ISTKsize",     ProcIStkSize,       MK_PHAR_FLAT, 0,
+    "UNPRIVileged", ProcUnpriv,         MK_PHAR_FLAT, 0,
+    "PRIVileged",   ProcPriv,           MK_PHAR_FLAT, 0,
+    /* WARNING: do not document the following directive -- for internal use only */
+    "FLAGs",        ProcFlags,          MK_PHAR_FLAT, 0,
+    NULL
+};
+
+bool ProcPharRuntime( void )
+/**************************/
+{
+    return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
 

@@ -52,7 +52,6 @@
 #include "cmdelf.h"
 #include "cmdzdos.h"
 #include "cmdraw.h"
-#include "cmdxxx.h"
 #include "cmdline.h"
 #include "symtrace.h"
 #include "objio.h"
@@ -1392,6 +1391,197 @@ void ChkBase( offset align )
     }
 }
 
+#if defined( _OS2 ) || defined( _NOVELL ) || defined( _ELF )
+static bool ProcImport( void )
+/****************************/
+{
+#ifdef _OS2
+    if( HintFormat( MK_OS2 | MK_PE ) ) {
+        return( ProcOS2Import() );
+    }
+#endif
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFImport() );
+    }
+#endif
+#ifdef _NOVELL
+    if( HintFormat( MK_NOVELL ) ) {
+        return( ProcNovImport() );
+    }
+#endif
+    return( false );
+}
+
+static bool ProcExport( void )
+/****************************/
+{
+#ifdef _OS2
+    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
+        return( ProcOS2Export() );
+    }
+#endif
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFExport() );
+    }
+#endif
+#ifdef _NOVELL
+    if( HintFormat( MK_NOVELL ) ) {
+        return( ProcNovExport() );
+    }
+#endif
+    return( false );
+}
+#endif
+
+#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
+static bool ProcNoRelocs( void )
+/******************************/
+{
+#ifdef _QNX
+    if( HintFormat( MK_QNX ) ) {
+        return( ProcQNXNoRelocs() );
+    }
+#endif
+#ifdef _OS2
+    if( HintFormat( MK_PE ) ) {
+        return( ProcPENoRelocs() );
+    }
+#endif
+#ifdef _DOS16M
+    if( HintFormat( MK_DOS16M ) ) {
+        return( Proc16MNoRelocs() );
+    }
+#endif
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFNoRelocs() );
+    }
+#endif
+    return( true );
+}
+#endif
+
+#if defined( _OS2 ) || defined( _QNX )
+static bool ProcSegment( void )
+/*****************************/
+{
+#ifdef _OS2
+    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
+        return( ProcOS2Segment() );
+    }
+#endif
+#ifdef _QNX
+    if( HintFormat( MK_QNX ) ) {
+        return( ProcQNXSegment() );
+    }
+#endif
+    return( true );
+}
+#endif
+
+#if defined( _OS2 ) || defined( _ELF )
+static bool ProcAlignment( void )
+/*******************************/
+{
+#ifdef _OS2
+    if( HintFormat( MK_OS2_16BIT | MK_OS2_LX | MK_PE ) ) {
+        return( ProcOS2Alignment() );
+    }
+#endif
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFAlignment() );
+    }
+#endif
+    return( true );
+}
+#endif
+
+#if defined( _OS2 ) || defined( _QNX )
+static bool ProcHeapSize( void )
+/******************************/
+{
+#if defined( _QNX ) && defined( __QNX__ )
+    if( HintFormat( MK_QNX ) ) {
+        return( ProcQNXHeapSize() );
+    }
+#endif
+#ifdef _OS2
+    if( HintFormat( MK_OS2 | MK_PE ) ) {
+        return( ProcOS2HeapSize() );
+    }
+#endif
+#if defined( _QNX ) && !defined( __QNX__ )
+    if( HintFormat( MK_QNX ) ) {
+        return( ProcQNXHeapSize() );
+    }
+#endif
+    return( true );
+}
+#endif
+
+#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF ) || defined( _RAW )
+static bool ProcOffset( void )
+/****************************/
+{
+    if( !GetLong( &FmtData.base ) ) {
+        return( false );
+    }
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+#ifdef _RAW
+    if( FmtData.type & MK_RAW ) {
+        ChkBase( _4KB );
+        return( true );
+    }
+#endif
+//#ifdef _OS2
+//    if( FmtData.type & (MK_OS2 | MK_PE) ) {
+//        ChkBase( _64KB );
+//        return( true );
+//    }
+//#endif
+//#ifdef _ELF
+//    if( FmtData.type & MK_ELF ) {
+//        ChkBase( _4KB );
+//        return( true );
+//    }
+//#endif
+    ChkBase( _64KB );
+    return( true );
+}
+#endif
+
+#if defined( _ELF ) || defined( _NOVELL )
+static bool ProcModule( void )
+/****************************/
+{
+#ifdef _ELF
+    if( HintFormat( MK_ELF ) ) {
+        return( ProcELFModule() );
+    }
+#endif
+#ifdef _NOVELL
+    if( HintFormat( MK_NOVELL ) ) {
+        return( ProcNovModule() );
+    }
+#endif
+    return( false );
+}
+#endif
+
 #ifdef _INT_DEBUG
 static bool ProcXDbg( void )
 /***************************
@@ -1535,55 +1725,32 @@ static bool ProcOutput( void )
 
 
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-static parse_entry  RunOptions[] = {
-  #ifdef _DOS16M
-    "KEYboard",     ProcKeyboard,       MK_DOS16M, 0,
-    "OVERload",     ProcOverload,       MK_DOS16M, 0,
-    "INIT00",       ProcInit00,         MK_DOS16M, 0,
-    "INITFF",       ProcInitFF,         MK_DOS16M, 0,
-    "ROTate",       ProcRotate,         MK_DOS16M, 0,
-    "AUTO",         ProcAuto,           MK_DOS16M, 0,
-    "SELectors",    ProcSelectors,      MK_DOS16M, 0,
-    "INT10",        ProcInt10,          MK_DOS16M, 0,
-  #endif
-  #ifdef _PHARLAP
-    "MINReal",      ProcMinReal,        MK_PHAR_FLAT, 0,
-    "MAXReal",      ProcMaxReal,        MK_PHAR_FLAT, 0,
-    "REALBreak",    ProcRealBreak,      MK_PHAR_FLAT, CF_HAVE_REALBREAK,
-    "CALLBufs",     ProcCallBufs,       MK_PHAR_FLAT, 0,
-    "MINIBuf",      ProcMiniBuf,        MK_PHAR_FLAT, 0,
-    "MAXIBuf",      ProcMaxiBuf,        MK_PHAR_FLAT, 0,
-    "NISTack",      ProcNIStack,        MK_PHAR_FLAT, 0,
-    "ISTKsize",     ProcIStkSize,       MK_PHAR_FLAT, 0,
-    "UNPRIVileged", ProcUnpriv,         MK_PHAR_FLAT, 0,
-    "PRIVileged",   ProcPriv,           MK_PHAR_FLAT, 0,
-    /* WARNING: do not document the following directive -- for internal use only */
-    "FLAGs",        ProcFlags,          MK_PHAR_FLAT, 0,
-  #endif
-  #ifdef _OS2
-    "NATive",       ProcRunNative,      MK_PE, 0,
-    "WINdows",      ProcRunWindows,     MK_PE, 0,
-    "CONsole",      ProcRunConsole,     MK_PE, 0,
-    "POSix",        ProcRunPosix,       MK_PE, 0,
-    "OS2",          ProcRunOS2,         MK_PE, 0,
-    "DOSstyle",     ProcRunDosstyle,    MK_PE, 0,
-  #endif
-  #ifdef _ELF
-    "ABIver",       ProcELFRNumber,     MK_ELF, 0,
-    "SVR4",         ProcELFRSVR4,       MK_ELF, 0,
-    "NETbsd",       ProcELFRNetBSD,     MK_ELF, 0,
-    "LINux",        ProcELFRLinux,      MK_ELF, 0,
-    "FREebsd",      ProcELFRFBSD,       MK_ELF, 0,
-    "SOLaris",      ProcELFRSolrs,      MK_ELF, 0,
-  #endif
-    NULL
-};
 
 static bool AddRunTime( void )
 /****************************/
 {
     Token.thumb = true;         // reparse last token.
-    return( ProcOne( RunOptions, SEP_NO, false ) );
+  #ifdef _DOS16M
+    if( Proc16MRuntime() ) {
+        return( true );
+    }
+  #endif
+  #ifdef _PHARLAP
+    if( ProcPharRuntime() ) {
+        return( true );
+    }
+  #endif
+  #ifdef _OS2
+    if( ProcOS2Runtime() ) {
+        return( true );
+    }
+  #endif
+  #ifdef _ELF
+    if( ProcELFRuntime() ) {
+        return( true );
+    }
+  #endif
+    return( false );
 }
 
 static bool ProcRuntime( void )

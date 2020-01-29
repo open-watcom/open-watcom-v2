@@ -35,6 +35,8 @@
 extern void     SetOS2Fmt( void );
 extern void     FreeOS2Fmt( void );
 
+extern bool     ProcOS2Runtime( void );
+
 extern bool     ProcCommit( void );
 extern bool     ProcAnonExport( void );
 extern bool     ProcSingle( void );
@@ -51,13 +53,6 @@ extern bool     ProcToggleRelocsFlag( void );
 extern bool     ProcNoStdCall( void );
 extern bool     ProcResource( void );
 extern bool     ProcMixed1632( void );
-
-extern bool     ProcRunNative( void );
-extern bool     ProcRunWindows( void );
-extern bool     ProcRunConsole( void );
-extern bool     ProcRunPosix( void );
-extern bool     ProcRunOS2( void );
-extern bool     ProcRunDosstyle( void );
 
 extern bool     ProcOS2Import( void );
 extern bool     ProcOS2Export( void );

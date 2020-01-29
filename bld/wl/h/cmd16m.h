@@ -38,14 +38,7 @@ extern void     CmdD16MFini( void );
 
 extern bool     Proc16MNoRelocs( void );
 
-extern bool     ProcKeyboard( void );
-extern bool     ProcOverload( void );
-extern bool     ProcInt10( void );
-extern bool     ProcInit00( void );
-extern bool     ProcInitFF( void );
-extern bool     ProcRotate( void );
-extern bool     ProcSelectors( void );
-extern bool     ProcAuto( void );
+extern bool     Proc16MRuntime( void );
 
 extern bool     ProcBuffer( void );
 extern bool     ProcGDTSize( void );

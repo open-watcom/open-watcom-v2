@@ -966,7 +966,7 @@ bool ProcCommit( void )
 
 
 /****************************************************************
- * "RUNtime" Directive
+ * "RUntime" SysDirective/Directive
  ****************************************************************/
 
 static void GetSubsystemVersion( void )
@@ -987,54 +987,69 @@ static void GetSubsystemVersion( void )
     }
 }
 
-bool ProcRunNative( void )
-/************************/
+static bool ProcRunNative( void )
+/*******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_NATIVE;
     GetSubsystemVersion();
     return( true );
 }
 
-bool ProcRunWindows( void )
-/*************************/
+static bool ProcRunWindows( void )
+/********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_GUI;
     GetSubsystemVersion();
     return( true );
 }
 
-bool ProcRunConsole( void )
-/*************************/
+static bool ProcRunConsole( void )
+/********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_CHAR;
     GetSubsystemVersion();
     return( true );
 }
 
-bool ProcRunPosix( void )
-/***********************/
+static bool ProcRunPosix( void )
+/******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_POSIX_CHAR;
     GetSubsystemVersion();
     return( true );
 }
 
-bool ProcRunOS2( void )
-/*********************/
+static bool ProcRunOS2( void )
+/****************************/
 {
     FmtData.u.pe.subsystem = PE_SS_OS2_CHAR;
     GetSubsystemVersion();
     return( true );
 }
 
-
-bool ProcRunDosstyle( void )
-/**************************/
+static bool ProcRunDosstyle( void )
+/*********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_PL_DOSSTYLE;
     FmtData.u.pe.signature = PL_SIGNATURE;
     GetSubsystemVersion();
     return( true );
+}
+
+static parse_entry  RunOptions[] = {
+    "NATive",       ProcRunNative,      MK_PE, 0,
+    "WINdows",      ProcRunWindows,     MK_PE, 0,
+    "CONsole",      ProcRunConsole,     MK_PE, 0,
+    "POSix",        ProcRunPosix,       MK_PE, 0,
+    "OS2",          ProcRunOS2,         MK_PE, 0,
+    "DOSstyle",     ProcRunDosstyle,    MK_PE, 0,
+    NULL
+};
+
+bool ProcOS2Runtime( void )
+/*************************/
+{
+    return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
 

@@ -191,7 +191,7 @@ bool ProcELFModule( void )
 
 
 /****************************************************************
- * "RUntime" SysDirective
+ * "RUntime" SysDirective/Directive
  ****************************************************************/
 
 static void ParseABITypeAndVersion( void )
@@ -231,51 +231,67 @@ static void ParseABIVersion( const char *message )
     }
 }
 
-bool ProcELFRNumber( void )
-/*************************/
+static bool ProcELFRNumber( void )
+/********************************/
 {
     ParseABITypeAndVersion();
     return( true );
 }
 
-bool ProcELFRSVR4( void )
-/***********************/
+static bool ProcELFRSVR4( void )
+/******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_NONE;
     ParseABIVersion( "SVR4" );
     return( true );
 }
 
-bool ProcELFRNetBSD( void )
-/*************************/
+static bool ProcELFRNetBSD( void )
+/********************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_NETBSD;
     ParseABIVersion( "NETBSD" );
     return( true );
 }
 
-bool ProcELFRLinux( void )
-/************************/
+static bool ProcELFRLinux( void )
+/*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_LINUX;
     ParseABIVersion( "LINUX" );
     return( true );
 }
 
-bool ProcELFRSolrs( void )
-/************************/
+static bool ProcELFRSolrs( void )
+/*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_SOLARIS;
     ParseABIVersion( "FREEBSD" );
     return( true );
 }
 
-bool ProcELFRFBSD( void )
-/***********************/
+static bool ProcELFRFBSD( void )
+/******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;
     ParseABIVersion( "SOLARIS" );
     return( true );
+}
+
+static parse_entry  RunOptions[] = {
+    "ABIver",       ProcELFRNumber,     MK_ELF, 0,
+    "SVR4",         ProcELFRSVR4,       MK_ELF, 0,
+    "NETbsd",       ProcELFRNetBSD,     MK_ELF, 0,
+    "LINux",        ProcELFRLinux,      MK_ELF, 0,
+    "FREebsd",      ProcELFRFBSD,       MK_ELF, 0,
+    "SOLaris",      ProcELFRSolrs,      MK_ELF, 0,
+    NULL
+};
+
+bool ProcELFRuntime( void )
+/*************************/
+{
+    return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
 

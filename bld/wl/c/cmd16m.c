@@ -207,53 +207,53 @@ bool ProcDataSize( void )
 
 
 /****************************************************************
- * "RUntime" SysDirective
+ * "RUntime" SysDirective/Directive
  ****************************************************************/
 
-bool ProcKeyboard( void )
-/***********************/
+static bool ProcKeyboard( void )
+/******************************/
 {
     FmtData.u.d16m.options |= OPT_KEYBOARD;
     return( true );
 }
 
-bool ProcOverload( void )
-/***********************/
+static bool ProcOverload( void )
+/******************************/
 {
     FmtData.u.d16m.options |= OPT_OVERLOAD;
     return( true );
 }
 
-bool ProcInt10( void )
-/********************/
+static bool ProcInt10( void )
+/***************************/
 {
     FmtData.u.d16m.options |= OPT_INT10;
     return( true );
 }
 
-bool ProcInit00( void )
-/*********************/
+static bool ProcInit00( void )
+/****************************/
 {
     FmtData.u.d16m.options |= OPT_INIT00;
     return( true );
 }
 
-bool ProcInitFF( void )
-/*********************/
+static bool ProcInitFF( void )
+/****************************/
 {
     FmtData.u.d16m.options |= OPT_INITFF;
     return( true );
 }
 
-bool ProcRotate( void )
-/*********************/
+static bool ProcRotate( void )
+/****************************/
 {
     FmtData.u.d16m.options |= OPT_ROTATE;
     return( true );
 }
 
-bool ProcSelectors( void )
-/*************************
+static bool ProcSelectors( void )
+/********************************
  * force selectors to be assigned at load time.
  */
 {
@@ -261,8 +261,8 @@ bool ProcSelectors( void )
     return( true );
 }
 
-bool ProcAuto( void )
-/********************
+static bool ProcAuto( void )
+/***************************
  * force selectors to be assigned at load time, and force relocs as well.
  */
 {
@@ -272,6 +272,24 @@ bool ProcAuto( void )
     FmtData.u.d16m.options |= OPT_AUTO;
     LinkState |= LS_MAKE_RELOCS;
     return( true );
+}
+
+static parse_entry  RunOptions[] = {
+    "KEYboard",     ProcKeyboard,       MK_DOS16M, 0,
+    "OVERload",     ProcOverload,       MK_DOS16M, 0,
+    "INIT00",       ProcInit00,         MK_DOS16M, 0,
+    "INITFF",       ProcInitFF,         MK_DOS16M, 0,
+    "ROTate",       ProcRotate,         MK_DOS16M, 0,
+    "AUTO",         ProcAuto,           MK_DOS16M, 0,
+    "SELectors",    ProcSelectors,      MK_DOS16M, 0,
+    "INT10",        ProcInt10,          MK_DOS16M, 0,
+    NULL
+};
+
+bool Proc16MRuntime( void )
+/*************************/
+{
+    return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
 
