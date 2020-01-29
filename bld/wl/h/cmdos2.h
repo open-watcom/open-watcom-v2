@@ -39,6 +39,7 @@ extern bool     ProcOS2Runtime( void );
 
 extern bool     ProcCommit( void );
 extern bool     ProcAnonExport( void );
+extern bool     ProcOS2NoStub( void );
 extern bool     ProcSingle( void );
 extern bool     ProcMultiple( void );
 extern bool     ProcNone( void );

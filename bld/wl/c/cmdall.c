@@ -1020,15 +1020,6 @@ static bool ProcStub( void )
     return( true );
 }
 
-#ifdef _OS2
-static bool ProcNoStub( void )
-/****************************/
-{
-    FmtData.u.os2.no_stub = true;
-    return( true );
-}
-#endif
-
 static bool ProcVersion( void )
 /*****************************/
 {
@@ -1991,7 +1982,7 @@ static parse_entry  MainOptions[] = {
     "STUB",         ProcStub,           (MK_OS2 | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M), 0,
 #endif
 #ifdef _OS2
-    "NOSTUB",       ProcNoStub,         MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "NOSTUB",       ProcOS2NoStub,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     "ONEautodata",  ProcSingle,         MK_OS2, CF_AUTO_SEG_FLAG,
     "MANYautodata", ProcMultiple,       MK_OS2, CF_AUTO_SEG_FLAG,
     "NOAutodata",   ProcNone,           MK_OS2_16BIT, CF_AUTO_SEG_FLAG,

@@ -308,6 +308,13 @@ bool ProcNoStdCall( void )
     return( true );
 }
 
+bool ProcOS2NoStub( void )
+/************************/
+{
+    FmtData.u.os2.no_stub = true;
+    return( true );
+}
+
 bool ProcSingle( void )
 /*********************/
 {
@@ -404,6 +411,7 @@ bool ProcNoLargeAddressAware( void )
     FmtData.u.pe.largeaddressaware = false;
     return( true );
 }
+
 
 
 /****************************************************************
