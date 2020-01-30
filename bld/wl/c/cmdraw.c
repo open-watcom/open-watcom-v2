@@ -72,18 +72,18 @@ static bool ProcRawHEX( void )
     return( true );
 }
 
-static parse_entry  RawOptions[] = {
+static parse_entry  RawFormats[] = {
     "BIN",          ProcRawBIN,         MK_RAW, 0,
     "HEX",          ProcRawHEX,         MK_RAW, 0,
     NULL
 };
 
-bool ProcRaw( void )
-/******************/
+bool ProcRawFormat( void )
+/************************/
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
     FmtData.base = 0;                               // Default offset
-    ProcOneSuicide( RawOptions, SEP_NO );
+    ProcOneSuicide( RawFormats, SEP_NO );
     return( true );
 }
 

@@ -47,6 +47,6 @@ extern bool     ProcNovModule( void );
 extern bool     ProcNovImport( void );
 extern bool     ProcNovExport( void );
 
-extern bool     ProcNovell( void );
+extern bool     ProcNovFormat( void );
 
 #endif

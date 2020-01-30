@@ -47,13 +47,9 @@ extern bool     ProcOS2Export( void );
 extern bool     ProcOS2Segment( void );
 extern bool     ProcOS2Alignment( void );
 extern bool     ProcOS2HeapSize( void );
+extern bool     ProcOS2NoRelocs( void );
 
-/*
- *  These are PE only
- */
-extern bool     ProcPENoRelocs( void );
-
-extern bool     ProcOS2( void );
-extern bool     ProcWindows( void );
+extern bool     ProcOS2Format( void );
+extern bool     ProcWindowsFormat( void );
 
 #endif

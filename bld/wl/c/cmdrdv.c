@@ -137,18 +137,18 @@ static bool ProcRdosMboot( void )
     return( true );
 }
 
-static parse_entry  RdosOptions[] = {
+static parse_entry  RdosFormats[] = {
     "DEV",          ProcRdosDev,        MK_RDOS, 0,
     "BIN",          ProcRdosBin,        MK_RDOS, 0,
     "MBOOT",        ProcRdosMboot,      MK_RDOS, 0,
     NULL
 };
 
-bool ProcRdos( void )
-/*******************/
+bool ProcRdosFormat( void )
+/*************************/
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( RdosOptions, SEP_NO );
+    ProcOne( RdosFormats, SEP_NO );
     return( true );
 }
 

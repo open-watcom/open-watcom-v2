@@ -401,8 +401,8 @@ bool ProcTransparent( void )
  * "FORMat" Directive
  ****************************************************************/
 
-bool Proc16M( void )
-/******************/
+bool Proc16MFormat( void )
+/************************/
 {
     return( true );
 }

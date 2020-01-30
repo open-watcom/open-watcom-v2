@@ -766,7 +766,7 @@ static bool ProcModuleType12( void )
 }
 #endif
 
-static parse_entry  NovModels[] = {
+static parse_entry  NovFormats[] = {
     "NLM",          ProcNLM,            MK_NOVELL, 0,    /* 0 */
     "LAN",          ProcLAN,            MK_NOVELL, 0,    /* 1 */
     "DSK",          ProcDSK,            MK_NOVELL, 0,    /* 2 */
@@ -790,10 +790,10 @@ static parse_entry  NovModels[] = {
     NULL
 };
 
-bool ProcNovell( void )
-/*********************/
+bool ProcNovFormat( void )
+/************************/
 {
-    if( !ProcOne( NovModels, SEP_NO ) ) {    // get file type
+    if( !ProcOne( NovFormats, SEP_NO ) ) {          // get file type
         int     nType = 0;
 
         if( (nType = atoi( Token.this )) > 0 ) {

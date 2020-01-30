@@ -247,8 +247,8 @@ static parse_entry  QNXFormats[] = {
     NULL
 };
 
-bool ProcQNX( void )
-/******************/
+bool ProcQNXFormat( void )
+/************************/
 {
     if( !ProcOne( QNXFormats, SEP_NO ) ) {
         HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode

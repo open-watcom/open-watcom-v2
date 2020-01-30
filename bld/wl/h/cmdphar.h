@@ -38,6 +38,6 @@ extern void     FreePharFmt( void );
 
 extern bool     ProcPharOptions( void );
 extern bool     ProcPharRuntime( void );
-extern bool     ProcPharLap( void );
+extern bool     ProcPharFormat( void );
 
 #endif

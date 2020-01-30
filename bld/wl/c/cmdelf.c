@@ -318,15 +318,15 @@ static bool ProcELFDLL( void )
     return( true );
 }
 
-static parse_entry  ELFFormatKeywords[] = {
+static parse_entry  ELFFormats[] = {
     "DLl",          ProcELFDLL,         MK_ELF, 0,
     NULL
 };
 
-bool ProcELF( void )
-/******************/
+bool ProcELFFormat( void )
+/************************/
 {
-    ProcOne( ELFFormatKeywords, SEP_NO );
+    ProcOne( ELFFormats, SEP_NO );
     return( true );
 }
 

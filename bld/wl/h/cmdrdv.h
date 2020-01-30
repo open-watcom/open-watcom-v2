@@ -37,6 +37,6 @@ extern void SetRdosFmt( void );
 extern void FreeRdosFmt( void );
 
 extern bool ProcRdosOptions( void );
-extern bool ProcRdos( void );
+extern bool ProcRdosFormat( void );
 
 #endif

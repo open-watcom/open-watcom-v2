@@ -45,6 +45,6 @@ extern bool     ProcELFModule( void );
 extern bool     ProcELFAlignment( void );
 extern bool     ProcELFNoRelocs( void );
 
-extern bool     ProcELF( void );
+extern bool     ProcELFFormat( void );
 
 #endif

@@ -399,8 +399,8 @@ bool ProcOS2Options( void )
     return( ProcOne( MainOptions, SEP_NO ) );
 }
 
-bool ProcPENoRelocs( void )
-/*************************/
+bool ProcOS2NoRelocs( void )
+/**************************/
 {
     LinkState &= ~LS_MAKE_RELOCS;
     return( true );
@@ -896,36 +896,36 @@ static bool ProcNonPageable( void )
 }
 
 static parse_entry  SegDesc[] = {
-    "Class",        ProcOS2Class,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "TYpe",         ProcSegType,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "Class",            ProcOS2Class,       MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "TYpe",             ProcSegType,        MK_OS2 | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
 static parse_entry  SegModel[] = {
-    "PReload",      ProcPreload,        MK_OS2 | MK_WIN_VXD, 0,
-    "LOadoncall",   ProcLoadoncall,     MK_OS2 | MK_WIN_VXD, 0,
-    "Iopl",         ProcIopl,           MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "NOIopl",       ProcNoIopl,         MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "EXECUTEOnly",  ProcExecuteonly,    MK_OS2, 0,
-    "EXECUTERead",  ProcExecuteread,    MK_OS2, 0,
-    "SHared",       ProcShared,         MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "NONShared",    ProcNonShared,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
-    "READOnly",     ProcReadOnly,       MK_OS2, 0,
-    "READWrite",    ProcReadWrite,      MK_OS2, 0,
-    "CONforming",   ProcConforming,     MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "NONConforming",ProcNonConforming,  MK_ONLY_OS2 | MK_WIN_VXD, 0,
-    "MOVeable",     ProcMovable,        MK_OS2_16BIT, 0,
-    "FIXed",        ProcFixed,          MK_WINDOWS, 0,
-    "DIScardable",  ProcDiscardable,    MK_WINDOWS | MK_WIN_VXD, 0,
-    "NONDiscardable",ProcNonDiscardable,MK_WIN_VXD, 0,
-    "INValid",      ProcInvalid,        MK_OS2_LE | MK_OS2_LX, 0,
-    "RESident",     ProcPermanent,      MK_OS2_LE | MK_OS2_LX | MK_WIN_VXD, 0,
-    "CONTiguous",   ProcContiguous,     MK_OS2_LE | MK_OS2_LX, 0,
-    "DYNamic",      ProcOS2Dynamic,     MK_OS2_LE | MK_OS2_LX, 0,
-    "PERManent",    ProcPermanent,      MK_OS2_LE | MK_OS2_LX, 0,
-    "NONPERManent", ProcNonPermanent,   MK_OS2_LE | MK_OS2_LX, 0,
-    "PAGEable",     ProcPageable,       MK_PE, 0,
-    "NONPageable",  ProcNonPageable,    MK_PE, 0,
+    "PReload",          ProcPreload,        MK_OS2 | MK_WIN_VXD, 0,
+    "LOadoncall",       ProcLoadoncall,     MK_OS2 | MK_WIN_VXD, 0,
+    "Iopl",             ProcIopl,           MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "NOIopl",           ProcNoIopl,         MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "EXECUTEOnly",      ProcExecuteonly,    MK_OS2, 0,
+    "EXECUTERead",      ProcExecuteread,    MK_OS2, 0,
+    "SHared",           ProcShared,         MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "NONShared",        ProcNonShared,      MK_OS2 | MK_PE | MK_WIN_VXD, 0,
+    "READOnly",         ProcReadOnly,       MK_OS2, 0,
+    "READWrite",        ProcReadWrite,      MK_OS2, 0,
+    "CONforming",       ProcConforming,     MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "NONConforming",    ProcNonConforming,  MK_ONLY_OS2 | MK_WIN_VXD, 0,
+    "MOVeable",         ProcMovable,        MK_OS2_16BIT, 0,
+    "FIXed",            ProcFixed,          MK_WINDOWS, 0,
+    "DIScardable",      ProcDiscardable,    MK_WINDOWS | MK_WIN_VXD, 0,
+    "NONDiscardable",   ProcNonDiscardable, MK_WIN_VXD, 0,
+    "INValid",          ProcInvalid,        MK_OS2_LE | MK_OS2_LX, 0,
+    "RESident",         ProcPermanent,      MK_OS2_LE | MK_OS2_LX | MK_WIN_VXD, 0,
+    "CONTiguous",       ProcContiguous,     MK_OS2_LE | MK_OS2_LX, 0,
+    "DYNamic",          ProcOS2Dynamic,     MK_OS2_LE | MK_OS2_LX, 0,
+    "PERManent",        ProcPermanent,      MK_OS2_LE | MK_OS2_LX, 0,
+    "NONPERManent",     ProcNonPermanent,   MK_OS2_LE | MK_OS2_LX, 0,
+    "PAGEable",         ProcPageable,       MK_PE, 0,
+    "NONPageable",      ProcNonPageable,    MK_PE, 0,
     NULL
 };
 
@@ -1214,7 +1214,7 @@ static bool ProcEFI( void )
     return( true );
 }
 
-static parse_entry  NTFormatKeywords[] = {
+static parse_entry  PESubFormats[] = {
     "TNT",          ProcTNT,            MK_PE, 0,
     "RDOS",         ProcRDOS,           MK_PE, 0,
     "EFI",          ProcEFI,            MK_PE, 0,
@@ -1224,11 +1224,11 @@ static parse_entry  NTFormatKeywords[] = {
 static bool ProcPE( void )
 /************************/
 {
-    ProcOne( NTFormatKeywords, SEP_NO );
+    ProcOne( PESubFormats, SEP_NO );
     FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
     FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
     FmtData.u.pe.stackcommit = DEF_VALUE;
-    FmtData.u.pe.os2.segment_shift = 9;                         // 512 byte arbitrary rounding
+    FmtData.u.pe.os2.segment_shift = 9;             // 512 byte arbitrary rounding
     return( true );
 }
 
@@ -1246,7 +1246,7 @@ static bool ProcStaticDriver( void )
     return( true );
 }
 
-static parse_entry  VXDFormatKeywords[] = {
+static parse_entry  VXDSubFormats[] = {
     "DYNamic",      ProcDynamicDriver,  MK_WIN_VXD, 0,
     "STATic",       ProcStaticDriver,   MK_WIN_VXD, 0,
     NULL
@@ -1255,7 +1255,7 @@ static parse_entry  VXDFormatKeywords[] = {
 static bool ProcVXD( void )
 /*************************/
 {
-    ProcOne( VXDFormatKeywords, SEP_NO );
+    ProcOne( VXDSubFormats, SEP_NO );
     FmtData.dll = true;
     return( true );
 }
@@ -1348,8 +1348,8 @@ static parse_entry  OS2Formats[] = {
     NULL
 };
 
-bool ProcOS2( void )
-/*******************
+bool ProcOS2Format( void )
+/*************************
  * process the format os2 or format windows directives
  */
 {
@@ -1371,8 +1371,8 @@ bool ProcOS2( void )
     return( true );
 }
 
-bool ProcWindows( void )
-/***********************
+bool ProcWindowsFormat( void )
+/*****************************
  * process the format windows directives
  */
 {

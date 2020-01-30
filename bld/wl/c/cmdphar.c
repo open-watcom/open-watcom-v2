@@ -344,17 +344,17 @@ static bool ProcPharSegmented( void )
     return( true );
 }
 
-static parse_entry  PharModels[] = {
+static parse_entry  PharLapFormats[] = {
     "EXTended",     ProcPharFlat,       MK_PHAR_FLAT,     0,
     "REX",          ProcRex,            MK_PHAR_REX,      0,
     "SEGmented",    ProcPharSegmented,  MK_PHAR_MULTISEG, 0,
     NULL
 };
 
-bool ProcPharLap( void )
-/**********************/
+bool ProcPharFormat( void )
+/*************************/
 {
-    ProcOne( PharModels, SEP_NO );
+    ProcOne( PharLapFormats, SEP_NO );
     return( true );
 }
 

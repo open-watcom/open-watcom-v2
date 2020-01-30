@@ -36,6 +36,6 @@
 extern void SetZdosFmt( void );
 extern void FreeZdosFmt( void );
 
-extern bool ProcZdos( void );
+extern bool ProcZdosFormat( void );
 
 #endif

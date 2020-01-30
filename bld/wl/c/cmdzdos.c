@@ -90,19 +90,19 @@ static bool ProcZdosFSD( void )
     return( true );
 }
 
-static parse_entry  ZdosOptions[] = {
+static parse_entry  ZdosFormats[] = {
     "SYS",          ProcZdosSYS,        MK_ZDOS, 0,
     "HWD",          ProcZdosHWD,        MK_ZDOS, 0,
     "FSD",          ProcZdosFSD,        MK_ZDOS, 0,
     NULL
 };
 
-bool ProcZdos( void )
-/*******************/
+bool ProcZdosFormat( void )
+/*************************/
 {
     LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
     FmtData.base = 0x1000;                          // assume user application
-    ProcOne( ZdosOptions, SEP_NO );
+    ProcOne( ZdosFormats, SEP_NO );
     return( true );
 }
 

@@ -1437,7 +1437,7 @@ static bool ProcNoRelocs( void )
 #endif
 #ifdef _OS2
     if( HintFormat( MK_PE ) ) {
-        return( ProcPENoRelocs() );
+        return( ProcOS2NoRelocs() );
     }
 #endif
 #ifdef _DOS16M
@@ -2048,35 +2048,35 @@ static bool ProcOptions( void )
 
 static parse_entry  Models[] = {
 #ifdef _EXE
-    "Dos",          ProcDos,            MK_DOS, 0,
+    "Dos",          ProcDosFormat,      MK_DOS, 0,
 #endif
 #ifdef _OS2
-    "OS2",          ProcOS2,            MK_ONLY_OS2, 0,
-    "WINdows",      ProcWindows,        MK_WINDOWS | MK_PE | MK_WIN_VXD, 0,
+    "OS2",          ProcOS2Format,      MK_ONLY_OS2, 0,
+    "WINdows",      ProcWindowsFormat,  MK_WINDOWS | MK_PE | MK_WIN_VXD, 0,
 #endif
 #ifdef _PHARLAP
-    "PHARlap",      ProcPharLap,        MK_PHAR_LAP, 0,
+    "PHARlap",      ProcPharFormat,     MK_PHAR_LAP, 0,
 #endif
 #ifdef _NOVELL
-    "NOVell",       ProcNovell,         MK_NOVELL, 0,
+    "NOVell",       ProcNovFormat,      MK_NOVELL, 0,
 #endif
 #ifdef _QNX
-    "QNX",          ProcQNX,            MK_QNX, 0,
+    "QNX",          ProcQNXFormat,      MK_QNX, 0,
 #endif
 #ifdef _DOS16M
-    "DOS16M",       Proc16M,            MK_DOS16M, 0,
+    "DOS16M",       Proc16MFormat,      MK_DOS16M, 0,
 #endif
 #ifdef _ELF
-    "ELF",          ProcELF,            MK_ELF, 0,
+    "ELF",          ProcELFFormat,      MK_ELF, 0,
 #endif
 #ifdef _ZDOS
-    "ZDos",         ProcZdos,           MK_ZDOS, 0,
+    "ZDos",         ProcZdosFormat,     MK_ZDOS, 0,
 #endif
 #ifdef _RDOS
-    "RDos",         ProcRdos,           MK_RDOS, 0,
+    "RDos",         ProcRdosFormat,     MK_RDOS, 0,
 #endif
 #ifdef _RAW
-    "Raw",          ProcRaw,            MK_RAW, 0,
+    "Raw",          ProcRawFormat,      MK_RAW, 0,
 #endif
     NULL
 };

@@ -523,16 +523,16 @@ static bool ProcCom( void )
     return( true );
 }
 
-static parse_entry  DosOptions[] = {
+static parse_entry  DosFormats[] = {
     "COM",          ProcCom,            MK_COM, 0,
     NULL
 };
 
-bool ProcDos( void )
-/******************/
+bool ProcDosFormat( void )
+/************************/
 {
     OvlLevel = 0;
-    ProcOne( DosOptions, SEP_NO );
+    ProcOne( DosFormats, SEP_NO );
     return( true );
 }
 

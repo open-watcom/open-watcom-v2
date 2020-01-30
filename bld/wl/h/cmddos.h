@@ -47,6 +47,6 @@ extern bool         ProcNoVector( void );
 extern bool         ProcVector( void );
 extern bool         ProcForceVector( void );
 
-extern bool         ProcDos( void );
+extern bool         ProcDosFormat( void );
 
 #endif

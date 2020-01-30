@@ -43,6 +43,6 @@ extern bool     Proc16MRuntime( void );
 extern bool     ProcMemory16M( void );
 extern bool     ProcTransparent( void );
 
-extern bool     Proc16M( void );
+extern bool     Proc16MFormat( void );
 
 #endif

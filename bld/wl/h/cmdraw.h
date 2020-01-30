@@ -33,6 +33,6 @@
 
 #ifdef _RAW
 
-extern bool ProcRaw( void );
+extern bool ProcRawFormat( void );
 
 #endif

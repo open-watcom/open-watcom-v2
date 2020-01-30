@@ -41,7 +41,6 @@ extern bool     ProcQNXOptions( void );
 extern bool     ProcQNXNoRelocs( void );
 extern bool     ProcQNXSegment( void );
 extern bool     ProcQNXHeapSize( void );
-
-extern bool     ProcQNX( void );
+extern bool     ProcQNXFormat( void );
 
 #endif
