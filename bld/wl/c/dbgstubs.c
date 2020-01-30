@@ -73,7 +73,7 @@ section * DBIGetSect( char *classname )
 /*****************************************/
 {
     classname = classname;
-    return NULL;
+    return( NULL );
 }
 
 void DBIColClass( class_entry *class )
@@ -86,7 +86,7 @@ unsigned_16 DBIColSeg( class_entry *class )
 /************************************************/
 {
     class = class;
-    return 0;
+    return( 0 );
 }
 
 void DBIP1ModuleScanned( void )
@@ -98,14 +98,14 @@ bool DBISkip( seg_leader *seg )
 /*************************************/
 {
     seg = seg;
-    return false;
+    return( false );
 }
 
 bool DBINoReloc( seg_leader *seg )
 /****************************************/
 {
     seg = seg;
-    return false;
+    return( false );
 }
 
 void DBIP1ModuleFinished( mod_entry *obj )

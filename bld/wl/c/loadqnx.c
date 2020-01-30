@@ -179,7 +179,7 @@ static bool WriteSegData( void *_sdata, void *_start )
         }
         WriteQNXInfo( CopyLoad, sdata->u1.vm_ptr, sdata->length );
     }
-    return false;
+    return( false );
 }
 
 static void DoGroupLeader( void *_seg )
@@ -298,16 +298,16 @@ static bool checkGroupFlags( void *_seg, void *_grp )
     if( sflags < 0x10 ) {
         if( (sflags & 1) == 0 ) {       // if can read/write or exec/read
             grp->u.qnxflags &= ~1;      // can for all segments.
-            return true;                // no need to check others
+            return( true );                // no need to check others
         }
     } else {
         // make segments read/write or exec/read unless every segment is specifically
         // set otherwise.
 
         grp->u.qnxflags &= ~1;
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 void SetQNXGroupFlags( void )

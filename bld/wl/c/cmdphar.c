@@ -341,7 +341,7 @@ static bool ProcPharSegmented( void )
 /***********************************/
 {
     LinkState |= LS_MAKE_RELOCS;    // make relocations;
-    return true;
+    return( true );
 }
 
 static parse_entry  PharModels[] = {

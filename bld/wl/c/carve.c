@@ -80,7 +80,7 @@ static blk_t * newBlk( cv_t *cv )
     *blklist = newblk;
     cv->blk_count++;
     cv->size_chg = true;
-    return newblk;
+    return( newblk );
 }
 
 static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
@@ -196,7 +196,7 @@ void *CarveAlloc( carve_t cv )
     }
     _REMOVE_FROM_FREE( cv, p );
     DbgZapAlloc( p, cv->elm_size );
-    return p;
+    return( p );
 }
 
 void *CarveZeroAlloc( carve_t cv )
@@ -245,7 +245,7 @@ void *CarveZeroAlloc( carve_t cv )
     case 1:
         p[0] = 0;
     }
-    return p;
+    return( p );
 }
 
 

@@ -290,7 +290,7 @@ static char * GetNewName( void )
 {
     CDatSegNum++;
     ultoa( CDatSegNum, CDatSegName + CDAT_SEG_NUM_OFF, 36 );
-    return CDatSegName;
+    return( CDatSegName );
 }
 
 static void AddToLinkerComdat( symbol *sym )
@@ -389,7 +389,7 @@ static offset CalcLIDataLength( void )
 static bool CompInfoSym( void *info, void *sym )
 /**********************************************/
 {
-    return ((comdat_info *)info)->sym == (symbol *)sym;
+    return( ((comdat_info *)info)->sym == (symbol *)sym );
 }
 
 #ifdef _INT_DEBUG
@@ -400,7 +400,7 @@ static bool CheckSameComdat( void *info, void *sym )
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "duplicate comdat found" );
         LnkMsg( ERR+MSG_INTERNAL, "s", ((symbol *)sym)->name );
     }
-    return false;
+    return( false );
 }
 #endif
 

@@ -339,7 +339,7 @@ bool QModTime( const char *name, time_t *time )
 
     result = stat( name, &buf );
     *time = buf.st_mtime;
-    return result != 0;
+    return( result != 0 );
 }
 
 time_t QFModTime( int handle )
@@ -348,7 +348,7 @@ time_t QFModTime( int handle )
     struct stat buf;
 
     fstat( handle, &buf );
-    return buf.st_mtime;
+    return( buf.st_mtime );
 }
 
 int WaitForKey( void )

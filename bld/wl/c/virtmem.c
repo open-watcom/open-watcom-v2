@@ -307,7 +307,7 @@ virt_mem AllocStg( virt_mem_size size )
 /*************************************/
 {
     if( size == 0 )
-        return 0;
+        return( 0 );
     size = MAKE_EVEN( size );
     if( size <= TINY_BLOCK_CUTOFF ) {
         return( AllocTinyStg( size ) );
@@ -498,7 +498,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
                 break;
             amt = currlen - off;
             if( !rtn( info, page[subpage], off, amt, subpage >= bignode->numswapped ) )
-                return false;
+                return( false );
             len -= amt;
             stg.l += amt;
             info = (char *)info + amt;
@@ -517,7 +517,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
                 break;
             amt = node->size - off;
             if( !rtn( info, node->loc, off, amt, node->flags & VIRT_INMEM ) ) {
-                return false;
+                return( false );
             }
             len -= amt;
             stg.l += amt;
@@ -526,7 +526,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
         }
         retval = rtn( info, node->loc, off, len, node->flags & VIRT_INMEM );
     }
-    return retval;
+    return( retval );
 }
 
 static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
@@ -534,13 +534,13 @@ static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
 /* copy data to info from the memory or spillfile referenced by node & off */
 {
     if( len == 0 )
-        return true;
+        return( true );
     if( inmem ) {
         memcpy( info, (char *)loc.addr + off, len );
     } else {
         SpillRead( loc.spill, off, info, len );
     }
-    return true;
+    return( true );
 }
 
 void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
@@ -555,14 +555,14 @@ static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
 /* copy data at info to the memory or spillfile referenced by node & off */
 {
     if( len == 0 )
-        return true;
+        return( true );
     DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, inmem, loc.spill ));
     if( inmem ) {
         memcpy( (char *)loc.addr + off, info, len );
     } else {
         SpillWrite( loc.spill, off, info, len );
     }
-    return true;
+    return( true );
 }
 
 void PutInfo( virt_mem stg, const void *info, virt_mem_size len )
@@ -590,20 +590,20 @@ static bool CompareBlock( void * info, spilladdr loc, size_t off, size_t len, bo
     void *      buf;
 
     if( len == 0 )
-        return true;
+        return( true );
     if( inmem ) {
         buf = (char *)loc.addr + off;
     } else {
         buf = alloca( len );
         SpillRead( loc.spill, off, buf, len );
     }
-    return memcmp( buf, info, len ) == 0;
+    return( memcmp( buf, info, len ) == 0 );
 }
 
 bool CompareInfo( virt_mem stg, const void *info, virt_mem_size len )
 /*******************************************************************/
 {
-    return ScanNodes( stg, (void *)info, len, CompareBlock );
+    return( ScanNodes( stg, (void *)info, len, CompareBlock ) );
 }
 
 static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
@@ -614,7 +614,7 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
 
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
-        return true;
+        return( true );
     DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, inmem, loc.spill ));
     if( inmem ) {
         WriteLoad( (char *)loc.addr + off, len );
@@ -628,7 +628,7 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
             off += amt;
         }
     }
-    return true;
+    return( true );
 }
 
 void WriteInfoLoad( virt_mem stg, virt_mem_size len )
@@ -644,13 +644,13 @@ static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool i
 {
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
-        return true;
+        return( true );
     if( inmem ) {
         memset( (char *)(loc.addr) + off, 0, len );
     } else {
         SpillNull( loc.spill, off, len );
     }
-    return true;
+    return( true );
 }
 
 void PutInfoNulls( virt_mem stg, virt_mem_size len )

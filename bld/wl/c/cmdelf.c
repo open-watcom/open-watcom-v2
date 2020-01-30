@@ -67,14 +67,14 @@ void FreeELFFmt( void )
 static bool ProcExtraSections( void )
 /***********************************/
 {
-    return GetLong( &FmtData.u.elf.extrasects );
+    return( GetLong( &FmtData.u.elf.extrasects ) );
 }
 
 static bool ProcExportAll( void )
 /*******************************/
 {
     FmtData.u.elf.exportallsyms = true;
-    return true;
+    return( true );
 }
 
 static parse_entry  MainOptions[] = {
@@ -116,7 +116,7 @@ bool ProcELFNoRelocs( void )
 /**************************/
 {
     LinkState &= ~LS_MAKE_RELOCS;
-    return true;
+    return( true );
 }
 
 
@@ -315,7 +315,7 @@ static bool ProcELFDLL( void )
 /****************************/
 {
     FmtData.dll = true;
-    return true;
+    return( true );
 }
 
 static parse_entry  ELFFormatKeywords[] = {
@@ -327,7 +327,7 @@ bool ProcELF( void )
 /******************/
 {
     ProcOne( ELFFormatKeywords, SEP_NO );
-    return true;
+    return( true );
 }
 
 #endif

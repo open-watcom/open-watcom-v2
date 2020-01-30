@@ -144,7 +144,7 @@ static targ_addr *GetIDLoc( group_entry *group )
     } else {
         retval = &CodeLoc;
     }
-    return retval;
+    return( retval );
 }
 
 void ChkLocated( targ_addr *segadr, bool fixed)

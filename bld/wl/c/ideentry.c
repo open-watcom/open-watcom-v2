@@ -159,7 +159,7 @@ char * GetEnvString( const char *envname )
 bool IsStdOutConsole( void )
 /*********************************/
 {
-    return InitInfo.console_output;
+    return( InitInfo.console_output );
 }
 
 void GetExtraCommands( void )
@@ -194,15 +194,15 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     /* unused parameters */ (void)hdl;
 
     if( info->ver < IDE_CUR_INFO_VER5 )
-        return true;
+        return( true );
     InitInfo = *info;
-    return false;
+    return( false );
 }
 
 unsigned IDEAPI IDEGetVersion( void )
 /***********************************/
 {
-    return IDE_CUR_DLL_VER;
+    return( IDE_CUR_DLL_VER );
 }
 
 void IDEAPI IDEStopRunning( void )
@@ -227,7 +227,7 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
     IdeHdl = cbhdl;
     IdeCbs = cb;
     InitSubSystems();
-    return false;
+    return( false );
 }
 
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )

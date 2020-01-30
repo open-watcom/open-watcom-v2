@@ -568,9 +568,9 @@ bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
         dll->m.modnum = NULL;
         dll->u.ordinal = ((entry_export *)sym->e.export)->ordinal;
         *dllhandle = dll;
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 #endif
