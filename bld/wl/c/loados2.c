@@ -1106,12 +1106,12 @@ void FiniOS2LoadFile( void )
     }
     exe_head.adsegnum = adseg;
     exe_head.heap = FmtData.u.os2.heapsize;
-/*
- * the microsoft linker for windows will generate a stack even if no stack
- * segment has been explicitly specified. (as long as the user specifies a stack
- * size). Since microsoft's windows libraries rely on this, we have to mimic
- * it.
-*/
+    /*
+     * the microsoft linker for windows will generate a stack even if no stack
+     * segment has been explicitly specified. (as long as the user specifies a stack
+     * size). Since microsoft's windows libraries rely on this, we have to mimic
+     * it.
+     */
     if( FmtData.u.os2.flags & PHONEY_STACK_FLAG ) {
         exe_head.SP = 0;
         exe_head.stacknum = adseg;

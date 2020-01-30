@@ -1714,7 +1714,6 @@ static bool ProcOutput( void )
 }
 #endif
 
-
 #if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
 static bool AddRunTime( void )
 /****************************/
