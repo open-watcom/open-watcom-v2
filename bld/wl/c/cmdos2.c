@@ -1313,29 +1313,38 @@ static bool ProcVirtDevice( void )
     return( true );
 }
 
-static parse_entry  SubFormats[] = {
-    "DLl",          ProcOS2DLL,         MK_OS2 | MK_PE, 0,
-    "FLat",         ProcLX,             MK_OS2_LX, 0,
-    "LE",           ProcLE,             MK_OS2_LE, 0,
-    "LX",           ProcLX,             MK_OS2_LX, 0,
-    "NT",           ProcPE,             MK_PE, 0,
-    "PE",           ProcPE,             MK_PE, 0,
-    "VXD",          ProcVXD,            MK_WIN_VXD, 0,
+static parse_entry  WindowsOptions[] = {
+    "MEMory",       ProcMemory,         MK_WINDOWS,             0,
+    "FOnt",         ProcFont,           MK_WINDOWS,             0,
     NULL
 };
 
-static parse_entry  WindowsFormatKeywords[] = {
-    "MEMory",       ProcMemory,         MK_WINDOWS, 0,
-    "FOnt",         ProcFont,           MK_WINDOWS, 0,
+static parse_entry  WindowsSubFormats[] = {
+    "DLl",          ProcOS2DLL,         MK_WINDOWS | MK_PE,     0,
     NULL
 };
 
-static parse_entry  OS2FormatKeywords[] = {
-    "PM",           ProcPM,             MK_ONLY_OS2, 0,
-    "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2, 0,
-    "FULLscreen",   ProcPMFullscreen,   MK_ONLY_OS2, 0,
-    "PHYSdevice",   ProcPhysDevice,     MK_OS2_LE | MK_OS2_LX, 0,
-    "VIRTdevice",   ProcVirtDevice,     MK_OS2_LE | MK_OS2_LX, 0,
+static parse_entry  WindowsFormats[] = {
+    "NT",           ProcPE,             MK_PE,                  0,
+    "PE",           ProcPE,             MK_PE,                  0,
+    "VXD",          ProcVXD,            MK_WIN_VXD,             0,
+    NULL
+};
+
+static parse_entry  OS2SubFormats[] = {
+    "DLl",          ProcOS2DLL,         MK_ONLY_OS2,            0,
+    "PM",           ProcPM,             MK_ONLY_OS2,            0,
+    "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2,            0,
+    "FULLscreen",   ProcPMFullscreen,   MK_ONLY_OS2,            0,
+    "PHYSdevice",   ProcPhysDevice,     MK_OS2_LE | MK_OS2_LX,  0,
+    "VIRTdevice",   ProcVirtDevice,     MK_OS2_LE | MK_OS2_LX,  0,
+    NULL
+};
+
+static parse_entry  OS2Formats[] = {
+    "FLat",         ProcLX,             MK_OS2_LX,              0,
+    "LE",           ProcLE,             MK_OS2_LE,              0,
+    "LX",           ProcLX,             MK_OS2_LX,              0,
     NULL
 };
 
@@ -1345,23 +1354,15 @@ bool ProcOS2( void )
  */
 {
     Extension = E_LOAD;
-    while( ProcOne( SubFormats, SEP_NO ) ) {
-        // NOTE NULL loop
-    }
-    if( FmtData.type & MK_WINDOWS ) {
-        if( ProcOne( WindowsFormatKeywords, SEP_NO ) ) {
-            ProcOne( WindowsFormatKeywords, SEP_NO );
-        }
-    } else if( FmtData.type & MK_ONLY_OS2 ) {
-        ProcOne( OS2FormatKeywords, SEP_NO );
-        if( FmtData.type & MK_OS2_LX ) {
-            if( FmtData.dll ) {
-                FmtData.u.os2.gen_int_relocs = true;
-            }
+    ProcOne( OS2Formats, SEP_NO );
+    ProcOne( OS2SubFormats, SEP_NO );
+    if( FmtData.type & MK_OS2_LX ) {
+        if( FmtData.dll ) {
+            FmtData.u.os2.gen_int_relocs = true;
         }
     }
-    if( FmtData.type & MK_ONLY_OS2_16 ) {       // if no 32-bit thing specd
-        HintFormat( MK_ONLY_OS2_16 );   // make sure 16-bit is what we get
+    if( FmtData.type & MK_ONLY_OS2_16 ) {   // if no 32-bit thing specd
+        HintFormat( MK_ONLY_OS2_16 );       // make sure 16-bit is what we get
         if( FmtData.dll ) {
             FmtData.u.os2.flags &= ~MULTIPLE_AUTO_DATA;
             FmtData.u.os2.flags |= SINGLE_AUTO_DATA;
@@ -1371,9 +1372,19 @@ bool ProcOS2( void )
 }
 
 bool ProcWindows( void )
-/**********************/
+/***********************
+ * process the format windows directives
+ */
 {
-    return( ProcOS2() );
+    Extension = E_LOAD;
+    ProcOne( WindowsFormats, SEP_NO );
+    ProcOne( WindowsSubFormats, SEP_NO );
+    if( FmtData.type & MK_WINDOWS ) {
+        while( ProcOne( WindowsOptions, SEP_NO ) ) {
+            // loop all options
+        }
+    }
+    return( true );
 }
 
 #endif
