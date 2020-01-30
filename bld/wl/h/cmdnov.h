@@ -39,14 +39,11 @@ extern void     CmdNovFini( void );
 extern void     SetNovImportSymbol( symbol * );
 
 extern bool     ProcNovOptions( void );
-
 extern bool     ProcNovDBI( void );
-extern bool     ProcExportsDBI( void );
+extern bool     ProcNovExportsDBI( void );
 extern bool     ProcNovModule( void );
-
 extern bool     ProcNovImport( void );
 extern bool     ProcNovExport( void );
-
 extern bool     ProcNovFormat( void );
 
 #endif

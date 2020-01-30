@@ -38,13 +38,11 @@ extern void     SetELFImportSymbol( symbol * );
 
 extern bool     ProcELFOptions( void );
 extern bool     ProcELFRuntime( void );
-
 extern bool     ProcELFImport( void );
 extern bool     ProcELFExport( void );
 extern bool     ProcELFModule( void );
 extern bool     ProcELFAlignment( void );
 extern bool     ProcELFNoRelocs( void );
-
 extern bool     ProcELFFormat( void );
 
 #endif

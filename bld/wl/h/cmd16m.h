@@ -39,10 +39,8 @@ extern void     CmdD16MFini( void );
 extern bool     Proc16MOptions( void );
 extern bool     Proc16MNoRelocs( void );
 extern bool     Proc16MRuntime( void );
-
-extern bool     ProcMemory16M( void );
-extern bool     ProcTransparent( void );
-
+extern bool     Proc16MMemory( void );
+extern bool     Proc16MTransparent( void );
 extern bool     Proc16MFormat( void );
 
 #endif

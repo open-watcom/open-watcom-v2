@@ -49,6 +49,12 @@
 
 #ifdef _NOVELL
 
+/*
+//  should move these somewhere more suitable
+*/
+#define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
+#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
+
 void SetNovFmt( void )
 /********************/
 {
@@ -85,12 +91,6 @@ static bool IsNetWarePrefix( const char *token, size_t tokenlen )
         return( true );
     return( false );
 }
-
-/*
-//  should move these somewhere more suitable
-*/
-#define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
-#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char **name, size_t *namelen, const char **prefix, size_t *prefixlen )
 /**********************************************************************************************************************************************/
@@ -142,8 +142,6 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
 
     return( true );
 }
-
-#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 static bool SetCurrentPrefix( const char *str, size_t len )
 /*********************************************************/
@@ -327,7 +325,7 @@ static bool GetSymbolImportExport( bool import )
  ****************************************************************/
 
 static bool ProcScreenName( void )
-/*************************/
+/********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -344,7 +342,7 @@ static bool ProcScreenName( void )
 }
 
 static bool ProcCheck( void )
-/********************/
+/***************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -354,14 +352,14 @@ static bool ProcCheck( void )
 }
 
 static bool ProcMultiLoad( void )
-/************************/
+/*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_MULTIPLE;
     return( true );
 }
 
 static bool ProcAutoUnload( void )
-/*************************/
+/********************************/
 {
     FmtData.u.nov.exeflags |= NOV_AUTOUNLOAD;
     return( true );
@@ -369,28 +367,28 @@ static bool ProcAutoUnload( void )
 
 
 static bool ProcReentrant( void )
-/************************/
+/*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_REENTRANT;
     return( true );
 }
 
 static bool ProcSynch( void )
-/********************/
+/***************************/
 {
     FmtData.u.nov.exeflags |= NOV_SYNCHRONIZE;
     return( true );
 }
 
 static bool ProcPseudoPreemption( void )
-/*******************************/
+/**************************************/
 {
     FmtData.u.nov.exeflags |= NOV_PSEUDOPREEMPTION;
     return( true );
 }
 
 static bool ProcNLMFlags( void )
-/***********************/
+/******************************/
 {
     unsigned_32 value;
 
@@ -401,7 +399,7 @@ static bool ProcNLMFlags( void )
 }
 
 static bool ProcCustom( void )
-/*********************/
+/****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         return( false );
@@ -411,7 +409,7 @@ static bool ProcCustom( void )
 }
 
 static bool ProcMessages( void )
-/***********************/
+/******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         return( false );
@@ -421,7 +419,7 @@ static bool ProcMessages( void )
 }
 
 static bool ProcHelp( void )
-/*******************/
+/**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         return( false );
@@ -431,7 +429,7 @@ static bool ProcHelp( void )
 }
 
 static bool ProcXDCData( void )
-/**********************/
+/*****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         return( false );
@@ -441,7 +439,7 @@ static bool ProcXDCData( void )
 }
 
 static bool ProcSharelib( void )
-/***********************/
+/******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         return( false );
@@ -451,7 +449,7 @@ static bool ProcSharelib( void )
 }
 
 static bool ProcExit( void )
-/*******************/
+/**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -461,7 +459,7 @@ static bool ProcExit( void )
 }
 
 static bool ProcThreadName( void )
-/*************************/
+/********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -479,7 +477,7 @@ static bool ProcThreadName( void )
 #define YEAR_OFFSET (sizeof( COPYRIGHT_START ) - 1)
 
 static bool ProcCopyright( void )
-/************************/
+/*******************************/
 {
     struct tm       *currtime;
     time_t          thetime;
@@ -513,7 +511,7 @@ static bool ProcCopyright( void )
 }
 
 static bool ProcOSDomain( void )
-/***********************/
+/******************************/
 {
     FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
     return( true );
@@ -605,8 +603,8 @@ bool ProcNovModule( void )
  * "Debug" Directive
  ****************************************************************/
 
-bool ProcExportsDBI( void )
-/*************************/
+bool ProcNovExportsDBI( void )
+/****************************/
 {
     DBIFlag |= DBI_ONLY_EXPORTS;
     FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;

@@ -105,14 +105,9 @@ static void PreAddrCalcFormatSpec( void )
 // format specific routines which need to be called before address calculation
 {
 #ifdef _OS2
-    if( FmtData.type & MK_PE ) {
-        SetOS2SegFlags();
-        ChkPEData();
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        SetOS2SegFlags();
-    } else if( FmtData.type & MK_OS2 ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2) ) {
   #if 0
-        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
@@ -121,6 +116,9 @@ static void PreAddrCalcFormatSpec( void )
   #else
         SetOS2SegFlags();
   #endif
+    }
+    if( FmtData.type & MK_PE ) {
+        ChkPEData();
     }
 #endif
 #ifdef _NOVELL

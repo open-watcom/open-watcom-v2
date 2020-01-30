@@ -350,7 +350,7 @@ static parse_entry  Strategies[] = {
     NULL
 };
 
-bool ProcMemory16M( void )
+bool Proc16MMemory( void )
 /************************/
 {
     return( ProcOne( Strategies, SEP_NO ) );
@@ -385,8 +385,8 @@ static parse_entry  TransTypes[] = {
     NULL
 };
 
-bool ProcTransparent( void )
-/**************************/
+bool Proc16MTransparent( void )
+/*****************************/
 {
     if( FmtData.u.d16m.flags & TRANS_SPECD ) {
         LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );

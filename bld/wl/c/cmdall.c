@@ -1886,7 +1886,7 @@ static parse_entry  PosDbgMods[] = {
 //    "STatic",       ProcDBIStatic,      MK_ALL, 0,
     "All",          ProcAll,            MK_ALL, 0,
 #ifdef _NOVELL
-    "ONLyexports",  ProcExportsDBI,     MK_NOVELL, 0,
+    "ONLyexports",  ProcNovExportsDBI,  MK_NOVELL, 0,
 #endif
     NULL
 };
@@ -2146,8 +2146,8 @@ static parse_entry  Directives[] = {
     "MODUle",       ProcModule,         MK_NOVELL | MK_ELF, 0,
 #endif
 #ifdef _DOS16M
-    "MEMory",       ProcMemory16M,      MK_DOS16M,          CF_SUBSET,
-    "TRansparent",  ProcTransparent,    MK_DOS16M,          CF_SUBSET,
+    "MEMory",       Proc16MMemory,      MK_DOS16M,          CF_SUBSET,
+    "TRansparent",  Proc16MTransparent, MK_DOS16M,          CF_SUBSET,
 #endif
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
     "NEWsegment",   ProcNewSegment,     (MK_OS2_16BIT | MK_DOS | MK_QNX), 0,
