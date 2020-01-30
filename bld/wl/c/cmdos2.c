@@ -938,12 +938,12 @@ static bool getsegflags( void )
     Token.thumb = true;
     _ChkAlloc( entry, sizeof( os2_seg_flags ) );
     entry->specified = 0;
-    entry->flags = FmtData.def_seg_flags;    // default value.
+    entry->flags = FmtData.def_seg_flags;   // default value.
     entry->name = NULL;
     entry->type = SEGFLAG_SEGMENT;
     entry->next = FmtData.u.os2.seg_flags;
     FmtData.u.os2.seg_flags = entry;
-    ProcOne( SegDesc, SEP_NO );          // look for an optional segdesc
+    ProcOne( SegDesc, SEP_NO );             // look for an optional segdesc
     if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             FmtData.u.os2.seg_flags = entry->next;
