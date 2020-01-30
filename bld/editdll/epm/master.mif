@@ -19,7 +19,7 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_l_flags_dll = op elim
 
-extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
 .c : ..
 
