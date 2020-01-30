@@ -1232,17 +1232,32 @@ static bool ProcPE( void )
     return( true );
 }
 
+static bool ProcDynamicDriver( void )
+/***********************************/
+{
+    FmtData.u.os2.flags |= VIRT_DEVICE;
+    return( true );
+}
+
+static bool ProcStaticDriver( void )
+/**********************************/
+{
+    FmtData.u.os2.flags |= PHYS_DEVICE;
+    return( true );
+}
+
+static parse_entry  VXDFormatKeywords[] = {
+    "DYNamic",      ProcDynamicDriver,  MK_WIN_VXD, 0,
+    "STATic",       ProcStaticDriver,   MK_WIN_VXD, 0,
+    NULL
+};
+
 static bool ProcVXD( void )
 /*************************/
 {
-    return( ProcOS2() );
-/*
     ProcOne( VXDFormatKeywords, SEP_NO );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = DEF_VALUE;
+    FmtData.dll = true;
     return( true );
-*/
 }
 
 static bool ProcMemory( void )
@@ -1256,20 +1271,6 @@ static bool ProcFont( void )
 /**************************/
 {
     FmtData.u.os2.flags |= PROPORTIONAL_FONT;
-    return( true );
-}
-
-static bool ProcDynamicDriver( void )
-/***********************************/
-{
-    FmtData.u.os2.flags |= VIRT_DEVICE;
-    return( true );
-}
-
-static bool ProcStaticDriver( void )
-/**********************************/
-{
-    FmtData.u.os2.flags |= PHYS_DEVICE;
     return( true );
 }
 
@@ -1329,12 +1330,6 @@ static parse_entry  WindowsFormatKeywords[] = {
     NULL
 };
 
-static parse_entry  VXDFormatKeywords[] = {
-    "DYNamic",      ProcDynamicDriver,  MK_WIN_VXD, 0,
-    "STATic",       ProcStaticDriver,   MK_WIN_VXD, 0,
-    NULL
-};
-
 static parse_entry  OS2FormatKeywords[] = {
     "PM",           ProcPM,             MK_ONLY_OS2, 0,
     "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2, 0,
@@ -1357,10 +1352,7 @@ bool ProcOS2( void )
         if( ProcOne( WindowsFormatKeywords, SEP_NO ) ) {
             ProcOne( WindowsFormatKeywords, SEP_NO );
         }
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        ProcOne( VXDFormatKeywords, SEP_NO );
-        FmtData.dll = true;
-    } else {
+    } else if( FmtData.type & MK_ONLY_OS2 ) {
         ProcOne( OS2FormatKeywords, SEP_NO );
         if( FmtData.type & MK_OS2_LX ) {
             if( FmtData.dll ) {
