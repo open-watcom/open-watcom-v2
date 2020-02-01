@@ -76,13 +76,20 @@
 
 #ifdef _OS2
 
-#define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
-#define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
+#define I386_TRANSFER_OP1       0xff        /* first byte of a "JMP [FOO]" */
+#define I386_TRANSFER_OP2       0x25        /* second byte of a "JMP [FOO]" */
 
-#define MINIMUM_SEG_SHIFT       2       /* Corresponds to 2^2 == 4 bytes */
-#define DEFAULT_SEG_SHIFT       9       /* Corresponds to 2^9 == 512 bytes */
+#define MINIMUM_SEG_SHIFT       2           /* Corresponds to 2^2 == 4 bytes */
+#define DEFAULT_SEG_SHIFT       9           /* Corresponds to 2^9 == 512 bytes */
 
-#define STUB_ALIGN 8    /* for PE format */
+#define STUB_ALIGN              8           /* for PE format */
+
+/* RDOS OS default major/minor version numbers */
+#define PE_RDOS_OS_MAJOR        8
+#define PE_RDOS_OS_MINOR        8
+/* RDOS Subsystem default major/minor version numbers */
+#define PE_RDOS_SS_MAJOR        1
+#define PE_RDOS_SS_MINOR        0
 
 #include "pushpck1.h"
 
@@ -1273,8 +1280,8 @@ void FiniPELoadFile( void )
             PE32( h ).os_minor = FmtData.u.pe.osminor;
         } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
             // RDOS default
-            PE32( h ).os_major = 8;
-            PE32( h ).os_minor = 8;
+            PE32( h ).os_major = PE_RDOS_OS_MAJOR;
+            PE32( h ).os_minor = PE_RDOS_OS_MINOR;
         } else {
             PE32( h ).os_major = PE_OS_MAJOR;
             PE32( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
@@ -1287,8 +1294,8 @@ void FiniPELoadFile( void )
             PE32( h ).subsys_minor = FmtData.u.pe.subminor;
         } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
             // RDOS default
-            PE32( h ).subsys_major = 1;
-            PE32( h ).subsys_minor = 0;
+            PE32( h ).subsys_major = PE_RDOS_SS_MAJOR;
+            PE32( h ).subsys_minor = PE_RDOS_SS_MINOR;
         } else {
             PE32( h ).subsys_major = 3;
             PE32( h ).subsys_minor = 0xa;
