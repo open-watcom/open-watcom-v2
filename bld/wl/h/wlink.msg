@@ -390,8 +390,8 @@ pick( MSG_NT_HELP_0,  " " , " " )
 pick( MSG_NT_HELP_1,  "commands valid for the Microsoft Windows NT executable formats only:" ,
                       "Microsoft Windows NT実行可能形式に対してのみ有効なオプション:" )
 pick( MSG_NT_HELP_2,  " " , " " )
-pick( MSG_NT_HELP_3,  "form      ::= \"WIndows NT\" [\"TNT\" | \"RDOS\"[=major[.minor]] | \"EFI\"[=major[.minor]]]" ,
-                      "form      ::= \"WIndows NT\" [\"TNT\" | \"RDOS\"[=major[.minor]] | \"EFI\"[=major[.minor]]]" )
+pick( MSG_NT_HELP_3,  "form      ::= \"WIndows NT\" [\"TNT\"]" ,
+                      "form      ::= \"WIndows NT\" [\"TNT\"]" )
 pick( MSG_NT_HELP_4,  "              [\"DLl\" [\"INITGlobal\" | \"INITInstance\" | \"INITThread\"" ,
                       "              [\"DLl\" [\"INITGlobal\" | \"INITInstance\" | \"INITThread\"" )
 pick( MSG_NT_HELP_5,  "                  [\"TERMInstance\" | \"TERMGlobal\" | \"TERMThread\"]]]" ,
@@ -428,9 +428,11 @@ pick( MSG_NT_HELP_20, "export    ::= entryname[\".\"ordinal][\"=\"internal][\"PR
                       "export    ::= エントリ名[\".\"序数][\"=\"内部名][\"PRIVATE\"]" )
 pick( MSG_NT_HELP_21, "segmodel  ::= (\"SHared\" | \"NONShared\") | (\"PAGEable\" | \"NONPageable\")" ,
                       "segmodel  ::= (\"SHared\" | \"NONShared\") | (\"PAGEable\" | \"NONPageable\")" )
-pick( MSG_NT_HELP_22, "runoption ::= (\"NATive\" | \"WINdows\" | \"CONsole\" | \"POSix\" | \"OS2\" | \"DOSstyle\")" ,
-                      "runoption ::= (\"NATive\" | \"WINdows\" | \"CONsole\" | \"POSix\" | \"OS2\" | \"DOSstyle\")" )
-pick( MSG_NT_HELP_23, "commitopt ::= \"STack=\"n | \"Heap=\"n" ,
+pick( MSG_NT_HELP_22, "runoption ::= (\"NATive\" | \"WINdows\" | \"CONsole\" | \"POSix\" | \"OS2\" | \"DOSstyle\"" ,
+                      "runoption ::= (\"NATive\" | \"WINdows\" | \"CONsole\" | \"POSix\" | \"OS2\" | \"DOSstyle\"" )
+pick( MSG_NT_HELP_23, "            | \"RDOS\" | \"EFIBoot\")" ,
+                      "            | \"RDOS\" | \"EFIBoot\")" )
+pick( MSG_NT_HELP_24, "commitopt ::= \"STack=\"n | \"Heap=\"n" ,
                       "commitopt ::= \"STack=\"n | \"Heap=\"n" )
 
 /*

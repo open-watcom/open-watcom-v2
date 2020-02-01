@@ -749,7 +749,8 @@ system begin rdos
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos ^
+    format windows pe ^
+    runtime rdos
 :endsegment
 end
 system begin rdos_dll
@@ -759,7 +760,8 @@ system begin rdos_dll
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos dll ^
+    format windows pe dll ^
+    runtime rdos
 :endsegment
 end
 system begin rdos_efi
@@ -769,7 +771,8 @@ system begin rdos_efi
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe efi ^
+    format windows pe ^
+    runtime efiboot
 :endsegment
 end
 system begin rdos_dev32

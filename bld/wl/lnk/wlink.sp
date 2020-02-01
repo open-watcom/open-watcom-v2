@@ -141,6 +141,7 @@ system begin 386
     option osname='rdos'
     libpath %WATCOM%\lib386
     libpath %WATCOM%\lib386\rdos
-    format windows pe rdos
+    format windows pe
+    runtime rdos
 end
 :endsegment

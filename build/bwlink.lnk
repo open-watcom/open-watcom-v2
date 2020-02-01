@@ -564,7 +564,8 @@ system begin rdos
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
     libpath %OWSRCDIR%/cpplib/library/generic.386/mf_r
     libpath %OWSRCDIR%/cpplib/library/rdos.386/mf_r
-    format windows pe rdos ^
+    format windows pe ^
+    runtime rdos
 end
 
 system begin rdos_dll
@@ -574,7 +575,8 @@ system begin rdos_dll
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
     libpath %OWSRCDIR%/cpplib/library/generic.386/ms_r
-    format windows pe rdos dll ^
+    format windows pe dll ^
+    runtime rdos
 end
 
 system begin rdosdev
