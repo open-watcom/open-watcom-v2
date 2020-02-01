@@ -565,12 +565,12 @@ static bool getexport( void )
     } else {
         exp->sym = RefISymbol( exp->name.u.ptr );
     }
-    exp->sym->info |= SYM_DCE_REF;      //make sure it is not removed
+    exp->sym->info |= SYM_DCE_REF;          //make sure it is not removed
     if( exp->ordinal == 0 ) {
-        exp->isresident = true;   // no ordinal spec'd so must be kept resident
+        exp->isresident = true;             // no ordinal spec'd so must be kept resident
     }
-    exp->next = FmtData.u.os2fam.exports;    // put in the front of the list for
-    FmtData.u.os2fam.exports = exp;          // now so ProcResidant can get to it.
+    exp->next = FmtData.u.os2fam.exports;   // put in the front of the list for
+    FmtData.u.os2fam.exports = exp;         // now so ProcResidant can get to it.
     while( ProcOne( Exp_Keywords, SEP_NO ) ) {
         // handle misc options
     }
