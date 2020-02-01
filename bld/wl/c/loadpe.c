@@ -1060,11 +1060,7 @@ void FiniPELoadFile( void )
     if( LinkState & LS_HAVE_X64_CODE ) {
         head_size = sizeof( pe_header64 );
         PE64( h ).magic = 0x20b;
-        if( FmtData.u.pe.signature != 0 ) {
-            PE64( h ).signature = FmtData.u.pe.signature;
-        } else {
-            PE64( h ).signature = PE_SIGNATURE;
-        }
+        PE64( h ).signature = PE_SIGNATURE;
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
         PE64( h ).time_stamp = (unsigned_32)time( NULL );
@@ -1210,8 +1206,8 @@ void FiniPELoadFile( void )
     } else {
         head_size = sizeof( pe_header );
         PE32( h ).magic = 0x10b;
-        if( FmtData.u.pe.signature != 0 ) {
-            PE32( h ).signature = FmtData.u.pe.signature;
+        if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
+            PE32( h ).signature = PL_SIGNATURE;
         } else {
             PE32( h ).signature = PE_SIGNATURE;
         }

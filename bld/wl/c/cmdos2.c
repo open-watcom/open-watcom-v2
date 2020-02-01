@@ -1068,7 +1068,6 @@ static bool ProcRunDosstyle( void )
 /*********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_PL_DOSSTYLE;
-    FmtData.u.pe.signature = PL_SIGNATURE;
     GetSubsystemVersion();
     return( true );
 }
@@ -1204,7 +1203,7 @@ static bool ProcLE( void )
 static bool ProcTNT( void )
 /*************************/
 {
-    FmtData.u.pe.signature = PL_SIGNATURE;
+    FmtData.u.pe.tnt = true;
     return( true );
 }
 
@@ -1217,10 +1216,10 @@ static bool ProcPE( void )
 /************************/
 {
     ProcOne( PESubFormats, SEP_NO );
-    FmtData.u.pe.heapcommit   = PE_DEF_HEAP_COMMIT; // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.os2.heapsize = PE_DEF_HEAP_SIZE;      // another arbitrary non-zero default
+    FmtData.u.os2.segment_shift = 9;                // 512 byte arbitrary rounding
+    FmtData.u.pe.heapcommit = PE_DEF_HEAP_COMMIT;   // arbitrary non-zero default.
     FmtData.u.pe.stackcommit = DEF_VALUE;
-    FmtData.u.pe.os2.segment_shift = 9;             // 512 byte arbitrary rounding
     return( true );
 }
 
