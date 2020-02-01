@@ -1,53 +1,53 @@
 pick( MSG_FILE_REC_NAME_0,      "file %s: " ,
-                                "ƒtƒ@ƒCƒ‹ %s: " )
+                                "ï¿½tï¿½@ï¿½Cï¿½â€¹ %s: " )
 pick( MSG_FILE_REC_NAME_1,      "(%s): " ,
                                 "(%s): " )
 pick( MSG_FILE_REC_NAME_2,      "file %1(%2): " ,
-                                "ƒtƒ@ƒCƒ‹ %1(%2): " )
+                                "ï¿½tï¿½@ï¿½Cï¿½â€¹ %1(%2): " )
 pick( MSG_FILE_REC_NAME_3,      "record %d: " ,
-                                "ƒŒƒR[ƒh %d: " )
+                                "ï¿½Åšï¿½Rï¿½[ï¿½h %d: " )
 pick( MSG_FILE_REC_NAME_4,      "file %s, record %d: " ,
-                                "ƒtƒ@ƒCƒ‹ %s, ƒŒƒR[ƒh %d: " )
+                                "ï¿½tï¿½@ï¿½Cï¿½â€¹ %s, ï¿½Åšï¿½Rï¿½[ï¿½h %d: " )
 pick( MSG_FILE_REC_NAME_5,      "(%s), record %d: " ,
-                                "(%s), ƒŒƒR[ƒh %d: " )
+                                "(%s), ï¿½Åšï¿½Rï¿½[ï¿½h %d: " )
 pick( MSG_FILE_REC_NAME_6,      "file %1(%2), record %d: " ,
-                                "ƒtƒ@ƒCƒ‹ %1(%2), ƒŒƒR[ƒh %d: " )
+                                "ï¿½tï¿½@ï¿½Cï¿½â€¹ %1(%2), ï¿½Åšï¿½Rï¿½[ï¿½h %d: " )
 pick( MSG_ERROR,                "Error! E%d: " ,
-                                "ƒGƒ‰[(%d): " )
+                                "ï¿½Gï¿½â€°ï¿½[(%d): " )
 pick( MSG_WARNING,              "Warning! W%d: " ,
-                                "Œx(%d): " )
+                                "ÅšxÅ¤ï¿½(%d): " )
 pick( MSG_SYS_BLK,              "system block %s: " ,
-                                "ƒVƒXƒeƒ€EƒuƒƒbƒN %s: " )
+                                "ï¿½Vï¿½Xï¿½eï¿½â‚¬ï¿½Eï¿½uï¿½Å¤ï¿½bï¿½N %s: " )
 pick( MSG_ENVIRON,              "environment %s: " ,
-                                "ŠÂ‹« %s: " )
+                                "Å Ã‚â€¹Â« %s: " )
 pick( MSG_LINE,                 "line(%d): " ,
-                                "s(%d): " )
+                                "Å¤s(%d): " )
 pick( MSG_FORMAT_NOT_DECIDED,   "format not decided" ,
-                                "ƒtƒH[ƒ}ƒbƒg‚ªŒˆ’è‚µ‚Ä‚¢‚Ü‚¹‚ñ" )
+                                "ï¿½tï¿½Hï¿½[ï¿½}ï¿½bï¿½gâ€šÅÅšï¿½â€™Äâ€šÂµâ€šÃ„â€šË˜â€šÃœâ€šÄ…â€šÅ„" )
 pick( MSG_NO_LEADER_ON_PASS_2,  "no leader found on pass 2" ,
-                                "ƒpƒX‚Q‚ÅƒŠ[ƒ_[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                                "ï¿½pï¿½Xâ€šQâ€šÄ¹ï¿½Å ï¿½[ï¿½_ï¿½[â€šÅÅšÂ©â€šÃ‚â€šÂ©â€šÄâ€šÃœâ€šÄ…â€šÅ„" )
 pick( MSG_IOERRLIST_0,          "" , "" )
 pick( MSG_IOERRLIST_1,          "" , "" )
 pick( MSG_IOERRLIST_2,          "file not found" ,
-                                "ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                                "ï¿½tï¿½@ï¿½Cï¿½â€¹â€šÅÅšÂ©â€šÃ‚â€šÂ©â€šÄâ€šÃœâ€šÄ…â€šÅ„" )
 pick( MSG_IOERRLIST_3,          "path not found" ,
-                                "ƒpƒX‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                                "ï¿½pï¿½Xâ€šÅÅšÂ©â€šÃ‚â€šÂ©â€šÄâ€šÃœâ€šÄ…â€šÅ„" )
 pick( MSG_IOERRLIST_4,          "too many open files" ,
-                                "ƒI[ƒvƒ“Eƒtƒ@ƒCƒ‹‚ª‘½‚·‚¬‚Ü‚·" )
+                                "ï¿½Iï¿½[ï¿½vï¿½â€œï¿½Eï¿½tï¿½@ï¿½Cï¿½â€¹â€šÅâ€˜Ëâ€šÂ·â€šÂ¬â€šÃœâ€šÂ·" )
 pick( MSG_IOERRLIST_5,          "access denied" ,
-                                "ƒAƒNƒZƒX‚ª‹‘”Û‚³‚ê‚Ü‚µ‚½" )
+                                "ï¿½Aï¿½Nï¿½Zï¿½Xâ€šÅâ€¹â€˜â€Å°â€šÅ‚â€šÄ™â€šÃœâ€šÂµâ€šË" )
 pick( MSG_IOERRLIST_6,          "invalid handle",
-                                "ƒnƒ“ƒhƒ‹‚ª–³Œø‚Å‚·" )
+                                "ï¿½nï¿½â€œï¿½hï¿½â€¹â€šÅâ€“Å‚ÅšÅ™â€šÄ¹â€šÂ·" )
 pick( MSG_IOERRLIST_7,          "disk full" ,
-                                "ƒfƒBƒXƒN‚ªˆê”t‚Å‚·" )
+                                "ï¿½fï¿½Bï¿½Xï¿½Nâ€šÅï¿½Ä™â€tâ€šÄ¹â€šÂ·" )
 pick( MSG_PRESS_KEY,            "press any key to continue" ,
-                                "‘±s‚·‚é‚½‚ß‚É‰½‚©ƒL[‚ğ‰Ÿ‚µ‚Ä‰º‚³‚¢" )
+                                "â€˜Â±Å¤sâ€šÂ·â€šÃ©â€šËâ€šÃŸâ€šÃ‰â€°Ëâ€šÂ©ï¿½Lï¿½[â€šÄ‘â€°Åºâ€šÂµâ€šÃ„â€°ÅŸâ€šÅ‚â€šË˜" )
 pick( MSG_FILE_TYPES_0,         "OS/2" ,
                                 "OS/2" )
 pick( MSG_FILE_TYPES_1,         "OS/2 linear" ,
-                                "OS/2 ƒŠƒjƒA" )
+                                "OS/2 ï¿½Å ï¿½jï¿½A" )
 pick( MSG_FILE_TYPES_2,         "OS/2 linear extended" ,
-                                "OS/2 ƒŠƒjƒAŠg’£" )
+                                "OS/2 ï¿½Å ï¿½jï¿½AÅ gâ€™Å" )
 pick( MSG_FILE_TYPES_3,         "Windows" ,
                                 "Windows" )
 pick( MSG_FILE_TYPES_4,         "PE" ,
@@ -57,19 +57,19 @@ pick( MSG_FILE_TYPES_5,         "DOS" ,
 pick( MSG_FILE_TYPES_6,         "DOS .COM" ,
                                 "DOS .COM" )
 pick( MSG_FILE_TYPES_7,         "DOS overlayed" ,
-                                "DOS ƒI[ƒoƒŒƒC" )
+                                "DOS ï¿½Iï¿½[ï¿½oï¿½Åšï¿½C" )
 pick( MSG_FILE_TYPES_8,         "Novell Netware" ,
                                 "Novell Netware" )
 pick( MSG_FILE_TYPES_9,         "QNX" ,
                                 "QNX" )
 pick( MSG_FILE_TYPES_10,        "Phar Lap simple" ,
-                                "Phar Lap ƒVƒ“ƒvƒ‹" )
+                                "Phar Lap ï¿½Vï¿½â€œï¿½vï¿½â€¹" )
 pick( MSG_FILE_TYPES_11,        "Phar Lap extended" ,
-                                "Phar Lap Šg’£" )
+                                "Phar Lap Å gâ€™Å" )
 pick( MSG_FILE_TYPES_12,        "Phar Lap relocatable" ,
-                                "Phar Lap ƒŠƒƒP[ƒ^ƒuƒ‹" )
+                                "Phar Lap ï¿½Å ï¿½Å¤ï¿½Pï¿½[ï¿½^ï¿½uï¿½â€¹" )
 pick( MSG_FILE_TYPES_13,        "Phar Lap segmented" ,
-                                "Phar Lap ƒZƒOƒƒ“ƒg" )
+                                "Phar Lap ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g" )
 pick( MSG_FILE_TYPES_14,        "QNX 386" ,
                                 "QNX 386" )
 pick( MSG_FILE_TYPES_15,        "ELF" ,
@@ -85,98 +85,98 @@ pick( MSG_FILE_TYPES_19,        "RAW Binary Image" ,
 pick( MSG_FILE_TYPES_20,        "RDOS" ,
                                 "RDOS" )
 pick( MSG_CREATE_TYPE_DLL,      "dynamic link library" ,
-                                "ƒ_ƒCƒiƒ~ƒbƒNEƒŠƒ“ƒNEƒ‰ƒCƒuƒ‰ƒŠ" )
+                                "ï¿½_ï¿½Cï¿½iï¿½~ï¿½bï¿½Nï¿½Eï¿½Å ï¿½â€œï¿½Nï¿½Eï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å " )
 pick( MSG_CREATE_TYPE_EXE,      "executable" ,
-                                "Às‰Â”\" )
+                                "Å½Å”Å¤sâ€°Ã‚â€\" )
 pick( MSG_IS_A_EXE,             "This is %f" ,
-                                "‚±‚ê‚Í %f ‚Å‚·" )
+                                "â€šÂ±â€šÄ™â€šÃ %f â€šÄ¹â€šÂ·" )
 
 pick( MSG_MAP_BOX_GROUP,        "|   Groups   |" ,
-                                "|  ƒOƒ‹[ƒv  |" )
+                                "|  ï¿½Oï¿½â€¹ï¿½[ï¿½v  |" )
 pick( MSG_MAP_TITLE_GROUP_0,    "Group                           Address              Size" ,
-                                "ƒOƒ‹[ƒv                        ƒAƒhƒŒƒX             ƒTƒCƒY" )
+                                "ï¿½Oï¿½â€¹ï¿½[ï¿½v                        ï¿½Aï¿½hï¿½Åšï¿½X             ï¿½Tï¿½Cï¿½Y" )
 pick( MSG_MAP_TITLE_GROUP_1,    "=====                           =======              ====" ,
                                 "=====                           =======              ====" )
 pick( MSG_MAP_BOX_ABS_SEG,      "|   Absolute Segments   |" ,
-                                "|     â‘ÎƒZƒOƒƒ“ƒg    |" )
+                                "|     ï¿½Ã¢â€˜Ãï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g    |" )
 pick( MSG_MAP_TITLE_ABS_SEG_0,  "Segment                 Class           Address              Size" ,
-                                "ƒZƒOƒƒ“ƒg              ƒNƒ‰ƒX          ƒAƒhƒŒƒX            ƒTƒCƒY" )
+                                "ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g              ï¿½Nï¿½â€°ï¿½X          ï¿½Aï¿½hï¿½Åšï¿½X            ï¿½Tï¿½Cï¿½Y" )
 pick( MSG_MAP_TITLE_ABS_SEG_1,  "=======                 =====           =======              ====" ,
                                 "==========              ======          ========             ======" )
 pick( MSG_MAP_BOX_SEGMENTS,     "|   Segments   |" ,
-                                "|  ƒZƒOƒƒ“ƒg  |" )
+                                "|  ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g  |" )
 pick( MSG_MAP_TITLE_SEGMENTS_0, "Segment                Class          Group          Address         Size" ,
-                                "ƒZƒOƒƒ“ƒg             ƒNƒ‰ƒX         ƒOƒ‹[ƒv      ƒAƒhƒŒƒX        ƒTƒCƒY" )
+                                "ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g             ï¿½Nï¿½â€°ï¿½X         ï¿½Oï¿½â€¹ï¿½[ï¿½v      ï¿½Aï¿½hï¿½Åšï¿½X        ï¿½Tï¿½Cï¿½Y" )
 pick( MSG_MAP_TITLE_SEGMENTS_1, "=======                =====          =====          =======         ====" ,
                                 "=========              ======         =========      ========        ======" )
 pick( MSG_MAP_BOX_MEMORY_MAP,   "|   Memory Map   |" ,
-                                "| ƒƒ‚ƒŠEƒ}ƒbƒv |" )
+                                "| ï¿½ï¿½ï¿½â€šï¿½Å ï¿½Eï¿½}ï¿½bï¿½v |" )
 pick( MSG_MAP_UNREF_SYM,        "* = unreferenced symbol" ,
-                                "* = QÆ‚³‚ê‚È‚¢ƒVƒ“ƒ{ƒ‹" )
+                                "* = Å½QÅ¹Ä†â€šÅ‚â€šÄ™â€šÄŒâ€šË˜ï¿½Vï¿½â€œï¿½{ï¿½â€¹" )
 pick( MSG_MAP_REF_LOCAL_SYM,    "+ = symbol only referenced locally" ,
-                                "+ = ƒVƒ“ƒ{ƒ‹‚Íƒ[ƒJƒ‹‚Å‚ÌQÆ‚Ì‚İ‚Å‚·" )
+                                "+ = ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€šÃï¿½Å¤ï¿½[ï¿½Jï¿½â€¹â€šÄ¹â€šÄšÅ½QÅ¹Ä†â€šÄšâ€šÃâ€šÄ¹â€šÂ·" )
 pick( MSG_MAP_TITLE_MEMORY_MAP_0,   "Address        Symbol" ,
-                                    "ƒAƒhƒŒƒX       ƒVƒ“ƒ{ƒ‹" )
+                                    "ï¿½Aï¿½hï¿½Åšï¿½X       ï¿½Vï¿½â€œï¿½{ï¿½â€¹" )
 pick( MSG_MAP_TITLE_MEMORY_MAP_1,   "=======        ======" ,
                                     "========       ========" )
 pick( MSG_MAP_BOX_OVERLAY_VECTOR,   "|   Overlay Vectors   |" ,
-                                    "| ƒI[ƒoƒŒƒCEƒxƒNƒ^  |" )
+                                    "| ï¿½Iï¿½[ï¿½oï¿½Åšï¿½Cï¿½Eï¿½xï¿½Nï¿½^  |" )
 pick( MSG_MAP_BOX_COMMUNAL,     "|   Communal Symbols   |" ,
-                                "|     ‹¤—LƒVƒ“ƒ{ƒ‹     |" )
+                                "|     â€¹Â¤â€”Lï¿½Vï¿½â€œï¿½{ï¿½â€¹     |" )
 pick( MSG_MAP_TITLE_COMMUNAL_0, "Address        Symbol" ,
-                                "ƒAƒhƒŒƒX       ƒVƒ“ƒ{ƒ‹" )
+                                "ï¿½Aï¿½hï¿½Åšï¿½X       ï¿½Vï¿½â€œï¿½{ï¿½â€¹" )
 pick( MSG_MAP_TITLE_COMMUNAL_1, "=======        ======" ,
                                 "========       ========" )
 pick( MSG_MAP_BOX_MOD_SEG,      "|   Module Segments   |" ,
-                                "|ƒ‚ƒWƒ…[ƒ‹ ƒZƒOƒƒ“ƒg|" )
+                                "|ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹ ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g|" )
 pick( MSG_MAP_ABS_ADDR,         "* = absolute address" ,
-                                "* = â‘ÎƒAƒhƒŒƒX" )
+                                "* = ï¿½Ã¢â€˜Ãï¿½Aï¿½hï¿½Åšï¿½X" )
 pick( MSG_MAP_32BIT_SEG,        "! = 32-bit segment" ,
-                                "! = 32ƒrƒbƒgEƒZƒOƒƒ“ƒg" )
+                                "! = 32ï¿½rï¿½bï¿½gï¿½Eï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g" )
 pick( MSG_MAP_TITLE_MOD_SEG_0,  "Module          Segment               Class           Address         Size" ,
-                                "ƒ‚ƒWƒ…[ƒ‹      ƒZƒOƒƒ“ƒg            ƒNƒ‰ƒX         ƒAƒhƒŒƒX        ƒTƒCƒY" )
+                                "ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹      ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½g            ï¿½Nï¿½â€°ï¿½X         ï¿½Aï¿½hï¿½Åšï¿½X        ï¿½Tï¿½Cï¿½Y" )
 pick( MSG_MAP_TITLE_MOD_SEG_1,  "======          =======               =====           =======         ====" ,
                                 "==========      ==========            ======          ========        ======" )
 pick( MSG_MAP_BOX_TRACE_SYM,    "|   Traced Symbols   |" ,
-                                "|  ƒgƒŒ[ƒX ƒVƒ“ƒ{ƒ‹ |" )
+                                "|  ï¿½gï¿½Åšï¿½[ï¿½X ï¿½Vï¿½â€œï¿½{ï¿½â€¹ |" )
 pick( MSG_MAP_BOX_IMP_SYM,      "|   Imported Symbols   |" ,
-                                "|  ƒCƒ“ƒ|[ƒg ƒVƒ“ƒ{ƒ‹ |" )
+                                "|  ï¿½Cï¿½â€œï¿½|ï¿½[ï¿½g ï¿½Vï¿½â€œï¿½{ï¿½â€¹ |" )
 pick( MSG_MAP_TITLE_IMP_SYM_0,  "Symbol" ,
-                                "ƒVƒ“ƒ{ƒ‹" )
+                                "ï¿½Vï¿½â€œï¿½{ï¿½â€¹" )
 pick( MSG_MAP_TITLE_IMP_SYM_1,  "======" ,
                                 "========" )
 pick( MSG_MAP_TITLE_IMP_SYM_2,  "Symbol                              Module" ,
-                                "ƒVƒ“ƒ{ƒ‹                            ƒ‚ƒWƒ…[ƒ‹" )
+                                "ï¿½Vï¿½â€œï¿½{ï¿½â€¹                            ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹" )
 pick( MSG_MAP_TITLE_IMP_SYM_3,  "======                              ======" ,
                                 "========                            ===========" )
 pick( MSG_MAP_BOX_UNRES_REF,    "|   Unresolved References   |" ,
-                                "|        –¢‰ğŒˆ‚ÈQÆ       |" )
+                                "|        â€“Ë˜â€°Ä‘Åšï¿½â€šÄŒÅ½QÅ¹Ä†       |" )
 pick( MSG_MAP_TITLE_UNRES_REF_0,    "Undefined Symbol                Referenced by" ,
-                                    "–¢’è‹`ƒVƒ“ƒ{ƒ‹                  QÆƒ‚ƒWƒ…[ƒ‹" )
+                                    "â€“Ë˜â€™Äâ€¹`ï¿½Vï¿½â€œï¿½{ï¿½â€¹                  Å½QÅ¹Ä†ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹" )
 pick( MSG_MAP_TITLE_UNRES_REF_1,    "================                =============" ,
                                     "==============                  ===============" )
 pick( MSG_MAP_BOX_LIB_USED,     "|   Libraries Used   |" ,
-                                "|   g—pƒ‰ƒCƒuƒ‰ƒŠ   |" )
+                                "|   Å½gâ€”pï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å    |" )
 pick( MSG_MAP_BOX_LINKER_STAT,  "|   Linker Statistics   |" ,
-                                "|     ƒŠƒ“ƒJ[“Œv      |" )
+                                "|     ï¿½Å ï¿½â€œï¿½Jï¿½[â€œÅ¥Åšv      |" )
 pick( MSG_MAP_STACK_SIZE,       "Stack size:" ,
-                                "ƒXƒ^ƒbƒN ƒTƒCƒY:" )
+                                "ï¿½Xï¿½^ï¿½bï¿½N ï¿½Tï¿½Cï¿½Y:" )
 pick( MSG_MAP_MEM_SIZE,         "Memory size:" ,
-                                "ƒƒ‚ƒŠ ƒTƒCƒY:" )
+                                "ï¿½ï¿½ï¿½â€šï¿½Å  ï¿½Tï¿½Cï¿½Y:" )
 pick( MSG_MAP_OVL_SIZE,         "Overlay area size:" ,
-                                "ƒI[ƒoƒŒƒC ƒTƒCƒY:" )
+                                "ï¿½Iï¿½[ï¿½oï¿½Åšï¿½C ï¿½Tï¿½Cï¿½Y:" )
 pick( MSG_MAP_ENTRY_PT_ADDR,    "Entry point address: %a" ,
-                                "ƒGƒ“ƒgƒŠƒAƒhƒŒƒX: %a" )
+                                "ï¿½Gï¿½â€œï¿½gï¿½Å ï¿½Aï¿½hï¿½Åšï¿½X: %a" )
 pick( MSG_MAP_STUB_FILE,        "Stub file: %s" ,
                                 "Stub file: %s" )
 pick( MSG_MAP_LINK_TIME,        "Link time: %s" ,
-                                "ƒŠƒ“ƒNŠÔ: %s" )
+                                "ï¿½Å ï¿½â€œï¿½NÅ½Å¾Å Ã”: %s" )
 pick( MSG_MAP_COMDAT,           "c = initialized communal data" ,
-                                "c = ‰Šú‰»‚³‚ê‚½‹¤—Lƒf[ƒ^" )
+                                "c = Å¹â€°Å Ãºâ€°Â»â€šÅ‚â€šÄ™â€šËâ€¹Â¤â€”Lï¿½fï¿½[ï¿½^" )
 pick( MSG_MAP_SYM_STATIC,       "s = symbol is static" ,
-                                "s = ƒVƒ“ƒ{ƒ‹‚ÍƒXƒ^ƒeƒBƒbƒN‚Å‚·" )
+                                "s = ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€šÃï¿½Xï¿½^ï¿½eï¿½Bï¿½bï¿½Nâ€šÄ¹â€šÂ·" )
 pick( MSG_MAP_DEFINING_MODULE,  "Module: %s(%s)" ,
-                                "ƒ‚ƒWƒ…[ƒ‹: %s(%s)" )
+                                "ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹: %s(%s)" )
 
 
 /*
@@ -185,49 +185,49 @@ pick( MSG_MAP_DEFINING_MODULE,  "Module: %s(%s)" ,
  */
 pick( MSG_GENERAL_HELP_0,   " " , " " )
 pick( MSG_GENERAL_HELP_1,   "usage: wlink {directive}" ,
-                            "g—p•û–@: wlink {directive}" )
+                            "Å½gâ€”pâ€¢Å±â€“@: wlink {directive}" )
 pick( MSG_GENERAL_HELP_2,   " " , " " )
 pick( MSG_GENERAL_HELP_3,   "commands valid for all executable formats:" ,
-                            "‘S‚Ä‚ÌÀs‰Â”\ƒtƒH[ƒ}ƒbƒg‚Å—LŒø‚ÈƒRƒ}ƒ“ƒh:" )
+                            "â€˜Sâ€šÃ„â€šÄšÅ½Å”Å¤sâ€°Ã‚â€\ï¿½tï¿½Hï¿½[ï¿½}ï¿½bï¿½gâ€šÄ¹â€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )
 pick( MSG_GENERAL_HELP_4,   " " , " " )
 pick( MSG_GENERAL_HELP_5,   "directive  ::= \"File\"        obj_spec{\",\"obj_spec}" ,
                             "directive  ::= \"File\"        obj_spec{\",\"obj_spec}" )
 pick( MSG_GENERAL_HELP_6,   "            | \"Name\"         exe_file" ,
-                            "            | \"Name\"         EXEƒtƒ@ƒCƒ‹" )
+                            "            | \"Name\"         EXEï¿½tï¿½@ï¿½Cï¿½â€¹" )
 pick( MSG_GENERAL_HELP_7,   "            | \"OPtion\"       option{\",\"option}" ,
                             "            | \"OPtion\"       option{\",\"option}" )
 pick( MSG_GENERAL_HELP_8,   "            | \"Library\"      library_file{\",\"library_file}" ,
-                            "            | \"Library\"      ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹{\",\"library_file}" )
+                            "            | \"Library\"      ï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å ï¿½tï¿½@ï¿½Cï¿½â€¹{\",\"library_file}" )
 pick( MSG_GENERAL_HELP_9,   "            | \"OPTLIB\"       library_file{\",\"library_file}" ,
-                            "            | \"OPTLIB\"       ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹{\",\"ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹}" )
+                            "            | \"OPTLIB\"       ï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å ï¿½tï¿½@ï¿½Cï¿½â€¹{\",\"ï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å ï¿½tï¿½@ï¿½Cï¿½â€¹}" )
 pick( MSG_GENERAL_HELP_10,  "            | \"Path\"         path_name{\";\"path_name}" ,
-                            "            | \"Path\"         ƒpƒX–¼{\";\"ƒpƒX–¼}" )
+                            "            | \"Path\"         ï¿½pï¿½Xâ€“Ä½{\";\"ï¿½pï¿½Xâ€“Ä½}" )
 pick( MSG_GENERAL_HELP_11,  "            | \"LIBPath\"      path_name{\";\"path_name}" ,
-                            "            | \"LIBPath\"      ƒpƒX–¼{\";\"ƒpƒX–¼}" )
+                            "            | \"LIBPath\"      ï¿½pï¿½Xâ€“Ä½{\";\"ï¿½pï¿½Xâ€“Ä½}" )
 pick( MSG_GENERAL_HELP_12,  "            | \"LIBFile\"      obj_file{\",\"obj_file}" ,
-                            "            | \"LIBFile\"      ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹{\",\"ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹}" )
+                            "            | \"LIBFile\"      ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹{\",\"ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹}" )
 pick( MSG_GENERAL_HELP_13,  "            | \"Debug\"        dbtype [dblist] | dblist" ,
                             "            | \"Debug\"        dbtype [dblist] | dblist" )
 pick( MSG_GENERAL_HELP_14,  "            | \"MODTrace\"     module_name{\",\"module_name}" ,
-                            "            | \"MODTrace\"     ƒ‚ƒWƒ…[ƒ‹–¼{\",\"ƒ‚ƒWƒ…[ƒ‹–¼}" )
+                            "            | \"MODTrace\"     ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½{\",\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½}" )
 pick( MSG_GENERAL_HELP_15,  "            | \"SYMTrace\"     symbol_name{\",\"symbol_name}" ,
-                            "            | \"SYMTrace\"     ƒVƒ“ƒ{ƒ‹–¼{\",\"ƒVƒ“ƒ{ƒ‹–¼}" )
+                            "            | \"SYMTrace\"     ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½{\",\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½}" )
 pick( MSG_GENERAL_HELP_16,  "            | \"SYStem\"       system_name" ,
-                            "            | \"SYStem\"       ƒVƒXƒeƒ€–¼" )
+                            "            | \"SYStem\"       ï¿½Vï¿½Xï¿½eï¿½â‚¬â€“Ä½" )
 pick( MSG_GENERAL_HELP_17,  "            | \"SYStem Begin\" system_name directive {directive} \"End\"" ,
-                            "            | \"SYStem Begin\" ƒVƒXƒeƒ€–¼ directive {directive} \"End\"" )
+                            "            | \"SYStem Begin\" ï¿½Vï¿½Xï¿½eï¿½â‚¬â€“Ä½ directive {directive} \"End\"" )
 pick( MSG_GENERAL_HELP_18,  "            | \"FORMat\"       form" ,
                             "            | \"FORMat\"       form" )
 pick( MSG_GENERAL_HELP_19,  "            | \"REFerence\"    symbol_name{\",\"symbol_name}" ,
-                            "            | \"REFerence\"    ƒVƒ“ƒ{ƒ‹–¼{\",\"ƒVƒ“ƒ{ƒ‹–¼}" )
+                            "            | \"REFerence\"    ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½{\",\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½}" )
 pick( MSG_GENERAL_HELP_20,  "            | \"@\"            directive_file" ,
                             "            | \"@\"            directive_file" )
 pick( MSG_GENERAL_HELP_21,  "            | \"#\"            comment" ,
-                            "            | \"#\"            ƒRƒƒ“ƒg" )
+                            "            | \"#\"            ï¿½Rï¿½ï¿½ï¿½â€œï¿½g" )
 pick( MSG_GENERAL_HELP_22,  "            | \"Alias\"        alias\"=\"symbol_name{\",\"alias\"=\"symbol_name}" ,
-                            "            | \"Alias\"        ƒGƒCƒŠƒAƒX\"=\"ƒVƒ“ƒ{ƒ‹–¼{\",\"ƒGƒCƒŠƒAƒX\"=\"ƒVƒ“ƒ{ƒ‹–¼}" )
+                            "            | \"Alias\"        ï¿½Gï¿½Cï¿½Å ï¿½Aï¿½X\"=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½{\",\"ï¿½Gï¿½Cï¿½Å ï¿½Aï¿½X\"=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½}" )
 pick( MSG_GENERAL_HELP_23,  "            | \"DISAble\"      msg_num{\",\"msg_num}" ,
-                            "            | \"DISAble\"      ƒƒbƒZ[ƒW”Ô†{\",\"ƒƒbƒZ[ƒW”Ô†}")
+                            "            | \"DISAble\"      ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wâ€Ã”Å¤â€ {\",\"ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wâ€Ã”Å¤â€ }")
 pick( MSG_GENERAL_HELP_24,  "            | \"SOrt\"         [\"GLobal\"] [\"ALPhabetical\"]" ,
                             "            | \"SOrt\"         [\"GLobal\"] [\"ALPhabetical\"]")
 pick( MSG_GENERAL_HELP_25,  "            | \"LANGuage\"     (\"JApanese\" | \"CHinese\" | \"KOrean\")",
@@ -237,9 +237,9 @@ pick( MSG_GENERAL_HELP_26,  "            | \"STARTLINK\"",
 pick( MSG_GENERAL_HELP_27,  "            | \"ENDLINK\"",
                             "            | \"ENDLINK\"")
 pick( MSG_GENERAL_HELP_28,  "            | \"MODFile\"      obj_file{\",\"obj_file}" ,
-                            "            | \"MODFile\"      ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹{\",\"ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹}" )
+                            "            | \"MODFile\"      ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹{\",\"ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹}" )
 pick( MSG_GENERAL_HELP_29,  "obj_spec  ::= obj_file[\"(\"obj_member\")\"] | library_file[\"(\"lib_member\")\"]" ,
-                            "obj_spec  ::= ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹[\"(\"ƒIƒuƒWƒFƒNƒgƒƒ“ƒo[\")\"] | ƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹[\"(\"ƒ‰ƒCƒuƒ‰ƒŠƒƒ“ƒo[\")\"]")
+                            "obj_spec  ::= ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹[\"(\"ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½â€œï¿½oï¿½[\")\"] | ï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å ï¿½tï¿½@ï¿½Cï¿½â€¹[\"(\"ï¿½â€°ï¿½Cï¿½uï¿½â€°ï¿½Å ï¿½ï¿½ï¿½â€œï¿½oï¿½[\")\"]")
 pick( MSG_GENERAL_HELP_30,  "dbtype    ::= \"Watcom\" | \"Dwarf\" | \"Codeview\"",
                             "dbtype    ::= \"Watcom\" | \"Dwarf\" | \"Codeview\"")
 pick( MSG_GENERAL_HELP_31,  "dblist    ::= dboption{\",\"dboption}" ,
@@ -251,15 +251,15 @@ pick( MSG_GENERAL_HELP_33,  "option    ::= \"ARTificial\" | \"[NO]CAChe\" | \"[N
 pick( MSG_GENERAL_HELP_34,  "            | \"Dosseg\" | \"ELiminate\" | \"[NO]FARcalls\"",
                             "            | \"Dosseg\" | \"ELiminate\" | \"[NO]FARcalls\"")
 pick( MSG_GENERAL_HELP_35,  "            | \"INCremental[=file_name]\" | \"MANGlednames\"",
-                            "            | \"INCremental[=ƒtƒ@ƒCƒ‹–¼]\" | \"MANGlednames\"")
+                            "            | \"INCremental[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½]\" | \"MANGlednames\"")
 pick( MSG_GENERAL_HELP_36,  "            | \"Map\"[\"=\"map_file] | \"MAXErrors=\"n | \"NAMELen=\"n",
-                            "            | \"Map\"[\"=\"ƒ}ƒbƒvƒtƒ@ƒCƒ‹] | \"MAXErrors=\"n | \"NAMELen=\"n" )
+                            "            | \"Map\"[\"=\"ï¿½}ï¿½bï¿½vï¿½tï¿½@ï¿½Cï¿½â€¹] | \"MAXErrors=\"n | \"NAMELen=\"n" )
 pick( MSG_GENERAL_HELP_37,  "            | \"NODefaultlibs\" | \"NOEXTension\" | \"OSName=\"string | \"Quiet\"",
-                            "            | \"NODefaultlibs\" | \"NOEXTension\" | \"OSName=\"•¶š—ñ | \"Quiet\"" )
+                            "            | \"NODefaultlibs\" | \"NOEXTension\" | \"OSName=\"â€¢Â¶Å½Å¡â€”Å„ | \"Quiet\"" )
 pick( MSG_GENERAL_HELP_38,  "            | \"[NO]REDefsok\" | \"STack\"=n | \"START=\"symbol_name | \"STATics\"",
-                            "            | \"[NO]REDefsok\" | \"STack\"=n | \"START=\"ƒVƒ“ƒ{ƒ‹–¼ | \"STATics\"" )
+                            "            | \"[NO]REDefsok\" | \"STack\"=n | \"START=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½ | \"STATics\"" )
 pick( MSG_GENERAL_HELP_39,  "            | \"SYMFile\"[\"=\"symbol_file], | \"[NO]Undefsok\" | \"Verbose\"",
-                            "            | \"SYMFile\"[\"=\"ƒVƒ“ƒ{ƒ‹ƒtƒ@ƒCƒ‹], | \"[NO]Undefsok\" | \"Verbose\"" )
+                            "            | \"SYMFile\"[\"=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹ï¿½tï¿½@ï¿½Cï¿½â€¹], | \"[NO]Undefsok\" | \"Verbose\"" )
 pick( MSG_GENERAL_HELP_40,  "            | \"VFRemoval\"" ,
                             "            | \"VFRemoval\"" )
                 
@@ -269,7 +269,7 @@ pick( MSG_GENERAL_HELP_40,  "            | \"VFRemoval\"" ,
  */
 pick( MSG_DOS_HELP_0,   " " , " " )
 pick( MSG_DOS_HELP_1,   "commands valid for the MS-DOS executable format only:" ,
-                        "MS-DOS Às‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒRƒ}ƒ“ƒh:" )
+                        "MS-DOS Å½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )
 pick( MSG_DOS_HELP_2,   " " , " " )
 pick( MSG_DOS_HELP_3,   "form      ::= \"Dos\" [\"COM\"]" ,
                         "form      ::= \"Dos\" [\"COM\"]" )
@@ -284,55 +284,57 @@ pick( MSG_DOS_HELP_5,   "option    ::= \"FULLHeader\" | \"PACKCode=\"n | \"PACKD
  */
 pick( MSG_OS2_HELP_0,  " " , " " )
 pick( MSG_OS2_HELP_1,  "commands valid for the OS/2 and DOS/4G executable formats only:" ,
-                       "OS/2Às‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒRƒ}ƒ“ƒh:" )
+                       "OS/2Å½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )
 pick( MSG_OS2_HELP_2,  " " , " " )
 pick( MSG_OS2_HELP_3,  "form      ::= \"OS2\" [\"FLat\" | \"LE\" | \"LX\"] [\"PHYSdevice\" | \"VIRTdevice\"" ,
                        "form      ::= \"OS2\" [\"FLat\" | \"LE\" | \"LX\"] [\"PHYSdevice\" | \"VIRTdevice\"" )
-pick( MSG_OS2_HELP_4,  "            | \"DLl\" [\"INITGlobal\" | \"INITInstance\" [\"TERMInstance\" | \"TERMGlobal\"]]" ,
-                       "            | \"DLl\" [\"INITGlobal\" | \"INITInstance\" [\"TERMInstance\" | \"TERMGlobal\"]]" )
-pick( MSG_OS2_HELP_5,  "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " ,
+pick( MSG_OS2_HELP_4,  "            | \"DLl\" [\"INITGlobal\" | \"INITInstance\"" ,
+                       "            | \"DLl\" [\"INITGlobal\" | \"INITInstance\"" )
+pick( MSG_OS2_HELP_5,  "                [\"TERMInstance\" | \"TERMGlobal\"]]" ,
+                       "                [\"TERMInstance\" | \"TERMGlobal\"]]" )
+pick( MSG_OS2_HELP_6,  "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " ,
                        "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " )
-pick( MSG_OS2_HELP_6,  "directive ::= \"NEWsegment\"" ,
+pick( MSG_OS2_HELP_7,  "directive ::= \"NEWsegment\"" ,
                        "directive ::= \"NEWsegment\"" )                
-pick( MSG_OS2_HELP_7,  "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
+pick( MSG_OS2_HELP_8,  "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                        "            | \"SEgment\"     segdesc{\",\"segdesc}" )
-pick( MSG_OS2_HELP_8,  "            | \"IMPort\"      import{\",\"import}" ,
+pick( MSG_OS2_HELP_9,  "            | \"IMPort\"      import{\",\"import}" ,
                        "            | \"IMPort\"      import{\",\"import}" )
-pick( MSG_OS2_HELP_9,  "            | \"EXPort\"      export{\",\"export}" ,
+pick( MSG_OS2_HELP_10, "            | \"EXPort\"      export{\",\"export}" ,
                        "            | \"EXPort\"      export{\",\"export}" )
-pick( MSG_OS2_HELP_10, "            | \"EXPort\"      \"=\"wlib_directive_file" ,
-                       "            | \"EXPort\"      \"=\"wlib‹^—–½—ßÌ§²Ù" )
-pick( MSG_OS2_HELP_11, "segdesc   ::= segspec segmodel {segmodel}" ,
+pick( MSG_OS2_HELP_11, "            | \"EXPort\"      \"=\"wlib_directive_file" ,
+                       "            | \"EXPort\"      \"=\"wlibâ€¹^Å½â€”â€“Ëâ€”ÃŸÄšÂ§Ë›Å®" )
+pick( MSG_OS2_HELP_12, "segdesc   ::= segspec segmodel {segmodel}" ,
                        "segdesc   ::= segspec segmodel {segmodel}" )
-pick( MSG_OS2_HELP_12, "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
-                       "segspec   ::= ƒZƒOƒƒ“ƒg–¼ | \"Class\" ƒNƒ‰ƒX–¼ | \"TYpe\" (\"CODE\" | \"DATA\")" )
-pick( MSG_OS2_HELP_13, "import    ::= entryname module[\".\"(extname | ordinal)]" ,
-                       "import    ::= ƒGƒ“ƒgƒŠ–¼ ƒ‚ƒWƒ…[ƒ‹[\".\"(ŠO•”–¼ | ˜”)]" )
-pick( MSG_OS2_HELP_14, "option    ::= \"Alignment=\"n | \"DEscription\" description | \"Heapsize=\"n" ,
-                       "option    ::= \"Alignment=\"n | \"DEscription\" ÃŞ¨½¸ØÌß¼®İ | \"Heapsize=\"n" )
-pick( MSG_OS2_HELP_15, "            | \"IMPFile\"[=file_name] | \"IMPLib\"[=file_name]" ,
-                       "            | \"IMPFile\"[=ƒtƒ@ƒCƒ‹–¼] | \"IMPLib\"[=ƒtƒ@ƒCƒ‹–¼]" )
-pick( MSG_OS2_HELP_16, "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" ,
+pick( MSG_OS2_HELP_13, "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
+                       "segspec   ::= ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½gâ€“Ä½ | \"Class\" ï¿½Nï¿½â€°ï¿½Xâ€“Ä½ | \"TYpe\" (\"CODE\" | \"DATA\")" )
+pick( MSG_OS2_HELP_14, "import    ::= entryname module[\".\"(extname | ordinal)]" ,
+                       "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½ ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹[\".\"(Å Oâ€¢â€â€“Ä½ | Å¹ï¿½ï¿½â€)]" )
+pick( MSG_OS2_HELP_15, "option    ::= \"Alignment=\"n | \"DEscription\" description | \"Heapsize=\"n" ,
+                       "option    ::= \"Alignment=\"n | \"DEscription\" Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã | \"Heapsize=\"n" )
+pick( MSG_OS2_HELP_16, "            | \"IMPFile\"[=file_name] | \"IMPLib\"[=file_name]" ,
+                       "            | \"IMPFile\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"IMPLib\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½]" )
+pick( MSG_OS2_HELP_17, "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" ,
                        "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" )
-pick( MSG_OS2_HELP_17, "            | \"MODName=\"module_name | \"MIXed1632\" | \"NEWFiles\" | \"OFFset=\"n" ,
-                       "            | \"MODName=\"ƒ‚ƒWƒ…[ƒ‹–¼ | \"MIXed1632\" | \"NEWFiles\" | \"OFFset=\"n" )
-pick( MSG_OS2_HELP_18, "            | \"OLDlibrary=\"dll_name | \"PACKCode=\"n | \"PACKData=\"n | \"PROTmode\"" ,
-                       "            | \"OLDlibrary=\"DLL–¼ | \"PACKCode=\"n | \"PACKData=\"n | \"PROTmode\"")
-pick( MSG_OS2_HELP_19, "            | \"RESource=\"res_file_name | \"STUB=\"stub_name | \"NOSTUB\"" ,
-                       "            | \"RESource=\"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹–¼ | \"STUB=\"ƒXƒ^ƒu–¼ | \"NOSTUB\"")
-pick( MSG_OS2_HELP_20, "            | \"VERSion=\"major[.minor]" ,
-                       "            | \"VERSion=\"Ò¼Ş¬°ÊŞ°¼Ş®İ[.Ï²Å°ÊŞ°¼Ş®İ]")
-pick( MSG_OS2_HELP_21, "export    ::= entryname[\".\"ordinal][\"=\"internal][\"RESident\"][\"PRIVATE\"][iopl]" ,
-                       "export    ::= ƒGƒ“ƒgƒŠ–¼[\".\"˜”][\"=\"\/“à•”–¼][\"RESident\"][\"PRIVATE\"][I/O“ÁŒ ƒŒƒxƒ‹]")
-pick( MSG_OS2_HELP_22, "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" ,
+pick( MSG_OS2_HELP_18, "            | \"MODName=\"module_name | \"MIXed1632\" | \"NEWFiles\" | \"OFFset=\"n" ,
+                       "            | \"MODName=\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½ | \"MIXed1632\" | \"NEWFiles\" | \"OFFset=\"n" )
+pick( MSG_OS2_HELP_19, "            | \"OLDlibrary=\"dll_name | \"PACKCode=\"n | \"PACKData=\"n | \"PROTmode\"" ,
+                       "            | \"OLDlibrary=\"DLLâ€“Ä½ | \"PACKCode=\"n | \"PACKData=\"n | \"PROTmode\"")
+pick( MSG_OS2_HELP_20, "            | \"RESource=\"res_file_name | \"STUB=\"stub_name | \"NOSTUB\"" ,
+                       "            | \"RESource=\"ï¿½Å ï¿½\ï¿½[ï¿½Xï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½ | \"NOSTUB\"")
+pick( MSG_OS2_HELP_21, "            | \"VERSion=\"major[.minor]" ,
+                       "            | \"VERSion=\"Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã]")
+pick( MSG_OS2_HELP_22, "export    ::= entryname[\".\"ordinal][\"=\"internal][\"RESident\"][\"PRIVATE\"][iopl]" ,
+                       "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½[\".\"Å¹ï¿½ï¿½â€][\"=\"\/â€œÅ•â€¢â€â€“Ä½][\"RESident\"][\"PRIVATE\"][I/Oâ€œÃÅšÂ ï¿½Åšï¿½xï¿½â€¹]")
+pick( MSG_OS2_HELP_23, "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" ,
                        "segmodel  ::= (\"PReload\" | \"LOadoncall\") | {\"SHared\" | \"NONShared\")" )
-pick( MSG_OS2_HELP_23, "            | (\"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\")" ,
+pick( MSG_OS2_HELP_24, "            | (\"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\")" ,
                        "            | (\"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\")" )
-pick( MSG_OS2_HELP_24, "            | (\"Iopl\" | \"NOIopl\") | (\"CONforming\" | \"NONConforming\")" ,
+pick( MSG_OS2_HELP_25, "            | (\"Iopl\" | \"NOIopl\") | (\"CONforming\" | \"NONConforming\")" ,
                        "            | (\"Iopl\" | \"NOIopl\") | (\"CONforming\" | \"NONConforming\")" )
-pick( MSG_OS2_HELP_25, "            | (\"PERManent\" | \"NONPERManent\") | \"INValid\" | \"RESident\"" ,
+pick( MSG_OS2_HELP_26, "            | (\"PERManent\" | \"NONPERManent\") | \"INValid\" | \"RESident\"" ,
                        "            | (\"PERManent\" | \"NONPERManent\") | \"INValid\" | \"RESident\"" )
-pick( MSG_OS2_HELP_26, "            | \"CONTiguous\" | \"DYNamic\"" ,
+pick( MSG_OS2_HELP_27, "            | \"CONTiguous\" | \"DYNamic\"" ,
                        "            | \"CONTiguous\" | \"DYNamic\"" )
 
 /*
@@ -341,7 +343,7 @@ pick( MSG_OS2_HELP_26, "            | \"CONTiguous\" | \"DYNamic\"" ,
  */
 pick( MSG_WINDOWS_HELP_0,  " " , " " )
 pick( MSG_WINDOWS_HELP_1,  "commands valid for the Microsoft Windows executable formats only:" ,
-                           "Microsoft WindowsÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                           "Microsoft WindowsÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_WINDOWS_HELP_2,  " " , " " )
 pick( MSG_WINDOWS_HELP_3,  "form      ::= \"WIndows\" [\"DLl\" [\"INITGlobal\" | \"INITInstance\"]] [MEMory] [FOnt]" ,
                            "form      ::= \"WIndows\" [\"DLl\" [\"INITGlobal\" | \"INITInstance\"]] [MEMory] [FOnt]" )
@@ -354,27 +356,27 @@ pick( MSG_WINDOWS_HELP_6,  "            | \"IMPort\"      import{\",\"import}" ,
 pick( MSG_WINDOWS_HELP_7,  "            | \"EXPort\"      export{\",\"export}" ,
                            "            | \"EXPort\"      export{\",\"export}" )
 pick( MSG_WINDOWS_HELP_8,  "            | \"EXPort\"      \"=\"wlib_directive_file" ,
-                           "            | \"EXPort\"      \"=\"wlib‹^—–½—ßÌ§²Ù" )
+                           "            | \"EXPort\"      \"=\"wlibâ€¹^Å½â€”â€“Ëâ€”ÃŸÄšÂ§Ë›Å®" )
 pick( MSG_WINDOWS_HELP_9,  "segdesc   ::= segspec segmodel {segmodel}" ,
                            "segdesc   ::= segspec segmodel {segmodel}" )
 pick( MSG_WINDOWS_HELP_10, "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
-                           "segspec   ::= ƒZƒOƒƒ“ƒg–¼ | \"Class\" ƒNƒ‰ƒX–¼ | \"TYpe\" (\"CODE\" | \"DATA\")" )
+                           "segspec   ::= ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½gâ€“Ä½ | \"Class\" ï¿½Nï¿½â€°ï¿½Xâ€“Ä½ | \"TYpe\" (\"CODE\" | \"DATA\")" )
 pick( MSG_WINDOWS_HELP_11, "import    ::= entryname module[\".\"(extname | ordinal)]" ,
-                           "import    ::= ƒGƒ“ƒgƒŠ–¼ ƒ‚ƒWƒ…[ƒ‹[\".\"(ŠO•”–¼ | ˜”)]" )
+                           "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½ ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹[\".\"(Å Oâ€¢â€â€“Ä½ | Å¹ï¿½ï¿½â€)]" )
 pick( MSG_WINDOWS_HELP_12, "option    ::= \"Alignment=\"n | \"DEscription\" description | \"Heapsize=\"n" ,
-                           "option    ::= \"Alignment=\"n | \"DEscription\" ÃŞ¨½¸ØÌß¼®İ | \"Heapsize=\"n" )
+                           "option    ::= \"Alignment=\"n | \"DEscription\" Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã | \"Heapsize=\"n" )
 pick( MSG_WINDOWS_HELP_13, "            | \"IMPFile\"[=file_name] | \"IMPLib\"[=file_name]" ,
-                           "            | \"IMPFile\"[=ƒtƒ@ƒCƒ‹–¼] | \"IMPLib\"[=ƒtƒ@ƒCƒ‹–¼]" )
+                           "            | \"IMPFile\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"IMPLib\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½]" )
 pick( MSG_WINDOWS_HELP_14, "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" ,
                            "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" )
 pick( MSG_WINDOWS_HELP_15, "            | \"MODName=\"module_name | \"OLDlibrary=\"dll_name | \"PACKCode=\"n" ,
-                           "            | \"MODName=\"ƒ‚ƒWƒ…[ƒ‹–¼ | \"OLDlibrary=\"DLL–¼ | \"PACKCode=\"n" )
+                           "            | \"MODName=\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½ | \"OLDlibrary=\"DLLâ€“Ä½ | \"PACKCode=\"n" )
 pick( MSG_WINDOWS_HELP_16, "            | \"PACKData=\"n | \"RESource=\"res_file_name | \"RWReloccheck\"" ,
-                           "            | \"PACKData=\"n | \"RESource=\"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹–¼ | \"RWReloccheck\"")
+                           "            | \"PACKData=\"n | \"RESource=\"ï¿½Å ï¿½\ï¿½[ï¿½Xï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"RWReloccheck\"")
 pick( MSG_WINDOWS_HELP_17, "            | \"STUB=\"stub_name | \"NOSTUB\" | \"VERSion=\"major[.minor]" ,
-                           "            | \"STUB=\"ƒXƒ^ƒu–¼ | \"NOSTUB\" | \"VERSion=\"Ò¼Ş¬°ÊŞ°¼Ş®İ[.Ï²Å°ÊŞ°¼Ş®İ]")
+                           "            | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½ | \"NOSTUB\" | \"VERSion=\"Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã]")
 pick( MSG_WINDOWS_HELP_18, "export    ::= entryname[\".\"ordinal][\"=\"internal][\"RESident\"][\"PRIVATE\"]" ,
-                           "export    ::= ƒGƒ“ƒgƒŠ–¼[\".\"˜”][\"=\"“à•”–¼][\"RESident\"][\"PRIVATE\"]" )
+                           "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½[\".\"Å¹ï¿½ï¿½â€][\"=\"â€œÅ•â€¢â€â€“Ä½][\"RESident\"][\"PRIVATE\"]" )
 pick( MSG_WINDOWS_HELP_19, "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" ,
                            "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" )
 pick( MSG_WINDOWS_HELP_20, "            | (\"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\")" ,
@@ -388,7 +390,7 @@ pick( MSG_WINDOWS_HELP_21, "            | (\"MOVeable\" | \"FIXed\") | \"DIScard
  */
 pick( MSG_NT_HELP_0,  " " , " " )
 pick( MSG_NT_HELP_1,  "commands valid for the Microsoft Windows NT executable formats only:" ,
-                      "Microsoft Windows NTÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                      "Microsoft Windows NTÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_NT_HELP_2,  " " , " " )
 pick( MSG_NT_HELP_3,  "form      ::= \"WIndows NT\" [\"TNT\"]" ,
                       "form      ::= \"WIndows NT\" [\"TNT\"]" )
@@ -397,7 +399,7 @@ pick( MSG_NT_HELP_4,  "              [\"DLl\" [\"INITGlobal\" | \"INITInstance\"
 pick( MSG_NT_HELP_5,  "                  [\"TERMInstance\" | \"TERMGlobal\" | \"TERMThread\"]]]" ,
                       "                  [\"TERMInstance\" | \"TERMGlobal\" | \"TERMThread\"]]]" )
 pick( MSG_NT_HELP_6,  "directive ::= \"RUntime\"     runoption[=major[.minor]]" ,
-                      "directive ::= \"RUntime\"     runoption[=Ò¼Ş¬°ÊŞ°¼Ş®İ[.Ï²Å°ÊŞ°¼Ş®İ]]")             
+                      "directive ::= \"RUntime\"     runoption[=Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã]]")             
 pick( MSG_NT_HELP_7,  "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                       "            | \"SEgment\"     segdesc{\",\"segdesc}" )
 pick( MSG_NT_HELP_8,  "            | \"IMPort\"      import{\",\"import}" ,
@@ -405,27 +407,27 @@ pick( MSG_NT_HELP_8,  "            | \"IMPort\"      import{\",\"import}" ,
 pick( MSG_NT_HELP_9,  "            | \"EXPort\"      export{\",\"export}" ,
                       "            | \"EXPort\"      export{\",\"export}" )
 pick( MSG_NT_HELP_10, "            | \"EXPort\"      \"=\"wlib_directive_file" ,
-                      "            | \"EXPort\"      \"=\"wlib‹^—–½—ßÌ§²Ù" )
+                      "            | \"EXPort\"      \"=\"wlibâ€¹^Å½â€”â€“Ëâ€”ÃŸÄšÂ§Ë›Å®" )
 pick( MSG_NT_HELP_11, "            | \"COMmit\"       commitopt{\",\"commitopt}" ,
                       "            | \"COMmit\"       commitopt{\",\"commitopt}" )
 pick( MSG_NT_HELP_12, "segdesc   ::= segspec segmodel {segmodel}" ,
                       "segdesc   ::= segspec segmodel {segmodel}" )
 pick( MSG_NT_HELP_13, "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
-                      "segspec   ::= ƒZƒOƒƒ“ƒg–¼ | \"Class\" ƒNƒ‰ƒX–¼ | \"TYpe\" (\"CODE\" | \"DATA\")" )
+                      "segspec   ::= ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½gâ€“Ä½ | \"Class\" ï¿½Nï¿½â€°ï¿½Xâ€“Ä½ | \"TYpe\" (\"CODE\" | \"DATA\")" )
 pick( MSG_NT_HELP_14, "import    ::= entryname module[\".\"(extname | ordinal)]" ,
-                      "import    ::= ƒGƒ“ƒgƒŠ–¼ ƒ‚ƒWƒ…[ƒ‹[\".\"(ŠO•”–¼ | ˜”)]" )
+                      "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½ ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹[\".\"(Å Oâ€¢â€â€“Ä½ | Å¹ï¿½ï¿½â€)]" )
 pick( MSG_NT_HELP_15, "option    ::= \"Alignment=\"n | \"DEscription\" description | \"Heapsize=\"n" ,
-                      "option    ::= \"Alignment=\"n | \"DEscription\" ÃŞ¨½¸ØÌß¼®İ | \"Heapsize=\"n" )
+                      "option    ::= \"Alignment=\"n | \"DEscription\" Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã | \"Heapsize=\"n" )
 pick( MSG_NT_HELP_16, "            | \"IMPFile\"[=file_name] | \"IMPLib\"[=file_name]" ,
-                      "            | \"IMPFile\"[=ƒtƒ@ƒCƒ‹–¼] | \"IMPLib\"[=ƒtƒ@ƒCƒ‹–¼]" )
+                      "            | \"IMPFile\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"IMPLib\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½]" )
 pick( MSG_NT_HELP_17, "            | \"MODName=\"module_name | \"NOSTDCall\" | \"OBJAlign=\"n | \"OFFset=\"n" ,
-                      "            | \"MODName=\"ƒ‚ƒWƒ…[ƒ‹–¼ | \"NOSTDCall\" | \"OBJAlign=\"n | \"OFFset=\"n" )
+                      "            | \"MODName=\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½ | \"NOSTDCall\" | \"OBJAlign=\"n | \"OFFset=\"n" )
 pick( MSG_NT_HELP_18, "            | \"OLDlibrary=\"dll_name | \"RESource=\"res_file_name" ,
-                      "            | \"OLDlibrary=\"DLL–¼ | \"RESource=\"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹–¼")
+                      "            | \"OLDlibrary=\"DLLâ€“Ä½ | \"RESource=\"ï¿½Å ï¿½\ï¿½[ï¿½Xï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½")
 pick( MSG_NT_HELP_19, "            | \"STUB=\"stub_name | \"NOSTUB\" | \"VERSion\"=major[.minor]" ,
-                      "            | \"STUB=\"ƒXƒ^ƒu–¼ | \"NOSTUB\" | \"VERSion=\"Ò¼Ş¬°ÊŞ°¼Ş®İ.[Ï²Å°ÊŞ°¼Ş®İ]")
+                      "            | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½ | \"NOSTUB\" | \"VERSion=\"Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã.[ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã]")
 pick( MSG_NT_HELP_20, "export    ::= entryname[\".\"ordinal][\"=\"internal][\"PRIVATE\"]" ,
-                      "export    ::= ƒGƒ“ƒgƒŠ–¼[\".\"˜”][\"=\"“à•”–¼][\"PRIVATE\"]" )
+                      "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½[\".\"Å¹ï¿½ï¿½â€][\"=\"â€œÅ•â€¢â€â€“Ä½][\"PRIVATE\"]" )
 pick( MSG_NT_HELP_21, "segmodel  ::= (\"SHared\" | \"NONShared\") | (\"PAGEable\" | \"NONPageable\")" ,
                       "segmodel  ::= (\"SHared\" | \"NONShared\") | (\"PAGEable\" | \"NONPageable\")" )
 pick( MSG_NT_HELP_22, "runoption ::= (\"NATive\" | \"WINdows\" | \"CONsole\" | \"POSix\" | \"OS2\" | \"DOSstyle\"" ,
@@ -441,20 +443,20 @@ pick( MSG_NT_HELP_24, "commitopt ::= \"STack=\"n | \"Heap=\"n" ,
  */
 pick( MSG_PHAR_HELP_0,  " " , " " )               
 pick( MSG_PHAR_HELP_1,  "commands valid for the Phar Lap executable formats only:" ,
-                        "Phar LapÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                        "Phar LapÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_PHAR_HELP_2,  " " , " " )               
 pick( MSG_PHAR_HELP_3,  "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\" | \"SEGmented\"]" ,
                         "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\"]" )
 pick( MSG_PHAR_HELP_4,  "directive ::= \"RUntime\"     runoption{\",\"runoption}" ,
                         "directive ::= \"RUntime\"     runoption{\",\"runoption}" )
 pick( MSG_PHAR_HELP_5,  "option    ::= \"MAXData=\"n | \"MINData=\"n | \"OFFset=\"n | \"STUB=\"stub_name" ,
-                        "option    ::= \"MAXData=\"n | \"MINData=\"n | \"OFFset=\"n | \"STUB=\"ƒXƒ^ƒu–¼" )
+                        "option    ::= \"MAXData=\"n | \"MINData=\"n | \"OFFset=\"n | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½" )
 pick( MSG_PHAR_HELP_6,  "runoption ::= \"MINReal=\"n | \"MAXReal=\"n | \"CALLBufs=\"n | \"MINIBuf=\"n" ,
                         "runoption ::= \"MINReal=\"n | \"MAXReal=\"n | \"CALLBufs=\"n | \"MINIBuf=\"n" )
 pick( MSG_PHAR_HELP_7,  "            | \"MAXIBuf=\"n | \"NISTack=\"n | \"ISTKsize=\"n | \"PRIVileged\"" ,
                         "            | \"MAXIBuf=\"n | \"NISTack=\"n | \"ISTKsize=\"n | \"PRIVileged\"" )
 pick( MSG_PHAR_HELP_8,  "            | \"REALBreak=\"(n | symbol_name ) | \"UNPRIVileged\"" ,
-                        "            | \"REALBreak=\"(n | ƒVƒ“ƒ{ƒ‹–¼)  | \"UNPRIVileged\"" )
+                        "            | \"REALBreak=\"(n | ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½)  | \"UNPRIVileged\"" )
 
 /*
  *  Novell help screen: max 32 lines (from 0 to 31).
@@ -462,12 +464,12 @@ pick( MSG_PHAR_HELP_8,  "            | \"REALBreak=\"(n | symbol_name ) | \"UNPR
  */
 pick( MSG_NOVELL_HELP_0,    " " , " " )
 pick( MSG_NOVELL_HELP_1,    "commands valid for the Novell Netware executable format only:" ,
-                            "Novell NetwareÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒRƒ}ƒ“ƒh:" )
+                            "Novell NetwareÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )
 pick( MSG_NOVELL_HELP_2,    " " , " " )
 pick( MSG_NOVELL_HELP_3,    "form      ::= \"NOVell\" [\"NLM\" | \"LAN\" | \"DSK\" | \"NAM\" | 'number'] 'description'" ,
-                            "form      ::= \"NOVell\" [\"NLM\" | \"LAN\" | \"DSK\" | \"NAM\" | 'number'] ÃŞ¨½¸ØÌß¼®İ" )
+                            "form      ::= \"NOVell\" [\"NLM\" | \"LAN\" | \"DSK\" | \"NAM\" | 'number'] Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã" )
 pick( MSG_NOVELL_HELP_4,    "directive ::= \"MODUle\"      module_name{\",\"module_name}" ,
-                            "directive ::= \"MODUle\"      ƒ‚ƒWƒ…[ƒ‹–¼{\",\"ƒ‚ƒWƒ…[ƒ‹–¼}" )
+                            "directive ::= \"MODUle\"      ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½{\",\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½}" )
 pick( MSG_NOVELL_HELP_5,    "            | \"IMPort\"      import{\",\"import}" ,
                             "            | \"IMPort\"      import{\",\"import}" )
 pick( MSG_NOVELL_HELP_6,    "            | \"EXPort\"      export{\",\"export}" ,
@@ -475,23 +477,23 @@ pick( MSG_NOVELL_HELP_6,    "            | \"EXPort\"      export{\",\"export}" 
 pick( MSG_NOVELL_HELP_7,    "            | \"Debug\"       \"Novell\" [\"ONLyexports\"] [\"REFerenced\"]" ,
                             "            | \"Debug\"       \"Novell\" [\"ONLyexports\"] [\"REFerenced\"]" )
 pick( MSG_NOVELL_HELP_8,    "option    ::= \"CHeck=\"symbol_name | \"COPYRight\" [string] | \"CUSTom=\"file_name" ,
-                            "option    ::= \"CHeck=\"ƒVƒ“ƒ{ƒ‹–¼ | \"COPYRight\" [•¶š—ñ] | \"CUSTom=\"ƒtƒ@ƒCƒ‹–¼" )
+                            "option    ::= \"CHeck=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½ | \"COPYRight\" [â€¢Â¶Å½Å¡â€”Å„] | \"CUSTom=\"ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½" )
 pick( MSG_NOVELL_HELP_9,    "            | \"EXit=\"symbol_name | \"HElp=\"file_name | \"IMPFile=\"file_name" ,
-                            "            | \"EXit=\"ƒVƒ“ƒ{ƒ‹–¼ | \"HElp=\"ƒtƒ@ƒCƒ‹–¼ | \"IMPFile=\"ƒtƒ@ƒCƒ‹–¼" )
+                            "            | \"EXit=\"ï¿½Vï¿½â€œï¿½{ï¿½â€¹â€“Ä½ | \"HElp=\"ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"IMPFile=\"ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½" )
 pick( MSG_NOVELL_HELP_10,   "            | \"IMPLib\"[=file_name] | \"MESsages\"[=file_name] | \"MULTILoad\"" ,
-                            "            | \"IMPLib\"[=ƒtƒ@ƒCƒ‹–¼] | \"MESsages\"[=ƒtƒ@ƒCƒ‹–¼] | \"MULTILoad\"" )
+                            "            | \"IMPLib\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"MESsages\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"MULTILoad\"" )
 pick( MSG_NOVELL_HELP_11,   "            | \"NLMFlags=\"value | \"PSeudopreemption\" | \"REentrant\"" ,
                             "            | \"NLMFlags=\"value | \"PSeudopreemption\" | \"REentrant\"" )
 pick( MSG_NOVELL_HELP_12,   "            | \"SCReenname\" description | \"SHArelib=\"file_name | \"SYnchronize\"" ,
-                            "            | \"SCReenname\" ÃŞ¨½¸ØÌß¼®İ | \"SHArelib=\"ƒtƒ@ƒCƒ‹–¼ | \"SYnchronize\"" )
+                            "            | \"SCReenname\" Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã | \"SHArelib=\"ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"SYnchronize\"" )
 pick( MSG_NOVELL_HELP_13,   "            | \"THReadname\" name | \"VERSion=\"major[.minor[.revision]]" ,
-                            "            | \"THReadname\" name | \"VERSion=\"Ò¼Ş¬°ÊŞ°¼Ş®İ[.Ï²Å°ÊŞ°¼Ş®İ[.ØËŞ¼Ş®İ]]" )
+                            "            | \"THReadname\" name | \"VERSion=\"Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.Å˜Ã‹Å¢Ä½Å¢Â®Ã]]" )
 pick( MSG_NOVELL_HELP_14,   "            | \"XDCdata=\"file_name | \"AUTOUNload\"" ,
-                            "            | \"XDCdata=\"ƒtƒ@ƒCƒ‹–¼ | \"AUTOUNload\"" )
+                            "            | \"XDCdata=\"ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"AUTOUNload\"" )
 pick( MSG_NOVELL_HELP_15,   "import    ::= entryname" ,
-                            "import    ::= ƒGƒ“ƒgƒŠ–¼" )                
+                            "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½" )                
 pick( MSG_NOVELL_HELP_16,   "export    ::= entryname" ,
-                            "export    ::= ƒGƒ“ƒgƒŠ–¼" )                
+                            "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½" )                
 
 /*
  *  Dos/16M help screen: max 16 lines (from 0 to 15).
@@ -499,7 +501,7 @@ pick( MSG_NOVELL_HELP_16,   "export    ::= entryname" ,
  */
 pick( MSG_DOS16_HELP_0,     " " , " " )               
 pick( MSG_DOS16_HELP_1,     "commands valid for the DOS/16M executable format only:" ,
-                            "DOS/16MÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒRƒ}ƒ“ƒh:" )
+                            "DOS/16MÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )
 pick( MSG_DOS16_HELP_2,     " " , " " )
 pick( MSG_DOS16_HELP_3,     "form      ::= \"DOS16M\"" ,
                             "form      ::= \"DOS16m\"" )
@@ -514,7 +516,7 @@ pick( MSG_DOS16_HELP_7,     "option    ::= \"BUFfer=\"n | \"GDTsize=\"n | (\"REL
 pick( MSG_DOS16_HELP_8,     "            | \"DATASize=\"n | \"EXTended=\"n" ,
                             "            | \"DATASize=\"n | \"EXTended=\"n" )
 pick( MSG_DOS16_HELP_9,     "            | \"EXPName=\"exp_name | \"STUB=\"stub_name" ,
-                            "            | \"EXPName=\"exp_name | \"STUB=\"ƒXƒ^ƒu–¼")
+                            "            | \"EXPName=\"exp_name | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½")
 pick( MSG_DOS16_HELP_10,    "runoption ::= \"KEYboard\" | \"OVERload\" | \"INIT00\" | \"INITFF\" | \"ROTate\" | \"AUTO\"" ,
                             "runoption ::=  \"KEYbord\" | \"OVERload\" | \"INIT00\" | \"INITFF\" | \"ROTate\" | \"AUTO\"" )
 pick( MSG_DOS16_HELP_11,    "            | \"SELectors\" | \"INT10\"" ,
@@ -530,7 +532,7 @@ pick( MSG_DOS16_HELP_13,    "seg_type  ::= \"STack\" | \"DAta\"" ,
  */
 pick( MSG_QNX_HELP_0,   " " , " " )               
 pick( MSG_QNX_HELP_1,   "commands valid for the QNX executable format only:" ,
-                        "QNXÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒRƒ}ƒ“ƒh:" )              
+                        "QNXÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Rï¿½}ï¿½â€œï¿½h:" )              
 pick( MSG_QNX_HELP_2,   " " , " " )               
 pick( MSG_QNX_HELP_3,   "form      ::= \"QNX\" [\"FLat\"]" ,
                         "form      ::= \"QNX\" [\"FLat\"]" )                
@@ -543,11 +545,11 @@ pick( MSG_QNX_HELP_6,   "option    ::= \"Heapsize=\"n | \"LInearrelocs\" | \"LOn
 pick( MSG_QNX_HELP_7,   "            | \"OFFset=\"n | \"PACKCode=\"n | \"PACKData=\"n | \"PRIVilege\"=n" ,
                         "            | \"OFFset=\"n | \"PACKCode=\"n | \"PACKData=\"n | \"PRIVilege\"=n" )
 pick( MSG_QNX_HELP_8,   "            | \"RESource\"(\"=\"res_file_name | string)" ,
-                        "            | \"RESource\"(\"=\"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹–¼ | •¶š—ñ)" )
+                        "            | \"RESource\"(\"=\"ï¿½Å ï¿½\ï¿½[ï¿½Xï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | â€¢Â¶Å½Å¡â€”Å„)" )
 pick( MSG_QNX_HELP_9,   "segdesc   ::= segspec segmodel {segmodel}" ,
                         "segdesc   ::= segspec segmodel {segmodel}" )
 pick( MSG_QNX_HELP_10,  "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
-                        "segspec   ::= ƒZƒOƒƒ“ƒg–¼ | \"Class\" ƒNƒ‰ƒX–¼ | \"TYpe\" (\"CODE\" | \"DATA\")" )
+                        "segspec   ::= ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½gâ€“Ä½ | \"Class\" ï¿½Nï¿½â€°ï¿½Xâ€“Ä½ | \"TYpe\" (\"CODE\" | \"DATA\")" )
 pick( MSG_QNX_HELP_11,  "segmodel  ::= \"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\"" ,
                         "segmodel  ::= \"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\"" )
 
@@ -557,12 +559,12 @@ pick( MSG_QNX_HELP_11,  "segmodel  ::= \"EXECUTEOnly\" | \"EXECUTERead\" | \"REA
  */
 pick( MSG_ELF_HELP_0,   " " , " " )
 pick( MSG_ELF_HELP_1,   "commands valid for the ELF executable format only:" ,
-                        "ELFÀs‰Â”\ƒtƒH[ƒ}ƒbƒg‚É‘Î‚µ‚Ä‚Ì‚İ‚ÌƒRƒ}ƒ“ƒh‚Å‚·:" )
+                        "ELFÅ½Å”Å¤sâ€°Ã‚â€\ï¿½tï¿½Hï¿½[ï¿½}ï¿½bï¿½gâ€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€šÄšï¿½Rï¿½}ï¿½â€œï¿½hâ€šÄ¹â€šÂ·:" )
 pick( MSG_ELF_HELP_2,   " " , " " )
 pick( MSG_ELF_HELP_3,   "form      ::= \"ELF\" [\"DLl\"]" ,
                         "form      ::= \"ELF\" [\"DLl\"]" )
 pick( MSG_ELF_HELP_4,   "directive ::= \"MODUle\"      module_name{\",\"module_name}" ,
-                        "directive ::= \"MODUle\"      ƒ‚ƒWƒ…[ƒ‹–¼{\",\"ƒ‚ƒWƒ…[ƒ‹–¼}" )
+                        "directive ::= \"MODUle\"      ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½{\",\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½}" )
 pick( MSG_ELF_HELP_5,   "            | \"IMPort\"      import{\",\"import}" ,
                         "            | \"IMPort\"      import{\",\"import}" )
 pick( MSG_ELF_HELP_6,   "            | \"EXPort\"      export{\",\"export}" ,
@@ -574,11 +576,11 @@ pick( MSG_ELF_HELP_8,   "option    ::= \"Alignment=\"n | \"EXPORTAll\" | \"EXTRA
 pick( MSG_ELF_HELP_9,   "            | \"OFFSet=\"n" ,
                         "            | \"OFFSet=\"n" )
 pick( MSG_ELF_HELP_10,  "import    ::= entryname" ,
-                        "import    ::= ƒGƒ“ƒgƒŠ–¼" )
+                        "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½" )
 pick( MSG_ELF_HELP_11,  "export    ::= entryname" ,
-                        "export    ::= ƒGƒ“ƒgƒŠ–¼" )
-pick( MSG_ELF_HELP_12,  "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"NETbsd\" | \"SOLaris\" | \"ABIver\" )" ,
-                        "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"NETbsd\" | \"SOLaris\" | \"ABIver\" )" )
+                        "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½" )
+pick( MSG_ELF_HELP_12,  "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"NETbsd\" | \"SOLaris\" | \"ABIver\")" ,
+                        "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"NETbsd\" | \"SOLaris\" | \"ABIver\")" )
 
 
 /*
@@ -587,7 +589,7 @@ pick( MSG_ELF_HELP_12,  "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"N
  */
 pick( MSG_WIN_VXD_HELP_0,   " " , " " )
 pick( MSG_WIN_VXD_HELP_1,   "commands valid for the Microsoft Windows VxD formats only:" ,
-                            "Microsoft Windows VxDÀs‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                            "Microsoft Windows VxDÅ½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_WIN_VXD_HELP_2,   " " , " " )
 pick( MSG_WIN_VXD_HELP_3,   "form      ::= \"WIndows VXD\" [\"STATic\" | \"DYNamic\"]" ,
                             "form      ::= \"WIndows VXD\" [\"STATic\" | \"DYNamic\"]" )
@@ -601,27 +603,27 @@ pick( MSG_WIN_VXD_HELP_6,   "            | \"IMPort\"      import{\",\"import}" 
 pick( MSG_WIN_VXD_HELP_7,   "            | \"EXPort\"      export{\",\"export}" ,
                             "            | \"EXPort\"      export{\",\"export}" )
 pick( MSG_WIN_VXD_HELP_8,   "            | \"EXPort\"      \"=\"wlib_directive_file" ,
-                            "            | \"EXPort\"      \"=\"wlib‹^—–½—ßÌ§²Ù" )
+                            "            | \"EXPort\"      \"=\"wlibâ€¹^Å½â€”â€“Ëâ€”ÃŸÄšÂ§Ë›Å®" )
 pick( MSG_WIN_VXD_HELP_9,   "segdesc   ::= segspec segmodel {segmodel}" ,
                             "segdesc   ::= segspec segmodel {segmodel}" )
 pick( MSG_WIN_VXD_HELP_10,  "segspec   ::= seg_name | \"Class\" class_name | \"TYpe\" (\"CODE\" | \"DATA\")" ,
-                            "segspec   ::= ƒZƒOƒƒ“ƒg–¼ | \"Class\" ƒNƒ‰ƒX–¼ | \"TYpe\" (\"CODE\" | \"DATA\")" )
+                            "segspec   ::= ï¿½Zï¿½Oï¿½ï¿½ï¿½â€œï¿½gâ€“Ä½ | \"Class\" ï¿½Nï¿½â€°ï¿½Xâ€“Ä½ | \"TYpe\" (\"CODE\" | \"DATA\")" )
 pick( MSG_WIN_VXD_HELP_11,  "import    ::= entryname module[\".\"(extname | ordinal)]" ,
-                            "import    ::= ƒGƒ“ƒgƒŠ–¼ ƒ‚ƒWƒ…[ƒ‹[\".\"(ŠO•”–¼ | ˜”)]" )
+                            "import    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½ ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹[\".\"(Å Oâ€¢â€â€“Ä½ | Å¹ï¿½ï¿½â€)]" )
 pick( MSG_WIN_VXD_HELP_12,  "option    ::= \"Alignment=\"n | \"DEscription\" description | \"Heapsize=\"n" ,
-                            "option    ::= \"Alignment=\"n | \"DEscription\" ÃŞ¨½¸ØÌß¼®İ | \"Heapsize=\"n" )
+                            "option    ::= \"Alignment=\"n | \"DEscription\" Ä‚Å¢Â¨ËÂ¸Å˜ÄšÃŸÄ½Â®Ã | \"Heapsize=\"n" )
 pick( MSG_WIN_VXD_HELP_13,  "            | \"IMPFile\"[=file_name] | \"IMPLib\"[=file_name]" ,
-                            "            | \"IMPFile\"[=ƒtƒ@ƒCƒ‹–¼] | \"IMPLib\"[=ƒtƒ@ƒCƒ‹–¼]" )
+                            "            | \"IMPFile\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½] | \"IMPLib\"[=ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½]" )
 pick( MSG_WIN_VXD_HELP_14,  "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" ,
                             "            | (\"MANYautodata\" | \"NOautodata\" | \"ONEAutodata\")" )
 pick( MSG_WIN_VXD_HELP_15,  "            | \"MODName=\"module_name | \"OLDlibrary=\"dll_name | \"PACKCode=\"n" ,
-                            "            | \"MODName=\"ƒ‚ƒWƒ…[ƒ‹–¼ | \"OLDlibrary=\"DLL–¼ | \"PACKCode=\"n" )
+                            "            | \"MODName=\"ï¿½â€šï¿½Wï¿½â€¦ï¿½[ï¿½â€¹â€“Ä½ | \"OLDlibrary=\"DLLâ€“Ä½ | \"PACKCode=\"n" )
 pick( MSG_WIN_VXD_HELP_16,  "            | \"PACKData=\"n | \"RESource=\"res_file_name | \"RWReloccheck\"" ,
-                            "            | \"PACKData=\"n | \"RESource=\"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹–¼ | \"RWReloccheck\"")
+                            "            | \"PACKData=\"n | \"RESource=\"ï¿½Å ï¿½\ï¿½[ï¿½Xï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½ | \"RWReloccheck\"")
 pick( MSG_WIN_VXD_HELP_17,  "            | \"STUB=\"stub_name | \"NOSTUB\" | \"VERSion=\"major[.minor]" ,
-                            "            | \"STUB=\"ƒXƒ^ƒu–¼ | \"NOSTUB\" | \"VERSion=\"Ò¼Ş¬°ÊŞ°¼Ş®İ[.Ï²Å°ÊŞ°¼Ş®İ]")
+                            "            | \"STUB=\"ï¿½Xï¿½^ï¿½uâ€“Ä½ | \"NOSTUB\" | \"VERSion=\"Å‡Ä½Å¢Â¬Â°Ä˜Å¢Â°Ä½Å¢Â®Ã[.ÄË›Ä¹Â°Ä˜Å¢Â°Ä½Å¢Â®Ã]")
 pick( MSG_WIN_VXD_HELP_18,  "export    ::= entryname[\".\"ordinal][\"=\"internal][\"RESident\"][\"PRIVATE\"]" ,
-                            "export    ::= ƒGƒ“ƒgƒŠ–¼[\".\"˜”][\"=\"“à•”–¼][\"RESident\"][\"PRIVATE\"]" )
+                            "export    ::= ï¿½Gï¿½â€œï¿½gï¿½Å â€“Ä½[\".\"Å¹ï¿½ï¿½â€][\"=\"â€œÅ•â€¢â€â€“Ä½][\"RESident\"][\"PRIVATE\"]" )
 pick( MSG_WIN_VXD_HELP_19,  "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" ,
                             "segmodel  ::= (\"PReload\" | \"LOadoncall\") | (\"SHared\" | \"NONShared\")" )
 pick( MSG_WIN_VXD_HELP_20,  "            | (\"EXECUTEOnly\" | \"EXECUTERead\" | \"READOnly\" | \"READWrite\")" ,
@@ -636,7 +638,7 @@ pick( MSG_WIN_VXD_HELP_21,  "            | (\"MOVeable\" | \"FIXed\") | \"DIScar
  */
 pick( MSG_ZDOS_HELP_0,      " " , " " )
 pick( MSG_ZDOS_HELP_1,      "commands valid for the ZDOS executable formats only:" ,
-                            "ZDOS Às‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                            "ZDOS Å½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_ZDOS_HELP_2,      " " , " " )
 pick( MSG_ZDOS_HELP_3,      "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" ,
                             "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" )
@@ -646,7 +648,7 @@ pick( MSG_ZDOS_HELP_3,      "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"
  */
 pick( MSG_RAW_HELP_0,       " " , " " )
 pick( MSG_RAW_HELP_1,       "commands valid for the RAW executable formats only:" ,
-                            "RAW Às‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                            "RAW Å½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_RAW_HELP_2,       " " , " " )
 pick( MSG_RAW_HELP_3,       "form      ::= \"Raw\" (\"BIN\" | \"HEX\")" ,
                             "form      ::= \"Raw\" (\"SYS\" | \"HEX\")" )
@@ -659,7 +661,7 @@ pick( MSG_RAW_HELP_4,       "option    ::= \"OFFset=\"n" ,
  */
 pick( MSG_RDOS_HELP_0,      " " , " " )
 pick( MSG_RDOS_HELP_1,      "commands valid for the RDOS special executable formats only:" ,
-                            "RDOS Às‰Â”\Œ`®‚É‘Î‚µ‚Ä‚Ì‚İ—LŒø‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                            "RDOS Å½Å”Å¤sâ€°Ã‚â€\Åš`Å½Â®â€šÃ‰â€˜Ãâ€šÂµâ€šÃ„â€šÄšâ€šÃâ€”LÅšÅ™â€šÄŒï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:" )
 pick( MSG_RDOS_HELP_2,      " " , " " )
 pick( MSG_RDOS_HELP_3,      "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" ,
                             "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" )

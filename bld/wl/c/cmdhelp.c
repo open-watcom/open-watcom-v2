@@ -58,10 +58,11 @@
 #define _RDOS_HELP      MSG_RDOS_HELP_0,    MSG_RDOS_HELP_15
 #define _RAW_HELP       MSG_RAW_HELP_0,     MSG_RAW_HELP_15
 
-#define HELP_ARGS(x)    	_ ## x ## _HELP
-#define WRITE_HELP_ONE(x) 	WriteHelp( HELP_ARGS(x), false )
-#define WRITE_HELP_FULL(x) 	WriteHelp( HELP_ARGS(x), true )
-#define HELP_PAGE_LENGTH	24
+#define HELP_ARGS(x)            _ ## x ## _HELP
+#define WRITE_HELP_ONE(x)       WriteHelp( HELP_ARGS(x), false )
+#define WRITE_HELP_FULL(x)      WriteHelp( HELP_ARGS(x), true )
+
+#define NUM_ROWS        24
 
 static int  line_count = 0;
 static bool previous_null = false;
@@ -89,7 +90,7 @@ static void doWriteHelp( int first_msg, int last_msg )
             WriteStdOutWithNL( msg_buffer );
             previous_null = false;
         } else {
-            if( line_count > HELP_PAGE_LENGTH && ( CmdFlags & CF_TO_STDOUT ) ) {
+            if( ( CmdFlags & CF_TO_STDOUT ) && line_count == ( NUM_ROWS - 2 ) ) {
                 PressKey();
                 line_count = 0;
             }
@@ -303,4 +304,3 @@ bool DoHelp( void )
 {
     return( ProcOne( FormatHelp, SEP_NO ) );
 }
-

@@ -1073,6 +1073,23 @@ static bool ProcRunDosstyle( void )
     return( true );
 }
 
+static bool ProcRunRDOS( void )
+/*****************************/
+{
+    FmtData.u.pe.subsystem = PE_SS_RDOS;
+    GetSubsystemVersion();
+    return( true );
+}
+
+static bool ProcRunEFIBoot( void )
+/********************************/
+{
+    Extension = E_EFI;
+    FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
+    GetSubsystemVersion();
+    return( true );
+}
+
 static parse_entry  RunOptions[] = {
     "NATive",       ProcRunNative,      MK_PE, 0,
     "WINdows",      ProcRunWindows,     MK_PE, 0,
@@ -1080,6 +1097,8 @@ static parse_entry  RunOptions[] = {
     "POSix",        ProcRunPosix,       MK_PE, 0,
     "OS2",          ProcRunOS2,         MK_PE, 0,
     "DOSstyle",     ProcRunDosstyle,    MK_PE, 0,
+    "RDOS",         ProcRunRDOS,        MK_PE, 0,
+    "EFIBoot",      ProcRunEFIBoot,     MK_PE, 0,
     NULL
 };
 
@@ -1189,27 +1208,8 @@ static bool ProcTNT( void )
     return( true );
 }
 
-static bool ProcRDOS( void )
-/**************************/
-{
-    FmtData.u.pe.subsystem = PE_SS_RDOS;
-    GetSubsystemVersion();
-    return( true );
-}
-
-static bool ProcEFI( void )
-/*************************/
-{
-    Extension = E_EFI;
-    FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
-    GetSubsystemVersion();
-    return( true );
-}
-
 static parse_entry  PESubFormats[] = {
     "TNT",          ProcTNT,            MK_PE, 0,
-    "RDOS",         ProcRDOS,           MK_PE, 0,
-    "EFI",          ProcEFI,            MK_PE, 0,
     NULL
 };
 
