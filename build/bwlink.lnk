@@ -682,3 +682,9 @@ system begin novell
     module clib
     import @%OWSRCDIR%/os_supp/novell/common/imp/owclib.imp
 end
+
+system begin bin
+    format dos com
+    option nodefault
+    disable 1023,1080
+end
