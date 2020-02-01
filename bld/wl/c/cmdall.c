@@ -981,7 +981,7 @@ static char **getStubNamePtr( void )
 {
 #ifdef _OS2
     if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
-        return( &FmtData.u.os2.stub_file_name );
+        return( &FmtData.u.os2fam.stub_file_name );
     }
 #endif
 #ifdef _DOS16M

@@ -112,50 +112,56 @@ struct fmt_phar_data {
 //    boolbit             pack        : 1;    needed if/when .exp packing implemented
 };
 
+// linker specific OS/2 formats family data
+
+struct fmt_os2fam_data {
+    struct entry_export     *exports;
+    obj_name_list           *mod_ref_list;
+    obj_name_list           *imp_tab_list;
+    char                    *stub_file_name;
+    char                    *module_name;
+    char                    *old_lib_name;
+    struct os2_seg_flags    *seg_flags;
+    unsigned_32             heapsize;
+    unsigned                segment_shift;
+    unsigned                flags;          // in LOADOS2.H
+    boolbit                 chk_seg_relocs : 1;
+    boolbit                 toggle_relocs  : 1;
+    boolbit                 gen_int_relocs : 1;
+    boolbit                 gen_rel_relocs : 1;
+    boolbit                 is_private_dll : 1;
+    boolbit                 no_stub        : 1;
+    boolbit                 mixed1632      : 1;
+};
+
 // linker specific OS/2 data
 
 struct fmt_os2_data {
-    struct entry_export *exports;
-    obj_name_list       *mod_ref_list;
-    obj_name_list       *imp_tab_list;
-    char                *stub_file_name;
-    char                *module_name;
-    char                *old_lib_name;
-    struct os2_seg_flags *seg_flags;
-    unsigned_32         heapsize;
-    unsigned            segment_shift;
-    unsigned            flags;            // in LOADOS2.H
-    boolbit             chk_seg_relocs : 1;
-    boolbit             toggle_relocs  : 1;
-    boolbit             gen_int_relocs : 1;
-    boolbit             gen_rel_relocs : 1;
-    boolbit             is_private_dll : 1;
-    boolbit             no_stub        : 1;
-    boolbit             mixed1632      : 1;
+    struct fmt_os2fam_data  os2fam;         /* must be first field */
 };
 
 // linker specific PE data
 
 struct fmt_pe_data {
-    struct fmt_os2_data os2;    /* must be first field */
-    list_of_names       *resources;
-    unsigned_32         heapcommit;
-    unsigned_32         stackcommit;
-    unsigned            subsystem;
-    unsigned_16         submajor;
-    unsigned_16         subminor;
-    unsigned_16         osmajor;    /*  OS major version    */
-    unsigned_16         osminor;    /*  OS minor version    */
-    unsigned_8          linkmajor;  /*  link major version  */
-    unsigned_8          linkminor;  /*  link minor version  */
-    boolbit             tnt                 : 1;
-    boolbit             sub_specd           : 1;
-    boolbit             no_stdcall          : 1;
-    boolbit             osv_specd           : 1;    /* OS version specified? */
-    boolbit             lnk_specd           : 1;    /* Link version specified */
-    boolbit             checksumfile        : 1;    /* Create checksum for file? */
-    boolbit             largeaddressaware   : 1;
-    boolbit             nolargeaddressaware : 1;
+    struct fmt_os2fam_data  os2fam;         /* must be first field */
+    list_of_names           *resources;
+    unsigned_32             heapcommit;
+    unsigned_32             stackcommit;
+    unsigned                subsystem;
+    unsigned_16             submajor;
+    unsigned_16             subminor;
+    unsigned_16             osmajor;        /*  OS major version    */
+    unsigned_16             osminor;        /*  OS minor version    */
+    unsigned_8              linkmajor;      /*  link major version  */
+    unsigned_8              linkminor;      /*  link minor version  */
+    boolbit                 tnt                 : 1;
+    boolbit                 sub_specd           : 1;
+    boolbit                 no_stdcall          : 1;
+    boolbit                 osv_specd           : 1;    /* OS version specified? */
+    boolbit                 lnk_specd           : 1;    /* Link version specified */
+    boolbit                 checksumfile        : 1;    /* Create checksum for file? */
+    boolbit                 largeaddressaware   : 1;
+    boolbit                 nolargeaddressaware : 1;
 };
 
 // structures used in processing DOS/16M load files.
@@ -243,6 +249,7 @@ struct fmt_rdos_data {
 struct fmt_data {
     union   fmt_spec_data {
         struct  fmt_dos_data    dos;
+        struct  fmt_os2fam_data os2fam;
         struct  fmt_os2_data    os2;
         struct  fmt_pe_data     pe;
         struct  fmt_d16m_data   d16m;

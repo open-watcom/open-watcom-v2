@@ -109,7 +109,7 @@ void FreeExportList( void )
     entry_export    *exp;
 
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        for( exp = FmtData.u.os2.exports; exp != NULL; ) {
+        for( exp = FmtData.u.os2fam.exports; exp != NULL; ) {
             exp = FreeAnExport( exp );
         }
     }
@@ -126,7 +126,7 @@ void AddToExportList( entry_export *exp )
 
     place = NULL;
     len = strlen( exp->name.u.ptr );
-    for( owner = &FmtData.u.os2.exports; (curr = *owner) != NULL; owner = &curr->next ) {
+    for( owner = &FmtData.u.os2fam.exports; (curr = *owner) != NULL; owner = &curr->next ) {
         currlen = strlen( curr->name.u.ptr );
         if( currlen == len && CmpRtn( curr->name.u.ptr, exp->name.u.ptr, len ) == 0 ) {
             if( !IS_FMT_INCREMENTAL( ObjFormat ) ) {
@@ -145,7 +145,7 @@ void AddToExportList( entry_export *exp )
             } else if( curr->ordinal == exp->ordinal ) {
                 LnkMsg( WRN+MSG_DUP_EXP_ORDINAL, NULL );
                 exp->ordinal = 0;    // if duplicate, assign a new one later
-                place = &FmtData.u.os2.exports;
+                place = &FmtData.u.os2fam.exports;
             } else if( curr->ordinal > exp->ordinal ) {
                 place = owner;
             }
@@ -309,10 +309,10 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
             dll->iatsym->p.import = NULL;
         }
-        dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2.mod_ref_list );
+        dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2fam.mod_ref_list );
         if( ordinal == NOT_IMP_BY_ORDINAL ) {
             dll->isordinal = false;
-            dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2.imp_tab_list );
+            dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2fam.imp_tab_list );
         } else {
             dll->isordinal = true;
             dll->u.ordinal = ordinal;
@@ -341,14 +341,14 @@ void CheckExport( const char *name, ordinal_t ordinal, bool cmpcase )
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
     rtn = ( cmpcase ) ? strcmp : stricmp;
     prev = NULL;
-    for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
+    for( place = FmtData.u.os2fam.exports; place != NULL; place = place->next ) {
         if( rtn( place->name.u.ptr, name ) == 0 ) {
             if( place->ordinal == 0 ) {
                 place->ordinal = ordinal;
                 place = FindPlace( place );
                 if( place != NULL ) {
                     if( prev == NULL ) {
-                        FmtData.u.os2.exports = place;
+                        FmtData.u.os2fam.exports = place;
                     } else {
                         prev->next = place;
                     }
@@ -368,7 +368,7 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     entry_export    *exp;
 
     max_ord = 0;
-    for( owner = &FmtData.u.os2.exports; (exp = *owner) != NULL; owner = &exp->next ) {
+    for( owner = &FmtData.u.os2fam.exports; (exp = *owner) != NULL; owner = &exp->next ) {
         if( addr.seg == exp->addr.seg && addr.off == exp->addr.off ) {
             return( exp->ordinal );
         }

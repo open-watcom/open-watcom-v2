@@ -400,7 +400,7 @@ static void CheckRWData( target_spec *target, targ_addr *addr )
     symbol sym;
 
     if( (FmtData.type & MK_WINDOWS)
-      && FmtData.u.os2.chk_seg_relocs
+      && FmtData.u.os2fam.chk_seg_relocs
       && IsReadOnly( LastSegData ) ) {
         if( !IS_SYM_IMPORTED( target->u.sym ) && !IsReadOnly( GetTargetSegData( target ) ) ) {
             if( !IS_DBG_INFO( CurrRec.seg->u.leader ) ) {
@@ -958,7 +958,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         CheckPartialRange( fix, off, 0x03FFFFFF, 0x02000000 );
     }
     PatchOffset( fix, off, true );
-    fix->os2_selfrel = (FmtData.type & MK_OS2_LX) && FmtData.u.os2.gen_rel_relocs;
+    fix->os2_selfrel = (FmtData.type & MK_OS2_LX) && FmtData.u.os2fam.gen_rel_relocs;
     return( !( fix->os2_selfrel || (fix->type & FIX_ABS) ) );
 }
 
@@ -1060,7 +1060,7 @@ static void PatchData( fix_relo_data *fix )
         if( !( (FmtData.type & MK_WINDOWS) && (fix->type & FIX_LOADER_RES) ) ) {
             PatchOffset( fix, FindRealAddr( fix ), false );
             if( (FmtData.type & (MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_NOVELL | MK_PHAR_REX | MK_ZDOS | MK_RAW)) == 0
-                || (FmtData.type & MK_OS2_LX) && !FmtData.u.os2.gen_int_relocs ) {
+                || (FmtData.type & MK_OS2_LX) && !FmtData.u.os2fam.gen_int_relocs ) {
                 fix->done = true;
             }
         }

@@ -865,11 +865,11 @@ static const char *getStubName( void )
 /************************************/
 {
 #ifdef _OS2
-    if( FmtData.u.os2.no_stub ) {
+    if( FmtData.u.os2fam.no_stub ) {
         return( "none" );
     }
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
-        return( FmtData.u.os2.stub_file_name );
+        return( FmtData.u.os2fam.stub_file_name );
     }
 #endif
 #ifdef _DOS16M
