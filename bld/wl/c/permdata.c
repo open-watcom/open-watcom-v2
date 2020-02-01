@@ -38,7 +38,6 @@
 #include "dbgall.h"
 #include "carve.h"
 #include "alloc.h"
-#include "command.h"
 #include "reloc.h"
 #include "fileio.h"
 #include "virtmem.h"
@@ -551,8 +550,8 @@ void WritePermData( void )
     hdr.numuserlibs = WriteLibList( &info, true );
     hdr.numdeflibs = WriteLibList( &info, false );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
-        PrepNameTable( FmtData.u.os2.mod_ref_list, &info );
-        PrepNameTable( FmtData.u.os2.imp_tab_list, &info );
+        PrepNameTable( FmtData.u.os2fam.mod_ref_list, &info );
+        PrepNameTable( FmtData.u.os2fam.imp_tab_list, &info );
         hdr.numdllsyms = WriteSmallCarve( CarveDLLInfo, MarkDLLInfo, WriteDLLInfo, &info );
         hdr.numexports = WriteSmallCarve( CarveExportInfo, MarkExportInfo, WriteExportInfo, &info );
     }

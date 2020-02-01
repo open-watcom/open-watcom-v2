@@ -38,7 +38,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "dbgall.h"
@@ -52,8 +52,9 @@
 #ifdef _RDOS
 
 void SetRdosFmt( void )
-/*********************/
-// set up the structures needed to be able to process something in RDOS mode.
+/**********************
+ * set up the structures needed to be able to process something in RDOS mode.
+ */
 {
     if( LinkState & LS_FMT_INITIALIZED )
         return;
@@ -62,7 +63,6 @@ void SetRdosFmt( void )
     FmtData.u.rdos.data_seg = 0;
     FmtData.u.rdos.code_sel = 0;
     FmtData.u.rdos.data_sel = 0;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
 }
@@ -72,76 +72,84 @@ void FreeRdosFmt( void )
 {
 }
 
-bool ProcRdos( void )
-/*******************/
+
+/****************************************************************
+ * "OPtion" Directive
+ ****************************************************************/
+
+static bool ProcRdosCodeSel( void )
+/**********************************
+ * process CODESelector option
+ */
 {
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( RdosOptions, SEP_NO, false );
-    return( true );
+    return( GetLong( &FmtData.u.rdos.code_sel ) );
 }
 
-bool ProcRdosDev16( void )
-/************************/
+static bool ProcRdosDataSel( void )
+/**********************************
+ * process DataSelector option
+ */
+{
+    return( GetLong( &FmtData.u.rdos.data_sel ) );
+}
+
+static parse_entry  MainOptions[] = {
+    "CODESelector", ProcRdosCodeSel,    MK_RDOS, 0,
+    "DATASelector", ProcRdosDataSel,    MK_RDOS, 0,
+    NULL
+};
+
+bool ProcRdosOptions( void )
+/**************************/
+{
+    return( ProcOne( MainOptions, SEP_NO ) );
+}
+
+
+/****************************************************************
+ * "Format" Directive
+ ****************************************************************/
+
+static bool ProcRdosDev( void )
+/*****************************/
 {
     Extension = E_RDV;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 1;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
 
-bool ProcRdosDev32( void )
-/************************/
-{
-    Extension = E_RDV;
-    FmtData.u.rdos.bitness = 32;
-    FmtData.u.rdos.driver = 1;
-    FmtData.u.rdos.mboot = 0;
-    return( true );
-}
-
-bool ProcRdosBin16( void )
-/************************/
+static bool ProcRdosBin( void )
+/*******************************/
 {
     Extension = E_BIN;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
     return( true );
 }
 
-bool ProcRdosBin32( void )
-/************************/
+static bool ProcRdosMboot( void )
+/*******************************/
 {
     Extension = E_BIN;
-    FmtData.u.rdos.bitness = 32;
-    FmtData.u.rdos.driver = 0;
-    FmtData.u.rdos.mboot = 0;
-    return( true );
-}
-
-bool ProcRdosMboot( void )
-/************************/
-{
-    Extension = E_BIN;
-    FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 1;
     return( true );
 }
 
-bool ProcRdosCodeSel( void )
-/***************************/
-/* process CODESelector option */
-{
-    return( GetLong( &FmtData.u.rdos.code_sel ) );
-}
+static parse_entry  RdosFormats[] = {
+    "DEV",          ProcRdosDev,        MK_RDOS, 0,
+    "BIN",          ProcRdosBin,        MK_RDOS, 0,
+    "MBOOT",        ProcRdosMboot,      MK_RDOS, 0,
+    NULL
+};
 
-bool ProcRdosDataSel( void )
-/***************************/
-/* process DataSelector option */
+bool ProcRdosFormat( void )
+/*************************/
 {
-    return( GetLong( &FmtData.u.rdos.data_sel ) );
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
+    ProcOne( RdosFormats, SEP_NO );
+    return( true );
 }
 
 #endif

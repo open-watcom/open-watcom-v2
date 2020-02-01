@@ -38,7 +38,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "dbgall.h"
@@ -61,36 +61,48 @@ void FreeZdosFmt( void )
 {
 }
 
-bool ProcZdos( void )
-/*******************/
-{
-    FmtData.base = 0x1000;                          // assume user application
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
-    ProcOne( ZdosOptions, SEP_NO, false );
-    return( true );
-}
 
-bool ProcZdosSYS( void )
-/**********************/
+/****************************************************************
+ * "Format" Directive
+ ****************************************************************/
+
+static bool ProcZdosSYS( void )
+/*****************************/
 {
-    FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_SYS;
+    FmtData.base = 0;                           // it's a driver, so reset base
     return( true );
 }
 
-bool ProcZdosHWD( void )
-/**********************/
+static bool ProcZdosHWD( void )
+/*****************************/
 {
-    FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_HWD;
+    FmtData.base = 0;                           // it's a driver, so reset base
     return( true );
 }
 
-bool ProcZdosFSD( void )
-/**********************/
+static bool ProcZdosFSD( void )
+/*****************************/
 {
-    FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_FSD;
+    FmtData.base = 0;                           // it's a driver, so reset base
+    return( true );
+}
+
+static parse_entry  ZdosFormats[] = {
+    "SYS",          ProcZdosSYS,        MK_ZDOS, 0,
+    "HWD",          ProcZdosHWD,        MK_ZDOS, 0,
+    "FSD",          ProcZdosFSD,        MK_ZDOS, 0,
+    NULL
+};
+
+bool ProcZdosFormat( void )
+/*************************/
+{
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // make relocations;
+    FmtData.base = 0x1000;                          // assume user application
+    ProcOne( ZdosFormats, SEP_NO );
     return( true );
 }
 

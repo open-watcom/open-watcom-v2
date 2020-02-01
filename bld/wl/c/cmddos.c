@@ -33,7 +33,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "dbgall.h"
@@ -46,6 +46,13 @@
 
 
 #ifdef _EXE
+
+/*
+ * this is an arbitrary non-zero value put in the sect->relocs field to
+ * signify that ProcBegin already made a new section, so ProcSection
+ * should not.
+ */
+#define SECT_ALREADY_MADE 1
 
 static byte         OvlLevel;
 
@@ -60,14 +67,6 @@ void FreeDosFmt( void )
 {
 }
 
-bool ProcDos( void )
-/******************/
-{
-    OvlLevel = 0;
-    ProcOne( DosOptions, SEP_NO, false );
-    return( true );
-}
-
 overlay_ref GetOvlRef( void )
 /***************************/
 {
@@ -75,9 +74,55 @@ overlay_ref GetOvlRef( void )
     return( ( OvlLevel == 0 ) ? 0 : OvlSectNum - 1 );
 }
 
+#ifdef _INT_DEBUG
+static void PrintAreas( OVL_AREA *ovlarea );
+
+static void PrintSect( section *sect )
+/************************************/
+{
+    file_list   *list;
+
+    OvlLevel++;
+    for( ; sect != NULL; sect = sect->next_sect ) {
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovlref, OvlLevel ));
+        DEBUG(( DBG_OLD, "Files:" ));
+        if( sect->files == NULL ) {
+            DEBUG(( DBG_OLD, "\"Non-section\"" ));
+        }
+        for( list = sect->files; list != NULL; list = list->next_file ) {
+            DEBUG(( DBG_OLD, "%s", list->infile->name ));
+        }
+        PrintAreas( sect->areas );
+    }
+    OvlLevel--;
+}
+
+static void PrintAreas( OVL_AREA *ovlarea )
+/*****************************************/
+{
+    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "Begin OverLay Area" ));
+        PrintSect( ovlarea->sections );
+        DEBUG(( DBG_OLD, "" ));
+        DEBUG(( DBG_OLD, "End OverLay Area" ));
+    }
+}
+
+static void PrintOvl( void )
+/**************************/
+{
+    OvlLevel = 0;
+    PrintAreas( Root->areas );
+}
+#endif
+
 static void SetOvlClasses( void )
-/*******************************/
-// make sure the overlay loader is always "overlayed".
+/********************************
+ * make sure the overlay loader is always "overlayed".
+ */
 {
     list_of_names       *ovlmgr;
 
@@ -89,50 +134,6 @@ static void SetOvlClasses( void )
     }
 }
 
-static bool AddClass( void )
-/**************************/
-{
-    list_of_names       *ovlclass;
-
-    _PermAlloc( ovlclass, sizeof( list_of_names ) + Token.len );
-    memcpy( ovlclass->name, Token.this, Token.len );
-    ovlclass->name[Token.len] = '\0';
-    ovlclass->next_name = OvlClasses;
-    OvlClasses = ovlclass;
-    return( true );
-}
-
-bool ProcOverlay( void )
-/*****************************/
-{
-    return( ProcArgList( &AddClass, TOK_INCLUDE_DOT ) );
-}
-
-bool ProcDistribute( void )
-/********************************/
-{
-    FmtData.u.dos.distribute = true;
-    return( true );
-}
-
-bool ProcPadSections( void )
-/*********************************/
-{
-    FmtData.u.dos.pad_sections = true;
-    return( true );
-}
-
-bool ProcFixedLib( void )
-/******************************/
-{
-    bool    ret;
-
-    CmdFlags |= CF_SET_SECTION;
-    ret = ProcLibrary();
-    CmdFlags &= ~CF_SET_SECTION;
-    return( ret );
-}
-
 static section *OvlNewSection( void )
 /***********************************/
 {
@@ -141,8 +142,9 @@ static section *OvlNewSection( void )
 }
 
 static void NewArea( section *sect )
-/**********************************/
-/* allocate a new area including this section */
+/***********************************
+ * allocate a new area including this section
+ */
 {
     ovl_area            *ovl;
     ovl_area            **owner;
@@ -157,81 +159,32 @@ static void NewArea( section *sect )
     *owner = ovl;
 }
 
-// this is an arbitrary non-zero value put in the sect->relocs field to
-// signify that ProcBegin already made a new section, so ProcSection
-// should not.
-
-#define SECT_ALREADY_MADE 1
-
-bool ProcBegin( void )
-/***************************/
-/* process a new overlay area */
-{
-    section         *oldsect;
-    file_list       **oldflist;
-    section         *sect;
-
-    LinkState |= LS_FMT_SPECIFIED;      // she must want DOS mode.
-    if( ( OvlLevel > 0 ) && FmtData.u.dos.dynamic ) {
-        oldsect = NULL;
-        oldflist = NULL;
-        CmdFlags &= ~CF_AUTOSECTION;    // merge old area with this.
-    } else {
-        oldsect = CurrSect;
-        oldflist = CurrFList;
-        sect = OvlNewSection();
-        if( LinkFlags & LF_ANY_DBI_FLAG ) {
-            DBISectInit( sect );
-        }
-        NewArea( sect );
-        sect->relocs = SECT_ALREADY_MADE;
-        CurrSect = sect;
-        CurrFList = &sect->files;
-    }
-    OvlLevel++;
-    while( ProcOne( Sections, SEP_NO, false ) ) {
-        // NULL LOOP
-    }
-    if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
-        CurrFList = oldflist;
-        CurrSect = oldsect;
-    }
-    return( true );
-}
-
-bool ProcInto( void )
-/**************************/
-// Process the into keyword.
-{
-    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        CurrSect->outfile = NewOutFile( FileName( Token.this, Token.len, E_OVL, false ) );
-        return( true );
-    }
-    LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
-    return( false );
-}
-
-
 static void MakeNonArea( void )
-/*****************************/
-/* make a new overlay area for non-overlay classes */
+/******************************
+ * make a new overlay area for non-overlay classes
+ */
 {
     NonSect = OvlNewSection();   // No debug info in nonsect.
     NewArea( NonSect );
 }
 
-
-bool ProcEnd( void )
-/*************************/
-/* process the end of an overlay area */
+void CmdOvlFini( void )
+/*********************/
 {
-    if( OvlLevel > 0 ) {  // OvlLevel should always be > 0, but just in case..
-        OvlLevel--;
+    if( OvlLevel != 0 ) {
+        Ignite();
+        LnkMsg( LOC+LINE+FTL+MSG_EXPECTING_END, NULL );
     }
-    if( CurrSect->relocs != 0 ) {   // this only happens if the user specifies
-        CurrSect->relocs = 0;       // an overlay area with no files in it.
+    if( FmtData.u.dos.dynamic &&
+        ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
+        Ignite();
+        LnkMsg( LOC+LINE+FTL+MSG_INCORRECT_NUM_AREAS, NULL );
     }
-    return( false );    /*  cause loop to be exited in ProcBegin */
+    SetOvlClasses();
+    MakeNonArea();
+#ifdef _INT_DEBUG
+    PrintOvl();
+#endif
 }
 
 void MakeNewSection( void )
@@ -256,42 +209,251 @@ void MakeNewSection( void )
     }
 }
 
-bool ProcSection( void )
-/*****************************/
-/* process SECTION command */
+
+/****************************************************************
+ * "OPtion" Directive
+ ****************************************************************/
+
+static bool ProcDistribute( void )
+/********************************/
 {
-    if( OvlLevel == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
-    } else {
-        MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
-        while( ProcOne( Directives, SEP_NO, false ) ) {
-            RestoreParser();
-        }
-    }
+    FmtData.u.dos.distribute = true;
     return( true );
 }
 
-bool ProcSmall( void )
+static bool ProcPadSections( void )
+/*********************************/
+{
+    FmtData.u.dos.pad_sections = true;
+    return( true );
+}
+
+static bool ProcSmall( void )
 /***************************/
 {
     FmtData.u.dos.ovl_short = true;
     return( true );
 }
 
-bool ProcCom( void )
-/*************************/
-{
-    Extension = E_COM;
-    return( true );
-}
-
-bool ProcDynamic( void )
+static bool ProcDynamic( void )
 /*****************************/
 {
     FmtData.u.dos.dynamic = true;
     return( true );
 }
+
+static bool ProcNoIndirect( void )
+/********************************/
+{
+    FmtData.u.dos.noindirect = true;
+    return( true );
+}
+
+static bool ProcFullHeader( void )
+/********************************/
+{
+    FmtData.u.dos.full_mz_hdr = true;
+    return( true );
+}
+
+static bool ProcStandard( void )
+/******************************/
+{
+    FmtData.u.dos.dynamic = false;
+    return( true );
+}
+
+static bool ProcArea( void )
+/***************************
+ * process the area size directive.
+ */
+{
+    unsigned_32     value;
+    bool            ret;
+
+    ret = GetLong( &value );
+    if( ret ) {
+        OvlAreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
+    }
+    return( ret );
+}
+
+static parse_entry  MainOptions[] = {
+    "SMall",        ProcSmall,          MK_OVERLAYS, 0,
+    "DIStribute",   ProcDistribute,     MK_OVERLAYS, 0,
+    "DYNamic",      ProcDynamic,        MK_OVERLAYS, 0,
+    "STANdard",     ProcStandard,       MK_OVERLAYS, 0,
+    "NOIndirect",   ProcNoIndirect,     MK_OVERLAYS, 0,
+    "ARea",         ProcArea,           MK_OVERLAYS, 0,
+    "PADSections",  ProcPadSections,    MK_OVERLAYS, 0,
+    "FULLHeader",   ProcFullHeader,     MK_DOS, 0,
+    NULL
+};
+
+bool ProcDosOptions( void )
+/*************************/
+{
+    return( ProcOne( MainOptions, SEP_NO ) );
+}
+
+
+/****************************************************************
+ * "OVerlay" Directive
+ ****************************************************************/
+
+static bool AddClass( void )
+/**************************/
+{
+    list_of_names       *ovlclass;
+
+    _PermAlloc( ovlclass, sizeof( list_of_names ) + Token.len );
+    memcpy( ovlclass->name, Token.this, Token.len );
+    ovlclass->name[Token.len] = '\0';
+    ovlclass->next_name = OvlClasses;
+    OvlClasses = ovlclass;
+    return( true );
+}
+
+bool ProcOverlay( void )
+/**********************/
+{
+    return( ProcArgList( AddClass, TOK_INCLUDE_DOT ) );
+}
+
+
+/****************************************************************
+ * "FIXedlib" Directive
+ ****************************************************************/
+
+bool ProcFixedLib( void )
+/***********************/
+{
+    bool    ret;
+
+    CmdFlags |= CF_SET_SECTION;
+    ret = ProcLibrary();
+    CmdFlags &= ~CF_SET_SECTION;
+    return( ret );
+}
+
+
+/****************************************************************
+ * "Begin" Directive
+ ****************************************************************/
+
+static bool ProcInto( void )
+/***************************
+ * Process the INTO keyword.
+ */
+{
+    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+        CurrSect->outfile = NewOutFile( FileName( Token.this, Token.len, E_OVL, false ) );
+        return( true );
+    }
+    LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
+    return( false );
+}
+
+static parse_entry  SectOptions[] = {
+    "INto",         ProcInto,           MK_OVERLAYS, 0,
+    NULL
+};
+
+static bool ProcSection( void )
+/******************************
+ * process SECTION command
+ */
+{
+    if( OvlLevel == 0 ) {
+        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
+    } else {
+        MakeNewSection();
+        ProcOne( SectOptions, SEP_NO );      // check for INTO
+        while( DoParseDirective() ) {
+            RestoreParser();
+        }
+    }
+    return( true );
+}
+
+static bool ProcAutoSection( void )
+/*********************************/
+{
+    if( OvlLevel == 0 ) {
+        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
+    } else {
+        MakeNewSection();
+        ProcOne( SectOptions, SEP_NO );      // check for INTO
+        CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
+        while( DoParseDirective() ) {
+        }
+        CmdFlags &= ~CF_AUTOSECTION;
+    }
+    return( true );
+}
+
+static bool ProcEnd( void )
+/**************************
+ * process the end of an overlay area
+ */
+{
+    if( OvlLevel > 0 ) {  // OvlLevel should always be > 0, but just in case..
+        OvlLevel--;
+    }
+    if( CurrSect->relocs != 0 ) {   // this only happens if the user specifies
+        CurrSect->relocs = 0;       // an overlay area with no files in it.
+    }
+    return( false );    /*  cause loop to be exited in ProcBegin */
+}
+
+static parse_entry  Sections[] = {
+    "Section",      ProcSection,        MK_OVERLAYS, 0,
+    "AUTOSection",  ProcAutoSection,    MK_OVERLAYS, 0,
+    "End",          ProcEnd,            MK_OVERLAYS, 0,
+    NULL
+};
+
+bool ProcBegin( void )
+/*********************
+ * process a new overlay area
+ */
+{
+    section         *oldsect;
+    file_list       **oldflist;
+    section         *sect;
+
+    LinkState |= LS_FMT_SPECIFIED;      // she must want DOS mode.
+    if( ( OvlLevel > 0 ) && FmtData.u.dos.dynamic ) {
+        oldsect = NULL;
+        oldflist = NULL;
+        CmdFlags &= ~CF_AUTOSECTION;    // merge old area with this.
+    } else {
+        oldsect = CurrSect;
+        oldflist = CurrFList;
+        sect = OvlNewSection();
+        if( LinkFlags & LF_ANY_DBI_FLAG ) {
+            DBISectInit( sect );
+        }
+        NewArea( sect );
+        sect->relocs = SECT_ALREADY_MADE;
+        CurrSect = sect;
+        CurrFList = &sect->files;
+    }
+    OvlLevel++;
+    while( ProcOne( Sections, SEP_NO ) ) {
+        // NULL LOOP
+    }
+    if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
+        CurrFList = oldflist;
+        CurrSect = oldsect;
+    }
+    return( true );
+}
+
+
+/****************************************************************
+ * "NOVector" Directive
+ ****************************************************************/
 
 static bool AddNoVector( void )
 /*****************************/
@@ -304,23 +466,33 @@ static bool AddNoVector( void )
 }
 
 bool ProcNoVector( void )
-/******************************/
+/***********************/
 {
     return( ProcArgList( AddNoVector, TOK_INCLUDE_DOT ) );
 }
+
+
+/****************************************************************
+ * "VECtor" Directive
+ ****************************************************************/
 
 static bool AddVector( void )
 /***************************/
 {
     OvlVectorize( SymOp( ST_REFERENCE_SYM, Token.this, Token.len ) );
-    return(true);
+    return( true );
 }
 
 bool ProcVector( void )
-/****************************/
+/*********************/
 {
     return( ProcArgList( AddVector, TOK_INCLUDE_DOT ) );
 }
+
+
+/****************************************************************
+ * "FORCEVector" Directive
+ ****************************************************************/
 
 static bool AddForceVector( void )
 /********************************/
@@ -334,123 +506,34 @@ static bool AddForceVector( void )
 }
 
 bool ProcForceVector( void )
-/*********************************/
+/**************************/
 {
     return( ProcArgList( AddForceVector, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcAutoSection( void )
-/*********************************/
-{
-    if( OvlLevel == 0 ) {
-        LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
-    } else {
-        MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
-        CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( ProcOne( Directives, SEP_NO, false ) ) {
-        }
-        CmdFlags &= ~CF_AUTOSECTION;
-    }
-    return( true );
-}
 
-bool ProcNoIndirect( void )
-/********************************/
-{
-    FmtData.u.dos.noindirect = true;
-    return( true );
-}
+/****************************************************************
+ * "FORMat" Directive
+ ****************************************************************/
 
-bool ProcFullHeader( void )
+static bool ProcCom( void )
 /*************************/
 {
-    FmtData.u.dos.full_mz_hdr = true;
+    Extension = E_COM;
     return( true );
 }
 
-bool ProcStandard( void )
-/******************************/
-{
-    FmtData.u.dos.dynamic = false;
-    return( true );
-}
+static parse_entry  DosFormats[] = {
+    "COM",          ProcCom,            MK_COM, 0,
+    NULL
+};
 
-bool ProcArea( void )
-/**************************/
-// process the area size directive.
-{
-    unsigned_32     value;
-    bool            ret;
-
-    ret = GetLong( &value );
-    if( ret ) {
-        OvlAreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
-    }
-    return( ret );
-}
-
-#ifdef _INT_DEBUG
-static void PrintSect( section *sect );
-
-static void PrintAreas( OVL_AREA *ovlarea )
-{
-    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "Begin OverLay Area" ));
-        PrintSect( ovlarea->sections );
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "End OverLay Area" ));
-    }
-}
-
-static void PrintOvl( void )
-/**************************/
+bool ProcDosFormat( void )
+/************************/
 {
     OvlLevel = 0;
-    PrintAreas( Root->areas );
-}
-
-static void PrintSect( section *sect )
-/************************************/
-{
-    file_list   *list;
-
-    OvlLevel++;
-    for( ; sect != NULL; sect = sect->next_sect ) {
-        DEBUG(( DBG_OLD, "" ));
-        DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovlref, OvlLevel ));
-        DEBUG(( DBG_OLD, "Files:" ));
-        if( sect->files == NULL ) {
-            DEBUG(( DBG_OLD, "\"Non-section\"" ));
-        }
-        for( list = sect->files; list != NULL; list = list->next_file ) {
-            DEBUG(( DBG_OLD, "%s", list->infile->name ));
-        }
-        PrintAreas( sect->areas );
-    }
-    OvlLevel--;
-}
-#endif
-
-void CmdOvlFini( void )
-/****************************/
-{
-    if( OvlLevel != 0 ) {
-        Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_EXPECTING_END, NULL );
-    }
-    if( FmtData.u.dos.dynamic &&
-        ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
-        Ignite();
-        LnkMsg( LOC+LINE+FTL+MSG_INCORRECT_NUM_AREAS, NULL );
-    }
-    SetOvlClasses();
-    MakeNonArea();
-#ifdef _INT_DEBUG
-    PrintOvl();
-#endif
+    ProcOne( DosFormats, SEP_NO );
+    return( true );
 }
 
 #endif

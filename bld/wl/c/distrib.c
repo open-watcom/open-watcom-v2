@@ -140,7 +140,8 @@ void InitArcList( mod_entry *mod )
  * set up the mod_entry arcdata field for dead code elimination
  */
 {
-    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+    } else {
         _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
     }
 }
@@ -319,8 +320,7 @@ static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlre
  * this case.
  */
 {
-    if( ( sym->p.seg == NULL )
-        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+    if( ( sym->p.seg == NULL ) || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
     /*

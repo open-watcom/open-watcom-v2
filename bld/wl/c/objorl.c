@@ -50,7 +50,6 @@
 #include "carve.h"
 #include "wcomdef.h"
 #include "permdata.h"
-#include "command.h"    // NYI: don't want to include this!
 #include "impexp.h"
 #include "virtmem.h"
 #include "loadfile.h"

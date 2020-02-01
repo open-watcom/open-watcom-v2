@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,11 @@
 #include "watcom.h"
 #include "wres.h"
 #include "pass2l1.h"
+#include "rcrtns.h"     // for OW linker build
 #include "mergedir.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 bool MergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
 /******************************************************************
  * merge the directories of all the res files into one large directory
@@ -57,3 +59,4 @@ bool MergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
     }
     return( false );
 }
+#endif

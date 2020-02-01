@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "rcrtns.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 static size_t RemoveRedundantStrings( void **strlist, size_t num,
                     int (*compare)(const void *, const void *) )
 /***************************************************************/
@@ -384,3 +386,4 @@ int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
         return( (int_32)( *location - (uint_8 *)str->StringBlock ) );
     }
 }
+#endif

@@ -114,8 +114,6 @@ typedef struct {
     unsigned        rel_size;       /* actual size of reloc item */
     unsigned        fix_size;       /* size of field being fixed up */
     offset          fix_off;        /* start addr of field being fixed */
-    boolbit         isfloat     : 1;
-    boolbit         isqnxlinear : 1;
     reloc_item      item;
 } base_reloc;
 
@@ -402,7 +400,7 @@ static void CheckRWData( target_spec *target, targ_addr *addr )
     symbol sym;
 
     if( (FmtData.type & MK_WINDOWS)
-      && FmtData.u.os2.chk_seg_relocs
+      && FmtData.u.os2fam.chk_seg_relocs
       && IsReadOnly( LastSegData ) ) {
         if( !IS_SYM_IMPORTED( target->u.sym ) && !IsReadOnly( GetTargetSegData( target ) ) ) {
             if( !IS_DBG_INFO( CurrRec.seg->u.leader ) ) {
@@ -662,29 +660,17 @@ size_t IncSaveRelocs( void *_save )
 static void DumpReloc( base_reloc *breloc )
 /*****************************************/
 {
-#ifdef _QNX
-    if( breloc->isfloat ) {
-        QNXFloatReloc( &breloc->item );
-    } else if( breloc->isqnxlinear ) {
-        QNXLinearReloc( CurrRec.seg->u.leader->group, &breloc->item );
-    } else {
-#endif
-        WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off,
-                    &breloc->item, breloc->rel_size );
+    WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off, &breloc->item, breloc->rel_size );
 #ifdef _OS2
-        if( FmtData.type & MK_OS2_FLAT ) {
-            if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
-                /*
-                 * stupid relocation has been split across two
-                 * pages, have to duplicate the entry
-                 */
-                breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
-                WriteReloc( CurrRec.seg->u.leader->group,
-                            breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
-            }
+    if( FmtData.type & MK_OS2_FLAT ) {
+        if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
+            /*
+             * stupid relocation has been split across two
+             * pages, have to duplicate the entry
+             */
+            breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
+            WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
         }
-#endif
-#ifdef _QNX
     }
 #endif
 }
@@ -692,8 +678,6 @@ static void DumpReloc( base_reloc *breloc )
 static void InitReloc( base_reloc *breloc )
 /*****************************************/
 {
-    breloc->isfloat = false;
-    breloc->isqnxlinear = false;
     breloc->rel_size = FmtRelocSize;
 }
 
@@ -717,14 +701,12 @@ static unsigned FindGroupIdx( segment seg )
 static void MakeQNXFloatReloc( fix_relo_data *fix )
 /*************************************************/
 {
-    base_reloc  breloc;
+    qnx_reloc_item  qnx_reloc;
 
     if( FmtData.u.qnx.gen_seg_relocs ) {
-        InitReloc( &breloc );
-        breloc.isfloat = true;
-        breloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->fpp_type << 28 );
-        breloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
-        DumpReloc( &breloc );
+        qnx_reloc.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->fpp_type << 28 );
+        qnx_reloc.segment = ToQNXIndex( fix->loc_addr.seg );
+        WriteQNXFloatReloc( &qnx_reloc );
     }
 }
 #endif
@@ -846,9 +828,12 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
 #endif
     special = fix->type & FIX_SPECIAL_MASK;
     if( ( special == FIX_TOC ) || ( special == FIX_TOCV ) ) {
+        pos = 0;
         if( special == FIX_TOCV ) {
             DbgAssert( target->type == FIX_TARGET_EXT );
+#ifdef _OS2
             pos = FindSymPosInTocv( target->u.sym );
+#endif
         } else {
             if( target->type  == FIX_TARGET_EXT ) {
                 pos = FindSymPosInToc( target->u.sym );
@@ -898,6 +883,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
 #ifdef _OS2
         if( FmtData.type & MK_OS2_16BIT ) {  // can not get at a DLL relatively
             LnkMsg( LOC+ERR+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
+            return( true );
         }
 #endif
 #ifdef _ELF
@@ -972,7 +958,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         CheckPartialRange( fix, off, 0x03FFFFFF, 0x02000000 );
     }
     PatchOffset( fix, off, true );
-    fix->os2_selfrel = (FmtData.type & MK_OS2_LX) && FmtData.u.os2.gen_rel_relocs;
+    fix->os2_selfrel = (FmtData.type & MK_OS2_LX) && FmtData.u.os2fam.gen_rel_relocs;
     return( !( fix->os2_selfrel || (fix->type & FIX_ABS) ) );
 }
 
@@ -1074,7 +1060,7 @@ static void PatchData( fix_relo_data *fix )
         if( !( (FmtData.type & MK_WINDOWS) && (fix->type & FIX_LOADER_RES) ) ) {
             PatchOffset( fix, FindRealAddr( fix ), false );
             if( (FmtData.type & (MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_NOVELL | MK_PHAR_REX | MK_ZDOS | MK_RAW)) == 0
-                || (FmtData.type & MK_OS2_LX) && !FmtData.u.os2.gen_int_relocs ) {
+                || (FmtData.type & MK_OS2_LX) && !FmtData.u.os2fam.gen_int_relocs ) {
                 fix->done = true;
             }
         }
@@ -1088,10 +1074,14 @@ static void PatchData( fix_relo_data *fix )
         if( FmtData.type & MK_PROT_MODE ) {
             PUT_U16( data, 0 );
         }
+#if defined( _DOS16M ) || defined( _PHARLAP )
         if( FmtData.type & (MK_DOS16M | MK_PHAR_MULTISEG) ) {
             PUT_U16( data, fix->tgt_addr.seg );
+            return;
+        }
+#endif
 #ifdef _RDOS
-        } else if( FmtData.type & MK_RDOS ) {
+        if( FmtData.type & MK_RDOS ) {
             segval = fix->tgt_addr.seg;
             if( segval == FmtData.u.rdos.code_seg ) {
                 segval = FmtData.u.rdos.code_sel;
@@ -1104,8 +1094,10 @@ static void PatchData( fix_relo_data *fix )
                 LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
             }
             PUT_U16( data, segval );
+            return;
+        }
 #endif
-        } else if( fix->done || (FmtData.type & (MK_QNX | MK_DOS)) ) {
+        if( fix->done || (FmtData.type & (MK_QNX | MK_DOS)) ) {
             if( isdbi && (LinkFlags & LF_CV_DBI_FLAG) ) {    // FIXME
                 segval = FindGroupIdx( fix->tgt_addr.seg );
             } else if( fix->type & FIX_ABS ) {
@@ -1255,6 +1247,7 @@ static void MakeBase( fix_relo_data *fix )
 }
 
 static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *seg, base_reloc *breloc )
+/*******************************************************************************************************/
 {
     targ_addr           target;
     group_entry         *grp;
@@ -1506,35 +1499,30 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {
-        bool    done;
-
-        done = false;
         if( ( ftype == FIX_OFFSET_32 ) || ( ftype == FIX_BASE_OFFSET_32 ) ) {
             if( FmtData.u.qnx.gen_linear_relocs ) {
-                breloc->isqnxlinear = true;
-                breloc->item.qnxl.reloc_offset = fix->loc_addr.off;
+                qnx_linear_item qnxl_reloc;
+
+                qnxl_reloc.reloc_offset = fix->loc_addr.off;
                 seg = GetTargetSegData( tthread );
                 if( seg->iscode ) {
-                    breloc->item.qnxl.reloc_offset |= 0x80000000;
+                    qnxl_reloc.reloc_offset |= 0x80000000;
                 }
                 if( (fix->type & FIX_ABS) && (fix->type & FIX_REL) ) {
-                    breloc->item.qnxl.reloc_offset |= 0x40000000;
+                    qnxl_reloc.reloc_offset |= 0x40000000;
                 }
-                if( fix->type == FIX_BASE_OFFSET_32 ) {
-                    DumpReloc( breloc );
-                    InitReloc( breloc );
-                    breloc->fix_size = CalcFixupSize( fix->type );
-                    breloc->fix_off = fix->loc_addr.off;
-                } else {
-                    done = true;
+                WriteQNXLinearReloc( CurrRec.seg->u.leader->group, &qnxl_reloc );
+                if( fix->type != FIX_BASE_OFFSET_32 ) {
+                    return( false );
                 }
+                InitReloc( breloc );
+                breloc->fix_size = CalcFixupSize( fix->type );
+                breloc->fix_off = fix->loc_addr.off;
             }
         }
-        if( !done ) {
-            MakeBase( fix );
-            breloc->item.qnx.reloc_offset = fix->loc_addr.off;
-            breloc->item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
-        }
+        MakeBase( fix );
+        breloc->item.qnx.reloc_offset = fix->loc_addr.off;
+        breloc->item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         return( true );
     }
 #endif

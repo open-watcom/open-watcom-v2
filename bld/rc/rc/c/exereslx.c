@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "exereslx.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 static int CompareLXResIdName( const void *e1, const void *e2 )
 /*************************************************************/
 {
@@ -326,7 +328,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 } /* BuildLXResourceObjects */
 
 
-#ifndef INSIDE_WLINK
+#if !defined( INSIDE_WLINK )
 bool RcBuildLXResourceObjects( void )
 /***************************************/
 {
@@ -365,4 +367,6 @@ RcStatus RcWriteLXResourceObjects( void )
     }
     return( ret );
 }
+#endif
+
 #endif

@@ -52,3 +52,4 @@ extern void             AddLibPathsToEnd( const char * );
 extern void             AddLibPathsToEndList( const char *list );
 extern void             PressKey( void );
 extern int              DoBuffCmdParse( const char *cmd );
+extern char             *CmdFileName( void );

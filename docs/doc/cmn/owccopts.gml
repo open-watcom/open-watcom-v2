@@ -83,7 +83,7 @@ d3 plus debug inlines; emit inlines as external out-of-line functions
 (C++ only)
 d3 plus debug inlines; emit inlines as static out-of-line functions
 .*
-.note g{w,d,c}
+.note g{watcom,dwarf,codeview}
 set debug output format (&company, Dwarf, Codeview)
 .*
 .note D<name>[=text]

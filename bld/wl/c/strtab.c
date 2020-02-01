@@ -71,7 +71,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
     blk->next = NULL;
     RingAppend( &strtab->data, blk );
     blk->size = 0;
-    return blk;
+    return( blk );
 }
 
 void InitStringTable( stringtable *strtab, bool dontsplit )
@@ -179,7 +179,7 @@ static bool WriteStringData( void *_blk, void *_param )
     stringblock *blk = _blk;
     strblkparam *param = _param;
     param->fn( param->info, blk->data, blk->size );
-    return false;
+    return( false );
 }
 
 void WriteStringTable( stringtable *strtab, write_strtable_fn *fn, void *info )

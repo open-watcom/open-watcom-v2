@@ -89,6 +89,7 @@ typedef enum {
     CF_AFTER_INC            = CONSTU32( 0x00008000 ),   // option must be specd. after op inc
     CF_DOING_OPTLIB         = CONSTU32( 0x00010000 ),
     CF_NO_EXTENSION         = CONSTU32( 0x00020000 ),   // don't put an extension on exe name
+    CF_SUBSET               = CONSTU32( 0x00040000 ),
 } commandflag;
 
 #define CF_LANGUAGE_MASK    (CF_LANGUAGE_ENGLISH | CF_LANGUAGE_JAPANESE | CF_LANGUAGE_CHINESE | CF_LANGUAGE_KOREAN)
@@ -98,6 +99,20 @@ typedef enum {
     TOK_INCLUDE_DOT     = 0x01,
     TOK_IS_FILENAME     = 0x02
 } tokcontrol;
+
+typedef enum {
+    GENVER_ERROR        = 0,
+    GENVER_MAJOR        = 0x01,
+    GENVER_MINOR        = 0x02,
+    GENVER_REVISION     = 0x04
+} version_state;
+
+typedef struct version_block {
+    unsigned_32 major;
+    unsigned_32 minor;
+    unsigned_32 revision;
+    const char  *message;
+} version_block;
 
 typedef struct {
     char        *buff;
@@ -129,55 +144,6 @@ typedef struct {
     commandflag         flags;
 } parse_entry;
 
-/* command parse tables */
-
-extern parse_entry PosDbgMods[];
-extern parse_entry DbgMods[];
-extern parse_entry SysBeginOptions[];
-extern parse_entry SysDeleteOptions[];
-extern parse_entry SysEndOptions[];
-extern parse_entry SortOptions[];
-extern parse_entry Directives[];
-extern parse_entry MainOptions[];
-extern parse_entry SysDirectives[];
-extern parse_entry Models[];
-extern parse_entry Languages[];
-extern parse_entry EndLinkOpt[];
-#if defined( _PHARLAP ) || defined( _DOS16M ) || defined( _OS2 ) || defined( _ELF )
-extern parse_entry RunOptions[];
-#endif
-extern parse_entry Strategies[];
-extern parse_entry TransTypes[];
-extern parse_entry QNXSegModel[];
-extern parse_entry QNXSegDesc[];
-extern parse_entry QNXFormats[];
-extern parse_entry PharModels[];
-extern parse_entry NovModels[];
-extern parse_entry NovDBIOptions[];
-extern parse_entry Sections[];
-extern parse_entry SectOptions[];
-extern parse_entry DosOptions[];
-extern parse_entry SubFormats[];
-extern parse_entry OS2FormatKeywords[];
-extern parse_entry WindowsFormatKeywords[];
-extern parse_entry NTFormatKeywords[];
-extern parse_entry VXDFormatKeywords[];
-extern parse_entry Init_Keywords[];
-extern parse_entry Term_Keywords[];
-extern parse_entry Exp_Keywords[];
-extern parse_entry SegDesc[];
-extern parse_entry SegTypeDesc[];
-extern parse_entry SegModel[];
-extern parse_entry CommitKeywords[];
-extern parse_entry ELFFormatKeywords[];
-extern parse_entry ZdosOptions[];
-extern parse_entry RdosOptions[];
-extern parse_entry RawOptions[];
-extern parse_entry OrderOpts[];
-extern parse_entry OrderClassOpts[];
-extern parse_entry OrderSegOpts[];
-extern parse_entry OutputOpts[];
-
 /* handy globals */
 
 extern file_defext      Extension;
@@ -191,7 +157,9 @@ extern cmdfilelist      *CmdFile;
 
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
 extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
-extern bool             ProcOne( parse_entry *, sep_type, bool );
+extern bool             ProcOne( parse_entry *entry, sep_type req );
+extern bool             ProcOneSubset( parse_entry *entry, sep_type req );
+extern bool             ProcOneSuicide( parse_entry *entry, sep_type req );
 extern bool             MatchOne( parse_entry *, sep_type, const char *, size_t );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );
@@ -205,10 +173,9 @@ extern void             RestoreParser( void );
 extern void             NewCommandSource( const char *, const char *, method );
 extern void             SetCommandFile( f_handle, const char * );
 extern void             EatWhite( void );
-extern char             *FileName( const char *, size_t, file_defext, bool );
 extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );
 extern outfilelist      *NewOutFile( char * );
-extern section          *NewSection( void );
 extern char             *GetFileName( char **, bool );
+extern version_state    GetGenVersion( version_block *vb, version_state enq, bool novell_revision );

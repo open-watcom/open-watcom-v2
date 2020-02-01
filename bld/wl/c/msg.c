@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "linkstd.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
 #include "ideentry.h"
@@ -45,6 +45,7 @@
 #include "msg.h"
 
 #include "clibext.h"
+
 
 const char *MsgStrings[] = {
     #define pick( name, string ) string,
@@ -565,6 +566,7 @@ void LnkMsg(
     MessageFini( num, buff, len );
 }
 
+#ifdef _OS2
 static void HandleRcMsg( unsigned num, va_list *args )
 /****************************************************/
 /* getting an error message from resource compiler code */
@@ -600,13 +602,17 @@ void RcError( unsigned num, ... )
     HandleRcMsg( num, &args );
     va_end( args );
 }
+#endif
 
-void WLPrtBanner( void )
-/*****************************/
-// print the banner, if it hasn't already been printed.
+int WLPrtBanner( void )
+/**********************
+ * print the banner, if it hasn't already been printed
+ */
 {
     const char  *msg;
+    int         count;
 
+    count = 0;
     if( !BannerPrinted ) {
         msg = MsgStrings[PRODUCT];
         WriteStdOutInfo( msg, BANNER, NULL );
@@ -619,7 +625,9 @@ void WLPrtBanner( void )
         msg = MsgStrings[TRADEMARK2];
         WriteStdOutInfo( msg, BANNER, NULL );
         BannerPrinted = true;
+        count = 5;
     }
+    return( count );
 }
 
 bool SkipSymbol( symbol * sym )

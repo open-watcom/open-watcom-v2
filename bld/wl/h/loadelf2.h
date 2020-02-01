@@ -36,24 +36,24 @@
 #include "strtab.h"
 
 typedef struct {
-    Elf32_Ehdr eh;
-    Elf32_Shdr *strhdr;
-    Elf32_Phdr *ph;
-    unsigned   ph_size;
-    Elf32_Shdr *sh;
-    unsigned   sh_size;
+    Elf32_Ehdr  eh;
+    Elf32_Shdr  *strhdr;
+    Elf32_Phdr  *ph;
+    unsigned    ph_size;
+    Elf32_Shdr  *sh;
+    unsigned    sh_size;
     stringtable secstrtab;
     struct {
-        unsigned   secstr;  // Index of strings section for section names
-        unsigned   grpbase; // Index base for Groups in section
-        unsigned   grpnum;  // Number of groups
-        unsigned   relbase; // Index base for relocation sections
-        unsigned   relnum;  // number of relocations
-        unsigned   symstr;  // Index of symbol's string table
-        unsigned   symtab;  // Index of symbol table
-        unsigned   symhash; // Index of symbol hash table
-        unsigned   dbgbegin;// Index of first debug section
-        unsigned   dbgnum;  // Number of debug sections
+        unsigned    secstr;  // Index of strings section for section names
+        unsigned    grpbase; // Index base for Groups in section
+        unsigned    grpnum;  // Number of groups
+        unsigned    relbase; // Index base for relocation sections
+        unsigned    relnum;  // number of relocations
+        unsigned    symstr;  // Index of symbol's string table
+        unsigned    symtab;  // Index of symbol table
+        unsigned    symhash; // Index of symbol hash table
+        unsigned    dbgbegin;// Index of first debug section
+        unsigned    dbgnum;  // Number of debug sections
     } i;  // Indexes into sh
     unsigned_32 curr_off;
 } ElfHdr;

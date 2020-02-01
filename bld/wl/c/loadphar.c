@@ -43,7 +43,7 @@
 #include "dbgall.h"
 #include "fileio.h"
 #include "loadfile.h"
-#include "command.h"
+#include "cmdutils.h"
 
 
 #ifdef _PHARLAP
@@ -90,7 +90,7 @@ static unsigned_32 WritePharRelocs( void )
     RELOC_INFO  *temp;
 
     temp = Root->reloclist;             // don't want to modify original
-    return DumpMaxRelocList( &temp, 0 );
+    return( DumpMaxRelocList( &temp, 0 ) );
 }
 
 static void WritePharSimple( unsigned_32 start )
@@ -286,7 +286,7 @@ static unsigned_32 WriteSIT( void )
         WriteLoad( &sit, sizeof( seg_info_table ) );
         size += sizeof( seg_info_table );
     }
-    return size;
+    return( size );
 }
 
 static void WritePharExtended( unsigned_32 start )

@@ -35,7 +35,7 @@
 #include <ctype.h>
 #include "linkstd.h"
 #include "msg.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "cmdline.h"
 #include "fileio.h"
@@ -58,50 +58,65 @@
 #define _RDOS_HELP      MSG_RDOS_HELP_0,    MSG_RDOS_HELP_15
 #define _RAW_HELP       MSG_RAW_HELP_0,     MSG_RAW_HELP_15
 
-#define HELP_ARGS(x)    _ ## x ## _HELP
-#define WRITE_HELP(x)   WriteHelp( HELP_ARGS(x), CmdFlags & CF_TO_STDOUT )
+#define HELP_ARGS(x)            _ ## x ## _HELP
+#define WRITE_HELP_ONE(x)       WriteHelp( HELP_ARGS(x), false )
+#define WRITE_HELP_FULL(x)      WriteHelp( HELP_ARGS(x), true )
 
-static void WriteHelp( int first_msg, int last_msg, bool prompt )
-/***************************************************************/
+#define NUM_ROWS        24
+
+static int  line_count = 0;
+static bool previous_null = false;
+
+static void doWriteHelp( int first_msg, int last_msg )
+/****************************************************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    bool        previous_null;
     int         msg;
+    bool        ok;
 
-    if( prompt ) {
-        PressKey();
-    }
-    previous_null = false;
     for( msg = first_msg; msg <= last_msg; msg++ ) {
-        Msg_Get( msg, msg_buffer );
-        if( msg_buffer[0] == '\0' ) {
+        ok = Msg_Get( msg, msg_buffer );
+        if( !ok ) {
             if( previous_null ) {
                 break;
             }
             previous_null = true;
         } else if( previous_null ) {
-            PressKey();
+            if( CmdFlags & CF_TO_STDOUT ) {
+                PressKey();
+                line_count = 0;
+            }
+            line_count++;
             WriteStdOutWithNL( msg_buffer );
             previous_null = false;
         } else {
+            if( ( CmdFlags & CF_TO_STDOUT ) && line_count == ( NUM_ROWS - 2 ) ) {
+                PressKey();
+                line_count = 0;
+            }
+            line_count++;
             WriteStdOutWithNL( msg_buffer );
         }
     }
 }
 
-static void WriteGenHelp( void )
-/******************************/
+static void WriteHelp( int first_msg, int last_msg, bool genhelp )
+/****************************************************************/
 {
-    WLPrtBanner();
-    WriteHelp( _GENERAL_HELP, false );
+    if( genhelp || ( first_msg == MSG_GENERAL_HELP_0 && last_msg == MSG_GENERAL_HELP_51 ) ) {
+        line_count = WLPrtBanner();
+        if( genhelp ) {
+            doWriteHelp( _GENERAL_HELP );
+        }
+    }
+    doWriteHelp( first_msg, last_msg );
 }
 
 #ifdef _EXE
 static bool ProcDosHelp( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( DOS );
+    WRITE_HELP_FULL( DOS );
     return( true );
 }
 #endif
@@ -109,32 +124,28 @@ static bool ProcDosHelp( void )
 static bool ProcOS2Help( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( OS2 );
+    WRITE_HELP_FULL( OS2 );
     return( true );
 }
 
 static bool ProcWindowsHelp( void )
 /*********************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( WINDOWS );
+    WRITE_HELP_FULL( WINDOWS );
     return( true );
 }
 
 static bool ProcWinVxdHelp( void )
 /*********************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( WINVXD );
+    WRITE_HELP_FULL( WINVXD );
     return( true );
 }
 
 static bool ProcNTHelp( void )
 /****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( NT );
+    WRITE_HELP_FULL( NT );
     return( true );
 }
 #endif
@@ -142,8 +153,7 @@ static bool ProcNTHelp( void )
 static bool ProcPharHelp( void )
 /******************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( PHARLAP );
+    WRITE_HELP_FULL( PHARLAP );
     return( true );
 }
 #endif
@@ -151,8 +161,7 @@ static bool ProcPharHelp( void )
 static bool ProcNovellHelp( void )
 /********************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( NOVELL );
+    WRITE_HELP_FULL( NOVELL );
     return( true );
 }
 #endif
@@ -160,8 +169,7 @@ static bool ProcNovellHelp( void )
 static bool Proc16MHelp( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( DOS16M );
+    WRITE_HELP_FULL( DOS16M );
     return( true );
 }
 #endif
@@ -169,8 +177,7 @@ static bool Proc16MHelp( void )
 static bool ProcQNXHelp( void )
 /*******************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( QNX );
+    WRITE_HELP_FULL( QNX );
     return( true );
 }
 #endif
@@ -179,8 +186,7 @@ static bool ProcQNXHelp( void )
 static bool ProcELFHelp( void )
 /*******************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( ELF );
+    WRITE_HELP_FULL( ELF );
     return( true );
 }
 #endif
@@ -189,8 +195,7 @@ static bool ProcELFHelp( void )
 static bool ProcZdosHelp( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( ZDOS );
+    WRITE_HELP_FULL( ZDOS );
     return( true );
 }
 #endif
@@ -199,8 +204,7 @@ static bool ProcZdosHelp( void )
 static bool ProcRdosHelp( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( RDOS );
+    WRITE_HELP_FULL( RDOS );
     return( true );
 }
 #endif
@@ -209,13 +213,12 @@ static bool ProcRdosHelp( void )
 static bool ProcRawHelp( void )
 /*****************************/
 {
-    WriteGenHelp();
-    WRITE_HELP( RAW );
+    WRITE_HELP_FULL( RAW );
     return( true );
 }
 #endif
 
-static  parse_entry   FormatHelp[] = {
+static  parse_entry FormatHelp[] = {
 #ifdef _EXE
     "Dos",          ProcDosHelp,            MK_ALL,     0,
 #endif
@@ -255,48 +258,42 @@ static  parse_entry   FormatHelp[] = {
 void DisplayOptions( void )
 /*************************/
 {
-    bool    isout;
-
-    isout = false;
-    if( CmdFlags & CF_TO_STDOUT ) {
-        isout = true;
-    }
-    WriteGenHelp();
+    WRITE_HELP_ONE( GENERAL );
 #if defined( _QNX ) && defined( __QNX__ )
-    WRITE_HELP( QNX );
+    WRITE_HELP_ONE( QNX );
 #endif
 #ifdef _EXE
-    WRITE_HELP( DOS );
+    WRITE_HELP_ONE( DOS );
 #endif
 #ifdef _OS2
-    WRITE_HELP( OS2 );
-    WRITE_HELP( WINDOWS );
-    WRITE_HELP( WINVXD );
-    WRITE_HELP( NT );
+    WRITE_HELP_ONE( OS2 );
+    WRITE_HELP_ONE( WINDOWS );
+    WRITE_HELP_ONE( WINVXD );
+    WRITE_HELP_ONE( NT );
 #endif
 #ifdef _PHARLAP
-    WRITE_HELP( PHARLAP );
+    WRITE_HELP_ONE( PHARLAP );
 #endif
 #ifdef _NOVELL
-    WRITE_HELP( NOVELL );
+    WRITE_HELP_ONE( NOVELL );
 #endif
 #ifdef _DOS16M
-    WRITE_HELP( DOS16M );
+    WRITE_HELP_ONE( DOS16M );
 #endif
 #if defined( _QNX ) && !defined( __QNX__ )
-    WRITE_HELP( QNX );
+    WRITE_HELP_ONE( QNX );
 #endif
 #ifdef _ELF
-    WRITE_HELP( ELF );
+    WRITE_HELP_ONE( ELF );
 #endif
 #ifdef _ZDOS
-    WRITE_HELP( ZDOS );
+    WRITE_HELP_ONE( ZDOS );
 #endif
 #ifdef _RDOS
-    WRITE_HELP( RDOS );
+    WRITE_HELP_ONE( RDOS );
 #endif
 #ifdef _RAW
-    WRITE_HELP( RAW );
+    WRITE_HELP_ONE( RAW );
 #endif
 }
 
@@ -305,6 +302,5 @@ bool DoHelp( void )
 // display help, optionally allowing the user to specifiy the format he/she
 // wants the help for.
 {
-    return( ProcOne( FormatHelp, SEP_NO, false ) );
+    return( ProcOne( FormatHelp, SEP_NO ) );
 }
-

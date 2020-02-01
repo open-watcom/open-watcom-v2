@@ -749,7 +749,8 @@ system begin rdos
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos ^
+    format windows pe ^
+    runtime rdos
 :endsegment
 end
 system begin rdos_dll
@@ -759,7 +760,8 @@ system begin rdos_dll
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos dll ^
+    format windows pe dll ^
+    runtime rdos
 :endsegment
 end
 system begin rdos_efi
@@ -769,7 +771,8 @@ system begin rdos_efi
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe efi ^
+    format windows pe ^
+    runtime efiboot
 :endsegment
 end
 system begin rdos_dev32
@@ -779,7 +782,7 @@ system begin rdos_dev32
     option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdosdev
-    format rdos dev32 ^
+    format rdos dev ^
 :endsegment
 end
 system begin rdos_dev16
@@ -787,7 +790,7 @@ system begin rdos_dev16
     ARCH i86 -bt=rdos_dev16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Device driver'
-    format rdos dev16 ^
+    format rdos dev ^
 :endsegment
 end
 system begin rdosdev
@@ -797,7 +800,7 @@ system begin rdosdev
     option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdosdev
-    format rdos dev32 ^
+    format rdos dev ^
 :endsegment
 end
 system begin rdos_bin32
@@ -806,7 +809,7 @@ system begin rdos_bin32
 :elsesegment Pwlsystem
     option osname='32-bit RDOS Binary'
     libpath %WATCOM%/lib386
-    format rdos bin32 ^
+    format rdos bin ^
 :endsegment
 end
 system begin rdos_bin16
@@ -814,7 +817,7 @@ system begin rdos_bin16
     ARCH i86 -bt=rdos_bin16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Binary'
-    format rdos bin16 ^
+    format rdos bin ^
 :endsegment
 end
 system begin rdos_mboot

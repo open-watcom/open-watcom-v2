@@ -75,7 +75,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf
             buf = (map_entry *)((char *)buf + sizeof( le_map_entry ));
         }
     } else {
-        shift = FmtData.u.os2.segment_shift;
+        shift = FmtData.u.os2fam.segment_shift;
         size = num * sizeof( lx_map_entry );
         while( limit > 0 ) {
             buf->lx.page_offset = *start >> shift;
@@ -159,7 +159,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
             objrec.flags |= OBJ_DISCARDABLE;
         }
         if( (group->segflags & SEG_PURE)
-          || (group == DataGroup && (FmtData.u.os2.flags & SINGLE_AUTO_DATA)) ) {
+          || (group == DataGroup && (FmtData.u.os2fam.flags & SINGLE_AUTO_DATA)) ) {
             objrec.flags |= OBJ_SHARABLE;
         }
         if( group->segflags & SEG_PRELOAD ) {
@@ -225,7 +225,7 @@ static unsigned long DumpFlatEntryTable( void )
     flat_bundle_entryfwd bundle_fwd;
 
     size = 0;
-    start = FmtData.u.os2.exports;
+    start = FmtData.u.os2fam.exports;
     if( start != NULL ) {
         prevord = 0;
         for( place = start; place != NULL; ) {
@@ -379,7 +379,7 @@ static unsigned WriteDataPages( unsigned long loc )
                 if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
-                    size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift) - last_page;
+                    size = ROUND_SHIFT(last_page, FmtData.u.os2fam.segment_shift) - last_page;
                 }
                 PadLoad( size );
                 loc += size;
@@ -392,7 +392,7 @@ static unsigned WriteDataPages( unsigned long loc )
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
     } else if( (FmtData.type & (MK_OS2_LE | MK_WIN_VXD)) == 0 ) {
-        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift ) - last_page );
+        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2fam.segment_shift ) - last_page );
     }
     return( last_page );
 }
@@ -404,7 +404,7 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
     entry_export *exp;
     vxd_ddb      ddb;
 
-    exp = FmtData.u.os2.exports;
+    exp = FmtData.u.os2fam.exports;
     if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
         ReadInfo( (exp->sym->p.seg)->u1.vm_ptr, &ddb, sizeof( ddb ) );
         exe_head->r.vxd.device_ID = ddb.req_device_number;
@@ -460,7 +460,7 @@ void FiniOS2FlatLoadFile( void )
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         exe_head.l.last_page = last_page;
     } else {
-        exe_head.l.page_shift = FmtData.u.os2.segment_shift;
+        exe_head.l.page_shift = FmtData.u.os2fam.segment_shift;
     }
     exe_head.nonres_off = PosLoad();
     exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
@@ -500,18 +500,18 @@ void FiniOS2FlatLoadFile( void )
         FmtData.minor *= 10;
     exe_head.version = FmtData.major * 100 + FmtData.minor;
     if( FmtData.type & MK_WIN_VXD ) { // VxD flags settings
-        if( FmtData.u.os2.flags & VIRT_DEVICE ) {
+        if( FmtData.u.os2fam.flags & VIRT_DEVICE ) {
             exe_head.flags |= VXD_DEVICE_DRIVER_DYNAMIC;
-        } else if( FmtData.u.os2.flags & PHYS_DEVICE ) {
+        } else if( FmtData.u.os2fam.flags & PHYS_DEVICE ) {
             exe_head.flags |= VXD_DEVICE_DRIVER_STATIC;
         } else {
             exe_head.flags |= VXD_DEVICE_DRIVER_3x;
         }
-//        exe_head.heapsize  = FmtData.u.os2.heapsize;
+//        exe_head.heapsize  = FmtData.u.os2fam.heapsize;
     } else { // OS/2 flags settings
-        if( FmtData.u.os2.flags & PHYS_DEVICE ) {
+        if( FmtData.u.os2fam.flags & PHYS_DEVICE ) {
             exe_head.flags |= OSF_PHYS_DEVICE;
-        } else if( FmtData.u.os2.flags & VIRT_DEVICE ) {
+        } else if( FmtData.u.os2fam.flags & VIRT_DEVICE ) {
             exe_head.flags |= OSF_VIRT_DEVICE;
         } else if( FmtData.dll ) {
             exe_head.flags |= OSF_IS_DLL;
@@ -520,10 +520,10 @@ void FiniOS2FlatLoadFile( void )
              * is no entrypoint!
              */
             if( exe_head.start_obj != 0 ) {
-                if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+                if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
                     exe_head.flags |= OSF_INIT_INSTANCE;
                 }
-                if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
+                if( FmtData.u.os2fam.flags & TERM_INSTANCE_FLAG ) {
                     exe_head.flags |= OSF_TERM_INSTANCE;
                 }
             }
@@ -532,9 +532,9 @@ void FiniOS2FlatLoadFile( void )
              * These are only relevant for EXEs
              */
             exe_head.stacksize = StackSize;
-            if( FmtData.u.os2.flags & PM_NOT_COMPATIBLE ) {
+            if( FmtData.u.os2fam.flags & PM_NOT_COMPATIBLE ) {
                 exe_head.flags |= OSF_NOT_PM_COMPATIBLE;
-            } else if( FmtData.u.os2.flags & PM_APPLICATION ) {
+            } else if( FmtData.u.os2fam.flags & PM_APPLICATION ) {
                 exe_head.flags |= OSF_PM_APP;
             } else {
                 exe_head.flags |= OSF_PM_COMPATIBLE;
@@ -544,10 +544,10 @@ void FiniOS2FlatLoadFile( void )
             exe_head.flags |= OSF_LINK_ERROR;
         }
         if( (FmtData.type & MK_OS2_LX)
-            && (FmtData.u.os2.toggle_relocs ^ FmtData.u.os2.gen_int_relocs) ) {
+            && (FmtData.u.os2fam.toggle_relocs ^ FmtData.u.os2fam.gen_int_relocs) ) {
             exe_head.flags |= OSF_INTERNAL_FIXUPS_DONE;
         }
-        exe_head.heapsize  = FmtData.u.os2.heapsize;
+        exe_head.heapsize  = FmtData.u.os2fam.heapsize;
     }
     exe_head.page_size = OSF_DEF_PAGE_SIZE;
     exe_head.num_preload = 0;       /* NYI: we should fill in this one correctly */
@@ -568,9 +568,9 @@ bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
         dll->m.modnum = NULL;
         dll->u.ordinal = ((entry_export *)sym->e.export)->ordinal;
         *dllhandle = dll;
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 #endif

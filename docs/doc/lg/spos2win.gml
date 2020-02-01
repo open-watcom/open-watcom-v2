@@ -34,7 +34,7 @@ is any of the following:
 .note FORMAT WINDOWS VXD [DYNAMIC]
 .do end
 .if '&exeformat' eq 'win nt' .do begin
-.note FORMAT WINDOWS NT [TNT | RDOS] [dll_form]
+.note FORMAT WINDOWS NT [TNT] [dll_form]
 .do end
 .if '&exeformat' ne 'win vxd' .do begin
 .note IMPORT import{,import}

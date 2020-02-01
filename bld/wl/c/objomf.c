@@ -893,7 +893,7 @@ static void Comment( void )
             break;
         case MOMF_PROT_LIB:
             if( FmtData.type & MK_WINDOWS ) {
-                FmtData.u.os2.is_private_dll = true;
+                FmtData.u.os2fam.is_private_dll = true;
             }
             break;
         }

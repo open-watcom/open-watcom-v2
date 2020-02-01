@@ -33,8 +33,8 @@
 
 #ifdef _EXE
 
-extern unsigned_32      OvlTabOffset;
+extern unsigned_32  OvlTabOffset;
 
-extern void     FiniDOSLoadFile( void );
+extern void         FiniDOSLoadFile( void );
 
 #endif

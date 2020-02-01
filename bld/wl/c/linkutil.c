@@ -36,6 +36,7 @@
 #include <setjmp.h>
 #include <sys/types.h>
 #include "linkstd.h"
+#include "walloca.h"
 #include "pcobj.h"
 #include "newmem.h"
 #include "alloc.h"
@@ -64,6 +65,14 @@ typedef struct {
 typedef struct {
     class_walk_fn   *cbfn;
 } class_walk_data;
+
+/* Default File Extension array, see ldefext.h */
+
+static  char    *DefExt[] = {
+    #define pick1(enum,text) text,
+    #include "ldefext.h"
+    #undef pick1
+};
 
 void WriteNulls( f_handle file, size_t len, const char *name )
 /************************************************************/
@@ -646,4 +655,80 @@ file_list *AllocNewFile( member_list *member )
         new_entry->flags |= STAT_HAS_MEMBER;
     }
     return( new_entry );
+}
+
+char *FileName( const char *buff, size_t len, file_defext etype, bool force )
+/***************************************************************************/
+{
+    const char  *namptr;
+    const char  *namstart;
+    char        *ptr;
+    size_t      cnt;
+    size_t      namelen;
+    char        c;
+
+
+    for( namptr = buff + len; namptr != buff; --namptr ) {
+        c = namptr[-1];
+        if( IS_PATH_SEP( c ) ) {
+            break;
+        }
+    }
+    namstart = namptr;
+    cnt = len - ( namptr - buff );
+    if( cnt == 0 ) {
+        DUPSTR_STACK( ptr, buff, len );
+        LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
+    }
+    namelen = cnt;
+    namptr = buff + len - 1;
+    while( --cnt != 0 && *namptr != '.' ) {
+        namptr--;
+    }
+    if( force || *namptr != '.' ) {
+        if( force && etype == E_MAP ) {         // op map goes in current dir.
+            buff = namstart;
+            len = namelen;
+        }
+        if( cnt != 0 ) {
+            len = namptr - buff;
+        }
+        _ChkAlloc( ptr, len + strlen( DefExt[etype] ) + 1 );
+        memcpy( ptr, buff, len );
+        strcpy( ptr + len, DefExt[etype] );
+    } else {
+        ptr = ChkToString( buff, len );
+    }
+    return( ptr );
+}
+
+static int stricmp_wrapper( const void *s1, const void *s2 )
+/**********************************************************/
+{
+    return( stricmp( s1, s2 ) );
+}
+
+section *NewSection( void )
+/*************************/
+{
+    section             *sect;
+
+    _ChkAlloc( sect, sizeof( section ) );
+    sect->next_sect = NULL;
+    sect->classlist = NULL;
+    sect->orderlist = NULL;
+    sect->areas = NULL;
+    sect->files = NULL;
+    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
+    sect->mods = NULL;
+    sect->reloclist = NULL;
+    SET_ADDR_UNDEFINED( sect->sect_addr );
+    sect->ovlref = 0;
+    sect->parent = NULL;
+    sect->relocs = 0;
+    sect->size = 0;
+    sect->outfile = NULL;
+    sect->u.dist_mods = NULL;
+    sect->dbg_info = NULL;
+    return( sect );
 }

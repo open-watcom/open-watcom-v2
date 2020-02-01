@@ -228,7 +228,7 @@ target_as_mps   = bwasmps -zq -w8
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
     @%make echo_aslink
     $(noecho)*$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-    $(noecho)*bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+    $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
 
 ./mkcode.exe: ../../a/mkcode.c
     @%make echo_bldcl

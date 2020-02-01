@@ -839,7 +839,7 @@ symbol *DefISymbol( const char *name )
         LnkMsg( ERR+MSG_RESERVED_SYM_DEFINED, "s", name );
     }
     sym->info |= SYM_DEFINED | SYM_LINK_GEN;
-    return sym;
+    return( sym );
 }
 
 symbol *FindISymbol( const char *name )
@@ -1177,7 +1177,7 @@ symbol *AddAltDef( symbol *sym, sym_info sym_type )
     symbol *    altsym;
 
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 )
-        return sym;
+        return( sym );
     altsym = AddSym();
     SET_SYM_TYPE( altsym, sym_type );
     altsym->info |= SYM_DEAD | SYM_IS_ALTDEF;
@@ -1186,7 +1186,7 @@ symbol *AddAltDef( symbol *sym, sym_info sym_type )
     altsym->e.mainsym = sym;
     Ring2Append( &CurrMod->publist, altsym );
     RingAppend( &sym->u.altdefs, altsym );
-    return altsym;
+    return( altsym );
 }
 
 symbol *HashReplace( symbol *sym )
@@ -1195,13 +1195,13 @@ symbol *HashReplace( symbol *sym )
     symbol *    newsym;
 
     if( sym->mod == NULL )
-        return sym;
+        return( sym );
     Ring2Prune( &sym->mod->publist, sym );
     if( IS_SYM_COMMUNAL( sym ) ) {
         sym->p.seg->isdead = true;
     }
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 )
-        return sym;
+        return( sym );
     newsym = AddSym();
     newsym->e.mainsym = sym;
     newsym->name = sym->name;
@@ -1212,7 +1212,7 @@ symbol *HashReplace( symbol *sym )
     if( IS_SYM_NICOMDEF( sym ) ) {
         sym->p.cdefsize = sym->p.seg->length;
     }
-    return sym;
+    return( sym );
 }
 
 static void SetDataSymInfo( symbol *sym, symbol *old )
@@ -1237,9 +1237,9 @@ static bool SetNewDataSym( void *_dead, void *_sym )
         } else {
             sym->u.datasym = deadsym->u.datasym;
         }
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 static void CleanAltDefs( symbol *sym )
@@ -1409,7 +1409,7 @@ symbol *MakeWeakExtdef( const char *name, symbol *def )
     sym = SymOp( ST_CREATE, name, strlen( name ) );
     sym->e.def = def;
     SET_SYM_TYPE( sym, SYM_LINK_WEAK_REF );
-    return sym;
+    return( sym );
 }
 
 void ConvertVFSym( symbol * sym )
@@ -1443,7 +1443,7 @@ offset SymbolAbsAddr( symbol *sym )
     } else {
         // it is an imported symbol; addr is already absolute
     }
-    return addr;
+    return( addr );
 }
 
 group_entry *SymbolGroup( symbol *sym )
@@ -1466,5 +1466,5 @@ group_entry *SymbolGroup( symbol *sym )
             group = NULL;
         }
     }
-    return group;
+    return( group );
 }

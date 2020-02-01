@@ -226,6 +226,7 @@ enum {
     PE_SS_EFI_APPLICATION   = 0x000A,
     PE_SS_EFI_BOOT          = 0x000B,
     PE_SS_EFI_RUNTIME       = 0x000C,
+    PE_SS_EFI_ROM           = 0x000D,
     PE_SS_PL_DOSSTYLE       = 0x0042,
     PE_SS_RDOS              = 0xAD05
 };

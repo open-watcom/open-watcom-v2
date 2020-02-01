@@ -14,13 +14,13 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
             | RAW [BIN | HEX]
             | WINDOWS [win_dll] [MEMORY] [FONT]
             | WINDOWS VXD [DYNAMIC]
-            | WINDOWS NT [TNT | RDOS] [dll_attrs]
+            | WINDOWS NT [TNT] [dll_attrs]
             | OS2 [os2_type] [dll_attrs | os2_attrs]
             | PHARLAP [EXTENDED | REX | SEGMENTED]
             | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
             | QNX [FLAT]
             | ELF [DLL]
-            | RDOS [DEV16 | DEV32 | BIN16 | BIN32 | MBOOT]
+            | RDOS [DEV | BIN | MBOOT]
 
     win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
 
@@ -178,10 +178,6 @@ extender is created.
 A "PL" format (rather than "PE") executable is created so that
 the Phar Lap TNT DOS extender will always run the application
 (including under Windows NT).
-.np
-.ix 'RDOS'
-If "RDOS" is specified, an executable for the RDOS operating system
-is created.
 .np
 If "DLL" (short form "DL") is specified, a Dynamic Link Library will
 be generated in which case the name of the executable file will have
@@ -491,11 +487,9 @@ see the chapter entitled :HDREF refid='qnxchap'..
 .mnote RDOS
 tells the &lnkname to generate a RDOS special executable file.
 .np
-If "DEV16" or "DEV32" is specified, a 16-bit or 32-bit device
-driver file is created.
+If "DEV" is specified, a device driver file is created.
 .np
-If "BIN16" or "BIN32" is specified, a 16-bit or 32-bit binary 
-executable file is created.
+If "BIN" is specified, a binary executable file is created.
 .np
 If "MBOOT" is specified, a 16-bit multi-boot executable file 
 is created.

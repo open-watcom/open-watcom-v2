@@ -824,10 +824,6 @@ static void setDefBase( void )
         FmtData.base = PE_DEFAULT_BASE;
         return;
     }
-    if( FmtData.type & MK_WIN_VXD ) {
-        FmtData.base = 0;
-        return;
-    }
     if( FmtData.type & MK_OS2_FLAT ) {
         FmtData.base = FLAT_GRANULARITY;
         return;

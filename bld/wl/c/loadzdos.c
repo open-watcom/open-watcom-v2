@@ -76,7 +76,7 @@ static unsigned_32 WriteZdosRelocs( void )
     RELOC_INFO  *temp;
 
     temp = Root->reloclist;                 // don't want to modify original
-    return DumpMaxRelocList( &temp, 0 );    // write the relocations.
+    return( DumpMaxRelocList( &temp, 0 ) ); // write the relocations.
 }
 
 void FiniZdosLoadFile( void )
