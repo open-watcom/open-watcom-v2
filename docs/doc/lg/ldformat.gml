@@ -12,22 +12,23 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
     form ::= DOS [COM]
             | ZDOS [SYS | HWD | FSD]
             | RAW [BIN | HEX]
-            | WINDOWS [win_dll] [MEMORY] [FONT]
-            | WINDOWS VXD [DYNAMIC]
-            | WINDOWS NT [TNT] [dll_attrs]
-            | OS2 [os2_type] [dll_attrs | os2_attrs]
+            | WINDOWS [win_dll_attrs] [MEMORY] [FONT]
+            | WINDOWS VXD [STATIC | DYNAMIC]
+            | WINDOWS NT [TNT] [nt_dll_attrs]
+            | OS2 [FLAT | LE | LX] [os2_dll_attrs | os2_attrs]
             | PHARLAP [EXTENDED | REX | SEGMENTED]
             | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
             | QNX [FLAT]
             | ELF [DLL]
             | RDOS [DEV | BIN | MBOOT]
 
-    win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
+    win_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE]
 
-    dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE]
-                      [TERMINSTANCE | TERMGLOBAL]
+    nt_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE | INITTHREAD
+                      [TERMINSTANCE | TERMGLOBAL | TERMTHREAD]]
 
-    os2_type ::= FLAT | LE | LX
+    os2_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE
+                      [TERMINSTANCE | TERMGLOBAL]]
 
     os2_attrs ::= PM | PMCOMPATIBLE | FULLSCREEN
                         | PHYSDEVICE | VIRTDEVICE
