@@ -1274,6 +1274,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.osv_specd ) {
             PE32( h ).os_major = FmtData.u.pe.osmajor;
             PE32( h ).os_minor = FmtData.u.pe.osminor;
+        } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
+            // RDOS default
+            PE32( h ).os_major = 8;
+            PE32( h ).os_minor = 8;
         } else {
             PE32( h ).os_major = PE_OS_MAJOR;
             PE32( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
@@ -1284,6 +1288,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.sub_specd ) {
             PE32( h ).subsys_major = FmtData.u.pe.submajor;
             PE32( h ).subsys_minor = FmtData.u.pe.subminor;
+        } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
+            // RDOS default
+            PE32( h ).subsys_major = 1;
+            PE32( h ).subsys_minor = 0;
         } else {
             PE32( h ).subsys_major = 3;
             PE32( h ).subsys_minor = 0xa;

@@ -1018,6 +1018,7 @@ static void GetSubsystemVersion( void )
     vb.message = "SUBSYSTEM";
     result = GetGenVersion( &vb, GENVER_MAJOR | GENVER_MINOR, false );
     if( result != GENVER_ERROR ) {
+        FmtData.u.pe.sub_specd = true;
         FmtData.u.pe.submajor = vb.major;
         FmtData.u.pe.subminor = vb.minor;
     }
@@ -1192,15 +1193,7 @@ static bool ProcRDOS( void )
 /**************************/
 {
     FmtData.u.pe.subsystem = PE_SS_RDOS;
-
-    FmtData.u.pe.osmajor = 8;
-    FmtData.u.pe.osminor = 8;
-    FmtData.u.pe.osv_specd = true;
-
-    FmtData.u.pe.submajor = 1;
-    FmtData.u.pe.subminor = 0;
-    FmtData.u.pe.sub_specd = true;
-
+    GetSubsystemVersion();
     return( true );
 }
 
@@ -1210,7 +1203,6 @@ static bool ProcEFI( void )
     Extension = E_EFI;
     FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
     GetSubsystemVersion();
-
     return( true );
 }
 
@@ -1331,17 +1323,13 @@ static parse_entry  WindowsFormats[] = {
     NULL
 };
 
-static parse_entry  OS2FormatOptions[] = {
-    "PM",           ProcPM,             MK_ONLY_OS2,            0,
-    "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2,            0,
-    "FULLscreen",   ProcPMFullscreen,   MK_ONLY_OS2,            0,
-    NULL
-};
-
 static parse_entry  OS2SubFormats[] = {
     "DLl",          ProcOS2DLL,         MK_ONLY_OS2,            0,
     "PHYSdevice",   ProcPhysDevice,     MK_OS2_LE | MK_OS2_LX,  0,
     "VIRTdevice",   ProcVirtDevice,     MK_OS2_LE | MK_OS2_LX,  0,
+    "PM",           ProcPM,             MK_ONLY_OS2,            0,
+    "PMCompatible", ProcPMCompatible,   MK_ONLY_OS2,            0,
+    "FULLscreen",   ProcPMFullscreen,   MK_ONLY_OS2,            0,
     NULL
 };
 
@@ -1360,7 +1348,6 @@ bool ProcOS2Format( void )
     Extension = E_LOAD;
     ProcOne( OS2Formats, SEP_NO );
     ProcOne( OS2SubFormats, SEP_NO );
-    ProcOne( OS2FormatOptions, SEP_NO );
     if( FmtData.type & MK_OS2_LX ) {
         if( FmtData.dll ) {
             FmtData.u.os2.gen_int_relocs = true;

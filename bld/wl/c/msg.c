@@ -604,12 +604,15 @@ void RcError( unsigned num, ... )
 }
 #endif
 
-void WLPrtBanner( void )
-/*****************************/
-// print the banner, if it hasn't already been printed.
+int WLPrtBanner( void )
+/**********************
+ * print the banner, if it hasn't already been printed
+ */
 {
     const char  *msg;
+    int         count;
 
+    count = 0;
     if( !BannerPrinted ) {
         msg = MsgStrings[PRODUCT];
         WriteStdOutInfo( msg, BANNER, NULL );
@@ -622,7 +625,9 @@ void WLPrtBanner( void )
         msg = MsgStrings[TRADEMARK2];
         WriteStdOutInfo( msg, BANNER, NULL );
         BannerPrinted = true;
+        count = 5;
     }
+    return( count );
 }
 
 bool SkipSymbol( symbol * sym )
