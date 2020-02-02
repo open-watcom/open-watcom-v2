@@ -26,8 +26,10 @@ pick( MSG_FORMAT_NOT_DECIDED,   "format not decided" ,
                                 "フォーマットが決定していません" )
 pick( MSG_NO_LEADER_ON_PASS_2,  "no leader found on pass 2" ,
                                 "パス２でリーダーが見つかりません" )
-pick( MSG_IOERRLIST_0,          "" , "" )
-pick( MSG_IOERRLIST_1,          "" , "" )
+pick( MSG_IOERRLIST_0,          "" ,
+                                "" )
+pick( MSG_IOERRLIST_1,          "" ,
+                                "" )
 pick( MSG_IOERRLIST_2,          "file not found" ,
                                 "ファイルが見つかりません" )
 pick( MSG_IOERRLIST_3,          "path not found" ,
@@ -183,13 +185,16 @@ pick( MSG_MAP_DEFINING_MODULE,  "Module: %s(%s)" ,
  *  General help screen: max 52 lines (from 0 to 51).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_GENERAL_HELP_0,   " " , " " )
+pick( MSG_GENERAL_HELP_0,   " " ,
+                            " " )
 pick( MSG_GENERAL_HELP_1,   "usage: wlink {directive}" ,
                             "使用方法: wlink {directive}" )
-pick( MSG_GENERAL_HELP_2,   " " , " " )
+pick( MSG_GENERAL_HELP_2,   " " ,
+                            " " )
 pick( MSG_GENERAL_HELP_3,   "commands valid for all executable formats:" ,
                             "全ての実行可能フォーマットで有効なコマンド:" )
-pick( MSG_GENERAL_HELP_4,   " " , " " )
+pick( MSG_GENERAL_HELP_4,   " " ,
+                            " " )
 pick( MSG_GENERAL_HELP_5,   "directive  ::= \"File\"        obj_spec{\",\"obj_spec}" ,
                             "directive  ::= \"File\"        obj_spec{\",\"obj_spec}" )
 pick( MSG_GENERAL_HELP_6,   "            | \"Name\"         exe_file" ,
@@ -267,14 +272,16 @@ pick( MSG_GENERAL_HELP_40,  "            | \"VFRemoval\"" ,
  *  Dos help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_DOS_HELP_0,   " " , " " )
+pick( MSG_DOS_HELP_0,   " " ,
+                        " " )
 pick( MSG_DOS_HELP_1,   "commands valid for the MS-DOS executable format only:" ,
                         "MS-DOS 実行可能形式に対してのみ有効なコマンド:" )
-pick( MSG_DOS_HELP_2,   " " , " " )
+pick( MSG_DOS_HELP_2,   " " ,
+                        " " )
 pick( MSG_DOS_HELP_3,   "form      ::= \"Dos\" [\"COM\"]" ,
                         "form      ::= \"Dos\" [\"COM\"]" )
 pick( MSG_DOS_HELP_4,   "directive ::= \"NEWsegment\"" ,
-                        "directive ::+ \"NEWsegment\"" )                
+                        "directive ::+ \"NEWsegment\"" )
 pick( MSG_DOS_HELP_5,   "option    ::= \"FULLHeader\" | \"PACKCode=\"n | \"PACKData=\"n" ,
                         "option    ::= \"FULLHeader\" | \"PACKCode=\"n | \"PACKData=\"n" )
 
@@ -282,10 +289,12 @@ pick( MSG_DOS_HELP_5,   "option    ::= \"FULLHeader\" | \"PACKCode=\"n | \"PACKD
  *  OS2 help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_OS2_HELP_0,  " " , " " )
+pick( MSG_OS2_HELP_0,  " " ,
+                       " " )
 pick( MSG_OS2_HELP_1,  "commands valid for the OS/2 and DOS/4G executable formats only:" ,
                        "OS/2実行可能形式に対してのみ有効なコマンド:" )
-pick( MSG_OS2_HELP_2,  " " , " " )
+pick( MSG_OS2_HELP_2,  " " ,
+                       " " )
 pick( MSG_OS2_HELP_3,  "form      ::= \"OS2\" [\"FLat\" | \"LE\" | \"LX\"] [\"PHYSdevice\" | \"VIRTdevice\"" ,
                        "form      ::= \"OS2\" [\"FLat\" | \"LE\" | \"LX\"] [\"PHYSdevice\" | \"VIRTdevice\"" )
 pick( MSG_OS2_HELP_4,  "            | \"DLl\" [\"INITGlobal\" | \"INITInstance\"" ,
@@ -295,7 +304,7 @@ pick( MSG_OS2_HELP_5,  "                 [\"TERMInstance\" | \"TERMGlobal\"]]" ,
 pick( MSG_OS2_HELP_6,  "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " ,
                        "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " )
 pick( MSG_OS2_HELP_7,  "directive ::= \"NEWsegment\"" ,
-                       "directive ::= \"NEWsegment\"" )                
+                       "directive ::= \"NEWsegment\"" )
 pick( MSG_OS2_HELP_8,  "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                        "            | \"SEgment\"     segdesc{\",\"segdesc}" )
 pick( MSG_OS2_HELP_9,  "            | \"IMPort\"      import{\",\"import}" ,
@@ -341,10 +350,12 @@ pick( MSG_OS2_HELP_27, "            | \"CONTiguous\" | \"DYNamic\"" ,
  *  Windows help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_WINDOWS_HELP_0,  " " , " " )
+pick( MSG_WINDOWS_HELP_0,  " " ,
+                           " " )
 pick( MSG_WINDOWS_HELP_1,  "commands valid for the Microsoft Windows executable formats only:" ,
                            "Microsoft Windows実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_WINDOWS_HELP_2,  " " , " " )
+pick( MSG_WINDOWS_HELP_2,  " " ,
+                           " " )
 pick( MSG_WINDOWS_HELP_3,  "form      ::= \"WIndows\" [\"DLl\" [\"INITGlobal\" | \"INITInstance\"]] [MEMory] [FOnt]" ,
                            "form      ::= \"WIndows\" [\"DLl\" [\"INITGlobal\" | \"INITInstance\"]] [MEMory] [FOnt]" )
 pick( MSG_WINDOWS_HELP_4,  "directive ::= \"NEWsegment\"" ,
@@ -388,10 +399,12 @@ pick( MSG_WINDOWS_HELP_21, "            | (\"MOVeable\" | \"FIXed\") | \"DIScard
  *  NT help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_NT_HELP_0,  " " , " " )
+pick( MSG_NT_HELP_0,  " " ,
+                      " " )
 pick( MSG_NT_HELP_1,  "commands valid for the Microsoft Windows NT executable formats only:" ,
                       "Microsoft Windows NT実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_NT_HELP_2,  " " , " " )
+pick( MSG_NT_HELP_2,  " " ,
+                      " " )
 pick( MSG_NT_HELP_3,  "form      ::= \"WIndows NT\" [\"TNT\"]" ,
                       "form      ::= \"WIndows NT\" [\"TNT\"]" )
 pick( MSG_NT_HELP_4,  "              [\"DLl\" [\"INITGlobal\" | \"INITInstance\" | \"INITThread\"" ,
@@ -399,7 +412,7 @@ pick( MSG_NT_HELP_4,  "              [\"DLl\" [\"INITGlobal\" | \"INITInstance\"
 pick( MSG_NT_HELP_5,  "                  [\"TERMInstance\" | \"TERMGlobal\" | \"TERMThread\"]]]" ,
                       "                  [\"TERMInstance\" | \"TERMGlobal\" | \"TERMThread\"]]]" )
 pick( MSG_NT_HELP_6,  "directive ::= \"RUntime\"     runoption[=major[.minor]]" ,
-                      "directive ::= \"RUntime\"     runoption[=ﾒｼﾞｬｰﾊﾞｰｼﾞｮﾝ[.ﾏｲﾅｰﾊﾞｰｼﾞｮﾝ]]")             
+                      "directive ::= \"RUntime\"     runoption[=ﾒｼﾞｬｰﾊﾞｰｼﾞｮﾝ[.ﾏｲﾅｰﾊﾞｰｼﾞｮﾝ]]")
 pick( MSG_NT_HELP_7,  "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                       "            | \"SEgment\"     segdesc{\",\"segdesc}" )
 pick( MSG_NT_HELP_8,  "            | \"IMPort\"      import{\",\"import}" ,
@@ -441,10 +454,12 @@ pick( MSG_NT_HELP_24, "commitopt ::= \"STack=\"n | \"Heap=\"n" ,
  *  Phar Lap help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_PHAR_HELP_0,  " " , " " )               
+pick( MSG_PHAR_HELP_0,  " " ,
+                        " " )
 pick( MSG_PHAR_HELP_1,  "commands valid for the Phar Lap executable formats only:" ,
                         "Phar Lap実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_PHAR_HELP_2,  " " , " " )               
+pick( MSG_PHAR_HELP_2,  " " ,
+                        " " )
 pick( MSG_PHAR_HELP_3,  "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\" | \"SEGmented\"]" ,
                         "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\"]" )
 pick( MSG_PHAR_HELP_4,  "directive ::= \"RUntime\"     runoption{\",\"runoption}" ,
@@ -462,10 +477,12 @@ pick( MSG_PHAR_HELP_8,  "            | \"REALBreak=\"(n | symbol_name ) | \"UNPR
  *  Novell help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_NOVELL_HELP_0,    " " , " " )
+pick( MSG_NOVELL_HELP_0,    " " ,
+                            " " )
 pick( MSG_NOVELL_HELP_1,    "commands valid for the Novell Netware executable format only:" ,
                             "Novell Netware実行可能形式に対してのみ有効なコマンド:" )
-pick( MSG_NOVELL_HELP_2,    " " , " " )
+pick( MSG_NOVELL_HELP_2,    " " ,
+                            " " )
 pick( MSG_NOVELL_HELP_3,    "form      ::= \"NOVell\" [\"NLM\" | \"LAN\" | \"DSK\" | \"NAM\" | 'number'] 'description'" ,
                             "form      ::= \"NOVell\" [\"NLM\" | \"LAN\" | \"DSK\" | \"NAM\" | 'number'] ﾃﾞｨｽｸﾘﾌﾟｼｮﾝ" )
 pick( MSG_NOVELL_HELP_4,    "directive ::= \"MODUle\"      module_name{\",\"module_name}" ,
@@ -491,24 +508,26 @@ pick( MSG_NOVELL_HELP_13,   "            | \"THReadname\" name | \"VERSion=\"maj
 pick( MSG_NOVELL_HELP_14,   "            | \"XDCdata=\"file_name | \"AUTOUNload\"" ,
                             "            | \"XDCdata=\"ファイル名 | \"AUTOUNload\"" )
 pick( MSG_NOVELL_HELP_15,   "import    ::= entryname" ,
-                            "import    ::= エントリ名" )                
+                            "import    ::= エントリ名" )
 pick( MSG_NOVELL_HELP_16,   "export    ::= entryname" ,
-                            "export    ::= エントリ名" )                
+                            "export    ::= エントリ名" )
 
 /*
  *  Dos/16M help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_DOS16_HELP_0,     " " , " " )               
+pick( MSG_DOS16_HELP_0,     " " ,
+                            " " )
 pick( MSG_DOS16_HELP_1,     "commands valid for the DOS/16M executable format only:" ,
                             "DOS/16M実行可能形式に対してのみ有効なコマンド:" )
-pick( MSG_DOS16_HELP_2,     " " , " " )
+pick( MSG_DOS16_HELP_2,     " " ,
+                            " " )
 pick( MSG_DOS16_HELP_3,     "form      ::= \"DOS16M\"" ,
                             "form      ::= \"DOS16m\"" )
 pick( MSG_DOS16_HELP_4,     "directive ::= \"MEMory\"      strategy" ,
-                            "directive ::= \"MEMory\"      strategy" )              
+                            "directive ::= \"MEMory\"      strategy" )
 pick( MSG_DOS16_HELP_5,     "            | \"TRansparent\" seg_type" ,
-                            "            | \"TRansparent\" seg_type" )              
+                            "            | \"TRansparent\" seg_type" )
 pick( MSG_DOS16_HELP_6,     "            | \"RUntime\"     runoption{\",\"runoption}" ,
                             "            | \"RUntime\"     runoption{\",\"runoption}" )
 pick( MSG_DOS16_HELP_7,     "option    ::= \"BUFfer=\"n | \"GDTsize=\"n | (\"RELocs\" | \"NORelocs\") | \"SELstart=\"n" ,
@@ -524,18 +543,20 @@ pick( MSG_DOS16_HELP_11,    "            | \"SELectors\" | \"INT10\"" ,
 pick( MSG_DOS16_HELP_12,    "strategy  ::= \"TRYExtended\" | \"TRYLow\" | \"FORCEExtended\" | \"FORCELow\"" ,
                             "strategy  ::= \"TRYExtended\" | \"TRYLow\" | \"FORCEExtended\" | \"FORCELow\"" )
 pick( MSG_DOS16_HELP_13,    "seg_type  ::= \"STack\" | \"DAta\"" ,
-                            "seg_type  ::= \"STack\" | \"DAta\"" )              
+                            "seg_type  ::= \"STack\" | \"DAta\"" )
 
 /*
  *  QNX help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_QNX_HELP_0,   " " , " " )               
+pick( MSG_QNX_HELP_0,   " " ,
+                        " " )
 pick( MSG_QNX_HELP_1,   "commands valid for the QNX executable format only:" ,
-                        "QNX実行可能形式に対してのみ有効なコマンド:" )              
-pick( MSG_QNX_HELP_2,   " " , " " )               
+                        "QNX実行可能形式に対してのみ有効なコマンド:" )
+pick( MSG_QNX_HELP_2,   " " ,
+                        " " )
 pick( MSG_QNX_HELP_3,   "form      ::= \"QNX\" [\"FLat\"]" ,
-                        "form      ::= \"QNX\" [\"FLat\"]" )                
+                        "form      ::= \"QNX\" [\"FLat\"]" )
 pick( MSG_QNX_HELP_4,   "directive ::= \"SEGment\"     segdesc{\",\"segdesc}" ,
                         "directive ::= \"SEgment\"     segdesc{\",\"segdesc}" )
 pick( MSG_QNX_HELP_5,   "            | \"NEWsegment\"" ,
@@ -557,10 +578,12 @@ pick( MSG_QNX_HELP_11,  "segmodel  ::= \"EXECUTEOnly\" | \"EXECUTERead\" | \"REA
  *  ELF help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_ELF_HELP_0,   " " , " " )
+pick( MSG_ELF_HELP_0,   " " ,
+                        " " )
 pick( MSG_ELF_HELP_1,   "commands valid for the ELF executable format only:" ,
                         "ELF実行可能フォーマットに対してのみのコマンドです:" )
-pick( MSG_ELF_HELP_2,   " " , " " )
+pick( MSG_ELF_HELP_2,   " " ,
+                        " " )
 pick( MSG_ELF_HELP_3,   "form      ::= \"ELF\" [\"DLl\"]" ,
                         "form      ::= \"ELF\" [\"DLl\"]" )
 pick( MSG_ELF_HELP_4,   "directive ::= \"MODUle\"      module_name{\",\"module_name}" ,
@@ -587,10 +610,12 @@ pick( MSG_ELF_HELP_12,  "runoption ::= (\"SVR4\" | \"LINux\" | \"FREebsd\" | \"N
  *  Windows VXD help screen: max 32 lines (from 0 to 31).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_WIN_VXD_HELP_0,   " " , " " )
+pick( MSG_WIN_VXD_HELP_0,   " " ,
+                            " " )
 pick( MSG_WIN_VXD_HELP_1,   "commands valid for the Microsoft Windows VxD formats only:" ,
                             "Microsoft Windows VxD実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_WIN_VXD_HELP_2,   " " , " " )
+pick( MSG_WIN_VXD_HELP_2,   " " ,
+                            " " )
 pick( MSG_WIN_VXD_HELP_3,   "form      ::= \"WIndows VXD\" [\"STATic\" | \"DYNamic\"]" ,
                             "form      ::= \"WIndows VXD\" [\"STATic\" | \"DYNamic\"]" )
 /*
@@ -636,20 +661,24 @@ pick( MSG_WIN_VXD_HELP_21,  "            | (\"MOVeable\" | \"FIXed\") | \"DIScar
  *  Zdos help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_ZDOS_HELP_0,      " " , " " )
+pick( MSG_ZDOS_HELP_0,      " " ,
+                            " " )
 pick( MSG_ZDOS_HELP_1,      "commands valid for the ZDOS executable formats only:" ,
                             "ZDOS 実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_ZDOS_HELP_2,      " " , " " )
+pick( MSG_ZDOS_HELP_2,      " " ,
+                            " " )
 pick( MSG_ZDOS_HELP_3,      "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" ,
                             "form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" )
 /*
  *  Raw help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_RAW_HELP_0,       " " , " " )
+pick( MSG_RAW_HELP_0,       " " ,
+                            " " )
 pick( MSG_RAW_HELP_1,       "commands valid for the RAW executable formats only:" ,
                             "RAW 実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_RAW_HELP_2,       " " , " " )
+pick( MSG_RAW_HELP_2,       " " ,
+                            " " )
 pick( MSG_RAW_HELP_3,       "form      ::= \"Raw\" (\"BIN\" | \"HEX\")" ,
                             "form      ::= \"Raw\" (\"SYS\" | \"HEX\")" )
 pick( MSG_RAW_HELP_4,       "option    ::= \"OFFset=\"n" ,
@@ -659,9 +688,11 @@ pick( MSG_RAW_HELP_4,       "option    ::= \"OFFset=\"n" ,
  *  Zdos help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick( MSG_RDOS_HELP_0,      " " , " " )
+pick( MSG_RDOS_HELP_0,      " " ,
+                            " " )
 pick( MSG_RDOS_HELP_1,      "commands valid for the RDOS special executable formats only:" ,
                             "RDOS 実行可能形式に対してのみ有効なオプション:" )
-pick( MSG_RDOS_HELP_2,      " " , " " )
+pick( MSG_RDOS_HELP_2,      " " ,
+                            " " )
 pick( MSG_RDOS_HELP_3,      "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" ,
                             "form      ::= \"RDos\" [\"DEV\" | \"BIN\" | \"MBOOT\"]" )
