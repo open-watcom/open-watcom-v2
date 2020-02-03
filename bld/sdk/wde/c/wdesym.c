@@ -454,6 +454,8 @@ static jmp_buf SymEnv;
 int PP_CharLen( unsigned char c )
 /*******************************/
 {
+    /* unused parameters */ (void)c;
+
     return( 1 );
 }
 

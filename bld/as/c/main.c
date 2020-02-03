@@ -46,6 +46,8 @@ int             ExitStatus = EXIT_SUCCESS;
 int PP_CharLen( unsigned char c )
 /*******************************/
 {
+    /* unused parameters */ (void)c;
+
     return( 1 );
 }
 

@@ -50,6 +50,8 @@ static void MkMkDependency( const char *filename, size_t len, const char *fullna
 
 int PP_CharLen( unsigned char c )
 {
+    /* unused parameters */ (void)c;
+
     return( 1 );
 }
 

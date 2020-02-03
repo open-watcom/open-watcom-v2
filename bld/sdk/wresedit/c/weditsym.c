@@ -106,6 +106,8 @@ static void addSymbols( WRHashTable *table )
 int PP_CharLen( unsigned char c )
 /*******************************/
 {
+    /* unused parameters */ (void)c;
+
     return( 1 );
 }
 

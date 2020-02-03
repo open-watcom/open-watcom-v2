@@ -71,6 +71,8 @@ static void dumpheap( void )
 
 int PP_CharLen( unsigned char c )
 {
+    /* unused parameters */ (void)c;
+
     return( 1 );
 }
 
