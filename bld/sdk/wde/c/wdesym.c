@@ -461,7 +461,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
-    unsigned            flags;
+    pp_flags            ppflags;
     char                *inc_path;
     WdeGetFileStruct    gf;
     bool                ret;
@@ -476,7 +476,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 
     PP_Init( '#' );
 
-    ok = (table != NULL);
+    ok = ( table != NULL );
 
     if( ok ) {
         WdeSetStatusText( NULL, " ", false );
@@ -492,15 +492,15 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
         } else {
             name = WdeStrDup( file_name );
         }
-        ok = (name != NULL);
+        ok = ( name != NULL );
     }
 
     WdeSetWaitCursor( true );
 
     if( ok ) {
-        flags = PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_EMIT_LINE;
         if( WdeGetOption( WdeOptIgnoreInc ) ) {
-            flags |= PPFLAG_IGNORE_INCLUDE;
+            ppflags |= PPFLAG_IGNORE_INCLUDE;
         }
         inc_path = WdeGetIncPathOption();
 
@@ -509,12 +509,12 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
             ok = false;
             PP_FileFini();
         } else {
-            ok = (pop_env = WdePushEnv( &SymEnv ));
+            ok = pop_env = WdePushEnv( &SymEnv );
         }
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, flags, inc_path );
+        ok = !PP_FileInit( name, ppflags, inc_path );
         if( !ok ) {
             WdeWriteTrail( "WdeLoadSymbols: Unable to open header file!" );
             WdeDisplayErrorMsg( WDE_NOLOADHEADERFILE );
