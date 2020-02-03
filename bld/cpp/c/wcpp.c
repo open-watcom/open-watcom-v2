@@ -361,6 +361,7 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
 }
 
 static void SetRange( char *p, int low, int high, char data )
+/***********************************************************/
 {
     int     i;
 
@@ -370,11 +371,13 @@ static void SetRange( char *p, int low, int high, char data )
 }
 
 int PP_CharLen( unsigned char c )
+/*******************************/
 {
     return( MBCharLen[c] + 1 );
 }
 
 int main( int argc, char *argv[] )
+/********************************/
 {
     int         ch;
     int         i;
