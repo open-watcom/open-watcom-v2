@@ -98,8 +98,6 @@ static const char * const Months[] = {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-static char MBCharLen[256];         // multi-byte character len table
-
 static char *str_dup( const char *str )
 {
     size_t  len;
@@ -310,7 +308,7 @@ static void PP_GenLine( void )
                 continue;
             }
 #endif
-            len = MBCharLen[*(unsigned char *)fname] + 1;
+            len = PP_CharLen( *(unsigned char *)fname );
             while( len-- > 0 ) {
                 *p++ = *fname++;
             }
@@ -339,45 +337,7 @@ static void PP_TimeInit( void )
     sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }
 
-static void SetRange( char *p, int low, int high, char data )
-{
-    int     i;
-
-    for( i = low; i <= high; ++i ) {
-        p[i] = data;
-    }
-}
-
-static void initMultiByte( char *p, pp_flags ppflags, const char *leadbytes )
-{
-    PPFlags = ppflags;
-    if( leadbytes != NULL ) {
-        memcpy( p, leadbytes, 256 );
-    } else {
-        memset( p, 0, 256 );
-        if( PPFlags & PPFLAG_DB_KANJI ) {
-            SetRange( p, 0x81, 0x9f, 1 );
-            SetRange( p, 0xe0, 0xfc, 1 );
-        } else if( PPFlags & PPFLAG_DB_CHINESE ) {
-            SetRange( p, 0x81, 0xfc, 1 );
-        } else if( PPFlags & PPFLAG_DB_KOREAN ) {
-            SetRange( p, 0x81, 0xfd, 1 );
-        } else if( PPFlags & PPFLAG_UTF8 ) {
-            SetRange( p, 0xc0, 0xdf, 1 );
-            SetRange( p, 0xe0, 0xef, 2 );
-            SetRange( p, 0xf0, 0xf7, 3 );
-            SetRange( p, 0xf8, 0xfb, 4 );
-            SetRange( p, 0xfc, 0xfd, 5 );
-        }
-    }
-}
-
 int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
-{
-    return( PP_FileInit2( filename, ppflags, include_path, NULL ) );
-}
-
-int PPENTRY PP_FileInit2( const char *filename, pp_flags ppflags, const char *include_path, const char *leadbytes )
 {
     FILE        *handle;
     int         hash;
@@ -385,7 +345,7 @@ int PPENTRY PP_FileInit2( const char *filename, pp_flags ppflags, const char *in
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         PPHashTable[hash] = NULL;
     }
-    initMultiByte( MBCharLen, ppflags, leadbytes );
+    PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
     IncludePath2 = PP_Malloc( 1 );
@@ -1125,7 +1085,7 @@ static const char *PPScanLiteral( const char *p )
     int         len;
 
     for( quote_char = *p++; ; p += len ) {
-        len = MBCharLen[*(unsigned char *)p] + 1;
+        len = PP_CharLen( *(unsigned char *)p );
         if( len == 1 )  {
             if( *p == '\0' )
                 break;

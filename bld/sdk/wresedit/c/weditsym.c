@@ -103,6 +103,12 @@ static void addSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
+int PP_CharLen( unsigned char c )
+/*******************************/
+{
+    return( 1 );
+}
+
 char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
 {
     char                *name;

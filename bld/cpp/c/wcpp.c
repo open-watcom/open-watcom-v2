@@ -41,6 +41,14 @@
 #include "swchar.h"
 
 
+typedef enum {
+    MBCP_NONE       = 0,
+    MBCP_KANJI      = 1,
+    MBCP_CHINESE    = 2,
+    MBCP_KOREAN     = 3,
+    MBCP_UTF8       = 4,
+} mb_codepage;
+
 static char     **defines = NULL;
 static int      numdefs = 0;
 static char     **filenames = NULL;
@@ -65,10 +73,14 @@ static const char * const usageMsg[] = {
     NULL
 };
 
+static char         MBCharLen[256];         // multi-byte character len table
+static int          mbcp = MBCP_NONE;
+
 /* forward declaration */
 static bool doScanParams( int argc, char *argv[], pp_flags *ppflags );
 
 static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
+/***************************************************************************/
 {
     va_list     al;
 
@@ -91,6 +103,7 @@ static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
 }
 
 static char *my_strdup( const char *str )
+/***************************************/
 {
     size_t     len;
     char       *ptr;
@@ -169,17 +182,17 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         ++arg;
         if( tolower( arg[0] ) == 'k' ) {
             if( arg[1] == '0' && arg[2] == '\0' ) {
-                *ppflags |= PPFLAG_DB_KANJI;
+                mbcp = MBCP_KANJI;
                 break;
             } else if( arg[1] == '1' && arg[2] == '\0' ) {
-                *ppflags |= PPFLAG_DB_CHINESE;
+                mbcp = MBCP_CHINESE;
                 break;
             } else if( arg[1] == '2' && arg[2] == '\0' ) {
-                *ppflags |= PPFLAG_DB_KOREAN;
+                mbcp = MBCP_KOREAN;
                 break;
             } else if( tolower( arg[1] ) == 'u' ) {
                 if( arg[2] == '8' && arg[3] == '\0' ) {
-                    *ppflags |= PPFLAG_UTF8;
+                    mbcp = MBCP_UTF8;
                     break;
                 }
             }
@@ -347,6 +360,20 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
     return( contok );
 }
 
+static void SetRange( char *p, int low, int high, char data )
+{
+    int     i;
+
+    for( i = low; i <= high; ++i ) {
+        p[i] = data;
+    }
+}
+
+int PP_CharLen( unsigned char c )
+{
+    return( MBCharLen[c] + 1 );
+}
+
 int main( int argc, char *argv[] )
 {
     int         ch;
@@ -367,8 +394,28 @@ int main( int argc, char *argv[] )
     PP_IncludePathInit();
 
     rc = EXIT_FAILURE;
+    memset( MBCharLen, 0, 256 );
     ppflags = PPFLAG_NONE;
     if( doScanParams( argc - 1, argv + 1, &ppflags ) && nofilenames != 0 ) {
+        switch( mbcp ) {
+        case MBCP_KANJI:
+            SetRange( MBCharLen, 0x81, 0x9f, 1 );
+            SetRange( MBCharLen, 0xe0, 0xfc, 1 );
+            break;
+        case MBCP_CHINESE:
+            SetRange( MBCharLen, 0x81, 0xfc, 1 );
+            break;
+        case MBCP_KOREAN:
+            SetRange( MBCharLen, 0x81, 0xfd, 1 );
+            break;
+        case MBCP_UTF8:
+            SetRange( MBCharLen, 0xc0, 0xdf, 1 );
+            SetRange( MBCharLen, 0xe0, 0xef, 2 );
+            SetRange( MBCharLen, 0xf0, 0xf7, 3 );
+            SetRange( MBCharLen, 0xf8, 0xfb, 4 );
+            SetRange( MBCharLen, 0xfc, 0xfd, 5 );
+            break;
+        }
         PP_Init( '#' );
         fo = stdout;
         if( out_filename != NULL ) {

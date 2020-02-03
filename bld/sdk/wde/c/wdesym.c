@@ -451,6 +451,12 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
+int PP_CharLen( unsigned char c )
+/*******************************/
+{
+    return( 1 );
+}
+
 char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
