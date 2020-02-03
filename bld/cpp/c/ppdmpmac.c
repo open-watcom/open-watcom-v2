@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,8 @@
 
 static void dump_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
 {
+    /* unused parameters */ (void)cookie;
+
     printf( "#define %s %s ", me->name, me->replacement_list );
     if( val->type == PPTYPE_SIGNED ) {
         printf( "(value=%ld)\n", val->val.ivalue );

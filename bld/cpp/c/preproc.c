@@ -348,21 +348,21 @@ static void SetRange( char *p, int low, int high, char data )
     }
 }
 
-static void initMultiByte( char *p, pp_flags flags, const char *leadbytes )
+static void initMultiByte( char *p, pp_flags ppflags, const char *leadbytes )
 {
-    PPFlags = flags;
+    PPFlags = ppflags;
     if( leadbytes != NULL ) {
         memcpy( p, leadbytes, 256 );
     } else {
         memset( p, 0, 256 );
-        if( flags & PPFLAG_DB_KANJI ) {
+        if( PPFlags & PPFLAG_DB_KANJI ) {
             SetRange( p, 0x81, 0x9f, 1 );
             SetRange( p, 0xe0, 0xfc, 1 );
-        } else if( flags & PPFLAG_DB_CHINESE ) {
+        } else if( PPFlags & PPFLAG_DB_CHINESE ) {
             SetRange( p, 0x81, 0xfc, 1 );
-        } else if( flags & PPFLAG_DB_KOREAN ) {
+        } else if( PPFlags & PPFLAG_DB_KOREAN ) {
             SetRange( p, 0x81, 0xfd, 1 );
-        } else if( flags & PPFLAG_UTF8 ) {
+        } else if( PPFlags & PPFLAG_UTF8 ) {
             SetRange( p, 0xc0, 0xdf, 1 );
             SetRange( p, 0xe0, 0xef, 2 );
             SetRange( p, 0xf0, 0xf7, 3 );
@@ -372,12 +372,12 @@ static void initMultiByte( char *p, pp_flags flags, const char *leadbytes )
     }
 }
 
-int PPENTRY PP_FileInit( const char *filename, pp_flags flags, const char *include_path )
+int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
 {
-    return( PP_FileInit2( filename, flags, include_path, NULL ) );
+    return( PP_FileInit2( filename, ppflags, include_path, NULL ) );
 }
 
-int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *include_path, const char *leadbytes )
+int PPENTRY PP_FileInit2( const char *filename, pp_flags ppflags, const char *include_path, const char *leadbytes )
 {
     FILE        *handle;
     int         hash;
@@ -385,7 +385,7 @@ int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *incl
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         PPHashTable[hash] = NULL;
     }
-    initMultiByte( MBCharLen, flags, leadbytes );
+    initMultiByte( MBCharLen, ppflags, leadbytes );
     NestLevel = 0;
     SkipLevel = 0;
     IncludePath2 = PP_Malloc( 1 );
@@ -1131,7 +1131,7 @@ static const char *PPScanLiteral( const char *p )
                 break;
             if( *p == quote_char ) {
                 ++p;
-ø                break;
+                break;
             }
             if( *p == '\\' ) {
                 ++p;
