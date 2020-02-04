@@ -308,7 +308,7 @@ static void PP_GenLine( void )
                 continue;
             }
 #endif
-            len = PP_CharLen( *(unsigned char *)fname );
+            len = PP_MBCharLen( fname );
             while( len-- > 0 ) {
                 *p++ = *fname++;
             }
@@ -1085,7 +1085,7 @@ static const char *PPScanLiteral( const char *p )
     int         len;
 
     for( quote_char = *p++; ; p += len ) {
-        len = PP_CharLen( *(unsigned char *)p );
+        len = PP_MBCharLen( p );
         if( len == 1 )  {
             if( *p == '\0' )
                 break;

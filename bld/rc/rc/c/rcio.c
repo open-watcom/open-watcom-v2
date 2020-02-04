@@ -490,10 +490,10 @@ int RcFindSourceFile( const char *name, char *fullpath )
     return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
 /*******************************/
 {
-    return( CharSetLen[c] + 1 );
+    return( CharSetLen[*(unsigned char *)p] + 1 );
 }
 
 static bool PreprocessInputFile( void )

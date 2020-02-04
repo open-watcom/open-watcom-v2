@@ -370,10 +370,10 @@ static void SetRange( char *p, int low, int high, char data )
     }
 }
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
 /*******************************/
 {
-    return( MBCharLen[c] + 1 );
+    return( MBCharLen[*(unsigned char *)p] + 1 );
 }
 
 int main( int argc, char *argv[] )

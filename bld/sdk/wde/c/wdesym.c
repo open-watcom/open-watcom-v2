@@ -451,10 +451,10 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
 /*******************************/
 {
-    /* unused parameters */ (void)c;
+    /* unused parameters */ (void)p;
 
     return( 1 );
 }

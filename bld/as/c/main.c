@@ -43,10 +43,10 @@ extern int      CurrLineno;
 jmp_buf         AsmParse;
 int             ExitStatus = EXIT_SUCCESS;
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
 /*******************************/
 {
-    /* unused parameters */ (void)c;
+    /* unused parameters */ (void)p;
 
     return( 1 );
 }

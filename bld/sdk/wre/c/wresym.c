@@ -184,10 +184,10 @@ static void WREAddSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
 /*******************************/
 {
-    /* unused parameters */ (void)c;
+    /* unused parameters */ (void)p;
 
     return( 1 );
 }

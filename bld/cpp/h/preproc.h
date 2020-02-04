@@ -88,7 +88,7 @@ extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );
 
 // Application defined functions
 
-extern  int         PPENTRY PP_CharLen( unsigned char c );
+extern  int         PPENTRY PP_MBCharLen( const char *p );
 extern  const char  * PPENTRY PP_GetEnv( const char *__name );
 extern  void        * PPENTRY PP_Malloc( size_t __size );
 extern  void        PPENTRY PP_Free( void *__ptr );

@@ -35,6 +35,7 @@
 
 
 static void dumpheap( void )
+/**************************/
 {
 #if 0
     struct _heapinfo h;
@@ -69,14 +70,16 @@ static void dumpheap( void )
 #endif
 }
 
-int PP_CharLen( unsigned char c )
+int PP_MBCharLen( const char *p )
+/*******************************/
 {
-    /* unused parameters */ (void)c;
+    /* unused parameters */ (void)p;
 
     return( 1 );
 }
 
 int main( int argc, char *argv[] )
+/********************************/
 {
     int         c;
 
