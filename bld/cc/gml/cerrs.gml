@@ -505,6 +505,23 @@ If a macro is defined more than once, the definitions must be identical.
 If you want to redefine a macro to have a different definition, you must
 .id #undef
 it before you can define it with a new definition.
+:MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
+:MSGTXT. message number '%d' is invalid
+:MSGJTXT. メッセージ番号'%d'は不適切です
+:WARNING. 1
+The message number used in the #pragma does not match the message number
+for any warning message.  This message can also indicate that a number
+or '*' (meaning all warnings) was not found when it was expected.
+:MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
+:MSGTXT. warning level must be an integer in range 0 to 5
+:MSGJTXT. 警告レベルは，0～5の範囲の整数でなければなりません
+:WARNING. 1
+The new warning level that can be used for the warning can be in the range
+0 to 5.  The level 0 means that the warning will be treated as an error
+(compilation will not succeed).  Levels 1 up to 5 are used to classify
+warnings.  The -w option sets an upper limit on the level for warnings.
+By setting the level above the command line limit, you effectively
+ignore all cases where the warning shows up.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2
@@ -2173,22 +2190,6 @@ void foo( int a )
     int j = 3;
 }
 .eerrbad
-:MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
-:MSGTXT. message number '%d' is invalid
-:MSGJTXT. メッセージ番号'%d'は不適切です
-The message number used in the #pragma does not match the message number
-for any warning message.  This message can also indicate that a number
-or '*' (meaning all warnings) was not found when it was expected.
-.
-:MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
-:MSGTXT. warning level must be an integer in range 0 to 5
-:MSGJTXT. 警告レベルは，0～5の範囲の整数でなければなりません
-The new warning level that can be used for the warning can be in the range
-0 to 5.  The level 0 means that the warning will be treated as an error
-(compilation will not succeed).  Levels 1 up to 5 are used to classify
-warnings.  The -w option sets an upper limit on the level for warnings.
-By setting the level above the command line limit, you effectively
-ignore all cases where the warning shows up.
 .
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
