@@ -134,9 +134,6 @@ RcStatus LoadCharTable( const char *fname, char *path )
         ret = readDBTable( fh );
     if( ret != RS_OPEN_ERROR )
         fclose( fh );
-    if( ret == RS_OK ) {
-        ConvToUnicode = DBStringToUnicode;
-    }
     return( ret );
 }
 

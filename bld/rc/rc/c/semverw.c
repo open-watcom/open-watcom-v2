@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,11 +123,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = true;
-    } else {
-        block->UseUnicode = false;
-    }
+    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     block->Value = list;
     block->Nest = NULL;
 
@@ -142,11 +139,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = true;
-    } else {
-        block->UseUnicode = false;
-    }
+    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     block->Value = NULL;
     block->Nest = nest;
 
