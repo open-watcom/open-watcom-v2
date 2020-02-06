@@ -78,7 +78,7 @@ int setsockopt (int s, int level, int option, const void *optval, int optlen)
 
   VERIFY_RW (optval, optlen);
 
-  if ((WORD)level == SOL_SOCKET)
+  if (level == SOL_SOCKET)
      rc = set_sol_opt (socket, option, optval, optlen);
 
   else if ((level == socket->so_proto) && (level == IPPROTO_TCP))
@@ -128,7 +128,7 @@ int getsockopt (int s, int level, int option, void *optval, int *optlen)
   VERIFY_RW (optval, 0);
   VERIFY_RW (optlen, sizeof(u_long));
 
-  if ((WORD)level == SOL_SOCKET)
+  if (level == SOL_SOCKET)
      rc = get_sol_opt (socket, option, optval, optlen);
 
   else if (level == socket->so_proto == IPPROTO_TCP)
@@ -1032,7 +1032,7 @@ static const char *lookup (int option, const struct opt_list *opt, int num)
 
 static const char *sockopt_name (int option, int level)
 {
-  switch ((DWORD)level)
+  switch (level)
   {
     case IPPROTO_UDP:
          return ("udp option!?");
