@@ -75,9 +75,15 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
            SOCK_ERR (EBADF);
            return (-1);
          }
-         if (socket->so_state & SS_PRIV)  /* must be SOCK_DGRAM */
-              len = sock_recv_used (socket->udp_sock);
-         else len = sock_rbused ((sock_type*)socket->tcp_sock);
+         if (socket->so_type == SOCK_DGRAM) {
+            if (socket->so_state & SS_PRIV) {
+                len = sock_recv_used (socket->udp_sock);
+            } else {
+                len = sock_rbused ((sock_type*)socket->udp_sock);
+            }
+         } else {
+            len = sock_rbused ((sock_type*)socket->tcp_sock);
+         }
 
          SOCK_DEBUGF ((socket, " %d", len));
          if (len >= 0)
