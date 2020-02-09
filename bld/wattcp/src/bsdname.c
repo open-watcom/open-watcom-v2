@@ -127,7 +127,7 @@ int setdomainname (const char *name, int len)
 /*
  * Make a FQDN from `hostname' & `def_domain'.
  * Set errno on failure and return -1.
- */                                                   
+ */
 int gethostname (char *buffer, int buflen)
 {
   /* the fqdn when no hostname has been set is "localhost.localdomain".

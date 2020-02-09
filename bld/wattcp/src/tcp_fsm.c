@@ -83,7 +83,7 @@ int _tcp_fsm (tcp_Socket **sp, const in_Header *ip)
 
   return (*tcp_state_tab[s->state]) (sp, ip, tcp_hdr, flags);
 }
-                            
+
 /*
  * LISTEN state
  */
@@ -385,7 +385,7 @@ static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
    * is ready to change states.
    */
   if (s->missed_seg[0] == 0L && (flags & flag_SYNACK) == flag_SYNACK)
-  {                         
+  {
     if (seq == s->acknum)
     {
       s->acknum++;               /* we must ACK their FIN! */
@@ -756,7 +756,7 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp_hdr, int len, int fl
 #endif
 
     if (s->missed_seg[0] == 0L)  /* just dropped a segment */
-    {                         
+    {
       len = min (s->maxrdatalen - s->rdatalen - diff, len);
       if (len > 0)
       {
@@ -766,12 +766,12 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp_hdr, int len, int fl
       }
     }
     else  /* haven't seen missing segment yet */
-    {     
+    {
       tmpldiff = s->missed_seg[0] - seqnum;
       tmpdiff  = abs ((int)tmpldiff);
 
       if (tmpldiff > 0 && len >= tmpdiff)  /* prepend bytes to fragment */
-      {   
+      {
         memcpy (s->rdata + s->rdatalen + diff, data, tmpdiff);
         s->missed_seg[0] -= tmpdiff;
       }
@@ -781,7 +781,7 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp_hdr, int len, int fl
       /* append bytes touching fragment
        */
       if (tmpldiff > 0)
-      {          
+      {
         tmpldiff = s->missed_seg[1] - seqnum;
         if (tmpldiff >= 0)
         {

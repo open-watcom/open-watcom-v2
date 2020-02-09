@@ -382,7 +382,7 @@ extern int parse_config_table (struct config_table *tab,
 /*
  * Run with no config file (embedded/diskless)
  */
-extern int _watt_no_config; 
+extern int _watt_no_config;
 
 
 /*
@@ -423,7 +423,7 @@ extern WORD  inchksum          (const void *ptr, int len);
  * Turn off "C" scope because <stdio.h> may include
  * features specific to "C++". Nested scopes are bad.
  */
-#ifdef __cplusplus 
+#ifdef __cplusplus
 };
 #endif
 

@@ -138,33 +138,32 @@ int sock_preread (const sock_type *s, BYTE *buf, unsigned len)
  */
 int _chk_socket (const sock_type *s)
 {
-    if (!s)
-        return (0);
-
-    switch (s->u.ip_type) {
-    case UDP_PROTO:
-        return (VALID_UDP);
-    case TCP_PROTO:
-        if (s->tcp.state <= tcp_StateCLOSED)
-            return (VALID_TCP);
-        break;
-    case IP_TYPE:
-        return (VALID_IP);
+    if (s != NULL) {
+        switch (s->u.ip_type) {
+        case UDP_PROTO:
+            return (VALID_UDP);
+        case TCP_PROTO:
+            if (s->tcp.state <= tcp_StateCLOSED)
+                return (VALID_TCP);
+            break;
+        case IP_TYPE:
+            return (VALID_IP);
+        }
     }
     return (0);
 }
 
 const char *sockerr (const sock_type *s)
 {
-    if (s == NULL)
-        return (NULL);
-
-    switch (s->u.ip_type) {
-    case UDP_PROTO:
-    case TCP_PROTO:
-        if(s->u.err_msg != NULL && s->u.err_msg[0] != '\0')
-            return (s->u.err_msg);
-        break;
+    if (s != NULL) {
+        switch (s->u.ip_type) {
+        case UDP_PROTO:
+        case TCP_PROTO:
+            if (s->u.err_msg != NULL && s->u.err_msg[0] != '\0') {
+                return (s->u.err_msg);
+            }
+            break;
+        }
     }
     return (NULL);
 }
