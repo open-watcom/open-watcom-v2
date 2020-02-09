@@ -31,7 +31,6 @@ static WORD  disc_port = 9;
 static DWORD disc_host = 0;
 
 static void echo_discard_daemon (void);
-static void udp_handler (sock_type *s, BYTE *data, int len);
 
 static void (*prev_hook) (const char*, const char*) = NULL;
 
@@ -59,6 +58,22 @@ static void echo_config (const char *name, const char *value)
     if (prev_hook)
       (*prev_hook) (name, value);
   }
+}
+
+/*
+ * callback handler for echo + discard UDP sockets.
+ */
+static void udp_handler (sock_type *s, BYTE *data, int len, tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr)
+{
+  /* unused parameters */ (void)tcp_phdr; (void)udp_hdr;
+
+    if (s == (sock_type*)&udp_echo_sock) {
+        if (!sock_enqueue (s, data, len)) {
+            sock_close (s);
+        }
+    } else {
+        /* discard packet */
+    }
 }
 
 /*
@@ -111,21 +126,6 @@ static void echo_discard_daemon (void)
     BYTE buf[ETH_MAX_DATA];
     int  len = sock_read (s, buf, sizeof(buf));
     sock_write (s, buf, len);
-  }
-}
-
-/*
- * callback handler for echo + discard UDP sockets.
- */
-static void udp_handler (sock_type *s, BYTE *data, int len)
-{
-  if (s == (sock_type*)&udp_echo_sock)
-  {
-    if (!sock_enqueue (s, data, len))
-       sock_close (s);
-  }
-  else   /* discard packet */
-  {
   }
 }
 #endif
