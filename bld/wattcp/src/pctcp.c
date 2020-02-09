@@ -1880,32 +1880,39 @@ WORD sock_mode (sock_type *s, WORD mode)
 /*
  * sock_yield - enable user defined yield function
  */
-int sock_yield (tcp_Socket *s, void (*fn)(void))
+int sock_yield (sock_type *s, void (*fn)(void))
 {
-  if (s)
-       s->usr_yield = fn;
-  else system_yield = fn;
-  return (0);
+    if (s != NULL) {
+        switch (s->u.ip_type) {
+        case UDP_PROTO:
+#if !defined(USE_UDP_ONLY)
+        case TCP_PROTO:
+#endif
+            s->u.usr_yield = fn;
+            return (0);
+        }
+    }
+    system_yield = fn;
+    return (0);
 }
 
 
 void sock_abort (sock_type *s)
 {
-  switch (s->tcp.ip_type)
-  {
+    switch (s->u.ip_type) {
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
-         tcp_abort (&s->tcp);
-         break;
+        tcp_abort (&s->tcp);
+        break;
 #endif
     case UDP_PROTO:
-         udp_close (&s->udp);
-         break;
+        udp_close (&s->udp);
+        break;
     case IP_TYPE:
-         s->raw.ip_type = 0;
-         s->raw.used    = 0;
-         break;
-  }
+        s->raw.ip_type = 0;
+        s->raw.used    = 0;
+        break;
+    }
 }
 
 #if defined(USE_BSD_FUNC)

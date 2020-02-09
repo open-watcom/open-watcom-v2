@@ -18,10 +18,10 @@ typedef struct recv_buf {
         BYTE   buf_data [ETH_MAX_DATA];
       } recv_buf;
 
-extern int sock_recv_init (udp_Socket *s, void *space, int len);
-extern int sock_recv_used (udp_Socket *s);
-extern int sock_recv      (udp_Socket *s, char  *buffer, int len);
-extern int sock_recv_from (udp_Socket *s, DWORD *hisip, WORD *hisport,
-                           char *buffer, int len, int peek);
+extern int sock_recv_init (sock_type *s, char *buffer, int len);
+extern int sock_recv_used (sock_type *s);
+extern int sock_recv      (sock_type *s, char *buffer, int len);
+extern int sock_recv_from (sock_type *s, DWORD *hisip, WORD *hisport,
+                                char *buffer, int len, int peek);
 
 #endif

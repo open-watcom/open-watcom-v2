@@ -434,7 +434,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
       memcpy (&send_buf[INT16SZ],ns_buf,ns_buflen);
       if (sock_write(sock,send_buf,INT16SZ+ns_buflen) != INT16SZ+ns_buflen)
       {
-        Perror ("sock_write() failed", sockerr(&sock->tcp));
+        Perror ("sock_write() failed", sockerr(sock));
         badns |= (1 << ns);
         resolve_close();
         return (NEXT_NS);
@@ -453,7 +453,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
     }
     if (n <= 0)
     {
-      Perror ("tcp_read() failed", sockerr(&sock->tcp));
+      Perror ("tcp_read() failed", sockerr(sock));
       resolve_close();
       return (NEXT_NS);
     }
@@ -475,7 +475,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
     }
     if (n <= 0)
     {
-      Perror ("tcp_read(vc)",sockerr(&sock->tcp));
+      Perror ("tcp_read(vc)",sockerr(sock));
       resolve_close();
       return (NEXT_NS);
     }

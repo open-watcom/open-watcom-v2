@@ -352,10 +352,9 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
     if (socket->so_state & SS_PRIV)
     {
       struct in_addr peer;
-      udp_Socket *udp  = socket->udp_sock;
-      WORD        port = ntohs (socket->local_addr->sin_port);
+      WORD           port = ntohs (socket->local_addr->sin_port);
 
-      ret = sock_recv_from (udp, &peer.s_addr, &port, buf, len,
+      ret = sock_recv_from ((sock_type *)socket->udp_sock, &peer.s_addr, &port, buf, len,
                             (flags & MSG_PEEK) ? 1 : 0);
 
       if (ret != 0 && peer.s_addr)

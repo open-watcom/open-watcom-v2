@@ -472,8 +472,8 @@ extern int  delwattcpd (void (*p)(void));
 extern void _sock_debug_on  (void);
 extern void _sock_debug_off (void);
 
-extern const char *sockerr  (tcp_Socket *s);
-extern const char *sockstate(tcp_Socket *s);
+extern const char *sockerr  (const void *s);
+extern const char *sockstate(const void *s);
 
 #ifndef iovec_defined
 #define iovec_defined

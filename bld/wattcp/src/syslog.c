@@ -136,7 +136,7 @@ void vsyslog (int pri, const char *fmt, va_list ap)
   if (logSock)
   {
     int   len       = sock_puts (logSock, (const BYTE*)tbuffer);
-    const char *err = sockerr ((const tcp_Socket*)logSock);
+    const char *err = sockerr (logSock);
     if (len == 0 || err)
     {
       sock_close (logSock);

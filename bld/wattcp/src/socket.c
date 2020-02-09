@@ -1101,7 +1101,7 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 
     /* Setup _recvdaemon() to enqueue broadcast/"unconnected" messages
      */
-    sock_recv_init (udp, pool, pool_size);
+    sock_recv_init ((sock_type *)udp, pool, pool_size);
   }
   else
   {

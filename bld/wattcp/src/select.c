@@ -379,9 +379,11 @@ int _sock_read_select (Socket *socket)
 
   if (socket->so_type == SOCK_DGRAM)
   {
-    if (socket->so_state & SS_PRIV)
-         len = sock_recv_used (socket->udp_sock);
-    else len = sock_rbused ((sock_type*)socket->udp_sock);
+    if (socket->so_state & SS_PRIV) {
+        len = sock_recv_used ((sock_type *)socket->udp_sock);
+    } else {
+        len = sock_rbused ((sock_type *)socket->udp_sock);
+    }
 
     if (len > socket->recv_lowat ||
         sock_signalled(socket,READ_STATE_MASK))

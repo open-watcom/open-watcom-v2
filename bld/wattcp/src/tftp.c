@@ -259,7 +259,7 @@ sock_err:
   }
   /* most likely "Port unreachable"
    */
-  TRACE (("tftp: %s\n", sockerr(&sock->tcp)));
+  TRACE (("tftp: %s\n", sockerr(sock)));
   tftp_errno = ERR_UNKNOWN;
   return (-1);
 }

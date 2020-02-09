@@ -163,7 +163,7 @@ extern int   sock_printf      (sock_type *s, const char *format, ...);
 extern int   sock_scanf       (sock_type *s, const char *format, ...);
 extern WORD  sock_dataready   (sock_type *s);
 extern int   sock_close       (sock_type *s);
-extern int   sock_yield       (tcp_Socket *s, void (*fn)(void));
+extern int   sock_yield       (sock_type *s, void (*fn)(void));
 extern WORD  sock_mode        (sock_type *s, WORD mode);
 extern int   sock_sselect     (const sock_type *s, int state);
 

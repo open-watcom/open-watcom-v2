@@ -77,12 +77,12 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
          }
          if (socket->so_type == SOCK_DGRAM) {
             if (socket->so_state & SS_PRIV) {
-                len = sock_recv_used (socket->udp_sock);
+                len = sock_recv_used ((sock_type *)socket->udp_sock);
             } else {
-                len = sock_rbused ((sock_type*)socket->udp_sock);
+                len = sock_rbused ((sock_type *)socket->udp_sock);
             }
          } else {
-            len = sock_rbused ((sock_type*)socket->tcp_sock);
+            len = sock_rbused ((sock_type *)socket->tcp_sock);
          }
 
          SOCK_DEBUGF ((socket, " %d", len));

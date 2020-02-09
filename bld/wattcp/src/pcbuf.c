@@ -138,43 +138,51 @@ int sock_preread (const sock_type *s, BYTE *buf, unsigned len)
  */
 int _chk_socket (const sock_type *s)
 {
-  if (!s)
-     return (0);
+    if (!s)
+        return (0);
 
-  if (s->tcp.ip_type == TCP_PROTO && s->tcp.state <= tcp_StateCLOSED)
-     return (VALID_TCP);
-
-  if (s->udp.ip_type == UDP_PROTO)
-     return (VALID_UDP);
-
-  if (s->raw.ip_type == IP_TYPE)
-     return (VALID_IP);
-
-  return (0);
+    switch (s->u.ip_type) {
+    case UDP_PROTO:
+        return (VALID_UDP);
+    case TCP_PROTO:
+        if (s->tcp.state <= tcp_StateCLOSED)
+            return (VALID_TCP);
+        break;
+    case IP_TYPE:
+        return (VALID_IP);
+    }
+    return (0);
 }
 
-const char *sockerr (const tcp_Socket *s)
+const char *sockerr (const sock_type *s)
 {
-  if (s && s->err_msg && s->err_msg[0])
-     return (s->err_msg);
-  return (NULL);
+    if (s == NULL)
+        return (NULL);
+
+    switch (s->u.ip_type) {
+    case UDP_PROTO:
+    case TCP_PROTO:
+        if(s->u.err_msg != NULL && s->u.err_msg[0] != '\0')
+            return (s->u.err_msg);
+        break;
+    }
+    return (NULL);
 }
 
-const char *sockstate (const tcp_Socket *s)
+const char *sockstate (const sock_type *s)
 {
-  switch (_chk_socket((const sock_type*)s))
-  {
+    switch (_chk_socket(s)) {
     case VALID_IP:
-         return (_LANG("Raw IP Socket"));
+        return (_LANG("Raw IP Socket"));
 
     case VALID_UDP:
-         return (_LANG("UDP Socket"));
+        return (_LANG("UDP Socket"));
 
     case VALID_TCP:
-         return (_LANG(tcpState[s->state]));
+        return (_LANG(tcpState[s->tcp.state]));
 
     default:
-         return (_LANG("Not an active socket"));
-  }
+        return (_LANG("Not an active socket"));
+    }
 }
 
