@@ -115,7 +115,7 @@
   extern int   dpmi_unlock_region  (void *address, unsigned length);
   extern void *dpmi_get_real_vector(int intr);
   extern int   dpmi_real_interrupt (int intr, struct DPMI_regs *reg);
-  extern int   dpmi_alloc_callback (void (*func)(), struct DPMI_callback *cb);
+  extern int   dpmi_alloc_callback (void (*func)(void), struct DPMI_callback *cb);
   extern int   dpmi_cpu_type       (void);
   extern int   dpmi_dos_yield      (void);
 

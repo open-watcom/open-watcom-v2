@@ -39,9 +39,9 @@ char  defaultdomain [MAX_HOSTLEN+1] = "your.domain.com";
 char *def_domain = defaultdomain;
 char *loc_domain;    /* current subname to be used by the domain system */
 
-int (*_resolve_hook)(void);      /* user hook for terminating resolve() */
-int   _resolve_exit;             /* user hook interrupted */
-int   _resolve_timeout;          /* (reverse) lookup timeout */
+int (*_resolve_hook)(void) = NULL;  /* user hook for terminating resolve() */
+int   _resolve_exit;                /* user hook interrupted */
+int   _resolve_timeout;             /* (reverse) lookup timeout */
 
 DWORD def_nameservers [MAX_NAMESERVERS];
 WORD  last_nameserver = 0;

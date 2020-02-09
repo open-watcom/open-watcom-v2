@@ -770,7 +770,7 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
 
     len -= sizeof(*udp);
     if (s->protoHandler)
-      (*s->protoHandler) (s, data, len, &ph, udp);
+      (*s->protoHandler) ((sock_type *)s, data, len, &ph, udp);
     /* save first received packet rather than latest */
     else if (len > 0 && s->rdatalen == 0)
     {
@@ -1880,7 +1880,7 @@ WORD sock_mode (sock_type *s, WORD mode)
 /*
  * sock_yield - enable user defined yield function
  */
-int sock_yield (tcp_Socket *s, void (*fn)())
+int sock_yield (tcp_Socket *s, void (*fn)(void))
 {
   if (s)
        s->usr_yield = fn;

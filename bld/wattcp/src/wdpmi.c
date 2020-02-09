@@ -146,7 +146,7 @@ int dpmi_real_interrupt (int intr, struct DPMI_regs *reg)
   return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
 }
 
-int dpmi_alloc_callback (void (*callback)(), struct DPMI_callback *cb)
+int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
 {
   union  REGS  r;
   struct SREGS s;

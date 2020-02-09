@@ -466,8 +466,8 @@ extern int   sethostname   (char *name, int len);
 extern void _arp_register  (DWORD use, DWORD instead_of, int nowait);
 extern int  _arp_resolve   (DWORD ina, void *eth, int nowait);
 
-extern int  addwattcpd (void (*p)());
-extern int  delwattcpd (void (*p)());
+extern int  addwattcpd (void (*p)(void));
+extern int  delwattcpd (void (*p)(void));
 
 extern void _sock_debug_on  (void);
 extern void _sock_debug_off (void);

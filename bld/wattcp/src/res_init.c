@@ -263,7 +263,7 @@ int res_init (void)
  * Configure hook routine for bind resolver. Must be called
  * before res_init() (via sock_init).
  */
-static void (*prev_hook) (const char*, const char*);
+static void (*prev_hook) (const char*, const char*) = NULL;
 
 static struct config_table bind_cfg[] = {
               { "RES_OPTIONS", ARG_STRDUP, (void*)&res_cfg_options },

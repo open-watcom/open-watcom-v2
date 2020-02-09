@@ -92,7 +92,7 @@ int _watt_no_config = 0;    /* run with no config file (embedded/diskless) */
 
 int surviverarp = 0;
 
-void (*_watt_post_hook) (void);
+void (*_watt_post_hook) (void) = NULL;
 
 int   _watt_is_init     = 0;
 int   _watt_fatal_error = 0;

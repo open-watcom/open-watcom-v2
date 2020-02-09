@@ -31,13 +31,13 @@ static void dowattcpd (void)
   while (count--);
 }
 
-int addwattcpd (void (*p)())
+int addwattcpd (void (*p)(void))
 {
   int i;
 
   if (!wattcpd)
   {
-    backd = (void(**)()) calloc (MAX_DAEMONS, sizeof(void(*)()));
+    backd = (void(**)(void)) calloc (MAX_DAEMONS, sizeof(void(*)(void)));
     if (backd)
        wattcpd = dowattcpd;
   }
@@ -57,7 +57,7 @@ int addwattcpd (void (*p)())
   return (-1);
 }
 
-int delwattcpd (void (*p)())
+int delwattcpd (void (*p)(void))
 {
   int i, j;
 

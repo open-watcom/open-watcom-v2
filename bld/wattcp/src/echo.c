@@ -83,16 +83,14 @@ void echo_discard_start (void)
 
   if (do_echo)
   {
-    udp_listen (&udp_echo_sock, echo_host, echo_port, 0,
-                (ProtoHandler)udp_handler);
+    udp_listen (&udp_echo_sock, echo_host, echo_port, 0, udp_handler);
     udp_echo_sock.sockmode |= UDP_MODE_NOCHK;
     tcp_listen (&tcp_echo_sock, echo_host, echo_port, 0, NULL, 0);
   }
 
   if (do_disc)
   {
-    udp_listen (&udp_disc_sock, disc_host, disc_port, 0,
-                (ProtoHandler)udp_handler);
+    udp_listen (&udp_disc_sock, disc_host, disc_port, 0, udp_handler);
     udp_disc_sock.sockmode |= UDP_MODE_NOCHK;
     tcp_listen (&tcp_disc_sock, disc_host, disc_port, 0, NULL, 0);
   }

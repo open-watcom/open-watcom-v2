@@ -691,7 +691,7 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
     len  -= diff;
 
     if (s->protoHandler)
-        s->acknum += (*s->protoHandler) (s, data, len, NULL, NULL);
+        s->acknum += (*s->protoHandler) ((sock_type *)s, data, len, NULL, NULL);
     else
     {
       /* no handler, just dump to buffer, should be indexed,
