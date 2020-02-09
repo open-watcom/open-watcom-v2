@@ -918,8 +918,6 @@ void tcp_Retransmitter (int force)
  */
 int _ip_handler (in_Header *ip, BOOL broadcast)
 {
-  sock_type *s = NULL;
-
   if (block_ip || !_chk_ip_header(ip))
      return (0);
 
@@ -944,47 +942,59 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
      return (1);
 #endif
 
-  switch (ip->proto)
-  {
+    switch (ip->proto) {
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
-         s = (sock_type*) tcp_handler (ip, broadcast);
-         break;
+      {
+        tcp_Socket *s;
+          
+        s = tcp_handler (ip, broadcast);
+        if (s != NULL) {    /* Check if peer allows IP-fragments */
+            if (intel16(ip->frag_ofs) & IP_DF) {
+                s->locflags |=  LF_NOFRAGMENT;
+            } else {
+                s->locflags &= ~LF_NOFRAGMENT;
+            }
+        }
+        break;
+      }
 #endif
 
     case UDP_PROTO:
-         s = (sock_type*) udp_handler (ip, broadcast);
-         break;
+      {
+        udp_Socket *s;
+          
+        s = udp_handler (ip, broadcast);
+        if (s != NULL) {    /* Check if peer allows IP-fragments */
+            if (intel16(ip->frag_ofs) & IP_DF) {
+                s->locflags |=  LF_NOFRAGMENT;
+            } else {
+                s->locflags &= ~LF_NOFRAGMENT;
+            }
+        }
+        break;
+      }
 
     case ICMP_PROTO:
-         icmp_handler (ip, broadcast);
-         break;
+        icmp_handler (ip, broadcast);
+        break;
 
 #if defined(USE_MULTICAST)
     case IGMP_PROTO:
-         igmp_handler (ip, broadcast);
-         break;
+        igmp_handler (ip, broadcast);
+        break;
 #endif
     default:
-         if (!broadcast)
-         {
-           if (is_local_addr (intel(ip->destination)))
-              icmp_unreach (ip, 2);  /* protocol unreachable */
-           DEBUG_RX (NULL, ip);
-           STAT (ipstats.ips_noproto++);
-         }
-         return (0);
-  }
-
-  if (s)    /* Check if peer allows IP-fragments */
-  {
-    if (intel16(ip->frag_ofs) & IP_DF)
-         s->tcp.locflags |=  LF_NOFRAGMENT;
-    else s->tcp.locflags &= ~LF_NOFRAGMENT;
-  }
-
-  STAT (ipstats.ips_delivered++);
-  return (1);
+        if (!broadcast) {
+            if (is_local_addr (intel(ip->destination)))
+                icmp_unreach (ip, 2);  /* protocol unreachable */
+            DEBUG_RX (NULL, ip);
+            STAT (ipstats.ips_noproto++);
+        }
+        return (0);
+    }
+    STAT (ipstats.ips_delivered++);
+    return (1);
 }
 
 
@@ -1000,16 +1010,12 @@ WORD tcp_tick (sock_type *s)
 #if !defined(USE_UDP_ONLY)
   /* finish off dead sockets
    */
-  if (s)
-  {
-    if ((s->tcp.ip_type  == TCP_PROTO)       &&
-        (s->tcp.state    == tcp_StateCLOSED) &&
-        (s->tcp.rdatalen == 0))
-    {
-      (void) _tcp_unthread (&s->tcp);
-      s->tcp.ip_type = 0;   /* fail further I/O */
+    if (s != NULL && (s->u.ip_type == TCP_PROTO)) {
+        if ((s->tcp.state == tcp_StateCLOSED) && (s->tcp.rdatalen == 0)) {
+            (void) _tcp_unthread (&s->tcp);
+            s->u.ip_type = 0;   /* fail further I/O */
+        }
     }
-  }
 #endif
 
   while (1)
@@ -1057,7 +1063,7 @@ WORD tcp_tick (sock_type *s)
     daemon_timer = set_timeout (DAEMON_RUN_TIME);
   }
 
-  return (s ? s->tcp.ip_type : 0);
+  return ((s != NULL) ? s->u.ip_type : 0);
 }
 
 /*
@@ -1835,7 +1841,7 @@ int sock_keepalive (sock_type *s)
   BYTE        kc;
   int         datalen;
 
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
      return (0);
 
   tcp     = &s->tcp;
@@ -1869,10 +1875,10 @@ int sock_keepalive (sock_type *s)
  */
 WORD sock_mode (sock_type *s, WORD mode)
 {
-  if (s->tcp.ip_type == TCP_PROTO || s->tcp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == TCP_PROTO || s->u.ip_type == UDP_PROTO)
   {
-    s->tcp.sockmode = (s->tcp.sockmode & 0xFFFC) | mode;
-    return (s->tcp.sockmode);
+    s->u.sockmode = (s->u.sockmode & 0xFFFC) | mode;
+    return (s->u.sockmode);
   }
   return (0);
 }
@@ -1909,8 +1915,8 @@ void sock_abort (sock_type *s)
         udp_close (&s->udp);
         break;
     case IP_TYPE:
-        s->raw.ip_type = 0;
-        s->raw.used    = 0;
+        s->u.ip_type = 0;
+        s->raw.used = 0;
         break;
     }
 }
@@ -1951,7 +1957,7 @@ int sock_read (sock_type *s, BYTE *buf, int maxlen)
     int len = 0;
     int raw = 0;
 
-    switch (s->udp.ip_type)
+    switch (s->u.ip_type)
     {
 #if !defined(USE_UDP_ONLY)
       case TCP_PROTO:
@@ -1994,16 +2000,16 @@ int sock_read (sock_type *s, BYTE *buf, int maxlen)
  */
 int sock_fastread (sock_type *s, BYTE *buf, int len)
 {
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
      return udp_read (&s->udp, buf, len);
 
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO || s->tcp.rdatalen > 0)
+  if (s->u.ip_type == TCP_PROTO || s->tcp.rdatalen > 0)
      return tcp_read (&s->tcp, buf, len);
 #endif
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return raw_read (&s->raw, buf, len);
 #endif
 
@@ -2023,7 +2029,7 @@ int sock_write (sock_type *s, const BYTE *data, int len)
 
   while (chunk > 0)
   {
-    switch (s->udp.ip_type)
+    switch (s->u.ip_type)
     {
 #if !defined(USE_UDP_ONLY)
       case TCP_PROTO:
@@ -2071,7 +2077,7 @@ int sock_write (sock_type *s, const BYTE *data, int len)
  */
 int sock_fastwrite (sock_type *s, const BYTE *data, int len)
 {
-  switch (s->udp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          len = min (mtu - sizeof(in_Header) - sizeof(udp_Header), len);
@@ -2093,7 +2099,7 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
   if (len <= 0)
      return (0);
 
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
   {
     int written = 0;
     int total   = 0;
@@ -2115,7 +2121,7 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
   }
 
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.queue    = data;
     s->tcp.queuelen = len;
@@ -2129,7 +2135,7 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
 #if !defined(USE_UDP_ONLY)
 void sock_noflush (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags &= ~tcp_FlagPUSH;
     s->tcp.sockmode |= TCP_LOCAL;
@@ -2141,7 +2147,7 @@ void sock_noflush (sock_type *s)
  */
 void sock_flush (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     tcp_Socket *tcp = &s->tcp;
 
@@ -2160,7 +2166,7 @@ void sock_flush (sock_type *s)
  */
 void sock_flushnext (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags |= tcp_FlagPUSH;
     s->tcp.sockmode &= ~TCP_LOCAL;
@@ -2171,7 +2177,7 @@ void sock_flushnext (sock_type *s)
 
 int sock_close (sock_type *s)
 {
-  switch (s->tcp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          udp_close (&s->udp);

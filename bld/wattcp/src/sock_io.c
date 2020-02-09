@@ -37,7 +37,7 @@ int sock_puts (sock_type *s, const BYTE *data)
   int len;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
@@ -45,7 +45,7 @@ int sock_puts (sock_type *s, const BYTE *data)
 
   if (s->tcp.sockmode & TCP_MODE_ASCII) /* udp/tcp ASCII mode */
   {
-    if (s->tcp.ip_type == TCP_PROTO)
+    if (s->u.ip_type == TCP_PROTO)
         s->tcp.sockmode |= TCP_LOCAL;
 
 #if !defined(USE_UDP_ONLY)
@@ -84,13 +84,13 @@ int sock_gets (sock_type *s, BYTE *data, int n)
   BYTE *src_p, *nl_p, *cr_p;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
   /* Access the buffer pointer and length.
    */
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
   {
     src_p = s->udp.rdata;
     np    = &s->udp.rdatalen;
@@ -198,9 +198,9 @@ int sock_gets (sock_type *s, BYTE *data, int n)
   /* update window if less than MSS/2 free in receive buffer
    */
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO       &&
-      s->tcp.state   != tcp_StateCLOSED &&
-      (s->tcp.maxrdatalen - s->tcp.rdatalen) < s->tcp.max_seg/2)
+  if (s->u.ip_type == TCP_PROTO &&
+      s->tcp.state != tcp_StateCLOSED &&
+      (s->tcp.maxrdatalen - s->tcp.rdatalen) < (s->tcp.max_seg / 2))
     TCP_SENDSOON (&s->tcp);
 #endif
 
@@ -226,7 +226,7 @@ WORD sock_dataready (sock_type *s)
   int  len = s->tcp.rdatalen;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
@@ -249,7 +249,7 @@ WORD sock_dataready (sock_type *s)
     if (len == s->tcp.maxrdatalen)
        return (len);
 
-    if (s->tcp.ip_type == TCP_PROTO)         /* GV 99.12.02 */
+    if (s->u.ip_type == TCP_PROTO)         /* GV 99.12.02 */
     {
       if (s->tcp.state == tcp_StateLASTACK)  /* EE 99.07.02 */
          return (len);

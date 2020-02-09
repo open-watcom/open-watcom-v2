@@ -47,7 +47,7 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
   do
   {
 #if !defined(USE_UDP_ONLY)
-    if (s->tcp.ip_type == TCP_PROTO)
+    if (s->u.ip_type == TCP_PROTO)
     {
       if (tcp_established(&s->tcp))
       {
@@ -80,7 +80,7 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
 
-    if (s->tcp.ip_type == UDP_PROTO)
+    if (s->u.ip_type == UDP_PROTO)
     {
       status = 0;
       break;
@@ -148,7 +148,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 {
   int status = -1;
 
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
   {
     if (statusptr)
        *statusptr = 1;
@@ -197,7 +197,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 
 int sock_timeout (sock_type *s, int sec)
 {
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
      return (1);
 
 #if !defined(USE_UDP_ONLY)
@@ -213,7 +213,7 @@ int sock_timeout (sock_type *s, int sec)
 
 int sock_established (sock_type *s)
 {
-  switch (s->tcp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          return (1);

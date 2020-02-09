@@ -18,12 +18,12 @@ int sock_sselect (const sock_type *s, int waitstate)
   if (waitstate == SOCKDATAREADY && s->tcp.rdatalen)
      return (SOCKDATAREADY);
 
-  if (s->tcp.ip_type == 0)
+  if (s->u.ip_type == 0)
      return (SOCKCLOSED);
 
   if (waitstate == SOCKESTABLISHED)
   {
-    if (s->tcp.ip_type == UDP_PROTO      ||
+    if (s->u.ip_type == UDP_PROTO      ||
         s->tcp.state   == tcp_StateESTAB ||
         s->tcp.state   == tcp_StateESTCL ||
         s->tcp.state   == tcp_StateCLOSWT)

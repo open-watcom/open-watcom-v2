@@ -565,7 +565,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
       STAT (ipstats.ips_toolong++);
       return (-1);
     }
-    return SEND_IP_FRAGMENTS (sk, sk->raw.ip_type, dest, buf, len);
+    return SEND_IP_FRAGMENTS (sk, sk->u.ip_type, dest, buf, len);
   }
 #else
   if (!(socket->inp_flags & INP_HDRINCL) &&

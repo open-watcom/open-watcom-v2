@@ -665,7 +665,7 @@ static void resolve_close (void)
 {
   if (sock)
   {
-    if (sock->tcp.ip_type == TCP_PROTO &&
+    if (sock->u.ip_type == TCP_PROTO &&
         sock->tcp.state < tcp_StateCLOSED)
     {
       sock_close (sock);
