@@ -326,14 +326,14 @@ static void DumpAdrPort (const char       *proto,
                          const tcp_Socket *sock,
                          const in_Header  *ip)
 {
-  const tcp_Header *tcp = (const tcp_Header*) ((BYTE*)ip + in_GetHdrLen(ip));
+  const tcp_Header *tcp_hdr = (const tcp_Header*) ((BYTE*)ip + in_GetHdrLen(ip));
   char  dst[20];
   char  src[20];
 
   if (!sock)
        db_fprintf ("%s:  NO SOCKET : %s (%d) -> %s (%d)\n", proto,
-                   ip_src, intel16(tcp->srcPort),
-                   ip_dst, intel16(tcp->dstPort));
+                   ip_src, intel16(tcp_hdr->srcPort),
+                   ip_dst, intel16(tcp_hdr->dstPort));
 
   else if (outbound)
        db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
@@ -834,31 +834,31 @@ static int pppoe_sess_dump (const struct pppoe_Packet *pppoe)
 /*----------------------------------------------------------------------*/
 
 static const char *udp_tcp_chksum (const in_Header  *ip,
-                                   const udp_Header *udp,
-                                   const tcp_Header *tcp)
+                                   const udp_Header *udp_hdr,
+                                   const tcp_Header *tcp_hdr)
 {
-  tcp_PseudoHeader ph;
-  int              len;
+  tcp_PseudoHeader  tcp_phdr;
+  int               len;
 
-  memset (&ph, 0, sizeof(ph));
-  if (udp)
+  memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+  if (udp_hdr)
   {
-    len = intel16 (udp->length);
-    ph.protocol = UDP_PROTO;
-    ph.checksum = checksum (udp, len);
+    len = intel16 (udp_hdr->length);
+    tcp_phdr.protocol = UDP_PROTO;
+    tcp_phdr.checksum = checksum (udp_hdr, len);
   }
   else
   {
     len = intel16 (ip->length) - in_GetHdrLen (ip);
-    ph.protocol = TCP_PROTO;
-    ph.checksum = checksum (tcp, len);
+    tcp_phdr.protocol = TCP_PROTO;
+    tcp_phdr.checksum = checksum (tcp_hdr, len);
   }
 
-  ph.src    = ip->source;
-  ph.dst    = ip->destination;
-  ph.length = intel16 (len);
+  tcp_phdr.src    = ip->source;
+  tcp_phdr.dst    = ip->destination;
+  tcp_phdr.length = intel16 (len);
 
-  if (checksum(&ph,sizeof(ph)) == 0xFFFF)
+  if (checksum(&tcp_phdr, sizeof(tcp_phdr)) == 0xFFFF)
      return ("ok");
   return ("ERROR");
 }
@@ -867,33 +867,33 @@ static const char *udp_tcp_chksum (const in_Header  *ip,
 
 static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
 {
-  const char *chk_ok    = "n/a";
-  WORD  iplen           = intel16 (ip->length) - sizeof(*ip);
-  const udp_Header *udp = (const udp_Header*) ((BYTE*)ip + in_GetHdrLen(ip));
-  WORD  udplen          = intel16 (udp->length) - sizeof(*udp);
-  const BYTE *data      = (const BYTE*) (udp+1);
+  const char *chk_ok        = "n/a";
+  WORD  iplen               = intel16 (ip->length) - sizeof(*ip);
+  const udp_Header *udp_hdr = (const udp_Header*) ((BYTE*)ip + in_GetHdrLen(ip));
+  WORD  udplen              = intel16 (udp_hdr->length) - sizeof(*udp_hdr);
+  const BYTE *data          = (const BYTE*) (udp_hdr+1);
 
-  if (udp->checksum && !is_frag)
-     chk_ok = udp_tcp_chksum (ip, udp, NULL);
+  if (udp_hdr->checksum && !is_frag)
+     chk_ok = udp_tcp_chksum (ip, udp_hdr, NULL);
 
   if (is_frag || udplen > iplen)
      udplen = min (udplen, iplen);
 
   if (is_frag && !first_frag)
   {
-    DumpData ((const BYTE*)udp, iplen);
+    DumpData ((const BYTE*)udp_hdr, iplen);
     return (1);
   }
 
   DumpAdrPort ("UDP", sock, ip);
 
   db_fprintf ("      len %d, chksum %04X (%s)\r\n",
-              intel16(udp->length), intel16(udp->checksum), chk_ok);
+              intel16(udp_hdr->length), intel16(udp_hdr->checksum), chk_ok);
 
 #if (DEBUG_DNS)
   if (dbg_dns_details && udplen > sizeof(struct dhead) &&
-      ((!outbound && udp->srcPort == intel16(DOM_DST_PORT)) ||
-       ( outbound && udp->dstPort == intel16(DOM_DST_PORT))))
+      ((!outbound && udp_hdr->srcPort == intel16(DOM_DST_PORT)) ||
+       ( outbound && udp_hdr->dstPort == intel16(DOM_DST_PORT))))
   {
     db_flush();
     dns_dump (data, udplen);
@@ -909,22 +909,22 @@ static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
 
 static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
 {
-  WORD   iplen           = intel16 (ip->length) - sizeof(*ip);
-  int    j               = in_GetHdrLen (ip);
-  const  tcp_Header *tcp = (const tcp_Header*) ((const BYTE*)ip + j);
-  int    i               = tcp->offset << 2;
-  WORD   dlen            = intel16 (ip->length) - j - i;
-  WORD   olen            = 0;
-  const  BYTE *data      = (const BYTE*) tcp + i;
-  DWORD  win             = intel16 (tcp->window);
+  WORD   iplen              = intel16 (ip->length) - sizeof(*ip);
+  int    j                  = in_GetHdrLen (ip);
+  const  tcp_Header *tcp_hdr = (const tcp_Header*) ((const BYTE*)ip + j);
+  int    i                  = tcp_hdr->offset << 2;
+  WORD   dlen               = intel16 (ip->length) - j - i;
+  WORD   olen               = 0;
+  const  BYTE *data         = (const BYTE*) tcp_hdr + i;
+  DWORD  win                = intel16 (tcp_hdr->window);
   DWORD  ack, seq;
-  char   flgBuf [4*6+1]  = { 0 };
+  char   flgBuf [4*6+1]     = { 0 };
   const  char *chk_ok;
 
   if (is_frag || dlen > iplen)
      dlen = min (dlen, iplen);
 
-  if (i < sizeof(*tcp))
+  if (i < sizeof(*tcp_hdr))
   {
     db_write ("      Bad header\r\n");
     return (0);
@@ -932,33 +932,33 @@ static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
 
   if (is_frag && !first_frag)
   {
-    DumpData ((const BYTE*)tcp, iplen);
+    DumpData ((const BYTE*)tcp_hdr, iplen);
     return (1);
   }
 
-  if (tcp->flags & tcp_FlagACK)  strcat (flgBuf, " ACK");
-  if (tcp->flags & tcp_FlagFIN)  strcat (flgBuf, " FIN");
-  if (tcp->flags & tcp_FlagSYN)  strcat (flgBuf, " SYN");
-  if (tcp->flags & tcp_FlagPUSH) strcat (flgBuf, " PSH");
-  if (tcp->flags & tcp_FlagRST)  strcat (flgBuf, " RST");
-  if (tcp->flags & tcp_FlagURG)  strcat (flgBuf, " URG");
+  if (tcp_hdr->flags & tcp_FlagACK)  strcat (flgBuf, " ACK");
+  if (tcp_hdr->flags & tcp_FlagFIN)  strcat (flgBuf, " FIN");
+  if (tcp_hdr->flags & tcp_FlagSYN)  strcat (flgBuf, " SYN");
+  if (tcp_hdr->flags & tcp_FlagPUSH) strcat (flgBuf, " PSH");
+  if (tcp_hdr->flags & tcp_FlagRST)  strcat (flgBuf, " RST");
+  if (tcp_hdr->flags & tcp_FlagURG)  strcat (flgBuf, " URG");
 
   if (is_frag)
        chk_ok = "n/a";
-  else chk_ok = udp_tcp_chksum (ip, NULL, tcp);
+  else chk_ok = udp_tcp_chksum (ip, NULL, tcp_hdr);
 
   DumpAdrPort ("TCP", sock, ip);
 
   if (sock)
      win <<= outbound ? sock->send_wscale : sock->recv_wscale;
 
-  ack = intel (tcp->acknum);
-  seq = intel (tcp->seqnum);
+  ack = intel (tcp_hdr->acknum);
+  seq = intel (tcp_hdr->seqnum);
 
   db_fprintf ("      flags%s, win %lu, chksum %04X (%s), urg %u\r\n"
               "                 SEQ %10lu,  ACK %10lu\r\n",
-              flgBuf, win, intel16(tcp->checksum), chk_ok,
-              intel16(tcp->urgent), seq, ack);
+              flgBuf, win, intel16(tcp_hdr->checksum), chk_ok,
+              intel16(tcp_hdr->urgent), seq, ack);
   if (sock)
   {
     UINT  state = sock->state;
@@ -1001,17 +1001,17 @@ static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
                 RTT_str (sock->rtt_time - now));
   }
 
-  olen = i - sizeof(*tcp);
+  olen = i - sizeof(*tcp_hdr);
   if (olen > 0)
   {
-    const BYTE *opt = (const BYTE*) (tcp+1);
+    const BYTE *opt = (const BYTE*) (tcp_hdr+1);
     DumpOptions (0, opt, olen);
   }
 
 #if (DEBUG_DNS)
   if (dbg_dns_details && dlen > sizeof(struct dhead) &&
-      ((!outbound && tcp->srcPort == intel16(DOM_DST_PORT)) ||
-       ( outbound && tcp->dstPort == intel16(DOM_DST_PORT))))
+      ((!outbound && tcp_hdr->srcPort == intel16(DOM_DST_PORT)) ||
+       ( outbound && tcp_hdr->dstPort == intel16(DOM_DST_PORT))))
   {
     db_flush();
     dns_dump (data, dlen);

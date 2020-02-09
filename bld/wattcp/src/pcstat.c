@@ -398,9 +398,9 @@ void update_out_stat (const void *pkt, WORD proto)
 
   if (ip->proto == TCP_PROTO)
   {
-    tcp_Header *tcp   = (tcp_Header*) ((BYTE*)ip + hlen);
-    BYTE        flags = tcp->flags & tcp_FlagMASK;
-    int         tlen  = intel16 (ip->length) - hlen - (tcp->offset << 2);
+    tcp_Header *tcp_hdr = (tcp_Header*) ((BYTE*)ip + hlen);
+    BYTE        flags = tcp_hdr->flags & tcp_FlagMASK;
+    int         tlen  = intel16 (ip->length) - hlen - (tcp_hdr->offset << 2);
 
     tcpstats.tcps_sndtotal++;
 

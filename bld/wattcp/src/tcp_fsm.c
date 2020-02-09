@@ -29,7 +29,7 @@
 
 #define flag_SYNACK (tcp_FlagSYN | tcp_FlagACK)
 
-typedef int (*tcp_StateProc)  (tcp_Socket**, const in_Header*, tcp_Header*, int);
+typedef int (*tcp_StateProc)  (tcp_Socket**, const in_Header*, tcp_Header *tcp_hdr, int);
 
 static int  tcp_listen_state  (tcp_Socket**, const in_Header*, tcp_Header*, int);
 static int  tcp_synsent_state (tcp_Socket**, const in_Header*, tcp_Header*, int);
@@ -43,8 +43,8 @@ static int  tcp_closing_state (tcp_Socket**, const in_Header*, tcp_Header*, int)
 static int  tcp_lastack_state (tcp_Socket**, const in_Header*, tcp_Header*, int);
 static int  tcp_timewt_state  (tcp_Socket**, const in_Header*, tcp_Header*, int);
 
-static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags);
-static int  tcp_ProcessAck  (tcp_Socket *s, tcp_Header *tcp, long *unack);
+static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp_hdr, int len, int flags);
+static int  tcp_ProcessAck  (tcp_Socket *s, tcp_Header *tcp_hdr, long *unack);
 
 static tcp_StateProc tcp_state_tab [] = {
   tcp_listen_state,   /* tcp_StateLISTEN  : listening for connection */
@@ -69,7 +69,7 @@ static tcp_StateProc tcp_state_tab [] = {
  */
 int _tcp_fsm (tcp_Socket **sp, const in_Header *ip)
 {
-  tcp_Header *tcp;
+  tcp_Header *tcp_hdr;
   tcp_Socket *s = *sp;
   WORD       len;
   BYTE       flags;
@@ -78,17 +78,17 @@ int _tcp_fsm (tcp_Socket **sp, const in_Header *ip)
      return (0);   /* cannot happen! */
 
   len   = in_GetHdrLen (ip);                /* len of IP header   */
-  tcp   = (tcp_Header*) ((BYTE*)ip + len);  /* tcp frame pointer  */
-  flags = tcp->flags & tcp_FlagMASK;        /* get TCP-head flags */
+  tcp_hdr = (tcp_Header*) ((BYTE*)ip + len);  /* tcp frame pointer  */
+  flags = tcp_hdr->flags & tcp_FlagMASK;        /* get TCP-head flags */
 
-  return (*tcp_state_tab[s->state]) (sp, ip, tcp, flags);
+  return (*tcp_state_tab[s->state]) (sp, ip, tcp_hdr, flags);
 }
                             
 /*
  * LISTEN state
  */
 static int tcp_listen_state (tcp_Socket **sp, const in_Header *ip,
-                             tcp_Header *tcp, int flags)
+                             tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
@@ -120,7 +120,7 @@ static int tcp_listen_state (tcp_Socket **sp, const in_Header *ip,
     * We best not do that since SunOS ignores TOS
     */
 
-    s->acknum  = intel (tcp->seqnum) + 1;
+    s->acknum  = intel (tcp_hdr->seqnum) + 1;
     s->flags   = flag_SYNACK;
     s->state   = tcp_StateSYNREC;
     s->unhappy = TRUE;
@@ -131,8 +131,8 @@ static int tcp_listen_state (tcp_Socket **sp, const in_Header *ip,
   }
   else
   {
-    if (!(flags & tcp_FlagRST))  /* don't answer RST */
-       TCP_RESET (s, ip, tcp);   /* send a reset */
+    if (!(flags & tcp_FlagRST))     /* don't answer RST */
+       TCP_RESET (s, ip, tcp_hdr);  /* send a reset */
     STAT (tcpstats.tcps_conndrops++);
     CLR_PEER_MAC_ADDR (s);
   }
@@ -143,7 +143,7 @@ static int tcp_listen_state (tcp_Socket **sp, const in_Header *ip,
  * SYNSENT state
  */
 static int tcp_synsent_state (tcp_Socket **sp, const in_Header *ip,
-                              tcp_Header *tcp, int flags)
+                              tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
@@ -161,14 +161,14 @@ static int tcp_synsent_state (tcp_Socket **sp, const in_Header *ip,
     {
       /* but is it for the correct session ?
        */
-      if (tcp->acknum == intel(s->seqnum + 1))
+      if (tcp_hdr->acknum == intel(s->seqnum + 1))
       {
         int len = intel16 (ip->length) - in_GetHdrLen (ip);
 
         s->state = tcp_StateESTAB;
         s->seqnum++;                          /* good increment */
-        s->acknum = intel (tcp->seqnum) + 1;
-        tcp_ProcessData (s, tcp, len, flags); /* someone may try it */
+        s->acknum = intel (tcp_hdr->seqnum) + 1;
+        tcp_ProcessData (s, tcp_hdr, len, flags); /* someone may try it */
         s->unhappy = TRUE;                    /* rely on their attempts */
         TCP_SEND (s); /* !! maybe use TCP_SENDSOON() to merge application
                          data into ACK */
@@ -200,7 +200,7 @@ static int tcp_synsent_state (tcp_Socket **sp, const in_Header *ip,
   }
   else
   {
-    TCP_RESET (s, ip, tcp);
+    TCP_RESET (s, ip, tcp_hdr);
     return (0);              /* Added 18-Aug 1999, GV */
   }
   return (1);
@@ -210,7 +210,7 @@ static int tcp_synsent_state (tcp_Socket **sp, const in_Header *ip,
  * SYNREC state
  */
 static int tcp_synrec_state (tcp_Socket **sp, const in_Header *ip,
-                             tcp_Header *tcp, int flags)
+                             tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
@@ -223,9 +223,9 @@ static int tcp_synrec_state (tcp_Socket **sp, const in_Header *ip,
     return (0);
   }
 
-  if ((flags & tcp_FlagACK) && (intel(tcp->acknum) == (s->seqnum + 1)))
+  if ((flags & tcp_FlagACK) && (intel(tcp_hdr->acknum) == (s->seqnum + 1)))
   {
-    s->window = intel16 (tcp->window);
+    s->window = intel16 (tcp_hdr->window);
     if (s->window > MAX_WINDOW)
         s->window = MAX_WINDOW;
     s->seqnum++;
@@ -243,7 +243,7 @@ static int tcp_synrec_state (tcp_Socket **sp, const in_Header *ip,
  * ESTABLISHED state
  */
 static int tcp_estab_state (tcp_Socket **sp, const in_Header *ip,
-                            tcp_Header *tcp, int flags)
+                            tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
   int   len;
@@ -263,7 +263,7 @@ static int tcp_estab_state (tcp_Socket **sp, const in_Header *ip,
 
   s->timeout = 0UL;             /* we do not timeout at this point */
 
-  if (!tcp_ProcessAck(s,tcp,&ldiff))
+  if (!tcp_ProcessAck(s, tcp_hdr, &ldiff))
   {
 #if defined(USE_DEBUG)
     if (debug_on > 1)
@@ -280,12 +280,12 @@ static int tcp_estab_state (tcp_Socket **sp, const in_Header *ip,
 
   len = intel16 (ip->length) - in_GetHdrLen (ip);
   ack = s->acknum;
-  tcp_ProcessData (s, tcp, len, flags);
+  tcp_ProcessData (s, tcp_hdr, len, flags);
 
   if (s->state != tcp_StateCLOSWT &&
       (flags & tcp_FlagFIN)       &&
       s->missed_seg[0] == 0L      &&
-      ack == intel(tcp->seqnum))
+      ack == intel(tcp_hdr->seqnum))
   {
     s->acknum++;
     if (s->err_msg == NULL)
@@ -306,7 +306,7 @@ static int tcp_estab_state (tcp_Socket **sp, const in_Header *ip,
    * data length only, so exclude the TCP header size
    *  -- Joe <jdhagen@itis.com>
    */
-  len -= (tcp->offset << 2);
+  len -= (tcp_hdr->offset << 2);
   if ((ldiff > 0 && s->datalen > 0) || len > 0)
   {
    /* Need to ACK and update window, but how urgent ??
@@ -336,9 +336,9 @@ static int tcp_estab_state (tcp_Socket **sp, const in_Header *ip,
  * ESTAB_CLOSE state
  */
 static int tcp_estcl_state (tcp_Socket **sp, const in_Header *ip,
-                            tcp_Header *tcp, int flags)
+                            tcp_Header *tcp_hdr, int flags)
 {
-  tcp_estab_state (sp, ip, tcp, flags);
+  tcp_estab_state (sp, ip, tcp_hdr, flags);
   _tcp_close (*sp);
   return (0);
 }
@@ -347,16 +347,16 @@ static int tcp_estcl_state (tcp_Socket **sp, const in_Header *ip,
  * CLOSE_WAIT state
  */
 static int tcp_closewt_state (tcp_Socket **sp, const in_Header *ip,
-                              tcp_Header *tcp, int flags)
+                              tcp_Header *tcp_hdr, int flags)
 {
-  return tcp_estab_state (sp, ip, tcp, flags);
+  return tcp_estab_state (sp, ip, tcp_hdr, flags);
 }
 
 /*
  * FIN_WAIT1 state -
  */
 static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
-                             tcp_Header *tcp, int flags)
+                             tcp_Header *tcp_hdr, int flags)
 {
   long  ldiff;
   int   len = intel16 (ip->length) - in_GetHdrLen (ip);
@@ -367,7 +367,7 @@ static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
  /* They have not necessarily read all the data
   * yet, we must still supply it as requested
   */
-  if (tcp_ProcessAck(s,tcp,&ldiff))
+  if (tcp_ProcessAck(s, tcp_hdr, &ldiff))
   {
     if (ldiff == 0 || s->unacked < 0)
        s->unacked = 0;
@@ -375,10 +375,10 @@ static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
 
   /* they may still be transmitting data, we must read it
    */
-  tcp_ProcessData (s, tcp, len, flags);
+  tcp_ProcessData (s, tcp_hdr, len, flags);
 
-  ack = intel (tcp->acknum);
-  seq = intel (tcp->seqnum);
+  ack = intel (tcp_hdr->acknum);
+  seq = intel (tcp_hdr->seqnum);
  
 
   /* check if other tcp has ACK'ed all sent data and
@@ -454,7 +454,7 @@ static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
  * FIN_WAIT2 state
  */
 static int tcp_finwt2_state (tcp_Socket **sp, const in_Header *ip,
-                             tcp_Header *tcp, int flags)
+                             tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s   = *sp;
   int         len = intel16 (ip->length) - in_GetHdrLen (ip);
@@ -462,10 +462,10 @@ static int tcp_finwt2_state (tcp_Socket **sp, const in_Header *ip,
 
   /* They may still be transmitting data, we must read it
    */
-  ack = intel (tcp->acknum);
-  seq = intel (tcp->seqnum);
+  ack = intel (tcp_hdr->acknum);
+  seq = intel (tcp_hdr->seqnum);
 
-  tcp_ProcessData (s, tcp, len, flags);
+  tcp_ProcessData (s, tcp_hdr, len, flags);
 
   if (s->missed_seg[0])  /* must retransmit to get all data */
      return (1);
@@ -492,18 +492,18 @@ static int tcp_finwt2_state (tcp_Socket **sp, const in_Header *ip,
  * CLOSING state
  */
 static int tcp_closing_state (tcp_Socket **sp, const in_Header *ip,
-                              tcp_Header *tcp, int flags)
+                              tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
   if ((flags & flag_SYNACK) == tcp_FlagACK)  /* ACK, no FIN */
   {
-    /* Per FINWT1 above, tcp->acknum should be s->seqnum+1,
+    /* Per FINWT1 above, tcp_hdr->acknum should be s->seqnum+1,
      * which should cause us to bump s->seqnum to match
      */
-// !! if ((tcp->acknum >= intel(s->seqnum) + 1) &&
-      if (((long)(intel(tcp->acknum) - s->seqnum) > 0) && /* AGW - moved intel() so +1 OK 6th Jan 2001 */
-          (tcp->seqnum == intel(s->acknum)))
+// !! if ((tcp_hdr->acknum >= intel(s->seqnum) + 1) &&
+      if (((long)(intel(tcp_hdr->acknum) - s->seqnum) > 0) && /* AGW - moved intel() so +1 OK 6th Jan 2001 */
+          (tcp_hdr->seqnum == intel(s->acknum)))
       {
         s->seqnum++;
         s->state   = tcp_StateTIMEWT;
@@ -519,7 +519,7 @@ static int tcp_closing_state (tcp_Socket **sp, const in_Header *ip,
  * LASTACK state
  */
 static int tcp_lastack_state (tcp_Socket **sp, const in_Header *ip,
-                              tcp_Header *tcp, int flags)
+                              tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
@@ -534,10 +534,10 @@ static int tcp_lastack_state (tcp_Socket **sp, const in_Header *ip,
     return (0);
   }
 
-//!! if ((intel(tcp->acknum) == (s->seqnum + 1)) &&
-  if (((long)(intel(tcp->acknum) - s->seqnum) > 0) && /* AGW allow for any later acks 6th Jan 2001 */
+//!! if ((intel(tcp_hdr->acknum) == (s->seqnum + 1)) &&
+  if (((long)(intel(tcp_hdr->acknum) - s->seqnum) > 0) && /* AGW allow for any later acks 6th Jan 2001 */
 
-      (intel(tcp->seqnum) == s->acknum))
+      (intel(tcp_hdr->seqnum) == s->acknum))
   {
     s->state   = tcp_StateCLOSED;   /* no 2msl necessary */
     s->unhappy = FALSE;             /* we're done        */
@@ -551,7 +551,7 @@ static int tcp_lastack_state (tcp_Socket **sp, const in_Header *ip,
  * TIMEWAIT state
  */
 static int tcp_timewt_state (tcp_Socket **sp, const in_Header *ip,
-                             tcp_Header *tcp, int flags)
+                             tcp_Header *tcp_hdr, int flags)
 {
   tcp_Socket *s = *sp;
 
@@ -565,7 +565,7 @@ static int tcp_timewt_state (tcp_Socket **sp, const in_Header *ip,
     TCP_SEND (s);
   }
   ARGSUSED (ip);
-  ARGSUSED (tcp);
+  ARGSUSED (tcp_hdr);
   return (1);
 }
 
@@ -575,7 +575,7 @@ static int tcp_timewt_state (tcp_Socket **sp, const in_Header *ip,
  * Called from all states where incoming data can be received:
  * SYNSENT, ESTAB, ESTCL, CLOSWT, FIN-WAIT-1 and FIN-WAIT-2
  */
-static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
+static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp_hdr, int len, int flags)
 {
   long  ldiff, tmpldiff;
   int   diff,  tmpdiff, data_ofs;
@@ -584,11 +584,11 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
   if (s->stress > 0)
       s->stress--;
 
-  s->window = intel16 (tcp->window);
+  s->window = intel16 (tcp_hdr->window);
   if (s->window > MAX_WINDOW)
       s->window = MAX_WINDOW;
 
-  ldiff = s->acknum - intel (tcp->seqnum);
+  ldiff = s->acknum - intel (tcp_hdr->seqnum);
 
   if (flags & tcp_FlagSYN)
      ldiff--;                         /* back up to 0 */
@@ -597,12 +597,12 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
 
   /* find the data portion
    */
-  data_ofs = tcp->offset << 2;        /* dword to byte offset */
-  data     = (BYTE*) tcp + data_ofs;
+  data_ofs = tcp_hdr->offset << 2;        /* dword to byte offset */
+  data     = (BYTE*) tcp_hdr + data_ofs;
 
-  if (data_ofs - sizeof(*tcp) > 0)    /* process TCP options */
+  if (data_ofs - sizeof(*tcp_hdr) > 0)    /* process TCP options */
   {
-    BYTE *opt = (BYTE*)(tcp+1);
+    BYTE *opt = (BYTE*)(tcp_hdr+1);
 
     while (opt < data)
     {
@@ -667,9 +667,9 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
    * Handle Out-of-Order data. Raise SIGURG.
    */
   if ((flags & tcp_FlagURG) &&
-      tcp->urgent && intel16(tcp->urgent) < len)
+      tcp_hdr->urgent && intel16(tcp_hdr->urgent) < len)
   {
-    intel16 (tcp->urgent) + intel16 (tcp->seqnum);
+    intel16 (tcp_hdr->urgent) + intel16 (tcp_hdr->seqnum);
     STAT (tcpstats.tcps_rcvoopack++);
     STAT (tcpstats.tcps_rcvoobyte += len);
   }
@@ -747,7 +747,7 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
   }
   else    /* handle one out-of-segment packet */
   {
-    DWORD seqnum = intel (tcp->seqnum);
+    DWORD seqnum = intel (tcp_hdr->seqnum);
 
 #if 0
     /* S. Lawson - no out-of-sequence processing of FIN flag
@@ -813,9 +813,9 @@ static void tcp_ProcessData (tcp_Socket *s, tcp_Header *tcp, int len, int flags)
  * Process the ACK value in received packet, but only if it falls within
  * current window. Discard queued data that have been acknowledged.
  */
-static int tcp_ProcessAck (tcp_Socket *s, tcp_Header *tcp, long *unacked)
+static int tcp_ProcessAck (tcp_Socket *s, tcp_Header *tcp_hdr, long *unacked)
 {
-  long ldiff = (long) (intel(tcp->acknum) - s->seqnum);
+  long ldiff = (long) (intel(tcp_hdr->acknum) - s->seqnum);
   int  diff  = (int) ldiff;
 
   if (unacked)
@@ -843,24 +843,24 @@ static int tcp_ProcessAck (tcp_Socket *s, tcp_Header *tcp, long *unacked)
 /*
  * Format and send a reset tcp packet
  */
-int _tcp_reset (tcp_Socket *s, const in_Header *his_ip, tcp_Header *old_tcp,
+int _tcp_reset (tcp_Socket *s, const in_Header *his_ip, tcp_Header *old_tcp_hdr,
                 const char *file, unsigned line)
 {
   #include <sys/packon.h>
   struct packet {
          in_Header  ip;
-         tcp_Header tcp;
+         tcp_Header tcp_hdr;
          WORD       options[2];
        } *pkt;
   #include <sys/packoff.h>
 
   static DWORD next_RST_time = 0UL;
 
-  tcp_PseudoHeader ph;
-  BYTE         oldflags;
-  in_Header   *ip;
-  tcp_Header  *tcp;
-  int          temp;
+  tcp_PseudoHeader  tcp_phdr;
+  BYTE              oldflags;
+  in_Header         *ip;
+  tcp_Header        *tcp_hdr;
+  int               temp;
 
   /* see RFC 793 page 65 for details
    */
@@ -869,27 +869,27 @@ int _tcp_reset (tcp_Socket *s, const in_Header *his_ip, tcp_Header *old_tcp,
 
   next_RST_time = set_timeout (tcp_RST_TIME);
 
-  oldflags = old_tcp->flags;
+  oldflags = old_tcp_hdr->flags;
   if (oldflags & tcp_FlagRST)
      return (-1);
 
   if (oldflags & tcp_FlagACK)                        /* ACK */
   {
-    old_tcp->seqnum = old_tcp->acknum;
-    old_tcp->acknum = 0;
+    old_tcp_hdr->seqnum = old_tcp_hdr->acknum;
+    old_tcp_hdr->acknum = 0;
     oldflags        = tcp_FlagRST;
   }
   else if ((oldflags & flag_SYNACK) == tcp_FlagSYN)  /* SYN, no ACK */
   {
-    old_tcp->acknum = intel (intel(old_tcp->seqnum) + 1);
-    old_tcp->seqnum = 0;
+    old_tcp_hdr->acknum = intel (intel(old_tcp_hdr->seqnum) + 1);
+    old_tcp_hdr->seqnum = 0;
     oldflags        = tcp_FlagACK | tcp_FlagRST;
   }
   else
   {
     temp = intel16 (his_ip->length) - in_GetHdrLen (his_ip);
-    old_tcp->acknum = intel (intel(old_tcp->seqnum) + temp);
-    old_tcp->seqnum = 0;
+    old_tcp_hdr->acknum = intel (intel(old_tcp_hdr->seqnum) + temp);
+    old_tcp_hdr->seqnum = 0;
     oldflags        = tcp_FlagRST;
   }
 
@@ -898,33 +898,33 @@ int _tcp_reset (tcp_Socket *s, const in_Header *his_ip, tcp_Header *old_tcp,
 
   pkt = (struct packet*) _eth_formatpacket (MAC_SRC(his_ip), IP_TYPE);
   ip  = &pkt->ip;
-  tcp = &pkt->tcp;
+  tcp_hdr = &pkt->tcp_hdr;
 
   /* tcp header
    */
-  tcp->srcPort  = old_tcp->dstPort;
-  tcp->dstPort  = old_tcp->srcPort;
-  tcp->seqnum   = old_tcp->seqnum;
-  tcp->acknum   = old_tcp->acknum;
-  tcp->window   = 0;
-  tcp->flags    = (oldflags | tcp_FlagRST);
-  tcp->unused   = 0;
-  tcp->offset   = sizeof(*tcp) / 4;
-  tcp->checksum = 0;
-  tcp->urgent   = 0;
+  tcp_hdr->srcPort  = old_tcp_hdr->dstPort;
+  tcp_hdr->dstPort  = old_tcp_hdr->srcPort;
+  tcp_hdr->seqnum   = old_tcp_hdr->seqnum;
+  tcp_hdr->acknum   = old_tcp_hdr->acknum;
+  tcp_hdr->window   = 0;
+  tcp_hdr->flags    = (oldflags | tcp_FlagRST);
+  tcp_hdr->unused   = 0;
+  tcp_hdr->offset   = sizeof(*tcp_hdr) / 4;
+  tcp_hdr->checksum = 0;
+  tcp_hdr->urgent   = 0;
 
-  memset (&ph, 0, sizeof(ph));
-  ph.src      = his_ip->destination;   /* already network order */
-  ph.dst      = his_ip->source;
-  ph.protocol = TCP_PROTO;
-  ph.length   = intel16 (sizeof(*tcp));
-  ph.checksum = checksum (tcp, sizeof(*tcp));
+  memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+  tcp_phdr.src      = his_ip->destination;   /* already network order */
+  tcp_phdr.dst      = his_ip->source;
+  tcp_phdr.protocol = TCP_PROTO;
+  tcp_phdr.length   = intel16 (sizeof(*tcp_hdr));
+  tcp_phdr.checksum = checksum (tcp_hdr, sizeof(*tcp_hdr));
 
-  tcp->checksum = ~checksum (&ph, sizeof(ph));
+  tcp_hdr->checksum = ~checksum (&tcp_phdr, sizeof(tcp_phdr));
 
-  return _ip_output (ip, ph.src, ph.dst, TCP_PROTO,
+  return _ip_output (ip, tcp_phdr.src, tcp_phdr.dst, TCP_PROTO,
                      s ? s->ttl : _default_ttl,
-                     his_ip->tos, 0, sizeof(*tcp), s, file, line);
+                     his_ip->tos, 0, sizeof(*tcp_hdr), s, file, line);
 }
 
 #endif /* !USE_UDP_ONLY */
