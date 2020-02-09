@@ -48,7 +48,7 @@
 #endif
 
 #ifndef __inline  /* normally in <sys/cdefs.h> */
-#define __inline   
+#define __inline
 #endif
 
 /*
@@ -117,7 +117,7 @@ udp_Socket *_udp_allsocs = NULL;   /* list of udp-sockets */
   static void tcp_rtt_wind (tcp_Socket *s);
   static void tcp_upd_wind (tcp_Socket *s, unsigned line);
   static int  tcp_chksum   (const in_Header *ip, const tcp_Header *tcp, int len);
-  
+
   static void tcp_rtt_add  (tcp_Socket *s, UINT rto);
   static void tcp_rtt_clr  (tcp_Socket *s);
   static UINT tcp_rtt_get  (tcp_Socket *s);
@@ -190,7 +190,7 @@ int udp_open (udp_Socket *s, WORD lport, DWORD ip, WORD port, ProtoHandler handl
 #endif
   else if (!_arp_resolve(ip,&s->hisethaddr,0))
           return (0);
- 
+
   s->hisaddr      = ip;
   s->hisport      = port;
   s->protoHandler = handler;
@@ -291,7 +291,7 @@ int tcp_open (tcp_Socket *s, WORD lport, DWORD ina, WORD rport, ProtoHandler han
   _tcp_allsocs    = s;
 
   (void) TCP_SEND (s);                      /* send opening SYN */
- 
+
   /* find previous RTT replacing RTT set in tcp_send() above
    */
   if ((rtt = tcp_rtt_get(s)) > 0)
@@ -450,7 +450,7 @@ int _tcp_sendsoon (tcp_Socket *s, char *file, unsigned line)
     rc = _tcp_send (s, file, line);
     s->recent = 1;
     return (rc);
-  } 
+  }
 
   if ((s->unhappy || s->datalen > 0 || s->karn_count == 1) &&
       (s->rtt_time && cmp_timers(s->rtt_time,timeout) < 0))
@@ -1162,13 +1162,13 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
            break;
   }
 
-  if (s)  
+  if (s)
   {
     if (s->err_msg == NULL && msg)
         s->err_msg = msg;
 
     if (s->sol_callb)            /* tell the socket layer about it */
-      (*s->sol_callb) ((void*)s, type);
+      (*s->sol_callb) ((sock_type *)s, type);
 
     if (type == ICMP_REDIRECT && /* handle redirect on active sockets */
         !passive)
@@ -1191,7 +1191,7 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
     for (s = _udp_allsocs; s; s = s->next)
     {
       if (s->sol_callb)
-        (*s->sol_callb) ((void*)s, type);
+        (*s->sol_callb) ((sock_type *)s, type);
     }
   }
 }
@@ -1231,7 +1231,7 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
              }
              /* FALLTROUGH */
 
-        case ICMP_SOURCEQUENCH:    
+        case ICMP_SOURCEQUENCH:
              s->cwindow = 1;       /* slow-down tx-rate */
              s->wwindow = 1;
              s->vj_sa <<= 2;
@@ -1259,7 +1259,7 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
              break;
       }
       if (s->sol_callb)
-        (*s->sol_callb) ((void*)s, type);
+        (*s->sol_callb) ((sock_type *)s, type);
     }
   }
 }
@@ -1345,7 +1345,7 @@ static int tcp_write (tcp_Socket *s, const BYTE *data, UINT len)
     }
     if (rc < 0)
        return (-1);
-  }        
+  }
   return (len);
 }
 
@@ -1363,7 +1363,7 @@ static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp)
   WORD       dstPort = intel16 (tcp->dstPort);
 
   for (s = _tcp_allsocs; s; s = s->next)
-  {     
+  {
     if (s->hisport != 0      &&
         dstHost == s->myaddr &&
         dstPort == s->myport &&
@@ -1555,7 +1555,7 @@ static __inline int tcp_opt_timestamp (tcp_Socket *s, BYTE *opt,
 {
   *opt++ = TCPOPT_NOP;     /* NOP,NOP,TIMESTAMP,length,TSval,TSecho */
   *opt++ = TCPOPT_NOP;
-  *opt++ = TCPOPT_TIMESTAMP;   
+  *opt++ = TCPOPT_TIMESTAMP;
   *opt++ = 10;
   *(DWORD*) opt = intel (ts_val);  opt += sizeof(ts_val);
   *(DWORD*) opt = intel (ts_echo); opt += sizeof(ts_echo);
@@ -2030,7 +2030,7 @@ int sock_write (sock_type *s, const BYTE *data, int len)
            s->tcp.flags |= tcp_FlagPUSH;
            written = tcp_write (&s->tcp, data, chunk);
            break;
-#endif           
+#endif
       case UDP_PROTO:
            chunk = min (mtu - sizeof(in_Header) - sizeof(udp_Header), chunk);
            written = udp_write (&s->udp, data, chunk);

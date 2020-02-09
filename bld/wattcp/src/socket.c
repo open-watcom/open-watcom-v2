@@ -326,7 +326,7 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
   }
 
   FREE_SK (sock->local_addr);
-  FREE_SK (sock->remote_addr);    
+  FREE_SK (sock->remote_addr);
   FREE_SK (sock->ip_opt);
   FREE_SK (sock->bcast_pool);
 
@@ -453,7 +453,7 @@ static int sock_raw_recv (const in_Header *ip)
      *          vacant buffer.
      * assumes sock->raw_sock is non-NULL
      */
-    if (sock->raw_sock->used)  
+    if (sock->raw_sock->used)
     {
       num_dropped++;
       SOCK_DEBUGF ((sock, "\n  socket %d dropped IP, proto %d",
@@ -517,7 +517,7 @@ static Socket *tcp_sock_daemon (Socket *sock, tcp_Socket *tcp)
          sock->keepalive = set_timeout (1000 * tcp_keepalive);
     else sock->keepalive = 0;
   }
-  
+
   if (state == tcp_StateSYNSENT)        /* opening active tcp session */
   {
     sock->so_state |= SS_ISCONNECTING;
@@ -557,7 +557,7 @@ static Socket *tcp_sock_daemon (Socket *sock, tcp_Socket *tcp)
 
       /* If linger-period expired and fully closed, delete the TCB
        */
-      if (expired && state == tcp_StateCLOSED)  
+      if (expired && state == tcp_StateCLOSED)
       {
         SOCK_DEBUGF ((sock, "\n  tcp_sock_daemon del:%d, lport %d",
                       s, tcp->myport));
@@ -740,7 +740,7 @@ static int InitSockets (void)
   atexit (fortify_exit);
 #endif
   return (1);
-}          
+}
 
 /*
  * _socklist_find
@@ -1031,19 +1031,17 @@ static int dgram_cancel (const udp_Socket *udp)
   return (1);
 }
 
-static int sol_callback (void *p, int icmp_type)
+static int sol_callback (sock_type *s, int icmp_type)
 {
-  sock_type *s = (sock_type*)p;
- 
   SOCK_DEBUGF ((NULL, "\nsol_callback (s=%08lX, IP-type=%d, ICMP-type %d)",
-                (DWORD)p, s->udp.ip_type, icmp_type));
+                (DWORD)s, s->u.ip_type, icmp_type));
 
   if (icmp_type == ICMP_UNREACH || icmp_type == ICMP_PARAMPROB)
   {
-    if (s->udp.ip_type == UDP_PROTO)
+    if (s->u.ip_type == UDP_PROTO)
        return dgram_cancel (&s->udp);
 
-    if (s->udp.ip_type == TCP_PROTO)
+    if (s->u.ip_type == TCP_PROTO)
        return stream_cancel (&s->tcp);
   }
   return (0);

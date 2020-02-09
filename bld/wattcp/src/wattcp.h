@@ -385,9 +385,9 @@ typedef struct arp_Header {
 typedef int (*ProtoHandler) (union sock_type *sock, BYTE *data, int len,
                              tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
 
-typedef int (*UserHandler)  (void *sock);
+typedef int (*UserHandler)  (union sock_type *sock);
 
-typedef int (*sol_upcall)   (void *sock, int icmp_type);
+typedef int (*sol_upcall)   (union sock_type *sock, int icmp_type);
 
 /*
  * UDP socket definition
