@@ -13,58 +13,58 @@
 #include "misc.h"
 #include "bsdname.h"
 
-int _getpeername (const tcp_Socket *s, void *dest, int *len)
+int _getpeername (const sock_type *s, void *dest, int *len)
 {
   struct watt_sockaddr temp;
   int    ltemp;
 
   memset (&temp, 0, sizeof(temp));
-  temp.s_ip   = s->hisaddr;
-  temp.s_port = s->hisport;
+  temp.s_ip   = s->u.hisaddr;
+  temp.s_port = s->u.hisport;
 
-  if (!s->hisaddr || !s->hisport || !_chk_socket((sock_type*)s))
+  if (!s->u.hisaddr || !s->u.hisport || !_chk_socket(s))
   {
-    if (len)
+    if (len != NULL)
        *len = 0;
     return (-1);
   }
 
   /* how much do we move
    */
-  ltemp = (len ? *len : sizeof (struct watt_sockaddr));
+  ltemp = ((len != NULL) ? *len : sizeof (struct watt_sockaddr));
   if (ltemp > sizeof (struct watt_sockaddr))
       ltemp = sizeof (struct watt_sockaddr);
   memcpy (dest, &temp, ltemp);
 
-  if (len)
+  if (len != NULL)
      *len = ltemp;
   return (0);
 }
 
-int _getsockname (const tcp_Socket *s, void *dest, int *len)
+int _getsockname (const sock_type *s, void *dest, int *len)
 {
   struct watt_sockaddr temp;
   int    ltemp;
 
   memset (&temp, 0, sizeof(temp));
-  temp.s_ip   = s->myaddr;
-  temp.s_port = s->myport;
+  temp.s_ip   = s->u.myaddr;
+  temp.s_port = s->u.myport;
 
-  if (!s->hisaddr || !s->hisport || !_chk_socket((sock_type*)s))
+  if (!s->u.myaddr || !s->u.myport || !_chk_socket(s))
   {
-    if (len)
+    if (len != NULL)
        *len = 0;
     return (-1);
   }
 
   /* how much do we move
    */
-  ltemp = (len ? *len : sizeof (struct watt_sockaddr));
+  ltemp = ((len != NULL) ? *len : sizeof (struct watt_sockaddr));
   if (ltemp > sizeof (struct watt_sockaddr))
       ltemp = sizeof (struct watt_sockaddr);
   memcpy (dest, &temp, ltemp);
 
-  if (len)
+  if (len != NULL)
      *len = ltemp;
   return (0);
 }
