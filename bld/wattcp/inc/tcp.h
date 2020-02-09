@@ -452,12 +452,12 @@ extern int sock_tbleft (const void *s);
 extern char *_inet_ntoa  (char *s, DWORD x);
 extern DWORD _inet_addr  (const char *name);
 
-extern int   _getsockname(const tcp_Socket *s, void *dest, int *len);
-extern int   _getpeername(const tcp_Socket *s, void *dest, int *len);
+extern int   _getsockname(const void *s, void *dest, int *len);
+extern int   _getpeername(const void *s, void *dest, int *len);
 extern DWORD _gethostid  (void);
 extern DWORD _sethostid  (DWORD ip);
-extern int  _chk_socket  (const tcp_Socket *s);
-extern void  psocket     (tcp_Socket *s);
+extern int   _chk_socket (const void *s);
+extern void  psocket     (const void *s);
 
 extern int   getdomainname (char *name, int len);
 extern int   setdomainname (char *name, int len);
@@ -503,7 +503,7 @@ extern int join_mcast_group  (DWORD);
 extern int leave_mcast_group (DWORD);
 extern int is_multicast      (DWORD);
 extern int multi_to_eth      (DWORD, void *);
-extern int udp_SetTTL        (udp_Socket *s, BYTE ttl);
+extern int udp_SetTTL        (void *s, BYTE ttl);
 
 
 /*
@@ -538,7 +538,7 @@ extern void print_tcp_stats (void);
 extern void print_all_stats (void);
 extern void reset_stats     (void);
 
-extern int  sock_stats (tcp_Socket *s, WORD *days, WORD *inactive,
+extern int  sock_stats (const void *s, WORD *days, WORD *inactive,
                         WORD *cwindow, WORD *avg, WORD *sd);
 
 
