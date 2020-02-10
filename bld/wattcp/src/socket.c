@@ -1025,13 +1025,13 @@ int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 {
     udp_Socket *udp = socket->udp_sock;
+    DWORD addr;
 
     port = ntohs (port);
 
     if (socket->so_state & SS_PRIV) {
         int   pool_size  = sizeof(recv_buf) * MAX_DGRAMS;
         void *pool = malloc (pool_size);
-        DWORD addr;
 
         if (!pool) {
             SOCK_FATAL (("%s (%d) Fatal: Allocation failed\r\n", __FILE__, __LINE__));
@@ -1056,8 +1056,8 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
          */
         sock_recv_init ((sock_type *)udp, pool, pool_size);
     } else {
-        DWORD ip = ntohl (host.s_addr);
-        udp_listen (udp, port, ip, 0, NULL);
+        addr = ntohl (host.s_addr);
+        udp_listen (udp, port, addr, 0, NULL);
     }
     udp->sol_callb = sol_callback;
     return (1);
