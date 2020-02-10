@@ -1767,7 +1767,7 @@ static BYTE *dns_resource (BYTE *p, BYTE *bp, BYTE *ep)
 
 static BYTE *dns_labels (BYTE *p, BYTE *bp, BYTE *ep)
 {
-  while (1)
+  for ( ;; )
   {
     BYTE count = *p++;
 

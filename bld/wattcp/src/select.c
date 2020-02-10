@@ -124,7 +124,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
   /*
    * Loop until specified timeout expires or event(s) satisfied.
    */
-  do
+  for ( ;; )
   {
 
     for (s = 0; s < num_fd; s++)
@@ -280,7 +280,6 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
       goto select_ok;
     }
   }
-  while (1);
 
 
 select_fail:

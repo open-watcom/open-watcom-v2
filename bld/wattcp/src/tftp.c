@@ -493,7 +493,7 @@ int tftp_boot_load (void)
   if (!tftp_open (tftp_server, tftp_boot_fname))
      return (0);
 
-  while (1)
+  for ( ;; )
   {
     char *buf;
     int   size = tftp_get (&buf);

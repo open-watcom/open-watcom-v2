@@ -55,7 +55,7 @@ void ReadNetworksFile (const char *fname)
   if (!networkFile)
      return;
 
-  while (1)
+  for ( ;; )
   {
     struct _netent *n, *n2 = (struct _netent*) getnetent();
 

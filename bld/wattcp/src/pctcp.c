@@ -1018,7 +1018,7 @@ WORD tcp_tick (sock_type *s)
     }
 #endif
 
-  while (1)
+  for ( ;; )
   {
     WORD eth_type = 0;
     BOOL brdcast  = FALSE;

@@ -44,7 +44,7 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
   int status = -1;
 
   ip_timer_init (&s->udp, timeoutseconds);
-  do
+  for ( ;; )
   {
 #if !defined(USE_UDP_ONLY)
     if (s->u.ip_type == TCP_PROTO)
@@ -86,7 +86,6 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
       break;
     }
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;
@@ -103,7 +102,7 @@ int _ip_delay1 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
   sock_flush (s);    /* new enhancement */
 #endif
 
-  do
+  for ( ;; )
   {
     if (sock_dataready(s))
     {
@@ -137,7 +136,6 @@ int _ip_delay1 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;
@@ -158,7 +156,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 #if !defined(USE_UDP_ONLY)
   ip_timer_init (&s->udp, timeoutseconds);
 
-  do
+  for ( ;; )
   {
     /* in this situation we know user is not planning to read rdata
      */
@@ -183,7 +181,6 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;

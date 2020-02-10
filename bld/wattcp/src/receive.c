@@ -205,7 +205,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
   if (socket->timeout && sock_inactive)
      timer = set_timeout (1000 * socket->timeout);
 
-  while (1)
+  for ( ;; )
   {
     int ok = (tcp_tick(sk) != 0);
 
@@ -329,7 +329,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
   }
 #endif
 
-  while (1)
+  for ( ;; )
   {
     sock_type *sk = (sock_type*) socket->udp_sock;
 
@@ -445,7 +445,7 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
   else timer = 0;
   loop = 1;
 
-  while (1)
+  for ( ;; )
   {
     struct in_addr peer;
     struct ip     *ip;

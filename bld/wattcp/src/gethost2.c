@@ -84,7 +84,7 @@ void ReadHostFile (const char *fname)
   if (!hostFile)
      return;
 
-  while (1)
+  for ( ;; )
   {
     struct _hostent h;
 

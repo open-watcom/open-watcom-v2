@@ -160,7 +160,7 @@ void ReadHostFile (const char *fname)
   if (!hostFile)
      return;
 
-  while (1)
+  for ( ;; )
   {
     struct  hostent *h = gethostent();
     struct _hostent *h2;

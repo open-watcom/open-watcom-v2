@@ -641,7 +641,7 @@ int rand_packet (fd_set *fd, int max)
 {
   int count = 0;
 
-  while (1)
+  for ( ;; )
   {
     int i = Random (0, max);
     if (i < max && !FD_ISSET(i,fd))
