@@ -38,13 +38,6 @@
 #define MAX_VJSD    20000UL
 #define INIT_VJSA   220
 
-/*
- * flags bits for 'sock_mode'
- */
-#define TCP_LOCAL   0x4000
-#define TCP_SAWCR   0x2000     /* for ASCII sockets - S. Lawson */
-
-
 typedef void (*DebugProc) (const void*, const void*, const char*, unsigned);
 
 #define my_ip_addr      NAMESPACE (my_ip_addr)

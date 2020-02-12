@@ -102,12 +102,33 @@ typedef BYTE            ax25_address[7];
 #define ICMP_PROTO       1
 #define IGMP_PROTO       2
 
-#define TCP_MODE_BINARY  0       /* default to binary mode */
+/*
+ * control bits for 'sockmode' used by 'sock_mode' function
+ */
+
+#define TCP_MODE_BINARY  0      /* default to binary mode */
 #define TCP_MODE_ASCII   1
-#define UDP_MODE_CHK     0       /* default to having checksums */
+#define UDP_MODE_CHK     0      /* default to having checksums */
 #define UDP_MODE_NOCHK   2
-#define TCP_MODE_NAGLE   0       /* default to Nagle algorithm */
+#define TCP_MODE_NAGLE   0      /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
+
+/*
+ * status bits for 'sockmode' used internaly
+ */
+
+#define TCP_MODE_SAWCR   0x2000 /* for ASCII sockets - S. Lawson */
+#define TCP_MODE_LOCAL   0x4000
+
+/*
+ * macros to handle 'sockmode'
+ */
+
+#define SETON_SOCKMODE(s,m)     (s).sockmode |= (m)
+#define SETOFF_SOCKMODE(s,m)    (s).sockmode &= ~(m)
+#define ISON_SOCKMODE(s,m)      ((s).sockmode & (m))
+#define ISOFF_SOCKMODE(s,m)     (((s).sockmode & (m)) == 0)
+
 
 /*
  * These are the IP options

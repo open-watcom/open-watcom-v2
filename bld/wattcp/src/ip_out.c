@@ -48,7 +48,7 @@ int _ip_output (in_Header  *ip,        /* ip-structure to fill in */
                 unsigned    line)      /*  and line was _ip_output called */
 {
   int len = sizeof(*ip) + data_len;
- 
+
  /*
   * Note: the 'ip->frag_ofs' field isn't set here. Normaly it's cleared
   *       in eth_formatpacket(). If sending fragments its set in
@@ -97,13 +97,13 @@ int _chk_ip_header (const in_Header *ip)
     DEBUG_RX (NULL, ip);
     STAT (ipstats.ips_badvers++);
     return (0);
-  }          
+  }
   if (ip_hlen < sizeof(*ip))
   {
     DEBUG_RX (NULL, ip);
     STAT (ipstats.ips_tooshort++);
     return (0);
-  }          
+  }
   if (checksum(ip,ip_hlen) != 0xFFFF)
   {
     DEBUG_RX (NULL, ip);
@@ -170,7 +170,7 @@ static __inline in_Header *make_udp_pkt (const udp_Socket *sk, BOOL first,
     tcp_phdr.src = intel (sk->myaddr);
     tcp_phdr.dst = intel (sk->hisaddr);
 
-    if (!(sk->sockmode & UDP_MODE_NOCHK))
+    if (ISOFF_SOCKMODE(*sk, UDP_MODE_NOCHK))
     {
       tcp_phdr.protocol = UDP_PROTO;
       tcp_phdr.length   = udp_hdr->length;

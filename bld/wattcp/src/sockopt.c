@@ -464,14 +464,16 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len)
   switch (opt)
   {
     case TCP_NODELAY:
-         if (on)     /* disable Nagle's algorithm */
+         if (on)
          {
-           sock_mode ((sock_type*)tcp, TCP_MODE_NONAGLE);
+           /* disable Nagle's algorithm */
+           SETON_SOCKMODE(tcp->u, TCP_MODE_NONAGLE);
            tcp->locflags |= LF_NODELAY;
          }
-         else        /* turn on Nagle */
+         else
          {
-           sock_mode ((sock_type*)tcp, TCP_MODE_NAGLE);
+           /* turn on Nagle */
+           SETOFF_SOCKMODE(tcp->u, TCP_MODE_NONAGLE);
            tcp->locflags &= ~LF_NODELAY;
          }
          break;
@@ -511,7 +513,7 @@ static int get_tcp_opt (tcp_Socket *tcp, int opt, void *val, int *len)
   switch (opt)
   {
     case TCP_NODELAY:
-         if (tcp->sockmode & TCP_MODE_NONAGLE)
+         if (ISON_SOCKMODE(*tcp, TCP_MODE_NONAGLE))
               *(int*)val = TCP_NODELAY;
          else *(int*)val = 0;
          *(size_t*)len = sizeof(int);

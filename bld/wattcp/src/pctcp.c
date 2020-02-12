@@ -265,7 +265,9 @@ int tcp_open (tcp_Socket *s, WORD lport, DWORD ina, WORD rport, ProtoHandler han
 
   /* to-do !!: use TCP_NODELAY set in setsockopt()
    */
-  s->sockmode     = tcp_nagle ? TCP_MODE_NAGLE : TCP_MODE_NONAGLE;
+  if (!tcp_nagle)
+     SETON_SOCKMODE(*s, TCP_MODE_NONAGLE);
+
   s->cwindow      = 1;
   s->wwindow      = 0;                      /* slow start VJ algorithm */
   s->vj_sa        = INIT_VJSA;
@@ -752,7 +754,7 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
   tcp_phdr.length   = udp_hdr->length;
   tcp_phdr.checksum = checksum (udp_hdr, len);
 
-  if (udp_hdr->checksum && (s->sockmode & UDP_MODE_NOCHK) == 0)
+  if (udp_hdr->checksum && ISOFF_SOCKMODE(*s, UDP_MODE_NOCHK))
   {
     if (checksum(&tcp_phdr, sizeof(tcp_phdr)) != 0xFFFF)
     {
@@ -947,7 +949,7 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
     case TCP_PROTO:
       {
         tcp_Socket *s;
-          
+
         s = tcp_handler (ip, broadcast);
         if (s != NULL) {    /* Check if peer allows IP-fragments */
             if (intel16(ip->frag_ofs) & IP_DF) {
@@ -963,7 +965,7 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
     case UDP_PROTO:
       {
         udp_Socket *s;
-          
+
         s = udp_handler (ip, broadcast);
         if (s != NULL) {    /* Check if peer allows IP-fragments */
             if (intel16(ip->frag_ofs) & IP_DF) {
@@ -1103,7 +1105,7 @@ static int udp_write (udp_Socket *s, const BYTE *data, int len)
   tcp_phdr.src = intel (s->myaddr);
   tcp_phdr.dst = intel (s->hisaddr);
 
-  if (!(s->sockmode & UDP_MODE_NOCHK))
+  if (ISOFF_SOCKMODE(*s, UDP_MODE_NOCHK))
   {
     tcp_phdr.protocol = UDP_PROTO;
     tcp_phdr.length   = udp_hdr->length;
@@ -1332,13 +1334,13 @@ static int tcp_write (tcp_Socket *s, const BYTE *data, UINT len)
     s->unhappy   = TRUE;    /* redundant because we have outstanding data */
     s->datatimer = set_timeout (1000 * sock_data_timeout); /* EE 99.08.23 */
 
-    if (s->sockmode & TCP_LOCAL)    /* queue up data, flush on next write */
+    if (ISON_SOCKMODE(*s, TCP_MODE_LOCAL))    /* queue up data, flush on next write */
     {
-      s->sockmode &= ~TCP_LOCAL;
+      SETOFF_SOCKMODE(*s, TCP_MODE_LOCAL);
       return (len);
     }
 
-    if (s->sockmode & TCP_MODE_NONAGLE)
+    if (ISON_SOCKMODE(*s, TCP_MODE_NONAGLE))
        rc = TCP_SEND (s);
     else
     {
@@ -1877,7 +1879,8 @@ WORD sock_mode (sock_type *s, WORD mode)
 {
   if (s->u.ip_type == TCP_PROTO || s->u.ip_type == UDP_PROTO)
   {
-    s->u.sockmode = (s->u.sockmode & 0xFFFC) | mode;
+    SETOFF_SOCKMODE(s->u, (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE));
+    SETON_SOCKMODE(s->u, mode & (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE));
     return (s->u.sockmode);
   }
   return (0);
@@ -2138,7 +2141,7 @@ void sock_noflush (sock_type *s)
   if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags &= ~tcp_FlagPUSH;
-    s->tcp.sockmode |= TCP_LOCAL;
+    SETON_SOCKMODE(s->tcp, TCP_MODE_LOCAL);
   }
 }
 
@@ -2151,7 +2154,7 @@ void sock_flush (sock_type *s)
   {
     tcp_Socket *tcp = &s->tcp;
 
-    tcp->sockmode &= ~TCP_LOCAL;
+    SETOFF_SOCKMODE(*tcp, TCP_MODE_LOCAL);
     if (tcp->datalen > 0)
     {
       tcp->flags |= tcp_FlagPUSH;
@@ -2169,7 +2172,7 @@ void sock_flushnext (sock_type *s)
   if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags |= tcp_FlagPUSH;
-    s->tcp.sockmode &= ~TCP_LOCAL;
+    SETOFF_SOCKMODE(s->tcp, TCP_MODE_LOCAL);
   }
 }
 #endif  /* !USE_UDP_ONLY */
