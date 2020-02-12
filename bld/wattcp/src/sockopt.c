@@ -467,13 +467,13 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len)
          if (on)
          {
            /* disable Nagle's algorithm */
-           SETON_SOCKMODE(tcp->u, TCP_MODE_NONAGLE);
+           SETON_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
            tcp->locflags |= LF_NODELAY;
          }
          else
          {
            /* turn on Nagle */
-           SETOFF_SOCKMODE(tcp->u, TCP_MODE_NONAGLE);
+           SETOFF_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
            tcp->locflags &= ~LF_NODELAY;
          }
          break;
