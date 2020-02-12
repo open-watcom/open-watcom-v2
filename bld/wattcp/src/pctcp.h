@@ -177,8 +177,8 @@ extern void  maybe_reuse_lport(tcp_Socket *s);
 
 /* In sock_in.c
  */
-extern void  ip_timer_init    (udp_Socket * , int);
-extern int   ip_timer_expired (const udp_Socket *);
+extern void  ip_timer_init    (sock_type * , int);
+extern int   ip_timer_expired (const sock_type *);
 extern int  _ip_delay0        (sock_type *, int, UserHandler, int *);
 extern int  _ip_delay1        (sock_type *, int, UserHandler, int *);
 extern int  _ip_delay2        (sock_type *, int, UserHandler, int *);

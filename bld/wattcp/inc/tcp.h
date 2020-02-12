@@ -76,11 +76,11 @@ typedef int (*UserHandler)  (void *sock);
 #define MAX_COOKIES     10
 #define MAX_NAMESERVERS 10
 
-#define TCP_MODE_BINARY  0
+#define TCP_MODE_BINARY  0       /* default to binary mode */
 #define TCP_MODE_ASCII   1
-#define UDP_MODE_CHK     0       /* default to checksum */
+#define UDP_MODE_CHK     0       /* default to having checksums */
 #define UDP_MODE_NOCHK   2
-#define TCP_MODE_NAGLE   0       /* Nagle algorithm */
+#define TCP_MODE_NAGLE   0       /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
 
 #define SOCKESTABLISHED  1       /* socket states for sock_sselect */

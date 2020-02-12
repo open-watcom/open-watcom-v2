@@ -479,7 +479,7 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
   for (i = 2; i < 17 && !_resolve_exit; i *= 2)
   {
     sock_write ((sock_type*)&dom_sock, (BYTE*)q, sizeof(*q));
-    ip_timer_init (&dom_sock, i);
+    ip_timer_init ((sock_type *)&dom_sock, i);
     do
     {
       kbhit();
@@ -490,7 +490,7 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
         _resolve_exit = 1;
         break;
       }
-      if (ip_timer_expired(&dom_sock) || chk_timeout(resolve_timeout))
+      if (ip_timer_expired((sock_type *)&dom_sock) || chk_timeout(resolve_timeout))
          break;
 
       if (sock_dataready((sock_type*)&dom_sock))

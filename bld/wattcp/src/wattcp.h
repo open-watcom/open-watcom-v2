@@ -102,11 +102,11 @@ typedef BYTE            ax25_address[7];
 #define ICMP_PROTO       1
 #define IGMP_PROTO       2
 
-#define TCP_MODE_BINARY  0       /* default mode */
+#define TCP_MODE_BINARY  0       /* default to binary mode */
 #define TCP_MODE_ASCII   1
 #define UDP_MODE_CHK     0       /* default to having checksums */
-#define UDP_MODE_NOCHK   2       /* turn off checksums */
-#define TCP_MODE_NAGLE   0       /* Nagle algorithm */
+#define UDP_MODE_NOCHK   2
+#define TCP_MODE_NAGLE   0       /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
 
 /*

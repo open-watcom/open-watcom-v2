@@ -613,7 +613,7 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
   for (sec = 2; sec < dns_timeout-1 && !quit && !_resolve_exit; sec *= 2)
   {
     sock_write (s, (BYTE*)q, sizeof(*q));
-    ip_timer_init (&s->udp, sec);
+    ip_timer_init (s, sec);
     do
     {
       kbhit();
@@ -631,7 +631,7 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
         quit  = 1;
         ready = 1;
       }
-      if (ip_timer_expired(&s->udp) || chk_timeout(resolve_timeout))
+      if (ip_timer_expired(s) || chk_timeout(resolve_timeout))
       {
         ready = 0;
         resolve_timeout = 1;
