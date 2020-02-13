@@ -113,6 +113,8 @@ typedef BYTE            ax25_address[7];
 #define TCP_MODE_NAGLE   0      /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
 
+#define SOCK_MODE_MASK   (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE)
+
 /*
  * status bits for 'sockmode' used internaly
  */

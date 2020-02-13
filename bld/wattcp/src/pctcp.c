@@ -1879,9 +1879,9 @@ WORD sock_mode (sock_type *s, WORD mode)
 {
   if (s->u.ip_type == TCP_PROTO || s->u.ip_type == UDP_PROTO)
   {
-    SETOFF_SOCKMODE(s->u, (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE));
-    SETON_SOCKMODE(s->u, mode & (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE));
-    return (s->u.sockmode);
+    SETOFF_SOCKMODE(s->u, SOCK_MODE_MASK);
+    SETON_SOCKMODE(s->u, mode & SOCK_MODE_MASK);
+    return (s->u.sockmode & SOCK_MODE_MASK);
   }
   return (0);
 }
