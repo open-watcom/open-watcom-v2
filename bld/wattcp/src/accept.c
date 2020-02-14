@@ -85,10 +85,13 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
   maxconn = socket->backlog;
   if (maxconn < 1 || maxconn > SOMAXCONN)
   {
+#if defined(USE_BSD_FATAL)
     SOCK_FATAL (("%s(%d): Illegal socket backlog %d",
                 __FILE__, __LINE__, maxconn));
+#else
     SOCK_ERR (EINVAL);
     return (-1);
+#endif
   }
 
   if (socket->timeout)

@@ -1034,9 +1034,12 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
         void *pool = malloc (pool_size);
 
         if (!pool) {
+#if defined(USE_BSD_FATAL)
             SOCK_FATAL (("%s (%d) Fatal: Allocation failed\r\n", __FILE__, __LINE__));
+#else
             SOCK_ERR (ENOMEM);
             return (-1);
+#endif
         }
         socket->bcast_pool = (recv_buf**) pool;
 

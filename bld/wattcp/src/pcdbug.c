@@ -413,7 +413,7 @@ static void dump_arp_data (void)
   for (i = 0; i < arp_last_gateway; i++)
   {
     struct gate_table *gw = arp_gate_list + i;
-  
+
     db_write ("      ");
     db_fprintf ("network: %-15s ", _inet_ntoa(buf, gw->subnet));
     db_fprintf ("router: %-15s ",  _inet_ntoa(buf, gw->gate_ip));
@@ -903,7 +903,7 @@ static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
 
   DumpData (data, udplen);
   return (1);
-} 
+}
 
 /*----------------------------------------------------------------------*/
 
@@ -1301,7 +1301,7 @@ static void DumpData (const BYTE *data, unsigned datalen)
 {
   unsigned ofs;
 
-  if (datalen <= 0 || !dbg_mode_all)
+  if (datalen == 0 || !dbg_mode_all)
      return;
 
   for (ofs = 0; (ofs < datalen) && (op < op_max); ofs += 16)
@@ -1394,7 +1394,7 @@ static void ourinit (const char *name, const char *value)
                 { "PROTO",   ARG_FUNC,  (void*)set_debug_proto  },
                 { "STAT",    ARG_ATOI,  (void*)&dbg_print_stat  },
                 { "DNS",     ARG_ATOI,  (void*)&dbg_dns_details },
-                { "RTP",     ARG_ATOI,  (void*)&dbg_rtp_details }, 
+                { "RTP",     ARG_ATOI,  (void*)&dbg_rtp_details },
                 { NULL }
               };
   char val[80];
@@ -1699,7 +1699,7 @@ static void dns_dump (const BYTE *bp, unsigned length)
     i--;
   }
 }
- 
+
 /*
  * dns_resource()
  *

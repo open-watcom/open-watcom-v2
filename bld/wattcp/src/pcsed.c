@@ -504,11 +504,11 @@ static union link_Packet *poll_ip_queue (WORD *type)
     }
 
     /* We have determined it's an IP-packet.
-     */  
+     */
     ip_ofs = intel16 (ip->frag_ofs);
     ip_flg = (WORD) (ip_ofs & ~IP_OFFMASK);
     ip_ofs = (ip_ofs & IP_OFFMASK) << 3;  /* 0 <= ip_ofs <= 65536-8 */
-   
+
     /* It's a non-fragmented IP-packet.
      *
      * fix-me!!: This packet might be a last fragment (ofs 0, MF=0)
@@ -631,7 +631,7 @@ static union link_Packet *poll_recv_queues (WORD *type)
     exit (-1);
   }
 #endif
-                        
+
   for (loop = 0; loop < 2; loop++)
   {
     union link_Packet *pkt = which ? poll_ip_queue (type)
@@ -641,7 +641,7 @@ static union link_Packet *poll_recv_queues (WORD *type)
        return (pkt);
   }
   return (NULL);
-}  
+}
 
 
 /*
@@ -671,7 +671,7 @@ void *_eth_arrived (WORD *type, BOOL *brdcast)
 
   /* If ip_handler() can't be reentered, only accept
    * non-IP packets
-   */ 
+   */
   if (_ip_recursion && *type == IP_TYPE)
      return (NULL);
 
@@ -718,7 +718,7 @@ void *_eth_arrived (WORD *type, BOOL *brdcast)
 }
 
 
-#if defined(USE_DEBUG)
+#if defined(USE_DEBUG) && 0
 /*
  * Return pointer to MAC header start address of an IP packet.
  */
