@@ -391,8 +391,8 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
 
   if (v_circuit)  /* i.e. TCP */
   {
-    int     truncated;
-    u_short len;
+    int    truncated;
+    int    len;
     u_char *cp;
 
     /* Use virtual circuit; at most one attempt per server.
@@ -448,7 +448,8 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
     while ((n = tcp_read(&sock->tcp,cp,len,&errno,dns_timeout)) > 0)
     {
       cp += n;
-      if ((len -= n) <= 0)
+      len -= n;
+      if (len <= 0)
          break;
     }
     if (n <= 0)
