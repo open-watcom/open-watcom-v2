@@ -161,7 +161,7 @@ static void (*old_sigsegv)(int);
 /*
  * Note: Watcom's extension to SIGFPE is undocumented
  */
-void WattExcHandler (int sig, int code)
+static void WattExcHandler (int sig, int code)
 {
 #if defined(__WATCOMC__)
   if (sig == SIGFPE && code == FPE_IOVERFLOW)

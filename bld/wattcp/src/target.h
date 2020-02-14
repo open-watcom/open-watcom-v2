@@ -306,7 +306,6 @@
   #include <dos.h>
   #include <string.h>
   #pragma intrinsic(strcmp,memset)
-  #pragma warning(disable:120)
 
   #undef  interrupt
   #define interrupt       __interrupt
