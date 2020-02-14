@@ -169,7 +169,7 @@ static const char *tftp_strerror (int code)
 /*
  * Watch out for "ICMP port unreachable".
  */
-static void udp_callback (sock_type *s, int icmp_type)
+static int udp_callback (sock_type *s, int icmp_type)
 {
   if (s == sock && s->u.ip_type == UDP_PROTO && icmp_type == ICMP_UNREACH)
   {
@@ -179,6 +179,7 @@ static void udp_callback (sock_type *s, int icmp_type)
     s->udp.locflags |= LF_GOT_FIN;
     s->udp.err_msg = icmp_type_str [ICMP_UNREACH];
   }
+  return (1);
 }
 
 /*
