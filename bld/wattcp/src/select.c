@@ -268,7 +268,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
     {
       expiry = timeval_diff(&now, &starttime);
       SOCK_DEBUGF ((NULL, ", timeout!: %u.%06lus",
-                   expiry.tv_secs, expiry.tv_usecs ));
+                   expiry.tv_sec, expiry.tv_usec ));
 
       for (s = 0; s < num_fd; s++)
       {
