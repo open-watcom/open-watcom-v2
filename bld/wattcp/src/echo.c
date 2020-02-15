@@ -63,7 +63,7 @@ static void echo_config (const char *name, const char *value)
 /*
  * callback handler for echo + discard UDP sockets.
  */
-static void udp_handler (sock_type *s, BYTE *data, int len, tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr)
+static int udp_handler (sock_type *s, BYTE *data, int len, tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr)
 {
   /* unused parameters */ (void)tcp_phdr; (void)udp_hdr;
 
@@ -74,6 +74,7 @@ static void udp_handler (sock_type *s, BYTE *data, int len, tcp_PseudoHeader *tc
     } else {
         /* discard packet */
     }
+    return (1);
 }
 
 /*

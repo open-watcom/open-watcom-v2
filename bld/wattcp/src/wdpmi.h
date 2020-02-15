@@ -8,7 +8,8 @@
 /*
  * The Watcom stackset() functions are from Dan Kegel's RARP implementation
  */
-#if defined(__WATCOMC__) && !defined(__386__)  /* 16-bit Watcom */
+#if defined(__WATCOMC__)
+#if defined(_M_I86)  /* 16-bit Watcom */
   extern void stackset (void far *stack);
   #pragma aux stackset = \
           "mov  ax, ss"  \
@@ -28,7 +29,7 @@
           "mov sp, bx"             /* don't put esp here */  \
           __modify [__ax __bx];
 
-#elif defined(__WATCOM386__)       /* 32-bit Watcom targets */
+#else       /* 32-bit Watcom targets */
   #define USES_DPMI_API
 
   extern void stackset (void *stack);
@@ -47,6 +48,12 @@
   #pragma aux stackrestore = \
           "lss esp, [esp]";
 
+  extern DWORD _get_limit (WORD sel);
+  #pragma aux _get_limit = \
+          "lsl eax, eax"   \
+          __parm [__eax];
+#endif
+
   extern WORD My_CS (void);
   #pragma aux My_CS =  \
           "mov ax, cs" \
@@ -56,11 +63,6 @@
   #pragma aux My_DS =  \
           "mov ax, ds" \
           __modify [__ax];
-
-  extern DWORD _get_limit (WORD sel);
-  #pragma aux _get_limit = \
-          "lsl eax, eax"   \
-          __parm [__eax];
 
 #elif defined(__BORLAND386__) && (DOSX == WDOSX)
   #define USES_DPMI_API
