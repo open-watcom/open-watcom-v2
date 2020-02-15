@@ -411,12 +411,12 @@ static __inline void qinit (question_t *q, DWORD ip)
  * getresult() - read answer and extract host name
  *               return 0 on error, 1 on success
  */
-static __inline int getresult (udp_Socket *s, char *name)
+static __inline int getresult (sock_type *s, char *name)
 {
   answer_t a;
   struct   rrpart *rr;
   char    *c;
-  int      len = sock_fastread ((sock_type*)s, (BYTE*)&a, sizeof(a));
+  int      len = sock_fastread (s, (BYTE*)&a, sizeof(a));
 
   if (len < sizeof(struct dhead) ||
       a.h.qdcount != intel16(1) || a.h.ancount == 0)
@@ -468,42 +468,41 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
 {
   int        i, ret;
   int        ready = 0;
-  udp_Socket dom_sock;
+  udp_Socket udp_sock;
+  sock_type  *dom_sock = &udp_sock;
 
-  if (!nameserver ||         /* no nameserver, give up */
-      dns_timeout == 0)
-     return (0);
+    if (!nameserver || dns_timeout == 0)  /* no nameserver, give up */
+        return (0);
 
-  udp_open (&dom_sock, 997, nameserver, 53, NULL);
+    udp_open (&dom_sock->udp, 997, nameserver, 53, NULL);
 
-  for (i = 2; i < 17 && !_resolve_exit; i *= 2)
-  {
-    sock_write ((sock_type*)&dom_sock, (BYTE*)q, sizeof(*q));
-    ip_timer_init ((sock_type *)&dom_sock, i);
-    do
-    {
-      kbhit();
-      tcp_tick ((sock_type*)&dom_sock);
+    for (i = 2; i < 17 && !_resolve_exit; i *= 2) {
+        sock_write (dom_sock, (BYTE*)q, sizeof(*q));
+        ip_timer_init (dom_sock, i);
+        do {
+            kbhit();
+            tcp_tick (dom_sock);
 
-      if (watcbroke || (_resolve_hook && (*_resolve_hook)() == 0))
-      {
-        _resolve_exit = 1;
-        break;
-      }
-      if (ip_timer_expired((sock_type *)&dom_sock) || chk_timeout(resolve_timeout))
-         break;
+            if (watcbroke || (_resolve_hook && (*_resolve_hook)() == 0)) {
+                _resolve_exit = 1;
+                break;
+            }
+            if (ip_timer_expired(dom_sock) || chk_timeout(resolve_timeout))
+                break;
 
-      if (sock_dataready((sock_type*)&dom_sock))
-         ready = 1;
+            if (sock_dataready(dom_sock)) {
+                ready = 1;
+            }
+        } while (!ready);
     }
-    while (!ready);
-  }
-  if (ready)
-       ret = getresult (&dom_sock, name);
-  else ret = 0;
+    if (ready) {
+        ret = getresult (dom_sock, name);
+    } else {
+        ret = 0;
+    }
 
-  sock_close ((sock_type*)&dom_sock);
-  return (ret);
+    sock_close (dom_sock);
+    return (ret);
 }
 
 /*
