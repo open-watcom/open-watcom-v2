@@ -10,7 +10,7 @@
  */
 #if defined(__WATCOMC__)
 #if defined(_M_I86)  /* 16-bit Watcom */
-  extern void stackset (void far *stack);
+  extern void stackset (void __far *stack);
   #pragma aux stackset = \
           "mov  ax, ss"  \
           "mov  bx, sp"  \
