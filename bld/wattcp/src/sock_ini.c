@@ -207,7 +207,7 @@ static void WattExcHandler (int sig, int code)
 #endif  /* USE_EXCHANDLER && (__BORLANDC__ || __WATCOMC__) */
 
 
-#if defined (__WATCOM386__)
+#if defined (WATCOM386)
 static void CheckStackLimit (void)
 {
   if (stackavail() < NEEDED_STK)
@@ -222,7 +222,7 @@ static void CheckStackLimit (void)
 #endif
 
 
-#if defined (__BORLAND386__)  /* using WDOSX/PowerPak */
+#if defined (BORLAND386)  /* using WDOSX/PowerPak */
 static void CheckStackLimit (void)
 {
   UNFINISHED();  /* to-do !! */
@@ -471,7 +471,7 @@ int sock_init (void)
    * but djgpp's C-lib automatically fails critical I/O faults, so
    * it's not needed. Not implemented for bcc32.
    */
-#if !defined(__DJGPP__) && !defined(__BORLAND386__)
+#if !defined(__DJGPP__) && !defined(BORLAND386)
   int24_init();
 #endif
 
@@ -640,18 +640,3 @@ void sock_exit (void)
        set_cbreak (old_brk);
   }
 }
-
-/*
- * Make sure user links the correct 32-bit C-libs for Watcom
- */
-#if defined(__WATCOM386__)
-  #if defined(__SW_3R)
-    #pragma library ("clib3r.lib");
-    #pragma library ("math387r.lib");
-
-  #else /* __SW_3S */
-    #pragma library ("clib3s.lib");
-    #pragma library ("math387s.lib");
-  #endif
-#endif
-

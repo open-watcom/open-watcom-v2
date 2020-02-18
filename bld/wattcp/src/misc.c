@@ -50,25 +50,6 @@ FARPTR _watt_dosFp = (FARPTR)0; /* Put in _DATA segment */
 static void setup_dos_xfer_buf (void);
 #endif
 
-#if defined(__WATCOMC__)
-extern char cdecl __begtext;    /* label at TEXT start */
-extern UINT cdecl _x386_stacklow;
-
-#if defined(__SW_3S)            /* wcc386 -3s, wcc */
-  void cdecl _fatal_runtime_error (UINT stk);
-  #define FATAL_HANDLER _fatal_runtime_error
-#else
-  void cdecl _fatal_runtime_error_ (UINT stk);
-  #define FATAL_HANDLER _fatal_runtime_error_
-#endif
-
-/* Prevent linker (with 'option eliminate') to drop our
- * '_fatal_runtime_error()' function from .exe-image.
- */
-char *dummy_fatal_rte = (char*)&FATAL_HANDLER;
-#endif /* __WATCOMC__ */
-
-
 /*
  * Turn off stack-checking to avoid destroying assumptions
  * made in bswap patch code and ffs() below. And also to make
@@ -107,7 +88,7 @@ unsigned short _w32_intel16 (unsigned short val)
   return swap16 (&val);
 }
 
-#if (DOSX) && !defined(__WATCOMC__) /* suspect trouble with Watcom */
+#if (DOSX)
 static BYTE bswap[] = {
             0x8B,0x44,0x24,0x04,       /* mov eax,[esp+4] */
             0x0F,0xC8,                 /* bswap eax       */
@@ -130,15 +111,8 @@ static BYTE bswap16[] = {
  */
 static void patch_bswap (void)
 {
-  /* For Watcom's register calling convention. Argument is in EAX.
-   */
-#if defined(__WATCOM386__) && defined(__SW_3R) /* -3r/-4r/-5r used */
-  memcpy ((void*)_w32_intel,  4+(BYTE*)&bswap,  sizeof(bswap)-4);
-  memcpy ((void*)_w32_intel16,4+(BYTE*)&bswap16,sizeof(bswap16)-4);
-#else
   memcpy ((void*)_w32_intel,  (const void*)&bswap,  sizeof(bswap));
   memcpy ((void*)_w32_intel16,(const void*)&bswap16,sizeof(bswap16));
-#endif
 }
 #endif  /* DOSX */
 #endif  /* BIG_ENDIAN_MACHINE */
@@ -182,7 +156,7 @@ void init_misc (void)
 #endif
 
 #if (DOSX) && !defined(BIG_ENDIAN_MACHINE) && !defined(__WATCOMC__)
-  if (cpu_type >= 486)                      /* ^suspect trouble with Watcom */
+  if (cpu_type >= 486)
      patch_bswap();
 #endif
 
@@ -350,7 +324,8 @@ BOOL valid_addr (DWORD addr, int len)
  * ffs() isn't needed yet, but should be used in select_s()
  */
 #if defined(USE_BSD_FUNC)
-#if !defined(__BORLAND386__) && ((DOSX == 0) || defined(OLD_WATCOMC))
+#if !defined(__WATCOMC__) || (__WATCOMC__ < 1250)
+#if (DOSX == 0)
 /*
  * Copyright (C) 1991, 1992 Free Software Foundation, Inc.
  * Contributed by Torbjorn Granlund (tege@sics.se).
@@ -374,7 +349,7 @@ BOOL valid_addr (DWORD addr, int len)
 /*
  * Find the first bit set in 'i'.
  */
-static int ffs_86 (int i)
+int ffs (int i)
 {
   static BYTE table[] = {
     0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
@@ -391,27 +366,41 @@ static int ffs_86 (int i)
   a = x <= 0xFFFFUL ? (x <= 0xFF ? 0 : 8) : (x <= 0xFFFFFF ? 16 : 24);
   return (table[x >> a] + a);
 }
-#endif  /* DOSX == 0 || OLD_WATCOMC */
+#else /* !(DOSX == 0) */
 
-#ifndef __cdecl
-#define __cdecl  /* prevent register calls */
+#if defined(__WATCOMC__)
+    static int ffs_386 (int i);
+  #if (__WATCOMC__ < 1100)
+    #pragma aux ffs_386 = \
+            0x0F 0xBC 0xC0  /* bsf eax,eax */   \
+            0x0F 0x95 0xC1  /* setne cl */      \
+            0x02 0xC1       /* add al,cl */     \
+    __parm [__eax] __value[__eax] __modify[__cl]
+  #else
+    #pragma aux ffs_386 = \
+            "bsf eax,eax"   \
+            "setne cl"      \
+            "add al,cl"     \
+    __parm [__eax] __value[__eax] __modify[__cl]
+  #endif
 #endif
 
-int __cdecl ffs (int val)
+int ffs (int val)
 {
  /* Calling code in data-segment, but this is flat model remember.
   * The "data-array" code crashes the BCC32 and Watcom 10.6 compilers!
   */
-#if defined(__BORLAND386__)
-  __asm bsf eax, val
-  __asm jz zero
+#if defined(__WATCOMC__)
+        return ffs_386 (val);
+#elif defined(__BORLANDC__)
+        __asm bsf eax, val
+        __asm jz zero
 
     val = _EAX;
     return (++val);
   zero:
     return (0);
-
-#elif (DOSX) && !defined(OLD_WATCOMC)
+#else
   __asm {
          bsf eax, val
          jnz short L1
@@ -420,10 +409,9 @@ int __cdecl ffs (int val)
          mov val,eax
   }
   return(val);
-#else
-  return ffs_86 (val);
 #endif
 }
+#endif  /* (DOSX == 0) */
 #endif  /* USE_BSD_FUNC */
 
 
@@ -467,6 +455,9 @@ void watt_largecheck (void *s, int size, char *file, unsigned line)
 
 /*
  * For tracking down stack overflow bugs.
+ *
+ * 32-bit
+ *
  * Stack checker __CHK is pascal-style with stack-size at [esp+4].
  * __CHK calls __STK which in turn may call _fatal_runtime_error()
  *
@@ -474,45 +465,94 @@ void watt_largecheck (void *s, int size, char *file, unsigned line)
  *  (*) push <stack size needed>   <- 68h, dword size at EIP-9
  *      call __CHK                 <- 5 bytes
  *      ...                        <- extracted EIP of return
+ *
+ * 16-bit (existing implementation is wrong, need rework)
+ *
+ * All necessary info are not available on the stack
+ * some of them are in registers only.
+ * Probably it will require to intercept __STACKOVERFLOW code.
  */
+
+#if !defined(__LARGE__)
+/*
+ * label at TEXT start
+ */
+extern char __begtext;
+#pragma aux __begtext "_*";
+#endif
+
+extern  unsigned    _STACKLOW;
+
+    void __cdecl _fatal_runtime_error (UINT stk); /* __cdecl used to have access to stack */
+    #define FATAL_HANDLER _fatal_runtime_error
+#if !defined(__SW_3S)
+    #pragma aux _fatal_runtime_error "_*_"  /* wcc386 -3r and wcc, register-based calling name mangling */
+#endif
+
+/* Prevent linker (with 'option eliminate') to drop our
+ * '_fatal_runtime_error()' function from .exe-image.
+ */
+char *dummy_fatal_rte = (char*)&FATAL_HANDLER;
+
 static void stk_overflow (WORD cs, UINT eip)
 {
-  UINT size = *(UINT*)(eip-9);
-  static char buf[12];
-  eip -= (UINT)&__begtext - 9; /* print .map-file address of (*) */
+    static char buf[12];
+
+    /*
+     * temporary 16-bit code to get some info
+     * TO-DO need some work to be correct
+     */
+#if defined(__I86__)
+//    eip -= ???;       /* add appropriate correction if necessary */
+#else
+    UINT size;
+
+    size = *(UINT*)(eip-9);
+    eip -= (UINT)&__begtext - 9; /* print .map-file address of (*) */
+#endif
 
 #if 1
-  outs ("Stack overflow (");
-  itoa (size, buf, 10);
-  outs (buf);
-  outs (" bytes) detected at ");
-  itoa (cs, buf, 16);
-  outs (buf);
-  buf[0] = ':';
-  itoa (eip, buf+1, 16);
-  outsnl (buf);
+    outs ("Stack overflow ");
+#if defined(__386__)
+    buf[0] = '(';
+    itoa (size, buf + 1, 10);
+    outs (buf);
+    outs (" bytes) ");
+#endif
+    outs ("detected at ");
+    itoa (cs, buf, 16);
+    outs (buf);
+    buf[0] = ':';
+    itoa (eip, buf+1, 16);
+    outsnl (buf);
 #else
-  fprintf (stderr, "Stack overflow (%u bytes) detected at %X:%08lXh\n",
+    fprintf (stderr, "Stack overflow (%u bytes) detected at %X:%08lXh\n",
            size, cs, (DWORD)eip);
 #endif
 
-  _eth_release();
-  _exit (1);     /* do minimal work, no atexit() functions */
+    _eth_release();
+    _exit (1);     /* do minimal work, no atexit() functions */
 }
 
 void FATAL_HANDLER (UINT stk)
 {
-#if defined(__SMALL__)
-  _x386_stacklow = stk + 2;
-  stk_overflow (My_CS(), *(UINT*)(&stk+3));
+    /*
+     * temporary 16-bit code to get some info
+     * TO-DO need some work to be correct
+     */
 
-#elif defined(__LARGE__)
-  _x386_stacklow = stk + 4;
-  stk_overflow (*(WORD*)(&stk+5), *(UINT*)(&stk+3)); /* far-call */
-
-#else     /* wcc386 */
-  _x386_stacklow = stk + 4;
-  stk_overflow (My_CS(), *(UINT*)(&stk+3));
+#if defined(__386__)
+    /* 32-bit near call */
+    _STACKLOW = stk + 4;
+    stk_overflow (My_CS(), *(UINT*)(&stk+3));
+#elif defined(__SMALL__)
+    /* 16-bit near call */
+    _STACKLOW = stk + 2;
+    stk_overflow (My_CS(), *(UINT*)(&stk+3));
+#else
+    /* 16-bit far call */
+    _STACKLOW = stk + 4;
+    stk_overflow (*(WORD*)(&stk+5), *(UINT*)(&stk+3));
 #endif
 }
 

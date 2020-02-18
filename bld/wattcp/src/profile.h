@@ -1,7 +1,7 @@
 #ifndef __PROFILE_H
 #define __PROFILE_H
 
-#if defined(__DJGPP__) || defined(__WATCOM386__)
+#if defined(__DJGPP__) || defined(WATCOM386)
   extern void CheckCpuType (void);
 
   extern int x86_capability;
@@ -67,7 +67,7 @@
     ARGSUSED (tsc);  /* for lint */
   }
 
-#elif defined(__WATCOM386__)
+#elif defined(WATCOM386)
   extern void get_cpuid (DWORD val, DWORD *eax, DWORD *ebx, DWORD *ecx, DWORD *edx);
   #pragma aux get_cpuid =   \
         ".586"              \

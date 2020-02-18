@@ -785,7 +785,7 @@ static int pkt_init (void)
 #pragma off(check_stack)
 #endif
 
-#if defined(__WATCOM386__)
+#if defined(WATCOM386)
 //#pragma option -zu                    /* assume SS != DS (doesn't work) */
 //#pragma aux pkt_release __modify[__ss]; /* !! fix-me (doesn't work) */
 #endif

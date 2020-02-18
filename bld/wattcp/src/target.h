@@ -73,38 +73,45 @@
   #error Unsupported memory model (medium/huge)
 #endif
 
-#if defined(__SMALL__) || defined(__COMPACT__) || defined(__LARGE__)
-  #undef  DOSX
-  #define DOSX 0
-#endif
-
 #if defined(__DJGPP__) && defined(__GNUC__)
-  #undef  DOSX
-  #define DOSX      DJGPP      /* WDOSX is possible? */
+  #ifndef  DOSX
+    #define DOSX    DJGPP       /* WDOSX is possible? */
+  #endif
 #endif
 
 #if defined(__WATCOMC__) && defined(__386__)
-  #undef  DOSX
-  #define DOSX      DOS4GW     /* may also be WDOSX/PHARLAP */
-  #define __WATCOM386__
+  #ifndef  DOSX
+    #define DOSX    DOS4GW      /* may also be WDOSX/PHARLAP */
+  #endif
+  #define WATCOM386
 #endif
 
 #if defined(_MSC_VER) && defined(__386__)
-  #undef  DOSX
-  #define DOSX      PHARLAP
+  #ifndef  DOSX
+    #define DOSX    PHARLAP
+  #endif
+  #define MSC386
 #endif
 
 #if defined(__HIGHC__)
-  #undef  DOSX
-  #define DOSX      PHARLAP /* DOS4GW is possible? */
+  #ifndef  DOSX
+    #define DOSX    PHARLAP     /* DOS4GW is possible? */
+  #endif
   #undef  BUGGY_FARPTR
-  #define BUGGY_FARPTR 0    /* set to 1 for HighC 3.1 at opt-lvl >=3 */
-#endif                      /* It generates buggy code for far-ptrs */
+  #define BUGGY_FARPTR 0        /* set to 1 for HighC 3.1 at opt-lvl >=3 */
+#endif                          /* It generates buggy code for far-ptrs */
 
 #if defined(__BORLANDC__) && defined(__FLAT__) && defined(__DPMI32__)
-  #undef  DOSX
-  #define DOSX  WDOSX       /* may use WDOSX,POWERPAK */
-  #define __BORLAND386__
+  #ifndef  DOSX
+    #define DOSX    WDOSX       /* may use WDOSX,POWERPAK */
+  #endif
+  #define BORLAND386
+#endif
+
+#if defined(__SMALL__) || defined(__COMPACT__) || defined(__LARGE__)
+  #ifndef  DOSX
+    #define DOSX    0           /* 16-bit real-mode */
+  #endif
 #endif
 
 #ifndef DOSX
@@ -119,9 +126,8 @@
   #include <stdio.h>
   #include <pharlap.h>
 
-  #ifdef __WATCOM386__
+  #ifdef __WATCOMC__
     #undef FP_OFF
-    #include <i86.h>
     #include <dos.h>
   #endif
 
@@ -198,7 +204,7 @@
   #undef  BOOL
   #define BOOL int
 
-#else     /* All real-mode targets */
+#elif (DOSX == 0)       /* All 16-bit real-mode targets */
   #include <dos.h>
   #define  BOOL           int
 
@@ -350,7 +356,7 @@
   #endif
   #include <conio.h>  /* simple kbhit() */
 
-#elif defined(_MSC_VER) && defined(__386__)
+#elif defined(MSC386)
   /* problems including <conio.h> from Visual C 4.0
    */
   int __cdecl kbhit (void);

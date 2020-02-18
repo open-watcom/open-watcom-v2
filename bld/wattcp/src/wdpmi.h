@@ -64,7 +64,7 @@
           "mov ax, ds" \
           __modify [__ax];
 
-#elif defined(__BORLAND386__) && (DOSX == WDOSX)
+#elif defined(BORLAND386) && (DOSX == WDOSX)
   #define USES_DPMI_API
 
   #define stackset(stk)  __asm { mov  ax,ss;    \
@@ -121,7 +121,7 @@
   extern int   dpmi_cpu_type       (void);
   extern int   dpmi_dos_yield      (void);
 
-#ifdef __BORLAND386__
+#ifdef BORLAND386
   extern int dpmi_real_interrupt2 (int intr, struct DPMI_regs *reg);
 #endif
 

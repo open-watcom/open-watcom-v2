@@ -74,7 +74,7 @@ int GetCountryCode (void)
     return (reg.w.bx);
 
 #elif (DOSX & POWERPAK)
-    UNFINISED();
+    UNFINISHED();
 
 #elif (DOSX == 0)        /* real-mode */
     union  REGS  reg;

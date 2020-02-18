@@ -6,7 +6,7 @@
 #include "pcdbug.h"
 #include "profile.h"
 
-#if defined(__DJGPP__) || defined(__WATCOM386__)
+#if defined(__DJGPP__) || defined(WATCOM386)
 
 static FILE *fout;
 static char  fname[] = "wattcp.pro";
@@ -107,5 +107,5 @@ void profile_init (void)
   }
 }
 
-#endif  /* __DJGPP__ || __WATCOM386__ */
+#endif  /* __DJGPP__ || WATCOM386 */
 

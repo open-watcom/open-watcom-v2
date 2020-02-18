@@ -258,7 +258,7 @@ int _eth_init (void)
     return (WERR_ILL_DOSX);
   }
 
-#elif defined(__WATCOM386__)   /* Watcom386 + DOS4GW style or Pharlap */
+#elif defined(WATCOM386)   /* Watcom386 + DOS4GW style or Pharlap */
   if (dpmi_init() < 0)
      return (WERR_ILL_DOSX);
 

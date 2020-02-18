@@ -48,7 +48,7 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 {
     void *ptr;
 
-#if defined(__WATCOM386__) && 0  /* find DOS4GW bug! */
+#if defined(WATCOM386) && 0  /* find DOS4GW bug! */
     int rc = _heapset (0xCC);
 
     if (rc != _HEAPOK && rc != _HEAPEMPTY)
@@ -62,7 +62,7 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 #endif
 
     if (!ptr) {
-#if defined(__WATCOM386__) && 0  /* find DOS4GW bug! */
+#if defined(WATCOM386) && 0  /* find DOS4GW bug! */
         struct _heapinfo hi;
         _heapwalk (&hi);
 #endif
@@ -341,7 +341,7 @@ not_inuse:
 
     FD_CLR (s, &inuse[0]);
 
-#if !defined(USE_DEBUG)
+#if !defined(USE_BSD_FATAL)
     ARGSUSED (file);
     ARGSUSED (line);
 #endif

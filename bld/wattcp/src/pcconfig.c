@@ -395,7 +395,7 @@ static void do_include_file (const char *value, int len)
 
 static void do_profile (const char *value)
 {
-#if defined(__DJGPP__) || defined(__WATCOM386__)
+#if defined(__DJGPP__) || defined(WATCOM386)
   if (*value == '1')
      profile_init();
 #else
