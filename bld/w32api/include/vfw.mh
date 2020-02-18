@@ -1468,7 +1468,9 @@ BOOL VFWAPI capGetDriverDescriptionA( UINT, LPSTR, int, LPSTR, int );
 BOOL VFWAPI capGetDriverDescriptionW( UINT, LPWSTR, int, LPWSTR, int );
 
 /* Variable used internally by various macros */
+#pragma off (unreferenced)
 static DWORD    dwICValue;
+#pragma on (unreferenced)
 
 /* Functions implemented as macros */
 #define ICQueryAbout( x ) \
