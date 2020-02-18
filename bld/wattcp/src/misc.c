@@ -15,10 +15,10 @@
 #include <dos.h>
 
 #ifdef __HIGHC__
-#include <init.h>  /* _mwlsl(), _msgetcs() */
+    #include <init.h>  /* _mwlsl(), _msgetcs() */
 #endif
 #ifdef __DJGPP__
-#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 #include "wattcp.h"
@@ -412,6 +412,7 @@ int ffs (int val)
 #endif
 }
 #endif  /* (DOSX == 0) */
+#endif  /* !defined(__WATCOMC__) || (__WATCOMC__ < 1250) */
 #endif  /* USE_BSD_FUNC */
 
 
