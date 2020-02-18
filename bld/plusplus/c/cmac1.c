@@ -351,13 +351,11 @@ static size_t file_name_copy(   // COPY STRING, ESCAPING ANY BACKSLASHES
 
 
 static size_t genFUNCTION(
-    special_macros spec_macro )
+    void )
 {
     SYMBOL  sym;
     size_t  len;
     VBUF    buff;
-
-    DbgAssert( ( spec_macro == MACRO_FUNCTION ) || ( spec_macro == MACRO_FUNC ) );
 
     sym = ParseCurrFunction();
     if( sym != NULL ) {
@@ -403,7 +401,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
             memcpy( Buffer, SpcMacros[mentry->parm_count].name, TokenLen );
             return( T_ID );
         }
-        TokenLen = genFUNCTION( mentry->parm_count ) + 1;
+        TokenLen = genFUNCTION() + 1;
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         Buffer[0] = '1';
