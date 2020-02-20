@@ -19,6 +19,8 @@
   #include <unistd.h>
 #endif
 
+#include "pchooks.h"
+
 #ifdef USE_LIBPCAP
   #include "w32pcap.h"
 #endif
@@ -391,13 +393,13 @@ static Socket *sock_find_udp (const udp_Socket *udp)
  *    Finds the 'Socket' associated with tcp-socket 'tcp'.
  *    Return NULL if not found.
  */
-static void *sock_find_tcp (const tcp_Socket *tcp)
+static Socket *sock_find_tcp (const tcp_Socket *tcp)
 {
     Socket *sock;
 
     for (sock = sk_list; sock; sock = sock->next) {
         if (&sock->proto_sock->tcp == tcp) {
-            return (void*)sock;
+            return sock;
         }
     }
     return (NULL);

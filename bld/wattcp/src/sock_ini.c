@@ -23,6 +23,7 @@
 
 #include "copyrigh.h"
 #include "wattcp.h"
+#include "wattcpd.h"
 #include "strings.h"
 #include "language.h"
 #include "crit.h"

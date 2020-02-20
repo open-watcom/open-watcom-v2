@@ -23,6 +23,8 @@
 
 #if defined(USE_BSD_FUNC)
 
+#include "pchooks.h"
+
 static int dup_bind   (Socket *socket, Socket **clone, int idx);
 static int alloc_addr (Socket *socket, Socket  *clone);
 static int listen_free(Socket *socket, int idx);

@@ -45,12 +45,14 @@
 
 #if defined(USE_BSD_FUNC)
 #include "socket.h"
+#include "pchooks.h"
 #endif
 
 #ifndef __inline  /* normally in <sys/cdefs.h> */
 #define __inline
 #endif
 
+#if defined(USE_BSD_FUNC)
 /*
  * These are hooks to prevent the BSD-socket API being linked in
  * by default. These function pointers are only set from the BSD
@@ -62,6 +64,7 @@
 int   (*_raw_ip_hook)  (const in_Header *)  = NULL;
 int   (*_tcp_syn_hook) (tcp_Socket **)      = NULL;
 void *(*_tcp_find_hook) (const tcp_Socket*) = NULL;
+#endif
 
 char   hostname[MAX_HOSTLEN+1] = "random-pc";
 
@@ -340,6 +343,20 @@ int tcp_listen (tcp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler ha
   if (timeout != 0)
      s->timeout = set_timeout (1000 * timeout);
   return (1);
+}
+
+/*
+ * Reuse local port now if not owned by a STREAM-socket.
+ * Otherwise let socket daemon free local port when linger period
+ * expires. We don't care about rapid reuse of local ports connected
+ * to DGRAM-sockets.
+ */
+static void maybe_reuse_lport (tcp_Socket *s)
+{
+#if defined(USE_BSD_FUNC)
+  if (!_tcp_find_hook || !(*_tcp_find_hook)(s))
+#endif
+     reuse_localport (s->myport);
 }
 
 /*

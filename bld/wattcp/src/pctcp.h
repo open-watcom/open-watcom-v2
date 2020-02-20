@@ -82,10 +82,6 @@ extern int       tcp_RETRAN_TIME;
 extern DWORD     my_ip_addr;
 extern DWORD     sin_mask;
 
-extern int   (*_raw_ip_hook) (const in_Header*);
-extern int   (*_tcp_syn_hook) (tcp_Socket**);
-extern void *(*_tcp_find_hook) (const tcp_Socket*);
-
 extern tcp_Socket *_tcp_allsocs;
 extern udp_Socket *_udp_allsocs;
 
@@ -166,7 +162,6 @@ extern int   init_localport   (void);
 extern WORD  findfreeport     (WORD oldport, BOOL sleep_msl);
 extern int   grab_localport   (WORD port);
 extern int   reuse_localport  (WORD port);
-extern void  maybe_reuse_lport(tcp_Socket *s);
 
 /* In sock_in.c
  */

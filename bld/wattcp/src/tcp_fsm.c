@@ -25,6 +25,11 @@
 #include "pctcp.h"
 #include "tcp_fsm.h"
 
+#if defined(USE_BSD_FUNC)
+    #include "socket.h"
+    #include "pchooks.h"
+#endif
+
 #if !defined(USE_UDP_ONLY)
 
 #define flag_SYNACK (tcp_FlagSYN | tcp_FlagACK)
@@ -379,7 +384,7 @@ static int tcp_finwt1_state (tcp_Socket **sp, const in_Header *ip,
 
   ack = intel (tcp_hdr->acknum);
   seq = intel (tcp_hdr->seqnum);
- 
+
 
   /* check if other tcp has ACK'ed all sent data and
    * is ready to change states.
