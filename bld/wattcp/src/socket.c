@@ -287,30 +287,31 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
 
     switch (sock->so_type) {
     case SOCK_STREAM:
-        sk = (sock_type*) sock->tcp_sock;
+        sk = sock->proto_sock;
         if (sk) {
             reuse_localport (sk->tcp.myport); /* clear 'lport_inuse' bit now */
             sock_abort (sk);
             free_rcv_buf (sk);
         }
-        FREE_SK (sock->tcp_sock);
+        FREE_SK (sk);
         unset_tcp_syn_hook (sock);
         break;
 
     case SOCK_DGRAM:
-        sk = (sock_type*) sock->udp_sock;
+        sk = sock->proto_sock;
         if (sk) {
             reuse_localport (sk->udp.myport);
             sock_abort (sk);
             free_rcv_buf (sk);
         }
-        FREE_SK (sock->udp_sock);
+        FREE_SK (sk);
         break;
 
     case SOCK_RAW:
-        sock->raw_sock->ip_type = 0;
-        sock->raw_sock->next    = NULL;
-        FREE_SK (sock->raw_sock);
+        sk = sock->proto_sock;
+        sk->raw.ip_type = 0;
+        sk->raw.next = NULL;
+        FREE_SK (sk);
         unset_raw_ip_hook (sock);
         break;
 
@@ -377,7 +378,7 @@ static Socket *sock_find_udp (const udp_Socket *udp)
     Socket *sock;
 
     for (sock = sk_list; sock; sock = sock->next) {
-        if (sock->udp_sock == udp) {
+        if (&sock->proto_sock->udp == udp) {
             return (sock);
         }
     }
@@ -395,7 +396,7 @@ static void *sock_find_tcp (const tcp_Socket *tcp)
     Socket *sock;
 
     for (sock = sk_list; sock; sock = sock->next) {
-        if (sock->tcp_sock == tcp) {
+        if (&sock->proto_sock->tcp == tcp) {
             return (void*)sock;
         }
     }
@@ -425,7 +426,7 @@ static int sock_raw_recv (const in_Header *ip)
 
     /* Jumbo packets won't match any raw-sockets
      */
-    if (len > sizeof(sock->raw_sock->data))
+    if (len > sizeof(sock->proto_sock->raw.data))
         return (0);
 
     /* Not addressed to us or not (limited) broadcast
@@ -453,13 +454,13 @@ static int sock_raw_recv (const in_Header *ip)
          *          vacant buffer.
          * assumes sock->raw_sock is non-NULL
          */
-        if (sock->raw_sock->used) {
+        if (sock->proto_sock->raw.used) {
             num_dropped++;
             SOCK_DEBUGF ((sock, "\n  socket %d dropped IP, proto %d", sock->fd, ip->proto));
         } else {
             /* Copy IP-header to raw_sock.ip
              */
-            memcpy (&sock->raw_sock->ip, ip, sizeof(*ip));
+            memcpy (&sock->proto_sock->raw.ip, ip, sizeof(*ip));
 
             /* Copy any IP-options
              */
@@ -470,8 +471,8 @@ static int sock_raw_recv (const in_Header *ip)
 
             /* Copy rest of IP-packet
              */
-            memcpy (&sock->raw_sock->data, (BYTE*)ip+hlen, len);
-            sock->raw_sock->used = TRUE;
+            memcpy (&sock->proto_sock->raw.data, (BYTE*)ip+hlen, len);
+            sock->proto_sock->raw.used = TRUE;
             num_enqueued++;
         }
     }
@@ -603,15 +604,15 @@ static void sock_daemon (void)
         _sock_debugf (NULL, "\nsock_daemon:%d", sock->fd);
 #endif
 
-        switch (sock->so_type) {
-        case SOCK_STREAM:
-            if (sock->tcp_sock)
-                next = tcp_sock_daemon (sock, sock->tcp_sock);
-            break;
-        case SOCK_DGRAM:
-            if (sock->udp_sock)
-                next = udp_sock_daemon (sock, sock->udp_sock);
-            break;
+        if (sock->proto_sock) {
+            switch (sock->so_type) {
+            case SOCK_STREAM:
+                next = tcp_sock_daemon (sock, &sock->proto_sock->tcp);
+                break;
+            case SOCK_DGRAM:
+                next = udp_sock_daemon (sock, &sock->proto_sock->udp);
+                break;
+            }
         }
     }
 }
@@ -648,36 +649,34 @@ void _sock_stop_crit (void)
 static void fortify_exit (void)
 {
     Socket *sock;
+    sock_type *sk;
 
     for (sock = sk_list; sock; sock = sock->next) {
         char *type = "<?>";
         void *data = NULL;
         tcp_Socket *tcp;
 
+        sk = sock->proto_sock;
         switch (sock->so_type) {
         case SOCK_STREAM:
             type = "TCP";
-            data = sock->tcp_sock;
             break;
         case SOCK_DGRAM:
             type = "UDP";
-            data = sock->udp_sock;
             break;
         case SOCK_RAW:
             type = "Raw";
-            data = sock->raw_sock;
             break;
         }
         SOCK_DEBUGF ((NULL, "\n%2d: inuse %d, type %s, data %08lX",
                   sock->fd, FD_ISSET(sock->fd,&inuse[0]) ? 1 : 0,
-                  type, (DWORD)data));
+                  type, (DWORD)sk));
 
-        tcp = sock->tcp_sock;
-        if (tcp) {
-            if (tcp->ip_type == TCP_PROTO) {
+        if (sk) {
+            if (sk->u.ip_type == TCP_PROTO) {
                 SOCK_DEBUGF ((NULL, " (ip_type %d, state %s, ports %u/%u, rdatalen %d)",
-                         TCP_PROTO, tcpState[tcp->state],
-                         tcp->myport, tcp->hisport, tcp->rdatalen));
+                         TCP_PROTO, tcpState[sk->tcp.state],
+                         sk->tcp.myport, sk->tcp.hisport, sk->tcp.rdatalen));
             } else if (sock->so_state & SS_ISDISCONNECTING) {
                 SOCK_DEBUGF ((NULL, " (closed)"));
             } else {
@@ -754,7 +753,7 @@ Socket *_socklist_find (int s)
 static Socket *sock_list_add (int s, int type, int proto)
 {
     Socket *sock = SOCK_CALLOC (sizeof(*sock));
-    void   *proto_sk;
+    sock_type *proto_sk;
 
     if (!sock)
         return (NULL);
@@ -765,29 +764,29 @@ static Socket *sock_list_add (int s, int type, int proto)
          */
         sock->timeout     = sock_delay;
         sock->linger_time = TCP_LINGERTIME;
-        sock->tcp_sock    = proto_sk = SOCK_CALLOC (sizeof(*sock->tcp_sock));
-        if (!sock->tcp_sock) {
+        proto_sk = SOCK_CALLOC (sizeof(tcp_Socket));
+        if (!proto_sk) {
             free (sock);
             return (NULL);
         }
         break;
 
     case IPPROTO_UDP:
-        sock->udp_sock = proto_sk = SOCK_CALLOC (sizeof(*sock->udp_sock));
-        if (!sock->udp_sock) {
+        proto_sk = SOCK_CALLOC (sizeof(udp_Socket));
+        if (!proto_sk) {
             free (sock);
             return (NULL);
         }
         break;
 
     default:
-        sock->raw_sock = proto_sk = SOCK_CALLOC (sizeof(*sock->raw_sock));
-        if (!sock->raw_sock) {
+        proto_sk = SOCK_CALLOC (sizeof(raw_Socket));
+        if (!proto_sk) {
             free (sock);
             return (NULL);
         }
-        sock->raw_sock->ip_type = IP_TYPE;
-        sock->raw_sock->next = NULL; /* !!to-do: make list of MAX_RAW_BUFS */
+        proto_sk->raw.ip_type = IP_TYPE;
+        proto_sk->raw.next = NULL; /* !!to-do: make list of MAX_RAW_BUFS */
         break;
     }
 
@@ -811,6 +810,7 @@ static Socket *sock_list_add (int s, int type, int proto)
         sock->next = sk_list;
         sk_list    = sock;
     }
+    sock->proto_sock = proto_sk;
     sock->fd         = s;
     sock->so_type    = type;
     sock->so_proto   = proto;
@@ -966,7 +966,7 @@ static int stream_cancel (const tcp_Socket *tcp)
     Socket *socket;
 
     for (socket = sk_list; socket; socket = socket->next) {
-        if (socket->so_type == SOCK_STREAM && tcp == socket->tcp_sock) {
+        if (socket->so_type == SOCK_STREAM && tcp == &socket->proto_sock->tcp) {
             socket->so_state |= SS_CONN_REFUSED;
             socket->so_error  = ECONNREFUSED;
         }
@@ -979,7 +979,7 @@ static int dgram_cancel (const udp_Socket *udp)
     Socket *socket;
 
     for (socket = sk_list; socket; socket = socket->next) {
-        if (socket->so_type == SOCK_DGRAM && udp == socket->udp_sock) {
+        if (socket->so_type == SOCK_DGRAM && udp == &socket->proto_sock->udp) {
             socket->so_state |= SS_CONN_REFUSED;
             socket->so_error  = ECONNREFUSED;
         }
@@ -1014,17 +1014,17 @@ int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!udp_open (socket->udp_sock, loc_port, ip, rem_port, NULL))
+    if (!udp_open (&socket->proto_sock->udp, loc_port, ip, rem_port, NULL))
         return (0);
 
-    set_rcv_buf ((sock_type*)socket->udp_sock);
-    socket->udp_sock->sol_callb = sol_callback;
+    set_rcv_buf (socket->proto_sock);
+    socket->proto_sock->udp.sol_callb = sol_callback;
     return (1);
 }
 
 int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 {
-    udp_Socket *udp = socket->udp_sock;
+    udp_Socket *udp = &socket->proto_sock->udp;
     DWORD addr;
 
     port = ntohs (port);
@@ -1077,7 +1077,7 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!tcp_open (socket->tcp_sock, loc_port, dest, rem_port, NULL))
+    if (!tcp_open (&socket->proto_sock->tcp, loc_port, dest, rem_port, NULL))
         return (0);
 
     /*
@@ -1094,8 +1094,8 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 
     /* Advertise a large rcv-win from the next ACK
      */
-    set_rcv_buf ((sock_type*)socket->tcp_sock);
-    socket->tcp_sock->sol_callb = sol_callback;
+    set_rcv_buf (socket->proto_sock);
+    socket->proto_sock->tcp.sol_callb = sol_callback;
     return (1);
 }
 
@@ -1104,8 +1104,8 @@ int _TCP_listen (Socket *socket, struct in_addr host, WORD port)
     DWORD addr     = ntohl (host.s_addr);
     WORD  loc_port = ntohs (port);
 
-    tcp_listen (socket->tcp_sock, loc_port, addr, 0, NULL, 0);
-    socket->tcp_sock->sol_callb = sol_callback;
+    tcp_listen (&socket->proto_sock->tcp, loc_port, addr, 0, NULL, 0);
+    socket->proto_sock->tcp.sol_callb = sol_callback;
     return (1);
 }
 

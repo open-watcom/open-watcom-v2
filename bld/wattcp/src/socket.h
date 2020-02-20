@@ -103,9 +103,8 @@ typedef struct Socket {
         unsigned            fd_duped;    /* FSEXT reference counting */
         DWORD               cookie;      /* memory cookie / marker */
         DWORD               keepalive;   /* keepalive timeout */
-        udp_Socket         *udp_sock;    /* actual state and Rx/Tx data is in */
-        tcp_Socket         *tcp_sock;    /*  one of these pointers */
-        raw_Socket         *raw_sock;    /* !!to-do: make linked-list of bufs */
+        sock_type          *proto_sock;  /* actual state and Rx/Tx data is in */
+                                         /* !!to-do: make linked-list of bufs */
         recv_buf          **bcast_pool;  /* buffers for INADDR_ANY sockets */
 
         /* listen-queue for incoming tcp connections

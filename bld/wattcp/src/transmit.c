@@ -84,11 +84,11 @@ static __inline void msg_eor_close (Socket *socket)
   {
     case SOCK_STREAM:
          socket->so_state |= SS_CANTSENDMORE;
-         sock_close ((sock_type*)socket->tcp_sock);
+         sock_close (socket->proto_sock);
          break;
     case SOCK_DGRAM:
          socket->so_state |= SS_CANTSENDMORE;
-         sock_close ((sock_type*)socket->udp_sock);
+         sock_close (socket->proto_sock);
          break;
     case SOCK_RAW:
          socket->so_state |= SS_CANTSENDMORE;
@@ -256,8 +256,8 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
 
     if (socket->so_type == SOCK_DGRAM)
     {
-      lport = socket->udp_sock->myport;
-      rdata = (char*)socket->udp_sock->rdata;  /* preserve current data */
+      lport = socket->proto_sock->udp.myport;
+      rdata = (char*)socket->proto_sock->udp.rdata;  /* preserve current data */
     }
   }
 
@@ -273,7 +273,7 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
 
   if (rdata)  /* Must be SOCK_DGRAM */
   {
-    udp_Socket *udp = socket->udp_sock;
+    udp_Socket *udp = &socket->proto_sock->udp;
 
     free (udp->rdata);                /* free new rx-buffer set in connect() */
     udp->rdata       = (BYTE*) rdata; /* reuse previous data buffer */
@@ -298,12 +298,8 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
  */
 static __inline int check_non_block_tx (Socket *socket, int *len)
 {
-  sock_type *sk;
+  sock_type *sk = socket->proto_sock;
   int        room;
-
-  if (socket->so_type == SOCK_DGRAM)
-       sk = (sock_type*) socket->udp_sock;
-  else sk = (sock_type*) socket->tcp_sock;
 
   room = sock_tbleft (sk);
   if (*len <= room)
@@ -339,7 +335,7 @@ static __inline int check_non_block_tx (Socket *socket, int *len)
  */
 static int tcp_transmit (Socket *socket, const void *buf, int len, int flags)
 {
-  sock_type *sk = (sock_type*)socket->tcp_sock;
+  sock_type *sk = socket->proto_sock;
 
   tcp_tick (sk);
   tcp_Retransmitter (1);
@@ -410,7 +406,7 @@ static int tcp_transmit (Socket *socket, const void *buf, int len, int flags)
  */
 static int udp_transmit (Socket *socket, const void *buf, int len)
 {
-  sock_type *sk   = (sock_type*) socket->udp_sock;
+  sock_type *sk   = socket->proto_sock;
   u_long     dest = socket->remote_addr->sin_addr.s_addr;
   int        tx_room, rc;
   int        is_bcast, is_multi;
@@ -500,7 +496,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
   eth_address eth;
   u_long      dest;
   unsigned    tx_len, tx_room;
-  sock_type  *sk = (sock_type*)socket->udp_sock;
+  sock_type  *sk = socket->proto_sock;
 
   struct ip   *ip  = (struct ip*) tx;
   const  BYTE *buf = (const BYTE*) tx;
@@ -556,7 +552,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
   if (!(socket->inp_flags & INP_HDRINCL) &&
       tx_len + socket->ip_opt_len > tx_room)
   {
-    sk = (sock_type*)socket->raw_sock;
+    sk = socket->proto_sock;
 
     if (flags & IP_DF)
     {

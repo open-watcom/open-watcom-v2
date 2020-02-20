@@ -59,7 +59,7 @@ int connect (int s, const struct sockaddr *servaddr, int addrlen)
     SOCK_DEBUGF ((socket, ", EINVAL"));
     SOCK_ERR (EINVAL);
     return (-1);
-  } 
+  }
 
   if (socket->remote_addr)
   {
@@ -201,7 +201,7 @@ static int tcp_connect (Socket *socket)
   /* Don't let tcp_Retransmitter() kill this socket
    * before our `socket->timeout' expires
    */
-  socket->tcp_sock->locflags |= LF_RCVTIMEO;
+  socket->proto_sock->tcp.locflags |= LF_RCVTIMEO;
 
   /* We're here only when connect() is called the 1st time
    * (blocking or non-blocking socket).
@@ -212,7 +212,7 @@ static int tcp_connect (Socket *socket)
   {
     /* if user calls getsockopt(SO_ERROR) before calling connect() again
      */
-    socket->so_error = EALREADY;   
+    socket->so_error = EALREADY;
     SOCK_DEBUGF ((socket, ", EINPROGRESS"));
     SOCK_ERR (EINPROGRESS);
     return (-1);
@@ -222,8 +222,7 @@ static int tcp_connect (Socket *socket)
    * maybe we should use select_s() instead ?
    */
   timeout = set_timeout (1000 * socket->timeout);
-  status  = _ip_delay0 ((sock_type*)socket->tcp_sock,
-                        socket->timeout, NULL, NULL);
+  status  = _ip_delay0 (socket->proto_sock, socket->timeout, NULL, NULL);
 
 
   /* We got an ICMP_UNREACH from our peer
@@ -275,7 +274,7 @@ static int nblk_connect (Socket *socket)
   }
 
   if ((socket->so_state & (SS_ISDISCONNECTING | SS_CONN_REFUSED)) ||
-      (socket->tcp_sock->state >= tcp_StateCLOSED))
+      (socket->proto_sock->tcp.state >= tcp_StateCLOSED))
   {
     SOCK_DEBUGF ((socket, ", ECONNREFUSED"));
     socket->so_error = ECONNREFUSED;

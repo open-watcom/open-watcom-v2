@@ -374,14 +374,14 @@ int _sock_read_select (Socket *socket)
 #endif
 
   if (socket->so_type == SOCK_RAW)
-     return (socket->raw_sock && socket->raw_sock->used);
+     return (socket->proto_sock && socket->proto_sock->raw.used);
 
   if (socket->so_type == SOCK_DGRAM)
   {
     if (socket->so_state & SS_PRIV) {
-        len = sock_recv_used ((sock_type *)socket->udp_sock);
+        len = sock_recv_used (socket->proto_sock);
     } else {
-        len = sock_rbused ((sock_type *)socket->udp_sock);
+        len = sock_rbused (socket->proto_sock);
     }
 
     if (len > socket->recv_lowat ||
@@ -392,7 +392,7 @@ int _sock_read_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
+    sock_type *sk = socket->proto_sock;
 
     if (sock_signalled(socket,READ_STATE_MASK) || /* signalled for read_s() */
         sk->tcp.state >= tcp_StateLASTACK      || /* got FIN from peer */
@@ -425,7 +425,7 @@ int _sock_write_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
+    sock_type *sk = socket->proto_sock;
 
     if (sock_tbleft(sk) > socket->send_lowat ||  /* Tx room above low-limit */
         sock_signalled(socket,WRITE_STATE_MASK)) /* signalled for write */

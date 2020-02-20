@@ -190,7 +190,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
 
   /* Prevent a PUSH on first segment sent.
    */
-  sock_noflush ((sock_type*)clone->tcp_sock);
+  sock_noflush (clone->proto_sock);
 
   SOCK_DEBUGF ((clone, "\nremote %s (%d)",
                 inet_ntoa (clone->remote_addr->sin_addr),
@@ -241,11 +241,11 @@ static int dup_bind (Socket *sock, Socket **newconn, int idx)
     clone->so_state   = sock->so_state;
     clone->so_options = sock->so_options;
 
-    /* TCB for clone is from listen-queue[idx]; free tcp_sock from
+    /* TCB for clone is from listen-queue[idx]; free proto_sock from
      * socket(). Reuse listen-queue slot for another SYN.
      */
-    free (clone->tcp_sock);
-    clone->tcp_sock = sock->listen_queue[idx];
+    free (clone->proto_sock);
+    clone->proto_sock = (sock_type *)sock->listen_queue[idx];
     sock->listen_queue [idx] = NULL;
     sock->syn_timestamp[idx] = 0;
     *newconn = clone;
@@ -272,13 +272,13 @@ static int alloc_addr (Socket *socket, Socket *clone)
     return (-1);
   }
 
-  peer.s_addr = htonl (clone->tcp_sock->hisaddr);
+  peer.s_addr = htonl (clone->proto_sock->tcp.hisaddr);
   clone->local_addr->sin_family  = AF_INET;
   clone->local_addr->sin_port    = socket->local_addr->sin_port;
   clone->local_addr->sin_addr    = socket->local_addr->sin_addr;
 
   clone->remote_addr->sin_family = AF_INET;
-  clone->remote_addr->sin_port   = htons (clone->tcp_sock->hisport);
+  clone->remote_addr->sin_port   = htons (clone->proto_sock->tcp.hisport);
   clone->remote_addr->sin_addr   = peer;
   return (0);
 }

@@ -469,7 +469,7 @@ static int reverse_lookup (question_t *q, char *name, DWORD nameserver)
   int        i, ret;
   int        ready = 0;
   udp_Socket udp_sock;
-  sock_type  *dom_sock = &udp_sock;
+  sock_type  *dom_sock = (sock_type *)&udp_sock;
 
     if (!nameserver || dns_timeout == 0)  /* no nameserver, give up */
         return (0);
