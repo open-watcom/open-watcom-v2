@@ -25,9 +25,9 @@
   #include "w32pcap.h"
 #endif
 
-static int     sk_block = 0;        /* sock_daemon() semaphore */
-static int     sk_last  = SK_FIRST; /* highest socket number */
-static Socket *sk_list  = NULL;
+static int     socket_block = 0;        /* sock_daemon() semaphore */
+static int     sk_last  = SK_FIRST;     /* highest socket number */
+static Socket *socket_list = NULL;
 static BOOL    sk_init  = 0;
 
 #if 0  /* !!to-do */
@@ -151,7 +151,7 @@ static int sock_get_fd (void)
  *
  *    Note: for non-djgpp targets 's' may have same value as a
  *          DOS-handle. This function should only be used when 's'
- *          isn't found in 'sk_list'.
+ *          isn't found in 'socket_list'.
  */
 int _sock_dos_fd (int s)
 {
@@ -190,26 +190,26 @@ static __inline void free_rcv_buf (sock_type *p)
 }
 
 /*
- *  sk_list_del
+ *  socket_list_del
  *    Deletes the list element associated with a socket.
  *    Return pointer to next node.
  *    Return NULL if no next or sock not found.
  */
-static __inline Socket *sk_list_del (int s)
+static __inline Socket *socket_list_del (int s)
 {
     Socket *sock, *next, *last;
 
-    for (sock = last = sk_list; sock; last = sock, sock = sock->next) {
-        if (sock->fd != s) {
+    for (socket = last = socket_list; socket != NULL; last = socket, socket = socket->next) {
+        if (socket->fd != s) {
             continue;
         }
-        if (sock == sk_list) {
-            sk_list = sock->next;
+        if (socket == socket_list) {
+            socket_list = socket->next;
         } else {
-            last->next = sock->next;
+            last->next = socket->next;
         }
-        next = sock->next;
-        free (sock);
+        next = socket->next;
+        free (socket);
         return (next);
     }
     return (NULL);
@@ -222,13 +222,13 @@ static __inline Socket *sk_list_del (int s)
  */
 static __inline void unset_tcp_syn_hook (Socket *this)
 {
-    Socket *sock;
+    Socket *socket;
     int    num = 0;
 
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (sock->so_type == SOCK_STREAM
-          && (sock->so_options & SO_ACCEPTCONN)
-          && sock != this) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (socket->so_type == SOCK_STREAM
+          && (socket->so_options & SO_ACCEPTCONN)
+          && socket != this) {
             num++;
         }
     }
@@ -243,11 +243,11 @@ static __inline void unset_tcp_syn_hook (Socket *this)
  */
 static __inline void unset_raw_ip_hook (Socket *this)
 {
-    Socket *sock;
+    Socket *socket;
     int    num = 0;
 
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (sock->so_type == SOCK_RAW && sock != this) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (socket->so_type == SOCK_RAW && socket != this) {
             num++;
         }
     }
@@ -258,14 +258,14 @@ static __inline void unset_raw_ip_hook (Socket *this)
 }
 
 /*
- *  _sock_del_fd
+ *  _socket_del_fd
  *    Delete the socket from `inuse' array and all memory associated
- *    with it. Also unlink it from the socket list (sk_list).
+ *    with it. Also unlink it from the socket list (socket_list).
  *    Return pointer to next node in list or NULL if none/error.
  */
-Socket * _sock_del_fd (const char *file, unsigned line, int s)
+Socket * _socket_del_fd (const char *file, unsigned line, int s)
 {
-    Socket    *sock, *next = NULL;
+    Socket    *socket, *next = NULL;
     sock_type *sk;
 
     SOCK_DEBUGF ((NULL, "\n  _sock_del_fd:%d", s));
@@ -275,21 +275,21 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
         return (NULL);
     }
 
-    sock = _socklist_find (s);
-    if (!sock) {
+    socket = _socklist_find (s);
+    if (socket == NULL) {
         SOCK_FATAL (("%s (%u) Fatal: socket %d not in list\r\n", file, line, s));
         goto not_inuse;
     }
 
-    if (sock->cookie != SAFETYTCP) {    /* Aaarg! marker destroyed */
+    if (socket->cookie != SAFETYTCP) {    /* Aaarg! marker destroyed */
         SOCK_FATAL (("%s (%u) fatal: socket %d (%p) overwritten\r\n",
-                 file, line, s, sock));
+                 file, line, s, socket));
         goto not_inuse;
     }
 
-    sk = sock->proto_sock;
+    sk = socket->proto_sock;
     if (sk != NULL) {
-        switch (sock->so_type) {
+        switch (socket->so_type) {
         case SOCK_STREAM:
         case SOCK_DGRAM:
             reuse_localport (sk->u.myport); /* clear 'lport_inuse' bit now */
@@ -304,25 +304,25 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
         FREE_SK (sk);
     }
 
-    switch (sock->so_type) {
+    switch (socket->so_type) {
     case SOCK_STREAM:
-        unset_tcp_syn_hook (sock);
+        unset_tcp_syn_hook (socket);
         break;
     case SOCK_DGRAM:
         break;
     case SOCK_RAW:
-        unset_raw_ip_hook (sock);
+        unset_raw_ip_hook (socket);
         break;
     default:
         SOCK_DEBUGF ((NULL, "\n  _sock_del_fd(%d): unknown type %d",
-                       s, sock->so_type));
+                       s, socket->so_type));
         break;
     }
 
-    FREE_SK (sock->local_addr);
-    FREE_SK (sock->remote_addr);
-    FREE_SK (sock->ip_opt);
-    FREE_SK (sock->bcast_pool);
+    FREE_SK (socket->local_addr);
+    FREE_SK (socket->remote_addr);
+    FREE_SK (socket->ip_opt);
+    FREE_SK (socket->bcast_pool);
 
 #if defined(USE_FSEXT) && defined(__DJGPP__)
     /* Free the socket from File-System Extension system.
@@ -332,7 +332,7 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
     _close (s);
 #endif
 
-    next = sk_list_del (s);  /* delete socket from linked list */
+    next = socket_list_del (s);  /* delete socket from linked list */
 
 not_inuse:
     if (s == sk_last-1)
@@ -354,30 +354,30 @@ not_inuse:
  *    Finds the 'fd' associated with pointer 'socket'.
  *    Return -1 if not found.
  */
-static int sock_find_fd (const Socket *socket)
+static int socket_find_fd (const Socket *this)
 {
-    Socket *sock;
+    Socket *socket;
 
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (sock == socket) {
-            return (sock->fd);
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (socket == this) {
+            return (socket->fd);
         }
     }
     return (-1);
 }
 
 /*
- *  sock_find_udp
- *    Finds the 'Socket' associated with udp-socket 'udp'.
+ *  socket_find_udp
+ *    Finds the 'Socket' associated with udp_socket 'udp'.
  *    Return NULL if not found.
  */
-static Socket *sock_find_udp (const udp_Socket *udp)
+static Socket *socket_find_udp (const udp_Socket *udp)
 {
-    Socket *sock;
+    Socket *socket;
 
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (&sock->proto_sock->udp == udp) {
-            return (sock);
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (&socket->proto_sock->udp == udp) {
+            return (socket);
         }
     }
     return (NULL);
@@ -385,17 +385,17 @@ static Socket *sock_find_udp (const udp_Socket *udp)
 #endif
 
 /*
- *  sock_find_tcp
- *    Finds the 'Socket' associated with tcp-socket 'tcp'.
+ *  socket_find_tcp
+ *    Finds the 'Socket' associated with tcp_socket 'tcp'.
  *    Return NULL if not found.
  */
-static Socket *sock_find_tcp (const tcp_Socket *tcp)
+static Socket *socket_find_tcp (const tcp_Socket *tcp)
 {
-    Socket *sock;
+    Socket *socket;
 
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (&sock->proto_sock->tcp == tcp) {
-            return sock;
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (&socket->proto_sock->tcp == tcp) {
+            return socket;
         }
     }
     return (NULL);
@@ -403,28 +403,28 @@ static Socket *sock_find_tcp (const tcp_Socket *tcp)
 
 
 /*
- *  sock_raw_recv - Called from _ip_handler() via `_raw_ip_hook'.
+ *  socket_raw_recv - Called from _ip_handler() via `_raw_ip_hook'.
  *    IP-header is already checked in _ip_handler().
  *    Finds all 'Socket' associated with raw IP-packet 'ip'.
- *    Enqueue to 'sock->raw_sock'.
+ *    Enqueue to 'socket->raw_sock'.
  *    Return >=1 if 'ip' is consumed, 0 otherwise.
  *
  *  Fix-me: This routine will steal all packets destined for
  *          SOCK_STREAM/SOCK_DGRAM sockets if those sockets are
- *          allocated after the SOCK_RAW socket (behind in sk_list).
+ *          allocated after the SOCK_RAW socket (behind in socket_list).
  */
-static int sock_raw_recv (const in_Header *ip)
+static int socket_raw_recv (const in_Header *ip)
 {
-    Socket *sock;
+    Socket *socket;
     int     num_enqueued = 0;
     int     num_dropped  = 0;
     int     hlen = in_GetHdrLen (ip);
     DWORD   dst  = ntohl (ip->destination);
     size_t  len  = ntohs (ip->length);
 
-    /* Jumbo packets won't match any raw-sockets
+    /* Jumbo packets won't match any raw_sockets
      */
-    if (len > sizeof(sock->proto_sock->raw.data))
+    if (len > sizeof(socket->proto_sock->raw.data))
         return (0);
 
     /* Not addressed to us or not (limited) broadcast
@@ -432,45 +432,45 @@ static int sock_raw_recv (const in_Header *ip)
     if (!is_local_addr(dst) && !is_ip_brdcast(ip))
         return (0);
 
-    for (sock = sk_list; sock; sock = sock->next) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
 #if 0 /* !! to-do */
-        if (sock->so_type == SOCK_RAW && sock->so_proto == IPPROTO_RAW)
+        if (socket->so_type == SOCK_RAW && socket->so_proto == IPPROTO_RAW)
             ; /* socket matches every IP-protocol, enqueue */
 #endif
 
-        if (ip->proto == IPPROTO_TCP && sock->so_type == SOCK_STREAM)
+        if (ip->proto == IPPROTO_TCP && socket->so_type == SOCK_STREAM)
             return (0);
 
-        if (ip->proto == IPPROTO_UDP && sock->so_type == SOCK_DGRAM)
+        if (ip->proto == IPPROTO_UDP && socket->so_type == SOCK_DGRAM)
             return (0);
 
-        if (sock->so_type != SOCK_RAW ||
-            (ip->proto != sock->so_proto && sock->so_proto != IPPROTO_IP))
+        if (socket->so_type != SOCK_RAW ||
+            (ip->proto != socket->so_proto && socket->so_proto != IPPROTO_IP))
             continue;
 
-        /* !!to-do: follow the 'sock->raw_sock->next' pointer to first
+        /* !!to-do: follow the 'socket->raw_sock->next' pointer to first
          *          vacant buffer.
-         * assumes sock->raw_sock is non-NULL
+         * assumes socket->raw_sock is non-NULL
          */
-        if (sock->proto_sock->raw.used) {
+        if (socket->proto_sock->raw.used) {
             num_dropped++;
-            SOCK_DEBUGF ((sock, "\n  socket %d dropped IP, proto %d", sock->fd, ip->proto));
+            SOCK_DEBUGF ((socket, "\n  socket %d dropped IP, proto %d", socket->fd, ip->proto));
         } else {
             /* Copy IP-header to raw_sock.ip
              */
-            memcpy (&sock->proto_sock->raw.ip, ip, sizeof(*ip));
+            memcpy (&socket->proto_sock->raw.ip, ip, sizeof(*ip));
 
             /* Copy any IP-options
              */
-            if (hlen > sizeof(*ip) && sock->ip_opt) {
-                int olen = min (sock->ip_opt_len, hlen - sizeof(*ip));
-                memcpy (&sock->ip_opt, ip+1, olen);
+            if (hlen > sizeof(*ip) && socket->ip_opt) {
+                int olen = min (socket->ip_opt_len, hlen - sizeof(*ip));
+                memcpy (&socket->ip_opt, ip+1, olen);
             }
 
             /* Copy rest of IP-packet
              */
-            memcpy (&sock->proto_sock->raw.data, (BYTE*)ip+hlen, len);
-            sock->proto_sock->raw.used = TRUE;
+            memcpy (&socket->proto_sock->raw.data, (BYTE*)ip+hlen, len);
+            socket->proto_sock->raw.used = TRUE;
             num_enqueued++;
         }
     }
@@ -498,34 +498,34 @@ static int sock_raw_recv (const in_Header *ip)
  *    period has expired.
  *
  */
-static Socket *tcp_sock_daemon (Socket *sock, tcp_Socket *tcp)
+static Socket *tcp_sock_daemon (Socket *socket, tcp_Socket *tcp)
 {
-    Socket *next  = sock->next;
-    int     s     = sock->fd;
+    Socket *next  = socket->next;
+    int     s     = socket->fd;
     int     state = tcp->state;
 
-    if ((sock->so_options & SO_KEEPALIVE) && chk_timeout(sock->keepalive)) {
+    if ((socket->so_options & SO_KEEPALIVE) && chk_timeout(socket->keepalive)) {
         sock_keepalive ((sock_type*)tcp);
         if (tcp_keepalive) {
-            sock->keepalive = set_timeout (1000 * tcp_keepalive);
+            socket->keepalive = set_timeout (1000 * tcp_keepalive);
         } else {
-            sock->keepalive = 0;
+            socket->keepalive = 0;
         }
     }
 
     if (state == tcp_StateSYNSENT) {          /* opening active tcp session */
-        sock->so_state |= SS_ISCONNECTING;
+        socket->so_state |= SS_ISCONNECTING;
     } else if (state == tcp_StateESTAB) {     /* established tcp session */
-        sock->so_state |=  SS_ISCONNECTED;
-        sock->so_state &= ~SS_ISCONNECTING;
-        sock->so_state &= ~SS_ISDISCONNECTING;
+        socket->so_state |=  SS_ISCONNECTED;
+        socket->so_state &= ~SS_ISCONNECTING;
+        socket->so_state &= ~SS_ISDISCONNECTING;
     } else if (state >= tcp_StateTIMEWT) {    /* dying tcp session */
         sock_type *sk = (sock_type*)tcp;
-        int  closing  = sock->so_state & (SS_ISDISCONNECTING | SS_CANTSENDMORE);
+        int  closing  = socket->so_state & (SS_ISDISCONNECTING | SS_CANTSENDMORE);
 
-        sock->so_state &= ~(SS_ISCONNECTED | SS_ISCONNECTING);
+        socket->so_state &= ~(SS_ISCONNECTED | SS_ISCONNECTING);
 
-        if (sock->close_time && (sock->so_state & SS_CANTRCVMORE)) {
+        if (socket->close_time && (socket->so_state & SS_CANTRCVMORE)) {
             /* Flush any remaining Rx data received after shutdown(0) called.
              */
             sock_fastread (sk, NULL, -1);
@@ -536,16 +536,16 @@ static Socket *tcp_sock_daemon (Socket *sock, tcp_Socket *tcp)
 
             if (!sock_rbused(sk)) {
                 free_rcv_buf (sk);         /* free memory not needed anymore */
-                FREE_SK (sock->ip_opt);
+                FREE_SK (socket->ip_opt);
             }
 
-            if (sock->close_time)        /* close_s() called */
-                expired = (time(NULL) - sock->close_time >= sock->linger_time);
+            if (socket->close_time)        /* close_s() called */
+                expired = (time(NULL) - socket->close_time >= socket->linger_time);
 
             /* If linger-period expired and fully closed, delete the TCB
              */
             if (expired && state == tcp_StateCLOSED) {
-                SOCK_DEBUGF ((sock, "\n  tcp_sock_daemon del:%d, lport %d", s, tcp->myport));
+                SOCK_DEBUGF ((socket, "\n  tcp_sock_daemon del:%d, lport %d", s, tcp->myport));
                 next = SOCK_DEL_FD (s);
             }
         }
@@ -563,14 +563,14 @@ static Socket *tcp_sock_daemon (Socket *sock, tcp_Socket *tcp)
  * Note: Setting 'SS_ISDISCONNECTING' is really a mis-nomer, but
  * should indicate socket is closed/aborted with Rx-data remaining.
  */
-static Socket *udp_sock_daemon (Socket *sock, udp_Socket *udp)
+static Socket *udp_sock_daemon (Socket *socket, udp_Socket *udp)
 {
-    Socket *next = sock->next;
+    Socket *next = socket->next;
 
-    if ((sock->so_state & (SS_ISDISCONNECTING | SS_CANTSENDMORE))
+    if ((socket->so_state & (SS_ISDISCONNECTING | SS_CANTSENDMORE))
       && (udp->rdatalen == 0 || udp->ip_type == 0)) {
-        SOCK_DEBUGF ((sock, "\n  udp_sock_daemon del:%d", sock->fd));
-        next = SOCK_DEL_FD (sock->fd);
+        SOCK_DEBUGF ((socket, "\n  udp_sock_daemon del:%d", socket->fd));
+        next = SOCK_DEL_FD (socket->fd);
     }
     return (next);
 }
@@ -580,35 +580,35 @@ static Socket *udp_sock_daemon (Socket *sock, udp_Socket *udp)
  */
 static void sock_daemon (void)
 {
-    Socket *sock, *next = NULL;
+    Socket *socket, *next = NULL;
 
     /* If we're in a critical region (e.g. select_s()) where we don't
      * want our socket-list to change, do this later.
      */
-    if (sk_block)
+    if (socket_block)
         return;
 
-    for (sock = sk_list; sock; sock = next) {
-        int s = sock->fd;
-        next  = sock->next;
+    for (socket = socket_list; socket != NULL; socket = next) {
+        int s = socket->fd;
+        next  = socket->next;
 
         if (!FD_ISSET(s,&inuse[0]))
             continue;
 
-        if (sock->local_addr == NULL)  /* not bound to anything yet */
+        if (socket->local_addr == NULL)  /* not bound to anything yet */
             continue;
 
 #if 0
-        _sock_debugf (NULL, "\nsock_daemon:%d", sock->fd);
+        _sock_debugf (NULL, "\nsock_daemon:%d", socket->fd);
 #endif
 
-        if (sock->proto_sock) {
-            switch (sock->so_type) {
+        if (socket->proto_sock) {
+            switch (socket->so_type) {
             case SOCK_STREAM:
-                next = tcp_sock_daemon (sock, &sock->proto_sock->tcp);
+                next = tcp_sock_daemon (socket, &socket->proto_sock->tcp);
                 break;
             case SOCK_DGRAM:
-                next = udp_sock_daemon (sock, &sock->proto_sock->udp);
+                next = udp_sock_daemon (socket, &socket->proto_sock->udp);
                 break;
             }
         }
@@ -616,27 +616,27 @@ static void sock_daemon (void)
 }
 
 /*
- * Start and stop critical regions from letting `sk_list' be
+ * Start and stop critical regions from letting `socket_list' be
  * destroyed (e.g. in sock_daemon) and thus confusing select(),
  * connect() etc.
  */
 void _sock_start_crit (void)
 {
-    if (sk_block < INT_MAX) {
-        ++sk_block;
+    if (socket_block < INT_MAX) {
+        ++socket_block;
     }
 }
 
 void _sock_stop_crit (void)
 {
-    if (sk_block > 0) {
-        --sk_block;
+    if (socket_block > 0) {
+        --socket_block;
 
 #ifdef SIGALRM         /* handle SIGALRM raised in crit-section */
         /* !!to-do */
 #endif
 
-        if (!sk_block) {
+        if (!socket_block) {
             sock_daemon();  /* run blocked sock_daemon() */
         }
     }
@@ -646,16 +646,14 @@ void _sock_stop_crit (void)
 #if defined(USE_BSD_FORTIFY) && defined(USE_DEBUG)
 static void fortify_exit (void)
 {
-    Socket *sock;
+    Socket *socket;
     sock_type *sk;
 
-    for (sock = sk_list; sock; sock = sock->next) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
         char *type = "<?>";
-        void *data = NULL;
-        tcp_Socket *tcp;
 
-        sk = sock->proto_sock;
-        switch (sock->so_type) {
+        sk = socket->proto_sock;
+        switch (socket->so_type) {
         case SOCK_STREAM:
             type = "TCP";
             break;
@@ -667,15 +665,15 @@ static void fortify_exit (void)
             break;
         }
         SOCK_DEBUGF ((NULL, "\n%2d: inuse %d, type %s, data %08lX",
-                  sock->fd, FD_ISSET(sock->fd,&inuse[0]) ? 1 : 0,
+                  socket->fd, FD_ISSET(socket->fd,&inuse[0]) ? 1 : 0,
                   type, (DWORD)sk));
 
-        if (sk) {
+        if (sk != NULL) {
             if (sk->u.ip_type == TCP_PROTO) {
                 SOCK_DEBUGF ((NULL, " (ip_type %d, state %s, ports %u/%u, rdatalen %d)",
                          TCP_PROTO, tcpState[sk->tcp.state],
                          sk->tcp.myport, sk->tcp.hisport, sk->tcp.rdatalen));
-            } else if (sock->so_state & SS_ISDISCONNECTING) {
+            } else if (socket->so_state & SS_ISDISCONNECTING) {
                 SOCK_DEBUGF ((NULL, " (closed)"));
             } else {
                 SOCK_DEBUGF ((NULL, " (aborted?)"));
@@ -710,7 +708,7 @@ static int InitSockets (void)
     sk_last = SK_FIRST;
 #endif  /* __DJGPP__ */
 
-    sk_list = NULL;
+    socket_list = NULL;
     memset (&inuse, 0, sizeof(inuse));
     addwattcpd (sock_daemon);
 
@@ -729,97 +727,93 @@ static int InitSockets (void)
  */
 Socket *_socklist_find (int s)
 {
-    Socket *sock;
+    Socket *socket;
 
     if (!sk_init) {
         if (!InitSockets())
             return (NULL);
         sk_init = 1;
     }
-    for (sock = sk_list; sock; sock = sock->next) {
-        if (sock->fd == s) {
-            return (sock);
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
+        if (socket->fd == s) {
+            return (socket);
         }
     }
     return (NULL);
 }
 
 /*
- * sock_list_add
- *   Adds a new socket to the sk_list
+ * socket_list_add
+ *   Adds a new socket to the socket_list
  */
-static Socket *sock_list_add (int s, int type, int proto)
+static Socket *socket_list_add (int s, int type, int proto)
 {
-    Socket *sock = SOCK_CALLOC (sizeof(*sock));
+    Socket *socket = SOCK_CALLOC (sizeof(*socket));
     sock_type *proto_sk;
 
-    if (!sock)
+    if (socket == NULL)
         return (NULL);
 
     switch (proto) {
     case IPPROTO_TCP:
         /* Only tcp times out on inactivity
          */
-        sock->timeout     = sock_delay;
-        sock->linger_time = TCP_LINGERTIME;
+        socket->timeout     = sock_delay;
+        socket->linger_time = TCP_LINGERTIME;
         proto_sk = SOCK_CALLOC (sizeof(tcp_Socket));
-        if (!proto_sk) {
-            free (sock);
-            return (NULL);
-        }
         break;
-
     case IPPROTO_UDP:
         proto_sk = SOCK_CALLOC (sizeof(udp_Socket));
-        if (!proto_sk) {
-            free (sock);
-            return (NULL);
-        }
         break;
-
     default:
         proto_sk = SOCK_CALLOC (sizeof(raw_Socket));
-        if (!proto_sk) {
-            free (sock);
-            return (NULL);
-        }
-        proto_sk->raw.ip_type = IP_TYPE;
+        break;
+    }
+    if (proto_sk == NULL) {
+        free (socket);
+        return (NULL);
+    }
+
+#if defined(USE_FSEXT) && defined(__DJGPP__)
+    if (!__FSEXT_set_data (s,socket)) {
+        free (proto_sk);
+        free (socket);
+        SOCK_FATAL (("%s (%d) Fatal: cannot grow FSEXT table\r\n", __FILE__, __LINE__));
+        return (NULL);
+    }
+#endif
+
+    switch (proto) {
+    case IPPROTO_TCP:
+    case IPPROTO_UDP:
+        break;
+    default:
+        proto_sk->u.ip_type = IP_TYPE;
         proto_sk->raw.next = NULL; /* !!to-do: make list of MAX_RAW_BUFS */
         break;
     }
 
-#if defined(USE_FSEXT) && defined(__DJGPP__)
-    if (!__FSEXT_set_data (s,sock)) {
-        free (proto_sk);
-        free (sock);
-        SOCK_FATAL (("%s (%d) Fatal: cannot grow FSEXT table\r\n", __FILE__, __LINE__));
-        return (NULL);
-    }
-#else
-    ARGSUSED (proto_sk);
-#endif
-
-    /* Link 'sock' into the 'sk_list'
+    /* Link 'socket' into the 'socket_list'
      */
-    if (!sk_list) {
-        sock->next = NULL;
-        sk_list    = sock;
+    if (!socket_list) {
+        socket->next = NULL;
+        socket_list = socket;
     } else {
-        sock->next = sk_list;
-        sk_list    = sock;
+        socket->next = socket_list;
+        socket_list = socket;
     }
-    sock->proto_sock = proto_sk;
-    sock->fd         = s;
-    sock->so_type    = type;
-    sock->so_proto   = proto;
-    sock->so_state   = SS_UNCONNECTED;
-    sock->send_lowat = DEFAULT_SEND_LOWAT;
-    sock->recv_lowat = DEFAULT_RECV_LOWAT;
-    sock->ip_ttl     = IPDEFTTL;
-    sock->ip_tos     = 0;
-    sock->cookie     = SAFETYTCP;
+    socket->proto_sock = proto_sk;
+    socket->fd         = s;
+    socket->so_type    = type;
+    socket->so_proto   = proto;
+    socket->so_state   = SS_UNCONNECTED;
+    socket->send_lowat = DEFAULT_SEND_LOWAT;
+    socket->recv_lowat = DEFAULT_RECV_LOWAT;
+    socket->ip_ttl     = IPDEFTTL;
+    socket->ip_tos     = 0;
+    socket->cookie     = SAFETYTCP;
 
-    return (sock);
+    return (socket);
 }
 
 /*
@@ -861,7 +855,7 @@ static __inline int set_proto (int type, int *proto)
  */
 int socket (int family, int type, int protocol)
 {
-    Socket *sock;
+    Socket *socket;
     int     s, ss;
 
     if (!sk_init && !InitSockets()) {
@@ -904,8 +898,8 @@ int socket (int family, int type, int protocol)
         return (-1);
     }
 
-    sock = sock_list_add (s, type, protocol);
-    ss   = (sock ? s : -1);
+    socket = socket_list_add (s, type, protocol);
+    ss = (socket ? s : -1);
 
     switch (type) {
     case SOCK_STREAM:
@@ -928,7 +922,7 @@ int socket (int family, int type, int protocol)
 #endif
     }
 
-    if (!sock) {
+    if (socket == NULL) {
         SOCK_ERR (ENOMEM);
         return (-1);
     }
@@ -963,7 +957,7 @@ static int stream_cancel (const tcp_Socket *tcp)
 {
     Socket *socket;
 
-    for (socket = sk_list; socket; socket = socket->next) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
         if (socket->so_type == SOCK_STREAM && tcp == &socket->proto_sock->tcp) {
             socket->so_state |= SS_CONN_REFUSED;
             socket->so_error  = ECONNREFUSED;
@@ -976,7 +970,7 @@ static int dgram_cancel (const udp_Socket *udp)
 {
     Socket *socket;
 
-    for (socket = sk_list; socket; socket = socket->next) {
+    for (socket = socket_list; socket != NULL; socket = socket->next) {
         if (socket->so_type == SOCK_DGRAM && udp == &socket->proto_sock->udp) {
             socket->so_state |= SS_CONN_REFUSED;
             socket->so_error  = ECONNREFUSED;
@@ -1129,13 +1123,13 @@ int _sock_half_open (const tcp_Socket *s)
  */
 int socketpair (int family, int type, int protocol, int usockvec[2])
 {
-    Socket *sock1, *sock2;
+    Socket *socket1, *socket2;
     int     s1, s2;
 
     if ((s1 = socket (family, type, protocol)) < 0)
         return (fd1);
 
-    sock1 = socklist_find (s1);
+    socket1 = socklist_find (s1);
 
     /* Now grab another socket and try to connect the two together.
      */
@@ -1144,12 +1138,12 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
         return (-EINVAL);
     }
 
-    sock2 = socklist_find (s2);
+    socket2 = socklist_find (s2);
 
-    sock1->conn = sock2;
-    sock2->conn = sock1;
-    sock1->so_state = SS_CONNECTED;
-    sock2->so_state = SS_CONNECTED;
+    socket1->conn = socket2;
+    socket2->conn = socket1;
+    socket1->so_state = SS_CONNECTED;
+    socket2->so_state = SS_CONNECTED;
 
     usockvec[0] = s1;
     usockvec[1] = s2;

@@ -225,7 +225,7 @@ accept_fail:
  *  local/remote addresses. Transfer TCB from listen-queue[idx] of
  *  'socket' to TCB of 'clone'.
  */
-static int dup_bind (Socket *sock, Socket **newconn, int idx)
+static int dup_bind (Socket *_socket, Socket **newconn, int idx)
 {
   int fd = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -235,21 +235,21 @@ static int dup_bind (Socket *sock, Socket **newconn, int idx)
 
     /* child gets state from parent
      */
-    clone->timeout    = sock->timeout;
-    clone->close_time = sock->close_time;
-    clone->keepalive  = sock->keepalive;
-    clone->ip_tos     = sock->ip_tos;
-    clone->ip_ttl     = sock->ip_ttl;
-    clone->so_state   = sock->so_state;
-    clone->so_options = sock->so_options;
+    clone->timeout    = _socket->timeout;
+    clone->close_time = _socket->close_time;
+    clone->keepalive  = _socket->keepalive;
+    clone->ip_tos     = _socket->ip_tos;
+    clone->ip_ttl     = _socket->ip_ttl;
+    clone->so_state   = _socket->so_state;
+    clone->so_options = _socket->so_options;
 
     /* TCB for clone is from listen-queue[idx]; free proto_sock from
      * socket(). Reuse listen-queue slot for another SYN.
      */
     free (clone->proto_sock);
-    clone->proto_sock = sock->listen_queue[idx];
-    sock->listen_queue[idx] = NULL;
-    sock->syn_timestamp[idx] = 0;
+    clone->proto_sock = _socket->listen_queue[idx];
+    _socket->listen_queue[idx] = NULL;
+    _socket->syn_timestamp[idx] = 0;
     *newconn = clone;
   }
   return (fd);
@@ -316,54 +316,54 @@ int _sock_append (tcp_Socket **tcp)
 {
   sock_type  *clone;
   tcp_Socket *orig = *tcp;
-  Socket     *sock = NULL;   /* associated socket for '*tcp' */
+  Socket     *socket = NULL;   /* associated socket for '*tcp' */
   int         i;
 
   /* Lookup BSD-socket for Wattcp TCB
    */
-  if (_tcp_find_hook == NULL || (sock = (*_tcp_find_hook)(orig)) == NULL)
+  if (_tcp_find_hook == NULL || (socket = (*_tcp_find_hook)(orig)) == NULL)
   {
     SOCK_DEBUGF ((NULL, "\n  sock_append: not found!?"));
     return (0);  /* i.e. could be a native Wattcp socket */
   }
 
-  SOCK_DEBUGF ((sock, "\n  sock_append:%d", sock->fd));
+  SOCK_DEBUGF ((socket, "\n  sock_append:%d", socket->fd));
 
-  if (!(sock->so_options & SO_ACCEPTCONN))
+  if (!(socket->so_options & SO_ACCEPTCONN))
   {
-    SOCK_DEBUGF ((sock, ", not SO_ACCEPTCONN"));
+    SOCK_DEBUGF ((socket, ", not SO_ACCEPTCONN"));
     return (-1);  /* How could this happen? */
   }
 
   /* Find the first vacant slot for this clone
    */
-  for (i = 0; i < sock->backlog; i++) {
-      if (sock->listen_queue[i] == NULL) {
+  for (i = 0; i < socket->backlog; i++) {
+      if (socket->listen_queue[i] == NULL) {
          break;
       }
   }
 
-  if (i >= sock->backlog || i >= SOMAXCONN)
+  if (i >= socket->backlog || i >= SOMAXCONN)
   {
     /* !!to-do: drop the oldest (or a random) slot in the listen-queue.
      */
-    SOCK_DEBUGF ((sock, ", queue full (idx %d)", i));
+    SOCK_DEBUGF ((socket, ", queue full (idx %d)", i));
     return (-1);
   }
 
-  SOCK_DEBUGF ((sock, ", idx %d", i));
+  SOCK_DEBUGF ((socket, ", idx %d", i));
 
   clone = SOCK_CALLOC (sizeof(tcp_Socket));
   if (clone == NULL)
   {
-    SOCK_DEBUGF ((sock, ", ENOMEM"));
+    SOCK_DEBUGF ((socket, ", ENOMEM"));
     return (-1);
   }
 
   /* Link in the semi-connected socket (SYN received, ACK will be sent)
    */
-  sock->listen_queue[i] = clone;
-  sock->syn_timestamp[i] = set_timeout (0);
+  socket->listen_queue[i] = clone;
+  socket->syn_timestamp[i] = set_timeout (0);
 
   /* Copy the TCB (except Tx-buffer) to clone
    */
