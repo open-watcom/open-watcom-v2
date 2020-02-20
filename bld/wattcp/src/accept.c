@@ -111,7 +111,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
    */
   for (que_idx = 0; ; que_idx = (++que_idx % maxconn))
   {
-    tcp_Socket *sk = socket->listen_queue [que_idx];
+    sock_type *sk = socket->listen_queue[que_idx];
 
     tcp_tick (NULL);
 
@@ -121,7 +121,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
      * after 'select_s()' said that socket was readable. (At least one
      * connection on the listen-queue).
      */
-    if (sk)
+    if (sk != NULL)
     {
       /* This could happen if 'accept()' was called too long after connection
        * was established and then closed by peer. This could also happen if
@@ -132,7 +132,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
        * Queue slot is in any case ready for another 'SYN' to come and be
        * handled by '_sock_append()'.
        */
-      if (sk->state >= tcp_StateLASTACK && sk->ip_type == 0)
+      if (sk->u.ip_type == 0 && sk->tcp.state >= tcp_StateLASTACK)
       {
         SOCK_DEBUGF ((socket, ", aborted TCB (idx %d)", que_idx));
         listen_free (socket, que_idx);
@@ -142,7 +142,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
       /* !!to-do: Should maybe loop over all maxconn TCBs and accept the
        *          one with oldest 'syn_timestamp'.
        */
-      if (tcp_established(sk))
+      if (tcp_established(&sk->tcp))
       {
         SOCK_DEBUGF ((socket, ", connected! (idx %d)", que_idx));
         break;
@@ -247,8 +247,8 @@ static int dup_bind (Socket *sock, Socket **newconn, int idx)
      * socket(). Reuse listen-queue slot for another SYN.
      */
     free (clone->proto_sock);
-    clone->proto_sock = (sock_type *)sock->listen_queue[idx];
-    sock->listen_queue [idx] = NULL;
+    clone->proto_sock = sock->listen_queue[idx];
+    sock->listen_queue[idx] = NULL;
     sock->syn_timestamp[idx] = 0;
     *newconn = clone;
   }
@@ -290,14 +290,14 @@ static int alloc_addr (Socket *socket, Socket *clone)
  */
 static int listen_free (Socket *socket, int idx)
 {
-  tcp_Socket *tcb = socket->listen_queue [idx];
+  sock_type *tcb_sk = socket->listen_queue[idx];
 
-  _tcp_unthread (tcb);
+  _tcp_unthread (&tcb_sk->tcp);
 
-  if (tcb->rdata != &tcb->rddata[0])  /* free large Rx buffer? */
-     free (tcb->rdata);
-  free (tcb);
-  socket->listen_queue [idx] = NULL;
+  if (tcb_sk->tcp.rdata != &tcb_sk->tcp.rddata[0])  /* free large Rx buffer? */
+     free (tcb_sk->tcp.rdata);
+  free (tcb_sk);
+  socket->listen_queue[idx] = NULL;
   return (0);
 }
 
@@ -314,14 +314,14 @@ static int listen_free (Socket *socket, int idx)
  */
 int _sock_append (tcp_Socket **tcp)
 {
-  tcp_Socket *clone;
+  sock_type  *clone;
   tcp_Socket *orig = *tcp;
   Socket     *sock = NULL;   /* associated socket for '*tcp' */
   int         i;
 
   /* Lookup BSD-socket for Wattcp TCB
    */
-  if (!_tcp_find_hook || (sock = (*_tcp_find_hook)(orig)) == NULL)
+  if (_tcp_find_hook == NULL || (sock = (*_tcp_find_hook)(orig)) == NULL)
   {
     SOCK_DEBUGF ((NULL, "\n  sock_append: not found!?"));
     return (0);  /* i.e. could be a native Wattcp socket */
@@ -337,9 +337,11 @@ int _sock_append (tcp_Socket **tcp)
 
   /* Find the first vacant slot for this clone
    */
-  for (i = 0; i < sock->backlog; i++)
-      if (!sock->listen_queue[i])
+  for (i = 0; i < sock->backlog; i++) {
+      if (sock->listen_queue[i] == NULL) {
          break;
+      }
+  }
 
   if (i >= sock->backlog || i >= SOMAXCONN)
   {
@@ -351,8 +353,8 @@ int _sock_append (tcp_Socket **tcp)
 
   SOCK_DEBUGF ((sock, ", idx %d", i));
 
-  clone = SOCK_CALLOC (sizeof(*clone));
-  if (!clone)
+  clone = SOCK_CALLOC (sizeof(tcp_Socket));
+  if (clone == NULL)
   {
     SOCK_DEBUGF ((sock, ", ENOMEM"));
     return (-1);
@@ -360,17 +362,17 @@ int _sock_append (tcp_Socket **tcp)
 
   /* Link in the semi-connected socket (SYN received, ACK will be sent)
    */
-  sock->listen_queue[i]  = clone;
+  sock->listen_queue[i] = clone;
   sock->syn_timestamp[i] = set_timeout (0);
 
   /* Copy the TCB (except Tx-buffer) to clone
    */
-  memcpy (clone, orig, sizeof(*clone) - sizeof(clone->data));
-  clone->safetytcp = SAFETYTCP;
+  memcpy (clone, orig, sizeof(tcp_Socket) - sizeof(clone->tcp.data));
+  clone->tcp.safetytcp = SAFETYTCP;
 
   /* Increase the TCP window (to 16kB)
    */
-  sock_setbuf ((sock_type*)clone, calloc(DEFAULT_RCV_WIN,1), DEFAULT_RCV_WIN);
+  sock_setbuf (clone, calloc(DEFAULT_RCV_WIN,1), DEFAULT_RCV_WIN);
 
   /* Undo what tcp_handler() and tcp_listen_state() did to
    * this listening socket.
@@ -388,9 +390,9 @@ int _sock_append (tcp_Socket **tcp)
   orig->last_seqnum[0] = orig->last_seqnum[1] = 0;
 #endif
 
-  clone->next  = _tcp_allsocs;
-  _tcp_allsocs = clone;         /* prepend clone to TCB-list */
-  *tcp = clone;                 /* clone is now the new TCB */
+  clone->tcp.next = _tcp_allsocs;
+  _tcp_allsocs = &clone->tcp;   /* prepend clone to TCB-list */
+  *tcp = _tcp_allsocs;          /* clone is now the new TCB */
   return (0);
 }
 

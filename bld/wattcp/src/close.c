@@ -68,12 +68,12 @@ static int close_stream (int s)
     listen_abort = 1;
     for (i = 0; i < socket->backlog && i < SOMAXCONN; i++)
     {
-      sock_type *tcb = (sock_type*) socket->listen_queue[i];
-      if (tcb)
+      sock_type *tcb_sk = socket->listen_queue[i];
+      if (tcb_sk != NULL)
       {
-        tcb->tcp.rdatalen = 0;   /* flush Rx data */
-        sock_abort (tcb);
-        free (tcb);
+        tcb_sk->tcp.rdatalen = 0;   /* flush Rx data */
+        sock_abort (tcb_sk);
+        free (tcb_sk);
         socket->listen_queue[i] = NULL;
       }
     }

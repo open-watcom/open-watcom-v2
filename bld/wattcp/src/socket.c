@@ -287,36 +287,32 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
         goto not_inuse;
     }
 
+    sk = sock->proto_sock;
+    if (sk != NULL) {
+        switch (sock->so_type) {
+        case SOCK_STREAM:
+        case SOCK_DGRAM:
+            reuse_localport (sk->u.myport); /* clear 'lport_inuse' bit now */
+            sock_abort (sk);
+            free_rcv_buf (sk);
+            break;
+        case SOCK_RAW:
+            sk->u.ip_type = 0;
+            sk->raw.next = NULL;
+            break;
+        }
+        FREE_SK (sk);
+    }
+
     switch (sock->so_type) {
     case SOCK_STREAM:
-        sk = sock->proto_sock;
-        if (sk) {
-            reuse_localport (sk->tcp.myport); /* clear 'lport_inuse' bit now */
-            sock_abort (sk);
-            free_rcv_buf (sk);
-        }
-        FREE_SK (sk);
         unset_tcp_syn_hook (sock);
         break;
-
     case SOCK_DGRAM:
-        sk = sock->proto_sock;
-        if (sk) {
-            reuse_localport (sk->udp.myport);
-            sock_abort (sk);
-            free_rcv_buf (sk);
-        }
-        FREE_SK (sk);
         break;
-
     case SOCK_RAW:
-        sk = sock->proto_sock;
-        sk->raw.ip_type = 0;
-        sk->raw.next = NULL;
-        FREE_SK (sk);
         unset_raw_ip_hook (sock);
         break;
-
     default:
         SOCK_DEBUGF ((NULL, "\n  _sock_del_fd(%d): unknown type %d",
                        s, sock->so_type));

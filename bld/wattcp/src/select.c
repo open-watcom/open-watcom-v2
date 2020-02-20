@@ -301,17 +301,17 @@ static __inline int listen_queued (Socket *socket)
 
   for (i = 0; i < socket->backlog && i < DIM(socket->listen_queue); i++)
   {
-    tcp_Socket *tcb = socket->listen_queue[i];
+    sock_type *tcb_sk = socket->listen_queue[i];
 
-    if (!tcb)
+    if (tcb_sk == NULL)
        continue;
 
     /* Socket has reached Established state or receive data above
      * low water mark. This means, socket may have reached Closed,
      * but this still counts as a readable event.
      */
-    if (tcb->state == tcp_StateESTAB ||
-        sock_rbused((sock_type*)tcb) > socket->recv_lowat)
+    if (tcb_sk->tcp.state == tcp_StateESTAB ||
+        sock_rbused(tcb_sk) > socket->recv_lowat)
        return (1);
   }
   return (0);

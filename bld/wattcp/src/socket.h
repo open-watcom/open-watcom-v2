@@ -110,7 +110,7 @@ typedef struct Socket {
         /* listen-queue for incoming tcp connections
          */
         int                 backlog;
-        tcp_Socket         *listen_queue [SOMAXCONN];
+        sock_type          *listen_queue[SOMAXCONN];
         DWORD               syn_timestamp[SOMAXCONN]; /* got SYN at [msec] */
 
         /* low-water marks for send add receive
