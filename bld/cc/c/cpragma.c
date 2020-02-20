@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -908,7 +908,7 @@ static bool warnLevelValidate( unsigned level )
 
     ok = true;
     if( level > WLEVEL_MAX ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+        CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
         ok = false;
     }
     return( ok );
@@ -949,14 +949,14 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index < 0 ) {
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
@@ -990,14 +990,14 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index < 0 ) {
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
@@ -1049,7 +1049,7 @@ static bool pragWarning( void )
                 }
             }
         } else {
-            CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+            CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
             NextToken();
         }
     }

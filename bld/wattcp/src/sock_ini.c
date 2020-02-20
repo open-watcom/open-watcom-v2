@@ -23,6 +23,7 @@
 
 #include "copyrigh.h"
 #include "wattcp.h"
+#include "wattcpd.h"
 #include "strings.h"
 #include "language.h"
 #include "crit.h"
@@ -92,7 +93,7 @@ int _watt_no_config = 0;    /* run with no config file (embedded/diskless) */
 
 int surviverarp = 0;
 
-void (*_watt_post_hook) (void);
+void (*_watt_post_hook) (void) = NULL;
 
 int   _watt_is_init     = 0;
 int   _watt_fatal_error = 0;
@@ -161,7 +162,7 @@ static void (*old_sigsegv)(int);
 /*
  * Note: Watcom's extension to SIGFPE is undocumented
  */
-void WattExcHandler (int sig, int code)
+static void WattExcHandler (int sig, int code)
 {
 #if defined(__WATCOMC__)
   if (sig == SIGFPE && code == FPE_IOVERFLOW)
@@ -207,7 +208,7 @@ void WattExcHandler (int sig, int code)
 #endif  /* USE_EXCHANDLER && (__BORLANDC__ || __WATCOMC__) */
 
 
-#if defined (__WATCOM386__)
+#if defined (WATCOM386)
 static void CheckStackLimit (void)
 {
   if (stackavail() < NEEDED_STK)
@@ -222,7 +223,7 @@ static void CheckStackLimit (void)
 #endif
 
 
-#if defined (__BORLAND386__)  /* using WDOSX/PowerPak */
+#if defined (BORLAND386)  /* using WDOSX/PowerPak */
 static void CheckStackLimit (void)
 {
   UNFINISHED();  /* to-do !! */
@@ -471,7 +472,7 @@ int sock_init (void)
    * but djgpp's C-lib automatically fails critical I/O faults, so
    * it's not needed. Not implemented for bcc32.
    */
-#if !defined(__DJGPP__) && !defined(__BORLAND386__)
+#if !defined(__DJGPP__) && !defined(BORLAND386)
   int24_init();
 #endif
 
@@ -640,18 +641,3 @@ void sock_exit (void)
        set_cbreak (old_brk);
   }
 }
-
-/*
- * Make sure user links the correct 32-bit C-libs for Watcom
- */
-#if defined(__WATCOM386__)
-  #if defined(__SW_3R)
-    #pragma library ("clib3r.lib");
-    #pragma library ("math387r.lib");
-
-  #else /* __SW_3S */
-    #pragma library ("clib3s.lib");
-    #pragma library ("math387s.lib");
-  #endif
-#endif
-

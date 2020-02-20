@@ -75,9 +75,11 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
            SOCK_ERR (EBADF);
            return (-1);
          }
-         if (socket->so_state & SS_PRIV)  /* must be SOCK_DGRAM */
-              len = sock_recv_used (socket->udp_sock);
-         else len = sock_rbused ((sock_type*)socket->tcp_sock);
+         if (socket->so_type == SOCK_DGRAM && (socket->so_state & SS_PRIV)) {
+            len = sock_recv_used (socket->proto_sock);
+         } else {
+            len = sock_rbused (socket->proto_sock);
+         }
 
          SOCK_DEBUGF ((socket, " %d", len));
          if (len >= 0)
@@ -85,14 +87,11 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
          break;
 
     case FIONBIO:                 /* set nonblocking I/O on/off */
-         if (socket->so_type != SOCK_STREAM)
-         {
-           SOCK_ERR (EBADF);
-           return (-1);
+         if (*argp) {
+             socket->so_state |=  SS_NBIO;
+         } else {
+             socket->so_state &= ~SS_NBIO;
          }
-         if (*argp)
-              socket->so_state |=  SS_NBIO;
-         else socket->so_state &= ~SS_NBIO;
          SOCK_DEBUGF ((socket, " %d", (socket->so_state & SS_NBIO) ? 1 : 0));
          break;
 

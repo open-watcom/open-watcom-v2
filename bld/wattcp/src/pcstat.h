@@ -208,7 +208,7 @@ struct pppoestat {
  * igps_snd_reports     - sent membership reports
  */
 
-extern int sock_stats (tcp_Socket *s, WORD *days, WORD *inactive,
+extern int sock_stats (const sock_type *s, WORD *days, WORD *inactive,
                        WORD *cwindow, WORD *avg,  WORD *sd);
 
 extern void print_mac_stats (void);

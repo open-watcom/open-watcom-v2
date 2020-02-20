@@ -72,7 +72,7 @@ int loopback_enable = 1;
 int (*loopback_handler) (in_Header*) = NULL;
 
 static int icmp_loopback (ICMP_PKT   *icmp, unsigned icmp_len);
-static int udp_loopback  (udp_Header *udp,  unsigned udp_len);
+static int udp_loopback  (udp_Header *udp_hdr, unsigned udp_len);
 
 /*
  * We have been called with an ip-packet located on stack in
@@ -115,8 +115,8 @@ int loopback_device (in_Header *ip)
   }
   else if (ip->proto == UDP_PROTO)
   {
-    udp_Header *udp = (udp_Header*) ((BYTE*)ip + ip_hlen);
-    int         len = udp_loopback (udp, ip_len-ip_hlen);
+    udp_Header *udp_hdr = (udp_Header*) ((BYTE*)ip + ip_hlen);
+    int         len = udp_loopback (udp_hdr, ip_len-ip_hlen);
 
     if (len > 0)
        return (ip_hlen+len);
@@ -148,13 +148,13 @@ static int icmp_loopback (ICMP_PKT *icmp, unsigned icmp_len)
   return (0);
 }
 
-static int udp_loopback (udp_Header *udp, unsigned udp_len)
+static int udp_loopback (udp_Header *udp_hdr, unsigned udp_len)
 {
-  if (intel16(udp->dstPort) == IPPORT_ECHO)
+  if (intel16(udp_hdr->dstPort) == IPPORT_ECHO)
   {
     /* !!to-do */
   }
-  else if (intel16(udp->dstPort) == IPPORT_DISCARD)
+  else if (intel16(udp_hdr->dstPort) == IPPORT_DISCARD)
   {
     /* !!to-do */
   }
@@ -171,10 +171,10 @@ static int udp_loopback (udp_Header *udp, unsigned udp_len)
  *  static int pmap_loopback (in_Header *ip)
  *  {
  *    WORD        hlen = in_GetHdrLen (ip);
- *    udp_Header *udp  = (udp_Header*) ((BYTE*)ip + hlen);
+ *    udp_Header *udp_hdr = (udp_Header*) ((BYTE*)ip + hlen);
  *
- *    if (ip->proto == UDP_PROTO && intel16(udp->dstPort) == 111)
- *       return do_portmapper (udp); (return length of IP reply packet)
+ *    if (ip->proto == UDP_PROTO && intel16(udp_hdr->dstPort) == 111)
+ *       return do_portmapper (udp_hdr); (return length of IP reply packet)
  *
  *    if (old_loopback)
  *       return (*old_loopback) (ip);

@@ -56,7 +56,7 @@ int _dorarp (void)
 
   outs (_LANG("Configuring through RARP..."));
 
-  while (1)
+  for ( ;; )
   {
     DWORD sendtimeout;
 

@@ -122,14 +122,14 @@ int isaddr_dotless (const char *str, DWORD *ip)
   return (1);
 }
 
-void psocket (const tcp_Socket *s)
+void psocket (const sock_type *s)
 {
   char buffer[20];
 
   (*_outch) ('[');
-  outs (_inet_ntoa(buffer, s->hisaddr));
+  outs (_inet_ntoa(buffer, s->u.hisaddr));
   (*_outch) (':');
-  itoa (s->hisport,buffer,10);
+  itoa (s->u.hisport, buffer, 10);
   outs (buffer);
   (*_outch) (']');
 }

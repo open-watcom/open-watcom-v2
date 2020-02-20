@@ -89,7 +89,7 @@ static int receive (const char *func, int s, void *buf, int len, int flags,
     return (-1);
   }
 
-  /* If application installs the same signal handlers we do, we must 
+  /* If application installs the same signal handlers we do, we must
    * exit cracefully from below loops.
    */
   if (_sock_sig_setup() < 0)
@@ -110,7 +110,7 @@ static int receive (const char *func, int s, void *buf, int len, int flags,
          ret = udp_receive (socket, buf, len, flags, from, fromlen);
          SOCK_DEBUGF ((socket, ", len=%d", ret));
          break;
-               
+
     case SOCK_RAW:
          ret = raw_receive (socket, buf, len, flags, from, fromlen);
          SOCK_DEBUGF ((socket, ", len=%d", ret));
@@ -193,19 +193,19 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
   int        ret   = 0;
   int        fin   = 0;    /* got FIN from peer */
   DWORD      timer = 0UL;
-  sock_type *sk    = (sock_type*) socket->tcp_sock;
+  sock_type *sk    = socket->proto_sock;
 
   if (!from && !socket->local_addr)
   {
     SOCK_DEBUGF ((socket, ", no local_addr"));
     SOCK_ERR (ENOTCONN);
     return (-1);
-  }   
+  }
 
   if (socket->timeout && sock_inactive)
      timer = set_timeout (1000 * socket->timeout);
 
-  while (1)
+  for ( ;; )
   {
     int ok = (tcp_tick(sk) != 0);
 
@@ -287,7 +287,7 @@ read_it:
     if (fromlen)
        *fromlen = sizeof (*from);
   }
-  else if (ret < 0)    
+  else if (ret < 0)
   {
     if (fin)     /* A FIN and -1 from sock_xread() maps to 0 */
        ret = 0;
@@ -306,7 +306,7 @@ read_it:
  */
 static int udp_receive (Socket *socket, void *buf, int len, int flags,
                         struct sockaddr *from, int *fromlen)
-{ 
+{
   int   ret   = 0;
   DWORD timer = 0UL;
 
@@ -329,9 +329,9 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
   }
 #endif
 
-  while (1)
+  for ( ;; )
   {
-    sock_type *sk = (sock_type*) socket->udp_sock;
+    sock_type *sk = socket->proto_sock;
 
     SOCK_YIELD();
 
@@ -352,10 +352,9 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
     if (socket->so_state & SS_PRIV)
     {
       struct in_addr peer;
-      udp_Socket *udp  = socket->udp_sock;
-      WORD        port = ntohs (socket->local_addr->sin_port);
+      WORD           port = ntohs (socket->local_addr->sin_port);
 
-      ret = sock_recv_from (udp, &peer.s_addr, &port, buf, len,
+      ret = sock_recv_from (socket->proto_sock, &peer.s_addr, &port, buf, len,
                             (flags & MSG_PEEK) ? 1 : 0);
 
       if (ret != 0 && peer.s_addr)
@@ -406,8 +405,8 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
     struct in_addr peer;
     WORD   port;
 
-    port = htons (socket->udp_sock->hisport);
-    peer.s_addr = htonl (socket->udp_sock->hisaddr);
+    port = htons (socket->proto_sock->udp.hisport);
+    peer.s_addr = htonl (socket->proto_sock->udp.hisaddr);
 
     udp_raw_fill_from (from, fromlen, &peer, port);
 
@@ -431,7 +430,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
 static int raw_receive (Socket *socket, void *buf, int len, int flags,
                         struct sockaddr *from, int *fromlen)
 {
-  raw_Socket  *raw = socket->raw_sock;
+  raw_Socket  *raw = &socket->proto_sock->raw;
   DWORD        timer;
   static DWORD loop;
 
@@ -446,7 +445,7 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
   else timer = 0;
   loop = 1;
 
-  while (1)
+  for ( ;; )
   {
     struct in_addr peer;
     struct ip     *ip;

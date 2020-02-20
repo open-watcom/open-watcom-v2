@@ -169,17 +169,17 @@ static const char *tftp_strerror (int code)
 /*
  * Watch out for "ICMP port unreachable".
  */
-static void udp_callback (udp_Socket *s, int icmp_type)
+static int udp_callback (sock_type *s, int icmp_type)
 {
-  if (s == (udp_Socket*)sock && s->ip_type == UDP_PROTO &&
-     icmp_type == ICMP_UNREACH)
+  if (s == sock && s->u.ip_type == UDP_PROTO && icmp_type == ICMP_UNREACH)
   {
     /* In lack of a better way, pretend we got a FIN.
      * This causes sock_wait_input() below to break it's loop.
      */
-    s->locflags |= LF_GOT_FIN; 
-    s->err_msg = icmp_type_str [ICMP_UNREACH];
+    s->udp.locflags |= LF_GOT_FIN;
+    s->udp.err_msg = icmp_type_str [ICMP_UNREACH];
   }
+  return (1);
 }
 
 /*
@@ -188,14 +188,14 @@ static void udp_callback (udp_Socket *s, int icmp_type)
 static int recv_packet (int block)
 {
   int len, status = 0;
- 
+
   /* Use a callback since first block sent might cause a "ICMP
    * port unreachable" to be sent back. Note that the normal mechanism
    * of detecting ICMP errors (through _udp_cancel) doesn't work since
    * we did set 'sock->udp.hisaddr = 0'.
    */
   if (block == 1)
-       sock->udp.sol_callb = (sol_upcall) udp_callback;
+       sock->udp.sol_callb = udp_callback;
   else sock->udp.sol_callb = NULL;
 
   /* Read packet with timeout
@@ -259,7 +259,7 @@ sock_err:
   }
   /* most likely "Port unreachable"
    */
-  TRACE (("tftp: %s\n", sockerr(&sock->tcp)));
+  TRACE (("tftp: %s\n", sockerr(sock)));
   tftp_errno = ERR_UNKNOWN;
   return (-1);
 }
@@ -494,7 +494,7 @@ int tftp_boot_load (void)
   if (!tftp_open (tftp_server, tftp_boot_fname))
      return (0);
 
-  while (1)
+  for ( ;; )
   {
     char *buf;
     int   size = tftp_get (&buf);
@@ -540,7 +540,7 @@ static void tftp_cfg_hook (const char *name, const char *value)
 
 /*
  * Initialize config-hook for TFTP protocol.
- */ 
+ */
 int tftp_init (void)
 {
   prev_hook = usr_init;
@@ -551,7 +551,7 @@ int tftp_init (void)
 /*
  * A small test program, for djgpp/Watcom only
  */
-#if defined(TEST_PROG) 
+#if defined(TEST_PROG)
 
 #include "getopt.h"
 #include "udp_nds.h"
@@ -635,7 +635,7 @@ int main (int argc, char **argv)
        case 'a':
             a_flag = 1;
             break;
-       case 'n':        
+       case 'n':
             n_flag = 1;
             break;
        case 'h':

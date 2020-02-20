@@ -89,7 +89,7 @@ int _dobootp (void)
 
   memcpy (&bootp_out.bp_chaddr, &_eth_addr, sizeof(eth_address));
 
-  while (1)
+  for ( ;; )
   {
     DWORD sendtimeout;
 

@@ -15,8 +15,8 @@ extern int sock_tbleft  (const sock_type *s);
 extern int sock_setbuf  (sock_type *s, BYTE *buf, unsigned len);
 extern int sock_preread (const sock_type *s, BYTE *buf, unsigned len);
 
-extern const char  *sockerr   (const tcp_Socket *s);
-extern const char  *sockstate (const tcp_Socket *s);
+extern const char  *sockerr   (const sock_type *s);
+extern const char  *sockstate (const sock_type *s);
 extern int         _chk_socket(const sock_type *s);
 
 #endif

@@ -47,10 +47,16 @@
 #undef  USE_PPPOE       /* PPP-over-Ethernet encapsulation (!experimental) */
 
 /*
+ * This handle 16-bit real-mode
+ */
+#if (DOSX == 0)
+
+/*
  * Building small-model applications doesn't leave
  * much room for the fancy stuff :-(
  */
 #if !defined(OPT_DEFINED) && defined(__SMALL__)
+//  #define USE_DEBUG
   #define USE_UDP_ONLY     /* test udp-only (cookie,ping) */
   #define OPT_DEFINED
 #endif
@@ -98,6 +104,11 @@
 #endif
 
 /*
+ * This handle 32-bit protected-mode
+ */
+#else /* !(DOSX == 0) */
+
+/*
  * Else, define options to everything except Multicast
  * RARP, non-BSD Fortify, Embedded, new-timers and UDP-only.
  */
@@ -125,6 +136,8 @@
   #define USE_NEW_TIMERS
   #define USE_FSEXT
 #endif
+
+#endif /* DOSX == 0 */
 
 /*
  * Test some illegal combinations.

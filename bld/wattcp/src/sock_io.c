@@ -37,16 +37,16 @@ int sock_puts (sock_type *s, const BYTE *data)
   int len;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
   len = strlen ((const char*)data);
 
-  if (s->tcp.sockmode & TCP_MODE_ASCII) /* udp/tcp ASCII mode */
+  if (ISON_SOCKMODE(s->u, TCP_MODE_ASCII)) /* udp/tcp ASCII mode */
   {
-    if (s->tcp.ip_type == TCP_PROTO)
-        s->tcp.sockmode |= TCP_LOCAL;
+    if (s->u.ip_type == TCP_PROTO)
+        SETON_SOCKMODE(s->tcp, TCP_MODE_LOCAL);
 
 #if !defined(USE_UDP_ONLY)
     sock_noflush (s);
@@ -84,13 +84,13 @@ int sock_gets (sock_type *s, BYTE *data, int n)
   BYTE *src_p, *nl_p, *cr_p;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
   /* Access the buffer pointer and length.
    */
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
   {
     src_p = s->udp.rdata;
     np    = &s->udp.rdatalen;
@@ -111,9 +111,9 @@ int sock_gets (sock_type *s, BYTE *data, int n)
   }
 #endif
 
-  if (s->tcp.sockmode & TCP_SAWCR)
+  if (ISON_SOCKMODE(s->tcp, TCP_MODE_SAWCR))
   {
-    s->tcp.sockmode &= ~TCP_SAWCR;
+    SETOFF_SOCKMODE(s->tcp, TCP_MODE_SAWCR);
     if (*np && (*src_p == '\n' || *src_p == '\0'))
        movmem (src_p + 1, src_p, frag + (*np)--);
   }
@@ -181,7 +181,7 @@ int sock_gets (sock_type *s, BYTE *data, int n)
     /* If \r at end of data, might get a \0 or \n in next packet
      */
     if (cr_p && (*np == n))
-       s->tcp.sockmode |= TCP_SAWCR;
+       SETON_SOCKMODE(s->tcp, TCP_MODE_SAWCR);
 
     /* ... and it could have been \r\0 or \r\n.
      */
@@ -198,9 +198,9 @@ int sock_gets (sock_type *s, BYTE *data, int n)
   /* update window if less than MSS/2 free in receive buffer
    */
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO       &&
-      s->tcp.state   != tcp_StateCLOSED &&
-      (s->tcp.maxrdatalen - s->tcp.rdatalen) < s->tcp.max_seg/2)
+  if (s->u.ip_type == TCP_PROTO &&
+      s->tcp.state != tcp_StateCLOSED &&
+      (s->tcp.maxrdatalen - s->tcp.rdatalen) < (s->tcp.max_seg / 2))
     TCP_SENDSOON (&s->tcp);
 #endif
 
@@ -226,17 +226,17 @@ WORD sock_dataready (sock_type *s)
   int  len = s->tcp.rdatalen;
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return (0);   /* not supported yet */
 #endif
 
-  if (len && (s->tcp.sockmode & TCP_MODE_ASCII))
+  if (len && ISON_SOCKMODE(s->tcp, TCP_MODE_ASCII))
   {
     p = (char*)s->tcp.rdata;
 
-    if (s->tcp.sockmode & TCP_SAWCR)  /* !! S. Lawson */
+    if (ISON_SOCKMODE(s->tcp, TCP_MODE_SAWCR))  /* !! S. Lawson */
     {
-      s->tcp.sockmode &= ~TCP_SAWCR;
+      SETOFF_SOCKMODE(s->tcp, TCP_MODE_SAWCR);
       if (*p == '\n' || *p == '\0')
       {
         s->tcp.rdatalen = --len;
@@ -249,7 +249,7 @@ WORD sock_dataready (sock_type *s)
     if (len == s->tcp.maxrdatalen)
        return (len);
 
-    if (s->tcp.ip_type == TCP_PROTO)         /* GV 99.12.02 */
+    if (s->u.ip_type == TCP_PROTO)         /* GV 99.12.02 */
     {
       if (s->tcp.state == tcp_StateLASTACK)  /* EE 99.07.02 */
          return (len);

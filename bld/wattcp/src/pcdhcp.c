@@ -387,7 +387,7 @@ static int DHCP_offer (struct dhcp *in)
 
              if (!srv_added)        /* only use first log-server */
                 break;
-             
+
              ip = intel (*(DWORD*)(opt+2)); /* select 1st host */
              TRACE ("LOG:      %s\r\n", INET_NTOA(ip));
 
@@ -483,15 +483,23 @@ static int DHCP_offer (struct dhcp *in)
 #if defined(USE_TFTP)
       case DHCP_TFTP_SERVER:
            {
+#if defined(USE_DEBUG)
              char *p = tftp_set_server ((const char*)(opt+2), opt[1]);
              TRACE ("TFTP-serv: `%s'\r\n", p);
+#else
+             tftp_set_server ((const char*)(opt+2), opt[1]);
+#endif
            }
            break;
 
       case DHCP_BOOT_FILENAME:
            {
+#if defined(USE_DEBUG)
              char *p = tftp_set_boot_fname ((const char*)(opt+2), opt[1]);
              TRACE ("BOOT-file: `%s'\r\n", p);
+#else
+             tftp_set_boot_fname ((const char*)(opt+2), opt[1]);
+#endif
            }
            break;
 #endif
@@ -618,7 +626,7 @@ int _dodhcp (void)
     sendtimeout = set_timeout (dhcp_timeout * 1000);
 
     while (!chk_timeout(sendtimeout))
-    { 
+    {
       sock_tick (sock, &status);
       if (!sock_dataready(sock))
          continue;
@@ -629,7 +637,7 @@ int _dodhcp (void)
           dhcp_in.dh_op  != BOOTREPLY ||      /* not a BOOT reply */
           dhcp_in.dh_xid != dhcp_out.dh_xid)  /* not our exchange ID */
          continue;
-     
+
       gateway = dhcp_in.dh_giaddr;
 
       if (!got_offer && DHCP_offer(&dhcp_in))
@@ -700,7 +708,7 @@ sock_err:
  * dhcp_renew() - enter renewing or rebinding state
  * !! to-do: make this a non-blocking state-machine.
  */
-static int dhcp_renew (void)  
+static int dhcp_renew (void)
 {
   struct dhcp dhcp_out;
   struct dhcp dhcp_in;
@@ -731,7 +739,7 @@ static int dhcp_renew (void)
           dhcp_in.dh_op  != BOOTREPLY ||      /* not a BOOT reply */
           dhcp_in.dh_xid != dhcp_out.dh_xid)  /* not our exchange ID */
          continue;
-     
+
       gateway = dhcp_in.dh_giaddr;
       if (DHCP_ack(&dhcp_in))
       {
@@ -814,7 +822,7 @@ void _dodhcp_inform (void)
 
   if (!do_inform || !dhcp_server)
      return;
- 
+
   udp_open (&socket, IPPORT_BOOTPC, dhcp_server, IPPORT_BOOTPS, NULL);
   sock       = (sock_type*) &socket;
   start_time = time (NULL);
@@ -863,7 +871,7 @@ static void dhcp_set_timers (void)
 /*
  * dhcp_daemon() - called from tcp_tick()
  */
-static void dhcp_daemon (void) 
+static void dhcp_daemon (void)
 {
   BOOL t1, t2;
 

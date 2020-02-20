@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,6 +118,8 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
         }
         if( use_unicode ) {
             size = ConvToUnicode( size, item->Value.String, NULL );
+        } else {
+            size = ConvToMultiByte( size, item->Value.String, NULL );
         }
     }
     return( size );

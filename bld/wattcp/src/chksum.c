@@ -57,8 +57,8 @@ WORD inchksum (const void *ptr, int len)
 int do_checksum (BYTE *buf, int protocol, int len)
 {
   struct in_Header   *ip = (struct in_Header*) buf;
-  struct tcp_Header  *tcp;
-  struct udp_Header  *udp;
+  struct tcp_Header  *tcp_hdr;
+  struct udp_Header  *udp_hdr;
   struct IGMP_packet *igmp;
   union  icmp_pkt    *icmp;
   int    ip_hlen, sum = 0;
@@ -68,21 +68,21 @@ int do_checksum (BYTE *buf, int protocol, int len)
   switch (protocol)
   {
     case TCP_PROTO:
-         tcp = (struct tcp_Header*) (buf + ip_hlen);
-         tcp->checksum = 0;
+         tcp_hdr = (struct tcp_Header*) (buf + ip_hlen);
+         tcp_hdr->checksum = 0;
          sum = checksum (&ip->source, 8);
          sum += intel16 (TCP_PROTO + len);
-         sum += checksum (tcp, len);
-         tcp->checksum = CKSUM_CARRY (sum);
+         sum += checksum (tcp_hdr, len);
+         tcp_hdr->checksum = CKSUM_CARRY (sum);
          break;
 
     case UDP_PROTO:
-         udp = (struct udp_Header*) (buf + ip_hlen);
-         udp->checksum = 0;
+         udp_hdr = (struct udp_Header*) (buf + ip_hlen);
+         udp_hdr->checksum = 0;
          sum = checksum (&ip->source, 8);
          sum += intel16 (UDP_PROTO + len);
-         sum += checksum (udp, len);
-         udp->checksum = CKSUM_CARRY (sum);
+         sum += checksum (udp_hdr, len);
+         udp_hdr->checksum = CKSUM_CARRY (sum);
          break;
 
     case ICMP_PROTO:

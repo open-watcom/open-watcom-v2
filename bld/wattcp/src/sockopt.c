@@ -44,10 +44,9 @@ static __inline void do_error (void)
   char *err = strerror_s (errno_s);
   char *par = strchr (err, '(');
 
-  if (!par)
+  if (!par) {
      _sock_debugf (NULL, " errno %d", errno_s);
-  else
-  {
+  } else {
     char *eol = strrchr (par, '\n');
     if (eol)
        *eol = '\0';
@@ -63,10 +62,8 @@ int setsockopt (int s, int level, int option, const void *optval, int optlen)
 
   SOCK_DEBUGF ((socket, "\nsetsockopt:%d, %s", s, sockopt_name(option,level)));
 
-  if (!socket)
-  {
-    if (_sock_dos_fd(s))
-    {
+  if (socket == NULL) {
+    if (_sock_dos_fd(s)) {
       SOCK_DEBUGF ((NULL, ", ENOTSOCK"));
       SOCK_ERR (ENOTSOCK);
       return (-1);
@@ -78,21 +75,16 @@ int setsockopt (int s, int level, int option, const void *optval, int optlen)
 
   VERIFY_RW (optval, optlen);
 
-  if ((WORD)level == SOL_SOCKET)
+  if (level == SOL_SOCKET) {
      rc = set_sol_opt (socket, option, optval, optlen);
-
-  else if ((level == socket->so_proto) && (level == IPPROTO_TCP))
-     rc = set_tcp_opt (socket->tcp_sock, option, optval, optlen);
-
-  else if ((level == socket->so_proto) && (level == IPPROTO_UDP))
-     rc = set_udp_opt (socket->udp_sock, option, optval, optlen);
-
-  else if (((level == socket->so_proto) && (level == IPPROTO_IP)) ||
-           ((level == socket->so_proto) && (level == IPPROTO_ICMP)))
+  } else if ((level == socket->so_proto) && (level == IPPROTO_TCP)) {
+     rc = set_tcp_opt (&socket->proto_sock->tcp, option, optval, optlen);
+  } else if ((level == socket->so_proto) && (level == IPPROTO_UDP)) {
+     rc = set_udp_opt (&socket->proto_sock->udp, option, optval, optlen);
+  } else if (((level == socket->so_proto) && (level == IPPROTO_IP)) ||
+           ((level == socket->so_proto) && (level == IPPROTO_ICMP))) {
      rc = set_raw_opt (socket, option, optval, optlen);
-
-  else
-  {
+  } else {
     SOCK_ERR (ENOPROTOOPT);
     rc = -1;
   }
@@ -112,10 +104,8 @@ int getsockopt (int s, int level, int option, void *optval, int *optlen)
 
   SOCK_DEBUGF ((socket, "\ngetsockopt:%d, %s", s, sockopt_name(option,level)));
 
-  if (!socket)
-  {
-    if (_sock_dos_fd(s))
-    {
+  if (socket == NULL) {
+    if (_sock_dos_fd(s)) {
       SOCK_DEBUGF ((NULL, ", ENOTSOCK"));
       SOCK_ERR (ENOTSOCK);
       return (-1);
@@ -128,21 +118,16 @@ int getsockopt (int s, int level, int option, void *optval, int *optlen)
   VERIFY_RW (optval, 0);
   VERIFY_RW (optlen, sizeof(u_long));
 
-  if ((WORD)level == SOL_SOCKET)
+  if (level == SOL_SOCKET) {
      rc = get_sol_opt (socket, option, optval, optlen);
-
-  else if (level == socket->so_proto == IPPROTO_TCP)
-     rc = get_tcp_opt (socket->tcp_sock, option, optval, optlen);
-
-  else if (level == socket->so_proto == IPPROTO_UDP)
-     rc = get_udp_opt (socket->udp_sock, option, optval, optlen);
-
-  else if ((level == socket->so_proto == IPPROTO_IP) ||
-           (level == socket->so_proto == IPPROTO_ICMP))
+  } else if (level == socket->so_proto == IPPROTO_TCP) {
+     rc = get_tcp_opt (&socket->proto_sock->tcp, option, optval, optlen);
+  } else if (level == socket->so_proto == IPPROTO_UDP) {
+     rc = get_udp_opt (&socket->proto_sock->udp, option, optval, optlen);
+  } else if ((level == socket->so_proto == IPPROTO_IP) ||
+           (level == socket->so_proto == IPPROTO_ICMP)) {
      rc = get_raw_opt (socket, option, optval, optlen);
-
-  else
-  {
+  } else {
     SOCK_ERR (ENOPROTOOPT);
     rc = -1;
   }
@@ -156,44 +141,43 @@ int getsockopt (int s, int level, int option, void *optval, int *optlen)
 }
 
 
-static int set_sol_opt (Socket *s, int opt, const void *val, int len)
+static int set_sol_opt (Socket *socket, int opt, const void *val, int len)
 {
   struct timeval *tv   = (struct timeval*) val;
   int             on   = *(int*) val;
   unsigned        size = *(unsigned*) val;
 
-  switch (opt)
-  {
+  switch (opt) {
     case SO_DEBUG:
 #if defined(USE_DEBUG)
-         if (on)
-         {
-           s->so_options |= SO_DEBUG;
+         if (on) {
+           socket->so_options |= SO_DEBUG;
            _sock_dbug_on();
-         }
-         else
-         {
-           s->so_options &= ~SO_DEBUG;
+         } else {
+           socket->so_options &= ~SO_DEBUG;
            _sock_dbug_off();
          }
 #endif
          break;
 
     case SO_ACCEPTCONN:
-         if (on)
-              s->so_options |=  SO_ACCEPTCONN;
-         else s->so_options &= ~SO_ACCEPTCONN;
+         if (on) {
+             socket->so_options |=  SO_ACCEPTCONN;
+         } else {
+             socket->so_options &= ~SO_ACCEPTCONN;
+         }
          break;
 
     case SO_RCVTIMEO:
-         if (len != sizeof(*tv) || tv->tv_usec < 0)
-         {
+         if (len != sizeof(*tv) || tv->tv_usec < 0) {
            SOCK_ERR (EINVAL);
            return (-1);
          }
-         if (tv->tv_sec == 0)        /* i.e. use system default */
-              s->timeout = sock_delay;
-         else s->timeout = tv->tv_sec + tv->tv_usec/1000000UL;
+         if (tv->tv_sec == 0) {      /* i.e. use system default */
+             socket->timeout = sock_delay;
+         } else {
+             socket->timeout = tv->tv_sec + tv->tv_usec/1000000UL;
+         }
          break;
 
     case SO_SNDTIMEO:    /* Don't think we need this */
@@ -204,18 +188,18 @@ static int set_sol_opt (Socket *s, int opt, const void *val, int len)
      * multiple socks to the same port but with different ip-addr.
      */
     case SO_REUSEADDR:
-         if (s->tcp_sock && s->so_proto == IPPROTO_TCP)
-         {
-           reuse_localport (s->tcp_sock->myport);
-           return (0);
-         }
-         if (s->udp_sock && s->so_proto == IPPROTO_UDP)
-         {
-           reuse_localport (s->udp_sock->myport);
-           return (0);
-         }
-         SOCK_ERR (ENOPROTOOPT);
-         return (-1);
+        if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_TCP) {
+                reuse_localport (socket->proto_sock->tcp.myport);
+                return (0);
+            }
+            if (socket->so_proto == IPPROTO_UDP) {
+                reuse_localport (socket->proto_sock->udp.myport);
+                return (0);
+            }
+        }
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
 
     /*
      * SO_REUSEPORT enables duplicate address and port bindings
@@ -231,77 +215,70 @@ static int set_sol_opt (Socket *s, int opt, const void *val, int len)
          break;
 
     case SO_SNDLOWAT:
-         return set_tx_lowat (s, size);
+         return set_tx_lowat (socket, size);
 
     case SO_RCVLOWAT:
-         return set_rx_lowat (s, size);
+         return set_rx_lowat (socket, size);
 
     case SO_RCVBUF:
-         if (size == 0)
-         {
-           SOCK_ERR (EINVAL);
-           return (-1);
-         }
-         if (s->udp_sock && s->so_proto == IPPROTO_UDP)
-            return udp_rx_buf (s->udp_sock, size);
-
-         if (s->tcp_sock && s->so_proto == IPPROTO_TCP)
-            return tcp_rx_buf (s->tcp_sock, size);
-
-         if (s->raw_sock)
-            return raw_rx_buf (s->raw_sock, size);
-
-         SOCK_ERR (ENOPROTOOPT);
-         return (-1);
+        if (size == 0) {
+            SOCK_ERR (EINVAL);
+            return (-1);
+        }
+        if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_UDP) {
+                return udp_rx_buf (&socket->proto_sock->udp, size);
+            }
+            if (socket->so_proto == IPPROTO_TCP) {
+                return tcp_rx_buf (&socket->proto_sock->tcp, size);
+            }
+            return raw_rx_buf (&socket->proto_sock->raw, size);
+        }
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
 
     case SO_SNDBUF:
-         if (size == 0)
-         {
-           SOCK_ERR (EINVAL);
-           return (-1);
-         }
-         if (s->udp_sock && s->so_proto == IPPROTO_UDP)
-            return udp_tx_buf (s->udp_sock, size);
-
-         if (s->tcp_sock && s->so_proto == IPPROTO_TCP)
-            return tcp_tx_buf (s->tcp_sock, size);
-
-         if (s->raw_sock)
-            return raw_tx_buf (s->raw_sock, size);
-
-         SOCK_ERR (ENOPROTOOPT);
-         return (-1);
+        if (size == 0) {
+            SOCK_ERR (EINVAL);
+            return (-1);
+        }
+        if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_UDP) {
+                return udp_tx_buf (&socket->proto_sock->udp, size);
+            }
+            if (socket->so_proto == IPPROTO_TCP) {
+                return tcp_tx_buf (&socket->proto_sock->tcp, size);
+            }
+            return raw_tx_buf (&socket->proto_sock->raw, size);
+        }
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
 
     case SO_LINGER:
          {
            struct linger *linger = (struct linger*) val;
 
-           if (len < sizeof(*linger))
-           {
+           if (len < sizeof(*linger)) {
              SOCK_ERR (EINVAL);
              return (-1);
            }
 
-           if (s->so_type != SOCK_STREAM || !s->tcp_sock)
-           {
+           if (socket->so_type != SOCK_STREAM || !socket->proto_sock) {
              SOCK_ERR (ENOPROTOOPT);
              return (-1);
            }
 
-           if (linger->l_onoff == 0 && linger->l_linger == 0)
-           {
-             s->tcp_sock->locflags &= ~LF_LINGER;
-             s->linger_time = 0;
-           }
-           else if (linger->l_onoff && linger->l_linger > 0)
-           {
+           if (linger->l_onoff == 0 && linger->l_linger == 0) {
+             socket->proto_sock->tcp.locflags &= ~LF_LINGER;
+             socket->linger_time = 0;
+           } else if (linger->l_onoff && linger->l_linger > 0) {
              unsigned sec = TCP_LINGERTIME;
 
              if (linger->l_linger < 100 * TCP_LINGERTIME)
                 sec = linger->l_linger / 100;  /* in 10ms units */
 
-             s->linger_time = sec;
-             s->tcp_sock->locflags |= LF_LINGER;
+             socket->linger_time = sec;
+             socket->proto_sock->tcp.locflags |= LF_LINGER;
            }
          }
          break;
@@ -314,29 +291,29 @@ static int set_sol_opt (Socket *s, int opt, const void *val, int len)
 }
 
 
-static int get_sol_opt (Socket *s, int opt, void *val, int *len)
+static int get_sol_opt (Socket *socket, int opt, void *val, int *len)
 {
   struct timeval *tv;
   unsigned       *size = (unsigned*)val;
 
-  switch (opt)
-  {
+  switch (opt) {
     case SO_DEBUG:
     case SO_ACCEPTCONN:
-         *(int*)val = (s->so_options & opt);
+         *(int*)val = (socket->so_options & opt);
          *len = sizeof(int);
          break;
 
     case SO_OOBINLINE:
 #if 0
-         if (!s->tcp_sock || s->so_proto != IPPROTO_TCP)
-         {
+         if (!socket->proto_sock || socket->so_proto != IPPROTO_TCP) {
            SOCK_ERR (ENOPROTOOPT);
            return (-1);
          }
-         if (s->so_options & SO_OOBINLINE)
-              *(int*)val = urgent_data ((sock_type*)s->tcp_sock);
-         else *(int*)val = 0;
+         if (socket->so_options & SO_OOBINLINE) {
+             *(int*)val = urgent_data (socket->proto_sock);
+         } else {
+             *(int*)val = 0;
+         }
          break;
 #endif
 
@@ -349,66 +326,58 @@ static int get_sol_opt (Socket *s, int opt, void *val, int *len)
          break;
 
     case SO_SNDLOWAT:
-         return get_tx_lowat (s, size);
+         return get_tx_lowat (socket, size);
 
     case SO_RCVLOWAT:
-         return get_rx_lowat (s, size);
+         return get_rx_lowat (socket, size);
 
     case SO_RCVBUF:
-         if (s->udp_sock && s->so_proto == IPPROTO_UDP)
-         {
-           *(int*)val = sock_rbsize ((sock_type*)s->udp_sock);
-           return (0);
-         }
-         if (s->tcp_sock && s->so_proto == IPPROTO_TCP)
-         {
-           *(int*)val = sock_rbsize ((sock_type*)s->tcp_sock);
-           return (0);
-         }
-         if (s->raw_sock)
-         {
-           *(size_t*)val = sizeof (s->raw_sock->data);
-           return (0);
-         }
-         SOCK_ERR (ENOPROTOOPT);
-         return (-1);
+        if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_UDP) {
+                *(int*)val = sock_rbsize (socket->proto_sock);
+                return (0);
+            }
+            if (socket->so_proto == IPPROTO_TCP) {
+                *(int*)val = sock_rbsize (socket->proto_sock);
+                return (0);
+            }
+            *(size_t*)val = sizeof (socket->proto_sock->raw.data);
+            return (0);
+        }
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
 
     case SO_SNDBUF:
-         if (s->udp_sock && s->so_proto == IPPROTO_UDP)
-         {
-           *(unsigned*)val = 0;
-           return (0);
-         }
-         if (s->tcp_sock && s->so_proto == IPPROTO_TCP)
-         {
-           *(unsigned*)val = sock_tbsize ((sock_type*)s->tcp_sock);
-           return (0);
-         }
-         if (s->raw_sock)
-         {
-           *(size_t*)val = sizeof (s->raw_sock->data);
-           return (0);
-         }
-         SOCK_ERR (ENOPROTOOPT);
-         return (-1);
+        if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_UDP) {
+                *(unsigned*)val = 0;
+                return (0);
+            }
+            if (socket->so_proto == IPPROTO_TCP) {
+                *(unsigned*)val = sock_tbsize (socket->proto_sock);
+                return (0);
+            }
+            *(size_t*)val = sizeof (socket->proto_sock->raw.data);
+            return (0);
+        }
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
 
     case SO_LINGER:
          {
            struct linger *linger = (struct linger*) val;
 
-           if (!len || *len < sizeof(*linger))
-           {
+           if (!len || *len < sizeof(*linger)) {
              SOCK_ERR (EINVAL);
              return (-1);
            }
-           if (s->so_type != SOCK_STREAM || !s->tcp_sock)
-           {
+           if (socket->so_type != SOCK_STREAM || !socket->proto_sock) {
              SOCK_ERR (ENOPROTOOPT);
              return (-1);
            }
            *(size_t*)len    = sizeof(*linger);
-           linger->l_onoff  = (s->tcp_sock->locflags & LF_LINGER) ? 1 : 0;
-           linger->l_linger = 100 * s->linger_time;
+           linger->l_onoff  = (socket->proto_sock->tcp.locflags & LF_LINGER) ? 1 : 0;
+           linger->l_linger = 100 * socket->linger_time;
          }
          break;
 
@@ -416,33 +385,29 @@ static int get_sol_opt (Socket *s, int opt, void *val, int *len)
          break;
 
     case SO_RCVTIMEO:
-         if (*len < sizeof(*tv))
-         {
+         if (*len < sizeof(*tv)) {
            SOCK_ERR (EINVAL);
            return (-1);
          }
          tv = (struct timeval*)val;
-         if (s->timeout == 0)
-         {
+         if (socket->timeout == 0) {
            tv->tv_usec = LONG_MAX;
            tv->tv_sec  = LONG_MAX;
-         }
-         else
-         {
+         } else {
            tv->tv_usec = 0;
-           tv->tv_sec  = s->timeout;
+           tv->tv_sec  = socket->timeout;
          }
          break;
 
     case SO_ERROR:
-         *(int*)val    = s->so_error;
-         *(size_t*)len = sizeof(s->so_error);
-         s->so_error = 0;   /* !! should be do this */
+         *(int*)val    = socket->so_error;
+         *(size_t*)len = sizeof(socket->so_error);
+         socket->so_error = 0;   /* !! should be do this */
          break;
 
     case SO_TYPE:
-         *(int*)val    = s->so_type;
-         *(size_t*)len = sizeof(s->so_type);
+         *(int*)val    = socket->so_type;
+         *(size_t*)len = sizeof(socket->so_type);
          break;
 
     default:
@@ -461,25 +426,22 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len)
   BOOL on = *(BOOL*)val;
   long MSS;
 
-  switch (opt)
-  {
+  switch (opt) {
     case TCP_NODELAY:
-         if (on)     /* disable Nagle's algorithm */
-         {
-           sock_mode ((sock_type*)tcp, TCP_MODE_NONAGLE);
+         if (on) {
+           /* disable Nagle's algorithm */
+           SETON_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
            tcp->locflags |= LF_NODELAY;
-         }
-         else        /* turn on Nagle */
-         {
-           sock_mode ((sock_type*)tcp, TCP_MODE_NAGLE);
+         } else {
+           /* turn on Nagle */
+           SETOFF_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
            tcp->locflags &= ~LF_NODELAY;
          }
          break;
 
     case TCP_MAXSEG:
          MSS = *(long*)val;
-         if (MSS < 1 || MSS > MAX_WINDOW)
-         {
+         if (MSS < 1 || MSS > MAX_WINDOW) {
            SOCK_ERR (EINVAL);
            return (-1);
          }
@@ -487,15 +449,19 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len)
          break;
 
     case TCP_NOPUSH:
-         if (on)
-              tcp->locflags |=  LF_NOPUSH;
-         else tcp->locflags &= ~LF_NOPUSH;
+         if (on) {
+             tcp->locflags |=  LF_NOPUSH;
+         } else {
+             tcp->locflags &= ~LF_NOPUSH;
+         }
          break;
 
     case TCP_NOOPT:
-         if (on)
-              tcp->locflags |=  LF_NOOPT;
-         else tcp->locflags &= ~LF_NOOPT;
+         if (on) {
+             tcp->locflags |=  LF_NOOPT;
+         } else {
+             tcp->locflags &= ~LF_NOOPT;
+         }
          break;
 
     default:
@@ -508,12 +474,13 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len)
 
 static int get_tcp_opt (tcp_Socket *tcp, int opt, void *val, int *len)
 {
-  switch (opt)
-  {
+  switch (opt) {
     case TCP_NODELAY:
-         if (tcp->sockmode & TCP_MODE_NONAGLE)
-              *(int*)val = TCP_NODELAY;
-         else *(int*)val = 0;
+         if (ISON_SOCKMODE(*tcp, TCP_MODE_NONAGLE)) {
+             *(int*)val = TCP_NODELAY;
+         } else {
+             *(int*)val = 0;
+         }
          *(size_t*)len = sizeof(int);
          break;
 
@@ -566,7 +533,7 @@ static int get_udp_opt (udp_Socket *udp, int opt, void *val, int *len)
 /*
  * set/get IP/ICMP-layer (raw/multicast) options
  */
-static int set_raw_opt (Socket *s, int opt, const void *val, int len)
+static int set_raw_opt (Socket *socket, int opt, const void *val, int len)
 {
   BOOL on = *(BOOL*)val;
 #ifdef USE_MULTICAST
@@ -574,74 +541,69 @@ static int set_raw_opt (Socket *s, int opt, const void *val, int len)
   DWORD  ip;
 #endif
 
-  switch (opt)
-  {
+  switch (opt) {
     case IP_OPTIONS:
-         if (!s->ip_opt && (s->ip_opt = SOCK_CALLOC(sizeof(*s->ip_opt))) == NULL)
-         {
+         if (!socket->ip_opt && (socket->ip_opt = SOCK_CALLOC(sizeof(*socket->ip_opt))) == NULL) {
            SOCK_ERR (ENOMEM);
            return (-1);
          }
-         if (len == 0 && s->ip_opt)
-         {
-           free (s->ip_opt);
-           s->ip_opt     = NULL;
-           s->ip_opt_len = 0;
-         }
-         else
-         {
-           s->ip_opt_len = min (len, sizeof(*s->ip_opt));
-           memcpy (&s->ip_opt->ip_opts, val, s->ip_opt_len);
+         if (len == 0 && socket->ip_opt) {
+           free (socket->ip_opt);
+           socket->ip_opt     = NULL;
+           socket->ip_opt_len = 0;
+         } else {
+           socket->ip_opt_len = min (len, sizeof(*socket->ip_opt));
+           memcpy (&socket->ip_opt->ip_opts, val, socket->ip_opt_len);
          }
          break;
 
     case IP_HDRINCL:
-         if (on)
-              s->inp_flags |=  INP_HDRINCL;
-         else s->inp_flags &= ~INP_HDRINCL;
+         if (on) {
+             socket->inp_flags |=  INP_HDRINCL;
+         } else {
+             socket->inp_flags &= ~INP_HDRINCL;
+         }
          break;
 
     case IP_TOS:
-         s->ip_tos = *(int*)val;
-         if (s->tcp_sock)
-             s->tcp_sock->tos = s->ip_tos;
+         socket->ip_tos = *(int*)val;
+         if (socket->proto_sock)
+             socket->proto_sock->tcp.tos = socket->ip_tos;
          break;
 
     case IP_TTL:
-         s->ip_ttl = min (1, *(int*)val);
-         if (s->udp_sock)
-            s->udp_sock->ttl = s->ip_ttl;
-         else if (s->tcp_sock)
-            s->tcp_sock->ttl = s->ip_ttl;
+         socket->ip_ttl = min (1, *(int *)val);
+         if (socket->proto_sock) {
+            if (socket->so_proto == IPPROTO_UDP) {
+                socket->proto_sock->udp.ttl = socket->ip_ttl;
+            } else if (socket->so_proto == IPPROTO_TCP) {
+                socket->proto_sock->tcp.ttl = socket->ip_ttl;
+            }
+         }
          break;
 
     case IP_ADD_MEMBERSHIP:
     case IP_DROP_MEMBERSHIP:
 #ifdef USE_MULTICAST
          l_pMreq = (struct ip_mreq*)val;
-         if (!l_pMreq || len < sizeof(*l_pMreq))
-         {
+         if (!l_pMreq || len < sizeof(*l_pMreq)) {
            SOCK_ERR (EINVAL);
            return (-1);
          }
          ip = ntohl (l_pMreq->imr_multiaddr.s_addr);
-         if (!is_multicast(ip))
-         {
+         if (!is_multicast(ip)) {
            SOCK_ERR (EINVAL);
            return (-1);
          }
-         if (!_multicast_on)
-         {
+         if (!_multicast_on) {
            SOCK_ERR (EADDRNOTAVAIL);
            return (-1);
          }
-         if (opt == IP_ADD_MEMBERSHIP && !join_mcast_group(ip))
-         {
+         if (opt == IP_ADD_MEMBERSHIP && !join_mcast_group(ip)) {
            SOCK_ERR (ENOBUFS);        /* !!correct errno? */
            return (-1);
          }
-         if (opt == IP_DROP_MEMBERSHIP && !leave_mcast_group(ip))
-         {
+         if (opt == IP_DROP_MEMBERSHIP && !leave_mcast_group(ip)) {
            SOCK_ERR (EADDRNOTAVAIL);  /* !!correct errno? */
            return (-1);
          }
@@ -671,33 +633,29 @@ static int set_raw_opt (Socket *s, int opt, const void *val, int len)
   return (0);
 }
 
-static int get_raw_opt (Socket *s, int opt, void *val, int *len)
+static int get_raw_opt (Socket *socket, int opt, void *val, int *len)
 {
-  switch (opt)
-  {
+  switch (opt) {
     case IP_OPTIONS:
-         if (s->ip_opt)
-         {
-           *len = s->ip_opt_len;
-           memcpy (val, s->ip_opt->ip_opts, *len);
-         }
-         else
-         {
+         if (socket->ip_opt) {
+           *len = socket->ip_opt_len;
+           memcpy (val, socket->ip_opt->ip_opts, *len);
+         } else {
            memset (val, 0, *len);
            *len = 0;
          }
          break;
 
     case IP_HDRINCL:
-         *(int*)val = (s->inp_flags & INP_HDRINCL);
+         *(int*)val = (socket->inp_flags & INP_HDRINCL);
          break;
 
     case IP_TOS:
-         *(int*)val = s->ip_tos;
+         *(int*)val = socket->ip_tos;
          break;
 
     case IP_TTL:
-         *(int*)val = s->ip_ttl;
+         *(int*)val = socket->ip_ttl;
          break;
 
     case IP_RECVOPTS:
@@ -736,8 +694,7 @@ static int tcp_rx_buf (tcp_Socket *tcp, unsigned size)
 
   size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
   buf  = realloc (tcp->rdata, size);
-  if (!buf)
-  {
+  if (!buf) {
     SOCK_ERR (ENOMEM);
     return (-1);
   }
@@ -745,13 +702,13 @@ static int tcp_rx_buf (tcp_Socket *tcp, unsigned size)
   /* Copy the data to new buffer. Data might be overlapping
    * hence using movmem(). Also clear rest of buffer.
    */
-  if (tcp->rdatalen > 0)
-  {
+  if (tcp->rdatalen > 0) {
     int len = min ((long)size, tcp->rdatalen);
 
     movmem (tcp->rdata, buf, len);
-    if (size > tcp->rdatalen)
+    if (size > tcp->rdatalen) {
        memset (tcp->rdata + tcp->rdatalen, 0, size - tcp->rdatalen);
+    }
   }
   tcp->rdata       = buf;
   tcp->maxrdatalen = size;
@@ -773,8 +730,7 @@ static int tcp_tx_buf (tcp_Socket *tcp, unsigned size)
 
   size = min (size, MAX_TCP_SEND_BUF);
   buf  = realloc (tcp->data, size);
-  if (!buf)
-  {
+  if (!buf) {
     SOCK_ERR (ENOMEM);
     return (-1);
   }
@@ -782,8 +738,7 @@ static int tcp_tx_buf (tcp_Socket *tcp, unsigned size)
   /* Copy current data to new buffer. Data might be overlapping
    * hence using movmem().
    */
-  if (tcp->datalen > 0)
-  {
+  if (tcp->datalen > 0) {
     int len = min ((long)size, udp->datalen);
     movmem (udp->data, buf, len);
   }
@@ -806,8 +761,7 @@ static int udp_rx_buf (udp_Socket *udp, unsigned size)
 
   size = min (size, MAX_UDP_RECV_BUF);
   buf  = realloc (udp->rdata, size);
-  if (!buf)
-  {
+  if (!buf) {
     SOCK_ERR (ENOMEM);
     return (-1);
   }
@@ -815,13 +769,13 @@ static int udp_rx_buf (udp_Socket *udp, unsigned size)
   /* Copy current data to new buffer. Data might be overlapping
    * hence using movmem(). Also clear rest of buffer.
    */
-  if (udp->rdatalen > 0)
-  {
+  if (udp->rdatalen > 0) {
     int len = min ((long)size, udp->rdatalen);
 
     movmem (udp->rdata, buf, len);
-    if (size > udp->rdatalen)
+    if (size > udp->rdatalen) {
        memset (buf + udp->rdatalen, 0, size - udp->rdatalen);
+    }
   }
   udp->rdata       = buf;
   udp->maxrdatalen = size;
@@ -839,8 +793,7 @@ static int udp_tx_buf (udp_Socket *udp, unsigned size)
 
   size = min (size, MAX_UDP_SEND_BUF);
   buf  = realloc (udp->data, size);
-  if (!buf)
-  {
+  if (!buf) {
     SOCK_ERR (ENOMEM);
     return (-1);
   }
@@ -875,18 +828,17 @@ static int raw_tx_buf (raw_Socket *raw, unsigned size)
 /*
  * Set send buffer "low water marks"
  */
-static int set_tx_lowat (Socket *sock, unsigned size)
+static int set_tx_lowat (Socket *socket, unsigned size)
 {
-  switch (sock->so_type)
-  {
+  switch (socket->so_type) {
     case SOCK_STREAM:
-         sock->send_lowat = min (size, MAX_TCP_SEND_BUF-1);
+         socket->send_lowat = min (size, MAX_TCP_SEND_BUF-1);
          break;
     case SOCK_DGRAM:
-         sock->send_lowat = min (size, MAX_UDP_SEND_BUF-1);
+         socket->send_lowat = min (size, MAX_UDP_SEND_BUF-1);
          break;
     case SOCK_RAW:
-         sock->send_lowat = min (size, sizeof(sock->raw_sock->data)-1);
+         socket->send_lowat = min (size, sizeof(socket->proto_sock->raw.data)-1);
          break;
     default:
          SOCK_ERR (ENOPROTOOPT);
@@ -898,20 +850,19 @@ static int set_tx_lowat (Socket *sock, unsigned size)
 /*
  * Set receive/transmit buffer "low water marks"
  */
-static int set_rx_lowat (Socket *sock, unsigned size)
+static int set_rx_lowat (Socket *socket, unsigned size)
 {
-  switch (sock->so_type)
-  {
+  switch (socket->so_type) {
     case SOCK_STREAM:
-         if (sock->tcp_sock)
-            sock->send_lowat = min (size, sock->tcp_sock->maxrdatalen);
+         if (socket->proto_sock)
+            socket->send_lowat = min (size, socket->proto_sock->tcp.maxrdatalen);
          break;
     case SOCK_DGRAM:
-         if (sock->udp_sock)
-            sock->send_lowat = min (size, sock->udp_sock->maxrdatalen);
+         if (socket->proto_sock)
+            socket->send_lowat = min (size, socket->proto_sock->udp.maxrdatalen);
          break;
     case SOCK_RAW:
-         sock->send_lowat = min (size, sizeof(sock->raw_sock->data));
+         socket->send_lowat = min (size, sizeof(socket->proto_sock->raw.data));
          break;
     default:
          SOCK_ERR (ENOPROTOOPT);
@@ -923,26 +874,26 @@ static int set_rx_lowat (Socket *sock, unsigned size)
 /*
  * Get receive/transmit buffer "low water marks"
  */
-static int get_tx_lowat (const Socket *sock, unsigned *size)
+static int get_tx_lowat (const Socket *socket, unsigned *size)
 {
-  if (sock->so_type == SOCK_STREAM ||
-      sock->so_type == SOCK_DGRAM  ||
-      sock->so_type == SOCK_RAW)
+  if (socket->so_type == SOCK_STREAM ||
+      socket->so_type == SOCK_DGRAM  ||
+      socket->so_type == SOCK_RAW)
   {
-    *size = sock->send_lowat;
+    *size = socket->send_lowat;
     return (0);
   }
   SOCK_ERR (ENOPROTOOPT);
   return (-1);
 }
 
-static int get_rx_lowat (const Socket *sock, unsigned *size)
+static int get_rx_lowat (const Socket *socket, unsigned *size)
 {
-  if (sock->so_type == SOCK_STREAM ||
-      sock->so_type == SOCK_DGRAM  ||
-      sock->so_type == SOCK_RAW)
+  if (socket->so_type == SOCK_STREAM ||
+      socket->so_type == SOCK_DGRAM  ||
+      socket->so_type == SOCK_RAW)
   {
-    *size = sock->recv_lowat;
+    *size = socket->recv_lowat;
     return (0);
   }
   SOCK_ERR (ENOPROTOOPT);
@@ -1019,8 +970,7 @@ static const char *lookup (int option, const struct opt_list *opt, int num)
 {
   static char buf[10];
 
-  while (num)
-  {
+  while (num) {
     if (opt->opt_val == option)
        return (opt->opt_name);
     num--;
@@ -1032,8 +982,7 @@ static const char *lookup (int option, const struct opt_list *opt, int num)
 
 static const char *sockopt_name (int option, int level)
 {
-  switch ((DWORD)level)
-  {
+  switch (level) {
     case IPPROTO_UDP:
          return ("udp option!?");
 

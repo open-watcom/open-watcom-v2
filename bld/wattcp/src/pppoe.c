@@ -242,7 +242,7 @@ static int pppoe_wait (int wait_code)
 {
   DWORD timer = set_timeout (1000 * cfg.timeout);
 
-  while (1)
+  for ( ;; )
   {
     tcp_tick (NULL);
 

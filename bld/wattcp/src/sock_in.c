@@ -21,16 +21,28 @@
  *   int  ip_timer_expired (void *s)
  *  - 0 if not expired
  */
-void ip_timer_init (udp_Socket *s, int seconds)
+void ip_timer_init (sock_type *s, int seconds)
 {
-  if (seconds)
-       s->usertimer = set_timeout (1000 * seconds);
-  else s->usertimer = 0;
+    switch (s->u.ip_type) {
+    case UDP_PROTO:
+    case TCP_PROTO:
+        if (seconds) {
+            s->u.usertimer = set_timeout (1000 * seconds);
+        } else {
+            s->u.usertimer = 0;
+        }
+        break;
+    }
 }
 
-int ip_timer_expired (const udp_Socket *s)
+int ip_timer_expired (const sock_type *s)
 {
-  return chk_timeout (s->usertimer);
+    switch (s->u.ip_type) {
+    case UDP_PROTO:
+    case TCP_PROTO:
+        return chk_timeout (s->u.usertimer);
+    }
+    return (0);
 }
 
 /*
@@ -38,16 +50,16 @@ int ip_timer_expired (const udp_Socket *s)
  * _ip_delay1 called by macro sock_wait_input()
  * _ip_delay2 called by macro sock_wait_closed();
  *
- */ 
+ */
 int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr)
 {
   int status = -1;
 
-  ip_timer_init (&s->udp, timeoutseconds);
-  do
+  ip_timer_init (s, timeoutseconds);
+  for ( ;; )
   {
 #if !defined(USE_UDP_ONLY)
-    if (s->tcp.ip_type == TCP_PROTO)
+    if (s->u.ip_type == TCP_PROTO)
     {
       if (tcp_established(&s->tcp))
       {
@@ -66,7 +78,7 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
       status = -1;       /* get an early reset */
       break;
     }
-    if (ip_timer_expired(&s->udp))
+    if (ip_timer_expired(s))
     {
       if (s->tcp.err_msg == NULL)
           s->tcp.err_msg = _LANG("Open timed out");
@@ -80,13 +92,12 @@ int _ip_delay0 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
 
-    if (s->tcp.ip_type == UDP_PROTO)
+    if (s->u.ip_type == UDP_PROTO)
     {
       status = 0;
       break;
     }
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;
@@ -97,13 +108,13 @@ int _ip_delay1 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 {
   int status = -1;
 
-  ip_timer_init (&s->udp, timeoutseconds);
+  ip_timer_init (s, timeoutseconds);
 
 #if !defined(USE_UDP_ONLY)
   sock_flush (s);    /* new enhancement */
 #endif
 
-  do
+  for ( ;; )
   {
     if (sock_dataready(s))
     {
@@ -123,7 +134,7 @@ int _ip_delay1 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
       break;
     }
 
-    if (ip_timer_expired(&s->udp))
+    if (ip_timer_expired(s))
     {
       if (s->tcp.err_msg == NULL)
           s->tcp.err_msg = _LANG("Connection timed out");
@@ -137,7 +148,6 @@ int _ip_delay1 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;
@@ -148,7 +158,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 {
   int status = -1;
 
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
   {
     if (statusptr)
        *statusptr = 1;
@@ -156,9 +166,9 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
   }
 
 #if !defined(USE_UDP_ONLY)
-  ip_timer_init (&s->udp, timeoutseconds);
+  ip_timer_init (s, timeoutseconds);
 
-  do
+  for ( ;; )
   {
     /* in this situation we know user is not planning to read rdata
      */
@@ -169,7 +179,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
       status = 1;
       break;
     }
-    if (ip_timer_expired(&s->udp))
+    if (ip_timer_expired(s))
     {
       if (s->tcp.err_msg == NULL)
           s->tcp.err_msg = _LANG("Connection timed out");
@@ -183,7 +193,6 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
     if (s->tcp.usr_yield)
       (*s->tcp.usr_yield)();
   }
-  while (1);
 
   if (statusptr)
      *statusptr = status;
@@ -197,7 +206,7 @@ int _ip_delay2 (sock_type *s, int timeoutseconds, UserHandler fn, int *statusptr
 
 int sock_timeout (sock_type *s, int sec)
 {
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
      return (1);
 
 #if !defined(USE_UDP_ONLY)
@@ -213,7 +222,7 @@ int sock_timeout (sock_type *s, int sec)
 
 int sock_established (sock_type *s)
 {
-  switch (s->tcp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          return (1);

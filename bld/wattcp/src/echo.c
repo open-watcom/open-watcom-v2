@@ -31,7 +31,6 @@ static WORD  disc_port = 9;
 static DWORD disc_host = 0;
 
 static void echo_discard_daemon (void);
-static void udp_handler (sock_type *s, BYTE *data, int len);
 
 static void (*prev_hook) (const char*, const char*) = NULL;
 
@@ -62,6 +61,23 @@ static void echo_config (const char *name, const char *value)
 }
 
 /*
+ * callback handler for echo + discard UDP sockets.
+ */
+static int udp_handler (sock_type *s, BYTE *data, int len, tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr)
+{
+  /* unused parameters */ (void)tcp_phdr; (void)udp_hdr;
+
+    if (s == (sock_type*)&udp_echo_sock) {
+        if (!sock_enqueue (s, data, len)) {
+            sock_close (s);
+        }
+    } else {
+        /* discard packet */
+    }
+    return (1);
+}
+
+/*
  * Called from sock_init(): Setup config-file parser for "echo..."
  * and "discard.." keywords.
  */
@@ -83,17 +99,15 @@ void echo_discard_start (void)
 
   if (do_echo)
   {
-    udp_listen (&udp_echo_sock, echo_host, echo_port, 0,
-                (ProtoHandler)udp_handler);
-    udp_echo_sock.sockmode |= UDP_MODE_NOCHK;
+    udp_listen (&udp_echo_sock, echo_host, echo_port, 0, udp_handler);
+    SETON_SOCKMODE(udp_echo_sock, UDP_MODE_NOCHK);
     tcp_listen (&tcp_echo_sock, echo_host, echo_port, 0, NULL, 0);
   }
 
   if (do_disc)
   {
-    udp_listen (&udp_disc_sock, disc_host, disc_port, 0,
-                (ProtoHandler)udp_handler);
-    udp_disc_sock.sockmode |= UDP_MODE_NOCHK;
+    udp_listen (&udp_disc_sock, disc_host, disc_port, 0, udp_handler);
+    SETON_SOCKMODE(udp_disc_sock, UDP_MODE_NOCHK);
     tcp_listen (&tcp_disc_sock, disc_host, disc_port, 0, NULL, 0);
   }
 
@@ -113,21 +127,6 @@ static void echo_discard_daemon (void)
     BYTE buf[ETH_MAX_DATA];
     int  len = sock_read (s, buf, sizeof(buf));
     sock_write (s, buf, len);
-  }
-}
-
-/*
- * callback handler for echo + discard UDP sockets.
- */
-static void udp_handler (sock_type *s, BYTE *data, int len)
-{
-  if (s == (sock_type*)&udp_echo_sock)
-  {
-    if (!sock_enqueue (s, data, len))
-       sock_close (s);
-  }
-  else   /* discard packet */
-  {
   }
 }
 #endif

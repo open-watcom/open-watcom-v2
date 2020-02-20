@@ -124,7 +124,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
   /*
    * Loop until specified timeout expires or event(s) satisfied.
    */
-  do
+  for ( ;; )
   {
 
     for (s = 0; s < num_fd; s++)
@@ -268,7 +268,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
     {
       expiry = timeval_diff(&now, &starttime);
       SOCK_DEBUGF ((NULL, ", timeout!: %u.%06lus",
-                   expiry.tv_secs, expiry.tv_usecs ));
+                   expiry.tv_sec, expiry.tv_usec ));
 
       for (s = 0; s < num_fd; s++)
       {
@@ -280,7 +280,6 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
       goto select_ok;
     }
   }
-  while (1);
 
 
 select_fail:
@@ -302,17 +301,17 @@ static __inline int listen_queued (Socket *socket)
 
   for (i = 0; i < socket->backlog && i < DIM(socket->listen_queue); i++)
   {
-    tcp_Socket *tcb = socket->listen_queue[i];
+    sock_type *tcb_sk = socket->listen_queue[i];
 
-    if (!tcb)
+    if (tcb_sk == NULL)
        continue;
 
     /* Socket has reached Established state or receive data above
      * low water mark. This means, socket may have reached Closed,
      * but this still counts as a readable event.
      */
-    if (tcb->state == tcp_StateESTAB ||
-        sock_rbused((sock_type*)tcb) > socket->recv_lowat)
+    if (tcb_sk->tcp.state == tcp_StateESTAB ||
+        sock_rbused(tcb_sk) > socket->recv_lowat)
        return (1);
   }
   return (0);
@@ -375,13 +374,15 @@ int _sock_read_select (Socket *socket)
 #endif
 
   if (socket->so_type == SOCK_RAW)
-     return (socket->raw_sock && socket->raw_sock->used);
+     return (socket->proto_sock && socket->proto_sock->raw.used);
 
   if (socket->so_type == SOCK_DGRAM)
   {
-    if (socket->so_state & SS_PRIV)
-         len = sock_recv_used (socket->udp_sock);
-    else len = sock_rbused ((sock_type*)socket->udp_sock);
+    if (socket->so_state & SS_PRIV) {
+        len = sock_recv_used (socket->proto_sock);
+    } else {
+        len = sock_rbused (socket->proto_sock);
+    }
 
     if (len > socket->recv_lowat ||
         sock_signalled(socket,READ_STATE_MASK))
@@ -391,7 +392,7 @@ int _sock_read_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
+    sock_type *sk = socket->proto_sock;
 
     if (sock_signalled(socket,READ_STATE_MASK) || /* signalled for read_s() */
         sk->tcp.state >= tcp_StateLASTACK      || /* got FIN from peer */
@@ -424,7 +425,7 @@ int _sock_write_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
+    sock_type *sk = socket->proto_sock;
 
     if (sock_tbleft(sk) > socket->send_lowat ||  /* Tx room above low-limit */
         sock_signalled(socket,WRITE_STATE_MASK)) /* signalled for write */

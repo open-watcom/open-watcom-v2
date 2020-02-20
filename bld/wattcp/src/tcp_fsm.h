@@ -3,7 +3,7 @@
 
 extern int _tcp_fsm (tcp_Socket **s, const in_Header *ip);
 
-extern int _tcp_reset (tcp_Socket *s, const in_Header *ip, tcp_Header *tcp,
+extern int _tcp_reset (tcp_Socket *s, const in_Header *ip, tcp_Header *tcp_hdr,
                        const char *file, unsigned line);
 
 #define TCP_RESET(s, ip, tcp) \

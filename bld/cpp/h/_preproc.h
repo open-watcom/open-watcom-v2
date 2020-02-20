@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,6 @@ typedef struct  file_list {
 typedef void        pp_callback(const char *, size_t len, const char *, int);
 
 extern  void        PP_Dependency_List(pp_callback *);
-extern  void        PP_SetLeadBytes( const char *bytes );
 extern  int         PP_Class(char __c);
 extern  MACRO_ENTRY *PP_AddMacro( const char *__name, size_t len );
 extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );

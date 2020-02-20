@@ -46,6 +46,8 @@
 #define MACRO_END_CHAR          'Z'
 #define MACRO_END_STRING        "Z-<end of macro>"
 
+#define FUNCTION_not_expandable (CompFlags.cpp_output)
+
 typedef struct _tokens TOKEN_LIST;
 struct _tokens {
     TOKEN_LIST  *next;
@@ -343,29 +345,18 @@ static size_t file_name_copy(   // COPY STRING, ESCAPING ANY BACKSLASHES
         }
         *dst++ = *src++;
     }
-    *dst++ = *src++;
+    *dst = *src;
     return( dst - org );
 }
 
-#define _FUNCTION_not_expandable    (CompFlags.cpp_output)
 
-static TOKEN genFUNCTION(
-    special_macros spec_macro )
+static size_t genFUNCTION(
+    void )
 {
     SYMBOL  sym;
     size_t  len;
     VBUF    buff;
-    char    *name;
 
-    DbgAssert( ( spec_macro == MACRO_FUNCTION ) || ( spec_macro == MACRO_FUNC ) );
-
-    if( _FUNCTION_not_expandable ) {
-        name = SpcMacros[spec_macro].name;
-        len = strlen( name );
-        memcpy( Buffer, name, len + 1 );
-        TokenLen = len;
-        return( T_ID );
-    }
     sym = ParseCurrFunction();
     if( sym != NULL ) {
         FormatSymWithTypedefs( sym, &buff );
@@ -380,8 +371,7 @@ static TOKEN genFUNCTION(
         len = 1;
     }
     Buffer[len] = '\0';
-    TokenLen = len + 1;
-    return( T_STRING );
+    return( len );
 }
 
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
@@ -394,19 +384,25 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_FILE:
-        TokenLen = file_name_copy( Buffer, SrcFileNameCurrent() );
+        TokenLen = file_name_copy( Buffer, SrcFileNameCurrent() ) + 1;
         return( T_STRING );
     case MACRO_DATE:
         strcpy( Buffer, __Date );
-        TokenLen = strlen( Buffer );
+        TokenLen = strlen( Buffer ) + 1;
         return( T_STRING );
     case MACRO_TIME:
         strcpy( Buffer, __Time );
-        TokenLen = strlen( Buffer );
+        TokenLen = strlen( Buffer ) + 1;
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
-        return( genFUNCTION( mentry->parm_count ) );
+        if( FUNCTION_not_expandable ) {
+            TokenLen = strlen( SpcMacros[mentry->parm_count].name ) + 1;
+            memcpy( Buffer, SpcMacros[mentry->parm_count].name, TokenLen );
+            return( T_ID );
+        }
+        TokenLen = genFUNCTION() + 1;
+        return( T_STRING );
     case MACRO_CPLUSPLUS:
         Buffer[0] = '1';
         Buffer[1] = '\0';
@@ -729,7 +725,7 @@ static int isExpandable( MEPTR mentry, MACRO_TOKEN *mtok, int macro_parm )
 
     if( MacroIsSpecial( mentry ) ) {  /* if special macro */
         if( ( mentry->parm_count == MACRO_FUNCTION ) || ( mentry->parm_count == MACRO_FUNC ) ) {
-            if( _FUNCTION_not_expandable ) {
+            if( FUNCTION_not_expandable ) {
                 return( 0 );
             }
         }

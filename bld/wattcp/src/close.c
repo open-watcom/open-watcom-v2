@@ -50,7 +50,7 @@ int closesocket (int s)
 static int close_stream (int s)
 {
   Socket    *socket = _socklist_find (s);
-  sock_type *sk     = (sock_type*)socket->tcp_sock;
+  sock_type *sk     = socket->proto_sock;
   int  i, listen_abort = 0;
 
   if ((socket->so_state & SS_ISDISCONNECTING) && socket->close_time)
@@ -63,17 +63,17 @@ static int close_stream (int s)
   /* Save memory and abort listen() socket and queue now.
    */
   if (socket->so_options & SO_ACCEPTCONN)
-  { 
+  {
     SOCK_DEBUGF ((socket, ", listen abort, backlog %d", socket->backlog));
     listen_abort = 1;
     for (i = 0; i < socket->backlog && i < SOMAXCONN; i++)
     {
-      sock_type *tcb = (sock_type*) socket->listen_queue[i];
-      if (tcb)
+      sock_type *tcb_sk = socket->listen_queue[i];
+      if (tcb_sk != NULL)
       {
-        tcb->tcp.rdatalen = 0;   /* flush Rx data */
-        sock_abort (tcb);
-        free (tcb);
+        tcb_sk->tcp.rdatalen = 0;   /* flush Rx data */
+        sock_abort (tcb_sk);
+        free (tcb_sk);
         socket->listen_queue[i] = NULL;
       }
     }
@@ -111,7 +111,7 @@ static int close_stream (int s)
 static int close_dgram (int s)
 {
   Socket    *socket = _socklist_find (s);      /* 'socket' is non-NULL */
-  sock_type *sk     = (sock_type*)socket->udp_sock;
+  sock_type *sk     = socket->proto_sock;
 
   sk->udp.rdatalen = 0;   /* flush Rx data */
   sock_close (sk);

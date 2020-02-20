@@ -123,18 +123,3 @@ int reuse_localport (WORD port)
   }
   return (-1);
 }
-
-
-#if !defined(USE_UDP_ONLY)
-/*
- * Reuse local port now if not owned by a STREAM-socket.
- * Otherwise let socket daemon free local port when linger period
- * expires. We don't care about rapid reuse of local ports connected
- * to DGRAM-sockets.
- */
-void maybe_reuse_lport (tcp_Socket *s)
-{
-  if (!_tcp_find_hook || !(*_tcp_find_hook)(s))
-     reuse_localport (s->myport);
-}
-#endif /* USE_UDP_ONLY */

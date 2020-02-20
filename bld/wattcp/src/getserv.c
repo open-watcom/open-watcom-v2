@@ -69,7 +69,7 @@ void ReadServFile (const char *fname)
   if (!servFile)
      return;
 
-  while (1)
+  for ( ;; )
   {
     struct _servent *se, *se2 = (struct _servent*) getservent();
 

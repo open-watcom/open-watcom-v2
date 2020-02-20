@@ -55,7 +55,7 @@ void ReadProtoFile (const char *fname)
   if (!protoFile)
      return;
 
-  while (1)
+  for ( ;; )
   {
     struct _protoent *p, *p2 = (struct _protoent*) getprotoent();
 

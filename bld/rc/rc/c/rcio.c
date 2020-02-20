@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -490,20 +490,26 @@ int RcFindSourceFile( const char *name, char *fullpath )
     return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    return( CharSetLen[*(unsigned char *)p] + 1 );
+}
+
 static bool PreprocessInputFile( void )
 /*************************************/
 {
-    unsigned    flags;
+    pp_flags    ppflags;
     char        rcdefine[13];
     char        **cppargs;
     char        *p;
     int         rc;
 
-    flags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
     if( CmdLineParms.IgnoreCWD ) {
-        flags |= PPFLAG_IGNORE_CWD;
+        ppflags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_FileInit2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
+    rc = PP_FileInit( CmdLineParms.InFileName, ppflags, NULL );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );

@@ -1,5 +1,5 @@
 #ifndef __WATTCP_H
-#define __WATTCP_H    
+#define __WATTCP_H
 
 /*
  * Our basic types
@@ -12,13 +12,6 @@ typedef BYTE            eth_address[6];
 typedef BYTE            ax25_address[7];
 
 #define mac_address eth_address /* our emphasis is no longer on Ethernet */
-
-typedef int (*ProtoHandler) (void *sock, BYTE *data, int len,
-                             void *tcp_phdr, void *udp_hdr);
-
-typedef int (*UserHandler)  (void *sock);
-
-typedef int (*sol_upcall)   (void *socket, int icmp_type);
 
 #if defined(__HIGHC__) || defined(__GNUC__)
   typedef unsigned long long  uint64;
@@ -33,7 +26,7 @@ typedef int (*sol_upcall)   (void *socket, int icmp_type);
  * Until C compilers support C++ namespaces, we use this
  * prefix for our namespace.
  */
-#define NAMESPACE(x)    _w32_ ## x     
+#define NAMESPACE(x)    _w32_ ## x
 
 
 #include "target.h"        /* portability macros & defines */
@@ -109,12 +102,35 @@ typedef int (*sol_upcall)   (void *socket, int icmp_type);
 #define ICMP_PROTO       1
 #define IGMP_PROTO       2
 
-#define TCP_MODE_BINARY  0       /* default mode */
+/*
+ * control bits for 'sockmode' used by 'sock_mode' function
+ */
+
+#define TCP_MODE_BINARY  0      /* default to binary mode */
 #define TCP_MODE_ASCII   1
-#define UDP_MODE_CHK     0       /* default to having checksums */
-#define UDP_MODE_NOCHK   2       /* turn off checksums */
-#define TCP_MODE_NAGLE   0       /* Nagle algorithm */
+#define UDP_MODE_CHK     0      /* default to having checksums */
+#define UDP_MODE_NOCHK   2
+#define TCP_MODE_NAGLE   0      /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
+
+#define SOCK_MODE_MASK   (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE)
+
+/*
+ * status bits for 'sockmode' used internaly
+ */
+
+#define TCP_MODE_SAWCR   0x2000 /* for ASCII sockets - S. Lawson */
+#define TCP_MODE_LOCAL   0x4000
+
+/*
+ * macros to handle 'sockmode'
+ */
+
+#define SETON_SOCKMODE(s,m)     (s).sockmode |= (m)
+#define SETOFF_SOCKMODE(s,m)    (s).sockmode &= ~(m)
+#define ISON_SOCKMODE(s,m)      ((s).sockmode & (m))
+#define ISOFF_SOCKMODE(s,m)     (((s).sockmode & (m)) == 0)
+
 
 /*
  * These are the IP options
@@ -230,7 +246,7 @@ typedef struct in_Header {
 /*
  * IP packet incuding header and data
  */
-typedef struct ip_Packet {    
+typedef struct ip_Packet {
         in_Header head;
         BYTE      data [MAX_IP_DATA];
       } ip_Packet;
@@ -347,13 +363,19 @@ typedef struct arp_Header {
 #define tcp_MaxTxBufSize  tcp_MaxBufSize        /* and on tcp output */
 
 /*
+ * Fields common to any socket definition.
+ */
+
+#define SOCKET_COMMON                                                       \
+        WORD         ip_type           /* protocol type */
+
+/*
  * Fields common to UDP & TCP socket definition.
  * Tries to keep members on natural boundaries (words on word-boundary,
  * dwords on dword boundary)
  */
 
 #define UDP_TCP_COMMON                                                      \
-        WORD         ip_type;          /* UDP_PROTO or TCPPROTO */          \
         BYTE         ttl;              /* Time To Live */                   \
         BYTE         fill_1;                                                \
         const char  *err_msg;          /* null when all is ok */            \
@@ -383,11 +405,19 @@ typedef struct arp_Header {
         BYTE         rddata[tcp_MaxBufSize+1]; /* received data buffer */   \
         DWORD        safetysig                 /* magic marker */
 
+typedef int (*ProtoHandler) (union sock_type *sock, BYTE *data, int len,
+                             tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
+
+typedef int (*UserHandler)  (union sock_type *sock);
+
+typedef int (*sol_upcall)   (union sock_type *sock, int icmp_type);
+
 /*
  * UDP socket definition
  */
 typedef struct udp_Socket {
         struct udp_Socket *next;
+        SOCKET_COMMON;
         UDP_TCP_COMMON;
       } udp_Socket;
 
@@ -396,6 +426,7 @@ typedef struct udp_Socket {
  */
 typedef struct tcp_Socket {
         struct  tcp_Socket *next;  /* link to next tcp-socket */
+        SOCKET_COMMON;
         UDP_TCP_COMMON;
 
         UINT   state;              /* tcp connection state */
@@ -454,11 +485,20 @@ typedef struct tcp_Socket {
  */
 typedef struct raw_Socket {
         struct raw_Socket *next;
-        WORD   ip_type;               /* same ofs as for udp/tcp Socket */
+        SOCKET_COMMON;
         BOOL   used;                  /* used flag; packet not read yet */
         struct in_Header ip;
         BYTE   data [MAX_FRAG_SIZE];  /* room for 1 jumbo IP packet */
       } raw_Socket;
+
+/*
+ * shared fields socket structure definition
+ */
+typedef struct u_Socket {
+        struct u_Socket *next;
+        SOCKET_COMMON;
+        UDP_TCP_COMMON;
+      } u_Socket;
 
 /*
  * sock_type used for socket I/O
@@ -467,6 +507,7 @@ typedef union sock_type {
         udp_Socket udp;
         tcp_Socket tcp;
         raw_Socket raw;
+        u_Socket   u;
       } sock_type;
 
 typedef struct watt_sockaddr {
@@ -480,7 +521,7 @@ typedef struct watt_sockaddr {
  * A simple RTT cache based on Phil Karn's KA9Q.
  * # of TCP round-trip-time cache entries
  */
-#define RTTCACHE  16  
+#define RTTCACHE  16
 
 struct tcp_rtt {
        DWORD ip;

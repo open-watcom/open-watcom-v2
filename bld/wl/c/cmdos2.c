@@ -574,7 +574,7 @@ static bool getexport( void )
     while( ProcOne( Exp_Keywords, SEP_NO ) ) {
         // handle misc options
     }
-    FmtData.u.os2fam.exports = exp->next;       // take it off the list
+    FmtData.u.os2fam.exports = exp->next;   // take it off the list
     exp->iopl_words = 0;
     if( (FmtData.type & (MK_WINDOWS | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
@@ -1216,8 +1216,8 @@ static bool ProcPE( void )
 /************************/
 {
     ProcOne( PESubFormats, SEP_NO );
-    FmtData.u.os2fam.heapsize = PE_DEF_HEAP_SIZE;      // another arbitrary non-zero default
-    FmtData.u.os2fam.segment_shift = 9;                // 512 byte arbitrary rounding
+    FmtData.u.os2fam.heapsize = PE_DEF_HEAP_SIZE;   // another arbitrary non-zero default
+    FmtData.u.os2fam.segment_shift = 9;             // 512 byte arbitrary rounding
     FmtData.u.pe.heapcommit = PE_DEF_HEAP_COMMIT;   // arbitrary non-zero default.
     FmtData.u.pe.stackcommit = DEF_VALUE;
     return( true );

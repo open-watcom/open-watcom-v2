@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 
 
 static void dumpheap( void )
+/**************************/
 {
 #if 0
     struct _heapinfo h;
@@ -67,7 +69,16 @@ static void dumpheap( void )
 #endif
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 int main( int argc, char *argv[] )
+/********************************/
 {
     int         c;
 

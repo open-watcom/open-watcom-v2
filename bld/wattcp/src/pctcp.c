@@ -45,12 +45,14 @@
 
 #if defined(USE_BSD_FUNC)
 #include "socket.h"
+#include "pchooks.h"
 #endif
 
 #ifndef __inline  /* normally in <sys/cdefs.h> */
-#define __inline   
+#define __inline
 #endif
 
+#if defined(USE_BSD_FUNC)
 /*
  * These are hooks to prevent the BSD-socket API being linked in
  * by default. These function pointers are only set from the BSD
@@ -62,6 +64,7 @@
 int   (*_raw_ip_hook)  (const in_Header *)  = NULL;
 int   (*_tcp_syn_hook) (tcp_Socket **)      = NULL;
 void *(*_tcp_find_hook) (const tcp_Socket*) = NULL;
+#endif
 
 char   hostname[MAX_HOSTLEN+1] = "random-pc";
 
@@ -111,13 +114,13 @@ udp_Socket *_udp_allsocs = NULL;   /* list of udp-sockets */
 
   tcp_Socket *_tcp_allsocs  = NULL; /* list of tcp-sockets */
 
-  static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp);
+  static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp_hdr);
 
   static void tcp_sockreset(tcp_Socket *s, int proxy);
   static void tcp_rtt_wind (tcp_Socket *s);
   static void tcp_upd_wind (tcp_Socket *s, unsigned line);
-  static int  tcp_chksum   (const in_Header *ip, const tcp_Header *tcp, int len);
-  
+  static int  tcp_chksum   (const in_Header *ip, const tcp_Header *tcp_hdr, int len);
+
   static void tcp_rtt_add  (tcp_Socket *s, UINT rto);
   static void tcp_rtt_clr  (tcp_Socket *s);
   static UINT tcp_rtt_get  (tcp_Socket *s);
@@ -190,7 +193,7 @@ int udp_open (udp_Socket *s, WORD lport, DWORD ip, WORD port, ProtoHandler handl
 #endif
   else if (!_arp_resolve(ip,&s->hisethaddr,0))
           return (0);
- 
+
   s->hisaddr      = ip;
   s->hisport      = port;
   s->protoHandler = handler;
@@ -265,7 +268,9 @@ int tcp_open (tcp_Socket *s, WORD lport, DWORD ina, WORD rport, ProtoHandler han
 
   /* to-do !!: use TCP_NODELAY set in setsockopt()
    */
-  s->sockmode     = tcp_nagle ? TCP_MODE_NAGLE : TCP_MODE_NONAGLE;
+  if (!tcp_nagle)
+     SETON_SOCKMODE(*s, TCP_MODE_NONAGLE);
+
   s->cwindow      = 1;
   s->wwindow      = 0;                      /* slow start VJ algorithm */
   s->vj_sa        = INIT_VJSA;
@@ -291,7 +296,7 @@ int tcp_open (tcp_Socket *s, WORD lport, DWORD ina, WORD rport, ProtoHandler han
   _tcp_allsocs    = s;
 
   (void) TCP_SEND (s);                      /* send opening SYN */
- 
+
   /* find previous RTT replacing RTT set in tcp_send() above
    */
   if ((rtt = tcp_rtt_get(s)) > 0)
@@ -338,6 +343,20 @@ int tcp_listen (tcp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler ha
   if (timeout != 0)
      s->timeout = set_timeout (1000 * timeout);
   return (1);
+}
+
+/*
+ * Reuse local port now if not owned by a STREAM-socket.
+ * Otherwise let socket daemon free local port when linger period
+ * expires. We don't care about rapid reuse of local ports connected
+ * to DGRAM-sockets.
+ */
+static void maybe_reuse_lport (tcp_Socket *s)
+{
+#if defined(USE_BSD_FUNC)
+  if (!_tcp_find_hook || !(*_tcp_find_hook)(s))
+#endif
+     reuse_localport (s->myport);
 }
 
 /*
@@ -450,7 +469,7 @@ int _tcp_sendsoon (tcp_Socket *s, char *file, unsigned line)
     rc = _tcp_send (s, file, line);
     s->recent = 1;
     return (rc);
-  } 
+  }
 
   if ((s->unhappy || s->datalen > 0 || s->karn_count == 1) &&
       (s->rtt_time && cmp_timers(s->rtt_time,timeout) < 0))
@@ -504,7 +523,7 @@ int tcp_established (tcp_Socket *s)
  */
 static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
 {
-  tcp_Header *tcp;
+  tcp_Header *tcp_hdr;
   tcp_Socket *s;
   int        len;
   BYTE       flags;
@@ -522,18 +541,18 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
   }
 
   len   = in_GetHdrLen (ip);                /* len of IP header  */
-  tcp   = (tcp_Header*) ((BYTE*)ip + len);  /* tcp frame pointer */
+  tcp_hdr = (tcp_Header*) ((BYTE*)ip + len);  /* tcp frame pointer */
   len   = intel16 (ip->length) - len;       /* len of tcp+data   */
-  flags = tcp->flags & tcp_FlagMASK;        /* get TCP flags     */
+  flags = tcp_hdr->flags & tcp_FlagMASK;        /* get TCP flags     */
 
-  if (!tcp_chksum(ip,tcp,len))
+  if (!tcp_chksum(ip, tcp_hdr, len))
   {
     DEBUG_RX (NULL, ip);
     return (NULL);
   }
 
-  dstPort = intel16 (tcp->dstPort);
-  srcPort = intel16 (tcp->srcPort);
+  dstPort = intel16 (tcp_hdr->dstPort);
+  srcPort = intel16 (tcp_hdr->srcPort);
 
   /* demux to active sockets
    */
@@ -574,10 +593,10 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
   if (!s)
   {
     if (!(flags & tcp_FlagRST))              /* don't answer RST */
-       TCP_RESET (NULL, ip, tcp);
+       TCP_RESET (NULL, ip, tcp_hdr);
 
     else if ((flags & tcp_FlagACK) &&           /* got ACK,RST   */
-             (s = tcp_findseq(ip,tcp)) != NULL) /* ACK = SEQ + 1 */
+             (s = tcp_findseq(ip, tcp_hdr)) != NULL) /* ACK = SEQ + 1 */
             tcp_sockreset (s, 1);  /* e.g. a firewall is sending */
     STAT (tcpstats.tcps_drops++);  /* RST for server on inside   */
     return (NULL);
@@ -610,9 +629,9 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
  */
 static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
 {
-  udp_Socket      *s;
-  udp_Header      *udp;
-  tcp_PseudoHeader ph;
+  udp_Socket        *s;
+  udp_Header        *udp_hdr;
+  tcp_PseudoHeader  tcp_phdr;
 
   WORD  len, dstPort, srcPort;
   DWORD destin   = intel (ip->destination);
@@ -638,18 +657,18 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
 #endif
 
   len = in_GetHdrLen (ip);
-  udp = (udp_Header*) ((BYTE*)ip + len);   /* udp segment pointer */
-  len = intel16 (udp->length);
+  udp_hdr = (udp_Header*) ((BYTE*)ip + len);   /* udp segment pointer */
+  len = intel16 (udp_hdr->length);
 
-  if (len < sizeof(*udp))
+  if (len < sizeof(*udp_hdr))
   {
     DEBUG_RX (NULL, ip);
     STAT (udpstats.udps_hdrops++);
     return (NULL);
   }
 
-  srcPort = intel16 (udp->srcPort);
-  dstPort = intel16 (udp->dstPort);
+  srcPort = intel16 (udp_hdr->srcPort);
+  dstPort = intel16 (udp_hdr->dstPort);
 
   /* demux to active sockets
    */
@@ -745,16 +764,16 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
 
   /* these parameters are used for things other than just checksums
    */
-  memset (&ph, 0, sizeof(ph));
-  ph.src      = ip->source;      /* already network order */
-  ph.dst      = ip->destination;
-  ph.protocol = UDP_PROTO;
-  ph.length   = udp->length;
-  ph.checksum = checksum (udp, len);
+  memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+  tcp_phdr.src      = ip->source;      /* already network order */
+  tcp_phdr.dst      = ip->destination;
+  tcp_phdr.protocol = UDP_PROTO;
+  tcp_phdr.length   = udp_hdr->length;
+  tcp_phdr.checksum = checksum (udp_hdr, len);
 
-  if (udp->checksum && (s->sockmode & UDP_MODE_NOCHK) == 0)
+  if (udp_hdr->checksum && ISOFF_SOCKMODE(*s, UDP_MODE_NOCHK))
   {
-    if (checksum(&ph,sizeof(ph)) != 0xFFFF)
+    if (checksum(&tcp_phdr, sizeof(tcp_phdr)) != 0xFFFF)
     {
       if (debug_on)
          outsnl (_LANG("bad udp checksum"));
@@ -766,11 +785,11 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
   /* Process user data. 0-byte probe is legal for s->protoHandler.
    */
   {
-    BYTE *data = (BYTE*)(udp+1);
+    BYTE *data = (BYTE*)(udp_hdr+1);
 
-    len -= sizeof(*udp);
+    len -= sizeof(*udp_hdr);
     if (s->protoHandler)
-      (*s->protoHandler) (s, data, len, &ph, udp);
+      (*s->protoHandler) ((sock_type *)s, data, len, &tcp_phdr, udp_hdr);
     /* save first received packet rather than latest */
     else if (len > 0 && s->rdatalen == 0)
     {
@@ -918,8 +937,6 @@ void tcp_Retransmitter (int force)
  */
 int _ip_handler (in_Header *ip, BOOL broadcast)
 {
-  sock_type *s = NULL;
-
   if (block_ip || !_chk_ip_header(ip))
      return (0);
 
@@ -944,47 +961,59 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
      return (1);
 #endif
 
-  switch (ip->proto)
-  {
+    switch (ip->proto) {
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
-         s = (sock_type*) tcp_handler (ip, broadcast);
-         break;
+      {
+        tcp_Socket *s;
+
+        s = tcp_handler (ip, broadcast);
+        if (s != NULL) {    /* Check if peer allows IP-fragments */
+            if (intel16(ip->frag_ofs) & IP_DF) {
+                s->locflags |=  LF_NOFRAGMENT;
+            } else {
+                s->locflags &= ~LF_NOFRAGMENT;
+            }
+        }
+        break;
+      }
 #endif
 
     case UDP_PROTO:
-         s = (sock_type*) udp_handler (ip, broadcast);
-         break;
+      {
+        udp_Socket *s;
+
+        s = udp_handler (ip, broadcast);
+        if (s != NULL) {    /* Check if peer allows IP-fragments */
+            if (intel16(ip->frag_ofs) & IP_DF) {
+                s->locflags |=  LF_NOFRAGMENT;
+            } else {
+                s->locflags &= ~LF_NOFRAGMENT;
+            }
+        }
+        break;
+      }
 
     case ICMP_PROTO:
-         icmp_handler (ip, broadcast);
-         break;
+        icmp_handler (ip, broadcast);
+        break;
 
 #if defined(USE_MULTICAST)
     case IGMP_PROTO:
-         igmp_handler (ip, broadcast);
-         break;
+        igmp_handler (ip, broadcast);
+        break;
 #endif
     default:
-         if (!broadcast)
-         {
-           if (is_local_addr (intel(ip->destination)))
-              icmp_unreach (ip, 2);  /* protocol unreachable */
-           DEBUG_RX (NULL, ip);
-           STAT (ipstats.ips_noproto++);
-         }
-         return (0);
-  }
-
-  if (s)    /* Check if peer allows IP-fragments */
-  {
-    if (intel16(ip->frag_ofs) & IP_DF)
-         s->tcp.locflags |=  LF_NOFRAGMENT;
-    else s->tcp.locflags &= ~LF_NOFRAGMENT;
-  }
-
-  STAT (ipstats.ips_delivered++);
-  return (1);
+        if (!broadcast) {
+            if (is_local_addr (intel(ip->destination)))
+                icmp_unreach (ip, 2);  /* protocol unreachable */
+            DEBUG_RX (NULL, ip);
+            STAT (ipstats.ips_noproto++);
+        }
+        return (0);
+    }
+    STAT (ipstats.ips_delivered++);
+    return (1);
 }
 
 
@@ -1000,19 +1029,15 @@ WORD tcp_tick (sock_type *s)
 #if !defined(USE_UDP_ONLY)
   /* finish off dead sockets
    */
-  if (s)
-  {
-    if ((s->tcp.ip_type  == TCP_PROTO)       &&
-        (s->tcp.state    == tcp_StateCLOSED) &&
-        (s->tcp.rdatalen == 0))
-    {
-      (void) _tcp_unthread (&s->tcp);
-      s->tcp.ip_type = 0;   /* fail further I/O */
+    if (s != NULL && (s->u.ip_type == TCP_PROTO)) {
+        if ((s->tcp.state == tcp_StateCLOSED) && (s->tcp.rdatalen == 0)) {
+            (void) _tcp_unthread (&s->tcp);
+            s->u.ip_type = 0;   /* fail further I/O */
+        }
     }
-  }
 #endif
 
-  while (1)
+  for ( ;; )
   {
     WORD eth_type = 0;
     BOOL brdcast  = FALSE;
@@ -1057,7 +1082,7 @@ WORD tcp_tick (sock_type *s)
     daemon_timer = set_timeout (DAEMON_RUN_TIME);
   }
 
-  return (s ? s->tcp.ip_type : 0);
+  return ((s != NULL) ? s->u.ip_type : 0);
 }
 
 /*
@@ -1068,44 +1093,44 @@ static int udp_write (udp_Socket *s, const BYTE *data, int len)
   #include <sys/packon.h>
   struct udp_pkt {
          in_Header  in;
-         udp_Header udp;
+         udp_Header udp_hdr;
       /* BYTE       data[]; */
        } *pkt;
   #include <sys/packoff.h>
 
-  tcp_PseudoHeader ph;
-  in_Header       *ip;
-  udp_Header      *udp;
-  mac_address     *dst;
+  tcp_PseudoHeader  tcp_phdr;
+  in_Header         *ip;
+  udp_Header        *udp_hdr;
+  mac_address       *dst;
 
   /* build link-layer header
    */
   dst = (_pktserial ? NULL : &s->hisethaddr);
   pkt = (struct udp_pkt*) _eth_formatpacket (dst, IP_TYPE);
   ip  = &pkt->in;
-  udp = &pkt->udp;
+  udp_hdr = &pkt->udp_hdr;
 
   /* build udp header
    */
-  udp->srcPort  = intel16 (s->myport);
-  udp->dstPort  = intel16 (s->hisport);
-  udp->checksum = 0;
-  udp->length   = intel16 (sizeof(*udp)+len);
+  udp_hdr->srcPort  = intel16 (s->myport);
+  udp_hdr->dstPort  = intel16 (s->hisport);
+  udp_hdr->checksum = 0;
+  udp_hdr->length   = intel16 (sizeof(*udp_hdr)+len);
 
   memcpy (pkt+1, data, len);   /* copy 'data' to 'pkt->data[]' */
-  memset (&ph, 0, sizeof(ph));
-  ph.src = intel (s->myaddr);
-  ph.dst = intel (s->hisaddr);
+  memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+  tcp_phdr.src = intel (s->myaddr);
+  tcp_phdr.dst = intel (s->hisaddr);
 
-  if (!(s->sockmode & UDP_MODE_NOCHK))
+  if (ISOFF_SOCKMODE(*s, UDP_MODE_NOCHK))
   {
-    ph.protocol = UDP_PROTO;
-    ph.length   = udp->length;
-    ph.checksum = checksum (udp, sizeof(*udp)+len);
-    udp->checksum = ~checksum (&ph, sizeof(ph));
+    tcp_phdr.protocol = UDP_PROTO;
+    tcp_phdr.length   = udp_hdr->length;
+    tcp_phdr.checksum = checksum (udp_hdr, sizeof(*udp_hdr)+len);
+    udp_hdr->checksum = ~checksum (&tcp_phdr, sizeof(tcp_phdr));
   }
-  if (!IP_OUTPUT(ip, ph.src, ph.dst, UDP_PROTO, s->ttl,
-                 (BYTE)_default_tos, 0, sizeof(*udp)+len, s))
+  if (!IP_OUTPUT(ip, tcp_phdr.src, tcp_phdr.dst, UDP_PROTO, s->ttl,
+                 (BYTE)_default_tos, 0, sizeof(*udp_hdr)+len, s))
      return (-1);
   return (len);
 }
@@ -1141,11 +1166,11 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
   WORD        srcPort, dstPort;
   int         len     = in_GetHdrLen (ip);
   BOOL        passive = FALSE;
-  udp_Header *udp     = (udp_Header*) ((BYTE*)ip + len);
+  udp_Header *udp_hdr = (udp_Header*) ((BYTE*)ip + len);
   udp_Socket *s;
 
-  srcPort = intel16 (udp->srcPort);
-  dstPort = intel16 (udp->dstPort);
+  srcPort = intel16 (udp_hdr->srcPort);
+  dstPort = intel16 (udp_hdr->dstPort);
 
   for (s = _udp_allsocs; s; s = s->next)  /* demux to active sockets */
   {
@@ -1162,13 +1187,13 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
            break;
   }
 
-  if (s)  
+  if (s)
   {
     if (s->err_msg == NULL && msg)
         s->err_msg = msg;
 
     if (s->sol_callb)            /* tell the socket layer about it */
-      (*s->sol_callb) ((void*)s, type);
+      (*s->sol_callb) ((sock_type *)s, type);
 
     if (type == ICMP_REDIRECT && /* handle redirect on active sockets */
         !passive)
@@ -1191,7 +1216,7 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
     for (s = _udp_allsocs; s; s = s->next)
     {
       if (s->sol_callb)
-        (*s->sol_callb) ((void*)s, type);
+        (*s->sol_callb) ((sock_type *)s, type);
     }
   }
 }
@@ -1199,11 +1224,11 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
 #if !defined(USE_UDP_ONLY)
 void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
 {
-  tcp_Header *tcp = (tcp_Header*) ((BYTE*)ip + in_GetHdrLen (ip));
+  tcp_Header *tcp_hdr = (tcp_Header*) ((BYTE*)ip + in_GetHdrLen (ip));
   tcp_Socket *s;
 
-  WORD srcPort = intel16 (tcp->srcPort);
-  WORD dstPort = intel16 (tcp->dstPort);
+  WORD srcPort = intel16 (tcp_hdr->srcPort);
+  WORD dstPort = intel16 (tcp_hdr->dstPort);
 
   /* demux to active sockets
    */
@@ -1231,7 +1256,7 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
              }
              /* FALLTROUGH */
 
-        case ICMP_SOURCEQUENCH:    
+        case ICMP_SOURCEQUENCH:
              s->cwindow = 1;       /* slow-down tx-rate */
              s->wwindow = 1;
              s->vj_sa <<= 2;
@@ -1259,7 +1284,7 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
              break;
       }
       if (s->sol_callb)
-        (*s->sol_callb) ((void*)s, type);
+        (*s->sol_callb) ((sock_type *)s, type);
     }
   }
 }
@@ -1326,13 +1351,13 @@ static int tcp_write (tcp_Socket *s, const BYTE *data, UINT len)
     s->unhappy   = TRUE;    /* redundant because we have outstanding data */
     s->datatimer = set_timeout (1000 * sock_data_timeout); /* EE 99.08.23 */
 
-    if (s->sockmode & TCP_LOCAL)    /* queue up data, flush on next write */
+    if (ISON_SOCKMODE(*s, TCP_MODE_LOCAL))    /* queue up data, flush on next write */
     {
-      s->sockmode &= ~TCP_LOCAL;
+      SETOFF_SOCKMODE(*s, TCP_MODE_LOCAL);
       return (len);
     }
 
-    if (s->sockmode & TCP_MODE_NONAGLE)
+    if (ISON_SOCKMODE(*s, TCP_MODE_NONAGLE))
        rc = TCP_SEND (s);
     else
     {
@@ -1345,7 +1370,7 @@ static int tcp_write (tcp_Socket *s, const BYTE *data, UINT len)
     }
     if (rc < 0)
        return (-1);
-  }        
+  }
   return (len);
 }
 
@@ -1355,15 +1380,15 @@ static int tcp_write (tcp_Socket *s, const BYTE *data, UINT len)
  *  Find the socket with the tripplet:
  *  DESTADDR=MYADDR,DESTPORT=MYPORT and ACKNUM=SEQNUM+1
  */
-static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp)
+static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp_hdr)
 {
   tcp_Socket *s;
   DWORD      dstHost = intel (ip->destination);
-  DWORD      ackNum  = intel (tcp->acknum);
-  WORD       dstPort = intel16 (tcp->dstPort);
+  DWORD      ackNum  = intel (tcp_hdr->acknum);
+  WORD       dstPort = intel16 (tcp_hdr->dstPort);
 
   for (s = _tcp_allsocs; s; s = s->next)
-  {     
+  {
     if (s->hisport != 0      &&
         dstHost == s->myaddr &&
         dstPort == s->myport &&
@@ -1407,18 +1432,18 @@ static void tcp_sockreset (tcp_Socket *s, int proxy)
 /*
  *  tcp_chksum - Check tcp header checksum
  */
-static int tcp_chksum (const in_Header *ip, const tcp_Header *tcp, int len)
+static int tcp_chksum (const in_Header *ip, const tcp_Header *tcp_hdr, int len)
 {
-  tcp_PseudoHeader ph;
+  tcp_PseudoHeader  tcp_phdr;
 
-  memset (&ph, 0, sizeof(ph));
-  ph.src      = ip->source;
-  ph.dst      = ip->destination;
-  ph.protocol = TCP_PROTO;
-  ph.length   = intel16 (len);
-  ph.checksum = checksum (tcp, len);
+  memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+  tcp_phdr.src      = ip->source;
+  tcp_phdr.dst      = ip->destination;
+  tcp_phdr.protocol = TCP_PROTO;
+  tcp_phdr.length   = intel16 (len);
+  tcp_phdr.checksum = checksum (tcp_hdr, len);
 
-  if (checksum(&ph,sizeof(ph)) == 0xFFFF)
+  if (checksum(&tcp_phdr,sizeof(tcp_phdr)) == 0xFFFF)
      return (1);
 
   STAT (tcpstats.tcps_rcvbadsum++);
@@ -1555,7 +1580,7 @@ static __inline int tcp_opt_timestamp (tcp_Socket *s, BYTE *opt,
 {
   *opt++ = TCPOPT_NOP;     /* NOP,NOP,TIMESTAMP,length,TSval,TSecho */
   *opt++ = TCPOPT_NOP;
-  *opt++ = TCPOPT_TIMESTAMP;   
+  *opt++ = TCPOPT_TIMESTAMP;
   *opt++ = 10;
   *(DWORD*) opt = intel (ts_val);  opt += sizeof(ts_val);
   *(DWORD*) opt = intel (ts_echo); opt += sizeof(ts_echo);
@@ -1664,17 +1689,17 @@ int _tcp_send (tcp_Socket *s, char *file, unsigned line)
   #include <sys/packon.h>
   struct tcp_pkt {
          in_Header  in;
-         tcp_Header tcp;
+         tcp_Header tcp_hdr;
        } *pkt;
   #include <sys/packoff.h>
 
-  tcp_PseudoHeader ph;
+  tcp_PseudoHeader  tcp_phdr;
 
   BOOL         tx_ok;
   BYTE        *data;            /* where to copy user's data */
   mac_address *dst;
   in_Header   *ip;
-  tcp_Header  *tcp;
+  tcp_Header  *tcp_hdr;
   int          sendtotlen = 0;  /* count of data length we've sent */
   int          senddatalen;     /* how much data in this segment */
   int          startdata;       /* where data starts in tx-buffer */
@@ -1689,8 +1714,8 @@ int _tcp_send (tcp_Socket *s, char *file, unsigned line)
   dst  = (_pktserial ? NULL : &s->hisethaddr);
   pkt  = (struct tcp_pkt*) _eth_formatpacket (dst, IP_TYPE);
   ip   = &pkt->in;
-  tcp  = &pkt->tcp;
-  data = (BYTE*) (tcp+1);
+  tcp_hdr = &pkt->tcp_hdr;
+  data = (BYTE*) (tcp_hdr+1);
 
   if (s->karn_count == 2)   /* doing slow-start */
   {
@@ -1714,16 +1739,16 @@ int _tcp_send (tcp_Socket *s, char *file, unsigned line)
   {
     /* make tcp header
      */
-    tcp->srcPort  = intel16 (s->myport);
-    tcp->dstPort  = intel16 (s->hisport);
-    tcp->seqnum   = intel (s->seqnum + startdata); /* unacked - no longer sendtotlen */
-    tcp->acknum   = intel (s->acknum);
+    tcp_hdr->srcPort  = intel16 (s->myport);
+    tcp_hdr->dstPort  = intel16 (s->hisport);
+    tcp_hdr->seqnum   = intel (s->seqnum + startdata); /* unacked - no longer sendtotlen */
+    tcp_hdr->acknum   = intel (s->acknum);
 
-    tcp->window   = intel16 (s->maxrdatalen - s->rdatalen);
-    tcp->flags    = s->flags;
-    tcp->unused   = 0;
-    tcp->checksum = 0;
-    tcp->urgent   = 0;
+    tcp_hdr->window   = intel16 (s->maxrdatalen - s->rdatalen);
+    tcp_hdr->flags    = s->flags;
+    tcp_hdr->unused   = 0;
+    tcp_hdr->checksum = 0;
+    tcp_hdr->urgent   = 0;
 
     /* Insert any TCP options after header
      */
@@ -1742,9 +1767,9 @@ int _tcp_send (tcp_Socket *s, char *file, unsigned line)
       senddatalen = min (sendtotdata, data_free);
     }
 
-    tcp_len = sizeof(*tcp) + opt_len;
+    tcp_len = sizeof(*tcp_hdr) + opt_len;
     data   += opt_len;
-    tcp->offset = tcp_len/4;
+    tcp_hdr->offset = tcp_len / 4;
 
     if (senddatalen > 0)         /* non-SYN packets with data */
     {
@@ -1755,19 +1780,19 @@ int _tcp_send (tcp_Socket *s, char *file, unsigned line)
     }
 
     if (s->locflags & LF_NOPUSH)
-       tcp->flags &= ~tcp_FlagPUSH;
+       tcp_hdr->flags &= ~tcp_FlagPUSH;
 
     /* make tcp header check-sum
      */
-    memset (&ph, 0, sizeof(ph));
-    ph.src      = intel (s->myaddr);
-    ph.dst      = intel (s->hisaddr);
-    ph.protocol = TCP_PROTO;
-    ph.length   = intel16 (tcp_len);
-    ph.checksum = checksum (tcp, tcp_len);
-    tcp->checksum = ~checksum (&ph, sizeof(ph));
+    memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+    tcp_phdr.src      = intel (s->myaddr);
+    tcp_phdr.dst      = intel (s->hisaddr);
+    tcp_phdr.protocol = TCP_PROTO;
+    tcp_phdr.length   = intel16 (tcp_len);
+    tcp_phdr.checksum = checksum (tcp_hdr, tcp_len);
+    tcp_hdr->checksum = ~checksum (&tcp_phdr, sizeof(tcp_phdr));
 
-    tx_ok = _ip_output (ip, ph.src, ph.dst, TCP_PROTO,
+    tx_ok = _ip_output (ip, tcp_phdr.src, tcp_phdr.dst, TCP_PROTO,
                         s->ttl, s->tos, 0, tcp_len, s, file, line) != 0;
     if (!tx_ok)
     {
@@ -1835,7 +1860,7 @@ int sock_keepalive (sock_type *s)
   BYTE        kc;
   int         datalen;
 
-  if (s->tcp.ip_type != TCP_PROTO)
+  if (s->u.ip_type != TCP_PROTO)
      return (0);
 
   tcp     = &s->tcp;
@@ -1869,10 +1894,11 @@ int sock_keepalive (sock_type *s)
  */
 WORD sock_mode (sock_type *s, WORD mode)
 {
-  if (s->tcp.ip_type == TCP_PROTO || s->tcp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == TCP_PROTO || s->u.ip_type == UDP_PROTO)
   {
-    s->tcp.sockmode = (s->tcp.sockmode & 0xFFFC) | mode;
-    return (s->tcp.sockmode);
+    SETOFF_SOCKMODE(s->u, SOCK_MODE_MASK);
+    SETON_SOCKMODE(s->u, mode & SOCK_MODE_MASK);
+    return (s->u.sockmode & SOCK_MODE_MASK);
   }
   return (0);
 }
@@ -1880,32 +1906,39 @@ WORD sock_mode (sock_type *s, WORD mode)
 /*
  * sock_yield - enable user defined yield function
  */
-int sock_yield (tcp_Socket *s, void (*fn)())
+int sock_yield (sock_type *s, void (*fn)(void))
 {
-  if (s)
-       s->usr_yield = fn;
-  else system_yield = fn;
-  return (0);
+    if (s != NULL) {
+        switch (s->u.ip_type) {
+        case UDP_PROTO:
+#if !defined(USE_UDP_ONLY)
+        case TCP_PROTO:
+#endif
+            s->u.usr_yield = fn;
+            return (0);
+        }
+    }
+    system_yield = fn;
+    return (0);
 }
 
 
 void sock_abort (sock_type *s)
 {
-  switch (s->tcp.ip_type)
-  {
+    switch (s->u.ip_type) {
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
-         tcp_abort (&s->tcp);
-         break;
+        tcp_abort (&s->tcp);
+        break;
 #endif
     case UDP_PROTO:
-         udp_close (&s->udp);
-         break;
+        udp_close (&s->udp);
+        break;
     case IP_TYPE:
-         s->raw.ip_type = 0;
-         s->raw.used    = 0;
-         break;
-  }
+        s->u.ip_type = 0;
+        s->raw.used = 0;
+        break;
+    }
 }
 
 #if defined(USE_BSD_FUNC)
@@ -1944,7 +1977,7 @@ int sock_read (sock_type *s, BYTE *buf, int maxlen)
     int len = 0;
     int raw = 0;
 
-    switch (s->udp.ip_type)
+    switch (s->u.ip_type)
     {
 #if !defined(USE_UDP_ONLY)
       case TCP_PROTO:
@@ -1987,16 +2020,16 @@ int sock_read (sock_type *s, BYTE *buf, int maxlen)
  */
 int sock_fastread (sock_type *s, BYTE *buf, int len)
 {
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
      return udp_read (&s->udp, buf, len);
 
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO || s->tcp.rdatalen > 0)
+  if (s->u.ip_type == TCP_PROTO || s->tcp.rdatalen > 0)
      return tcp_read (&s->tcp, buf, len);
 #endif
 
 #if defined(USE_BSD_FUNC)
-  if (s->raw.ip_type == IP_TYPE)
+  if (s->u.ip_type == IP_TYPE)
      return raw_read (&s->raw, buf, len);
 #endif
 
@@ -2016,14 +2049,14 @@ int sock_write (sock_type *s, const BYTE *data, int len)
 
   while (chunk > 0)
   {
-    switch (s->udp.ip_type)
+    switch (s->u.ip_type)
     {
 #if !defined(USE_UDP_ONLY)
       case TCP_PROTO:
            s->tcp.flags |= tcp_FlagPUSH;
            written = tcp_write (&s->tcp, data, chunk);
            break;
-#endif           
+#endif
       case UDP_PROTO:
            chunk = min (mtu - sizeof(in_Header) - sizeof(udp_Header), chunk);
            written = udp_write (&s->udp, data, chunk);
@@ -2064,7 +2097,7 @@ int sock_write (sock_type *s, const BYTE *data, int len)
  */
 int sock_fastwrite (sock_type *s, const BYTE *data, int len)
 {
-  switch (s->udp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          len = min (mtu - sizeof(in_Header) - sizeof(udp_Header), len);
@@ -2086,7 +2119,7 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
   if (len <= 0)
      return (0);
 
-  if (s->udp.ip_type == UDP_PROTO)
+  if (s->u.ip_type == UDP_PROTO)
   {
     int written = 0;
     int total   = 0;
@@ -2108,7 +2141,7 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
   }
 
 #if !defined(USE_UDP_ONLY)
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.queue    = data;
     s->tcp.queuelen = len;
@@ -2122,10 +2155,10 @@ int sock_enqueue (sock_type *s, const BYTE *data, int len)
 #if !defined(USE_UDP_ONLY)
 void sock_noflush (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags &= ~tcp_FlagPUSH;
-    s->tcp.sockmode |= TCP_LOCAL;
+    SETON_SOCKMODE(s->tcp, TCP_MODE_LOCAL);
   }
 }
 
@@ -2134,11 +2167,11 @@ void sock_noflush (sock_type *s)
  */
 void sock_flush (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     tcp_Socket *tcp = &s->tcp;
 
-    tcp->sockmode &= ~TCP_LOCAL;
+    SETOFF_SOCKMODE(*tcp, TCP_MODE_LOCAL);
     if (tcp->datalen > 0)
     {
       tcp->flags |= tcp_FlagPUSH;
@@ -2153,10 +2186,10 @@ void sock_flush (sock_type *s)
  */
 void sock_flushnext (sock_type *s)
 {
-  if (s->tcp.ip_type == TCP_PROTO)
+  if (s->u.ip_type == TCP_PROTO)
   {
     s->tcp.flags |= tcp_FlagPUSH;
-    s->tcp.sockmode &= ~TCP_LOCAL;
+    SETOFF_SOCKMODE(s->tcp, TCP_MODE_LOCAL);
   }
 }
 #endif  /* !USE_UDP_ONLY */
@@ -2164,7 +2197,7 @@ void sock_flushnext (sock_type *s)
 
 int sock_close (sock_type *s)
 {
-  switch (s->tcp.ip_type)
+  switch (s->u.ip_type)
   {
     case UDP_PROTO:
          udp_close (&s->udp);

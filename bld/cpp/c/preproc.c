@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,8 +97,6 @@ static const char * const Months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
-
-static char MBCharLen[256];         // multi-byte character len table
 
 static char *str_dup( const char *str )
 {
@@ -295,7 +293,7 @@ static void PP_GenLine( void )
 {
     char        *p;
     const char  *fname;
-    int         i;
+    int         len;
 
     p = PPLineBuf + 1;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
@@ -310,7 +308,8 @@ static void PP_GenLine( void )
                 continue;
             }
 #endif
-            for( i = MBCharLen[*(unsigned char *)fname] + 1; i > 0; --i ) {
+            len = PP_MBCharLen( fname );
+            while( len-- > 0 ) {
                 *p++ = *fname++;
             }
         }
@@ -338,30 +337,7 @@ static void PP_TimeInit( void )
     sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }
 
-static void SetRange( int low, int high, char data )
-{
-    int     i;
-
-    for( i = low; i <= high; ++i ) {
-        MBCharLen[i] = data;
-    }
-}
-
-void PP_SetLeadBytes( const char *bytes )
-{
-    unsigned    i;
-
-    for( i = 0; i < 256; i++ ) {
-        MBCharLen[i] = bytes[i];
-    }
-}
-
-int PPENTRY PP_FileInit( const char *filename, pp_flags flags, const char *include_path )
-{
-    return( PP_FileInit2( filename, flags, include_path, NULL ) );
-}
-
-int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *include_path, const char *leadbytes )
+int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
 {
     FILE        *handle;
     int         hash;
@@ -369,26 +345,9 @@ int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *incl
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         PPHashTable[hash] = NULL;
     }
+    PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
-    PPFlags = flags;
-    memset( MBCharLen, 0, 256 );
-    if( leadbytes != NULL ) {
-        PP_SetLeadBytes( leadbytes );
-    } else if( flags & PPFLAG_DB_KANJI ) {
-        SetRange( 0x81, 0x9f, 1 );
-        SetRange( 0xe0, 0xfc, 1 );
-    } else if( flags & PPFLAG_DB_CHINESE ) {
-        SetRange( 0x81, 0xfc, 1 );
-    } else if( flags & PPFLAG_DB_KOREAN ) {
-        SetRange( 0x81, 0xfd, 1 );
-    } else if( flags & PPFLAG_UTF8 ) {
-        SetRange( 0xc0, 0xdf, 1 );
-        SetRange( 0xe0, 0xef, 2 );
-        SetRange( 0xf0, 0xf7, 3 );
-        SetRange( 0xf8, 0xfb, 4 );
-        SetRange( 0xfc, 0xfd, 5 );
-    }
     IncludePath2 = PP_Malloc( 1 );
     *IncludePath2 = '\0';
     IncludePath2 = AddIncludePath( IncludePath2, include_path );
@@ -1123,28 +1082,24 @@ static int PP_Read( void )
 static const char *PPScanLiteral( const char *p )
 {
     char        quote_char;
-    int         i;
+    int         len;
 
-    quote_char = *p++;
-    for( ;; ) {
-        i = MBCharLen[*(unsigned char *)p];
-        if( i )  {
-            p += i + 1;
-            continue;
-        }
-        if( *p == '\0' )
-            break;
-        if( *p == quote_char ) {
-            ++p;
-            break;
-        }
-        if( *p == '\\' ) {
-            ++p;
-            if( *p == '\0' ) {
+    for( quote_char = *p++; ; p += len ) {
+        len = PP_MBCharLen( p );
+        if( len == 1 )  {
+            if( *p == '\0' )
+                break;
+            if( *p == quote_char ) {
+                ++p;
                 break;
             }
+            if( *p == '\\' ) {
+                ++p;
+                if( *p == '\0' ) {
+                    break;
+                }
+            }
         }
-        ++p;
     }
     return( p );
 }

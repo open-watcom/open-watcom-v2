@@ -39,9 +39,9 @@ char  defaultdomain [MAX_HOSTLEN+1] = "your.domain.com";
 char *def_domain = defaultdomain;
 char *loc_domain;    /* current subname to be used by the domain system */
 
-int (*_resolve_hook)(void);      /* user hook for terminating resolve() */
-int   _resolve_exit;             /* user hook interrupted */
-int   _resolve_timeout;          /* (reverse) lookup timeout */
+int (*_resolve_hook)(void) = NULL;  /* user hook for terminating resolve() */
+int   _resolve_exit;                /* user hook interrupted */
+int   _resolve_timeout;             /* (reverse) lookup timeout */
 
 DWORD def_nameservers [MAX_NAMESERVERS];
 WORD  last_nameserver = 0;
@@ -356,12 +356,12 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
       return (0);
     }
 
-    ip_timer_init (dom_sock,sec);
+    ip_timer_init ((sock_type *)dom_sock,sec);
     do
     {
       tcp_tick ((sock_type*)dom_sock);
 
-      if (ip_timer_expired(dom_sock) || chk_timeout(resolve_timeout))
+      if (ip_timer_expired((sock_type *)dom_sock) || chk_timeout(resolve_timeout))
          break;
 
       kbhit();
@@ -379,7 +379,7 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
     while (*timedout);
 
     if (!*timedout)           /* got an answer */
-       break;      
+       break;
   }
 
   if (*timedout)

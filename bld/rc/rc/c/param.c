@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,6 +195,19 @@ static bool ScanMultiOptArg( const char * arg )
     return( contok );
 } /* ScanMultiOptArg */
 
+static void setCodePageFile( const char *fname )
+/**********************************************/
+{
+    if( CmdLineParms.CodePageFile != NULL ) {
+        RcMemFree( CmdLineParms.CodePageFile );
+        CmdLineParms.CodePageFile = NULL;
+    }
+    if( fname != NULL ) {
+        CmdLineParms.CodePageFile = RcMemMalloc( strlen( fname ) + 1 );
+        strcpy( CmdLineParms.CodePageFile, fname );
+    }
+}
+
 static bool ScanOptionsArg( const char *arg )
 /*******************************************/
 {
@@ -277,7 +290,9 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        CmdLineParms.CodePageFile = scanString( RcMemMalloc( len + 1 ), arg, len  );
+        p = scanString( RcMemMalloc( len + 1 ), arg, len  );
+        setCodePageFile( p );
+        RcMemFree( p );
         break;
     case 'd':
         /* temporary until preprocessing done inline */
@@ -436,67 +451,26 @@ static bool ScanOptionsArg( const char *arg )
         case 'n':
             CmdLineParms.NoPreprocess = true;
             break;
-        /*
-            Lead-byte and trail-byte ranges for code pages used in Far East
-            editions of Windows 95.
-
-                        Character           Code    Lead-Byte   Trail-Byte
-        Language        Set Name            Page    Ranges      Ranges
-
-        Chinese
-        (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
-
-        Chinese
-        (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
-                                                                0xA1-0xFE
-
-        Japanese        Shift-JIS (Japan
-                        Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
-                                                    0xE0-0xFC   (except 0x7F)
-
-        Korean
-        (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
-                                                                0x61-0x7A
-                                                                0x81-0xFE
-
-        Korean
-        (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
-                                                    0xD8        0x81-0xFE
-                                                    0xD9-0xDE   (Government
-                                                    0xE0-0xF9   standard:
-                                                                0x31-0x7E
-                                                                0x41-0xFE)
-        */
         case 'k':
             arg++;
             switch( tolower( *arg ) ) {
             case '1':
-                SetMBRange( 0x81, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_TRADITIONAL_CHINESE;
                 break;
             case '2':
-                SetMBRange( 0x81, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_WANSUNG_KOREAN;
                 break;
             case '3':
-                SetMBRange( 0xA1, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_SIMPLIFIED_CHINESE;
                 break;
             case '0':
             case ' ':
             case '\0':
-                SetMBRange( 0x81, 0x9f, 1 );
-                SetMBRange( 0xe0, 0xfc, 1 );
                 CmdLineParms.MBCharSupport = DB_KANJI;
                 break;
             case 'u':
                 if( arg[1] == '8' ) {
                     arg++;
-                    SetMBRange( 0xc0, 0xdf, 1 );
-                    SetMBRange( 0xe0, 0xef, 2 );
-                    SetMBRange( 0xf0, 0xf7, 3 );
-                    SetMBRange( 0xf8, 0xfb, 4 );
-                    SetMBRange( 0xfc, 0xfd, 5 );
                     CmdLineParms.MBCharSupport = MB_UTF8;
                     break;
                 }
@@ -639,30 +613,6 @@ static void CheckParms( void )
     if( CmdLineParms.GenAutoDep && CmdLineParms.MSResFormat ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
     }
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-#define UNICODE_SIMPLIFIED_CHINESE_FILE     "936.uni"
-#define UNICODE_TRADITIONAL_CHINESE_FILE    "950.uni"
-#define UNICODE_KANJI_FILE                  "kanji.uni"
-#define UNICODE_WANSUNG_KOREAN_FILE         "949.uni"
-        switch( CmdLineParms.MBCharSupport ) {
-        case DB_SIMPLIFIED_CHINESE:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_SIMPLIFIED_CHINESE_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_SIMPLIFIED_CHINESE_FILE );
-            break;
-        case DB_TRADITIONAL_CHINESE:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_TRADITIONAL_CHINESE_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_TRADITIONAL_CHINESE_FILE );
-            break;
-        case DB_KANJI:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_KANJI_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_KANJI_FILE );
-            break;
-        case DB_WANSUNG_KOREAN:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_WANSUNG_KOREAN_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_WANSUNG_KOREAN_FILE );
-            break;
-        }
-    }
     if( CmdLineParms.PreprocessOnly && CmdLineParms.NoPreprocess ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
     }
@@ -785,12 +735,81 @@ static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
     return( ret * 2 );
 }
 
-static void getCodePage( void ) {
+static void initMBCodePage( void )
 /********************************/
-
+{
     RcStatus            ret;
     char                path[_MAX_PATH];
 
+    /*
+        Lead-byte and trail-byte ranges for code pages used in Far East
+        editions of Windows 95.
+
+                    Character           Code    Lead-Byte   Trail-Byte
+    Language        Set Name            Page    Ranges      Ranges
+
+    Chinese
+    (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
+
+    Chinese
+    (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
+                                                            0xA1-0xFE
+
+    Japanese        Shift-JIS (Japan
+                    Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
+                                                0xE0-0xFC   (except 0x7F)
+
+    Korean
+    (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
+                                                            0x61-0x7A
+                                                            0x81-0xFE
+
+    Korean
+    (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
+                                                0xD8        0x81-0xFE
+                                                0xD9-0xDE   (Government
+                                                0xE0-0xF9   standard:
+                                                            0x31-0x7E
+                                                            0x41-0xFE)
+    */
+    switch( CmdLineParms.MBCharSupport ) {
+    case DB_TRADITIONAL_CHINESE:
+        SetMBRange( 0x81, 0xfe, 1 );
+        break;
+    case DB_WANSUNG_KOREAN:
+        SetMBRange( 0x81, 0xfe, 1 );
+        break;
+    case DB_SIMPLIFIED_CHINESE:
+        SetMBRange( 0xA1, 0xfe, 1 );
+        break;
+    case DB_KANJI:
+        SetMBRange( 0x81, 0x9f, 1 );
+        SetMBRange( 0xe0, 0xfc, 1 );
+        break;
+    case MB_UTF8:
+        SetMBRange( 0xc0, 0xdf, 1 );
+        SetMBRange( 0xe0, 0xef, 2 );
+        SetMBRange( 0xf0, 0xf7, 3 );
+        SetMBRange( 0xf8, 0xfb, 4 );
+        SetMBRange( 0xfc, 0xfd, 5 );
+        break;
+    }
+    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        switch( CmdLineParms.MBCharSupport ) {
+        case DB_SIMPLIFIED_CHINESE:
+            setCodePageFile( "936.uni" );
+            break;
+        case DB_TRADITIONAL_CHINESE:
+            setCodePageFile( "950.uni" );
+            break;
+        case DB_KANJI:
+            setCodePageFile( "kanji.uni" );
+            break;
+        case DB_WANSUNG_KOREAN:
+            setCodePageFile( "949.uni" );
+            break;
+        }
+    }
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         ConvToUnicode = UTF8StringToUnicode;
     } else if( CmdLineParms.CodePageFile != NULL ) {
@@ -812,8 +831,9 @@ static void getCodePage( void ) {
         case RS_OPEN_ERROR:
             RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
             break;
-        default:
+        case RS_OK:
             SetMBChars( GetLeadBytes() );
+            ConvToUnicode = DBStringToUnicode;
             break;
         }
 #ifdef __NT__
@@ -1009,7 +1029,7 @@ bool ScanParams( int argc, char * argv[] )
             contok = false;
         } else {
             CheckParms();
-            getCodePage();
+            initMBCodePage();
         }
     }
     return( contok );

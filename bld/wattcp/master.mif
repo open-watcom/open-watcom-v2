@@ -77,7 +77,13 @@ inc_dirs = -I"../inc"
 .c : ../src
 .asm : ../src
 
-wattcpl.lib: $(objs) $(__MAKEFILES__)
+!ifndef lib_suffix
+!ifdef memory_model_$(host_cpu)
+lib_suffix = $(memory_model_$(host_cpu))
+!endif
+!endif
+
+wattcp$(lib_suffix).lib: $(objs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %f in ($(objs)) do @%append $^&.lbc +- %f
     @%make echo_lib

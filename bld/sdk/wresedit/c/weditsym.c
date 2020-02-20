@@ -103,11 +103,19 @@ static void addSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
 {
     char                *name;
     int                 c;
-    unsigned            flags;
+    pp_flags            ppflags;
     char                *inc_path;
     WGetFileStruct      gf;
     bool                ret;
@@ -141,7 +149,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     WSetWaitCursor( parent, true );
 
     if( ok ) {
-        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv ) != 0;
         if( ret ) {
@@ -152,7 +160,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, flags, inc_path );
+        ok = !PP_FileInit( name, ppflags, inc_path );
         if( !ok ) {
             WDisplayErrorMsg( W_NOOPENSYMFILE );
         }

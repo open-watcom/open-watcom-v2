@@ -8,8 +8,9 @@
 /*
  * The Watcom stackset() functions are from Dan Kegel's RARP implementation
  */
-#if defined(__WATCOMC__) && !defined(__386__)  /* 16-bit Watcom */
-  extern void stackset (void far *stack);
+#if defined(__WATCOMC__)
+#if defined(_M_I86)  /* 16-bit Watcom */
+  extern void stackset (void __far *stack);
   #pragma aux stackset = \
           "mov  ax, ss"  \
           "mov  bx, sp"  \
@@ -28,7 +29,7 @@
           "mov sp, bx"             /* don't put esp here */  \
           __modify [__ax __bx];
 
-#elif defined(__WATCOM386__)       /* 32-bit Watcom targets */
+#else       /* 32-bit Watcom targets */
   #define USES_DPMI_API
 
   extern void stackset (void *stack);
@@ -47,6 +48,12 @@
   #pragma aux stackrestore = \
           "lss esp, [esp]";
 
+  extern DWORD _get_limit (WORD sel);
+  #pragma aux _get_limit = \
+          "lsl eax, eax"   \
+          __parm [__eax];
+#endif
+
   extern WORD My_CS (void);
   #pragma aux My_CS =  \
           "mov ax, cs" \
@@ -57,12 +64,7 @@
           "mov ax, ds" \
           __modify [__ax];
 
-  extern DWORD _get_limit (WORD sel);
-  #pragma aux _get_limit = \
-          "lsl eax, eax"   \
-          __parm [__eax];
-
-#elif defined(__BORLAND386__) && (DOSX == WDOSX)
+#elif defined(BORLAND386) && (DOSX == WDOSX)
   #define USES_DPMI_API
 
   #define stackset(stk)  __asm { mov  ax,ss;    \
@@ -115,11 +117,11 @@
   extern int   dpmi_unlock_region  (void *address, unsigned length);
   extern void *dpmi_get_real_vector(int intr);
   extern int   dpmi_real_interrupt (int intr, struct DPMI_regs *reg);
-  extern int   dpmi_alloc_callback (void (*func)(), struct DPMI_callback *cb);
+  extern int   dpmi_alloc_callback (void (*func)(void), struct DPMI_callback *cb);
   extern int   dpmi_cpu_type       (void);
   extern int   dpmi_dos_yield      (void);
 
-#ifdef __BORLAND386__
+#ifdef BORLAND386
   extern int dpmi_real_interrupt2 (int intr, struct DPMI_regs *reg);
 #endif
 

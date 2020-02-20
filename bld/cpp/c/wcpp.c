@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,20 @@
 #include "swchar.h"
 
 
+typedef enum {
+    MBCP_NONE       = 0,
+    MBCP_KANJI      = 1,
+    MBCP_CHINESE    = 2,
+    MBCP_KOREAN     = 3,
+    MBCP_UTF8       = 4,
+} mb_codepage;
+
+static char     **defines = NULL;
+static int      numdefs = 0;
+static char     **filenames = NULL;
+static int      nofilenames = 0;
+static char     *out_filename = NULL;
+
 static const char * const usageMsg[] = {
     "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-o<file>] [-zk0] [-zk1] [-zk2]\n"
     "\t\t[-zku8] [input files]\n",
@@ -58,10 +73,14 @@ static const char * const usageMsg[] = {
     NULL
 };
 
+static char         MBCharLen[256];         // multi-byte character len table
+static int          mbcp = MBCP_NONE;
+
 /* forward declaration */
-static bool doScanParams( int argc, char *argv[] );
+static bool doScanParams( int argc, char *argv[], pp_flags *ppflags );
 
 static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
+/***************************************************************************/
 {
     va_list     al;
 
@@ -84,6 +103,7 @@ static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
 }
 
 static char *my_strdup( const char *str )
+/***************************************/
 {
     size_t     len;
     char       *ptr;
@@ -92,13 +112,6 @@ static char *my_strdup( const char *str )
     ptr = malloc( len );
     return( memcpy( ptr, str, len ) );
 }
-
-static int      flags = 0;
-static char     **defines = NULL;
-static int      numdefs = 0;
-static char     **filenames = NULL;
-static int      nofilenames = 0;
-static char     *out_filename = NULL;
 
 static bool scanString( char *buf, const char *str, size_t len )
 /**************************************************************/
@@ -121,8 +134,8 @@ static bool scanString( char *buf, const char *str, size_t len )
     return( have_quote );
 }
 
-static bool ScanOptionsArg( const char * arg )
-/********************************************/
+static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
+/***************************************************************/
 {
     bool        contok;
     size_t      len;
@@ -131,7 +144,7 @@ static bool ScanOptionsArg( const char * arg )
 
     switch( tolower( *arg ) ) {
     case 'c':
-        flags |= PPFLAG_KEEP_COMMENTS;
+        *ppflags |= PPFLAG_KEEP_COMMENTS;
         break;
     case 'd':
         ++arg;
@@ -154,7 +167,7 @@ static bool ScanOptionsArg( const char * arg )
         }
         break;
     case 'l':
-        flags |= PPFLAG_EMIT_LINE;
+        *ppflags |= PPFLAG_EMIT_LINE;
         break;
     case 'o':
         ++arg;
@@ -169,17 +182,17 @@ static bool ScanOptionsArg( const char * arg )
         ++arg;
         if( tolower( arg[0] ) == 'k' ) {
             if( arg[1] == '0' && arg[2] == '\0' ) {
-                flags |= PPFLAG_DB_KANJI;
+                mbcp = MBCP_KANJI;
                 break;
             } else if( arg[1] == '1' && arg[2] == '\0' ) {
-                flags |= PPFLAG_DB_CHINESE;
+                mbcp = MBCP_CHINESE;
                 break;
             } else if( arg[1] == '2' && arg[2] == '\0' ) {
-                flags |= PPFLAG_DB_KOREAN;
+                mbcp = MBCP_KOREAN;
                 break;
             } else if( tolower( arg[1] ) == 'u' ) {
                 if( arg[2] == '8' && arg[3] == '\0' ) {
-                    flags |= PPFLAG_UTF8;
+                    mbcp = MBCP_UTF8;
                     break;
                 }
             }
@@ -253,8 +266,8 @@ static int ParseVariable( const char *var, char **argv, char *buf )
     return( argc );
 }
 
-static bool scanEnvVarOrFile( const char *name )
-/**********************************************/
+static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
+/*****************************************************************/
 {
     /*
      * Pass nofilenames and analysis of getenv(name) into argc and argv
@@ -313,15 +326,15 @@ static bool scanEnvVarOrFile( const char *name )
     ParseVariable( optstring, info->argv, info->buf + argvsize );
     info->name = info->buf + argvsize + argbufsize;
     strcpy( info->name, name );
-    result = doScanParams( argc, info->argv );
+    result = doScanParams( argc, info->argv, ppflags );
 
     stack = info->next;                             // pop stack
     free( info );
     return( result );
 }
 
-static bool doScanParams( int argc, char *argv[] )
-/************************************************/
+static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
+/*******************************************************************/
 {
     const char  *arg;
     int         switchchar;
@@ -333,9 +346,9 @@ static bool doScanParams( int argc, char *argv[] )
     for( currarg = 0; currarg < argc && contok; currarg++ ) {
         arg = argv[currarg];
         if( *arg == switchchar || *arg == '-' ) {
-            contok = ScanOptionsArg( arg + 1 ) && contok;
+            contok = ScanOptionsArg( arg + 1, ppflags ) && contok;
         } else if( *arg == '@' ) {
-            contok = scanEnvVarOrFile( arg + 1 ) && contok;
+            contok = scanEnvVarOrFile( arg + 1, ppflags ) && contok;
         } else if( *arg == '?' ) {
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
@@ -347,13 +360,31 @@ static bool doScanParams( int argc, char *argv[] )
     return( contok );
 }
 
+static void SetRange( char *p, int low, int high, char data )
+/***********************************************************/
+{
+    int     i;
+
+    for( i = low; i <= high; ++i ) {
+        p[i] = data;
+    }
+}
+
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    return( MBCharLen[*(unsigned char *)p] + 1 );
+}
+
 int main( int argc, char *argv[] )
+/********************************/
 {
     int         ch;
     int         i;
     int         j;
     int         rc;
     FILE        *fo;
+    pp_flags    ppflags;
 
     if( argc < 2 ) {
         wcpp_quit( usageMsg, "No filename specified\n" );
@@ -366,7 +397,28 @@ int main( int argc, char *argv[] )
     PP_IncludePathInit();
 
     rc = EXIT_FAILURE;
-    if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+    memset( MBCharLen, 0, 256 );
+    ppflags = PPFLAG_NONE;
+    if( doScanParams( argc - 1, argv + 1, &ppflags ) && nofilenames != 0 ) {
+        switch( mbcp ) {
+        case MBCP_KANJI:
+            SetRange( MBCharLen, 0x81, 0x9f, 1 );
+            SetRange( MBCharLen, 0xe0, 0xfc, 1 );
+            break;
+        case MBCP_CHINESE:
+            SetRange( MBCharLen, 0x81, 0xfc, 1 );
+            break;
+        case MBCP_KOREAN:
+            SetRange( MBCharLen, 0x81, 0xfd, 1 );
+            break;
+        case MBCP_UTF8:
+            SetRange( MBCharLen, 0xc0, 0xdf, 1 );
+            SetRange( MBCharLen, 0xe0, 0xef, 2 );
+            SetRange( MBCharLen, 0xf0, 0xf7, 3 );
+            SetRange( MBCharLen, 0xf8, 0xfb, 4 );
+            SetRange( MBCharLen, 0xfc, 0xfd, 5 );
+            break;
+        }
         PP_Init( '#' );
         fo = stdout;
         if( out_filename != NULL ) {
@@ -374,7 +426,7 @@ int main( int argc, char *argv[] )
         }
         rc = EXIT_SUCCESS;
         for( i = 0; i < nofilenames; ++i ) {
-            if( PP_FileInit( filenames[i], flags, NULL ) != 0 ) {
+            if( PP_FileInit( filenames[i], ppflags, NULL ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
                 rc = EXIT_FAILURE;
                 break;

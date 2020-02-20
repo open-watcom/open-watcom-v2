@@ -3,7 +3,7 @@
  * -
  * Copyright (c) 1985, 1989, 1993
  *    The Regents of the University of California.  All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -19,7 +19,7 @@
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,14 +33,14 @@
  * SUCH DAMAGE.
  * -
  * Portions Copyright (c) 1993 by Digital Equipment Corporation.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies, and that
  * the name of Digital Equipment Corporation not be used in advertising or
  * publicity pertaining to distribution of the document or software without
  * specific, written prior permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND DIGITAL EQUIPMENT CORP. DISCLAIMS ALL
  * WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS.   IN NO EVENT SHALL DIGITAL EQUIPMENT
@@ -391,8 +391,8 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
 
   if (v_circuit)  /* i.e. TCP */
   {
-    int     truncated;
-    u_short len;
+    int    truncated;
+    int    len;
     u_char *cp;
 
     /* Use virtual circuit; at most one attempt per server.
@@ -434,7 +434,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
       memcpy (&send_buf[INT16SZ],ns_buf,ns_buflen);
       if (sock_write(sock,send_buf,INT16SZ+ns_buflen) != INT16SZ+ns_buflen)
       {
-        Perror ("sock_write() failed", sockerr(&sock->tcp));
+        Perror ("sock_write() failed", sockerr(sock));
         badns |= (1 << ns);
         resolve_close();
         return (NEXT_NS);
@@ -448,12 +448,13 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
     while ((n = tcp_read(&sock->tcp,cp,len,&errno,dns_timeout)) > 0)
     {
       cp += n;
-      if ((len -= n) <= 0)
+      len -= n;
+      if (len <= 0)
          break;
     }
     if (n <= 0)
     {
-      Perror ("tcp_read() failed", sockerr(&sock->tcp));
+      Perror ("tcp_read() failed", sockerr(sock));
       resolve_close();
       return (NEXT_NS);
     }
@@ -475,7 +476,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
     }
     if (n <= 0)
     {
-      Perror ("tcp_read(vc)",sockerr(&sock->tcp));
+      Perror ("tcp_read(vc)",sockerr(sock));
       resolve_close();
       return (NEXT_NS);
     }
@@ -665,7 +666,7 @@ static void resolve_close (void)
 {
   if (sock)
   {
-    if (sock->tcp.ip_type == TCP_PROTO &&
+    if (sock->u.ip_type == TCP_PROTO &&
         sock->tcp.state < tcp_StateCLOSED)
     {
       sock_close (sock);

@@ -184,11 +184,19 @@ static void WREAddSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
-    unsigned            flags;
+    pp_flags            ppflags;
     char                *inc_path;
     WREGetFileStruct    gf;
     unsigned            pp_count;
@@ -224,7 +232,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     WRESetWaitCursor( TRUE );
 
     if( ok ) {
-        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv );
         if( ret ) {
@@ -235,7 +243,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, flags, inc_path );
+        ok = !PP_FileInit( name, ppflags, inc_path );
         if( !ok ) {
             WREDisplayErrorMsg( WRE_NOLOADHEADERFILE );
         }

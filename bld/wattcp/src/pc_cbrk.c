@@ -98,7 +98,7 @@ int set_cbreak (int want_brk)
 #endif
   return (brk);
 
-#elif defined(__WATCOM386__) || defined(__BORLAND386__)
+#elif defined(WATCOM386) || defined(BORLAND386)
   struct DPMI_regs reg;
 
   reg.r_ax = 0x3300;

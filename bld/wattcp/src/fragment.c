@@ -45,6 +45,7 @@
 #include "pcsed.h"
 #include "pcbsd.h"
 #include "pctcp.h"
+#include "fragment.h"
 
 #if defined(USE_FRAGMENTS)
 
@@ -279,10 +280,10 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
         got_hole, (DWORD)frag->hole_first));
 
   if (!frag->hole_first)    /* Now we have all the parts */
-  { 
+  {
     if (frag_buckets[j].active >= 1)
         frag_buckets[j].active--;
- 
+
    /* Redo checksum as we've changed the length in the header
     */
     frag->ip->frag_ofs = 0;
@@ -348,7 +349,7 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
   if (data_start == 0)  /* 1st fragment sent is 1st fragment received */
   {
     WORD  ip_len = intel16 (ip->length);
-    BYTE *dst    = (BYTE*)bucket;   
+    BYTE *dst    = (BYTE*)bucket;
 
     memcpy (dst, ip, min(ip_len,mtu));
     hole = (hole_descr*) (dst + ip_len + 1);
@@ -514,7 +515,7 @@ void chk_timeout_frags (void)
           chk_timeout(frag_list[j][i].timer))
       {
         const in_Header *ip = frag_list[j][i].ip;
-        
+
         if (!_pktserial)    /* send a ICMP_TIMXCEED (code 1) */
              icmp_timexceed (ip, (void*) &frag_buckets[j].mac_src);
         else icmp_timexceed (ip, NULL);
@@ -641,7 +642,7 @@ int rand_packet (fd_set *fd, int max)
 {
   int count = 0;
 
-  while (1)
+  for ( ;; )
   {
     int i = Random (0, max);
     if (i < max && !FD_ISSET(i,fd))

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #define PPINCLUDE_SRC       2
 
 typedef enum {
+    PPFLAG_NONE             = 0,
     PPFLAG_PREPROCESSING    = 0x0001,
     PPFLAG_EMIT_LINE        = 0x0002,
     PPFLAG_SKIP_COMMENT     = 0x0004,
@@ -46,15 +48,11 @@ typedef enum {
     PPFLAG_ASM_COMMENT      = 0x0040,
     PPFLAG_IGNORE_CWD       = 0x0080,
     PPFLAG_IGNORE_DEFDIRS   = 0x0100,
-    PPFLAG_DB_KANJI         = 0x0200,
-    PPFLAG_DB_CHINESE       = 0x0400,
-    PPFLAG_DB_KOREAN        = 0x0800,
-    PPFLAG_UTF8             = 0x1000,
-    PPFLAG_DONT_READ        = 0x4000,
-    PPFLAG_UNDEFINED_VAR    = 0x8000
+    PPFLAG_DONT_READ        = 0x0200,
+    PPFLAG_UNDEFINED_VAR    = 0x0400
 } pp_flags;
 
-#define PP_SPECIAL_MACRO        255
+#define PP_SPECIAL_MACRO    255
 
 typedef struct macro_entry {
     struct macro_entry  *next;
@@ -78,8 +76,7 @@ typedef void        (* walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *v
 
 extern  void        PPENTRY PP_Init( char c );
 extern  void        PPENTRY PP_Fini( void );
-extern  int         PPENTRY PP_FileInit( const char *filename, pp_flags flags, const char *incpath );
-extern  int         PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *include_path, const char *leadbytes );
+extern  int         PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *incpath );
 extern  void        PPENTRY PP_FileFini( void );
 extern  void        PPENTRY PP_IncludePathInit( void );
 extern  void        PPENTRY PP_IncludePathFini( void );
@@ -91,6 +88,7 @@ extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );
 
 // Application defined functions
 
+extern  int         PPENTRY PP_MBCharLen( const char *p );
 extern  const char  * PPENTRY PP_GetEnv( const char *__name );
 extern  void        * PPENTRY PP_Malloc( size_t __size );
 extern  void        PPENTRY PP_Free( void *__ptr );

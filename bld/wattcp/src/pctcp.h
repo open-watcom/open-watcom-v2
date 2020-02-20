@@ -38,13 +38,6 @@
 #define MAX_VJSD    20000UL
 #define INIT_VJSA   220
 
-/*
- * flags bits for 'sock_mode'
- */
-#define TCP_LOCAL   0x4000
-#define TCP_SAWCR   0x2000     /* for ASCII sockets - S. Lawson */
-
-
 typedef void (*DebugProc) (const void*, const void*, const char*, unsigned);
 
 #define my_ip_addr      NAMESPACE (my_ip_addr)
@@ -88,10 +81,6 @@ extern int       tcp_RETRAN_TIME;
 
 extern DWORD     my_ip_addr;
 extern DWORD     sin_mask;
-
-extern int   (*_raw_ip_hook) (const in_Header*);
-extern int   (*_tcp_syn_hook) (tcp_Socket**);
-extern void *(*_tcp_find_hook) (const tcp_Socket*);
 
 extern tcp_Socket *_tcp_allsocs;
 extern udp_Socket *_udp_allsocs;
@@ -163,7 +152,7 @@ extern int   sock_printf      (sock_type *s, const char *format, ...);
 extern int   sock_scanf       (sock_type *s, const char *format, ...);
 extern WORD  sock_dataready   (sock_type *s);
 extern int   sock_close       (sock_type *s);
-extern int   sock_yield       (tcp_Socket *s, void (*fn)());
+extern int   sock_yield       (sock_type *s, void (*fn)(void));
 extern WORD  sock_mode        (sock_type *s, WORD mode);
 extern int   sock_sselect     (const sock_type *s, int state);
 
@@ -173,12 +162,11 @@ extern int   init_localport   (void);
 extern WORD  findfreeport     (WORD oldport, BOOL sleep_msl);
 extern int   grab_localport   (WORD port);
 extern int   reuse_localport  (WORD port);
-extern void  maybe_reuse_lport(tcp_Socket *s);
 
 /* In sock_in.c
  */
-extern void  ip_timer_init    (udp_Socket * , int);
-extern int   ip_timer_expired (const udp_Socket *);
+extern void  ip_timer_init    (sock_type * , int);
+extern int   ip_timer_expired (const sock_type *);
 extern int  _ip_delay0        (sock_type *, int, UserHandler, int *);
 extern int  _ip_delay1        (sock_type *, int, UserHandler, int *);
 extern int  _ip_delay2        (sock_type *, int, UserHandler, int *);

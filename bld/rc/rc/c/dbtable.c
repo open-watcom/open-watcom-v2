@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,7 @@ typedef struct {
 static DBCharInfo       charInfo;
 
 static RcStatus readDBHeader( FILE *fh )
+/**************************************/
 {
     size_t      numread;
 
@@ -67,6 +69,7 @@ static RcStatus readDBHeader( FILE *fh )
 }
 
 static RcStatus readDBRanges( FILE *fh )
+/**************************************/
 {
     size_t      numread;
 
@@ -78,6 +81,7 @@ static RcStatus readDBRanges( FILE *fh )
 }
 
 static RcStatus readDBIndex( FILE *fh )
+/*************************************/
 {
     size_t      numread;
     size_t      size;
@@ -92,6 +96,7 @@ static RcStatus readDBIndex( FILE *fh )
 }
 
 static RcStatus readDBTable( FILE *fh )
+/*************************************/
 {
     size_t      numread;
     size_t      size;
@@ -106,6 +111,7 @@ static RcStatus readDBTable( FILE *fh )
 }
 
 RcStatus LoadCharTable( const char *fname, char *path )
+/*****************************************************/
 {
     FILE        *fh;
     RcStatus    ret;
@@ -128,14 +134,12 @@ RcStatus LoadCharTable( const char *fname, char *path )
         ret = readDBTable( fh );
     if( ret != RS_OPEN_ERROR )
         fclose( fh );
-    if( ret == RS_OK ) {
-        ConvToUnicode = DBStringToUnicode;
-    }
     return( ret );
 }
 
-static uint_16 lookUpDBChar( uint_16 ch ) {
-
+static uint_16 lookUpDBChar( uint_16 ch )
+/***************************************/
+{
     int         i;
     int         index;
 
@@ -148,12 +152,15 @@ static uint_16 lookUpDBChar( uint_16 ch ) {
     return( (uint_16)-1 );
 }
 
-const char *GetLeadBytes( void ) {
+const char *GetLeadBytes( void )
+/******************************/
+{
     return( charInfo.begchars );
 }
 
-size_t DBStringToUnicode( size_t len, const char *str, char *buf ) {
-
+size_t DBStringToUnicode( size_t len, const char *str, char *buf )
+/****************************************************************/
+{
     const uint_8    *ptr;
     const uint_8    *end;
     uint_16         *ubuf;

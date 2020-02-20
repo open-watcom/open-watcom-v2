@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,10 @@
 #include "mresfmt.h"
 
 typedef size_t ConvToUnicode_fn( size_t, const char *, char * );
+typedef size_t ConvToMultiByte_fn( size_t, const char *, char * );
 
-extern ConvToUnicode_fn *ConvToUnicode;
+extern ConvToUnicode_fn     *ConvToUnicode;
+extern ConvToMultiByte_fn   *ConvToMultiByte;
 
 extern bool ResWriteUint8( uint_8 newint, FILE *fp );
 extern bool ResWriteUint16( uint_16 newint, FILE *fp );
