@@ -265,6 +265,7 @@ static int dup_bind (Socket *_socket, Socket **newconn, int idx)
 static int alloc_addr (Socket *socket, Socket *clone)
 {
   struct in_addr peer;
+  sock_type *sk;
 
   clone->local_addr  = SOCK_CALLOC (sizeof(*clone->local_addr));
   clone->remote_addr = SOCK_CALLOC (sizeof(*clone->remote_addr));
@@ -275,14 +276,14 @@ static int alloc_addr (Socket *socket, Socket *clone)
     SOCK_ERR (ENOMEM);
     return (-1);
   }
-
-  peer.s_addr = htonl (clone->proto_sock->tcp.hisaddr);
+  sk = clone->proto_sock;
+  peer.s_addr = htonl (sk->tcp.hisaddr);
   clone->local_addr->sin_family  = AF_INET;
   clone->local_addr->sin_port    = socket->local_addr->sin_port;
   clone->local_addr->sin_addr    = socket->local_addr->sin_addr;
 
   clone->remote_addr->sin_family = AF_INET;
-  clone->remote_addr->sin_port   = htons (clone->proto_sock->tcp.hisport);
+  clone->remote_addr->sin_port   = htons (sk->tcp.hisport);
   clone->remote_addr->sin_addr   = peer;
   return (0);
 }

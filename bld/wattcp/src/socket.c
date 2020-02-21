@@ -26,9 +26,9 @@
 #endif
 
 static int     socket_block = 0;        /* sock_daemon() semaphore */
-static int     sk_last  = SK_FIRST;     /* highest socket number */
+static int     s_last  = S_FIRST;       /* highest socket number */
 static Socket *socket_list = NULL;
-static BOOL    sk_init  = 0;
+static BOOL    socket_init  = 0;
 
 #if 0  /* !!to-do */
   #define SOCK_HASH_SIZE (MAX_SOCKETS / 32)
@@ -91,11 +91,11 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
  *
  *  Non-djgpp targets:
  *    Allocate a new descriptor (handle) by searching through `inuse' for
- *    the first zero bit. Update `sk_last' as needed.
+ *    the first zero bit. Update `s_last' as needed.
  *
  *  djgpp target:
  *    Allocate a descriptior from the "File System Extension" layer.
- *    `sk_last' is not used (initialised to MAX_SOCKETS).
+ *    `s_last' is not used (initialised to MAX_SOCKETS).
  */
 
 static fd_set inuse [NUM_SOCK_FDSETS];
@@ -121,7 +121,7 @@ static int sock_get_fd (void)
 #else
     int s;
 
-    for (s = SK_FIRST; s < sk_last; s++) {
+    for (s = S_FIRST; s < s_last; s++) {
         if (!FD_ISSET(s,&inuse[0])      /* not marked as in-use */
             && !_socklist_find(s)) {    /* don't use a dying socket */
             break;
@@ -131,8 +131,8 @@ static int sock_get_fd (void)
 #endif /* __DJGPP__ && USE_FSEXT */
 
     if (s < MAX_SOCKETS) {
-        if (s == sk_last)
-            sk_last++;
+        if (s == s_last)
+            s_last++;
 
         FD_SET (s, &inuse[0]);
         return (s);
@@ -270,7 +270,7 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
 
     SOCK_DEBUGF ((NULL, "\n  _sock_del_fd:%d", s));
 
-    if (s < SK_FIRST || s >= sk_last || !FD_ISSET(s,&inuse[0])) {
+    if (s < S_FIRST || s >= s_last || !FD_ISSET(s,&inuse[0])) {
         SOCK_FATAL (("%s (%u) Fatal: socket %d not inuse\r\n", file, line, s));
         return (NULL);
     }
@@ -335,8 +335,8 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
     next = socket_list_del (s);  /* delete socket from linked list */
 
 not_inuse:
-    if (s == sk_last-1)
-        sk_last--;
+    if (s == s_last-1)
+        s_last--;
 
     FD_CLR (s, &inuse[0]);
 
@@ -707,9 +707,9 @@ static int InitSockets (void)
         r.rlim_max = MAX_SOCKETS;     /* We don't know this before we try it */
         setrlimit (RLIMIT_NOFILE, &r);
     }
-    sk_last = MAX_SOCKETS;
+    s_last = MAX_SOCKETS;
 #else
-    sk_last = SK_FIRST;
+    s_last = S_FIRST;
 #endif  /* __DJGPP__ */
 
     socket_list = NULL;
@@ -733,10 +733,10 @@ Socket *_socklist_find (int s)
 {
     Socket *socket;
 
-    if (!sk_init) {
+    if (!socket_init) {
         if (!InitSockets())
             return (NULL);
-        sk_init = 1;
+        socket_init = 1;
     }
     for (socket = socket_list; socket != NULL; socket = socket->next) {
         if (socket->fd == s) {
@@ -862,11 +862,11 @@ int socket (int family, int type, int protocol)
     Socket *socket;
     int     s, ss;
 
-    if (!sk_init && !InitSockets()) {
+    if (!socket_init && !InitSockets()) {
         SOCK_ERR (ENETDOWN);
         return (-1);
     }
-    sk_init = 1;
+    socket_init = 1;
 
     if (family != AF_INET) {
         SOCK_DEBUGF ((NULL, "\nsocket: invalid family (%d)", family));

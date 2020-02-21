@@ -309,6 +309,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
 {
   int   ret   = 0;
   DWORD timer = 0UL;
+  sock_type *sk;
 
   if (socket->timeout)
      timer = set_timeout (1000 * socket->timeout);
@@ -329,14 +330,11 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
   }
 #endif
 
-  for ( ;; )
-  {
-    sock_type *sk = socket->proto_sock;
-
+  sk = socket->proto_sock;
+  for ( ;; ) {
     SOCK_YIELD();
 
-    if (!tcp_tick(sk))
-    {
+    if (!tcp_tick(sk)) {
       socket->so_state |= SS_CANTRCVMORE;
       SOCK_DEBUGF ((socket, ", ENOTCONN"));
       SOCK_ERR (ENOTCONN);
@@ -349,16 +347,14 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
      * queue setup by sock_recv_init() (in _UDP_listen).
      * Note: it is possible to receive 0-byte probe packets.
      */
-    if (socket->so_state & SS_PRIV)
-    {
+    if (socket->so_state & SS_PRIV) {
       struct in_addr peer;
       WORD           port = ntohs (socket->local_addr->sin_port);
 
       ret = sock_recv_from (sk, &peer.s_addr, &port, buf, len,
                             (flags & MSG_PEEK) ? 1 : 0);
 
-      if (ret != 0 && peer.s_addr)
-      {
+      if (ret != 0 && peer.s_addr) {
         udp_raw_fill_from (from, fromlen, &peer, port);
         SOCK_DEBUGF ((socket, ", remote: %s (%d)",
                       inet_ntoa(peer), ntohs(port)));
@@ -366,43 +362,37 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
            return (0);
         return (ret);
       }
-    }
-
-    else if (sock_rbused(sk) > socket->recv_lowat)
-    {
-      if (flags & MSG_PEEK)
-           ret = sock_preread  (sk, (BYTE*)buf, len);
-      else if (flags & MSG_WAITALL)
-           ret = sock_read     (sk, (BYTE*)buf, len);
-      else ret = sock_fastread (sk, (BYTE*)buf, len);
+    } else if (sock_rbused(sk) > socket->recv_lowat) {
+      if (flags & MSG_PEEK) {
+          ret = sock_preread (sk, (BYTE*)buf, len);
+      } else if (flags & MSG_WAITALL) {
+          ret = sock_read (sk, (BYTE*)buf, len);
+      } else {
+          ret = sock_fastread (sk, (BYTE*)buf, len);
+      }
       break;
     }
 
-    if (socket->so_state & SS_CONN_REFUSED)
-    {
+    if (socket->so_state & SS_CONN_REFUSED) {
       SOCK_DEBUGF ((socket, ", ECONNREFUSED (2)"));
       SOCK_ERR (ECONNREFUSED);
       return (-1);
     }
 
-    if (socket->so_state & SS_NBIO)
-    {
+    if (socket->so_state & SS_NBIO) {
       SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
       SOCK_ERR (EWOULDBLOCK);
       return (-1);
     }
 
-    if (chk_timeout(timer))
-    {
+    if (chk_timeout(timer)) {
       SOCK_DEBUGF ((socket, ", ETIMEDOUT"));
       SOCK_ERR (ETIMEDOUT);
       return (-1);
     }
   }
 
-  if (ret > 0)
-  {
-    sock_type *sk = socket->proto_sock;
+  if (ret > 0) {
     struct in_addr peer;
     WORD   port;
 
@@ -411,8 +401,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
 
     udp_raw_fill_from (from, fromlen, &peer, port);
 
-    if (socket->remote_addr)
-    {
+    if (socket->remote_addr) {
       socket->remote_addr->sin_family = AF_INET;
       socket->remote_addr->sin_addr   = peer;
       socket->remote_addr->sin_port   = port;

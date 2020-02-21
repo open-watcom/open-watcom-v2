@@ -135,10 +135,10 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
       int     read_cnt = 0, write_cnt = 0, exc_cnt = 0;
       Socket *socket = NULL;
 
-#if (SK_FIRST > 0)
+#if (S_FIRST > 0)
       /* We ignore stdin/stdout/stderr handles for now
        */
-      if (s < SK_FIRST)
+      if (s < S_FIRST)
          continue;
 #endif
 

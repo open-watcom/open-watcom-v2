@@ -155,9 +155,9 @@ typedef struct Socket {
  * confuse sockets with stdin/stdout/stderr handles.
  */
 #ifdef __DJGPP__
-  #define SK_FIRST  0   /* first socket will always be >3 */
+  #define S_FIRST  0    /* first socket will always be >3 */
 #else
-  #define SK_FIRST  3   /* skip handles 0-2 */
+  #define S_FIRST  3    /* skip handles 0-2 */
 #endif
 
 

@@ -58,7 +58,7 @@ static __inline void do_error (void)
 int setsockopt (int s, int level, int option, const void *optval, int optlen)
 {
   Socket *socket = _socklist_find (s);
-  sock_type *sk = socket->proto_sock;
+  sock_type *sk;
   int     rc;
 
   SOCK_DEBUGF ((socket, "\nsetsockopt:%d, %s", s, sockopt_name(option,level)));
@@ -76,6 +76,7 @@ int setsockopt (int s, int level, int option, const void *optval, int optlen)
 
   VERIFY_RW (optval, optlen);
 
+  sk = socket->proto_sock;
   if (level == SOL_SOCKET) {
      rc = set_sol_opt (socket, option, optval, optlen);
   } else if ((level == socket->so_proto) && (level == IPPROTO_TCP)) {
@@ -101,7 +102,7 @@ int setsockopt (int s, int level, int option, const void *optval, int optlen)
 int getsockopt (int s, int level, int option, void *optval, int *optlen)
 {
   Socket *socket = _socklist_find (s);
-  sock_type *sk = socket->proto_sock;
+  sock_type *sk;
   int     rc;
 
   SOCK_DEBUGF ((socket, "\ngetsockopt:%d, %s", s, sockopt_name(option,level)));
@@ -120,6 +121,7 @@ int getsockopt (int s, int level, int option, void *optval, int *optlen)
   VERIFY_RW (optval, 0);
   VERIFY_RW (optlen, sizeof(u_long));
 
+  sk = socket->proto_sock;
   if (level == SOL_SOCKET) {
      rc = get_sol_opt (socket, option, optval, optlen);
   } else if (level == socket->so_proto == IPPROTO_TCP) {
@@ -192,12 +194,8 @@ static int set_sol_opt (Socket *socket, int opt, const void *val, int len)
      */
     case SO_REUSEADDR:
         if (sk != NULL) {
-            if (socket->so_proto == IPPROTO_TCP) {
-                reuse_localport (sk->tcp.myport);
-                return (0);
-            }
-            if (socket->so_proto == IPPROTO_UDP) {
-                reuse_localport (sk->udp.myport);
+            if (socket->so_proto == IPPROTO_TCP || socket->so_proto == IPPROTO_UDP) {
+                reuse_localport (sk->u.myport);
                 return (0);
             }
         }
@@ -337,11 +335,7 @@ static int get_sol_opt (Socket *socket, int opt, void *val, int *len)
 
     case SO_RCVBUF:
         if (sk != NULL) {
-            if (socket->so_proto == IPPROTO_UDP) {
-                *(int*)val = sock_rbsize (sk);
-                return (0);
-            }
-            if (socket->so_proto == IPPROTO_TCP) {
+            if (socket->so_proto == IPPROTO_UDP || socket->so_proto == IPPROTO_TCP) {
                 *(int*)val = sock_rbsize (sk);
                 return (0);
             }
@@ -579,10 +573,8 @@ static int set_raw_opt (Socket *socket, int opt, const void *val, int len)
     case IP_TTL:
          socket->ip_ttl = min (1, *(int *)val);
          if (sk != NULL) {
-            if (socket->so_proto == IPPROTO_UDP) {
-                sk->udp.ttl = socket->ip_ttl;
-            } else if (socket->so_proto == IPPROTO_TCP) {
-                sk->tcp.ttl = socket->ip_ttl;
+            if (socket->so_proto == IPPROTO_UDP || socket->so_proto == IPPROTO_TCP) {
+                sk->u.ttl = socket->ip_ttl;
             }
         }
         break;

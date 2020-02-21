@@ -230,6 +230,7 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
   WORD   lport     = 0;
   char  *rdata     = NULL;
   int    rc;
+  sock_type *sk = socket->proto_sock;
 
   if (socket->so_state & SS_ISCONNECTED)
   {
@@ -251,8 +252,8 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
 
     if (socket->so_type == SOCK_DGRAM)
     {
-      lport = socket->proto_sock->udp.myport;
-      rdata = (char*)socket->proto_sock->udp.rdata;  /* preserve current data */
+      lport = sk->udp.myport;
+      rdata = (char*)sk->udp.rdata;  /* preserve current data */
     }
   }
 
@@ -265,14 +266,10 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
   if (rc < 0)
      return (-1);
 
-
-  if (rdata)  /* Must be SOCK_DGRAM */
-  {
-    udp_Socket *udp = &socket->proto_sock->udp;
-
-    free (udp->rdata);                /* free new rx-buffer set in connect() */
-    udp->rdata       = (BYTE*) rdata; /* reuse previous data buffer */
-    udp->maxrdatalen = DEFAULT_RCV_WIN;
+  if (rdata) {  /* Must be SOCK_DGRAM */
+    free (sk->udp.rdata);                /* free new rx-buffer set in connect() */
+    sk->udp.rdata       = (BYTE*) rdata; /* reuse previous data buffer */
+    sk->udp.maxrdatalen = DEFAULT_RCV_WIN;
 
     grab_localport (lport);   /* Restore freed localport */
   }
@@ -547,8 +544,6 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
   if (!(socket->inp_flags & INP_HDRINCL) &&
       tx_len + socket->ip_opt_len > tx_room)
   {
-    sk = socket->proto_sock;
-
     if (flags & IP_DF)
     {
       SOCK_DEBUGF ((socket, ", EMSGSIZE"));
