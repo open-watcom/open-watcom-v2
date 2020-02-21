@@ -111,50 +111,50 @@ extern udp_Socket *_udp_allsocs;
            }                                          \
         } while (0)
 
-extern int   udp_listen (udp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern int   udp_open   (udp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern void  udp_SetTTL (udp_Socket *s, BYTE ttl);
+extern int   udp_listen (udp_Socket *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern int   udp_open   (udp_Socket *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern void  udp_SetTTL (udp_Socket *udp_sk, BYTE ttl);
 extern void _udp_cancel (const in_Header*, int, const char *, DWORD);
 extern void _tcp_cancel (const in_Header*, int, const char *, DWORD);
 
-extern void _tcp_close    (tcp_Socket *s);
-extern void  tcp_abort    (tcp_Socket *s);
-extern int   tcp_open     (tcp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern int   tcp_listen   (tcp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler, WORD timeout);
-extern WORD  tcp_tick     (sock_type *s);
+extern void _tcp_close    (tcp_Socket *tcp_sk);
+extern void  tcp_abort    (tcp_Socket *tcp_sk);
+extern int   tcp_open     (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern int   tcp_listen   (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler, WORD timeout);
+extern WORD  tcp_tick     (sock_type *sk);
 
-extern int   tcp_established (tcp_Socket *s);
-extern int  _tcp_send        (tcp_Socket *s, char *file, unsigned line);
-extern int  _tcp_sendsoon    (tcp_Socket *s, char *file, unsigned line);
+extern int   tcp_established (tcp_Socket *tcp_sk);
+extern int  _tcp_send        (tcp_Socket *tcp_sk, char *file, unsigned line);
+extern int  _tcp_sendsoon    (tcp_Socket *tcp_sk, char *file, unsigned line);
 
-extern tcp_Socket *_tcp_unthread (tcp_Socket *s);
+extern tcp_Socket *_tcp_unthread (tcp_Socket *tcp_sk);
 extern void tcp_Retransmitter (int force);
 extern int  _ip_handler (in_Header *ip, BOOL broadcast);
 
 #define TCP_SEND(s)     _tcp_send    (s, __FILE__, __LINE__)
 #define TCP_SENDSOON(s) _tcp_sendsoon(s, __FILE__, __LINE__)
 
-extern void  sock_abort       (sock_type *s);
-extern int   sock_keepalive   (sock_type *s);
-extern int   sock_read        (sock_type *s, BYTE *dp, int len);
-extern int   sock_fastread    (sock_type *s, BYTE *dp, int len);
-extern int   sock_write       (sock_type *s, const BYTE *dp, int len);
-extern int   sock_fastwrite   (sock_type *s, const BYTE *dp, int len);
-extern int   sock_enqueue     (sock_type *s, const BYTE *dp, int len);
-extern void  sock_noflush     (sock_type *s);
-extern void  sock_flush       (sock_type *s);
-extern void  sock_flushnext   (sock_type *s);
-extern BYTE  sock_putc        (sock_type *s, BYTE c);
-extern WORD  sock_getc        (sock_type *s);
-extern int   sock_puts        (sock_type *s, const BYTE *dp);
-extern int   sock_gets        (sock_type *s, BYTE *dp, int n);
-extern int   sock_printf      (sock_type *s, const char *format, ...);
-extern int   sock_scanf       (sock_type *s, const char *format, ...);
-extern WORD  sock_dataready   (sock_type *s);
-extern int   sock_close       (sock_type *s);
-extern int   sock_yield       (sock_type *s, void (*fn)(void));
-extern WORD  sock_mode        (sock_type *s, WORD mode);
-extern int   sock_sselect     (const sock_type *s, int state);
+extern void  sock_abort       (sock_type *sk);
+extern int   sock_keepalive   (sock_type *sk);
+extern int   sock_read        (sock_type *sk, BYTE *dp, int len);
+extern int   sock_fastread    (sock_type *sk, BYTE *dp, int len);
+extern int   sock_write       (sock_type *sk, const BYTE *dp, int len);
+extern int   sock_fastwrite   (sock_type *sk, const BYTE *dp, int len);
+extern int   sock_enqueue     (sock_type *sk, const BYTE *dp, int len);
+extern void  sock_noflush     (sock_type *sk);
+extern void  sock_flush       (sock_type *sk);
+extern void  sock_flushnext   (sock_type *sk);
+extern BYTE  sock_putc        (sock_type *sk, BYTE c);
+extern WORD  sock_getc        (sock_type *sk);
+extern int   sock_puts        (sock_type *sk, const BYTE *dp);
+extern int   sock_gets        (sock_type *sk, BYTE *dp, int n);
+extern int   sock_printf      (sock_type *sk, const char *format, ...);
+extern int   sock_scanf       (sock_type *sk, const char *format, ...);
+extern WORD  sock_dataready   (sock_type *sk);
+extern int   sock_close       (sock_type *sk);
+extern int   sock_yield       (sock_type *sk, void (*fn)(void));
+extern WORD  sock_mode        (sock_type *sk, WORD mode);
+extern int   sock_sselect     (const sock_type *sk, int state);
 
 /* In ports.c
  */
@@ -165,12 +165,12 @@ extern int   reuse_localport  (WORD port);
 
 /* In sock_in.c
  */
-extern void  ip_timer_init    (sock_type * , int);
-extern int   ip_timer_expired (const sock_type *);
-extern int  _ip_delay0        (sock_type *, int, UserHandler, int *);
-extern int  _ip_delay1        (sock_type *, int, UserHandler, int *);
-extern int  _ip_delay2        (sock_type *, int, UserHandler, int *);
-extern int   sock_timeout     (sock_type *, int);
-extern int   sock_established (sock_type *);
+extern void  ip_timer_init    (sock_type *sk , int);
+extern int   ip_timer_expired (const sock_type *sk);
+extern int  _ip_delay0        (sock_type *sk, int, UserHandler, int *);
+extern int  _ip_delay1        (sock_type *sk, int, UserHandler, int *);
+extern int  _ip_delay2        (sock_type *sk, int, UserHandler, int *);
+extern int   sock_timeout     (sock_type *sk, int);
+extern int   sock_established (sock_type *sk);
 
 #endif

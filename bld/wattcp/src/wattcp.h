@@ -405,12 +405,12 @@ typedef struct arp_Header {
         BYTE         rddata[tcp_MaxBufSize+1]; /* received data buffer */   \
         DWORD        safetysig                 /* magic marker */
 
-typedef int (*ProtoHandler) (union sock_type *sock, BYTE *data, int len,
+typedef int (*ProtoHandler) (union sock_type *sk, BYTE *data, int len,
                              tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
 
-typedef int (*UserHandler)  (union sock_type *sock);
+typedef int (*UserHandler)  (union sock_type *sk);
 
-typedef int (*sol_upcall)   (union sock_type *sock, int icmp_type);
+typedef int (*sol_upcall)   (union sock_type *sk, int icmp_type);
 
 /*
  * UDP socket definition

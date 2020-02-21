@@ -5,7 +5,7 @@
  * tcc <= 2.01 lacks proper bit-field support.
  * Don't define USE_BSD_FUNC/USE_STATISTICS with this compiler.
  */
-#if !defined(OLD_TURBOC)  
+#if !defined(OLD_TURBOC)
   #include <sys/socket.h>
   #include <net/if.h>
   #include <net/if_dl.h>
@@ -208,7 +208,7 @@ struct pppoestat {
  * igps_snd_reports     - sent membership reports
  */
 
-extern int sock_stats (const sock_type *s, WORD *days, WORD *inactive,
+extern int sock_stats (const sock_type *sk, WORD *days, WORD *inactive,
                        WORD *cwindow, WORD *avg,  WORD *sd);
 
 extern void print_mac_stats (void);
