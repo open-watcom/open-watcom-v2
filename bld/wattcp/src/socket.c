@@ -197,7 +197,7 @@ static __inline void free_rcv_buf (sock_type *p)
  */
 static __inline Socket *socket_list_del (int s)
 {
-    Socket *sock, *next, *last;
+    Socket *socket, *next, *last;
 
     for (socket = last = socket_list; socket != NULL; last = socket, socket = socket->next) {
         if (socket->fd != s) {
@@ -258,12 +258,12 @@ static __inline void unset_raw_ip_hook (Socket *this)
 }
 
 /*
- *  _socket_del_fd
+ *  _sock_del_fd
  *    Delete the socket from `inuse' array and all memory associated
  *    with it. Also unlink it from the socket list (socket_list).
  *    Return pointer to next node in list or NULL if none/error.
  */
-Socket * _socket_del_fd (const char *file, unsigned line, int s)
+Socket * _sock_del_fd (const char *file, unsigned line, int s)
 {
     Socket    *socket, *next = NULL;
     sock_type *sk;
@@ -350,7 +350,7 @@ not_inuse:
 
 #ifdef NOT_USED
 /*
- *  sock_find_fd
+ *  socket_find_fd
  *    Finds the 'fd' associated with pointer 'socket'.
  *    Return -1 if not found.
  */
@@ -828,7 +828,7 @@ static __inline int set_proto (int type, int *proto)
             SOCK_DEBUGF ((NULL, "\nsocket: invalid STREAM protocol (%d)", *proto));
             return (-1);
         }
-        _tcp_find_hook = sock_find_tcp;
+        _tcp_find_hook = socket_find_tcp;
     } else if (type == SOCK_DGRAM) {
         if (*proto == 0) {
             *proto = IPPROTO_UDP;
@@ -839,7 +839,7 @@ static __inline int set_proto (int type, int *proto)
     } else if (type == SOCK_RAW) {
         if (*proto == IPPROTO_RAW)     /* match all IP-protocols */
             *proto = IPPROTO_IP;
-        _raw_ip_hook = sock_raw_recv;  /* hook for _ip_handler() */
+        _raw_ip_hook = socket_raw_recv;  /* hook for _ip_handler() */
     }
     return (0);
 }
@@ -1129,7 +1129,7 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
     if ((s1 = socket (family, type, protocol)) < 0)
         return (fd1);
 
-    socket1 = socklist_find (s1);
+    socket1 = _socklist_find (s1);
 
     /* Now grab another socket and try to connect the two together.
      */
@@ -1138,7 +1138,7 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
         return (-EINVAL);
     }
 
-    socket2 = socklist_find (s2);
+    socket2 = _socklist_find (s2);
 
     socket1->conn = socket2;
     socket2->conn = socket1;

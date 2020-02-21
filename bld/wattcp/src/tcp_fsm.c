@@ -107,7 +107,7 @@ static int tcp_listen_state (tcp_Socket **sp, const in_Header *ip,
      * from `_tcp_syn_hook' (_sock_append) is the clone of `s' on
      * input unless the listen-queue is full.
      */
-    if (_tcp_syn_hook && (*_tcp_syn_hook)(&s) < 0)
+    if (_tcp_syn_hook != NULL && (*_tcp_syn_hook)(&s) < 0)
     {
       /* Append failed due to queue full or (temporary) memory shortage.
        * Silently discard SYN. TCB `s' is unchanged.

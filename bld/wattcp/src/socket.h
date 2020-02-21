@@ -330,7 +330,7 @@ extern void _sock_enter_scope (void);
 extern void _sock_leave_scope (void);
 extern void bsd_fortify_print (const char *buf);
 
-extern void _sock_debugf (const Socket *sock, const char *fmt, ...)
+extern void _sock_debugf (const Socket *socket, const char *fmt, ...)
 #ifdef __GNUC__
   __attribute__((format(printf,2,3)))
 #endif

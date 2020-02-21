@@ -19,10 +19,10 @@
 
 int sock_fgets (char *buf, int max, FILE *stream)
 {
-  int     s    = fileno (stream);
-  Socket *sock = _socklist_find (s);
+  int     s = fileno (stream);
+  Socket *socket = _socklist_find (s);
 
-  SOCK_PROLOGUE (sock, "\nsock_fgets:%d", s);
+  SOCK_PROLOGUE (socket, "\nsock_fgets:%d", s);
 
   /* !!to-do: this should read a single line only (use sock_gets?)
    */
@@ -31,10 +31,10 @@ int sock_fgets (char *buf, int max, FILE *stream)
 
 int sock_fputs (char *text, FILE *stream)
 {
-  int     s    = fileno (stream);
-  Socket *sock = _socklist_find (s);
+  int     s = fileno (stream);
+  Socket *socket = _socklist_find (s);
 
-  SOCK_PROLOGUE (sock, "\nsock_fputs:%d", s);
+  SOCK_PROLOGUE (socket, "\nsock_fputs:%d", s);
   return write_s (s, text, strlen(text));
 }
 

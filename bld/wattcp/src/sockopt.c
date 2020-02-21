@@ -15,10 +15,10 @@
 
 #if defined(USE_BSD_FUNC)
 
-static int set_sol_opt (Socket *s, int opt, const void *val, int len);
-static int set_raw_opt (Socket *s, int opt, const void *val, int len);
-static int get_sol_opt (Socket *s, int opt, void *val, int *len);
-static int get_raw_opt (Socket *s, int opt, void *val, int *len);
+static int set_sol_opt (Socket *socket, int opt, const void *val, int len);
+static int set_raw_opt (Socket *socket, int opt, const void *val, int len);
+static int get_sol_opt (Socket *socket, int opt, void *val, int *len);
+static int get_raw_opt (Socket *socket, int opt, void *val, int *len);
 
 static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *val, int len);
 static int set_udp_opt (udp_Socket *udp, int opt, const void *val, int len);
@@ -31,10 +31,10 @@ static int raw_rx_buf  (raw_Socket *raw, unsigned size);
 static int udp_tx_buf  (udp_Socket *udp, unsigned size);
 static int tcp_tx_buf  (tcp_Socket *tcp, unsigned size);
 static int raw_tx_buf  (raw_Socket *raw, unsigned size);
-static int set_tx_lowat (Socket *s, unsigned  size);
-static int set_rx_lowat (Socket *s, unsigned  size);
-static int get_tx_lowat (const Socket *s, unsigned *size);
-static int get_rx_lowat (const Socket *s, unsigned *size);
+static int set_tx_lowat (Socket *socket, unsigned  size);
+static int set_rx_lowat (Socket *socket, unsigned  size);
+static int get_tx_lowat (const Socket *socket, unsigned *size);
+static int get_rx_lowat (const Socket *socket, unsigned *size);
 
 #if defined(USE_DEBUG)
 static const char *sockopt_name (int option, int level);
