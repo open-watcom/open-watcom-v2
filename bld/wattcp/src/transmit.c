@@ -80,20 +80,15 @@ int writev_s (int s, const struct iovec *vector, size_t count)
  */
 static __inline void msg_eor_close (Socket *socket)
 {
-  switch (socket->so_type)
-  {
+    switch (socket->so_type) {
     case SOCK_STREAM:
-         socket->so_state |= SS_CANTSENDMORE;
-         sock_close (socket->proto_sock);
-         break;
     case SOCK_DGRAM:
-         socket->so_state |= SS_CANTSENDMORE;
-         sock_close (socket->proto_sock);
-         break;
+        sock_close (socket->proto_sock);
+        /* fall through */
     case SOCK_RAW:
-         socket->so_state |= SS_CANTSENDMORE;
-         break;
-  }
+        socket->so_state |= SS_CANTSENDMORE;
+        break;
+    }
 }
 
 /*

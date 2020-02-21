@@ -312,7 +312,7 @@ static __inline int listen_queued (Socket *socket)
      */
     if (tcb_sk->tcp.state == tcp_StateESTAB ||
         sock_rbused(tcb_sk) > socket->recv_lowat)
-       return (1);
+        return (1);
   }
   return (0);
 }

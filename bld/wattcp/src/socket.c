@@ -406,7 +406,7 @@ static Socket *socket_find_tcp (const tcp_Socket *tcp)
  *  socket_raw_recv - Called from _ip_handler() via `_raw_ip_hook'.
  *    IP-header is already checked in _ip_handler().
  *    Finds all 'Socket' associated with raw IP-packet 'ip'.
- *    Enqueue to 'socket->raw_sock'.
+ *    Enqueue to 'sock->proto_sock->raw'.
  *    Return >=1 if 'ip' is consumed, 0 otherwise.
  *
  *  Fix-me: This routine will steal all packets destined for
@@ -448,9 +448,9 @@ static int socket_raw_recv (const in_Header *ip)
             (ip->proto != socket->so_proto && socket->so_proto != IPPROTO_IP))
             continue;
 
-        /* !!to-do: follow the 'socket->raw_sock->next' pointer to first
+        /* !!to-do: follow the 'socket->proto_sock->raw.next' pointer to first
          *          vacant buffer.
-         * assumes socket->raw_sock is non-NULL
+         * assumes socket->proto_sock is non-NULL
          */
         if (socket->proto_sock->raw.used) {
             num_dropped++;
@@ -1001,22 +1001,23 @@ static int sol_callback (sock_type *s, int icmp_type)
  */
 int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD ip = ntohl (host.s_addr);
 
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!udp_open (&socket->proto_sock->udp, loc_port, ip, rem_port, NULL))
+    if (!udp_open (&sk->udp, loc_port, ip, rem_port, NULL))
         return (0);
 
-    set_rcv_buf (socket->proto_sock);
-    socket->proto_sock->udp.sol_callb = sol_callback;
+    set_rcv_buf (sk);
+    sk->udp.sol_callb = sol_callback;
     return (1);
 }
 
 int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 {
-    udp_Socket *udp = &socket->proto_sock->udp;
+    sock_type *sk = socket->proto_sock;
     DWORD addr;
 
     port = ntohs (port);
@@ -1045,16 +1046,16 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
             addr = ntohl (host.s_addr);
         }
 
-        udp_listen (udp, port, addr, 0, NULL);
+        udp_listen (&sk->udp, port, addr, 0, NULL);
 
         /* Setup _recvdaemon() to enqueue broadcast/"unconnected" messages
          */
-        sock_recv_init ((sock_type *)udp, pool, pool_size);
+        sock_recv_init (sk, pool, pool_size);
     } else {
         addr = ntohl (host.s_addr);
-        udp_listen (udp, port, addr, 0, NULL);
+        udp_listen (&sk->udp, port, addr, 0, NULL);
     }
-    udp->sol_callb = sol_callback;
+    sk->udp.sol_callb = sol_callback;
     return (1);
 }
 
@@ -1064,12 +1065,13 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
  */
 int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD dest = ntohl (host.s_addr);
 
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!tcp_open (&socket->proto_sock->tcp, loc_port, dest, rem_port, NULL))
+    if (!tcp_open (&sk->tcp, loc_port, dest, rem_port, NULL))
         return (0);
 
     /*
@@ -1086,18 +1088,19 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 
     /* Advertise a large rcv-win from the next ACK
      */
-    set_rcv_buf (socket->proto_sock);
-    socket->proto_sock->tcp.sol_callb = sol_callback;
+    set_rcv_buf (sk);
+    sk->tcp.sol_callb = sol_callback;
     return (1);
 }
 
 int _TCP_listen (Socket *socket, struct in_addr host, WORD port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD addr     = ntohl (host.s_addr);
     WORD  loc_port = ntohs (port);
 
-    tcp_listen (&socket->proto_sock->tcp, loc_port, addr, 0, NULL, 0);
-    socket->proto_sock->tcp.sol_callb = sol_callback;
+    tcp_listen (&sk->tcp, loc_port, addr, 0, NULL, 0);
+    sk->tcp.sol_callb = sol_callback;
     return (1);
 }
 
