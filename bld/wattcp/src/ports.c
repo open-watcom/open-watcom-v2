@@ -3,7 +3,6 @@
  * Moved from pctcp.c
  */
 
-#include <stdio.h>
 #include <assert.h>
 #include <limits.h>
 
@@ -12,9 +11,6 @@
 #include "pcbsd.h"
 #include "pctcp.h"
 
-#if defined(USE_BSD_FUNC)
-#include "socket.h"
-#endif
 
 static fd_set lport_inuse[6]; /* at least 1536 bits */
 

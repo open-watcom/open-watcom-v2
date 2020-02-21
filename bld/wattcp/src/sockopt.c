@@ -296,7 +296,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *val, int len)
 
 static int get_sol_opt (Socket *socket, int opt, void *val, int *len)
 {
-  sock_type      *sk = s->proto_sock;
+  sock_type      *sk = socket->proto_sock;
   struct timeval *tv;
   unsigned       *size = (unsigned*)val;
 
@@ -857,7 +857,7 @@ static int set_tx_lowat (Socket *socket, unsigned size)
  */
 static int set_rx_lowat (Socket *socket, unsigned size)
 {
-  sock_type      *sk = sock->proto_sock;
+  sock_type      *sk = socket->proto_sock;
 
   switch (socket->so_type) {
     case SOCK_STREAM:

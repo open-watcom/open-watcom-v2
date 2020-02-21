@@ -359,11 +359,11 @@ static __inline int sock_signalled (Socket *socket, int mask)
  */
 int _sock_read_select (Socket *socket)
 {
+  sock_type *sk = socket->proto_sock;
   int len;
 
 #if defined(USE_LIBPCAP)
-  if (socket->so_type == SOCK_PACKET)
-  {
+  if (socket->so_type == SOCK_PACKET) {
     /* !!fix-me: need to push-back this packet, else it's lost
      *           when read_s()/recv() is called.
      */
@@ -374,14 +374,13 @@ int _sock_read_select (Socket *socket)
 #endif
 
   if (socket->so_type == SOCK_RAW)
-     return (socket->proto_sock && socket->proto_sock->raw.used);
+     return (sk != NULL && sk->raw.used);
 
-  if (socket->so_type == SOCK_DGRAM)
-  {
+  if (socket->so_type == SOCK_DGRAM) {
     if (socket->so_state & SS_PRIV) {
-        len = sock_recv_used (socket->proto_sock);
+        len = sock_recv_used (sk);
     } else {
-        len = sock_rbused (socket->proto_sock);
+        len = sock_rbused (sk);
     }
 
     if (len > socket->recv_lowat ||
@@ -390,10 +389,7 @@ int _sock_read_select (Socket *socket)
     return (0);
   }
 
-  if (socket->so_type == SOCK_STREAM)
-  {
-    sock_type *sk = socket->proto_sock;
-
+  if (socket->so_type == SOCK_STREAM) {
     if (sock_signalled(socket,READ_STATE_MASK) || /* signalled for read_s() */
         sk->tcp.state >= tcp_StateLASTACK      || /* got FIN from peer */
         sock_rbused(sk) > socket->recv_lowat)     /* Rx-data above low-limit */
@@ -425,9 +421,7 @@ int _sock_write_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = socket->proto_sock;
-
-    if (sock_tbleft(sk) > socket->send_lowat ||  /* Tx room above low-limit */
+    if (sock_tbleft(socket->proto_sock) > socket->send_lowat ||  /* Tx room above low-limit */
         sock_signalled(socket,WRITE_STATE_MASK)) /* signalled for write */
       return (1);
     return (0);

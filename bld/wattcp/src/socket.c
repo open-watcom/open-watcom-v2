@@ -182,10 +182,10 @@ static __inline void set_rcv_buf (sock_type *p)
  */
 static __inline void free_rcv_buf (sock_type *p)
 {
-    if (p->udp.rdata != &p->udp.rddata[0]) {
-        free (p->udp.rdata);
-        p->udp.rdata = &p->udp.rddata[0];
-        p->udp.rdatalen = 0;
+    if (p->u.rdata != &p->u.rddata[0]) {
+        free (p->u.rdata);
+        p->u.rdata = &p->u.rddata[0];
+        p->u.rdatalen = 0;
     }
 }
 
@@ -368,7 +368,7 @@ static int socket_find_fd (const Socket *this)
 
 /*
  *  socket_find_udp
- *    Finds the 'Socket' associated with udp_socket 'udp'.
+ *    Finds the 'Socket' associated with udp-socket 'udp'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_udp (const udp_Socket *udp)
@@ -386,7 +386,7 @@ static Socket *socket_find_udp (const udp_Socket *udp)
 
 /*
  *  socket_find_tcp
- *    Finds the 'Socket' associated with tcp_socket 'tcp'.
+ *    Finds the 'Socket' associated with tcp-socket 'tcp'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_tcp (const tcp_Socket *tcp)
@@ -416,13 +416,14 @@ static Socket *socket_find_tcp (const tcp_Socket *tcp)
 static int socket_raw_recv (const in_Header *ip)
 {
     Socket *socket;
+    sock_type *sk;
     int     num_enqueued = 0;
     int     num_dropped  = 0;
     int     hlen = in_GetHdrLen (ip);
     DWORD   dst  = ntohl (ip->destination);
     size_t  len  = ntohs (ip->length);
 
-    /* Jumbo packets won't match any raw_sockets
+    /* Jumbo packets won't match any raw-sockets
      */
     if (len > sizeof(socket->proto_sock->raw.data))
         return (0);
@@ -433,6 +434,7 @@ static int socket_raw_recv (const in_Header *ip)
         return (0);
 
     for (socket = socket_list; socket != NULL; socket = socket->next) {
+        sk = socket->proto_sock;
 #if 0 /* !! to-do */
         if (socket->so_type == SOCK_RAW && socket->so_proto == IPPROTO_RAW)
             ; /* socket matches every IP-protocol, enqueue */
@@ -452,13 +454,13 @@ static int socket_raw_recv (const in_Header *ip)
          *          vacant buffer.
          * assumes socket->proto_sock is non-NULL
          */
-        if (socket->proto_sock->raw.used) {
+        if (sk->raw.used) {
             num_dropped++;
             SOCK_DEBUGF ((socket, "\n  socket %d dropped IP, proto %d", socket->fd, ip->proto));
         } else {
             /* Copy IP-header to raw_sock.ip
              */
-            memcpy (&socket->proto_sock->raw.ip, ip, sizeof(*ip));
+            memcpy (&sk->raw.ip, ip, sizeof(*ip));
 
             /* Copy any IP-options
              */
@@ -469,8 +471,8 @@ static int socket_raw_recv (const in_Header *ip)
 
             /* Copy rest of IP-packet
              */
-            memcpy (&socket->proto_sock->raw.data, (BYTE*)ip+hlen, len);
-            socket->proto_sock->raw.used = TRUE;
+            memcpy (&sk->raw.data, (BYTE*)ip+hlen, len);
+            sk->raw.used = TRUE;
             num_enqueued++;
         }
     }
@@ -581,6 +583,7 @@ static Socket *udp_sock_daemon (Socket *socket, udp_Socket *udp)
 static void sock_daemon (void)
 {
     Socket *socket, *next = NULL;
+    sock_type *sk;
 
     /* If we're in a critical region (e.g. select_s()) where we don't
      * want our socket-list to change, do this later.
@@ -589,6 +592,7 @@ static void sock_daemon (void)
         return;
 
     for (socket = socket_list; socket != NULL; socket = next) {
+        sk = socket->proto_sock;
         int s = socket->fd;
         next  = socket->next;
 
@@ -602,13 +606,13 @@ static void sock_daemon (void)
         _sock_debugf (NULL, "\nsock_daemon:%d", socket->fd);
 #endif
 
-        if (socket->proto_sock) {
+        if (sk != NULL) {
             switch (socket->so_type) {
             case SOCK_STREAM:
-                next = tcp_sock_daemon (socket, &socket->proto_sock->tcp);
+                next = tcp_sock_daemon (socket, &sk->tcp);
                 break;
             case SOCK_DGRAM:
-                next = udp_sock_daemon (socket, &socket->proto_sock->udp);
+                next = udp_sock_daemon (socket, &sk->udp);
                 break;
             }
         }
