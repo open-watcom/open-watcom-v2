@@ -85,30 +85,31 @@ extern DWORD     sin_mask;
 extern tcp_Socket *_tcp_allsocs;
 extern udp_Socket *_udp_allsocs;
 
-#define sock_wait_established(s,seconds,fn,statusptr) \
-        do {                                          \
-           if (_ip_delay0 (s,seconds,fn,statusptr))   \
-              goto sock_err;                          \
+#define sock_wait_established(sk,seconds,fn,statusptr) \
+        do {                                           \
+           if (_ip_delay0 (sk,seconds,fn,statusptr))   \
+              goto sock_err;                           \
         } while (0)
 
-#define sock_wait_input(s,seconds,fn,statusptr)       \
-        do {                                          \
-           if (_ip_delay1 (s,seconds,fn,statusptr))   \
-              goto sock_err;                          \
+#define sock_wait_input(sk,seconds,fn,statusptr)       \
+        do {                                           \
+           if (_ip_delay1 (sk,seconds,fn,statusptr))   \
+              goto sock_err;                           \
         } while (0)
 
-#define sock_wait_closed(s,seconds,fn,statusptr)      \
-        do {                                          \
-           if (_ip_delay2(s,seconds,fn,statusptr))    \
-              goto sock_err;                          \
+#define sock_wait_closed(sk,seconds,fn,statusptr)      \
+        do {                                           \
+           if (_ip_delay2(sk,seconds,fn,statusptr))    \
+              goto sock_err;                           \
         } while (0)
 
-#define sock_tick(s, statusptr)                       \
-        do {                                          \
-           if (!tcp_tick(s)) {                        \
-              if (statusptr) *statusptr = 1;          \
-              goto sock_err;                          \
-           }                                          \
+#define sock_tick(sk, statusptr)                       \
+        do {                                           \
+           if (!tcp_tick(sk)) {                        \
+              if (statusptr)                           \
+                 *statusptr = 1;                       \
+              goto sock_err;                           \
+           }                                           \
         } while (0)
 
 extern int   udp_listen (udp_Socket *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
@@ -165,7 +166,7 @@ extern int   reuse_localport  (WORD port);
 
 /* In sock_in.c
  */
-extern void  ip_timer_init    (sock_type *sk , int);
+extern void  ip_timer_init    (sock_type *sk, int);
 extern int   ip_timer_expired (const sock_type *sk);
 extern int  _ip_delay0        (sock_type *sk, int, UserHandler, int *);
 extern int  _ip_delay1        (sock_type *sk, int, UserHandler, int *);
