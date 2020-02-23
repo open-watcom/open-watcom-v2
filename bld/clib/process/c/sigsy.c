@@ -213,7 +213,9 @@ void __restore_int23( void )
     }
 #if defined(__WINDOWS_386__)
     TinySetVect( 0x23, __old_int23 );
-#elif defined( __386__ )
+#elif defined( _M_I86 )
+    _dos_setvect( 0x23, __old_int23 );
+#else
     if( _IsPharLap() ) {
         pharlap_rm_setvect( 0x23, __old_int23 );
         pharlap_pm_setvect( 0x23, __old_pm_int23 );
@@ -223,8 +225,6 @@ void __restore_int23( void )
     } else {        /* this is what it used to do */
         _dos_setvect( 0x23, __old_int23 );
     }
-#else
-    _dos_setvect( 0x23, __old_int23 );
 #endif
     __old_int23 = 0;
 }
@@ -241,7 +241,9 @@ void __restore_int_ctrl_break( void )
     }
 #if defined(__WINDOWS_386__)
     TinySetVect( CTRL_BRK_VEC, __old_int_ctrl_break );
-#elif defined( __386__ )
+#elif defined( _M_I86 )
+    _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+#else
     if( _IsPharLap() ) {
         pharlap_rm_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
         pharlap_pm_setvect( CTRL_BRK_VEC, __old_pm_int_ctrl_break );
@@ -251,8 +253,6 @@ void __restore_int_ctrl_break( void )
     } else {
         _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
     }
-#else
-    _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
 #endif
     __old_int_ctrl_break = 0;
 }
@@ -269,7 +269,10 @@ void __grab_int23( void )
 #if defined(__WINDOWS_386__)
         __old_int23 = _dos_getvect( 0x23 );
         TinySetVect( 0x23, (void (_WCNEAR *)(void))__int23_handler );
-#elif defined( __386__ )
+#elif defined( _M_I86 )
+        __old_int23 = _dos_getvect( 0x23 );
+        _dos_setvect( 0x23, __int23_handler );
+#else
         if( _IsPharLap() ) {
             __old_int23 = pharlap_rm_getvect( 0x23 );
             __old_pm_int23 = pharlap_pm_getvect( 0x23 );
@@ -284,9 +287,6 @@ void __grab_int23( void )
             __old_int23 = _dos_getvect( 0x23 );
             _dos_setvect( 0x23, __int23_handler );
         }
-#else
-        __old_int23 = _dos_getvect( 0x23 );
-        _dos_setvect( 0x23, __int23_handler );
 #endif
         if( __int23_exit == __null_int23_exit ) {
             __int23_exit = __restore_int23;
@@ -302,7 +302,10 @@ void __grab_int_ctrl_break( void )
 #if defined(__WINDOWS_386__)
         __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
         TinySetVect( CTRL_BRK_VEC, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
-#elif defined( __386__ )
+#elif defined( _M_I86 )
+        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
+        _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+#else
         if( _IsPharLap() ) {
             __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BRK_VEC );
             __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BRK_VEC );
@@ -317,9 +320,6 @@ void __grab_int_ctrl_break( void )
             __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
             _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
         }
-#else
-        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
-        _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
 #endif
         if( __int23_exit == __null_int23_exit ) {
             __int23_exit = __restore_int_ctrl_break;
