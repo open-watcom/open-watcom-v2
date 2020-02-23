@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,15 @@
 
 
 #ifdef _M_I86
-typedef void _WCI86FAR      FPEhandler( int );
+typedef void _WCI86FAR      FPEhandler( int fpe_type );
 #else
-typedef void                FPEhandler( int );
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
+typedef int                 FPEhandler( int fpe_type );
+#else
+typedef void                FPEhandler( int fpe_type );
+#endif
 #endif
 
 extern FPEhandler           *__FPE_handler;
 #define _RWD_FPE_handler    __FPE_handler
+

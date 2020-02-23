@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,15 +76,15 @@ static sigtab  _SignalTable[] = {
 };
 
 
-_WCRTLINK int   __sigfpe_handler( int fpe )
-/*****************************************/
+_WCRTLINK int   __sigfpe_handler( int fpe_type )
+/**********************************************/
 {
     __sig_func  func;
 
     func = _RWD_sigtab[SIGFPE].func;
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         _RWD_sigtab[SIGFPE].func = SIG_DFL;
-        (*(__sigfpe_func)func)( SIGFPE, fpe );
+        SIGFPE_CALL( func )( SIGFPE, fpe_type );    /* so we can pass 2'nd parm */
         return( 0 );
     } else if( func == SIG_IGN ) {
         return( 0 );
@@ -100,7 +100,7 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
 /************************************************************************/
 
     int                 sig;
-    int                 fpe;
+    int                 fpe_type;
     unsigned char       *ip;
     unsigned short      fp_tw;
     status_word         fp_sw;
@@ -112,31 +112,31 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
        ( pxcpt->ExceptionNum <= XCPT_FLOAT_UNDERFLOW )) {
         switch( pxcpt->ExceptionNum ) {
         case XCPT_FLOAT_DENORMAL_OPERAND :
-            fpe = FPE_DENORMAL;
+            fpe_type = FPE_DENORMAL;
             break;
         case XCPT_FLOAT_DIVIDE_BY_ZERO :
-            fpe = FPE_ZERODIVIDE;
+            fpe_type = FPE_ZERODIVIDE;
             break;
         case XCPT_FLOAT_INEXACT_RESULT :
-            fpe = FPE_INEXACT;
+            fpe_type = FPE_INEXACT;
             break;
         case XCPT_FLOAT_INVALID_OPERATION :
-            fpe = FPE_INVALID;
+            fpe_type = FPE_INVALID;
             ip = (unsigned char *)context->ctx_env[3];
             if( *(unsigned short *)ip == 0xfad9 ) {
                 // exception caused by "fsqrt" instruction
-                fpe = FPE_SQRTNEG;
+                fpe_type = FPE_SQRTNEG;
             } else if( *(unsigned short *)ip == 0xf1d9 ) {
                 // exception caused by "fyl2x" instruction
-                fpe = FPE_LOGERR;
+                fpe_type = FPE_LOGERR;
             } else if( *(unsigned short *)ip == 0xf8d9 ) {
                 // exception caused by "fprem" instruction
-                fpe = FPE_MODERR;
+                fpe_type = FPE_MODERR;
             } else {
                 if( ( ip[0] == 0xdb ) || ( ip[0] == 0xdf ) ) {
                     if( ( ip[1] & 0x30 ) == 0x10 ) {
                         // exception caused by "fist(p)" instruction
-                        fpe = FPE_IOVERFLOW;
+                        fpe_type = FPE_IOVERFLOW;
                     }
                 }
                 if( !(ip[0] & 0x01) ) {
@@ -145,29 +145,29 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                         fp_tw = context->ctx_env[2] & 0x0000ffff;
                         fp_sw.sw = context->ctx_env[1] & 0x0000ffff;
                         if( ((fp_tw >> (fp_sw.b.st << 1)) & 0x01) == 0x01 ) {
-                            fpe = FPE_ZERODIVIDE;
+                            fpe_type = FPE_ZERODIVIDE;
                         }
                     }
                 }
             }
             break;
         case XCPT_FLOAT_OVERFLOW :
-            fpe = FPE_OVERFLOW;
+            fpe_type = FPE_OVERFLOW;
             break;
         case XCPT_FLOAT_STACK_CHECK :
             if( context->ctx_env[1] & SW_C1 ) {
-                fpe = FPE_STACKOVERFLOW;
+                fpe_type = FPE_STACKOVERFLOW;
             } else {
-                fpe = FPE_STACKUNDERFLOW;
+                fpe_type = FPE_STACKUNDERFLOW;
             }
             break;
         case XCPT_FLOAT_UNDERFLOW :
-            fpe = FPE_UNDERFLOW;
+            fpe_type = FPE_UNDERFLOW;
             break;
         }
         _fpreset();
         __ExceptionHandled = 1;
-        if(( __sigfpe_handler( fpe ) == 0 ) && ( __ExceptionHandled )) {
+        if(( __sigfpe_handler( fpe_type ) == 0 ) && ( __ExceptionHandled )) {
             context->ctx_env[1] &= ~( SW_BUSY | SW_XCPT_FLAGS | SW_IREQ );
             return( XCPT_CONTINUE_EXECUTION );
         }
@@ -339,7 +339,7 @@ static void __SetSigInit( void )
 {
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;
-    _RWD_FPE_handler = (FPEhandler *)__sigfpe_handler;
+    _RWD_FPE_handler = __sigfpe_handler;
 }
 
 AXI( __SetSigInit, INIT_PRIORITY_LIBRARY )

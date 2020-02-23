@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +105,7 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
     func = _SignalTable[SIGFPE];
     if( func != SIG_IGN && func != SIG_DFL && func != SIG_ERR ) {
         _SignalTable[SIGFPE] = SIG_DFL;
-        (*(__sigfpe_func)func)( SIGFPE, fpe_type );    /* so we can pass 2nd parm */
+        SIGFPE_CALL( func )( SIGFPE, fpe_type );    /* so we can pass 2nd parm */
     }
 }
 
