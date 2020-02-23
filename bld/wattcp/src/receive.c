@@ -309,6 +309,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
 {
   int   ret   = 0;
   DWORD timer = 0UL;
+  sock_type *sk;
 
   if (socket->timeout)
      timer = set_timeout (1000 * socket->timeout);
@@ -329,14 +330,11 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
   }
 #endif
 
-  for ( ;; )
-  {
-    sock_type *sk = socket->proto_sock;
-
+  sk = socket->proto_sock;
+  for ( ;; ) {
     SOCK_YIELD();
 
-    if (!tcp_tick(sk))
-    {
+    if (!tcp_tick(sk)) {
       socket->so_state |= SS_CANTRCVMORE;
       SOCK_DEBUGF ((socket, ", ENOTCONN"));
       SOCK_ERR (ENOTCONN);
@@ -349,16 +347,14 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
      * queue setup by sock_recv_init() (in _UDP_listen).
      * Note: it is possible to receive 0-byte probe packets.
      */
-    if (socket->so_state & SS_PRIV)
-    {
+    if (socket->so_state & SS_PRIV) {
       struct in_addr peer;
       WORD           port = ntohs (socket->local_addr->sin_port);
 
-      ret = sock_recv_from (socket->proto_sock, &peer.s_addr, &port, buf, len,
+      ret = sock_recv_from (sk, &peer.s_addr, &port, buf, len,
                             (flags & MSG_PEEK) ? 1 : 0);
 
-      if (ret != 0 && peer.s_addr)
-      {
+      if (ret != 0 && peer.s_addr) {
         udp_raw_fill_from (from, fromlen, &peer, port);
         SOCK_DEBUGF ((socket, ", remote: %s (%d)",
                       inet_ntoa(peer), ntohs(port)));
@@ -366,52 +362,46 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
            return (0);
         return (ret);
       }
-    }
-
-    else if (sock_rbused(sk) > socket->recv_lowat)
-    {
-      if (flags & MSG_PEEK)
-           ret = sock_preread  (sk, (BYTE*)buf, len);
-      else if (flags & MSG_WAITALL)
-           ret = sock_read     (sk, (BYTE*)buf, len);
-      else ret = sock_fastread (sk, (BYTE*)buf, len);
+    } else if (sock_rbused(sk) > socket->recv_lowat) {
+      if (flags & MSG_PEEK) {
+          ret = sock_preread (sk, (BYTE*)buf, len);
+      } else if (flags & MSG_WAITALL) {
+          ret = sock_read (sk, (BYTE*)buf, len);
+      } else {
+          ret = sock_fastread (sk, (BYTE*)buf, len);
+      }
       break;
     }
 
-    if (socket->so_state & SS_CONN_REFUSED)
-    {
+    if (socket->so_state & SS_CONN_REFUSED) {
       SOCK_DEBUGF ((socket, ", ECONNREFUSED (2)"));
       SOCK_ERR (ECONNREFUSED);
       return (-1);
     }
 
-    if (socket->so_state & SS_NBIO)
-    {
+    if (socket->so_state & SS_NBIO) {
       SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
       SOCK_ERR (EWOULDBLOCK);
       return (-1);
     }
 
-    if (chk_timeout(timer))
-    {
+    if (chk_timeout(timer)) {
       SOCK_DEBUGF ((socket, ", ETIMEDOUT"));
       SOCK_ERR (ETIMEDOUT);
       return (-1);
     }
   }
 
-  if (ret > 0)
-  {
+  if (ret > 0) {
     struct in_addr peer;
     WORD   port;
 
-    port = htons (socket->proto_sock->udp.hisport);
-    peer.s_addr = htonl (socket->proto_sock->udp.hisaddr);
+    port = htons (sk->udp.hisport);
+    peer.s_addr = htonl (sk->udp.hisaddr);
 
     udp_raw_fill_from (from, fromlen, &peer, port);
 
-    if (socket->remote_addr)
-    {
+    if (socket->remote_addr) {
       socket->remote_addr->sin_family = AF_INET;
       socket->remote_addr->sin_addr   = peer;
       socket->remote_addr->sin_port   = port;
@@ -430,19 +420,21 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
 static int raw_receive (Socket *socket, void *buf, int len, int flags,
                         struct sockaddr *from, int *fromlen)
 {
-  raw_Socket  *raw = &socket->proto_sock->raw;
+  sock_type    *sk = socket->proto_sock;
   DWORD        timer;
   static DWORD loop;
 
-  if (!raw || len < sizeof(raw->ip))
+  if (sk == NULL || len < sizeof(sk->raw.ip))
   {
     SOCK_ERR (EINVAL);
     return (-1);
   }
 
-  if (socket->timeout)
-       timer = set_timeout (1000 * socket->timeout);
-  else timer = 0;
+  if (socket->timeout) {
+      timer = set_timeout (1000 * socket->timeout);
+  } else {
+      timer = 0;
+  }
   loop = 1;
 
   for ( ;; )
@@ -460,25 +452,25 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
       tcp_Retransmitter (1);
     }
 
-    ip_len = sock_rbused ((sock_type*)raw);  /* includes header length */
+    ip_len = sock_rbused (sk);  /* includes header length */
     if (ip_len >= sizeof(*ip) + socket->recv_lowat)
     {
       if (len < sizeof(*ip))
       {
-        raw->used = FALSE;
+        sk->raw.used = FALSE;
         continue;
       }
       ip = (struct ip*) buf;
 
       /* SOCK_RAW shall allway return IP-header and data in 'buf'
        */
-      memcpy (ip, &raw->ip, sizeof(*ip));
+      memcpy (ip, &sk->raw.ip, sizeof(*ip));
       len = min (ip_len-sizeof(*ip), len);
       if (len > 0)
-         memcpy (++ip, &raw->data, len);
+         memcpy (++ip, &sk->raw.data, len);
 
-      peer.s_addr = raw->ip.source;
-      raw->used = FALSE;
+      peer.s_addr = sk->raw.ip.source;
+      sk->raw.used = FALSE;
 
       udp_raw_fill_from (from, fromlen, &peer, 0);
       SOCK_DEBUGF ((socket, ", remote: %s", inet_ntoa(peer)));

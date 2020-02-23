@@ -96,9 +96,11 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
 #endif
   }
 
-  if (socket->timeout)
-       timeout = set_timeout (1000 * socket->timeout);
-  else timeout = 0UL;
+  if (socket->timeout) {
+      timeout = set_timeout (1000 * socket->timeout);
+  } else {
+      timeout = 0UL;
+  }
 
 
   if (_sock_sig_setup() < 0)
@@ -111,7 +113,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
    */
   for (que_idx = 0; ; que_idx = (++que_idx % maxconn))
   {
-    sock_type *sk = socket->listen_queue[que_idx];
+    sock_type *tcb_sk = socket->listen_queue[que_idx];
 
     tcp_tick (NULL);
 
@@ -121,7 +123,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
      * after 'select_s()' said that socket was readable. (At least one
      * connection on the listen-queue).
      */
-    if (sk != NULL)
+    if (tcb_sk != NULL)
     {
       /* This could happen if 'accept()' was called too long after connection
        * was established and then closed by peer. This could also happen if
@@ -132,7 +134,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
        * Queue slot is in any case ready for another 'SYN' to come and be
        * handled by '_sock_append()'.
        */
-      if (sk->u.ip_type == 0 && sk->tcp.state >= tcp_StateLASTACK)
+      if (tcb_sk->u.ip_type == 0 && tcb_sk->tcp.state >= tcp_StateLASTACK)
       {
         SOCK_DEBUGF ((socket, ", aborted TCB (idx %d)", que_idx));
         listen_free (socket, que_idx);
@@ -142,7 +144,7 @@ int accept (int s, struct sockaddr *addr, int *addrlen)
       /* !!to-do: Should maybe loop over all maxconn TCBs and accept the
        *          one with oldest 'syn_timestamp'.
        */
-      if (tcp_established(&sk->tcp))
+      if (tcp_established(&tcb_sk->tcp))
       {
         SOCK_DEBUGF ((socket, ", connected! (idx %d)", que_idx));
         break;
@@ -263,6 +265,7 @@ static int dup_bind (Socket *_socket, Socket **newconn, int idx)
 static int alloc_addr (Socket *socket, Socket *clone)
 {
   struct in_addr peer;
+  sock_type *sk;
 
   clone->local_addr  = SOCK_CALLOC (sizeof(*clone->local_addr));
   clone->remote_addr = SOCK_CALLOC (sizeof(*clone->remote_addr));
@@ -273,14 +276,14 @@ static int alloc_addr (Socket *socket, Socket *clone)
     SOCK_ERR (ENOMEM);
     return (-1);
   }
-
-  peer.s_addr = htonl (clone->proto_sock->tcp.hisaddr);
+  sk = clone->proto_sock;
+  peer.s_addr = htonl (sk->tcp.hisaddr);
   clone->local_addr->sin_family  = AF_INET;
   clone->local_addr->sin_port    = socket->local_addr->sin_port;
   clone->local_addr->sin_addr    = socket->local_addr->sin_addr;
 
   clone->remote_addr->sin_family = AF_INET;
-  clone->remote_addr->sin_port   = htons (clone->proto_sock->tcp.hisport);
+  clone->remote_addr->sin_port   = htons (sk->tcp.hisport);
   clone->remote_addr->sin_addr   = peer;
   return (0);
 }
@@ -314,7 +317,7 @@ static int listen_free (Socket *socket, int idx)
  */
 int _sock_append (tcp_Socket **tcp)
 {
-  sock_type  *clone;
+  sock_type  *clone_sk;
   tcp_Socket *orig = *tcp;
   Socket     *socket = NULL;   /* associated socket for '*tcp' */
   int         i;
@@ -353,8 +356,8 @@ int _sock_append (tcp_Socket **tcp)
 
   SOCK_DEBUGF ((socket, ", idx %d", i));
 
-  clone = SOCK_CALLOC (sizeof(tcp_Socket));
-  if (clone == NULL)
+  clone_sk = SOCK_CALLOC (sizeof(tcp_Socket));
+  if (clone_sk == NULL)
   {
     SOCK_DEBUGF ((socket, ", ENOMEM"));
     return (-1);
@@ -362,17 +365,17 @@ int _sock_append (tcp_Socket **tcp)
 
   /* Link in the semi-connected socket (SYN received, ACK will be sent)
    */
-  socket->listen_queue[i] = clone;
+  socket->listen_queue[i] = clone_sk;
   socket->syn_timestamp[i] = set_timeout (0);
 
   /* Copy the TCB (except Tx-buffer) to clone
    */
-  memcpy (clone, orig, sizeof(tcp_Socket) - sizeof(clone->tcp.data));
-  clone->tcp.safetytcp = SAFETYTCP;
+  memcpy (clone_sk, orig, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.data));
+  clone_sk->tcp.safetytcp = SAFETYTCP;
 
   /* Increase the TCP window (to 16kB)
    */
-  sock_setbuf (clone, calloc(DEFAULT_RCV_WIN,1), DEFAULT_RCV_WIN);
+  sock_setbuf (clone_sk, calloc(DEFAULT_RCV_WIN,1), DEFAULT_RCV_WIN);
 
   /* Undo what tcp_handler() and tcp_listen_state() did to
    * this listening socket.
@@ -390,9 +393,9 @@ int _sock_append (tcp_Socket **tcp)
   orig->last_seqnum[0] = orig->last_seqnum[1] = 0;
 #endif
 
-  clone->tcp.next = _tcp_allsocs;
-  _tcp_allsocs = &clone->tcp;   /* prepend clone to TCB-list */
-  *tcp = _tcp_allsocs;          /* clone is now the new TCB */
+  clone_sk->tcp.next  = _tcp_allsocs;
+  _tcp_allsocs = &clone_sk->tcp;    /* prepend clone to TCB-list */
+  *tcp = _tcp_allsocs;              /* clone is now the new TCB */
   return (0);
 }
 

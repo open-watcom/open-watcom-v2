@@ -67,17 +67,17 @@ int _fsext_demux (__FSEXT_Fnumber func, int *rv, va_list _args)
   int     fd   = va_arg (_args, int);
   int     cmd  = va_arg (_args, int);
   int     arg  = va_arg (_args, int);
-  Socket *sock = __FSEXT_get_data (fd); /* same as _socklist_find(fd) */
+  Socket *socket = __FSEXT_get_data (fd); /* same as _socklist_find(fd) */
 
   SOCK_DEBUGF ((NULL,
      "\n_fsext_demux: fd %d%c, func %d = \"%s\", cmd %08lX, arg %08lX",
-     fd, sock ? 's' : 'f', func, lookup (func, fs_func, DIM(fs_func)),
+     fd, socket ? 's' : 'f', func, lookup (func, fs_func, DIM(fs_func)),
      (DWORD)cmd, (DWORD)arg));
 
 
   /* fd is not a valid socket, pass on to lower layer
    */
-  if (!sock)
+  if (socket == NULL)
      return (0);
 
   switch (func)
@@ -91,17 +91,17 @@ int _fsext_demux (__FSEXT_Fnumber func, int *rv, va_list _args)
          return (1);
 
     case __FSEXT_close:                       /* close (fd) */
-         if (sock->fd_duped == 0)
+         if (socket->fd_duped == 0)
             *rv = close_s (fd);
          else
          {
-           sock->fd_duped--;
+           socket->fd_duped--;
            *rv = 0;
          }
          return (1);
 
     case __FSEXT_ioctl:   /* ioctl (fd,cmd,...) */
-         *rv = ioctlsocket (fd, cmd, (char*)arg); 
+         *rv = ioctlsocket (fd, cmd, (char*)arg);
          return (1);
 
     case __FSEXT_fcntl:   /* 'fcntl (fd,cmd)' or 'fcntl (fd,cmd,arg)' */
@@ -112,13 +112,13 @@ int _fsext_demux (__FSEXT_Fnumber func, int *rv, va_list _args)
 #if 0    /* avoid the overhead of select_s() */
          tcp_tick (NULL);
          *rv = 0;
-         if (_sock_read_select(sock) > 0)
+         if (_sock_read_select(socket) > 0)
             *rv |= __FSEXT_ready_read;
 
-         if (_sock_write_select(sock) > 0)
+         if (_sock_write_select(socket) > 0)
             *rv |= __FSEXT_ready_write;
 
-         if (_sock_exc_select(sock) > 0)
+         if (_sock_exc_select(socket) > 0)
             *rv |= __FSEXT_ready_error;
 
 #else    /* include trace from select_s() */
@@ -154,13 +154,13 @@ int _fsext_demux (__FSEXT_Fnumber func, int *rv, va_list _args)
 #if (DJGPP_MINOR >= 2)    /* functions added in v2.02 */
     case __FSEXT_dup:     /* dup (fd) */
          *rv = fd;
-         sock->fd_duped++;
+         socket->fd_duped++;
          return (1);
 
     case __FSEXT_dup2:    /* dup2 (oldfd,newfd) */
          {
-           int type  = sock->so_type;  /* don't use 'sock' after close() */
-           int proto = sock->so_proto;
+           int type  = socket->so_type;  /* don't use 'socket' after close() */
+           int proto = socket->so_proto;
 
            close (cmd);   /* close (newd) */
            *rv = socket (AF_INET, type, proto);
@@ -171,7 +171,7 @@ int _fsext_demux (__FSEXT_Fnumber func, int *rv, va_list _args)
     case __FSEXT_stat:
 #if defined(USE_STATISTICS)
          *rv = 0;
-         switch (sock->so_proto)
+         switch (socket->so_proto)
          {
            int size;
 

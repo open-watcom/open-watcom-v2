@@ -1,1 +1,1 @@
-extern void sock_debugdump (const sock_type *s);
+extern void sock_debugdump (const sock_type *sk);

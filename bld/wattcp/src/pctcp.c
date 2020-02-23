@@ -59,11 +59,11 @@
  * functions when needed; `_raw_ip_hook' is set to filter SOCK_RAW
  * packets, `_tcp_syn_hook' is set to filter incoming SYN packets
  * for SOCK_STREAM packets used in `accept()'. And '_tcp_find_hook'
- * is set to `sock_find_tcp()' when allocating SOCK_STREAM sockets.
+ * is set to `socket_find_tcp()' when allocating SOCK_STREAM sockets.
  */
 int   (*_raw_ip_hook)  (const in_Header *)  = NULL;
 int   (*_tcp_syn_hook) (tcp_Socket **)      = NULL;
-void *(*_tcp_find_hook) (const tcp_Socket*) = NULL;
+Socket *(*_tcp_find_hook) (const tcp_Socket*) = NULL;
 #endif
 
 char   hostname[MAX_HOSTLEN+1] = "random-pc";
@@ -354,7 +354,7 @@ int tcp_listen (tcp_Socket *s, WORD lport, DWORD ina, WORD port, ProtoHandler ha
 static void maybe_reuse_lport (tcp_Socket *s)
 {
 #if defined(USE_BSD_FUNC)
-  if (!_tcp_find_hook || !(*_tcp_find_hook)(s))
+  if (_tcp_find_hook == NULL || (*_tcp_find_hook)(s) == NULL)
 #endif
      reuse_localport (s->myport);
 }
@@ -957,7 +957,7 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
    * Fix-me: a raw socket may gobble up a packet we're awaiting in
    *         e.g. resolve().
    */
-  if (_raw_ip_hook && (*_raw_ip_hook)(ip))
+  if (_raw_ip_hook != NULL && (*_raw_ip_hook)(ip))
      return (1);
 #endif
 
@@ -1414,15 +1414,14 @@ static void tcp_sockreset (tcp_Socket *s, int proxy)
   s->ip_type = 0;   /* 2001.1.18 - make it fail tcp_tick() */
 
 #if defined(USE_BSD_FUNC)
-  if (_tcp_find_hook)
-  {
-    Socket *sock = (Socket*) (*_tcp_find_hook) (s);
+  if (_tcp_find_hook != NULL) {
+    Socket *socket = (*_tcp_find_hook) (s);
 
-    if (sock)  /* do a "read-wakeup" on the SOCK_STREAM socket */
-    {
-      sock->so_state |= SS_CONN_REFUSED;
-      if (sock->so_error == 0)
-          sock->so_error = ECONNRESET;
+    if (socket != NULL) { /* do a "read-wakeup" on the SOCK_STREAM socket */
+      socket->so_state |= SS_CONN_REFUSED;
+      if (socket->so_error == 0) {
+          socket->so_error = ECONNRESET;
+      }
     }
   }
 #endif

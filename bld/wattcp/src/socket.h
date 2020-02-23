@@ -155,9 +155,9 @@ typedef struct Socket {
  * confuse sockets with stdin/stdout/stderr handles.
  */
 #ifdef __DJGPP__
-  #define SK_FIRST  0   /* first socket will always be >3 */
+  #define S_FIRST  0    /* first socket will always be >3 */
 #else
-  #define SK_FIRST  3   /* skip handles 0-2 */
+  #define S_FIRST  3    /* skip handles 0-2 */
 #endif
 
 
@@ -315,8 +315,8 @@ extern void   *_sock_calloc   (const char *file, unsigned line, size_t size);
 extern Socket *_sock_del_fd   (const char *file, unsigned line, int sock);
 extern Socket *_socklist_find (int s);
 extern int     _sock_dos_fd   (int s);
-extern int     _sock_half_open(const tcp_Socket *tcp);
-extern int     _sock_append   (tcp_Socket **tcp);
+extern int     _sock_half_open(const tcp_Socket *tcp_sk);
+extern int     _sock_append   (tcp_Socket **tcp_sk);
 
 /*
  * Debugging of BSD-socket API. Writes to "sk_debug.device"
@@ -330,7 +330,7 @@ extern void _sock_enter_scope (void);
 extern void _sock_leave_scope (void);
 extern void bsd_fortify_print (const char *buf);
 
-extern void _sock_debugf (const Socket *sock, const char *fmt, ...)
+extern void _sock_debugf (const Socket *socket, const char *fmt, ...)
 #ifdef __GNUC__
   __attribute__((format(printf,2,3)))
 #endif

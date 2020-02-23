@@ -26,9 +26,9 @@
 #endif
 
 static int     socket_block = 0;        /* sock_daemon() semaphore */
-static int     sk_last  = SK_FIRST;     /* highest socket number */
+static int     s_last  = S_FIRST;       /* highest socket number */
 static Socket *socket_list = NULL;
-static BOOL    sk_init  = 0;
+static BOOL    socket_init  = 0;
 
 #if 0  /* !!to-do */
   #define SOCK_HASH_SIZE (MAX_SOCKETS / 32)
@@ -91,11 +91,11 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
  *
  *  Non-djgpp targets:
  *    Allocate a new descriptor (handle) by searching through `inuse' for
- *    the first zero bit. Update `sk_last' as needed.
+ *    the first zero bit. Update `s_last' as needed.
  *
  *  djgpp target:
  *    Allocate a descriptior from the "File System Extension" layer.
- *    `sk_last' is not used (initialised to MAX_SOCKETS).
+ *    `s_last' is not used (initialised to MAX_SOCKETS).
  */
 
 static fd_set inuse [NUM_SOCK_FDSETS];
@@ -121,7 +121,7 @@ static int sock_get_fd (void)
 #else
     int s;
 
-    for (s = SK_FIRST; s < sk_last; s++) {
+    for (s = S_FIRST; s < s_last; s++) {
         if (!FD_ISSET(s,&inuse[0])      /* not marked as in-use */
             && !_socklist_find(s)) {    /* don't use a dying socket */
             break;
@@ -131,8 +131,8 @@ static int sock_get_fd (void)
 #endif /* __DJGPP__ && USE_FSEXT */
 
     if (s < MAX_SOCKETS) {
-        if (s == sk_last)
-            sk_last++;
+        if (s == s_last)
+            s_last++;
 
         FD_SET (s, &inuse[0]);
         return (s);
@@ -182,10 +182,10 @@ static __inline void set_rcv_buf (sock_type *p)
  */
 static __inline void free_rcv_buf (sock_type *p)
 {
-    if (p->udp.rdata != &p->udp.rddata[0]) {
-        free (p->udp.rdata);
-        p->udp.rdata = &p->udp.rddata[0];
-        p->udp.rdatalen = 0;
+    if (p->u.rdata != &p->u.rddata[0]) {
+        free (p->u.rdata);
+        p->u.rdata = &p->u.rddata[0];
+        p->u.rdatalen = 0;
     }
 }
 
@@ -197,7 +197,7 @@ static __inline void free_rcv_buf (sock_type *p)
  */
 static __inline Socket *socket_list_del (int s)
 {
-    Socket *sock, *next, *last;
+    Socket *socket, *next, *last;
 
     for (socket = last = socket_list; socket != NULL; last = socket, socket = socket->next) {
         if (socket->fd != s) {
@@ -258,19 +258,19 @@ static __inline void unset_raw_ip_hook (Socket *this)
 }
 
 /*
- *  _socket_del_fd
+ *  _sock_del_fd
  *    Delete the socket from `inuse' array and all memory associated
  *    with it. Also unlink it from the socket list (socket_list).
  *    Return pointer to next node in list or NULL if none/error.
  */
-Socket * _socket_del_fd (const char *file, unsigned line, int s)
+Socket * _sock_del_fd (const char *file, unsigned line, int s)
 {
     Socket    *socket, *next = NULL;
     sock_type *sk;
 
     SOCK_DEBUGF ((NULL, "\n  _sock_del_fd:%d", s));
 
-    if (s < SK_FIRST || s >= sk_last || !FD_ISSET(s,&inuse[0])) {
+    if (s < S_FIRST || s >= s_last || !FD_ISSET(s,&inuse[0])) {
         SOCK_FATAL (("%s (%u) Fatal: socket %d not inuse\r\n", file, line, s));
         return (NULL);
     }
@@ -335,8 +335,8 @@ Socket * _socket_del_fd (const char *file, unsigned line, int s)
     next = socket_list_del (s);  /* delete socket from linked list */
 
 not_inuse:
-    if (s == sk_last-1)
-        sk_last--;
+    if (s == s_last-1)
+        s_last--;
 
     FD_CLR (s, &inuse[0]);
 
@@ -350,7 +350,7 @@ not_inuse:
 
 #ifdef NOT_USED
 /*
- *  sock_find_fd
+ *  socket_find_fd
  *    Finds the 'fd' associated with pointer 'socket'.
  *    Return -1 if not found.
  */
@@ -368,7 +368,7 @@ static int socket_find_fd (const Socket *this)
 
 /*
  *  socket_find_udp
- *    Finds the 'Socket' associated with udp_socket 'udp'.
+ *    Finds the 'Socket' associated with udp-socket 'udp'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_udp (const udp_Socket *udp)
@@ -386,7 +386,7 @@ static Socket *socket_find_udp (const udp_Socket *udp)
 
 /*
  *  socket_find_tcp
- *    Finds the 'Socket' associated with tcp_socket 'tcp'.
+ *    Finds the 'Socket' associated with tcp-socket 'tcp'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_tcp (const tcp_Socket *tcp)
@@ -406,7 +406,7 @@ static Socket *socket_find_tcp (const tcp_Socket *tcp)
  *  socket_raw_recv - Called from _ip_handler() via `_raw_ip_hook'.
  *    IP-header is already checked in _ip_handler().
  *    Finds all 'Socket' associated with raw IP-packet 'ip'.
- *    Enqueue to 'socket->raw_sock'.
+ *    Enqueue to 'sock->proto_sock->raw'.
  *    Return >=1 if 'ip' is consumed, 0 otherwise.
  *
  *  Fix-me: This routine will steal all packets destined for
@@ -416,13 +416,14 @@ static Socket *socket_find_tcp (const tcp_Socket *tcp)
 static int socket_raw_recv (const in_Header *ip)
 {
     Socket *socket;
+    sock_type *sk;
     int     num_enqueued = 0;
     int     num_dropped  = 0;
     int     hlen = in_GetHdrLen (ip);
     DWORD   dst  = ntohl (ip->destination);
     size_t  len  = ntohs (ip->length);
 
-    /* Jumbo packets won't match any raw_sockets
+    /* Jumbo packets won't match any raw-sockets
      */
     if (len > sizeof(socket->proto_sock->raw.data))
         return (0);
@@ -433,6 +434,7 @@ static int socket_raw_recv (const in_Header *ip)
         return (0);
 
     for (socket = socket_list; socket != NULL; socket = socket->next) {
+        sk = socket->proto_sock;
 #if 0 /* !! to-do */
         if (socket->so_type == SOCK_RAW && socket->so_proto == IPPROTO_RAW)
             ; /* socket matches every IP-protocol, enqueue */
@@ -448,17 +450,17 @@ static int socket_raw_recv (const in_Header *ip)
             (ip->proto != socket->so_proto && socket->so_proto != IPPROTO_IP))
             continue;
 
-        /* !!to-do: follow the 'socket->raw_sock->next' pointer to first
+        /* !!to-do: follow the 'socket->proto_sock->raw.next' pointer to first
          *          vacant buffer.
-         * assumes socket->raw_sock is non-NULL
+         * assumes socket->proto_sock is non-NULL
          */
-        if (socket->proto_sock->raw.used) {
+        if (sk->raw.used) {
             num_dropped++;
             SOCK_DEBUGF ((socket, "\n  socket %d dropped IP, proto %d", socket->fd, ip->proto));
         } else {
             /* Copy IP-header to raw_sock.ip
              */
-            memcpy (&socket->proto_sock->raw.ip, ip, sizeof(*ip));
+            memcpy (&sk->raw.ip, ip, sizeof(*ip));
 
             /* Copy any IP-options
              */
@@ -469,8 +471,8 @@ static int socket_raw_recv (const in_Header *ip)
 
             /* Copy rest of IP-packet
              */
-            memcpy (&socket->proto_sock->raw.data, (BYTE*)ip+hlen, len);
-            socket->proto_sock->raw.used = TRUE;
+            memcpy (&sk->raw.data, (BYTE*)ip+hlen, len);
+            sk->raw.used = TRUE;
             num_enqueued++;
         }
     }
@@ -581,6 +583,7 @@ static Socket *udp_sock_daemon (Socket *socket, udp_Socket *udp)
 static void sock_daemon (void)
 {
     Socket *socket, *next = NULL;
+    sock_type *sk;
 
     /* If we're in a critical region (e.g. select_s()) where we don't
      * want our socket-list to change, do this later.
@@ -589,6 +592,7 @@ static void sock_daemon (void)
         return;
 
     for (socket = socket_list; socket != NULL; socket = next) {
+        sk = socket->proto_sock;
         int s = socket->fd;
         next  = socket->next;
 
@@ -602,13 +606,13 @@ static void sock_daemon (void)
         _sock_debugf (NULL, "\nsock_daemon:%d", socket->fd);
 #endif
 
-        if (socket->proto_sock) {
+        if (sk != NULL) {
             switch (socket->so_type) {
             case SOCK_STREAM:
-                next = tcp_sock_daemon (socket, &socket->proto_sock->tcp);
+                next = tcp_sock_daemon (socket, &sk->tcp);
                 break;
             case SOCK_DGRAM:
-                next = udp_sock_daemon (socket, &socket->proto_sock->udp);
+                next = udp_sock_daemon (socket, &sk->udp);
                 break;
             }
         }
@@ -703,9 +707,9 @@ static int InitSockets (void)
         r.rlim_max = MAX_SOCKETS;     /* We don't know this before we try it */
         setrlimit (RLIMIT_NOFILE, &r);
     }
-    sk_last = MAX_SOCKETS;
+    s_last = MAX_SOCKETS;
 #else
-    sk_last = SK_FIRST;
+    s_last = S_FIRST;
 #endif  /* __DJGPP__ */
 
     socket_list = NULL;
@@ -729,10 +733,10 @@ Socket *_socklist_find (int s)
 {
     Socket *socket;
 
-    if (!sk_init) {
+    if (!socket_init) {
         if (!InitSockets())
             return (NULL);
-        sk_init = 1;
+        socket_init = 1;
     }
     for (socket = socket_list; socket != NULL; socket = socket->next) {
         if (socket->fd == s) {
@@ -828,7 +832,7 @@ static __inline int set_proto (int type, int *proto)
             SOCK_DEBUGF ((NULL, "\nsocket: invalid STREAM protocol (%d)", *proto));
             return (-1);
         }
-        _tcp_find_hook = sock_find_tcp;
+        _tcp_find_hook = socket_find_tcp;
     } else if (type == SOCK_DGRAM) {
         if (*proto == 0) {
             *proto = IPPROTO_UDP;
@@ -839,7 +843,7 @@ static __inline int set_proto (int type, int *proto)
     } else if (type == SOCK_RAW) {
         if (*proto == IPPROTO_RAW)     /* match all IP-protocols */
             *proto = IPPROTO_IP;
-        _raw_ip_hook = sock_raw_recv;  /* hook for _ip_handler() */
+        _raw_ip_hook = socket_raw_recv;  /* hook for _ip_handler() */
     }
     return (0);
 }
@@ -858,11 +862,11 @@ int socket (int family, int type, int protocol)
     Socket *socket;
     int     s, ss;
 
-    if (!sk_init && !InitSockets()) {
+    if (!socket_init && !InitSockets()) {
         SOCK_ERR (ENETDOWN);
         return (-1);
     }
-    sk_init = 1;
+    socket_init = 1;
 
     if (family != AF_INET) {
         SOCK_DEBUGF ((NULL, "\nsocket: invalid family (%d)", family));
@@ -1001,22 +1005,23 @@ static int sol_callback (sock_type *s, int icmp_type)
  */
 int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD ip = ntohl (host.s_addr);
 
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!udp_open (&socket->proto_sock->udp, loc_port, ip, rem_port, NULL))
+    if (!udp_open (&sk->udp, loc_port, ip, rem_port, NULL))
         return (0);
 
-    set_rcv_buf (socket->proto_sock);
-    socket->proto_sock->udp.sol_callb = sol_callback;
+    set_rcv_buf (sk);
+    sk->udp.sol_callb = sol_callback;
     return (1);
 }
 
 int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 {
-    udp_Socket *udp = &socket->proto_sock->udp;
+    sock_type *sk = socket->proto_sock;
     DWORD addr;
 
     port = ntohs (port);
@@ -1045,16 +1050,16 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
             addr = ntohl (host.s_addr);
         }
 
-        udp_listen (udp, port, addr, 0, NULL);
+        udp_listen (&sk->udp, port, addr, 0, NULL);
 
         /* Setup _recvdaemon() to enqueue broadcast/"unconnected" messages
          */
-        sock_recv_init ((sock_type *)udp, pool, pool_size);
+        sock_recv_init (sk, pool, pool_size);
     } else {
         addr = ntohl (host.s_addr);
-        udp_listen (udp, port, addr, 0, NULL);
+        udp_listen (&sk->udp, port, addr, 0, NULL);
     }
-    udp->sol_callb = sol_callback;
+    sk->udp.sol_callb = sol_callback;
     return (1);
 }
 
@@ -1064,12 +1069,13 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
  */
 int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD dest = ntohl (host.s_addr);
 
     loc_port = ntohs (loc_port);
     rem_port = ntohs (rem_port);
 
-    if (!tcp_open (&socket->proto_sock->tcp, loc_port, dest, rem_port, NULL))
+    if (!tcp_open (&sk->tcp, loc_port, dest, rem_port, NULL))
         return (0);
 
     /*
@@ -1086,18 +1092,19 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 
     /* Advertise a large rcv-win from the next ACK
      */
-    set_rcv_buf (socket->proto_sock);
-    socket->proto_sock->tcp.sol_callb = sol_callback;
+    set_rcv_buf (sk);
+    sk->tcp.sol_callb = sol_callback;
     return (1);
 }
 
 int _TCP_listen (Socket *socket, struct in_addr host, WORD port)
 {
+    sock_type *sk = socket->proto_sock;
     DWORD addr     = ntohl (host.s_addr);
     WORD  loc_port = ntohs (port);
 
-    tcp_listen (&socket->proto_sock->tcp, loc_port, addr, 0, NULL, 0);
-    socket->proto_sock->tcp.sol_callb = sol_callback;
+    tcp_listen (&sk->tcp, loc_port, addr, 0, NULL, 0);
+    sk->tcp.sol_callb = sol_callback;
     return (1);
 }
 
@@ -1129,7 +1136,7 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
     if ((s1 = socket (family, type, protocol)) < 0)
         return (fd1);
 
-    socket1 = socklist_find (s1);
+    socket1 = _socklist_find (s1);
 
     /* Now grab another socket and try to connect the two together.
      */
@@ -1138,7 +1145,7 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
         return (-EINVAL);
     }
 
-    socket2 = socklist_find (s2);
+    socket2 = _socklist_find (s2);
 
     socket1->conn = socket2;
     socket2->conn = socket1;
