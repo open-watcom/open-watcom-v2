@@ -31,25 +31,9 @@
 ****************************************************************************/
 
 
-#include "extfunc.h"
-
-#ifdef _M_IX86
-#define SIGFPE_CALL(x)  ((__sigfpe_func)(x))
-#else
-#define SIGFPE_CALL(x)  (x)
-#endif
-
-typedef void (*__sigfpe_func)( int, int );
-#ifdef _M_IX86
-    #pragma aux (__outside_CLIB) __sig_func;
-    #pragma aux (__outside_CLIB) __sigfpe_func;
-#endif
-
 #if defined( __NT__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __RDOS__ )
 _WCRTLINK extern int __sigfpe_handler( int );
 #else
 _WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
 #endif
-extern void             __restore_FPE_handler( void );
-extern void             __grab_FPE_handler( void );
 extern void             __terminate( void );        // Defined in abort.c
