@@ -31,10 +31,13 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <signal.h>
 #include <float.h>
 #include "rtdata.h"
 #include "rterrno.h"
+#include "rtfpehdl.h"
+#include "rtfpesig.h"
 #include "sigtab.h"
 #include "sigfunc.h"
 #include "_int23.h"
@@ -79,6 +82,29 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
+#if defined( __DOS__ )
+
+static FPEhandler   *__old_FPE_handler = NULL;
+
+static void __restore_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        return;
+    }
+    _RWD_FPE_handler = __old_FPE_handler;
+    __old_FPE_handler = NULL;
+}
+
+static void __grab_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        __old_FPE_handler = _RWD_FPE_handler;
+        _RWD_FPE_handler = __sigfpe_handler;
+    }
+}
+
+#endif
+
 
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
 {
@@ -105,7 +131,7 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
     func = _SignalTable[SIGFPE];
     if( func != SIG_IGN && func != SIG_DFL && func != SIG_ERR ) {
         _SignalTable[SIGFPE] = SIG_DFL;
-        SIGFPE_CALL( func )( SIGFPE, fpe_type );    /* so we can pass 2nd parm */
+        SIGFPE_CALL( func, fpe_type );    /* so we can pass 2nd parm */
     }
 }
 

@@ -39,6 +39,7 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
+#include "rtfpesig.h"
 #include "rterrno.h"
 #include "sigfunc.h"
 #include "fpusig.h"
@@ -84,7 +85,7 @@ _WCRTLINK int   __sigfpe_handler( int fpe_type )
     func = _RWD_sigtab[SIGFPE].func;
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         _RWD_sigtab[SIGFPE].func = SIG_DFL;
-        SIGFPE_CALL( func )( SIGFPE, fpe_type );    /* so we can pass 2'nd parm */
+        SIGFPE_CALL( func, fpe_type );    /* so we can pass 2'nd parm */
         return( 0 );
     } else if( func == SIG_IGN ) {
         return( 0 );
@@ -246,7 +247,7 @@ static void __SigFini( void )
 
 
 static void __sigabort( void )
-/*********************/
+/****************************/
 {
     raise( SIGABRT );
 }
@@ -335,11 +336,11 @@ _WCRTLINK int raise( int sig )
 }
 
 
-static void __SetSigInit( void )
+static void __sig_init( void )
 {
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;
     _RWD_FPE_handler = __sigfpe_handler;
 }
 
-AXI( __SetSigInit, INIT_PRIORITY_LIBRARY )
+AXI( __sig_init, INIT_PRIORITY_LIBRARY )

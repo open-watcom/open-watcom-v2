@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 #include <string.h>
 #include <dos.h>
 #include "rtdata.h"
-#include "rtfpehdl.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "sigfunc.h"
@@ -328,26 +328,3 @@ void __grab_int_ctrl_break( void )
         }
     }
 }
-
-#if defined( __DOS__ )
-
-static FPEhandler   *__old_FPE_handler = NULL;
-
-void __restore_FPE_handler( void )
-{
-    if( __old_FPE_handler == NULL ) {
-        return;
-    }
-    _RWD_FPE_handler = __old_FPE_handler;
-    __old_FPE_handler = NULL;
-}
-
-void __grab_FPE_handler( void )
-{
-    if( __old_FPE_handler == NULL ) {
-        __old_FPE_handler = _RWD_FPE_handler;
-        _RWD_FPE_handler = __sigfpe_handler;
-    }
-}
-
-#endif

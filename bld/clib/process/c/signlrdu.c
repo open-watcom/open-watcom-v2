@@ -38,6 +38,7 @@
 #include <excpt.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
+#include "rtfpesig.h"
 #include "rterrno.h"
 #include "sigfunc.h"
 #include "signlrdu.h"
@@ -120,7 +121,7 @@ _WCRTLINK int __sigfpe_handler( int fpe_type )
     func = __GetSignalFunc( SIGFPE );
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         __SetSignalFunc( SIGFPE, SIG_DFL );
-        SIGFPE_CALL( func )( SIGFPE, fpe_type );    /* so we can pass 2'nd parm */
+        SIGFPE_CALL( func, fpe_type );    /* so we can pass 2'nd parm */
         return( 0 );
     } else if( func == SIG_IGN ) {
         return( 0 );
