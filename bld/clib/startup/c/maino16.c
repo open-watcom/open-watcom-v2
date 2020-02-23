@@ -103,7 +103,7 @@ extern char     end;
 
 static void __far __null_FPE_handler( int fpe_type )
 {
-    fpe_type = fpe_type;
+    /* unused parameters */ (void)fpe_type;
 }
 
 FPEhandler  *__FPE_handler = __null_FPE_handler;
