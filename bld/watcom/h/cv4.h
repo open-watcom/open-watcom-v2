@@ -185,8 +185,21 @@ typedef struct {
     unsigned_16 pad;
     unsigned_32 baseSrcLn[1];
 //  unsigned_64 start_end[];
+/*
+ * this is interpratation of next data as defined in MS publicly available
+ * documentation for CV4
+ */
 //  unsigned_16 cbName;
 //  char        name[];
+/*
+ * following is interpretation of next data which is used by Watcom tools
+ * they are using it as length-prefixed string (as all string in CV)
+ * Checking real executable (NB09) created by MS tools ("NE" + "PE" formats)
+ * confirm Watcom interpretation of this data
+ * it looks like a bug in MS documentation or is there some other
+ * undocumented things
+ */
+//  char        name[];    // length-prefixed string
 } cv_sst_src_module_file_table;
 
 typedef struct {
