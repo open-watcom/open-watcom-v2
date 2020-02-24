@@ -20,6 +20,10 @@
 #include <math.h>
 #include <time.h>
 #include <io.h>
+#if defined (__DJGPP__)
+#include <sys/exceptn.h>
+#include <stubinfo.h>
+#endif
 
 #include "copyrigh.h"
 #include "wattcp.h"
@@ -128,13 +132,29 @@ static void ExitFortify (void)
  *  install signal handlers.
  */
 
+#if (DOSX)
+
 #if defined(USE_FRAGMENTS)
   #define NEEDED_STK  210000UL  /* pcdbug.c needs lots of stack */
 #else
   #define NEEDED_STK  32000UL
 #endif
 
-#if defined (__HIGHC__)
+#if defined (__DJGPP__)
+
+static void CheckStackLimit (void)
+{
+  if (_stubinfo->minstack < NEEDED_STK)
+  {
+    fprintf (stderr,
+             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
+             "Use `STUBEDIT' or `_stklen' to modify\r\n",
+             _stubinfo->minstack, NEEDED_STK);
+    exit (-1);
+  }
+}
+
+#elif defined (__HIGHC__)
 
 static void CheckStackLimit (void)
 {
@@ -151,10 +171,35 @@ static void CheckStackLimit (void)
     exit (-1);
   }
 }
-#endif  /* __HIGHC__ */
+
+#elif defined (__WATCOMC__)
+
+static void CheckStackLimit (void)
+{
+  if (stackavail() < NEEDED_STK)
+  {
+    fprintf (stderr,
+             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
+             "Relink your application with \"option stack=%lu\"\r\n",
+             stackavail(), NEEDED_STK, NEEDED_STK);
+    exit (-1);
+  }
+}
+
+#elif defined (__BORLANDC__)  /* using WDOSX/PowerPak */
+
+static void CheckStackLimit (void)
+{
+  UNFINISHED();  /* to-do !! */
+}
+#endif
+
+#endif  /* (DOSX) */
 
 
-#if defined(USE_EXCHANDLER) && (defined(__BORLANDC__) || defined(__WATCOMC__))
+#if defined(USE_EXCHANDLER)
+
+#if defined(__BORLANDC__) || defined(__WATCOMC__)
 
 static void (*old_sigfpe)(int);
 static void (*old_sigsegv)(int);
@@ -205,50 +250,9 @@ static void WattExcHandler (int sig, int code)
   fflush (stderr);
   exit (-1);
 }
-#endif  /* USE_EXCHANDLER && (__BORLANDC__ || __WATCOMC__) */
 
+#elif defined (__DJGPP__)
 
-#if defined (WATCOM386)
-static void CheckStackLimit (void)
-{
-  if (stackavail() < NEEDED_STK)
-  {
-    fprintf (stderr,
-             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
-             "Relink your application with \"option stack=%lu\"\r\n",
-             stackavail(), NEEDED_STK, NEEDED_STK);
-    exit (-1);
-  }
-}
-#endif
-
-
-#if defined (BORLAND386)  /* using WDOSX/PowerPak */
-static void CheckStackLimit (void)
-{
-  UNFINISHED();  /* to-do !! */
-}
-#endif
-
-
-#if defined (__DJGPP__)
-#include <sys/exceptn.h>
-#include <stubinfo.h>
-#include <float.h>
-
-static void CheckStackLimit (void)
-{
-  if (_stubinfo->minstack < NEEDED_STK)
-  {
-    fprintf (stderr,
-             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
-             "Use `STUBEDIT' or `_stklen' to modify\r\n",
-             _stubinfo->minstack, NEEDED_STK);
-    exit (-1);
-  }
-}
-
-#if defined(USE_EXCHANDLER)
 void WattExcHandler (int sig)
 {
   static int been_here = 0;
@@ -281,8 +285,9 @@ void WattExcHandler (int sig)
 
   raise (SIGABRT); /* this doesn't call `atexit()' functions */
 }
-#endif  /* USE_EXCHANDLER */
 #endif  /* __DJGPP__ */
+
+#endif  /* USE_EXCHANDLER */
 
 
 /*
