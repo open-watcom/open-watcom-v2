@@ -188,7 +188,7 @@ int udp_open (udp_Socket *udp_sk, WORD lport, DWORD ip, WORD port, ProtoHandler 
         multi_to_eth (ip, (BYTE*)&udp_sk->hisethaddr[0]);
         udp_sk->ttl = 1;     /* so we don't send worldwide as default */
 #endif
-    } else if (!_arp_resolve(ip,&udp_sk->hisethaddr,0)) {
+    } else if (!_arp_resolve(ip, &udp_sk->hisethaddr, 0)) {
         return (0);
     }
 
@@ -272,12 +272,12 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
         SETON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
 
     tcp_sk->cwindow      = 1;
-    tcp_sk->wwindow      = 0;                      /* slow start VJ algorithm */
+    tcp_sk->wwindow      = 0;                       /* slow start VJ algorithm */
     tcp_sk->vj_sa        = INIT_VJSA;
-    tcp_sk->rto          = tcp_OPEN_TO;            /* added 14-Dec 1999, GV   */
+    tcp_sk->rto          = tcp_OPEN_TO;             /* added 14-Dec 1999, GV   */
     tcp_sk->myaddr       = my_ip_addr;
-    tcp_sk->myport       = findfreeport (lport,1); /* get a nonzero port val  */
-    tcp_sk->locflags     = LF_LINGER;              /* close via TIMEWT state  */
+    tcp_sk->myport       = findfreeport (lport, 1); /* get a nonzero port val  */
+    tcp_sk->locflags     = LF_LINGER;               /* close via TIMEWT state  */
     if (tcp_opt_timstmp)
         tcp_sk->locflags |= LF_REQ_TSTMP;           /* use timestamp option */
 
@@ -290,12 +290,12 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
     tcp_sk->protoHandler = handler;
     tcp_sk->usr_yield    = system_yield;
 
-    tcp_sk->safetysig    = SAFETYTCP;              /* marker signatures */
+    tcp_sk->safetysig    = SAFETYTCP;               /* marker signatures */
     tcp_sk->safetytcp    = SAFETYTCP;
-    tcp_sk->next         = _tcp_allsocs;           /* insert into chain */
+    tcp_sk->next         = _tcp_allsocs;            /* insert into chain */
     _tcp_allsocs    = tcp_sk;
 
-    (void) TCP_SEND (tcp_sk);                      /* send opening SYN */
+    (void) TCP_SEND (tcp_sk);                       /* send opening SYN */
 
     /* find previous RTT replacing RTT set in tcp_send() above
      */
@@ -458,7 +458,7 @@ int _tcp_sendsoon (tcp_Socket *tcp_sk, char *file, unsigned line)
     }
 
     if (tcp_sk->rto <= tcp_RTO_BASE && tcp_sk->recent == 0 &&
-      cmp_timers(tcp_sk->rtt_time,timeout) <= 0)
+      cmp_timers(tcp_sk->rtt_time, timeout) <= 0)
     {                         /* !! was == */
         int rc;
 
@@ -469,7 +469,7 @@ int _tcp_sendsoon (tcp_Socket *tcp_sk, char *file, unsigned line)
     }
 
     if ((tcp_sk->unhappy || tcp_sk->datalen > 0 || tcp_sk->karn_count == 1) &&
-      (tcp_sk->rtt_time && cmp_timers(tcp_sk->rtt_time,timeout) < 0))
+      (tcp_sk->rtt_time && cmp_timers(tcp_sk->rtt_time, timeout) < 0))
         return (0);
 
     if (tcp_sk->state == tcp_StateSYNSENT) { /* relaxed in SYNSENT state */
@@ -608,10 +608,10 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
         return (NULL);
     }
 
-    tcp_rtt_wind (_tcp_sk);       /* update retrans timer, windows etc. */
+    tcp_rtt_wind (_tcp_sk);         /* update retrans timer, windows etc. */
 
-    if (_tcp_fsm(&_tcp_sk,ip) &&  /* do input tcp state-machine */
-        _tcp_sk->unhappy)         /* if "unhappy", retransmit soon */
+    if (_tcp_fsm(&_tcp_sk, ip) &&   /* do input tcp state-machine */
+        _tcp_sk->unhappy)           /* if "unhappy", retransmit soon */
         TCP_SENDSOON (_tcp_sk);
 
     return (_tcp_sk);
@@ -1395,7 +1395,7 @@ static int tcp_chksum (const in_Header *ip, const tcp_Header *tcp_hdr, int len)
     tcp_phdr.length   = intel16 (len);
     tcp_phdr.checksum = checksum (tcp_hdr, len);
 
-    if (checksum(&tcp_phdr,sizeof(tcp_phdr)) == 0xFFFF)
+    if (checksum(&tcp_phdr, sizeof(tcp_phdr)) == 0xFFFF)
         return (1);
 
     STAT (tcpstats.tcps_rcvbadsum++);
@@ -1489,7 +1489,7 @@ static void tcp_rtt_wind (tcp_Socket *tcp_sk)
     chk_timeout (0UL);
     timeout = set_timeout (tcp_sk->rto + tcp_RTO_ADD);
 
-    if (tcp_sk->rtt_time == 0UL || cmp_timers(tcp_sk->rtt_time,timeout) < 0)
+    if (tcp_sk->rtt_time == 0UL || cmp_timers(tcp_sk->rtt_time, timeout) < 0)
         tcp_sk->rtt_time = timeout;
 
     tcp_sk->datatimer = 0UL; /* resetting tx-timer, EE 99.08.23 */
@@ -1515,7 +1515,7 @@ static void tcp_upd_wind (tcp_Socket *tcp_sk, unsigned line)
  */
 static __inline int tcp_opt_maxsegment (tcp_Socket *tcp_sk, BYTE *opt)
 {
-    *opt++ = TCPOPT_MAXSEG;    /* option: MAXSEG,length,mss */
+    *opt++ = TCPOPT_MAXSEG;    /* option: MAXSEG, length, mss */
     *opt++ = 4;
     *(WORD*) opt = intel16 (tcp_sk->max_seg);
     return (4);
@@ -1718,7 +1718,7 @@ int _tcp_send (tcp_Socket *tcp_sk, char *file, unsigned line)
             if (tcp_sk->queuelen) {
                 memcpy (data, tcp_sk->queue+startdata, senddatalen);
             } else {
-                memcpy (data, tcp_sk->data +startdata, senddatalen);
+                memcpy (data, tcp_sk->data + startdata, senddatalen);
             }
         }
 
@@ -2043,12 +2043,16 @@ int sock_fastwrite (sock_type *sk, const BYTE *data, int len)
 
 int sock_enqueue (sock_type *sk, const BYTE *data, int len)
 {
+    int written;
+    int total;
+
     if (len <= 0)
         return (0);
 
-    if (sk->u.ip_type == UDP_PROTO) {
-        int written = 0;
-        int total   = 0;
+    switch(sk->u.ip_type) {
+    case UDP_PROTO:
+        written = 0;
+        total   = 0;
         do {
             len = min (mtu - sizeof(in_Header) - sizeof(udp_Header), len);
             written = udp_write (&sk->udp, data, len);
@@ -2061,16 +2065,14 @@ int sock_enqueue (sock_type *sk, const BYTE *data, int len)
             total += written;
         } while (len > 0);
         return (total);
-    }
-
 #if !defined(USE_UDP_ONLY)
-    if (sk->u.ip_type == TCP_PROTO) {
+    case TCP_PROTO:
         sk->tcp.queue    = data;
         sk->tcp.queuelen = len;
         sk->tcp.datalen  = len;
         return TCP_SEND (&sk->tcp);
-    }
 #endif
+    }
     return (0);
 }
 
