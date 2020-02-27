@@ -861,9 +861,10 @@ static char *getinpline( char *buf )  /* where to send the input */
 
     assert( buf >= linebuf && buf < linebuf + sizeof( linebuf ) );
 
-    /* The OW fgets has some strange behavior:
-     * 0 on input is not treated specially. sed ignores the rest of the line.
-     * 26 (^Z) stops reading the current line and is stripped.
+    /*
+     * The OW fgets note:
+     *
+     * character 26 (^Z DOS EOF mark) stops reading of file and setup EOF for stream.
      */
     memset( buf, 0xFF, room + 1 );
     *buf = '\0';

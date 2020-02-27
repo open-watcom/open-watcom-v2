@@ -454,7 +454,7 @@ static int cmdcomp( char cchar )        /* character name of command */
     case 'r':                           /* read file into stream */
         if( cmdp->addr2 )
             ABORT( AD2NG );
-        /* Drop through */
+        /* fall through */
     case 'c':                           /* change text */
         if( *cp == '\\' && *++cp == '\n' )
             cp++;
@@ -496,12 +496,12 @@ static int cmdcomp( char cchar )        /* character name of command */
                 cmdp->flags.nthone = (unsigned)i;
             }
         }
-                                        /* Drop through */
+        /* fall through */
     case 'l':                           /* list pattern space */
         if( *cp != 'w' )
             break;                      /* s or l is done */
         cp++;                           /* and execute a w command! */
-        /* drop through */
+        /* fall through */
     case 'w':                           /* write-pattern-space command */
     case 'W':                           /* write-first-line command */
         if( nwfiles >= WFILES )
