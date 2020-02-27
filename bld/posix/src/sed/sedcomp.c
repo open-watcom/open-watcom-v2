@@ -79,7 +79,7 @@ static char const       NEEDB[] = "sed: error processing: %s\n";
 static char const       INERR[] = "sed: internal error: %s\n";
 static char const       SMCNT[] = "sed: bad value for match count on s command %s\n";
 static char const       UNCLS[] = "sed: invalid character class name %s\n";
-static char const       *USAGE[] = { 
+static char const       *USAGE[] = {
     "Usage: sed [-g] [-n] script file ...",
     "       sed [-g] [-n] -e script ... -f script_file ... file ...",
     "",
@@ -137,15 +137,15 @@ static int      eflag = 0;              /* -e option flag */
 static bool     gflag = false;          /* -g option flag */
 
 static void     compile( void );
-static int      cmdcomp( register char cchar );
-static char     *rhscomp( register char *rhsp, register char delim );
+static int      cmdcomp( char cchar );
+static char     *rhscomp( char *rhsp, char delim );
 static char     *recomp( char *expbuf, char redelim );
-static int      cmdline( register char *cbuf );
-static char     *getaddress( register char *expbuf );
+static int      cmdline( char *cbuf );
+static char     *getaddress( char *expbuf );
 static void     gettext( int accept_whitespace );
 static label    *search( void );
 static void     resolve( void );
-static char     *ycomp( register char *ep, char delim );
+static char     *ycomp( char *ep, char delim );
 static void     myexit( int status );
 static void     usage( void );
 
@@ -360,7 +360,7 @@ static void compile( void )
 }
 
 /* compile a single command */
-static int cmdcomp( register char cchar ) /* character name of command */
+static int cmdcomp( char cchar )        /* character name of command */
 {
     static sedcmd       **cmpstk[MAXDEPTH]; /* current cmd stack for {} */
     static char const   *fname[WFILES]; /* w file name pointers */
@@ -552,11 +552,11 @@ static int cmdcomp( register char cchar ) /* character name of command */
 
 /* generate replacement string for substitute command right hand side */
 static char *rhscomp(
-    register char       *rhsp,          /* place to compile expression to */
-    register char       delim )         /* RE end-mark to find */
+    char       *rhsp,                   /* place to compile expression to */
+    char       delim )                  /* RE end-mark to find */
                                         /* uses bcount */
 {
-    register char       *p = cp;        /* strictly for speed */
+    char       *p = cp;                 /* strictly for speed */
 
     for( ;; )
         if( ( *rhsp = *p++ ) == '\\' ) { /* copy; if it's a \, */
@@ -579,9 +579,9 @@ static char *recomp(
     char            redelim )           /* RE end-marker to look for */
                                         /* uses cp, bcount */
 {
-    register char   *ep = expbuf;       /* current-compiled-char pointer */
-    register char   *sp = cp;           /* source-character ptr */
-    register char   c;                  /* current-character */
+    char   *ep = expbuf;                /* current-compiled-char pointer */
+    char   *sp = cp;                    /* source-character ptr */
+    char   c;                           /* current-character */
     char            negclass;           /* all-but flag */
     char            *lastep;            /* ptr to last expr compiled */
     char const      *svclass;           /* start of current char class */
@@ -899,16 +899,16 @@ static char *recomp(
 }
 
 /* read next command from -e argument or command file */
-static int cmdline( register char *cbuf ) /* uses eflag, eargc, cmdf */
+static int cmdline( char *cbuf )        /* uses eflag, eargc, cmdf */
 {
-    register int        inc;            /* not char because must hold EOF */
+    int        inc;                     /* not char because must hold EOF */
 
     assert( cbuf == cp );
     cbuf--;                             /* so pre-increment points us at cbuf */
 
                                         /* e command flag is on */
     if( eflag ) {
-        register char   *p;             /* ptr to current -e argument */
+        char   *p;                      /* ptr to current -e argument */
         static char     *savep;         /* saves previous value of p */
 
         if( eflag > 0 ) {               /* there are pending -e arguments */
@@ -967,10 +967,10 @@ static int cmdline( register char *cbuf ) /* uses eflag, eargc, cmdf */
 }
 
 /* expand an address at *cp... into expbuf, return ptr at following char */
-static char *getaddress( register char *expbuf ) /* uses cp, linenum */
+static char *getaddress( char *expbuf ) /* uses cp, linenum */
 {
     static int          numl = 0;       /* current ind in addr-number table */
-    register char       *rcp;           /* temp compile ptr for forwd look */
+    char       *rcp;                    /* temp compile ptr for forwd look */
     long                lno;            /* computed value of numeric address */
 
     switch( *cp ) {
@@ -1033,7 +1033,7 @@ static void gettext( int accept_whitespace )
 /* find the label matching *ptr, return NULL if none */
 static label *search( void )            /* uses globals lablst and curlab */
 {
-    register label      *rp;
+    label      *rp;
     char const * const  name = curlab->name;
     for( rp = lablst; rp < curlab; rp++ )
         if( strcmp( rp->name, name ) == 0 )
@@ -1044,9 +1044,9 @@ static label *search( void )            /* uses globals lablst and curlab */
 /* write label links into the compiled-command space */
 static void resolve( void )             /* uses global lablst */
 {
-    register label const        *rp;
-    register sedcmd             *rptr;
-    register sedcmd             *trptr;
+    label const        *rp;
+    sedcmd             *rptr;
+    sedcmd             *trptr;
                                         /* loop through the label table */
     for( rp = lablst; rp < curlab; rp++ )
         if( rp->link == NULL )          /* barf if not defined */
@@ -1060,12 +1060,12 @@ static void resolve( void )             /* uses global lablst */
 
 /* compile a y (transliterate) command */
 static char *ycomp(
-    register char       *ep,            /* where to compile to */
+    char       *ep,                     /* where to compile to */
     char                delim )         /* end delimiter to look for */
 {
-    register int        c;
-    register char       *tp;
-    register char const *sp;
+    int        c;
+    char       *tp;
+    char const *sp;
 
     if( delim == 0 || delim == '\\' || delim == '\n' )
         return( BAD );
