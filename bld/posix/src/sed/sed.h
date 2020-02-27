@@ -5,6 +5,9 @@
 #define MAXAPPENDS      20      /* maximum number of appends */
 #define MAXTAGS         9       /* tagged patterns are \1 to \9 */
 
+#define MAXCMDS         400     /* max number of compiled commands */
+#define MAXLINES        256     /* max number of numeric addresses */
+
 /* constants for compiled-command representation */
 #define EQCMD   0x01    /* = -- print current line number               */
 #define ACMD    0x02    /* a -- append text after current line          */
@@ -77,15 +80,15 @@ struct cmd_t {                          /* compiled-command representation */
 extern void     execute( const char *file ); /* In sed.c */
 
 /* The following are in sedcomp.c */
-                                        /* main data areas */
-extern char             linebuf[];      /* current-line buffer */
-extern sedcmd           cmds[];         /* hold compiled commands */
-extern long             linenum[];      /* numeric-addresses table */
+                                                /* main data areas */
+extern char             linebuf[MAXBUF + 3];    /* current-line buffer */
+extern sedcmd           cmds[MAXCMDS + 1];      /* hold compiled commands */
+extern long             linenum[MAXLINES];      /* numeric-addresses table */
 
-                                        /* miscellaneous shared variables */
-extern bool                 nflag;      /* -n option flag */
-extern int                  eargc;      /* scratch copy of argument count */
-extern unsigned char const  bits[];     /* the bits table */
+                                                /* miscellaneous shared variables */
+extern bool                 nflag;              /* -n option flag */
+extern int                  eargc;              /* scratch copy of argument count */
+extern unsigned char const  bits[];             /* the bits table */
 
 /* sed.h ends here */
 

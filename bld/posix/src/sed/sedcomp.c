@@ -23,9 +23,6 @@ resolves references at the end.
 #include "bool.h"
 #include "sed.h"                        /* command type struct & name defines */
 
-#define MAXCMDS         400             /* max number of compiled commands */
-#define MAXLINES        256             /* max number of numeric addresses */
-
 #define POOLSIZE        10000           /* size of string-pool space */
 #define WFILES          10              /* max number of w output files */
 #define RELIMIT         256             /* max chars in compiled RE */

@@ -856,36 +856,30 @@ static void command( sedcmd *ipc )
 /* get next line of text to be filtered */
 static char *getinpline( char *buf )  /* where to send the input */
 {
-    static char const * const   linebufend = linebuf + MAXBUF + 2;
-    int const                   room = (int)( linebufend - buf );
+    int const                   room = (int)( linebuf + sizeof( linebuf ) - 1 - buf );
     int                         temp;
-    char                        prev;
 
-    assert( buf >= linebuf && buf < linebuf + MAXBUF + 3 );
+    assert( buf >= linebuf && buf < linebuf + sizeof( linebuf ) );
 
     /* The OW fgets has some strange behavior:
      * 0 on input is not treated specially. sed ignores the rest of the line.
      * 26 (^Z) stops reading the current line and is stripped.
      */
     memset( buf, 0xFF, room + 1 );
-    *buf = 0;
+    *buf = '\0';
     if (fgets(buf, room, stdin) != NULL) { /* gets() can smash program - WFB */
         lnum++;                         /* note that we got another line */
         /* find the end of the input */
-        for( prev = '\xFF'; ; ++buf ) {
-            if( *buf == '\xFF' && prev == '\0' ) {
-                --buf;
-                break;
-            }
-            prev = *buf;
+        while( buf[0] != '\0' || buf[1] != '\xFF' ) {
+            buf++;
         }
-        if( *(buf - 1) == '\n' ) {
+        if( buf != linebuf && *(buf - 1) == '\n' ) {
             --buf;
-            if( *(buf - 1) == '\r' ) {
+            if( buf != linebuf && *(buf - 1) == '\r' ) {
                 --buf;
             }
         }
-        *buf = 0;
+        *buf = '\0';
         if( eargc == 0 ) {              /* if no more args */
             lastline = ( (temp = getc( stdin )) == EOF );
             (void)ungetc( temp, stdin );
