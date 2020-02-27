@@ -64,22 +64,22 @@ static sedcmd   *pending = NULL;        /* next command to be executed */
 
 static bool     selected( sedcmd *ipc );
 static bool     match( char *expbuf, bool gf, bool is_cnt );
-static bool     advance( register char *lp, register char *ep );
+static bool     advance( char *lp, char *ep );
 static bool     substitute( sedcmd const *ipc );
 static void     dosub( char const *rhsbuf );
-static char     *place( register char *asp, register char const *al1, register char const *al2 );
-static void     listto( register char const *p1, const char *end, FILE *fp );
+static char     *place( char *asp, char const *al1, char const *al2 );
+static void     listto( char const *p1, const char *end, FILE *fp );
 static void     command( sedcmd *ipc );
-static char     *getinpline( register char *buf );
-static bool     memeql( register char const *a, register char const *b, size_t count );
+static char     *getinpline( char *buf );
+static bool     memeql( char const *a, char const *b, size_t count );
 static void     readout( void );
 
 /* execute the compiled commands in cmds[] on a file */
 void execute( const char *file )        /* name of text source file to filter */
 {
-    register char const *p1;            /* dummy copy ptrs */
-    register sedcmd     *ipc;           /* ptr to current command */
-    char                *execp;         /* ptr to source */
+    char const  *p1;                    /* dummy copy ptrs */
+    sedcmd      *ipc;                   /* ptr to current command */
+    char        *execp;                 /* ptr to source */
 
     if( file != NULL ) {                /* filter text from a named file */
         if( freopen( file, "r", stdin ) == NULL )
@@ -141,10 +141,10 @@ void execute( const char *file )        /* name of text source file to filter */
 /* is current command selected */
 static bool selected( sedcmd *ipc )
 {
-    register char               *p1 = ipc->addr1;       /* first address */
-    register char * const       p2 = ipc->addr2;        /*   and second */
-    int                         c;
-    bool const                  allbut = (bool)ipc->flags.allbut;
+    char            *p1 = ipc->addr1;       /* first address */
+    char * const    p2 = ipc->addr2;        /*   and second */
+    int             c;
+    bool const      allbut = (bool)ipc->flags.allbut;
 
     if( p1 == NULL )
         return( !allbut );
@@ -190,10 +190,10 @@ static bool match(
     bool                gf,
     bool                is_cnt )
 {
-    register char       *p1;
-    register char       *p2;
-    register char       c;
-    static char         *lastre = NULL; /* old RE pointer */
+    char            *p1;
+    char            *p2;
+    char            c;
+    static char     *lastre = NULL; /* old RE pointer */
 
     if( *expbuf == CEOF ) {
         if( lastre == NULL )
@@ -246,16 +246,16 @@ static bool match(
 
 /* attempt to advance match pointer by one pattern element */
 static bool advance(
-    register char       *lp,            /* source (linebuf) ptr */
-    register char       *ep )           /* regular expression element ptr */
+    char       *lp,                     /* source (linebuf) ptr */
+    char       *ep )                    /* regular expression element ptr */
 {
-    register char const *curlp;         /* save ptr for closures */
-    char                c;              /* scratch character holder */
-    char                *bbeg;
-    char                *tep;
-    size_t              ct;
-    int                 i1;
-    int                 i2;
+    char const      *curlp;             /* save ptr for closures */
+    char            c;                  /* scratch character holder */
+    char            *bbeg;
+    char            *tep;
+    size_t          ct;
+    int             i1;
+    int             i2;
 
     for( ;; ) {
         switch( *ep++ ) {
@@ -542,10 +542,10 @@ static bool substitute( sedcmd const *ipc ) /* ptr to s command struct */
 static void dosub( char const *rhsbuf ) /* where to put the result */
                                         /* uses linebuf, genbuf, spend */
 {
-    register char       *lp;
-    register char       *sp;
-    register char const *rp;
-    int                 c;
+    char            *lp;
+    char            *sp;
+    char const      *rp;
+    int             c;
                                         /* linebuf upto location 1 -> genbuf */
     lp = linebuf;
     sp = genbuf;
@@ -586,9 +586,9 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
 
 /* place chars at *al1...*(al1 - 1) at asp... in genbuf[] */
 static char *place(
-    register char       *asp,
-    register char const *al1,
-    register char const *al2 )
+    char       *asp,
+    char const *al1,
+    char const *al2 )
 {
     while( al1 < al2 ) {
         if( asp >= genbuf + sizeof genbuf ) { /* Not exercised by sedtest.mak */
@@ -602,9 +602,9 @@ static char *place(
 
 /* write a hex dump expansion of *p1... to fp */
 static void listto(
-    register char const *p1,            /* the source start */
-    register char const *p2,            /* the source end */
-    FILE                *fp )           /* output stream to write to */
+    char const *p1,             /* the source start */
+    char const *p2,             /* the source end */
+    FILE       *fp )            /* output stream to write to */
 {
     int const   linesize = 64;
     int         written = 0;
@@ -658,8 +658,8 @@ static void command( sedcmd *ipc )
     static bool     didsub = false;     /* true if last s succeeded */
     static char     holdsp[MAXHOLD];    /* the hold space */
     static char     *hspend = holdsp;   /* hold space end pointer */
-    register char   *p1;
-    register char   *p2;
+    char            *p1;
+    char            *p2;
     char            *execp;
 
     switch( ipc->command ) {
@@ -854,38 +854,33 @@ static void command( sedcmd *ipc )
 }
 
 /* get next line of text to be filtered */
-static char *getinpline( register char *buf )  /* where to send the input */
+static char *getinpline( char *buf )  /* where to send the input */
 {
-    static char const * const   linebufend = linebuf + MAXBUF + 2;
-    int const                   room = (int)( linebufend - buf );
+    int const                   room = (int)( linebuf + sizeof( linebuf ) - 1 - buf );
     int                         temp;
-    char                        prev;
 
-    assert( buf >= linebuf && buf < linebuf + MAXBUF + 3 );
+    assert( buf >= linebuf && buf < linebuf + sizeof( linebuf ) );
 
-    /* The OW fgets has some strange behavior:
-     * 0 on input is not treated specially. sed ignores the rest of the line.
-     * 26 (^Z) stops reading the current line and is stripped.
+    /*
+     * The OW fgets note:
+     *
+     * character 26 (^Z DOS EOF mark) stops reading of file and setup EOF for stream.
      */
     memset( buf, 0xFF, room + 1 );
-    *buf = 0;
+    *buf = '\0';
     if (fgets(buf, room, stdin) != NULL) { /* gets() can smash program - WFB */
         lnum++;                         /* note that we got another line */
         /* find the end of the input */
-        for( prev = '\xFF'; ; ++buf ) {
-            if( *buf == '\xFF' && prev == '\0' ) {
-                --buf;
-                break;
-            }
-            prev = *buf;
+        while( buf[0] != '\0' || buf[1] != '\xFF' ) {
+            buf++;
         }
-        if( *(buf - 1) == '\n' ) {
+        if( buf != linebuf && *(buf - 1) == '\n' ) {
             --buf;
-            if( *(buf - 1) == '\r' ) {
+            if( buf != linebuf && *(buf - 1) == '\r' ) {
                 --buf;
             }
         }
-        *buf = 0;
+        *buf = '\0';
         if( eargc == 0 ) {              /* if no more args */
             lastline = ( (temp = getc( stdin )) == EOF );
             (void)ungetc( temp, stdin );
@@ -899,9 +894,9 @@ static char *getinpline( register char *buf )  /* where to send the input */
 
 /* return true if *a... == *b... for count chars, false otherwise */
 static bool memeql(
-    register char const *a,
-    register char const *b,
-    size_t              count )
+    char const *a,
+    char const *b,
+    size_t     count )
 {
     while( count-- ) {                  /* look at count characters */
         if( *a++ != *b++ ) {            /* if any are nonequal   */
@@ -914,7 +909,7 @@ static bool memeql(
 /* write file indicated by r command to output */
 static void readout( void )
 {
-    register int        t;              /* hold input char or EOF */
+    int                 t;              /* hold input char or EOF */
     FILE                *fi;            /* ptr to file to be read */
     sedcmd * const      *ap;            /* Loops through appends */
 
