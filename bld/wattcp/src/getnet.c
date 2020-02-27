@@ -23,7 +23,7 @@ struct _netent {
         int     n_addrtype;     /* net address type      */
         DWORD   n_net;          /* network #,host order! */
         struct _netent *next;
-      };
+    };
 
 #define MAX_NETW_ALIASES  5
 
@@ -34,56 +34,53 @@ static int     networkClose     = 0;
 
 void ReadNetworksFile (const char *fname)
 {
-  static int been_here = 0;
+    static int been_here = 0;
 
-  if (!fname || !*fname)
-     return;
+    if (fname == NULL || !*fname)
+        return;
 
-  if (been_here)  /* loading multiple network files */
-  {
-    free (networkFname);
-    fclose (networkFile);
-    networkFile = NULL;
-  }
-  been_here = 1;
+    if (been_here) { /* loading multiple network files */
+        free (networkFname);
+        fclose (networkFile);
+        networkFile = NULL;
+    }
+    been_here = 1;
 
-  networkFname = strdup (fname);
-  if (!networkFname)
-     return;
+    networkFname = strdup (fname);
+    if (networkFname == NULL)
+        return;
 
-  setnetent (1);
-  if (!networkFile)
-     return;
+    setnetent (1);
+    if (networkFile == NULL)
+        return;
 
-  for ( ;; )
-  {
-    struct _netent *n, *n2 = (struct _netent*) getnetent();
+    for ( ;; ) {
+        struct _netent *n, *n2 = (struct _netent*) getnetent();
 
-    if (!n2 || (n = malloc(sizeof(*n))) == NULL)
-       break;
+        if (n2 == NULL || (n = malloc(sizeof(*n))) == NULL)
+            break;
 
-    *n = *n2;
-    n->next  = network0;
-    network0 = n;
-  }
-  rewind (networkFile);
-  atexit (endnetent);
+        *n = *n2;
+        n->next  = network0;
+        network0 = n;
+    }
+    rewind (networkFile);
+    atexit (endnetent);
 
 #if 0  /* test */
-  {
-    struct _netent *n;
-
-    printf ("%s entries:\n", fname);
-    for (n = network0; n; n = n->next)
     {
-      int i;
-      printf ("net = %-15.15s name = %-10.10s  alias:",
-              inet_ntoa(inet_makeaddr(n->n_net,0)), n->n_name);
-      for (i = 0; n->n_aliases && n->n_aliases[i]; i++)
-            printf (" %s", n->n_aliases[i]);
-      puts ("");
+        struct _netent *n;
+
+        printf ("%s entries:\n", fname);
+        for (n = network0; n != NULL; n = n->next) {
+            int i;
+            printf ("net = %-15.15s name = %-10.10s  alias:",
+                inet_ntoa(inet_makeaddr(n->n_net,0)), n->n_name);
+            for (i = 0; n->n_aliases != NULL && n->n_aliases[i] != NULL; i++)
+                printf (" %s", n->n_aliases[i]);
+            puts ("");
+        }
     }
-  }
 #endif
 }
 
@@ -92,7 +89,7 @@ void ReadNetworksFile (const char *fname)
  */
 const char *GetNetworksFile (void)
 {
-  return (networkFname);
+    return (networkFname);
 }
 
 /*
@@ -101,13 +98,13 @@ const char *GetNetworksFile (void)
  */
 void CloseNetworksFile (void)
 {
-  fclose (networkFile);
-  networkFile = NULL;
+    fclose (networkFile);
+    networkFile = NULL;
 }
 
 void ReopenNetworksFile (void)
 {
-  ReadNetworksFile (networkFname);
+    ReadNetworksFile (networkFname);
 }
 
 /*
@@ -121,52 +118,48 @@ void ReopenNetworksFile (void)
  */
 struct netent * getnetent (void)
 {
-  static struct netent n;
-  char  *name, *net, *alias;
-  char   buf[100];
+    static struct netent n;
+    char  *name, *net, *alias;
+    char   buf[100];
 
-  if (!netdb_init())
-     return (NULL);
+    if (!netdb_init())
+        return (NULL);
 
-  do
-  {
-    if (!fgets(buf,sizeof(buf)-1,networkFile))
-       return (NULL);
-  }
-  while (buf[0] == '#' || buf[0] == ';' || buf[0] == '\n');
+    do {
+        if (!fgets(buf, sizeof(buf)-1, networkFile)) {
+            return (NULL);
+        }
+    } while (buf[0] == '#' || buf[0] == ';' || buf[0] == '\n');
 
-  if (networkClose)
-     endnetent();
+    if (networkClose)
+        endnetent();
 
-  name = strtok (buf, " \t");
-  net  = strtok (NULL,"= \t\n");
+    name = strtok (buf, " \t");
+    net  = strtok (NULL,"= \t\n");
 
-  n.n_net  = inet_network (net);
-  n.n_name = strdup (name);
-  if (!n.n_name)
-     return (NULL);
+    n.n_net  = inet_network (net);
+    n.n_name = strdup (name);
+    if (n.n_name == NULL)
+        return (NULL);
 
-  n.n_addrtype = AF_INET;
-  n.n_aliases  = NULL;
-  alias        = strtok (NULL," \t\n");
+    n.n_addrtype = AF_INET;
+    n.n_aliases  = NULL;
+    alias        = strtok (NULL," \t\n");
 
-  if (alias && *alias != '#' && *alias != ';')
-  {
-    char **alist = calloc ((1+MAX_NETW_ALIASES) * sizeof(char*), 1);
-    int  i = 0;
-    do
-    {
-      if (*alias == '#' || *alias == ';')
-         break;
-      if (!alist || (i == MAX_NETW_ALIASES) ||
-          (alist[i++] = strdup(alias)) == NULL)
-         break;
-      alias = strtok (NULL," \t\n");
+    if (alias != NULL && *alias != '#' && *alias != ';') {
+        char **alist = calloc ((1+MAX_NETW_ALIASES) * sizeof(char*), 1);
+        int  i = 0;
+        do {
+            if (*alias == '#' || *alias == ';')
+                break;
+            if (alist == NULL || (i == MAX_NETW_ALIASES) ||
+                (alist[i++] = strdup(alias)) == NULL)
+                break;
+            alias = strtok (NULL," \t\n");
+        } while (alias != NULL);
+        n.n_aliases = alist;
     }
-    while (alias);
-    n.n_aliases = alist;
-  }
-  return (&n);
+    return (&n);
 }
 
 /*
@@ -175,23 +168,24 @@ struct netent * getnetent (void)
  */
 struct netent * getnetbyname (const char *name)
 {
-  struct _netent *n;
+    struct _netent *n;
 
-  if (!netdb_init())
-     return (NULL);
+    if (!netdb_init())
+        return (NULL);
 
-  for (n = network0; n; n = n->next)
-  {
-    char **alias;
+    for (n = network0; n != NULL; n = n->next) {
+        char **alias;
 
-    if (n->n_name && !stricmp(n->n_name,name))
-       return (struct netent*) n;
+        if (n->n_name != NULL && !stricmp(n->n_name,name))
+            return (struct netent*) n;
 
-    for (alias = n->n_aliases; alias && *alias; alias++)
-        if (!stricmp(name,*alias))
-           return (struct netent*) n;
-  }
-  return (NULL);
+        for (alias = n->n_aliases; alias != NULL && *alias != NULL; alias++) {
+            if (!stricmp(name, *alias)) {
+                return (struct netent*) n;
+            }
+        }
+    }
+    return (NULL);
 }
 
 /*
@@ -200,15 +194,17 @@ struct netent * getnetbyname (const char *name)
  */
 struct netent *getnetbyaddr (long net, int type)
 {
-  struct _netent *n;
+    struct _netent *n;
 
-  if (!netdb_init())
-     return (NULL);
+    if (!netdb_init())
+        return (NULL);
 
-  for (n = network0; n; n = n->next)
-      if ((DWORD)net == n->n_net && type == n->n_addrtype)
-         return (struct netent*) n;
-  return (NULL);
+    for (n = network0; n != NULL; n = n->next) {
+        if ((DWORD)net == n->n_net && type == n->n_addrtype) {
+            return (struct netent*) n;
+        }
+    }
+    return (NULL);
 }
 
 /*
@@ -216,14 +212,16 @@ struct netent *getnetbyaddr (long net, int type)
  */
 void setnetent (int stayopen)
 {
-  networkClose = (stayopen == 0);
+    networkClose = (stayopen == 0);
 
-  if (!netdb_init() || !networkFname)
-     return;
+    if (!netdb_init() || networkFname == NULL)
+        return;
 
-  if (!networkFile)
-       networkFile = fopen (networkFname, "rt");
-  else rewind (networkFile);
+    if (networkFile == NULL) {
+        networkFile = fopen (networkFname, "rt");
+    } else {
+        rewind (networkFile);
+    }
 }
 
 /*
@@ -231,32 +229,32 @@ void setnetent (int stayopen)
  */
 void endnetent (void)
 {
-  struct _netent *n, *next = NULL;
+    struct _netent *n, *next = NULL;
 
-  if (!netdb_init() || !networkFile)
-     return;
+    if (!netdb_init() || networkFile == NULL)
+        return;
 
-  free (networkFname);
-  fclose (networkFile);
-  networkFname = NULL;
-  networkFile  = NULL;
+    free (networkFname);
+    fclose (networkFile);
+    networkFname = NULL;
+    networkFile  = NULL;
 
-  for (n = network0; n; n = next)
-  {
-    if (n->n_aliases)
-    {
-      int i;
-      for (i = 0; i < MAX_NETW_ALIASES; i++)
-         if (n->n_aliases[i])
-           free (n->n_aliases[i]);
-      free (n->n_aliases);
+    for (n = network0; n != NULL; n = next) {
+        if (n->n_aliases != NULL) {
+            int i;
+            for (i = 0; i < MAX_NETW_ALIASES; i++) {
+                if (n->n_aliases[i] != NULL) {
+                    free (n->n_aliases[i]);
+                }
+            }
+            free (n->n_aliases);
+        }
+        next = n->next;
+        free (n->n_name);
+        free (n);
     }
-    next = n->next;
-    free (n->n_name);
-    free (n);
-  }
-  network0 = NULL;
-  networkClose = 1;
+    network0 = NULL;
+    networkClose = 1;
 }
 
 #endif /* USE_BSD_FUNC */

@@ -25,26 +25,34 @@
 *
 *  ========================================================================
 *
-* Description:  raise() implemented using POSIX getpid() and kill().
+* Description:  C run-time library internal FPE signal handler declaration.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <signal.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include "sigfunc.h"
+#include "extfunc.h"
 
+#if !defined( __UNIX__ )
 
-_WCRTLINK int (raise)( int sig )
-{
-    return( kill( getpid(), sig ) );
-}
+#if defined( _W64 )
+typedef void __sigfpe_func(int,int);
+typedef void (* __sig_func)(int);
+#endif
 
-_WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
-{
-    /* unused parameters */ (void)fpe_type;
+#if defined( _M_IX86 ) || defined( _W64 )
+#define SIGFPE_CALL(x,y)    ((__clib_sigfpe_func)(x))(SIGFPE, (y))
+#define SET_SIGFPE(x)       signal(SIGFPE, (__sig_func)(x))
+#else
+#define SIGFPE_CALL(x,y)    (x)(SIGFPE)
+#define SET_SIGFPE(x)       signal(SIGFPE, (x))
+#endif
 
-    raise( SIGFPE );
-}
+#if defined( __WATCOMC__ )
+typedef __sigfpe_func       *__clib_sigfpe_func;
+#if defined( _M_IX86 )
+    #pragma aux (__outside_CLIB) __sig_func;
+    #pragma aux (__outside_CLIB) __clib_sigfpe_func;
+#endif
+#endif
+
+#endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,8 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "rterrno.h"
+#include "rtfpehdl.h"
+#include "rtfpesig.h"
 #include "sigfunc.h"
 #include "_int23.h"
 #include "thread.h"
@@ -68,6 +70,25 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
+static FPEhandler   *__old_FPE_handler = NULL;
+
+static void __restore_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        return;
+    }
+    _RWD_FPE_handler = __old_FPE_handler;
+    __old_FPE_handler = NULL;
+}
+
+static void __grab_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        __old_FPE_handler = _RWD_FPE_handler;
+        _RWD_FPE_handler = __sigfpe_handler;
+    }
+}
+
 
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
 {
@@ -76,7 +97,7 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
     func = _RWD_sigtab[SIGFPE].func;
     if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
         _RWD_sigtab[SIGFPE].func = SIG_DFL;
-        (*(__sigfpe_func)func)( SIGFPE, fpe_type );        /* so we can pass 2'nd parm */
+        SIGFPE_CALL( func, fpe_type );    /* so we can pass 2'nd parm */
     }
 }
 

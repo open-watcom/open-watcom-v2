@@ -78,6 +78,12 @@ typedef int sig_atomic_t;
 :include nsstdepi.sp
 
 typedef void (_WCCALLBACK *__sig_func)( int );
+:segment DOS | RDOS
+
+:include ext.sp
+typedef void _WCCALLBACK __sigfpe_func( int, int );
+:include extepi.sp
+:endsegment
 :segment LINUX
 
 :include incdir.sp

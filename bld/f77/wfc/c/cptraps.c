@@ -35,20 +35,17 @@
 #include <float.h>
 #include "errcod.h"
 #include "ferror.h"
-#if defined( __OSI__ )
-#include "rtfpehdl.h"
-#endif
+#include "rtfpesig.h"
 #include "cptraps.h"
 
 
-#if defined( __WATCOMC__ )
+#if !defined( __UNIX__ )
 
-#if defined( __QNX__ )
-#else
-static void _WFC_FPEHandler( int fpe_type ) {
-//=======================================
+static __sigfpe_func        WFC_FPEHandler;
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+static void _WFC_FPEHandler( int fpe_type )
+//=========================================
+{
     if( fpe_type == FPE_OVERFLOW ) {
         Warning( KO_FOVERFLOW );
     } else if( fpe_type == FPE_UNDERFLOW ) {
@@ -56,42 +53,37 @@ static void _WFC_FPEHandler( int fpe_type ) {
     } else if( fpe_type == FPE_ZERODIVIDE ) {
         Warning( KO_FDIV_ZERO );
     }
-#endif
 }
-#endif
 
 
-#if defined( __QNX__ )
-#elif defined( __OSI__ )
-#else
-
-static  void    WFC_FPEHandler( int sig_num, int fpe_type ) {
-//=======================================================
+#if !defined( __OSI__ )
+static  void    WFC_FPEHandler( int sig_num, int fpe_type )
+//=========================================================
+{
+    /* unused parameters */ (void)sig_num;
 
     // reset the signal so we can get subsequent signals
-    signal( SIGFPE, (__sig_func)WFC_FPEHandler );
-    sig_num = sig_num;
+    SET_SIGFPE( WFC_FPEHandler );
     _WFC_FPEHandler( fpe_type );
 }
-
 #endif
 
-#endif
+#endif /* !defined( __UNIX__ ) */
 
-void    FTrapInit( void ) {
-//==================
-
-#if !defined( __WATCOMC__ )
-#elif defined( __QNX__ )
-#elif defined( __OSI__ )
-    _RWD_FPE_handler = (FPEhandler *)_WFC_FPEHandler;
+void    FTrapInit( void )
+//=======================
+{
+#if !defined( __UNIX__ )
+#if defined( __OSI__ )
+    _RWD_FPE_handler = _WFC_FPEHandler;
 #else
-    signal( SIGFPE, (__sig_func)WFC_FPEHandler );
+    SET_SIGFPE( WFC_FPEHandler );
+#endif
 #endif
 }
 
 
-void    FTrapFini( void ) {
-//==================
-
+void    FTrapFini( void )
+//=======================
+{
 }

@@ -22,7 +22,7 @@
 struct _servent {
         struct  servent  s;
         struct _servent *next;
-      };
+    };
 
 
 #define MAX_SERV_ALIASES  5
@@ -48,226 +48,217 @@ static BOOL    servClose      = 0;
 
 void ReadServFile (const char *fname)
 {
-  static int been_here = 0;
+    static int been_here = 0;
 
-  if (!fname || !*fname)
-     return;
+    if (fname == NULL || !*fname)
+        return;
 
-  if (been_here)  /* loading multiple service files */
-  {
-    free (servFname);
-    fclose (servFile);
-    servFile = NULL;
-  }
-  been_here = 1;
-
-  servFname = strdup (fname);
-  if (!servFname)
-     return;
-
-  setservent (1);
-  if (!servFile)
-     return;
-
-  for ( ;; )
-  {
-    struct _servent *se, *se2 = (struct _servent*) getservent();
-
-    if (!se2)
-       break;
-
-    if ((se = malloc(sizeof(*se))) == NULL)
-    {
-      outsnl (_LANG("Service-file too big!\7"));
-      return;
+    if (been_here) { /* loading multiple service files */
+        free (servFname);
+        fclose (servFile);
+        servFile = NULL;
     }
-    *se = *se2;
-    se->next = serv0;
-    serv0    = se;
-    SET_HASH (se);
-  }
-  rewind (servFile);
-  atexit (endservent);
+    been_here = 1;
+
+    servFname = strdup (fname);
+    if (servFname == NULL)
+        return;
+
+    setservent (1);
+    if (servFile == NULL)
+        return;
+
+    for ( ;; ) {
+        struct _servent *se, *se2 = (struct _servent*) getservent();
+
+        if (se2 == NULL)
+            break;
+
+        if ((se = malloc(sizeof(*se))) == NULL) {
+            outsnl (_LANG("Service-file too big!\7"));
+            return;
+        }
+        *se = *se2;
+        se->next = serv0;
+        serv0    = se;
+        SET_HASH (se);
+    }
+    rewind (servFile);
+    atexit (endservent);
 }
 
 /*------------------------------------------------------------------*/
 
 const char *GetServFile (void)
 {
-  return (servFname);
+    return (servFname);
 }
 
 void CloseServFile (void)
 {
-  fclose (servFile);
-  servFile = NULL;
+    fclose (servFile);
+    servFile = NULL;
 }
 
 void ReopenServFile (void)
 {
-  ReadServFile (servFname);
+    ReadServFile (servFname);
 }
 
 /*------------------------------------------------------------------*/
 
 struct servent * getservent (void)
 {
-  static struct _servent se;
-  WORD   port;
-  char  *name, *alias, *proto;
-  char   buf[200];
+    static struct _servent se;
+    WORD   port;
+    char  *name, *alias, *proto;
+    char   buf[200];
 
-  if (!netdb_init() || !servFile)
-     return (NULL);
+    if (!netdb_init() || servFile == NULL)
+        return (NULL);
 
-  do
-  {
-    do
-    {
-      if (!fgets(buf,sizeof(buf)-1,servFile))
-         return (NULL);
+    do {
+        do {
+            if (!fgets(buf, sizeof(buf)-1, servFile)) {
+                return (NULL);
+            }
+        } while (buf[0] == '#' || buf[0] == '\n');
+        if (servClose)
+            endservent();
+
+        /*  # Service         port/prot       alias(es)
+         *  #-------------------------------------------
+         *    rtmp            1/udp   <- only support "udp"/"tcp"
+         *    echo            7/tcp
+         *    echo            7/udp
+         *    discard         9/tcp           sink null
+         *    discard         9/udp           sink null
+         */
+
+        name  = strtok (buf, " \t");
+        port  = intel16 (atoi (strtok (NULL, "/ \t\n")));
+        proto = strtok (NULL, " \t\n");
+
+    } while (stricmp(proto,"udp") && stricmp(proto,"tcp"));
+
+    se.s.s_name    = strdup (name);
+    se.s.s_proto   = strdup (proto);
+    se.s.s_port    = port;
+    se.s.s_aliases = NULL;
+
+    if (se.s.s_name == NULL || se.s.s_proto == NULL)
+        return (NULL);
+
+    alias = strtok (NULL, " \t\n");
+
+    if (alias != NULL && *alias != '#' && *alias != ';') {
+        char **alist = calloc ((1+MAX_SERV_ALIASES) * sizeof(char*), 1);
+        int  i = 0;
+        do {
+            if (*alias == '#' || *alias == ';')
+                break;
+            if (alist == NULL || (i == MAX_SERV_ALIASES) ||
+                (alist[i++] = strdup(alias)) == NULL)
+                break;
+            alias = strtok (NULL, " \t\n");
+        } while (alias != NULL);
+        se.s.s_aliases = alist;
     }
-    while (buf[0] == '#' || buf[0] == '\n');
-
-    if (servClose)
-       endservent();
-
-    /*  # Service         port/prot       alias(es)
-     *  #-------------------------------------------
-     *    rtmp            1/udp   <- only support "udp"/"tcp"
-     *    echo            7/tcp
-     *    echo            7/udp
-     *    discard         9/tcp           sink null
-     *    discard         9/udp           sink null
-     */
-
-    name  = strtok (buf, " \t");
-    port  = intel16 (atoi (strtok (NULL, "/ \t\n")));
-    proto = strtok (NULL, " \t\n");
-
-  }
-  while (stricmp(proto,"udp") && stricmp(proto,"tcp"));
-
-  se.s.s_name    = strdup (name);
-  se.s.s_proto   = strdup (proto);
-  se.s.s_port    = port;
-  se.s.s_aliases = NULL;
-
-  if (!se.s.s_name || !se.s.s_proto)
-     return (NULL);
-
-  alias = strtok (NULL, " \t\n");
-
-  if (alias && *alias != '#' && *alias != ';')
-  {
-    char **alist = calloc ((1+MAX_SERV_ALIASES) * sizeof(char*), 1);
-    int  i = 0;
-    do
-    {
-      if (*alias == '#' || *alias == ';')
-         break;
-      if (!alist || (i == MAX_SERV_ALIASES) ||
-          (alist[i++] = strdup(alias)) == NULL)
-         break;
-      alias = strtok (NULL, " \t\n");
-    }
-    while (alias);
-    se.s.s_aliases = alist;
-  }
-  return (&se.s);
+    return (&se.s);
 }
 
 /*------------------------------------------------------------------*/
 
 struct servent * getservbyname (const char *serv, const char *proto)
 {
-  struct _servent *se;
+    struct _servent *se;
 
-  if (!netdb_init())
-     return (NULL);
+    if (!netdb_init())
+        return (NULL);
 
-  for (se = serv0; se && serv; se = se->next)
-  {
-    char **alias;
-    BOOL chk_prot = 0;
+    for (se = serv0; se != NULL && serv != NULL; se = se->next) {
+        char **alias;
+        BOOL chk_prot = 0;
 
-    if (se->s.s_name && !stricmp(se->s.s_name,serv))
-       chk_prot = TRUE;
-
-    else for (alias = se->s.s_aliases; alias && *alias; alias++)
-             if (!stricmp(serv,*alias))
-             {
-               chk_prot = TRUE;
-               break;
-             }
-    if (chk_prot && (!proto || !stricmp(se->s.s_proto,proto)))
-       return (&se->s);
-  }
-  return (NULL);
+        if (se->s.s_name != NULL && !stricmp(se->s.s_name,serv)) {
+            chk_prot = TRUE;
+        } else for (alias = se->s.s_aliases; alias != NULL && *alias != NULL; alias++) {
+            if (!stricmp(serv, *alias)) {
+                chk_prot = TRUE;
+                break;
+            }
+        }
+        if (chk_prot != NULL && (proto == NULL || !stricmp(se->s.s_proto, proto))) {
+            return (&se->s);
+        }
+    }
+    return (NULL);
 }
 
 /*------------------------------------------------------------------*/
 
 struct servent * getservbyport (int port, const char *proto)
 {
-  struct _servent *se;
+    struct _servent *se;
 
-  if (!netdb_init())
-     return (NULL);
+    if (!netdb_init())
+        return (NULL);
 
-  for (se = GET_HASH(port); se && port; se = se->next)
-  {
-    if (se->s.s_port == port &&
-        (!proto || !stricmp(se->s.s_proto,proto)))
-       return (&se->s);
-  }
-  return (NULL);
+    for (se = GET_HASH(port); se != NULL && port != NULL; se = se->next) {
+        if (se->s.s_port == port &&
+            (!proto || !stricmp(se->s.s_proto,proto))) {
+            return (&se->s);
+        }
+    }
+    return (NULL);
 }
 
 /*------------------------------------------------------------------*/
 
 void setservent (int stayopen)
 {
-  servClose = (stayopen == 0);
-  if (!netdb_init() || !servFname)
-     return;
+    servClose = (stayopen == 0);
+    if (!netdb_init() || servFname == NULL)
+        return;
 
-  if (!servFile)
-       servFile = fopen (servFname, "rt");
-  else rewind (servFile);
+    if (servFile == NULL) {
+        servFile = fopen (servFname, "rt");
+    } else {
+        rewind (servFile);
+    }
 }
 
 /*------------------------------------------------------------------*/
 
 void endservent (void)
 {
-  struct _servent *se, *next = NULL;
+    struct _servent *se, *next = NULL;
 
-  if (!netdb_init() || !servFile)
-     return;
+    if (!netdb_init() || servFile == NULL)
+        return;
 
-  free (servFname);
-  fclose (servFile);
-  servFname = NULL;
-  servFile  = NULL;
+    free (servFname);
+    fclose (servFile);
+    servFname = NULL;
+    servFile  = NULL;
 
-  for (se = serv0; se; se = next)
-  {
-    if (se->s.s_aliases)
-    {
-      int i;
-      for (i = 0; i < MAX_SERV_ALIASES; i++)
-          if (se->s.s_aliases[i])
-             free (se->s.s_aliases[i]);
-      free (se->s.s_aliases);
+    for (se = serv0; se != NULL; se = next) {
+        if (se->s.s_aliases != NULL) {
+            int i;
+            for (i = 0; i < MAX_SERV_ALIASES; i++) {
+                if (se->s.s_aliases[i] != NULL) {
+                    free (se->s.s_aliases[i]);
+                }
+            }
+            free (se->s.s_aliases);
+        }
+        next = se->next;
+        free (se->s.s_name);
+        free (se->s.s_proto);
+        free (se);
     }
-    next = se->next;
-    free (se->s.s_name);
-    free (se->s.s_proto);
-    free (se);
-  }
-  serv0 = NULL;
-  servClose = 1;
+    serv0 = NULL;
+    servClose = 1;
 }
 
 #endif /* USE_BSD_FUNC */
@@ -279,22 +270,21 @@ void endservent (void)
 
 int main (void)
 {
-  struct _servent *se;
-  int    i;
+    struct _servent *se;
+    int    i;
 
-  dbug_init();
-  sock_init();
+    dbug_init();
+    sock_init();
 
-  for (se = serv0; se; se = se->next)
-  {
-    printf ("proto %-6.6s  port %4d  name %-10.10s  aliases:",
+    for (se = serv0; se != NULL; se = se->next) {
+        printf ("proto %-6.6s  port %4d  name %-10.10s  aliases:",
             se->s.s_proto, intel16(se->s.s_port), se->s.s_name);
-    for (i = 0; se->s.s_aliases && se->s.s_aliases[i]; i++)
-         printf (" %s", se->s.s_aliases[i]);
-    puts ("");
-  }
-  return (0);
+        for (i = 0; se->s.s_aliases != NULL && se->s.s_aliases[i] != NULL; i++) {
+            printf (" %s", se->s.s_aliases[i]);
+        }
+        puts ("");
+    }
+    return (0);
 }
 #endif /* TEST_PROG */
-
 

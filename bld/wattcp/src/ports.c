@@ -23,8 +23,8 @@ static fd_set lport_inuse[6]; /* at least 1536 bits */
  */
 int init_localport (void)
 {
-  memset (&lport_inuse[0], 0, sizeof(lport_inuse));
-  return (NUM_PORTS);
+    memset (&lport_inuse[0], 0, sizeof(lport_inuse));
+    return (NUM_PORTS);
 }
 
 /*
@@ -40,50 +40,57 @@ int init_localport (void)
  */
 WORD findfreeport (WORD port, BOOL linger)
 {
-  WORD p;
-  WORD lo_port, hi_port;
+    WORD p;
+    WORD lo_port, hi_port;
 
-  if (port > 0 && port < USHRT_MAX)    /* return port as-is */
-     return (port);
+    if (port > 0 && port < USHRT_MAX)    /* return port as-is */
+        return (port);
 
-  if (port == 0)
-       lo_port = 1025;
-  else lo_port = 513;
-  hi_port = lo_port + 510;  /* our range of empherical ports */
-
-  assert (hi_port < NUM_PORTS);
-
-  /* This is too wasteful; O(2^n)
-   * !!to-do: replace these loops with FD_* macros
-   */
-  for (p = lo_port; p < hi_port; p++)
-  {
-    if (_udp_allsocs)
-    {
-      udp_Socket *udp = _udp_allsocs;
-
-      while (udp->next && udp->myport != p)
-             udp = udp->next;
-      if (udp->myport == p)
-         continue;
+    if (port == 0) {
+        lo_port = 1025;
+    } else {
+        lo_port = 513;
     }
+    hi_port = lo_port + 510;  /* our range of empherical ports */
+
+    assert (hi_port < NUM_PORTS);
+
+    /* This is too wasteful; O(2^n)
+     * !!to-do: replace these loops with FD_* macros
+     */
+    for (p = lo_port; p < hi_port; p++) {
+        if (_udp_allsocs != NULL) {
+            udp_Socket *_udp_sk;
+
+            for (_udp_sk = _udp_allsocs; _udp_sk->next != NULL; _udp_sk = _udp_sk->next) {
+                if (_udp_sk->myport == p) {
+                    break;
+                }
+            }
+            if (_udp_sk->myport == p) {
+                continue;
+            }
+        }
 #if !defined(USE_UDP_ONLY)
-    if (_tcp_allsocs)
-    {
-      tcp_Socket *tcp = _tcp_allsocs;
+        if (_tcp_allsocs != NULL) {
+            tcp_Socket *_tcp_sk;
 
-      while (tcp->next && tcp->myport != p)
-             tcp = tcp->next;
-      if (tcp->myport == p)
-         continue;
-    }
+            for (_tcp_sk = _tcp_allsocs; _tcp_sk->next != NULL; _tcp_sk = _tcp_sk->next) {
+                if (_tcp_sk->myport == p) {
+                    break;
+                }
+            }
+            if (_tcp_sk->myport == p) {
+                continue;
+            }
+        }
 #endif
-    if (linger && FD_ISSET(p,&lport_inuse[0])) /* inuse, try next 'p' */
-       continue;
-    break;
-  }
-  FD_SET (p, &lport_inuse[0]);
-  return (p);
+        if (linger && FD_ISSET(p, &lport_inuse[0])) /* inuse, try next 'p' */
+            continue;
+        break;
+    }
+    FD_SET (p, &lport_inuse[0]);
+    return (p);
 }
 
 #if defined(USE_BSD_FUNC)
@@ -94,13 +101,12 @@ WORD findfreeport (WORD port, BOOL linger)
  */
 int grab_localport (WORD port)
 {
-  if (port < NUM_PORTS)
-  {
-    int rc = FD_ISSET (port, &lport_inuse[0]);
-    FD_SET (port, &lport_inuse[0]);
-    return (rc);
-  }
-  return (-1);
+    if (port < NUM_PORTS) {
+        int rc = FD_ISSET (port, &lport_inuse[0]);
+        FD_SET (port, &lport_inuse[0]);
+        return (rc);
+    }
+    return (-1);
 }
 #endif
 
@@ -111,11 +117,10 @@ int grab_localport (WORD port)
  */
 int reuse_localport (WORD port)
 {
-  if (port < NUM_PORTS)
-  {
-    int rc = FD_ISSET (port, &lport_inuse[0]);
-    FD_CLR (port, &lport_inuse[0]);
-    return (rc);
-  }
-  return (-1);
+    if (port < NUM_PORTS) {
+        int rc = FD_ISSET (port, &lport_inuse[0]);
+        FD_CLR (port, &lport_inuse[0]);
+        return (rc);
+    }
+    return (-1);
 }

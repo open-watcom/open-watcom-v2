@@ -50,17 +50,17 @@ int   dns_recurse     = 1;
 
 static DWORD resolve_timeout;
 
-static udp_Socket   *dom_sock;
+static udp_Socket   *dom_sk;
 static struct useek *question;
 static const char   *no_serv = __LANG ("No nameserver defined!");
 
 static void qinit (void)
 {
-  question->h.flags   = intel16 (DRD);
-  question->h.qdcount = intel16 (1);
-  question->h.ancount = 0;
-  question->h.nscount = 0;
-  question->h.arcount = 0;
+    question->h.flags   = intel16 (DRD);
+    question->h.qdcount = intel16 (1);
+    question->h.ancount = 0;
+    question->h.nscount = 0;
+    question->h.arcount = 0;
 }
 
 
@@ -73,44 +73,39 @@ static void qinit (void)
  */
 static int packdom (char *dst, const char *src)
 {
-  char *p, *q, *savedst;
-  int   i, dotflag, defflag;
+    char *p, *q, *savedst;
+    int   i, dotflag, defflag;
 
-  p = (char*) src;
-  dotflag = defflag = 0;
-  savedst = dst;
+    p = (char*) src;
+    dotflag = defflag = 0;
+    savedst = dst;
 
-  do                          /* copy whole string */
-  {
-    *dst = 0;
-    q = dst + 1;
-    while (*p && *p != '.')
-       *q++ = *p++;
+    do {                        /* copy whole string */
+        *dst = 0;
+        q = dst + 1;
+        while (*p && *p != '.')
+            *q++ = *p++;
 
-    i = p - (char*)src;
-    if (i > 0x3F)
-       return (-1);
-    *dst = i;
-    *q = 0;
+        i = p - (char*)src;
+        if (i > 0x3F)
+            return (-1);
+        *dst = i;
+        *q = 0;
 
-    if (*p)                   /* update pointers */
-    {
-      dotflag = 1;
-      src = ++p;
-      dst = q;
-    }
-    else if (!dotflag && !defflag && loc_domain)
-    {
-      p = loc_domain;         /* continue packing with default */
-      defflag = 1;
-      src = p;
-      dst = q;
-    }
-  }
-  while (*p);
+        if (*p) {                 /* update pointers */
+            dotflag = 1 ;
+            src = ++p;
+            dst = q;
+        } else if (!dotflag && !defflag && loc_domain) {
+            p = loc_domain;         /* continue packing with default */
+            defflag = 1;
+            src = p;
+            dst = q;
+        }
+    } while (*p);
 
-  q++;
-  return (q - savedst);       /* length of packed string */
+    q++;
+    return (q - savedst);       /* length of packed string */
 }
 
 /*
@@ -123,36 +118,34 @@ static int packdom (char *dst, const char *src)
  */
 static int unpackdom (BYTE *dst, const BYTE *src, const BYTE *buf)
 {
-  int   retval  = 0;
-  const BYTE *p = src;
+    int   retval  = 0;
+    const BYTE *p = src;
 
-  while (*src)
-  {
-    int i,j = *src;
+    while (*src) {
+        int i,j = *src;
 
-    while ((j & 0xC0) == 0xC0)
-    {
-      if (!retval)
-         retval = src - p + 2;
-      src++;
-      src = &buf[(j & 0x3F)*256 + *src];  /* pointer dereference */
-      j = *src;
+        while ((j & 0xC0) == 0xC0) {
+            if (!retval)
+                retval = src - p + 2;
+            src++;
+            src = &buf[(j & 0x3F)*256 + *src];  /* pointer dereference */
+            j = *src;
+        }
+
+        src++;
+        for (i = 0; i < (j & 0x3F); i++)
+            *dst++ = *src++;
+
+        *dst++ = '.';
     }
 
-    src++;
-    for (i = 0; i < (j & 0x3F); i++)
-        *dst++ = *src++;
+    *(--dst) = 0;              /* add terminator */
+    src++;                     /* account for terminator on src */
 
-    *dst++ = '.';
-  }
+    if (!retval)
+        retval = src - p;
 
-  *(--dst) = 0;              /* add terminator */
-  src++;                     /* account for terminator on src */
-
-  if (!retval)
-     retval = src - p;
-
-  return (retval);
+    return (retval);
 }
 
 
@@ -163,57 +156,56 @@ static int unpackdom (BYTE *dst, const BYTE *src, const BYTE *buf)
  */
 static int send_dom (const char *name, DWORD towho)
 {
-  WORD  ulen;
-  BYTE *start = (BYTE*)&question->x;
-  WORD  i     = packdom ((char*)start, name);
-  BYTE *p     = &question->x[i];
+    WORD  ulen;
+    BYTE *start = (BYTE*)&question->x;
+    WORD  i     = packdom ((char*)start, name);
+    BYTE *p     = &question->x[i];
 
-  *p++ = 0;               /* high byte of qtype */
-  *p++ = DTYPEA;          /* number is < 256, so we know high byte=0 */
-  *p++ = 0;               /* high byte of qclass */
-  *p++ = DIN;             /* qtype is < 256 */
+    *p++ = 0;               /* high byte of qtype */
+    *p++ = DTYPEA;          /* number is < 256, so we know high byte=0 */
+    *p++ = 0;               /* high byte of qclass */
+    *p++ = DIN;             /* qtype is < 256 */
 
-  question->h.ident = Random (1, USHRT_MAX);
+    question->h.ident = Random (1, USHRT_MAX);
 
-  if (!udp_open(dom_sock,997,towho,DOM_DST_PORT,NULL))
-  {
-    outsnl (_LANG("Nameserver ARP failed"));
-    return (0);
-  }
-  ulen = sizeof (struct dhead) + (p - start);
-  sock_write ((sock_type*)dom_sock, (BYTE*)question, ulen);
-  return (ulen);
+    if (!udp_open(dom_sk, 997, towho, DOM_DST_PORT, NULL)) {
+        outsnl (_LANG("Nameserver ARP failed"));
+        return (0);
+    }
+    ulen = sizeof (struct dhead) + (p - start);
+    sock_write ((sock_type*)dom_sk, (BYTE*)question, ulen);
+    return (ulen);
 }
 
 static __inline int countpaths (const char *pathstring)
 {
-  int   count = 0;
-  const char *p;
+    int   count = 0;
+    const char *p;
 
-  for (p = pathstring; *p || *(p+1); p++)
-  {
-    if (*p == 0)
-       count++;
-  }
-  return (++count);
+    for (p = pathstring; *p || *(p+1); p++) {
+        if (*p == 0) {
+            count++;
+        }
+    }
+    return (++count);
 }
 
 static __inline const char *getpath (
                 const char *pathstring,  /* the path list to search        */
                 int         whichone)    /* which path to get, starts at 1 */
 {
-  const char *rc;
+    const char *rc;
 
-  if (whichone > countpaths(pathstring))
-     return (NULL);
+    if (whichone > countpaths(pathstring))
+        return (NULL);
 
-  whichone--;
-  for (rc = pathstring; whichone; rc++)
-  {
-    if (*rc == 0)
-       whichone--;
-  }
-  return (rc);
+    whichone--;
+    for (rc = pathstring; whichone; rc++) {
+        if (*rc == 0) {
+            whichone--;
+        }
+    }
+    return (rc);
 }
 
 
@@ -225,70 +217,68 @@ static __inline const char *getpath (
  */
 static int ddextract (const struct useek *qp, DWORD *mip)
 {
-  WORD nans  = intel16 (qp->h.ancount);
-  BYTE rcode = DRCODE & intel16(qp->h.flags);
+    WORD nans  = intel16 (qp->h.ancount);
+    BYTE rcode = DRCODE & intel16(qp->h.flags);
 
-  if (rcode > 0)
-     return (int)rcode;
+    if (rcode > 0)
+        return (int)rcode;
 
-  if (nans > 0 &&                              /* at least one answer   */
-      (intel16(qp->h.flags) & DQR))            /* response flag is set  */
-  {
-    BYTE  space[260];
-    const BYTE *p = (const BYTE*) &qp->x;
-    int   i = unpackdom (space, p, (const BYTE*)qp);
-
-   /* spec defines name then QTYPE + QCLASS = 4 bytes
-    */
-    p += i + 4;
-
-   /* at this point, there may be several answers.  We will take the first
-    * one which has an IP number.  There may be other types of answers that
-    * we want to support later.
-    */
-    while (nans-- > 0)                     /* look at each answer   */
+    if (nans > 0 &&                              /* at least one answer   */
+        (intel16(qp->h.flags) & DQR))            /* response flag is set  */
     {
-      struct rrpart *rrp;
-      int    j;
+        BYTE  space[260];
+        const BYTE *p = (const BYTE*) &qp->x;
+        int   i = unpackdom (space, p, (const BYTE*)qp);
 
-      i   = unpackdom (space, p, (const BYTE*)qp);
-      p  += i;                             /* account for string    */
-      rrp = (struct rrpart*) p;            /* resource record here  */
+        /* spec defines name then QTYPE + QCLASS = 4 bytes
+         */
+        p += i + 4;
 
-      if (!*p && *(p+1) == DTYPEA &&       /* correct type and class */
-          !*(p+2) && *(p+3) == DIN)
-      {
-        *mip = *(DWORD*)&rrp->rdata;       /* save IP #         */
-        return (0);                        /* successful return */
-      }
-      j  = *(WORD*) &rrp->rdlength;
-      p += 10 + intel16 (j);               /* length of rest of RR */
+        /* at this point, there may be several answers.  We will take the first
+         * one which has an IP number.  There may be other types of answers that
+         * we want to support later.
+         */
+        while (nans-- > 0) {                   /* look at each answer   */
+            struct rrpart *rrp;
+            int    j;
+
+            i   = unpackdom (space, p, (const BYTE*)qp);
+            p  += i;                             /* account for string    */
+            rrp = (struct rrpart*) p;            /* resource record here  */
+
+            if (!*p && *(p+1) == DTYPEA &&       /* correct type and class */
+                !*(p+2) && *(p+3) == DIN)
+            {
+                *mip = *(DWORD*)&rrp->rdata;       /* save IP #         */
+                return (0);                        /* successful return */
+            }
+            j  = *(WORD*) &rrp->rdlength;
+            p += 10 + intel16 (j);               /* length of rest of RR */
+        }
     }
-  }
-  return (-1);                             /* generic failed to parse */
+    return (-1);                             /* generic failed to parse */
 }
 
 
 /*
- * parse_domain()
+ * parse_dom                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ain()
  *   Look at the results to see if our DOMAIN request is ready.
  *   It may be a timeout, which requires another query.
  */
 static DWORD parse_domain (void)
 {
-  DWORD ip = 0UL;
+    DWORD ip = 0UL;
 
-  sock_fastread ((sock_type*)dom_sock, (BYTE*)question, sizeof(*question));
+    sock_fastread ((sock_type*)dom_sk, (BYTE*)question, sizeof(*question));
 
- /* check to see if the necessary information was in the UDP response
-  */
-  switch (ddextract (question, &ip))
-  {
+    /* check to see if the necessary information was in the UDP response
+     */
+    switch (ddextract (question, &ip)) {
     case  3: return (0);         /* name does not exist                */
     case  0: return intel (ip);  /* we found the IP number             */
     case -1: return (0);         /* strange return code from ddextract */
     default: return (0);         /* dunno                              */
-  }
+    }
 }
 
 
@@ -305,89 +295,83 @@ static DWORD parse_domain (void)
 static DWORD lookup_domain (const char *mname, int  add_dom,
                             DWORD nameserver,  BYTE *timedout)
 {
-  char  namebuff [512];
-  int   sec;
-  DWORD response;
+    char  namebuff [512];
+    int   sec;
+    DWORD response;
 
-  response  = 0;
-  *timedout = 1;     /* assume we will timeout */
+    response  = 0;
+    *timedout = 1;     /* assume we will timeout */
 
-  if (!nameserver)   /* no nameserver, give up now */
-  {
-    outsnl (_LANG(no_serv));
-    _resolve_exit = 1;
-    return (0);
-  }
-
-  while (*mname && *mname <= ' ')   /* kill leading spaces */
-     mname++;
-
-  if (*mname == 0)
-     return (0L);
-
-  qinit();                     /* initialize some flag fields */
-  strcpy (namebuff, mname);
-
-  if (add_dom)
-  {
-    int dot = strlen (namebuff) - 1;
-    if (namebuff[dot] != '.')    /* if no trailing dot */
-    {
-      if (loc_domain)            /* there is a search list */
-      {
-        strcat (namebuff, ".");
-        strcat (namebuff, getpath(loc_domain,1));
-      }
-    }
-    else
-      namebuff [dot] = 0;        /* kill trailing dot */
-  }
-
-  /*
-   * This is not terribly good, but it attempts to use a binary
-   * exponentially increasing delays.
-   */
-
-  for (sec = 2; sec < dns_timeout-1 && !_resolve_exit; sec *= 2)
-  {
-    if (!send_dom(namebuff,nameserver))
-    {
-      _resolve_timeout = 1; /* Sort of..ARP failed */
-      return (0);
-    }
-
-    ip_timer_init ((sock_type *)dom_sock,sec);
-    do
-    {
-      tcp_tick ((sock_type*)dom_sock);
-
-      if (ip_timer_expired((sock_type *)dom_sock) || chk_timeout(resolve_timeout))
-         break;
-
-      kbhit();
-      if (watcbroke || (_resolve_hook && (*_resolve_hook)() == 0))
-      {
+    if (!nameserver) { /* no nameserver, give up now */
+        outsnl (_LANG(no_serv));
         _resolve_exit = 1;
-        break;
-      }
-      if (dom_sock->usr_yield)    /* Added, 16-Jun-97 GV */
-        (*dom_sock->usr_yield)();
-
-      if (sock_dataready((sock_type*)dom_sock))
-         *timedout = 0;
+        return (0);
     }
-    while (*timedout);
 
-    if (!*timedout)           /* got an answer */
-       break;
-  }
+    while (*mname && *mname <= ' ')   /* kill leading spaces */
+        mname++;
 
-  if (*timedout)
-       _resolve_timeout = 1;
-  else response = parse_domain();
+    if (*mname == 0)
+        return (0L);
 
-  sock_close ((sock_type*)dom_sock);
-  return (response);
+    qinit();                     /* initialize some flag fields */
+    strcpy (namebuff, mname);
+
+    if (add_dom) {
+        int dot = strlen (namebuff) - 1;
+        if (namebuff[dot] != '.') {  /* if no trailing dot */
+            if (loc_domain) {          /* there is a search list */
+                strcat (namebuff, ".");
+                strcat (namebuff, getpath(loc_domain,1));
+            }
+        } else {
+            namebuff [dot] = 0;        /* kill trailing dot */
+        }
+    }
+
+    /*
+     * This is not terribly good, but it attempts to use a binary
+     * exponentially increasing delays.
+     */
+
+    for (sec = 2; sec < dns_timeout-1 && !_resolve_exit; sec *= 2) {
+        if (!send_dom(namebuff,nameserver)) {
+            _resolve_timeout = 1; /* Sort of..ARP failed */
+            return (0);
+        }
+
+        ip_timer_init ((sock_type *)dom_sk, sec);
+        do {
+            tcp_tick ((sock_type*)dom_sk);
+
+            if (ip_timer_expired((sock_type *)dom_sk) || chk_timeout(resolve_timeout))
+                break;
+
+            kbhit();
+            if (watcbroke || (_resolve_hook != NULL && (*_resolve_hook)() == 0)) {
+                _resolve_exit = 1;
+                break;
+            }
+            if (dom_sk->usr_yield)    /* Added, 16-Jun-97 GV */
+                (*dom_sk->usr_yield)();
+
+            if (sock_dataready((sock_type*)dom_sk)) {
+                *timedout = 0;
+            }
+        } while (*timedout);
+
+        if (!*timedout) {         /* got an answer */
+            break;
+        }
+    }
+
+    if (*timedout) {
+        _resolve_timeout = 1;
+    } else {
+        response = parse_domain();
+    }
+    sock_close ((sock_type*)dom_sk);
+    return (response);
 }
 
 /*
@@ -396,16 +380,15 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
  */
 static const char *nextdomain (const char *domain, int count)
 {
-  const char *p = domain;
-  int   i;
+    const char *p = domain;
+    int   i;
 
-  for (i = 0; i < count; i++)
-  {
-    if ((p = strchr(p,'.')) == NULL)
-       return (NULL);
-    p++;
-  }
-  return (p);
+    for (i = 0; i < count; i++) {
+        if ((p = strchr(p,'.')) == NULL)
+            return (NULL);
+        p++;
+    }
+    return (p);
 }
 
 
@@ -417,125 +400,114 @@ static const char *nextdomain (const char *domain, int count)
  */
 DWORD resolve (const char *name)
 {
-  DWORD        ip_address = 0L;
-  int          count, len;
-  char         namebuf [MAX_HOSTLEN];
-  BYTE         timeout [MAX_NAMESERVERS];
-  WORD         oldhndlcbrk;
-  struct useek qp;       /* temp buffer */
-  udp_Socket   ds;       /* DNS socket  */
+    DWORD        ip_address = 0L;
+    int          count, len;
+    char         namebuf [MAX_HOSTLEN];
+    BYTE         timeout [MAX_NAMESERVERS];
+    WORD         oldhndlcbrk;
+    struct useek qp;        /* temp buffer */
+    udp_Socket   udp_sk;    /* DNS socket  */
 
-  if (!name || *name == 0)
-     return (0);
+    if (name == NULL || *name == 0)
+        return (0);
 
-  len = strlen (name);
-  if (len >= sizeof(namebuf)-1)
-     return (0);
+    len = strlen (name);
+    if (len >= sizeof(namebuf)-1)
+        return (0);
 
-  memcpy (namebuf, name, len+1); /* make a copy of 'name'      */
-  rip (namebuf);                 /* strip off '\r' and/or '\n' */
+    memcpy (namebuf, name, len+1); /* make a copy of 'name'      */
+    rip (namebuf);                 /* strip off '\r' and/or '\n' */
 
-  if (isaddr(namebuf))
-     return aton (namebuf);
+    if (isaddr(namebuf))
+        return aton (namebuf);
 
 #if defined(USE_BSD_FUNC)
-  if (!called_from_ghbn)         /* This hack avoids reentrancy */
-  {                              /* from gethostbyname()        */
-    struct hostent *h;
+    if (!called_from_ghbn) {        /* This hack avoids reentrancy */
+                                    /* from gethostbyname()        */
+        struct hostent *h;
 
-    called_from_resolve = 1;     /* ditto hack ! (vice versa)   */
-    h = gethostbyname (namebuf);
-    called_from_resolve = 0;
-    if (h)                       /* IP from host file or cache  */
-    {
-      /*
-       * NOTE: gethostbyname() returns network order
-       *       We assume IPv4 (32-bit)
-       */
-      DWORD ip = *(DWORD*)h->h_addr_list[0];
-      return intel (ip);
+        called_from_resolve = 1;     /* ditto hack ! (vice versa)   */
+        h = gethostbyname (namebuf);
+        called_from_resolve = 0;
+        if (h) {                     /* IP from host file or cache  */
+            /*
+             * NOTE: gethostbyname() returns network order
+             *       We assume IPv4 (32-bit)
+             */
+            DWORD ip = *(DWORD*)h->h_addr_list[0];
+            return intel (ip);
+        }
+
+        /* not found in /etc/hosts file, ask the DNS server(s)
+         */
     }
-
-    /* not found in /etc/hosts file, ask the DNS server(s)
-     */
-  }
 #endif
 
-  if (last_nameserver == 0)    /* no nameserver, give up now */
-  {
-    outsnl (_LANG(no_serv));
-    return (0);
-  }
-
-  if (my_ip_addr == 0)         /* not configured, give up now */
-  {
-    outsnl (_LANG("Cannot resolve without IP"));
-    return (0);
-  }
-
-  if (dns_timeout == 0)
-      dns_timeout = (UINT)sock_delay << 2;
-  resolve_timeout = set_timeout (1000 * dns_timeout);
-
-  count = 0;
-  memset (&timeout, 0, sizeof(timeout));
-
-  question    = &qp;
-  dom_sock    = &ds;
-  oldhndlcbrk = wathndlcbrk;
-  wathndlcbrk = 1;        /* enable special interrupt mode */
-  watcbroke   = 0;
-
-  _resolve_exit = _resolve_timeout = 0;
-
-  do
-  {
-    int i;
-
-    if (strchr(namebuf,'.'))
-    {
-      loc_domain = NULL;
-      count = -1;
-    }
-    else if (dns_recurse == 0 && count == 0)
-    {
-      loc_domain = NULL;
-      count = -1;
-    }
-    else
-    {
-      loc_domain = (char*) nextdomain (def_domain, count);
-      if (!loc_domain)
-         count = -1;     /* use default name */
+    if (last_nameserver == 0) {  /* no nameserver, give up now */
+        outsnl (_LANG(no_serv));
+        return (0);
     }
 
-    for (i = 0; i < last_nameserver; i++)
-    {
-      if (!timeout[i])
-      {
-        ip_address = lookup_domain (namebuf, count != -1,
+    if (my_ip_addr == 0) {       /* not configured, give up now */
+        outsnl (_LANG("Cannot resolve without IP"));
+        return (0);
+    }
+
+    if (dns_timeout == 0)
+        dns_timeout = (UINT)sock_delay << 2;
+    resolve_timeout = set_timeout (1000 * dns_timeout);
+
+    count = 0;
+    memset (&timeout, 0, sizeof(timeout));
+
+    question    = &qp;
+    dom_sk      = &udp_sk;
+    oldhndlcbrk = wathndlcbrk;
+    wathndlcbrk = 1;        /* enable special interrupt mode */
+    watcbroke   = 0;
+
+    _resolve_exit = _resolve_timeout = 0;
+
+    do {
+        int i;
+
+        if (strchr(namebuf,'.')) {
+            loc_domain = NULL;
+        } else if (dns_recurse == 0 && count == 0) {
+            loc_domain = NULL;
+            count = -1;
+        } else {
+            loc_domain = (char*) nextdomain (def_domain, count);
+            if (!loc_domain) {
+                count = -1;     /* use default name */
+            }
+        }
+
+        for (i = 0; i < last_nameserver; i++) {
+            if (!timeout[i]) {
+                ip_address = lookup_domain (namebuf, count != -1,
                                     def_nameservers[i], timeout+i);
-        if (ip_address)
-           break;           /* got name, bail out of for loop */
-        if (_resolve_exit)
-           break;           /* an error occured, return to caller */
-      }
+                if (ip_address)
+                    break;           /* got name, bail out of for loop */
+                if (_resolve_exit) {
+                    break;           /* an error occured, return to caller */
+                }
+            }
 
-      /*
-       * Should we really try the other nameservers if the first
-       * says the host doesn't exist? Maybe a trusting mechanism
-       * is needed
-       */
-    }
-    if (count == -1)
-       break;
-    count++;
-  }
-  while (!ip_address && !_resolve_exit);
+            /*
+             * Should we really try the other nameservers if the first
+             * says the host doesn't exist? Maybe a trusting mechanism
+             * is needed
+             */
+        }
+        if (count == -1)
+            break;
+        count++;
+    } while (!ip_address && !_resolve_exit);
 
-  watcbroke   = 0;        /* always clean up */
-  wathndlcbrk = oldhndlcbrk;
+    watcbroke   = 0;        /* always clean up */
+    wathndlcbrk = oldhndlcbrk;
 
-  return (ip_address);
+    return (ip_address);
 }
 
