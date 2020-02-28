@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -366,7 +366,7 @@ pch_status PCHReadRttiDescriptors( void )
     RTTI_CLASS *c;
     RTTI_VFPTR *v;
     RTTI_TYPEID *t;
-    auto cvinit_t data;
+    cvinit_t data;
 
     // NYI: use read in place optimizations
     rttiClasses = rttiClassPCHRead();
@@ -482,7 +482,7 @@ static void saveTypeid( void *e, carve_walk_base *d )
 
 pch_status PCHWriteRttiDescriptors( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     rttiClassPCHWrite( rttiClasses );
     rttiTypeidPCHWrite( rttiTypeids );

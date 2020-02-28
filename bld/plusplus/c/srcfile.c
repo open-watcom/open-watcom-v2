@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -599,7 +600,7 @@ char *SrcFileFullName(          // GET FULL PATH NAME OF SOURCE FILE
     SRCFILE sf )                // - source file
 {
     char *p;
-    auto char buff[_MAX_PATH];
+    char buff[_MAX_PATH];
 
     if( sf->full_name != NULL ) {
         return( sf->full_name );
@@ -628,7 +629,7 @@ void SrcFileSetErrLoc(          // SET TEMPORARY ERROR LOCATION TO CURRENT POS
     void )
 {
     OPEN_FILE *act;
-    auto TOKEN_LOCN tmp_locn;
+    TOKEN_LOCN tmp_locn;
 
     act = activeSrc();
     tmp_locn.src_file = srcFile;
@@ -1614,8 +1615,8 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     char const *path_list )     // - the directory
 {
     char *full;                 // - full path
-    auto char path[_MAX_PATH];  // - used to extract directory
-    auto char buff[_MAX_PATH];  // - expanded path for directory
+    char path[_MAX_PATH];       // - used to extract directory
+    char buff[_MAX_PATH];       // - expanded path for directory
     DIR_LIST* curr;             // - current R/O entry
     DIR_LIST* srch;             // - search R/O entry
 
@@ -2036,7 +2037,7 @@ static void writeRoDirs( void )
 
 pch_status PCHWriteSrcFiles( void )
 {
-    auto carve_walk_base dsrc;
+    carve_walk_base dsrc;
 
     SrcFilePCHWrite( srcFilesUnique );
     CarveWalkAllFree( carveSrcFile, markFreeSrcFile );
@@ -2049,7 +2050,7 @@ pch_status PCHWriteSrcFiles( void )
 static void readRoDirs( void )
 {
     unsigned len;
-    auto char buff[_MAX_PATH];
+    char buff[_MAX_PATH];
 
     for( ; (len = PCHReadUInt()) != 0; ) {
         PCHRead( buff, len );
@@ -2066,7 +2067,7 @@ pch_status PCHReadSrcFiles( void )
     SRCFILE n;
     size_t name_len;
     size_t ifndef_len;
-    auto cvinit_t data;
+    cvinit_t data;
 
     // primarySrcFile will already be set properly so it is unaffected by PCH
     unique_srcfiles = SrcFilePCHRead();

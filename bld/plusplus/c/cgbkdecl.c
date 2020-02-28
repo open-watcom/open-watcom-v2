@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +139,7 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     SYMBOL stop;
     SYMBOL *psym;               // - addr[ parameter symbol ]
     TYPE fn_type;
-    auto VSTK_CTL sym_stack;
+    VSTK_CTL sym_stack;
     SYMBOL ret_sym;
     NAME ret_name;
 

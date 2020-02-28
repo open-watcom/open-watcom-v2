@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ char *dos4g_path( void )
 void main( int argc, char *argv[] )
 {
     char        *av[4];
-    auto char   cmdline[128];
+    char        cmdline[128];
 
     av[0] = dos4g_path();           /* Locate the DOS/4GW loader */
     av[1] = argv[0];                /* name of executable to run */

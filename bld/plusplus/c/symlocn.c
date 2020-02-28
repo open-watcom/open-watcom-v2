@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +154,7 @@ static void saveTokenLocn( void *e, carve_walk_base *d )
 
 pch_status PCHWriteTokenLocns( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carveSYMBOL_LOCN, markFreeTokenLocn );
     CarveWalkAll( carveSYMBOL_LOCN, saveTokenLocn, &data );
@@ -164,7 +165,7 @@ pch_status PCHWriteTokenLocns( void )
 pch_status PCHReadTokenLocns( void )
 {
     SYM_TOKEN_LOCN *b;
-    auto cvinit_t data;
+    cvinit_t data;
 
     // DbgVerify( sizeof( uint_32 ) >= sizeof( void* ), "Bad assumption" );
     CarveInitStart( carveSYMBOL_LOCN, &data );

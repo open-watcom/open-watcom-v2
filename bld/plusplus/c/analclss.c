@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -669,8 +670,8 @@ void GenerateDefaultAssign(     // EMIT A DEFAULT ASSIGN
     SCOPE scope;                // - scope for class
     TYPE class_type;            // - class operator= is in
     CLASSINFO *info;            // - info on class
-    auto FUNCTION_DATA fn_data; // - function data for operator=
-    auto error_state_t check;   // - error data
+    FUNCTION_DATA fn_data;      // - function data for operator=
+    error_state_t check;        // - error data
 
     if( SymClassCorrupted( operator ) ) {
         return;
@@ -850,7 +851,7 @@ PTREE ClassAssign(              // ASSIGN TO CLASS OBJECT
 void GenerateDefaultCopy(       // EMIT A DEFAULT COPY CTOR
     SYMBOL copy_ctor )          // - the copy ctor
 {
-    auto FUNCTION_DATA fn_data;
+    FUNCTION_DATA fn_data;
     error_state_t check;
 
     if( SymClassCorrupted( copy_ctor ) ) {
@@ -1289,8 +1290,8 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
 void GenerateDefaultCtor(       // EMIT A DEFAULT CTOR
     SYMBOL ctor )               // - the ctor
 {
-    auto error_state_t check;
-    auto FUNCTION_DATA fn_data;
+    error_state_t check;
+    FUNCTION_DATA fn_data;
 
     if( SymClassCorrupted( ctor ) ) {
         return;
@@ -1337,8 +1338,8 @@ CNV_RETN ClassDefaultCtorDefine(// DEFINE DEFAULT CTOR FOR A CLASS
 void GenerateDefaultDtor(       // EMIT A DEFAULT DTOR
     SYMBOL dtor )               // - the dtor
 {
-    auto FUNCTION_DATA fn_data;
-    auto error_state_t check;
+    FUNCTION_DATA fn_data;
+    error_state_t check;
 
     if( SymClassCorrupted( dtor ) ) {
         return;
@@ -1499,8 +1500,8 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     SCOPE scope;                // - scope for parameters
     NAME name;                  // - dummy name for parameter
     PTREE stmt;
-    auto FUNCTION_DATA fn_data;
-    auto error_state_t check;
+    FUNCTION_DATA fn_data;
+    error_state_t check;
 
     ar_type = ArrayType( ar_type );
     if( ClassCorrupted( ArrayBaseType( ar_type ) ) ) {

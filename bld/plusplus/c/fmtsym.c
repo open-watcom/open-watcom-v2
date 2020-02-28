@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,9 +256,9 @@ void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
     SYMBOL sym;
     const char *delim;
     TYPE type;
-    auto VBUF sym_parm;
-    auto VBUF type_parm_prefix;
-    auto VBUF type_parm_suffix;
+    VBUF sym_parm;
+    VBUF type_parm_prefix;
+    VBUF type_parm_suffix;
 
     VbufInit( parms );
     if( parm_scope == NULL ) {
@@ -316,7 +317,7 @@ void FormatTemplateParms( VBUF *parms, TYPE class_type )
 
 static void fmtTemplateParms( VBUF *pvbuf, TYPE class_type )
 {
-    auto VBUF parms;
+    VBUF parms;
 
     FormatTemplateParms( &parms, class_type );
     VbufConcVbufRev( pvbuf, &parms );

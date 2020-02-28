@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ _WMRTLINK char *gcvt( double value, int digits, char *buf )
     int         i;
     CVT_INFO    cvt;
     long_double ld;
-    auto char   stkbuf[64];     // See comment in ldcvt.c regarding stkbuf size
+    char        stkbuf[64];     // See comment in ldcvt.c regarding stkbuf size
 #ifdef _LONG_DOUBLE_
     double      double_value;
 

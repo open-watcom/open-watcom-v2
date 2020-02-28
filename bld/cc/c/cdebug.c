@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +174,7 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
     dbug_type       ret_val;
     dbg_loc         dl;
     SYM_HANDLE      sym_handle;
-    auto SYM_ENTRY  sym;
+    SYM_ENTRY       sym;
     bool            have_retval;
 
     have_retval = false;
@@ -217,8 +218,8 @@ dbug_type DBType( TYPEPTR typ )
     TYPEPTR         *parm_types;
     TYPEPTR         parm_type;
     target_size     size;
-    auto SYM_ENTRY  sym;
-    auto struct debug_fwd_types fwd_info, *fip;
+    SYM_ENTRY       sym;
+    struct debug_fwd_types fwd_info, *fip;
     cg_type         cgtype;
 
     if( typ->u1.debug_type == DBG_FWD_TYPE ) {

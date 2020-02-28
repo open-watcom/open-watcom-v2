@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,7 @@ enum {
 
 static int verifyOBJFile( int fh )
 {
-    auto struct {
+    struct {
         obj_record      header;
         obj_name        name;
     } theadr;
@@ -107,15 +108,15 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     time_t DOS_stamp_time;
     int fh;
     unsigned len;
-    auto obj_record header;
-    auto struct {
+    obj_record header;
+    struct {
         uint_8          bits;
         uint_8          type;
         uint_16         dos_time;
         uint_16         dos_date;
         uint_8          name_len;
     } comment;
-    auto char buff[256];
+    char buff[256];
 
     fh = open( file_name, O_RDONLY | O_BINARY );
     if( fh < 0 ) {

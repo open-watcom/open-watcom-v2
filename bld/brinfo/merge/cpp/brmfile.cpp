@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +92,7 @@ void BrmFilePch::Open( char const filename[] )
 {
     BrmFile::Open( filename );
     if( _file ) {
-        auto precompiled_header_header hdr;
+        precompiled_header_header hdr;
         fread( &hdr, sizeof( hdr ), 1, _file );
         fseek( _file, hdr.browse_info, SEEK_SET );
         _start = ftell( _file );

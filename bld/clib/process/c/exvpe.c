@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
     register CHAR_TYPE *p;
     register CHAR_TYPE *p2;
     register int retval;
-    auto CHAR_TYPE buffer[_MAX_PATH];
+    CHAR_TYPE buffer[_MAX_PATH];
     size_t file_len;
     CHAR_TYPE *end;
 

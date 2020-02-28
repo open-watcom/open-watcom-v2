@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +176,7 @@ PTREE AsmStmt( void )
     TYPE        ret_type;
     SYMBOL      sym;
     NAME        fn_name;
-    auto VBUF   code_buffer;
+    VBUF        code_buffer;
     ppctl_t     old_ppctl;
 
     old_ppctl = PPControl;

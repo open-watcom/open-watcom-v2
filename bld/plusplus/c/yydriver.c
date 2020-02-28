@@ -1894,8 +1894,8 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     la_action decl_what;
     PARSE_STACK *disambig_state;
     look_ahead_storage *ambiguous_left_paren_token;
-    auto PARSE_STACK look_ahead_decl_state;
-    auto PARSE_STACK look_ahead_expr_state;
+    PARSE_STACK look_ahead_decl_state;
+    PARSE_STACK look_ahead_expr_state;
     typedef enum la_response {
         ____,                   /* error */
         DIS1,                   /* must disambiguate one of the parses */
@@ -2431,7 +2431,7 @@ DECL_INFO *ParseException( void )
     PARSE_STACK except_state;
     p_action    what;
     DECL_INFO   *exception;
-    auto error_state_t check;
+    error_state_t check;
 
     CErrCheckpoint( &check );
     newExceptionStack( &except_state );
@@ -2562,8 +2562,8 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     YYTOKENTYPE save_yytoken;
     unsigned    suppressState;
     token_source_fn *last_source;
-    auto error_state_t check;
-    auto TOKEN_LOCN locn;
+    error_state_t check;
+    TOKEN_LOCN locn;
 
     if( defn == NULL ) {
         return( NULL );
@@ -2647,7 +2647,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     p_action    what;
     REWRITE     *last_rewrite;
     token_source_fn *last_source;
-    auto TOKEN_LOCN locn;
+    TOKEN_LOCN locn;
 
     if( defn == NULL ) {
         return;
@@ -2703,7 +2703,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     p_action    what;
     REWRITE     *last_rewrite;
     token_source_fn *last_source;
-    auto TOKEN_LOCN locn;
+    TOKEN_LOCN locn;
 
     if( defn == NULL ) {
         return;
@@ -2796,8 +2796,8 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     PTREE       save_tree;
     YYTOKENTYPE save_yytoken;
     token_source_fn *last_source;
-    auto error_state_t check;
-    auto TOKEN_LOCN locn;
+    error_state_t check;
+    TOKEN_LOCN locn;
 
     if( defn == NULL ) {
         return( NULL );

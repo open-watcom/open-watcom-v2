@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2651,7 +2651,7 @@ static walk_status fillLeaps( BASE_STACK *top, void *parm )
     TYPE base_type;
     GEN_LEAP *leap;
     inherit_flag access_flags;
-    auto CLASS_TABLE location;
+    CLASS_TABLE location;
 
     scope = top->scope;
     base_type = ScopeClass( scope );
@@ -2690,7 +2690,7 @@ unsigned ScopeRttiLeaps( TYPE class_type, GEN_LEAP **head )
 /*********************************************************/
 {
     SCOPE scope;
-    auto rtti_leap_walk data;
+    rtti_leap_walk data;
 
     /* kludge alert: this routine uses TYP_CLASS->of to cache GEN_LEAPs */
     scope = class_type->u.c.scope;
@@ -2822,7 +2822,7 @@ static bool notABase( SCOPE derived, SCOPE possible_base )
 
 static derived_status isQuickScopeDerived( SCOPE derived, SCOPE possible_base )
 {
-    auto derived_walk data;
+    derived_walk data;
 
 #ifndef NDEBUG
     if( derived == NULL || ! _IsClassScope( derived ) ) {
@@ -3067,7 +3067,7 @@ derived_status ScopeDerived( SCOPE derived, SCOPE possible_base )
 {
     derived_status status;
     inherit_flag violation;
-    auto scope_derived_walk data;
+    scope_derived_walk data;
 
     data.derived = derived;
     data.base = possible_base;
@@ -3181,7 +3181,7 @@ derived_status ScopeDerivedCount( SCOPE derived, SCOPE possible_base, unsigned *
 /*************************************************************************************/
 {
     derived_status status;
-    auto base_depth_walk data;
+    base_depth_walk data;
 
     *depth = 0;
     data.base = possible_base;
@@ -3976,7 +3976,7 @@ static inherit_flag setAccess( PATH_CAP *cap )
     BASE_PATH *path;
     BASE_PATH *next;
     inherit_flag perm;
-    auto access_data access_data;
+    access_data access_data;
 
     perm = IN_PUBLIC;
     for( path = cap->head; path != NULL; path = next ) {
@@ -4003,7 +4003,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
     SYMBOL sym;
     BASE_PATH *path;
     bool protected_checked;
-    auto access_data access_data;
+    access_data access_data;
 
     if( data->protected_OK ) {
         return( true );
@@ -4402,7 +4402,7 @@ static bool allFunctionNames( lookup_walk *data )
     SYMBOL_NAME sym_name;
     SYMBOL sym;
     SYMBOL *pinfo;
-    auto SYMBOL info[2];
+    SYMBOL info[2];
 
     root = NULL;
     pinfo = &info[1];
@@ -4560,9 +4560,9 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
     SYMBOL_NAME sym_name;
     PSTK_CTL *curr;
     PSTK_CTL *next;
-    auto PSTK_CTL stack1;
-    auto PSTK_CTL stack2;
-    auto PSTK_CTL cycle;
+    PSTK_CTL stack1;
+    PSTK_CTL stack2;
+    PSTK_CTL cycle;
 
     sym_name = doRecordedLookup( data, scope );
     if( sym_name != NULL ) {
@@ -4599,8 +4599,8 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
     SCOPE edge_scope;
     SCOPE *top;
     USING_NS *curr;
-    auto PSTK_CTL cycle;
-    auto PSTK_CTL stack;
+    PSTK_CTL cycle;
+    PSTK_CTL stack;
 
     PstkOpen( &stack );
     PstkPush( &stack, scope );
@@ -4911,7 +4911,7 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     target_offset_t delta;
     BASE_CLASS *base;
     unsigned amount;
-    auto CLASS_TABLE location;
+    CLASS_TABLE location;
 
     scope = top->scope;
     class_type = ScopeClass( scope );
@@ -4948,7 +4948,7 @@ CLASS_VBTABLE *ScopeCollectVBTable( SCOPE scope, scv_control control )
 /********************************************************************/
 {
     CLASSINFO *info;
-    auto vbtable_walk data;
+    vbtable_walk data;
 
     data.tables = NULL;
     data.start = scope;
@@ -5512,7 +5512,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
     THUNK_ACTION *init;
     unsigned i;
     unsigned amount;
-    auto CLASS_TABLE location;
+    CLASS_TABLE location;
 
     data->top = top;
     scope = top->scope;
@@ -5576,7 +5576,7 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
 /********************************************************************/
 {
     CLASSINFO *info;
-    auto vftable_walk data;
+    vftable_walk data;
 
     data.tables = NULL;
     data.start = scope;
@@ -5995,7 +5995,7 @@ find_virtual_status ScopeFindVirtual( SCOPE scope, SYMBOL sym[2], NAME name )
 /***************************************************************************/
 {
     find_virtual_status status;
-    auto lookup_walk data;
+    lookup_walk data;
 
     status = FVS_NULL;
     initVirtualSearch( &data, sym[0], name );
@@ -6022,7 +6022,7 @@ find_virtual_status ScopeFindVirtual( SCOPE scope, SYMBOL sym[2], NAME name )
 
 static SEARCH_RESULT *addBaseDelta( SEARCH_RESULT *result, SCOPE from, SCOPE to)
 {
-    auto lookup_walk data;
+    lookup_walk data;
 
     DbgAssert( _IsClassScope( from ) && _IsClassScope( to ) );
     newLookupData( &data, NULL );
@@ -6071,7 +6071,7 @@ static inherit_flag checkBaseAccess( SCOPE d, SCOPE b, derived_status status )
     PATH_CAP *cap;
     inherit_flag perm;
     inherit_flag best_perm;
-    auto lookup_walk data;
+    lookup_walk data;
 
     DbgAssert( _IsClassScope( d ) && _IsClassScope( b ) );
     newLookupData( &data, NULL );
@@ -6140,7 +6140,7 @@ SEARCH_RESULT *ScopeFindScopedMember( SCOPE scope, SCOPE disambig, NAME name )
 /****************************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.disambiguate = disambig;
@@ -6160,7 +6160,7 @@ SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE scope, SCOPE disambig, TYP
 /*************************************************************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     /* finds specific user-defined conversion (e.g., ->operator int()) */
     newLookupData( &data, CppConversionName() );
@@ -6179,7 +6179,7 @@ SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE scope, SCOPE disambig, TYPE
 /************************************************************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     /* finds specific user-defined conversion (e.g., ->operator int()) */
     newLookupData( &data, CppConversionName() );
@@ -6204,7 +6204,7 @@ FNOV_LIST *ScopeConversionList( SCOPE scope, type_flag this_qualifier, TYPE type
 {
     CLASSINFO *info;
     TYPE class_type;
-    auto lookup_walk data;
+    lookup_walk data;
 
     /* finds list of user-defined conversions to 'type' */
     ExtraRptIncrementCtr( cnv_total );
@@ -6231,7 +6231,7 @@ SEARCH_RESULT *ScopeContainsMember( SCOPE scope, NAME name )
 /**********************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.no_inherit = true;
@@ -6244,7 +6244,7 @@ SEARCH_RESULT *ScopeContainsNaked( SCOPE scope, NAME name )
 /*********************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     searchScope( &data, scope );
@@ -6256,7 +6256,7 @@ SEARCH_RESULT *ScopeFindScopedNaked( SCOPE scope, SCOPE disambig, NAME name )
 /***************************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.disambiguate = disambig;
@@ -6275,7 +6275,7 @@ SEARCH_RESULT *ScopeFindNakedFriend( SCOPE scope, NAME name )
 /***********************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     if( _IsClassScope( scope ) ) {
@@ -6290,7 +6290,7 @@ SYMBOL_NAME ScopeYYLexical( SCOPE scope, NAME name )
 /**************************************************/
 {
     SYMBOL_NAME sym_name;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.ignore_access = true;
@@ -6313,7 +6313,7 @@ SYMBOL_NAME ScopeYYMember( SCOPE scope, NAME name )
 /*************************************************/
 {
     SYMBOL_NAME sym_name;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.member_lookup = true;
@@ -6351,7 +6351,7 @@ SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE scope, NAME name )
 /****************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.check_special = true;
@@ -6365,7 +6365,7 @@ SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, NAME name )
 /***************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.check_special = true;
@@ -6379,7 +6379,7 @@ SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, NAME name, bool tilde )
 /*****************************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     // 'name' occurs before a '::'
     newLookupData( &data, name );
@@ -6394,7 +6394,7 @@ SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE scope, NAME name )
 /****************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     // 'name' occurs before a '::'
     newLookupData( &data, name );
@@ -6409,7 +6409,7 @@ SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE scope, NAME name )
 /****************************************************************/
 {
     SEARCH_RESULT *result;
-    auto lookup_walk data;
+    lookup_walk data;
 
     newLookupData( &data, name );
     data.check_special = true;
@@ -6432,8 +6432,8 @@ static walk_status findExactOverride( BASE_STACK *top, void *parm )
     FNOV_RESULT save_check;
     BASE_STACK *save_top;
     BASE_STACK *curr;
-    auto CLASS_TABLE location1;
-    auto CLASS_TABLE location2;
+    CLASS_TABLE location1;
+    CLASS_TABLE location2;
 
     save_check = 0;
     save_top = NULL;
@@ -6489,7 +6489,7 @@ SYMBOL ScopeFindExactVfun(      // FIND EXACT VIRTUAL FUNCTION IN DERIVED CLASS
     target_offset_t* a_adj_this,// - adjustment for this
     target_offset_t* a_adj_retn)// - adjustment for return
 {
-    auto vfn_opt_walk data;
+    vfn_opt_walk data;
 
     data.derived = scope;
     data.base = SymScope( vfun );
@@ -6579,7 +6579,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
     inherit_flag perm;
     MSG_NUM err_msg;
     msg_status_t msg_status;
-    auto access_data access_data;
+    access_data access_data;
 
     if( result->lookup_error ) {
         msg_status = lookupError( result, result->error_msg );
@@ -7208,7 +7208,7 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
         void * ),               // -- user data
     void *data )                // - user supplied data
 {
-    auto all_bases_walk walk_data;
+    all_bases_walk walk_data;
 
     walkVisitOnce( scope, markNotVisited, NULL );
     walk_data.rtn = rtn;
@@ -7645,7 +7645,7 @@ static void saveMappingList( void )
 
 pch_status PCHWriteScopes( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     NamePCHWrite( uniqueNameSpaceName );
     NameSpacePCHWrite( allNameSpaces );
@@ -7701,7 +7701,7 @@ static void readMappingList( void )
 static void readSymRegion( void )
 {
     SYM_REGION *u;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveSYM_REGION, &data );
     for( ; (u = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -7715,7 +7715,7 @@ static void readSymRegion( void )
 static void readUsingNS( void )
 {
     USING_NS *u;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveUSING_NS, &data );
     for( ; (u = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -7729,7 +7729,7 @@ static void readUsingNS( void )
 static void readNameSpaces( void )
 {
     NAME_SPACE *ns;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveNAME_SPACE, &data );
     for( ; (ns = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -7743,7 +7743,7 @@ static void readNameSpaces( void )
 static void readScopes( void )
 {
     SCOPE s;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveSCOPE, &data );
     for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -7778,7 +7778,7 @@ static void readScopes( void )
 static void readSymbolNames( void )
 {
     SYMBOL_NAME sn;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveSYMBOL_NAME, &data );
     for( ; (sn = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -7795,7 +7795,7 @@ static void readSymbols( void )
 {
     cv_index i;
     SYMBOL sym;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveSYMBOL, &data );
     for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {

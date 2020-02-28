@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1139,7 +1140,7 @@ int main(int argc, char *argv[])
     fseek( infile, 0, SEEK_SET );
 
     if( pch_file ){
-        auto precompiled_header_header hdr;
+        precompiled_header_header hdr;
         fread( &hdr, sizeof( hdr ), 1, infile );
         fseek( infile, hdr.browse_info, SEEK_SET );
         file_len -= ftell( infile );

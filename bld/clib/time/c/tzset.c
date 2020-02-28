@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -434,9 +435,9 @@ static int tryOSTimeZone( const char *tz )
     }
 #if defined( __NT__ )
     {
-        auto TIME_ZONE_INFORMATION  tz_info;
-        LPSYSTEMTIME                st;
-        size_t                      rc;
+        TIME_ZONE_INFORMATION   tz_info;
+        LPSYSTEMTIME            st;
+        size_t                  rc;
 
         _RWD_daylight = 1;                  // assume daylight savings supported
         switch( GetTimeZoneInformation( &tz_info ) ) {

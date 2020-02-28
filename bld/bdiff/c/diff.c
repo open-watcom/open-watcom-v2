@@ -705,7 +705,7 @@ static int both_walker( void *_new_blk, void *parm )
     exe_blk         *old_blk;
     exe_mod         *old_mod;
     exe_mod         *new_mod;
-    auto exe_mod    tmp_mod;
+    exe_mod         tmp_mod;
     exe_blk         *new_blk = _new_blk;
 
     last = parm;
@@ -781,7 +781,7 @@ static int only_new_walker( void *_new_blk, void *parm )
     fpos_t          len;
     walker_data     *last;
     exe_mod         *new_mod;
-    auto exe_mod    tmp_mod;
+    exe_mod         tmp_mod;
     exe_blk         *new_blk = _new_blk;
 
     last = parm;
@@ -832,12 +832,12 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     fpos_t                  curr_offset;
     fpos_t                  debug_header;
     addr48_ptr              seg_addr;
-    auto master_dbg_header  dbg_head;
-    auto section_dbg_header section_head;
-    auto seg_dbg_info       seg_desc;
-    auto mod_dbg_info       mod_name;
-    auto addr_dbg_info      seg_chunk;
-    auto exe_mod            tmp_mod;
+    master_dbg_header       dbg_head;
+    section_dbg_header      section_head;
+    seg_dbg_info            seg_desc;
+    mod_dbg_info            mod_name;
+    addr_dbg_info           seg_chunk;
+    exe_mod                 tmp_mod;
     char                    file_name[_MAX_PATH];
     PGROUP2                 pg;
 
@@ -934,7 +934,7 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
 
 void SymbolicDiff( algorithm alg, char *old_exe, char *new_exe )
 {
-    auto walker_data data;
+    walker_data     data;
 
     data.last_offset = 0;
     ProcessExe( new_exe, NewSymName, &new );

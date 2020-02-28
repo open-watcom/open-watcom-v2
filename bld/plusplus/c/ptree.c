@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1817,7 +1818,7 @@ static void savePTree( void *p, carve_walk_base *d )
     float_handle save_float;
     unsigned fp_len;
     PTREE save_subtree[2];
-    auto char buff[128];
+    char buff[128];
 
     if( s->op == PT_FREE ) {
         return;
@@ -1933,7 +1934,7 @@ static void savePTree( void *p, carve_walk_base *d )
 
 pch_status PCHWritePTrees( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carvePTREE, markFreePTree );
     CarveWalkAll( carvePTREE, savePTree, &data );
@@ -1946,8 +1947,8 @@ pch_status PCHReadPTrees( void )
 {
     PTREE r;
     unsigned len;
-    auto cvinit_t data;
-    auto char buff[128];
+    cvinit_t data;
+    char buff[128];
 
     CarveInitStart( carvePTREE, &data );
     for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {

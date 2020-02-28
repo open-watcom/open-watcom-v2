@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 static TYPE type_infoGetType( PTREE expr )
 {
     TYPE type_info;
-    auto TOKEN_LOCN locn;
+    TOKEN_LOCN locn;
 
     type_info = TypeGetCache( TYPC_TYPE_INFO_CONST_REF );
     if( type_info != NULL ) {

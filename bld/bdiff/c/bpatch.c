@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +41,9 @@ MY_FILE         NewFile;
 
 PATCH_RET_CODE OpenNew( foff len )
 {
-    FILE                *fd;
-    char                *name;
-    auto struct stat    statblk;
+    FILE            *fd;
+    char            *name;
+    struct stat     statblk;
 
     len = len;
     name = SetOld( NULL );

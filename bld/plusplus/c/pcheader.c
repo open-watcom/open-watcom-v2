@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,7 +163,7 @@ static void fail( void )
 
 static void dumpHeader( void )
 {
-    auto precompiled_header_header header;
+    precompiled_header_header header;
 
     memcpy( header.text_header, PHH_TEXT_HEADER, TEXT_HEADER_SIZE );
     header.signature[0] = PHH_SIGNATURE_0;
@@ -182,7 +182,7 @@ static void dumpHeader( void )
 
 static void setOKHeader( unsigned long brinf_posn )
 {
-    auto precompiled_header_header header;
+    precompiled_header_header header;
 
     if( lseek( pchFile, 0, SEEK_SET ) != 0 ) {
         fail();
@@ -222,7 +222,7 @@ static void dumpCheckData( char *include_file )
 {
     SRCFILE src;
     time_t stamp;
-    auto char buff[_MAX_PATH];
+    char buff[_MAX_PATH];
 
     PCHWriteVar( GenSwitches );
     PCHWriteVar( TargetSwitches );
@@ -476,7 +476,7 @@ void PCHeaderCreate( char *include_file )
 {
     char * volatile pch_fname;  // must be preserved by setjmp()
     int status;
-    auto jmp_buf restore_state;
+    jmp_buf restore_state;
 #ifndef NDEBUG
     clock_t start;
     clock_t stop;
@@ -679,9 +679,9 @@ static bool stalePCH( char *include_file )
     time_t stamp;
     cg_switches test_gen;
     cg_target_switches test_target;
-    auto char buff1[_MAX_PATH];
-    auto char buff2[_MAX_PATH];
-    auto COMP_FLAGS testflags;
+    char buff1[_MAX_PATH];
+    char buff2[_MAX_PATH];
+    COMP_FLAGS testflags;
 
     PCHReadVar( test_gen );
     PCHReadVar( test_target );
@@ -781,7 +781,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
 {
     pch_absorb ret;
     int status;
-    auto jmp_buf restore_state;
+    jmp_buf restore_state;
 #ifndef NDEBUG
     clock_t start;
     clock_t stop;
@@ -808,7 +808,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
         if( initialRead() == 0 ) {
             ret = PCHA_NOT_PRESENT;
         } else {
-            auto precompiled_header_header header;
+            precompiled_header_header header;
 #ifdef OPT_BR
             unsigned long br_posn;
 #endif

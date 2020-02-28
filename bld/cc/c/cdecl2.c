@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -624,8 +624,8 @@ bool DeclList( SYM_HANDLE *sym_head )
     decl_state          state;
     SYM_HANDLE          sym_handle;
     SYM_HANDLE          prevsym_handle;
-    auto SYM_ENTRY      sym;
-    auto SYM_ENTRY      prevsym;
+    SYM_ENTRY           sym;
+    SYM_ENTRY           prevsym;
     decl_info           info;
 
     ParmList = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
     }
 #else
     register CHAR_TYPE *name;
-    auto CHAR_TYPE switch_c[4];
+    CHAR_TYPE switch_c[4];
     unsigned char use_cmd;
     int ret_code;
   #if defined( __NT__ )
