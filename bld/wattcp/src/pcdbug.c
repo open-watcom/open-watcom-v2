@@ -323,26 +323,26 @@ static __inline const char *MAC_addr (const void *adr)
  *   "host1 (a) -> host2 (b)"
  */
 static void DumpAdrPort (const char       *proto,
-                         const tcp_Socket *sock,
+                         const sock_type  *sk,
                          const in_Header  *ip)
 {
   const tcp_Header *tcp_hdr = (const tcp_Header*) ((BYTE*)ip + in_GetHdrLen(ip));
   char  dst[20];
   char  src[20];
 
-  if (!sock)
+  if (!sk)
        db_fprintf ("%s:  NO SOCKET : %s (%d) -> %s (%d)\n", proto,
                    ip_src, intel16(tcp_hdr->srcPort),
                    ip_dst, intel16(tcp_hdr->dstPort));
 
   else if (outbound)
        db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
-                   _inet_ntoa(src,my_ip_addr),   sock->myport,
-                   _inet_ntoa(dst,sock->hisaddr),sock->hisport);
+                   _inet_ntoa(src,my_ip_addr),   sk->u.myport,
+                   _inet_ntoa(dst,sk->u.hisaddr),sk->u.hisport);
 
   else db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
-                   _inet_ntoa(src,sock->hisaddr),sock->hisport,
-                   _inet_ntoa(dst,my_ip_addr),   sock->myport);
+                   _inet_ntoa(src,sk->u.hisaddr),sk->u.hisport,
+                   _inet_ntoa(dst,my_ip_addr),   sk->u.myport);
 }
 
 /*----------------------------------------------------------------------*/
@@ -865,7 +865,7 @@ static const char *udp_tcp_chksum (const in_Header  *ip,
 
 /*----------------------------------------------------------------------*/
 
-static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
+static int udp_dump (const sock_type *sk, const in_Header *ip)
 {
   const char *chk_ok        = "n/a";
   WORD  iplen               = intel16 (ip->length) - sizeof(*ip);
@@ -885,7 +885,7 @@ static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
     return (1);
   }
 
-  DumpAdrPort ("UDP", sock, ip);
+  DumpAdrPort ("UDP", sk, ip);
 
   db_fprintf ("      len %d, chksum %04X (%s)\r\n",
               intel16(udp_hdr->length), intel16(udp_hdr->checksum), chk_ok);
@@ -897,17 +897,19 @@ static int udp_dump (const tcp_Socket *sock, const in_Header *ip)
   {
     db_flush();
     dns_dump (data, udplen);
+  } else {
+#endif
+    DumpData (data, udplen);
+#if (DEBUG_DNS)
   }
-  else
 #endif
 
-  DumpData (data, udplen);
   return (1);
 }
 
 /*----------------------------------------------------------------------*/
 
-static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
+static int tcp_dump (const sock_type *sk, const in_Header *ip)
 {
   WORD   iplen              = intel16 (ip->length) - sizeof(*ip);
   int    j                  = in_GetHdrLen (ip);
@@ -947,10 +949,10 @@ static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
        chk_ok = "n/a";
   else chk_ok = udp_tcp_chksum (ip, NULL, tcp_hdr);
 
-  DumpAdrPort ("TCP", sock, ip);
+  DumpAdrPort ("TCP", sk, ip);
 
-  if (sock)
-     win <<= outbound ? sock->send_wscale : sock->recv_wscale;
+  if (sk)
+     win <<= outbound ? sk->tcp.send_wscale : sk->tcp.recv_wscale;
 
   ack = intel (tcp_hdr->acknum);
   seq = intel (tcp_hdr->seqnum);
@@ -959,46 +961,46 @@ static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
               "                 SEQ %10lu,  ACK %10lu\r\n",
               flgBuf, win, intel16(tcp_hdr->checksum), chk_ok,
               intel16(tcp_hdr->urgent), seq, ack);
-  if (sock)
+  if (sk)
   {
-    UINT  state = sock->state;
+    UINT  state = sk->tcp.state;
     long  delta_seq, delta_ack;
 
     if (outbound)
     {
-      if (state == tcp_StateESTAB && sock->last_acknum[0] == 0)
+      if (state == tcp_StateESTAB && sk->tcp.last_acknum[0] == 0)
            delta_ack = 0;
-      else delta_ack = ack - sock->last_acknum[0];
+      else delta_ack = ack - sk->tcp.last_acknum[0];
 
-      if (state == tcp_StateSYNSENT && sock->last_seqnum[0] == 0)
+      if (state == tcp_StateSYNSENT && sk->tcp.last_seqnum[0] == 0)
            delta_seq = 0;
-      else delta_seq = seq - sock->last_seqnum[0];
+      else delta_seq = seq - sk->tcp.last_seqnum[0];
 
-      ((tcp_Socket*)sock)->last_seqnum[0] = seq;
-      ((tcp_Socket*)sock)->last_acknum[0] = ack;
+      ((DWORD *)sk->tcp.last_seqnum)[0] = seq;
+      ((DWORD *)sk->tcp.last_acknum)[0] = ack;
     }
     else
     {
-      if (state == tcp_StateLISTEN || sock->last_seqnum[1] == 0)
+      if (state == tcp_StateLISTEN || sk->tcp.last_seqnum[1] == 0)
            delta_seq = 0;
-      else delta_seq = seq - sock->last_seqnum[1];
+      else delta_seq = seq - sk->tcp.last_seqnum[1];
 
-      if (state == tcp_StateSYNSENT && sock->last_acknum[1] == 0)
+      if (state == tcp_StateSYNSENT && sk->tcp.last_acknum[1] == 0)
            delta_ack = 0;
-      else delta_ack = ack - sock->last_acknum[1];
+      else delta_ack = ack - sk->tcp.last_acknum[1];
 
-      ((tcp_Socket*)sock)->last_seqnum[1] = seq;
-      ((tcp_Socket*)sock)->last_acknum[1] = ack;
+      ((DWORD *)sk->tcp.last_seqnum)[1] = seq;
+      ((DWORD *)sk->tcp.last_acknum)[1] = ack;
     }
 
     db_fprintf ("      %-8.8s (dSEQ %10ld, dACK %10ld), MS %lu/%lu%s\r\n"
                 "      KC %d, vjSA %lu, vjSD %lu, CW %d, WW %d, RTO %d, RTTdiff %s\r\n",
                 tcpState[state], delta_seq, delta_ack,
-                sock->missed_seg[0], sock->missed_seg[1],
-                sock->unhappy ? ", Unhappy" : "",
-                sock->karn_count, sock->vj_sa, sock->vj_sd,
-                sock->cwindow, sock->wwindow, sock->rto,
-                RTT_str (sock->rtt_time - now));
+                sk->tcp.missed_seg[0], sk->tcp.missed_seg[1],
+                sk->tcp.unhappy ? ", Unhappy" : "",
+                sk->tcp.karn_count, sk->tcp.vj_sa, sk->tcp.vj_sd,
+                sk->tcp.cwindow, sk->tcp.wwindow, sk->tcp.rto,
+                RTT_str (sk->tcp.rtt_time - now));
   }
 
   olen = i - sizeof(*tcp_hdr);
@@ -1015,17 +1017,19 @@ static int tcp_dump (const tcp_Socket *sock, const in_Header *ip)
   {
     db_flush();
     dns_dump (data, dlen);
+  } else {
+#endif
+    DumpData (data, dlen);
+#if (DEBUG_DNS)
   }
-  else
 #endif
 
-  DumpData (data, dlen);
   return (1);
 }
 
 /*----------------------------------------------------------------------*/
 
-static int db_dump (const void *sock, const in_Header *ip,
+static int db_dump (const sock_type *sk, const in_Header *ip,
                     const char *fname, unsigned line)
 {
   static int arp_dumped = 0;
@@ -1092,8 +1096,8 @@ static int db_dump (const void *sock, const in_Header *ip,
 #endif
 
   if (ip->proto == ICMP_PROTO && debug.ICMP) return icmp_dump (ip);
-  if (ip->proto ==  UDP_PROTO && debug.UDP)  return udp_dump (sock, ip);
-  if (ip->proto ==  TCP_PROTO && debug.TCP)  return tcp_dump (sock, ip);
+  if (ip->proto ==  UDP_PROTO && debug.UDP)  return udp_dump (sk, ip);
+  if (ip->proto ==  TCP_PROTO && debug.TCP)  return tcp_dump (sk, ip);
 
   if (debug.IP)    /* dump unknown IP-network protocol */
   {
@@ -1106,7 +1110,7 @@ static int db_dump (const void *sock, const in_Header *ip,
 
 /*----------------------------------------------------------------------*/
 
-static void dbg_send (const void *sock, const void *ip,
+static void dbg_send (const sock_type *sk, const void *ip,
                       const char *fname, unsigned line)
 {
   char buf [STK_BUF_SIZE];
@@ -1126,14 +1130,14 @@ static void dbg_send (const void *sock, const void *ip,
   last_frag  = FALSE;
   is_frag    = FALSE;
 
-  if (db_dump(sock,ip,fname,line))
+  if (db_dump(sk, ip, fname, line))
   {
     db_putc ('\n');
     db_flush();
   }
 }
 
-static void dbg_recv (const void *sock, const void *ip,
+static void dbg_recv (const sock_type *sk, const void *ip,
                       const char *fname, unsigned line)
 {
   char buf [STK_BUF_SIZE];
@@ -1153,7 +1157,7 @@ static void dbg_recv (const void *sock, const void *ip,
   last_frag  = FALSE;
   is_frag    = FALSE;
 
-  if (db_dump(sock,ip,fname,line))
+  if (db_dump(sk, ip, fname, line))
   {
     db_putc ('\n');
     db_flush();

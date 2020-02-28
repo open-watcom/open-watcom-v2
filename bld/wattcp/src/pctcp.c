@@ -540,10 +540,10 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
         return (NULL);
     }
 
-    len   = in_GetHdrLen (ip);                /* len of IP header  */
+    len   = in_GetHdrLen (ip);                  /* len of IP header  */
     tcp_hdr = (tcp_Header*) ((BYTE*)ip + len);  /* tcp frame pointer */
-    len   = intel16 (ip->length) - len;       /* len of tcp+data   */
-    flags = tcp_hdr->flags & tcp_FlagMASK;        /* get TCP flags     */
+    len   = intel16 (ip->length) - len;         /* len of tcp+data   */
+    flags = tcp_hdr->flags & tcp_FlagMASK;      /* get TCP flags     */
 
     if (!tcp_chksum(ip, tcp_hdr, len)) {
         DEBUG_RX (NULL, ip);
@@ -558,7 +558,7 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
     for (_tcp_sk = _tcp_allsocs; _tcp_sk != NULL; _tcp_sk = _tcp_sk->next) {
         if (_tcp_sk->safetysig != SAFETYTCP || _tcp_sk->safetytcp != SAFETYTCP) {
             outsnl (_LANG("tcp-socket error in tcp_handler()"));
-            DEBUG_RX (_tcp_sk, ip);
+            DEBUG_RX ((sock_type *)_tcp_sk, ip);
             return (NULL);
         }
 
@@ -577,24 +577,24 @@ static tcp_Socket *tcp_handler (const in_Header *ip, BOOL broadcast)
             if (_tcp_sk->hisport == 0 &&        /* =0, listening socket */
                 dstPort    == _tcp_sk->myport)  /* addressed to my local port */
             {
-                _tcp_sk->hisport = srcPort;  /* remember his IP-address */
-                _tcp_sk->hisaddr = source;   /*   and src-port */
-                _tcp_sk->myaddr  = destin;   /* socket is now active */
+                _tcp_sk->hisport = srcPort;     /* remember his IP-address */
+                _tcp_sk->hisaddr = source;      /*   and src-port */
+                _tcp_sk->myaddr  = destin;      /* socket is now active */
                 break;
             }
         }
     }
 
-    DEBUG_RX (_tcp_sk, ip);
+    DEBUG_RX ((sock_type *)_tcp_sk, ip);
 
     if (_tcp_sk == NULL) {
-        if (!(flags & tcp_FlagRST)) {            /* don't answer RST */
+        if (!(flags & tcp_FlagRST)) {           /* don't answer RST */
             TCP_RESET (NULL, ip, tcp_hdr);
-        } else if ((flags & tcp_FlagACK) &&           /* got ACK,RST   */
+        } else if ((flags & tcp_FlagACK) &&     /* got ACK,RST   */
             (_tcp_sk = tcp_findseq(ip, tcp_hdr)) != NULL) { /* ACK = SEQ + 1 */
-            tcp_sockreset (_tcp_sk, 1);           /* e.g. a firewall is sending */
+            tcp_sockreset (_tcp_sk, 1);         /* e.g. a firewall is sending */
         }
-        STAT (tcpstats.tcps_drops++);  /* RST for server on inside   */
+        STAT (tcpstats.tcps_drops++);           /* RST for server on inside   */
         return (NULL);
     }
 
@@ -669,7 +669,7 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
     for (_udp_sk = _udp_allsocs; _udp_sk != NULL; _udp_sk = _udp_sk->next) {
         if (_udp_sk->safetysig != SAFETYUDP) {
             outsnl (_LANG("udp-socket error in udp_handler()"));
-            DEBUG_RX (_udp_sk, ip);
+            DEBUG_RX ((sock_type *)_udp_sk, ip);
             return (NULL);
         }
         if (!ip_bcast               &&
@@ -706,7 +706,7 @@ static udp_Socket *udp_handler (const in_Header *ip, BOOL broadcast)
         }
     }
 
-    DEBUG_RX (_udp_sk, ip);
+    DEBUG_RX ((sock_type *)_udp_sk, ip);
 
 #if defined(USE_MULTICAST)
     if (_udp_sk == NULL) {
@@ -912,6 +912,8 @@ void tcp_Retransmitter (int force)
  */
 int _ip_handler (in_Header *ip, BOOL broadcast)
 {
+    sock_type   *sk;
+
     if (block_ip || !_chk_ip_header(ip))
         return (0);
 
@@ -938,36 +940,25 @@ int _ip_handler (in_Header *ip, BOOL broadcast)
 #endif
 
     switch (ip->proto) {
+    case UDP_PROTO:
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
-      {
-        tcp_Socket *tcp_sk;
-
-        tcp_sk = tcp_handler (ip, broadcast);
-        if (tcp_sk != NULL) {    /* Check if peer allows IP-fragments */
-            if (intel16(ip->frag_ofs) & IP_DF) {
-                tcp_sk->locflags |=  LF_NOFRAGMENT;
-            } else {
-                tcp_sk->locflags &= ~LF_NOFRAGMENT;
-            }
-        }
-        break;
-      }
+        if (ip->proto == TCP_PROTO) {
+            sk = (sock_type *)tcp_handler (ip, broadcast);
+        } else {
 #endif
-    case UDP_PROTO:
-      {
-        udp_Socket *udp_sk;
-
-        udp_sk = udp_handler (ip, broadcast);
-        if (udp_sk != NULL) {    /* Check if peer allows IP-fragments */
+            sk = (sock_type *)udp_handler (ip, broadcast);
+#if !defined(USE_UDP_ONLY)
+        }
+#endif
+        if (sk != NULL) {    /* Check if peer allows IP-fragments */
             if (intel16(ip->frag_ofs) & IP_DF) {
-                udp_sk->locflags |=  LF_NOFRAGMENT;
+                sk->u.locflags |=  LF_NOFRAGMENT;
             } else {
-                udp_sk->locflags &= ~LF_NOFRAGMENT;
+                sk->u.locflags &= ~LF_NOFRAGMENT;
             }
         }
         break;
-      }
     case ICMP_PROTO:
         icmp_handler (ip, broadcast);
         break;
@@ -1096,7 +1087,7 @@ static int udp_write (udp_Socket *udp_sk, const BYTE *data, int len)
         udp_hdr->checksum = ~checksum (&tcp_phdr, sizeof(tcp_phdr));
     }
     if (!IP_OUTPUT(ip, tcp_phdr.src, tcp_phdr.dst, UDP_PROTO, udp_sk->ttl,
-                 (BYTE)_default_tos, 0, sizeof(*udp_hdr)+len, udp_sk))
+                 (BYTE)_default_tos, 0, sizeof(*udp_hdr)+len, (sock_type *)udp_sk))
         return (-1);
     return (len);
 }
@@ -1736,7 +1727,7 @@ int _tcp_send (tcp_Socket *tcp_sk, char *file, unsigned line)
         tcp_hdr->checksum = ~checksum (&tcp_phdr, sizeof(tcp_phdr));
 
         tx_ok = _ip_output (ip, tcp_phdr.src, tcp_phdr.dst, TCP_PROTO,
-                        tcp_sk->ttl, tcp_sk->tos, 0, tcp_len, tcp_sk, file, line) != 0;
+                        tcp_sk->ttl, tcp_sk->tos, 0, tcp_len, (sock_type *)tcp_sk, file, line) != 0;
         if (!tx_ok) {
             TCP_SENDSOON (tcp_sk);
             return (-1);
@@ -1883,18 +1874,18 @@ void sock_abort (sock_type *sk)
 /*
  * Read data from a raw-socket. Don't copy IP-header to buf.
  */
-static int raw_read (raw_Socket *raw, BYTE *buf, int maxlen)
+static int raw_read (raw_Socket *raw_sk, BYTE *buf, int maxlen)
 {
     int len = 0;
 
-    if (raw->used) {
-        int   hlen = in_GetHdrLen (&raw->ip);
-        BYTE *data = (BYTE*)&raw->ip + hlen;
+    if (raw_sk->used) {
+        int   hlen = in_GetHdrLen (&raw_sk->ip);
+        BYTE *data = (BYTE*)&raw_sk->ip + hlen;
 
-        len = intel16 (raw->ip.length) - hlen;
+        len = intel16 (raw_sk->ip.length) - hlen;
         len = min (len, maxlen);
         memcpy (buf, data, len);
-        raw->used = 0;
+        raw_sk->used = 0;
     }
     return (len);
 }

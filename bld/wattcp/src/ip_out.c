@@ -35,17 +35,17 @@ WORD _get_this_ip_id (void)
   return intel16 (ip_id);
 }
 
-int _ip_output (in_Header  *ip,        /* ip-structure to fill in */
-                DWORD       src_ip,    /* from address (network order!) */
-                DWORD       dst_ip,    /* dest address (network order!) */
-                WORD        protocol,  /* IP-protocol number */
-                BYTE        ttl,       /* Time To Live */
-                BYTE        tos,       /* Type Of Service, 0 unspecified */
-                WORD        ip_id,     /* IP identification, normally 0 */
-                int         data_len,  /* length of data after ip header */
-                const void *sock,      /* which socket is this */
-                const char *file,      /* Debug: from what file */
-                unsigned    line)      /*  and line was _ip_output called */
+int _ip_output (in_Header       *ip,        /* ip-structure to fill in */
+                DWORD           src_ip,     /* from address (network order!) */
+                DWORD           dst_ip,     /* dest address (network order!) */
+                WORD            protocol,   /* IP-protocol number */
+                BYTE            ttl,        /* Time To Live */
+                BYTE            tos,        /* Type Of Service, 0 unspecified */
+                WORD            ip_id,      /* IP identification, normally 0 */
+                int             data_len,   /* length of data after ip header */
+                const sock_type *sk,        /* which socket is this */
+                const char      *file,      /* Debug: from what file */
+                unsigned        line)       /*  and line was _ip_output called */
 {
   int len = sizeof(*ip) + data_len;
 
@@ -71,10 +71,10 @@ int _ip_output (in_Header  *ip,        /* ip-structure to fill in */
   ip->checksum       = ~checksum (ip, sizeof(*ip));
 
 #if defined(USE_DEBUG)
-  if (_dbugxmit)
-    (*_dbugxmit) (sock, ip, file, line);
+  if (_dbugxmit != NULL)
+    (*_dbugxmit) (sk, ip, file, line);
 #else
-  ARGSUSED (sock);
+  ARGSUSED (sk);
   ARGSUSED (file);
   ARGSUSED (line);
 #endif

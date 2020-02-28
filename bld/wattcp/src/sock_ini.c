@@ -388,8 +388,8 @@ static void tcp_post_init (void)
         outsnl ("\"sin_mask\"is 0.0.0.0 !\7");
 
 #if defined(USE_BSD_FUNC) && defined(USE_DEBUG)
-    if (_dbugxmit)          /* if dbug_init() called   */
-        _sock_dbug_on();     /*  start BSD-socket debug */
+    if (_dbugxmit != NULL)  /* if dbug_init() called   */
+        _sock_dbug_on();    /*  start BSD-socket debug */
 #endif
 
 #if defined (USE_ETHERS)

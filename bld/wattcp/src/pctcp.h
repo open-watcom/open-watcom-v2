@@ -38,7 +38,7 @@
 #define MAX_VJSD    20000UL
 #define INIT_VJSA   220
 
-typedef void (*DebugProc) (const void*, const void*, const char*, unsigned);
+typedef void (*DebugProc) (const sock_type *, const void*, const char*, unsigned);
 
 #define my_ip_addr      NAMESPACE (my_ip_addr)
 #define sin_mask        NAMESPACE (sin_mask)

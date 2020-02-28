@@ -16,20 +16,20 @@ extern void dbug_write_raw (const char*);
  * Send Rx/Tx packet to ip-debugger if debugger active
  */
 #if defined(USE_DEBUG)
-  #define DEBUG_RX(sock, ip)                               \
-          do {                                             \
-            if (_dbugrecv)                                 \
-              (*_dbugrecv) (sock, ip, __FILE__, __LINE__); \
+  #define DEBUG_RX(sk, ip)                               \
+          do {                                           \
+            if (_dbugrecv != NULL)                       \
+              (*_dbugrecv) (sk, ip, __FILE__, __LINE__); \
           } while (0)
 
-  #define DEBUG_TX(sock, ip)                               \
-          do {                                             \
-            if (_dbugxmit)                                 \
-              (*_dbugxmit) (sock, ip, __FILE__, __LINE__); \
+  #define DEBUG_TX(sk, ip)                               \
+          do {                                           \
+            if (_dbugxmit != NULL)                       \
+              (*_dbugxmit) (sk, ip, __FILE__, __LINE__); \
           } while (0)
 #else
-  #define DEBUG_RX(sock, ip) ((void)0)
-  #define DEBUG_TX(sock, ip) ((void)0)
+  #define DEBUG_RX(sk, ip) ((void)0)
+  #define DEBUG_TX(sk, ip) ((void)0)
 #endif
 
 #endif

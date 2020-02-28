@@ -929,7 +929,7 @@ int _tcp_reset (tcp_Socket *s, const in_Header *his_ip, tcp_Header *old_tcp_hdr,
 
   return _ip_output (ip, tcp_phdr.src, tcp_phdr.dst, TCP_PROTO,
                      s ? s->ttl : _default_ttl,
-                     his_ip->tos, 0, sizeof(*tcp_hdr), s, file, line);
+                     his_ip->tos, 0, sizeof(*tcp_hdr), (sock_type *)s, file, line);
 }
 
 #endif /* !USE_UDP_ONLY */
