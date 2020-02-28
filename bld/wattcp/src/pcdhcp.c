@@ -875,7 +875,7 @@ static int set_request_list (char *options)
     int    maxreq   = 312 - 27; /* sizeof(dh_opt) - min size of rest */
     BYTE  *list, *start, *tok, *end;
 
-    if (init || (list = calloc(maxreq, 1)) == NULL)
+    if (init || (list = calloc(1, maxreq)) == NULL)
         return (0);
 
     init  = 1;

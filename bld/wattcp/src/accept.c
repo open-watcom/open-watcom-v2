@@ -375,7 +375,7 @@ int _sock_append (tcp_Socket **tcp)
 
   /* Increase the TCP window (to 16kB)
    */
-  sock_setbuf (clone_sk, calloc(DEFAULT_RCV_WIN,1), DEFAULT_RCV_WIN);
+  sock_setbuf (clone_sk, calloc(1, DEFAULT_RCV_WIN), DEFAULT_RCV_WIN);
 
   /* Undo what tcp_handler() and tcp_listen_state() did to
    * this listening socket.

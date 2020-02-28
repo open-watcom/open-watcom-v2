@@ -58,9 +58,9 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 #endif
 
 #if defined(USE_FORTIFY) || defined(USE_BSD_FORTIFY)
-    ptr = Fortify_calloc (size, 1, file, line);
+    ptr = Fortify_calloc (1, size, file, line);
 #else
-    ptr = calloc (size, 1);
+    ptr = calloc (1, size);
 #endif
 
     if (!ptr) {
@@ -80,7 +80,7 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 
 #if defined(USE_BSD_FORTIFY)  /* to detect leaks done here */
   #undef  SOCK_CALLOC
-  #define SOCK_CALLOC(x)  Fortify_calloc (x, 1, __FILE__, __LINE__)
+  #define SOCK_CALLOC(x)  Fortify_calloc (1, x, __FILE__, __LINE__)
 #endif
 
 
@@ -113,7 +113,7 @@ static int sock_get_fd (void)
         return (-1);
     }
 
-    if (FD_ISSET(s,&inuse[0])) {
+    if (FD_ISSET(s, &inuse[0])) {
         SOCK_FATAL (("%s (%u) Fatal: Reusing existing socket\n", __FILE__, __LINE__));
         return (-1);
     }
@@ -122,7 +122,7 @@ static int sock_get_fd (void)
     int s;
 
     for (s = S_FIRST; s < s_last; s++) {
-        if (!FD_ISSET(s,&inuse[0])      /* not marked as in-use */
+        if (!FD_ISSET(s, &inuse[0])      /* not marked as in-use */
             && !_socklist_find(s)) {    /* don't use a dying socket */
             break;
         }
@@ -174,7 +174,7 @@ int _sock_dos_fd (int s)
 static __inline void set_rcv_buf (sock_type *sk)
 {
     int len = DEFAULT_RCV_WIN;
-    sock_setbuf (sk, calloc(len,1), len);
+    sock_setbuf (sk, calloc(1, len), len);
 }
 
 /*
@@ -270,7 +270,7 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
 
     SOCK_DEBUGF ((NULL, "\n  _sock_del_fd:%d", s));
 
-    if (s < S_FIRST || s >= s_last || !FD_ISSET(s,&inuse[0])) {
+    if (s < S_FIRST || s >= s_last || !FD_ISSET(s, &inuse[0])) {
         SOCK_FATAL (("%s (%u) Fatal: socket %d not inuse\r\n", file, line, s));
         return (NULL);
     }
@@ -406,7 +406,7 @@ static Socket *socket_find_tcp (const tcp_Socket *tcp_sk)
  *  socket_raw_recv - Called from _ip_handler() via `_raw_ip_hook'.
  *    IP-header is already checked in _ip_handler().
  *    Finds all 'Socket' associated with raw IP-packet 'ip'.
- *    Enqueue to 'sock->proto_sock->raw'.
+ *    Enqueue to 'socket->proto_sock->raw'.
  *    Return >=1 if 'ip' is consumed, 0 otherwise.
  *
  *  Fix-me: This routine will steal all packets destined for
@@ -595,7 +595,7 @@ static void sock_daemon (void)
         sk = _socket->proto_sock;
         next  = _socket->next;
 
-        if (!FD_ISSET(s,&inuse[0]))
+        if (!FD_ISSET(s, &inuse[0]))
             continue;
 
         if (_socket->local_addr == NULL)  /* not bound to anything yet */
@@ -671,7 +671,7 @@ static void fortify_exit (void)
             break;
         }
         SOCK_DEBUGF ((NULL, "\n%2d: inuse %d, type %s, data %08lX",
-                  _socket->fd, FD_ISSET(_socket->fd,&inuse[0]) ? 1 : 0,
+                  _socket->fd, FD_ISSET(_socket->fd, &inuse[0]) ? 1 : 0,
                   type, (DWORD)sk));
 
         if (sk != NULL) {
@@ -781,7 +781,7 @@ static Socket *socket_list_add (int s, int type, int proto)
     }
 
 #if defined(USE_FSEXT) && defined(__DJGPP__)
-    if (!__FSEXT_set_data (s,_socket)) {
+    if (!__FSEXT_set_data (s, _socket)) {
         free (proto_sk);
         free (_socket);
         SOCK_FATAL (("%s (%d) Fatal: cannot grow FSEXT table\r\n", __FILE__, __LINE__));
@@ -1030,7 +1030,7 @@ int _UDP_listen (Socket *socket, struct in_addr host, WORD port)
 
     if (socket->so_state & SS_PRIV) {
         int   pool_size  = sizeof(recv_buf) * MAX_DGRAMS;
-        void *pool = malloc (pool_size);
+        char  *pool = malloc (pool_size);
 
         if (!pool) {
 #if defined(USE_BSD_FATAL)
