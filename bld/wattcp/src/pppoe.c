@@ -223,7 +223,7 @@ static int pppoe_send (int code)
   pppoe_Packet *pkt = (struct pppoe_Packet*) MAC_HDR (eth);
   int           len = build_pad (pkt, code);
 
-  DEBUG_TX (NULL, eth)
+  DEBUG_TX (NULL, eth);
 
 #if defined(USE_DEBUG)
   if (debug_on) {
