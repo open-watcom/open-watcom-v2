@@ -114,22 +114,35 @@ int tcp_keepalive = 30;
 
 tcp_Socket *_tcp_allsocs  = NULL; /* list of tcp-sockets */
 
-static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp_hdr);
-
-static void tcp_sockreset(tcp_Socket *tcp_sk, int proxy);
-static void tcp_rtt_wind (tcp_Socket *tcp_sk);
-static void tcp_upd_wind (tcp_Socket *tcp_sk, unsigned line);
-static int  tcp_chksum   (const in_Header *ip, const tcp_Header *tcp_hdr, int len);
-
-static void tcp_rtt_add  (tcp_Socket *tcp_sk, UINT rto);
-static void tcp_rtt_clr  (tcp_Socket *tcp_sk);
-static UINT tcp_rtt_get  (tcp_Socket *tcp_sk);
-
 #endif
 
-static void udp_close   (udp_Socket *udp_sk);
 static void (*system_yield)(void) = NULL;
 
+
+/*
+ *  Since UDP is stateless, simply reclaim the local-port and
+ *  unthread the socket from the list.
+ */
+static void udp_close (udp_Socket *udp_sk)
+{
+    udp_Socket *_udp_sk, *prev;
+
+    for (_udp_sk = prev = _udp_allsocs; _udp_sk != NULL; prev = _udp_sk, _udp_sk = _udp_sk->next) {
+        if (_udp_sk != udp_sk)
+            continue;
+
+        (void) reuse_localport (_udp_sk->myport);
+
+        if (_udp_sk == _udp_allsocs) {
+            _udp_allsocs = _udp_sk->next;
+        } else {
+            prev->next   = _udp_sk->next;
+        }
+        if (_udp_sk->err_msg == NULL) {
+            _udp_sk->err_msg = _LANG("UDP Close called");
+        }
+    }
+}
 
 /*
  * Passive open: listen for a connection on a particular port
@@ -203,31 +216,6 @@ int udp_open (udp_Socket *udp_sk, WORD lport, DWORD ip, WORD port, ProtoHandler 
 }
 
 /*
- *  Since UDP is stateless, simply reclaim the local-port and
- *  unthread the socket from the list.
- */
-static void udp_close (udp_Socket *udp_sk)
-{
-    udp_Socket *_udp_sk, *prev;
-
-    for (_udp_sk = prev = _udp_allsocs; _udp_sk != NULL; prev = _udp_sk, _udp_sk = _udp_sk->next) {
-        if (_udp_sk != udp_sk)
-            continue;
-
-        (void) reuse_localport (_udp_sk->myport);
-
-        if (_udp_sk == _udp_allsocs) {
-            _udp_allsocs = _udp_sk->next;
-        } else {
-            prev->next   = _udp_sk->next;
-        }
-        if (_udp_sk->err_msg == NULL) {
-            _udp_sk->err_msg = _LANG("UDP Close called");
-        }
-    }
-}
-
-/*
  * Set the TTL on an outgoing UDP datagram.
  */
 void udp_SetTTL (udp_Socket *udp_sk, BYTE ttl)
@@ -237,6 +225,249 @@ void udp_SetTTL (udp_Socket *udp_sk, BYTE ttl)
 
 
 #if !defined(USE_UDP_ONLY)
+
+/*
+ * Round trip timing cache routines.
+ * These functions implement a very simple system for keeping track of
+ * network performance for future use in new connections.
+ * The emphasis here is on speed of update (rather than optimum cache
+ * hit ratio) since tcp_rtt_add() is called every time a TCP connection
+ * updates its round trip estimate. Note: 'rto' is either in ticks or
+ * milli-sec depending on if PC has an 8254 Time chip.
+ *
+ * These routines are modified versions from KA9Q by Phil Karn.
+ */
+static struct tcp_rtt rtt_cache [RTTCACHE];
+
+static void tcp_rtt_add (tcp_Socket *tcp_sk, UINT rto)
+{
+    struct tcp_rtt *rtt;
+    DWORD  addr = tcp_sk->hisaddr;
+
+    if (~addr & ~sin_mask)  /* 0.0.0.0 or broadcast addresses? */
+        return;
+
+    rtt = &rtt_cache [(WORD)addr % RTTCACHE];
+
+    /* Cache-slot is vacant or we're updating previous RTO
+     * for same peer
+     */
+    if (!rtt->ip || rtt->ip == addr) {
+        rtt->ip  = addr;
+        rtt->rto = rto;
+        STAT (tcpstats.tcps_cachedrtt++);
+    }
+}
+
+static UINT tcp_rtt_get (tcp_Socket *tcp_sk)
+{
+    struct tcp_rtt *rtt = &rtt_cache [(WORD)tcp_sk->hisaddr % RTTCACHE];
+
+    if (tcp_sk->hisaddr && rtt->ip == tcp_sk->hisaddr && rtt->rto > 0) {
+#if defined(USE_DEBUG) && !defined(_MSC_VER) /* MSC6 crashes below */
+        char buf[20];
+        dbug_write_raw ("\r\nRTT-cache: host ");
+        dbug_write_raw (_inet_ntoa(buf, rtt->ip));
+        dbug_write_raw (": ");
+        dbug_write_raw (time_str(rtt->rto));
+        dbug_write_raw ("s\r\n\r\n");
+#endif
+
+        STAT (tcpstats.tcps_usedrtt++);
+        return (rtt->rto);
+    }
+    return (0);
+}
+
+static void tcp_rtt_clr (tcp_Socket *tcp_sk)
+{
+    struct tcp_rtt *rtt = &rtt_cache [(WORD)tcp_sk->hisaddr % RTTCACHE];
+
+    if (tcp_sk->hisaddr && rtt->ip == tcp_sk->hisaddr) {
+        rtt->rto = 0;
+        rtt->ip  = 0;
+    }
+}
+
+/*
+ *  tcp_upd_wind - Check if receive window needs an update.
+ */
+static void tcp_upd_wind (tcp_Socket *tcp_sk, unsigned line)
+{
+    UINT winfree = tcp_sk->maxrdatalen - tcp_sk->rdatalen;
+
+    if (winfree < tcp_sk->max_seg/2) {
+        _tcp_send (tcp_sk, __FILE__, line);  /* update window now */
+    }
+}
+
+/*
+ *  tcp_chksum - Check tcp header checksum
+ */
+static int tcp_chksum (const in_Header *ip, const tcp_Header *tcp_hdr, int len)
+{
+    tcp_PseudoHeader  tcp_phdr;
+
+    memset (&tcp_phdr, 0, sizeof(tcp_phdr));
+    tcp_phdr.src      = ip->source;
+    tcp_phdr.dst      = ip->destination;
+    tcp_phdr.protocol = TCP_PROTO;
+    tcp_phdr.length   = intel16 (len);
+    tcp_phdr.checksum = checksum (tcp_hdr, len);
+
+    if (checksum(&tcp_phdr, sizeof(tcp_phdr)) == 0xFFFF)
+        return (1);
+
+    STAT (tcpstats.tcps_rcvbadsum++);
+    if (debug_on)
+        outsnl (_LANG("bad tcp checksum"));
+    return (0);
+}
+
+
+
+/*
+ *  Find the socket with the tripplet:
+ *  DESTADDR=MYADDR,DESTPORT=MYPORT and ACKNUM=SEQNUM+1
+ */
+static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp_hdr)
+{
+    tcp_Socket *_tcp_sk;
+    DWORD      dstHost = intel (ip->destination);
+    DWORD      ackNum  = intel (tcp_hdr->acknum);
+    WORD       dstPort = intel16 (tcp_hdr->dstPort);
+
+    for (_tcp_sk = _tcp_allsocs; _tcp_sk != NULL; _tcp_sk = _tcp_sk->next) {
+        if (_tcp_sk->hisport != 0      &&
+            dstHost == _tcp_sk->myaddr &&
+            dstPort == _tcp_sk->myport &&
+            ackNum  == (_tcp_sk->seqnum+1)) {
+            break;
+        }
+    }
+    return (_tcp_sk);
+}
+
+static void tcp_sockreset (tcp_Socket *tcp_sk, int proxy)
+{
+    char *str = proxy ? "Proxy reset connection"
+                    : "Remote reset connection";
+    if (debug_on)
+        outsnl (_LANG(str));
+
+    tcp_sk->datalen = 0;  /* Flush Tx buffer */
+
+    if (tcp_sk->state != tcp_StateCLOSED && tcp_sk->state != tcp_StateLASTACK)
+        tcp_sk->rdatalen = 0;
+    tcp_sk->err_msg = _LANG (str);
+    tcp_sk->state   = tcp_StateCLOSED;
+    tcp_sk->ip_type = 0;   /* 2001.1.18 - make it fail tcp_tick() */
+
+#if defined(USE_BSD_FUNC)
+    if (_tcp_find_hook != NULL) {
+        Socket *socket = (*_tcp_find_hook) ((sock_type *)tcp_sk);
+
+        if (socket != NULL) { /* do a "read-wakeup" on the SOCK_STREAM socket */
+            socket->so_state |= SS_CONN_REFUSED;
+            if (socket->so_error == 0) {
+                socket->so_error = ECONNRESET;
+            }
+        }
+    }
+#endif
+    (void) _tcp_unthread (tcp_sk);
+}
+
+/*
+ *  tcp_rtt_wind - Update retransmission timer, VJ algorithm
+ *  and tcp windows.
+ */
+static void tcp_rtt_wind (tcp_Socket *tcp_sk)
+{
+    DWORD timeout;
+
+    /* update our retransmission stuff (Karn algorithm)
+     */
+    if (tcp_sk->karn_count == 2) {  /* Wake up from slow-start */
+#if defined(USE_DEBUG)
+        if (debug_on > 1) {
+            (*_printf)("finally got it safely zapped from %u to ????\r\n",
+                  tcp_sk->unacked);
+        }
+#endif
+    } else if (tcp_sk->vj_last) { /* We expect an immediate response */
+        long  dT;      /* time since last (re)transmission */
+        DWORD now;
+
+        chk_timeout (0UL);          /* update date/date_ms */
+        now = (long) set_timeout (0);
+        dT  = (long) get_timediff (now, tcp_sk->vj_last);
+
+        if (dT >= 0) {      /* !!shouldn't this be '> 0' ? */
+            dT -= (DWORD)(tcp_sk->vj_sa >> 3);
+            tcp_sk->vj_sa += (int)dT;
+
+            if (dT < 0)
+                dT = -dT;
+
+            dT -= (tcp_sk->vj_sd >> 2);
+            tcp_sk->vj_sd += (int)dT;      /* vj_sd = RTTVAR, rtt variance */
+
+            if (tcp_sk->vj_sa > MAX_VJSA)  /* vj_sa = SRTT, smoothed rtt */
+                tcp_sk->vj_sa = MAX_VJSA;
+            if (tcp_sk->vj_sd > MAX_VJSD) {
+                tcp_sk->vj_sd = MAX_VJSD;
+            }
+        }
+
+#if 0 /* !!to-do: use TimeStamp option values */
+        if (tcp_sk->ts_echo && tcp_sk->ts_echo == tcp_sk->ts_sent) {
+            dT = get_timediff (now, tcp_sk->ts_echo);
+        } else {
+            tcp_rtt_add (tcp_sk, tcp_sk->rto);
+        }
+#else
+        /* only recompute RTT hence RTO after success
+         */
+        tcp_sk->rto = tcp_RTO_BASE + (((tcp_sk->vj_sa >> 2) + (tcp_sk->vj_sd)) >> 1);
+        tcp_rtt_add (tcp_sk, tcp_sk->rto);
+#endif
+
+
+#if defined(USE_DEBUG)
+        if (debug_on > 1) {
+            (*_printf)("rto %u  sa %u  sd %u  cwindow %u"
+                  "  wwindow %u  unacked %u\r\n",
+                  tcp_sk->rto, tcp_sk->vj_sa, tcp_sk->vj_sd, tcp_sk->cwindow,
+                  tcp_sk->wwindow, tcp_sk->unacked);
+        }
+#endif
+    }
+
+    tcp_sk->karn_count = 0;
+    if (tcp_sk->wwindow != 255) {
+        /* A. Iljasov (iljasov@oduurl.ru) suggested this pre-increment
+         */
+        if (++tcp_sk->wwindow >= tcp_sk->cwindow) {
+            if (tcp_sk->cwindow != 255)
+                tcp_sk->cwindow++;
+            tcp_sk->wwindow = 0;    /* mdurkin -- added 95.05.02 */
+        }
+    }
+
+
+    /* Restart RTT timer or postpone retransmission
+     * based on calculated RTO. Make sure date/date_ms variables
+     * are updated close to midnight.
+     */
+    chk_timeout (0UL);
+    timeout = set_timeout (tcp_sk->rto + tcp_RTO_ADD);
+
+    if (tcp_sk->rtt_time == 0UL || cmp_timers(tcp_sk->rtt_time, timeout) < 0)
+        tcp_sk->rtt_time = timeout;
+
+    tcp_sk->datatimer = 0UL; /* resetting tx-timer, EE 99.08.23 */
+}
 
 /*
  * Actively open a TCP connection to a particular destination.
@@ -1318,186 +1549,6 @@ static int tcp_write (tcp_Socket *tcp_sk, const BYTE *data, UINT len)
     return (len);
 }
 
-
-
-/*
- *  Find the socket with the tripplet:
- *  DESTADDR=MYADDR,DESTPORT=MYPORT and ACKNUM=SEQNUM+1
- */
-static tcp_Socket *tcp_findseq (const in_Header *ip, const tcp_Header *tcp_hdr)
-{
-    tcp_Socket *_tcp_sk;
-    DWORD      dstHost = intel (ip->destination);
-    DWORD      ackNum  = intel (tcp_hdr->acknum);
-    WORD       dstPort = intel16 (tcp_hdr->dstPort);
-
-    for (_tcp_sk = _tcp_allsocs; _tcp_sk != NULL; _tcp_sk = _tcp_sk->next) {
-        if (_tcp_sk->hisport != 0      &&
-            dstHost == _tcp_sk->myaddr &&
-            dstPort == _tcp_sk->myport &&
-            ackNum  == (_tcp_sk->seqnum+1)) {
-            break;
-        }
-    }
-    return (_tcp_sk);
-}
-
-static void tcp_sockreset (tcp_Socket *tcp_sk, int proxy)
-{
-    char *str = proxy ? "Proxy reset connection"
-                    : "Remote reset connection";
-    if (debug_on)
-        outsnl (_LANG(str));
-
-    tcp_sk->datalen = 0;  /* Flush Tx buffer */
-
-    if (tcp_sk->state != tcp_StateCLOSED && tcp_sk->state != tcp_StateLASTACK)
-        tcp_sk->rdatalen = 0;
-    tcp_sk->err_msg = _LANG (str);
-    tcp_sk->state   = tcp_StateCLOSED;
-    tcp_sk->ip_type = 0;   /* 2001.1.18 - make it fail tcp_tick() */
-
-#if defined(USE_BSD_FUNC)
-    if (_tcp_find_hook != NULL) {
-        Socket *socket = (*_tcp_find_hook) ((sock_type *)tcp_sk);
-
-        if (socket != NULL) { /* do a "read-wakeup" on the SOCK_STREAM socket */
-            socket->so_state |= SS_CONN_REFUSED;
-            if (socket->so_error == 0) {
-                socket->so_error = ECONNRESET;
-            }
-        }
-    }
-#endif
-    (void) _tcp_unthread (tcp_sk);
-}
-
-/*
- *  tcp_chksum - Check tcp header checksum
- */
-static int tcp_chksum (const in_Header *ip, const tcp_Header *tcp_hdr, int len)
-{
-    tcp_PseudoHeader  tcp_phdr;
-
-    memset (&tcp_phdr, 0, sizeof(tcp_phdr));
-    tcp_phdr.src      = ip->source;
-    tcp_phdr.dst      = ip->destination;
-    tcp_phdr.protocol = TCP_PROTO;
-    tcp_phdr.length   = intel16 (len);
-    tcp_phdr.checksum = checksum (tcp_hdr, len);
-
-    if (checksum(&tcp_phdr, sizeof(tcp_phdr)) == 0xFFFF)
-        return (1);
-
-    STAT (tcpstats.tcps_rcvbadsum++);
-    if (debug_on)
-        outsnl (_LANG("bad tcp checksum"));
-    return (0);
-}
-
-/*
- *  tcp_rtt_wind - Update retransmission timer, VJ algorithm
- *  and tcp windows.
- */
-static void tcp_rtt_wind (tcp_Socket *tcp_sk)
-{
-    DWORD timeout;
-
-    /* update our retransmission stuff (Karn algorithm)
-     */
-    if (tcp_sk->karn_count == 2) {  /* Wake up from slow-start */
-#if defined(USE_DEBUG)
-        if (debug_on > 1) {
-            (*_printf)("finally got it safely zapped from %u to ????\r\n",
-                  tcp_sk->unacked);
-        }
-#endif
-    } else if (tcp_sk->vj_last) { /* We expect an immediate response */
-        long  dT;      /* time since last (re)transmission */
-        DWORD now;
-
-        chk_timeout (0UL);          /* update date/date_ms */
-        now = (long) set_timeout (0);
-        dT  = (long) get_timediff (now, tcp_sk->vj_last);
-
-        if (dT >= 0) {      /* !!shouldn't this be '> 0' ? */
-            dT -= (DWORD)(tcp_sk->vj_sa >> 3);
-            tcp_sk->vj_sa += (int)dT;
-
-            if (dT < 0)
-                dT = -dT;
-
-            dT -= (tcp_sk->vj_sd >> 2);
-            tcp_sk->vj_sd += (int)dT;      /* vj_sd = RTTVAR, rtt variance */
-
-            if (tcp_sk->vj_sa > MAX_VJSA)  /* vj_sa = SRTT, smoothed rtt */
-                tcp_sk->vj_sa = MAX_VJSA;
-            if (tcp_sk->vj_sd > MAX_VJSD) {
-                tcp_sk->vj_sd = MAX_VJSD;
-            }
-        }
-
-#if 0 /* !!to-do: use TimeStamp option values */
-        if (tcp_sk->ts_echo && tcp_sk->ts_echo == tcp_sk->ts_sent) {
-            dT = get_timediff (now, tcp_sk->ts_echo);
-        } else {
-            tcp_rtt_add (tcp_sk, tcp_sk->rto);
-        }
-#else
-        /* only recompute RTT hence RTO after success
-         */
-        tcp_sk->rto = tcp_RTO_BASE + (((tcp_sk->vj_sa >> 2) + (tcp_sk->vj_sd)) >> 1);
-        tcp_rtt_add (tcp_sk, tcp_sk->rto);
-#endif
-
-
-#if defined(USE_DEBUG)
-        if (debug_on > 1) {
-            (*_printf)("rto %u  sa %u  sd %u  cwindow %u"
-                  "  wwindow %u  unacked %u\r\n",
-                  tcp_sk->rto, tcp_sk->vj_sa, tcp_sk->vj_sd, tcp_sk->cwindow,
-                  tcp_sk->wwindow, tcp_sk->unacked);
-        }
-#endif
-    }
-
-    tcp_sk->karn_count = 0;
-    if (tcp_sk->wwindow != 255) {
-        /* A. Iljasov (iljasov@oduurl.ru) suggested this pre-increment
-         */
-        if (++tcp_sk->wwindow >= tcp_sk->cwindow) {
-            if (tcp_sk->cwindow != 255)
-                tcp_sk->cwindow++;
-            tcp_sk->wwindow = 0;    /* mdurkin -- added 95.05.02 */
-        }
-    }
-
-
-    /* Restart RTT timer or postpone retransmission
-     * based on calculated RTO. Make sure date/date_ms variables
-     * are updated close to midnight.
-     */
-    chk_timeout (0UL);
-    timeout = set_timeout (tcp_sk->rto + tcp_RTO_ADD);
-
-    if (tcp_sk->rtt_time == 0UL || cmp_timers(tcp_sk->rtt_time, timeout) < 0)
-        tcp_sk->rtt_time = timeout;
-
-    tcp_sk->datatimer = 0UL; /* resetting tx-timer, EE 99.08.23 */
-}
-
-/*
- *  tcp_upd_wind - Check if receive window needs an update.
- */
-static void tcp_upd_wind (tcp_Socket *tcp_sk, unsigned line)
-{
-    UINT winfree = tcp_sk->maxrdatalen - tcp_sk->rdatalen;
-
-    if (winfree < tcp_sk->max_seg/2) {
-        _tcp_send (tcp_sk, __FILE__, line);  /* update window now */
-    }
-}
-
 /*
  * TCP option routines.
  * Note: Each of these MUST add multiple of 4 byte of options.
@@ -2120,69 +2171,3 @@ int sock_close (sock_type *sk)
     }
     return (0);
 }
-
-#if !defined(USE_UDP_ONLY)
-
-/*
- * Round trip timing cache routines.
- * These functions implement a very simple system for keeping track of
- * network performance for future use in new connections.
- * The emphasis here is on speed of update (rather than optimum cache
- * hit ratio) since tcp_rtt_add() is called every time a TCP connection
- * updates its round trip estimate. Note: 'rto' is either in ticks or
- * milli-sec depending on if PC has an 8254 Time chip.
- *
- * These routines are modified versions from KA9Q by Phil Karn.
- */
-static struct tcp_rtt rtt_cache [RTTCACHE];
-
-static void tcp_rtt_add (tcp_Socket *tcp_sk, UINT rto)
-{
-    struct tcp_rtt *rtt;
-    DWORD  addr = tcp_sk->hisaddr;
-
-    if (~addr & ~sin_mask)  /* 0.0.0.0 or broadcast addresses? */
-        return;
-
-    rtt = &rtt_cache [(WORD)addr % RTTCACHE];
-
-    /* Cache-slot is vacant or we're updating previous RTO
-     * for same peer
-     */
-    if (!rtt->ip || rtt->ip == addr) {
-        rtt->ip  = addr;
-        rtt->rto = rto;
-        STAT (tcpstats.tcps_cachedrtt++);
-    }
-}
-
-static UINT tcp_rtt_get (tcp_Socket *tcp_sk)
-{
-    struct tcp_rtt *rtt = &rtt_cache [(WORD)tcp_sk->hisaddr % RTTCACHE];
-
-    if (tcp_sk->hisaddr && rtt->ip == tcp_sk->hisaddr && rtt->rto > 0) {
-#if defined(USE_DEBUG) && !defined(_MSC_VER) /* MSC6 crashes below */
-        char buf[20];
-        dbug_write_raw ("\r\nRTT-cache: host ");
-        dbug_write_raw (_inet_ntoa(buf, rtt->ip));
-        dbug_write_raw (": ");
-        dbug_write_raw (time_str(rtt->rto));
-        dbug_write_raw ("s\r\n\r\n");
-#endif
-
-        STAT (tcpstats.tcps_usedrtt++);
-        return (rtt->rto);
-    }
-    return (0);
-}
-
-static void tcp_rtt_clr (tcp_Socket *tcp_sk)
-{
-    struct tcp_rtt *rtt = &rtt_cache [(WORD)tcp_sk->hisaddr % RTTCACHE];
-
-    if (tcp_sk->hisaddr && rtt->ip == tcp_sk->hisaddr) {
-        rtt->rto = 0;
-        rtt->ip  = 0;
-    }
-}
-#endif /* !USE_UDP_ONLY */
