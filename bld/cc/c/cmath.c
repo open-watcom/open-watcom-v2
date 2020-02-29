@@ -457,6 +457,16 @@ static pointer_class PointerClass( TYPEPTR typ )
         class = PTRCLS_FAR16;
     } else if( flags & FLAG_HUGE ) {
         class = PTRCLS_HUGE;
+    } else {
+        if( typ->decl_type == TYPE_FUNCTION ) {
+            if( TargetSwitches & BIG_CODE ) {
+                class = PTRCLS_FAR;
+            }
+        } else {
+            if( TargetSwitches & BIG_DATA ) {
+                class = PTRCLS_FAR;
+            }
+        }
     }
     if( typ->decl_type == TYPE_FUNCTION )
         class += PTRCLS_FUNC;
@@ -668,8 +678,21 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
     typ1_flags = typ1->u.p.decl_flags;
     typ2_flags = typ2->u.p.decl_flags;
     if( typ1->decl_type == TYPE_POINTER && typ2->decl_type == TYPE_POINTER ) {
-        if( (typ1_flags & FLAG_FAR) && (typ2_flags & FLAG_BASED) ) {
-            op2 = BasedPtrNode( typ2, op2 );
+        if( typ2_flags & FLAG_BASED ) {
+            if( (typ1_flags & MASK_ALL_MEM_MODELS) == FLAG_NONE ) {
+                if( typ1->object->decl_type == TYPE_FUNCTION ) {
+                    if( TargetSwitches & BIG_CODE ) {
+                        typ1_flags = FLAG_FAR;
+                    }
+                } else {
+                    if( TargetSwitches & BIG_DATA ) {
+                        typ1_flags = FLAG_FAR;
+                    }
+                }
+            }
+            if( (typ1_flags & FLAG_FAR) ) {
+                op2 = BasedPtrNode( typ2, op2 );
+            }
         }
     } else if( typ2->decl_type == TYPE_POINTER ) {
         // If we're converting a based pointer to some larger arithmetic type,

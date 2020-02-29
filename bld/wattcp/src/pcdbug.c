@@ -325,18 +325,18 @@ static void DumpAdrPort (const char       *proto,
     char  dst[20];
     char  src[20];
 
-    if (!sk) {
-        db_fprintf ("%s:  NO SOCKET : %s (%d) -> %s (%d)\n", proto,
+    if (sk == NULL) {
+       db_fprintf ("%s:  NO SOCKET : %s (%d) -> %s (%d)\n", proto,
                    ip_src, intel16(tcp_hdr->srcPort),
                    ip_dst, intel16(tcp_hdr->dstPort));
     } else if (outbound) {
-        db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
-                   _inet_ntoa(src,my_ip_addr),   sk->u.myport,
-                   _inet_ntoa(dst,sk->u.hisaddr),sk->u.hisport);
+       db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
+                   _inet_ntoa(src, my_ip_addr), sk->u.myport,
+                   _inet_ntoa(dst, sk->u.hisaddr), sk->u.hisport);
     } else {
-        db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
-                   _inet_ntoa(src,sk->u.hisaddr),sk->u.hisport,
-                   _inet_ntoa(dst,my_ip_addr),   sk->u.myport);
+       db_fprintf ("%s:  %s (%d) -> %s (%d)\n", proto,
+                   _inet_ntoa(src, sk->u.hisaddr), sk->u.hisport,
+                   _inet_ntoa(dst, my_ip_addr), sk->u.myport);
     }
 }
 
@@ -911,7 +911,7 @@ static int tcp_dump (const sock_type *sk, const in_Header *ip)
 
     DumpAdrPort ("TCP", sk, ip);
 
-    if (sk)
+    if (sk != NULL)
         win <<= outbound ? sk->tcp.send_wscale : sk->tcp.recv_wscale;
 
     ack = intel (tcp_hdr->acknum);
@@ -921,7 +921,7 @@ static int tcp_dump (const sock_type *sk, const in_Header *ip)
               "                 SEQ %10lu,  ACK %10lu\r\n",
               flgBuf, win, intel16(tcp_hdr->checksum), chk_ok,
               intel16(tcp_hdr->urgent), seq, ack);
-    if (sk) {
+    if (sk != NULL) {
         UINT  state = sk->tcp.state;
         long  delta_seq, delta_ack;
 
@@ -936,7 +936,7 @@ static int tcp_dump (const sock_type *sk, const in_Header *ip)
             } else {
                 delta_seq = seq - sk->tcp.last_seqnum[0];
             }
-
+            /* do debug fields writeble */
             ((DWORD *)sk->tcp.last_seqnum)[0] = seq;
             ((DWORD *)sk->tcp.last_acknum)[0] = ack;
         } else {
@@ -950,7 +950,7 @@ static int tcp_dump (const sock_type *sk, const in_Header *ip)
             } else {
                 delta_ack = ack - sk->tcp.last_acknum[1];
             }
-
+            /* do debug fields writeble */
             ((DWORD *)sk->tcp.last_seqnum)[1] = seq;
             ((DWORD *)sk->tcp.last_acknum)[1] = ack;
         }

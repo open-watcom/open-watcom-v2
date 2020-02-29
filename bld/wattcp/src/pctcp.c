@@ -61,9 +61,9 @@
  * for SOCK_STREAM packets used in `accept()'. And '_tcp_find_hook'
  * is set to `socket_find_tcp()' when allocating SOCK_STREAM sockets.
  */
-int   (*_raw_ip_hook)  (const in_Header *)  = NULL;
-int   (*_tcp_syn_hook) (tcp_Socket **)      = NULL;
-Socket *(*_tcp_find_hook) (const tcp_Socket*) = NULL;
+int   (*_raw_ip_hook)  (const in_Header *) = NULL;
+int   (*_tcp_syn_hook) (tcp_Socket **tcp_skp) = NULL;
+Socket *(*_tcp_find_hook) (const tcp_Socket *tcp_sk) = NULL;
 #endif
 
 char   hostname[MAX_HOSTLEN+1] = "random-pc";

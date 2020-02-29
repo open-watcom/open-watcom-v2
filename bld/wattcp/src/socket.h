@@ -316,7 +316,7 @@ extern Socket *_sock_del_fd   (const char *file, unsigned line, int sock);
 extern Socket *_socklist_find (int s);
 extern int     _sock_dos_fd   (int s);
 extern int     _sock_half_open(const tcp_Socket *tcp_sk);
-extern int     _sock_append   (tcp_Socket **tcp_sk);
+extern int     _sock_append   (tcp_Socket **tcp_skp);
 
 /*
  * Debugging of BSD-socket API. Writes to "sk_debug.device"
