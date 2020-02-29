@@ -33,7 +33,7 @@ cflags_watcom   = -ot -s -d1 -zq -w3 -fpi87 $(extra_w_opts)
 # cflags_watcom = -obmilertan -s -d1 -zq -w3 $(extra_w_opts)
 !endif
 !ifndef cflags_msvc
-cflags_msvc     = -c -O2 -Ox -nologo $(extra_m_opts)
+cflags_msvc     = -c $(dft_oflags_visualc) -nologo $(extra_m_opts)
 !endif
 !ifndef cflags_ibmc
 cflags_ibmc     = -c -O+ -G5 -Q -Wpro- -Wcnd-

@@ -24,7 +24,7 @@ CPU_TYP = 0
 MODEL=L
 
 CC=cl
-CFLAGS=-nologo -A$(MODEL) -G$(CPU_TYP) -W3 -Oait -Gs $(LOC)
+CFLAGS=-nologo -A$(MODEL) -G$(CPU_TYP) -W3 $(dft_oflags_visualc) -Gs $(LOC)
 #-Ox generates bad code with MSC 5.1
 LIB_CFLAGS=-Zl $(CFLAGS)
 

@@ -51,10 +51,10 @@ common_cppflags_nt_x64  = -D__NT_X64__
 
 # common release/debug options
 !ifdef __INTEL_TOOLS__
-common_flags_rel = -Ox -Zi -fast
+common_flags_rel = $(dft_oflags_visualc) -Zi -fast
 common_flags_dbg = -Zi -fast
 !else
-common_flags_rel = -Ox -Zi
+common_flags_rel = $(dft_oflags_visualc) -Zi
 common_flags_dbg = -Zi
 !endif
 !ifeq release 1

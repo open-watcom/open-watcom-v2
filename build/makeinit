@@ -133,6 +133,7 @@ bld_os = osx
 watcom_common_cflags   =-wce=310
 watcom_common_cxxflags =-wce=579
 
+dft_oflags_visualc = -Ob2ity
 bld_dft_oflags = -ox
 dft_oflags     = -oaxt
 
