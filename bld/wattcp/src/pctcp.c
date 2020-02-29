@@ -62,8 +62,8 @@
  * is set to `socket_find_tcp()' when allocating SOCK_STREAM sockets.
  */
 int   (*_raw_ip_hook)  (const in_Header *) = NULL;
-int   (*_tcp_syn_hook) (tcp_Socket **tcp_skp) = NULL;
-Socket *(*_tcp_find_hook) (const tcp_Socket *tcp_sk) = NULL;
+int   (*_tcp_syn_hook) (sock_type **skp) = NULL;
+Socket *(*_tcp_find_hook) (const sock_type *sk) = NULL;
 #endif
 
 char   hostname[MAX_HOSTLEN+1] = "random-pc";
@@ -140,7 +140,7 @@ int udp_listen (udp_Socket *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     watt_largecheck (udp_sk, sizeof(*udp_sk), __FILE__, __LINE__);
     memset (udp_sk, 0, sizeof(*udp_sk));
 
-    udp_sk->rdata        = &udp_sk->rddata[0];
+    udp_sk->rdata        = udp_sk->rddata;
     udp_sk->maxrdatalen  = udp_MaxBufSize;
     udp_sk->ip_type      = UDP_PROTO;
     udp_sk->myport       = findfreeport (lport, 0); /* get a nonzero port val */
@@ -171,7 +171,7 @@ int udp_open (udp_Socket *udp_sk, WORD lport, DWORD ip, WORD port, ProtoHandler 
     if (ip - my_ip_addr <= multihomes)
         return (0);
 
-    udp_sk->rdata       = &udp_sk->rddata[0];
+    udp_sk->rdata       = udp_sk->rddata;
     udp_sk->maxrdatalen = udp_MaxBufSize;
     udp_sk->ip_type     = UDP_PROTO;
     udp_sk->myport      = findfreeport (lport, 0);
@@ -259,7 +259,7 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
     if (!_arp_resolve(ina, &tcp_sk->hisethaddr, 0))
         return (0);
 
-    tcp_sk->rdata        = &tcp_sk->rddata[0];
+    tcp_sk->rdata        = tcp_sk->rddata;
     tcp_sk->maxrdatalen  = tcp_MaxBufSize;
     tcp_sk->ip_type      = TCP_PROTO;
     tcp_sk->max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
@@ -319,7 +319,7 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     if (is_multicast(ina))
         return (0);
 
-    tcp_sk->rdata        = &tcp_sk->rddata[0];
+    tcp_sk->rdata        = tcp_sk->rddata;
     tcp_sk->maxrdatalen  = tcp_MaxBufSize;
     tcp_sk->ip_type      = TCP_PROTO;
     tcp_sk->max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
@@ -356,7 +356,7 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
 static void maybe_reuse_lport (tcp_Socket *tcp_sk)
 {
 #if defined(USE_BSD_FUNC)
-    if (_tcp_find_hook == NULL || (*_tcp_find_hook)(tcp_sk) == NULL) {
+    if (_tcp_find_hook == NULL || (*_tcp_find_hook)((sock_type *)tcp_sk) == NULL) {
 #endif
         reuse_localport (tcp_sk->myport);
 #if defined(USE_BSD_FUNC)
@@ -1359,7 +1359,7 @@ static void tcp_sockreset (tcp_Socket *tcp_sk, int proxy)
 
 #if defined(USE_BSD_FUNC)
     if (_tcp_find_hook != NULL) {
-        Socket *socket = (*_tcp_find_hook) (tcp_sk);
+        Socket *socket = (*_tcp_find_hook) ((sock_type *)tcp_sk);
 
         if (socket != NULL) { /* do a "read-wakeup" on the SOCK_STREAM socket */
             socket->so_state |= SS_CONN_REFUSED;
@@ -1930,8 +1930,8 @@ int sock_read (sock_type *sk, BYTE *buf, int maxlen)
             buf    += len;
             maxlen -= len;
         }
-        if (maxlen > 0 && !raw && sk->tcp.usr_yield) { /* yield only when room */
-            (*sk->tcp.usr_yield)();                    /* 99.07.01 EE */
+        if (maxlen > 0 && !raw && sk->tcp.usr_yield != NULL) {  /* yield only when room */
+            (*sk->tcp.usr_yield)();                             /* 99.07.01 EE */
         }
     } while (maxlen);
     return (count);
@@ -1997,7 +1997,7 @@ int sock_write (sock_type *sk, const BYTE *data, int len)
         data  += written;
         chunk -= written;
 
-        if (sk->udp.usr_yield)
+        if (sk->udp.usr_yield != NULL)
             (*sk->udp.usr_yield)();
 
         if (!tcp_tick(sk)) {

@@ -182,9 +182,9 @@ static __inline void set_rcv_buf (sock_type *sk)
  */
 static __inline void free_rcv_buf (sock_type *sk)
 {
-    if (sk->u.rdata != &sk->u.rddata[0]) {
+    if (sk->u.rdata != sk->u.rddata) {
         free (sk->u.rdata);
-        sk->u.rdata = &sk->u.rddata[0];
+        sk->u.rdata = sk->u.rddata;
         sk->u.rdatalen = 0;
     }
 }
@@ -389,12 +389,12 @@ static Socket *socket_find_udp (const udp_Socket *udp_sk)
  *    Finds the 'Socket' associated with tcp-socket 'tcp_sk'.
  *    Return NULL if not found.
  */
-static Socket *socket_find_tcp (const tcp_Socket *tcp_sk)
+static Socket *socket_find_tcp (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (&_socket->proto_sock->tcp == tcp_sk) {
+        if (_socket->proto_sock == sk) {
             return _socket;
         }
     }
@@ -1116,12 +1116,12 @@ int _TCP_listen (Socket *socket, struct in_addr host, WORD port)
  *   Return true if peer closed his side.
  *   There might still be data to read
  */
-int _sock_half_open (const tcp_Socket *tcp_sk)
+int _sock_half_open (const sock_type *sk)
 {
-    if (tcp_sk == NULL || tcp_sk->ip_type == UDP_PROTO || tcp_sk->ip_type == IP_TYPE)
+    if (sk == NULL || sk->u.ip_type == UDP_PROTO || sk->u.ip_type == IP_TYPE)
         return (0);
 
-    return (tcp_sk->state >= tcp_StateFINWT1 && tcp_sk->state <= tcp_StateCLOSED);
+    return (sk->tcp.state >= tcp_StateFINWT1 && sk->tcp.state <= tcp_StateCLOSED);
 }
 #endif
 

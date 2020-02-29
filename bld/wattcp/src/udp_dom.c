@@ -352,7 +352,7 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
                 _resolve_exit = 1;
                 break;
             }
-            if (dom_sk->usr_yield)    /* Added, 16-Jun-97 GV */
+            if (dom_sk->usr_yield != NULL)  /* Added, 16-Jun-97 GV */
                 (*dom_sk->usr_yield)();
 
             if (sock_dataready((sock_type*)dom_sk)) {

@@ -81,7 +81,7 @@ int _ip_delay0 (sock_type *sk, int timeoutseconds, UserHandler fn, int *statuspt
             status = -1;
             break;
         }
-        if (fn && (status = (*fn)(sk)) != 0)
+        if (fn != NULL && (status = (*fn)(sk)) != 0)
             break;
 
         if (sk->tcp.usr_yield != NULL)
@@ -131,7 +131,7 @@ int _ip_delay1 (sock_type *sk, int timeoutseconds, UserHandler fn, int *statuspt
             status = -1;
             break;
         }
-        if (fn && (status = (*fn)(sk)) != 0)
+        if (fn != NULL && (status = (*fn)(sk)) != 0)
             break;
 
         if (sk->tcp.usr_yield != NULL) {

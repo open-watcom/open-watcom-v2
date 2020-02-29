@@ -279,7 +279,7 @@ static int listen_free (Socket *socket, int idx)
 
     _tcp_unthread (&tcb_sk->tcp);
 
-    if (tcb_sk->tcp.rdata != &tcb_sk->tcp.rddata[0])  /* free large Rx buffer? */
+    if (tcb_sk->tcp.rdata != tcb_sk->tcp.rddata)    /* free large Rx buffer? */
         free (tcb_sk->tcp.rdata);
     free (tcb_sk);
     socket->listen_queue[idx] = NULL;
@@ -290,23 +290,23 @@ static int listen_free (Socket *socket, int idx)
  *  Called from tcp_fsm.c / tcp_listen_state() (via _tcp_syn_hook) to
  *  append a new connection to the listen-queue of socket 'sock'.
  *
- *  TCB on input ('orig') has received a SYN. Replace TCB on output
+ *  TCB on input ('orig_sk') has received a SYN. Replace TCB on output
  *  with a cloned TCB that we append to the listen-queue and eventually
  *  is used by accept() to create a new socket.
  *
- *  TCB on input ('orig') must still be listening for further connections
+ *  TCB on input ('orig_sk') must still be listening for further connections
  *  on the same port as specified in call to _TCP_listen().
  */
-int _sock_append (tcp_Socket **tcp_skp)
+int _sock_append (sock_type **skp)
 {
-    sock_type  *clone_sk;
-    tcp_Socket *orig = *tcp_skp;
-    Socket     *socket = NULL;   /* associated socket for '*tcp_skp' */
+    sock_type   *clone_sk;
+    sock_type   *orig_sk = *skp;
+    Socket      *socket = NULL;   /* associated socket for '*skp' */
     int         i;
 
     /* Lookup BSD-socket for Wattcp TCB
      */
-    if (_tcp_find_hook == NULL || (socket = (*_tcp_find_hook)(orig)) == NULL) {
+    if (_tcp_find_hook == NULL || (socket = (*_tcp_find_hook)(orig_sk)) == NULL) {
         SOCK_DEBUGF ((NULL, "\n  sock_append: not found!?"));
         return (0);  /* i.e. could be a native Wattcp socket */
     }
@@ -348,7 +348,7 @@ int _sock_append (tcp_Socket **tcp_skp)
 
     /* Copy the TCB (except Tx-buffer) to clone
     */
-    memcpy (clone_sk, orig, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.data));
+    memcpy (clone_sk, orig_sk, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.data));
     clone_sk->tcp.safetytcp = SAFETYTCP;
 
     /* Increase the TCP window (to 16kB)
@@ -358,22 +358,22 @@ int _sock_append (tcp_Socket **tcp_skp)
     /* Undo what tcp_handler() and tcp_listen_state() did to
      * this listening socket.
      */
-    orig->hisport = 0;
-    orig->hisaddr = 0;
-    orig->myaddr  = 0;
+    orig_sk->tcp.hisport = 0;
+    orig_sk->tcp.hisaddr = 0;
+    orig_sk->tcp.myaddr  = 0;
 
-    orig->seqnum  = INIT_SEQ();   /* set new ISS */
-    orig->unhappy = FALSE;
-    CLR_PEER_MAC_ADDR (orig);
+    orig_sk->tcp.seqnum  = INIT_SEQ();   /* set new ISS */
+    orig_sk->tcp.unhappy = FALSE;
+    CLR_PEER_MAC_ADDR (&orig_sk->tcp);
 
 #if defined(USE_DEBUG)          /* !!needs some work */
-    orig->last_acknum[0] = orig->last_acknum[1] = 0;
-    orig->last_seqnum[0] = orig->last_seqnum[1] = 0;
+    orig_sk->tcp.last_acknum[0] = orig_sk->tcp.last_acknum[1] = 0;
+    orig_sk->tcp.last_seqnum[0] = orig_sk->tcp.last_seqnum[1] = 0;
 #endif
 
     clone_sk->tcp.next = _tcp_allsocs;
-    _tcp_allsocs = &clone_sk->tcp;  /* prepend clone to TCB-list */
-    *tcp_skp = _tcp_allsocs;        /* clone is now the new TCB */
+    _tcp_allsocs = &clone_sk->tcp;      /* prepend clone to TCB-list */
+    *skp = (sock_type *)_tcp_allsocs;   /* clone is now the new TCB */
     return (0);
 }
 

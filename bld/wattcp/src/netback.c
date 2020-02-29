@@ -13,32 +13,31 @@
 #define STK_SIZE   1024
 
 #if (DOSX)
-  void backgroundon (void)
-  {
+void backgroundon (void)
+{
     outsnl (_LANG("Use wintr_init() / wintr_enable() instead"));
     exit (3);
-  }
+}
 
 #elif !defined(NO_INLINE_ASM)  /* MSC <=6 unsupported */
 
-  static void (*userRoutine)(void) = NULL;
-  static int inside = 0;
+static void (*userRoutine)(void) = NULL;
+static int inside = 0;
 
   #ifdef __TURBOC__
-    static void interrupt (*oldinterrupt)(void);
+static void interrupt (*oldinterrupt)(void);
   #else
-    static void (interrupt *oldinterrupt)(void);
+static void (interrupt *oldinterrupt)(void);
   #endif
 
-  static void interrupt newinterrupt(void)
-  {
+static void interrupt newinterrupt(void)
+{
     (*oldinterrupt)();
     DISABLE();
-    if (inside)
-    {
-      static UINT tempstack [STK_SIZE];
+    if (inside) {
+        static UINT tempstack [STK_SIZE];
   #ifdef __WATCOMC__
-      stackset (&tempstack[STK_SIZE-1]);
+        stackset (&tempstack[STK_SIZE-1]);
   #else
         static UINT old_SP;
         static WORD old_SS;
@@ -51,41 +50,41 @@
         asm  lea sp,tempstack[STK_SIZE-1]
 
   #endif
-      ENABLE();
+        ENABLE();
 
-      if (userRoutine)
-        (*userRoutine)();
-      tcp_tick (NULL);
+        if (userRoutine != NULL)
+            (*userRoutine)();
+        tcp_tick (NULL);
 
-      DISABLE();
+        DISABLE();
 
   #ifdef __WATCOMC__
-      stackrestore();
+        stackrestore();
   #else
-      asm  mov ax,old_SS
-      asm  mov ss,ax
-      asm  mov ax,old_SP
-      asm  mov sp,ax
+        asm  mov ax,old_SS
+        asm  mov ss,ax
+        asm  mov ax,old_SP
+        asm  mov sp,ax
 
   #endif
-      inside = 0;
+        inside = 0;
     }
     ENABLE();
-  }
+}
 
-  void backgroundon (void)
-  {
+void backgroundon (void)
+{
     oldinterrupt = getvect (TIMER_INTR);
     setvect (TIMER_INTR, newinterrupt);
-  }
+}
 
-  void backgroundoff (void)
-  {
+void backgroundoff (void)
+{
     setvect (TIMER_INTR, oldinterrupt);
-  }
+}
 
-  void backgroundfn (void (*fn)(void))
-  {
+void backgroundfn (void (*fn)(void))
+{
     userRoutine = fn;
-  }
+}
 #endif  /* DOSX */
