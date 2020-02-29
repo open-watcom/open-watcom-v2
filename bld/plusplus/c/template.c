@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1061,7 +1061,7 @@ static TYPE doParseClassTemplate( TEMPLATE_SPECIALIZATION *tspec,
 {
     TYPE new_type;
     DECL_SPEC *dspec;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     new_type = TypeError;
     if( ! tspec->corrupted ) {
@@ -1135,7 +1135,7 @@ static void defineAllClassDecls( TEMPLATE_SPECIALIZATION *tspec )
     SCOPE inst_scope;
     SCOPE parm_scope;
     SCOPE old_parm_scope;
-    auto TOKEN_LOCN location;
+    TOKEN_LOCN location;
 
     SrcFileGetTokenLocn( &location );
     save_scope = GetCurrScope();
@@ -1872,7 +1872,7 @@ static bool suitableForAddressParm( PTREE parm )
 
 static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
 {
-    auto error_state_t check;
+    error_state_t check;
 
     CErrSuppress( &check );
     parm = AnalyseRawExpr( parm );
@@ -2867,7 +2867,7 @@ static void instantiateMember( TEMPLATE_INFO *tinfo,
     SCOPE parm_scope;
     NAME *member_arg_names;
     TOKEN_LOCN *locn;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     save_scope = GetCurrScope();
     ScopeAdjustUsing( save_scope, NULL );
@@ -3006,7 +3006,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     SYMBOL bound_sym;
     SCOPE save_scope;
     SCOPE parm_scope;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     fn_sym = fn_templ->sym;
     bound_sym = SymDefaultBase( fn_inst->bound_sym );
@@ -3207,7 +3207,7 @@ bool TemplateProcessInstantiations( void )
     TEMPLATE_MEMBER *curr_member;
     TEMPLATE_SPECIALIZATION *tspec;
     TOKEN_LOCN *locn;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     templateData.keep_going = false;
     verifyOKToProceed( NULL );
@@ -3721,7 +3721,7 @@ static void saveFnTemplateDefn( void *p, carve_walk_base *d )
 
 pch_status PCHWriteTemplates( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     PCHWriteVar( templateData.max_depth );
     TemplateClassInfoPCHWrite( allClassTemplates );
@@ -3758,7 +3758,7 @@ pch_status PCHReadTemplates( void )
     REWRITE *memb_defn;
     NAME *memb_arg_names;
     bool cont;
-    auto cvinit_t data;
+    cvinit_t data;
 
     PCHReadVar( templateData.max_depth );
     allClassTemplates = TemplateClassInfoPCHRead();

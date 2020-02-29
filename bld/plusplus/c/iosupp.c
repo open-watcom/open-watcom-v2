@@ -109,18 +109,14 @@ static const char* extsCmd[] =        // extensions for command files
     ,   NULL
     };
 
-static const char* extsOut[] =        // extensions for output files
-    {   ".obj"
-    ,   ".i"
-    ,   ".err"
-    ,   ".mbr"
-    ,   ".def"
+static const char* extsOut[] = {      // extensions for output files
+    #define pick(e,u,o)     o,
+        OFT_DEFS()
 #ifdef OPT_BR
-    ,   ".brm"
+        OFT_BRI_DEFS()
 #endif
-    ,   ".d"
-    ,   ".obj"
-    };
+    #undef pick
+};
 
 #elif defined(__UNIX__)
 
@@ -162,18 +158,14 @@ static const char* extsCmd[] =        // extensions for command files
     ,   NULL
     };
 
-static const char* extsOut[] =        // extensions for output files
-    {   ".o"
-    ,   ".i"
-    ,   ".err"
-    ,   ".mbr"
-    ,   ".def"
+static const char* extsOut[] = {      // extensions for output files
+    #define pick(e,u,o)     u,
+        OFT_DEFS()
 #ifdef OPT_BR
-    ,   ".brm"
+        OFT_BRI_DEFS()
 #endif
-    ,   ".d"
-    ,   ".o"
-    };
+    #undef pick
+};
 
 #else
 
@@ -418,9 +410,9 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 {
     const char *ext;            // - current extension
 
-    if( nd->ext[0] == '\0' ) {
-        ext = openSrcExt( NULL, nd, typ );
-        if( ext == NULL ) {
+    ext = openSrcExt( nd->ext, nd, typ );
+    if( ext == NULL ) {
+        if( nd->ext[0] == '\0' ) {
             switch( typ ) {
             case FT_SRC:
                 if( CompFlags.dont_autogen_ext_src )
@@ -445,8 +437,6 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
                 }
             }
         }
-    } else {
-        ext = openSrcExt( nd->ext, nd, typ );
     }
     return( ext );
 }

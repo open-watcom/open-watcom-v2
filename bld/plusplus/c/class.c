@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -427,7 +428,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     symbol_flag perm;
     symbol_flag curr_perm;
     bool error_diagnosed;
-    auto TOKEN_LOCN name_locn;
+    TOKEN_LOCN name_locn;
 
     error_diagnosed = false;
     data = classDataStack;
@@ -868,7 +869,7 @@ TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
     SYMBOL_NAME sym_name;
     SYMBOL_NAME std_sym_name;
     SYMBOL std_sym;
-    auto CLASS_DATA data;
+    CLASS_DATA data;
 
     id = NULL;
     ClassPush( &data );
@@ -3754,7 +3755,7 @@ static void saveBaseClass( void *e, carve_walk_base *d )
 
 pch_status PCHWriteBases( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     PCHWriteVar( classIndex );
     CarveWalkAllFree( carveBASE_CLASS, markFreeBaseClass );
@@ -3766,7 +3767,7 @@ pch_status PCHWriteBases( void )
 pch_status PCHReadBases( void )
 {
     BASE_CLASS *b;
-    auto cvinit_t data;
+    cvinit_t data;
 
     PCHReadVar( classIndex );
     CarveInitStart( carveBASE_CLASS, &data );

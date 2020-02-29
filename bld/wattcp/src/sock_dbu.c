@@ -7,40 +7,39 @@
 #include "pcdbug.h"
 #include "sock_dbu.h"
 
-void sock_debugdump (const sock_type *s)
+void sock_debugdump (const sock_type *sk)
 {
 #if defined(USE_DEBUG)
-  if (s->u.ip_type == IP_TYPE)
-     return;
+    if (sk->u.ip_type == IP_TYPE)
+        return;
 
 #if defined(__SMALL__)
-  (*_printf) ("next       %04X\r\n",      s->u.next);
+    (*_printf) ("next       %04X\r\n",      sk->next);
 #elif defined(__LARGE__)
-  (*_printf) ("next       %04X:%04X\r\n", FP_SEG(s->u.next), FP_OFF(s->u.next));
+    (*_printf) ("next       %04X:%04X\r\n", FP_SEG(sk->next), FP_OFF(sk->next));
 #else
-  (*_printf) ("next       %08lX\r\n",     (DWORD)s->u.next);
+    (*_printf) ("next       %08lX\r\n",     (DWORD)sk->next);
 #endif
 
-  (*_printf) ("type       %d\r\n", s->u.ip_type);
+    (*_printf) ("type       %d\r\n", sk->u.ip_type);
 
-  (*_printf) ("stat/error %s\r\n", s->u.err_msg ? s->u.err_msg : "(none)");
-  (*_printf) ("usr-timer  %08lX (%sexpired)\r\n",
-              s->u.usertimer, chk_timeout(s->u.usertimer) ? "" : "not ");
+    (*_printf) ("stat/error %s\r\n", sk->u.err_msg ? sk->u.err_msg : "(none)");
+    (*_printf) ("usr-timer  %08lX (%sexpired)\r\n",
+              sk->u.usertimer, chk_timeout(sk->u.usertimer) ? "" : "not ");
 
-  switch (s->u.ip_type)
-  {
+    switch (sk->u.ip_type) {
     case UDP_PROTO:
-         (*_printf) ("udp rdata  %u `%.*s'\r\n",
-                     s->udp.rdatalen, s->udp.rdatalen, s->udp.rdata);
-         break;
+        (*_printf) ("udp rdata  %u `%.*s'\r\n",
+                     sk->udp.rdatalen, sk->udp.rdatalen, sk->udp.rdata);
+        break;
     case TCP_PROTO:
-         (*_printf) ("tcp rdata  %u `%.*s'\r\n",
-                     s->tcp.rdatalen, s->tcp.rdatalen, s->tcp.rdata);
-         (*_printf) ("tcp state  %u (%s)\r\n",
-                     s->tcp.state, tcpState[s->tcp.state]);
-         break;
-  }
+        (*_printf) ("tcp rdata  %u `%.*s'\r\n",
+                     sk->tcp.rdatalen, sk->tcp.rdatalen, sk->tcp.rdata);
+        (*_printf) ("tcp state  %u (%s)\r\n",
+                     sk->tcp.state, tcpState[sk->tcp.state]);
+        break;
+    }
 #else
-  ARGSUSED (s);
+    ARGSUSED (sk);
 #endif
 }

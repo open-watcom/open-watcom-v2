@@ -75,7 +75,7 @@ void ReadEthersFile (void)
     if (!h)
        continue;
 
-    e = calloc (sizeof(*e), 1);
+    e = calloc (1, sizeof(*e));
     if (!e)
        break;
 

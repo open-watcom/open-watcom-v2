@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -913,7 +913,7 @@ static bool array( output_desc *data, state_desc *state )
 
 static bool function( output_desc *data, state_desc *state )
 {
-    auto state_desc new_state;
+    state_desc      new_state;
     size_t          conv_offset = 0;
     bool            first_arg;
 
@@ -1071,7 +1071,7 @@ static bool based_encoding( output_desc *data, state_desc *state )
     case 'F':
         advanceChar( data );
         if( currChar( data ) == TYPE_NAME_PREFIX ) {
-            auto state_desc new_state;
+            state_desc new_state;
 
             advanceChar( data );
             new_state = *state;
@@ -1175,7 +1175,7 @@ static bool template_arg( output_desc *data, state_desc *state )
 
 static bool template_name( output_desc *data, state_desc *state )
 {
-    auto state_desc new_state;
+    state_desc      new_state;
     bool            first_arg;
     char            c;
 
@@ -1536,7 +1536,7 @@ static bool scope( output_desc *data, state_desc *state, size_t *symbol_length )
             return( recursive_mangled_name( data, state ) );
         }
     } else if( c == TEMPLATE_PREFIX ) {
-        auto state_desc new_state;
+        state_desc new_state;
 
         advanceChar( data );
         new_state = *state;
@@ -1575,7 +1575,7 @@ static bool scoped_name( output_desc *data, state_desc *state )
 
 static bool mangled_name( output_desc *data )
 {
-    auto state_desc new_state;
+    state_desc new_state;
 
     _output1( DM_MANGLED_NAME );
     new_state.prefix = 0;
@@ -1721,7 +1721,7 @@ static size_t terminateOutput( output_desc *data )
 static size_t demangle_recursive( char const *input, char *buff, size_t buff_size )
 {
     realloc_fn_t save_reallocator;
-    auto output_desc data;
+    output_desc data;
 
     save_reallocator = user_realloc;
     user_realloc = NULL;
@@ -1742,7 +1742,7 @@ static size_t demangle_recursive( char const *input, char *buff, size_t buff_siz
 
 static bool recursive_mangled_name( output_desc *data, state_desc *state )
 {
-    auto char buff[AUTO_BUFFER_SIZE];
+    char buff[AUTO_BUFFER_SIZE];
 
     _output1( DM_RECURSE_BEGIN );
     data->input += demangle_recursive( data->input, buff, sizeof( buff ) );
@@ -1758,8 +1758,8 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
     char *buff,                                 // - output buffer for demangled C++ name
     size_t buff_size )                          // - size of output buffer
 {
-    size_t              outlen;
-    auto output_desc    data;
+    size_t          outlen;
+    output_desc     data;
 
     init_globals( NULL );
     if( len == 0 )
@@ -1892,9 +1892,9 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     char *buff,                                 // - output buffer for demangled C++ type
     size_t buff_size )                          // - size of output buffer
 {
-    size_t              outlen;
-    auto output_desc    data;
-    auto state_desc     new_state;
+    size_t          outlen;
+    output_desc     data;
+    state_desc      new_state;
 
     init_globals( NULL );
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
@@ -1915,9 +1915,9 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     size_t buff_size,                           // - size of output buffer
     void * (*realloc)( void *, size_t ) )       // - size adjuster for output
 {
-    char                *buff;
-    size_t              outlen;
-    auto output_desc    data;
+    char            *buff;
+    size_t          outlen;
+    output_desc     data;
 
     init_globals( realloc );
     if( len == 0 )
@@ -1950,7 +1950,7 @@ bool __scope_name(                              // EXTRACT A C++ SCOPE
     char const **scopep,                        // - location of C++ scope name
     size_t *scope_sizep )                       // - size of C++ scope name
 {                                               // returns true on success
-    auto output_desc    data;
+    output_desc     data;
 
     init_globals( NULL );
     *scopep = NULL;
@@ -1978,8 +1978,8 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     char *buff,                                 // - output buffer for demangled C++ base name
     size_t buff_size )                          // - size of output buffer
 {                                               // return len of output
-    size_t              outlen;
-    auto output_desc    data;
+    size_t          outlen;
+    output_desc     data;
 
     init_globals( NULL );
     if( len == 0 )
@@ -2054,7 +2054,7 @@ void __parse_mangled_name(                      // PARSE MANGLED NAME
     void *cookie,                               // - data to carry around
     outfunPtr ofn )                             // - function to invoke
 {
-    auto output_desc    data;
+    output_desc     data;
 
     init_globals( NULL );
     if( len == 0 )

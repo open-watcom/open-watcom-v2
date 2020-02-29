@@ -15,22 +15,22 @@
 /*
  *  _recvdaemon - gets upcalled when data arrives
  */
-static int _recvdaemon (sock_type *s, BYTE *data, int len,
+static int _recvdaemon (sock_type *sk, BYTE *data, int len,
                         tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr)
 {
     recv_data *r;
     recv_buf  *p;
     int i;
 
-    switch (s->u.ip_type) {
+    switch (sk->u.ip_type) {
     case UDP_PROTO:
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
 #endif
-        r = (recv_data *)s->u.rdata;
+        r = (recv_data *)sk->u.rdata;
         if (r->recv_sig != RECV_USED) {
 #if !defined(USE_UDP_ONLY)
-            if (s->u.ip_type == TCP_PROTO) {
+            if (sk->u.ip_type == TCP_PROTO) {
                 outsnl (_LANG("ERROR: tcp recv data conflict"));
                 break;
             }
@@ -39,20 +39,20 @@ static int _recvdaemon (sock_type *s, BYTE *data, int len,
             break;
         }
 #if !defined(USE_UDP_ONLY)
-        if (s->u.ip_type == TCP_PROTO) {
-            if (len > s->tcp.max_seg)
+        if (sk->u.ip_type == TCP_PROTO) {
+            if (len > sk->tcp.max_seg)
                 break;
 
             /* stick it on the end if you can
              */
-            i = s->tcp.maxrdatalen - s->tcp.rdatalen;
+            i = sk->tcp.maxrdatalen - sk->tcp.rdatalen;
             if (i > 1) {
                 /* we can accept some of this */
                 if (len > i)
                     len = i;
                 if (len > 0)
-                    memcpy (&r->recv_bufs[s->tcp.rdatalen], data, len);
-                s->tcp.rdatalen += len;
+                    memcpy (&r->recv_bufs[sk->tcp.rdatalen], data, len);
+                sk->tcp.rdatalen += len;
                 return (len);
             }
             break;      /* didn't take none */
@@ -88,24 +88,24 @@ static int _recvdaemon (sock_type *s, BYTE *data, int len,
 }
 
 
-int sock_recv_used (sock_type *s)
+int sock_recv_used (sock_type *sk)
 {
     recv_data  *r;
     recv_buf   *p;
     int i, len;
 
-    switch (_chk_socket(s)) {
+    switch (_chk_socket(sk)) {
     case VALID_UDP:
 #if !defined(USE_UDP_ONLY)
     case VALID_TCP:
 #endif
-        r = (recv_data *) s->u.rdata;
+        r = (recv_data *) sk->u.rdata;
         if (r->recv_sig != RECV_USED)
             return (-1);
 
 #if !defined(USE_UDP_ONLY)
-        if (s->u.ip_type == TCP_PROTO) {
-            return (s->tcp.rdatalen);
+        if (sk->u.ip_type == TCP_PROTO) {
+            return (sk->tcp.rdatalen);
         }
 #endif
         p = (recv_buf *) r->recv_bufs;
@@ -120,26 +120,26 @@ int sock_recv_used (sock_type *s)
 }
 
 
-int sock_recv_init (sock_type *s, char *buffer, int len)
+int sock_recv_init (sock_type *sk, char *buffer, int len)
 {
     recv_buf  *p;
     recv_data *r;
     int i;
 
     memset (buffer, 0, len);                /* clear data area */
-    switch (s->u.ip_type) {
+    switch (sk->u.ip_type) {
     case UDP_PROTO:
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
 #endif
-        s->u.protoHandler = _recvdaemon;
-        r = (recv_data *) s->u.rddata;
-        memset (r, 0, sizeof(s->u.rddata)); /* clear table */
+        sk->u.protoHandler = _recvdaemon;
+        r = (recv_data *) sk->u.rddata;
+        memset (r, 0, sizeof(sk->u.rddata)); /* clear table */
         r->recv_sig     = RECV_USED;
         r->recv_bufs    = (BYTE *) buffer;
         r->recv_bufnum  = len / sizeof(recv_buf);
 #if !defined(USE_UDP_ONLY)
-        if (s->u.ip_type == TCP_PROTO) {
+        if (sk->u.ip_type == TCP_PROTO) {
             break;
         }
 #endif
@@ -154,26 +154,26 @@ int sock_recv_init (sock_type *s, char *buffer, int len)
 
 #if defined(USE_BSD_FUNC)
 
-int sock_recv_from (sock_type *s, DWORD *hisip, WORD *hisport,
+int sock_recv_from (sock_type *sk, DWORD *hisip, WORD *hisport,
                     char *buffer, int len, int peek)
 {
     recv_buf   *p;
     recv_data  *r;
     int i;
 
-    switch (s->u.ip_type) {
+    switch (sk->u.ip_type) {
     case UDP_PROTO:
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
 #endif
-        r = (recv_data *) s->u.rdata;
+        r = (recv_data *) sk->u.rdata;
         if (r->recv_sig != RECV_USED)
             return (-1);
 
 #if !defined(USE_UDP_ONLY)
-        if (s->u.ip_type == TCP_PROTO) {
-            if (len > s->tcp.rdatalen)
-                len = s->tcp.rdatalen;
+        if (sk->u.ip_type == TCP_PROTO) {
+            if (len > sk->tcp.rdatalen)
+                len = sk->tcp.rdatalen;
             if (len)
                 memcpy (buffer, r->recv_bufs, len);
             return (len);
@@ -212,25 +212,25 @@ int sock_recv_from (sock_type *s, DWORD *hisip, WORD *hisport,
 #endif  /* USE_BSD_FUNC */
 
 
-int sock_recv (sock_type *s, char *buffer, int len)
+int sock_recv (sock_type *sk, char *buffer, int len)
 {
     recv_buf   *p;
     recv_data  *r;
     int i;
 
-    switch (s->u.ip_type) {
+    switch (sk->u.ip_type) {
     case UDP_PROTO:
 #if !defined(USE_UDP_ONLY)
     case TCP_PROTO:
 #endif
-        r = (recv_data *) s->u.rdata;
+        r = (recv_data *) sk->u.rdata;
         if (r->recv_sig != RECV_USED)
             return (-1);
 
 #if !defined(USE_UDP_ONLY)
-        if (s->u.ip_type == TCP_PROTO) {
-            if (len > s->tcp.rdatalen)
-                len = s->tcp.rdatalen;
+        if (sk->u.ip_type == TCP_PROTO) {
+            if (len > sk->tcp.rdatalen)
+                len = sk->tcp.rdatalen;
             if (len)
                 memcpy (buffer, r->recv_bufs, len);
             return (len);

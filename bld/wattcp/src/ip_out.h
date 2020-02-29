@@ -10,11 +10,11 @@ extern WORD _get_this_ip_id (void);
 
 extern int _ip_output (in_Header *ip, DWORD src_ip, DWORD dst_ip,
                        WORD protocol, BYTE ttl, BYTE tos, WORD ip_id,
-                       int data_len, const void *sock,
+                       int data_len, const sock_type *sk,
                        const char *file, unsigned line);
 
-#define IP_OUTPUT(ip, src, dst, proto, ttl, tos, ip_id, data_len, sock) \
-       _ip_output(ip, src, dst, proto, ttl, tos, ip_id, data_len, sock, \
+#define IP_OUTPUT(ip, src, dst, proto, ttl, tos, ip_id, data_len, sk) \
+       _ip_output(ip, src, dst, proto, ttl, tos, ip_id, data_len, sk, \
                   __FILE__, __LINE__)
 
 extern int _chk_ip_header (const in_Header *ip);

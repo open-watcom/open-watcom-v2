@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +225,7 @@ FUNCTION_LINKAGE errno_t FUNCTION_NAME(
     int                 comparison, swaptype, shell;
     size_t              count, r, s;
     unsigned            sp;
-    auto char           *base_stack[MAXDEPTH];
+    char                *base_stack[MAXDEPTH];
     unsigned            n_stack[MAXDEPTH];
     qcomp               *cmp = (qcomp*)compar;
     errno_t             rc = -1;

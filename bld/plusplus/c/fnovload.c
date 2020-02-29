@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1491,7 +1492,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     addr_func_t         retn;
     SYMBOL              curr;
     SYM_REGION          *region;
-    auto FNOV_RANK      curr_rank[1];
+    FNOV_RANK           curr_rank[1];
     SEARCH_RESULT       *result;
 
     initRankVector( FNC_DEFAULT, curr_rank, 1 );
@@ -1991,7 +1992,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
     FNOV_RESULT     overload_result = FNOV_NO_MATCH;
     FNOV_LIST       *candidates = NULL; // list of symbols to resolve
     FNOV_LIST       *match = NULL;
-    auto arg_list   alist;
+    arg_list        alist;
     FNOV_INFO       info;
 
     *pold_sym = NULL;

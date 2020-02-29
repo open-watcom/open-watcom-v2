@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -271,7 +271,7 @@ static void CIdent( void )
 void CInclude( void )
 {
     bool        in_macro;
-    auto char   buf[82];
+    char        buf[82];
 
     if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {

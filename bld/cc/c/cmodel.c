@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static size_t get_namelen( const char *start )
 char *BadCmdLine( int error_code, const char *str )
 {
     char        *p;
-    auto char   buffer[128];
+    char        buffer[128];
 
     p = buffer;
     for( ; *str != '\0'; ) {

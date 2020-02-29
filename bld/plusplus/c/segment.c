@@ -266,7 +266,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
 #if _INTEL_CPU && COMP_CFG_COFF == 0
 //alpha permits segments defined anywhere and we need it for comdat data
 //ditto for COFF
-    DbgVerify( ! flags.in_back_end || ( attrs & PRIVATE ) || ( control & SA_DEFINE_ANYTIME )
+    DbgVerify( !flags.in_back_end || (attrs & PRIVATE) || (control & SA_DEFINE_ANYTIME)
              , "segmentAlloc -- defining in back end" );
 #endif
     size = strlen( seg_name );
@@ -274,7 +274,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
     curr->sibling = curr;
     stxvcpy( curr->name, seg_name, size );
     curr->offset = 0;
-    curr->dgroup = (( control & SA_IN_DGROUP ) != 0 );
+    curr->dgroup = ( (control & SA_IN_DGROUP) != 0 );
     curr->lab_gened = false;
     if( class_name != NULL ) {
         curr->class_name = strpermsave( class_name );
@@ -282,7 +282,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
         curr->class_name = NULL;
     }
     curr->used = false;
-    curr->module_prefix = (( control & SA_MODULE_PREFIX ) != 0 );
+    curr->module_prefix = ( (control & SA_MODULE_PREFIX) != 0 );
     curr->fixed_alignment = false;
     curr->cg_defed = false;
     curr->has_data = false;
@@ -378,7 +378,7 @@ static PC_SEGMENT *addDefSeg(   // ADD A DEFAULT PC SEGMENT
     ++def_seg->ctr;
     sa_control = SA_NULL;
     if( ads_control & ADS_MODULE_PREFIX ) {
-        if(( ads_control & ADS_CODE_SEGMENT ) == 0 && DataSegName[0] != '\0' ) {
+        if( (ads_control & ADS_CODE_SEGMENT) == 0 && DataSegName[0] != '\0' ) {
             VbufConcStr( &seg_name, DataSegName );
         } else {
             VbufConcStr( &seg_name, ModuleName );
@@ -403,7 +403,7 @@ static PC_SEGMENT *addDefSeg(   // ADD A DEFAULT PC SEGMENT
         VbufConcDecimal( &seg_name, def_seg->ctr );
     }
     curr = segmentAlloc( VbufString( &seg_name ), NULL, SEG_NULL, attrs, sa_control );
-    if( 0 == ( attrs & EXEC ) ) {
+    if( 0 == (attrs & EXEC) ) {
         _markUsed( curr, true );
     }
     if( ads_control & ADS_STRING_SEGMENT ) {
@@ -947,7 +947,7 @@ static bool segmentIsCode(
     PC_SEGMENT *seg;
 
     seg = segIdLookup( segid );
-    if( ( seg->attrs & EXEC ) == 0 ) {
+    if( (seg->attrs & EXEC) == 0 ) {
         CErr( ERR_CODE_IN_NONCODE_SEG, seg->name );
         InfMsgPtr( INF_CODE_SEGMENT_SUFFIX, CODE_ENDING );
         return( false );
@@ -1089,7 +1089,7 @@ static void initP5TimingSegs( void )
     PC_SEGMENT *seg;
     PC_SEGMENT *sib;
 
-    if( TargetSwitches & (P5_PROFILING|NEW_P5_PROFILING) ) {
+    if( TargetSwitches & (P5_PROFILING | NEW_P5_PROFILING) ) {
         seg = segmentAllocRom( TS_SEG_TIB, SEG_PROF_BEG );
         sib = segmentAllocRW( TS_SEG_TI, SEG_PROF_REF );
         addSibling( seg, sib );
@@ -1295,7 +1295,7 @@ void SegmentCodeCgInit(         // TURN OFF USED BIT FOR ALL CODE SEGMENTS
     SegmentData( NULL, NULL );
     SegmentCode( NULL, NULL );
     RingIterBeg( seg_list, segment ) {
-        if( ( segment->attrs & EXEC ) && ! segment->has_data ) {
+        if( (segment->attrs & EXEC) && ! segment->has_data ) {
             _markUsed( segment, false );
         }
     } RingIterEnd( segment )

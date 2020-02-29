@@ -859,7 +859,7 @@ static void pragAllocText( void )
 {
     struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
-    auto SYM_ENTRY      sym;
+    SYM_ENTRY           sym;
 
     PPCTL_ENABLE_MACROS();
     PPNextToken();

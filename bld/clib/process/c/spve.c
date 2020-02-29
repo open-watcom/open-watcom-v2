@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     unsigned char           prot_mode286;
     unsigned char           use_cmd;
 #if defined( __DOS__ )
-    auto _87state           _87save;
+    _87state                _87save;
 #endif
     CHAR_TYPE               *drive;
     CHAR_TYPE               *dir;

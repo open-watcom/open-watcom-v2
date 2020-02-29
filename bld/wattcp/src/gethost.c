@@ -108,7 +108,7 @@ static __inline void AddHostEnt (struct _hostent *h,
             free (h->h_name);
         }
     } else {            /* create a new node */
-        h = calloc (sizeof(*h),1);
+        h = calloc (1, sizeof(*h));
         if (h != NULL) {
             h->h_next = host0;
             host0 = h;
@@ -166,7 +166,7 @@ void ReadHostFile (const char *fname)
         if (h == NULL)
             break;
 
-        h2 = calloc (sizeof(*h2),1);
+        h2 = calloc (1, sizeof(*h2));
         if (h2 == NULL) {
             outsnl (_LANG("Hostfile too big!\7"));
             break;
@@ -243,7 +243,7 @@ struct hostent * gethostent (void)
     alias       = strtok (NULL, " \t\n");
 
     if (alias != NULL && *alias != '#' && *alias != ';') {
-        char **alist = calloc ((1+MAX_HOST_ALIASES) * sizeof(char*), 1);
+        char **alist = calloc ((1+MAX_HOST_ALIASES), sizeof(char*));
         int  i = 0;
         do {
             if (*alias == '#' || *alias == ';')

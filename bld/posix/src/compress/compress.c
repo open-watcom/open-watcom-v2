@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -579,7 +580,7 @@ int foreground( void )
 
 void prratio(FILE *stream, long int num, long int den)
 {
-    register int q;         /* Doesn't need to be long */
+    int q;                  /* Doesn't need to be long */
 
     if(num > 214748L) {     /* 2147483647/10000 */
         q = (int) (num / (den / 10000L));

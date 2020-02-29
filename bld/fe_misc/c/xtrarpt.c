@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,8 +298,8 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
     int integ;                  // - computed average: integral part
     int fract;                  // - computed average: fractional part
     char *p;                    // - walks thru buffer
-    auto char int_part[16];     // - formatting buffers
-    auto char frac_part[16];
+    char int_part[16];          // - formatting buffers
+    char frac_part[16];
 
     count = *reg->avg.count->ctr.a_ctr;
     if( count == 0 ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1147,7 +1148,7 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
 {
     TOKEN prev_token;
     TOKEN curr_token;
-    auto char buf[2];
+    char buf[2];
 
     buf[1] = '\0';
     prev_token = T_NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 #ifdef __WIDECHAR__
 _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list arg )
 {
-    auto struct vswprtf_buf info;
+    struct vswprtf_buf info;
 
     if( n != 0 ) {
         info.bufptr = dest;
@@ -95,7 +95,7 @@ _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *
 #ifndef __WIDECHAR__
     register int            len;
 #else
-    auto struct vswprtf_buf info;
+    struct vswprtf_buf info;
 #endif
 
 #ifdef __WIDECHAR__

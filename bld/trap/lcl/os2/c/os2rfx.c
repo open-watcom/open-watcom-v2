@@ -372,76 +372,80 @@ trap_retval ReqRfx_nametocanonical( void )
     char                        *name;
     char                        *fullname;
     char                        *p;
-    int                         level = 0;
+    char                        *d;
+    int                         level;
     USHORT                      drive;
     ULONG                       map;
     USHORT                      len;
 
     // Not tested, and not used right now
+
+    // skip leading spaces
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
-    ret = GetOutPtr( 0 );
-    fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = 1;
     while( *name == ' ' ) {
         name++;
     }
-    if( *( name + 1 ) == ':' ) {
-        drive = toupper( *name ) - 'A';
+    // get drive
+    if( name[1] == ':' ) {
+        drive = toupper( name[0] ) - 'A';
         name += 2;
     } else {
         DosQCurDisk( &drive, &map );
     }
+    fullname = GetOutPtr( sizeof( *ret ) );
+    level = 0;
     len = RFX_NAME_MAX + 1;
-    if( *name != '\\' ) {
-        *fullname++ = '\\';
-        // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
-        DosQCurDir( drive + 1, (PBYTE)fullname, &len );
-        if( *fullname != '\0' ) {
-            level++;
-            while( *fullname != '\0' ) {
-                if( *fullname == '\\' ) {
-                    level++;
-                }
-                fullname++;
-            }
-        }
-    } else {
+    d = fullname;
+    *d++ = drive + 'A';
+    *d++ = ':';
+    len += 2;
+    if( IsPathSep( name ) ) {
         name++;
         if( *name == '\0' ) {
-            *fullname++ = '\\';
+            *d++ = '\\';
+            len--;
         }
-        *fullname = '\0';
-    }
-    p = name;
-    for( ;; ) {
-        for( ;; ) {
-            if( *p == '\0' )
-                goto done;
-            if( IsPathSep( p ) )
-                break;
-            ++p;
-        }
-        if( IsDot( p ) ) {
-        } else if( IsDotDot( p ) ) {
-            if( level > 0 ) {
-                while( *fullname != '\\' ) {
-                    fullname--;
+    } else {
+        *d++ = '\\';
+        len--;
+        // DOS : TinyGetCWDir( d, TinyGetCurrDrive() + 1 );
+        DosQCurDir( drive + 1, (PBYTE)d, &len );
+        if( *d != '\0' ) {
+            level++;
+            for( ; *d != '\0'; d++ ) {
+                if( *d == '\\' ) {
+                    level++;
                 }
-                level--;
-                *fullname = '\0';
-            } else {
-                ret->err = 1;
+            }
+        }
+    }
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    for( p = name; *p != '\0'; ) {
+        if( IsPathSep( p ) ) {
+            p++;
+            if( *p == '\0' ) {
                 break;
+            } else if( IsDot( p ) )
+                break;
+            } else if( IsDotDot( p ) ) {
+                if( level > 0 ) {
+                    while( *d != '\\' ) {
+                        d--;
+                    }
+                    level--;
+                } else {
+                    ret->err = 1;
+                }
+                break;
+            } else {
+                level++;
+                *d++ = '\\';
             }
         } else {
-            *fullname++ = '\\';
-            level++;
-            do {
-                *fullname++ = *p++;
-            } while( *p != '\0' );
-            *fullname = '\0';
+            *d++ = *p++;
         }
     }
-done:
-    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof( *ret ) ) ) + 1 );
+    *d = '\0';
+    return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ int     __near  _fmode;
 main( int argc, char *argv[] )
 {
     const char  *av[3];
-    auto char   cmdline[128];
+    char        cmdline[128];
 
     av[0] = PGM_NAME;                   /* name of executable to run */
     av[1] = getcmd( cmdline );          /* command line */

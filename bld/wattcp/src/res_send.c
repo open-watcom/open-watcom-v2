@@ -290,10 +290,10 @@ int res_send (const u_char *buf, int buflen, u_char *ans, int anssiz)
   #define ERROR_TYPE int
 #endif
 
-static int tcp_conn (tcp_Socket *tcp_sk, ERROR_TYPE *error, DWORD timeout)
+static int tcp_conn (sock_type *sk, ERROR_TYPE *error, DWORD timeout)
 {
     DWORD timer  = set_timeout (timeout);
-    int   status = _ip_delay0 ((sock_type*)tcp_sk, (int)timeout, NULL, NULL);
+    int   status = _ip_delay0 (sk, (int)timeout, NULL, NULL);
 
     if (status == -1) {
         *error = chk_timeout(timer) ? ETIMEDOUT : ECONNREFUSED;
@@ -305,10 +305,10 @@ static int tcp_conn (tcp_Socket *tcp_sk, ERROR_TYPE *error, DWORD timeout)
 
 /*------------------------------------------------------------------------*/
 
-static int tcp_read (tcp_Socket *tcp_sk, u_char *buf, int len,
+static int tcp_read (sock_type *sk, u_char *buf, int len,
                      ERROR_TYPE *error, DWORD timeout)
 {
-    int status = _ip_delay1 ((sock_type*)tcp_sk, (int)timeout, NULL, NULL);
+    int status = _ip_delay1 (sk, (int)timeout, NULL, NULL);
 
     if (status == -1) {
         *error = ETIMEDOUT;
@@ -319,22 +319,22 @@ static int tcp_read (tcp_Socket *tcp_sk, u_char *buf, int len,
         return (0);
     }
     *error = 0;
-    return sock_fastread ((sock_type*)tcp_sk, (BYTE*)buf, len);
+    return sock_fastread (sk, (BYTE*)buf, len);
 }
 
 /*------------------------------------------------------------------------*/
 
-static int udp_read (udp_Socket *udp_sk, u_char *buf, int len,
+static int udp_read (sock_type *sk, u_char *buf, int len,
                      ERROR_TYPE *error, DWORD timeout)
 {
-    int status = _ip_delay1 ((sock_type*)udp_sk, (int)timeout, NULL, NULL);
+    int status = _ip_delay1 (sk, (int)timeout, NULL, NULL);
 
     if (status == -1) {
         *error = ETIMEDOUT;
         return (0);
     }
     *error = 0;
-    return sock_fastread ((sock_type*)udp_sk, (BYTE*)buf, len);
+    return sock_fastread (sk, (BYTE*)buf, len);
 }
 
 /*------------------------------------------------------------------------*/
@@ -404,7 +404,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
             }
 
             if (!tcp_open(&conn_sk->tcp, 0, his_ip, his_port, NULL) ||
-                !tcp_conn(&conn_sk->tcp, &errno, dns_timeout)) {
+                !tcp_conn(conn_sk, &errno, dns_timeout)) {
                 Aerror ("tcp_open/vc", "failed/timeout", *nsap);
                 badns |= (1 << ns);
                 resolve_close();
@@ -432,7 +432,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
          */
         cp  = ns_ans;
         len = INT16SZ;
-        while ((n = tcp_read(&conn_sk->tcp, cp, len, &errno, dns_timeout)) > 0) {
+        while ((n = tcp_read(conn_sk, cp, len, &errno, dns_timeout)) > 0) {
             cp += n;
             len -= n;
             if (len <= 0)
@@ -453,7 +453,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
         }
 
         cp = ns_ans;
-        while (len && (n = tcp_read(&conn_sk->tcp, cp, len, &errno, dns_timeout)) > 0) {
+        while (len && (n = tcp_read(conn_sk, cp, len, &errno, dns_timeout)) > 0) {
             cp  += n;
             len -= n;
         }
@@ -471,7 +471,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
                 u_char junk[PACKETSZ];
 
                 n = (len > sizeof(junk) ? sizeof(junk) : len);
-                n = tcp_read (&conn_sk->tcp, junk, n, &errno, dns_timeout);
+                n = tcp_read (conn_sk, junk, n, &errno, dns_timeout);
                 if (n > 0) {
                     len -= n;
                 } else {
@@ -526,7 +526,7 @@ static int name_server_send (int ns, struct sockaddr_in *nsap)
 
 wait:
 
-        n = udp_read (&conn_sk->udp, ns_ans, ns_anssiz, &errno, timeout);
+        n = udp_read (conn_sk, ns_ans, ns_anssiz, &errno, timeout);
         if (n == 0) {
             Dprint (_res.options & RES_DEBUG, (";; timeout\n"));
             gotsomewhere = 1;

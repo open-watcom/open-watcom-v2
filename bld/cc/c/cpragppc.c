@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +218,7 @@ void AsmSysLine( const char *buff )
 static bool GetByteSeq( byte_seq **code )
 /***************************************/
 {
-    auto unsigned char  buff[MAXIMUM_BYTESEQ + 32];
+    unsigned char       buff[MAXIMUM_BYTESEQ + 32];
     bool                uses_auto;
     bool                too_many_bytes;
 
@@ -352,7 +352,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    auto char           name[8];
+    char                name[8];
 
     AsmFini();
     uses_auto = false;

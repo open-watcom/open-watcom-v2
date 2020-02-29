@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -695,7 +696,7 @@ static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
 {
     SWCASE *curr;               // - current case in search
     target_ulong case_uint;     // - value to look for
-    auto char buff[16];         // - buffer for duplicate value
+    char buff[16];              // - buffer for duplicate value
 
     case_uint = case_value->u.uint_constant;
     RingIterBeg( my_switch->u.s.cases, curr ) {

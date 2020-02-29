@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +228,7 @@ static void defineFeatureMacros( void )
     char        *end_watcom;
     char        *end_feature;
     const char  **p;
-    auto char   buff[128];
+    char        buff[128];
     static const char *feature[] = {
         "BOOL",
         "MUTABLE",

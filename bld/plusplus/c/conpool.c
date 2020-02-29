@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ POOL_CON *ConPoolFloatAdd       // ADD AN ITEM TO THE CONSTANTS POOL
     POOL_CON *pool;
     unsigned len;
     char *stg;
-    auto char buff[128];
+    char buff[128];
 
     len = PTreeGetFPRaw( node, buff, sizeof( buff ) );
     stg = CPermAlloc( len );
@@ -142,7 +142,7 @@ static void saveConstant( void *e, carve_walk_base *d )
 
 pch_status PCHWriteConstantPool( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     ConstantPoolPCHWrite( pool_float );
     ConstantPoolPCHWrite( pool_int64 );
@@ -156,7 +156,7 @@ pch_status PCHReadConstantPool( void )
 {
     unsigned len;
     POOL_CON *c;
-    auto cvinit_t data;
+    cvinit_t data;
 
     pool_float = ConstantPoolPCHRead();
     pool_int64 = ConstantPoolPCHRead();

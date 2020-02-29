@@ -68,7 +68,7 @@ static int udp_handler (sock_type *sk, BYTE *data, int len, tcp_PseudoHeader *tc
 {
     ARGSUSED (tcp_phdr); ARGSUSED (udp_hdr);
 
-    if (sk == (sock_type*)&udp_echo_sk) {
+    if (&sk->udp == &udp_echo_sk) {
         if (!sock_enqueue (sk, data, len)) {
             sock_close (sk);
         }

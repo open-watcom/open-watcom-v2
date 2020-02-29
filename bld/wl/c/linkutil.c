@@ -412,8 +412,8 @@ void VMemQSort( virt_mem base, size_t n, size_t width,
     size_t          i;
     size_t          count;
     size_t          sp;
-    auto virt_mem   base_stack[MAXDEPTH];
-    auto size_t     n_stack[MAXDEPTH];
+    virt_mem        base_stack[MAXDEPTH];
+    size_t          n_stack[MAXDEPTH];
 
     sp = 0;
     for( ; ; ) {

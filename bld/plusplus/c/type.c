@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -7613,7 +7613,7 @@ bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
 {
     TYPE fn_type;
     TYPE *top;
-    auto PSTK_CTL type_stack;
+    PSTK_CTL type_stack;
 
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
@@ -8357,7 +8357,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
     SYMBOL curr, stop;
     tb_status bind_status;
     bool result;
-    auto type_bind_info data;
+    type_bind_info data;
 
     DbgAssert( parm_scope != NULL );
 
@@ -8661,7 +8661,7 @@ static void dumpXrefType( void *e, carve_walk_base *d )
 void DumpOfRefs( void )
 {
     FILE *fp;
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     if( CompFlags.extra_stats_wanted ) {
         CarveWalkAllFree( carveTYPE, markFreeType );
@@ -8692,7 +8692,7 @@ static void freeTypeName( void *e, carve_walk_base *d )
 static void typesFini(          // COMPLETION OF TYPES PROCESSING
     INITFINI* defn )            // - definition
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     /* unused parameters */ (void)defn;
 
@@ -9185,8 +9185,8 @@ pch_status PCHWriteTypes( void )
 {
     unsigned i;
     unsigned tci;
-    auto type_pch_walk type_data;
-    auto carve_walk_base data;
+    type_pch_walk type_data;
+    carve_walk_base data;
 
     memset( &type_data, 0, sizeof( type_data ) );
     writeType( TypeError );
@@ -9262,7 +9262,7 @@ static void readTypes( type_pch_walk *type_data )
 {
     unsigned int l;
     TYPE t;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveTYPE, &data );
     for( ; (t = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9316,7 +9316,7 @@ static void readClassInfos( void )
 {
     CLASSINFO *ci;
     signed char friend_is_type;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveCLASSINFO, &data );
     for( ; (ci = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9343,7 +9343,7 @@ static void readClassInfos( void )
 static void readDeclInfos( void )
 {
     DECL_INFO *dinfo;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveDECL_INFO, &data );
     for( ; (dinfo = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9378,8 +9378,8 @@ pch_status PCHReadTypes( void )
     arg_list **translate;
     arg_list *args;
     arg_list **set;
-    auto type_pch_walk type_data;
-    auto arg_list tmp_arglist;
+    type_pch_walk type_data;
+    arg_list tmp_arglist;
 
     readType( &TypeError );
     readType( &uniqueTypes );
@@ -9510,7 +9510,7 @@ static void relocType( void *e, carve_walk_base *d )
 
 pch_status PCHRelocTypes( char *block, size_t size )
 {
-    auto type_reloc_pch_walk type_data;
+    type_reloc_pch_walk type_data;
 
     type_data.curr = block;
     type_data.amount = size;

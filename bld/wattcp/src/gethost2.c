@@ -154,7 +154,7 @@ static int _gethostent (struct _hostent *h)
     alias        = strtok (NULL," \t\n");
 
     if (alias != NULL && *alias != '#' && *alias != ';') {
-        char **alist = calloc ((1+MAX_HOST_ALIASES) * sizeof(char*), 1);
+        char **alist = calloc ((1+MAX_HOST_ALIASES), sizeof(char*));
         int  i = 0;
         do {
             if (*alias == '#' || *alias == ';')

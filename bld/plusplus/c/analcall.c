@@ -159,7 +159,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     aptr = alist->type_list;
     while( num_args-- > 0 ) {
         arg->type = BindTemplateClass( arg->type, &arg->locn, true );
-        if( ( arg->flags & PTF_LVALUE ) && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
+        if( (arg->flags & PTF_LVALUE) && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
             // temporaries may only be bound to const references
             if( NULL == TypeReference( arg->type ) ) {
                 arg->type = MakeConstReferenceTo( arg->type );
@@ -201,7 +201,7 @@ static PTREE arg_fillout(       // FILL OUT A CONVERTED ARGUMENT
 
     right = arg->u.subtree[1];
     arg->type = right->type;
-    arg->flags = (arg->flags & PTF_ARGS ) | right->flags;
+    arg->flags = (arg->flags & PTF_ARGS) | right->flags;
     return( arg );
 }
 

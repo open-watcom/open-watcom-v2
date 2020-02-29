@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,8 +73,8 @@ static void processLang( char *prefix, unsigned lang ) {
     FILE *ifp;
     unsigned component;
     fpos_t header_posn;
-    auto LocaleData header;
-    auto char fname[16];
+    LocaleData header;
+    char fname[16];
 
     sprintf( fname, "%.6s%02u." LOCALE_DATA_EXT, prefix, lang );
     fp = fopen( fname, "wb" );

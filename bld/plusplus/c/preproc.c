@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +235,7 @@ void PrtChar(                   // PRINT PREPROC CHAR IF REQ'D
 
 static void printMangledId( IDMANGLE *id )
 {
-    auto char buff[32];
+    char buff[32];
 
     sprintf( buff, "_%u_", id->index );
     PrtString( buff );

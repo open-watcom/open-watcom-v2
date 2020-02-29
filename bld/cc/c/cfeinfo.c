@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1043,9 +1043,9 @@ static CGPOINTER NextImportS( int index, aux_class request )
 */
 CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    aux_info             *inf;
-    auto SYM_ENTRY       sym;
-    static hw_reg_set    save_set;
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+    static hw_reg_set   save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:
@@ -1203,9 +1203,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 */
 CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    aux_info                *inf;
-    auto SYM_ENTRY          sym;
-    static hw_reg_set       save_set;
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+    static hw_reg_set   save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:

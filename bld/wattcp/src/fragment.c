@@ -440,7 +440,7 @@ static in_Header *alloc_frag_buffer (const in_Header *ip)
 
     if (!frag_buckets[i].ip)
     {
-      p = calloc (BUCKET_SIZE + _pkt_ip_ofs, 1);
+      p = calloc (1, BUCKET_SIZE + _pkt_ip_ofs);
       if (!p)
       {
         MSG (("calloc() failed\n"));
@@ -617,7 +617,7 @@ BYTE *init_frag (int argc, char **argv)
     exit (-1);
   }
 
-  data = calloc (frag_size * max_frags, 1);
+  data = calloc (max_frags, frag_size);
   if (!data)
   {
     printf ("no memory\n");

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -549,7 +550,7 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
     ULONG       nesting;
     LONG        req_count;
     struct pgmparms parms;
-    auto SYSEREGREC RegRec;
+    SYSEREGREC  RegRec;
 
     __IsDBCS = __checkIsDBCS();
     parms.isDBCS = __IsDBCS;

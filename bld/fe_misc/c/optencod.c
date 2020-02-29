@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2266,8 +2266,8 @@ static void emitUsageB( const char *str, bool page_flag )
 static void dumpInternational( void )
 {
     unsigned lang;
-    auto char fname[16];
-    auto LocaleUsage usage_header;
+    char fname[16];
+    LocaleUsage usage_header;
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
         sprintf( fname, "usage%02u." LOCALE_DATA_EXT, lang );

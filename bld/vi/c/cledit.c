@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "vi.h"
 #include "posix.h"
 #include "win.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -252,12 +252,17 @@ vi_rc EditFile( const char *name, bool dammit )
                     /* directory has changed -- check with full path
                      * note that this will fail if an absolute path
                      * was specified thus we do the regular check first */
-                    char    path[FILENAME_MAX];
-                    PGROUP  pg;
+                    char        path[FILENAME_MAX];
+                    PGROUP2     pg1;
+                    PGROUP2     pg2;
 
-                    _splitpath( il->CurrentFile->name, pg.drive, pg.dir, pg.fname, pg.ext );
-                    if( pg.drive[0] == '\0' ) {
-                        _splitpath( il->CurrentFile->home, pg.drive, NULL, NULL, NULL );
+                    _splitpath2( il->CurrentFile->name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+                    _splitpath2( il->CurrentFile->home, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+                    if( pg1.drive[0] == '\0' ) {
+                        pg1.drive = pg2.drive;
+                    }
+                    if( pg1.dir[0] == '\0' ) {
+                        pg1.dir = pg2.dir;
                     }
                     strcpy( path, il->CurrentFile->home );
                     len = strlen( path );
@@ -275,15 +280,15 @@ vi_rc EditFile( const char *name, bool dammit )
                             break;
                         }
                     }
-                    if( pg.dir[0] == '\0' ) {
-                        _splitpath( path, NULL, pg.dir, NULL, NULL );
-                    } else if( pg.dir[0] != FILE_SEP ) {
+                    if( pg1.dir[0] == '\0' ) {
+                        _splitpath( path, NULL, pg1.dir, NULL, NULL );
+                    } else if( pg1.dir[0] != FILE_SEP ) {
                         char dir2[_MAX_DIR];
                         _splitpath( path, NULL, dir2, NULL, NULL );
-                        strcat( dir2, pg.dir );
-                        strcpy( pg.dir, dir2 );
+                        strcat( dir2, pg1.dir );
+                        strcpy( pg1.dir, dir2 );
                     }
-                    _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
+                    _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
 
                     if( SameFile( path, currfn ) ) {
                         break;

@@ -223,11 +223,10 @@ static int pppoe_send (int code)
   pppoe_Packet *pkt = (struct pppoe_Packet*) MAC_HDR (eth);
   int           len = build_pad (pkt, code);
 
+  DEBUG_TX (NULL, eth);
+
 #if defined(USE_DEBUG)
-  if (_dbugxmit)
-    (*_dbugxmit) (NULL, eth, __FILE__, __LINE__);
-  if (debug_on)
-  {
+  if (debug_on) {
     outs ("PPPOE: sending code 0x");
     outhex (code);
   }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1325,7 +1325,7 @@ static void writeWordTable( void )
 {
     MSGWORD *w;
     unsigned i;
-    auto data_word_tables data_w;
+    data_word_tables data_w;
 
     data_w.current_base = 0;
     data_w.word_base = malloc( ( multiRefWords + 1 ) * sizeof( unsigned ) );
@@ -1537,8 +1537,8 @@ static void dumpInternational( void )
     unsigned lang;
     unsigned len;
     bool dump_warning;
-    auto char err_fname[16];
-    auto LocaleErrors errors_header;
+    char err_fname[16];
+    LocaleErrors errors_header;
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
         sprintf( err_fname, "errors%02u." LOCALE_DATA_EXT, lang );

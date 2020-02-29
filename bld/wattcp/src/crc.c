@@ -78,7 +78,7 @@ int watt_crc_init (void)
   if (crctable)
      return (1);
 
-  crctable = (DWORD*) calloc (sizeof(DWORD), 256);
+  crctable = (DWORD*) calloc (256, sizeof(DWORD));
   if (!crctable)
      return (0);
 
