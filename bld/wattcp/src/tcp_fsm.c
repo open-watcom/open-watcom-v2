@@ -651,9 +651,9 @@ static void tcp_ProcessData (tcp_Socket *tcp_sk, tcp_Header *tcp_hdr, int len, i
         data += diff;
         len  -= diff;
 
-        if (tcp_sk->protoHandler)
+        if (tcp_sk->protoHandler != NULL) {
             tcp_sk->acknum += (*tcp_sk->protoHandler) ((sock_type *)tcp_sk, data, len, NULL, NULL);
-        else {
+        } else {
             /* no handler, just dump to buffer, should be indexed,
              * handles goofs limit receive size to our window
              */

@@ -563,11 +563,11 @@ static sock_type *dhcp_open (int reconf)
 
 /*-------------------------------------------------------------------*/
 
-static void arp_add_server (sock_type *sock)
+static void arp_add_server (sock_type *sk)
 {
     if ((_pktdevclass == PD_ETHER || _pktdevclass == PD_TOKEN) &&
-        memcmp(&sock->udp.hisethaddr, &_eth_brdcast, sizeof(_eth_brdcast))) {
-        _arp_add_cache (dhcp_server, &sock->udp.hisethaddr, TRUE);
+        memcmp(&sk->udp.hisethaddr, &_eth_brdcast, sizeof(_eth_brdcast))) {
+        _arp_add_cache (dhcp_server, &sk->udp.hisethaddr, TRUE);
     }
 }
 
