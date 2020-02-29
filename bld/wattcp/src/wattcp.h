@@ -504,6 +504,7 @@ typedef struct u_Socket {
  * sock_type used for socket I/O
  */
 typedef union sock_type {
+        union sock_type *next;
         udp_Socket udp;
         tcp_Socket tcp;
         raw_Socket raw;
