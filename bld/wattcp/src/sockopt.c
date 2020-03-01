@@ -217,7 +217,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
         return set_rx_lowat (socket, optval);
     case SO_RCVBUF:
       {
-        int size = *(const int*) optval;
+        sock_size size = *(const sock_size*) optval;
         if (size == 0) {
             SOCK_ERR (EINVAL);
             return (-1);
@@ -236,7 +236,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
       }
     case SO_SNDBUF:
       {
-        unsigned size = *(const unsigned*) optval;
+        sock_size size = *(const sock_size*) optval;
         if (size == 0) {
             SOCK_ERR (EINVAL);
             return (-1);
@@ -325,6 +325,8 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
         return get_rx_lowat (socket, optval);
     case SO_RCVBUF:
         if (sk != NULL) {
+            *optlen = sizeof(int);
+            *(int*)optval = sizeof (sk->raw.data);
             if (socket->so_proto == IPPROTO_UDP || socket->so_proto == IPPROTO_TCP) {
                 *(int*)optval = sock_rbsize (sk);
                 return (0);
@@ -336,6 +338,7 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
         return (-1);
     case SO_SNDBUF:
         if (sk != NULL) {
+            *optlen = sizeof(int);
             if (socket->so_proto == IPPROTO_UDP) {
                 *(unsigned*)optval = 0;
                 return (0);
@@ -468,7 +471,7 @@ static int get_tcp_opt (tcp_Socket *tcp, int opt, void *optval, socklen_t *optle
         break;
     case TCP_NOOPT:
         *(int*)optval = ( (tcp->locflags & LF_NOOPT) != 0 );
-        *(size_t*)optlen = sizeof (int);
+        *(size_t*)optlen = sizeof(int);
         break;
     default:
         SOCK_ERR (ENOPROTOOPT);
@@ -647,7 +650,7 @@ static int get_raw_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
  * Max size accepted is 64k * (2 << TCP_MAX_WINSHIFT) = 1MByte.
  * Or 64kB for small/large models.
  */
-static int tcp_rx_buf (tcp_Socket *tcp, unsigned size)
+static int tcp_rx_buf (tcp_Socket *tcp, sock_size size)
 {
     BYTE *buf;
 
@@ -682,7 +685,7 @@ static int tcp_rx_buf (tcp_Socket *tcp, unsigned size)
  * Set transmit buffer size for TCP.
  * Max size accepted is 64k.
  */
-static int tcp_tx_buf (tcp_Socket *tcp, unsigned size)
+static int tcp_tx_buf (tcp_Socket *tcp, sock_size size)
 {
 #ifdef NOT_YET
     BYTE *buf;

@@ -20,11 +20,11 @@
  *
  * Set errno on failure and return -1.
  */
-int getdomainname (char *buffer, int buflen)
+int getdomainname (char *buffer, size_t buflen)
 {
     const char *my_domainname = "";
 
-    if (buffer == NULL || buflen < 0) {
+    if (buffer == NULL) {
         errno = EINVAL;
         return (-1);
     }
@@ -46,15 +46,15 @@ int getdomainname (char *buffer, int buflen)
  * Set the host's domain name.
  * Set errno on failure and return -1.
  */
-int setdomainname (const char *name, int len)
+int setdomainname (const char *name, size_t buflen)
 {
-    if (name == NULL || len < 0 || len > sizeof(defaultdomain)-1) {
+    if (name == NULL || buflen > sizeof(defaultdomain)-1) {
         errno = EINVAL;
         return (-1);
     }
 
 #if (DOSX)
-    if (!valid_addr((DWORD)name, len)) {
+    if (!valid_addr((DWORD)name, buflen)) {
         errno = EFAULT;
         return (-1);
     }
@@ -68,7 +68,7 @@ int setdomainname (const char *name, int len)
  * Make a FQDN from `hostname' & `def_domain'.
  * Set errno on failure and return -1.
  */
-int gethostname (char *buffer, int buflen)
+int gethostname (char *buffer, size_t buflen)
 {
     /* the fqdn when no hostname has been set is "localhost.localdomain".
      * the fqdn when a hostname has been set, but no domname is set, is 'hostname'
@@ -78,7 +78,7 @@ int gethostname (char *buffer, int buflen)
     const char *my_domname  = "localdomain";
     int   pos;
 
-    if (buffer == NULL || buflen < 0) {
+    if (buffer == NULL) {
         errno = EINVAL;
         return (-1);
     }
@@ -119,23 +119,23 @@ int gethostname (char *buffer, int buflen)
  * Split at first `.' and extract `hostname' and `def_domain'.
  * Set errno on failure and return -1.
  */
-int sethostname (const char *fqdn, int len)
+int sethostname (const char *fqdn, size_t buflen)
 {
     int pos;
 
-    if (fqdn == NULL || *fqdn == '\0' || len < 0 || len > MAX_HOSTLEN) {
+    if (fqdn == NULL || *fqdn == '\0' || buflen > MAX_HOSTLEN) {
         errno = EINVAL;
         return (-1);
     }
 
 #if (DOSX)
-    if (!valid_addr((DWORD)fqdn, len)) {
+    if (!valid_addr((DWORD)fqdn, buflen)) {
         errno = EFAULT;
         return (-1);
     }
 #endif
 
-    for(pos = 0; pos < len && fqdn[pos] != '.'; pos++) {
+    for(pos = 0; pos < buflen && fqdn[pos] != '.'; pos++) {
         if (!fqdn[pos]) {   /* should do complete alpha/digit/underscore check here */
             pos = 0;
             break;
@@ -150,7 +150,7 @@ int sethostname (const char *fqdn, int len)
         return (-1);
     }
     if (fqdn[pos] == '.') {   /* a trailing '.' is ok too */
-        if (setdomainname(&fqdn[pos+1], len-pos) != 0) {
+        if (setdomainname(&fqdn[pos+1], buflen - pos) != 0) {
             return (-1);
         }
     }
@@ -184,10 +184,10 @@ int sethostname (const char *fqdn, int len)
 /*
  * Try asking a LAN extension of DOS for a host-name.
  */
-int _get_machine_name (char *buf, int size)
+int _get_machine_name (char *buf, size_t buflen)
 {
     char *h, dosbuf[16];
-    int   len;
+    size_t len;
 
 #if (DOSX & DJGPP)
     __dpmi_regs r;
@@ -264,7 +264,7 @@ int _get_machine_name (char *buf, int size)
     *h  = 0;
     h   = dosbuf;
     len = strlen (h);
-    if (len + 1 > size) {
+    if (len + 1 > buflen) {
         errno = ERANGE;
         return (-1);
     }

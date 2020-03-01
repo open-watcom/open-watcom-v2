@@ -368,15 +368,15 @@ static int socket_find_fd (const Socket *socket)
 
 /*
  *  socket_find_udp
- *    Finds the 'Socket' associated with udp-socket 'udp_sk'.
+ *    Finds the 'Socket' associated with udp-socket 'sk'.
  *    Return NULL if not found.
  */
-static Socket *socket_find_udp (const udp_Socket *udp_sk)
+static Socket *socket_find_udp (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (&_socket->proto_sock->udp == udp_sk) {
+        if (_socket->proto_sock == sk) {
             return (_socket);
         }
     }
@@ -386,7 +386,7 @@ static Socket *socket_find_udp (const udp_Socket *udp_sk)
 
 /*
  *  socket_find_tcp
- *    Finds the 'Socket' associated with tcp-socket 'tcp_sk'.
+ *    Finds the 'Socket' associated with tcp-socket 'sk'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_tcp (const sock_type *sk)

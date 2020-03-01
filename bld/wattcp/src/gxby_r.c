@@ -28,11 +28,11 @@
 /*
  * gethostbyY_r..
  */
-int gethostbyaddr_r (const char *addr, int addr_len, int addr_type,
+int gethostbyaddr_r (const char *addr, socklen_t addr_len, int addr_type,
                      struct hostent *result,
                      struct hostent *buffer,
                      int buffer_len, int *p_errno)
-{   
+{
   struct hostent *he;
 
   if (!result || !buffer)

@@ -220,7 +220,8 @@ int main (int argc, char **argv)
     struct timeval  tv;
     struct sockaddr from;
     fd_set fd_read, fd_write, fd_exc;
-    int    num, from_len = sizeof(from);
+    int    num;
+    socklen_t from_len = sizeof(from);
 
     FD_ZERO (&fd_read);
     FD_ZERO (&fd_write);

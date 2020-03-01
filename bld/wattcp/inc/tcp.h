@@ -453,17 +453,17 @@ extern int sock_tbleft (const void *sk);
 extern char *_inet_ntoa  (char *s, DWORD x);
 extern DWORD _inet_addr  (const char *name);
 
-extern int   _getsockname(const void *sk, void *dest, int *len);
-extern int   _getpeername(const void *sk, void *dest, int *len);
+extern int   _getsockname(const void *sk, void *dest, socklen_t *len);
+extern int   _getpeername(const void *sk, void *dest, socklen_t *len);
 extern DWORD _gethostid  (void);
 extern DWORD _sethostid  (DWORD ip);
 extern int   _chk_socket (const void *sk);
 extern void  psocket     (const void *sk);
 
-extern int   getdomainname (char *name, int len);
-extern int   setdomainname (char *name, int len);
-extern int   gethostname   (char *name, int len);
-extern int   sethostname   (char *name, int len);
+extern int   getdomainname (char *name, size_t len);
+extern int   setdomainname (char *name, size_t len);
+extern int   gethostname   (char *name, size_t len);
+extern int   sethostname   (char *name, size_t len);
 extern void _arp_register  (DWORD use, DWORD instead_of, int nowait);
 extern int  _arp_resolve   (DWORD ina, void *eth, int nowait);
 
