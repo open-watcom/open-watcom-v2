@@ -35,7 +35,7 @@
  *  source address/port of peer.
  */
 
-int bind (int s, const struct sockaddr *myaddr, int namelen)
+int bind (int s, const struct sockaddr *myaddr, socklen_t namelen)
 {
   Socket             *socket = _socklist_find (s);
   struct sockaddr_in *addr   = (struct sockaddr_in*) myaddr;
@@ -106,7 +106,7 @@ int bind (int s, const struct sockaddr *myaddr, int namelen)
   }
   else  /* check if requested port is vacant */
   {
-    local_port = ntohs (addr->sin_port); 
+    local_port = ntohs (addr->sin_port);
     if (grab_localport (local_port) > 0)
     {
       SOCK_DEBUGF ((socket, ", EADDRINUSE"));

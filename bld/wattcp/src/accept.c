@@ -30,7 +30,7 @@ static int alloc_addr (Socket *socket, Socket  *clone);
 static int listen_free(Socket *socket, int idx);
 
 
-int accept (int s, struct sockaddr *addr, int *addrlen)
+int accept (int s, struct sockaddr *addr, socklen_t *addrlen)
 {
     Socket  *clone, *socket;
     volatile DWORD   timeout;

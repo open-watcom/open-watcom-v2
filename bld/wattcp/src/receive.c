@@ -14,13 +14,13 @@
 #if defined(USE_BSD_FUNC)
 
 static int tcp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int udp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int raw_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 /*
  * receive() flags:
@@ -36,7 +36,7 @@ static int raw_receive (Socket *sock, void *buf, int len, int flags,
  */
 
 static int receive (const char *func, int s, void *buf, int len, int flags,
-                    struct sockaddr *from, int *fromlen)
+                    struct sockaddr *from, socklen_t *fromlen)
 {
   Socket *socket = _socklist_find (s);
   int     ret    = 0;
@@ -140,7 +140,7 @@ recv_exit:
  * recvfrom(): receive from socket 's'. Address (src-ip/port) is put
  *             in 'from' (if non-NULL)
  */
-int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, int *fromlen)
+int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, socklen_t *fromlen)
 {
   return receive ("recvfrom", s, buf, len, flags, from, fromlen);
 }
@@ -167,7 +167,7 @@ int read_s (int s, char *buf, int len)
  * Fill in packet's address in 'from' and length in 'fromlen'.
  * Only used for UDP & Raw-IP. TCP have peer info in 'socket->remote_addr'.
  */
-static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
+static void udp_raw_fill_from (struct sockaddr *from, socklen_t *fromlen,
                                struct in_addr  *peer, WORD port)
 {
   struct sockaddr_in *sa = (struct sockaddr_in*) from;
@@ -188,7 +188,7 @@ static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
  *  TCP receiver
  */
 static int tcp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   int        ret   = 0;
   int        fin   = 0;    /* got FIN from peer */
@@ -305,7 +305,7 @@ read_it:
  *  UDP receiver
  */
 static int udp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   int   ret   = 0;
   DWORD timer = 0UL;
@@ -418,7 +418,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
  * Raw-IP receiver. Doesn't handle IP-options yet.
  */
 static int raw_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   sock_type    *sk = socket->proto_sock;
   DWORD        timer;

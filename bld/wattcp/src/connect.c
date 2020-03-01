@@ -24,7 +24,7 @@ static void set_keepalive(Socket *socket);
  *  address and foreign port number in the "servaddr".
  */
 
-int connect (int s, const struct sockaddr *servaddr, int addrlen)
+int connect (int s, const struct sockaddr *servaddr, socklen_t addrlen)
 {
   struct   sockaddr_in *addr   = (struct sockaddr_in*) servaddr;
   struct   Socket      *socket = _socklist_find (s);
