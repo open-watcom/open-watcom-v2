@@ -13,12 +13,12 @@ void sock_debugdump (const sock_type *sk)
     if (sk->u.ip_type == IP_TYPE)
         return;
 
-#if defined(__SMALL__)
-    (*_printf) ("next       %04X\r\n",      sk->next);
+#if (DOSX)
+    (*_printf) ("next       %08lX\r\n",     (DWORD)sk->next);
 #elif defined(__LARGE__)
     (*_printf) ("next       %04X:%04X\r\n", FP_SEG(sk->next), FP_OFF(sk->next));
 #else
-    (*_printf) ("next       %08lX\r\n",     (DWORD)sk->next);
+    (*_printf) ("next       %04X\r\n",      sk->next);
 #endif
 
     (*_printf) ("type       %d\r\n", sk->u.ip_type);
