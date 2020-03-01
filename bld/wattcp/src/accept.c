@@ -277,7 +277,7 @@ static int listen_free (Socket *socket, int idx)
 {
     sock_type *tcb_sk = socket->listen_queue[idx];
 
-    _tcp_unthread (&tcb_sk->tcp);
+    _tcp_unthread (tcb_sk);
 
     if (tcb_sk->tcp.rdata != tcb_sk->tcp.rddata)    /* free large Rx buffer? */
         free (tcb_sk->tcp.rdata);
@@ -371,9 +371,9 @@ int _sock_append (sock_type **skp)
     orig_sk->tcp.last_seqnum[0] = orig_sk->tcp.last_seqnum[1] = 0;
 #endif
 
-    clone_sk->tcp.next = _tcp_allsocs;
-    _tcp_allsocs = &clone_sk->tcp;      /* prepend clone to TCB-list */
-    *skp = (sock_type *)_tcp_allsocs;   /* clone is now the new TCB */
+    clone_sk->next = _tcp_allsocs;
+    _tcp_allsocs = clone_sk;            /* prepend clone to TCB-list */
+    *skp = _tcp_allsocs;                /* clone is now the new TCB */
     return (0);
 }
 

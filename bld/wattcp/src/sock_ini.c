@@ -293,8 +293,9 @@ static void tcp_shutdown (void)
 
     if (!_watt_fatal_error) {
 #if !defined(USE_UDP_ONLY)
-        while (_tcp_allsocs)
-            tcp_abort (_tcp_allsocs);
+        while (_tcp_allsocs) {
+            tcp_abort (&_tcp_allsocs->tcp);
+        }
 #endif
 
 #if defined(USE_DHCP)
