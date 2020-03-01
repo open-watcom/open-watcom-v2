@@ -117,9 +117,9 @@
  * Structure used for manipulating linger option.
  */
 struct linger {
-       int l_onoff;                /* option on/off */
-       int l_linger;               /* linger time */
-     };
+    int             l_onoff;            /* option on/off */
+    int             l_linger;           /* linger time */
+};
 
 /*
  * Level number for (get/set)sockopt() to apply to socket itself.
@@ -159,18 +159,18 @@ struct linger {
  * is called struct osockaddr in 4.4BSD
  */
 struct sockaddr {
-       u_short sa_family;              /* address family */
-       char    sa_data[14];            /* up to 14 bytes of direct address */
-     };
+    u_short         sa_family;          /* address family */
+    char            sa_data[14];        /* up to 14 bytes of direct address */
+};
 
 /*
  * Structure used by kernel to pass protocol
  * information in raw sockets.
  */
 struct sockproto {
-       u_short sp_family;              /* address family */
-       u_short sp_protocol;            /* protocol */
-     };
+    u_short         sp_family;          /* address family */
+    u_short         sp_protocol;        /* protocol */
+};
 
 /*
  * Protocol families, same as address families for now.
@@ -221,28 +221,29 @@ struct sockproto {
  * of message elements headed by cmsghdr structures.
  */
 struct cmsghdr {
-       u_int   cmsg_len;               /* data byte count, including hdr */
-       int     cmsg_level;             /* originating protocol */
-       int     cmsg_type;              /* protocol-specific type */
-       /* followed by  u_char  cmsg_data[]; */
-     };
+    socklen_t       cmsg_len;           /* data byte count, including hdr */
+    int             cmsg_level;         /* originating protocol */
+    int             cmsg_type;          /* protocol-specific type */
+    /* followed by  u_char  cmsg_data[]; */
+};
 
 #ifndef iovec_defined
 #define iovec_defined
 struct iovec {
-       void *iov_base;
-       int   iov_len;
-     };
+    void            *iov_base;
+    int             iov_len;
+};
 #endif
 
 struct msghdr {
-       char         *msg_name;         /* Contains an optional address. */
-       int           msg_namelen;      /* len of optional address */
-       struct iovec *msg_iov;          /* scatter/gather array. */
-       int           msg_iovlen;       /* number of elements in msg_iov */
-       char         *msg_accrights;    /* does not apply to IP - not changed */
-       int           msg_accrightslen; /* does not apply to IP */
-     };
+    char            *msg_name;          /* Contains an optional address. */
+    socklen_t       msg_namelen;        /* len of optional address       */
+    struct iovec    *msg_iov;           /* scatter/gather array.         */
+    int             msg_iovlen;         /* number of elements in msg_iov */
+    void            *msg_control;       /* Ancillary data                */
+    socklen_t       msg_controllen;     /* Ancillary data buffer length  */
+    int             msg_flags;          /* Received flags on recvmsg     */
+};
 
 /* given pointer to struct adatahdr, return pointer to data */
 #define CMSG_DATA(cmsg)         ((u_char *)((cmsg) + 1))
@@ -263,28 +264,28 @@ struct msghdr {
 
 __BEGIN_DECLS
 
-extern  int    accept (int, struct sockaddr *, int *);
-extern  int    bind (int, const struct sockaddr *, int);
-extern  int    closesocket (int s);
-extern  int    connect (int, const struct sockaddr *, int);
-extern  int    ioctlsocket (int s, long cmd, char *argp);
-extern  int    fcntlsocket (int s, int cmd, ...);
+extern int      accept (int, struct sockaddr *, socklen_t *);
+extern int      bind (int, const struct sockaddr *, socklen_t);
+extern int      closesocket (int s);
+extern int      connect (int, const struct sockaddr *, socklen_t);
+extern int      ioctlsocket (int s, long cmd, char *argp);
+extern int      fcntlsocket (int s, int cmd, ...);
 
-extern  u_long gethostid (void);
-extern  int    getpeername (int, struct sockaddr *, int *);
-extern  int    getsockname (int, struct sockaddr *, int *);
-extern  int    getsockopt (int, int, int, void *, int *);
-extern  int    listen (int, int);
-extern  int    recv (int, void *, int, int);
-extern  int    recvfrom (int, void *, int, int, struct sockaddr *, int *);
-extern  int    send (int, const void *, int, int);
-extern  int    sendto (int, const void *, int, int, const struct sockaddr *, int);
-extern  u_long sethostid (u_long);
-extern  int    setsockopt (int, int, int, const void *, int);
-extern  int    shutdown (int, int);
-extern  int    socket (int, int, int);
+extern u_long   gethostid (void);
+extern int      getpeername (int, struct sockaddr *, socklen_t *);
+extern int      getsockname (int, struct sockaddr *, socklen_t *);
+extern int      getsockopt (int, int, int, void *, socklen_t *);
+extern int      listen (int, int);
+extern int      recv (int, void *, int, int);
+extern int      recvfrom (int, void *, int, int, struct sockaddr *, socklen_t *);
+extern int      send (int, const void *, int, int);
+extern int      sendto (int, const void *, int, int, const struct sockaddr *, socklen_t);
+extern u_long   sethostid (u_long);
+extern int      setsockopt (int, int, int, const void *, socklen_t);
+extern int      shutdown (int, int);
+extern int      socket (int, int, int);
 #define soclose close_s
-extern int close_s  (int s);
+extern int      close_s (int s);
 
 __END_DECLS
 
