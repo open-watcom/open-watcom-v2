@@ -153,13 +153,15 @@ struct linger {
 #define AF_INET6        24              /* IPv6 address family */
 #define AF_MAX          25
 
+typedef u_short 	sa_family_t;
+
 /*
  * Structure used by kernel to store most
  * addresses.
  * is called struct osockaddr in 4.4BSD
  */
 struct sockaddr {
-    u_short         sa_family;          /* address family */
+    sa_family_t     sa_family;          /* address family */
     char            sa_data[14];        /* up to 14 bytes of direct address */
 };
 
