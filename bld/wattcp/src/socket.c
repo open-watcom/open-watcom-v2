@@ -959,12 +959,12 @@ int socket (int family, int type, int protocol)
  *        but currrently there is a 1-to-1 relation between a
  *        'socket' and a 'tcp' (or 'udp') structure.
  */
-static int stream_cancel (const tcp_Socket *tcp_sk)
+static int stream_cancel (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (_socket->so_type == SOCK_STREAM && tcp_sk == &_socket->proto_sock->tcp) {
+        if (_socket->so_type == SOCK_STREAM && sk == _socket->proto_sock) {
             _socket->so_state |= SS_CONN_REFUSED;
             _socket->so_error  = ECONNREFUSED;
         }
@@ -972,12 +972,12 @@ static int stream_cancel (const tcp_Socket *tcp_sk)
     return (1);
 }
 
-static int dgram_cancel (const udp_Socket *udp_sk)
+static int dgram_cancel (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (_socket->so_type == SOCK_DGRAM && udp_sk == &_socket->proto_sock->udp) {
+        if (_socket->so_type == SOCK_DGRAM && sk == _socket->proto_sock) {
             _socket->so_state |= SS_CONN_REFUSED;
             _socket->so_error  = ECONNREFUSED;
         }
@@ -992,10 +992,10 @@ static int sol_callback (sock_type *sk, int icmp_type)
 
     if (icmp_type == ICMP_UNREACH || icmp_type == ICMP_PARAMPROB) {
         if (sk->u.ip_type == UDP_PROTO)
-            return dgram_cancel (&sk->udp);
+            return dgram_cancel (sk);
 
         if (sk->u.ip_type == TCP_PROTO) {
-            return stream_cancel (&sk->tcp);
+            return stream_cancel (sk);
         }
     }
     return (0);

@@ -16,7 +16,7 @@
  *                        Francisco Pastor <fpastor.etra-id@etra.es> for
  *                        finding this.
  *   0.91: Jun 01, 2000 : Rearranged acccept-loop for EWOULDBLOCK with no
- *                        listen_queue element (dropped 'continue' construct).
+ *                        listen-queue element (dropped 'continue' construct).
  */
 
 #include "socket.h"

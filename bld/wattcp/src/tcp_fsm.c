@@ -771,7 +771,7 @@ static int tcp_ProcessAck (sock_type *sk, tcp_Header *tcp_hdr, long *unacked)
             sk->tcp.queue    += diff;
             sk->tcp.queuelen -= diff;
         } else if (diff < sk->tcp.datalen) {
-            movmem (sk->tcp.data+diff, sk->tcp.data, sk->tcp.datalen-diff);
+            movmem (sk->tcp.data + diff, sk->tcp.data, sk->tcp.datalen - diff);
         }
 
         sk->tcp.datalen -= diff;
