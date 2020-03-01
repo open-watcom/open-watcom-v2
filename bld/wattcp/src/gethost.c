@@ -33,7 +33,7 @@
 #include "pc_cbrk.h"
 #include "pcbsd.h"
 #include "pctcp.h"
-#include "bsdname.h"
+#include "hostname.h"
 #include "udp_dom.h"
 
 typedef struct {

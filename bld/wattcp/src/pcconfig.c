@@ -18,7 +18,7 @@
 #include "language.h"
 #include "udp_dom.h"
 #include "udp_nds.h"
-#include "bsdname.h"
+#include "hostname.h"
 #include "pcqueue.h"
 #include "pcsed.h"
 #include "pcpkt.h"

@@ -30,7 +30,6 @@
 #include "pc_cbrk.h"
 #include "pcbsd.h"
 #include "pctcp.h"
-#include "bsdname.h"
 #include "udp_dom.h"
 #include "btree.h"
 

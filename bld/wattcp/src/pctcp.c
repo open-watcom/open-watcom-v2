@@ -23,7 +23,6 @@
 #include "strings.h"
 #include "language.h"
 #include "udp_dom.h"
-#include "bsdname.h"
 #include "pcstat.h"
 #include "pcconfig.h"
 #include "pcqueue.h"

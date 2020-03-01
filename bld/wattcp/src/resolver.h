@@ -97,7 +97,6 @@
 
 #include "wattcp.h"
 #include "misc.h"
-#include "bsdname.h"
 #include "sock_ini.h"
 #include "udp_dom.h"
 #include "udp_nds.h"

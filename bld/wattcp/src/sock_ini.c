@@ -48,7 +48,7 @@
 #include "pcbsd.h"
 #include "syslog2.h"
 #include "udp_dom.h"
-#include "bsdname.h"
+#include "hostname.h"
 #include "fragment.h"
 #include "sock_ini.h"
 

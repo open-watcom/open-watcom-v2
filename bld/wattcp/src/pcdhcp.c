@@ -25,7 +25,7 @@
 #include "language.h"
 #include "misc.h"
 #include "udp_dom.h"
-#include "bsdname.h"
+#include "hostname.h"
 #include "ip_out.h"
 #include "syslog2.h"
 #include "pctcp.h"
