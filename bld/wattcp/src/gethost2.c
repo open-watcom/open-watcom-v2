@@ -266,7 +266,7 @@ struct hostent *gethostbyname (const char *name)
 
 /*------------------------------------------------------------------*/
 
-struct hostent *gethostbyaddr (const char *adr_name, int len, int type)
+struct hostent *gethostbyaddr (const char *adr_name, socklen_t len, int type)
 {
     struct _hostent *h, ret;
     struct  hostent *h2;

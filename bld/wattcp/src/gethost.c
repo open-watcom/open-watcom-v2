@@ -355,7 +355,7 @@ expired:
 
 /*------------------------------------------------------------------*/
 
-struct hostent *gethostbyaddr (const char *adr_name, int len, int type)
+struct hostent *gethostbyaddr (const char *adr_name, socklen_t len, int type)
 {
     _hostent *h, ret;
     u_long   addr;
