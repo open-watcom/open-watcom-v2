@@ -50,7 +50,7 @@ int   dns_recurse     = 1;
 
 static DWORD resolve_timeout;
 
-static udp_Socket   *dom_sk;
+static sock_type    *dom_sk;
 static struct useek *question;
 static const char   *no_serv = __LANG ("No nameserver defined!");
 
@@ -168,12 +168,12 @@ static int send_dom (const char *name, DWORD towho)
 
     question->h.ident = Random (1, USHRT_MAX);
 
-    if (!udp_open(dom_sk, 997, towho, DOM_DST_PORT, NULL)) {
+    if (!udp_open(&dom_sk->udp, 997, towho, DOM_DST_PORT, NULL)) {
         outsnl (_LANG("Nameserver ARP failed"));
         return (0);
     }
     ulen = sizeof (struct dhead) + (p - start);
-    sock_write ((sock_type*)dom_sk, (BYTE*)question, ulen);
+    sock_write (dom_sk, (BYTE*)question, ulen);
     return (ulen);
 }
 
@@ -269,7 +269,7 @@ static DWORD parse_domain (void)
 {
     DWORD ip = 0UL;
 
-    sock_fastread ((sock_type*)dom_sk, (BYTE*)question, sizeof(*question));
+    sock_fastread (dom_sk, (BYTE*)question, sizeof(*question));
 
     /* check to see if the necessary information was in the UDP response
      */
@@ -340,11 +340,11 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
             return (0);
         }
 
-        ip_timer_init ((sock_type *)dom_sk, sec);
+        ip_timer_init (dom_sk, sec);
         do {
-            tcp_tick ((sock_type*)dom_sk);
+            tcp_tick (dom_sk);
 
-            if (ip_timer_expired((sock_type *)dom_sk) || chk_timeout(resolve_timeout))
+            if (ip_timer_expired(dom_sk) || chk_timeout(resolve_timeout))
                 break;
 
             kbhit();
@@ -352,10 +352,10 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
                 _resolve_exit = 1;
                 break;
             }
-            if (dom_sk->usr_yield != NULL)  /* Added, 16-Jun-97 GV */
-                (*dom_sk->usr_yield)();
+            if (dom_sk->udp.usr_yield != NULL)  /* Added, 16-Jun-97 GV */
+                (*dom_sk->udp.usr_yield)();
 
-            if (sock_dataready((sock_type*)dom_sk)) {
+            if (sock_dataready(dom_sk)) {
                 *timedout = 0;
             }
         } while (*timedout);
@@ -370,7 +370,7 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
     } else {
         response = parse_domain();
     }
-    sock_close ((sock_type*)dom_sk);
+    sock_close (dom_sk);
     return (response);
 }
 
@@ -461,7 +461,7 @@ DWORD resolve (const char *name)
     memset (&timeout, 0, sizeof(timeout));
 
     question    = &qp;
-    dom_sk      = &udp_sk;
+    dom_sk      = (sock_type *)&udp_sk;
     oldhndlcbrk = wathndlcbrk;
     wathndlcbrk = 1;        /* enable special interrupt mode */
     watcbroke   = 0;

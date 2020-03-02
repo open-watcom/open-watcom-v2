@@ -1565,18 +1565,18 @@ static int tcp_write (sock_type *sk, const BYTE *data, UINT len)
  *
  * Insert MSS option.
  */
-static __inline int tcp_opt_maxsegment (tcp_Socket *tcp_sk, BYTE *opt)
+static __inline int tcp_opt_maxsegment (sock_type *sk, BYTE *opt)
 {
     *opt++ = TCPOPT_MAXSEG;    /* option: MAXSEG, length, mss */
     *opt++ = 4;
-    *(WORD*) opt = intel16 (tcp_sk->max_seg);
+    *(WORD*) opt = intel16 (sk->tcp.max_seg);
     return (4);
 }
 
 /*
  * Insert TimeStamp option.
  */
-static __inline int tcp_opt_timestamp (tcp_Socket *tcp_sk, BYTE *opt,
+static __inline int tcp_opt_timestamp (sock_type *sk, BYTE *opt,
                                        DWORD ts_val, DWORD ts_echo)
 {
     *opt++ = TCPOPT_NOP;     /* NOP,NOP,TIMESTAMP,length,TSval,TSecho */
@@ -1585,7 +1585,7 @@ static __inline int tcp_opt_timestamp (tcp_Socket *tcp_sk, BYTE *opt,
     *opt++ = 10;
     *(DWORD*) opt = intel (ts_val);  opt += sizeof(ts_val);
     *(DWORD*) opt = intel (ts_echo); opt += sizeof(ts_echo);
-    tcp_sk->ts_sent = ts_val;       /* remember ts_sent */
+    sk->tcp.ts_sent = ts_val;       /* remember ts_sent */
     return (12);
 }
 
@@ -1604,15 +1604,15 @@ static __inline int tcp_opt_padding (BYTE *opt, int len)
     return (i);
 }
 
-static __inline int tcp_opt_winscale (tcp_Socket *tcp_sk, BYTE *opt)
+static __inline int tcp_opt_winscale (sock_type *sk, BYTE *opt)
 {
     *opt++ = TCPOPT_WINDOW;    /* option: WINDOW,length,wscale */
     *opt++ = 4;
-    *(WORD*) opt = intel16 (tcp_sk->send_wscale);
+    *(WORD*) opt = intel16 (sk->tcp.send_wscale);
     return (4);
 }
 
-static __inline int tcp_opt_sack_ok (tcp_Socket *tcp_sk, BYTE *opt)
+static __inline int tcp_opt_sack_ok (sock_type *sk, BYTE *opt)
 {
     *opt++ = TCPOPT_SACKOK;
     *opt++ = 2;
@@ -1621,7 +1621,7 @@ static __inline int tcp_opt_sack_ok (tcp_Socket *tcp_sk, BYTE *opt)
     return (4);
 }
 
-static __inline int tcp_opt_sack (tcp_Socket *tcp_sk, BYTE *opt,
+static __inline int tcp_opt_sack (sock_type *sk, BYTE *opt,
                                   struct SACK_list *sack)
 {
     int i, len = 2 + 8 * sack->num_blk;
@@ -1644,22 +1644,22 @@ static __inline int tcp_opt_sack (tcp_Socket *tcp_sk, BYTE *opt,
 /*
  * tcp_do_options - Add TCP options to output segment
  */
-static __inline int tcp_do_options (tcp_Socket *tcp_sk, BYTE *opt, BOOL is_syn)
+static __inline int tcp_do_options (sock_type *sk, BYTE *opt, BOOL is_syn)
 {
     DWORD now = set_timeout (0);
     int   len = 0;
 
-    if (is_syn && !(tcp_sk->locflags & LF_NOOPT)) {
-        len += tcp_opt_maxsegment (tcp_sk, opt);
+    if (is_syn && !(sk->tcp.locflags & LF_NOOPT)) {
+        len += tcp_opt_maxsegment (sk, opt);
 
-        if (tcp_sk->locflags & LF_REQ_TSTMP)
-            len += tcp_opt_timestamp (tcp_sk, opt+len, now, 0UL);
+        if (sk->tcp.locflags & LF_REQ_TSTMP)
+            len += tcp_opt_timestamp (sk, opt+len, now, 0UL);
 #if 0
-        if (tcp_sk->locflags & LF_REQ_SCALE)
-            len += tcp_opt_winscale (tcp_sk, opt+len);
+        if (sk->tcp.locflags & LF_REQ_SCALE)
+            len += tcp_opt_winscale (sk, opt+len);
 
         if (tcp_opt_sackok) {
-            len += tcp_opt_sack_ok (tcp_sk, opt+len);
+            len += tcp_opt_sack_ok (sk, opt+len);
         }
 #endif
     } else if (!is_syn) {
@@ -1667,11 +1667,11 @@ static __inline int tcp_do_options (tcp_Socket *tcp_sk, BYTE *opt, BOOL is_syn)
          * Send it back unless we send a RST or disallow options.
          * A Win98 host will have 0 in 's->ts_recent'
          */
-        if ((tcp_sk->flags & tcp_FlagRST) == 0 && tcp_opt_timstmp &&
-            (tcp_sk->locflags & (LF_RCVD_TSTMP|LF_NOOPT)) == LF_RCVD_TSTMP)
+        if ((sk->tcp.flags & tcp_FlagRST) == 0 && tcp_opt_timstmp &&
+            (sk->tcp.locflags & (LF_RCVD_TSTMP|LF_NOOPT)) == LF_RCVD_TSTMP)
         {
-            len += tcp_opt_timestamp (tcp_sk, opt, now, tcp_sk->ts_recent);
-            tcp_sk->locflags &= ~LF_RCVD_TSTMP;  /* don't echo this again */
+            len += tcp_opt_timestamp (sk, opt, now, sk->tcp.ts_recent);
+            sk->tcp.locflags &= ~LF_RCVD_TSTMP;  /* don't echo this again */
         }
     }
 
@@ -1750,12 +1750,12 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
         /* Insert any TCP options after header
          */
         if (pkt_num == 0 && (sk->tcp.flags & (tcp_FlagSYN|tcp_FlagACK)) == tcp_FlagSYN) {
-            opt_len = tcp_do_options (&sk->tcp, data, TRUE);
+            opt_len = tcp_do_options (sk, data, TRUE);
             senddatalen = 0;   /* no data, only options */
         } else {
             int data_free;
 
-            opt_len = tcp_do_options (&sk->tcp, data, FALSE);
+            opt_len = tcp_do_options (sk, data, FALSE);
             if ((data_free = sk->tcp.max_seg - opt_len) < 0)
                 data_free = 0;
             senddatalen = min (sendtotdata, data_free);
