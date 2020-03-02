@@ -25,26 +25,25 @@
  */
 DWORD aton (const char *str)
 {
-  int   i;
-  DWORD ip = 0;
+    int   i;
+    DWORD ip = 0;
 
-  if (*str == '[')
-     ++str;
+    if (*str == '[')
+        ++str;
 
-  for (i = 24; i >= 0; i -= 8)
-  {
-    int cur = atoi (str);
+    for (i = 24; i >= 0; i -= 8) {
+        int cur = atoi (str);
 
-    ip |= (DWORD)(cur & 0xFF) << i;
-    if (!i)
-       return (ip);
+        ip |= (DWORD)(cur & 0xFF) << i;
+        if (!i)
+            return (ip);
 
-    str = strchr (str, '.');
-    if (!str)
-       return (0);      /* return 0 on error */
-    ++str;
-  }
-  return (0);           /* cannot happen ??  */
+        str = strchr (str, '.');
+        if (!str)
+            return (0);     /* return 0 on error */
+        ++str;
+    }
+    return (0);             /* cannot happen ??  */
 }
 
 /*
@@ -54,17 +53,16 @@ DWORD aton (const char *str)
  */
 int isaddr (const char *str)
 {
-  char ch;
+    char ch;
 
-  while ((ch = *str++) != 0)
-  {
-    if (isdigit(ch))
-       continue;
-    if (ch == '.' || ch == ' ' || ch == '[' || ch == ']')
-       continue;
-    return (0);
-  }
-  return (1);
+    while ((ch = *str++) != 0) {
+        if (isdigit(ch))
+            continue;
+        if (ch == '.' || ch == ' ' || ch == '[' || ch == ']')
+            continue;
+        return (0);
+    }
+    return (1);
 }
 
 /*
@@ -74,10 +72,10 @@ int isaddr (const char *str)
  */
 DWORD aton_dotless (const char *str)
 {
-  DWORD ip = 0UL;
+    DWORD ip = 0UL;
 
-  isaddr_dotless (str, &ip);
-  return (ip);
+    isaddr_dotless (str, &ip);
+    return (ip);
 }
 
 /*
@@ -87,72 +85,70 @@ DWORD aton_dotless (const char *str)
  */
 int isaddr_dotless (const char *str, DWORD *ip)
 {
-  char  ch, buf[10] = { 0 };
-  int   i = 0;
-  DWORD adr;
+    char  ch, buf[10] = { 0 };
+    int   i = 0;
+    DWORD adr;
 
-  while ((ch = *str++) != 0)
-  {
-    if (ch == '.' || i == sizeof(buf))
-       return (0);
+    while ((ch = *str++) != 0) {
+        if (ch == '.' || i == sizeof(buf))
+            return (0);
 
-    if (isdigit(ch))
-    {
-      buf[i++] = ch;
-      continue;
+        if (isdigit(ch)) {
+            buf[i++] = ch;
+            continue;
+        }
+        if (ch == ' ' || ch == '[' || ch == ']')
+            continue;
+        return (0);
     }
-    if (ch == ' ' || ch == '[' || ch == ']')
-       continue;
-    return (0);
-  }
 
-  buf[i] = '\0';
-  adr = atol (buf);
-  if (adr == 0)
-     return (0);
+    buf[i] = '\0';
+    adr = atol (buf);
+    if (adr == 0)
+        return (0);
 
-  if ((adr % 256) == 0)         /* LSB must be non-zero */
-     return (0);
+    if ((adr % 256) == 0)         /* LSB must be non-zero */
+        return (0);
 
-  if (((adr >> 24) % 256) == 0) /* MSB must be non-zero */
-     return (0);
+    if (((adr >> 24) % 256) == 0) /* MSB must be non-zero */
+        return (0);
 
-  if (ip)
-     *ip = adr;
-  return (1);
+    if (ip)
+        *ip = adr;
+    return (1);
 }
 
-void psocket (const sock_type *s)
+void psocket (const sock_type *sk)
 {
-  char buffer[20];
+    char buffer[20];
 
-  (*_outch) ('[');
-  outs (_inet_ntoa(buffer, s->u.hisaddr));
-  (*_outch) (':');
-  itoa (s->u.hisport, buffer, 10);
-  outs (buffer);
-  (*_outch) (']');
+    (*_outch) ('[');
+    outs (_inet_ntoa(buffer, sk->u.hisaddr));
+    (*_outch) (':');
+    itoa (sk->u.hisport, buffer, 10);
+    outs (buffer);
+    (*_outch) (']');
 }
 
 #ifdef NOT_USED
 int priv_addr (DWORD ip)
 {
-  /*
-   * private addresses in the "black range":
-   *
-   * 10.0.0.0    - 10.255.255.255
-   * 172.16.0.0  - 172.31.255.255
-   * 192.168.0.0 - 192.168.255.255
-   */
-  if (ip >= aton("10.0.0.0") && ip <= aton("10.255.255.255"))
-     return (1);
+    /*
+     * private addresses in the "black range":
+     *
+     *  10.0.0.0    - 10.255.255.255
+     * 172.16.0.0  - 172.31.255.255
+     * 192.168.0.0 - 192.168.255.255
+     */
+    if (ip >= aton("10.0.0.0") && ip <= aton("10.255.255.255"))
+        return (1);
 
-  if (ip >= aton("172.16.0.0") && ip <= aton("172.31.255.255"))
-     return (1);
+    if (ip >= aton("172.16.0.0") && ip <= aton("172.31.255.255"))
+        return (1);
 
-  if (ip >= aton("192.168.0.0") && ip <= aton("192.168.255.255"))
-     return (1);
+    if (ip >= aton("192.168.0.0") && ip <= aton("192.168.255.255"))
+        return (1);
 
-  return (0);
+    return (0);
 }
 #endif
