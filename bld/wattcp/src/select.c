@@ -359,7 +359,7 @@ static __inline int sock_signalled (Socket *socket, int mask)
  */
 int _sock_read_select (Socket *socket)
 {
-  sock_type *sk = socket->proto_sock;
+  sock_type *sk;
   int len;
 
 #if defined(USE_LIBPCAP)
@@ -372,7 +372,7 @@ int _sock_read_select (Socket *socket)
     return (0);
   }
 #endif
-
+  sk = socket->proto_sock;
   if (socket->so_type == SOCK_RAW)
      return (sk != NULL && sk->raw.used);
 

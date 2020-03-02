@@ -82,8 +82,8 @@ extern int       tcp_RETRAN_TIME;
 extern DWORD     my_ip_addr;
 extern DWORD     sin_mask;
 
-extern tcp_Socket *_tcp_allsocs;
-extern udp_Socket *_udp_allsocs;
+extern sock_type *_tcp_allsocs;
+extern sock_type *_udp_allsocs;
 
 #define sock_wait_established(sk,seconds,fn,statusptr) \
         do {                                           \
@@ -118,22 +118,22 @@ extern void  udp_SetTTL (udp_Socket *udp_sk, BYTE ttl);
 extern void _udp_cancel (const in_Header*, int, const char *, DWORD);
 extern void _tcp_cancel (const in_Header*, int, const char *, DWORD);
 
-extern void _tcp_close    (tcp_Socket *tcp_sk);
+extern void _tcp_close    (sock_type *sk);
 extern void  tcp_abort    (tcp_Socket *tcp_sk);
 extern int   tcp_open     (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
 extern int   tcp_listen   (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler, WORD timeout);
 extern WORD  tcp_tick     (sock_type *sk);
 
 extern int   tcp_established (tcp_Socket *tcp_sk);
-extern int  _tcp_send        (tcp_Socket *tcp_sk, char *file, unsigned line);
-extern int  _tcp_sendsoon    (tcp_Socket *tcp_sk, char *file, unsigned line);
+extern int  _tcp_send        (sock_type *sk, char *file, unsigned line);
+extern int  _tcp_sendsoon    (sock_type *sk, char *file, unsigned line);
 
-extern tcp_Socket *_tcp_unthread (tcp_Socket *tcp_sk);
+extern sock_type *_tcp_unthread (sock_type *sk);
 extern void tcp_Retransmitter (int force);
 extern int  _ip_handler (in_Header *ip, BOOL broadcast);
 
-#define TCP_SEND(s)     _tcp_send    (s, __FILE__, __LINE__)
-#define TCP_SENDSOON(s) _tcp_sendsoon(s, __FILE__, __LINE__)
+#define TCP_SEND(sk)        _tcp_send    (sk, __FILE__, __LINE__)
+#define TCP_SENDSOON(sk)    _tcp_sendsoon(sk, __FILE__, __LINE__)
 
 extern void  sock_abort       (sock_type *sk);
 extern int   sock_keepalive   (sock_type *sk);

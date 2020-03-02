@@ -24,11 +24,11 @@ void backgroundon (void)
 static void (*userRoutine)(void) = NULL;
 static int inside = 0;
 
-  #ifdef __TURBOC__
+#ifdef __TURBOC__
 static void interrupt (*oldinterrupt)(void);
-  #else
+#else
 static void (interrupt *oldinterrupt)(void);
-  #endif
+#endif
 
 static void interrupt newinterrupt(void)
 {

@@ -1082,7 +1082,7 @@ static void dbg_send (const sock_type *sk, const void *ip,
         return;
 
 #if defined(__LARGE__)
-    watt_largecheck (&buf, sizeof(buf), __FILE__, __LINE__);
+    watt_largecheck (buf, sizeof(buf), __FILE__, __LINE__);
 #endif
 
     outbound = 1;
@@ -1108,7 +1108,7 @@ static void dbg_recv (const sock_type *sk, const void *ip,
         return;
 
 #if defined(__LARGE__)
-    watt_largecheck (&buf, sizeof(buf), __FILE__, __LINE__);
+    watt_largecheck (buf, sizeof(buf), __FILE__, __LINE__);
 #endif
 
     outbound = 0;

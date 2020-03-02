@@ -368,15 +368,15 @@ static int socket_find_fd (const Socket *socket)
 
 /*
  *  socket_find_udp
- *    Finds the 'Socket' associated with udp-socket 'udp_sk'.
+ *    Finds the 'Socket' associated with udp-socket 'sk'.
  *    Return NULL if not found.
  */
-static Socket *socket_find_udp (const udp_Socket *udp_sk)
+static Socket *socket_find_udp (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (&_socket->proto_sock->udp == udp_sk) {
+        if (_socket->proto_sock == sk) {
             return (_socket);
         }
     }
@@ -386,7 +386,7 @@ static Socket *socket_find_udp (const udp_Socket *udp_sk)
 
 /*
  *  socket_find_tcp
- *    Finds the 'Socket' associated with tcp-socket 'tcp_sk'.
+ *    Finds the 'Socket' associated with tcp-socket 'sk'.
  *    Return NULL if not found.
  */
 static Socket *socket_find_tcp (const sock_type *sk)
@@ -434,7 +434,6 @@ static int socket_raw_recv (const in_Header *ip)
         return (0);
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        sk = _socket->proto_sock;
 #if 0 /* !! to-do */
         if (_socket->so_type == SOCK_RAW && _socket->so_proto == IPPROTO_RAW)
             ; /* socket matches every IP-protocol, enqueue */
@@ -454,6 +453,7 @@ static int socket_raw_recv (const in_Header *ip)
          *          vacant buffer.
          * assumes _socket->proto_sock is non-NULL
          */
+        sk = _socket->proto_sock;
         if (sk->raw.used) {
             num_dropped++;
             SOCK_DEBUGF ((_socket, "\n  socket %d dropped IP, proto %d", _socket->fd, ip->proto));
@@ -471,7 +471,7 @@ static int socket_raw_recv (const in_Header *ip)
 
             /* Copy rest of IP-packet
              */
-            memcpy (&sk->raw.data, (BYTE*)ip+hlen, len);
+            memcpy (sk->raw.data, (BYTE*)ip+hlen, len);
             sk->raw.used = TRUE;
             num_enqueued++;
         }
@@ -592,7 +592,6 @@ static void sock_daemon (void)
 
     for (_socket = socket_list; _socket != NULL; _socket = next) {
         int s = _socket->fd;
-        sk = _socket->proto_sock;
         next  = _socket->next;
 
         if (!FD_ISSET(s, &inuse[0]))
@@ -604,7 +603,7 @@ static void sock_daemon (void)
 #if 0
         _sock_debugf (NULL, "\nsock_daemon:%d", _socket->fd);
 #endif
-
+        sk = _socket->proto_sock;
         if (sk != NULL) {
             switch (_socket->so_type) {
             case SOCK_STREAM:
@@ -639,7 +638,7 @@ void _sock_stop_crit (void)
         /* !!to-do */
 #endif
 
-        if (!socket_block) {
+        if (socket_block == 0) {
             sock_daemon();  /* run blocked sock_daemon() */
         }
     }
@@ -762,10 +761,6 @@ static Socket *socket_list_add (int s, int type, int proto)
 
     switch (proto) {
     case IPPROTO_TCP:
-        /* Only tcp times out on inactivity
-         */
-        _socket->timeout     = sock_delay;
-        _socket->linger_time = TCP_LINGERTIME;
         proto_sk = SOCK_CALLOC (sizeof(tcp_Socket));
         break;
     case IPPROTO_UDP:
@@ -791,6 +786,11 @@ static Socket *socket_list_add (int s, int type, int proto)
 
     switch (proto) {
     case IPPROTO_TCP:
+        /* Only tcp times out on inactivity
+         */
+        _socket->timeout     = sock_delay;
+        _socket->linger_time = TCP_LINGERTIME;
+        break;
     case IPPROTO_UDP:
         break;
     default:
@@ -905,7 +905,7 @@ int socket (int family, int type, int protocol)
     }
 
     _socket = socket_list_add (s, type, protocol);
-    ss = (_socket ? s : -1);
+    ss = (_socket != NULL ? s : -1);
 
     switch (type) {
     case SOCK_STREAM:
@@ -959,12 +959,12 @@ int socket (int family, int type, int protocol)
  *        but currrently there is a 1-to-1 relation between a
  *        'socket' and a 'tcp' (or 'udp') structure.
  */
-static int stream_cancel (const tcp_Socket *tcp_sk)
+static int stream_cancel (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (_socket->so_type == SOCK_STREAM && tcp_sk == &_socket->proto_sock->tcp) {
+        if (_socket->so_type == SOCK_STREAM && sk == _socket->proto_sock) {
             _socket->so_state |= SS_CONN_REFUSED;
             _socket->so_error  = ECONNREFUSED;
         }
@@ -972,12 +972,12 @@ static int stream_cancel (const tcp_Socket *tcp_sk)
     return (1);
 }
 
-static int dgram_cancel (const udp_Socket *udp_sk)
+static int dgram_cancel (const sock_type *sk)
 {
     Socket *_socket;
 
     for (_socket = socket_list; _socket != NULL; _socket = _socket->next) {
-        if (_socket->so_type == SOCK_DGRAM && udp_sk == &_socket->proto_sock->udp) {
+        if (_socket->so_type == SOCK_DGRAM && sk == _socket->proto_sock) {
             _socket->so_state |= SS_CONN_REFUSED;
             _socket->so_error  = ECONNREFUSED;
         }
@@ -992,10 +992,10 @@ static int sol_callback (sock_type *sk, int icmp_type)
 
     if (icmp_type == ICMP_UNREACH || icmp_type == ICMP_PARAMPROB) {
         if (sk->u.ip_type == UDP_PROTO)
-            return dgram_cancel (&sk->udp);
+            return dgram_cancel (sk);
 
         if (sk->u.ip_type == TCP_PROTO) {
-            return stream_cancel (&sk->tcp);
+            return stream_cancel (sk);
         }
     }
     return (0);
@@ -1132,13 +1132,13 @@ int _sock_half_open (const sock_type *sk)
  */
 int socketpair (int family, int type, int protocol, int usockvec[2])
 {
-    Socket *socket1, *socket2;
+    Socket *_socket1, *_socket2;
     int     s1, s2;
 
     if ((s1 = socket (family, type, protocol)) < 0)
         return (fd1);
 
-    socket1 = _socklist_find (s1);
+    _socket1 = _socklist_find (s1);
 
     /* Now grab another socket and try to connect the two together.
      */
@@ -1147,12 +1147,12 @@ int socketpair (int family, int type, int protocol, int usockvec[2])
         return (-EINVAL);
     }
 
-    socket2 = _socklist_find (s2);
+    _socket2 = _socklist_find (s2);
 
-    socket1->conn = socket2;
-    socket2->conn = socket1;
-    socket1->so_state = SS_CONNECTED;
-    socket2->so_state = SS_CONNECTED;
+    _socket1->conn = _socket2;
+    _socket2->conn = _socket1;
+    _socket1->so_state = SS_CONNECTED;
+    _socket2->so_state = SS_CONNECTED;
 
     usockvec[0] = s1;
     usockvec[1] = s2;

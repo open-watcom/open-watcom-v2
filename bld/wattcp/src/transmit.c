@@ -15,12 +15,12 @@
 static int ip_transmit   (Socket *socket, const void *buf, int len);
 static int udp_transmit  (Socket *socket, const void *buf, int len);
 static int tcp_transmit  (Socket *socket, const void *buf, int len, int flags);
-static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen);
+static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t tolen);
 
 static int transmit (const char *func, int s, const void *buf, int len,
-                     int flags, const struct sockaddr *to, int tolen);
+                     int flags, const struct sockaddr *to, socklen_t tolen);
 
-int sendto (int s, const void *buf, int len, int flags, const struct sockaddr *to, int tolen)
+int sendto (int s, const void *buf, int len, int flags, const struct sockaddr *to, socklen_t tolen)
 {
   return transmit ("sendto", s, buf, len, flags, to, tolen);
 }
@@ -101,7 +101,7 @@ static __inline void msg_eor_close (Socket *socket)
  *   MSG_WAITALL   Wait till room in tx-buffer         (not supported)
  */
 static int transmit (const char *func, int s, const void *buf, int len,
-                     int flags, const struct sockaddr *to, int tolen)
+                     int flags, const struct sockaddr *to, socklen_t tolen)
 {
   Socket *socket;
   int     rc;
@@ -223,7 +223,7 @@ static int transmit (const char *func, int s, const void *buf, int len,
  *  Must reconnect socket if 'remote_addr' and 'to' address are different.
  *  I.e we're sending to another host/port than last time.
  */
-static int setup_udp_raw (Socket *socket, const struct sockaddr *to, int tolen)
+static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t tolen)
 {
   struct sockaddr_in *peer = (struct sockaddr_in*) to;
   DWORD  keepalive = socket->keepalive;

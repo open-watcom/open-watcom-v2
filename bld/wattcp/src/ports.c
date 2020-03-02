@@ -60,27 +60,27 @@ WORD findfreeport (WORD port, BOOL linger)
      */
     for (p = lo_port; p < hi_port; p++) {
         if (_udp_allsocs != NULL) {
-            udp_Socket *_udp_sk;
+            sock_type *sk;
 
-            for (_udp_sk = _udp_allsocs; _udp_sk->next != NULL; _udp_sk = _udp_sk->next) {
-                if (_udp_sk->myport == p) {
+            for (sk = _udp_allsocs; sk->next != NULL; sk = sk->next) {
+                if (sk->udp.myport == p) {
                     break;
                 }
             }
-            if (_udp_sk->myport == p) {
+            if (sk->udp.myport == p) {
                 continue;
             }
         }
 #if !defined(USE_UDP_ONLY)
         if (_tcp_allsocs != NULL) {
-            tcp_Socket *_tcp_sk;
+            sock_type *sk;
 
-            for (_tcp_sk = _tcp_allsocs; _tcp_sk->next != NULL; _tcp_sk = _tcp_sk->next) {
-                if (_tcp_sk->myport == p) {
+            for (sk = _tcp_allsocs; sk->next != NULL; sk = sk->next) {
+                if (sk->tcp.myport == p) {
                     break;
                 }
             }
-            if (_tcp_sk->myport == p) {
+            if (sk->tcp.myport == p) {
                 continue;
             }
         }

@@ -30,7 +30,6 @@
 #include "pc_cbrk.h"
 #include "pcbsd.h"
 #include "pctcp.h"
-#include "bsdname.h"
 #include "udp_dom.h"
 #include "btree.h"
 
@@ -266,7 +265,7 @@ struct hostent *gethostbyname (const char *name)
 
 /*------------------------------------------------------------------*/
 
-struct hostent *gethostbyaddr (const char *adr_name, int len, int type)
+struct hostent *gethostbyaddr (const char *adr_name, socklen_t len, int type)
 {
     struct _hostent *h, ret;
     struct  hostent *h2;

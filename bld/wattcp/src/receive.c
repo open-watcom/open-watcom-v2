@@ -14,13 +14,13 @@
 #if defined(USE_BSD_FUNC)
 
 static int tcp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int udp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int raw_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 /*
  * receive() flags:
@@ -36,7 +36,7 @@ static int raw_receive (Socket *sock, void *buf, int len, int flags,
  */
 
 static int receive (const char *func, int s, void *buf, int len, int flags,
-                    struct sockaddr *from, int *fromlen)
+                    struct sockaddr *from, socklen_t *fromlen)
 {
   Socket *socket = _socklist_find (s);
   int     ret    = 0;
@@ -140,7 +140,7 @@ recv_exit:
  * recvfrom(): receive from socket 's'. Address (src-ip/port) is put
  *             in 'from' (if non-NULL)
  */
-int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, int *fromlen)
+int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, socklen_t *fromlen)
 {
   return receive ("recvfrom", s, buf, len, flags, from, fromlen);
 }
@@ -167,7 +167,7 @@ int read_s (int s, char *buf, int len)
  * Fill in packet's address in 'from' and length in 'fromlen'.
  * Only used for UDP & Raw-IP. TCP have peer info in 'socket->remote_addr'.
  */
-static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
+static void udp_raw_fill_from (struct sockaddr *from, socklen_t *fromlen,
                                struct in_addr  *peer, WORD port)
 {
   struct sockaddr_in *sa = (struct sockaddr_in*) from;
@@ -188,15 +188,14 @@ static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
  *  TCP receiver
  */
 static int tcp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   int        ret   = 0;
   int        fin   = 0;    /* got FIN from peer */
   DWORD      timer = 0UL;
   sock_type *sk    = socket->proto_sock;
 
-  if (!from && !socket->local_addr)
-  {
+  if (!from && !socket->local_addr) {
     SOCK_DEBUGF ((socket, ", no local_addr"));
     SOCK_ERR (ENOTCONN);
     return (-1);
@@ -205,8 +204,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
   if (socket->timeout && sock_inactive)
      timer = set_timeout (1000 * socket->timeout);
 
-  for ( ;; )
-  {
+  for ( ;; ) {
     int ok = (tcp_tick(sk) != 0);
 
     tcp_Retransmitter (1);
@@ -215,8 +213,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
        goto read_it;
 
 #if 0  /* !to-do */
-    if ((socket-so_options & SO_OOBINLINE) && urgent_data(sk))
-    {
+    if ((socket-so_options & SO_OOBINLINE) && urgent_data(sk)) {
       ret = urgent_data_read (sk, (BYTE*)buf, len);
       break;
     }
@@ -224,10 +221,8 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
 
     /* Don't do this for a listening socket
      */
-    if (!(socket->so_options & SO_ACCEPTCONN))
-    {
-      if (sk->tcp.locflags & LF_GOT_FIN)         /* got FIN, no unACK data */
-      {
+    if (!(socket->so_options & SO_ACCEPTCONN)) {
+      if (sk->tcp.locflags & LF_GOT_FIN) {       /* got FIN, no unACK data */
         socket->so_state |=  SS_ISDISCONNECTING; /* We may receive more */
         socket->so_state &= ~SS_ISCONNECTED;     /* no longer ESTAB state */
         fin = 1;
@@ -235,8 +230,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
         goto read_it;
       }
 
-      if (!ok)
-      {
+      if (!ok) {
         socket->so_state |= (SS_CANTRCVMORE | SS_ISDISCONNECTING);
         socket->so_state &= ~SS_ISCONNECTED;
         SOCK_DEBUGF ((socket, ", ENOTCONN"));
@@ -245,33 +239,31 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
       }
     }
 
-    if (sock_rbused(sk) > socket->recv_lowat)
-    {
+    if (sock_rbused(sk) > socket->recv_lowat) {
 read_it:
-      if (flags & MSG_PEEK)
-           ret = sock_preread (sk, (BYTE*)buf, len);
-      else if (flags & MSG_WAITALL)
-           ret = sock_read    (sk, (BYTE*)buf, len);
-      else ret = sock_fastread(sk, (BYTE*)buf, len);
+      if (flags & MSG_PEEK) {
+          ret = sock_preread (sk, (BYTE*)buf, len);
+      } else if (flags & MSG_WAITALL) {
+          ret = sock_read (sk, (BYTE*)buf, len);
+      } else {
+          ret = sock_fastread (sk, (BYTE*)buf, len);
+      }
       break;
     }
 
-    if (socket->so_state & SS_CONN_REFUSED)
-    {
+    if (socket->so_state & SS_CONN_REFUSED) {
       SOCK_DEBUGF ((socket, ", ECONNREFUSED (2)"));
       SOCK_ERR (ECONNREFUSED);
       return (-1);
     }
 
-    if (socket->so_state & SS_NBIO)
-    {
+    if (socket->so_state & SS_NBIO) {
       SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
       SOCK_ERR (EWOULDBLOCK);
       return (-1);
     }
 
-    if (chk_timeout(timer))
-    {
+    if (chk_timeout(timer)) {
       SOCK_DEBUGF ((socket, ", ETIMEDOUT"));
       SOCK_ERR (ETIMEDOUT);
       return (-1);
@@ -280,19 +272,16 @@ read_it:
     SOCK_YIELD();
   }
 
-  if (ret > 0)
-  {
+  if (ret > 0) {
     if (from)
        memcpy (from, socket->remote_addr, sizeof(*from));
-    if (fromlen)
+    if (fromlen) {
        *fromlen = sizeof (*from);
-  }
-  else if (ret < 0)
-  {
-    if (fin)     /* A FIN and -1 from sock_xread() maps to 0 */
+    }
+  } else if (ret < 0) {
+    if (fin) {   /* A FIN and -1 from sock_xread() maps to 0 */
        ret = 0;
-    else         /* else some buffer/socket error */
-    {
+    } else {       /* else some buffer/socket error */
       SOCK_DEBUGF ((socket, ", EIO"));
       SOCK_ERR (EIO);
     }
@@ -305,7 +294,7 @@ read_it:
  *  UDP receiver
  */
 static int udp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   int   ret   = 0;
   DWORD timer = 0UL;
@@ -418,14 +407,13 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
  * Raw-IP receiver. Doesn't handle IP-options yet.
  */
 static int raw_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   sock_type    *sk = socket->proto_sock;
   DWORD        timer;
   static DWORD loop;
 
-  if (sk == NULL || len < sizeof(sk->raw.ip))
-  {
+  if (sk == NULL || len < sizeof(sk->raw.ip)) {
     SOCK_ERR (EINVAL);
     return (-1);
   }
@@ -467,7 +455,7 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
       memcpy (ip, &sk->raw.ip, sizeof(*ip));
       len = min (ip_len-sizeof(*ip), len);
       if (len > 0)
-         memcpy (++ip, &sk->raw.data, len);
+         memcpy (++ip, sk->raw.data, len);
 
       peer.s_addr = sk->raw.ip.source;
       sk->raw.used = FALSE;

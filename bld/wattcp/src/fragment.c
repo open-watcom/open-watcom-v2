@@ -142,8 +142,7 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
    * !!to-do: probably better to check ip-header after we found the
    *          key. Then we could empty the whole bucket on error.
    */
-  if (!_chk_ip_header(ip))
-  {
+  if (!_chk_ip_header(ip)) {
     MSG (("!_chk_ip_header()\r"));
     STAT (ipstats.ips_fragdropped++);
     return (NULL);
@@ -156,8 +155,7 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
   data_end    = data_start + data_length;
   more_frags  = (flags & IP_MF);
 
-  if (!check_data_start(ip,data_start,data_length))
-  {
+  if (!check_data_start(ip,data_start,data_length)) {
     DEBUG_RX (NULL, ip);
     STAT (ipstats.ips_fragdropped++);
     return (NULL);
@@ -174,13 +172,11 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
 
   /* Check if we have a match
    */
-  for (i = j = 0; i < MAX_FRAGMENTS; i++)
-  {
+  for (i = j = 0; i < MAX_FRAGMENTS; i++) {
    /* to-do!! : scan `j' over all our buckets.
     */
     frag = &frag_list[j][i];
-    if (frag->used && !memcmp(&frag->key,&key,sizeof(key)))
-    {
+    if (frag->used && !memcmp(&frag->key,&key,sizeof(key))) {
       found = TRUE;
       break;
     }
@@ -188,17 +184,13 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
 
   MSG (("bucket %d, key %sfound, i=%d\n", j, found ? "" : "not ", i));
 
-  if (!found)
-  {
+  if (!found) {
     /* Can't handle any new frags, biff packet
      */
-    if (frag_buckets[j].active == MAX_FRAGMENTS)
-    {
+    if (frag_buckets[j].active == MAX_FRAGMENTS) {
       DEBUG_RX (NULL, ip);
       STAT (ipstats.ips_fragdropped++);
-    }
-    else
-    {
+    } else {
       /* Setup first fragment received
        */
       setup_first_frag (ip, j, &key);
@@ -213,8 +205,7 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
 
   hole = frag->hole_first;   /* Hole handling */
 
-  do
-  {
+  do {
     long temp;
 
     if (hole && (data_start <= hole->end) &&   /* We've found the spot */
@@ -227,38 +218,33 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
        */
       temp = hole->end;    /* Pick up old hole end for later */
 
-      if (data_start > hole->start)
-      {
+      if (data_start > hole->start) {
         hole->end = data_start - 1;
         prev_hole = hole;  /* We have a new prev */
-      }
-      else
-      {
+      } else {
         /* No, delete current hole
          */
-        if (!prev_hole)
+        if (!prev_hole) {
              frag->hole_first = hole->next;
-        else prev_hole->next  = hole->next;
+        } else {
+            prev_hole->next  = hole->next;
+        }
       }
 
       /* Is there a hole after the current fragment
        * Only if we're not last and more to come
        */
-      if (data_end < hole->end && more_frags)
-      {
+      if (data_end < hole->end && more_frags) {
         hole = (hole_descr*) (data_end + 1 + frag->data_offset);
         hole->start = data_end + 1;
         hole->end   = temp;
 
         /* prev_hole = NULL if first
          */
-        if (!prev_hole)
-        {
+        if (!prev_hole) {
           hole->next = frag->hole_first;
           frag->hole_first = hole;
-        }
-        else
-        {
+        } else {
           hole->next = prev_hole->next;
           prev_hole->next = hole;
         }
@@ -266,8 +252,7 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
     }
     prev_hole = hole;
     hole = hole->next;
-  }
-  while (hole);          /* Until we got to the end or found */
+  } while (hole);          /* Until we got to the end or found */
 
 
   /* Thats all setup so copy in the data
@@ -279,8 +264,7 @@ in_Header * ip_defragment (const in_Header *ip, DWORD offset, WORD flags)
   MSG (("got_hole %d, frag->hole_first %lX\n",
         got_hole, (DWORD)frag->hole_first));
 
-  if (!frag->hole_first)    /* Now we have all the parts */
-  {
+  if (!frag->hole_first) {  /* Now we have all the parts */
     if (frag_buckets[j].active >= 1)
         frag_buckets[j].active--;
 
@@ -310,8 +294,7 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
   /* Allocate a fragment bucket. MAC-header is in front of bucket.
    */
   bucket = alloc_frag_buffer (ip);
-  if (!bucket)
-  {
+  if (!bucket) {
     STAT (ipstats.ips_fragdropped++);
     return;
   }
@@ -319,9 +302,11 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
   /* Find first empty slot
    */
   frag = &frag_list[idx][0];
-  for (i = 0; i < MAX_FRAGMENTS; i++, frag++)
-      if (!frag->used)
+  for (i = 0; i < MAX_FRAGMENTS; i++, frag++) {
+      if (!frag->used) {
          break;
+      }
+  }
 
   frag->used = 1;               /* mark as used             */
   frag_buckets[idx].active++;   /* inc active frags counter */
@@ -330,9 +315,11 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
 
   /* Remember MAC source address
    */
-  if (!_pktserial)
-       memcpy (&frag_buckets[idx].mac_src, MAC_SRC(ip), sizeof(mac_address));
-  else memset (&frag_buckets[idx].mac_src, 0, sizeof(mac_address));
+  if (!_pktserial) {
+      memcpy (&frag_buckets[idx].mac_src, MAC_SRC(ip), sizeof(mac_address));
+  } else {
+      memset (&frag_buckets[idx].mac_src, 0, sizeof(mac_address));
+  }
 
   /* Setup frag header data, first packet
    */
@@ -346,17 +333,14 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
 
   /* Setup initial hole table
    */
-  if (data_start == 0)  /* 1st fragment sent is 1st fragment received */
-  {
+  if (data_start == 0) { /* 1st fragment sent is 1st fragment received */
     WORD  ip_len = intel16 (ip->length);
     BYTE *dst    = (BYTE*)bucket;
 
     memcpy (dst, ip, min(ip_len,mtu));
     hole = (hole_descr*) (dst + ip_len + 1);
     frag->hole_first = hole;
-  }
-  else
-  {
+  } else {
     /* !!fix-me: assumes header length of this fragment is same as
      *           in reassembled IP packet (may have IP-options)
      */
@@ -370,21 +354,17 @@ static void setup_first_frag (const in_Header *ip, int idx, frag_key *key)
     hole        = frag->hole_first = (hole_descr*)frag->data_offset;
     hole->start = 0;
     hole->end   = data_start - 1;
-    if (more_frags)
-    {
+    if (more_frags) {
       hole->next = (hole_descr*) (frag->data_offset + data_length + 1);
       hole = hole->next;
-    }
-    else
-    {
+    } else {
       hole = frag->hole_first->next = NULL;
       /* Adjust length */
       frag->ip->length = intel16 ((WORD)(data_end + in_GetHdrLen(ip)));
     }
   }
 
-  if (hole)
-  {
+  if (hole) {
     hole->start = data_length;
     hole->end   = MAX_FRAG_SIZE;
     hole->next  = NULL;
@@ -408,8 +388,7 @@ static int check_data_start (const in_Header *ip, DWORD ofs, DWORD len)
      return (1);
 
 #if defined(USE_DEBUG)
-  if (debug_on)
-  {
+  if (debug_on) {
     char src[20];
     char dst[20];
     (*_printf) (_LANG("Bad frag-ofs: fo %lu, ip-prot %u (%s->%s)\r\n"),
@@ -433,27 +412,22 @@ static in_Header *alloc_frag_buffer (const in_Header *ip)
   BYTE *p = NULL;
   int   i;
 
-  for (i = 0; i < MAX_IP_FRAGS; i++)
-  {
-    if (frag_buckets[i].used)
+  for (i = 0; i < MAX_IP_FRAGS; i++) {
+    if (frag_buckets[i].used) {
        continue;
+    }
 
-    if (!frag_buckets[i].ip)
-    {
+    if (!frag_buckets[i].ip) {
       p = calloc (1, BUCKET_SIZE + _pkt_ip_ofs);
-      if (!p)
-      {
+      if (!p) {
         MSG (("calloc() failed\n"));
         return (NULL);
       }
       frag_buckets[i].ip = (HugeIP*) (p + _pkt_ip_ofs);
       ((HugeIP*)p)->marker = BUCKET_MARKER;
-    }
-    else
-    {
+    } else {
       p = (BYTE*)frag_buckets[i].ip - _pkt_ip_ofs;
-      if (((HugeIP*)p)->marker != BUCKET_MARKER)
-      {
+      if (((HugeIP*)p)->marker != BUCKET_MARKER) {
         (*_printf) ("frag_buckets[%d] destroyed\r\n!", i);
      /* free (p);    heap probably corrupt, don't free */
         frag_buckets[i].ip = NULL;
@@ -481,7 +455,7 @@ int free_fragment (const in_Header *ip)
 {
   int i, j;
 
-  for (j = 0; j < MAX_IP_FRAGS; j++)
+  for (j = 0; j < MAX_IP_FRAGS; j++) {
       if (ip == &frag_buckets[j].ip->hdr &&
           frag_buckets[j].used)
       {
@@ -493,6 +467,7 @@ int free_fragment (const in_Header *ip)
         MSG (("free_fragment(%lX), bucket=%d\n", (DWORD)ip, j));
         return (1);
       }
+  }
   return (0);
 }
 
@@ -504,26 +479,27 @@ void chk_timeout_frags (void)
 {
   int j;
 
-  for (j = 0; j < MAX_IP_FRAGS; j++)
-  {
+  for (j = 0; j < MAX_IP_FRAGS; j++) {
     int i;
 
-    for (i = 0; i < MAX_FRAGMENTS; i++)
-    {
+    for (i = 0; i < MAX_FRAGMENTS; i++) {
       if (frag_buckets[j].active &&
           frag_list[j][i].used   &&
           chk_timeout(frag_list[j][i].timer))
       {
         const in_Header *ip = frag_list[j][i].ip;
 
-        if (!_pktserial)    /* send a ICMP_TIMXCEED (code 1) */
-             icmp_timexceed (ip, (void*) &frag_buckets[j].mac_src);
-        else icmp_timexceed (ip, NULL);
+        if (!_pktserial) {  /* send a ICMP_TIMXCEED (code 1) */
+            icmp_timexceed (ip, (void*) &frag_buckets[j].mac_src);
+        } else {
+            icmp_timexceed (ip, NULL);
+        }
 
         STAT (ipstats.ips_fragtimeout++);
         MSG (("chk_timeout_frags(), ip = %lX\n", (DWORD)ip));
-        if (free_fragment(ip))
+        if (free_fragment(ip)) {
            break;
+        }
       }
     }
   }
@@ -576,9 +552,8 @@ BYTE *init_frag (int argc, char **argv)
   int   i, ch;
   BYTE *data;
 
-  while ((ch = getopt(argc, argv, "h:n:s:rt?")) != EOF)
-     switch (ch)
-     {
+  while ((ch = getopt(argc, argv, "h:n:s:rt?")) != EOF) {
+     switch (ch) {
        case 'h': to_host = inet_addr (optarg);
                  if (to_host == INADDR_NONE)
                  {
@@ -598,34 +573,32 @@ BYTE *init_frag (int argc, char **argv)
        case '?':
        default : usage (argv[0]);
      }
+  }
 
-  if (max_frags < 1 || max_frags > FD_SETSIZE)
-  {
+  if (max_frags < 1 || max_frags > FD_SETSIZE) {
     printf ("# of fragments is 1 - %d\n", FD_SETSIZE);
     exit (-1);
   }
 
-  if (frag_size < 8 || frag_size > MAX_IP_DATA)
-  {
+  if (frag_size < 8 || frag_size > MAX_IP_DATA) {
     printf ("Fragsize range is 8 - %ld\n", MAX_IP_DATA);
     exit (-1);
   }
 
-  if (frag_size * max_frags > USHRT_MAX)
-  {
+  if (frag_size * max_frags > USHRT_MAX) {
     printf ("Total fragsize > 64kB!\n");
     exit (-1);
   }
 
   data = calloc (max_frags, frag_size);
-  if (!data)
-  {
+  if (!data) {
     printf ("no memory\n");
     exit (-1);
   }
 
-  for (i = 0; i < max_frags; i++)
+  for (i = 0; i < max_frags; i++) {
      memset (data + i*frag_size, 'a'+i, frag_size);
+  }
 
   loopback_enable = 1;
   dbug_init();
@@ -642,16 +615,15 @@ int rand_packet (fd_set *fd, int max)
 {
   int count = 0;
 
-  for ( ;; )
-  {
+  for ( ;; ) {
     int i = Random (0, max);
-    if (i < max && !FD_ISSET(i,fd))
-    {
+    if (i < max && !FD_ISSET(i,fd)) {
       FD_SET (i, fd);
       return (i);
     }
-    if (++count == 10*max)
+    if (++count == 10*max) {
        return (-1);
+    }
   }
 }
 
@@ -667,8 +639,7 @@ int main (int argc, char **argv)
   WORD        frag_flag;
   BYTE       *data = init_frag (argc, argv);
 
-  if (!_arp_resolve (ntohl(to_host), &eth, 0))
-  {
+  if (!_arp_resolve (ntohl(to_host), &eth, 0)) {
     printf ("ARP failed\n");
     return (-1);
   }
@@ -694,24 +665,25 @@ int main (int argc, char **argv)
   FD_ZERO (&is_sent);
 
 #if 0  /* test random generation */
-  if (rand_frag)
-     for (i = 0; i < max_frags; i++)
-     {
+  if (rand_frag) {
+     for (i = 0; i < max_frags; i++) {
        int j = rand_packet (&is_sent, max_frags);
        printf ("index %d\n", j);
      }
+  }
   exit (0);
 #endif
 
-  for (i = 0; i < max_frags; i++)
-  {
+  for (i = 0; i < max_frags; i++) {
     int j = rand_frag ? rand_packet (&is_sent,max_frags) : i;
 
     if (j < 0)
        break;
-    if (i == max_frags-1)
-         frag_flag = 0;
-    else frag_flag = IP_MF;
+    if (i == max_frags-1) {
+        frag_flag = 0;
+    } else {
+        frag_flag = IP_MF;
+    }
 
     frag_ofs = (j * frag_size);
     memcpy ((BYTE*)(ip+1), data+frag_ofs, frag_size);

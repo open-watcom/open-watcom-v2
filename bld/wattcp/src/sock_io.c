@@ -193,7 +193,7 @@ int sock_gets (sock_type *sk, BYTE *data, int n)
 #if !defined(USE_UDP_ONLY)
     if (sk->u.ip_type == TCP_PROTO && sk->tcp.state != tcp_StateCLOSED) {
         if((sk->tcp.maxrdatalen - sk->tcp.rdatalen) < (sk->tcp.max_seg / 2)) {
-            TCP_SENDSOON (&sk->tcp);
+            TCP_SENDSOON (sk);
         }
     }
 #endif

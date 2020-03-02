@@ -112,30 +112,30 @@ int _chk_ip_header (const in_Header *ip)
 
 #if defined(USE_FRAGMENTS)
 
-static __inline in_Header *make_tcp_pkt (const tcp_Socket *tcp_sk,
+static __inline in_Header *make_tcp_pkt (const sock_type *sk,
                                          BOOL first, char **data)
 {
-    in_Header *ip = (in_Header*) _eth_formatpacket (&tcp_sk->hisethaddr, IP_TYPE);
+    in_Header *ip = (in_Header*) _eth_formatpacket (&sk->tcp.hisethaddr, IP_TYPE);
 
     if (first) {
         tcp_Header          *tcp_hdr = (tcp_Header*) (ip+1);
         tcp_PseudoHeader    tcp_phdr;
         int                 tcp_len = sizeof(*tcp_hdr);
 
-        tcp_hdr->srcPort  = intel16 (tcp_sk->myport);
-        tcp_hdr->dstPort  = intel16 (tcp_sk->hisport);
-        tcp_hdr->seqnum   = intel (tcp_sk->seqnum + tcp_sk->unacked);
-        tcp_hdr->acknum   = intel (tcp_sk->acknum);
-        tcp_hdr->window   = intel16 (tcp_sk->maxrdatalen - tcp_sk->rdatalen);
-        tcp_hdr->flags    = tcp_sk->flags;
+        tcp_hdr->srcPort  = intel16 (sk->tcp.myport);
+        tcp_hdr->dstPort  = intel16 (sk->tcp.hisport);
+        tcp_hdr->seqnum   = intel (sk->tcp.seqnum + sk->tcp.unacked);
+        tcp_hdr->acknum   = intel (sk->tcp.acknum);
+        tcp_hdr->window   = intel16 (sk->tcp.maxrdatalen - sk->tcp.rdatalen);
+        tcp_hdr->flags    = sk->tcp.flags;
         tcp_hdr->unused   = 0;
         tcp_hdr->checksum = 0;
         tcp_hdr->urgent   = 0;
         tcp_hdr->offset   = tcp_len / 4;
 
         memset (&tcp_phdr, 0, sizeof(tcp_phdr));
-        tcp_phdr.src      = intel (tcp_sk->myaddr);
-        tcp_phdr.dst      = intel (tcp_sk->hisaddr);
+        tcp_phdr.src      = intel (sk->tcp.myaddr);
+        tcp_phdr.dst      = intel (sk->tcp.hisaddr);
         tcp_phdr.protocol = TCP_PROTO;
         tcp_phdr.length   = intel16 (tcp_len);
         tcp_phdr.checksum = checksum (tcp_hdr, tcp_len);
@@ -148,24 +148,24 @@ static __inline in_Header *make_tcp_pkt (const tcp_Socket *tcp_sk,
     return (ip);
 }
 
-static __inline in_Header *make_udp_pkt (const udp_Socket *udp_sk, BOOL first,
+static __inline in_Header *make_udp_pkt (const sock_type *sk, BOOL first,
                                          int len, char **data)
 {
-    in_Header *ip = (in_Header*) _eth_formatpacket (&udp_sk->hisethaddr, IP_TYPE);
+    in_Header *ip = (in_Header*) _eth_formatpacket (&sk->udp.hisethaddr, IP_TYPE);
 
     if (first) {
         udp_Header          *udp_hdr = (udp_Header*) (ip+1);
         tcp_PseudoHeader    tcp_phdr;
 
-        udp_hdr->srcPort  = intel16 (udp_sk->myport);
-        udp_hdr->dstPort  = intel16 (udp_sk->hisport);
+        udp_hdr->srcPort  = intel16 (sk->udp.myport);
+        udp_hdr->dstPort  = intel16 (sk->udp.hisport);
         udp_hdr->checksum = 0;
         udp_hdr->length   = intel16 (sizeof(*udp_hdr)+len);
         memset (&tcp_phdr, 0, sizeof(tcp_phdr));
-        tcp_phdr.src = intel (udp_sk->myaddr);
-        tcp_phdr.dst = intel (udp_sk->hisaddr);
+        tcp_phdr.src = intel (sk->udp.myaddr);
+        tcp_phdr.dst = intel (sk->udp.hisaddr);
 
-        if (ISOFF_SOCKMODE(*udp_sk, UDP_MODE_NOCHK)) {
+        if (ISOFF_SOCKMODE(sk->udp, UDP_MODE_NOCHK)) {
             tcp_phdr.protocol = UDP_PROTO;
             tcp_phdr.length   = udp_hdr->length;
             tcp_phdr.checksum = checksum (udp_hdr, sizeof(*udp_hdr)) + checksum (*data, len);
@@ -204,10 +204,10 @@ int send_ip_fragments (sock_type *sk, WORD proto, DWORD dest,
 
         switch (proto) {
         case UDP_PROTO:
-            ip = make_udp_pkt (&sk->udp, frag_ofs == 0, len, &data);
+            ip = make_udp_pkt (sk, frag_ofs == 0, len, &data);
             break;
         case TCP_PROTO:
-            ip = make_tcp_pkt (&sk->tcp, frag_ofs == 0, &data);
+            ip = make_tcp_pkt (sk, frag_ofs == 0, &data);
             break;
         default:
             fprintf (stderr, "Illegal protocol %04X at %s(%d)\n",

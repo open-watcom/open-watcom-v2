@@ -39,11 +39,11 @@ unsigned long set_ttimeout (unsigned ticks)
 /*
  * Keep the socket open inspite of receiving "ICMP Unreachable"
  */
-void sock_sturdy (sock_type *s, int level)
+void sock_sturdy (sock_type *sk, int level)
 {
-  s->tcp.rigid = level;
-  if (s->tcp.rigid < s->tcp.stress)
-     sock_abort (s);
+  sk->tcp.rigid = level;
+  if (sk->tcp.rigid < sk->tcp.stress)
+     sock_abort (sk);
 }
 
 /*
