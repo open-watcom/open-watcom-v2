@@ -135,7 +135,7 @@ verrc_dll = $(dllname)
 verrc_exe = $(exename)
 !include verrc.mif
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I.. -I"../../h" -I"d:\open-watcom-v2\bld\hdr\dos" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 .h: ../../h;$(watcom_dir)/h
@@ -232,7 +232,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 ./mkcode.exe: ../../a/mkcode.c
     @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@  -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_msgencod
@@ -240,14 +240,14 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I"$(fe_misc_dir)/h" -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     @%make echo_execute
@@ -255,7 +255,7 @@ asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
     @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     @%make echo_execute

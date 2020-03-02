@@ -80,7 +80,7 @@ option.obj : option.c optinfo.h
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     @%make echo_execute
@@ -88,7 +88,7 @@ asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
     @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     @%make echo_execute

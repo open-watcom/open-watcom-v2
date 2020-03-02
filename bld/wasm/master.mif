@@ -174,7 +174,7 @@ usage.u : ../h/options.gml $(__MAKEFILES__)
 
 ./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(__MAKEFILES__)
     @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" -I"D:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
     @%make echo_execute
@@ -182,7 +182,7 @@ asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(__MAKEFILES__)
     @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" -I"D:\open-watcom-v2\bld\hdr\dos" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
     @%make echo_execute

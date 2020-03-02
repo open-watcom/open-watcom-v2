@@ -200,7 +200,7 @@ $(xname).$(exe_ext) : $(objs) $(libs) $(resfile) $(extra_deps_$(target)) $(versi
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute

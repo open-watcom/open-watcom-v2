@@ -131,7 +131,7 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
     @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I"d:\open-watcom-v2\bld\hdr\dos" $(bld_ldflags)
 
 # dependencies on .h files
 mglob.obj : isarray.gh $(__MAKEFILES__) .AUTODEPEND

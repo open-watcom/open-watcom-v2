@@ -43,7 +43,7 @@ dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
 
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I"../h" $(bld_clflags) -I"D:\open-watcom-v2\bld\hdr\dos" $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     @%make echo_execute

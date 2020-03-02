@@ -114,4 +114,4 @@ distbls.gh : ./disbuild.exe
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
     @%make echo_bldcl
-    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" -I"d:\open-watcom-v2\bld\hdr\dos" $(dis_includes) $(bld_clflags) $(bld_ldflags)

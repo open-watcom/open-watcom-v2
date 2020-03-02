@@ -49,7 +49,7 @@ decstub.gh : ./mkcode.exe decstub.tmp
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I"D:\open-watcom-v2\bld\hdr\dos" $(bld_ldflags)
 
 echo_aslink : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
