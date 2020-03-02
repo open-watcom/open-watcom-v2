@@ -154,7 +154,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
     switch (opt) {
     case SO_DEBUG:
 #if defined(USE_DEBUG)
-        if (*(int*)optval) {   /* on */
+        if (*(BOOL*)optval) {   /* on/off */
             socket->so_options |= SO_DEBUG;
             _sock_dbug_on();
         } else {
@@ -164,7 +164,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
 #endif
         break;
     case SO_ACCEPTCONN:
-        if (*(int*)optval) {   /* on */
+        if (*(BOOL*)optval) {   /* on/off */
             socket->so_options |=  SO_ACCEPTCONN;
         } else {
             socket->so_options &= ~SO_ACCEPTCONN;
@@ -295,8 +295,8 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
     switch (opt) {
     case SO_DEBUG:
     case SO_ACCEPTCONN:
-        *(int*)optval = ( (socket->so_options & opt) != 0 );
-        *optlen = sizeof(int);
+        *(BOOL*)optval = ( (socket->so_options & opt) != 0 );   /* on/off */
+        *optlen = sizeof(BOOL);
         break;
     case SO_OOBINLINE:
 #if 0
@@ -412,7 +412,7 @@ static int set_tcp_opt (tcp_Socket *tcp_sk, int opt, const void *optval, socklen
 {
     switch (opt) {
     case TCP_NODELAY:
-        if (*(int*)optval) {  /* on */
+        if (*(BOOL*)optval) {  /* on/off */
             /* disable Nagle's algorithm */
             SETON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
             tcp_sk->locflags |= LF_NODELAY;
@@ -433,14 +433,14 @@ static int set_tcp_opt (tcp_Socket *tcp_sk, int opt, const void *optval, socklen
         break;
       }
     case TCP_NOPUSH:
-        if (*(int*)optval) {  /* on */
+        if (*(BOOL*)optval) {  /* on/off */
             tcp_sk->locflags |=  LF_NOPUSH;
         } else {
             tcp_sk->locflags &= ~LF_NOPUSH;
         }
         break;
     case TCP_NOOPT:
-        if (*(int*)optval) {  /* on */
+        if (*(BOOL*)optval) {  /* on/off */
             tcp_sk->locflags |=  LF_NOOPT;
         } else {
             tcp_sk->locflags &= ~LF_NOOPT;
@@ -458,20 +458,20 @@ static int get_tcp_opt (tcp_Socket *tcp_sk, int opt, void *optval, socklen_t *op
 {
     switch (opt) {
     case TCP_NODELAY:
-        *(int*)optval = ISON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
-        *(size_t*)optlen = sizeof(int);
+        *(BOOL*)optval = ISON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);  /* on/off */
+        *optlen = sizeof(BOOL);
         break;
     case TCP_MAXSEG:
         *(int*)optval    = tcp_sk->max_seg;
-        *(size_t*)optlen = sizeof(int);
+        *optlen = sizeof(int);
         break;
     case TCP_NOPUSH:
-        *(int*)optval = ( (tcp_sk->locflags & LF_NOPUSH) != 0 );
-        *(size_t*)optlen = sizeof(int);
+        *(BOOL*)optval = ( (tcp_sk->locflags & LF_NOPUSH) != 0 );   /* on/off */
+        *optlen = sizeof(BOOL);
         break;
     case TCP_NOOPT:
-        *(int*)optval = ( (tcp_sk->locflags & LF_NOOPT) != 0 );
-        *(size_t*)optlen = sizeof(int);
+        *(BOOL*)optval = ( (tcp_sk->locflags & LF_NOOPT) != 0 );    /* on/off */
+        *optlen = sizeof(BOOL);
         break;
     default:
         SOCK_ERR (ENOPROTOOPT);
@@ -527,7 +527,7 @@ static int set_raw_opt (Socket *socket, int opt, const void *optval, socklen_t o
         }
         break;
     case IP_HDRINCL:
-        if (*(int*)optval) {   /* on */
+        if (*(BOOL*)optval) {   /* on/off */
             socket->inp_flags |=  INP_HDRINCL;
         } else {
             socket->inp_flags &= ~INP_HDRINCL;
@@ -612,8 +612,8 @@ static int get_raw_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
         }
         break;
     case IP_HDRINCL:
-        *(int*)optval = ( (socket->inp_flags & INP_HDRINCL) != 0 );
-        *optlen = sizeof(int);
+        *(BOOL*)optval = ( (socket->inp_flags & INP_HDRINCL) != 0 );    /* on/off */
+        *optlen = sizeof(BOOL);
         break;
     case IP_TOS:
         *(int*)optval = socket->ip_tos;
