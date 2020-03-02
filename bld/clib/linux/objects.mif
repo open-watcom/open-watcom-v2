@@ -43,7 +43,6 @@
 !inject getpwuid.obj                                                                    l32 lpc lmp
 !inject getrlim.obj                                                                     l32 lpc lmp
 !inject gettid.obj                                                                      l32 lpc lmp
-!inject gettmofd.obj                                                                    l32 lpc lmp
 !inject getuid.obj                                                                      l32 lpc lmp
 !inject ioctl.obj                                                                       l32 lpc lmp
 !inject ioperm.obj                                                                      l32 lpc lmp
