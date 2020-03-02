@@ -408,18 +408,18 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
 /*
  * set/get TCP-layer options
  */
-static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *optval, socklen_t optlen)
+static int set_tcp_opt (tcp_Socket *tcp_sk, int opt, const void *optval, socklen_t optlen)
 {
     switch (opt) {
     case TCP_NODELAY:
         if (*(int*)optval) {  /* on */
             /* disable Nagle's algorithm */
-            SETON_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
-            tcp->locflags |= LF_NODELAY;
+            SETON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
+            tcp_sk->locflags |= LF_NODELAY;
         } else {
             /* turn on Nagle */
-            SETOFF_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
-            tcp->locflags &= ~LF_NODELAY;
+            SETOFF_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
+            tcp_sk->locflags &= ~LF_NODELAY;
         }
         break;
     case TCP_MAXSEG:
@@ -429,21 +429,21 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *optval, socklen_t 
             SOCK_ERR (EINVAL);
             return (-1);
         }
-        tcp->max_seg = *(int*)optval;
+        tcp_sk->max_seg = *(int*)optval;
         break;
       }
     case TCP_NOPUSH:
         if (*(int*)optval) {  /* on */
-            tcp->locflags |=  LF_NOPUSH;
+            tcp_sk->locflags |=  LF_NOPUSH;
         } else {
-            tcp->locflags &= ~LF_NOPUSH;
+            tcp_sk->locflags &= ~LF_NOPUSH;
         }
         break;
     case TCP_NOOPT:
         if (*(int*)optval) {  /* on */
-            tcp->locflags |=  LF_NOOPT;
+            tcp_sk->locflags |=  LF_NOOPT;
         } else {
-            tcp->locflags &= ~LF_NOOPT;
+            tcp_sk->locflags &= ~LF_NOOPT;
         }
         break;
     default:
@@ -454,23 +454,23 @@ static int set_tcp_opt (tcp_Socket *tcp, int opt, const void *optval, socklen_t 
     return (0);
 }
 
-static int get_tcp_opt (tcp_Socket *tcp, int opt, void *optval, socklen_t *optlen)
+static int get_tcp_opt (tcp_Socket *tcp_sk, int opt, void *optval, socklen_t *optlen)
 {
     switch (opt) {
     case TCP_NODELAY:
-        *(int*)optval = ISON_SOCKMODE(*tcp, TCP_MODE_NONAGLE);
+        *(int*)optval = ISON_SOCKMODE(*tcp_sk, TCP_MODE_NONAGLE);
         *(size_t*)optlen = sizeof(int);
         break;
     case TCP_MAXSEG:
-        *(int*)optval    = tcp->max_seg;
+        *(int*)optval    = tcp_sk->max_seg;
         *(size_t*)optlen = sizeof(int);
         break;
     case TCP_NOPUSH:
-        *(int*)optval = ( (tcp->locflags & LF_NOPUSH) != 0 );
+        *(int*)optval = ( (tcp_sk->locflags & LF_NOPUSH) != 0 );
         *(size_t*)optlen = sizeof(int);
         break;
     case TCP_NOOPT:
-        *(int*)optval = ( (tcp->locflags & LF_NOOPT) != 0 );
+        *(int*)optval = ( (tcp_sk->locflags & LF_NOOPT) != 0 );
         *(size_t*)optlen = sizeof(int);
         break;
     default:
@@ -483,9 +483,9 @@ static int get_tcp_opt (tcp_Socket *tcp, int opt, void *optval, socklen_t *optle
 /*
  * set/get UDP-layer options
  */
-static int set_udp_opt (udp_Socket *udp, int opt, const void *optval, socklen_t optlen)
+static int set_udp_opt (udp_Socket *udp_sk, int opt, const void *optval, socklen_t optlen)
 {
-    ARGSUSED (udp);      /* no udp option support yet */
+    ARGSUSED (udp_sk);      /* no udp option support yet */
     ARGSUSED (opt);
     ARGSUSED (optval);
     ARGSUSED (optlen);
@@ -494,9 +494,9 @@ static int set_udp_opt (udp_Socket *udp, int opt, const void *optval, socklen_t 
 }
 
 
-static int get_udp_opt (udp_Socket *udp, int opt, void *optval, socklen_t *optlen)
+static int get_udp_opt (udp_Socket *udp_sk, int opt, void *optval, socklen_t *optlen)
 {
-    ARGSUSED (udp);    /* no udp option support yet */
+    ARGSUSED (udp_sk);      /* no udp option support yet */
     ARGSUSED (opt);
     ARGSUSED (optval);
     ARGSUSED (optlen);
@@ -650,12 +650,12 @@ static int get_raw_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
  * Max size accepted is 64k * (2 << TCP_MAX_WINSHIFT) = 1MByte.
  * Or 64kB for small/large models.
  */
-static int tcp_rx_buf (tcp_Socket *tcp, sock_size size)
+static int tcp_rx_buf (tcp_Socket *tcp_sk, sock_size size)
 {
     BYTE *buf;
 
     size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
-    buf  = realloc (tcp->rdata, size);
+    buf  = realloc (tcp_sk->rdata, size);
     if (!buf) {
         SOCK_ERR (ENOMEM);
         return (-1);
@@ -664,19 +664,19 @@ static int tcp_rx_buf (tcp_Socket *tcp, sock_size size)
     /* Copy the data to new buffer. Data might be overlapping
      * hence using movmem(). Also clear rest of buffer.
      */
-    if (tcp->rdatalen > 0) {
-        int len = min ((long)size, tcp->rdatalen);
+    if (tcp_sk->rdatalen > 0) {
+        int len = min ((long)size, tcp_sk->rdatalen);
 
-        movmem (tcp->rdata, buf, len);
-        if (size > tcp->rdatalen) {
-            memset (tcp->rdata + tcp->rdatalen, 0, size - tcp->rdatalen);
+        movmem (tcp_sk->rdata, buf, len);
+        if (size > tcp_sk->rdatalen) {
+            memset (tcp_sk->rdata + tcp_sk->rdatalen, 0, size - tcp_sk->rdatalen);
         }
     }
-    tcp->rdata       = buf;
-    tcp->maxrdatalen = size;
+    tcp_sk->rdata       = buf;
+    tcp_sk->maxrdatalen = size;
 #if (DOSX)
     if (size > 64*1024)
-        tcp->send_wscale = size >> 16;
+        tcp_sk->send_wscale = size >> 16;
 #endif
     return (0);
 }
@@ -685,13 +685,13 @@ static int tcp_rx_buf (tcp_Socket *tcp, sock_size size)
  * Set transmit buffer size for TCP.
  * Max size accepted is 64k.
  */
-static int tcp_tx_buf (tcp_Socket *tcp, sock_size size)
+static int tcp_tx_buf (tcp_Socket *tcp_sk, sock_size size)
 {
 #ifdef NOT_YET
     BYTE *buf;
 
     size = min (size, MAX_TCP_SEND_BUF);
-    buf  = realloc (tcp->data, size);
+    buf  = realloc (tcp_sk->data, size);
     if (!buf) {
         SOCK_ERR (ENOMEM);
         return (-1);
@@ -700,14 +700,14 @@ static int tcp_tx_buf (tcp_Socket *tcp, sock_size size)
     /* Copy current data to new buffer. Data might be overlapping
      * hence using movmem().
      */
-    if (tcp->datalen > 0) {
-        int len = min ((long)size, udp->datalen);
-        movmem (udp->data, buf, len);
+    if (tcp_sk->datalen > 0) {
+        int len = min ((long)size, tcp_sk->datalen);
+        movmem (tcp_sk->data, buf, len);
     }
-    udp->data       = buf;
-    udp->maxdatalen = size;
+    tcp_sk->data       = buf;
+    tcp_sk->maxdatalen = size;
 #else
-    ARGSUSED (tcp);
+    ARGSUSED (tcp_sk);
     ARGSUSED (size);
 #endif
     return (0);
@@ -717,12 +717,12 @@ static int tcp_tx_buf (tcp_Socket *tcp, sock_size size)
  * Set receive buffer size for UDP.
  * Max size accepted is 64k.
  */
-static int udp_rx_buf (udp_Socket *udp, sock_size size)
+static int udp_rx_buf (udp_Socket *udp_sk, sock_size size)
 {
     BYTE *buf;
 
     size = min (size, MAX_UDP_RECV_BUF);
-    buf  = realloc (udp->rdata, size);
+    buf  = realloc (udp_sk->rdata, size);
     if (!buf) {
         SOCK_ERR (ENOMEM);
         return (-1);
@@ -731,16 +731,16 @@ static int udp_rx_buf (udp_Socket *udp, sock_size size)
     /* Copy current data to new buffer. Data might be overlapping
      * hence using movmem(). Also clear rest of buffer.
      */
-    if (udp->rdatalen > 0) {
-        int len = min ((long)size, udp->rdatalen);
+    if (udp_sk->rdatalen > 0) {
+        int len = min ((long)size, udp_sk->rdatalen);
 
-        movmem (udp->rdata, buf, len);
-        if (size > udp->rdatalen) {
-            memset (buf + udp->rdatalen, 0, size - udp->rdatalen);
+        movmem (udp_sk->rdata, buf, len);
+        if (size > udp_sk->rdatalen) {
+            memset (buf + udp_sk->rdatalen, 0, size - udp_sk->rdatalen);
         }
     }
-    udp->rdata       = buf;
-    udp->maxrdatalen = size;
+    udp_sk->rdata       = buf;
+    udp_sk->maxrdatalen = size;
     return (0);
 }
 
@@ -748,19 +748,19 @@ static int udp_rx_buf (udp_Socket *udp, sock_size size)
  * Set transmit buffer sizes for UDP.
  * Max size accepted is 64k.
  */
-static int udp_tx_buf (udp_Socket *udp, sock_size size)
+static int udp_tx_buf (udp_Socket *udp_sk, sock_size size)
 {
 #ifdef NOT_YET
     BYTE *buf;
 
     size = min (size, MAX_UDP_SEND_BUF);
-    buf  = realloc (udp->data, size);
+    buf  = realloc (udp_sk->data, size);
     if (!buf) {
         SOCK_ERR (ENOMEM);
         return (-1);
     }
 #else
-    ARGSUSED (udp);
+    ARGSUSED (udp_sk);
     ARGSUSED (size);
 #endif
     return (0);
@@ -770,18 +770,18 @@ static int udp_tx_buf (udp_Socket *udp, sock_size size)
 /*
  * Set receive buffer size for RAW socket
  */
-static int raw_rx_buf (raw_Socket *raw, sock_size size)
+static int raw_rx_buf (raw_Socket *raw_sk, sock_size size)
 {
     /* to-do !! */
-    ARGSUSED (raw);
+    ARGSUSED (raw_sk);
     ARGSUSED (size);
     return (0);
 }
 
-static int raw_tx_buf (raw_Socket *raw, sock_size size)
+static int raw_tx_buf (raw_Socket *raw_sk, sock_size size)
 {
     /* to-do !! */
-    ARGSUSED (raw);
+    ARGSUSED (raw_sk);
     ARGSUSED (size);
     return (0);
 }

@@ -53,8 +53,7 @@ static int close_stream (int s)
   sock_type *sk;
   int  i, listen_abort = 0;
 
-  if ((socket->so_state & SS_ISDISCONNECTING) && socket->close_time)
-  {
+  if ((socket->so_state & SS_ISDISCONNECTING) && socket->close_time) {
     SOCK_DEBUGF ((socket, ", close already called"));
     SOCK_ERR (EBADF);
     return (-1);
@@ -75,15 +74,14 @@ static int close_stream (int s)
         socket->listen_queue[i] = NULL;
       }
     }
-  } else if (sk) {
+  } else if (sk != NULL) {
     sk->tcp.rdatalen = 0;
     sock_flush (sk);
     sock_close (sk);
   }
 
   if (listen_abort || !socket->local_addr) {
-    /* 's' is a listening socket or we never received any thing, kill it now.
-     */
+    /* 's' is a listening socket or we never received any thing, kill it now. */
     SOCK_DEBUGF ((socket, ", fast kill!"));
     SOCK_DEL_FD (s);
   } else {
@@ -103,8 +101,8 @@ static int close_stream (int s)
  */
 static int close_dgram (int s)
 {
-  Socket    *socket = _socklist_find (s);      /* 'socket' is non-NULL */
-  sock_type *sk     = socket->proto_sock;
+  Socket    *socket = _socklist_find (s);   /* 'socket' is non-NULL */
+  sock_type *sk = socket->proto_sock;
 
   sk->udp.rdatalen = 0;   /* flush Rx data */
   sock_close (sk);

@@ -252,8 +252,7 @@ static int tcp_connect (Socket *socket)
     return (-1);
   }
 
-  socket->so_state &= ~SS_UNCONNECTED;
-  socket->so_state &= ~SS_ISCONNECTING;
+  socket->so_state &= ~(SS_UNCONNECTED | SS_ISCONNECTING);
   socket->so_state |=  SS_ISCONNECTED;
   set_keepalive (socket);
   return (0);

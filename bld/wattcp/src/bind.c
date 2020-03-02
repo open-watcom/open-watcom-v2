@@ -154,12 +154,12 @@ int bind (int s, const struct sockaddr *myaddr, socklen_t namelen)
 int main (int argc, char **argv)
 {
   struct sockaddr_in addr;
-  int    sock, quit;
+  int    s, quit;
 
   dbug_init();
 
-  sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (sock < 0)
+  s = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  if (s < 0)
   {
     perror ("socket");
     return (-1);
@@ -185,10 +185,10 @@ int main (int argc, char **argv)
     addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
     addr.sin_port        = IPPORT_ANY;
 
-    if (sendto (sock, &data, sizeof(data), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
+    if (sendto (s, &data, sizeof(data), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
        perror ("sendto");
 
-    close (sock);
+    close (s);
     return (-1);
   }
 
@@ -197,18 +197,18 @@ int main (int argc, char **argv)
   addr.sin_addr.s_addr = htonl (INADDR_ANY);
   addr.sin_port        = htons (MY_PORT_ID);
 
-  if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) < 0)
+  if (bind(s, (struct sockaddr*)&addr, sizeof(addr)) < 0)
   {
     perror ("bind");
-    close (sock);
+    close (s);
     return (-1);
   }
 
 #if 0
-  if (listen (sock, 5) < 0)
+  if (listen (s, 5) < 0)
   {
     perror ("listen");
-    close (sock);
+    close (s);
     return (-1);
   }
 #endif
@@ -227,17 +227,17 @@ int main (int argc, char **argv)
     FD_ZERO (&fd_write);
     FD_ZERO (&fd_exc);
     FD_SET (STDIN_FILENO, &fd_read);
-    FD_SET (sock, &fd_read);
-    FD_SET (sock, &fd_write);
-    FD_SET (sock, &fd_exc);
+    FD_SET (s, &fd_read);
+    FD_SET (s, &fd_write);
+    FD_SET (s, &fd_exc);
     tv.tv_usec = 0;
     tv.tv_sec  = 1;
 
-    num = select (sock+1, &fd_read, &fd_write, &fd_exc, &tv);
+    num = select (s+1, &fd_read, &fd_write, &fd_exc, &tv);
 
-    if (FD_ISSET(sock, &fd_read))  fputc ('r', stderr);
-    if (FD_ISSET(sock, &fd_write)) fputc ('w', stderr);
-    if (FD_ISSET(sock, &fd_exc))   fputc ('x', stderr);
+    if (FD_ISSET(s, &fd_read))  fputc ('r', stderr);
+    if (FD_ISSET(s, &fd_write)) fputc ('w', stderr);
+    if (FD_ISSET(s, &fd_exc))   fputc ('x', stderr);
 
     if (FD_ISSET(STDIN_FILENO, &fd_read))
     {
@@ -246,8 +246,8 @@ int main (int argc, char **argv)
       fputc (ch, stderr);
     }
 
-    if (FD_ISSET(sock, &fd_read) &&
-        accept (sock, &from, &from_len) < 0)
+    if (FD_ISSET(s, &fd_read) &&
+        accept (s, &from, &from_len) < 0)
     {
       perror ("accept");
       break;
@@ -261,7 +261,7 @@ int main (int argc, char **argv)
     usleep (300000);   /* 300ms */
   }
 
-  close (sock);
+  close (s);
   return (0);
 }
 #endif  /* TEST_PROG */
