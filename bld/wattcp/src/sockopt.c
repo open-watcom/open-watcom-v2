@@ -15,7 +15,7 @@
 
 #if defined(USE_BSD_FUNC)
 
-typedef unsigned    sock_size;
+typedef unsigned    sock_buf_size;
 
 static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
 static int set_raw_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
@@ -26,17 +26,6 @@ static int set_tcp_opt (sock_type *sk, int opt, const void *optval, socklen_t op
 static int set_udp_opt (sock_type *sk, int opt, const void *optval, socklen_t optlen);
 static int get_tcp_opt (sock_type *sk, int opt, void *optval, socklen_t *optlen);
 static int get_udp_opt (sock_type *sk, int opt, void *optval, socklen_t *optlen);
-
-static int udp_rx_buf  (sock_type *sk, sock_size size);
-static int tcp_rx_buf  (sock_type *sk, sock_size size);
-static int raw_rx_buf  (sock_type *sk, sock_size size);
-static int udp_tx_buf  (sock_type *sk, sock_size size);
-static int tcp_tx_buf  (sock_type *sk, sock_size size);
-static int raw_tx_buf  (sock_type *sk, sock_size size);
-static int set_tx_lowat (Socket *socket, const sock_size *optval);
-static int set_rx_lowat (Socket *socket, const sock_size *optval);
-static int get_tx_lowat (const Socket *socket, sock_size *optval);
-static int get_rx_lowat (const Socket *socket, sock_size *optval);
 
 #if defined(USE_DEBUG)
 static const char *sockopt_name (int option, int level);
@@ -146,6 +135,198 @@ int getsockopt (int s, int level, int option, void *optval, socklen_t *optlen)
     return (rc);
 }
 
+/*
+ * Set receive buffer size for TCP.
+ * Max size accepted is 64k * (2 << TCP_MAX_WINSHIFT) = 1MByte.
+ * Or 64kB for small/large models.
+ */
+static int tcp_rx_buf (sock_type *sk, sock_buf_size size)
+{
+    BYTE *buf;
+
+    size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
+    buf  = realloc (sk->tcp.rxdata, size);
+    if (!buf) {
+        SOCK_ERR (ENOMEM);
+        return (-1);
+    }
+
+    /* Copy the data to new buffer. Data might be overlapping
+     * hence using movmem(). Also clear rest of buffer.
+     */
+    if (sk->tcp.rxdatalen > 0) {
+        int len = min ((long)size, sk->tcp.rxdatalen);
+
+        movmem (sk->tcp.rxdata, buf, len);
+        if (size > sk->tcp.rxdatalen) {
+            memset (sk->tcp.rxdata + sk->tcp.rxdatalen, 0, size - sk->tcp.rxdatalen);
+        }
+    }
+    sk->tcp.rxdata       = buf;
+    sk->tcp.maxrxdatalen = size;
+#if (DOSX)
+    if (size > 64*1024)
+        sk->tcp.send_wscale = size >> 16;
+#endif
+    return (0);
+}
+
+/*
+ * Set receive buffer size for UDP.
+ * Max size accepted is 64k.
+ */
+static int udp_rx_buf (sock_type *sk, sock_buf_size size)
+{
+    BYTE *buf;
+
+    size = min (size, MAX_UDP_RECV_BUF);
+    buf  = realloc (sk->udp.rxdata, size);
+    if (!buf) {
+        SOCK_ERR (ENOMEM);
+        return (-1);
+    }
+
+    /* Copy current data to new buffer. Data might be overlapping
+     * hence using movmem(). Also clear rest of buffer.
+     */
+    if (sk->udp.rxdatalen > 0) {
+        int len = min ((long)size, sk->udp.rxdatalen);
+
+        movmem (sk->udp.rxdata, buf, len);
+        if (size > sk->udp.rxdatalen) {
+            memset (buf + sk->udp.rxdatalen, 0, size - sk->udp.rxdatalen);
+        }
+    }
+    sk->udp.rxdata       = buf;
+    sk->udp.maxrxdatalen = size;
+    return (0);
+}
+
+/*
+ * Set receive buffer size for RAW socket
+ */
+static int raw_rx_buf (sock_type *sk, sock_buf_size size)
+{
+    /* to-do !! */
+    ARGSUSED (sk);
+    ARGSUSED (size);
+    return (0);
+}
+
+/*
+ * Set transmit buffer size for TCP.
+ * Max size accepted is 64k.
+ */
+static int tcp_tx_buf (sock_type *sk, sock_buf_size size)
+{
+#ifdef NOT_YET
+    BYTE *buf;
+
+    size = min (size, MAX_TCP_SEND_BUF);
+    buf  = realloc (sk->tcp.data, size);
+    if (!buf) {
+        SOCK_ERR (ENOMEM);
+        return (-1);
+    }
+
+    /* Copy current data to new buffer. Data might be overlapping
+     * hence using movmem().
+     */
+    if (sk->tcp.txdatalen > 0) {
+        int len = min ((long)size, sk->tcp.txdatalen);
+        movmem (sk->tcp.data, buf, len);
+    }
+    sk->tcp.data       = buf;
+    sk->tcp.maxdatalen = size;
+#else
+    ARGSUSED (sk);
+    ARGSUSED (size);
+#endif
+    return (0);
+}
+
+/*
+ * Set transmit buffer sizes for UDP.
+ * Max size accepted is 64k.
+ */
+static int udp_tx_buf (sock_type *sk, sock_buf_size size)
+{
+#ifdef NOT_YET
+    BYTE *buf;
+
+    size = min (size, MAX_UDP_SEND_BUF);
+    buf  = realloc (sk->udp.data, size);
+    if (!buf) {
+        SOCK_ERR (ENOMEM);
+        return (-1);
+    }
+#else
+    ARGSUSED (sk);
+    ARGSUSED (size);
+#endif
+    return (0);
+}
+
+
+/*
+ * Set receive buffer size for RAW socket
+ */
+static int raw_tx_buf (sock_type *sk, sock_buf_size size)
+{
+    /* to-do !! */
+    ARGSUSED (sk);
+    ARGSUSED (size);
+    return (0);
+}
+
+/*
+ * Set send buffer "low water marks"
+ */
+static int set_tx_lowat (Socket *socket, const sock_buf_size *optval)
+{
+    switch (socket->so_type) {
+    case SOCK_STREAM:
+        socket->send_lowat = min (*optval, MAX_TCP_SEND_BUF-1);
+        break;
+    case SOCK_DGRAM:
+        socket->send_lowat = min (*optval, MAX_UDP_SEND_BUF-1);
+        break;
+    case SOCK_RAW:
+        socket->send_lowat = min (*optval, sizeof(socket->proto_sock->raw.data)-1);
+        break;
+    default:
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
+    }
+    return (0);
+}
+
+/*
+ * Set receive/transmit buffer "low water marks"
+ */
+static int set_rx_lowat (Socket *socket, const sock_buf_size *optval)
+{
+    sock_type *sk = socket->proto_sock;
+
+    switch (socket->so_type) {
+    case SOCK_STREAM:
+        if (sk != NULL)
+            socket->send_lowat = min (*optval, sk->tcp.maxrxdatalen);
+        break;
+    case SOCK_DGRAM:
+        if (sk != NULL)
+            socket->send_lowat = min (*optval, sk->udp.maxrxdatalen);
+        break;
+    case SOCK_RAW:
+        socket->send_lowat = min (*optval, sizeof(sk->raw.data));
+        break;
+    default:
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
+    }
+    return (0);
+}
+
 
 static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t optlen)
 {
@@ -217,7 +398,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
         return set_rx_lowat (socket, optval);
     case SO_RCVBUF:
       {
-        sock_size size = *(const sock_size*) optval;
+        sock_buf_size size = *(const sock_buf_size*) optval;
         if (size == 0) {
             SOCK_ERR (EINVAL);
             return (-1);
@@ -236,7 +417,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
       }
     case SO_SNDBUF:
       {
-        sock_size size = *(const sock_size*) optval;
+        sock_buf_size size = *(const sock_buf_size*) optval;
         if (size == 0) {
             SOCK_ERR (EINVAL);
             return (-1);
@@ -285,6 +466,35 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
         return (-1);
     }
     return (0);
+}
+
+/*
+ * Get receive/transmit buffer "low water marks"
+ */
+static int get_tx_lowat (const Socket *socket, sock_buf_size *optval)
+{
+    if (socket->so_type == SOCK_STREAM ||
+        socket->so_type == SOCK_DGRAM  ||
+        socket->so_type == SOCK_RAW)
+    {
+        *optval = socket->send_lowat;
+        return (0);
+    }
+    SOCK_ERR (ENOPROTOOPT);
+    return (-1);
+}
+
+static int get_rx_lowat (const Socket *socket, sock_buf_size *optval)
+{
+    if (socket->so_type == SOCK_STREAM ||
+        socket->so_type == SOCK_DGRAM  ||
+        socket->so_type == SOCK_RAW)
+    {
+        *optval = socket->recv_lowat;
+        return (0);
+    }
+    SOCK_ERR (ENOPROTOOPT);
+    return (-1);
 }
 
 
@@ -645,224 +855,6 @@ static int get_raw_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
     return (0);
 }
 
-/*
- * Set receive buffer size for TCP.
- * Max size accepted is 64k * (2 << TCP_MAX_WINSHIFT) = 1MByte.
- * Or 64kB for small/large models.
- */
-static int tcp_rx_buf (sock_type *sk, sock_size size)
-{
-    BYTE *buf;
-
-    size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
-    buf  = realloc (sk->tcp.rxdata, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
-    }
-
-    /* Copy the data to new buffer. Data might be overlapping
-     * hence using movmem(). Also clear rest of buffer.
-     */
-    if (sk->tcp.rxdatalen > 0) {
-        int len = min ((long)size, sk->tcp.rxdatalen);
-
-        movmem (sk->tcp.rxdata, buf, len);
-        if (size > sk->tcp.rxdatalen) {
-            memset (sk->tcp.rxdata + sk->tcp.rxdatalen, 0, size - sk->tcp.rxdatalen);
-        }
-    }
-    sk->tcp.rxdata       = buf;
-    sk->tcp.maxrxdatalen = size;
-#if (DOSX)
-    if (size > 64*1024)
-        sk->tcp.send_wscale = size >> 16;
-#endif
-    return (0);
-}
-
-/*
- * Set transmit buffer size for TCP.
- * Max size accepted is 64k.
- */
-static int tcp_tx_buf (sock_type *sk, sock_size size)
-{
-#ifdef NOT_YET
-    BYTE *buf;
-
-    size = min (size, MAX_TCP_SEND_BUF);
-    buf  = realloc (sk->tcp.data, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
-    }
-
-    /* Copy current data to new buffer. Data might be overlapping
-     * hence using movmem().
-     */
-    if (sk->tcp.txdatalen > 0) {
-        int len = min ((long)size, sk->tcp.txdatalen);
-        movmem (sk->tcp.data, buf, len);
-    }
-    sk->tcp.data       = buf;
-    sk->tcp.maxdatalen = size;
-#else
-    ARGSUSED (sk);
-    ARGSUSED (size);
-#endif
-    return (0);
-}
-
-/*
- * Set receive buffer size for UDP.
- * Max size accepted is 64k.
- */
-static int udp_rx_buf (sock_type *sk, sock_size size)
-{
-    BYTE *buf;
-
-    size = min (size, MAX_UDP_RECV_BUF);
-    buf  = realloc (sk->udp.rxdata, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
-    }
-
-    /* Copy current data to new buffer. Data might be overlapping
-     * hence using movmem(). Also clear rest of buffer.
-     */
-    if (sk->udp.rxdatalen > 0) {
-        int len = min ((long)size, sk->udp.rxdatalen);
-
-        movmem (sk->udp.rxdata, buf, len);
-        if (size > sk->udp.rxdatalen) {
-            memset (buf + sk->udp.rxdatalen, 0, size - sk->udp.rxdatalen);
-        }
-    }
-    sk->udp.rxdata       = buf;
-    sk->udp.maxrxdatalen = size;
-    return (0);
-}
-
-/*
- * Set transmit buffer sizes for UDP.
- * Max size accepted is 64k.
- */
-static int udp_tx_buf (sock_type *sk, sock_size size)
-{
-#ifdef NOT_YET
-    BYTE *buf;
-
-    size = min (size, MAX_UDP_SEND_BUF);
-    buf  = realloc (sk->udp.data, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
-    }
-#else
-    ARGSUSED (sk);
-    ARGSUSED (size);
-#endif
-    return (0);
-}
-
-
-/*
- * Set receive buffer size for RAW socket
- */
-static int raw_rx_buf (sock_type *sk, sock_size size)
-{
-    /* to-do !! */
-    ARGSUSED (sk);
-    ARGSUSED (size);
-    return (0);
-}
-
-static int raw_tx_buf (sock_type *sk, sock_size size)
-{
-    /* to-do !! */
-    ARGSUSED (sk);
-    ARGSUSED (size);
-    return (0);
-}
-
-
-/*
- * Set send buffer "low water marks"
- */
-static int set_tx_lowat (Socket *socket, const sock_size *optval)
-{
-    switch (socket->so_type) {
-    case SOCK_STREAM:
-        socket->send_lowat = min (*optval, MAX_TCP_SEND_BUF-1);
-        break;
-    case SOCK_DGRAM:
-        socket->send_lowat = min (*optval, MAX_UDP_SEND_BUF-1);
-        break;
-    case SOCK_RAW:
-        socket->send_lowat = min (*optval, sizeof(socket->proto_sock->raw.data)-1);
-        break;
-    default:
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
-    }
-    return (0);
-}
-
-/*
- * Set receive/transmit buffer "low water marks"
- */
-static int set_rx_lowat (Socket *socket, const sock_size *optval)
-{
-    sock_type *sk = socket->proto_sock;
-
-    switch (socket->so_type) {
-    case SOCK_STREAM:
-        if (sk != NULL)
-            socket->send_lowat = min (*optval, sk->tcp.maxrxdatalen);
-        break;
-    case SOCK_DGRAM:
-        if (sk != NULL)
-            socket->send_lowat = min (*optval, sk->udp.maxrxdatalen);
-        break;
-    case SOCK_RAW:
-        socket->send_lowat = min (*optval, sizeof(sk->raw.data));
-        break;
-    default:
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
-    }
-    return (0);
-}
-
-/*
- * Get receive/transmit buffer "low water marks"
- */
-static int get_tx_lowat (const Socket *socket, sock_size *optval)
-{
-    if (socket->so_type == SOCK_STREAM ||
-        socket->so_type == SOCK_DGRAM  ||
-        socket->so_type == SOCK_RAW)
-    {
-        *optval = socket->send_lowat;
-        return (0);
-    }
-    SOCK_ERR (ENOPROTOOPT);
-    return (-1);
-}
-
-static int get_rx_lowat (const Socket *socket, sock_size *optval)
-{
-    if (socket->so_type == SOCK_STREAM ||
-        socket->so_type == SOCK_DGRAM  ||
-        socket->so_type == SOCK_RAW)
-    {
-        *optval = socket->recv_lowat;
-        return (0);
-    }
-    SOCK_ERR (ENOPROTOOPT);
-    return (-1);
-}
 
 #if defined(USE_DEBUG)
 /*
