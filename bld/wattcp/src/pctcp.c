@@ -154,8 +154,8 @@ int udp_listen (udp_Socket *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     watt_largecheck (sk, sizeof(*udp_sk), __FILE__, __LINE__);
     memset (sk, 0, sizeof(*udp_sk));
 
-    sk->udp.rdata        = sk->udp.rddata;
-    sk->udp.maxrdatalen  = udp_MaxBufSize;
+    sk->udp.rxdata       = sk->udp.rxbuf;
+    sk->udp.maxrxdatalen = udp_MaxBufSize;
     sk->udp.ip_type      = UDP_PROTO;
     sk->udp.myport       = findfreeport (lport, 0); /* get a nonzero port val */
     sk->udp.hisport      = port;
@@ -186,12 +186,12 @@ int udp_open (udp_Socket *udp_sk, WORD lport, DWORD ip, WORD port, ProtoHandler 
     if (ip - my_ip_addr <= multihomes)
         return (0);
 
-    sk->udp.rdata       = sk->udp.rddata;
-    sk->udp.maxrdatalen = udp_MaxBufSize;
-    sk->udp.ip_type     = UDP_PROTO;
-    sk->udp.myport      = findfreeport (lport, 0);
-    sk->udp.myaddr      = my_ip_addr;
-    sk->udp.ttl         = _default_ttl;
+    sk->udp.rxdata       = sk->udp.rxbuf;
+    sk->udp.maxrxdatalen = udp_MaxBufSize;
+    sk->udp.ip_type      = UDP_PROTO;
+    sk->udp.myport       = findfreeport (lport, 0);
+    sk->udp.myaddr       = my_ip_addr;
+    sk->udp.ttl          = _default_ttl;
 
     if (bcast || !ip) {    /* check for broadcast */
         memset (sk->udp.hisethaddr, 0xFF, sizeof(eth_address));
@@ -297,7 +297,7 @@ static void tcp_rtt_clr (sock_type *sk)
  */
 static void tcp_upd_wind (sock_type *sk, unsigned line)
 {
-    UINT winfree = sk->tcp.maxrdatalen - sk->tcp.rdatalen;
+    UINT winfree = sk->tcp.maxrxdatalen - sk->tcp.rxdatalen;
 
     if (winfree < sk->tcp.max_seg/2) {
         _tcp_send (sk, __FILE__, line);  /* update window now */
@@ -358,10 +358,10 @@ static void tcp_sockreset (sock_type *sk, int proxy)
     if (debug_on)
         outsnl (_LANG(str));
 
-    sk->tcp.datalen = 0;  /* Flush Tx buffer */
+    sk->tcp.txdatalen = 0;  /* Flush Tx buffer */
 
     if (sk->tcp.state != tcp_StateCLOSED && sk->tcp.state != tcp_StateLASTACK)
-        sk->tcp.rdatalen = 0;
+        sk->tcp.rxdatalen = 0;
     sk->tcp.err_msg = _LANG (str);
     sk->tcp.state   = tcp_StateCLOSED;
     sk->tcp.ip_type = 0;   /* 2001.1.18 - make it fail tcp_tick() */
@@ -494,8 +494,8 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
     if (!_arp_resolve(ina, &sk->tcp.hisethaddr, 0))
         return (0);
 
-    sk->tcp.rdata        = sk->tcp.rddata;
-    sk->tcp.maxrdatalen  = tcp_MaxBufSize;
+    sk->tcp.rxdata       = sk->tcp.rxbuf;
+    sk->tcp.maxrxdatalen = tcp_MaxBufSize;
     sk->tcp.ip_type      = TCP_PROTO;
     sk->tcp.max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
     sk->tcp.state        = tcp_StateSYNSENT;
@@ -557,8 +557,8 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     if (is_multicast(ina))
         return (0);
 
-    sk->tcp.rdata        = sk->tcp.rddata;
-    sk->tcp.maxrdatalen  = tcp_MaxBufSize;
+    sk->tcp.rxdata       = sk->tcp.rxbuf;
+    sk->tcp.maxrxdatalen = tcp_MaxBufSize;
     sk->tcp.ip_type      = TCP_PROTO;
     sk->tcp.max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
     sk->tcp.cwindow      = 1;
@@ -616,7 +616,7 @@ void _tcp_close (sock_type *sk)
         sk->tcp.state == tcp_StateESTCL ||
         sk->tcp.state == tcp_StateSYNREC)
     {
-        if (sk->tcp.datalen) {    /* must first flush all Tx data */
+        if (sk->tcp.txdatalen) {    /* must first flush all Tx data */
             sk->tcp.flags |= (tcp_FlagPUSH | tcp_FlagACK);
             if (sk->tcp.state < tcp_StateESTCL) {
                 sk->tcp.state = tcp_StateESTCL;
@@ -668,7 +668,7 @@ void tcp_abort (tcp_Socket *tcp_sk)
         (void) TCP_SEND (sk);
     }
     sk->tcp.unhappy = FALSE;
-    sk->tcp.datalen = 0;        /* discard Tx buffer, but not Rx buffer */
+    sk->tcp.txdatalen = 0;      /* discard Tx buffer, but not Rx buffer */
     sk->tcp.ip_type = 0;
 
     maybe_reuse_lport (sk);
@@ -709,7 +709,7 @@ int _tcp_sendsoon (sock_type *sk, char *file, unsigned line)
         return (rc);
     }
 
-    if ((sk->tcp.unhappy || sk->tcp.datalen > 0 || sk->tcp.karn_count == 1) &&
+    if ((sk->tcp.unhappy || sk->tcp.txdatalen > 0 || sk->tcp.karn_count == 1) &&
       (sk->tcp.rtt_time && cmp_timers(sk->tcp.rtt_time, timeout) < 0))
         return (0);
 
@@ -744,7 +744,7 @@ sock_type *_tcp_unthread (sock_type *sk)
         next = _sk->next;
     }
 
-    if (_sk->tcp.rdatalen == 0 || (_sk->tcp.state > tcp_StateESTCL))
+    if (_sk->tcp.rxdatalen == 0 || (_sk->tcp.state > tcp_StateESTCL))
         _sk->u.ip_type = 0;              /* fail further I/O */
     _sk->tcp.state = tcp_StateCLOSED;    /* tcp_tick needs this */
 
@@ -1021,15 +1021,15 @@ static sock_type *udp_handler (const in_Header *ip, BOOL broadcast)
         if (sk->udp.protoHandler != NULL) {
             (*sk->udp.protoHandler) (sk, data, len, &tcp_phdr, udp_hdr);
         /* save first received packet rather than latest */
-        } else if (len > 0 && sk->udp.rdatalen == 0) {
-            if (len > sk->udp.maxrdatalen) { /* truncate data :-( */
-                len = sk->udp.maxrdatalen;
+        } else if (len > 0 && sk->udp.rxdatalen == 0) {
+            if (len > sk->udp.maxrxdatalen) {   /* truncate data :-( */
+                len = sk->udp.maxrxdatalen;
                 STAT (udpstats.udps_fullsock++);
             }
             /* Might overwrite previous data! But hey, this is UDP..
              */
-            memcpy (sk->udp.rdata, data, len);
-            sk->udp.rdatalen = len;
+            memcpy (sk->udp.rxdata, data, len);
+            sk->udp.rxdatalen = len;
         }
     }
     return (sk);
@@ -1062,14 +1062,14 @@ void tcp_Retransmitter (int force)
         /* possible to be closed but still queued
          */
         if (sk->tcp.state == tcp_StateCLOSED) {
-            if (sk->tcp.rdatalen == 0) {
+            if (sk->tcp.rxdatalen == 0) {
                 maybe_reuse_lport (sk);
                 next = _tcp_unthread (sk);
             }
             continue;
         }
 
-        if (sk->tcp.datalen > 0 || sk->tcp.unhappy || sk->tcp.karn_count == 1) {
+        if (sk->tcp.txdatalen > 0 || sk->tcp.unhappy || sk->tcp.karn_count == 1) {
             if (chk_timeout(sk->tcp.rtt_time)) { /* retransmission timeout */
                 sk->tcp.rtt_time = 0UL;           /* stop RTT timer */
 
@@ -1103,7 +1103,7 @@ void tcp_Retransmitter (int force)
                     sk->tcp.karn_count = 2;
                     sk->tcp.unacked    = 0;
                 }
-                if (sk->tcp.datalen > 0)
+                if (sk->tcp.txdatalen > 0)
                     sk->tcp.flags |= (tcp_FlagPUSH | tcp_FlagACK);
 
                 if (sk->tcp.unhappy) {
@@ -1235,7 +1235,7 @@ WORD tcp_tick (sock_type *sk)
     /* finish off dead sockets
      */
     if (sk != NULL && (sk->u.ip_type == TCP_PROTO)) {
-        if ((sk->tcp.state == tcp_StateCLOSED) && (sk->tcp.rdatalen == 0)) {
+        if ((sk->tcp.state == tcp_StateCLOSED) && (sk->tcp.rxdatalen == 0)) {
             (void) _tcp_unthread (sk);
             sk->u.ip_type = 0;   /* fail further I/O */
         }
@@ -1338,7 +1338,7 @@ static int udp_write (sock_type *sk, const BYTE *data, int len)
  */
 static int udp_read (sock_type *sk, BYTE *buf, int maxlen)
 {
-    int len = sk->udp.rdatalen;
+    int len = sk->udp.rxdatalen;
 
     if (maxlen < 0)
         maxlen = INT_MAX;
@@ -1348,10 +1348,10 @@ static int udp_read (sock_type *sk, BYTE *buf, int maxlen)
             len = maxlen;
         if (len > 0) {
             if (buf)
-                memcpy (buf, sk->udp.rdata, len);
-            sk->udp.rdatalen -= len;
-            if (sk->udp.rdatalen) {
-                movmem (sk->udp.rdata + len, sk->udp.rdata, sk->udp.rdatalen);
+                memcpy (buf, sk->udp.rxdata, len);
+            sk->udp.rxdatalen -= len;
+            if (sk->udp.rxdatalen) {
+                movmem (sk->udp.rxdata + len, sk->udp.rxdata, sk->udp.rxdatalen);
             }
         }
     }
@@ -1399,9 +1399,9 @@ void _udp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
             _arp_resolve (gateway, &sk->udp.hisethaddr, 1);
             _ip_recursion = 0;
         } else if (type != ICMP_TIMXCEED) {
-            sk->udp.rdatalen = 0;  /* will it be unthreaded ? */
-            sk->udp.ip_type  = 0;
-            sk->udp.err_msg  = _LANG("Port unreachable");
+            sk->udp.rxdatalen = 0;  /* will it be unthreaded ? */
+            sk->udp.ip_type = 0;
+            sk->udp.err_msg = _LANG("Port unreachable");
         }
     } else {
         /* tell the INADDR_ANY sockets about it
@@ -1438,9 +1438,9 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
                 if (sk->tcp.stress++ > sk->tcp.rigid && sk->tcp.rigid < 100)  /* halt it */
                 {
                     sk->tcp.err_msg  = msg != NULL ? msg : _LANG("ICMP closed connection");
-                    sk->tcp.rdatalen = 0;
-                    sk->tcp.datalen  = 0;
-                    sk->tcp.unhappy  = FALSE;
+                    sk->tcp.rxdatalen = 0;
+                    sk->tcp.txdatalen = 0;
+                    sk->tcp.unhappy = FALSE;
                     tcp_abort (&sk->tcp);
                     break;
                 }
@@ -1483,7 +1483,7 @@ void _tcp_cancel (const in_Header *ip, int type, const char *msg, DWORD gateway)
  */
 static int tcp_read (sock_type *sk, BYTE *buf, int maxlen)
 {
-    int len = sk->tcp.rdatalen;
+    int len = sk->tcp.rxdatalen;
 
     if (maxlen < 0)
         maxlen = INT_MAX;
@@ -1493,15 +1493,15 @@ static int tcp_read (sock_type *sk, BYTE *buf, int maxlen)
             len = maxlen;
         if (len > 0) {
             if (buf)
-                memcpy (buf, sk->tcp.rdata, len);
-            sk->tcp.rdatalen -= len;
-            if (sk->tcp.missed_seg[0] || sk->tcp.rdatalen > 0) {
+                memcpy (buf, sk->tcp.rxdata, len);
+            sk->tcp.rxdatalen -= len;
+            if (sk->tcp.missed_seg[0] || sk->tcp.rxdatalen > 0) {
                 int diff = 0;
                 if (sk->tcp.missed_seg[0] != 0) {
                     long ldiff = sk->tcp.missed_seg[1] - sk->tcp.acknum;
                     diff = abs ((int)ldiff);
                 }
-                movmem (sk->tcp.rdata + len, sk->tcp.rdata, sk->tcp.rdatalen + diff);
+                movmem (sk->tcp.rxdata + len, sk->tcp.rxdata, sk->tcp.rxdatalen + diff);
                 TCP_SENDSOON (sk);     /* update the window soon */
             } else {
                 tcp_upd_wind (sk, __LINE__);
@@ -1524,14 +1524,14 @@ static int tcp_write (sock_type *sk, const BYTE *data, UINT len)
     if (sk->tcp.state != tcp_StateESTAB)
         return (0);
 
-    room = tcp_MaxTxBufSize - sk->tcp.datalen;
+    room = tcp_MaxTxBufSize - sk->tcp.txdatalen;
     if (len > room)
         len = room;
     if (len > 0) {
         int rc = 0;
 
-        memcpy (sk->tcp.data + sk->tcp.datalen, data, len);
-        sk->tcp.datalen  += len;
+        memcpy (sk->tcp.txbuf + sk->tcp.txdatalen, data, len);
+        sk->tcp.txdatalen += len;
         sk->tcp.unhappy   = TRUE;    /* redundant because we have outstanding data */
         sk->tcp.datatimer = set_timeout (1000 * sock_data_timeout); /* EE 99.08.23 */
 
@@ -1546,7 +1546,7 @@ static int tcp_write (sock_type *sk, const BYTE *data, UINT len)
             /* transmit if first data or reached MTU.
              * not true MTU, but better than nothing
              */
-            if (sk->tcp.datalen == len || sk->tcp.datalen > sk->tcp.max_seg/2) {
+            if (sk->tcp.txdatalen == len || sk->tcp.txdatalen > sk->tcp.max_seg/2) {
                 rc = TCP_SEND (sk);
             } else {
                 rc = TCP_SENDSOON (sk);
@@ -1719,12 +1719,12 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
     data = (BYTE*) (tcp_hdr+1);
 
     if (sk->tcp.karn_count == 2) { /* doing slow-start */
-        sendtotdata = min (sk->tcp.datalen, sk->tcp.window);
+        sendtotdata = min (sk->tcp.txdatalen, sk->tcp.window);
         startdata = 0;
     } else {
         /* Morten Terstrup <MorTer@dk-online.dk> found this signed bug
          */
-        int size = min (sk->tcp.datalen, sk->tcp.window);
+        int size = min (sk->tcp.txdatalen, sk->tcp.window);
         sendtotdata = size - sk->tcp.unacked;
         if (sendtotdata < 0)
             sendtotdata = 0;
@@ -1741,7 +1741,7 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
         tcp_hdr->seqnum   = intel (sk->tcp.seqnum + startdata); /* unacked - no longer sendtotlen */
         tcp_hdr->acknum   = intel (sk->tcp.acknum);
 
-        tcp_hdr->window   = intel16 (sk->tcp.maxrdatalen - sk->tcp.rdatalen);
+        tcp_hdr->window   = intel16 (sk->tcp.maxrxdatalen - sk->tcp.rxdatalen);
         tcp_hdr->flags    = sk->tcp.flags;
         tcp_hdr->unused   = 0;
         tcp_hdr->checksum = 0;
@@ -1770,7 +1770,7 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
             if (sk->tcp.queuelen) {
                 memcpy (data, sk->tcp.queue + startdata, senddatalen);
             } else {
-                memcpy (data, sk->tcp.data + startdata, senddatalen);
+                memcpy (data, sk->tcp.txbuf + startdata, senddatalen);
             }
         }
 
@@ -1826,7 +1826,7 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
     } else {
         /* vj_last nonzero if we expect an immediate response
          */
-        if (sk->tcp.unhappy || sk->tcp.datalen)
+        if (sk->tcp.unhappy || sk->tcp.txdatalen)
             sk->tcp.vj_last = set_timeout (0);
         sk->tcp.karn_count = 0;
     }
@@ -1858,19 +1858,19 @@ int sock_keepalive (sock_type *sk)
     ack     = sk->tcp.acknum;
     seq     = sk->tcp.seqnum;
     kc      = sk->tcp.karn_count;
-    datalen = sk->tcp.datalen;
+    datalen = sk->tcp.txdatalen;
 
     sk->tcp.acknum     = sk->tcp.seqnum;
     sk->tcp.seqnum     = sk->tcp.unacked - 1;
     sk->tcp.flags      = tcp_FlagACK;
     sk->tcp.karn_count = 2;
-    sk->tcp.datalen    = 0;
+    sk->tcp.txdatalen  = 0;
     (void) TCP_SEND (sk);
 
     sk->tcp.acknum     = ack;
     sk->tcp.seqnum     = seq;
     sk->tcp.karn_count = kc;
-    sk->tcp.datalen    = datalen;
+    sk->tcp.txdatalen  = datalen;
 
     STAT (tcpstats.tcps_keepprobe++);
     STAT (tcpstats.tcps_keeptimeo++);
@@ -2008,7 +2008,7 @@ int sock_fastread (sock_type *sk, BYTE *buf, int len)
         return udp_read (sk, buf, len);
 
 #if !defined(USE_UDP_ONLY)
-    if (sk->u.ip_type == TCP_PROTO || sk->tcp.rdatalen > 0)
+    if (sk->u.ip_type == TCP_PROTO || sk->tcp.rxdatalen > 0)
         return tcp_read (sk, buf, len);
 #endif
 
@@ -2121,7 +2121,7 @@ int sock_enqueue (sock_type *sk, const BYTE *data, int len)
     case TCP_PROTO:
         sk->tcp.queue    = data;
         sk->tcp.queuelen = len;
-        sk->tcp.datalen  = len;
+        sk->tcp.txdatalen = len;
         return TCP_SEND (sk);
 #endif
     }
@@ -2144,7 +2144,7 @@ void sock_flush (sock_type *sk)
 {
     if (sk->u.ip_type == TCP_PROTO) {
         SETOFF_SOCKMODE(sk->tcp, TCP_MODE_LOCAL);
-        if (sk->tcp.datalen > 0) {
+        if (sk->tcp.txdatalen > 0) {
             sk->tcp.flags |= tcp_FlagPUSH;
             if (sk->tcp.unacked == 0) { /* !! S. Lawson - only if data not moving */
                 (void) TCP_SEND (sk);

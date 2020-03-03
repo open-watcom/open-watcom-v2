@@ -399,11 +399,11 @@ typedef struct arp_Header {
         UINT         queuelen;         /* optional Tx queue length */       \
         const BYTE  *queue;                                                 \
                                                                             \
-        int          rdatalen;         /* Rx length, must be signed */      \
-        UINT         maxrdatalen;                                           \
-        BYTE        *rdata;                    /* received data pointer */  \
-        BYTE         rddata[tcp_MaxBufSize+1]; /* received data buffer */   \
-        DWORD        safetysig                 /* magic marker */
+        int          rxdatalen;        /* Rx length, must be signed */      \
+        UINT         maxrxdatalen;                                          \
+        BYTE        *rxdata;           /* received data pointer */          \
+        BYTE         rxbuf[tcp_MaxBufSize+1]; /* received data buffer */    \
+        DWORD        safetysig         /* magic marker */
 
 typedef int (*ProtoHandler) (union sock_type *sk, BYTE *data, int len,
                              tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
@@ -444,7 +444,6 @@ typedef struct tcp_Socket {
         WORD   flags;              /* tcp flags for last packet sent */
 
         UINT   window;             /* other guy's window */
-        UINT   datalen;            /* number of bytes of data to send */
         int    unacked;            /* unacked data, must be signed */
 
         BYTE   cwindow;            /* Congestion window */
@@ -475,8 +474,9 @@ typedef struct tcp_Socket {
         BYTE   send_wscale;        /* to-do!!: window scales shifts, tx/rx */
         BYTE   recv_wscale;
 
-        BYTE   data[tcp_MaxBufSize+1]; /* data for transmission */
-        DWORD  safetytcp;              /* extra magic marker */
+        UINT   txdatalen;          /* number of bytes of data to send */
+        BYTE   txbuf[tcp_MaxBufSize+1]; /* data for transmission */
+        DWORD  safetytcp;          /* extra magic marker */
       } tcp_Socket;
 
 

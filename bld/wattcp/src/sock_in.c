@@ -158,9 +158,9 @@ int _ip_delay2 (sock_type *sk, int timeoutseconds, UserHandler fn, int *statuspt
     ip_timer_init (sk, timeoutseconds);
 
     for ( ;; ) {
-        /* in this situation we know user is not planning to read rdata
+        /* in this situation we know user is not planning to read rxdata
          */
-        sk->tcp.rdatalen = 0;
+        sk->tcp.rxdatalen = 0;
         kbhit();              /* permit ^C */
         if (!tcp_tick(sk)) {
             status = 1;

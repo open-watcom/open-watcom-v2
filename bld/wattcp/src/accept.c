@@ -279,8 +279,8 @@ static int listen_free (Socket *socket, int idx)
 
     _tcp_unthread (tcb_sk);
 
-    if (tcb_sk->tcp.rdata != tcb_sk->tcp.rddata)    /* free large Rx buffer? */
-        free (tcb_sk->tcp.rdata);
+    if (tcb_sk->tcp.rxdata != tcb_sk->tcp.rxbuf)    /* free large Rx buffer? */
+        free (tcb_sk->tcp.rxdata);
     free (tcb_sk);
     socket->listen_queue[idx] = NULL;
     return (0);
@@ -348,7 +348,7 @@ int _sock_append (sock_type **skp)
 
     /* Copy the TCB (except Tx-buffer) to clone
     */
-    memcpy (clone_sk, orig_sk, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.data));
+    memcpy (clone_sk, orig_sk, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.txbuf));
     clone_sk->tcp.safetytcp = SAFETYTCP;
 
     /* Increase the TCP window (to 16kB)

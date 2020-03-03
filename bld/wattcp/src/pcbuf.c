@@ -19,7 +19,7 @@ int sock_rbsize (const sock_type *sk)
         return (sizeof(sk->raw.ip) + sizeof(sk->raw.data));
     case VALID_UDP:
     case VALID_TCP:
-        return (sk->u.maxrdatalen);
+        return (sk->u.maxrxdatalen);
     }
     return (0);
 }
@@ -31,7 +31,7 @@ int sock_rbused (const sock_type *sk)
         return (sk->raw.used ? intel16 (sk->raw.ip.length) : 0);
     case VALID_UDP:
     case VALID_TCP:
-        return (sk->u.rdatalen);
+        return (sk->u.rxdatalen);
     }
     return (0);
 }
@@ -43,7 +43,7 @@ int sock_rbleft (const sock_type *sk)
         return (sk->raw.used ? 0 : sizeof(sk->raw.ip) + sizeof(sk->raw.data));
     case VALID_UDP:
     case VALID_TCP:
-        return (sk->u.maxrdatalen - sk->u.rdatalen);
+        return (sk->u.maxrxdatalen - sk->u.rxdatalen);
     }
     return (0);
 }
@@ -67,7 +67,7 @@ int sock_tbleft (const sock_type *sk)
     case VALID_IP:
         return (mtu);
     case VALID_TCP:
-        return (tcp_MaxTxBufSize - sk->tcp.datalen);
+        return (tcp_MaxTxBufSize - sk->tcp.txdatalen);
     case VALID_UDP:
         return (mtu - sizeof(in_Header) - sizeof(udp_Header));
     }
@@ -77,7 +77,7 @@ int sock_tbleft (const sock_type *sk)
 int sock_tbused (const sock_type *sk)
 {
     if (_chk_socket(sk) == VALID_TCP)
-        return (sk->tcp.datalen);
+        return (sk->tcp.txdatalen);
     return (0);
 }
 
@@ -92,18 +92,18 @@ int sock_setbuf (sock_type *sk, BYTE *rx_buf, unsigned rx_len)
     case VALID_TCP:
     case VALID_UDP:
         if (rx_len == 0 || rx_buf == NULL) {
-            sk->u.rdata = sk->u.rddata;
+            sk->u.rxdata = sk->u.rxbuf;
             if (sk->u.ip_type == UDP_PROTO) {
-                sk->tcp.maxrdatalen = udp_MaxBufSize;
+                sk->tcp.maxrxdatalen = udp_MaxBufSize;
             } else {
-                sk->tcp.maxrdatalen = tcp_MaxBufSize;
+                sk->tcp.maxrxdatalen = tcp_MaxBufSize;
             }
         } else {
-            sk->u.rdata       = rx_buf;
-            sk->u.maxrdatalen = min (rx_len, USHRT_MAX);
-            memset (rx_buf, 0, sk->u.maxrdatalen);
+            sk->u.rxdata       = rx_buf;
+            sk->u.maxrxdatalen = min (rx_len, USHRT_MAX);
+            memset (rx_buf, 0, sk->u.maxrxdatalen);
         }
-        return (sk->u.maxrdatalen);
+        return (sk->u.maxrxdatalen);
     }
     return (0);  /* Raw-sockets use fixed buffer */
 }
@@ -115,12 +115,12 @@ int sock_preread (const sock_type *sk, BYTE *buf, unsigned len)
     switch (_chk_socket(sk)) {
     case VALID_TCP:
     case VALID_UDP:
-        count = sk->u.rdatalen;
+        count = sk->u.rxdatalen;
         if (count > 0) {
             if (count > len)
                 count = len;
             if (buf != NULL) {
-                memcpy (buf, sk->u.rdata, count);
+                memcpy (buf, sk->u.rxdata, count);
             }
         }
         return (count);

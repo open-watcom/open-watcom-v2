@@ -182,10 +182,10 @@ static __inline void set_rcv_buf (sock_type *sk)
  */
 static __inline void free_rcv_buf (sock_type *sk)
 {
-    if (sk->u.rdata != sk->u.rddata) {
-        free (sk->u.rdata);
-        sk->u.rdata = sk->u.rddata;
-        sk->u.rdatalen = 0;
+    if (sk->u.rxdata != sk->u.rxbuf) {
+        free (sk->u.rxdata);
+        sk->u.rxdata = sk->u.rxbuf;
+        sk->u.rxdatalen = 0;
     }
 }
 
@@ -569,7 +569,7 @@ static Socket *udp_sock_daemon (Socket *socket, sock_type *sk)
     Socket *next = socket->next;
 
     if ((socket->so_state & (SS_ISDISCONNECTING | SS_CANTSENDMORE))
-      && (sk->udp.rdatalen == 0 || sk->u.ip_type == 0)) {
+      && (sk->udp.rxdatalen == 0 || sk->u.ip_type == 0)) {
         SOCK_DEBUGF ((socket, "\n  udp_sock_daemon del:%d", socket->fd));
         next = SOCK_DEL_FD (socket->fd);
     }
@@ -675,9 +675,9 @@ static void fortify_exit (void)
 
         if (sk != NULL) {
             if (sk->u.ip_type == TCP_PROTO) {
-                SOCK_DEBUGF ((NULL, " (ip_type %d, state %s, ports %u/%u, rdatalen %d)",
+                SOCK_DEBUGF ((NULL, " (ip_type %d, state %s, ports %u/%u, rxdatalen %d)",
                          TCP_PROTO, tcpState[sk->tcp.state],
-                         sk->tcp.myport, sk->tcp.hisport, sk->tcp.rdatalen));
+                         sk->tcp.myport, sk->tcp.hisport, sk->tcp.rxdatalen));
             } else if (_socket->so_state & SS_ISDISCONNECTING) {
                 SOCK_DEBUGF ((NULL, " (closed)"));
             } else {

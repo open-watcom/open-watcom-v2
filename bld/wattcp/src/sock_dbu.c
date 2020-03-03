@@ -29,12 +29,12 @@ void sock_debugdump (const sock_type *sk)
 
     switch (sk->u.ip_type) {
     case UDP_PROTO:
-        (*_printf) ("udp rdata  %u `%.*s'\r\n",
-                     sk->udp.rdatalen, sk->udp.rdatalen, sk->udp.rdata);
+        (*_printf) ("udp rxdata  %u `%.*s'\r\n",
+                     sk->udp.rxdatalen, sk->udp.rxdatalen, sk->udp.rxdata);
         break;
     case TCP_PROTO:
-        (*_printf) ("tcp rdata  %u `%.*s'\r\n",
-                     sk->tcp.rdatalen, sk->tcp.rdatalen, sk->tcp.rdata);
+        (*_printf) ("tcp rxdata  %u `%.*s'\r\n",
+                     sk->tcp.rxdatalen, sk->tcp.rxdatalen, sk->tcp.rxdata);
         (*_printf) ("tcp state  %u (%s)\r\n",
                      sk->tcp.state, tcpState[sk->tcp.state]);
         break;
