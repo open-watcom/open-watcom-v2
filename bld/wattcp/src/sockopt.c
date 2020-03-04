@@ -137,145 +137,136 @@ int getsockopt (int s, int level, int option, void *optval, socklen_t *optlen)
 
 /*
  * Set receive buffer size for TCP.
- * Max size accepted is 64k * (2 << TCP_MAX_WINSHIFT) = 1MByte.
- * Or 64kB for small/large models.
+ * TCP max size accepted is 1MByte = 64k * (2 << TCP_MAX_WINSHIFT) for 32-bit
+ * or 64kB for 16-bit.
+ * UDP max size accepted is 64k.
  */
-static int tcp_rx_buf (sock_type *sk, sock_buf_size size)
+static int set_rx_buf (Socket *socket, const sock_buf_size *optval)
 {
+    sock_buf_size size;
+    sock_type *sk;
     BYTE *buf;
 
-    size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
-    buf  = realloc (sk->tcp.rxdata, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
+    size = *optval;
+    if (size == 0) {
+        SOCK_ERR (EINVAL);
         return (-1);
     }
-
-    /* Copy the data to new buffer. Data might be overlapping
-     * hence using movmem(). Also clear rest of buffer.
-     */
-    if (sk->tcp.rxdatalen > 0) {
-        int len = min ((long)size, sk->tcp.rxdatalen);
-
-        movmem (sk->tcp.rxdata, buf, len);
-        if (size > sk->tcp.rxdatalen) {
-            memset (sk->tcp.rxdata + sk->tcp.rxdatalen, 0, size - sk->tcp.rxdatalen);
-        }
+    sk = socket->proto_sock;
+    if (sk == NULL) {
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
     }
-    sk->tcp.rxdata       = buf;
-    sk->tcp.maxrxdatalen = size;
+    switch (socket->so_proto) {
+    case IPPROTO_TCP:
+        size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
+        buf  = realloc (sk->tcp.rxdata, size);
+        if (!buf) {
+            SOCK_ERR (ENOMEM);
+            return (-1);
+        }
+
+        /* Copy the data to new buffer. Data might be overlapping
+         * hence using movmem(). Also clear rest of buffer.
+         */
+        if (sk->tcp.rxdatalen > 0) {
+            int len = min ((long)size, sk->tcp.rxdatalen);
+
+            movmem (sk->tcp.rxdata, buf, len);
+            if (size > sk->tcp.rxdatalen) {
+                memset (sk->tcp.rxdata + sk->tcp.rxdatalen, 0, size - sk->tcp.rxdatalen);
+            }
+        }
+        sk->tcp.rxdata       = buf;
+        sk->tcp.maxrxdatalen = size;
 #if (DOSX)
-    if (size > 64*1024)
-        sk->tcp.send_wscale = size >> 16;
+        if (size > 64*1024)
+            sk->tcp.send_wscale = size >> 16;
 #endif
-    return (0);
-}
-
-/*
- * Set receive buffer size for UDP.
- * Max size accepted is 64k.
- */
-static int udp_rx_buf (sock_type *sk, sock_buf_size size)
-{
-    BYTE *buf;
-
-    size = min (size, MAX_UDP_RECV_BUF);
-    buf  = realloc (sk->udp.rxdata, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
-    }
-
-    /* Copy current data to new buffer. Data might be overlapping
-     * hence using movmem(). Also clear rest of buffer.
-     */
-    if (sk->udp.rxdatalen > 0) {
-        int len = min ((long)size, sk->udp.rxdatalen);
-
-        movmem (sk->udp.rxdata, buf, len);
-        if (size > sk->udp.rxdatalen) {
-            memset (buf + sk->udp.rxdatalen, 0, size - sk->udp.rxdatalen);
+        break;
+    case IPPROTO_UDP:
+        size = min (size, MAX_UDP_RECV_BUF);
+        buf  = realloc (sk->udp.rxdata, size);
+        if (!buf) {
+            SOCK_ERR (ENOMEM);
+            return (-1);
         }
+
+        /* Copy current data to new buffer. Data might be overlapping
+         * hence using movmem(). Also clear rest of buffer.
+         */
+        if (sk->udp.rxdatalen > 0) {
+            int len = min ((long)size, sk->udp.rxdatalen);
+
+            movmem (sk->udp.rxdata, buf, len);
+            if (size > sk->udp.rxdatalen) {
+                memset (buf + sk->udp.rxdatalen, 0, size - sk->udp.rxdatalen);
+            }
+        }
+        sk->udp.rxdata       = buf;
+        sk->udp.maxrxdatalen = size;
+        break;
+    default:
+        /* raw to-do !! */
+        break;
     }
-    sk->udp.rxdata       = buf;
-    sk->udp.maxrxdatalen = size;
     return (0);
 }
 
 /*
- * Set receive buffer size for RAW socket
+ * Set transmit buffer size for Socket.
+ * TCP max size accepted is 64k.
+ * UDP doesn't use TX buffer
  */
-static int raw_rx_buf (sock_type *sk, sock_buf_size size)
+static int set_tx_buf (Socket *socket, const sock_buf_size *optval)
 {
-    /* to-do !! */
-    ARGSUSED (sk);
-    ARGSUSED (size);
-    return (0);
-}
-
-/*
- * Set transmit buffer size for TCP.
- * Max size accepted is 64k.
- */
-static int tcp_tx_buf (sock_type *sk, sock_buf_size size)
-{
+    sock_buf_size size;
+    sock_type *sk;
 #ifdef NOT_YET
     BYTE *buf;
+#endif
 
-    size = min (size, MAX_TCP_SEND_BUF);
-    buf  = realloc (sk->tcp.data, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
+    size = *optval;
+    if (size == 0) {
+        SOCK_ERR (EINVAL);
         return (-1);
     }
-
-    /* Copy current data to new buffer. Data might be overlapping
-     * hence using movmem().
-     */
-    if (sk->tcp.txdatalen > 0) {
-        int len = min ((long)size, sk->tcp.txdatalen);
-        movmem (sk->tcp.data, buf, len);
+    sk = socket->proto_sock;
+    if (sk == NULL) {
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
     }
-    sk->tcp.data       = buf;
-    sk->tcp.maxdatalen = size;
-#else
-    ARGSUSED (sk);
-    ARGSUSED (size);
-#endif
-    return (0);
-}
-
-/*
- * Set transmit buffer sizes for UDP.
- * Max size accepted is 64k.
- */
-static int udp_tx_buf (sock_type *sk, sock_buf_size size)
-{
 #ifdef NOT_YET
-    BYTE *buf;
+    switch (socket->so_proto) {
+    case IPPROTO_TCP:
+      {
 
-    size = min (size, MAX_UDP_SEND_BUF);
-    buf  = realloc (sk->udp.data, size);
-    if (!buf) {
-        SOCK_ERR (ENOMEM);
-        return (-1);
+        size = min (size, MAX_TCP_SEND_BUF);
+        buf  = realloc (sk->tcp.data, size);
+        if (!buf) {
+            SOCK_ERR (ENOMEM);
+            return (-1);
+        }
+
+        /* Copy current data to new buffer. Data might be overlapping
+         * hence using movmem().
+         */
+        if (sk->tcp.txdatalen > 0) {
+            int len = min ((long)size, sk->tcp.txdatalen);
+            movmem (sk->tcp.data, buf, len);
+        }
+        sk->tcp.data       = buf;
+        sk->tcp.maxdatalen = size;
+        break;
+      }
+    case IPPROTO_UDP:
+        /* UDP doesn't use TX-buffer */
+        break;
+    default:
+        /* raw to-do !! */
+        break;
     }
-#else
-    ARGSUSED (sk);
-    ARGSUSED (size);
 #endif
-    return (0);
-}
-
-
-/*
- * Set receive buffer size for RAW socket
- */
-static int raw_tx_buf (sock_type *sk, sock_buf_size size)
-{
-    /* to-do !! */
-    ARGSUSED (sk);
-    ARGSUSED (size);
     return (0);
 }
 
@@ -302,7 +293,7 @@ static int set_tx_lowat (Socket *socket, const sock_buf_size *optval)
 }
 
 /*
- * Set receive/transmit buffer "low water marks"
+ * Set receive buffer "low water marks"
  */
 static int set_rx_lowat (Socket *socket, const sock_buf_size *optval)
 {
@@ -397,43 +388,9 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
     case SO_RCVLOWAT:
         return set_rx_lowat (socket, optval);
     case SO_RCVBUF:
-      {
-        sock_buf_size size = *(const sock_buf_size*) optval;
-        if (size == 0) {
-            SOCK_ERR (EINVAL);
-            return (-1);
-        }
-        if (sk != NULL) {
-            if (socket->so_proto == IPPROTO_UDP) {
-                return udp_rx_buf (sk, size);
-            }
-            if (socket->so_proto == IPPROTO_TCP) {
-                return tcp_rx_buf (sk, size);
-            }
-            return raw_rx_buf (sk, size);
-        }
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
-      }
+        return set_rx_buf (socket, optval);
     case SO_SNDBUF:
-      {
-        sock_buf_size size = *(const sock_buf_size*) optval;
-        if (size == 0) {
-            SOCK_ERR (EINVAL);
-            return (-1);
-        }
-        if (sk != NULL) {
-            if (socket->so_proto == IPPROTO_UDP) {
-                return udp_tx_buf (sk, size);
-            }
-            if (socket->so_proto == IPPROTO_TCP) {
-                return tcp_tx_buf (sk, size);
-            }
-            return raw_tx_buf (sk, size);
-        }
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
-      }
+        return set_tx_buf (socket, optval);
     case SO_LINGER:
       {
         struct linger *linger = (struct linger*) optval;
@@ -464,6 +421,60 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
     default:
         SOCK_ERR (ENOPROTOOPT);
         return (-1);
+    }
+    return (0);
+}
+
+/*
+ * Get receive buffer size for Socket.
+ */
+static int get_rx_buf (const Socket *socket, sock_buf_size *optval, socklen_t *optlen)
+{
+    sock_type *sk;
+
+    sk = socket->proto_sock;
+    if (sk == NULL) {
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
+    }
+    *optlen = sizeof(sock_buf_size);
+    switch (socket->so_proto) {
+    case IPPROTO_TCP:
+        *optval = sock_rbsize (sk);
+        break;
+    case IPPROTO_UDP:
+        *optval = sock_rbsize (sk);
+        break;
+    default:
+        *optval = sizeof (sk->raw.data);
+        break;
+    }
+    return (0);
+}
+
+/*
+ * Get transmit buffer size for Socket.
+ */
+static int get_tx_buf (const Socket *socket, sock_buf_size *optval, socklen_t *optlen)
+{
+    sock_type *sk;
+
+    sk = socket->proto_sock;
+    if (sk == NULL) {
+        SOCK_ERR (ENOPROTOOPT);
+        return (-1);
+    }
+    *optlen = sizeof(sock_buf_size);
+    switch (socket->so_proto) {
+    case IPPROTO_TCP:
+        *optval = sock_tbsize (sk);
+        break;
+    case IPPROTO_UDP:
+        *optval = 0;
+        break;
+    default:
+        *optval = sizeof (sk->raw.data);
+        break;
     }
     return (0);
 }
@@ -534,34 +545,9 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
     case SO_RCVLOWAT:
         return get_rx_lowat (socket, optval);
     case SO_RCVBUF:
-        if (sk != NULL) {
-            *optlen = sizeof(int);
-            *(int*)optval = sizeof (sk->raw.data);
-            if (socket->so_proto == IPPROTO_UDP || socket->so_proto == IPPROTO_TCP) {
-                *(int*)optval = sock_rbsize (sk);
-                return (0);
-            }
-            *(size_t*)optval = sizeof (sk->raw.data);
-            return (0);
-        }
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
+        return get_rx_buf (socket, optval, optlen);
     case SO_SNDBUF:
-        if (sk != NULL) {
-            *optlen = sizeof(int);
-            if (socket->so_proto == IPPROTO_UDP) {
-                *(unsigned*)optval = 0;
-                return (0);
-            }
-            if (socket->so_proto == IPPROTO_TCP) {
-                *(unsigned*)optval = sock_tbsize (sk);
-                return (0);
-            }
-            *(size_t*)optval = sizeof (sk->raw.data);
-            return (0);
-        }
-        SOCK_ERR (ENOPROTOOPT);
-        return (-1);
+        return get_tx_buf (socket, optval, optlen);
     case SO_LINGER:
       {
         struct linger *linger = (struct linger*) optval;
