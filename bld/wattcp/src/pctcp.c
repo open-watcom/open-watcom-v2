@@ -40,6 +40,7 @@
 #include "fragment.h"
 #include "pppoe.h"
 #include "tcp_fsm.h"
+#include "pcbuf.h"
 #include "pctcp.h"
 
 #if defined(USE_BSD_FUNC)
@@ -1929,6 +1930,26 @@ void sock_abort (sock_type *sk)
         sk->raw.used = 0;
         break;
     }
+}
+
+int sock_preread (sock_type *sk, BYTE *buf, int len)
+{
+    int count;
+
+    switch (_chk_socket(sk)) {
+    case VALID_TCP:
+    case VALID_UDP:
+        count = sk->u.rxdatalen;
+        if (count > 0) {
+            if (count > len)
+                count = len;
+            if (buf != NULL) {
+                memcpy (buf, sk->u.rxdata, count);
+            }
+        }
+        return (count);
+    }
+    return (0);  /* Raw-sockets use fixed buffer */
 }
 
 #if defined(USE_BSD_FUNC)

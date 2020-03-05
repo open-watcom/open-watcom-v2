@@ -108,26 +108,6 @@ int sock_setbuf (sock_type *sk, BYTE *rx_buf, unsigned rx_len)
     return (0);  /* Raw-sockets use fixed buffer */
 }
 
-int sock_preread (const sock_type *sk, BYTE *buf, unsigned len)
-{
-    int count;
-
-    switch (_chk_socket(sk)) {
-    case VALID_TCP:
-    case VALID_UDP:
-        count = sk->u.rxdatalen;
-        if (count > 0) {
-            if (count > len)
-                count = len;
-            if (buf != NULL) {
-                memcpy (buf, sk->u.rxdata, count);
-            }
-        }
-        return (count);
-    }
-    return (0);  /* Raw-sockets use fixed buffer */
-}
-
 /*
  * chk_socket - determine whether a real socket or not
  */

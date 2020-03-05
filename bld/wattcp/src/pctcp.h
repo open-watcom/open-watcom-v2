@@ -139,6 +139,7 @@ extern void  sock_abort       (sock_type *sk);
 extern int   sock_keepalive   (sock_type *sk);
 extern int   sock_read        (sock_type *sk, BYTE *dp, int len);
 extern int   sock_fastread    (sock_type *sk, BYTE *dp, int len);
+extern int   sock_preread     (sock_type *sk, BYTE *dp, int len);
 extern int   sock_write       (sock_type *sk, const BYTE *dp, int len);
 extern int   sock_fastwrite   (sock_type *sk, const BYTE *dp, int len);
 extern int   sock_enqueue     (sock_type *sk, const BYTE *dp, int len);

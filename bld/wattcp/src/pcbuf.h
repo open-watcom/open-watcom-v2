@@ -13,7 +13,6 @@ extern int          sock_tbused  (const sock_type *sk);
 extern int          sock_tbleft  (const sock_type *sk);
 
 extern int          sock_setbuf  (sock_type *sk, BYTE *buf, unsigned len);
-extern int          sock_preread (const sock_type *sk, BYTE *buf, unsigned len);
 
 extern const char  *sockerr   (const sock_type *sk);
 extern const char  *sockstate (const sock_type *sk);
