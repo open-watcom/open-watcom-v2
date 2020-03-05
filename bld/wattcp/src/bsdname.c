@@ -7,7 +7,7 @@
 
 #include "bsdname.h"
 
-int _getpeername (const sock_type *sk, void *dest, int *len)
+int _getpeername (const sock_type *sk, void *dest, socklen_t *len)
 {
     struct watt_sockaddr temp;
     int    ltemp;
@@ -34,7 +34,7 @@ int _getpeername (const sock_type *sk, void *dest, int *len)
     return (0);
 }
 
-int _getsockname (const sock_type *sk, void *dest, int *len)
+int _getsockname (const sock_type *sk, void *dest, socklen_t *len)
 {
     struct watt_sockaddr temp;
     int    ltemp;
