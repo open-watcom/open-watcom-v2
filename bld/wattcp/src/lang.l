@@ -6,18 +6,6 @@
  *  Gisle Vanem 1997
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <setjmp.h>
-
-#include "wattcp.h"
-#include "strings.h"
-#include "sock_ini.h"
-#include "misc.h"
-#include "crc.h"
-
 #if defined(USE_LANGUAGE)
 
 #if defined(TEST_PROG)

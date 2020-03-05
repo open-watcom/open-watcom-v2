@@ -88,3 +88,5 @@ wattcp$(lib_suffix).lib: $(objs) $(__MAKEFILES__)
     @for %f in ($(objs)) do @%append $^&.lbc +- %f
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
+
+language.obj : language.c lang.c
