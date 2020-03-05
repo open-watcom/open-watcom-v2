@@ -358,9 +358,9 @@ typedef struct arp_Header {
 #define tcp_StateTIMEWT   10     /* dally after sending final FINACK */
 #define tcp_StateCLOSED   11     /* FINACK received */
 
-#define tcp_MaxBufSize    2048   /* maximum bytes to buffer on input */
-#define udp_MaxBufSize    tcp_MaxBufSize
-#define tcp_MaxTxBufSize  tcp_MaxBufSize        /* and on tcp output */
+#define udp_MaxBufSize    2048   /* maximum bytes to buffer on udp input */
+#define tcp_MaxBufSize    2048   /* maximum bytes to buffer on tcp input */
+#define tcp_MaxTxBufSize  tcp_MaxBufSize            /* and on tcp output */
 
 /*
  * Fields common to any socket definition.
@@ -401,9 +401,7 @@ typedef struct arp_Header {
                                                                             \
         int          rxdatalen;        /* Rx length, must be signed */      \
         UINT         maxrxdatalen;                                          \
-        BYTE        *rxdata;           /* received data pointer */          \
-        BYTE         rxbuf[tcp_MaxBufSize+1]; /* received data buffer */    \
-        DWORD        safetysig         /* magic marker */
+        BYTE        *rxdata;           /* received data pointer */
 
 typedef int (*ProtoHandler) (union sock_type *sk, BYTE *data, int len,
                              tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
@@ -419,6 +417,8 @@ typedef struct udp_Socket {
         struct udp_Socket *next;
         SOCKET_COMMON;
         UDP_TCP_COMMON;
+        BYTE   rxbuf[udp_MaxBufSize+1]; /* received data buffer */
+        DWORD  safetysig;          /* magic marker */
       } udp_Socket;
 
 /*
@@ -428,6 +428,8 @@ typedef struct tcp_Socket {
         struct  tcp_Socket *next;  /* link to next tcp-socket */
         SOCKET_COMMON;
         UDP_TCP_COMMON;
+        BYTE   rxbuf[tcp_MaxBufSize+1]; /* received data buffer */
+        DWORD  safetysig;          /* magic marker */
 
         UINT   state;              /* tcp connection state */
         DWORD  acknum;             /* data ACK'ed */
@@ -475,7 +477,7 @@ typedef struct tcp_Socket {
         BYTE   recv_wscale;
 
         UINT   txdatalen;          /* number of bytes of data to send */
-        BYTE   txbuf[tcp_MaxBufSize+1]; /* data for transmission */
+        BYTE   txbuf[tcp_MaxTxBufSize+1]; /* data for transmission */
         DWORD  safetytcp;          /* extra magic marker */
       } tcp_Socket;
 
@@ -498,6 +500,7 @@ typedef struct u_Socket {
         struct u_Socket *next;
         SOCKET_COMMON;
         UDP_TCP_COMMON;
+        BYTE   rxbuf[1];           /* received data buffer */
       } u_Socket;
 
 /*
