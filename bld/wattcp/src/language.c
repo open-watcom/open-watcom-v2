@@ -34,7 +34,6 @@
 #define YY_STACK_USED         0  /* only in some old Flex'er */
 #define YY_ALWAYS_INTERACTIVE 0
 #define YY_NEVER_INTERACTIVE  1
-#define YY_FATAL_ERROR(msg)   Fatal (msg, NULL)
 
 #include "wattcp.h"
 #include "strings.h"
