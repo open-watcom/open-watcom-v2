@@ -228,7 +228,8 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
   struct sockaddr_in *peer = (struct sockaddr_in*) to;
   DWORD  keepalive = socket->keepalive;
   WORD   lport     = 0;
-  char  *rxdata     = NULL;
+  BYTE  *rxdata     = NULL;
+  int    rxmaxdatalen;
   int    rc;
   sock_type *sk = socket->proto_sock;
 
@@ -253,7 +254,8 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
     if (socket->so_type == SOCK_DGRAM)
     {
       lport = sk->udp.myport;
-      rxdata = (char*)sk->udp.rx_data;  /* preserve current data */
+      rxdata = sk->udp.rx_data;             /* preserve current RX data buffer */
+      rxmaxdatalen = sk->udp.rx_maxdatalen;
     }
   }
 
@@ -266,10 +268,10 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
   if (rc < 0)
      return (-1);
 
-  if (rxdata) {  /* Must be SOCK_DGRAM */
-    free (sk->udp.rx_data);                /* free new rx-buffer set in connect() */
-    sk->udp.rx_data       = (BYTE*) rxdata; /* reuse previous data buffer */
-    sk->udp.rx_maxdatalen = DEFAULT_RCV_WIN;
+  if (rxdata != NULL) { /* Must be SOCK_DGRAM */
+    free (sk->udp.rx_data);                 /* free new rx-buffer set in connect() */
+    sk->udp.rx_data       = rxdata;         /* reuse previous RX data buffer */
+    sk->udp.rx_maxdatalen = rxmaxdatalen;
 
     grab_localport (lport);   /* Restore freed localport */
   }
