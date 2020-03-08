@@ -311,7 +311,7 @@ static __inline int listen_queued (Socket *socket)
      * but this still counts as a readable event.
      */
     if (tcb_sk->tcp.state == tcp_StateESTAB ||
-        sock_rbused(tcb_sk) > socket->recv_lowat)
+        sock_rbused(tcb_sk) > socket->rx_lowat)
         return (1);
   }
   return (0);
@@ -383,7 +383,7 @@ int _sock_read_select (Socket *socket)
         len = sock_rbused (sk);
     }
 
-    if (len > socket->recv_lowat ||
+    if (len > socket->rx_lowat ||
         sock_signalled(socket,READ_STATE_MASK))
        return (1);
     return (0);
@@ -392,7 +392,7 @@ int _sock_read_select (Socket *socket)
   if (socket->so_type == SOCK_STREAM) {
     if (sock_signalled(socket,READ_STATE_MASK) || /* signalled for read_s() */
         sk->tcp.state >= tcp_StateLASTACK      || /* got FIN from peer */
-        sock_rbused(sk) > socket->recv_lowat)     /* Rx-data above low-limit */
+        sock_rbused(sk) > socket->rx_lowat)     /* Rx-data above low-limit */
        return (1);
 
     if ((socket->so_options & SO_ACCEPTCONN) &&   /* connection pending */
@@ -421,7 +421,7 @@ int _sock_write_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    if (sock_tbleft(socket->proto_sock) > socket->send_lowat ||  /* Tx room above low-limit */
+    if (sock_tbleft(socket->proto_sock) > socket->tx_lowat ||  /* Tx room above low-limit */
         sock_signalled(socket,WRITE_STATE_MASK)) /* signalled for write */
       return (1);
     return (0);

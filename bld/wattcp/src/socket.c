@@ -813,8 +813,8 @@ static Socket *socket_list_add (int s, int type, int proto)
     _socket->so_type    = type;
     _socket->so_proto   = proto;
     _socket->so_state   = SS_UNCONNECTED;
-    _socket->send_lowat = DEFAULT_SEND_LOWAT;
-    _socket->recv_lowat = DEFAULT_RECV_LOWAT;
+    _socket->tx_lowat   = DEFAULT_TX_LOWAT;
+    _socket->rx_lowat   = DEFAULT_RX_LOWAT;
     _socket->ip_ttl     = IPDEFTTL;
     _socket->ip_tos     = 0;
     _socket->cookie     = SAFETYTCP;

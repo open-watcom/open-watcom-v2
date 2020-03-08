@@ -115,8 +115,8 @@ typedef struct Socket {
 
         /* low-water marks for send add receive
          */
-        unsigned            send_lowat;
-        unsigned            recv_lowat;
+        unsigned            tx_lowat;
+        unsigned            rx_lowat;
 
       } Socket;
 
@@ -147,8 +147,8 @@ typedef struct Socket {
   #define MAX_RAW_SEND_BUF  (USHRT_MAX-1)
 #endif
 
-#define DEFAULT_SEND_LOWAT  0
-#define DEFAULT_RECV_LOWAT  0
+#define DEFAULT_TX_LOWAT    0
+#define DEFAULT_RX_LOWAT    0
 
 /*
  * Let first socket (non-djgpp) start above 0 in order not to

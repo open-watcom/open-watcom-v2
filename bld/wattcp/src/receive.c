@@ -239,7 +239,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
       }
     }
 
-    if (sock_rbused(sk) > socket->recv_lowat) {
+    if (sock_rbused(sk) > socket->rx_lowat) {
 read_it:
       if (flags & MSG_PEEK) {
           ret = sock_preread (sk, (BYTE*)buf, len);
@@ -351,7 +351,7 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
            return (0);
         return (ret);
       }
-    } else if (sock_rbused(sk) > socket->recv_lowat) {
+    } else if (sock_rbused(sk) > socket->rx_lowat) {
       if (flags & MSG_PEEK) {
           ret = sock_preread (sk, (BYTE*)buf, len);
       } else if (flags & MSG_WAITALL) {
@@ -441,7 +441,7 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
     }
 
     ip_len = sock_rbused (sk);  /* includes header length */
-    if (ip_len >= sizeof(*ip) + socket->recv_lowat)
+    if (ip_len >= sizeof(*ip) + socket->rx_lowat)
     {
       if (len < sizeof(*ip))
       {

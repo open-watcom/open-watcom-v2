@@ -313,7 +313,7 @@ static __inline int check_non_block_tx (Socket *socket, int *len)
 
   /* stream: Tx room below (or equal) low-water mark is failure.
    */
-  if (*len > 0 && room <= socket->send_lowat)
+  if (*len > 0 && room <= socket->tx_lowat)
      return (-1);
 
   /* streams may be split up, modify '*len'
@@ -502,7 +502,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
   /* This should never happen
    */
   if (ip && (socket->so_state & SS_NBIO) &&
-      sock_tbleft(sk) < (len + socket->send_lowat))
+      sock_tbleft(sk) < (len + socket->tx_lowat))
   {
     SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
     SOCK_ERR (EWOULDBLOCK);
