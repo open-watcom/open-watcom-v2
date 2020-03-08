@@ -250,7 +250,7 @@ static int set_send_buf (Socket *socket, const sock_buf_size *optval)
       {
 
         size = min (size, MAX_TCP_SEND_BUF);
-        buf  = realloc (sk->tcp.data, size);
+        buf  = realloc (sk->tcp.tx_data, size);
         if (!buf) {
             SOCK_ERR (ENOMEM);
             return (-1);
@@ -261,10 +261,10 @@ static int set_send_buf (Socket *socket, const sock_buf_size *optval)
          */
         if (sk->tcp.tx_datalen > 0) {
             int len = min ((long)size, sk->tcp.tx_datalen);
-            movmem (sk->tcp.data, buf, len);
+            movmem (sk->tcp.tx_data, buf, len);
         }
-        sk->tcp.data       = buf;
-        sk->tcp.maxdatalen = size;
+        sk->tcp.tx_data = buf;
+        sk->tcp.tx_maxdatalen = size;
         break;
       }
     case IPPROTO_UDP:

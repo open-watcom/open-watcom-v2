@@ -54,7 +54,7 @@ int sock_tbsize (const sock_type *sk)
     case VALID_IP:
         return (mtu);
     case VALID_TCP:
-        return (tcp_MaxTxBufSize);
+        return (sk->tcp.tx_maxdatalen);
     case VALID_UDP:
         return (mtu - sizeof(in_Header) - sizeof(udp_Header));
     }
@@ -67,7 +67,7 @@ int sock_tbleft (const sock_type *sk)
     case VALID_IP:
         return (mtu);
     case VALID_TCP:
-        return (tcp_MaxTxBufSize - sk->tcp.tx_datalen);
+        return (sk->tcp.tx_maxdatalen - sk->tcp.tx_datalen);
     case VALID_UDP:
         return (mtu - sizeof(in_Header) - sizeof(udp_Header));
     }

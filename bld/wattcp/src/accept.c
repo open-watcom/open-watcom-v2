@@ -346,12 +346,18 @@ int _sock_append (sock_type **skp)
     socket->listen_queue[i] = clone_sk;
     socket->syn_timestamp[i] = set_timeout (0);
 
-    /* Copy the TCB (except Tx-buffer) to clone
+    /* Copy the TCB to clone
     */
-    memcpy (clone_sk, orig_sk, sizeof(tcp_Socket) - sizeof(clone_sk->tcp.tx_buf));
+    memcpy (clone_sk, orig_sk, sizeof(tcp_Socket));
+
+    /* Reset clone TX-buffer
+    */
+    clone_sk->tcp.tx_datalen = 0;
+    clone_sk->tcp.tx_maxdatalen = tcp_MaxTxBufSize;
+    clone_sk->tcp.tx_data = clone_sk->tcp.tx_buf;
     clone_sk->tcp.safetytcp = SAFETYTCP;
 
-    /* Increase the TCP window (to 16kB)
+    /* Increase the clone RX-buffer/window (to 16kB)
      */
     sock_setbuf (clone_sk, calloc(1, DEFAULT_RCV_WIN), DEFAULT_RCV_WIN);
 

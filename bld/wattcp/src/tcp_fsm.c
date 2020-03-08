@@ -606,7 +606,7 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
                     sk->tcp.rx_wscale = min (TCP_MAX_WINSHIFT, *(opt+2));
                     sk->tcp.locflags |= LF_RCVD_SCALE;
                 }
-                opt += 4;
+                opt += 3;
                 break;
 #if 0
             case TCPOPT_SACK_OK:
@@ -771,7 +771,7 @@ static int tcp_ProcessAck (sock_type *sk, tcp_Header *tcp_hdr, long *unacked)
             sk->tcp.queue    += diff;
             sk->tcp.queuelen -= diff;
         } else if (diff < sk->tcp.tx_datalen) {
-            movmem (sk->tcp.tx_buf + diff, sk->tcp.tx_buf, sk->tcp.tx_datalen - diff);
+            movmem (sk->tcp.tx_data + diff, sk->tcp.tx_data, sk->tcp.tx_datalen - diff);
         }
 
         sk->tcp.tx_datalen -= diff;

@@ -497,6 +497,8 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
 
     sk->tcp.rx_data       = sk->tcp.rx_buf;
     sk->tcp.rx_maxdatalen = tcp_MaxBufSize;
+    sk->tcp.tx_data       = sk->tcp.tx_buf;
+    sk->tcp.tx_maxdatalen = tcp_MaxTxBufSize;
     sk->tcp.ip_type      = TCP_PROTO;
     sk->tcp.max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
     sk->tcp.state        = tcp_StateSYNSENT;
@@ -560,6 +562,8 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
 
     sk->tcp.rx_data       = sk->tcp.rx_buf;
     sk->tcp.rx_maxdatalen = tcp_MaxBufSize;
+    sk->tcp.tx_data       = sk->tcp.tx_buf;
+    sk->tcp.tx_maxdatalen = tcp_MaxTxBufSize;
     sk->tcp.ip_type      = TCP_PROTO;
     sk->tcp.max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
     sk->tcp.cwindow      = 1;
@@ -1525,13 +1529,13 @@ static int tcp_write (sock_type *sk, const BYTE *data, UINT len)
     if (sk->tcp.state != tcp_StateESTAB)
         return (0);
 
-    room = tcp_MaxTxBufSize - sk->tcp.tx_datalen;
+    room = sk->tcp.tx_maxdatalen - sk->tcp.tx_datalen;
     if (len > room)
         len = room;
     if (len > 0) {
         int rc = 0;
 
-        memcpy (sk->tcp.tx_buf + sk->tcp.tx_datalen, data, len);
+        memcpy (sk->tcp.tx_data + sk->tcp.tx_datalen, data, len);
         sk->tcp.tx_datalen += len;
         sk->tcp.unhappy   = TRUE;    /* redundant because we have outstanding data */
         sk->tcp.datatimer = set_timeout (1000 * sock_data_timeout); /* EE 99.08.23 */
@@ -1772,7 +1776,7 @@ int _tcp_send (sock_type *sk, char *file, unsigned line)
             if (sk->tcp.queuelen) {
                 memcpy (data, sk->tcp.queue + startdata, senddatalen);
             } else {
-                memcpy (data, sk->tcp.tx_buf + startdata, senddatalen);
+                memcpy (data, sk->tcp.tx_data + startdata, senddatalen);
             }
         }
 
@@ -1852,7 +1856,7 @@ int sock_keepalive (sock_type *sk)
 {
     DWORD       ack, seq;
     BYTE        kc;
-    int         datalen;
+    UINT        datalen;
 
     if (sk->u.ip_type != TCP_PROTO)
         return (0);

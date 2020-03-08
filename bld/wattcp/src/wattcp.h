@@ -476,8 +476,11 @@ typedef struct tcp_Socket {
         BYTE   tx_wscale;           /* to-do!!: window scales shifts, tx/rx */
         BYTE   rx_wscale;
 
-        UINT   tx_datalen;          /* number of bytes of data to send */
-        BYTE   tx_buf[tcp_MaxTxBufSize+1]; /* data for transmission */
+        UINT   tx_datalen;          /* TX length, number of bytes of data to send */
+        UINT   tx_maxdatalen;                                             \
+        BYTE   *tx_data;            /* transmission data pointer */
+
+        BYTE   tx_buf[tcp_MaxTxBufSize+1]; /* data buffer for transmission */
         DWORD  safetytcp;           /* extra magic marker */
     } tcp_Socket;
 
