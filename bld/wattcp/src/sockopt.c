@@ -160,7 +160,7 @@ static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
     switch (socket->so_proto) {
     case IPPROTO_TCP:
         size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
-        buf  = realloc (sk->tcp.rxdata, size);
+        buf  = realloc (sk->tcp.rx_data, size);
         if (!buf) {
             SOCK_ERR (ENOMEM);
             return (-1);
@@ -169,16 +169,16 @@ static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
         /* Copy the data to new buffer. Data might be overlapping
          * hence using movmem(). Also clear rest of buffer.
          */
-        if (sk->tcp.rxdatalen > 0) {
-            int len = min ((long)size, sk->tcp.rxdatalen);
+        if (sk->tcp.rx_datalen > 0) {
+            int len = min ((long)size, sk->tcp.rx_datalen);
 
-            movmem (sk->tcp.rxdata, buf, len);
-            if (size > sk->tcp.rxdatalen) {
-                memset (sk->tcp.rxdata + sk->tcp.rxdatalen, 0, size - sk->tcp.rxdatalen);
+            movmem (sk->tcp.rx_data, buf, len);
+            if (size > sk->tcp.rx_datalen) {
+                memset (sk->tcp.rx_data + sk->tcp.rx_datalen, 0, size - sk->tcp.rx_datalen);
             }
         }
-        sk->tcp.rxdata       = buf;
-        sk->tcp.maxrxdatalen = size;
+        sk->tcp.rx_data       = buf;
+        sk->tcp.rx_maxdatalen = size;
 #if (DOSX)
         /*
          * following is wrong piece of code
@@ -194,7 +194,7 @@ static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
         break;
     case IPPROTO_UDP:
         size = min (size, MAX_UDP_RECV_BUF);
-        buf  = realloc (sk->udp.rxdata, size);
+        buf  = realloc (sk->udp.rx_data, size);
         if (!buf) {
             SOCK_ERR (ENOMEM);
             return (-1);
@@ -203,16 +203,16 @@ static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
         /* Copy current data to new buffer. Data might be overlapping
          * hence using movmem(). Also clear rest of buffer.
          */
-        if (sk->udp.rxdatalen > 0) {
-            int len = min ((long)size, sk->udp.rxdatalen);
+        if (sk->udp.rx_datalen > 0) {
+            int len = min ((long)size, sk->udp.rx_datalen);
 
-            movmem (sk->udp.rxdata, buf, len);
-            if (size > sk->udp.rxdatalen) {
-                memset (buf + sk->udp.rxdatalen, 0, size - sk->udp.rxdatalen);
+            movmem (sk->udp.rx_data, buf, len);
+            if (size > sk->udp.rx_datalen) {
+                memset (buf + sk->udp.rx_datalen, 0, size - sk->udp.rx_datalen);
             }
         }
-        sk->udp.rxdata       = buf;
-        sk->udp.maxrxdatalen = size;
+        sk->udp.rx_data       = buf;
+        sk->udp.rx_maxdatalen = size;
         break;
     default:
         /* raw to-do !! */
@@ -259,8 +259,8 @@ static int set_send_buf (Socket *socket, const sock_buf_size *optval)
         /* Copy current data to new buffer. Data might be overlapping
          * hence using movmem().
          */
-        if (sk->tcp.txdatalen > 0) {
-            int len = min ((long)size, sk->tcp.txdatalen);
+        if (sk->tcp.tx_datalen > 0) {
+            int len = min ((long)size, sk->tcp.tx_datalen);
             movmem (sk->tcp.data, buf, len);
         }
         sk->tcp.data       = buf;
@@ -310,11 +310,11 @@ static int set_recv_lowat (Socket *socket, const sock_buf_size *optval)
     switch (socket->so_type) {
     case SOCK_STREAM:
         if (sk != NULL)
-            socket->rx_lowat = min (*optval, sk->tcp.maxrxdatalen);
+            socket->rx_lowat = min (*optval, sk->tcp.rx_maxdatalen);
         break;
     case SOCK_DGRAM:
         if (sk != NULL)
-            socket->rx_lowat = min (*optval, sk->udp.maxrxdatalen);
+            socket->rx_lowat = min (*optval, sk->udp.rx_maxdatalen);
         break;
     case SOCK_RAW:
         socket->rx_lowat = min (*optval, sizeof(sk->raw.data));

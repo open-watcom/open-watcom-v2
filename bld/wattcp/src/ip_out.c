@@ -126,7 +126,7 @@ static __inline in_Header *make_tcp_pkt (const sock_type *sk,
         tcp_hdr->dstPort  = intel16 (sk->tcp.hisport);
         tcp_hdr->seqnum   = intel (sk->tcp.seqnum + sk->tcp.unacked);
         tcp_hdr->acknum   = intel (sk->tcp.acknum);
-        tcp_hdr->window   = intel16 (sk->tcp.maxrxdatalen - sk->tcp.rxdatalen);
+        tcp_hdr->window   = intel16 (sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen);
         tcp_hdr->flags    = sk->tcp.flags;
         tcp_hdr->unused   = 0;
         tcp_hdr->checksum = 0;

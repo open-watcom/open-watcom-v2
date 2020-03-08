@@ -68,14 +68,14 @@ static int close_stream (int s)
     for (i = 0; i < socket->backlog && i < SOMAXCONN; i++) {
       sock_type *tcb_sk = socket->listen_queue[i];
       if (tcb_sk != NULL) {
-        tcb_sk->tcp.rxdatalen = 0;      /* flush Rx data */
+        tcb_sk->tcp.rx_datalen = 0;      /* flush Rx data */
         sock_abort (tcb_sk);
         free (tcb_sk);
         socket->listen_queue[i] = NULL;
       }
     }
   } else if (sk != NULL) {
-    sk->tcp.rxdatalen = 0;
+    sk->tcp.rx_datalen = 0;
     sock_flush (sk);
     sock_close (sk);
   }
@@ -104,7 +104,7 @@ static int close_dgram (int s)
   Socket    *socket = _socklist_find (s);   /* 'socket' is non-NULL */
   sock_type *sk = socket->proto_sock;
 
-  sk->udp.rxdatalen = 0;    /* flush Rx data */
+  sk->udp.rx_datalen = 0;    /* flush Rx data */
   sock_close (sk);
   socket->so_state |= (SS_ISDISCONNECTING | SS_CANTSENDMORE);
 

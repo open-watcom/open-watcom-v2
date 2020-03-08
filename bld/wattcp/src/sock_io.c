@@ -88,15 +88,15 @@ int sock_gets (sock_type *sk, BYTE *data, int n)
     /* Access the buffer pointer and length.
      */
     if (sk->u.ip_type == UDP_PROTO) {
-        src_p = sk->udp.rxdata;
-        np    = &sk->udp.rxdatalen;
-        rmax  = (int) sk->udp.maxrxdatalen;
+        src_p = sk->udp.rx_data;
+        np    = &sk->udp.rx_datalen;
+        rmax  = (int) sk->udp.rx_maxdatalen;
 #if !defined(USE_UDP_ONLY)
     } else {
         is_tcp = 1;
-        src_p  = sk->tcp.rxdata;
-        np     = &sk->tcp.rxdatalen;
-        rmax   = (int) sk->tcp.maxrxdatalen;
+        src_p  = sk->tcp.rx_data;
+        np     = &sk->tcp.rx_datalen;
+        rmax   = (int) sk->tcp.rx_maxdatalen;
         if (sk->tcp.missed_seg[0]) {
             long ldiff = sk->tcp.missed_seg[1] - sk->tcp.acknum;
             frag = abs ((int)ldiff);
@@ -192,7 +192,7 @@ int sock_gets (sock_type *sk, BYTE *data, int n)
      */
 #if !defined(USE_UDP_ONLY)
     if (sk->u.ip_type == TCP_PROTO && sk->tcp.state != tcp_StateCLOSED) {
-        if((sk->tcp.maxrxdatalen - sk->tcp.rxdatalen) < (sk->tcp.max_seg / 2)) {
+        if((sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen) < (sk->tcp.max_seg / 2)) {
             TCP_SENDSOON (sk);
         }
     }
@@ -217,7 +217,7 @@ WORD sock_getc (sock_type *sk)
 WORD sock_dataready (sock_type *sk)
 {
     char *p;
-    int  len = sk->tcp.rxdatalen;
+    int  len = sk->tcp.rx_datalen;
 
 #if defined(USE_BSD_FUNC)
     if (sk->u.ip_type == IP_TYPE)
@@ -225,19 +225,19 @@ WORD sock_dataready (sock_type *sk)
 #endif
 
     if (len && ISON_SOCKMODE(sk->tcp, TCP_MODE_ASCII)) {
-        p = (char*)sk->tcp.rxdata;
+        p = (char*)sk->tcp.rx_data;
 
         if (ISON_SOCKMODE(sk->tcp, TCP_MODE_SAWCR)) { /* !! S. Lawson */
             SETOFF_SOCKMODE(sk->tcp, TCP_MODE_SAWCR);
             if (*p == '\n' || *p == '\0') {
-                sk->tcp.rxdatalen = --len;
-                movmem (p+1, p, sk->tcp.rxdatalen);
+                sk->tcp.rx_datalen = --len;
+                movmem (p+1, p, sk->tcp.rx_datalen);
                 if (!len)
                     return (0);
             }
         }
 
-        if (len == sk->tcp.maxrxdatalen)
+        if (len == sk->tcp.rx_maxdatalen)
             return (len);
 
         if (sk->u.ip_type == TCP_PROTO) {        /* GV 99.12.02 */

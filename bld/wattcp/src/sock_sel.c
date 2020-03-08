@@ -15,7 +15,7 @@ int sock_sselect (const sock_type *sk, int waitstate)
 {
     /* are we connected ?
      */
-    if (waitstate == SOCKDATAREADY && sk->tcp.rxdatalen)
+    if (waitstate == SOCKDATAREADY && sk->tcp.rx_datalen)
         return (SOCKDATAREADY);
 
     if (sk->u.ip_type == 0)

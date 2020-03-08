@@ -295,11 +295,11 @@ static int tcp_estab_state (sock_type **skp, const in_Header *ip,
      *  -- Joe <jdhagen@itis.com>
      */
     len -= (tcp_hdr->offset << 2);
-    if ((ldiff > 0 && sk->tcp.txdatalen > 0) || len > 0) {
+    if ((ldiff > 0 && sk->tcp.tx_datalen > 0) || len > 0) {
         /* Need to ACK and update window, but how urgent ??
          * Added new window update -GV 21-Nov-1998
          */
-        UINT winfree   = sk->tcp.maxrxdatalen - sk->tcp.rxdatalen;
+        UINT winfree   = sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen;
         UINT treshhold = max (sk->tcp.max_seg/2, winfree);
 
         if (debug_on > 1)
@@ -397,7 +397,7 @@ static int tcp_finwt1_state (sock_type **skp, const in_Header *ip,
          */
         if ((ack == sk->tcp.seqnum + 1) &&
             (seq == sk->tcp.acknum)     &&
-            (sk->tcp.txdatalen == 0))
+            (sk->tcp.tx_datalen == 0))
         {
             if (!(sk->tcp.locflags & LF_LINGER)) {
                 _tcp_unthread (sk);  /* enters tcp_StateCLOSED */
@@ -417,7 +417,7 @@ static int tcp_finwt1_state (sock_type **skp, const in_Header *ip,
             sk->tcp.flags      = tcp_FlagRST;
             sk->tcp.unhappy    = FALSE;
             sk->tcp.karn_count = 0;
-            sk->tcp.txdatalen  = 0;
+            sk->tcp.tx_datalen  = 0;
             TCP_SEND (sk);
             _tcp_unthread (sk);
             return (0);
@@ -657,8 +657,8 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
             /* no handler, just dump to buffer, should be indexed,
              * handles goofs limit receive size to our window
              */
-            if (sk->tcp.rxdatalen >= 0) {
-                int room = sk->tcp.maxrxdatalen - sk->tcp.rxdatalen;
+            if (sk->tcp.rx_datalen >= 0) {
+                int room = sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen;
                 if (len > room)
                     len = room;
 
@@ -671,15 +671,15 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
                 }
                 if (len > 0) {
                     sk->tcp.acknum += len;   /* our new ack begins at end of data */
-                    memcpy (sk->tcp.rxdata + sk->tcp.rxdatalen, data, len);
-                    sk->tcp.rxdatalen += len;
+                    memcpy (sk->tcp.rx_data + sk->tcp.rx_datalen, data, len);
+                    sk->tcp.rx_datalen += len;
                 }
 
                 if (sk->tcp.missed_seg[0] && sk->tcp.missed_seg[0] == sk->tcp.acknum) {
                     tmpldiff = sk->tcp.missed_seg[1] - sk->tcp.acknum;
                     tmpdiff  = abs ((int)tmpldiff);
                     if (tmpldiff > 0) {
-                        sk->tcp.rxdatalen += tmpdiff;
+                        sk->tcp.rx_datalen += tmpdiff;
                         sk->tcp.acknum = sk->tcp.missed_seg[1];
                     }
                     sk->tcp.missed_seg[0] = 0L;
@@ -688,7 +688,7 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
             }
         }
 
-        sk->tcp.unhappy = sk->tcp.txdatalen ? TRUE : FALSE;
+        sk->tcp.unhappy = sk->tcp.tx_datalen ? TRUE : FALSE;
 
         if (ldiff == 0 && sk->tcp.unacked && chk_timeout(sk->tcp.rtt_lasttran)) {
 #if defined(USE_DEBUG)
@@ -709,9 +709,9 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
 #endif
 
         if (sk->tcp.missed_seg[0] == 0L) { /* just dropped a segment */
-            len = min (sk->tcp.maxrxdatalen - sk->tcp.rxdatalen - diff, len);
+            len = min (sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen - diff, len);
             if (len > 0) {
-                memcpy (sk->tcp.rxdata + sk->tcp.rxdatalen + diff, data, len);
+                memcpy (sk->tcp.rx_data + sk->tcp.rx_datalen + diff, data, len);
                 sk->tcp.missed_seg[0]  = sk->tcp.missed_seg[1] = seqnum;
                 sk->tcp.missed_seg[1] += len;
             }
@@ -720,7 +720,7 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
             tmpdiff  = abs ((int)tmpldiff);
 
             if (tmpldiff > 0 && len >= tmpdiff) { /* prepend bytes to fragment */
-                memcpy (sk->tcp.rxdata + sk->tcp.rxdatalen + diff, data, tmpdiff);
+                memcpy (sk->tcp.rx_data + sk->tcp.rx_datalen + diff, data, tmpdiff);
                 sk->tcp.missed_seg[0] -= tmpdiff;
             }
             tmpldiff = seqnum + len - sk->tcp.missed_seg[1];
@@ -742,9 +742,9 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
 
                     /* length to move
                      */
-                    tmpdiff = min (sk->tcp.maxrxdatalen - sk->tcp.rxdatalen - dst, tmpdiff);
+                    tmpdiff = min (sk->tcp.rx_maxdatalen - sk->tcp.rx_datalen - dst, tmpdiff);
                     if (tmpdiff > 0) {
-                        memcpy (sk->tcp.rxdata + sk->tcp.rxdatalen + dst, data + src, tmpdiff);
+                        memcpy (sk->tcp.rx_data + sk->tcp.rx_datalen + dst, data + src, tmpdiff);
                         sk->tcp.missed_seg[1] += tmpdiff;
                     }
                 }
@@ -766,15 +766,15 @@ static int tcp_ProcessAck (sock_type *sk, tcp_Header *tcp_hdr, long *unacked)
     if (unacked)
         *unacked = ldiff;
 
-    if (ldiff >= 0 && diff <= sk->tcp.txdatalen) {
+    if (ldiff >= 0 && diff <= sk->tcp.tx_datalen) {
         if (sk->tcp.queuelen) {
             sk->tcp.queue    += diff;
             sk->tcp.queuelen -= diff;
-        } else if (diff < sk->tcp.txdatalen) {
-            movmem (sk->tcp.txbuf + diff, sk->tcp.txbuf, sk->tcp.txdatalen - diff);
+        } else if (diff < sk->tcp.tx_datalen) {
+            movmem (sk->tcp.tx_buf + diff, sk->tcp.tx_buf, sk->tcp.tx_datalen - diff);
         }
 
-        sk->tcp.txdatalen -= diff;
+        sk->tcp.tx_datalen -= diff;
         sk->tcp.unacked -= diff;
         sk->tcp.seqnum  += ldiff;
         return (1);
