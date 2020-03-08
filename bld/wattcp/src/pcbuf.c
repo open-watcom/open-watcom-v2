@@ -92,14 +92,15 @@ int sock_setbuf (sock_type *sk, BYTE *rx_buf, unsigned rx_len)
     case VALID_TCP:
     case VALID_UDP:
         if (rx_len == 0 || rx_buf == NULL) {
-            sk->u.rx_data = sk->u.rx_buf;
             if (sk->u.ip_type == UDP_PROTO) {
-                sk->tcp.rx_maxdatalen = udp_MaxBufSize;
+                sk->udp.rx_data = sk->udp.rx_buf;
+                sk->udp.rx_maxdatalen = udp_MaxBufSize;
             } else {
+                sk->tcp.rx_data = sk->tcp.rx_buf;
                 sk->tcp.rx_maxdatalen = tcp_MaxBufSize;
             }
         } else {
-            sk->u.rx_data       = rx_buf;
+            sk->u.rx_data = rx_buf;
             sk->u.rx_maxdatalen = min (rx_len, USHRT_MAX);
             memset (rx_buf, 0, sk->u.rx_maxdatalen);
         }

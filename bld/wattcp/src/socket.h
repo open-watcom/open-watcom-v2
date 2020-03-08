@@ -125,27 +125,21 @@ typedef struct Socket {
  * Various sizes
  */
 #if (DOSX)
-  #define DEFAULT_RCV_WIN   (16*1024)      /* default receive window, 16kB */
   #define MAX_DGRAMS        5              /* # of datagrams for broadcast */
   #define MAX_RAW_BUFS      2              /* # of raw_Socket in list      */
   #define MAX_SOCKETS       3000           /* # of sockets to handle */
   #define MAX_TCP_RECV_BUF  (1024*1024-1)  /* Max size for SO_RCVBUF */
-  #define MAX_TCP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_SEND_BUF  (USHRT_MAX-1)
 #else
-  #define DEFAULT_RCV_WIN   (16*1024)
   #define MAX_DGRAMS        2
   #define MAX_SOCKETS       512
-  #define MAX_TCP_RECV_BUF  (unsigned)TCP_MAXWIN  /* 64kB */
-  #define MAX_TCP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_SEND_BUF  (USHRT_MAX-1)
+  #define MAX_TCP_RECV_BUF  (unsigned)TCP_MAXWIN  /* 64kB - 1 */
 #endif
+#define DEFAULT_RECV_WIN    (16*1024)      /* default receive window, 16kB */
+#define MAX_TCP_SEND_BUF    (USHRT_MAX-1)
+#define MAX_UDP_RECV_BUF    (USHRT_MAX-1)
+#define MAX_UDP_SEND_BUF    (USHRT_MAX-1)
+#define MAX_RAW_RECV_BUF    (USHRT_MAX-1)
+#define MAX_RAW_SEND_BUF    (USHRT_MAX-1)
 
 #define DEFAULT_TX_LOWAT    0
 #define DEFAULT_RX_LOWAT    0

@@ -129,25 +129,27 @@ int sock_recv_init (sock_type *sk, char *buffer, int len)
     memset (buffer, 0, len);                /* clear data area */
     switch (sk->u.ip_type) {
     case UDP_PROTO:
-#if !defined(USE_UDP_ONLY)
-    case TCP_PROTO:
-#endif
-        sk->u.protoHandler = _recvdaemon;
-        r = (recv_data *) sk->u.rx_buf;
-        memset (r, 0, sizeof(sk->u.rx_buf)); /* clear table */
+        sk->udp.protoHandler = _recvdaemon;
+        r = (recv_data *) sk->udp.rx_buf;
+        memset (r, 0, udp_MaxBufSize); /* clear table */
         r->recv_sig     = RECV_USED;
         r->recv_bufs    = (BYTE *) buffer;
         r->recv_bufnum  = len / sizeof(recv_buf);
-#if !defined(USE_UDP_ONLY)
-        if (sk->u.ip_type == TCP_PROTO) {
-            break;
-        }
-#endif
         p = (recv_buf *)buffer;
         for (i = 0; i < r->recv_bufnum; i++, p++) {
             p->buf_sig = RECV_UNUSED;
         }
         break;
+#if !defined(USE_UDP_ONLY)
+    case TCP_PROTO:
+        sk->tcp.protoHandler = _recvdaemon;
+        r = (recv_data *) sk->tcp.rx_buf;
+        memset (r, 0, tcp_MaxBufSize); /* clear table */
+        r->recv_sig     = RECV_USED;
+        r->recv_bufs    = (BYTE *) buffer;
+        r->recv_bufnum  = len / sizeof(recv_buf);
+        break;
+#endif
     }
     return (0);
 }

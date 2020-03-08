@@ -281,6 +281,8 @@ static int listen_free (Socket *socket, int idx)
 
     if (tcb_sk->tcp.rx_data != tcb_sk->tcp.rx_buf)   /* free large Rx buffer? */
         free (tcb_sk->tcp.rx_data);
+    if (tcb_sk->tcp.tx_data != tcb_sk->tcp.tx_buf)   /* free large Tx buffer? */
+        free (tcb_sk->tcp.tx_data);
     free (tcb_sk);
     socket->listen_queue[idx] = NULL;
     return (0);
@@ -359,7 +361,7 @@ int _sock_append (sock_type **skp)
 
     /* Increase the clone RX-buffer/window (to 16kB)
      */
-    sock_setbuf (clone_sk, calloc(1, DEFAULT_RCV_WIN), DEFAULT_RCV_WIN);
+    sock_setbuf (clone_sk, calloc(1, DEFAULT_RECV_WIN), DEFAULT_RECV_WIN);
 
     /* Undo what tcp_handler() and tcp_listen_state() did to
      * this listening socket.
