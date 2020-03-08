@@ -15,7 +15,7 @@
 
 #if defined(USE_BSD_FUNC)
 
-typedef unsigned    sock_buf_size;
+typedef unsigned    sock_size;
 
 static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
 static int set_raw_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
@@ -141,9 +141,9 @@ int getsockopt (int s, int level, int option, void *optval, socklen_t *optlen)
  * or 64kB for 16-bit.
  * UDP max size accepted is 64k.
  */
-static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
+static int set_recv_buf (Socket *socket, const sock_size *optval)
 {
-    sock_buf_size size;
+    sock_size size;
     sock_type *sk;
     BYTE *buf;
 
@@ -226,9 +226,9 @@ static int set_recv_buf (Socket *socket, const sock_buf_size *optval)
  * TCP max size accepted is 64k.
  * UDP doesn't use TX buffer
  */
-static int set_send_buf (Socket *socket, const sock_buf_size *optval)
+static int set_send_buf (Socket *socket, const sock_size *optval)
 {
-    sock_buf_size size;
+    sock_size size;
     sock_type *sk;
 #ifdef NOT_YET
     BYTE *buf;
@@ -281,7 +281,7 @@ static int set_send_buf (Socket *socket, const sock_buf_size *optval)
 /*
  * Set send buffer "low water marks"
  */
-static int set_send_lowat (Socket *socket, const sock_buf_size *optval)
+static int set_send_lowat (Socket *socket, const sock_size *optval)
 {
     switch (socket->so_type) {
     case SOCK_STREAM:
@@ -303,7 +303,7 @@ static int set_send_lowat (Socket *socket, const sock_buf_size *optval)
 /*
  * Set receive buffer "low water marks"
  */
-static int set_recv_lowat (Socket *socket, const sock_buf_size *optval)
+static int set_recv_lowat (Socket *socket, const sock_size *optval)
 {
     sock_type *sk = socket->proto_sock;
 
@@ -436,7 +436,7 @@ static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t o
 /*
  * Get receive buffer size for Socket.
  */
-static int get_recv_buf (const Socket *socket, sock_buf_size *optval, socklen_t *optlen)
+static int get_recv_buf (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
     sock_type *sk;
 
@@ -445,7 +445,7 @@ static int get_recv_buf (const Socket *socket, sock_buf_size *optval, socklen_t 
         SOCK_ERR (ENOPROTOOPT);
         return (-1);
     }
-    *optlen = sizeof(sock_buf_size);
+    *optlen = sizeof(*optval);
     switch (socket->so_proto) {
     case IPPROTO_TCP:
         *optval = sock_rbsize (sk);
@@ -463,7 +463,7 @@ static int get_recv_buf (const Socket *socket, sock_buf_size *optval, socklen_t 
 /*
  * Get transmit buffer size for Socket.
  */
-static int get_send_buf (const Socket *socket, sock_buf_size *optval, socklen_t *optlen)
+static int get_send_buf (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
     sock_type *sk;
 
@@ -472,7 +472,7 @@ static int get_send_buf (const Socket *socket, sock_buf_size *optval, socklen_t 
         SOCK_ERR (ENOPROTOOPT);
         return (-1);
     }
-    *optlen = sizeof(sock_buf_size);
+    *optlen = sizeof(*optval);
     switch (socket->so_proto) {
     case IPPROTO_TCP:
         *optval = sock_tbsize (sk);
@@ -490,12 +490,13 @@ static int get_send_buf (const Socket *socket, sock_buf_size *optval, socklen_t 
 /*
  * Get receive/transmit buffer "low water marks"
  */
-static int get_send_lowat (const Socket *socket, sock_buf_size *optval)
+static int get_send_lowat (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
     if (socket->so_type == SOCK_STREAM ||
         socket->so_type == SOCK_DGRAM  ||
         socket->so_type == SOCK_RAW)
     {
+        *optlen = sizeof(*optval);
         *optval = socket->tx_lowat;
         return (0);
     }
@@ -503,12 +504,13 @@ static int get_send_lowat (const Socket *socket, sock_buf_size *optval)
     return (-1);
 }
 
-static int get_recv_lowat (const Socket *socket, sock_buf_size *optval)
+static int get_recv_lowat (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
     if (socket->so_type == SOCK_STREAM ||
         socket->so_type == SOCK_DGRAM  ||
         socket->so_type == SOCK_RAW)
     {
+        *optlen = sizeof(*optval);
         *optval = socket->rx_lowat;
         return (0);
     }
@@ -549,9 +551,9 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
     case SO_USELOOPBACK:
         break;
     case SO_SNDLOWAT:
-        return get_send_lowat (socket, optval);
+        return get_send_lowat (socket, optval, optlen);
     case SO_RCVLOWAT:
-        return get_recv_lowat (socket, optval);
+        return get_recv_lowat (socket, optval, optlen);
     case SO_RCVBUF:
         return get_recv_buf (socket, optval, optlen);
     case SO_SNDBUF:
