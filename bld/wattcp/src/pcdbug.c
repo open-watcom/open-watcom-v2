@@ -912,7 +912,7 @@ static int tcp_dump (const sock_type *sk, const in_Header *ip)
     DumpAdrPort ("TCP", sk, ip);
 
     if (sk != NULL)
-        win <<= outbound ? sk->tcp.send_wscale : sk->tcp.recv_wscale;
+        win <<= outbound ? sk->tcp.tx_wscale : sk->tcp.rx_wscale;
 
     ack = intel (tcp_hdr->acknum);
     seq = intel (tcp_hdr->seqnum);

@@ -1608,8 +1608,9 @@ static __inline int tcp_opt_padding (BYTE *opt, int len)
 static __inline int tcp_opt_winscale (sock_type *sk, BYTE *opt)
 {
     *opt++ = TCPOPT_WINDOW;    /* option: WINDOW,length,wscale */
-    *opt++ = 4;
-    *(WORD*) opt = intel16 (sk->tcp.send_wscale);
+    *opt++ = 3;
+    *opt++ = sk->tcp.tx_wscale;
+    *opt++ = TCPOPT_NOP;
     return (4);
 }
 

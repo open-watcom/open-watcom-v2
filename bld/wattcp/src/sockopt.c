@@ -180,8 +180,16 @@ static int set_rx_buf (Socket *socket, const sock_buf_size *optval)
         sk->tcp.rxdata       = buf;
         sk->tcp.maxrxdatalen = size;
 #if (DOSX)
+        /*
+         * following is wrong piece of code
+         * 
+         * it is unclear what it should do
+         *
+         * Anyway maximum window size without scaling
+         * is 65535 (TCP_MAXWIN)
+         */
         if (size > 64*1024)
-            sk->tcp.send_wscale = size >> 16;
+            sk->tcp.tx_wscale = size >> 16;
 #endif
         break;
     case IPPROTO_UDP:

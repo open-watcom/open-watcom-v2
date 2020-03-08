@@ -603,7 +603,7 @@ static void tcp_ProcessData (sock_type *sk, tcp_Header *tcp_hdr, int len, int fl
                 break;
             case TCPOPT_WINDOW:
                 if (flags & tcp_FlagSYN) {
-                    sk->tcp.recv_wscale = min (TCP_MAX_WINSHIFT, *(opt+2));
+                    sk->tcp.rx_wscale = min (TCP_MAX_WINSHIFT, *(opt+2));
                     sk->tcp.locflags |= LF_RCVD_SCALE;
                 }
                 opt += 4;

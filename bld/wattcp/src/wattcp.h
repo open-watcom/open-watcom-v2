@@ -473,8 +473,8 @@ typedef struct tcp_Socket {
         DWORD  datatimer;          /* EE 99.08.23, note broken connections */
         int    sock_delay;
 
-        BYTE   send_wscale;        /* to-do!!: window scales shifts, tx/rx */
-        BYTE   recv_wscale;
+        BYTE   tx_wscale;          /* to-do!!: window scales shifts, tx/rx */
+        BYTE   rx_wscale;
 
         UINT   txdatalen;          /* number of bytes of data to send */
         BYTE   txbuf[tcp_MaxTxBufSize+1]; /* data for transmission */
