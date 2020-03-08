@@ -171,7 +171,7 @@ int _sock_dos_fd (int s)
  *  to-do: allow user to define size using SO_RCVBUF/SO_SNDBUF
  *         before calling connect().
  */
-static __inline void set_recv_buf (sock_type *sk)
+static __inline void _set_recv_buf (sock_type *sk)
 {
     int len = DEFAULT_RECV_WIN;
     sock_setbuf (sk, calloc(1, len), len);
@@ -180,7 +180,7 @@ static __inline void set_recv_buf (sock_type *sk)
 /*
  *  Free receive buffer associated with udp/tcp sockets
  */
-static __inline void free_recv_buf (sock_type *sk)
+static __inline void _free_recv_buf (sock_type *sk)
 {
     if (sk->u.rx_data != sk->u.rx_buf) {
         free (sk->u.rx_data);
@@ -192,7 +192,7 @@ static __inline void free_recv_buf (sock_type *sk)
 /*
  *  Free sending buffer associated with tcp sockets
  */
-static __inline void free_send_buf (sock_type *sk)
+static __inline void _free_send_buf (sock_type *sk)
 {
     if (sk->tcp.tx_data != sk->tcp.tx_buf) {
         free (sk->tcp.tx_data);
@@ -306,9 +306,9 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
         case SOCK_DGRAM:
             reuse_localport (sk->u.myport); /* clear 'lport_inuse' bit now */
             sock_abort (sk);
-            free_recv_buf (sk);
+            _free_recv_buf (sk);
             if (_socket->so_type == SOCK_STREAM) {
-                free_send_buf (sk);
+                _free_send_buf (sk);
             }
             break;
         case SOCK_RAW:
@@ -551,10 +551,10 @@ static Socket *tcp_sock_daemon (Socket *socket, sock_type *sk)
             int expired = 0;
 
             if (!sock_tbused(sk)) {
-                free_send_buf (sk);
+                _free_send_buf (sk);
             }
             if (!sock_rbused(sk)) {
-                free_recv_buf (sk);         /* free memory not needed anymore */
+                _free_recv_buf (sk);         /* free memory not needed anymore */
                 FREE_SK (socket->ip_opt);
             }
             if (socket->close_time)        /* close_s() called */
@@ -1033,7 +1033,7 @@ int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
     if (!udp_open (&sk->udp, loc_port, ip, rem_port, NULL))
         return (0);
 
-    set_recv_buf (sk);
+    _set_recv_buf (sk);
     sk->udp.sol_callb = sol_callback;
     return (1);
 }
@@ -1111,7 +1111,7 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 
     /* Advertise a large rcv-win from the next ACK
      */
-    set_recv_buf (sk);
+    _set_recv_buf (sk);
     sk->tcp.sol_callb = sol_callback;
     return (1);
 }
