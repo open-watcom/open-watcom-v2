@@ -12,6 +12,8 @@
 
 #if defined(USE_BSD_FUNC)
 
+#include "pcbufsiz.h"
+
 static int ip_transmit   (Socket *socket, const void *buf, int len);
 static int udp_transmit  (Socket *socket, const void *buf, int len);
 static int tcp_transmit  (Socket *socket, const void *buf, int len, int flags);

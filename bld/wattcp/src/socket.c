@@ -165,19 +165,6 @@ int _sock_dos_fd (int s)
 }
 
 /*
- *  Setup a bigger receive buffer, the default in Wattcp
- *  is only 2k.
- *  Note: If calloc() fails, sock_setbuf() reverts to default
- *        2kB socket buffer.
- *  to-do: allow user to define size using SO_RCVBUF/SO_SNDBUF
- *         before calling connect().
- */
-static __inline void _set_recv_buf (sock_type *sk)
-{
-    sock_recv_buf (sk, DEFAULT_RECV_WIN);
-}
-
-/*
  *  Free receive buffer associated with udp/tcp sockets
  */
 static __inline void _free_recv_buf (sock_type *sk)
@@ -1033,7 +1020,7 @@ int _UDP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
     if (!udp_open (&sk->udp, loc_port, ip, rem_port, NULL))
         return (0);
 
-    _set_recv_buf (sk);
+    sock_recv_buf (sk, DEFAULT_RECV_WIN);
     sk->udp.sol_callb = sol_callback;
     return (1);
 }
@@ -1111,7 +1098,7 @@ int _TCP_open (Socket *socket, struct in_addr host, WORD loc_port, WORD rem_port
 
     /* Advertise a large rcv-win from the next ACK
      */
-    _set_recv_buf (sk);
+    sock_recv_buf (sk, DEFAULT_RECV_WIN);
     sk->tcp.sol_callb = sol_callback;
     return (1);
 }

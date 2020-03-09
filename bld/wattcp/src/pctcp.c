@@ -359,19 +359,19 @@ static void tcp_sockreset (sock_type *sk, int proxy)
     if (debug_on)
         outsnl (_LANG(str));
 
-    sk->tcp.tx_datalen = 0;  /* Flush Tx buffer */
+    sk->tcp.tx_datalen = 0;     /* Flush Tx buffer */
 
     if (sk->tcp.state != tcp_StateCLOSED && sk->tcp.state != tcp_StateLASTACK)
         sk->tcp.rx_datalen = 0;
     sk->tcp.err_msg = _LANG (str);
     sk->tcp.state   = tcp_StateCLOSED;
-    sk->tcp.ip_type = 0;   /* 2001.1.18 - make it fail tcp_tick() */
+    sk->tcp.ip_type = 0;        /* 2001.1.18 - make it fail tcp_tick() */
 
 #if defined(USE_BSD_FUNC)
     if (_tcp_find_hook != NULL) {
         Socket *socket = (*_tcp_find_hook) (sk);
 
-        if (socket != NULL) { /* do a "read-wakeup" on the SOCK_STREAM socket */
+        if (socket != NULL) {   /* do a "read-wakeup" on the SOCK_STREAM socket */
             socket->so_state |= SS_CONN_REFUSED;
             if (socket->so_error == 0) {
                 socket->so_error = ECONNRESET;
@@ -399,7 +399,7 @@ static void tcp_rtt_wind (sock_type *sk)
                   sk->tcp.unacked);
         }
 #endif
-    } else if (sk->tcp.vj_last) { /* We expect an immediate response */
+    } else if (sk->tcp.vj_last) {   /* We expect an immediate response */
         long  dT;      /* time since last (re)transmission */
         DWORD now;
 
@@ -531,7 +531,7 @@ int tcp_open (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD rport, ProtoHandle
     sk->tcp.safetysig    = SAFETYTCP;               /* marker signatures */
     sk->tcp.safetytcp    = SAFETYTCP;
 
-    sk->next     = _tcp_allsocs;            /* insert into chain */
+    sk->next     = _tcp_allsocs;                    /* insert into chain */
     _tcp_allsocs = sk;
 
     (void) TCP_SEND (sk);                           /* send opening SYN */
@@ -565,7 +565,7 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     sk->tcp.tx_data       = sk->tcp.tx_buf;
     sk->tcp.tx_maxdatalen = tcp_MaxTxBufSize;
     sk->tcp.ip_type      = TCP_PROTO;
-    sk->tcp.max_seg      = mss;        /* to-do !!: use mss from setsockopt() */
+    sk->tcp.max_seg      = mss;             /* to-do !!: use mss from setsockopt() */
     sk->tcp.cwindow      = 1;
     sk->tcp.wwindow      = 0;               /* slow start VJ algorithm */
     sk->tcp.vj_sa        = INIT_VJSA;
@@ -580,10 +580,10 @@ int tcp_listen (tcp_Socket *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandl
     sk->tcp.ttl          = _default_ttl;
     sk->tcp.protoHandler = handler;
     sk->tcp.usr_yield    = system_yield;
-    sk->tcp.safetysig    = SAFETYTCP;      /* marker signatures */
+    sk->tcp.safetysig    = SAFETYTCP;       /* marker signatures */
     sk->tcp.safetytcp    = SAFETYTCP;
 
-    sk->next     = _tcp_allsocs;   /* insert into chain */
+    sk->next     = _tcp_allsocs;            /* insert into chain */
     _tcp_allsocs = sk;
 
     if (timeout != 0)
@@ -621,7 +621,7 @@ void _tcp_close (sock_type *sk)
         sk->tcp.state == tcp_StateESTCL ||
         sk->tcp.state == tcp_StateSYNREC)
     {
-        if (sk->tcp.tx_datalen) {    /* must first flush all Tx data */
+        if (sk->tcp.tx_datalen) {   /* must first flush all Tx data */
             sk->tcp.flags |= (tcp_FlagPUSH | tcp_FlagACK);
             if (sk->tcp.state < tcp_StateESTCL) {
                 sk->tcp.state = tcp_StateESTCL;
@@ -673,7 +673,7 @@ void tcp_abort (tcp_Socket *tcp_sk)
         (void) TCP_SEND (sk);
     }
     sk->tcp.unhappy = FALSE;
-    sk->tcp.tx_datalen = 0;      /* discard Tx buffer, but not Rx buffer */
+    sk->tcp.tx_datalen = 0;     /* discard Tx buffer, but not Rx buffer */
     sk->tcp.ip_type = 0;
 
     maybe_reuse_lport (sk);

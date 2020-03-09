@@ -158,9 +158,8 @@ static int set_recv_buf (Socket *socket, const sock_size *optval)
         return (-1);
     }
     rc = sock_recv_buf(sk, size);
-    if (rc == -1) {
+    if (rc == -1)
         SOCK_ERR (ENOMEM);
-    }
     return (rc);
 }
 
@@ -187,9 +186,8 @@ static int set_send_buf (Socket *socket, const sock_size *optval)
     }
 #ifdef NOT_YET
     rc = sock_send_buf(sk, size);
-    if (rc == -1) {
+    if (rc == -1)
         SOCK_ERR (ENOMEM);
-    }
 #else
     rc = 0;
 #endif
@@ -410,10 +408,10 @@ static int get_send_buf (const Socket *socket, sock_size *optval, socklen_t *opt
  */
 static int get_send_lowat (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
-    if (socket->so_type == SOCK_STREAM ||
-        socket->so_type == SOCK_DGRAM  ||
-        socket->so_type == SOCK_RAW)
-    {
+    switch (socket->so_type) {
+    case SOCK_STREAM:
+    case SOCK_DGRAM:
+    case SOCK_RAW:
         *optlen = sizeof(*optval);
         *optval = socket->tx_lowat;
         return (0);
@@ -424,10 +422,10 @@ static int get_send_lowat (const Socket *socket, sock_size *optval, socklen_t *o
 
 static int get_recv_lowat (const Socket *socket, sock_size *optval, socklen_t *optlen)
 {
-    if (socket->so_type == SOCK_STREAM ||
-        socket->so_type == SOCK_DGRAM  ||
-        socket->so_type == SOCK_RAW)
-    {
+    switch (socket->so_type) {
+    case SOCK_STREAM:
+    case SOCK_DGRAM:
+    case SOCK_RAW:
         *optlen = sizeof(*optval);
         *optval = socket->rx_lowat;
         return (0);

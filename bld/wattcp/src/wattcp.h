@@ -161,7 +161,8 @@ typedef BYTE            ax25_address[7];
 #define TCPOPT_CCNEW     12      /* T/TCP CC options (rfc1644) */
 #define TCPOPT_CCECHO    13      /* T/TCP CC options (rfc1644) */
 
-#define TCP_MAX_WINSHIFT 14      /* maximum window shift */
+#define TCP_MAXWIN       65535   /* largest value for (unscaled) window */
+#define TCP_MAX_WINSHIFT 14      /* maximum window shift for (scaled) window */
 
 /*
  * These are the ICMP messages. Should be same as in <netinet/ip_icmp.h>
@@ -477,7 +478,7 @@ typedef struct tcp_Socket {
         BYTE   rx_wscale;
 
         UINT   tx_datalen;          /* TX length, number of bytes of data to send */
-        UINT   tx_maxdatalen;                                             \
+        UINT   tx_maxdatalen;
         BYTE   *tx_data;            /* transmission data pointer */
 
         BYTE   tx_buf[tcp_MaxTxBufSize+1]; /* data buffer for transmission */
