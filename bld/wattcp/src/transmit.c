@@ -214,11 +214,13 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
     struct sockaddr_in *peer = (struct sockaddr_in*) to;
     DWORD  keepalive = socket->keepalive;
     WORD   lport     = 0;
-    BYTE  *rxdata     = NULL;
+    BYTE  *rxdata;
     int    rxmaxdatalen;
     int    rc;
     sock_type *sk = socket->proto_sock;
 
+    rxdata = NULL;
+    rxmaxdatalen = 0;
     if (socket->so_state & SS_ISCONNECTED) {
         /* Don't reconnect if same peer address/port.
          */
@@ -238,7 +240,7 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
 
         if (socket->so_type == SOCK_DGRAM) {
             lport = sk->udp.myport;
-            rxdata = sk->udp.rx_data;             /* preserve current RX data buffer */
+            rxdata = sk->udp.rx_data;               /* preserve current RX data buffer */
             rxmaxdatalen = sk->udp.rx_maxdatalen;
         }
     }
@@ -252,12 +254,12 @@ static int setup_udp_raw (Socket *socket, const struct sockaddr *to, socklen_t t
     if (rc < 0)
         return (-1);
 
-    if (rxdata != NULL) { /* Must be SOCK_DGRAM */
-        free (sk->udp.rx_data);                 /* free new rx-buffer set in connect() */
-        sk->udp.rx_data       = rxdata;         /* reuse previous RX data buffer */
+    if (rxdata != NULL) {   /* Must be SOCK_DGRAM */
+        free (sk->udp.rx_data);                     /* free new rx-buffer set in connect() */
+        sk->udp.rx_data       = rxdata;             /* reuse previous RX data buffer */
         sk->udp.rx_maxdatalen = rxmaxdatalen;
 
-        grab_localport (lport);   /* Restore freed localport */
+        grab_localport (lport);                     /* Restore freed localport */
     }
 
     /* restore keepalive timer changed in connect()
@@ -281,10 +283,10 @@ static __inline int check_non_block_tx (Socket *socket, int *len)
 
     room = sock_tbleft (sk);
     if (*len <= room)
-        return (0);     /* okay, enough room, '*len' unmodified */
+        return (0);         /* okay, enough room, '*len' unmodified */
 
 #if 0
-    SOCK_YIELD();      /* a small delay to clear up things */
+    SOCK_YIELD();           /* a small delay to clear up things */
     tcp_tick (sk);
 
     room = sock_tbleft (sk);
@@ -406,21 +408,21 @@ static int udp_transmit (Socket *socket, const void *buf, int len)
                 ntohs(socket->remote_addr->sin_port),
                 is_multi ? "(mc)" : ""));
 
-    if (len == 0)   /* 0-byte probe packet */
+    if (len == 0)                   /* 0-byte probe packet */
         return ip_transmit (socket, NULL, 0);
 
-    tx_room = sock_tbleft (sk);  /* always MTU-28 */
+    tx_room = sock_tbleft (sk);     /* always MTU-28 */
 
     /* Special tests for broadcast messages
      */
     if (is_bcast) {
-        if (len > tx_room) {      /* don't allow fragments */
+        if (len > tx_room) {        /* don't allow fragments */
             SOCK_DEBUGF ((socket, ", EMSGSIZE"));
             SOCK_ERR (EMSGSIZE);
             STAT (ipstats.ips_odropped++);
             return (-1);
         }
-        if (_pktserial) {         /* Link-layer doesn't allow broadcast */
+        if (_pktserial) {           /* Link-layer doesn't allow broadcast */
             SOCK_DEBUGF ((socket, ", EADDRNOTAVAIL"));
             SOCK_ERR (EADDRNOTAVAIL);
             STAT (ipstats.ips_odropped++);
@@ -446,7 +448,7 @@ static int udp_transmit (Socket *socket, const void *buf, int len)
 #endif
 
     rc = sock_write (sk, (BYTE*)buf, len);
-    if (rc <= 0) {  /* error in udp_write() */
+    if (rc <= 0) {                  /* error in udp_write() */
         SOCK_DEBUGF ((socket, ", ENETDOWN"));
         SOCK_ERR (ENETDOWN);
         return (-1);
@@ -470,7 +472,7 @@ static int ip_transmit (Socket *socket, const void *tx, int len)
     DWORD  offset;
     UINT   h_len, o_len;
 
-    tcp_tick (NULL);        /* process other TCBs too */
+    tcp_tick (NULL);            /* process other TCBs too */
     tcp_Retransmitter (1);
 
     /* This should never happen

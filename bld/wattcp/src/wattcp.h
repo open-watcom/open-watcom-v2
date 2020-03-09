@@ -234,7 +234,7 @@ typedef struct in_Header {
         WORD   checksum;
         DWORD  source;
         DWORD  destination;
-      } in_Header;
+    } in_Header;
 
 #define IP_CE      0x8000     /* `in_Header.frag_ofs' masks: */
 #define IP_DF      0x4000     /*   Congestion Experienced */
@@ -249,7 +249,7 @@ typedef struct in_Header {
 typedef struct ip_Packet {
         in_Header head;
         BYTE      data [MAX_IP_DATA];
-      } ip_Packet;
+    } ip_Packet;
 
 
 /*
@@ -260,7 +260,7 @@ typedef struct udp_Header {
         WORD   dstPort;
         WORD   length;
         WORD   checksum;
-      } udp_Header;
+    } udp_Header;
 
 typedef struct tcp_Header {
         WORD   srcPort;
@@ -273,7 +273,7 @@ typedef struct tcp_Header {
         WORD   window;
         WORD   checksum;
         WORD   urgent;
-      } tcp_Header;
+    } tcp_Header;
 
 #define tcp_FlagFIN   0x01
 #define tcp_FlagSYN   0x02
@@ -293,7 +293,7 @@ typedef struct tcp_PseudoHeader {
         BYTE   protocol;
         WORD   length;
         WORD   checksum;
-      } tcp_PseudoHeader;
+    } tcp_PseudoHeader;
 
 /*
  * Internet Group Management Protocol Packet
@@ -304,7 +304,7 @@ typedef struct IGMP_packet {
         BYTE   mbz;
         WORD   checksum;
         DWORD  address;
-      } IGMP_packet;
+    } IGMP_packet;
 
 #define IGMP_VERSION  1
 #define IGMP_QUERY    1
@@ -324,7 +324,7 @@ typedef struct arp_Header {
         DWORD       srcIPAddr;
         eth_address dstEthAddr;
         DWORD       dstIPAddr;
-      } arp_Header;
+    } arp_Header;
 
 #define rarp_Header arp_Header
 
@@ -425,7 +425,7 @@ typedef struct udp_Socket {
  * TCP Socket definition (fields common to udp_Socket must come first)
  */
 typedef struct tcp_Socket {
-        struct  tcp_Socket *next;   /* link to next tcp-socket */
+        struct tcp_Socket *next;    /* link to next tcp-socket */
         SOCKET_COMMON;
         UDP_TCP_COMMON;
         BYTE   rx_buf[tcp_MaxBufSize+1]; /* received data buffer */
