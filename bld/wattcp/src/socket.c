@@ -19,6 +19,7 @@
   #include <unistd.h>
 #endif
 
+#include "pcbufsiz.h"
 #include "pchooks.h"
 
 #ifdef USE_LIBPCAP
@@ -173,8 +174,7 @@ int _sock_dos_fd (int s)
  */
 static __inline void _set_recv_buf (sock_type *sk)
 {
-    int len = DEFAULT_RECV_WIN;
-    sock_setbuf (sk, calloc(1, len), len);
+    sock_recv_buf (sk, DEFAULT_RECV_WIN);
 }
 
 /*

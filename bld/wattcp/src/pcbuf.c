@@ -82,34 +82,6 @@ int sock_tbused (const sock_type *sk)
 }
 
 /*
- *  Sets new buffer for Rx-data (for udp/tcp).
- *  Should be used only when current buffer is empty,
- *  i.e. sock_rbused() returns 0
- */
-int sock_setbuf (sock_type *sk, BYTE *rx_buf, unsigned rx_len)
-{
-    switch (_chk_socket(sk)) {
-    case VALID_TCP:
-    case VALID_UDP:
-        if (rx_len == 0 || rx_buf == NULL) {
-            if (sk->u.ip_type == UDP_PROTO) {
-                sk->udp.rx_data = sk->udp.rx_buf;
-                sk->udp.rx_maxdatalen = udp_MaxBufSize;
-            } else {
-                sk->tcp.rx_data = sk->tcp.rx_buf;
-                sk->tcp.rx_maxdatalen = tcp_MaxBufSize;
-            }
-        } else {
-            sk->u.rx_data = rx_buf;
-            sk->u.rx_maxdatalen = min (rx_len, USHRT_MAX);
-            memset (rx_buf, 0, sk->u.rx_maxdatalen);
-        }
-        return (sk->u.rx_maxdatalen);
-    }
-    return (0);  /* Raw-sockets use fixed buffer */
-}
-
-/*
  * chk_socket - determine whether a real socket or not
  */
 int _chk_socket (const sock_type *sk)
@@ -157,4 +129,3 @@ const char *sockstate (const sock_type *sk)
         return (_LANG("Not an active socket"));
     }
 }
-

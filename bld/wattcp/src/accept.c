@@ -23,6 +23,7 @@
 
 #if defined(USE_BSD_FUNC)
 
+#include "pcbufsiz.h"
 #include "pchooks.h"
 
 static int dup_bind   (Socket *socket, Socket **clone, int idx);
@@ -361,7 +362,7 @@ int _sock_append (sock_type **skp)
 
     /* Increase the clone RX-buffer/window (to 16kB)
      */
-    sock_setbuf (clone_sk, calloc(1, DEFAULT_RECV_WIN), DEFAULT_RECV_WIN);
+    sock_recv_buf (clone_sk, DEFAULT_RECV_WIN);
 
     /* Undo what tcp_handler() and tcp_listen_state() did to
      * this listening socket.

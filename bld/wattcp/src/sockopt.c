@@ -15,7 +15,7 @@
 
 #if defined(USE_BSD_FUNC)
 
-typedef unsigned    sock_size;
+#include "pcbufsiz.h"
 
 static int set_sol_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
 static int set_raw_opt (Socket *socket, int opt, const void *optval, socklen_t optlen);
@@ -145,7 +145,7 @@ static int set_recv_buf (Socket *socket, const sock_size *optval)
 {
     sock_size size;
     sock_type *sk;
-    BYTE *buf;
+    int rc;
 
     size = *optval;
     if (size == 0) {
@@ -157,68 +157,11 @@ static int set_recv_buf (Socket *socket, const sock_size *optval)
         SOCK_ERR (ENOPROTOOPT);
         return (-1);
     }
-    switch (socket->so_proto) {
-    case IPPROTO_TCP:
-        size = min (size, MAX_TCP_RECV_BUF);  /* 64kB/1MB */
-        buf  = realloc (sk->tcp.rx_data, size);
-        if (!buf) {
-            SOCK_ERR (ENOMEM);
-            return (-1);
-        }
-
-        /* Copy the data to new buffer. Data might be overlapping
-         * hence using movmem(). Also clear rest of buffer.
-         */
-        if (sk->tcp.rx_datalen > 0) {
-            int len = min ((long)size, sk->tcp.rx_datalen);
-
-            movmem (sk->tcp.rx_data, buf, len);
-            if (size > sk->tcp.rx_datalen) {
-                memset (sk->tcp.rx_data + sk->tcp.rx_datalen, 0, size - sk->tcp.rx_datalen);
-            }
-        }
-        sk->tcp.rx_data       = buf;
-        sk->tcp.rx_maxdatalen = size;
-#if (DOSX)
-        /*
-         * following is wrong piece of code
-         *
-         * it is unclear what it should do
-         *
-         * Anyway maximum window size without scaling
-         * is 65535 (TCP_MAXWIN)
-         */
-        if (size > 64*1024)
-            sk->tcp.tx_wscale = size >> 16;
-#endif
-        break;
-    case IPPROTO_UDP:
-        size = min (size, MAX_UDP_RECV_BUF);
-        buf  = realloc (sk->udp.rx_data, size);
-        if (!buf) {
-            SOCK_ERR (ENOMEM);
-            return (-1);
-        }
-
-        /* Copy current data to new buffer. Data might be overlapping
-         * hence using movmem(). Also clear rest of buffer.
-         */
-        if (sk->udp.rx_datalen > 0) {
-            int len = min ((long)size, sk->udp.rx_datalen);
-
-            movmem (sk->udp.rx_data, buf, len);
-            if (size > sk->udp.rx_datalen) {
-                memset (buf + sk->udp.rx_datalen, 0, size - sk->udp.rx_datalen);
-            }
-        }
-        sk->udp.rx_data       = buf;
-        sk->udp.rx_maxdatalen = size;
-        break;
-    default:
-        /* raw to-do !! */
-        break;
+    rc = sock_recv_buf(sk, size);
+    if (rc == -1) {
+        SOCK_ERR (ENOMEM);
     }
-    return (0);
+    return (rc);
 }
 
 /*
@@ -230,9 +173,7 @@ static int set_send_buf (Socket *socket, const sock_size *optval)
 {
     sock_size size;
     sock_type *sk;
-#ifdef NOT_YET
-    BYTE *buf;
-#endif
+    int rc;
 
     size = *optval;
     if (size == 0) {
@@ -245,37 +186,14 @@ static int set_send_buf (Socket *socket, const sock_size *optval)
         return (-1);
     }
 #ifdef NOT_YET
-    switch (socket->so_proto) {
-    case IPPROTO_TCP:
-      {
-
-        size = min (size, MAX_TCP_SEND_BUF);
-        buf  = realloc (sk->tcp.tx_data, size);
-        if (!buf) {
-            SOCK_ERR (ENOMEM);
-            return (-1);
-        }
-
-        /* Copy current data to new buffer. Data might be overlapping
-         * hence using movmem().
-         */
-        if (sk->tcp.tx_datalen > 0) {
-            int len = min ((long)size, sk->tcp.tx_datalen);
-            movmem (sk->tcp.tx_data, buf, len);
-        }
-        sk->tcp.tx_data = buf;
-        sk->tcp.tx_maxdatalen = size;
-        break;
-      }
-    case IPPROTO_UDP:
-        /* UDP doesn't use TX-buffer */
-        break;
-    default:
-        /* raw to-do !! */
-        break;
+    rc = sock_send_buf(sk, size);
+    if (rc == -1) {
+        SOCK_ERR (ENOMEM);
     }
+#else
+    rc = 0;
 #endif
-    return (0);
+    return (rc);
 }
 
 /*

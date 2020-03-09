@@ -46,6 +46,29 @@
 #undef  USE_ECHO_DISC   /* Include echo/discard servers */
 #undef  USE_PPPOE       /* PPP-over-Ethernet encapsulation (!experimental) */
 
+#if 1
+
+#if !defined(OPT_DEFINED)
+  #define USE_DEBUG
+  #define USE_EXCHANDLER
+  #define USE_BOOTP
+  #define USE_DHCP
+  #define USE_LANGUAGE
+  #define USE_FRAGMENTS
+  #define USE_STATISTICS
+  #define USE_BIND
+  #define USE_BSD_FUNC
+  #define USE_BSD_FATAL
+  #define USE_BSD_FORTIFY
+  #define USE_LOOPBACK
+  #define USE_BUFFERED_IO
+  #define USE_TFTP
+  #define USE_MULTICAST
+  #define OPT_DEFINED
+#endif
+
+#else
+
 /*
  * This handle 16-bit real-mode
  */
@@ -138,6 +161,8 @@
 #endif
 
 #endif /* DOSX == 0 */
+
+#endif
 
 /*
  * Test some illegal combinations.

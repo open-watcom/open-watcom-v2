@@ -444,6 +444,7 @@ static void fix_tok_head (tok_Header **trp)
 #ifdef NOT_YET
 static void fix_llc_head (void **mac)
 {
+    ARGSUSED (mac);
 }
 #endif
 
