@@ -350,7 +350,7 @@ tparam_internal(const char *string, va_list ap)
     int x, y;
     int i;
     size_t len2;
-    register const char *cp;
+    const char *cp;
     static size_t len_fmt;
     static char dummy[] = "";
     static char *format;

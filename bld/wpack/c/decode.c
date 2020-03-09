@@ -429,8 +429,8 @@ static bool CompareCRC( unsigned long crcvalue )
 
 static int FileExists( const char *name, file_info *info )
 {
-    auto struct stat            statblk;
-    int                         rc;
+    struct stat     statblk;
+    int             rc;
 
     rc = stat( name, &statblk );
     if( rc == 0 ) {

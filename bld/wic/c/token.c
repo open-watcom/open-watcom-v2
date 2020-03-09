@@ -448,7 +448,7 @@ static WicErrors scanStr(pTokData tokData)
 
 static WicErrors scanChar(pTokData tokData)
 {
-    register int i;
+    int i;
     unsigned long value;
     char charVal;
     WicErrors retVal = ERR_NONE;

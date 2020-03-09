@@ -115,7 +115,7 @@ typedef struct fd_set {
 
 #define FD_SET(fd, set)                \
 {                                      \
-   register int   *slot, *end;         \
+   int   *slot, *end;                  \
                                        \
    slot = (set)->fd_array;             \
    end  = slot + (set)->fd_count;      \
@@ -137,7 +137,7 @@ typedef struct fd_set {
 
 #define FD_CLR(fd, set)                \
 {                                      \
-   register int   *slot, *end;         \
+   int   *slot, *end;                  \
                                        \
    slot = (set)->fd_array;             \
    end  = slot + (set)->fd_count;      \

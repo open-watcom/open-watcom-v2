@@ -224,11 +224,9 @@ int DelCmd( char *cmd )
 }
 
 
-void SaveCmd( cmd, len )
-    register char *cmd;
-    register unsigned  len;
+void SaveCmd( char *cmd, unsigned len )
 {
-    register unsigned  chk, chk_len;
+    unsigned  chk, chk_len;
 
     LastWasNext = FALSE;
     CurrCmd = FirstFree;
@@ -251,12 +249,11 @@ void SaveCmd( cmd, len )
 }
 
 
-int PrevCmd( cmd )
-    register char *cmd;
+int PrevCmd( char *cmd )
 {
-    register unsigned  len;
-    register unsigned  cnt;
-    register unsigned  curr;
+    unsigned  len;
+    unsigned  cnt;
+    unsigned  curr;
 
     if( CurrCmd == FirstCmd ) {
         LastWasNext = TRUE;
@@ -283,12 +280,11 @@ int PrevCmd( cmd )
 }
 
 
-int NextCmd( cmd )
-    register char *cmd;
+int NextCmd( char *cmd )
 {
-    register unsigned  len;
-    register unsigned  cnt;
-    register unsigned  curr;
+    unsigned  len;
+    unsigned  cnt;
+    unsigned  curr;
 
     curr = CurrCmd;
     _ModIndex( curr, SaveArea[curr] + 2 );

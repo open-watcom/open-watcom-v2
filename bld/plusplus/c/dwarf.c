@@ -1300,8 +1300,8 @@ static void dwarf_block_open( SYMBOL sym )
 static void dwarfProcessFunction( CGFILE *file_ctl )
 /**************************************************/
 {
-    register CGVALUE ins_value; // - value on intermediate-code instruction
-    CGINTER *ins;               // - next intermediate-code instruction
+    CGVALUE ins_value;      // - value on intermediate-code instruction
+    CGINTER *ins;           // - next intermediate-code instruction
     dw_linenum line;
     dw_column column;
     dw_handle dh;

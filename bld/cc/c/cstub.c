@@ -37,27 +37,26 @@ extern  void    InitSymData();
 extern  void    DumpQuad();
 
 
-void EmitQuads()
-    {
-        register int i;
+void EmitQuads( void )
+{
+    register int i;
 
-        for( i = 0; i < QuadIndex; ++i ) {
-            DumpQuad( i );
-        }
+    for( i = 0; i < QuadIndex; ++i ) {
+        DumpQuad( i );
     }
+}
 
 
-void StaticInit( sym )
-        register SYMPTR sym;
-    {
-        InitSymData( sym->sym_type, sym->sym_type );
-    }
+void StaticInit( SYMPTR sym )
+{
+    InitSymData( sym->sym_type, sym->sym_type );
+}
 
-void EmitStrPtr( str )
-        register TREEPTR str;
-    {
-        ;
-    }
+void EmitStrPtr( TREEPTR str )
+{
+    ;
+}
+
 BEStrNode()     { ; }
 EmitStructs()   { ; }
 CodeBack()      { ; }
@@ -65,22 +64,15 @@ FEBack()        { ; }
 SetOp()         { ; }
 ResetOp()       { ; }
 
-DGInteger( value, t )
-        register int value;
-        register int t;
+DGInteger( int value, int t )
         { ; }
-DGFloat( value, t )
-        register char *value;
-        register int t;
+DGFloat( char *value, int t )
         { ; }
 
-DGFEPtr( sym_handle )
-        register SYM_HANDLE sym_handle;
+DGFEPtr( SYM_HANDLE sym_handle )
    { ; }
 
-DGFEOffset( sym_handle, value )
-        register SYM_HANDLE sym_handle;
-        register int value;
+DGFEOffset( SYM_HANDLE sym_handle, int value )
    { ; }
 
 GenOptions()   { ; }

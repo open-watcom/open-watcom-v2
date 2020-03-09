@@ -175,11 +175,11 @@ static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE
 
 INT main( int argc, char **argv )
 {
-    register SLONG      i;
-    register char       *ap;
-    struct stat         st;
-    char                path[_MAX_PATH];
-    PGROUP2             pg;
+    SLONG           i;
+    char            *ap;
+    struct stat     st;
+    char            path[_MAX_PATH];
+    PGROUP2         pg;
 
     while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
         while( *ap != EOS ) {
@@ -366,11 +366,11 @@ INT main( int argc, char **argv )
 void input( SLONG which )
     /* 0 or 1 to redefine infd[]  */
 {
-    register LINE       *lentry;
-    register SLONG      linect = 0;
-    FILE                *fd;
+    LINE        *lentry;
+    SLONG       linect = 0;
+    FILE        *fd;
 #define LSIZE_INC 200           /* # of line entries to alloc at once */
-    SLONG               lsize = LSIZE_INC;
+    SLONG       lsize = LSIZE_INC;
 
     lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
     fd = infd[which];
@@ -407,11 +407,11 @@ void input( SLONG which )
 
 void squish( void )
 {
-    register SLONG      i;
-    register LINE       *ap;
-    register LINE       *bp;
-    SLONG               j;
-    SLONG               k;
+    SLONG       i;
+    LINE        *ap;
+    LINE        *bp;
+    SLONG       j;
+    SLONG       k;
 
     /*
      * prefix -> first line (from start) that doesn't hash identically
@@ -460,12 +460,12 @@ void squish( void )
 
 void sort( LINE *vector, SLONG vecsize )
 {
-    register SLONG      j;
-    register LINE       *aim;
-    register LINE       *ai;
-    SLONG               mid;
-    SLONG               k;
-    LINE                work;
+    SLONG       j;
+    LINE        *aim;
+    LINE        *ai;
+    SLONG       mid;
+    SLONG       k;
+    LINE        work;
 
     for( j = 1; j <= vecsize; j *= 2 )
         ;
@@ -497,13 +497,13 @@ void sort( LINE *vector, SLONG vecsize )
 
 void equiv( void )
 {
-    register LINE       *ap;
+    LINE        *ap;
     union {
         LINE    *bp;
         short   *mp;
     }                   r;
-    register SLONG      j;
-    LINE                *atop;
+    SLONG       j;
+    LINE        *atop;
 
 #ifdef DEBUG
     printf( "equiv entry\n" );
@@ -574,16 +574,16 @@ void equiv( void )
 
 void unsort( void )
 {
-    SLONG               *temp;
-    register SLONG      *tp;
+    SLONG       *temp;
+    SLONG       *tp;
     union {
         LINE    *ap;
         short   *cp;
-    }                   u;
-    LINE                *evec;
-    short               *eclass;
+    }           u;
+    LINE        *evec;
+    short       *eclass;
 #ifdef DEBUG
-    SLONG               i;
+    SLONG       i;
 #endif
 
     temp = (SLONG *)myalloc( ( slenA + 1 ) * sizeof( SLONG ), "unsort scratch" );
@@ -624,7 +624,7 @@ newcand(    SLONG a,        /* Line in fileA      */
             SLONG b,        /* Line in fileB      */
             SLONG pred      /* Line in fileB      */ )
 {
-    register CANDIDATE  *new;
+    CANDIDATE   *new;
 
     clength++;
     if( ++clength >= csize ) {
@@ -643,13 +643,13 @@ newcand(    SLONG a,        /* Line in fileA      */
 
 SLONG subseq( void )
 {
-    SLONG               a;
-    register ULONG      ktop;
-    register SLONG      b;
-    register ULONG      s;
-    ULONG               r;
-    SLONG               i;
-    SLONG               cand;
+    SLONG       a;
+    ULONG       ktop;
+    SLONG       b;
+    ULONG       s;
+    ULONG       r;
+    SLONG       i;
+    SLONG       cand;
 
     klist[0] = newcand( 0, 0, -1 );
     klist[1] = newcand( slenA + 1, slenB + 1, -1 );
@@ -715,8 +715,8 @@ SLONG subseq( void )
 
 ULONG search( ULONG low, ULONG high, SLONG b )
 {
-    register SLONG      temp;
-    register ULONG      mid;
+    SLONG       temp;
+    ULONG       mid;
 
     if( clist[klist[low]].b >= b )
         return( 0 );
@@ -734,10 +734,10 @@ ULONG search( ULONG low, ULONG high, SLONG b )
 
 void unravel( SLONG k )
 {
-    register SLONG      i;
-    register CANDIDATE  *cp;
-    SLONG               first_trailer;
-    SLONG               difference;
+    SLONG       i;
+    CANDIDATE   *cp;
+    SLONG       first_trailer;
+    SLONG       difference;
 
     first_trailer = lenA - suffix;
     difference = lenB - lenA;

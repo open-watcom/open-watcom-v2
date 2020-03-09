@@ -282,9 +282,9 @@ void parse( FILE *i, FILE *o )
 
 static int yyparse( void )
 {
-    register int yym, yyn, yystate;
+    int yym, yyn, yystate;
 #if YYDEBUG
-    register char *yys;
+    char *yys;
 
     if( yys = getenv( "YYDEBUG" ) ) {
         yyn = *yys;

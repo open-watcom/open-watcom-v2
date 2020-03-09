@@ -65,7 +65,7 @@ int pktq_init (struct pkt_ringbuf *q, int size, int num, char *buf)
 
 /*
  * Increment the queue 'out_index' (tail).
- * Check for wraps. 
+ * Check for wraps.
  */
 int pktq_inc_out (struct pkt_ringbuf *q)
 {
@@ -122,8 +122,8 @@ void pktq_clear (struct pkt_ringbuf *q)
  */
 int pktq_queued (struct pkt_ringbuf *q)
 {
-  register int index = q->out_index;
-  register int num   = 0;
+  int index = q->out_index;
+  int num   = 0;
 
   /* DISABLE(); */
 

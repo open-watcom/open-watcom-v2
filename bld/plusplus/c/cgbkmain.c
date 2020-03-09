@@ -1336,7 +1336,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     CGFILE *file_ctl,               // - current file
     call_handle call )              // - handle for call when gen'ing inline fun.
 {
-    register CGVALUE ins_value;     // - value on intermediate-code instruction
+    CGVALUE         ins_value;      // - value on intermediate-code instruction
     FN_CTL          *fctl;          // - file control pointer
     CGINTER         *ins;           // - next intermediate-code instruction
     unsigned        ctr;            // - used as counter

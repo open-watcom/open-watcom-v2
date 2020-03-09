@@ -19,8 +19,8 @@
  */
 WORD inchksum (const void *ptr, int len)
 {
-  register long  sum = 0;
-  register const WORD *wrd = (const WORD*) ptr;
+  long  sum = 0;
+  const WORD *wrd = (const WORD*) ptr;
 
   while (len > 1)
   {
@@ -52,7 +52,7 @@ WORD inchksum (const void *ptr, int len)
  * Dug Song came up with this very cool checksuming implementation
  * eliminating the need for explicit psuedoheader use. Check it out.
  *
- * Ripped from libnet 1.0.1 
+ * Ripped from libnet 1.0.1
  */
 int do_checksum (BYTE *buf, int protocol, int len)
 {

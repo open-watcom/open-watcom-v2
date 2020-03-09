@@ -106,9 +106,9 @@ char *body[] =
     "bool",
     "yyparse()",
     "{",
-    "    register int yym, yyn, yystate;",
+    "    int yym, yyn, yystate;",
     "#if YYDEBUG",
-    "    register char *yys;",
+    "    char *yys;",
     "    extern char *getenv();",
     "",
     "    if (yys = getenv(\"YYDEBUG\"))",
@@ -310,8 +310,8 @@ char *trailer[] =
 write_section(section)
 char *section[];
 {
-    register int i;
-    register FILE *fp;
+    int i;
+    FILE *fp;
 
     fp = code_file;
     for (i = 0; section[i]; ++i)

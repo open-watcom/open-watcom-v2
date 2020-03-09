@@ -641,9 +641,8 @@ THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
 
 #ifndef NDEBUG
 void CPPLIB( pd_dump_rws )      // DEBUGGING -- DUMP R/W, R/O data structure
-    ( register void (*dump_rw)( RW_DTREG*// - watcom block
-                     , RO_DTREG* )
-    , register void (*dump_pd)( PData* ) )// - non-watcom block
+    ( void (*dump_rw)( RW_DTREG*, RO_DTREG* ) // - watcom block
+    , void (*dump_pd)( PData* ) )             // - non-watcom block
 ;
 #endif
 _WPRTLINK

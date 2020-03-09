@@ -63,7 +63,7 @@ delay_output(int ms)
         _nc_flush();
         napms(ms);
     } else {
-        register int nullcount;
+        int nullcount;
 
         nullcount = (ms * _nc_baudrate(ospeed)) / 10000;
         for (_nc_nulls_sent += nullcount; nullcount > 0; nullcount--)

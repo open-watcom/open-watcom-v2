@@ -273,14 +273,14 @@ __END_DECLS
  * portable or it can be elegant but rarely both.
  */
 #define GETSHORT(s, cp) { \
-        register u_char *t_cp = (u_char *)(cp); \
+        u_char *t_cp = (u_char *)(cp); \
         (s) = ((u_short)t_cp[0] << 8) \
             | ((u_short)t_cp[1]); \
         (cp) += INT16SZ; \
 }
 
 #define GETLONG(l, cp) { \
-        register u_char *t_cp = (u_char *)(cp); \
+        u_char *t_cp = (u_char *)(cp); \
         (l) = ((u_long)t_cp[0] << 24) \
             | ((u_long)t_cp[1] << 16) \
             | ((u_long)t_cp[2] << 8) \
@@ -289,16 +289,16 @@ __END_DECLS
 }
 
 #define PUTSHORT(s, cp) { \
-        register u_short t_s = (u_short)(s); \
-        register u_char *t_cp = (u_char *)(cp); \
+        u_short t_s = (u_short)(s); \
+        u_char *t_cp = (u_char *)(cp); \
         *t_cp++ = t_s >> 8; \
         *t_cp   = t_s; \
         (cp) += INT16SZ; \
 }
 
 #define PUTLONG(l, cp) { \
-        register u_long t_l = (u_long)(l); \
-        register u_char *t_cp = (u_char *)(cp); \
+        u_long t_l = (u_long)(l); \
+        u_char *t_cp = (u_char *)(cp); \
         *t_cp++ = t_l >> 24; \
         *t_cp++ = t_l >> 16; \
         *t_cp++ = t_l >> 8; \

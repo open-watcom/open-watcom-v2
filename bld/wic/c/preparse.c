@@ -763,12 +763,12 @@ extern int      prenstate, prenvar, prentoken, prenrule;
 int preparse( void )
 {
 
-        register short          prei, *prep;    /* for table lookup */
-        register short          *preps;         /* top of state stack */
-        register short          prestate;       /* current state */
-        register PRESTYPE       *prepv;         /* top of value stack */
-        register short          *preq;
-        register int            prej;
+        short          prei, *prep;    /* for table lookup */
+        short          *preps;         /* top of state stack */
+        short          prestate;       /* current state */
+        PRESTYPE       *prepv;         /* top of value stack */
+        short          *preq;
+        int            prej;
 
 #ifdef PRESTATIC
         static short    pres[PRESSIZE + 1];
