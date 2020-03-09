@@ -535,6 +535,7 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
             SOCK_ERR (ENOPROTOOPT);
             return (-1);
         }
+        *optlen = sizeof(int);
         if (socket->so_options & SO_OOBINLINE) {
             *(int*)optval = urgent_data (sk);
         } else {
@@ -596,12 +597,12 @@ static int get_sol_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
       }
     case SO_ERROR:
         *(int*)optval = socket->so_error;
-        *optlen = sizeof(socket->so_error);
+        *optlen = sizeof(int);
         socket->so_error = 0;   /* !! should be do this */
         break;
     case SO_TYPE:
         *(int*)optval = socket->so_type;
-        *optlen = sizeof(socket->so_type);
+        *optlen = sizeof(int);
         break;
     default:
         SOCK_ERR (ENOPROTOOPT);
@@ -635,7 +636,7 @@ static int set_tcp_opt (sock_type *sk, int opt, const void *optval, socklen_t op
             SOCK_ERR (EINVAL);
             return (-1);
         }
-        sk->tcp.max_seg = *(int*)optval;
+        sk->tcp.max_seg = MSS;
         break;
       }
     case TCP_NOPUSH:
@@ -823,9 +824,11 @@ static int get_raw_opt (Socket *socket, int opt, void *optval, socklen_t *optlen
         break;
     case IP_TOS:
         *(int*)optval = socket->ip_tos;
+        *optlen = sizeof(int);
         break;
     case IP_TTL:
         *(int*)optval = socket->ip_ttl;
+        *optlen = sizeof(int);
         break;
     case IP_RECVOPTS:
     case IP_RECVRETOPTS:
