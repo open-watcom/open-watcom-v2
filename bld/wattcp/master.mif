@@ -91,3 +91,4 @@ wattcp$(lib_suffix).lib: $(objs) $(__MAKEFILES__)
     $(librarian) $(libflags) @$^&.lbc
 
 language.obj : language.c lang.c
+neterr.obj : neterr.c ../src/watcom/syserr.c
