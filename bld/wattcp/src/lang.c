@@ -720,7 +720,7 @@ YY_MALLOC_DECL
 
 YY_DECL
         {
-        tate_type yy_current_state;
+        yy_state_type yy_current_state;
         char *yy_cp, *yy_bp;
         int yy_act;
 
