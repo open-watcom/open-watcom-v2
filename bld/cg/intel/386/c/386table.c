@@ -581,11 +581,23 @@ _OE( _Bin(   ANY,  R,    R,    EQ_R2 ),V_NO,           RG_8CRTN,     R_SWAPOPS, 
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
 
+/*
+ * must be implemented for long double
+ * now mapped to double symbol
+ */
+#define Rtn10C      Rtn8C
+
 static const opcode_entry    Rtn8[] = {
 /************************/
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
+
+/*
+ * must be implemented for long double
+ * now mapped to double symbol
+ */
+#define Rtn10       Rtn8
 
 
 static const opcode_entry    Mul1[] = {
@@ -1090,6 +1102,11 @@ _OE( _Side(  ANY,  ANY ),              V_NO,           RG_8,         R_MAKECALL,
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
+/*
+ * must be implemented for long double
+ * now mapped to double symbol
+ */
+#define CmpFL       CmpFD
 
 static const opcode_entry    Move1[] = {
 /*************************/
@@ -1242,6 +1259,11 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_8,         R_SPLITMOVE
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
+/*
+ * must be implemented for long double
+ * now mapped to double symbol
+ */
+#define MoveFL      Move8
 
 static const opcode_entry    MoveXX[] = {
 /**************************/
@@ -1534,6 +1556,12 @@ static const opcode_entry    Push8[] = {
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DBL,       R_SPLITUNARY,   FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
+
+/*
+ * must be implemented for long double
+ * now mapped to double symbol
+ */
+#define PushFL      Push8
 
 static const opcode_entry    PushXX[] = {
 /**************************/

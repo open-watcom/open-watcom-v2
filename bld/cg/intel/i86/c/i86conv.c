@@ -212,6 +212,23 @@ static  rt_class        RTRoutineTable[] = {
 
 #define __x__   BAD
 
+/*
+ * must be implemented for long double
+ * now mapped to double symbols
+ */
+#define C_U4_L  C_U4_D
+#define C_I4_L  C_I4_D
+#define C_U8_L  C_U8_D
+#define C_I8_L  C_I8_D
+#define C_S_L   C_S_D
+#define C_D_L   OK
+#define C_L_U4  C_D_U4
+#define C_L_I4  C_D_I4
+#define C_L_U8  C_D_U8
+#define C_L_I8  C_D_I8
+#define C_L_S   C_D_S
+#define C_L_D   OK
+
 static  conv_method     CvtTable[] = {
 /*                               from                                                                    */
 /*U1    I1     U2      I2     U4      I4      U8      I8      CP     PT     FS      FD      FL        to */
@@ -219,16 +236,23 @@ OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CU4, 
 OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I1 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CU4,    CU4,    CU4,    /* U2 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I2 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U4, C_D_U4, C_D_U4, /* U4 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_I4, C_D_I4, C_D_I4, /* I4 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_D_U8, /* U8 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_D_I8, /* I8 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U4, C_D_U4, C_L_U4, /* U4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_I4, C_D_I4, C_L_I4, /* I4 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_L_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_L_I8, /* I8 */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* PT */
-CU4,   CI4,   CU4,    CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__, __x__, OK,     C_D_S,  C_D_S,  /* FS */
-CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FD */
-CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FL */
+CU4,   CI4,   CU4,    CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__, __x__, OK,     C_D_S,  C_L_S,  /* FS */
+CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     C_L_D,  /* FD */
+CU4,   CI4,   CU4,    CI4,   C_U4_L, C_I4_L, C_U8_L, C_I8_L, __x__, __x__, C_S_L,  C_D_L,  OK,     /* FL */
 };
+
+/*
+ * must be implemented for long double
+ * now mapped to double symbols
+ */
+#define C7U8_L  C7U8_D
+#define C7L_U8  C7D_U8
 
 static  conv_method     FPCvtTable[] = {
 /*                               from                                                                    */
@@ -239,13 +263,13 @@ Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4, 
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   FPOK,   FPOK,   FPOK,   /* I2 */
 CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* U4 */
 CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* I4 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C7S_U8, C7D_U8, C7D_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C7S_U8, C7D_U8, C7L_U8, /* U8 */
 CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, FPOK,   FPOK,   FPOK,   /* I8 */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
-CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  CPT,    /* PT */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* PT */
 CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_S, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FS */
 CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FD */
-CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FL */
+CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_L, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FL */
 };
 
 static  conv_method     AskHow( type_class_def fr, type_class_def to )

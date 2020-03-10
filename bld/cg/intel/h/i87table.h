@@ -40,3 +40,10 @@ extern const opcode_entry   Move87S[];
 extern const opcode_entry   Move87D[];
 extern const opcode_entry   Push87S[];
 extern const opcode_entry   Push87D[];
+
+/*
+ * must be implemented for long double
+ * now mapped to double symbols
+ */
+#define Move87L     Move87D
+#define Push87L     Push87D
