@@ -176,8 +176,10 @@ instruction      *rSIMPCMP( instruction *ins )
         ins->table = OpcodeTable( FBINS );
         break;
     case FD:
-    case FL:
         ins->table = OpcodeTable( FBIND );
+        break;
+    case FL:
+        ins->table = OpcodeTable( FBINL );
         break;
     default:
         _Zoiks( ZOIKS_096 );
