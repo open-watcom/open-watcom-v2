@@ -36,9 +36,34 @@
 #include "i87table.h"
 
 
-const opcode_entry    Move87L[] = {
+const opcode_entry    Move87S[] = {
+/***********************************/
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
+_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
+#if _TARGET & _TARG_IAPX86
+_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
+_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
+_OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
+_OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
+#else
+_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DBL,       R_MOVOP1REG,    FU_NO ),
+_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
+_OE( _UnPP(  R|C,  M,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
+#endif
+_OE( _UnPP(  U,    M,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  M|C,  U,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_STI_ST0,   G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  R,    ANY,  NONE ),       V_NO,           RG_DBL_8087,  R_MOVOP1MEM,    FU_NO ),
+_OE( _UnPP(  ANY,  R,    NONE ),       V_NO,           RG_8087_DBL,  R_MOVRESMEM,    FU_NO ),
+_OE( _UnPP(  C,    ANY,  NONE ),       V_OP1ZERO,      RG_8087,      G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  C,    ANY,  NONE ),       V_OP1ONE,       RG_8087,      G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  C,    ANY,  NONE ),       V_NO,           RG_8087,      R_FORCEOP1CMEM, FU_NO ),
+_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_8087,      G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_8087,      G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  R|M,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
+_OE( _UnPP(  R,    R,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),
 _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
@@ -76,37 +101,14 @@ _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-const opcode_entry    Move87S[] = {
-/***********************************/
+#if 0
+const opcode_entry    Move87L[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
-_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
-#if _TARGET & _TARG_IAPX86
-_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
-_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
-_OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
-_OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
-#else
-_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DBL,       R_MOVOP1REG,    FU_NO ),
-_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
-_OE( _UnPP(  R|C,  M,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
-#endif
-_OE( _UnPP(  U,    M,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  M|C,  U,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_STI_ST0,   G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  R,    ANY,  NONE ),       V_NO,           RG_DBL_8087,  R_MOVOP1MEM,    FU_NO ),
-_OE( _UnPP(  ANY,  R,    NONE ),       V_NO,           RG_8087_DBL,  R_MOVRESMEM,    FU_NO ),
-_OE( _UnPP(  C,    ANY,  NONE ),       V_OP1ZERO,      RG_8087,      G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  C,    ANY,  NONE ),       V_OP1ONE,       RG_8087,      G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  C,    ANY,  NONE ),       V_NO,           RG_8087,      R_FORCEOP1CMEM, FU_NO ),
-_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_8087,      G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_8087,      G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  R|M,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
-_OE( _UnPP(  R,    R,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),
 _OE( _UnPP(  ANY,  ANY,  NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
+#endif
 
 const opcode_entry    Un87[] = {
 /***************************/
