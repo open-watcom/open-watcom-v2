@@ -107,14 +107,15 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh, cha
 
     offset = icueh->file;
     fp = VMBlock( iih, offset, sizeof( *fp ) );
-    if( fp == 0 )
+    if( fp == NULL )
         return( 0 );
     offset += offsetof( cv_sst_src_module_file_table, baseSrcLn )
                     + (fp->cSeg * (sizeof( unsigned_32 ) * 3));
     p = VMBlock( iih, offset, sizeof( unsigned_16 ) );
     if( p == NULL )
         return( 0 );
-    /* Doc says the length is unsigned_16, cvpack says 8. */
+    /* Doc says the length is unsigned_16, cvpack says unsigned_8. */
+    /* testing on real files confirm unsigned_8 */
     name_len = *(unsigned_8 *)p;
     p = VMBlock( iih, offset + sizeof( unsigned_8 ), name_len );
     if( p == NULL )
@@ -432,7 +433,7 @@ static search_result SearchFile( imp_image_handle *iih, address addr, imp_cue_ha
         return( SR_NONE );
     num_segs = fp->cSeg;
     fp = VMBlock( iih, file_base, sizeof( *fp )
-            + num_segs * (sizeof( unsigned_32 ) + sizeof( off_range ) ) );
+            + num_segs * (sizeof( *lines ) + sizeof( *ranges ) ) );
     if( fp == NULL )
         return( SR_NONE );
     ranges = walloca( num_segs * sizeof( *ranges ) );
