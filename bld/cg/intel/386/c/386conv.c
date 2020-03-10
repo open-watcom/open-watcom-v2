@@ -334,7 +334,7 @@ CU4,   CI4,   CU4,   CI4,   EXT_PT, CU4,    I8TOPT, I8TOPT, OK,     __x__, __x__
 __x__, __x__, __x__, __x__, __x__,  __x__,  __x__,  __x__,  __x__,  __x__, __x__,  __x__,  __x__,  /* PT */
 CU4,   CI4,   CU4,   CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__,  __x__, OK,     C_D_S,  C_L_S,  /* FS */
 CU4,   CI4,   CU4,   CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__,  __x__, C_S_D,  OK,     C_L_D,  /* FD */
-CU4,   CI4,   CU4,   CI4,   C_U4_L, C_I4_L, C_U8_L, C_U8_L, __x__,  __x__, C_S_L,  C_D_L,  OK,     /* FL */
+CU4,   CI4,   CU4,   CI4,   C_U4_L, C_I4_L, C_U8_L, C_I8_L, __x__,  __x__, C_S_L,  C_D_L,  OK,     /* FL */
 };
 
 /*
