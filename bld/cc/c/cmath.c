@@ -235,20 +235,20 @@ static char ShiftResult[TYPE_LAST_ENTRY] = {
 /* matches enum DATA_TYPE in ctypes.h */
 static const unsigned char  BinResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*  +       BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
-/* BOL */ { BOL,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* CHR */ { INT,CHR,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* UCH */ { UCH,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* SHT */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* USH */ { PUS,PUS,PUS,PUS,PUS,PUS,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* INT */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* UIN */ { UIN,UIN,UIN,UIN,UIN,UIN,UIN,PUI,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* LNG */ { LNG,LNG,LNG,LNG,LNG,LNG,PUI,LNG,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* ULN */ { ULN,ULN,ULN,ULN,ULN,ULN,ULN,ULN,ULN,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* LN8 */ { LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* UL8 */ { UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* FLT */ { FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* DBL */ { DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
-/* LDB */ { ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* BOL */ { BOL,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* CHR */ { INT,CHR,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* UCH */ { UCH,INT,UCH,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* SHT */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* USH */ { PUS,PUS,PUS,PUS,PUS,PUS,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* INT */ { INT,INT,INT,INT,PUS,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* UIN */ { UIN,UIN,UIN,UIN,UIN,UIN,UIN,PUI,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* LNG */ { LNG,LNG,LNG,LNG,LNG,LNG,PUI,LNG,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* ULN */ { ULN,ULN,ULN,ULN,ULN,ULN,ULN,ULN,ULN,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* LN8 */ { LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,LN8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* UL8 */ { UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,UL8,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* FLT */ { FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,FLT,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* DBL */ { DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,DBL,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
+/* LDB */ { LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,LDB,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* FIM */ { ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* DIM */ { ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
 /* LIM */ { ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR,ERR, },
@@ -273,84 +273,119 @@ static const unsigned char  BinResult[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 
 enum    conv_types {
     NIL = 0,
-    C2S,    /* char to short        */
-    C2I,    /* char to int          */
-    C2L,    /* char to long         */
-    C2M,    /* char to long long    */
-    C2U,    /* char to unsigned     */
-    C2F,    /* char to float        */
-    C2D,    /* char to double       */
-    S2C,    /* short to char        */
-    S2I,    /* short to int         */
-    S2L,    /* short to long        */
-    S2M,    /* short to long long   */
-    S2U,    /* short to unsigned    */
-    S2F,    /* short to float       */
-    S2D,    /* short to double      */
-    I2C,    /* int to char          */
-    I2S,    /* int to short         */
-    I2U,    /* int to unsigned      */
-    I2L,    /* int to long          */
-    I2M,    /* int to long long     */
-    I2F,    /* int to float         */
-    I2D,    /* int to double        */
-    L2C,    /* long to char         */
-    L2S,    /* long to short        */
-    L2I,    /* long to integer      */
-    L2M,    /* long to long long    */
-    L2U,    /* long to unsigned     */
-    L2F,    /* long to float        */
-    L2D,    /* long to double       */
-    M2C,    /* long long to char    */
-    M2S,    /* long long to short   */
-    M2I,    /* long long to integer */
-    M2L,    /* long long to long    */
-    M2U,    /* long long to unsigned*/
-    M2F,    /* long long to float   */
-    M2D,    /* long long to double  */
-    U2C,    /* unsigned to char     */
-    U2L,    /* unsigned to long     */
-    U2M,    /* unsigned to long long*/
-    U2F,    /* unsigned to float    */
-    U2D,    /* unsigned to double   */
-    F2C,    /* float to char        */
-    F2S,    /* float to short       */
-    F2I,    /* float to int         */
-    F2L,    /* float to long        */
-    F2M,    /* float to long long   */
-    F2D,    /* float to double      */
-    D2C,    /* double to char       */
-    D2S,    /* double to short      */
-    D2I,    /* double to int        */
-    D2L,    /* double to long       */
-    D2M,    /* double to long long  */
-    D2F,    /* double to float      */
-    P2P,    /* pointer to pointer   */
-    P2A,    /* pointer to arithmetic*/
-    A2P,    /* arithmetic to pointer*/
-    S2B,    /* scalar to _Bool      */
-    B2S,    /* _Bool to scalar      */
-    CER,    /* conversion error     */
+    C2S,    /* char to short            */
+    C2I,    /* char to int              */
+    C2L,    /* char to long             */
+    C2M,    /* char to long long        */
+    C2U,    /* char to unsigned         */
+    C2F,    /* char to float            */
+    C2D,    /* char to double           */
+    C2T,    /* char to long double      */
+    S2C,    /* short to char            */
+    S2I,    /* short to int             */
+    S2L,    /* short to long            */
+    S2M,    /* short to long long       */
+    S2U,    /* short to unsigned        */
+    S2F,    /* short to float           */
+    S2D,    /* short to double          */
+    S2T,    /* short to long double     */
+    I2C,    /* int to char              */
+    I2S,    /* int to short             */
+    I2U,    /* int to unsigned          */
+    I2L,    /* int to long              */
+    I2M,    /* int to long long         */
+    I2F,    /* int to float             */
+    I2D,    /* int to double            */
+    I2T,    /* int to long double       */
+    L2C,    /* long to char             */
+    L2S,    /* long to short            */
+    L2I,    /* long to integer          */
+    L2M,    /* long to long long        */
+    L2U,    /* long to unsigned         */
+    L2F,    /* long to float            */
+    L2D,    /* long to double           */
+    L2T,    /* long to long double      */
+    M2C,    /* long long to char        */
+    M2S,    /* long long to short       */
+    M2I,    /* long long to integer     */
+    M2L,    /* long long to long        */
+    M2U,    /* long long to unsigned    */
+    M2F,    /* long long to float       */
+    M2D,    /* long long to double      */
+    M2T,    /* long long to long double */
+    U2C,    /* unsigned to char         */
+    U2L,    /* unsigned to long         */
+    U2M,    /* unsigned to long long    */
+    U2F,    /* unsigned to float        */
+    U2D,    /* unsigned to double       */
+    U2T,    /* unsigned to long double  */
+    F2C,    /* float to char            */
+    F2S,    /* float to short           */
+    F2I,    /* float to int             */
+    F2L,    /* float to long            */
+    F2M,    /* float to long long       */
+    F2D,    /* float to double          */
+    F2T,    /* float to long double     */
+    D2C,    /* double to char           */
+    D2S,    /* double to short          */
+    D2I,    /* double to int            */
+    D2L,    /* double to long           */
+    D2M,    /* double to long long      */
+    D2F,    /* double to float          */
+    D2T,    /* double to long double    */
+    T2C,    /* long double to char      */
+    T2S,    /* long double to short     */
+    T2I,    /* long double to int       */
+    T2L,    /* long double to long      */
+    T2M,    /* long double to long long */
+    T2F,    /* long double to float     */
+    T2D,    /* long double to double    */
+    P2P,    /* pointer to pointer       */
+    P2A,    /* pointer to arithmetic    */
+    A2P,    /* arithmetic to pointer    */
+    S2B,    /* scalar to _Bool          */
+    B2S,    /* _Bool to scalar          */
+    CER,    /* conversion error         */
 };
+
+/*
+ * must be implemented for long double
+ * now mapped to error
+ */
+#define C2T     CER
+#define S2T     CER
+#define I2T     CER
+#define U2T     CER
+#define L2T     CER
+#define M2T     CER
+#define F2T     CER
+#define D2T     CER
+#define T2C     CER
+#define T2S     CER
+#define T2I     CER
+#define T2L     CER
+#define T2M     CER
+#define T2F     CER
+#define T2D     CER
 
 /* matches enum DATA_TYPE in ctypes.h */
 /* When indexing, row is the source type, column is the target. */
 static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*          BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
 /* BOL */ { NIL,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* CHR */ { S2B,NIL,C2U,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* UCH */ { S2B,U2C,NIL,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* SHT */ { S2B,S2C,S2C,NIL,S2U,S2I,S2U,S2L,S2L,S2M,S2M,S2F,S2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* USH */ { S2B,S2C,S2C,S2U,NIL,S2I,S2U,S2L,S2L,S2M,S2M,S2F,S2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* INT */ { S2B,I2C,I2C,I2S,I2S,NIL,I2U,I2L,I2L,I2M,I2M,I2F,I2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* UIN */ { S2B,I2C,I2C,I2S,I2S,I2U,NIL,U2L,U2L,U2M,U2M,U2F,U2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* LNG */ { S2B,L2C,L2C,L2S,L2S,L2I,L2U,NIL,L2U,L2M,L2M,L2F,L2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* ULN */ { S2B,L2C,L2C,L2S,L2S,L2I,L2U,L2U,NIL,L2M,L2M,L2F,L2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* LN8 */ { S2B,M2C,M2C,M2S,M2S,M2I,M2U,M2L,M2L,NIL,M2U,M2F,M2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* UL8 */ { S2B,M2C,M2C,M2S,M2S,M2I,M2U,M2L,M2L,M2U,NIL,M2F,M2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* FLT */ { S2B,F2C,F2C,F2S,F2S,F2I,F2I,F2L,F2L,F2M,F2M,NIL,F2D,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* DBL */ { S2B,D2C,D2C,D2S,D2S,D2I,D2I,D2L,D2L,D2M,D2M,D2F,NIL,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* LDB */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* CHR */ { S2B,NIL,C2U,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,C2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* UCH */ { S2B,U2C,NIL,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,C2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* SHT */ { S2B,S2C,S2C,NIL,S2U,S2I,S2U,S2L,S2L,S2M,S2M,S2F,S2D,S2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* USH */ { S2B,S2C,S2C,S2U,NIL,S2I,S2U,S2L,S2L,S2M,S2M,S2F,S2D,S2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* INT */ { S2B,I2C,I2C,I2S,I2S,NIL,I2U,I2L,I2L,I2M,I2M,I2F,I2D,I2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* UIN */ { S2B,I2C,I2C,I2S,I2S,I2U,NIL,U2L,U2L,U2M,U2M,U2F,U2D,U2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* LNG */ { S2B,L2C,L2C,L2S,L2S,L2I,L2U,NIL,L2U,L2M,L2M,L2F,L2D,L2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* ULN */ { S2B,L2C,L2C,L2S,L2S,L2I,L2U,L2U,NIL,L2M,L2M,L2F,L2D,L2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* LN8 */ { S2B,M2C,M2C,M2S,M2S,M2I,M2U,M2L,M2L,NIL,M2U,M2F,M2D,M2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* UL8 */ { S2B,M2C,M2C,M2S,M2S,M2I,M2U,M2L,M2L,M2U,NIL,M2F,M2D,M2T,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* FLT */ { S2B,F2C,F2C,F2S,F2S,F2I,F2I,F2L,F2L,F2M,F2M,NIL,F2D,F2T,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* DBL */ { S2B,D2C,D2C,D2S,D2S,D2I,D2I,D2L,D2L,D2M,D2M,D2F,NIL,D2T,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* LDB */ { S2B,T2C,T2C,T2S,T2S,T2I,T2I,T2L,T2L,T2M,T2M,T2F,T2D,NIL,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* FIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* DIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* LIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
