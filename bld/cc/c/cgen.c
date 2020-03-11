@@ -286,7 +286,7 @@ static cg_type DataPointerType( OPNODE *node )
 static cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
 {
     if( CompFlags.op_switch_used ) {
-        if( typ->decl_type == TYPE_FLOAT || typ->decl_type == TYPE_DOUBLE ) {
+        if( typ->decl_type == TYPE_FLOAT || typ->decl_type == TYPE_DOUBLE || typ->decl_type == TYPE_LONG_DOUBLE ) {
             name = CGVolatile( name );
         }
     }

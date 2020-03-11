@@ -858,6 +858,7 @@ static int_32 LongValue( TREEPTR leaf )
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
+    case TYPE_LONG_DOUBLE:
         flt = leaf->op.u2.float_value;
         if( flt->len == 0 ) {
             ld = flt->ld;
@@ -1171,6 +1172,7 @@ static arithmetic_type ArithmeticType( DATA_TYPE decl_type )
         return( UNSIGNED_INT64 );
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
+    case TYPE_LONG_DOUBLE:
         return( FLOATING );
     }
     return( NOT_A_NUMBER );

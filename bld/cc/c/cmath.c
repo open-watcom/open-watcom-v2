@@ -2109,7 +2109,7 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
 /*
     (arithmetic type) : (arithmetic type)       -> (promoted arithmetic type)
 */
-    if( (dtype1 <= TYPE_DOUBLE) && (dtype2 <= TYPE_DOUBLE) ) {
+    if( (dtype1 <= TYPE_LONG_DOUBLE) && (dtype2 <= TYPE_LONG_DOUBLE) ) {
         return( GetType( SubResult[dtype1][dtype2] ) );
     }
     TernChk( typ1, typ2 );

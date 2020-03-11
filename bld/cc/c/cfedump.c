@@ -198,7 +198,7 @@ static void DumpInfix( TREEPTR node )
         printf( "%s L%u ", _Ops[node->op.opr], node->op.u2.label_index );
         break;
     case OPR_CASE:
-        printf( "%s %u (L%u)", _Ops[node->op.opr], 
+        printf( "%s %u (L%u)", _Ops[node->op.opr],
                 node->op.u2.case_info->value, node->op.u2.case_info->label );
         break;
     case OPR_INDEX:
@@ -405,7 +405,7 @@ static void DumpDQuad( DATA_QUAD *dq, target_size *psize )
     case QDT_LDIMAGINARY:
         amount = TARGET_LDOUBLE;
         printf( "%6u byte long double (%s)\n",
-                amount, dq->type == QDT_DOUBLE ? "QDT_LONG_DOUBLE" :
+                amount, dq->type == QDT_LONG_DOUBLE ? "QDT_LONG_DOUBLE" :
                 "QDT_LDIMAGINARY" );
         *psize += amount;
         break;
