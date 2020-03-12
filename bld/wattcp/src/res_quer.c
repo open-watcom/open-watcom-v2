@@ -170,7 +170,7 @@ int res_search (const char *name, int class, int type, u_char *answer, int ansle
   h_errno = 0;  // !! HOST_NOT_FOUND;  /* default, if we never query */
   dots    = 0;
 
-  for (cp = name; *cp; cp++)
+  for (cp = name; *cp != '\0'; cp++)
       dots += (*cp == '.');
 
   trailing_dot = 0;
@@ -214,7 +214,7 @@ int res_search (const char *name, int class, int type, u_char *answer, int ansle
       (dots && !trailing_dot && (_res.options & RES_DNSRCH)))
   {
     for (domain = (const char * const *)_res.dnsrch;
-         *domain && !done;
+         *domain != NULL && !done;
          domain++)
     {
       ret = res_querydomain (name, *domain, class, type, answer, anslen);
@@ -385,7 +385,7 @@ char *__hostalias (const char *name)
   {
     char *cp1, *cp2;
 
-    for (cp1 = buf; *cp1 && !isspace(*cp1); cp1++)
+    for (cp1 = buf; *cp1 != '\0' && !isspace(*cp1); cp1++)
         ;
     if (!*cp1)
        break;
@@ -399,7 +399,7 @@ char *__hostalias (const char *name)
             ;
       if (!*cp1)
          break;
-      for (cp2 = cp1 + 1; *cp2 && !isspace(*cp2); cp2++)
+      for (cp2 = cp1 + 1; *cp2 != '\0' && !isspace(*cp2); cp2++)
           ;
       abuf [sizeof(abuf)-1] = *cp2 = '\0';
       strncpy (abuf, cp1, sizeof(abuf)-1);

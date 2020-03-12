@@ -156,13 +156,13 @@ struct protoent * getprotobyname (const char *proto)
     for (p = _proto0; proto != NULL && p != NULL; p = p->next) {
         char **alias;
 
-        if (p->p_name != NULL && !stricmp(p->p_name,proto))
+        if (p->p_name != NULL && !stricmp(p->p_name, proto))
             return (struct protoent*) p;
 
         /* aliases not supported yet
          */
         for (alias = p->p_aliases; alias != NULL && *alias != NULL; alias++) {
-            if (!stricmp(*alias,proto)) {
+            if (!stricmp(*alias, proto)) {
                 return (struct protoent*) p;
             }
         }

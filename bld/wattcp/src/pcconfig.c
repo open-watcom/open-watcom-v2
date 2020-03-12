@@ -208,7 +208,7 @@ int parse_config_table (const struct config_table *tab,
                         const char *name,
                         const char *value)
 {
-  for ( ; tab && tab->keyword; tab++)
+  for ( ; tab != NULL && tab->keyword != NULL; tab++)
   {
     char keyword[MAX_STRING];
 

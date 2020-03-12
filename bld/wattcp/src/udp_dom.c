@@ -182,8 +182,8 @@ static __inline int countpaths (const char *pathstring)
     int   count = 0;
     const char *p;
 
-    for (p = pathstring; *p || *(p+1); p++) {
-        if (*p == 0) {
+    for (p = pathstring; p[0] != '\0' || p[1] != '\0'; p++) {
+        if (p[0] == '\0') {
             count++;
         }
     }
@@ -352,7 +352,7 @@ static DWORD lookup_domain (const char *mname, int  add_dom,
                 _resolve_exit = 1;
                 break;
             }
-            if (dom_sk->udp.usr_yield != NULL)  /* Added, 16-Jun-97 GV */
+            if (dom_sk->udp.usr_yield != NULL)    /* Added, 16-Jun-97 GV */
                 (*dom_sk->udp.usr_yield)();
 
             if (sock_dataready(dom_sk)) {

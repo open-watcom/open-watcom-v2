@@ -201,9 +201,9 @@ int _dobootp (void)
                     default:
                         p += *(p+1) + 2;
                         break;
-                    }                  /* end of switch  */
-                }                    /* end of while   */
-            }                      /* if (intel()..  */
+                    } /* end of switch  */
+                } /* end of while   */
+            } /* if (intel()..  */
             goto give_up;
         }
     }

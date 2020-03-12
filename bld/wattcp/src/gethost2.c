@@ -567,16 +567,16 @@ static int host_cmp_addr (struct _hostent *h1, struct _hostent *h2)
  */
 static void print_hosts (TreeNode *node)
 {
-    if (node) {
+    if (node != NULL) {
         print_hosts (node->left);
-        if (node->info) {
+        if (node->info != NULL) {
             int i;
             _hostent *h = (_hostent*) node->info;
 
             printf ("address = %-17.17s name = %s; ",
                 inet_ntoa (*(struct in_addr*)&h->h_address), h->h_name);
             for (i = 0; h->h_aliases != NULL && h->h_aliases[i] != NULL; i++)
-                printf ("%s,",h->h_aliases[i]);
+                printf ("%s,", h->h_aliases[i]);
             puts ("");
         }
         print_hosts (node->right);

@@ -96,7 +96,7 @@ void ReadEthersFile (void)
     struct ethent *e;
 
     printf ("`%s' entries:\n", ethersFname);
-    for (e = eth0; e; e = e->next)
+    for (e = eth0; e != NULL; e = e->next)
         printf ("%02X:%02X:%02X:%02X:%02X:%02X = %-15.15s (%s)\n",
                 (int)e->eth_addr.ether_addr_octet[0],
                 (int)e->eth_addr.ether_addr_octet[1],
@@ -142,7 +142,7 @@ static void endethent (void)
 {
   struct ethent *e, *next = NULL;
 
-  for (e = eth0; e; e = next)
+  for (e = eth0; e != NULL; e = next)
   {
     next = e->next;
     free (e);
