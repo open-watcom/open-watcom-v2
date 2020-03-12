@@ -394,8 +394,8 @@ static  reg_set_index   IsSets[] = {
     RL_WORD,                /* I2*/
     RL_DOUBLE,              /* U4*/
     RL_DOUBLE,              /* I4*/
-    RL_DOUBLE,              /* U8*/
-    RL_DOUBLE,              /* I8*/
+    RL_8,                   /* U8*/
+    RL_8,                   /* I8*/
     RL_DBL_OR_PTR,          /* CP*/
     RL_DBL_OR_PTR,          /* PT*/
     RL_DOUBLE,              /* FS*/
