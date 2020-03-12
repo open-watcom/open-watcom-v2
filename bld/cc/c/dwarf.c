@@ -653,7 +653,7 @@ static void dwarfEmit( void )
     DATA_TYPE   i;
 
     dwarfInitTypes();
-    for( i = TYPE_BOOL; i <= TYPE_DOUBLE; i++ ) {
+    for( i = TYPE_BOOL; i <= TYPE_LONG_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
     WalkTypeList( EmitAType );
