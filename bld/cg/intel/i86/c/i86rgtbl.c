@@ -459,13 +459,18 @@ static  reg_set_index   IndexSets[] = {
 /*               intersection given in square matrix for class*/
 /*       }*/
 
+#define INTERSECT_DEFS \
+    pick( ONE_BYTE,   5, OneByteInter ) \
+    pick( TWO_BYTE,   9, TwoByteInter ) \
+    pick( FOUR_BYTE,  6, FourByteInter ) \
+    pick( EIGHT_BYTE, 1, EightByteInter ) \
+    pick( FLOATING,   2, FloatingInter ) \
+    pick( OTHER,      0, OtherInter )
+
 typedef enum {
-    ONE_BYTE,
-    TWO_BYTE,
-    FOUR_BYTE,
-    EIGHT_BYTE,
-    FLOATING,
-    OTHER
+    #define pick(e,w,l) e,
+        INTERSECT_DEFS
+    #undef pick
 } intersect_class;
 
 
@@ -482,13 +487,11 @@ static  reg_class       IntersectInfo[] = {
 };
 
 static  byte    Width[] = {
-    5,              /* ONE_BYTE   */
-    9,              /* TWO_BYTE   */
-    6,              /* FOUR_BYTE  */
-    1,              /* EIGHT_BYTE */
-    2,              /* FLOATING   */
-    0               /* OTHER      */
+    #define pick(e,w,l) w,
+        INTERSECT_DEFS
+    #undef pick
 };
+
 static  reg_set_index   OneByteInter[] = {
 /*   AL      AH      CL      BYTE        LOWBYTE  */
     RL_AL,  RL_,    RL_,    RL_AL,      RL_AL,          /* AL */
@@ -546,12 +549,9 @@ static  reg_set_index   OtherInter[] = {
 };
 
 static  reg_set_index   *InterTable[] = {
-    OneByteInter,       /* ONE_BYTE   */
-    TwoByteInter,       /* TWO_BYTE   */
-    FourByteInter,      /* FOUR_BYTE  */
-    EightByteInter,     /* EIGHT_BYTE */
-    FloatingInter,      /* FLOATING   */
-    OtherInter          /* others     */
+    #define pick(e,w,l) l,
+        INTERSECT_DEFS
+    #undef pick
 };
 
 void            InitRegTbl( void )
