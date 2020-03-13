@@ -513,6 +513,7 @@ sub run_tests
     my($fresult)    = 'fail';
     my($presult)    = 'fail';
     my($crtlresult) = 'fail';
+    my($mathresult) = 'fail';
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
