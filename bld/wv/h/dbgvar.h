@@ -89,20 +89,20 @@ typedef struct var_node {
     node_class          node_type;      // NODE_ROOT, NODE_SUBSCR or NODE_FIELD
     struct type_display *display_type;  // how should we display this node
 
-    unsigned            pushed          : 1;    // has this expression been pushed on ExprSP?
-    unsigned            popped          : 1;    // has this expression been popped off ExprSP?
-    unsigned            buried          : 1;    // versus on the top of the stack
-    unsigned            is_string       : 1;    // is this a natural character string
+    boolbit             pushed          : 1;    // has this expression been pushed on ExprSP?
+    boolbit             popped          : 1;    // has this expression been popped off ExprSP?
+    boolbit             buried          : 1;    // versus on the top of the stack
+    boolbit             is_string       : 1;    // is this a natural character string
 
-    unsigned            have_type       : 1;    // is ->th valid?
-    unsigned            is_sym_handle   : 1;    // versus a character string
-    unsigned            fake_array      : 1;    // not really an array but expanded as such
-    unsigned            value_valid     : 1;    // are the gadget/str fields accurate?
+    boolbit             have_type       : 1;    // is ->th valid?
+    boolbit             is_sym_handle   : 1;    // versus a character string
+    boolbit             fake_array      : 1;    // not really an array but expanded as such
+    boolbit             value_valid     : 1;    // are the gadget/str fields accurate?
 
-    unsigned            gadget_valid    : 1;    // are the gadget/str fields accurate?
-    unsigned            standout        : 1;    // draw in standout attribute?
-    unsigned            on_top          : 1;    // draw the on_top indicator?
-    unsigned            on_top_valid    : 1;    // is the on_top field valid?
+    boolbit             gadget_valid    : 1;    // are the gadget/str fields accurate?
+    boolbit             standout        : 1;    // draw in standout attribute?
+    boolbit             on_top          : 1;    // draw the on_top indicator?
+    boolbit             on_top_valid    : 1;    // is the on_top field valid?
 
     var_type_bits       bits;           // class of var (inherited, etc)
     var_display_bits    display;        // how to display the sucker
