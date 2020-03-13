@@ -521,14 +521,15 @@ sub run_tests
     print REPORT 'REGRESSION TESTS COMPLETED : ', get_datetime();
     print REPORT '';
 
-    $fresult    = process_log("\tFortran Compiler :", "$OW\/bld\/f77test\/result.log");
-    $cresult    = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
-    $presult    = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
-    $aresult    = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
-    $crtlresult = process_log("\tC run-time libr. :", "$OW\/bld\/clibtest\/result.log");
+    $fresult    = process_log("\tFortran Compiler    :", "$OW\/bld\/f77test\/result.log");
+    $cresult    = process_log("\tC Compiler          :", "$OW\/bld\/ctest\/result.log");
+    $presult    = process_log("\tC++ Compiler        :", "$OW\/bld\/plustest\/result.log");
+    $aresult    = process_log("\tWASM                :", "$OW\/bld\/wasmtest\/result.log");
+    $crtlresult = process_log("\tC run-time libr.    :", "$OW\/bld\/clibtest\/result.log");
+    $mathresult = process_log("\tMath run-time libr. :", "$OW\/bld\/mathtest\/result.log");
     print REPORT '';
 
-    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success' && $crtlresult eq 'success') {
+    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success' && $crtlresult eq 'success' && $mathresult eq 'success') {
         return 'success';
     } else {
         return 'fail';
