@@ -3,9 +3,9 @@
 #include "fpexcept.h"
 
 
-void __FPE_exception( int fpe )
+void __FPE_exception( int fpe_type )
 {
-    /* unused parameters */ (void)fpe;
+    /* unused parameters */ (void)fpe_type;
 
     kill( __MAGIC.my_pid, SIGFPE );
 }
