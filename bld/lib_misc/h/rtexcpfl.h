@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,10 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  prototypes for routines used in signaling ( Windows NT )
+* Description:  Operating System specific Exception handling flag declaration
 *
 ****************************************************************************/
 
-extern  __sig_func      (*__oscode_check_func)( int, long );
-extern  int             (*__raise_func)( int );
+#ifndef _RTEXCPFL_H_INCLUDED
+#define _RTEXCPFL_H_INCLUDED
 
+#if !defined( _M_I86 )
+  #if defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
+    extern unsigned char   __ExceptionHandled;
+  #endif
+#endif
+
+#endif

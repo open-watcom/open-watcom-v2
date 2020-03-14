@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +64,7 @@
 #include "thread.h"
 #include "fptraps.h"
 #include "rttraps.h"
+#include "rtexcpfl.h"
 
 
 #if defined( __OS2_286__ )
@@ -99,7 +100,6 @@ typedef void            (*fsig_func)( intstar4 );
 #endif
 
 #if defined( __OS2_386__ ) || defined( __NT__ )
-  extern byte           __ExceptionHandled;
   static void           IOvFlSignal(int);
 #endif
 

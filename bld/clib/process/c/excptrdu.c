@@ -46,6 +46,7 @@
 #include "initsig.h"
 #include "_xtoa.h"
 #include "rtexcpt.h"
+#include "rtexcpfl.h"
 
 
 int __ReportException( EXCEPTION_POINTERS *rec );
@@ -338,7 +339,7 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
                 return( ExceptionContinueExecution );
             }
         }
-    } else if( __raise_func ) {
+    } else if( __raise_func != NULL ) {
         /*
          * If the signal handling code is linked in then we need to see if the
          * user has installed a signal handler.

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,10 @@
 #include "fptraps.h"
 #include "rttraps.h"
 #include "rtfpesig.h"
+#include "rtexcpfl.h"
 
 
 #if !defined( __NETWARE__ ) && !defined( __UNIX__ )
-
-#if !defined( _M_I86 )
-#if defined( __OS2__ ) || defined( __NT__ )
-extern byte                 __ExceptionHandled;
-#endif
-#endif
 
 static __sigfpe_func   FLIB_FPEHandler;
 
