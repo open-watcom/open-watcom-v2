@@ -124,6 +124,7 @@ name    *Addressable( name *cons, type_class_def type_class )
 
     if( cons->n.class == N_CONSTANT ) {
         switch( type_class ) {
+        case FL:
         case FD:
         case FS:
             return( GenFloat( cons, type_class ) );
