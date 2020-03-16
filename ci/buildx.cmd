@@ -4,7 +4,6 @@
 REM ...
 REM Script to build the Open Watcom bootstrap tools
 REM ...
-SETLOCAL EnableDelayedExpansion
 if "%OWTOOLS%" == "WATCOM" (
     echo path_ow=%WATCOM_PATH%
     set PATH %WATCOM_PATH%
@@ -32,11 +31,13 @@ REM ...
 @echo %OWECHO%
 REM ...
 if "%OWDEBUG%" == "1" (
+    echo PATH=%PATH%
     echo INCLUDE="%INCLUDE%"
     echo LIB="%LIB%"
     echo LIBPATH="%LIBPATH%"
 )
 REM ...
+rem SETLOCAL EnableDelayedExpansion
 set RC=0
 cd %OWSRCDIR%
 if "%OWBUILD_STAGE%" == "boot" (
