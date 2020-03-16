@@ -16,20 +16,27 @@ bootutil_proc()
     mkdir $OWBINDIR
     #
     RC=-1
-    case `uname` in
-        Darwin)
-            mkdir $OWSRCDIR/wmake/$OWOBJDIR
-            cd $OWSRCDIR/wmake/$OWOBJDIR
-            make -f ../posmake TARGETDEF=-D__OSX__
-            RC=$?
-            ;;
-        *)
-            mkdir $OWSRCDIR/wmake/$OWOBJDIR
-            cd $OWSRCDIR/wmake/$OWOBJDIR
-            make -f ../posmake TARGETDEF=-D__LINUX__
-            RC=$?
-            ;;
-    esac
+    if [ "$OWTOOLS" = "WATCOM" ]; then
+        mkdir $OWSRCDIR/wmake/$OWOBJDIR
+        cd $OWSRCDIR/wmake/$OWOBJDIR
+        wmake -f ../wmake
+        RC=$?
+    else
+        case `uname` in
+            Darwin)
+                mkdir $OWSRCDIR/wmake/$OWOBJDIR
+                cd $OWSRCDIR/wmake/$OWOBJDIR
+                make -f ../posmake TARGETDEF=-D__OSX__
+                RC=$?
+                ;;
+            *)
+                mkdir $OWSRCDIR/wmake/$OWOBJDIR
+                cd $OWSRCDIR/wmake/$OWOBJDIR
+                make -f ../posmake TARGETDEF=-D__LINUX__
+                RC=$?
+                ;;
+        esac
+    fi
     if [ $RC -eq 0 ]; then
         #
         # build new verison of builder for host system

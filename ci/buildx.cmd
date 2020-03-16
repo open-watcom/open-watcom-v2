@@ -45,7 +45,11 @@ if "%OWBUILD_STAGE%" == "boot" (
     mkdir %OWBINDIR%
     mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
     cd %OWSRCDIR%\wmake\%OWOBJDIR%
-    nmake -f ..\nmake
+    if "%OWTOOLS%" == "WATCOM" (
+        wmake -f ..\wmake
+    ) else (
+        nmake -f ..\nmake
+    )
     set RC=!ERRORLEVEL!
     if not %RC% == 1 (
     	mkdir %OWSRCDIR%\builder\%OWOBJDIR%
