@@ -6,7 +6,7 @@ REM Script to build the Open Watcom bootstrap tools
 REM ...
 if "%OWTOOLS%" == "WATCOM" (
     echo path_ow=%WATCOM_PATH%
-    set PATH %WATCOM_PATH%
+    echo path=%PATH%
     set INCLUDE=%WATCOM_INCLUDE%
 )
 if "%OWTOOLS%" == "VISUALC" (
