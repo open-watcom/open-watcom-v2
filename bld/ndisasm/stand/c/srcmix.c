@@ -40,6 +40,12 @@
 #include "buffer.h"
 #include "disdwarf.h"
 #include "memfuncs.h"
+#if defined( __UNIX__ ) && defined( __WATCOMC__ )
+  #if ( __WATCOMC__ < 1300 )
+    // fix for OW 1.9
+    #include <limits.h>
+  #endif
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
