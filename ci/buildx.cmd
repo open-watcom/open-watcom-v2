@@ -7,7 +7,7 @@ REM ...
 SETLOCAL EnableDelayedExpansion
 if "%OWTOOLS%" == "WATCOM" (
     REM Build by Open Watcom
-    set PATH=%WATCOM%\binnt;%PATH%
+    PATH %WATCOM%\binnt;%PATH%
     set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt;%INCLUDE%
     REM set EDPATH=%WATCOM%\EDDAT
 )
