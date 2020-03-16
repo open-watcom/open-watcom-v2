@@ -37,7 +37,7 @@ jobs:
         vmImage: $(owimage_osx)
     steps:
     - ${{ if eq(parameters.arch, 'ntow') }}
-      script: echo "##vso[task.setvariable variable=PATH]$(watcom.path);%PATH%"
+      - script: echo "##vso[task.setvariable variable=PATH]$(watcom.path);%PATH%"
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml
