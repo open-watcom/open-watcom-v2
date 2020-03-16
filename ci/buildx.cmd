@@ -6,13 +6,11 @@ REM Script to build the Open Watcom bootstrap tools
 REM ...
 SETLOCAL EnableDelayedExpansion
 if "%OWTOOLS%" == "WATCOM" (
-    REM Build by Open Watcom
-    PATH %WATCOM%\binnt;%PATH%
-    set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt;%INCLUDE%
-    REM set EDPATH=%WATCOM%\EDDAT
+    echo path_ow=%WATCOM_PATH%
+    set PATH %WATCOM_PATH%
+    set INCLUDE=%WATCOM_INCLUDE%
 )
 if "%OWTOOLS%" == "VISUALC" (
-    REM Build by Microsoft Visual Studio
     call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 )
 REM ...

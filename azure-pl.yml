@@ -31,8 +31,12 @@ variables:
   owartifactfile7z: owartifact.tar
   owcibin32:        $(owroot)\ci\nt386
   owcibin64:        $(owroot)\ci\ntx64
-  owwatcom_lnx:     $(owroot)/ci/ow
-  owwatcom_nt:      $(owroot)\ci\ow
+  owwatcom_root_lnx: $(owroot)/ci/ow
+  owwatcom_root_nt:  $(owroot)\ci\ow
+  owwatcom_path_lnx: $(owroot)/ci/ow/binl;$(path)
+  owwatcom_path_nt:  $(owroot)\ci\ow\binnt;$(path)
+  owwatcom_include_lnx: $(owroot)/ci/ow/lh
+  owwatcom_include_nt:  $(owroot)\ci\ow\h;$(owroot)\ci\ow\h\nt;$(include)
   owbin32_lnx:      $(owroot)/ci/ow/binl
   owbin32_nt:       $(owroot)\ci\ow\binnt
 

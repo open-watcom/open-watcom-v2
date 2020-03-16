@@ -18,11 +18,15 @@ jobs:
       ${{ if eq(parameters.arch, 'lnxow') }}:
         owtools:      $(owtools_lnxow)
         owscript:     $(owscript_lnx)
-        watcom:       $(owwatcom_lnx)
+        watcom:       $(owwatcom_root_lnx)
+        watcom.path:  $(owwatcom_path_lnx)
+        watcom.include: $(owwatcom_include_lnx)
       ${{ if eq(parameters.arch, 'ntow') }}:
         owtools:      $(owtools_ntow)
         owscript:     $(owscript_nt)
-        watcom:       $(owwatcom_nt)
+        watcom:       $(owwatcom_root_nt)
+        watcom.path:  $(owwatcom_path_nt)
+        watcom.include: $(owwatcom_include_nt)
       owbuild.stage:    boot
     pool:
       ${{ if in(parameters.arch, 'lnx', 'lnxow') }}:
