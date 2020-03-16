@@ -18,17 +18,16 @@ jobs:
       ${{ if eq(parameters.arch, 'lnxow') }}:
         owtools:      $(owtools_lnxow)
         owscript:     $(owscript_lnx)
-        watcom:       $(owwatcom_root_lnx)
-        watcom.path:  $(owwatcom_path_lnx)
-        watcom.include: $(owwatcom_include_lnx)
+        watcom:       $(owroot)/ci/ow
+        watcom.path:  $(owroot)/ci/ow/binl
+        watcom.include: $(owroot)/ci/ow/lh
       ${{ if eq(parameters.arch, 'ntow') }}:
         owtools:      $(owtools_ntow)
         owscript:     $(owscript_nt)
-        watcom:       $(owwatcom_root_nt)
-        watcom.path:  $(owwatcom_path_nt)
-        watcom.include: $(owwatcom_include_nt)
+        watcom:       $(owroot)\ci\ow
+        watcom.path:  $(owroot)\ci\ow\binnt
+        watcom.include: $(owroot)\ci\ow\h;$(owroot)\ci\ow\h\nt
       owbuild.stage:    boot
-      path_var:         ''
     pool:
       ${{ if in(parameters.arch, 'lnx', 'lnxow') }}:
         vmImage: $(owimage_lnx)
@@ -37,9 +36,6 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
-    - ${{ if eq(parameters.arch, 'ntow') }}:
-      - script: echo "##vso[task.setvariable variable=path_var]$(watcom.path);%PATH%"
-        displayName: "Set PATH"
     - script: $(owscript)
       displayName: "Bootstrap"
       ${{ if eq(parameters.arch, 'ntow') }}:
