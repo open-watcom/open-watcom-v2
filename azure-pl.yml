@@ -33,10 +33,10 @@ variables:
   owcibin64:        $(owroot)\ci\ntx64
   owwatcom_root_lnx: $(owroot)/ci/ow
   owwatcom_root_nt:  $(owroot)\ci\ow
-  owwatcom_path_lnx: $(owroot)/ci/ow/binl:$PATH
-  owwatcom_path_nt:  $(owroot)\ci\ow\binnt;%PATH%
-  owwatcom_include_lnx: $(owroot)/ci/ow/lh:$INCLUDE
-  owwatcom_include_nt:  $(owroot)\ci\ow\h;$(owroot)\ci\ow\h\nt;%INCLUDE%
+  owwatcom_path_lnx: $(owroot)/ci/ow/binl
+  owwatcom_path_nt:  $(owroot)\ci\ow\binnt
+  owwatcom_include_lnx: $(owroot)/ci/ow/lh
+  owwatcom_include_nt:  $(owroot)\ci\ow\h;$(owroot)\ci\ow\h\nt
   owbin32_lnx:      $(owroot)/ci/ow/binl
   owbin32_nt:       $(owroot)\ci\ow\binnt
 

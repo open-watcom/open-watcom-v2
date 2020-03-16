@@ -36,11 +36,11 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
+    - script: |
+      ${{ if eq(parameters.arch, 'ntow') }}:
+        echo "##vso[task.setvariable variable=PATH]$(watcom.path);%PATH%"
     - script: $(owscript)
       displayName: "Bootstrap"
-      ${{ if eq(parameters.arch, 'ntow') }}:
-        env:
-          PATH:  $(watcom.path)
     - template: artfsave.yml
       parameters: 
         arch:       ${{ parameters.arch }}
