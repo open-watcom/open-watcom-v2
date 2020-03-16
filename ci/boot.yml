@@ -44,7 +44,7 @@ jobs:
       displayName: "Bootstrap"
       ${{ if eq(parameters.arch, 'ntow') }}:
         env:
-          PATH: $(path_var)
+          PATH: $(watcom.path)
     - template: artfsave.yml
       parameters: 
         arch:       ${{ parameters.arch }}
