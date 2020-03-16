@@ -1,11 +1,20 @@
 @set OWECHO=off
 @if "%OWDEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
-SETLOCAL EnableDelayedExpansion
-REM Script to build the Open Watcom bootstrap tools
-REM By Microsoft Visual Studio
 REM ...
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+REM Script to build the Open Watcom bootstrap tools
+REM ...
+SETLOCAL EnableDelayedExpansion
+if "%OWTOOLS%" == "WATCOM" (
+    REM Build by Open Watcom
+    set PATH=%WATCOM%\binnt;%PATH%
+    set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt;%INCLUDE%
+    REM set EDPATH=%WATCOM%\EDDAT
+)
+if "%OWTOOLS%" == "VISUALC" (
+    REM Build by Microsoft Visual Studio
+    call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+)
 REM ...
 @echo %OWECHO%
 REM ...

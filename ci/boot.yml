@@ -15,11 +15,19 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         owtools:      $(owtools_osx)
         owscript:     $(owscript_osx)
+      ${{ if eq(parameters.arch, 'lnxow') }}:
+        owtools:      $(owtools_lnxow)
+        owscript:     $(owscript_lnx)
+        watcom:       $(owwatcom_lnx)
+      ${{ if eq(parameters.arch, 'ntow') }}:
+        owtools:      $(owtools_ntow)
+        owscript:     $(owscript_nt)
+        watcom:       $(owwatcom_nt)
       owbuild.stage:    boot
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
+      ${{ if in(parameters.arch, 'lnx', 'lnxow') }}:
         vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
+      ${{ if in(parameters.arch, 'nt', 'ntow') }}:
         vmImage: $(owimage_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)

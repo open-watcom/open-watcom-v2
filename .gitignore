@@ -87,6 +87,7 @@
 !/ci/
 !/ci/nt386/*
 !/ci/ntx64/*
+!/ci/ow/**
 !/contrib/
 !/distrib/
 !/docs/

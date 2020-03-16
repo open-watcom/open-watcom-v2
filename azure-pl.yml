@@ -17,9 +17,13 @@ variables:
   owimage_lnx:      'ubuntu-latest'
   owimage_nt:       'vs2017-win2016'
   owimage_osx:      'macOS-latest'
+  owimage_lnxow:    'ubuntu-latest'
+  owimage_ntow:     'vs2017-win2016'
   owtools_lnx:      GCC
   owtools_nt:       VISUALC
   owtools_osx:      CLANG
+  owtools_lnxow:    WATCOM
+  owtools_ntow:     WATCOM
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
@@ -27,6 +31,10 @@ variables:
   owartifactfile7z: owartifact.tar
   owcibin32:        $(owroot)\ci\nt386
   owcibin64:        $(owroot)\ci\ntx64
+  owwatcom_lnx:     $(owroot)/ci/ow
+  owwatcom_nt:      $(owroot)\ci\ow
+  owbin32_lnx:      $(owroot)/ci/ow/binl
+  owbin32_nt:       $(owroot)\ci\ow\binnt
 
 stages:
   - stage: start
@@ -55,6 +63,15 @@ stages:
         parameters:
           arch:     osx
           title:    Build OSX
+  - stage: bootlnxow
+    displayName: "Bootstrap Linux OW"
+    dependsOn:
+      - start
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     lnxow
+          title:    Bootstrap Linux OW
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
@@ -128,6 +145,15 @@ stages:
         parameters:
           arch:     lnx
           title:    GitHub Release
+  - stage: bootntow
+    displayName: "Bootstrap Windows OW"
+    dependsOn:
+      - start
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     ntow
+          title:    Bootstrap Windows OW
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
