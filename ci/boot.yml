@@ -42,6 +42,8 @@ jobs:
         INCLUDE: $(watcom.include)
         ${{ if eq(parameters.arch, 'ntow') }}:
           PATH: $(watcom.path)
+        ${{ if eq(parameters.arch, 'lnxow') }}:
+          PATH: $(watcom.path):$PATH
     - template: artfsave.yml
       parameters: 
         arch:       ${{ parameters.arch }}

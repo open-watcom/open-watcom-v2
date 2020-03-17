@@ -50,10 +50,6 @@ bootutil_proc()
 
 build_proc()
 {
-    if [ "$OWTOOLS" = "WATCOM" ]; then
-        export PATH=$WATCOM/binl:$PATH
-    fi
-
     RC=0
     export OWDOSBOX=dosbox
     export OWGHOSTSCRIPTPATH=:
