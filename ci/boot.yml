@@ -38,8 +38,9 @@ jobs:
     steps:
     - script: $(owscript)
       displayName: "Bootstrap"
-      ${{ if eq(parameters.arch, 'ntow') }}:
-        env:
+      env:
+        INCLUDE: $(watcom.include)
+        ${{ if eq(parameters.arch, 'ntow') }}:
           PATH: $(watcom.path)
     - template: artfsave.yml
       parameters: 
