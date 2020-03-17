@@ -43,12 +43,12 @@ REM Set the toolchain version to OWTOOLSVER variable
 set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
-wcc386 -p getversi.gc >getversi.bat
+wcc386 -p getversi.gc >getversi.cmd
 goto toolsver
 :no_watcom
 :toolsver
-if not exist getversi.bat goto no_toolsver
-call getversi.bat
+if not exist getversi.cmd goto no_toolsver
+call getversi.cmd
 del getversi.*
 :no_toolsver
 
