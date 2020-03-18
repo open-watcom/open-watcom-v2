@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -276,34 +276,28 @@ void WEXPORT WFileName::absoluteTo( const char* f )
     *this = _x.path;
 }
 
-#ifdef __UNIX__
 bool WEXPORT WFileName::setCWD() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
-    if( strlen( _x.dir ) > 0 ) {
-        return( chdir( _x.dir ) == 0 );
-    }
-    return( true );
-}
-#else
-bool WEXPORT WFileName::setCWD() const
-{
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
+#ifndef __UNIX__
     int olddrive;
-    if( setdrive( _x.drive, &olddrive ) ) {
-        if( strlen( _x.dir ) > 0 ) {
-            int ret = chdir( _x.dir );
-            if( ret == 0 ) {
-                return( true );
-            }
-            _chdrive( olddrive );
-            return( false );
-        }
-        return( true );
-    }
-    return( false );
-}
+    bool ok;
 #endif
+
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
+    if( strlen( _x.dir ) == 0 )
+        return( true );
+#ifdef __UNIX__
+    return( chdir( _x.dir ) == 0 );
+#else
+    if( setdrive( _x.drive, &olddrive ) == 0 )
+        return( false );
+    ok = ( chdir( _x.dir ) == 0 );
+    if( !ok ) {
+        _chdrive( olddrive );
+    }
+    return( ok );
+#endif
+}
 
 void WEXPORT WFileName::getCWD( bool slash )
 {
@@ -314,31 +308,26 @@ void WEXPORT WFileName::getCWD( bool slash )
     *this = _x.path;
 }
 
-#ifdef __UNIX__
 bool WEXPORT WFileName::makeDir() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
-    if( strlen( _x.dir ) > 0 ) {
-        return( mkdir( _x.dir, 0755 ) == 0 );
-    }
-    return( true );
-}
-#else
-bool WEXPORT WFileName::makeDir() const
-{
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
-    if( strlen( _x.dir ) > 0 ) {
-        int olddrive;
-        if( setdrive( _x.drive, &olddrive ) ) {
-            int ret = mkdir( _x.dir );
-            _chdrive( olddrive );
-            return( ret == 0 );
-        }
-        return( false );
-    }
-    return( true );
-}
+#ifndef __UNIX__
+    int olddrive;
+    bool ok;
 #endif
+
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
+    if( strlen( _x.dir ) == 0 )
+        return( true );
+#ifdef __UNIX__
+    return( mkdir( _x.dir, 0755 ) == 0 );
+#else
+    if( setdrive( _x.drive, &olddrive ) == 0 )
+        return( false );
+    ok = ( mkdir( _x.dir ) == 0 );
+    _chdrive( olddrive );
+    return( ok );
+#endif
+}
 
 bool WEXPORT WFileName::dirExists() const
 {
@@ -351,19 +340,16 @@ bool WEXPORT WFileName::dirExists() const
     return( false );
 }
 
-#ifdef __UNIX__
 bool WEXPORT WFileName::attribs( unsigned* attribs ) const
 {
+#ifdef __UNIX__
     /* XXX needs to be fixed: just to get it going */
     struct stat st;
     if (attribs != NULL ) {
         *attribs = 0;
     }
     return( stat( *this, &st ) == 0 );
-}
 #else
-bool WEXPORT WFileName::attribs( unsigned* attribs ) const
-{
     struct _finddata_t fileinfo;
     intptr_t handle;
     int rc;
@@ -384,8 +370,8 @@ bool WEXPORT WFileName::attribs( unsigned* attribs ) const
         _findclose( handle );
     }
     return( found );
-}
 #endif
+}
 
 void WEXPORT WFileName::touch( time_t tm ) const
 {

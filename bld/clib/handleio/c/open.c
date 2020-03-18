@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,13 +100,13 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                     handle = -1;
                 } else if( mode & O_EXCL ) {    /* must not exist */
 #else
-    /*
-    Don't need to do the access check, since the file was opened
-    and therefore must exist (TinyOpen can't create a file).
-    We don't want to do the check because there are classes of items
-    in the file system namespace that are not devices, but the TinyAccess
-    will fail on (e.g. named pipes).
-    */
+                /*
+                 * Don't need to do the access check, since the file was opened
+                 * and therefore must exist (TinyOpen can't create a file).
+                 * We don't want to do the check because there are classes of items
+                 * in the file system namespace that are not devices, but
+                 * the TinyAccess will fail on (e.g. named pipes).
+                 */
                 /* must not exist if O_CREAT specified */
                 if( (mode & O_EXCL) && (mode & O_CREAT) ) {
 #endif

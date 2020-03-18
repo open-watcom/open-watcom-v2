@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,8 @@ int     projectTypeIndex;
 char    projectDir[256];
 char    projectName[256];
 
+#define MKDIR(d)    (mkdir(d) && errno != EEXIST && errno != EACCES)
+
 static bool createProjectDir( char *dir )
 /***************************************/
 {
@@ -58,7 +61,7 @@ static bool createProjectDir( char *dir )
         if( *ptr == '/' || (*ptr == '\\' && ptr != dircopy && *(ptr - 1) != ':') ) {
             ch = *ptr;
             *ptr = '\0';
-            if( mkdir( dircopy ) != 0 && errno != EEXIST ) {
+            if( MKDIR( dircopy ) ) {
                 free( dircopy );
                 ShowError( APPWIZ_MKDIR_FAILED );
                 return( FALSE );
@@ -67,7 +70,7 @@ static bool createProjectDir( char *dir )
         }
         ptr++;
     }
-    if( mkdir( dircopy ) != 0 && errno != EEXIST ) {
+    if( MKDIR( dircopy ) ) {
         free( dircopy );
         ShowError( APPWIZ_MKDIR_FAILED );
         return( FALSE );

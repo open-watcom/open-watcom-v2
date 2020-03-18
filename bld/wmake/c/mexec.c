@@ -1678,6 +1678,8 @@ STATIC RET_T handleMkdirSyntaxError( void )
     return( RET_ERROR );
 }
 
+#define DOMKDIR(d)  (MKDIR(d) == 0 || errno == EEXIST || errno == EACCES)
+
 STATIC bool processMkdir( char *path, bool mkparents )
 /****************************************************/
 {
@@ -1703,19 +1705,16 @@ STATIC bool processMkdir( char *path, bool mkparents )
             *p = NULLCHAR;
 
             /* create directory */
-            if( MKDIR( path ) ) {
-                /* if exist then continue to next level */
-                if( errno != EEXIST ) {
-                    /* Can not create directory for some reason */
-                    return( false );
-                }
+            if( !DOMKDIR( path ) ) {
+                /* Can not create directory for some reason */
+                return( false );
             }
             /* put back the path separator */
             *p = save_char;
         }
         return( true );
     } else {
-        return( MKDIR( path ) == 0 );
+        return( DOMKDIR( path ) );
     }
 }
 
