@@ -4,6 +4,9 @@
 REM ...
 REM Script to build the Open Watcom bootstrap tools
 REM ...
+if "%OWTOOLS%" == "WATCOM" (
+    set PATH=%WATCOM_PATH%
+)
 if "%OWTOOLS%" == "VISUALC" (
     call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 )

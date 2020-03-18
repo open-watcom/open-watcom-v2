@@ -19,14 +19,14 @@ jobs:
         owtools:      $(owtools_lnxow)
         owscript:     $(owscript_lnx)
         watcom:       $(owciroot_lnx)/ow
+        include:      $(watcom)/lh
         watcom.path:  $(watcom)/binl
-        watcom.include: $(watcom)/lh
       ${{ if eq(parameters.arch, 'ntow') }}:
         owtools:      $(owtools_ntow)
         owscript:     $(owscript_nt)
         watcom:       $(owciroot_nt)\ow
+        include:      $(watcom)\h;$(watcom)\h\nt
         watcom.path:  $(watcom)\binnt
-        watcom.include: $(watcom)\h;$(watcom)\h\nt
       owbuild.stage:    boot
     pool:
       ${{ if in(parameters.arch, 'lnx', 'lnxow') }}:
@@ -38,10 +38,6 @@ jobs:
     steps:
     - script: $(owscript)
       displayName: "Bootstrap"
-      env:
-        INCLUDE: $(watcom.include)
-        ${{ if eq(parameters.arch, 'ntow') }}:
-          PATH: $(watcom.path)
     - template: artfsave.yml
       parameters: 
         arch:       ${{ parameters.arch }}
