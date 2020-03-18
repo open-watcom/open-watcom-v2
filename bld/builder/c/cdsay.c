@@ -38,7 +38,6 @@
 #include <unistd.h>
 #else
 #include <direct.h>
-#include <dos.h>
 #endif
 
 

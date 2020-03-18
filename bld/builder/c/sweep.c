@@ -42,7 +42,6 @@
     #include <dirent.h>
 #else
     #include <direct.h>
-    #include <dos.h>
 #endif
 #include "wio.h"
 #include "watcom.h"
