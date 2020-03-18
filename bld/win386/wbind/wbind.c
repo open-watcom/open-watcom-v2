@@ -49,9 +49,6 @@
 #include "clibext.h"
 
 
-#undef _WBIND_VERSION_
-#define _WBIND_VERSION_ "2.3"
-
 #define IO_BUFF         64000
 #define MAX_DESC        80
 #ifdef BOOTSTRAP
