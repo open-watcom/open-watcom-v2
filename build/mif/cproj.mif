@@ -33,7 +33,7 @@ skip_build: .SYMBOLIC
 # set __WATCOM_TOOLS__ for OW build
 !else
 !ifndef bootstrap
-__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
+__WATCOM_TOOLS__ = $(bld_ver_tool)
 !endif
 !endif
 ###################################
@@ -42,7 +42,7 @@ __WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
 # define newowtools macro to use new OW features
 #
 !ifdef __WATCOM_TOOLS__
-!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
+!ifeq __WATCOM_TOOLS__ $(bld_ver_tool)
 newowtools = 1
 !endif
 !endif

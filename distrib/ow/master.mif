@@ -64,7 +64,7 @@ nulldevice = nul
 debug = $(%OWDEBUGBUILD)
 !endif
 
-bin_dir = ../bin
+distrib_bindir = ../bin
 
 !ifeq host_cpu x64
 !ifneq bld_cpu x64
@@ -85,9 +85,9 @@ all: .SYMBOLIC
 
 !else
 
-all : $(bin_dir)/$(installer_c) $(bin_dir)/$(installer_f77) .SYMBOLIC
+all : $(distrib_bindir)/$(installer_c) $(distrib_bindir)/$(installer_f77) .SYMBOLIC
 
-$(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
+$(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .ALWAYS
     @rm -f *.c
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
@@ -107,7 +107,7 @@ $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
-$(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
+$(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77) .ALWAYS
     @rm -f *.f77
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
@@ -127,7 +127,7 @@ $(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
-$(bin_dir) :
+$(distrib_bindir) :
     mkdir $@
 
 clean_inf : .PROCEDURE .EXPLICIT
@@ -136,8 +136,8 @@ clean_inf : .PROCEDURE .EXPLICIT
     @if exist setup.inf @rm setup.inf
 
 clean : .symbolic
-    @if exist $(bin_dir)/$(installer_c) rm $(bin_dir)/$(installer_c)
-    @if exist $(bin_dir)/$(installer_f77) rm $(bin_dir)/$(installer_f77)
+    @if exist $(distrib_bindir)/$(installer_c) rm $(distrib_bindir)/$(installer_c)
+    @if exist $(distrib_bindir)/$(installer_f77) rm $(distrib_bindir)/$(installer_f77)
     @if exist setup.zip rm setup.zip
     @if exist setup.exe rm setup.exe
     @%make clean_inf

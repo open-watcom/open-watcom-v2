@@ -12,7 +12,6 @@ patch_level   = 0
 contrib_dir   = $+$(%OWROOT)$-/contrib
 build_dir     = $+$(%OWROOT)$-/build
 src_dir       = $+$(%OWSRCDIR)$-
-bld_dir       = $+$(%OWBINDIR)$-/bld
 docs_dir      = $+$(%OWDOCSDIR)$-
 
 bin_subdir    = $+$(%OWOBJDIR)$-
@@ -38,18 +37,18 @@ mif_path      = $(build_dir)/mif
 .mif: $(mif_path)
 
 !ifeq %OWTOOLS WATCOM
-__WATCOM_TOOLS__ = $(%OWTOOLSVER)
-!if $(%OWTOOLSVER) >= 1300
+__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
+!if $(__WATCOM_TOOLS__) >= 1300
 bldnewowtools = 1
 !endif
 !else ifeq %OWTOOLS VISUALC
-__MSVC_TOOLS__ = $(%OWTOOLSVER)
+__MSVC_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS GCC
-__GCC_TOOLS__ = $(%OWTOOLSVER)
+__GCC_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS CLANG
-__CLANG_TOOLS__ = $(%OWTOOLSVER)
+__CLANG_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS INTEL
-__INTEL_TOOLS__ = $(%OWTOOLSVER)
+__INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else
 # if not defined or unknow value, default to WATCOM
 __WATCOM_TOOLS__ = 0
