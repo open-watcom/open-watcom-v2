@@ -13,8 +13,7 @@ memory_model_i86 = c
 .c : ..
 
 extra_l_flags_dos = op stack=8k
-extra_l_flags_os2_i86 = op newfile
-extra_l_flags_os2 = op stack=12k,heap=8k $(extra_l_flags_os2_$(host_cpu))
+extra_l_flags_os2 = op stack=12k,heap=8k,newfile
 
 inc_dirs = -I"../../h"
 
