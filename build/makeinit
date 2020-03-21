@@ -36,12 +36,8 @@ mif_path      = $(build_dir)/mif
 
 .mif: $(mif_path)
 
-!ifeq %OWTOOLS WATCOM
-__WATCOM_TOOLS__ = $+$(%OWTOOLSVER)$-
-!if $(__WATCOM_TOOLS__) >= 1300
-bldnewowtools = 1
-!endif
-!else ifeq %OWTOOLS VISUALC
+# setup non-WATCOM tools macros
+!ifeq %OWTOOLS VISUALC
 __MSVC_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS GCC
 __GCC_TOOLS__ = $+$(%OWTOOLSVER)$-
@@ -50,8 +46,19 @@ __CLANG_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS INTEL
 __INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else
-# if not defined or unknow value, default to WATCOM
+# if WATCOM or not defined or unknow value, default to WATCOM
 __WATCOM_TOOLS__ = 0
+!endif
+
+# setup WATCOM tools version
+bld_watcom_ver = 0
+!ifndef bootstrap
+# if it is not bootstrap then use current build version
+__WATCOM_TOOLS__ = $(bld_ver_tool)
+!else ifeq %OWTOOLS WATCOM
+# if bootstrap and WATCOM tools then use tools version
+bld_watcom_ver = $+$(%OWTOOLSVER)$-
+__WATCOM_TOOLS__ = $(bld_watcom_ver)
 !endif
 
 !ifdef %BOOTSTRAP_CPU

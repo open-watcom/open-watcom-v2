@@ -2,43 +2,11 @@
 #       This is the common makefile for each library.
 #
 
-!include $(posix_dir)/getvars.mif
 !include $(posix_dir)/common.mif
-!include deftarg.mif
-
-objs = &
-    alloc.obj &
-    argvenv.obj &
-    argvrx.obj &
-    console.obj &
-    die.obj &
-    filerx.obj &
-    fnlower.obj &
-    fncomp.obj &
-    getclsz.obj &
-    getopt.obj &
-    isdotdot.obj &
-    lineprt.obj &
-    quit.obj &
-    regexp.obj
-
-inc_dirs = -I"$(posix_dir)/h"
-
-.c: $(posix_dir)/misc
 
 #
 #       define the main target
 #
-posix.lib : $(objs)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_lib
-    $(blib) $(bld_libflags) $(objs)
-!else ifdef newowtools
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs)
-!else
-    $(noecho)%create $^&.lbc
-    @for %o in ($(objs)) do @%append $^&.lbc %o
-    @%make echo_lib
-    $(bld_lib) @$^&.lbc
-!endif
+
+all: posix.lib .symbolic
+    @%null

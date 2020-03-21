@@ -29,7 +29,7 @@ bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-!ifdef bldnewowtools
+!if $(bld_watcom_ver) >= 1300
 bld_new_cflags  = -xx-zam
 !endif
 

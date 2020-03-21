@@ -29,24 +29,9 @@ skip_build: .SYMBOLIC
 !else ifndef bootstrap
 !undef __WATCOM_TOOLS__
 !endif
-# supported architectures
-# set __WATCOM_TOOLS__ for OW build
-!else
-!ifndef bootstrap
-__WATCOM_TOOLS__ = $(bld_ver_tool)
 !endif
-!endif
+
 ###################################
-
-#
-# define newowtools macro to use new OW features
-#
-!ifdef __WATCOM_TOOLS__
-!ifeq __WATCOM_TOOLS__ $(bld_ver_tool)
-newowtools = 1
-!endif
-!endif
-
 # define OW build windows version for Win32 platform
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
@@ -145,12 +130,14 @@ as_mps          = *bwasmps
 
 !endif
 
+!ifndef release
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
 !else ifeq %OWDEBUGBUILD 1
 release = 0
 !else
 release = 1
+!endif
 !endif
 
 !ifdef $(proj_name)_rtdll
@@ -238,9 +225,11 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
-!ifdef newowtools
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) >= 1300
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
+!endif
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -410,10 +399,11 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!ifdef newowtools
-c_flags          =$(watcom_common_cflags)-za99
-!else
 c_flags          =$(watcom_common_cflags)
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) >= 1300
+c_flags          +=-za99
+!endif
 !endif
 
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))

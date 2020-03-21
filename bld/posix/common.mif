@@ -42,6 +42,11 @@ memory_model_386=$(model)
 
 !include cproj.mif
 !include defrule.mif
+!include deftarg.mif
+
+#
+# definitions for POSIX library build
+#
 
 subdir_i86 = m$(model)
 subdir_386 = m$(model)
@@ -50,10 +55,53 @@ subdir_axp = _s
 subdir_mps = _s
 subdir_ppc = _s
 
+alt_subdir_dosi86_s = mc
+alt_subdir_os2i86_s = mc
+alt_subdir_dosi86_c = ms
+alt_subdir_os2i86_c = ms
+
 !ifdef bootstrap
 libdir=$(subdir_$(host_cpu))
+altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 !else
 libdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
+altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+!endif
+
+posixlib_objs = &
+    alloc.obj &
+    argvenv.obj &
+    argvrx.obj &
+    console.obj &
+    die.obj &
+    filerx.obj &
+    fnlower.obj &
+    fncomp.obj &
+    getclsz.obj &
+    getopt.obj &
+    isdotdot.obj &
+    lineprt.obj &
+    quit.obj &
+    regexp.obj
+
+inc_dirs += -I"$(posix_dir)/h"
+.c: $(posix_dir)/misc
+
+#
+#       define the main target
+#
+posix.lib : $(posixlib_objs) .explicit
+!ifndef __WATCOM_TOOLS__
+    @%make echo_lib
+    $(blib) $(bld_libflags) $(posixlib_objs)
+!else if $(__WATCOM_TOOLS__) >= 1300
+    @%make echo_lib
+    $(librarian) $(libflags) $(posixlib_objs)
+!else
+    $(noecho)%create $^&.lbc
+    @for %o in ($(posixlib_objs)) do @%append $^&.lbc %o
+    @%make echo_lib
+    $(bld_lib) @$^&.lbc
 !endif
 
 #
