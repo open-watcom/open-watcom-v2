@@ -197,7 +197,6 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     size_t              len;
     struct stat         sb;
     PGROUP2             pg;
-    bool                wild;
 
     /*
      * initialize for file scan
