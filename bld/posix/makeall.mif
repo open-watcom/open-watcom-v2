@@ -9,7 +9,7 @@
 
 curr_dir_all=$+$(%__CWD__)$-
 
-additional_cleanup_subdir = $(libdir)
+additional_cleanup_subdir = $(stdlibdir)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
 additional_cleanup_subdir += $(altlibdir)
 !endif
@@ -18,8 +18,8 @@ all : lib $(commands) .symbolic
     @%null
 
 lib : .symbolic $(__MAKEFILES__)
-    @if not exist $(libdir) @mkdir $(libdir)
-    $(noecho)cd $(libdir)
+    @if not exist $(stdlibdir) @mkdir $(stdlibdir)
+    $(noecho)cd $(stdlibdir)
     !@%make posix.lib
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
     $(noecho)cd $(curr_dir_all)

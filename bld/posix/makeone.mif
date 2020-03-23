@@ -16,7 +16,7 @@
 
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
 
-libs = $(libdir)/posix.lib
+libs = $(stdlibdir)/posix.lib
 
 .c: $(posix_dir)/src/$(name)
 

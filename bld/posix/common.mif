@@ -61,10 +61,10 @@ alt_subdir_dosi86_c = ms
 alt_subdir_os2i86_c = ms
 
 !ifdef bootstrap
-libdir=$(subdir_$(host_cpu))
+stdlibdir=$(subdir_$(host_cpu))
 altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 !else
-libdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
+stdlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
 altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 !endif
 
