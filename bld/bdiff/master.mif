@@ -29,10 +29,18 @@ inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h"
 
 all : $(all_execs)
 
+subdir_wcpatch	= wcpatch
+subdir_wpatch	= wpatch
+subdir_bpatch	= bpatch
+subdir_bdump	= bdump
+subdir_bdiff	= bdiff
+subdir_bpcmt	= bpcmt
+subdir_bplevel	= bplevel
+
 #
 # WCPATCH. Create patch.
 #
-__subdir__=wcpatch
+subdir_key = wcpatch
 !include subdrule.mif
 
 extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
@@ -41,15 +49,15 @@ extra_cpp_wcpatch_flags += -DUSE_DBGINFO
 !endif
 
 wcpatch_objs = &
-    $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/wcptchio.obj &
-    $+$(__subdir__)$-/wcpatch.obj &
-    $+$(__subdir__)$-/wbdiff.obj &
-    $+$(__subdir__)$-/diff.obj
+    $(subdir_wcpatch)/dopatch.obj &
+    $(subdir_wcpatch)/msg.obj &
+    $(subdir_wcpatch)/wcptchio.obj &
+    $(subdir_wcpatch)/wcpatch.obj &
+    $(subdir_wcpatch)/wbdiff.obj &
+    $(subdir_wcpatch)/diff.obj
 
 !ifdef debug_bdiff
-wcpatch_objs += $+$(__subdir__)$-/symtab.obj
+wcpatch_objs += $(subdir_wcpatch)/symtab.obj
 !endif
 
 wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
@@ -70,19 +78,19 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host
 #
 # WPATCH. Apply patch.
 #
-__subdir__=wpatch
+subdir_key = wpatch
 !include subdrule.mif
 
 extra_cpp_wpatch_flags = -D_WPATCH
 
 wpatch_objs = &
-    $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/myio.obj &
-    $+$(__subdir__)$-/oldfile.obj &
-    $+$(__subdir__)$-/wpatchio.obj &
-    $+$(__subdir__)$-/wpatch.obj &
-    $+$(__subdir__)$-/bpatch.obj
+    $(subdir_wpatch)/dopatch.obj &
+    $(subdir_wpatch)/msg.obj &
+    $(subdir_wpatch)/myio.obj &
+    $(subdir_wpatch)/oldfile.obj &
+    $(subdir_wpatch)/wpatchio.obj &
+    $(subdir_wpatch)/wpatch.obj &
+    $(subdir_wpatch)/bpatch.obj
 
 wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
@@ -102,19 +110,19 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
 #
 # BPATCH.
 #
-__subdir__=bpatch
+subdir_key = bpatch
 !include subdrule.mif
 
 extra_cpp_bpatch_flags = -D_WPATCH
 
 bpatch_objs = &
-    $+$(__subdir__)$-/bpatch.obj &
-    $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/myio.obj &
-    $+$(__subdir__)$-/oldfile.obj &
-    $+$(__subdir__)$-/patchio.obj &
-    $+$(__subdir__)$-/patmain.obj
+    $(subdir_bpatch)/bpatch.obj &
+    $(subdir_bpatch)/dopatch.obj &
+    $(subdir_bpatch)/msg.obj &
+    $(subdir_bpatch)/myio.obj &
+    $(subdir_bpatch)/oldfile.obj &
+    $(subdir_bpatch)/patchio.obj &
+    $(subdir_bpatch)/patmain.obj
 
 bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
@@ -134,18 +142,18 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
 #
 # BDUMP.
 #
-__subdir__=bdump
+subdir_key = bdump
 !include subdrule.mif
 
 extra_cpp_bdump_flags = -DBDUMP
 
 bdump_objs = &
-    $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj &
-    $+$(__subdir__)$-/myio.obj &
-    $+$(__subdir__)$-/oldfile.obj &
-    $+$(__subdir__)$-/patchio.obj &
-    $+$(__subdir__)$-/patmain.obj
+    $(subdir_bdump)/dopatch.obj &
+    $(subdir_bdump)/msg.obj &
+    $(subdir_bdump)/myio.obj &
+    $(subdir_bdump)/oldfile.obj &
+    $(subdir_bdump)/patchio.obj &
+    $(subdir_bdump)/patmain.obj
 
 bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
@@ -164,7 +172,7 @@ bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 #
 # BDIFF.
 #
-__subdir__=bdiff
+subdir_key = bdiff
 !include subdrule.mif
 
 extra_cpp_bdiff_flags = -DBDIFF
@@ -173,13 +181,13 @@ extra_cpp_bdiff_flags += -DUSE_DBGINFO
 !endif
 
 bdiff_objs = &
-    $+$(__subdir__)$-/bdiff.obj &
-    $+$(__subdir__)$-/diff.obj &
-    $+$(__subdir__)$-/dopatch.obj &
-    $+$(__subdir__)$-/msg.obj
+    $(subdir_bdiff)/bdiff.obj &
+    $(subdir_bdiff)/diff.obj &
+    $(subdir_bdiff)/dopatch.obj &
+    $(subdir_bdiff)/msg.obj
 
 !ifdef debug_bdiff
-bdiff_objs += $+$(__subdir__)$-/symtab.obj
+bdiff_objs += $(subdir_bdiff)/symtab.obj
 !endif
 
 bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
@@ -199,13 +207,13 @@ bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 #
 # BCMT
 #
-__subdir__=bpcmt
+subdir_key = bpcmt
 !include subdrule.mif
 
 extra_cpp_bpcmt_flags = -DBPCMT
 
 bpcmt_objs = &
-    $+$(__subdir__)$-/bpcmt.obj
+    $(subdir_bpcmt)/bpcmt.obj
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
     @%make echo_link
@@ -218,13 +226,13 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 #
 # BLEVEL
 #
-__subdir__=bplevel
+subdir_key = bplevel
 !include subdrule.mif
 
 extra_cpp_bplevel_flags = -DBPLEVEL
 
 bplevel_objs = &
-    $+$(__subdir__)$-/bplevel.obj
+    $(subdir_bplevel)/bplevel.obj
 
 bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
     @%make echo_link

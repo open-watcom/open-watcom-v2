@@ -67,20 +67,22 @@ tstos2.exe : $(tst_objs) $(__MAKEFILES__)
 
 name = winint
 
-__subdir__ = eobjs
+subdir_key = editor_objs
 
-additional_cleanup_subdir = $(__subdir__)
+subdir_editor_objs = eobjs
+
+additional_cleanup_subdir = $(subdir_editor_objs)
 
 !include subdrule.mif
 
 .c: ../win;../dos
 
 objs = $(name).obj link.obj
-eobjs = $(__subdir__)/$(name).obj link.obj
+eobjs = $(subdir_editor_objs)/$(name).obj link.obj
 lnk = $(name).lnk
 
 extra_cpp_flags = -DSERVER
-extra_cpp_eobjs_flags = -D__EDITOR__
+extra_cpp_editor_objs_flags = -D__EDITOR__
 
 extra_c_flags = -zW -zu
 
