@@ -39,9 +39,9 @@ memory_model_386=$(model)
 
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
 
-libs = $(stdlibdir)/posix.lib
-
 .c: $(posix_dir)/src/$(name)
+
+libs = $(stdlibdir)/posix.lib
 
 #
 #       define the main target

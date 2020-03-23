@@ -50,7 +50,6 @@
 
 char *OptEnvVar = "du";
 
-char    filename[_MAX_PATH];
 char    numbuff[14];
 long    clsize;
 int     filecnt, linecnt;
