@@ -249,10 +249,12 @@ mode_clflags   += -fm
 ########################
 # MEMORY MODELS SETINGS
 ######
+!ifndef model_switch_i86
 !ifndef memory_model_i86
 memory_model_i86 = l
 !endif
 model_switch_i86 = -m$(memory_model_i86)
+!endif
 
 default_memory_model_386_dos     = s
 default_memory_model_386_zdos    = s
@@ -268,12 +270,12 @@ default_memory_model_386_nto     = f
 default_memory_model_386_rdos    = f
 default_memory_model_386_        = f
 
+!ifndef model_switch_386
 !ifndef memory_model_386
 memory_model_386 = $(default_memory_model_386_$(host_os))
 !endif
 model_switch_386 = -m$(memory_model_386)
-
-cl_model_switch  = $(model_switch_$(host_cpu))
+!endif
 
 ######################
 # FPU SETINGS
@@ -422,7 +424,7 @@ cflags_wind      = $(cflags_gen_all) $(cflags_wind_$(host_os)) $(proj_c_flags)
 ###################################
 # COMPILE AND LINK UTILITY SETINGS
 ######
-clflags_all  = $(mode_clflags) $(cl_model_switch) -j
+clflags_all  = $(mode_clflags) $(model_switch_$(host_cpu)) -j
 
 cl_fpu_flags = $(fpu_flags)
 
