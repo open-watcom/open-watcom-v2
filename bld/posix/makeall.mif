@@ -4,30 +4,71 @@
 
 !ifndef __UNIX__
 
+proj_name = posix_all
+
+posix_all_autodepends = .AUTODEPEND
+
+!ifndef model
+!ifeq host_cpu i86
+model=c
+!else ifeq host_cpu 386
+!ifeq host_os qnx
+model=s
+!else
+model=f
+!endif
+!endif
+!endif
+
+memory_model_i86=$(model)
+memory_model_386=$(model)
+
+model_switch_i86=
+model_switch_386=
+
+!include cproj.mif
+!include defrule.mif
+
 !include $(posix_dir)/commands.mif
 !include $(posix_dir)/common.mif
 
-curr_dir_all=$+$(%__CWD__)$-
+inc_dirs += -I"$(posix_dir)/h"
+.c: $(posix_dir)/misc
 
-additional_cleanup_subdir = $(stdlibdir)
-!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-additional_cleanup_subdir += $(altlibdir)
+subdir_stdlib = $(stdlibdir)/
+!ifdef alt_posixlib
+subdir_altlib = $(altlibdir)/
 !endif
+
+extra_cpp_stdlib_i86_flags = -m$(model)
+extra_cpp_stdlib_386_flags = -m$(model)
+
+extra_cpp_altlib_i86s_flags = -mc
+extra_cpp_altlib_i86c_flags = -ms
 
 all : lib $(commands) .symbolic
     @%null
 
-lib : .symbolic $(__MAKEFILES__)
-    @if not exist $(stdlibdir) @mkdir $(stdlibdir)
-    $(noecho)cd $(stdlibdir)
-    !@%make posix.lib
-!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-    $(noecho)cd $(curr_dir_all)
-    @if not exist $(altlibdir) @mkdir $(altlibdir)
-    $(noecho)cd $(altlibdir)
-    !@%make posix.lib
+!ifdef alt_posixlib
+subdir_key = altlib
+extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
+!include subdrule.mif
+$(altlibdir)/posix.lib : $+$(posixlib_objs)$-
+    @%make make_posix_lib
 !endif
-    $(noecho)cd $(curr_dir_all)
+
+subdir_key = stdlib
+std_posixlib_objs=$+$(posixlib_objs)$-
+extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
+!include subdrule.mif
+$(stdlibdir)/posix.lib : $+$(posixlib_objs)$-
+    @%make make_posix_lib
+
+lib : .symbolic $(__MAKEFILES__)
+    !@%make $(stdlibdir)/posix.lib
+!ifdef alt_posixlib
+    !@%make $(altlibdir)/posix.lib
+!endif
 
 wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
 !ifdef bootstrap
@@ -35,8 +76,28 @@ wmake_opts += bootstrap=$(bootstrap)
 !endif
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    @echo commands
     !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$^@/makefile
+
+curr_dir_all=$+$(%__CWD__)$-
+
+clean : .symbolic
+    @echo clean $(stdlibdir)
+    $(noecho)cd $(stdlibdir)
+    @%make clean_all_objs
+!ifdef alt_posixlib
+    $(noecho)cd $(curr_dir_all)
+    @echo clean $(altlibdir)
+    $(noecho)cd $(altlibdir)
+    @%make clean_all_objs
+!endif
+    $(noecho)cd $(curr_dir_all)
+    @echo clean $(curr_dir_all)
+    @%make clean_all_objs
+
+clean_all_objs: .procedure .explicit
+    rm -f *.obj *.o
+    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
+    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk $(additional_cleanup_sys)
 
 !else
 

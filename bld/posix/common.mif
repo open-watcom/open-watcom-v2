@@ -19,89 +19,67 @@
 #               contain the source for the command.
 
 #
-#       some people don't have the linker variable in their makeinit
-#
-proj_name = posix
-
-posix_autodepends = .AUTODEPEND
-
-!ifndef model
-!ifeq host_cpu i86
-model=c
-!else ifeq host_cpu 386
-!ifeq host_os qnx
-model=s
-!else
-model=f
-!endif
-!endif
-!endif
-
-memory_model_i86=$(model)
-memory_model_386=$(model)
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-#
 # definitions for POSIX library build
 #
 
-subdir_i86 = m$(model)
-subdir_386 = m$(model)
-subdir_x64 = _s
-subdir_axp = _s
-subdir_mps = _s
-subdir_ppc = _s
+std_subdir_i86 = m$(model)
+std_subdir_386 = m$(model)
+std_subdir_x64 = _s
+std_subdir_axp = _s
+std_subdir_mps = _s
+std_subdir_ppc = _s
 
-alt_subdir_dosi86_s = mc
-alt_subdir_os2i86_s = mc
-alt_subdir_dosi86_c = ms
-alt_subdir_os2i86_c = ms
+alt_subdir_dosi86s = mc
+alt_subdir_os2i86s = mc
+alt_subdir_dosi86c = ms
+alt_subdir_os2i86c = ms
 
-!ifdef bootstrap
-stdlibdir=$(subdir_$(host_cpu))
-altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
-!else
-stdlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
-altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+!ifeq proj_name posix_all
+!ifdef alt_subdir_$(host_os)$(host_cpu)$(model)
+alt_posixlib = 1
+!endif
 !endif
 
 posixlib_objs = &
-    alloc.obj &
-    argvenv.obj &
-    argvrx.obj &
-    console.obj &
-    die.obj &
-    filerx.obj &
-    fnlower.obj &
-    fncomp.obj &
-    getclsz.obj &
-    getopt.obj &
-    isdotdot.obj &
-    lineprt.obj &
-    quit.obj &
-    regexp.obj
+    $(subdir_$(subdir_key))alloc.obj &
+    $(subdir_$(subdir_key))argvenv.obj &
+    $(subdir_$(subdir_key))argvrx.obj &
+    $(subdir_$(subdir_key))console.obj &
+    $(subdir_$(subdir_key))die.obj &
+    $(subdir_$(subdir_key))filerx.obj &
+    $(subdir_$(subdir_key))fnlower.obj &
+    $(subdir_$(subdir_key))fncomp.obj &
+    $(subdir_$(subdir_key))getclsz.obj &
+    $(subdir_$(subdir_key))getopt.obj &
+    $(subdir_$(subdir_key))isdotdot.obj &
+    $(subdir_$(subdir_key))lineprt.obj &
+    $(subdir_$(subdir_key))quit.obj &
+    $(subdir_$(subdir_key))regexp.obj
 
-inc_dirs += -I"$(posix_dir)/h"
-.c: $(posix_dir)/misc
-
-#
-#       define the main target
-#
-posix.lib : $(posixlib_objs) .explicit
+make_posix_lib : .procedure .explicit
 !ifndef __WATCOM_TOOLS__
     @%make echo_lib
-    $(blib) $(bld_libflags) $(posixlib_objs)
+    $(blib) $(bld_libflags) $<
 !else if $(__WATCOM_TOOLS__) >= 1300
     @%make echo_lib
-    $(librarian) $(libflags) $(posixlib_objs)
+    $(librarian) $(libflags) $<
 !else
     $(noecho)%create $^&.lbc
-    @for %o in ($(posixlib_objs)) do @%append $^&.lbc %o
+    @for %o in ($<) do @%append $^&.lbc %o
     @%make echo_lib
     $(bld_lib) @$^&.lbc
+!endif
+
+!ifdef bootstrap
+stdlibdir=$(std_subdir_$(host_cpu))
+!ifdef alt_posixlib
+altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
+!endif
+!else
+stdlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(std_subdir_$(host_cpu))
+!ifdef alt_posixlib
+altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
+!endif
 !endif
 
 #

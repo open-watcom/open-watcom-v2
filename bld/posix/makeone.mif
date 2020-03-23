@@ -10,6 +10,29 @@
 #       name            the name of the command to be built
 #
 
+proj_name = posix
+
+posix_autodepends = .AUTODEPEND
+
+!ifndef model
+!ifeq host_cpu i86
+model=c
+!else ifeq host_cpu 386
+!ifeq host_os qnx
+model=s
+!else
+model=f
+!endif
+!endif
+!endif
+
+memory_model_i86=$(model)
+memory_model_386=$(model)
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
 !include $(posix_dir)/common.mif
 
 !include tools.mif
