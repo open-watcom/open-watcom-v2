@@ -42,62 +42,58 @@ subdir_altlib = $(altlibdir)/
 
 extra_cpp_stdlib_i86_flags = -m$(model)
 extra_cpp_stdlib_386_flags = -m$(model)
-
+extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
+!ifdef alt_posixlib
 extra_cpp_altlib_i86s_flags = -mc
 extra_cpp_altlib_i86c_flags = -ms
-
-all : lib $(commands) .symbolic
-    @%null
-
-!ifdef alt_posixlib
-subdir_key = altlib
 extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
-!include subdrule.mif
-$(altlibdir)/posix.lib : $+$(posixlib_objs)$-
-    @%make make_posix_lib
 !endif
 
-subdir_key = stdlib
-std_posixlib_objs=$+$(posixlib_objs)$-
-extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
-!include subdrule.mif
-$(stdlibdir)/posix.lib : $+$(posixlib_objs)$-
-    @%make make_posix_lib
-
-lib : .symbolic $(__MAKEFILES__)
-    !@%make $(stdlibdir)/posix.lib
+libs = $(stdlibdir)/posix.lib
 !ifdef alt_posixlib
-    !@%make $(altlibdir)/posix.lib
+libs += $(altlibdir)/posix.lib
+!endif
+
+curr_dir=$+$(%__CWD__)$-
+
+clean_dirs = $(curr_dir) $(subdir_stdlib)
+!ifdef alt_posixlib
+clean_dirs += $(subdir_altlib)
 !endif
 
 wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
 !ifdef bootstrap
 wmake_opts += bootstrap=$(bootstrap)
 !endif
+!ifdef release
+wmake_opts += release=$(release)
+!endif
+
+all : $(libs) $(commands) .symbolic
+    @%null
+
+!ifdef alt_posixlib
+subdir_key = altlib
+!include subdrule.mif
+$(altlibdir)/posix.lib : $+$(posixlib_objs)$-
+    @%make make_posix_lib
+!endif
+
+subdir_key = stdlib
+!include subdrule.mif
+$(stdlibdir)/posix.lib : $+$(posixlib_objs)$-
+    @%make make_posix_lib
 
 $(commands) : .symbolic $(__MAKEFILES__)
     !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$^@/makefile
 
-curr_dir_all=$+$(%__CWD__)$-
-
-clean : .symbolic
-    @echo clean $(stdlibdir)
-    $(noecho)cd $(stdlibdir)
-    @%make clean_all_objs
-!ifdef alt_posixlib
-    $(noecho)cd $(curr_dir_all)
-    @echo clean $(altlibdir)
-    $(noecho)cd $(altlibdir)
-    @%make clean_all_objs
-!endif
-    $(noecho)cd $(curr_dir_all)
-    @echo clean $(curr_dir_all)
-    @%make clean_all_objs
-
-clean_all_objs: .procedure .explicit
-    rm -f *.obj *.o
-    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
-    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk $(additional_cleanup_sys)
+$(clean_dirs) : .symbolic
+    cd $@
+    rm -f *.obj *.lnk *.exe *.exp *.lib *.lbc *.lst *.err *.pch *.map *.sym
+    rm -f *.tmp *.trk $(additional_cleanup_sys)
+    @cd $(curr_dir)
+    
+clean : $(clean_dirs) .symbolic
 
 !else
 
