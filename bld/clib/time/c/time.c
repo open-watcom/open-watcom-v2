@@ -29,10 +29,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stdio.h>
 #include <time.h>
-#include "timedata.h"
+#include "getctime.h"
+
 
 _WCRTLINK time_t time( time_t *timer )
 {

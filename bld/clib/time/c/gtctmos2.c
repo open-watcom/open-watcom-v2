@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,13 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <time.h>
 #include <dos.h>
 #include <wos2.h>
-#include "timedata.h"
+#include "getctime.h"
+
 
 int __getctime( struct tm *t )
 {

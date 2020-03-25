@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,7 @@
 #include "ftnstd.h"
 #include <time.h>
 #include "ftnapi.h"
-
-
-extern  uint            __getctime(struct tm *);
+#include "getctime.h"
 
 
 void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins, intstar2 *secs, intstar2 *tics ) {

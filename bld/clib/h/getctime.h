@@ -25,41 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of __getctime() for RDOS
+* Description:  Specification of __getctime internal CRTL function.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <rdos.h>
-#include <time.h>
-#include "getctime.h"
+#ifndef CTIMDATA_H_INCLUDED
+#define CTIMDATA_H_INCLUDED
 
+extern int              __getctime( struct tm * );
 
-int __getctime( struct tm *t )
-{
-    unsigned long msb;
-    unsigned long lsb;
-    int ms;
-    int us;
-
-    RdosGetTime( &msb, &lsb );
-
-    RdosDecodeMsbTics( msb,
-                       &t->tm_year,
-                       &t->tm_mon,
-                       &t->tm_mday,
-                       &t->tm_hour );
-
-    RdosDecodeLsbTics( lsb,
-                       &t->tm_min,
-                       &t->tm_sec,
-                       &ms,
-                       &us );
-
-    t->tm_year -= 1900;
-    t->tm_mon--;
-    t->tm_isdst = -1;
-
-    return( ms );
-}
+#endif
