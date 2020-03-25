@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,3 +39,7 @@
 #define FAPP_CHARACTER_MODE     1
 #define FAPP_GUI                2
 #define FAPP_DEFAULT_GUI        3
+
+#if defined( __IS_WINDOWED__ )
+extern char     __FAppType;
+#endif

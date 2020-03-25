@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,6 @@ static  char            NLSequence[] = { "\r\n" };
 #endif
 
 #if defined( __IS_WINDOWED__ )
-  extern        char            __FAppType;
-
   #define       BUFFLEN         1024
   static        char            *BuffCursor = { NULL };
   static        char            Buffer[BUFFLEN] = { NULLCHAR };

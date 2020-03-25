@@ -30,10 +30,6 @@
 
 
 #if defined( _M_IX86 )
-    #pragma aux FMAIN "*";
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-      #pragma aux FWINMAIN "*";
-    #endif
 
   #if defined( _M_I86 )
     #pragma aux rt_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];

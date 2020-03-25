@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +40,9 @@
     #undef SetForm
   #endif
 #endif
-#include "rtenv.h"
-#include "rundat.h"
-#include "errcod.h"
-#include "fwinmain.h"
 #include "rtspawn.h"
 #include "rt_init.h"
+#include "fwinmain.h"
 
 
 // Leave this forward declaration to avoid polluting "ftextfun.h"
@@ -58,16 +55,16 @@ static  int             CmdShow;
 static  HANDLE          PgmHandle;
 
 
-static  void    CallFWINMAIN( void ) {
-//==============================
-
+static  void    CallFWINMAIN( void )
+//==================================
+{
     RetCode = FWINMAIN( PgmHandle, PrevHandle, CmdLine, CmdShow );
 }
 
 
-int PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow ) {
-//===========================================================================
-
+int PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow )
+//===========================================================================================
+{
     PgmHandle = thishandle;
     PrevHandle = prevhandle;
     CmdLine = cmdline;
