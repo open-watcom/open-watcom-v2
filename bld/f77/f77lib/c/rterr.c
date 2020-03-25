@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
 #include "rtenv.h"
@@ -66,17 +65,6 @@
 void    (*TraceRoutine)(char *) = { NULL };
 
 static  char            ErrorPref[] = { "*ERR*" };
-
-static void noHook( int errcod, char *buffer ) {
-//==============================================
-
-    errcod = errcod;
-    if( TraceRoutine != NULL ) {
-        TraceRoutine( buffer );
-    }
-}
-
-void    (*ERR_HOOK)( int , char * ) = noHook;
 
 void    FlushStdUnit( void ) {
 //======================
@@ -113,7 +101,9 @@ void    WriteErr( int errcode, va_list args ) {
         StdBuffer();
         StdWriteNL( buffer, strlen( buffer ) );
     }
-    ERR_HOOK( errcode, buffer );
+    if( TraceRoutine != NULL ) {
+        TraceRoutine( buffer );
+    }
     StdFlush();
     _ReleaseFIO();
 }

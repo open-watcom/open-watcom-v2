@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,19 +49,12 @@
 #include "fthread.h"
 #include "xfflags.h"
 #include "rtenv.h"
-#include "rundat.h"
 #include "thread.h"
 #include "runmain.h"
 #include "rtspawn.h"
 #include "rt_init.h"
 #include "rstdio.h"
 #include "rterr.h"
-
-
-// this is used by the load and go debugger in _SA_LIBRARY
-
-static void noHook( void ) {}
-void (*STOP_HOOK)(void) = noHook;
 
 
 void    Stop( string PGM *ptr ) {
@@ -86,6 +79,5 @@ void    Stop( string PGM *ptr ) {
         _ReleaseFIO();
     }
     _RWD_XcptFlags |= XF_FATAL_ERROR;
-    STOP_HOOK();
     RTSuicide();
 }

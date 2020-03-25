@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -165,11 +165,6 @@
   #pragma aux (rt_rtn) SetModule;
   #pragma aux (rt_rtn) ADVFillHi;
   #pragma aux (rt_rtn) ADVFillHiLo1;
-
-  #pragma aux (rt_rtn) lg_rtn "LG@*";
-  #pragma aux (lg_rtn) STOP_HOOK;
-  #pragma aux (lg_rtn) PAUSE_HOOK;
-  #pragma aux (lg_rtn) ERR_HOOK;
 #else
   #define PowII         __RT_PowII
   #define PowRR         __RT_PowRR
