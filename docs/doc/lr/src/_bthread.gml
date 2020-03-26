@@ -3,7 +3,7 @@
 .func end
 .synop begin
 #include <process.h>
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 #if defined(__386__)
 #   define FAR
 #else

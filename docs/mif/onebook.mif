@@ -445,6 +445,8 @@ prepare_wgml_opts : .PROCEDURE
 #    @%append $(wgml_optfile) ( setsymbol defwinos2 1
 #
     @%append $(wgml_optfile) ( setsymbol cpyyear $(curr_year)
+    @%append $(wgml_optfile) ( setsymbol vermacro $(bld_ver_tool)
+    @%append $(wgml_optfile) ( setsymbol verrev $(bld_ver_str)
 
 #---------------------------------------
 # settings for Post Script documentation

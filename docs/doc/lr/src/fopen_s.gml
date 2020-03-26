@@ -99,7 +99,7 @@ The letter "t" may be added to any of the above sequences in the
 second or later position to indicate that the file is (or must be) a
 text file.
 .if '&machsys' ne 'QNX' .do begin
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .ix 'BINMODE.OBJ'
 It also overrides the global translation mode flag if you link your
 program with
@@ -114,7 +114,7 @@ variable
 .kw _fmode
 establishes whether the file is to treated as a binary or a text file.
 Unless this value is changed by the
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 program or you have linked your program with
 .filename BINMODE.OBJ,
 .do end
@@ -133,7 +133,7 @@ a distinction between text and binary files).
 .np
 Under QNX, there is no difference between text files and binary files.
 .do end
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .np
 You can also include one of the following characters to enable
 or disable the "commit" flag for the associated file.

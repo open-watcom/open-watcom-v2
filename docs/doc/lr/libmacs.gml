@@ -14,7 +14,7 @@
 .* version 10.7 or greater functions
 .*
 .dm fn7 begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fn7 end
@@ -22,7 +22,7 @@
 .* version 11.0 or greater functions
 .*
 .dm fn8 begin
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .  .fnc &*
 .do end
 .dm fn8 end
@@ -40,7 +40,7 @@
 .* corresponding to regular entry (e.g., strcmp)
 .*
 .dm fnm begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fnm end
@@ -50,7 +50,7 @@
 .*
 .dm fnn begin
 .if &farfnc. eq 1 .do begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .do end
@@ -60,7 +60,7 @@
 .* corresponding to regular entry (e.g., strcmp)
 .*
 .dm fnw begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fnw end

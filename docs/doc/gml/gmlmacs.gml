@@ -20,13 +20,13 @@
 .do end
 .*
 .dm v105 begin
-.if &version eq 105 .do begin
+.if &vermacro eq 1050 .do begin
 &*
 .do end
 .dm v105 end
 .*
 .dm v110 begin
-.if &version eq 110 .do begin
+.if &vermacro eq 1100 .do begin
 &*
 .do end
 .dm v110 end

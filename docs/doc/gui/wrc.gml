@@ -357,6 +357,9 @@ resource compiler)
 This option affects pass one only.  During pass two the target is
 inferred from the format of the input files.
 .*
+.point &sw.c=name
+Set the code page conversion file.
+.*
 .point &sw.e
 Specifies that global memory is above the EMS line in a Windows 3.0
 DLL.

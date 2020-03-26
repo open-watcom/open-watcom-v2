@@ -1,4 +1,4 @@
-.chap *refid=diffs Release Notes for &product &ver..&rev
+.chap *refid=diffs Release Notes for &product &verrev
 .*
 .np
 There are a number of enhancements and changes in this new version of
@@ -1539,7 +1539,7 @@ Components of the Win32 SDK and OS/2 Toolkits are no longer supplied.
 .bull
 MFC libraries, source code and documentation are no longer supplied.
 .endbull
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .*
 .section Changes in 11.0 that may Require Recompilation
 .*
@@ -1988,7 +1988,7 @@ This new version fixes all known bugs in the previous version.
 .*
 .do end
 .*
-.if &version ge 106 .do begin
+.if &vermacro ge 1060 .do begin
 .*
 .section Changes in 10.6 that may Require Recompilation
 .*
@@ -3229,7 +3229,7 @@ DOS system or in a Windows 3.x DOS box operating in enhanced mode.
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
 .*
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .*
 .section Changes in 11.0 that may Require Recompilation
 .*
@@ -3378,7 +3378,7 @@ platforms.
 .*
 .do end
 .*
-.if &version ge 106 .do begin
+.if &vermacro ge 1060 .do begin
 .*
 .section Changes in 10.6 that may Require Recompilation
 .*

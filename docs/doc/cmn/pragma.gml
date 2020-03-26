@@ -743,7 +743,7 @@ See also the description of :HDREF refid='&pragenbl.'..
 .ix 'class information'
 The "dump_object_model" pragma causes the C++ compiler to print
 information about the object model for an indicated
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 class or an enumeration name to the diagnostics file.
 .ix 'enumeration' 'information'
 .ix 'enumeration' 'values'
@@ -753,7 +753,7 @@ class.
 .do end
 For class names, this information includes the offsets and sizes of
 fields within the class and within base classes.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 For enumeration names, this information consists of a list of all the
 enumeration constants with their values.
 .do end
@@ -761,11 +761,11 @@ enumeration constants with their values.
 The general form of the "dump_object_model" pragma is as follows.
 .mbox begin
 :prgbeg. dump_object_model :id.class:eid. :prgend.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 :prgbeg. dump_object_model :id.enumeration:eid. :prgend.
 .do end
 :id.class ::= a defined C++ class free of errors:eid.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 :id.enumeration ::= a defined C++ enumeration name:eid.
 .do end
 .mbox end
@@ -799,7 +799,7 @@ avoid interpretation as an octal constant).
 .np
 See also the description of :HDREF refid='&pragdsbl.'..
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .*
 .section The ENUM Pragma
 .*
@@ -868,7 +868,7 @@ The following is an example.
 #endif
 .millust end
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .*
 .section The EXTREF Pragma
 .*
@@ -1274,7 +1274,7 @@ according to row 8.
 If the largest member of structure "x" is 16 bytes then "x" is aligned
 according to row 16.
 .np
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .if '&machine' eq '8086' .do begin
 If no value is specified in the "pack" pragma, a default value of 2 is
 used.
@@ -5255,7 +5255,7 @@ is a register set containing the string "8087", i.e. [8087].
 .section Preserving 80x87 Floating-Point Registers Across Calls
 .*
 .np
-.if &version le 90 .do begin
+.if &vermacro le 900 .do begin
 As described in the section entitled "Using the 80x87 to Pass
 Arguments", four of the eight 80x87 floating-point registers are used
 for a &function's local variables.

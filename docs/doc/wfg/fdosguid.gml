@@ -151,7 +151,7 @@ If you examine the listing file, you will find something similar
 to the following.
 .code begin
 .in -3
-&product &ver &cdate
+&product &verrev &cdate
 .cpyrit 1984
 .trdmrk
 
@@ -275,7 +275,7 @@ If you examine the listing file, you will find something similar to
 the following.
 .code begin
 .in -3
-&product &ver &cdate
+&product &verrev &cdate
 .cpyrit 1984
 .trdmrk
 
@@ -344,7 +344,7 @@ a floating-point quantity.
 The contents of the listing file are:
 .code begin
 .in -3
-&product &ver &cdate
+&product &verrev &cdate
 .cpyrit 1984
 .trdmrk
 
@@ -401,7 +401,7 @@ On the screen will appear
 something similar to the following:
 .code begin
 .in -3
-&product &ver &cdate
+&product &verrev &cdate
 .cpyrit 1984
 .trdmrk
 
@@ -591,7 +591,7 @@ or when an error is made in specifying the command line.
 .code begin
 .in -3
 WATFOR>?
-&product &ver &cdate
+&product &verrev &cdate
 .cpyrit 1984
 .trdmrk
 

@@ -13,7 +13,7 @@ data item contains the increment by which the "break" pointer for
 memory allocation will be advanced when there is no freed block large
 enough to satisfy a request to allocate a block of memory.
 This value may be changed by a program at any time.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .df __argc
 .proto stdlib.h
 This
@@ -127,7 +127,7 @@ is
 .kw O_BINARY
 is the setting for binary mode.
 .*
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 You can change the value of
 .kw _fmode
 in either of two ways:
@@ -262,7 +262,7 @@ variable contains the operating system build number for the version of
 Windows executing on the computer.
 .do end
 .if '&machsys' ne 'QNX' .do begin
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .df _osver
 (Win32 only)
 .proto stdlib.h

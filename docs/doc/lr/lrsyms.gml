@@ -33,7 +33,6 @@
 .*
 .* define default values
 .*
-:set symbol="version"   value="130".
 :set symbol="company"   value="Open Watcom".
 :set symbol="farfnc"    value="1".
 :set symbol="sw"        value="-".

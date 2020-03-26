@@ -513,7 +513,7 @@
 ~b~b~b~b~b~b
 .br
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 :CMT. .note oa
 :hotlink refid='SWoa'.
 ~b~b~b~b~b~b

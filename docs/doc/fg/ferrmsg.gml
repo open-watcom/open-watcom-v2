@@ -63,7 +63,7 @@ If we compile this program with the "extensions" option, the following
 output appears on the screen.
 .code begin
 C>&ccmd16 demo1 /exten
-WATCOM FORTRAN 77/16 Optimizing Compiler Version &ver..&rev &cdate
+WATCOM FORTRAN 77/16 Optimizing Compiler Version &verrev &cdate
 .cpyrit 1984
 .trdmrk
 demo1.for(14): *EXT* DO-05 this DO loop form is not FORTRAN 77 standard

@@ -303,7 +303,7 @@ or
 .fi noemu87.lib
 will be used with the 80x87 math
 libraries depending on the use of the "fpi" (include emulation) or
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 "fpi87"
 .do end
 .el .do begin

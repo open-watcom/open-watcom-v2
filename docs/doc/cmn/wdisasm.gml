@@ -84,7 +84,7 @@ using object file source line information, imbed original source
 lines into the output file
 .note c=<code_name>
 name of additional segments that contain executable code
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .note i=<char>
 redefine the initial character of internal labels (default: L)
 .do end
@@ -104,7 +104,7 @@ include list of public names
 display register names in upper case
 .note u
 display instruction opcode mnemonics in upper case
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .note m
 leave C++ names mangled
 .do end
@@ -245,7 +245,7 @@ It is not possible to instruct the &disname to interpret segments
 whose name ends in "CODE" or "TEXT" as data.
 .eremark
 .*
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .*
 .section Changing the Internal Label Character - "i=<char>"
 .*
@@ -505,7 +505,7 @@ The "u" option instructs the &disname to display instruction opcode
 mnemonics in uppercase.
 The default is to display instruction opcode mnemonics in lowercase.
 .*
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .*
 .section Retain C++ Mangled Names  - "m"
 .*

@@ -836,7 +836,7 @@ The contents of the screen will appear similar to the following.
 :cmt. .cbox begin
 :cmt. .in -2
 :cmt. <beginning of file>
-:cmt. &product &ver &cdate
+:cmt. &product &verrev &cdate
 :cmt. .cpyrit 1984
 :cmt. .trdmrk
 :cmt.
@@ -1004,7 +1004,7 @@ following.
 :cmt. .cbox begin
 :cmt. .in -2
 :cmt. <beginning of file>
-:cmt. &product &ver &cdate
+:cmt. &product &verrev &cdate
 :cmt. .cpyrit 1984
 :cmt. .trdmrk
 :cmt.
@@ -1090,7 +1090,7 @@ the following.
 :cmt. .cbox begin
 :cmt. .in -2
 :cmt. <beginning of file>
-:cmt. &product &ver &cdate
+:cmt. &product &verrev &cdate
 :cmt. .cpyrit 1984
 :cmt. .trdmrk
 :cmt.
@@ -1182,7 +1182,7 @@ On the screen will appear something similar to the following:
 :cmt. .cp 18
 :cmt. .cbox begin
 :cmt. .in -2
-:cmt. &product &ver &cdate
+:cmt. &product &verrev &cdate
 :cmt. .cpyrit 1984
 :cmt. .trdmrk
 :cmt.

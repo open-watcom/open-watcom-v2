@@ -307,7 +307,7 @@ function; symbolic constants for the types of exceptions are included
 declares a complex number
 .sfend
 .*------------------------------
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .df mmintrin.h
 .ix 'Multimedia Extension'
 .ix 'MMX'

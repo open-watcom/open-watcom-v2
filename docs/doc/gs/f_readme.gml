@@ -26,7 +26,7 @@
 :TITLE stitle="Getting Started".&product
 :TITLE.Getting Started
 .if &e'&beta eq 1 .do begin
-:TITLE.(&ver..&rev Beta)
+:TITLE.(&verrev Beta)
 .do end
 :INCLUDE file='DOCTITLE'.
 :eTITLEP.

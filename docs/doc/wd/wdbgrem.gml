@@ -768,7 +768,7 @@ TCPSERV server program first.
 .exam begin
 A>tcpserv
 Socket port number: 3563
-&company TCP/IP Debug Server Version &ver..&rev
+&company TCP/IP Debug Server Version &verrev
 &cpyrit 1988
 Press 'q' to exit
 .exam end

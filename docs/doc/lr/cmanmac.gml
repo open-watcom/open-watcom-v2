@@ -210,7 +210,7 @@
 .* The funcw macro explicitly declares the "wide" name of a function
 .*
 .dm funcw begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .sr wfunc=&*
 .do end
 .dm funcw end
