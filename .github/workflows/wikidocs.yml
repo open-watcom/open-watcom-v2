@@ -10,10 +10,10 @@ on:
       - master
     paths:
       - '.github/workflows/wikidocs.yml'
-      - 'docs/*'
-      - 'bld/cg/doc/*'
-      - 'bld/dwarf/dw/doc/*'
-      - 'bld/wv/doc/*'
+      - 'docs/**'
+      - 'bld/cg/doc/**'
+      - 'bld/dwarf/dw/doc/**'
+      - 'bld/wv/doc/**'
 
 jobs:
   boot:
