@@ -131,7 +131,7 @@ typedef enum _NL_NEIGHBOR_STATE {
     NlnsIncomplete  = 1,
     NlnsProbe       = 2,
     NlnsDelay       = 3,
-    NlnsState       = 4,
+    NlnsStale       = 4,
     NlnsReachable   = 5,
     NlnsPermanent   = 6,
     NlnsMaximum     = 7
