@@ -76,7 +76,7 @@ void RemotePut( void __far *data, unsigned len )
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     int                 status;
     char                __far *buffer;
@@ -85,24 +85,24 @@ char RemoteConnect( void )
 
 #ifdef SERVER
     status = mal_sizeof( GetHandle );
-    if( status == 0 ) return( 0 );
+    if( status == 0 )
+        return( false );
     status = mal_read( GetHandle, &buffer, &buflen );
     if( *buffer == PATTERN ){
         PutHandle = mal_of( mal_addr( GetHandle ) );
         pattern = PATTERN;
         mal_write( PutHandle, &pattern, sizeof(pattern) );
-        return( 1 );
+        return( true );
     }
-    return( 0 );
 #else
     pattern = PATTERN;
     mal_write( PutHandle, &pattern, sizeof( pattern ) );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer != PATTERN ){
-        return( 0 );
+    if( *buffer == PATTERN ){
+        return( true );
     }
-    return( 1 );
 #endif
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -147,6 +147,6 @@ const char *RemoteLink( const char __far *parms, char server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-        mal_free( GetHandle );
+    mal_free( GetHandle );
 #endif
 }

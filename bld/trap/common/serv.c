@@ -120,7 +120,8 @@ int main( int argc, char **argv )
         Output( TRP_MSG_press_q );
         Output( "\r\n" );
         for( ;; ) {
-            if( RemoteConnect() ) break;
+            if( RemoteConnect() )
+                break;
             NothingToDo();
             if( KeyPress() ) {
                 key = KeyGet();

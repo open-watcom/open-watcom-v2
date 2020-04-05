@@ -63,9 +63,6 @@
 
 #define CRC_VAL                 0x1021 /* value for CRC */
 
-#define SUCCESS                 1  /* this MUST be defined as non-zero */
-#define FAIL                    0  /* this MUST be defined as 0 */
-
 typedef struct baud_entry {
     char            *name;
     int             len;
