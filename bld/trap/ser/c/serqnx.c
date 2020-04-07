@@ -61,18 +61,16 @@ unsigned long                           NSecScale;
 
 extern int                              MaxBaud;
 
-#define MILLISEC_PER_TICK       55
-
 
 #define GET_MSECS (SysTime->nsec / NSecScale + (SysTime->seconds-StartSecs) * 1000)
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
     MSecsAtZero = GET_MSECS;
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
     return( ( GET_MSECS - MSecsAtZero ) / MILLISEC_PER_TICK );
 }
@@ -287,8 +285,8 @@ void Wait( unsigned timer_ticks )
 {
     unsigned    wait_time;
 
-    wait_time = WaitCount() + timer_ticks;
-    while( WaitCount() < wait_time ) {
+    wait_time = GetTimerTicks() + timer_ticks;
+    while( GetTimerTicks() < wait_time ) {
         Yield();
     }
 }

@@ -35,7 +35,7 @@
                 EXTRN   _dos_setvect_:NEAR
                 EXTRN   _dos_getvect_:NEAR
 
-                EXTRN   _Ticks:WORD
+                EXTRN   _TimerTicks:WORD
                 EXTRN   _IntVector:WORD
                 EXTRN   _IOBase:WORD
                 EXTRN   _ErrorFlag:WORD
@@ -255,7 +255,7 @@ timer_int       proc    far
 
                 ASSUME  DS:DGROUP
 
-                inc     word ptr ds:_Ticks
+                inc     word ptr ds:_TimerTicks
                 pop     ds
 
                 ASSUME  DS:NOTHING

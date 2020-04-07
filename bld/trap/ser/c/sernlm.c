@@ -48,13 +48,13 @@ int                                     PortNumber = -1;
 int                                     ComPortHandle;
 struct TimerDataStructure               TimerData;
 int                                     CurrentBaud;
-unsigned                                Ticks;
 
+static unsigned                         TimerTicks;
 
 static void Tick( LONG dummy )
 {
     dummy = dummy;
-    Ticks++;
+    TimerTicks++;
     CScheduleInterruptTimeCallBack( &TimerData );
 }
 
@@ -68,15 +68,15 @@ static void SetupTimerData( void )
 }
 
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
-    Ticks = 0;
+    TimerTicks = 0;
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
-    return( Ticks );
+    return( TimerTicks );
 }
 
 

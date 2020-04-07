@@ -41,12 +41,12 @@ int WaitByte( unsigned timer_ticks )
     unsigned wait_time;      /* timer variable for testing time-out */
     int      data;           /* storing data from receive buffer */
 
-    wait_time = WaitCount() + timer_ticks;
+    wait_time = GetTimerTicks() + timer_ticks;
     for( ;; ) {
         data = GetByte();
         if( data != SDATA_NO_DATA )
             break;    /* character received */
-        if( WaitCount() >= wait_time )
+        if( GetTimerTicks() >= wait_time )
             break;
         NothingToDo();
     }
@@ -58,6 +58,6 @@ void Wait( unsigned timer_ticks )
 {
     unsigned wait_time;
 
-    wait_time = WaitCount() + timer_ticks;
-    while( WaitCount() < wait_time );
+    wait_time = GetTimerTicks() + timer_ticks;
+    while( GetTimerTicks() < wait_time );
 }

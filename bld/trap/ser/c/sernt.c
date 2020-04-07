@@ -44,7 +44,7 @@ int ErrorFlag;
 int BreakFlag;
 
 static int currentBaudRateIndex;
-static DWORD lastTickReset;
+static DWORD resetTickCount;
 
 static HANDLE hSerial = INVALID_HANDLE_VALUE;
 static int comPortNumber = 1;
@@ -76,15 +76,15 @@ static void Trace(const char* fmt, ...)
     va_end( va );
 }
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
-    lastTickReset = GetTickCount();
+    resetTickCount = GetTickCount();
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
-    return( (GetTickCount() - lastTickReset) / 55 );
+    return( (GetTickCount() - resetTickCount) / MILLISEC_PER_TICK );
 }
 
 
@@ -104,7 +104,7 @@ char *InitSys( void )
 
     currentBaudRateIndex = -1;
 
-    ZeroWaitCount();
+    ResetTimerTicks();
 
     hSerial = CreateFile( deviceFileName,
         GENERIC_READ | GENERIC_WRITE,
@@ -240,7 +240,7 @@ void ClearCom( void )
 void SendABreak( void )
 {
     EscapeCommFunction( hSerial, SETBREAK );
-    Sleep( BREAK_TIME * 55 );
+    Sleep( BREAK_TIME * MILLISEC_PER_TICK );
     EscapeCommFunction( hSerial, CLRBREAK );
 }
 

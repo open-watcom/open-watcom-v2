@@ -45,14 +45,14 @@ static int hWait = 0;
 static int comPortNumber = 1;
 static unsigned long lastLsb;
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
     unsigned long msb;
 
     RdosGetSysTime( &msb, &lastLsb );
 }
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
     unsigned long msb;
     unsigned long lsb;
@@ -64,7 +64,7 @@ unsigned WaitCount( void )
 
 void Wait( unsigned timer_ticks )
 {
-    RdosWaitMilli( 55 * timer_ticks );
+    RdosWaitMilli( MILLISEC_PER_TICK * timer_ticks );
 }
 
 char *InitSys( void )
@@ -115,7 +115,7 @@ int WaitByte( unsigned ticks )
         RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
-    if ( RdosWaitTimeout( hWait, 500 + 55 * ticks ) != 0 )
+    if ( RdosWaitTimeout( hWait, 500 + MILLISEC_PER_TICK * ticks ) != 0 )
         return (int)RdosReadCom( hSerial );
     return SDATA_NO_DATA;
 }

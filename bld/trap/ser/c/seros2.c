@@ -71,8 +71,6 @@ bool                            BlockTransmission;
 
 extern int                      MaxBaud;
 
-#define MILLISEC_PER_TICK       55
-
 #define SERIAL          0x0001
 
 #define SETLINECTRL     0x0042
@@ -91,7 +89,7 @@ extern int                      MaxBaud;
 #define INPUT           0x0001
 #define OUTPUT          0x0002
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
 #ifdef _M_I86
     MSecsAtZero = GInfoSeg->msecs;
@@ -101,7 +99,7 @@ void ZeroWaitCount( void )
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
 #ifdef _M_I86
     return( ( GInfoSeg->msecs - MSecsAtZero ) / MILLISEC_PER_TICK );
@@ -377,8 +375,8 @@ void Wait( unsigned timer_ticks )
 {
     unsigned wait_time;
 
-    wait_time = WaitCount() + timer_ticks;
-    while( WaitCount() < wait_time ) {
+    wait_time = GetTimerTicks() + timer_ticks;
+    while( GetTimerTicks() < wait_time ) {
         DosSleep( MILLISEC_PER_TICK / 2 );      /* half a timer tick */
     }
 }
