@@ -75,7 +75,6 @@
 #define MSR_CTS         0x10 /* Clear To Send */
 #define MSR_DSR         0x20 /* Data Set Ready */
 
-#define BREAK_TIME      4   /* 4 ticks = 4 * 55 = 220 ms */
 
 /*
  * code and data shared with assembly code in serint.asm
@@ -205,7 +204,7 @@ void SendABreak( void )
     lcr_value = inp( LCR );                /* LCR contents */
     outp( LCR, lcr_value | LCR_BREAK );    /* set break bit on */
     SendByte( 0 );                         /* interrupt other side */
-    Wait( BREAK_TIME );                    /* hold it there */
+    Wait( MSEC2TICK( BREAK_TIME_MS ) );    /* hold it there */
     lcr_value &= (~LCR_BREAK);             /* assure break bit is off */
     outp( LCR, lcr_value );                /* restore lcr content */
 }

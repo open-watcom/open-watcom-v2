@@ -38,8 +38,6 @@
 #include "serlink.h"
 
 
-#define BREAK_TIME      4       // In DOS timer ticks, I think (55ms)
-
 int ErrorFlag;
 int BreakFlag;
 
@@ -240,7 +238,7 @@ void ClearCom( void )
 void SendABreak( void )
 {
     EscapeCommFunction( hSerial, SETBREAK );
-    Sleep( BREAK_TIME * MILLISEC_PER_TICK );
+    Sleep( BREAK_TIME_MS );
     EscapeCommFunction( hSerial, CLRBREAK );
 }
 

@@ -35,7 +35,8 @@
 #define MSEC2TICK( amt )        (((amt) + MILLISEC_PER_TICK / 2) / MILLISEC_PER_TICK)
 #define SEC2TICK( amt )         (MSEC2TICK( (amt) * 1000L ))
 #define MAX_BAUD_SET_TICKS      6
-#define FOREVER                 0 /* must be defined as 0 */
+#define BREAK_TIME_MS           250 /* ms (~4 tiscks) */
+#define FOREVER                 0   /* must be defined as 0 */
 
 #define SDATA_HI                0x01 /* start of conversation */
 #define SDATA_STX               0x02 /* start of text */
