@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #ifndef __UNIX__
     #include <direct.h>
 #endif

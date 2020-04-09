@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 #include "watcom.h"
 #include "stdui.h"
 #include "helpmem.h"
