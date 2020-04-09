@@ -546,8 +546,13 @@ typedef int             CATTR;          /* cursor attributes type */
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
+  #if 1
+    #define __FAR
+    #undef HAVE_FAR
+  #else
     #define __FAR       __far   /* ?? on netware probably should be near ?? */
     #define HAVE_FAR
+  #endif
     #undef UIDBCS
 #elif defined( _M_IX86 )        /* 32-bit DOS */
     typedef struct pixel {
