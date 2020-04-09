@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2014-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -56,7 +56,31 @@ typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
 #endif
 
 #if defined( __WINDOWS__ )
+
+#if defined( _M_I86 )
+extern void MAKEPROCINSTANCE_WIN(void);
+#pragma aux MAKEPROCINSTANCE_WIN "MAKEPROCINSTANCE"
+
+#define MAKEPROCINSTANCE_INLINE \
+        "push dx" \
+        "push ax" \
+        "push bx" \
+        "call far ptr MAKEPROCINSTANCE_WIN" \
+    __parm [__dx __ax] [__bx] __value [__dx __ax] __modify [__cx __es]
+
+#define GETWNDPROC_INLINE \
+    __parm [__dx __ax] __value [__dx __ax]
+#else
+#define MAKEPROCINSTANCE_INLINE \
+    __parm [__dx __eax] [__bx] __value [__eax]
+
+#define GETWNDPROC_INLINE \
+    __parm [__dx __eax] __value [__eax]
+#endif
+
 extern WNDPROC              GetWndProc( WNDPROCx p );
+#pragma aux GetWndProc = GETWNDPROC_INLINE
+
 extern DLGPROC              MakeProcInstance_DLG( DLGPROCx fn, HINSTANCE instance );
 extern FONTENUMPROC         MakeProcInstance_FONTENUM( FONTENUMPROCx fn, HINSTANCE instance );
 extern OLDFONTENUMPROC      MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROCx fn, HINSTANCE instance );
@@ -64,6 +88,13 @@ extern HOOKPROC             MakeProcInstance_HOOK( HOOKPROCx fn, HINSTANCE insta
 extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTANCE instance );
 extern WNDENUMPROC          MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE instance );
 extern WNDPROC              MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_DLG        = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_FONTENUM   = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_OLDFONTENUM = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_HOOK       = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_OFNHOOK    = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_WNDENUM    = MAKEPROCINSTANCE_INLINE
+#pragma aux MakeProcInstance_WND        = MAKEPROCINSTANCE_INLINE
 #else
 #define GetWndProc(p)                       p
 #define MakeProcInstance_DLG(f,i)           ((void)i,f)
@@ -76,13 +107,29 @@ extern WNDPROC              MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instanc
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
-void FreeProcInstance_DLG( DLGPROC f );
-void FreeProcInstance_FONTENUM( FONTENUMPROC f);
-void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC f);
-void FreeProcInstance_HOOK( HOOKPROC f );
-void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
-void FreeProcInstance_WNDENUM( WNDENUMPROC f );
-void FreeProcInstance_WND( WNDPROC f );
+extern void FREEPROCINSTANCE_WIN(void);
+#pragma aux FREEPROCINSTANCE_WIN "FREEPROCINSTANCE"
+
+#define FREEPROCINSTANCE_INLINE \
+        "push dx" \
+        "push ax" \
+        "call far ptr FREEPROCINSTANCE_WIN" \
+    __parm [__dx __ax] __modify [__bx __cx __es]
+
+extern void FreeProcInstance_DLG( DLGPROC f );
+extern void FreeProcInstance_FONTENUM( FONTENUMPROC f);
+extern void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC f);
+extern void FreeProcInstance_HOOK( HOOKPROC f );
+extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
+extern void FreeProcInstance_WNDENUM( WNDENUMPROC f );
+extern void FreeProcInstance_WND( WNDPROC f );
+#pragma aux FreeProcInstance_DLG        = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_FONTENUM   = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_OLDFONTENUM = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_HOOK       = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_OFNHOOK    = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_WNDENUM    = FREEPROCINSTANCE_INLINE
+#pragma aux FreeProcInstance_WND        = FREEPROCINSTANCE_INLINE
 #else
 #define FreeProcInstance_DLG(f)             ((void)f)
 #define FreeProcInstance_FONTENUM(f)        ((void)f)

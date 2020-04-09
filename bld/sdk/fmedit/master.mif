@@ -39,8 +39,6 @@ objs =  align.obj       &
         keybd.obj       &
         verdll.obj
 
-objs_win = wclbproc.obj
-
 objs = $(objs) $(objs_$(host_os))
 
 #

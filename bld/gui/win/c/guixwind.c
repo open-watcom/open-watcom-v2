@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "guirdlg.h"
 #include "guimdi.h"
 #include "guistat.h"
+#include "wclbproc.h"
 
 
 #if !defined(__NT__)
@@ -181,15 +182,18 @@ void GUIDestroyWnd( gui_window *wnd )
     }
 }
 
-static bool DoRegisterClass( WPI_INST hinst, char *class_name, WPI_CLASSPROC win_call_back, UINT style, int extra )
-{
 #ifdef __OS2_PM__
+static bool DoRegisterClass( WPI_INST hinst, char *class_name, PFNWP win_call_back, UINT style, int extra )
+{
     return( WinRegisterClass( hinst.hab, class_name, win_call_back, CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY | style, extra ) );
+}
 #else
+static bool DoRegisterClass( WPI_INST hinst, char *class_name, WNDPROCx win_call_back, UINT style, int extra )
+{
     WNDCLASS    wc;
 
     wc.style = style;
-    wc.lpfnWndProc = win_call_back;
+    wc.lpfnWndProc = GetWndProc( win_call_back );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
@@ -200,8 +204,8 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name, WPI_CLASSPROC win
     wc.lpszClassName = class_name;
 
     return( RegisterClass( &wc ) != 0 );
-#endif
 }
+#endif
 /*
  * SetupClass - Register the GUIClass class
  */
@@ -209,10 +213,10 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name, WPI_CLASSPROC win
 static bool SetupClass( void )
 
 {
-    if( DoRegisterClass( GUIMainHInst, GUIClass, (WPI_CLASSPROC)GUIWindowProc,
+    if( DoRegisterClass( GUIMainHInst, GUIClass, GUIWindowProc,
                          REGISTER_STYLE, EXTRA_SIZE * NUM_EXTRA_WORDS ) ) {
 
-        return( DoRegisterClass( GUIMainHInst, GUIDialogClass, (WPI_CLASSPROC)GUIWindowProc,
+        return( DoRegisterClass( GUIMainHInst, GUIDialogClass, GUIWindowProc,
                                  REGISTER_DIALOG_STYLE, EXTRA_SIZE * NUM_EXTRA_WORDS ) );
     }
     return( false );

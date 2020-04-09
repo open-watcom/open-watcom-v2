@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,7 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
+#include "wclbproc.h"
 
 
 typedef struct dialog_wnd_node {
@@ -401,7 +403,9 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
 WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
     WPI_WNDPROC old;
+#ifdef __OS2_PM__
     WPI_WNDPROC new;
+#endif
 
     //CvrCtl3dSubclassCtl( hwnd );
 
@@ -410,12 +414,22 @@ WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
+#ifdef __OS2_PM__
         new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
+#else
+        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
+        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIEditFunc, GUIMainHInst ) );
+#endif
         return( old );
     case GUI_GROUPBOX:
+#ifdef __OS2_PM__
         new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
+#else
+        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
+        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIGroupBoxFunc, GUIMainHInst ) );
+#endif
         return( old );
     default :
         return( NULL );

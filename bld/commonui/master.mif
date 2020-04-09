@@ -64,7 +64,6 @@ msgfiles = &
 !inject statwnd.obj   nt win os2         # shared with gui project
 !inject strsup.obj    nt win
 !inject toolbr.obj    nt win os2         # shared with gui project
-!inject wclbproc.obj     win     win386
 !inject windlg.obj    nt win             # shared with gui project
 !inject wmdisim.obj   nt win os2         # shared with gui project
 !inject wwinhelp.obj  nt win             # shared with gui project
