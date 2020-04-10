@@ -45,8 +45,8 @@ typedef struct vfieldedit {
     VFIELD_EDIT _FARD *fieldlist;   /* first vfield in linked list of vfields  */
     VFIELD_EDIT _FARD *curfield;    /* current vfield (might be NULL)          */
     VFIELD_EDIT _FARD *prevfield;   /* last vfield (might be NULL)             */
-    ATTR        enter;              /* attribute used to echo current field    */
-    ATTR        exit;               /* used when cursor leaves current field   */
+    ATTR        enter_attr;         /* attribute used to echo current field    */
+    ATTR        exit_attr;          /* used when cursor leaves current field   */
     char        _FARD *buffer;      /* buffer of characters being editted      */
                                     /*                           SET  RESET    */
     boolbit     oktomodify   :1;    /* user can edit buffer      app   app     */
