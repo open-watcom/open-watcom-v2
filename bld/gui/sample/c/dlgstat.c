@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -240,7 +241,7 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
 
     switch( gui_ev ) {
     case GUI_PAINT :
-        GUIGetRGB( GUI_BRIGHT_YELLOW, &rgb );
+        GUIGetRGB( GUI_BR_YELLOW, &rgb );
         GUIGetRGB( GUI_GREEN, &green );
         GUIDrawTextRGB( gui, "Line Draw!", 10, 0, 1, green, rgb );
         GUIDrawTextRGB( gui, "Line Draw!", 10, 1, 1, rgb, green );

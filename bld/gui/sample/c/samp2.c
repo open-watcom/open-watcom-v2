@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,15 +92,15 @@ static int Row;
 static int NumEnters = 0;
 
 static gui_colour_set StatusColours[GUI_NUM_ATTRS + 1] = {
-    /* Fore              Back        */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_PLAIN     */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_STANDOUT  */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_BACKGROUND     */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_TITLE_ACTIVE   */
-    GUI_GREY,          GUI_WHITE,   /* GUI_TITLE_INACTIVE */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_FRAME_ACTIVE   */
-    GUI_GREY,          GUI_WHITE,   /* GUI_FRAME_INACTIVE */
-    GUI_BRIGHT_WHITE,  GUI_MAGENTA  /* GUI_FIRST_UNUSED   */
+    /* Fore          Back        */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_MENU_PLAIN     */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_MENU_STANDOUT  */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_BACKGROUND     */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_TITLE_ACTIVE   */
+    GUI_GREY,      GUI_WHITE,   /* GUI_TITLE_INACTIVE */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_FRAME_ACTIVE   */
+    GUI_GREY,      GUI_WHITE,   /* GUI_FRAME_INACTIVE */
+    GUI_BR_WHITE,  GUI_MAGENTA  /* GUI_FIRST_UNUSED   */
 };
 
 static gui_create_info StatusWnd = {
@@ -118,8 +118,8 @@ static gui_create_info StatusWnd = {
 };
 
 static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] = {
-    { GUI_BRIGHT_WHITE, GUI_BLUE },
-    { GUI_BRIGHT_WHITE, GUI_BLUE }
+    { GUI_BR_WHITE, GUI_BLUE },
+    { GUI_BR_WHITE, GUI_BLUE }
 };
 
 static char * text = NULL;

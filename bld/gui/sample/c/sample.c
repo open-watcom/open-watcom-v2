@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,7 +278,7 @@ static  gui_key         KeyDownKey;
 static  gui_rect        ScreenRect      = { 500, 500, WIDTH, HEIGHT };
 static  gui_rect        ScaleRect       = { 500, 500, WIDTH, HEIGHT };
 static  gui_coord       Scale           = { WIDTH, HEIGHT };
-static  gui_colour_set  StatusColour    = { GUI_BRIGHT_WHITE, GUI_CYAN };
+static  gui_colour_set  StatusColour    = { GUI_BR_WHITE, GUI_CYAN };
 
 static void HandlePopup( gui_window *gui, gui_rect *rect, gui_ctl_id id )
 {
@@ -1257,12 +1257,11 @@ bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUIGetTextMetrics( gui, &text_metrics );
 //      GUIDrawLine( gui, &StartPoint, &EndPoint, GUI_PEN_SOLID,
 //                  text_metrics.avg.x, GUI_FIRST_UNUSED );
-        GUIGetRGB( GUI_BRIGHT_YELLOW, &rgb );
+        GUIGetRGB( GUI_BR_YELLOW, &rgb );
         GUIGetRGB( GUI_GREEN, &green );
         GUIDrawTextRGB( gui, "Line Draw!", 10, 1, 1, rgb, green );
         GUIDrawTextPosRGB( gui, "Line Draw!", 10, (gui_coord *)&StartPoint, green, rgb );
-        GUIDrawLineRGB( gui, &StartPoint, &EndPoint, GUI_PEN_SOLID, 6,
-                        rgb );
+        GUIDrawLineRGB( gui, &StartPoint, &EndPoint, GUI_PEN_SOLID, 6, rgb );
         GUIFillRect( gui, &SFillRect, GUI_BLUE );
         GUIDrawBar( gui,  6, 1, 20, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, false );
         GUIDrawTextRGB( gui, "Simple Bars", 11, 6, 75, rgb, green );
