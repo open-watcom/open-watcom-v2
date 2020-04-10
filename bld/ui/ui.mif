@@ -94,6 +94,11 @@ common_objs = &
 
 objs = $(common_objs) $(trmem_objs) $($(ui_os))
 
+!ifdef sample
+all: $(name).lib sample.$(exe_ext) .SYMBOLIC
+    @%null
+!endif
+
 $(name).lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
@@ -103,21 +108,25 @@ $(name).lib: $(objs) $(__MAKEFILES__)
 !endif
 
 !ifeq SAMPLE_MODE WIN_C_M_J
-sample.exe : samplew.obj sampdial.obj $(ui_lib) $(__MAKEFILES__)
+sample.$(exe_ext) : samplew.obj sampdial.obj $(ui_lib) $(__MAKEFILES__)
     $(noecho)%create sample.lnk
-    @%append sample.lnk system windows op m D A library {$(ui_lib)}
-    @%append sample.lnk n sample
-    @%append sample.lnk f samplew f sampdial
+    @%append sample.lnk system windows 
+    @%append sample.lnk option map debug all 
+    @%append sample.lnk library {$(ui_lib)}
+    @%append sample.lnk name $@
+    @%append sample.lnk file {samplew.obj sampdial.obj}
     @%append sample.lnk import DEATH GDI.121
     @%append sample.lnk import RESURRECTION GDI.122
     @%make echo_link
     $(linker) @sample.lnk
 !else ifeq SAMPLE_MODE WIN_C_M
-sample.exe : samplew.obj sampdial.obj swap.obj $(ui_lib) $(__MAKEFILES__)
+sample.$(exe_ext) : samplew.obj sampdial.obj swap.obj $(ui_lib) $(__MAKEFILES__)
     $(noecho)%create sample.lnk
-    @%append sample.lnk system windows op m D A library {$(ui_lib)}
-    @%append sample.lnk n sample
-    @%append sample.lnk f samplew f sampdial f swap
+    @%append sample.lnk system windows 
+    @%append sample.lnk option map debug all 
+    @%append sample.lnk library {$(ui_lib)}
+    @%append sample.lnk name $@
+    @%append sample.lnk file {samplew.obj sampdial.obj swap.obj}
     @%append sample.lnk import DEATH GDI.121
     @%append sample.lnk import RESURRECTION GDI.122
     @%make echo_link
@@ -128,7 +137,7 @@ sample.$(exe_ext) : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
     $(noecho)%create $^&.lnk
 !ifeq host_os nov
     @%append $^&.lnk opt st=10k
-    @%append $^&.lnk opt de 'Sample NLM'
+    @%append $^&.lnk opt description 'Sample NLM'
     @%append $^&.lnk debug novell
     @%append $^&.lnk module clib
     @%append $^&.lnk import @$(nwoss_dir)/common/imp/ownwos.imp

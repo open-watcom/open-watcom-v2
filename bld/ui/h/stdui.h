@@ -210,82 +210,82 @@ typedef enum ui_event {
     EV_LAST_KEYBOARD             = 0x01ff,
 #endif
     EV_SHOW_FIELD                = 0x0200,
-    EV_MODIFIED_FIELD,
-    EV_LINE_CHANGE,
-    EV_MOUSE_HOLD,
-    EV_MOUSE_PRESS,
-    EV_MOUSE_DRAG,
-    EV_MOUSE_RELEASE,
-    EV_BUFFER_FULL,
-    EV_FIELD_CHANGE,
-    EV_ALT_PRESS,
-    EV_ALT_RELEASE,
-    EV_MOUSE_DCLICK,
-    EV_MOUSE_REPEAT,
-    EV_SHIFT_PRESS,
-    EV_SHIFT_RELEASE,
-    EV_CTRL_PRESS,
-    EV_CTRL_RELEASE,
-    EV_SCROLL_PRESS,
-    EV_SCROLL_RELEASE,
-    EV_NUM_PRESS,
-    EV_NUM_RELEASE,
-    EV_CAPS_PRESS,
-    EV_CAPS_RELEASE,
-    EV_INSERT_PRESS,
-    EV_INSERT_RELEASE,
+    EV_MODIFIED_FIELD,          // 0x0201
+    EV_LINE_CHANGE,             // 0x0202
+    EV_MOUSE_HOLD,              // 0x0203
+    EV_MOUSE_PRESS,             // 0x0204
+    EV_MOUSE_DRAG,              // 0x0205
+    EV_MOUSE_RELEASE,           // 0x0206
+    EV_BUFFER_FULL,             // 0x0207
+    EV_FIELD_CHANGE,            // 0x0208
+    EV_ALT_PRESS,               // 0x0209
+    EV_ALT_RELEASE,             // 0x020A
+    EV_MOUSE_DCLICK,            // 0x020B
+    EV_MOUSE_REPEAT,            // 0x020C
+    EV_SHIFT_PRESS,             // 0x020D
+    EV_SHIFT_RELEASE,           // 0x020E
+    EV_CTRL_PRESS,              // 0x020F
+    EV_CTRL_RELEASE,            // 0x0210
+    EV_SCROLL_PRESS,            // 0x0211
+    EV_SCROLL_RELEASE,          // 0x0212
+    EV_NUM_PRESS,               // 0x0213
+    EV_NUM_RELEASE,             // 0x0214
+    EV_CAPS_PRESS,              // 0x0215
+    EV_CAPS_RELEASE,            // 0x0216
+    EV_INSERT_PRESS,            // 0x0217
+    EV_INSERT_RELEASE,          // 0x0218
 
-    EV_CLOCK_TICK,
-    EV_SINK,
+    EV_CLOCK_TICK,              // 0x0219
+    EV_SINK,                    // 0x021A
 
-    EV_MOUSE_HOLD_R,
-    EV_MOUSE_PRESS_R,
-    EV_MOUSE_DRAG_R,
-    EV_MOUSE_RELEASE_R,
-    EV_MOUSE_DCLICK_R,
-    EV_MOUSE_REPEAT_R,
-    EV_MOUSE_HOLD_M,
-    EV_MOUSE_PRESS_M,
-    EV_MOUSE_DRAG_M,
-    EV_MOUSE_RELEASE_M,
-    EV_MOUSE_DCLICK_M,
-    EV_MOUSE_REPEAT_M,
+    EV_MOUSE_HOLD_R,            // 0x021B
+    EV_MOUSE_PRESS_R,           // 0x021C
+    EV_MOUSE_DRAG_R,            // 0x021D
+    EV_MOUSE_RELEASE_R,         // 0x021E
+    EV_MOUSE_DCLICK_R,          // 0x021F
+    EV_MOUSE_REPEAT_R,          // 0x0220
+    EV_MOUSE_HOLD_M,            // 0x0221
+    EV_MOUSE_PRESS_M,           // 0x0222
+    EV_MOUSE_DRAG_M,            // 0x0223
+    EV_MOUSE_RELEASE_M,         // 0x0224
+    EV_MOUSE_DCLICK_M,          // 0x0225
+    EV_MOUSE_REPEAT_M,          // 0x0226
 
-    EV_TOP,
-    EV_BOTTOM,
+    EV_TOP,                     // 0x0227
+    EV_BOTTOM,                  // 0x0228
 
-    EV_BUMP_RIGHT,
-    EV_BUMP_LEFT,
-    EV_JOIN_RIGHT,
-    EV_JOIN_LEFT,
-    EV_SPLIT,
-    EV_SCROLL_LINE_UP,
-    EV_SCROLL_LINE_DOWN,
-    EV_SCROLL_PAGE_UP,
-    EV_SCROLL_PAGE_DOWN,
-    EV_SCROLL_LEFT_FIELD,
-    EV_SCROLL_RIGHT_FIELD,
-    EV_SCROLL_LEFT_PAGE,
-    EV_SCROLL_RIGHT_PAGE,
-    EV_SCROLL_VERTICAL,
-    EV_SCROLL_HORIZONTAL,
+    EV_BUMP_RIGHT,              // 0x0229
+    EV_BUMP_LEFT,               // 0x022A
+    EV_JOIN_RIGHT,              // 0x022B
+    EV_JOIN_LEFT,               // 0x022C
+    EV_SPLIT,                   // 0x022D
+    EV_SCROLL_LINE_UP,          // 0x022E
+    EV_SCROLL_LINE_DOWN,        // 0x022F
+    EV_SCROLL_PAGE_UP,          // 0x0230
+    EV_SCROLL_PAGE_DOWN,        // 0x0231
+    EV_SCROLL_LEFT_FIELD,       // 0x0232
+    EV_SCROLL_RIGHT_FIELD,      // 0x0233
+    EV_SCROLL_LEFT_PAGE,        // 0x0234
+    EV_SCROLL_RIGHT_PAGE,       // 0x0235
+    EV_SCROLL_VERTICAL,         // 0x0236
+    EV_SCROLL_HORIZONTAL,       // 0x0237
 
-    EV_IDLE,
-    EV_BUFFER_CLEAR,
+    EV_IDLE,                    // 0x0238
+    EV_BUFFER_CLEAR,            // 0x0239
 
-    EV_MOUSE_MOVE,
-    EV_LIST_BOX_CHANGED,
-    EV_MENU_ACTIVE,
-    EV_MENU_INITPOPUP,
-    EV_LIST_BOX_DCLICK,
-    EV_LIST_BOX_CLOSED,
-    EV_BACKGROUND_RESIZE,
+    EV_MOUSE_MOVE,              // 0x023A
+    EV_LIST_BOX_CHANGED,        // 0x023B
+    EV_MENU_ACTIVE,             // 0x023C
+    EV_MENU_INITPOPUP,          // 0x023D
+    EV_LIST_BOX_DCLICK,         // 0x023E
+    EV_LIST_BOX_CLOSED,         // 0x023F
+    EV_BACKGROUND_RESIZE,       // 0x0240
 
     // NOTE: This event should always be passed up, from all functions.
-    EV_KILL_UI,
+    EV_KILL_UI,                 // 0x0241
 
-    EV_CHECK_BOX_CLICK,
-    EV_REDRAW_SCREEN,
+    EV_CHECK_BOX_CLICK,         // 0x0242
+    EV_REDRAW_SCREEN,           // 0x0243
 
     EV_STICKY_FUNC               = 0x03F0,
     EV_STICKY_SHIFT,            // 0x03F1

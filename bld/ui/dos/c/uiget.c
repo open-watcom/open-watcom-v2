@@ -38,6 +38,8 @@
 #include "uidos.h"
 
 
+#define MILLISEC_PER_TICK       55L
+
 MOUSETIME UIAPI uiclock( void )
 /*****************************
  * this routine get time in platform dependant units,
@@ -53,7 +55,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  * dependant units - used to set mouse & timer delays
  */
 {
-    return( ( milli * 18L ) / 1000L );
+    return( ( milli + MILLISEC_PER_TICK / 2 ) / MILLISEC_PER_TICK );
 }
 
 void UIAPI uiflush( void )

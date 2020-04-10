@@ -45,6 +45,8 @@
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 #define _osmode_PROTMODE()  (_osmode == OS2_MODE)
 
+#define MILLISEC_PER_TICK   55L
+
 MOUSETIME UIAPI uiclock( void )
 /*****************************
  * this routine get time in platform dependant units,
@@ -68,7 +70,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
 #ifdef _M_I86
     if( _osmode_REALMODE() )
         /* convert milliseconds to ticks */
-        return( ( milli * 18L ) / 1000L );
+        return( ( milli + MILLISEC_PER_TICK / 2 ) / MILLISEC_PER_TICK );
 #endif
     return( milli );
 }

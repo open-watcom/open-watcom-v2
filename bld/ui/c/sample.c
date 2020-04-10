@@ -214,6 +214,7 @@ static an_event_string      evstrs[] = {
     { EV_ALT_RELEASE,       "EV_ALT_RELEASE" },
     { EV_IDLE,              "EV_IDLE" },
     { EV_MENU_INITPOPUP,    "EV_MENU_INITPOPUP" },
+    { EV_CLOCK_TICK,        "EV_CLOCK_TICK" },
     { EV_BACKGROUND_RESIZE, "EV_BACKGROUND_RESIZE" },
     { ___,                  NULL }
 };

@@ -106,7 +106,7 @@ ui_event UIAPI uieventsource( bool update )
                 }
             }
         } else {
-            proc = (event_proc)RdosWaitTimeout( WaitHandle, 25 );
+            proc = (event_proc)RdosWaitTimeout( WaitHandle, 25 /* ms */ );
             if( proc != NULL ) {
                 ui_ev = (*proc)();
                 if( ui_ev > EV_NO_EVENT ) {
@@ -127,7 +127,7 @@ ui_event UIAPI uieventsource( bool update )
                 }
             }
 
-            proc = (event_proc)RdosWaitTimeout( WaitHandle, 250 );
+            proc = (event_proc)RdosWaitTimeout( WaitHandle, 250 /* ms */ );
             if( proc != NULL ) {
                 ui_ev = (*proc)();
                 if( ui_ev > EV_NO_EVENT ) {
