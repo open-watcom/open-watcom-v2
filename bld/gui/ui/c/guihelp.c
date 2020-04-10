@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,18 +87,21 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
 
 bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 {
+    bool colours_set;
     const char *helpfiles[2] = { NULL, NULL };
 
     /* unused parameters */ (void)wnd;
 
     helpfiles[0] = file;
-    GUISetDialColours();
+    colours_set = GUISetDialColours();
     uipoplist( /* GUIAllEvents */ );
     helpinit( helpfiles, NULL );
     showhelp( topic, NULL, HELPLANG_ENGLISH );
     helpfini();
     uipushlist( GUIAllEvents );
-    GUIResetDialColours();
+    if( colours_set ) {
+        GUIResetDialColours();
+    }
     return( true );
 }
 

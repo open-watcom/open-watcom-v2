@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -775,6 +775,8 @@ extern int              UIAPI uimousealign( void );
 
 extern void             UIAPI UIMemOpen( void );
 extern void             UIAPI UIMemClose( void );
+
+extern int              UIAPI uisetattr( ATTR attr, int val );
 
 /*
  * Application related functions

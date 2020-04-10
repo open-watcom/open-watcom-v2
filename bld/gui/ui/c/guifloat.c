@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,6 +145,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     gui_window  *top;
     SAREA       area;
     DESCMENU    desc;
+    bool        ok;
 
     MenuWnd = wnd;
     if( MenuState == MENU_NONE ) {
@@ -153,21 +154,13 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     if( menuitems == NULL ) {
         return( EV_NO_EVENT );
     }
-    attr_active         = UIData->attrs[ATTR_ACTIVE];
-    attr_hot            = UIData->attrs[ATTR_HOT];
-    attr_curr_active    = UIData->attrs[ATTR_CURR_ACTIVE];
-    attr_hot_curr       = UIData->attrs[ATTR_HOT_CURR];
-    attr_inactive       = UIData->attrs[ATTR_INACTIVE];
-    attr_curr_inactive  = UIData->attrs[ATTR_CURR_INACTIVE];
-    attr_menu           = UIData->attrs[ATTR_MENU];
-
-    UIData->attrs[ATTR_ACTIVE]          = WNDATTR( wnd, GUI_MENU_PLAIN );
-    UIData->attrs[ATTR_HOT]             = WNDATTR( wnd, GUI_MENU_STANDOUT );
-    UIData->attrs[ATTR_CURR_ACTIVE]     = WNDATTR( wnd, GUI_MENU_ACTIVE );
-    UIData->attrs[ATTR_HOT_CURR]        = WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT );
-    UIData->attrs[ATTR_INACTIVE]        = WNDATTR( wnd, GUI_MENU_GRAYED );
-    UIData->attrs[ATTR_CURR_INACTIVE]   = WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE );
-    UIData->attrs[ATTR_MENU]            = WNDATTR( wnd, GUI_MENU_FRAME );
+    attr_active         = uisetattr( ATTR_ACTIVE, WNDATTR( wnd, GUI_MENU_PLAIN ) );
+    attr_hot            = uisetattr( ATTR_HOT, WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+    attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE, WNDATTR( wnd, GUI_MENU_ACTIVE ) );
+    attr_hot_curr       = uisetattr( ATTR_HOT_CURR, WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
+    attr_inactive       = uisetattr( ATTR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED ) );
+    attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
+    attr_menu           = uisetattr( ATTR_MENU, WNDATTR( wnd, GUI_MENU_FRAME ) );
 
     ui_ev = EV_NO_EVENT;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
@@ -177,28 +170,30 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     COPYAREA( top->use, area );
     area.row += top->vs.area.row;
     area.col += top->vs.area.col;
-
-    if( !uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + location->y,
-                            wnd->vs.area.col + location->x, &area, NULL ) ) {
-        return( EV_NO_EVENT );
-    }
-    ui_ev = uicreatepopupinarea( menuitems, &desc, track & GUI_TRACK_LEFT,
+    ok = uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + location->y,
+                            wnd->vs.area.col + location->x, &area, NULL );
+    if( ok ) {
+        ui_ev = uicreatepopupinarea( menuitems, &desc, track & GUI_TRACK_LEFT,
                               track & GUI_TRACK_RIGHT, ui_ev, &area, false );
 
-    if( ui_ev == EV_KILL_UI ) {
-        uiforceevadd( EV_KILL_UI );
-        ui_ev = EV_NO_EVENT;
+        if( ui_ev == EV_KILL_UI ) {
+            uiforceevadd( EV_KILL_UI );
+            ui_ev = EV_NO_EVENT;
+        }
+
+        GUIProcessMenuCurr( NULL );
     }
+    uisetattr( ATTR_ACTIVE, attr_active );
+    uisetattr( ATTR_HOT, attr_hot );
+    uisetattr( ATTR_CURR_ACTIVE, attr_curr_active );
+    uisetattr( ATTR_HOT_CURR, attr_hot_curr );
+    uisetattr( ATTR_INACTIVE, attr_inactive );
+    uisetattr( ATTR_CURR_INACTIVE, attr_curr_inactive );
+    uisetattr( ATTR_MENU, attr_menu );
 
-    GUIProcessMenuCurr( NULL );
-
-    UIData->attrs[ATTR_ACTIVE]          = attr_active;
-    UIData->attrs[ATTR_HOT]             = attr_hot;
-    UIData->attrs[ATTR_CURR_ACTIVE]     = attr_curr_active;
-    UIData->attrs[ATTR_HOT_CURR]        = attr_hot_curr;
-    UIData->attrs[ATTR_INACTIVE]        = attr_inactive;
-    UIData->attrs[ATTR_CURR_INACTIVE]   = attr_curr_inactive;
-    UIData->attrs[ATTR_MENU]            = attr_menu;
+    if( !ok ) {
+        return( EV_NO_EVENT );
+    }
 
     if( ( ui_ev != EV_MOUSE_DCLICK ) && ( ui_ev != EV_NO_EVENT ) ) {
         if( IS_CTLEVENT( ui_ev ) ) {

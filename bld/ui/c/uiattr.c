@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -350,3 +351,13 @@ char uigetblinkattr( void )
     return( BlinkAttr );
 }
 #endif
+
+int UIAPI uisetattr( ATTR attr, int val )
+{
+    int     old_val;
+
+    old_val = UIData->attrs[attr];
+    UIData->attrs[attr] = val;
+    return( old_val );
+}
+

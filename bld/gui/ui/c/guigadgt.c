@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,25 +68,22 @@ bool GUIDrawGadgetLine( p_gadget gadget )
     return( false );
 }
 
-static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
-                            ATTR *scroll_icon )
+static void SetScrollAttrs( gui_window *wnd, int *scroll_bar, int *scroll_icon )
 {
     bool                active;
     gui_draw_char       offset;
 
-    *scroll_bar = UIData->attrs[ATTR_SCROLL_BAR];
-    *scroll_icon = UIData->attrs[ATTR_SCROLL_ICON];
     active = ( wnd == GUICurrWnd ) || ( wnd->parent == NULL );
     offset = 0;
     if( active ) {
-        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_ACTIVE );
-        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_ACTIVE );
+        *scroll_bar = uisetattr( ATTR_SCROLL_BAR, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
+        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
     } else {
         if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             offset = GUI_INACTIVE_OFFSET;
         }
-        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_INACTIVE );
-        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_INACTIVE );
+        *scroll_bar = uisetattr( ATTR_SCROLL_BAR, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
+        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
     }
     VertScrollFrame[0] = GUIGetCharacter( GUI_VERT_SCROLL + offset );
     HorzScrollFrame[0] = GUIGetCharacter( GUI_HOR_SCROLL + offset);
@@ -97,10 +94,10 @@ static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
     DownPoint[0] =  GUIGetCharacter( GUI_DOWN_SCROLL_ARROW + offset);
 }
 
-static void ResetScrollAttrs( ATTR scroll_bar, ATTR scroll_icon )
+static void ResetScrollAttrs( int scroll_bar, int scroll_icon )
 {
-    UIData->attrs[ATTR_SCROLL_BAR] = scroll_bar;
-    UIData->attrs[ATTR_SCROLL_ICON] = scroll_icon;
+    uisetattr( ATTR_SCROLL_BAR, scroll_bar );
+    uisetattr( ATTR_SCROLL_ICON, scroll_icon );
     VertScrollFrame[0] = GUIGetCharacter( GUI_DIAL_VERT_SCROLL );
     UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
     DownPoint[0] =  GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
@@ -109,8 +106,8 @@ static void ResetScrollAttrs( ATTR scroll_bar, ATTR scroll_icon )
 
 void GUISetShowGadget( p_gadget gadget, bool show, bool set, int pos )
 {
-    ATTR        scroll_bar;
-    ATTR        scroll_icon;
+    int         scroll_bar;
+    int         scroll_icon;
     gui_window  *wnd;
 
     wnd = (gui_window *)(gadget->vs);
@@ -137,8 +134,8 @@ static ui_event CheckGadget( p_gadget gadget, ui_event ui_ev, ui_event scroll_ui
 
 ui_event GUIGadgetFilter( gui_window *wnd, ui_event ui_ev, int *prev, int *diff )
 {
-    ATTR        scroll_bar;
-    ATTR        scroll_icon;
+    int         scroll_bar;
+    int         scroll_icon;
     bool        set;
 
     set = false;

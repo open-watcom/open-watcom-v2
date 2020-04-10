@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,22 +151,32 @@ void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colour
 
 static bool ColoursSet = false;
 
+static int attr_normal = 0;
+static int attr_dial_frame = 0;
+static int attr_shadow = 0;
+static int attr_scroll_icon = 0;
+static int attr_scroll_bar = 0;
+static int attr_hotspot = 0;
+static int attr_default_hotspot = 0;
+static int attr_curr_hotspot = 0;
+static int attr_curr_hotspot_key = 0;
+
 bool GUISetDialColours( void )
 {
     if( ColoursSet )  {
         return( false );
     }
     ColoursSet = true;
-    UIData->attrs[ATTR_NORMAL]           = MAKEDLGATTR( GUI_DLG_NORMAL );
+    attr_normal = uisetattr( ATTR_NORMAL, MAKEDLGATTR( GUI_DLG_NORMAL ) );
 #if !defined( ISQL_COLOURS )
-    UIData->attrs[ATTR_DIAL_FRAME]       = MAKEDLGATTR( GUI_DLG_FRAME );
-    UIData->attrs[ATTR_SHADOW]           = MAKEDLGATTR( GUI_DLG_SHADOW );
-    UIData->attrs[ATTR_SCROLL_ICON]      = MAKEDLGATTR( GUI_DLG_SCROLL_ICON );
-    UIData->attrs[ATTR_SCROLL_BAR]       = MAKEDLGATTR( GUI_DLG_SCROLL_BAR );
-    UIData->attrs[ATTR_HOTSPOT]          = MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN );
-    UIData->attrs[ATTR_DEFAULT_HOTSPOT]  = MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT );
-    UIData->attrs[ATTR_CURR_HOTSPOT]     = MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE );
-    UIData->attrs[ATTR_CURR_HOTSPOT_KEY] = MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT );
+    attr_dial_frame = uisetattr( ATTR_DIAL_FRAME, MAKEDLGATTR( GUI_DLG_FRAME ) );
+    attr_shadow = uisetattr( ATTR_SHADOW, MAKEDLGATTR( GUI_DLG_SHADOW ) );
+    attr_scroll_icon = uisetattr( ATTR_SCROLL_ICON, MAKEDLGATTR( GUI_DLG_SCROLL_ICON ) );
+    attr_scroll_bar = uisetattr( ATTR_SCROLL_BAR, MAKEDLGATTR( GUI_DLG_SCROLL_BAR ) );
+    attr_hotspot = uisetattr( ATTR_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN ) );
+    attr_default_hotspot = uisetattr( ATTR_DEFAULT_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT ) );
+    attr_curr_hotspot = uisetattr( ATTR_CURR_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE ) );
+    attr_curr_hotspot_key = uisetattr( ATTR_CURR_HOTSPOT_KEY, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT ) );
 #endif
     SliderChar[0] = GUIGetCharacter( GUI_DIAL_SCROLL_SLIDER );
     UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
@@ -175,7 +186,18 @@ bool GUISetDialColours( void )
 
 void GUIResetDialColours( void )
 {
-    UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
+    uisetattr( ATTR_NORMAL, attr_normal );
+#if !defined( ISQL_COLOURS )
+    uisetattr( ATTR_DIAL_FRAME, attr_dial_frame );
+    uisetattr( ATTR_SHADOW, attr_shadow );
+    uisetattr( ATTR_SCROLL_ICON, attr_scroll_icon );
+    uisetattr( ATTR_SCROLL_BAR, attr_scroll_bar );
+    uisetattr( ATTR_HOTSPOT, attr_hotspot );
+    uisetattr( ATTR_DEFAULT_HOTSPOT, attr_default_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT, attr_curr_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT_KEY, attr_curr_hotspot_key );
+#endif
+//    UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
     ColoursSet = false;
 }
 
