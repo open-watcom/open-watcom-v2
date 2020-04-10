@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,54 +88,54 @@ gui_coord   BitMapSize;
 static gui_colour_set MainColours[] = {
 #if !defined( GUI_IS_GUI )
     /* Fore              Back        */
-    { GUI_WHITE,        GUI_BLACK },            /* GUI_MENU_PLAIN    */
-    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
-    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_BACKGROUND */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_TITLE_INACTIVE    */
+    { GUI_WHITE,        GUI_BLACK },        /* GUI_MENU_PLAIN           */
+    { GUI_BLUE,         GUI_BR_WHITE },     /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BR_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_BACKGROUND           */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_FRAME           */
+    { GUI_GREY,         GUI_BLUE },         /* GUI_TITLE_INACTIVE       */
 
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
-    { GUI_BLUE,         GUI_WHITE },            /* GUI_CONTROL_BACKGROUND */
-    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
-    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
-    { GUI_BLUE,         GUI_BRIGHT_WHITE },     /* WND_SELECTED */
-    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
-    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
-    { GUI_BLACK,        GUI_WHITE },            /* WND_STATUS_BAR */
-    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_TEXT */
-    { GUI_WHITE,        GUI_BLUE },             /* WND_STATUS_FRAME */
+    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_RESIZE         */
+    { GUI_BLUE,         GUI_WHITE },        /* GUI_CONTROL_BACKGROUND   */
+    { GUI_GREEN,        GUI_BLACK },        /* WND_PLAIN                */
+    { GUI_BLACK,        GUI_GREEN },        /* WND_TABSTOP              */
+    { GUI_BLUE,         GUI_BR_WHITE },     /* WND_SELECTED             */
+    { GUI_BLACK,        GUI_RED },          /* WND_HOTSPOT              */
+    { GUI_GREY,         GUI_BLACK },        /* WND_CENSORED             */
+    { GUI_BLACK,        GUI_WHITE },        /* WND_STATUS_BAR           */
+    { GUI_WHITE,        GUI_BLUE },         /* WND_STATUS_TEXT          */
+    { GUI_WHITE,        GUI_BLUE },         /* WND_STATUS_FRAME         */
 #else                   // win or winnt or OS/2
     /* Fore              Back        */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_PLAIN    */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
-    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BRIGHT_BLUE,  GUI_BRIGHT_BLUE },      /* GUI_BACKGROUND */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_FRAME    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_TITLE_INACTIVE    */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_MENU_PLAIN           */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BR_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BR_BLUE,      GUI_BR_BLUE },      /* GUI_BACKGROUND           */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_FRAME           */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_TITLE_INACTIVE       */
 
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GRAYED_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
-    { GUI_BLACK,        GUIEX_WND_BKGRND },     /* GUI_CONTROL_BACKGROUND */
-    { GUI_GREEN,        GUI_BLACK },            /* WND_PLAIN    */
-    { GUI_BLACK,        GUI_GREEN },            /* WND_TABSTOP   */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_SELECTED */
-    { GUI_BLACK,        GUI_RED },              /* WND_HOTSPOT */
-    { GUI_GREY,         GUI_BLACK },            /* WND_CENSORED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WND_STATUS_BAR */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_STATUS_TEXT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_STATUS_FRAME */
+    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_RESIZE         */
+    { GUI_BLACK,        GUIEX_WND_BKGRND }, /* GUI_CONTROL_BACKGROUND   */
+    { GUI_GREEN,        GUI_BLACK },        /* WND_PLAIN                */
+    { GUI_BLACK,        GUI_GREEN },        /* WND_TABSTOP              */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* WND_SELECTED             */
+    { GUI_BLACK,        GUI_RED },          /* WND_HOTSPOT              */
+    { GUI_GREY,         GUI_BLACK },        /* WND_CENSORED             */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* WND_STATUS_BAR           */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* WND_STATUS_TEXT          */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* WND_STATUS_FRAME         */
 #endif
 };
 
@@ -185,7 +185,7 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
                 indent = 16;
             }
 
-            GUIGetRGB( GUI_BRIGHT_BLUE, &rgb ); /* background - no effect */
+            GUIGetRGB( GUI_BR_BLUE, &rgb ); /* background - no effect */
             GUIGetRGB( GUI_BLACK, &foreg );     /* foreground */
 
             /* Start at bottom left of hotspot and use neagtive offset */

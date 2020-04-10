@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,15 @@
 ****************************************************************************/
 
 
-/*    enum                            foreground        background */
-pick( GUI_DLG_NORMAL,                 GUI_WHITE,        GUI_BLUE )
-pick( GUI_DLG_FRAME,                  GUI_BLUE,         GUI_CYAN )
-pick( GUI_DLG_SHADOW,                 GUI_BLACK,        GUI_BLUE )
-pick( GUI_DLG_SCROLL_ICON,            GUI_WHITE,        GUI_BLUE )
-pick( GUI_DLG_SCROLL_BAR,             GUI_WHITE,        GUI_BLUE )
+/*    enum                            foreground    background */
+pick( GUI_DLG_NORMAL,                 GUI_WHITE,    GUI_BLUE )
+pick( GUI_DLG_FRAME,                  GUI_BLUE,     GUI_CYAN )
+pick( GUI_DLG_SHADOW,                 GUI_BLACK,    GUI_BLUE )
+pick( GUI_DLG_SCROLL_ICON,            GUI_WHITE,    GUI_BLUE )
+pick( GUI_DLG_SCROLL_BAR,             GUI_WHITE,    GUI_BLUE )
     /* hot spot is inverted on purpose */
-pick( GUI_DLG_BUTTON_PLAIN,           GUI_BLUE,         GUI_WHITE )
-pick( GUI_DLG_BUTTON_STANDOUT,        GUI_BRIGHT_WHITE, GUI_WHITE )
-pick( GUI_DLG_BUTTON_ACTIVE,          GUI_BLUE,         GUI_CYAN )
-pick( GUI_DLG_BUTTON_ACTIVE_STANDOUT, GUI_BRIGHT_WHITE, GUI_CYAN )
+pick( GUI_DLG_BUTTON_PLAIN,           GUI_BLUE,     GUI_WHITE )
+pick( GUI_DLG_BUTTON_STANDOUT,        GUI_BR_WHITE, GUI_WHITE )
+pick( GUI_DLG_BUTTON_ACTIVE,          GUI_BLUE,     GUI_CYAN )
+pick( GUI_DLG_BUTTON_ACTIVE_STANDOUT, GUI_BR_WHITE, GUI_CYAN )
+

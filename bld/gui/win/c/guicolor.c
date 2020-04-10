@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +53,13 @@ WPI_COLOUR GUIColours[] = {
     0x00808000, /* GUI_BROWN           */
     0x00cccccc, /* GUI_WHITE           */
     0x00808080, /* GUI_GREY            */
-    0x000000ff, /* GUI_BRIGHT_BLUE     */
-    0x0000ff00, /* GUI_BRIGHT_GREEN    */
-    0x0000ffff, /* GUI_BRIGHT_CYAN     */
-    0x00ff0000, /* GUI_BRIGHT_RED      */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
-    0x00ffff00, /* GUI_BRIGHT_YELLOW   */
-    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x000000ff, /* GUI_BR_BLUE         */
+    0x0000ff00, /* GUI_BR_GREEN        */
+    0x0000ffff, /* GUI_BR_CYAN         */
+    0x00ff0000, /* GUI_BR_RED          */
+    0x00ff00ff, /* GUI_BR_MAGENTA      */
+    0x00ffff00, /* GUI_BR_YELLOW       */
+    0x00ffffff, /* GUI_BR_WHITE        */
     0x00808080, /* GUIEX_DLG_BKGRND    */
     0x00FFFFFF, /* GUIEX_WND_BKGRND    */
     0x00000080, /* GUIEX_HIGHLIGHT     */
@@ -74,13 +75,13 @@ WPI_COLOUR GUIColours[] = {
     0x00008080, /* GUI_BROWN           */
     0x00c0c0c0, /* GUI_WHITE           */
     0x00808080, /* GUI_GREY            */
-    0x00ff0000, /* GUI_BRIGHT_BLUE     */
-    0x0000ff00, /* GUI_BRIGHT_GREEN    */
-    0x00ffff00, /* GUI_BRIGHT_CYAN     */
-    0x000000ff, /* GUI_BRIGHT_RED      */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
-    0x0000ffff, /* GUI_BRIGHT_YELLOW   */
-    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x00ff0000, /* GUI_BR_BLUE         */
+    0x0000ff00, /* GUI_BR_GREEN        */
+    0x00ffff00, /* GUI_BR_CYAN         */
+    0x000000ff, /* GUI_BR_RED          */
+    0x00ff00ff, /* GUI_BR_MAGENTA      */
+    0x0000ffff, /* GUI_BR_YELLOW       */
+    0x00ffffff, /* GUI_BR_WHITE        */
     0x00808080, /* GUIEX_DLG_BKGRND    */
     0x00FFFFFF, /* GUIEX_WND_BKGRND    */
     0x00800000, /* GUIEX_HIGHLIGHT     */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +38,14 @@
 #if !defined( __NT__ ) || !defined( GUI_IS_GUI )
 static gui_colour_set DlgWndColours[GUI_NUM_ATTRS + 1] = {
   /* Fore              Back        */
-  { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
-  { GUI_BRIGHT_WHITE, GUI_BLUE },           /* GUI_MENU_STANDOUT  */
-  { GUI_WHITE,        GUI_BRIGHT_WHITE },   /* GUI_BACKGROUND     */
-  { GUI_RED,          GUI_WHITE },          /* GUI_TITLE_ACTIVE   */
-  { GUI_GREY,         GUI_WHITE },          /* GUI_TITLE_INACTIVE */
-  { GUI_BRIGHT_BLUE,  GUI_WHITE },          /* GUI_FRAME_ACTIVE   */
-  { GUI_GREY,         GUI_WHITE },          /* GUI_FRAME_INACTIVE */
-  { GUI_BRIGHT_CYAN,  GUI_CYAN }            /* GUI_FIRST_UNUSED   */
+  { GUI_BR_BLUE,  GUI_BR_WHITE },   /* GUI_MENU_PLAIN     */
+  { GUI_BR_WHITE, GUI_BLUE },       /* GUI_MENU_STANDOUT  */
+  { GUI_WHITE,    GUI_BR_WHITE },   /* GUI_BACKGROUND     */
+  { GUI_RED,      GUI_WHITE },      /* GUI_TITLE_ACTIVE   */
+  { GUI_GREY,     GUI_WHITE },      /* GUI_TITLE_INACTIVE */
+  { GUI_BR_BLUE,  GUI_WHITE },      /* GUI_FRAME_ACTIVE   */
+  { GUI_GREY,     GUI_WHITE },      /* GUI_FRAME_INACTIVE */
+  { GUI_BR_CYAN,  GUI_CYAN }        /* GUI_FIRST_UNUSED   */
 };
 #endif
 

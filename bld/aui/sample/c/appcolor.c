@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,29 +35,29 @@
 
 gui_colour_set WndColours[] = {
 
-    { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_ACTIVE    */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_BACKGROUND */
-    { GUI_BRIGHT_YELLOW,GUI_BLUE },             /* GUI_MENU_FRAME */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_TITLE_INACTIVE    */
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
-    { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* APP_COLOR_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* APP_COLOR_TABSTOP */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* APP_COLOR_SELECTED */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* APP_COLOR_HOTSPOT */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* APP_COLOR_CENSORED */
-    { GUI_GREEN,        GUI_BRIGHT_WHITE },     /* APP_COLOR_BASEBALL */
+    { GUI_WHITE,        GUI_BLUE },         /* GUI_MENU_PLAIN           */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLUE },         /* GUI_MENU_GRAYED          */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_BACKGROUND           */
+    { GUI_BR_YELLOW,    GUI_BLUE },         /* GUI_MENU_FRAME           */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_TITLE_INACTIVE       */
+    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,         GUI_CYAN },         /* GUI_FRAME_RESIZE         */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* APP_COLOR_PLAIN          */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* APP_COLOR_TABSTOP        */
+    { GUI_BR_WHITE,     GUI_RED },          /* APP_COLOR_SELECTED       */
+    { GUI_RED,          GUI_BR_WHITE },     /* APP_COLOR_HOTSPOT        */
+    { GUI_RED,          GUI_BR_WHITE },     /* APP_COLOR_CENSORED       */
+    { GUI_GREEN,        GUI_BR_WHITE },     /* APP_COLOR_BASEBALL       */
 };
 int WndNumColours = APP_NUMBER_OF_COLOURS;
 
-wnd_attr        WndPlainAttr = APP_COLOR_PLAIN;
-wnd_attr        WndTabStopAttr = APP_COLOR_TABSTOP;
+wnd_attr        WndPlainAttr    = APP_COLOR_PLAIN;
+wnd_attr        WndTabStopAttr  = APP_COLOR_TABSTOP;
 wnd_attr        WndSelectedAttr = APP_COLOR_SELECTED;
-wnd_attr        WndCursorAttr = APP_COLOR_BASEBALL;
+wnd_attr        WndCursorAttr   = APP_COLOR_BASEBALL;

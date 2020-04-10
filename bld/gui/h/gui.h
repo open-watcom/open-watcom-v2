@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,13 +156,13 @@ typedef enum {
     GUI_BROWN,
     GUI_WHITE,
     GUI_GREY,
-    GUI_BRIGHT_BLUE,
-    GUI_BRIGHT_GREEN,
-    GUI_BRIGHT_CYAN,
-    GUI_BRIGHT_RED,
-    GUI_BRIGHT_MAGENTA,
-    GUI_BRIGHT_YELLOW,
-    GUI_BRIGHT_WHITE,
+    GUI_BR_BLUE,
+    GUI_BR_GREEN,
+    GUI_BR_CYAN,
+    GUI_BR_RED,
+    GUI_BR_MAGENTA,
+    GUI_BR_YELLOW,
+    GUI_BR_WHITE,
     GUIEX_DLG_BKGRND,
     GUIEX_WND_BKGRND,
     GUIEX_HIGHLIGHT,

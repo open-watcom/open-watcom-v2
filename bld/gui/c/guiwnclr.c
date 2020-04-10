@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,11 @@ static gui_colour_set Default[GUI_NUM_ATTRS] =
 #if defined (__NT__) && defined( GUI_IS_GUI )
     /* GUIEX_DLG_BKGRND will be GetSysColor(COLOR_BTNFACE)       */
     /* and so on and so forth. See InitSystemRGB() in guicolor.c */
-    { GUI_BRIGHT_GREEN,     GUI_BRIGHT_BLUE   }, // GUI_MENU_PLAIN
-    { GUI_BLUE,             GUI_BRIGHT_GREEN  }, // GUI_MENU_STANDOUT
-    { GUI_GREY,             GUI_BRIGHT_BLUE   }, // GUI_MENU_GRAYED
+    { GUI_BR_GREEN,         GUI_BR_BLUE       }, // GUI_MENU_PLAIN
+    { GUI_BLUE,             GUI_BR_GREEN      }, // GUI_MENU_STANDOUT
+    { GUI_GREY,             GUI_BR_BLUE       }, // GUI_MENU_GRAYED
     { GUIEX_HIGHLIGHTTEXT,  GUIEX_HIGHLIGHT   }, // GUI_MENU_ACTIVE    (selected in list)
-    { GUI_BRIGHT_BLUE,      GUI_BRIGHT_GREEN  }, // GUI_MENU_ACTIVE_STANDOUT
+    { GUI_BR_BLUE,          GUI_BR_GREEN      }, // GUI_MENU_ACTIVE_STANDOUT
     { GUI_BLACK,            GUIEX_DLG_BKGRND  }, // GUI_BACKGROUND
     { GUI_BLUE,             GUI_GREY          }, // GUI_MENU_FRAME
     { GUI_GREY,             GUI_WHITE         }, // GUI_TITLE_INACTIVE
@@ -57,16 +58,16 @@ static gui_colour_set Default[GUI_NUM_ATTRS] =
 #else
     /*  fore/text           backgr. */
     { GUI_WHITE,            GUI_BLUE          }, // GUI_MENU_PLAIN
-    { GUI_BRIGHT_WHITE,     GUI_BLUE          }, // GUI_MENU_STANDOUT
+    { GUI_BR_WHITE,         GUI_BLUE          }, // GUI_MENU_STANDOUT
     { GUI_GREY,             GUI_BLUE          }, // GUI_MENU_GRAYED
     { GUI_WHITE,            GUI_BLACK         }, // GUI_MENU_ACTIVE
-    { GUI_BRIGHT_WHITE,     GUI_BLACK         }, // GUI_MENU_ACTIVE_STANDOUT
+    { GUI_BR_WHITE,         GUI_BLACK         }, // GUI_MENU_ACTIVE_STANDOUT
     { GUI_BLUE,             GUI_WHITE         }, // GUI_BACKGROUND
-    { GUI_BRIGHT_YELLOW,    GUI_BLUE          }, // GUI_MENU_FRAME
+    { GUI_BR_YELLOW,        GUI_BLUE          }, // GUI_MENU_FRAME
     { GUI_GREY,             GUI_WHITE         }, // GUI_TITLE_INACTIVE
     { GUI_BLUE,             GUI_CYAN          }, // GUI_FRAME_ACTIVE
     { GUI_GREY,             GUI_WHITE         }, // GUI_FRAME_INACTIVE
-    { GUI_BRIGHT_WHITE,     GUI_RED           }, // GUI_ICON
+    { GUI_BR_WHITE,         GUI_RED           }, // GUI_ICON
     { GUI_GREY,             GUI_BLACK         }, // GUI_MENU_GRAYED_ACTIVE
     { GUI_GREY,             GUI_CYAN          }, // GUI_FRAME_RESIZE
     { GUI_BLUE,             GUI_WHITE         }  // GUI_CONTROL_BACKGROUND

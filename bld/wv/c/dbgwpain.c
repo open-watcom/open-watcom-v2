@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 
 
 gui_colour_set          WndStatusColour = {
-    GUI_BRIGHT_WHITE,
+    GUI_BR_WHITE,
     GUI_BLUE
 };
 
@@ -62,26 +62,26 @@ static gui_colour_set   WndDlgColours[] = {
 };
 
 gui_colour_set WndColours[] = {
-    { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_ACTIVE    */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_BACKGROUND */
-    { GUI_BRIGHT_YELLOW,GUI_BLUE },             /* GUI_MENU_FRAME */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_TITLE_INACTIVE    */
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
-    { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_CONTROL_BACKGROUND */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WND_TABSTOP == ACTIVE  */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* WND_SELECTED */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_STANDOUT */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_HOTSPOT */
-    { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
+    { GUI_WHITE,        GUI_BLUE },         /* GUI_MENU_PLAIN           */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLUE },         /* GUI_MENU_GRAYED          */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_BACKGROUND           */
+    { GUI_BR_YELLOW,    GUI_BLUE },         /* GUI_MENU_FRAME           */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_TITLE_INACTIVE       */
+    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,         GUI_CYAN },         /* GUI_FRAME_RESIZE         */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_CONTROL_BACKGROUND   */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* WND_PLAIN                */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* WND_TABSTOP == ACTIVE    */
+    { GUI_BR_WHITE,     GUI_RED },          /* WND_SELECTED             */
+    { GUI_RED,          GUI_BR_WHITE },     /* WND_STANDOUT             */
+    { GUI_RED,          GUI_BR_WHITE },     /* WND_HOTSPOT              */
+    { GUI_BR_RED,       GUI_BLACK },        /* WND_STANDOUT_TABSTOP     */
 };
 
 int WndNumColours = { ArraySize( WndColours ) };
@@ -191,23 +191,23 @@ typedef struct {
 } colour_map;
 
 static colour_map ColourMap[] = {
-    { GUI_BLACK,                CLR_BLACK },
-    { GUI_BLUE,                 CLR_BLUE },
-    { GUI_GREEN,                CLR_GREEN },
-    { GUI_CYAN,                 CLR_CYAN },
-    { GUI_RED,                  CLR_RED },
-    { GUI_MAGENTA,              CLR_MAGENTA },
-    { GUI_BROWN,                CLR_BROWN },
-    { GUI_WHITE,                CLR_WHITE },
-    { GUI_GREY,                 CLR_GREY },
-    { GUI_BRIGHT_BLUE,          CLR_BRIGHT+CLR_BLUE },
-    { GUI_BRIGHT_GREEN,         CLR_BRIGHT+CLR_GREEN },
-    { GUI_BRIGHT_CYAN,          CLR_BRIGHT+CLR_CYAN },
-    { GUI_BRIGHT_RED,           CLR_BRIGHT+CLR_RED },
-    { GUI_BRIGHT_MAGENTA,       CLR_BRIGHT+CLR_MAGENTA },
-    { GUI_BRIGHT_YELLOW,        CLR_YELLOW },
-    { GUI_BRIGHT_YELLOW,        CLR_BRIGHT+CLR_BROWN },
-    { GUI_BRIGHT_WHITE,         CLR_BRIGHT+CLR_WHITE },
+    { GUI_BLACK,        CLR_BLACK },
+    { GUI_BLUE,         CLR_BLUE },
+    { GUI_GREEN,        CLR_GREEN },
+    { GUI_CYAN,         CLR_CYAN },
+    { GUI_RED,          CLR_RED },
+    { GUI_MAGENTA,      CLR_MAGENTA },
+    { GUI_BROWN,        CLR_BROWN },
+    { GUI_WHITE,        CLR_WHITE },
+    { GUI_GREY,         CLR_GREY },
+    { GUI_BR_BLUE,      CLR_BRIGHT+CLR_BLUE },
+    { GUI_BR_GREEN,     CLR_BRIGHT+CLR_GREEN },
+    { GUI_BR_CYAN,      CLR_BRIGHT+CLR_CYAN },
+    { GUI_BR_RED,       CLR_BRIGHT+CLR_RED },
+    { GUI_BR_MAGENTA,   CLR_BRIGHT+CLR_MAGENTA },
+    { GUI_BR_YELLOW,    CLR_YELLOW },
+    { GUI_BR_YELLOW,    CLR_BRIGHT+CLR_BROWN },
+    { GUI_BR_WHITE,     CLR_BRIGHT+CLR_WHITE },
 };
 
 wnd_attr WndMapTabAttr( wnd_attr wndattr )

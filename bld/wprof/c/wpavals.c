@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,40 +37,41 @@
 
 gui_colour_set WndColours[] = {
 
-    { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_ACTIVE    */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_BACKGROUND */
-    { GUI_BRIGHT_YELLOW,GUI_BLUE },             /* GUI_MENU_FRAME */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_TITLE_INACTIVE    */
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
-    { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
-    { GUI_BLACK,        GUIEX_WND_BKGRND },     /* GUI_CONTROL_BACKGROUND */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WPA_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WPA_TABSTOP */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* WPA_SELECTED */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WPA_STANDOUT */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WPA_HOTSPOT */
-    { GUI_BRIGHT_RED,   GUI_BLACK },            /* WPA_STANDOUT_TABSTOP */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* WPA_STATUS_LINE */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WPA_ABS_BAR */
-    { GUI_GREEN,        GUI_BRIGHT_WHITE },     /* WPA_REL_BAR */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* WPA_PLAIN_INACTIVE    */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WPA_OVERVIEW_NAME  */
-    { GUI_BRIGHT_RED,   GUI_BRIGHT_WHITE },     /* WPA_CLEAR_EXTRA    */
+    { GUI_WHITE,        GUI_BLUE },         /* GUI_MENU_PLAIN           */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLUE },         /* GUI_MENU_GRAYED          */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_BACKGROUND           */
+    { GUI_BR_YELLOW,    GUI_BLUE },         /* GUI_MENU_FRAME           */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_TITLE_INACTIVE       */
+    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,         GUI_CYAN },         /* GUI_FRAME_RESIZE         */
+    { GUI_BLACK,        GUIEX_WND_BKGRND }, /* GUI_CONTROL_BACKGROUND   */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* WPA_PLAIN                */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* WPA_TABSTOP              */
+    { GUI_BR_WHITE,     GUI_RED },          /* WPA_SELECTED             */
+    { GUI_RED,          GUI_BR_WHITE },     /* WPA_STANDOUT             */
+    { GUI_RED,          GUI_BR_WHITE },     /* WPA_HOTSPOT              */
+    { GUI_BR_RED,       GUI_BLACK },        /* WPA_STANDOUT_TABSTOP     */
+    { GUI_BR_WHITE,     GUI_BLUE },         /* WPA_STATUS_LINE          */
+    { GUI_RED,          GUI_BR_WHITE },     /* WPA_ABS_BAR              */
+    { GUI_GREEN,        GUI_BR_WHITE },     /* WPA_REL_BAR              */
+    { GUI_GREY,         GUI_BR_WHITE },     /* WPA_PLAIN_INACTIVE       */
+    { GUI_RED,          GUI_BR_WHITE },     /* WPA_OVERVIEW_NAME        */
+    { GUI_BR_RED,       GUI_BR_WHITE },     /* WPA_CLEAR_EXTRA          */
 };
 
-int                 WndNumColours = WPA_NUMBER_OF_COLOURS;
+int                 WndNumColours   = WPA_NUMBER_OF_COLOURS;
 
-wnd_attr            WndPlainAttr = WPA_PLAIN;
-wnd_attr            WndTabStopAttr = WPA_TABSTOP;
+wnd_attr            WndPlainAttr    = WPA_PLAIN;
+wnd_attr            WndTabStopAttr  = WPA_TABSTOP;
 wnd_attr            WndSelectedAttr = WPA_SELECTED;
-wnd_attr            WndCursorAttr = WPA_SELECTED;
+wnd_attr            WndCursorAttr   = WPA_SELECTED;
 wnd_attr            WndStatusColour = WPA_STATUS_LINE;
 
-gui_window_styles   WndStyle = GUI_PLAIN+GUI_GMOUSE;
+gui_window_styles   WndStyle        = GUI_PLAIN+GUI_GMOUSE;
+

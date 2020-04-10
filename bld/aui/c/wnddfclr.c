@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,27 +35,27 @@
 #include "_aui.h"
 
 gui_colour_set WndColours[] = {
-
-    { GUI_WHITE,        GUI_BLACK },            /* GUI_MENU_PLAIN    */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE */
-    { GUI_BRIGHT_YELLOW,GUI_BRIGHT_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_BACKGROUND */
-    { GUI_BLUE,         GUI_BLACK },            /* GUI_TITLE_ACTIVE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_TITLE_INACTIVE    */
-    { GUI_BRIGHT_BLUE,  GUI_BLACK },            /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_MENU_GREYED_ACTIVE    */
-    { GUI_BLACK,        GUI_CYAN },             /* GUI_HOTSPOT */
-    { GUI_BRIGHT_WHITE, GUI_CYAN },             /* GUI_HOTSPOT_STANDOUT */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
+    { GUI_WHITE,        GUI_BLACK },        /* GUI_MENU_PLAIN           */
+    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED          */
+    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW,    GUI_BR_WHITE },     /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_BACKGROUND           */
+    { GUI_BLUE,         GUI_BLACK },        /* GUI_TITLE_ACTIVE         */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_TITLE_INACTIVE       */
+    { GUI_BR_BLUE,      GUI_BLACK },        /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,         GUI_BLACK },        /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_MENU_GREYED_ACTIVE   */
+    { GUI_BLACK,        GUI_CYAN },         /* GUI_HOTSPOT              */
+    { GUI_BR_WHITE,     GUI_CYAN },         /* GUI_HOTSPOT_STANDOUT     */
+    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_RESIZE         */
 };
 
 int WndNumColours = ArraySize( WndColours );
 
-wnd_attr        WndPlainAttr = GUI_MENU_PLAIN;
-wnd_attr        WndTabStopAttr = GUI_MENU_STANDOUT;
+wnd_attr        WndPlainAttr    = GUI_MENU_PLAIN;
+wnd_attr        WndTabStopAttr  = GUI_MENU_STANDOUT;
 wnd_attr        WndSelectedAttr = GUI_MENU_ACTIVE;
-wnd_attr        WndCursorAttr = GUI_MENU_ACTIVE_STANDOUT;
+wnd_attr        WndCursorAttr   = GUI_MENU_ACTIVE_STANDOUT;
+

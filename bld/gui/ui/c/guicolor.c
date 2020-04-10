@@ -59,22 +59,22 @@ static gui_colour_set Normal = { NORMAL_FORE, NORMAL_BACK };
                                           DialColours[attr].back )
 
 static ATTR Colours[GUI_NUM_COLOURS] = {
-    C_BLACK,            /* GUI_BLACK          */
-    C_BLUE,             /* GUI_BLUE           */
-    C_GREEN,            /* GUI_GREEN          */
-    C_CYAN,             /* GUI_CYAN           */
-    C_RED,              /* GUI_RED            */
-    C_MAGENTA,          /* GUI_MAGENTA        */
-    C_BROWN,            /* GUI_BROWN          */
-    C_WHITE,            /* GUI_WHITE          */
-    C_BLACK   | BRIGHT, /* GUI_GREY           */
-    C_BLUE    | BRIGHT, /* GUI_BRIGHT_BLUE    */
-    C_GREEN   | BRIGHT, /* GUI_BRIGHT_GREEN   */
-    C_CYAN    | BRIGHT, /* GUI_BRIGHT_CYAN    */
-    C_RED     | BRIGHT, /* GUI_BRIGHT_RED     */
-    C_MAGENTA | BRIGHT, /* GUI_BRIGHT_MAGENTA */
-    C_BROWN   | BRIGHT, /* GUI_BRIGHT_YELLOW  */
-    C_WHITE   | BRIGHT  /* GUI_BRIGHT_WHITE   */
+    C_BLACK,            /* GUI_BLACK      */
+    C_BLUE,             /* GUI_BLUE       */
+    C_GREEN,            /* GUI_GREEN      */
+    C_CYAN,             /* GUI_CYAN       */
+    C_RED,              /* GUI_RED        */
+    C_MAGENTA,          /* GUI_MAGENTA    */
+    C_BROWN,            /* GUI_BROWN      */
+    C_WHITE,            /* GUI_WHITE      */
+    C_BLACK   | BRIGHT, /* GUI_GREY       */
+    C_BLUE    | BRIGHT, /* GUI_BR_BLUE    */
+    C_GREEN   | BRIGHT, /* GUI_BR_GREEN   */
+    C_CYAN    | BRIGHT, /* GUI_BR_CYAN    */
+    C_RED     | BRIGHT, /* GUI_BR_RED     */
+    C_MAGENTA | BRIGHT, /* GUI_BR_MAGENTA */
+    C_BROWN   | BRIGHT, /* GUI_BR_YELLOW  */
+    C_WHITE   | BRIGHT  /* GUI_BR_WHITE   */
 };
 
 static ATTR MakeAttr( gui_colour fore, gui_colour back )

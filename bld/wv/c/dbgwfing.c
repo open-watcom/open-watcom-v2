@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,10 +110,10 @@ static bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     case GUI_INIT_WINDOW:
         if( GUIIsGUI() ) {
             colours = GUIGetWindowColours( WndGui( wnd ) );
-            colours[GUI_BACKGROUND].fore = GUI_BRIGHT_CYAN;
-            colours[GUI_BACKGROUND].back = GUI_BRIGHT_CYAN;
+            colours[GUI_BACKGROUND].fore = GUI_BR_CYAN;
+            colours[GUI_BACKGROUND].back = GUI_BR_CYAN;
             colours[WND_PLAIN].fore = GUI_BLACK;
-            colours[WND_PLAIN].back = GUI_BRIGHT_CYAN;
+            colours[WND_PLAIN].back = GUI_BR_CYAN;
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
             GUIMemFree( colours );
         }
