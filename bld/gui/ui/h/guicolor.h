@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-extern bool GUIXSetColours( gui_window *, int num_attrs, gui_colour_set * colours );
-extern bool GUISetDialColours( void );
-extern void GUIResetDialColours( void );
-extern void GUISetColour( gui_colour_set * );
-extern ATTR GUIGetAttr( gui_window * wnd, gui_attr attr );
-extern void GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours );
-extern ATTR GUIMakeColour( gui_colour fore, gui_colour back );
-extern gui_colour GUIGetFore( ATTR attr );
-extern gui_colour GUIGetBack( ATTR attr );
+extern bool         GUIXSetColours( gui_window *, int num_attrs, gui_colour_set * colours );
+extern bool         GUISetDialColours( void );
+extern void         GUIResetDialColours( void );
+extern void         GUISetColour( gui_colour_set * );
+extern ATTR         GUIGetAttr( gui_window * wnd, gui_attr attr );
+extern void         GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours );
+extern ATTR         GUIMakeColour( gui_colour fore, gui_colour back );
+extern gui_colour   GUIGetFore( ATTR attr );
+extern gui_colour   GUIGetBack( ATTR attr );

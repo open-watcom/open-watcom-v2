@@ -86,6 +86,17 @@ static ATTR MakeAttr( gui_colour fore, gui_colour back )
     return( attr );
 }
 
+#if !defined( ISQL_COLOURS )
+static int  mnu_attr_menu = 0;
+static int  mnu_attr_active = 0;
+static int  mnu_attr_inactive = 0;
+static int  mnu_attr_curr_inactive = 0;
+static int  mnu_attr_hot = 0;
+static int  mnu_attr_hot_quiet = 0;
+static int  mnu_attr_curr_active = 0;
+static int  mnu_attr_hot_curr = 0;
+#endif
+
 /*
  * GUIXSetColours -- record the colours wanted
  */
@@ -106,14 +117,14 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
         }
         if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
-            UIData->attrs[ATTR_MENU]            = WNDATTR( wnd, GUI_MENU_FRAME );
-            UIData->attrs[ATTR_ACTIVE]          = WNDATTR( wnd, GUI_MENU_PLAIN );
-            UIData->attrs[ATTR_INACTIVE]        = WNDATTR( wnd, GUI_MENU_GRAYED );
-            UIData->attrs[ATTR_CURR_INACTIVE]   = WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE );
-            UIData->attrs[ATTR_HOT]             = WNDATTR( wnd, GUI_MENU_STANDOUT );
-            UIData->attrs[ATTR_HOT_QUIET]       = WNDATTR( wnd, GUI_MENU_STANDOUT );
-            UIData->attrs[ATTR_CURR_ACTIVE]     = WNDATTR( wnd, GUI_MENU_ACTIVE );
-            UIData->attrs[ATTR_HOT_CURR]        = WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT );
+            mnu_attr_menu           = uisetattr( ATTR_MENU,          WNDATTR( wnd, GUI_MENU_FRAME ) );
+            mnu_attr_active         = uisetattr( ATTR_ACTIVE,        WNDATTR( wnd, GUI_MENU_PLAIN ) );
+            mnu_attr_inactive       = uisetattr( ATTR_INACTIVE,      WNDATTR( wnd, GUI_MENU_GRAYED ) );
+            mnu_attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
+            mnu_attr_hot            = uisetattr( ATTR_HOT,           WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_hot_quiet      = uisetattr( ATTR_HOT_QUIET,     WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE,   WNDATTR( wnd, GUI_MENU_ACTIVE ) );
+            mnu_attr_hot_curr       = uisetattr( ATTR_HOT_CURR,      WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
 #endif
             uimenutitlebar();
         }
@@ -151,15 +162,17 @@ void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colour
 
 static bool ColoursSet = false;
 
-static int attr_normal = 0;
-static int attr_dial_frame = 0;
-static int attr_shadow = 0;
-static int attr_scroll_icon = 0;
-static int attr_scroll_bar = 0;
-static int attr_hotspot = 0;
-static int attr_default_hotspot = 0;
-static int attr_curr_hotspot = 0;
-static int attr_curr_hotspot_key = 0;
+static int  attr_normal = 0;
+#if !defined( ISQL_COLOURS )
+static int  attr_dial_frame = 0;
+static int  attr_shadow = 0;
+static int  attr_scroll_icon = 0;
+static int  attr_scroll_bar = 0;
+static int  attr_hotspot = 0;
+static int  attr_default_hotspot = 0;
+static int  attr_curr_hotspot = 0;
+static int  attr_curr_hotspot_key = 0;
+#endif
 
 bool GUISetDialColours( void )
 {
@@ -167,37 +180,37 @@ bool GUISetDialColours( void )
         return( false );
     }
     ColoursSet = true;
-    attr_normal = uisetattr( ATTR_NORMAL, MAKEDLGATTR( GUI_DLG_NORMAL ) );
+    attr_normal             = uisetattr( ATTR_NORMAL,           MAKEDLGATTR( GUI_DLG_NORMAL ) );
 #if !defined( ISQL_COLOURS )
-    attr_dial_frame = uisetattr( ATTR_DIAL_FRAME, MAKEDLGATTR( GUI_DLG_FRAME ) );
-    attr_shadow = uisetattr( ATTR_SHADOW, MAKEDLGATTR( GUI_DLG_SHADOW ) );
-    attr_scroll_icon = uisetattr( ATTR_SCROLL_ICON, MAKEDLGATTR( GUI_DLG_SCROLL_ICON ) );
-    attr_scroll_bar = uisetattr( ATTR_SCROLL_BAR, MAKEDLGATTR( GUI_DLG_SCROLL_BAR ) );
-    attr_hotspot = uisetattr( ATTR_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN ) );
-    attr_default_hotspot = uisetattr( ATTR_DEFAULT_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT ) );
-    attr_curr_hotspot = uisetattr( ATTR_CURR_HOTSPOT, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE ) );
-    attr_curr_hotspot_key = uisetattr( ATTR_CURR_HOTSPOT_KEY, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT ) );
+    attr_dial_frame         = uisetattr( ATTR_DIAL_FRAME,       MAKEDLGATTR( GUI_DLG_FRAME ) );
+    attr_shadow             = uisetattr( ATTR_SHADOW,           MAKEDLGATTR( GUI_DLG_SHADOW ) );
+    attr_scroll_icon        = uisetattr( ATTR_SCROLL_ICON,      MAKEDLGATTR( GUI_DLG_SCROLL_ICON ) );
+    attr_scroll_bar         = uisetattr( ATTR_SCROLL_BAR,       MAKEDLGATTR( GUI_DLG_SCROLL_BAR ) );
+    attr_hotspot            = uisetattr( ATTR_HOTSPOT,          MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN ) );
+    attr_default_hotspot    = uisetattr( ATTR_DEFAULT_HOTSPOT,  MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT ) );
+    attr_curr_hotspot       = uisetattr( ATTR_CURR_HOTSPOT,     MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE ) );
+    attr_curr_hotspot_key   = uisetattr( ATTR_CURR_HOTSPOT_KEY, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT ) );
 #endif
     SliderChar[0] = GUIGetCharacter( GUI_DIAL_SCROLL_SLIDER );
-    UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
-    DownPoint[0] =  GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
+    UpPoint[0]    = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
+    DownPoint[0]  = GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
     return( true );
 }
 
 void GUIResetDialColours( void )
 {
-    uisetattr( ATTR_NORMAL, attr_normal );
-#if !defined( ISQL_COLOURS )
-    uisetattr( ATTR_DIAL_FRAME, attr_dial_frame );
-    uisetattr( ATTR_SHADOW, attr_shadow );
-    uisetattr( ATTR_SCROLL_ICON, attr_scroll_icon );
-    uisetattr( ATTR_SCROLL_BAR, attr_scroll_bar );
-    uisetattr( ATTR_HOTSPOT, attr_hotspot );
-    uisetattr( ATTR_DEFAULT_HOTSPOT, attr_default_hotspot );
-    uisetattr( ATTR_CURR_HOTSPOT, attr_curr_hotspot );
-    uisetattr( ATTR_CURR_HOTSPOT_KEY, attr_curr_hotspot_key );
-#endif
 //    UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
+    uisetattr( ATTR_NORMAL,             attr_normal );
+#if !defined( ISQL_COLOURS )
+    uisetattr( ATTR_DIAL_FRAME,         attr_dial_frame );
+    uisetattr( ATTR_SHADOW,             attr_shadow );
+    uisetattr( ATTR_SCROLL_ICON,        attr_scroll_icon );
+    uisetattr( ATTR_SCROLL_BAR,         attr_scroll_bar );
+    uisetattr( ATTR_HOTSPOT,            attr_hotspot );
+    uisetattr( ATTR_DEFAULT_HOTSPOT,    attr_default_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT,       attr_curr_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT_KEY,   attr_curr_hotspot_key );
+#endif
     ColoursSet = false;
 }
 
