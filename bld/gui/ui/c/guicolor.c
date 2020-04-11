@@ -87,14 +87,14 @@ static ATTR MakeAttr( gui_colour fore, gui_colour back )
 }
 
 #if !defined( ISQL_COLOURS )
-static int mnu_attr_menu = 0;
-static int mnu_attr_active = 0;
-static int mnu_attr_inactive = 0;
-static int mnu_attr_curr_inactive = 0;
-static int mnu_attr_hot = 0;
-static int mnu_attr_hot_quiet = 0;
-static int mnu_attr_curr_active = 0;
-static int mnu_attr_hot_curr = 0;
+static ATTR mnu_attr_menu = 0;
+static ATTR mnu_attr_active = 0;
+static ATTR mnu_attr_inactive = 0;
+static ATTR mnu_attr_curr_inactive = 0;
+static ATTR mnu_attr_hot = 0;
+static ATTR mnu_attr_hot_quiet = 0;
+static ATTR mnu_attr_curr_active = 0;
+static ATTR mnu_attr_hot_curr = 0;
 #endif
 
 /*
@@ -117,14 +117,14 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
         }
         if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
-            mnu_attr_menu           = uisetattr( ATTR_MENU,         WNDATTR( wnd, GUI_MENU_FRAME ) );
-            mnu_attr_active         = uisetattr( ATTR_ACTIVE,       WNDATTR( wnd, GUI_MENU_PLAIN ) );
-            mnu_attr_inactive       = uisetattr( ATTR_INACTIVE,     WNDATTR( wnd, GUI_MENU_GRAYED ) );
+            mnu_attr_menu           = uisetattr( ATTR_MENU,          WNDATTR( wnd, GUI_MENU_FRAME ) );
+            mnu_attr_active         = uisetattr( ATTR_ACTIVE,        WNDATTR( wnd, GUI_MENU_PLAIN ) );
+            mnu_attr_inactive       = uisetattr( ATTR_INACTIVE,      WNDATTR( wnd, GUI_MENU_GRAYED ) );
             mnu_attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
-            mnu_attr_hot            = uisetattr( ATTR_HOT,          WNDATTR( wnd, GUI_MENU_STANDOUT ) );
-            mnu_attr_hot_quiet      = uisetattr( ATTR_HOT_QUIET,    WNDATTR( wnd, GUI_MENU_STANDOUT ) );
-            mnu_attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE,  WNDATTR( wnd, GUI_MENU_ACTIVE ) );
-            mnu_attr_hot_curr       = uisetattr( ATTR_HOT_CURR,     WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
+            mnu_attr_hot            = uisetattr( ATTR_HOT,           WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_hot_quiet      = uisetattr( ATTR_HOT_QUIET,     WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE,   WNDATTR( wnd, GUI_MENU_ACTIVE ) );
+            mnu_attr_hot_curr       = uisetattr( ATTR_HOT_CURR,      WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
 #endif
             uimenutitlebar();
         }
@@ -162,16 +162,16 @@ void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colour
 
 static bool ColoursSet = false;
 
-static int  dlg_attr_normal = 0;
+static ATTR dlg_attr_normal = 0;
 #if !defined( ISQL_COLOURS )
-static int  dlg_attr_dial_frame = 0;
-static int  dlg_attr_shadow = 0;
-static int  dlg_attr_scroll_icon = 0;
-static int  dlg_attr_scroll_bar = 0;
-static int  dlg_attr_hotspot = 0;
-static int  dlg_attr_default_hotspot = 0;
-static int  dlg_attr_curr_hotspot = 0;
-static int  dlg_attr_curr_hotspot_key = 0;
+static ATTR dlg_attr_dial_frame = 0;
+static ATTR dlg_attr_shadow = 0;
+static ATTR dlg_attr_scroll_icon = 0;
+static ATTR dlg_attr_scroll_bar = 0;
+static ATTR dlg_attr_hotspot = 0;
+static ATTR dlg_attr_default_hotspot = 0;
+static ATTR dlg_attr_curr_hotspot = 0;
+static ATTR dlg_attr_curr_hotspot_key = 0;
 #endif
 
 bool GUISetDialColours( void )

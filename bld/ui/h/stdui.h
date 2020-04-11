@@ -355,7 +355,7 @@ typedef struct ui_event_list {
     ui_event    _FARD *events[MAX_EVENT_LISTS];
 } ui_event_list;
 
-enum    {
+typedef enum {
     ATTR_MENU,
     ATTR_ACTIVE,
     ATTR_CURR_ACTIVE,
@@ -394,7 +394,7 @@ enum    {
     ATTR_OFF_HOTSPOT,
     ATTR_RADIO_HOTSPOT,
     ATTR_LAST
-};
+} UIATTR;
 
 /* line drawing and graphics characters */
 enum {
@@ -776,7 +776,7 @@ extern int              UIAPI uimousealign( void );
 extern void             UIAPI UIMemOpen( void );
 extern void             UIAPI UIMemClose( void );
 
-extern int              UIAPI uisetattr( ATTR attr, int val );
+extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
 
 /*
  * Application related functions

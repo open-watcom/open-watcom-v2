@@ -68,7 +68,7 @@ bool GUIDrawGadgetLine( p_gadget gadget )
     return( false );
 }
 
-static void SetScrollAttrs( gui_window *wnd, int *scroll_bar, int *scroll_icon )
+static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar, ATTR *scroll_icon )
 {
     bool                active;
     gui_draw_char       offset;
@@ -76,13 +76,13 @@ static void SetScrollAttrs( gui_window *wnd, int *scroll_bar, int *scroll_icon )
     active = ( wnd == GUICurrWnd ) || ( wnd->parent == NULL );
     offset = 0;
     if( active ) {
-        *scroll_bar = uisetattr( ATTR_SCROLL_BAR, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
+        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
         *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
     } else {
         if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             offset = GUI_INACTIVE_OFFSET;
         }
-        *scroll_bar = uisetattr( ATTR_SCROLL_BAR, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
+        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
         *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
     }
     VertScrollFrame[0] = GUIGetCharacter( GUI_VERT_SCROLL + offset );
@@ -94,9 +94,9 @@ static void SetScrollAttrs( gui_window *wnd, int *scroll_bar, int *scroll_icon )
     DownPoint[0] =  GUIGetCharacter( GUI_DOWN_SCROLL_ARROW + offset);
 }
 
-static void ResetScrollAttrs( int scroll_bar, int scroll_icon )
+static void ResetScrollAttrs( ATTR scroll_bar, ATTR scroll_icon )
 {
-    uisetattr( ATTR_SCROLL_BAR, scroll_bar );
+    uisetattr( ATTR_SCROLL_BAR,  scroll_bar );
     uisetattr( ATTR_SCROLL_ICON, scroll_icon );
     VertScrollFrame[0] = GUIGetCharacter( GUI_DIAL_VERT_SCROLL );
     UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
@@ -106,8 +106,8 @@ static void ResetScrollAttrs( int scroll_bar, int scroll_icon )
 
 void GUISetShowGadget( p_gadget gadget, bool show, bool set, int pos )
 {
-    int         scroll_bar;
-    int         scroll_icon;
+    ATTR        scroll_bar;
+    ATTR        scroll_icon;
     gui_window  *wnd;
 
     wnd = (gui_window *)(gadget->vs);
@@ -134,8 +134,8 @@ static ui_event CheckGadget( p_gadget gadget, ui_event ui_ev, ui_event scroll_ui
 
 ui_event GUIGadgetFilter( gui_window *wnd, ui_event ui_ev, int *prev, int *diff )
 {
-    int         scroll_bar;
-    int         scroll_icon;
+    ATTR        scroll_bar;
+    ATTR        scroll_icon;
     bool        set;
 
     set = false;

@@ -352,12 +352,12 @@ char uigetblinkattr( void )
 }
 #endif
 
-int UIAPI uisetattr( ATTR attr, int val )
+ATTR UIAPI uisetattr( UIATTR uiattr, ATTR new_attr )
 {
-    int     old_val;
+    ATTR    old_attr;
 
-    old_val = UIData->attrs[attr];
-    UIData->attrs[attr] = val;
-    return( old_val );
+    old_attr = UIData->attrs[uiattr];
+    UIData->attrs[uiattr] = new_attr;
+    return( old_attr );
 }
 

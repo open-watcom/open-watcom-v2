@@ -154,13 +154,13 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     if( menuitems == NULL ) {
         return( EV_NO_EVENT );
     }
-    attr_active         = uisetattr( ATTR_ACTIVE, WNDATTR( wnd, GUI_MENU_PLAIN ) );
-    attr_hot            = uisetattr( ATTR_HOT, WNDATTR( wnd, GUI_MENU_STANDOUT ) );
-    attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE, WNDATTR( wnd, GUI_MENU_ACTIVE ) );
-    attr_hot_curr       = uisetattr( ATTR_HOT_CURR, WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
-    attr_inactive       = uisetattr( ATTR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED ) );
-    attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
-    attr_menu           = uisetattr( ATTR_MENU, WNDATTR( wnd, GUI_MENU_FRAME ) );
+    attr_active         = uisetattr( ATTR_ACTIVE,           WNDATTR( wnd, GUI_MENU_PLAIN ) );
+    attr_hot            = uisetattr( ATTR_HOT,              WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+    attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE,      WNDATTR( wnd, GUI_MENU_ACTIVE ) );
+    attr_hot_curr       = uisetattr( ATTR_HOT_CURR,         WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
+    attr_inactive       = uisetattr( ATTR_INACTIVE,         WNDATTR( wnd, GUI_MENU_GRAYED ) );
+    attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE,    WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
+    attr_menu           = uisetattr( ATTR_MENU,             WNDATTR( wnd, GUI_MENU_FRAME ) );
 
     ui_ev = EV_NO_EVENT;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
@@ -183,13 +183,13 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
 
         GUIProcessMenuCurr( NULL );
     }
-    uisetattr( ATTR_ACTIVE, attr_active );
-    uisetattr( ATTR_HOT, attr_hot );
-    uisetattr( ATTR_CURR_ACTIVE, attr_curr_active );
-    uisetattr( ATTR_HOT_CURR, attr_hot_curr );
-    uisetattr( ATTR_INACTIVE, attr_inactive );
-    uisetattr( ATTR_CURR_INACTIVE, attr_curr_inactive );
-    uisetattr( ATTR_MENU, attr_menu );
+    uisetattr( ATTR_ACTIVE,         attr_active );
+    uisetattr( ATTR_HOT,            attr_hot );
+    uisetattr( ATTR_CURR_ACTIVE,    attr_curr_active );
+    uisetattr( ATTR_HOT_CURR,       attr_hot_curr );
+    uisetattr( ATTR_INACTIVE,       attr_inactive );
+    uisetattr( ATTR_CURR_INACTIVE,  attr_curr_inactive );
+    uisetattr( ATTR_MENU,           attr_menu );
 
     if( !ok ) {
         return( EV_NO_EVENT );

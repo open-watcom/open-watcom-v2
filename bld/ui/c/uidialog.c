@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,12 +96,12 @@ static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
             break;
         case FLD_LISTBOX :
             list = field->u.list;
-            list->box->attr = ATTR_EDIT;
+            list->box->uiattr = ATTR_EDIT;
             uipaintlistbox( list );
             break;
         case FLD_EDIT_MLE :
             list = field->u.list;
-            list->box->attr = ATTR_NORMAL;
+            list->box->uiattr = ATTR_NORMAL;
             uipaintlistbox( list );
             break;
         }
@@ -459,12 +459,12 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
         break;
     case FLD_LISTBOX :
         list = field->u.list;
-        list->box->attr = ATTR_CURR_EDIT;
+        list->box->uiattr = ATTR_CURR_EDIT;
         uipaintlistbox( list );
         break;
     case FLD_EDIT_MLE :
         list = field->u.list;
-        list->box->attr = ATTR_NORMAL;
+        list->box->uiattr = ATTR_NORMAL;
         uipaintlistbox( list );
         break;
     }
