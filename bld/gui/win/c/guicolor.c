@@ -275,7 +275,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 }
 
 /*
- * GUISetColours -- record the colours selected by the application
+ * GUIXSetColours -- record the colours selected by the application
  */
 
 bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
