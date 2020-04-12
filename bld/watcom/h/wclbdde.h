@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 #if defined( __WINDOWS_386__ )
-typedef HDDEDATA            (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, ULONG_PTR, ULONG_PTR );
+typedef HDDEDATA            (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, DWORD, DWORD );
 #else
 #define PFNCALLBACKx        PFNCALLBACK
 #endif
