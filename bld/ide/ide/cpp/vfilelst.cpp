@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,8 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#ifdef __WINDOWS__
-#include <commdlg.h>
-#endif
 #include "getfile.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"

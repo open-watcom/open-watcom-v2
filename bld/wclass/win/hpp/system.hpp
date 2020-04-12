@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +34,15 @@
 #ifndef system_include
 #define system_include
 
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ )
     #define INCLUDE_DDEML_H
+    #pragma library (ddeml)
+  #if !defined( _M_I86 )
     #define INCLUDE_COMMDLG_H
     #define INCLUDE_CDERR_H
+  #endif
 #endif
     #include <wwindows.h>
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-    #include <ddeml.h>
-    #pragma library (ddeml)
-#endif
 
 extern "C" {
     extern HINSTANCE        GUIMainHInst;

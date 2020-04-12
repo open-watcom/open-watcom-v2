@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,38 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  In-memory Dialog manipulation functions
+* Description:  WIN16/WIN386 MakeProcInstance.../FreeProcInstance...
+*               for DDE callback function prototypes
 *
 ****************************************************************************/
 
 
-#include "wdeglbl.h"
-#include "wdedispa.h"
+#include <ddeml.h>
+#include "wclbproc.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined( __WINDOWS_386__ )
+typedef HDDEDATA            (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, ULONG_PTR, ULONG_PTR );
+#else
+#define PFNCALLBACKx        PFNCALLBACK
+#endif
 
 #if defined( __WINDOWS__ )
-
-DISPATCHERPROC MakeProcInstance_DISPATCHER( DISPATCHERPROCx fn, HINSTANCE instance )
-{
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-    return( (DISPATCHERPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+extern PFNCALLBACK          MakeProcInstance_DDE( PFNCALLBACKx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_DDE = MAKEPROCINSTANCE_INLINE
 #else
-    instance = instance;
-    return( (DISPATCHERPROC)fn );
+#define MakeProcInstance_DDE(f,i)   ((void)i,f)
 #endif
-}
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
-
-void FreeProcInstance_DISPATCHER( DISPATCHERPROC fn )
-{
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-    FreeProcInstance( (FARPROC)fn );
+extern void FreeProcInstance_DDE( PFNCALLBACK f );
+#pragma aux FreeProcInstance_DDE = FREEPROCINSTANCE_INLINE
 #else
-    fn = fn;
+#define FreeProcInstance_DDE(f)     ((void)f)
 #endif
+
+#ifdef __cplusplus
 }
-
-#endif
-
 #endif

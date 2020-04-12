@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "winexprt.h"
+#include "wclbproc.h"
 
 
 WINEXPORT BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam );
@@ -48,25 +49,6 @@ char ClassName[256];
 char Caption[256];
 WORD CaptionLen;
 HWND TheWindow;
-
-#ifdef __WINDOWS__
-
-static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
-{
-    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
-
-#else
-
-#define MakeProcInstance_WNDENUM(f,i)       ((void)i,f)
-#define FreeProcInstance_WNDENUM(f)         ((void)f)
-
-#endif
 
 WINEXPORT BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam )
 {

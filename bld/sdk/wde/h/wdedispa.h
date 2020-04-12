@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2014-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "wclbproc.h"
+
+
 #define DISPATCHERPROC      DISPATCH_FN *
 
 #if defined( __WINDOWS_386__ )
@@ -40,12 +43,14 @@ typedef bool                (CALLBACK *DISPATCHERPROCx)(ACTION_ID, OBJPTR, void 
 
 #if defined( __WINDOWS__ )
 extern DISPATCHERPROC       MakeProcInstance_DISPATCHER( DISPATCHERPROCx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_DISPATCHER = MAKEPROCINSTANCE_INLINE
 #else
 #define MakeProcInstance_DISPATCHER(f,i)    ((void)i,f)
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
 void FreeProcInstance_DISPATCHER( DISPATCHERPROC fn );
+#pragma aux FreeProcInstance_DISPATCHER = FREEPROCINSTANCE_INLINE
 #else
 #define FreeProcInstance_DISPATCHER(f)      ((void)f)
 #endif

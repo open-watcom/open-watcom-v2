@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +59,8 @@
 #include <stdlib.h>
 #include "test.h"
 #include "rcsapi.h"
+#include "wclbproc.h"
+
 
 /* common functions */
 extern RCSGetVersionFn  RCSGetVersion;
@@ -216,15 +219,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    FARPROC lpProcAbout;
+    DLGPROC lpProcAbout;
 
     switch (message) {
     case WM_COMMAND:
         switch (wParam) {
         case IDM_ABOUT:
-            lpProcAbout = MakeProcInstance((FARPROC)About, hInst);
-            DialogBox(hInst, "AboutBox", hWnd, (DLGPROC)lpProcAbout);
-            FreeProcInstance(lpProcAbout);
+            lpProcAbout = MakeProcInstance_DLG(About, hInst);
+            DialogBox(hInst, "AboutBox", hWnd, lpProcAbout);
+            FreeProcInstance_DLG(lpProcAbout);
             break;
         /* RCS menu commands */
         case IDM_CHECKIN:

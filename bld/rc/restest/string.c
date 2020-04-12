@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 #include <windows.h>
 #include "restest.h"
 #include "verinfo.h"
+#include "wclbproc.h"
+
 
 void DisplayStrings( HWND hwnd )
 {
@@ -59,7 +62,7 @@ void DisplayStrings( HWND hwnd )
     }
 }
 
-BOOL CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -78,9 +81,9 @@ BOOL CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 
 void DisplayStringTable( void )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)StrTableDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( StrTableDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }

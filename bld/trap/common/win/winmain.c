@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "winserv.h"
 #include "servname.rh"
 #include "packet.h"
+#include "wclbproc.h"
+
 
 extern void OpeningStatement( void );
 extern int Initialize( char * );
@@ -253,7 +256,7 @@ BOOL CALLBACK GenericBox( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
  */
 LRESULT __export CALLBACK MainDriver( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    FARPROC     farproc;
+    DLGPROC     dlgproc;
 
     switch( msg ) {
     case WM_DESTROY:
@@ -268,9 +271,9 @@ LRESULT __export CALLBACK MainDriver( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             break;
 
         case MSG_ABOUT:
-            farproc = MakeProcInstance( GenericBox, CProcHandle );
-            DialogBox( CProcHandle, "AboutBox", hwnd, farproc );
-            FreeProcInstance( farproc );
+            dlgproc = MakeProcInstance_DLG( GenericBox, CProcHandle );
+            DialogBox( CProcHandle, "AboutBox", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
 
         case MSG_EXIT:

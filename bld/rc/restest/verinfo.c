@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef __NT__
@@ -37,6 +38,8 @@
 #endif
 #include "verinfo.h"
 #include "restest.h"
+#include "wclbproc.h"
+
 
 char *VerStringTypes[] = {
     "Comments",
@@ -126,7 +129,7 @@ static void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize 
     }
 }
 
-BOOL CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+WINEXPORT INT_PTR CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DWORD               infohdl;
     UINT                infosize;
@@ -183,9 +186,9 @@ BOOL CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 
 void DisplayVerInfo( void )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)VerInfoDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( VerInfoDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }

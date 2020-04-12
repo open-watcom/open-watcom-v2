@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@
 #include "resname.h"
 #include "verinfo.h"
 #include "gettype.h"
+#include "wclbproc.h"
+
 
 static LPCSTR   dataType;
 static char     dataTypeBuf[256];
@@ -45,7 +48,7 @@ static char     dataName[256];
 static void far *dataPtr;
 static DWORD    dataSize;
 
-BOOL CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        *end;
     WORD        val;
@@ -78,7 +81,7 @@ BOOL CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
     return( TRUE );
 }
 
-BOOL CALLBACK GetDataNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetDataNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -95,7 +98,7 @@ BOOL CALLBACK GetDataNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
     return( TRUE );
 }
 
-BOOL CALLBACK DataDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK DataDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        lb;
 
@@ -117,7 +120,7 @@ BOOL CALLBACK DataDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 
 void DisplayData( bool rcdata )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     HRSRC       rchdl;
     HGLOBAL     rcmemhdl;
     char        buf[256];
@@ -125,13 +128,13 @@ void DisplayData( bool rcdata )
     if( rcdata ) {
         dataType = RT_RCDATA;
     } else {
-        fp = MakeProcInstance( (FARPROC)GetDataTypeDlgProc, Instance );
-        DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlgproc = MakeProcInstance_DLG( GetDataTypeDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
     }
-    fp = MakeProcInstance( (FARPROC)GetDataNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( GetDataNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     rchdl = FindResource( Instance, dataName, dataType );
     if( rchdl == NULL ) {
@@ -153,7 +156,7 @@ void DisplayData( bool rcdata )
         return;
     }
 
-    fp = MakeProcInstance( (FARPROC)DataDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( DataDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,8 @@
 
 
 #include "wserver.hpp"
+#include "wclbdde.h"
+
 
 static WServer* _server = NULL;
 
@@ -72,8 +75,8 @@ WEXPORT WServer::WServer( const char *service, const char *topic, WObject* owner
         _server = this;
         _owner = owner;
         _notify = notify;
-        _procInst = MakeProcInstance( (FARPROC)serverCallback, GUIMainHInst );
-        if( !DdeInitialize( &_procid, (PFNCALLBACK)_procInst, INITFLAGS, 0L ) ) {
+        _procInst = MakeProcInstance_DDE( serverCallback, GUIMainHInst );
+        if( !DdeInitialize( &_procid, _procInst, INITFLAGS, 0L ) ) {
             _service = DdeCreateStringHandle( _procid, (char *)service, CP_WINANSI );
             _topic = DdeCreateStringHandle( _procid, (char *)topic, CP_WINANSI );
             if( DdeNameService( _procid, _service, 0, DNS_REGISTER ) ) {
@@ -94,9 +97,7 @@ WEXPORT WServer::~WServer() {
         DdeFreeStringHandle( _procid, _topic );
         DdeUninitialize( _procid );
         _procid = NULL;
-#if !defined(__NT__)
-        FreeProcInstance( _procInst );
-#endif
+        FreeProcInstance_DDE( _procInst );
         _service = NULL;
         _topic = NULL;
         _server = NULL;

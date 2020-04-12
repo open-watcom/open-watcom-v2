@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 
 #include "wreglbl.h"
-#include <ddeml.h>
+#include "wclbdde.h"
 #include "wresall.h"
 #include "wreres.h"
 #include "wregcres.h"
@@ -150,7 +151,7 @@ bool WREDDEStart( HINSTANCE inst )
         return( FALSE );
     }
 
-    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
     if( DdeProcInst == NULL ) {
         return( FALSE );
     }
@@ -265,7 +266,7 @@ void WREDDEEnd( void )
         DdeUninitialize( IdInst );
     }
     if( DdeProcInst != NULL ) {
-        FreeProcInstance( (FARPROC)DdeProcInst );
+        FreeProcInstance_DDE( DdeProcInst );
     }
 }
 

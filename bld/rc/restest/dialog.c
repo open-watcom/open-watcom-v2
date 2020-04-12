@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +35,12 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
+#include "wclbproc.h"
+
 
 static char dialogName[256];
 
-BOOL CALLBACK GetDialogNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetDialogNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -55,7 +58,7 @@ BOOL CALLBACK GetDialogNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpar
 }
 
 
-BOOL CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -83,16 +86,16 @@ BOOL CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam 
 
 void DisplayDialog( void )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     int         ret;
     char        buf[256];
 
-    fp = MakeProcInstance( (FARPROC)GetDialogNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
-    fp = MakeProcInstance( (FARPROC)DispDialogDlgProc, Instance );
-    ret = DialogBox( Instance, dialogName , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( GetDialogNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
+    dlgproc = MakeProcInstance_DLG( DispDialogDlgProc, Instance );
+    ret = DialogBox( Instance, dialogName , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     if( ret == -1 ) {
         sprintf( buf, "Can't Load Dialog %s", dialogName );
         Error( "dialog", buf );

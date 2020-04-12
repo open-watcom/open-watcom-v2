@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "vi.h"
 #include <stddef.h>
 #include "ddedef.h"
-#include "wclbproc.h"
+#include "wclbdde.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -56,17 +56,7 @@ UINT            ClipboardFormat = CF_TEXT;
 UINT            ServerCount;
 bool            UseDDE;
 
-#ifdef __WINDOWS_386__
-typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, ULONG_PTR, ULONG_PTR );
-static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
-{
-    instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
-}
-#else
-#define PFNCALLBACKx            PFNCALLBACK
-#define MakeFnCallbackProcInstance(f,i) MakeProcInstance((FARPROC)f,i)
-#endif
+static PFNCALLBACK  ddeproc = NULL;
 
 /*
  * DDECallback - callback routine for DDE
@@ -181,17 +171,16 @@ static void freeAllStringHandles( void )
  */
 bool DDEInit( void )
 {
-    FARPROC fp;
-
     if( UseDDE ) {
         return( true );
     }
 
-    fp = MakeFnCallbackProcInstance( DDECallback, InstanceHandle );
+    ddeproc = MakeProcInstance_DDE( DDECallback, InstanceHandle );
 
-    if( DdeInitialize( &DDEInstId, (PFNCALLBACK)fp, CBF_FAIL_EXECUTES |
+    if( DdeInitialize( &DDEInstId, ddeproc, CBF_FAIL_EXECUTES |
                        CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
                        CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
+        FreeProcInstance_DDE( ddeproc );
         return( false );
     }
 
@@ -213,6 +202,7 @@ void DDEFini( void )
     }
     freeAllStringHandles();
     DdeUninitialize( DDEInstId );
+    FreeProcInstance_DDE( ddeproc );
     UseDDE = false;
 
 } /* DDEFini */

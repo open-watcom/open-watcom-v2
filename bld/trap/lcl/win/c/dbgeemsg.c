@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,8 @@
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"
+#include "wclbproc.h"
+
 
 #ifndef WM_PAINTICON
 #define WM_PAINTICON    0x26
@@ -50,26 +53,6 @@ static WORD         SCCount;
 static WNDPROC      DefaultProcInstance;
 static WNDENUMPROC  EnumChildProcInstance;
 static WNDENUMPROC  EnumTaskProcInstance;
-
-static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
-{
-    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static WNDPROC MakeProcInstance_WND( WNDPROC fn, HINSTANCE instance )
-{
-    return( (WNDPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
-
-static void FreeProcInstance_WND( WNDPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
 
 /*
  * SubClassProc - handle all messages for the stopped task

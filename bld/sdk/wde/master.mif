@@ -67,8 +67,6 @@ objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
         windlg.obj windlg32.obj pathlist.obj $(cpp_objs)
 
-objs_win = wdedispa.obj
-
 objs = $(objs) $(objs_$(host_os))
 
 # where to look for various files

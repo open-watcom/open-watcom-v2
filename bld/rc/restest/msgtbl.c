@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,13 @@
 #include "restest.h"
 #include "getnum.h"
 #include "resname.h"
+#include "wclbproc.h"
+
 
 static DWORD    lastNum;
 static char     *getNumCaption;
 
-BOOL CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[128];
 
@@ -65,7 +68,7 @@ BOOL CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 
 void DisplayMessageTable( void ) {
 
-    DLGPROC     fp;
+    DLGPROC     dlgproc;
     DWORD       lang;
     DWORD       id;
     char        buf[256];
@@ -73,15 +76,15 @@ void DisplayMessageTable( void ) {
 
     /* get language id */
     getNumCaption = "Enter the language id for the message in hex";
-    fp = (DLGPROC)MakeProcInstance( GetMsgNumDlgProc, Instance );
-    DialogBox( Instance, "GET_NUM_DLG" , NULL, fp );
+    dlgproc = MakeProcInstance_DLG( GetMsgNumDlgProc, Instance );
+    DialogBox( Instance, "GET_NUM_DLG" , NULL, dlgproc );
     lang = lastNum;
 
     /* get msg number */
     getNumCaption = "Enter the message id for the message in hex";
-    DialogBox( Instance, "GET_NUM_DLG" , NULL, fp );
+    DialogBox( Instance, "GET_NUM_DLG" , NULL, dlgproc );
     id = lastNum;
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
     ret = FormatMessage(
                 FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_HMODULE,
                 GetModuleHandle( NULL ),

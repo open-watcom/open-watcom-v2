@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include "sampwin.h"
 #include "wsample.rh"
 #include "wreslang.h"
+#include "wclbproc.h"
 
 
 #define TMPSLEN 256
@@ -120,7 +121,7 @@ static BOOL StartOutput( short x, short y )
  */
 static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
 
     switch (message) {
     case WM_TIMER:
@@ -141,9 +142,9 @@ static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARA
     case WM_COMMAND:
         switch( wparam ) {
         case MSG_ABOUT:
-            proc = MakeProcInstance( (FARPROC)About, InstanceHandle );
-            DialogBox(InstanceHandle, ResName( "AboutBox" ), hwnd, (DLGPROC)proc);
-            FreeProcInstance(proc);
+            dlgproc = MakeProcInstance_DLG( About, InstanceHandle );
+            DialogBox(InstanceHandle, ResName( "AboutBox" ), hwnd, dlgproc);
+            FreeProcInstance_DLG(dlgproc);
             break;
         case MSG_OPT:
             Usage();

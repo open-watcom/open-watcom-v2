@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Display a cursor resource. 
+* Description:  Display a cursor resource.
 *
 ****************************************************************************/
 
@@ -34,10 +35,12 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
+#include "wclbproc.h"
+
 
 static char cursorName[256];
 
-BOOL CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -56,14 +59,14 @@ BOOL CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpar
 
 void DisplayCursor( HWND hwnd )
 {
-    FARPROC     fp;
+    FARPROC     dlgproc;
     HCURSOR     oldcur;
     HCURSOR     newcur;
     char        buf[256];
 
-    fp = MakeProcInstance( (FARPROC)GetCursorNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( (FARPROC)GetCursorNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     newcur = LoadCursor( Instance, cursorName );
     if( newcur == NULL ) {
         sprintf( buf, "Can't Load Cursor %s", cursorName );

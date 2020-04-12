@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,8 @@
 #include "link.h"
 #include "common.h"
 #include "winexprt.h"
+#include "wclbproc.h"
+
 
 static void listBoxOut( char *str, ... );
 
@@ -65,26 +67,6 @@ WINEXPORT int CALLBACK EnumFunc( const LOGFONT FAR *, const TEXTMETRIC FAR *, in
 WINEXPORT INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
-
-static OLDFONTENUMPROC MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn, HINSTANCE instance )
-{
-    return( (OLDFONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
-
-static DLGPROC MakeProcInstance_DLG( DLGPROC fn, HINSTANCE instance )
-{
-    return( (DLGPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static void FreeProcInstance_DLG( DLGPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
 
 /*
  * EnumFunc - enumerate fonts

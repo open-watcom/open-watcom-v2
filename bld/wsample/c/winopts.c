@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "wsample.rh"
+#include "wclbproc.h"
 
 
 static FARPROC  oldClassProc;
@@ -111,7 +112,7 @@ static BOOL FAR PASCAL About2( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
  */
 static long FAR PASCAL StartUpDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-    FARPROC     farproc;
+    DLGPROC     dlgproc;
     HWND        tmpw;
     int         len;
     char        data[_MAX_PATH];
@@ -127,9 +128,9 @@ static long FAR PASCAL StartUpDriver( HWND hwnd, UINT message, WPARAM wparam, LP
         switch( wparam ) {
         case MSG_ABOUT:
             inst = (HINSTANCE)GetWindowWord( hwnd, GWW_HINSTANCE );
-            farproc = MakeProcInstance( (FARPROC)About2, inst );
-            DialogBox( inst, ResName( "AboutBox" ), hwnd, (DLGPROC)farproc );
-            FreeProcInstance( farproc );
+            dlgproc = MakeProcInstance_DLG( About2, inst );
+            DialogBox( inst, ResName( "AboutBox" ), hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             SetFocus( editChild );
             break;
 

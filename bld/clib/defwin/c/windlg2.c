@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,10 +310,10 @@ INT_PTR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HAND
     DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlgproc = (DLGPROC)MakeProcInstance( (FARPROCx)dlgfn, inst );
+    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
     rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc );
     TEMPLATE_UNLOCK( dlgtemplate );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     GlobalFree( dlgtemplate );
     return( rc );
 

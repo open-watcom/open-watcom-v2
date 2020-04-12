@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "commonui.h"
 #include "vi.h"
-#include <shellapi.h>
 #include "toolbr.h"
 #include "color.h"
 #include "bitmap.h"
