@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#define INCLUDE_TOOL_H
 #include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
@@ -48,6 +50,7 @@
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
+#include "wclbtool.h"
 
 
 #define BUFF_SIZE 512
@@ -233,7 +236,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     command_data        cdata;
     MODULEENTRY         me;
     int                 rc;
-    FARPROC             notify_fn;
+    LPFNNOTIFYCALLBACK  notify_fn;
     FARPROC             fault_fn;
     char                buffer[10];
 
@@ -275,11 +278,11 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
      * register as interrupt and notify handler
      */
     fault_fn = MakeProcInstance( (FARPROC)IntHandler, InstanceHandle );
-    notify_fn = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
+    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
     if( !InterruptRegister( NULL, fault_fn ) ) {
         internalErrorMsg( MSG_SAMPLE_2 );
     }
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
+    if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
         InterruptUnRegister( NULL );
         internalErrorMsg( MSG_SAMPLE_3 );
     }

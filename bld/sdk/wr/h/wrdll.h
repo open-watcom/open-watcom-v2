@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,7 @@
     #define WRAPI   WINAPI
 #endif
 
-#if defined( __OS2__ )
-typedef void (APIENTRY *HELP_CALLBACK)(void);
-#else
-typedef void (WINAPI *HELP_CALLBACK)(void);
-#endif
-
+#include "wclbhelp.h"
 #include "wrinfo.h"
 #include "wrmain.h"
 #include "wridfile.h"

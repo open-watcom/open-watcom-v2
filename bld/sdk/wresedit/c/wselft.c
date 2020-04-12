@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,16 +62,16 @@
 
 WRFileType WSelectFileType( HWND parent, char *name,
                             bool is32bit, bool use_wres,
-                            HINSTANCE inst, HELP_CALLBACK help_callback )
+                            HINSTANCE inst, HELPFUNC help_callback )
 {
     WRFileType          file_type;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
 
     /* unused parameters */ (void)inst;
 
-    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
+    hcb = MakeProcInstance_HELP( help_callback, inst );
     file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
-    FreeProcInstance( (FARPROC)hcb );
+    FreeProcInstance_HELP( hcb );
 
     return( file_type );
 }

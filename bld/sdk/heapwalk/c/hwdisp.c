@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -467,7 +467,7 @@ static void DeleteRes( HWND hwnd )
     }
 } /* DeleteRes */
 
-BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     ResInfo             *info;
     HDC                 dc;

@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#define INCLUDE_TOOL_H
 #include "drwatcom.h"
 #include <i86.h>
 #include "watcom.h"
@@ -38,10 +39,12 @@
 #include "jdlg.h"
 #include "memwnd.h"
 #include "drwatmem.h"
+#include "wclbtool.h"
 
 
 static char     className[] = "drwatcom";
-static FARPROC  faultFN, notifyFN;
+static FARPROC  faultFN;
+static LPFNNOTIFYCALLBACK notifyFN;
 
 extern WORD     _STACKLOW;
 
@@ -153,11 +156,11 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
          * set up handlers
          */
         faultFN = MakeProcInstance( (FARPROC)IntHandler, Instance );
-        notifyFN = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
+        notifyFN = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
         if( !InterruptRegister( NULL, faultFN ) ) {
             Death( STR_CANT_HOOK_INTER );
         }
-        if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyFN, NF_NORMAL | NF_RIP ) ) {
+        if( !NotifyRegister( NULL, notifyFN, NF_NORMAL | NF_RIP ) ) {
             InterruptUnRegister( NULL );
             Death( STR_CANT_HOOK_NOTIF );
         }
@@ -197,7 +200,7 @@ void Death( msg_id msgid, ... )
     }
     NotifyUnRegister( NULL );
     if( notifyFN != NULL ) {
-        FreeProcInstance( notifyFN );
+        FreeProcInstance_NOTIFY( notifyFN );
     }
     Done386Debug();
 

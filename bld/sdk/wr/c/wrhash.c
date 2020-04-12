@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,14 +61,14 @@ typedef struct SymInitStruct {
 } SymInitStruct;
 
 typedef struct WREditSymInfo {
-    HELP_CALLBACK       help_callback;
+    HELPFUNC            help_callback;
     WRHashTable         *table;
     bool                modified;
     WRHashEntryFlags    flags;
 } WREditSymInfo;
 
 typedef struct WRAddSymInfo {
-    HELP_CALLBACK   help_callback;
+    HELPFUNC        help_callback;
     WRHashTable     *table;
     char            *symbol;
     WRHashValue     value;
@@ -961,7 +961,7 @@ bool WRAPI WRIsValidSymbol( const char *symbol )
 }
 
 bool WRAPI WREditSym( HWND parent, WRHashTable **table,
-                          WRHashEntryFlags *flags, HELP_CALLBACK help_callback )
+                          WRHashEntryFlags *flags, HELPFUNC help_callback )
 {
     WREditSymInfo       info;
     WRHashTable         *tmp;
@@ -1121,7 +1121,7 @@ static WRHashEntry *getHashEntry( HWND hDlg )
     return( entry );
 }
 
-static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_callback, bool modify )
+static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELPFUNC help_callback, bool modify )
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
@@ -1410,7 +1410,7 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
             break;
 
         case IDB_SYM_HELP:
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;
@@ -1566,7 +1566,7 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
         info = (WRAddSymInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_ADDSYM_HELP:
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;

@@ -48,6 +48,7 @@
 #include "wresym.h"
 #include "wresdefn.h"
 #include "pathgrp2.h"
+#include "wclbhelp.h"
 
 #include "clibext.h"
 
@@ -339,15 +340,15 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 bool WREEditResourceSymbols( WREResInfo *info )
 {
     WRHashEntryFlags    flags;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = (HELP_CALLBACK)NULL;
+    hcb = NULL;
     ok = (info != NULL && info->symbol_table != NULL);
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (hcb != (HELP_CALLBACK)NULL);
+        hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != NULL);
     }
 
     if( ok ) {
@@ -357,8 +358,8 @@ bool WREEditResourceSymbols( WREResInfo *info )
 
     // ***** call routine to update the edit sessions *****
 
-    if( hcb != (HELP_CALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)hcb );
+    if( hcb != NULL ) {
+        FreeProcInstance_HELP( hcb );
     }
 
     return( ok );

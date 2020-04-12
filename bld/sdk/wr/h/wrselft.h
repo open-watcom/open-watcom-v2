@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,6 @@
 #define WRSELFT_INCLUDED
 
 WRDLLENTRY extern WRFileType   WRAPI WRGuessFileType ( const char * );
-WRDLLENTRY extern WRFileType   WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit, bool use_wres, HELP_CALLBACK help_callback );
+WRDLLENTRY extern WRFileType   WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit, bool use_wres, HELPFUNC help_callback );
 
 #endif

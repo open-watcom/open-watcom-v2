@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,10 @@
 ****************************************************************************/
 
 
+#define INCLUDE_TOOL_H
 #include "vi.h"
 #include <dos.h>
-#ifdef __WIN__
-#include "wclbproc.h"
-#endif
+#include "wclbtool.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -42,24 +42,9 @@ WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data );
 #define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
 #define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
 
-#ifdef __WINDOWS_386__
-typedef BOOL (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
-#endif
-
 static bool     doneExec;
 static HMODULE  moduleHandle;
 static HMODULE  instanceHandle;
-
-#ifdef __WINDOWS_386__
-static FARPROC MakeNotifyCallbackProcInstance( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance )
-{
-    instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
-}
-#else
-#define LPFNNOTIFYCALLBACKx LPFNNOTIFYCALLBACK
-#define MakeNotifyCallbackProcInstance(f,i) MakeProcInstance((FARPROC)f,i)
-#endif
 
 WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 {
@@ -84,7 +69,7 @@ WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
  */
 long MySpawn( const char *cmd )
 {
-    FARPROC             proc;
+    LPFNNOTIFYCALLBACK  notifyproc;
     HANDLE              inst;
     cmd_struct          cmds;
     char                path[_MAX_PATH];
@@ -95,46 +80,42 @@ long MySpawn( const char *cmd )
 
     GetSpawnCommandLine( path, cmd, &cmds );
     cmds.cmd[cmds.len] = '\0';
-    proc = MakeNotifyCallbackProcInstance( NotifyHandler, InstanceHandle );
-    if( !NotifyRegister( (HANDLE)NULLHANDLE, (LPFNNOTIFYCALLBACK)proc, NF_NORMAL ) ) {
-        FreeProcInstance( proc );
-        return( -1L );
-    }
-    strcat( path, " " );
-    strcat( path, cmds.cmd );
-    inst = (HANDLE)WinExec( (LPCSTR)path, SW_SHOWNORMAL );
-    if( inst > (HANDLE)32 ) {
-        union REGS in_regs, out_regs;
+    notifyproc = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
+    rc = -1;
+    if( NotifyRegister( (HANDLE)NULLHANDLE, notifyproc, NF_NORMAL ) ) {
+        strcat( path, " " );
+        strcat( path, cmds.cmd );
+        inst = (HANDLE)WinExec( (LPCSTR)path, SW_SHOWNORMAL );
+        if( inst > (HANDLE)32 ) {
+            union REGS in_regs, out_regs;
 
-        doneExec = false;
+            doneExec = false;
 #ifdef __WINDOWS_386__
-        moduleHandle = GetModuleHandle( PASS_WORD_AS_POINTER( inst ) );
+            moduleHandle = GetModuleHandle( PASS_WORD_AS_POINTER( inst ) );
 #else
-        GetModuleFileName( inst, buffer, FILENAME_MAX - 1 );
-        moduleHandle = GetModuleHandle( buffer );
+            GetModuleFileName( inst, buffer, FILENAME_MAX - 1 );
+            moduleHandle = GetModuleHandle( buffer );
 #endif
+            // waiting doesn't work under win-os2 so don't wait!
+            in_regs.h.ah = 0x30;
+            in_regs.h.al = 0x0;
+            intdos( &in_regs, &out_regs );
+            if( out_regs.h.al == 20 ) {
+                doneExec = true;
+            }
 
-        // waiting doesn't work under win-os2 so don't wait!
-        in_regs.h.ah = 0x30;
-        in_regs.h.al = 0x0;
-        intdos( &in_regs, &out_regs );
-        if( out_regs.h.al == 20 ) {
-            doneExec = true;
+            instanceHandle = inst;
+            EditFlags.HoldEverything = true;
+            while( !doneExec ) {
+                MessageLoop( true );
+                Yield();
+            }
+            EditFlags.HoldEverything = false;
+            rc = 0;
         }
-
-        instanceHandle = inst;
-        EditFlags.HoldEverything = true;
-        while( !doneExec ) {
-            MessageLoop( true );
-            Yield();
-        }
-        EditFlags.HoldEverything = false;
-        rc = 0;
-    } else {
-        rc = -1L;
+        NotifyUnRegister( (HANDLE)NULLHANDLE );
     }
-    NotifyUnRegister( (HANDLE)NULLHANDLE );
-    FreeProcInstance( proc );
+    FreeProcInstance_NOTIFY( notifyproc );
     return( rc );
 
 } /* MySpawn */

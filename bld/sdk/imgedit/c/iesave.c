@@ -47,7 +47,7 @@
 #include "wricon.h"
 #include "wrselft.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#include "wclbhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -825,7 +825,7 @@ static bool saveResourceFile( img_node *node )
     bool            was32bit;
     bool            is32bit;
     bool            ok;
-    HELP_CALLBACK   hcb;
+    HELPFUNC        hcb;
 
     info_created = false;
     data = NULL;
@@ -869,9 +869,9 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
-            hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
+            hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
             save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, hcb );
-            _wpi_freeprocinstance( (WPI_PROC)hcb );
+            FreeProcInstance_HELP( hcb );
             is32bit = WRIs32Bit( save_type );
             if( was32bit ) {
                 if( is32bit ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,10 +68,10 @@ bool WREChangeMemFlags( void )
     char                *type_name;
     uint_16             type_id;
     uint_16             mflags;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = (HELP_CALLBACK)NULL;
+    hcb = NULL;
     type_name = NULL;
     mflags = 0;
     type_id = 0;
@@ -86,8 +87,8 @@ bool WREChangeMemFlags( void )
     }
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (hcb != (HELP_CALLBACK)NULL);
+        hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != NULL);
     }
 
     if( ok ) {
@@ -99,8 +100,8 @@ bool WREChangeMemFlags( void )
         curr.lang->Info.MemoryFlags = mflags;
     }
 
-    if( hcb != (HELP_CALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)hcb );
+    if( hcb != NULL ) {
+        FreeProcInstance_HELP( hcb );
     }
 
     if( type_name != NULL ) {

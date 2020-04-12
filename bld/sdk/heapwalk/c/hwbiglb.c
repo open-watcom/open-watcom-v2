@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam, LONG lparam );
+LRESULT __export FAR PASCAL TextBoxProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define TB_CLASS_NAME           "WatTextBox"
 #define STYLE_FLAGS             WS_VISIBLE | LBS_OWNERDRAWFIXED \
@@ -103,7 +103,7 @@ static void SizeTheListBox( HWND hwnd, TBinfo *info ) {
     info->old_area.bottom = height;
 }
 
-BOOL FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam, LONG lparam )
+LRESULT FAR PASCAL TextBoxProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     TBinfo                      *info;
     MEASUREITEMSTRUCT           *mis;
@@ -214,7 +214,7 @@ BOOL RegTextBox( HANDLE instance ) {
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (WNDPROC)TextBoxProc;
+    wc.lpfnWndProc = TextBoxProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = instance;

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,26 +24,49 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WIN16/WIN386 MakeProcInstance.../FreeProcInstance...
+*               for help callback function prototypes
 *
 ****************************************************************************/
 
 
-#ifndef WMEMF_INCLUDED
-#define WMEMF_INCLUDED
+#include "wclbproc.h"
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name, HINSTANCE, HELPFUNC help_callback );
+#if defined( __OS2__ )
+typedef void (EXPENTRY *HELPFUNC)(void);
 
+#define MakeProcInstance_HELP(f,i)  (HELPFUNC)_wpi_makeprocinstance((WPI_PROC)f, i)
+#define FreeProcInstance_HELP(f)    _wpi_freeprocinstance((WPI_PROC)f)
+#else
+typedef void (CALLBACK *HELPFUNC)(void);
+
+#if defined( __WINDOWS_386__ )
+typedef void        (CALLBACK *HELPFUNCx)( void );
+#else
+#define HELPFUNCx   HELPFUNC
+#endif
+
+#if defined( __WINDOWS__ )
+extern HELPFUNCx    MakeProcInstance_HELP( HELPFUNCx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_HELP = MAKEPROCINSTANCE_INLINE
+#else
+#define MakeProcInstance_HELP(f,i)   ((void)i,f)
+#endif
+
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+extern void FreeProcInstance_HELP( HELPFUNC f );
+#pragma aux FreeProcInstance_HELP = FREEPROCINSTANCE_INLINE
+#else
+#define FreeProcInstance_HELP(f)     ((void)f)
+#endif
+
+#endif
+
+#ifdef __cplusplus
+}
 #endif

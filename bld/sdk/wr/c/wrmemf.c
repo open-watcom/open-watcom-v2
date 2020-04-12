@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WRMFInfo {
-    HELP_CALLBACK   help_callback;
+    HELPFUNC        help_callback;
     uint_16         mflags;
     char            *name;
 } WRMFInfo;
@@ -68,7 +69,7 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALLBACK help_callback )
+bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELPFUNC help_callback )
 {
     WRMFInfo    info;
     DLGPROC     dlgproc;
@@ -174,7 +175,7 @@ WINEXPORT INT_PTR CALLBACK WRMemFlagsDlgProc( HWND hDlg, UINT message, WPARAM wP
         switch( LOWORD( wParam ) ) {
         case IDM_MFHELP:
             info = (WRMFInfo *)GET_DLGDATA( hDlg );
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;

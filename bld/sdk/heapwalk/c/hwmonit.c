@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +206,7 @@ static void PaintMonitor( HWND hwnd, HDC dc, LocalMonInfo *info ) {
  * LocalMonitorProc - handle messages while monitoring a local heap
  */
 
-BOOL FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     LocalMonInfo        *info;
     HDC                 dc;

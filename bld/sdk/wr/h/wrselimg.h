@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +45,13 @@ typedef struct {
     WResLangNode        *lnode;
     uint_16             type;
     WRInfo              *info;
-    HELP_CALLBACK       help_callback;
+    HELPFUNC            help_callback;
 } WRSelectImageInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
 WRDLLENTRY extern void                 WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info );
-WRDLLENTRY extern WRSelectImageInfo *  WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBACK help_callback );
+WRDLLENTRY extern WRSelectImageInfo *  WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELPFUNC help_callback );
 
 #endif

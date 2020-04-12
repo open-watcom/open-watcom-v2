@@ -99,7 +99,7 @@ static bool InitFirstInst( HANDLE hinst )
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) MainWndProc;
+    wc.lpfnWndProc = MainWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hinst;

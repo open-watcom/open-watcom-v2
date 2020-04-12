@@ -53,6 +53,7 @@
 #include "preproc.h"
 #include "wresdefn.h"
 #include "pathgrp2.h"
+#include "wclbhelp.h"
 
 #include "clibext.h"
 
@@ -131,15 +132,15 @@ void PPENTRY PP_Free( void *p )
 static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = (HELP_CALLBACK)NULL;
+    hcb = NULL;
     ok = (table != NULL);
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
-        ok = (hcb != (HELP_CALLBACK)NULL);
+        hcb = MakeProcInstance_HELP( WdeHelpRoutine, WdeGetAppInstance() );
+        ok = (hcb != NULL);
     }
 
     if( ok ) {
@@ -147,8 +148,8 @@ static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
         ok = WREditSym( parent, table, &flags, hcb );
     }
 
-    if( hcb != (HELP_CALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)hcb );
+    if( hcb != NULL ) {
+        FreeProcInstance_HELP( hcb );
     }
 
     return( ok );

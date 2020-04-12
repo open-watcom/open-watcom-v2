@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,26 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WIN16/WIN386 MakeProcInstance.../FreeProcInstance...
+*               for helptool.dll callback function prototypes
 *
 ****************************************************************************/
 
 
-#ifndef WMEMF_INCLUDED
-#define WMEMF_INCLUDED
+#include "wclbproc.h"
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name, HINSTANCE, HELPFUNC help_callback );
+#if defined( __WINDOWS_386__ )
+typedef BOOL                (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
+#else
+#define LPFNNOTIFYCALLBACKx LPFNNOTIFYCALLBACK
+#endif
 
+#if defined( __WINDOWS__ )
+extern LPFNNOTIFYCALLBACK   MakeProcInstance_NOTIFY( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_NOTIFY = MAKEPROCINSTANCE_INLINE
+#else
+#define MakeProcInstance_NOTIFY(f,i)   ((void)i,f)
+#endif
+
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+extern void FreeProcInstance_NOTIFY( LPFNNOTIFYCALLBACK f );
+#pragma aux FreeProcInstance_NOTIFY = FREEPROCINSTANCE_INLINE
+#else
+#define FreeProcInstance_NOTIFY(f)     ((void)f)
+#endif
+
+#ifdef __cplusplus
+}
 #endif

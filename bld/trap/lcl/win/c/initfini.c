@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <dos.h>
+#define INCLUDE_TOOL_H
 #include "cpuglob.h"
 #include "wdebug.h"
 #include "stdwin.h"
@@ -44,12 +45,13 @@
 #include "trpsys.h"
 #include "initfini.h"
 #include "di386cli.h"
+#include "wclbtool.h"
 
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
-static FARPROC  faultInstance;
-static FARPROC  notifyInstance;
+static FARPROC              faultInstance;
+static LPFNNOTIFYCALLBACK   notifyInstance;
 
 void SetInputLock( bool lock_status )
 {
@@ -89,8 +91,8 @@ char *InitDebugging( void )
     if( !InterruptRegister( NULL, faultInstance ) ) {
         return( TRP_WIN_Failed_to_get_interrupt_hook );
     }
-    notifyInstance = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyInstance, NF_NORMAL | NF_RIP ) ) {
+    notifyInstance = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
+    if( !NotifyRegister( NULL, notifyInstance, NF_NORMAL | NF_RIP ) ) {
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
     Out(( OUT_INIT,"ds=%04x, faultInstance=%Fp, notifyInstance=%Fp,Instance=%04x",
@@ -121,7 +123,7 @@ void FinishDebugging( void )
     }
     NotifyUnRegister( NULL );
     if( notifyInstance != NULL ) {
-        FreeProcInstance( notifyInstance );
+        FreeProcInstance_NOTIFY( notifyInstance );
     }
     if( WDebug386 ) {
         ResetDebugInterrupts32();

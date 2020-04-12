@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
     }
 }
 
-WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBACK help_callback )
+WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELPFUNC help_callback )
 {
     DLGPROC             dlgproc;
     HINSTANCE           inst;
@@ -250,7 +251,7 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
         info = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_SELIMGHELP:
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WResRenameInfo {
-    HELP_CALLBACK       help_callback;
+    HELPFUNC            help_callback;
     WResID              *old_name;
     WResID              *new_name;
 } WResRenameInfo;
@@ -72,7 +73,7 @@ static bool WGetNewName( HWND, WResRenameInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK help_callback )
+bool WRenameResource( HWND parent, WResID **name, HELPFUNC help_callback )
 {
     WResRenameInfo  info;
     bool            ok;

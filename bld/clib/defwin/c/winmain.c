@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,8 @@
 #include "strdup.h"
 #include "initarg.h"
 #include "defwin.h"
+#include "wclbproc.h"
+
 
 #ifndef __NT__
 #pragma aux __init_default_win "*";
@@ -48,12 +50,6 @@ char    __init_default_win;
 #endif
 
 #ifdef DEFAULT_WINDOWING
-
-#if defined( __WINDOWS_386__ )
-	#define TO_LPVOID(f)	((LPVOID)(long)(f))
-#else
-	#define TO_LPVOID(f)	((LPVOID)(f))
-#endif
 
 static char *mainClass;
 extern char __WinTitleBar[20];          /* Text for window title bar */
@@ -177,7 +173,7 @@ static BOOL firstInstance( HANDLE inst)
      * register window classes
      */
     wc.style = 0;
-    wc.lpfnWndProc = TO_LPVOID( _MainDriver );
+    wc.lpfnWndProc = GetWndProc( _MainDriver );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
@@ -192,7 +188,7 @@ static BOOL firstInstance( HANDLE inst)
         return( FALSE );
 
     wc.style = 0;
-    wc.lpfnWndProc = TO_LPVOID( _MainDriver );
+    wc.lpfnWndProc = GetWndProc( _MainDriver );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;

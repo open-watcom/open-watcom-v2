@@ -48,7 +48,7 @@
 #include "wricon.h"
 #include "wrselimg.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#include "wclbhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -672,7 +672,7 @@ static bool readInResourceFile( const char *fullname )
     size_t              dsize;
     WRInfo              *info;
     WRSelectImageInfo   *sii;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ok;
 
     info = NULL;
@@ -686,9 +686,9 @@ static bool readInResourceFile( const char *fullname )
     }
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
+        hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
         sii = WRSelectImage( HMainWindow, info, hcb );
-        _wpi_freeprocinstance( (WPI_PROC)hcb );
+        FreeProcInstance_HELP( hcb );
         ok = (sii != NULL && sii->lnode != NULL);
     }
 

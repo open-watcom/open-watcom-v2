@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ WRDLLENTRY extern void                 WRAPI WRValueListFree( WRHashValueList *l
 WRDLLENTRY extern WRHashValueList *    WRAPI WRLookupValue( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern int                  WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern char *               WRAPI WRResolveValue( WRHashTable *, WRHashValue );
-WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELP_CALLBACK help_callback );
+WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELPFUNC help_callback );
 WRDLLENTRY extern bool                 WRAPI WRDeleteDLGInclude( WResDir dir );
 WRDLLENTRY extern bool                 WRAPI WRCreateDLGInclude( WResDir *dir, const char *include );
 
