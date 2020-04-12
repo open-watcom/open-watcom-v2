@@ -41,9 +41,9 @@ WObjectMap WEXPORT WClient::_convMap;
 HDDEDATA _WEXPORT CALLBACK clientCallback( UINT type, UINT /*fmt*/,
                                            HCONV hconv, HSZ /*hsz1*/,
                                            HSZ /*hsz2*/, HDDEDATA /*hdata*/,
-                                           DWORD /*dwdata1*/,
-                                           DWORD /*dwdata2*/ ) {
-/**************************************************************/
+                                           ULONG_PTR /*dwdata1*/,
+                                           ULONG_PTR /*dwdata2*/ ) {
+/******************************************************************/
 
     WClient* client = (WClient*)WClient::_convMap.findThis( (WHANDLE)hconv );
     if( client != NULL ) {

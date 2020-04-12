@@ -41,9 +41,9 @@ static WServer* _server = NULL;
 HDDEDATA _WEXPORT CALLBACK serverCallback( UINT type, UINT fmt,
                                            HCONV /*hconv*/, HSZ hsz1,
                                            HSZ hsz2, HDDEDATA /*hdata*/,
-                                           DWORD /*dwdata1*/,
-                                           DWORD /*dwdata2*/ ) {
-/**************************************************************/
+                                           ULONG_PTR /*dwdata1*/,
+                                           ULONG_PTR /*dwdata2*/ ) {
+/******************************************************************/
 
     if( _server != NULL ) {
         switch( type ) {
