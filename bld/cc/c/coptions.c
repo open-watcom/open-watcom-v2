@@ -2300,10 +2300,10 @@ void GenCOptions( char **cmdline )
     for( ;*cmdline != NULL; ++cmdline ) {
         ProcOptions( *cmdline );
     }
-    if( CompFlags.cpp_output_requested )
+    if( CompFlags.cpp_output_requested ) {
         CompFlags.cpp_output = true;
-    if( CompFlags.cpp_output )
         CompFlags.quiet_mode = true;
+    }
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
     SetTargSystem();
