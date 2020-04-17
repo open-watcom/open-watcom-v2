@@ -673,6 +673,15 @@ static MACRO_TOKEN *BuildAToken( TOKEN token, const char *p )
 }
 
 
+static MACRO_TOKEN **BuildATokenOnEnd( MACRO_TOKEN **ptail, TOKEN token, const char *data )
+{
+    MACRO_TOKEN *mtok;
+
+    *ptail = BuildAToken( token, data );
+    return( &(*ptail)->next );
+}
+
+
 static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *data )
 {
     MACRO_TOKEN *tail;
@@ -780,20 +789,17 @@ static MACRO_TOKEN *ReTokenBuffer( char *buffer )
 // retokenize starting at buffer
 {
     MACRO_TOKEN *head;
-    MACRO_TOKEN **lnk;
-    MACRO_TOKEN *new;
+    MACRO_TOKEN **ptail;
     bool        ppscan_mode;
 
     ppscan_mode = InitPPScan();
     ReScanInit( buffer );
     head = NULL;
-    lnk = &head;
+    ptail = &head;
     for( ;; ) {
         Buffer[0] = '\0';
         ReScanToken();
-        new = BuildAToken( CurToken, Buffer );
-        *lnk = new;
-        lnk = &new->next;
+        ptail = BuildATokenOnEnd( ptail, CurToken, Buffer );
         if( CompFlags.rescan_buffer_done ) {
             break;
         }
@@ -806,15 +812,16 @@ static MACRO_TOKEN *ReTokenBuffer( char *buffer )
 static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 {
     MACRO_TOKEN *mtok;
-    MACRO_TOKEN **lnk,**_lnk;// prior lnk
+    MACRO_TOKEN **ptail;
+    MACRO_TOKEN **prev_ptail;   // prior ptail
     MACRO_TOKEN *next;
     char        *buf;
     char        *gluebuf;
 
     gluebuf = NULL;
-    _lnk = NULL;
-    lnk = &head;
-    mtok = *lnk;
+    prev_ptail = NULL;
+    ptail = &head;
+    mtok = *ptail;
     buf = Buffer;
     for( ; mtok != NULL; ) {
         if( mtok->token != T_WHITE_SPACE ) {
@@ -870,53 +877,42 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         /* Both ends of ## were empty */
                         mtok = BuildAToken( T_NULL, "P-<placemarker>" );
                     }
-                    *lnk = mtok;  // link in new mtok to mtok's link
-                    while( mtok != NULL && mtok->next != NULL ) {   //position mtok & lnk to last token
-                        _lnk = lnk;
-                        lnk = &mtok->next;
-                        mtok = *lnk;
+                    *ptail = mtok;  // link in new mtok to mtok's link
+                    while( mtok != NULL && mtok->next != NULL ) {   //position mtok & ptail to last token
+                        prev_ptail = ptail;
+                        ptail = &mtok->next;
+                        mtok = *ptail;
                         if( mtok == mtok->next ) {
                             return( head );
                         }
                     }
                     // mtok == last token of retokenizing
-                    // lnk == the pointer which references mtok
+                    // ptail == the pointer which references mtok
                     mtok->next = rem;
                 } else {
-                    if( _lnk ) {
-                        *lnk = rem;
-                        lnk = _lnk;
-                        mtok = *lnk;
+                    if( prev_ptail != NULL ) {
+                        *ptail = rem;
+                        ptail = prev_ptail;
+                        mtok = *ptail;
                     } else {
-                        *lnk = rem;
+                        *ptail = rem;
                         mtok = head;
                     }
                 }
                 continue;          //ready to go
             }
         }
-        _lnk = lnk;
-        lnk = &mtok->next;
-        mtok = *lnk;
+        prev_ptail = ptail;
+        ptail = &mtok->next;
+        mtok = *ptail;
     }
     return( head );
 }
 
-static MACRO_TOKEN **NextString( MACRO_TOKEN **lnk, const char *buf )
-{
-    MACRO_TOKEN *mtok;
-
-    mtok = BuildAToken( T_STRING, buf );
-    *lnk = mtok;
-    lnk = &mtok->next;
-    return( lnk );
-}
-
-
 static MACRO_TOKEN *BuildString( const char *p )
 {
     MACRO_TOKEN     *head;
-    MACRO_TOKEN     **lnk;
+    MACRO_TOKEN     **ptail;
     size_t          i;
     char            c;
     const char      *tokenstr;
@@ -926,7 +922,7 @@ static MACRO_TOKEN *BuildString( const char *p )
     TOKEN           tok;
 
     head = NULL;
-    lnk = &head;
+    ptail = &head;
 
     len = 0;
     if( p != NULL ) {
@@ -998,7 +994,7 @@ static MACRO_TOKEN *BuildString( const char *p )
         }
         if( len > 0 ) {
             buf[len] = '\0';
-            lnk = NextString( lnk, buf );
+            ptail = BuildATokenOnEnd( ptail, T_STRING, buf );
         }
         CMemFree( buf );
     }
@@ -1010,7 +1006,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
 {
     MACRO_TOKEN     *mtok;
     MACRO_TOKEN     *head;
-    MACRO_TOKEN     **lnk;
+    MACRO_TOKEN     **ptail;
     NESTED_MACRO    *nested;
     const char      *p2;
     char            buf[2];
@@ -1019,7 +1015,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
     mac_parm_count  parmno;
 
     head = NULL;
-    lnk = &head;
+    ptail = &head;
     nested = NestedMacros;
     buf[1] = '\0';
     prev_token = T_NULL;
@@ -1122,9 +1118,9 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             if( mtok->token != T_WHITE_SPACE ) {
                 prev_token = mtok->token;
             }
-            *lnk = mtok;
-            while( *lnk != NULL ) {
-                lnk = &(*lnk)->next;
+            *ptail = mtok;
+            while( *ptail != NULL ) {
+                ptail = &(*ptail)->next;
             }
         }
     }
