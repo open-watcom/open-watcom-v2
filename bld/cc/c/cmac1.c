@@ -675,8 +675,6 @@ static MACRO_TOKEN *BuildAToken( TOKEN token, const char *p )
 
 static MACRO_TOKEN **BuildATokenOnEnd( MACRO_TOKEN **ptail, TOKEN token, const char *data )
 {
-    MACRO_TOKEN *mtok;
-
     *ptail = BuildAToken( token, data );
     return( &(*ptail)->next );
 }
