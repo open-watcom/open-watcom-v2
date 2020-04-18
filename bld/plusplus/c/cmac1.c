@@ -946,9 +946,10 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *next;
     MACRO_TOKEN *new_mtok;
-    MACRO_TOKEN **ptail, **_ptail;
+    MACRO_TOKEN **ptail;
+    MACRO_TOKEN **prev_ptail;
 
-    _ptail = NULL;
+    prev_ptail = NULL;
     ptail = &head;
     for( mtok = head; mtok != NULL; ) {
         if( mtok->token != T_WHITE_SPACE ) {
@@ -966,8 +967,6 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
 
                 if( next->token == T_WHITE_SPACE )
                     next = next->next;
-                // glue mtok->token with next->token to make one token
-                // create new token
 
                 if( next == NULL )
                     break;
@@ -995,7 +994,7 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                             // keep the thing after the ##
                             rem = next->next;
                             next->next = NULL;
-                            _ptail = ptail;
+                            prev_ptail = ptail;
                             ptail = &(mtok->next);
                             mtok = mtok->next; // skip first...
                         }
@@ -1006,9 +1005,9 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                         }
                     }
                     *ptail = rem;
-                    if( _ptail ) {
+                    if( prev_ptail != NULL ) {
                         // skip back one param..
-                        ptail = _ptail;
+                        ptail = prev_ptail;
                         mtok = *ptail;
                     } else {
                         *ptail = rem;
@@ -1016,8 +1015,10 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                     }
                 } else {
                     MACRO_TOKEN *last;
-                    last = new_mtok = glue2Tokens( mtok, next );
-                    *ptail = new_mtok;
+
+                    // glue mtok->token with next->token to make one token
+                    // create new token
+                    *ptail = last = new_mtok = glue2Tokens( mtok, next );
                     while( last->next != NULL ) {
                         last = last->next;
                     }
@@ -1029,14 +1030,14 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                         CMemFree( mtok );
                         mtok = next;
                     } while( mtok != last->next );
-                    if( !_ptail )
+                    if( prev_ptail == NULL )
                         head = new_mtok;
                     mtok = new_mtok;
                 }
                 continue;       /* to catch consecutive ##'s */
             }
         }
-        _ptail = ptail;
+        prev_ptail = ptail;
         ptail = &(mtok->next);
         mtok = mtok->next;
     }
