@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "plusplus.h"
 #include "memmgr.h"
 #include "preproc.h"
+#include "cmacsupp.h"
 #include "ring.h"
 #include "pcheader.h"
 #include "stats.h"
@@ -460,8 +462,6 @@ pch_status PCHReadMacros( void )
     return( PCHCB_OK );
 }
 
-#define magicPredefined( n )    ( strcmp( "defined", (n) ) == 0 )
-
 static MEPTR macroFind(         // LOOK UP A HASHED MACRO
     const char *name,           // - macro name
     size_t len,                 // - length of macro name
@@ -541,7 +541,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     DbgAssert( mentry == (MEPTR)MacroOffset );
     new_mentry = NULL;
     mac_name = mentry->macro_name;
-    if( magicPredefined( mac_name ) ) {
+    if( IS_OPER_DEFINED( mac_name ) ) {
         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
     } else {
         name_len = strlen( mac_name );
@@ -651,12 +651,12 @@ bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
 }
 
 
-static void doMacroUndef( char *name, size_t len, bool quiet )
+static void doMacroUndef( const char *name, size_t len, bool quiet )
 {
     MEPTR mentry;           // - current macro entry
     unsigned hash;          // - current macro hash
 
-    if( magicPredefined( name ) ) {
+    if( IS_OPER_DEFINED( name ) ) {
         if( !quiet ) {
             CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
         }

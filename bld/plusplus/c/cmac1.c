@@ -930,7 +930,9 @@ static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
     size_t      i;
 
-    i = 10;
+    #define INPOUT_SHIFT    10
+
+    i = INPOUT_SHIFT;
     Buffer[i] = '\0';
     if( first != NULL ) {
         i = expandMacroToken( i, first );
@@ -938,7 +940,7 @@ static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     if( second != NULL ) {
         i = expandMacroToken( i, second );
     }
-    return( reTokenBuffer( &Buffer[10] ) );
+    return( reTokenBuffer( Buffer + INPOUT_SHIFT ) );
 }
 
 static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )

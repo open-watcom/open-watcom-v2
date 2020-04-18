@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,12 @@
 
 #ifndef _CMACSUPP_H
 #define _CMACSUPP_H
+
+#define OPER_DEFINED    "defined"
+#define OPER_PRAGMA     "_Pragma"
+
+#define IS_OPER_DEFINED(s)  (CMPLIT(s, OPER_DEFINED) == 0)
+#define IS_OPER_PRAGMA(s)   (CMPLIT(s, OPER_PRAGMA) == 0)
 
 void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
     size_t *mlen,               // - data length

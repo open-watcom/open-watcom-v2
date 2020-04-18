@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include <ctype.h>
 #include "cvars.h"
+#include "cmacsupp.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
@@ -1655,7 +1656,7 @@ static TREEPTR ExprId( void )
     int         count;
 
     if( Pre_processing != PPCTL_NORMAL ) {
-        if( CMPLIT( Buffer, "defined" ) == 0 ) {
+        if( IS_OPER_DEFINED( Buffer ) ) {
             ppctl_t old_ppctl;
 
             old_ppctl = Pre_processing;

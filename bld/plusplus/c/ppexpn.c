@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include "initdefs.h"
 #include "carve.h"
 #include "dumpapi.h"
+#include "cmacsupp.h"
 
 
 #define L       I64LO32
@@ -385,7 +387,7 @@ static bool COperand( void )
         SrcFileGetTokenLocn( &loc.locn ); // need this to store result
         loc.pos = Pos;
         Pos++;
-        if( strcmp( "defined", Buffer ) == 0 ) {
+        if( IS_OPER_DEFINED( Buffer ) ) {
             ppctl_t old_ppctl;
 
             old_ppctl = PPControl;

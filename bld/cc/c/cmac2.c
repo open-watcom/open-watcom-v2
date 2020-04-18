@@ -345,7 +345,7 @@ MEPTR MacroScan( void )
         ExpectIdentifier();
         return( NULL );
     }
-    if( CMPLIT( Buffer, "defined" ) == 0 ) {
+    if( IS_OPER_DEFINED( Buffer ) ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return( NULL );
     }
@@ -712,7 +712,7 @@ bool MacroDel( const char *name )
     bool        ret;
 
     ret = false;
-    if( CMPLIT( name, "defined" ) == 0 ) {
+    if( IS_OPER_DEFINED( name ) ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
