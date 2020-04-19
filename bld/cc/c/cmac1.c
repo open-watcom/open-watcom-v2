@@ -34,6 +34,7 @@
 #include "scan.h"
 #include "cfeinfo.h"
 #include "dumpapi.h"
+#include "cmacsupp.h"
 
 #include "clibext.h"
 
@@ -193,13 +194,14 @@ void GetMacroToken( void )
         case T_UNEXPANDABLE_ID:
             CalcHash( buf, len );
             if( !CompFlags.doing_macro_expansion ) {
-                CurToken = KwLookup( buf, len );
-                if( CurToken == T__PRAGMA ) {
+                if( IS_OPER_PRAGMA( buf, len ) ) {
                     TokenList = mtok->next;
                     CMemFree( mtok );
                     CurToken = Process_Pragma();
                     mtok = TokenList;
                     keep_token = true;
+                } else {
+                    CurToken = KwLookup( buf, len );
                 }
             }
             break;
@@ -209,13 +211,14 @@ void GetMacroToken( void )
             if( CompFlags.doing_macro_expansion ) {
                 CurToken = T_ID;
             } else {
-                CurToken = KwLookup( buf, len );
-                if( CurToken == T__PRAGMA ) {
+                if( IS_OPER_PRAGMA( buf, len ) ) {
                     TokenList = mtok->next;
                     CMemFree( mtok );
                     CurToken = Process_Pragma();
                     mtok = TokenList;
                     keep_token = true;
+                } else {
+                    CurToken = KwLookup( buf, len );
                 }
             }
             break;

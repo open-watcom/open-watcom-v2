@@ -42,6 +42,7 @@
 #include "yydriver.h"
 #include "carve.h"
 #include "dumpapi.h"
+#include "cmacsupp.h"
 
 
 #define MACRO_END_CHAR          'Z'
@@ -183,7 +184,6 @@ static void doGetMacroToken(        // GET NEXT TOKEN
     char        *token_end;
     MACRO_TOKEN *mtok;
     MACRO_TOKEN **mlist;
-    size_t      i;
     struct {
         unsigned keep_token     : 1;
         unsigned next_token     : 1;
@@ -204,18 +204,18 @@ static void doGetMacroToken(        // GET NEXT TOKEN
         flag.keep_token = false;
         flag.next_token = false;
         CurToken = mtok->token;
-        i = copyMTokToBuffer( mtok );
+        TokenLen = copyMTokToBuffer( mtok );
         switch( CurToken ) {
         case T_UNEXPANDABLE_ID:
-            if( ! doing_macro_expansion ) {
-                CurToken = KwLookup( i );
-                TokenLen = i;
-                if( CurToken == T__PRAGMA ) {
+            if( !doing_macro_expansion ) {
+                if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
                     *mlist = mtok->next;
                     CMemFree( mtok );
                     CurToken = Process_Pragma( internal );
                     mtok = *mlist;
                     flag.keep_token = true;
+                } else {
+                    CurToken = KwLookup( TokenLen );
                 }
             }
             break;
@@ -223,16 +223,15 @@ static void doGetMacroToken(        // GET NEXT TOKEN
         case T_SAVED_ID:
             if( doing_macro_expansion ) {
                 CurToken = T_ID;
-                TokenLen = i;
             } else {
-                CurToken = KwLookup( i );
-                TokenLen = i;
-                if( CurToken == T__PRAGMA ) {
+                if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
                     *mlist = mtok->next;
                     CMemFree( mtok );
                     CurToken = Process_Pragma( internal );
                     mtok = *mlist;
                     flag.keep_token = true;
+                } else {
+                    CurToken = KwLookup( TokenLen );
                 }
             }
             break;
@@ -255,7 +254,7 @@ static void doGetMacroToken(        // GET NEXT TOKEN
             break;
         case T_STRING:
         case T_LSTRING:
-            TokenLen = i + 1;
+            TokenLen++;
             break;
         case T_BAD_CHAR:
             break;

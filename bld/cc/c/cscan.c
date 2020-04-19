@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include "i64.h"
 #include "kwhash.h"
 #include "unicode.h"
+#include "cmacsupp.h"
 
 
 extern  unsigned char   TokValue[];
@@ -200,7 +201,6 @@ TOKEN KwLookup( const char *buf, size_t len )
     if( !CompFlags.c99_extensions ) {
         switch( token ) {
         case T_INLINE:
-        case T__PRAGMA:
             if( !CompFlags.extensions_enabled )
                 return( T_ID );
             break;
@@ -259,9 +259,10 @@ static TOKEN doScanName( void )
         return( T_ID );
     mentry = MacroLookup( Buffer );
     if( mentry == NULL ) {
-        token = KwLookup( Buffer, TokenLen );
-        if( token == T__PRAGMA ) {
+        if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
             token = Process_Pragma();
+        } else {
+            token = KwLookup( Buffer, TokenLen );
         }
     } else {
         /* this is a macro */
@@ -279,9 +280,10 @@ static TOKEN doScanName( void )
                     Buffer[TokenLen] = '\0';
                     token = T_ID;
                 } else {
-                    token = KwLookup( Buffer, TokenLen );
-                    if( token == T__PRAGMA ) {
+                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
                         token = Process_Pragma();
+                    } else {
+                        token = KwLookup( Buffer, TokenLen );
                     }
                 }
                 return( token );

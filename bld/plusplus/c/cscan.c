@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
+#include "cmacsupp.h"
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
@@ -786,9 +788,10 @@ static TOKEN doScanName( int c, bool expanding )
 
     mentry = MacroLookup( Buffer, TokenLen );
     if( mentry == NULL ) {
-        CurToken = KwLookup( TokenLen );
-        if( CurToken == T__PRAGMA ) {
+        if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
             CurToken = Process_Pragma( false );
+        } else {
+            CurToken = KwLookup( TokenLen );
         }
     } else {
         prt_char( ' ' );
@@ -806,9 +809,10 @@ static TOKEN doScanName( int c, bool expanding )
                     Buffer[TokenLen] = '\0';
                     CurToken = T_ID;
                 } else {
-                    CurToken = KwLookup( TokenLen );
-                    if( CurToken == T__PRAGMA ) {
+                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
                         CurToken = Process_Pragma( false );
+                    } else {
+                        CurToken = KwLookup( TokenLen );
                     }
                 }
                 return( CurToken );
