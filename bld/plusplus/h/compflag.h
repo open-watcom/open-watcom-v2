@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,9 +122,9 @@ typedef struct comp_flags {
     boolbit     undefine_all_macros             : 1;    // on => -u all macros
     boolbit     cpp_line_wanted                 : 1;    // wcpp - emit #line
     boolbit     cpp_ignore_line                 : 1;    /* wcpp - ignore #line */
-    boolbit     cpp_output                      : 1;    // WCC doing CPP output
-    boolbit     cpp_output_to_file              : 1;    // WCC doing CPP output to?.i
-    boolbit     cpp_output_requested            : 1;
+    boolbit     cpp_output                      : 1;    // compiler doing CPP output
+    boolbit     cpp_output_to_file              : 1;    // compiler doing CPP output to file (default extension .i)
+    boolbit     cpp_mode                        : 1;    // compiler CPP mode
     boolbit     no_debug_type_names             : 1;
     boolbit     emit_names                      : 1;
     boolbit     warnings_cause_bad_exit         : 1;

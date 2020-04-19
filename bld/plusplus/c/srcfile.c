@@ -382,7 +382,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
 
 static void setJustOpenedGuardState( void )
 {
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         setGuardState( GUARD_INCLUDE );
     } else {
         setGuardState( GUARD_TOP );
@@ -391,7 +391,7 @@ static void setJustOpenedGuardState( void )
 
 static void setReOpenedGuardState( unsigned guard_state )
 {
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         guard_state = GUARD_INCLUDE;
     } else if( guard_state == GUARD_IFNDEF ) {
         // seen this #include before with #ifndef MACRO but MACRO is not defined

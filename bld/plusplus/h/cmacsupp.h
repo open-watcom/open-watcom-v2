@@ -37,7 +37,7 @@
 #define OPER_PRAGMA     "_Pragma"
 
 #define IS_OPER_DEFINED(s)  (strcmp(s, OPER_DEFINED) == 0)
-#define IS_OPER_PRAGMA(s)   (strcmp(s, OPER_PRAGMA) == 0)
+#define IS_OPER_PRAGMA(s,l) ((CompFlags.extensions_enabled || CompFlags.enable_std0x) && l == (sizeof(OPER_PRAGMA) - 1) && memcmp(s, OPER_PRAGMA, sizeof(OPER_PRAGMA) - 1) == 0)
 
 void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
     size_t *mlen,               // - data length

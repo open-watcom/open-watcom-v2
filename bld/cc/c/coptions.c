@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1956,7 +1956,7 @@ static void SetOptimization( void )
 
 static void SetPreprocessOptions( void )
 {
-    CompFlags.cpp_output_requested = true;
+    CompFlags.cpp_mode = true;
     if( !OptionDelimiter( *OptScanPtr ) ) {
         ProcessSubOption( Preprocess_Options );
     }
@@ -2300,7 +2300,7 @@ void GenCOptions( char **cmdline )
     for( ;*cmdline != NULL; ++cmdline ) {
         ProcOptions( *cmdline );
     }
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -590,10 +590,10 @@ typedef struct comp_flags {
     boolbit wide_char_string                    : 1;    /* on => T_STRING is L"xxx"  */
     boolbit banner_printed                      : 1;    /* on => banner printed      */
     boolbit undefine_all_macros                 : 1;    /* on => -u all macros       */
-    boolbit emit_browser_info                   : 1;    /* -db emit broswer info */
+    boolbit emit_browser_info                   : 1;    /* -db emit broswer info     */
     boolbit rescan_buffer_done                  : 1;    /* ## re-scan buffer used up */
-    boolbit cpp_output                          : 1;    /* compiler doing CPP output        */
-    boolbit cpp_output_to_file                  : 1;    /* compiler doing CPP output to?.i  */
+    boolbit cpp_output                          : 1;    /* compiler doing CPP output */
+    boolbit cpp_output_to_file                  : 1;    /* compiler doing CPP output to file (default extension .i) */
 
 /*  /d1+
     generate info on BP-chains if possible
@@ -606,7 +606,7 @@ typedef struct comp_flags {
     boolbit debug_info_some                     : 1;    /* d1 + some typing info     */
     boolbit register_conv_set                   : 1;    /* has call conv been set    */
     boolbit emit_names                          : 1;    /* /en switch used           */
-    boolbit cpp_output_requested                : 1;    /* CPP output requested      */
+    boolbit cpp_mode                            : 1;    /* compiler CPP mode         */
     boolbit warnings_cause_bad_exit             : 1;    /* warnings=>non-zero exit   */
     boolbit save_restore_segregs                : 1;    /* save/restore segregs      */
     boolbit has_winmain                         : 1;    /* WinMain defined           */

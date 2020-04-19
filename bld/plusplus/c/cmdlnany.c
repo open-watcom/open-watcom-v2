@@ -1010,15 +1010,15 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_ignore_line = true;
     }
     if( data->p ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
     }
     if( data->pc ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         CompFlags.keep_comments = true;
         CompFlags.comments_wanted = true;
     }
     if( data->pe ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         CompFlags.encrypt_preproc_output = true;
     }
     if( data->pj ) {
@@ -1026,11 +1026,11 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.line_comments = true;
     }
     if( data->pl ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         CompFlags.cpp_line_wanted = true;
     }
     if( data->pw ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         PpSetWidth( data->pw_value );
     } else {
         // #line directives get screwed by wrapped lines but we don't want
@@ -1039,7 +1039,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             PpSetWidth( 0 );
         }
     }
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }
