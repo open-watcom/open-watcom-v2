@@ -184,94 +184,77 @@ static void doGetMacroToken(        // GET NEXT TOKEN
     char        *token_end;
     MACRO_TOKEN *mtok;
     MACRO_TOKEN **mlist;
-    struct {
-        unsigned keep_token     : 1;
-        unsigned next_token     : 1;
-    } flag;
+    bool        keep_token;
 
     if( internal ) {
         mlist = &internalTokenList;
     } else {
         mlist = &scannerTokenList;
     }
+    Buffer[0] = '\0';
+    TokenLen = 0;
     CurToken = T_NULL;
-    for(;;) {
-        mtok = *mlist;
-        if( mtok == NULL ) {
+    for( ;; ) {
+        if( (mtok = *mlist) == NULL ) {
             CompFlags.use_macro_tokens = false;
             break;
         }
-        flag.keep_token = false;
-        flag.next_token = false;
-        CurToken = mtok->token;
-        TokenLen = copyMTokToBuffer( mtok );
-        switch( CurToken ) {
-        case T_UNEXPANDABLE_ID:
-            if( !doing_macro_expansion ) {
-                if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
-                    *mlist = mtok->next;
-                    CMemFree( mtok );
-                    CurToken = Process_Pragma( internal );
-                    mtok = *mlist;
-                    flag.keep_token = true;
-                } else {
-                    CurToken = KwLookup( TokenLen );
+        if( (CurToken = mtok->token) != T_NULL ) {
+            keep_token = false;
+            TokenLen = copyMTokToBuffer( mtok );
+            switch( CurToken ) {
+            case T_SAVED_ID:
+                if( doing_macro_expansion ) {
+                    CurToken = T_ID;
                 }
-            }
-            break;
-        case T_ID:
-        case T_SAVED_ID:
-            if( doing_macro_expansion ) {
-                CurToken = T_ID;
-            } else {
-                if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
-                    *mlist = mtok->next;
-                    CMemFree( mtok );
-                    CurToken = Process_Pragma( internal );
-                    mtok = *mlist;
-                    flag.keep_token = true;
-                } else {
-                    CurToken = KwLookup( TokenLen );
+                /* fall through */
+            case T_ID:
+            case T_UNEXPANDABLE_ID:
+                if( !doing_macro_expansion ) {
+                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
+                        *mlist = mtok->next;
+                        CMemFree( mtok );
+                        CurToken = Process_Pragma( internal );
+                        mtok = *mlist;
+                        keep_token = true;
+                    } else {
+                        CurToken = KwLookup( TokenLen );
+                    }
                 }
+                break;
+            case T_BAD_TOKEN:
+            case T_CONSTANT:
+                ReScanInit( Buffer );
+                ReScanToken();
+                DbgAssert( mtok->data[TokenLen] == '\0' || CurToken == T_BAD_TOKEN );
+                break;
+            case T_PPNUMBER:
+                ReScanInit( Buffer );
+                ReScanToken();
+                DbgAssert( CurToken != T_STRING && CurToken != T_LSTRING );
+                token_end = &(mtok->data[TokenLen]);
+                if( *token_end != '\0' ) {
+                    // ppnumber is quite general so it may absorb multiple tokens
+                    strcpy( mtok->data, token_end );
+                    keep_token = true;
+                }
+                break;
+            case T_STRING:
+            case T_LSTRING:
+                TokenLen++;
+                break;
+            }
+            if( !keep_token ) {
+                *mlist = mtok->next;
+                CMemFree( mtok );
             }
             break;
-        case T_BAD_TOKEN:
-        case T_CONSTANT:
-            ReScanInit( Buffer );
-            ReScanToken();
-            DbgAssert( mtok->data[TokenLen] == '\0' || CurToken == T_BAD_TOKEN );
-            break;
-        case T_PPNUMBER:
-            ReScanInit( Buffer );
-            ReScanToken();
-            DbgAssert( CurToken != T_STRING && CurToken != T_LSTRING );
-            token_end = &(mtok->data[TokenLen]);
-            if( *token_end != '\0' ) {
-                // ppnumber is quite general so it may absorb multiple tokens
-                strcpy( mtok->data, token_end );
-                flag.keep_token = true;
-            }
-            break;
-        case T_STRING:
-        case T_LSTRING:
-            TokenLen++;
-            break;
-        case T_BAD_CHAR:
-            break;
-        case T_NULL:
-            if( Buffer[0] == MACRO_END_CHAR ) {    // if end of macro
-                deleteNestedMacro();
-            }
-            flag.next_token = true;
-            break;
         }
-        if( !flag.keep_token ) {
-            *mlist = mtok->next;
-            CMemFree( mtok );
+        if( mtok->data[0] == MACRO_END_CHAR ) {    // if end of macro
+            deleteNestedMacro();
         }
-        if( !flag.next_token ) {
-            break;
-        }
+        *mlist = mtok->next;
+        CMemFree( mtok );
     }
     DumpMacToken();
 }
