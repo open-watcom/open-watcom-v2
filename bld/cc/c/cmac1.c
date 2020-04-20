@@ -185,7 +185,7 @@ void GetMacroToken( void )
             MacroPtr = NULL;
             break;
         }
-        if( (CurToken = mtok->token) != NULL ) {
+        if( (CurToken = mtok->token) != T_NULL ) {
             while( (Buffer[TokenLen] = mtok->data[TokenLen]) != '\0' ) {
                 TokenLen++;
             }

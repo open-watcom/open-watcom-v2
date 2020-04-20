@@ -250,7 +250,7 @@ static void doGetMacroToken(        // GET NEXT TOKEN
             }
             break;
         }
-        if( mtok->data[0] == MACRO_END_CHAR ) {    // if end of macro
+        if( mtok->data[0] == MACRO_END_CHAR ) {     // if end of macro
             deleteNestedMacro();
         }
         *mlist = mtok->next;
