@@ -889,7 +889,7 @@ TOKEN Process_Pragma( void )
         }
     } else {
         InsertToken( CurToken, Buffer );
-        strcpy( Buffer, "_Pragma" );
+        CPYLIT( Buffer, OPER_PRAGMA );
         TokenLen = strlen( Buffer );
         CurToken = T_ID;
     }
