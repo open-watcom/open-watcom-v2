@@ -416,7 +416,6 @@ extern bool         FrontEnd(char **);
 extern void         FrontEndFini( void );
 extern void         CppComment(int);
 extern bool         CppPrinting(void);
-extern void         CppPutc(int);
 extern void         CppPrtf(char *,...);
 extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
