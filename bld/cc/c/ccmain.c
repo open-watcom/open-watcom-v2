@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -300,23 +300,13 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     return( filename );
 }
 
-void CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
+void PrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
 {
-    bool        save;
+    /* unused parameters */ (void)typ;
 
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        if( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) {
-            CppPrtf( "#include <%s>", filename );
-        } else {
-            CppPrtf( "#include \"%s\"", filename );
-        }
-        CompFlags.cpp_output = false;
-    }
     if( print_error ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    CompFlags.cpp_output = save;
 }
 
 static bool openForcePreInclude( void )
@@ -325,7 +315,7 @@ static bool openForcePreInclude( void )
 
     ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
     if( !ok )
-        CppPrtfFilenameErr( ForcePreInclude, FT_HEADER_PRE, false );
+        PrtfFilenameErr( ForcePreInclude, FT_HEADER_PRE, false );
     return( ok );
 }
 
@@ -385,27 +375,7 @@ void SetCppWidth( unsigned width )
     CppWidth = width - 1;
 }
 
-void CppComment( int ch )
-{
-    if( CompFlags.keep_comments && CppPrinting() ) {
-        if( ch != '\0' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '/' );
-            CppPutc( ch );
-        } else if( CommentChar == '*' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '*' );
-            CppPutc( '/' );
-//        } else if( CommentChar == '/' ) {
-//            CppPutc( '\n' );
-        }
-        CommentChar = ch;
-    }
-}
-
-void CppPutc( int ch )
+static void CppPutc( int ch )
 {
     int     rc;
 
@@ -442,6 +412,26 @@ void CppPutc( int ch )
     if( rc == EOF ) {
         CloseFiles();       /* get rid of temp file */
         MyExit( 1 );        /* exit */
+    }
+}
+
+void CppComment( int ch )
+{
+    if( CompFlags.keep_comments && CppPrinting() ) {
+        if( ch != '\0' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '/' );
+            CppPutc( ch );
+        } else if( CommentChar == '*' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '*' );
+            CppPutc( '/' );
+//        } else if( CommentChar == '/' ) {
+//            CppPutc( '\n' );
+        }
+        CommentChar = ch;
     }
 }
 
@@ -662,7 +652,7 @@ static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
     }
 */
     if( OpenFCB( fp, filename, typ ) ) {
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( CppFile == NULL )
                 OpenCppFile();
             EmitPoundLine( 1, filename, true );
@@ -922,7 +912,7 @@ static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
         if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
-            if( CompFlags.cpp_output ) {
+            if( CompFlags.cpp_mode ) {
                 if( CppFile == NULL )
                     OpenCppFile();
                 EmitPoundLine( 1, "stdin", true );
@@ -956,7 +946,7 @@ static void Parse( void )
     // header if the user requested such and it is a #include directive.
     if( ForceInclude != NULL ) {
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
-            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+            PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
         }
     }
     if( ForcePreInclude != NULL ) {
@@ -982,7 +972,7 @@ static void CPP_Parse( void )
     if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
-            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+            PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
         }
     }
     CurToken = T_NULL;
@@ -1022,9 +1012,11 @@ static void DoCCompile( char **cmdline )
 #if _CPU == 370
         ParseAuxFile();
 #endif
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             PrintWhiteSpace = true;
             if( ForcePreInclude != NULL ) {
+                if( CppFile == NULL )
+                    OpenCppFile();
                 CompFlags.cpp_output = false;
                 if( openForcePreInclude() ) {
                     CurToken = T_NULL;

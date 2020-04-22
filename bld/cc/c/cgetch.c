@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,7 +272,7 @@ static int tryBackSlashNewLine( void )
         if( CompFlags.scanning_cpp_comment && NestLevel == SkipLevel ) {
             CWarn1( WARN_SPLICE_IN_CPP_COMMENT, ERR_SPLICE_IN_CPP_COMMENT );
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( CompFlags.in_pragma ) {
                 CppPrtChar( '\\' );
                 CppPrtChar( '\n' );
@@ -590,7 +590,7 @@ void CloseFCB( FCB *srcfcb )
                 }
             }
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
         }
     } else {

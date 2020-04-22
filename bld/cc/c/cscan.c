@@ -275,7 +275,7 @@ static TOKEN doScanName( void )
         if( MacroWithParenthesis( mentry ) ) {
             SkipAhead();
             if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {
+                if( CompFlags.cpp_mode ) {
                     Buffer[TokenLen++] = ' ';
                     Buffer[TokenLen] = '\0';
                     token = T_ID;
@@ -540,10 +540,12 @@ static bool ScanHex( int max, const unsigned char **pbuf )
         return( false );            /* indicate no characters matched */
 /*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
     }
-    if( too_big ) {
-        BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-        if( NestLevel == SkipLevel ) {
-            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+    if( !CompFlags.cpp_mode ) {
+        if( too_big ) {
+            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+            if( NestLevel == SkipLevel ) {
+                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            }
         }
     }
     return( true );                        /* indicate characters were matched */
@@ -674,6 +676,7 @@ static TOKEN ScanNum( void )
     int         c;
     int         bad_token_type;
     cnv_cc      ov;
+    TOKEN       tok;
 
     struct {
         enum { CON_DEC, CON_HEX, CON_OCT, CON_ERR } form;
@@ -701,11 +704,13 @@ static TOKEN ScanNum( void )
                     break;
                 }
             }
-            if( TokenLen == 3 ) {   /* just collected a 0x */
-                BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-                if( NestLevel == SkipLevel ) {
-                    CErr1( ERR_INVALID_HEX_CONSTANT );
-                    con.form = CON_ERR;
+            if( !CompFlags.cpp_mode ) {
+                if( TokenLen == 3 ) {   /* just collected a 0x */
+                    BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
+                    if( NestLevel == SkipLevel ) {
+                        CErr1( ERR_INVALID_HEX_CONSTANT );
+                        con.form = CON_ERR;
+                    }
                 }
             }
         } else {    /* scan octal number */
@@ -723,11 +728,13 @@ static TOKEN ScanNum( void )
             if( c == '.' || c == 'e' || c == 'E' ) {
                 return( doScanFloat() );
             }
-            if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
-                BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
-                con.form = CON_ERR;
-                if( NestLevel == SkipLevel ) {
-                    CErr1( ERR_INVALID_OCTAL_CONSTANT );
+            if( !CompFlags.cpp_mode ) {
+                if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
+                    BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
+                    con.form = CON_ERR;
+                    if( NestLevel == SkipLevel ) {
+                        CErr1( ERR_INVALID_OCTAL_CONSTANT );
+                    }
                 }
             }
         }
@@ -741,18 +748,20 @@ static TOKEN ScanNum( void )
             return( doScanFloat() );
         }
     }
-    switch( con.form ) {
-    case CON_OCT:
-        ov = Cnv8();
-        break;
-    case CON_HEX:
-        ov = Cnv16();
-        break;
-    case CON_DEC:
-        ov = Cnv10();
-        break;
-    case CON_ERR:
-        ov = CNV_32;
+    if( !CompFlags.cpp_mode ) {
+        switch( con.form ) {
+        case CON_OCT:
+            ov = Cnv8();
+            break;
+        case CON_HEX:
+            ov = Cnv16();
+            break;
+        case CON_DEC:
+            ov = Cnv10();
+            break;
+        case CON_ERR:
+            ov = CNV_32;
+        }
     }
     con.suffix = SUFF_NONE;
     if( c == 'l' || c == 'L' ) {   // collect suffix
@@ -791,145 +800,154 @@ static TOKEN ScanNum( void )
         c = SaveNextChar();
         con.suffix = SUFF_I;
     }
-    if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
-        unsigned_32 value;
-
-        value = 0;
-        while( c >= '0' && c <= '9' ) {
-            value = value * 10 + c - '0';
-            c = SaveNextChar();
-        }
-        if( value == 64 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_LONG64;
-            } else {
-                ConstType = TYPE_ULONG64;
+    if( CompFlags.cpp_mode ) {
+        if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
+            while( c >= '0' && c <= '9' ) {
+                c = SaveNextChar();
             }
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Const64 );
-            }
-        } else if( value == 32 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_LONG;
-            } else {
-                ConstType = TYPE_ULONG;
-            }
-        } else if( value == 16 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_SHORT;
-            } else {
-                ConstType = TYPE_USHORT;
-            }
-        } else if( value == 8 ) {
-            if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_CHAR;
-            } else {
-                ConstType = TYPE_UCHAR;
-            }
-        } else {
-            if( NestLevel == SkipLevel ) {
-                CErr1( ERR_INVALID_CONSTANT );
-            }
-        }
-        if( ov == CNV_64 && value < 64 ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
-            Constant =  Const64.u._32[I64LO32];
-        }
-    } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
-        switch( con.suffix ) {
-        case SUFF_NONE:
-            if( Constant <= TARGET_INT_MAX ) {
-                ConstType = TYPE_INT;
-#if TARGET_INT < TARGET_LONG
-            } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
-                ConstType = TYPE_UINT;
-            } else if( Constant <= 0x7fffffffU ) {
-                ConstType = TYPE_LONG;
-            } else {
-                ConstType = TYPE_ULONG;
-            }
-#else
-            } else if( con.form != CON_DEC ) {
-                ConstType = TYPE_UINT;
-            } else {
-                ConstType = TYPE_ULONG;
-            }
-#endif
-            break;
-        case SUFF_L:
-            if( Constant <= 0x7FFFFFFFU ) {
-                ConstType = TYPE_LONG;
-            } else {
-                ConstType = TYPE_ULONG;
-            }
-            break;
-        case SUFF_U:
-            ConstType = TYPE_UINT;
-#if TARGET_INT < TARGET_LONG
-            if( Constant > TARGET_UINT_MAX ) {
-                ConstType = TYPE_ULONG;
-            }
-#endif
-            break;
-        case SUFF_UL:
-            ConstType = TYPE_ULONG;
-            break;
-        default:
-            break;
         }
     } else {
-        switch( con.suffix ) {
-        case SUFF_NONE:
-            ConstType = TYPE_LONG64;
-            if( Const64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYPE_ULONG64;
+        if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
+            unsigned_32 value;
+
+            value = 0;
+            while( c >= '0' && c <= '9' ) {
+                value = value * 10 + c - '0';
+                c = SaveNextChar();
             }
-            break;
-        case SUFF_L:
-        case SUFF_LL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Const64 );
-            }
-            if( Const64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYPE_ULONG64;
+            if( value == 64 ) {
+                if( con.suffix == SUFF_I ) {
+                    ConstType = TYPE_LONG64;
+                } else {
+                    ConstType = TYPE_ULONG64;
+                }
+                if( ov == CNV_32 ) {
+                    U32ToU64( Constant, &Const64 );
+                }
+            } else if( value == 32 ) {
+                if( con.suffix == SUFF_I ) {
+                    ConstType = TYPE_LONG;
+                } else {
+                    ConstType = TYPE_ULONG;
+                }
+            } else if( value == 16 ) {
+                if( con.suffix == SUFF_I ) {
+                    ConstType = TYPE_SHORT;
+                } else {
+                    ConstType = TYPE_USHORT;
+                }
+            } else if( value == 8 ) {
+                if( con.suffix == SUFF_I ) {
+                    ConstType = TYPE_CHAR;
+                } else {
+                    ConstType = TYPE_UCHAR;
+                }
             } else {
+                if( NestLevel == SkipLevel ) {
+                    CErr1( ERR_INVALID_CONSTANT );
+                }
+            }
+            if( ov == CNV_64 && value < 64 ) {
+                BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                if( NestLevel == SkipLevel ) {
+                    CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                }
+                Constant =  Const64.u._32[I64LO32];
+            }
+        } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
+            switch( con.suffix ) {
+            case SUFF_NONE:
+                if( Constant <= TARGET_INT_MAX ) {
+                    ConstType = TYPE_INT;
+#if TARGET_INT < TARGET_LONG
+                } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
+                    ConstType = TYPE_UINT;
+                } else if( Constant <= 0x7fffffffU ) {
+                    ConstType = TYPE_LONG;
+                } else {
+                    ConstType = TYPE_ULONG;
+                }
+#else
+                } else if( con.form != CON_DEC ) {
+                    ConstType = TYPE_UINT;
+                } else {
+                    ConstType = TYPE_ULONG;
+                }
+#endif
+                break;
+            case SUFF_L:
+                if( Constant <= 0x7FFFFFFFU ) {
+                    ConstType = TYPE_LONG;
+                } else {
+                    ConstType = TYPE_ULONG;
+                }
+                break;
+            case SUFF_U:
+                ConstType = TYPE_UINT;
+#if TARGET_INT < TARGET_LONG
+                if( Constant > TARGET_UINT_MAX ) {
+                    ConstType = TYPE_ULONG;
+                }
+#endif
+                break;
+            case SUFF_UL:
+                ConstType = TYPE_ULONG;
+                break;
+            default:
+                break;
+            }
+        } else {
+            switch( con.suffix ) {
+            case SUFF_NONE:
                 ConstType = TYPE_LONG64;
+                if( Const64.u._32[I64HI32] & 0x80000000 ) {
+                    ConstType = TYPE_ULONG64;
+                }
+                break;
+            case SUFF_L:
+            case SUFF_LL:
+                if( ov == CNV_32 ) {
+                    U32ToU64( Constant, &Const64 );
+                }
+                if( Const64.u._32[I64HI32] & 0x80000000 ) {
+                    ConstType = TYPE_ULONG64;
+                } else {
+                    ConstType = TYPE_LONG64;
+                }
+                break;
+            case SUFF_U:
+            case SUFF_UL:
+            case SUFF_ULL:
+                if( ov == CNV_32 ) {
+                    U32ToU64( Constant, &Const64 );
+                }
+                ConstType = TYPE_ULONG64;
+                break;
+            default:
+                break;
             }
-            break;
-        case SUFF_U:
-        case SUFF_UL:
-        case SUFF_ULL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Const64 );
-            }
-            ConstType = TYPE_ULONG64;
-            break;
-        default:
-            break;
         }
     }
+    tok = T_CONSTANT;
     if( Pre_processing != PPCTL_NORMAL && (CharSet[c] & (C_AL | C_DI)) ) {
+        tok = T_BAD_TOKEN;
         do {
             c = SaveNextChar();
         } while( CharSet[c] & (C_AL | C_DI) );
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
-        BadTokenInfo = bad_token_type;
-        return( T_BAD_TOKEN );
-    } else {
-        if( ov == CNV_OVR ) {
+    }
+    if( !CompFlags.cpp_mode ) {
+        if( tok == T_BAD_TOKEN ) {
+            BadTokenInfo = bad_token_type;
+        } else if( ov == CNV_OVR ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
             if( NestLevel == SkipLevel ) {
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
         }
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
-        return( T_CONSTANT );
     }
+    --TokenLen;
+    Buffer[TokenLen] = '\0';
+    return( tok );
 }
 
 static TOKEN ScanQuestionMark( void )
@@ -952,7 +970,7 @@ static TOKEN ScanSlash( void )
         Buffer[2] = '\0';
         return( T_DIV_EQUAL );
     } else if( c == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             CppComment( '/' );
         }
         CompFlags.scanning_cpp_comment = true;
@@ -967,11 +985,11 @@ static TOKEN ScanSlash( void )
             /* some editors don't put linefeeds on end of lines */
             if( CurrChar == '\n' || c == '\r' )
                 break;
-            if( CompFlags.cpp_output && CompFlags.keep_comments && CurrChar != '\r' ) {
+            if( CompFlags.cpp_mode && CompFlags.keep_comments && CurrChar != '\r' ) {
                 CppPrtChar( CurrChar );
             }
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             CppComment( '\0' );
         }
         CompFlags.scanning_cpp_comment = false;
@@ -1130,7 +1148,7 @@ static void ScanComment( void )
 
     CommentLoc = TokenLoc;
     CompFlags.scanning_comment = true;
-    if( CompFlags.cpp_output ) {        // 30-dec-93
+    if( CompFlags.cpp_mode ) {
         CppComment( '*' );
         c = NextChar();
         for( ;; ) {
@@ -1239,8 +1257,10 @@ static TOKEN CharConst( DATA_TYPE char_type )
                         SaveNextChar();
                         if( n > 0377 && char_type != TYPE_WCHAR ) {
                             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                            if( NestLevel == SkipLevel ) {
-                                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                            if( !CompFlags.cpp_mode ) {
+                                if( NestLevel == SkipLevel ) {
+                                    CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                                }
                             }
                             n &= 0377;          // mask off high bits
                         }
@@ -1286,7 +1306,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
         value = (value << 8) + c;
         /* handle case where user wants a \ but doesn't escape it */
         if( c == '\'' && CurrChar != '\'' ) {
-            if( !CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_mode ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -1295,7 +1315,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
         if( c == '\'' )
             break;
         if( i >= 4 ) {
-            if( !CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_mode ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -1490,7 +1510,7 @@ static TOKEN ScanWhiteSpace( void )
 
 static void SkipWhiteSpace( int c )
 {
-    if( !CompFlags.cpp_output ) {
+    if( !CompFlags.cpp_mode ) {
         ScanWhiteSpace();
     } else {
         for( ; (CharSet[c] & C_WS); ) {
@@ -1512,7 +1532,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_output && Pre_processing == PPCTL_NORMAL ) {
+            if( CompFlags.cpp_mode && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;
@@ -1575,7 +1595,7 @@ static TOKEN ScanMacroToken( void )
 {
     GetMacroToken();
     if( CurToken == T_NULL ) {
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             CppPrtChar( ' ' );
         }
         CurrChar = SavedCurrChar;
@@ -1626,7 +1646,7 @@ TOKEN PPNextToken( void )                     // called from macro pre-processor
         if( MacroPtr != NULL ) {
             GetMacroToken();
             if( CurToken == T_NULL ) {
-                if( CompFlags.cpp_output ) {
+                if( CompFlags.cpp_mode ) {
                     CppPrtChar( ' ' );
                 }
                 CurToken = ScanToken();

@@ -1609,7 +1609,7 @@ void CPragma( void )
     PPNextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
-    } else if( CompFlags.cpp_output ) {
+    } else if( CompFlags.cpp_mode ) {
         CppPrtf( "#pragma " );
         if( CurToken != T_NULL ) {
             CppPrtToken();

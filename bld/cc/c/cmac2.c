@@ -194,7 +194,7 @@ TOKEN ChkControl( void )
     ppctl_t     old_ppctl;
 
     if( !CompFlags.doing_macro_expansion ) {
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             PrintWhiteSpace = false;
         }
     }
@@ -206,7 +206,7 @@ TOKEN ChkControl( void )
         lines_skipped = false;
         old_ppctl = Pre_processing;
         for( ; CurrChar != EOF_CHAR; ) {
-            if( CompFlags.cpp_output ) {
+            if( CompFlags.cpp_mode ) {
                 CppPrtChar( '\n' );
             }
             NextChar();
@@ -234,7 +234,7 @@ TOKEN ChkControl( void )
                 lines_skipped = true;
             }
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( lines_skipped ) {
                 if( SrcFile != NULL ) {
                     EmitLine( SrcFile->src_loc.line, SrcFile->src_name );
@@ -288,7 +288,7 @@ void CInclude( void )
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
         if( !OpenSrcFile( Buffer, FT_HEADER ) ) {
-            CppPrtfFilenameErr( Buffer, FT_HEADER, true );
+            PrtfFilenameErr( Buffer, FT_HEADER, true );
         }
 #if _CPU == 370
         if( !CompFlags.use_precompiled_header ) {
@@ -305,7 +305,7 @@ void CInclude( void )
             PPNextToken();
             if( CurToken == T_GT ) {
                 if( !OpenSrcFile( buf, FT_LIBRARY ) ) {
-                    CppPrtfFilenameErr( buf, FT_LIBRARY, true );
+                    PrtfFilenameErr( buf, FT_LIBRARY, true );
                 }
                 break;
             }
@@ -774,7 +774,7 @@ static void CLine( void )
         PPNextToken();
         if( CurToken == T_NULL ) {
             if( CompFlags.cpp_ignore_line == 0 ) {
-                if( CompFlags.cpp_output ) {
+                if( CompFlags.cpp_mode ) {
                     EmitLine( src_line, SrcFile->src_name );
                 }
             }
@@ -790,7 +790,7 @@ static void CLine( void )
                         flist->rwflag = false;  // not a real file so no autodep
                         SrcFile->src_name = flist->name;
                         SrcFile->src_loc.fno = flist->index;
-                        if( CompFlags.cpp_output ) {
+                        if( CompFlags.cpp_mode ) {
                             EmitLine( src_line, SrcFile->src_name );
                         }
                     }
@@ -807,7 +807,6 @@ static void CLine( void )
 static void CError( void )
 {
     size_t      len;
-    bool        save;
 
     len = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {
@@ -818,10 +817,7 @@ static void CError( void )
     }
     Buffer[len] = '\0';
     /* Force #error output to be reported, even with preprocessor */
-    save = CompFlags.cpp_output;
-    CompFlags.cpp_output = false;
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
-    CompFlags.cpp_output = save;
 }
 
 

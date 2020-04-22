@@ -435,7 +435,7 @@ extern char         *CppFileName(void);
 extern char         *ForceSlash(char *, char );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
-extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
+extern void         PrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
 
 extern FNAMEPTR     AddFlist(char const *);
 extern FNAMEPTR     FileIndexToFName(unsigned);

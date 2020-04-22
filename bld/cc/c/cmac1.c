@@ -734,7 +734,7 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
         SkipAhead();
         if( CurrChar == '(' ) {
             return( 1 );
-        } else if( CompFlags.cpp_output ) {
+        } else if( CompFlags.cpp_mode ) {
             return( 2 );
         }
     }
