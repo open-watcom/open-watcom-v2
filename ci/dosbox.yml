@@ -6,6 +6,13 @@ steps:
     - script: |
         for i in {1..10}
         do
+          sudo apt-get install -y libpulse0
+          if [ $? = 0 ]; then
+            break
+          fi
+        done
+        for i in {1..10}
+        do
           sudo apt-get install -y dosbox
           if [ $? = 0 ]; then
             break
