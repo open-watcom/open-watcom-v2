@@ -147,36 +147,13 @@ bool OpenSrcFile(               // OPEN A SOURCE FILE
     src_file_type typ )         // - source file type
                                 // return: true ==> opened ok
 {
-    bool        save;           // - saved pre-proc status
-    bool        is_lib;
-
-    is_lib = ( typ == FT_LIBRARY );
-
     if( IoSuppOpenSrc( filename, typ ) ) {
         PpStartFile();
         return( true );
     }
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        PrtChar( PreProcChar );
-        PrtString( "include ");
-        if( is_lib ) {
-            PrtChar( '<' );
-        } else {
-            PrtChar( '"' );
-        }
-        PrtString( filename );
-        if( is_lib ) {
-            PrtChar( '>' );
-        } else {
-            PrtChar( '"' );
-        }
-        CompFlags.cpp_output = false;
-    }
     if( !CompFlags.ignore_fnf ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    CompFlags.cpp_output = save;
     return( false );
 }
 
