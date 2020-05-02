@@ -113,13 +113,13 @@ void ScreenInit( void )
 
     QNXCon = console_open( QNXConHandle, O_WRONLY );
     if( QNXCon == NULL ) {
-        // FatalError( ERR_WIND_NO_MORE_WINDOWS );
+        // FatalError( ERR_BAD_TERMINAL );
         ChangeDirectory( HomeDirectory );
         exit( 0 );
     }
     if( console_size( QNXCon, QNXConsole, 0, 0, &rows, &cols ) != 0 ) {
         console_close( QNXCon );
-        FatalError( ERR_WIND_NO_MORE_WINDOWS );
+        FatalError( ERR_BAD_TERMINAL );
     }
     rc = BIOSKeyboardInit();
     if( rc != ERR_NO_ERR ) {

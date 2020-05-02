@@ -1,4 +1,4 @@
-141
+142
 $
 Out of memory
 File not found
@@ -140,3 +140,4 @@ No more redos
 Save Canceled
 File '%s' not found
 Internal err: FCB size corruption
+Failed to initialize terminal
