@@ -224,21 +224,3 @@ stages:
         parameters:
           arch:     nt
           title:    Installers Build Windows
-  - stage: scanlnx
-    displayName: "Coverity Scan Linux"
-    dependsOn:
-      - buildlnx
-    condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'Schedule', 'Manual') 
-      )
-    jobs:
-      - template: ci/coverity.yml
-        parameters:
-          arch:     lnx
-          title:    Coverity Scan Linux
-      #- template: ci/coverity.yml
-      #  parameters:
-      #    arch:     nt
-      #    title:    Coverity Scan Windows
