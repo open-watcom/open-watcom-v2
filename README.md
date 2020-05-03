@@ -1,3 +1,9 @@
+[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2?branchName=master&stageName=Last%20CI%20build) - CI](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
+
+[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2?branchName=master&stageName=GitHub%20Release) - Release](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
+
+![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg) 
+![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)
 
 Open Watcom v2 Fork
 ===================
