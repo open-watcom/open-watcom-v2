@@ -24,13 +24,8 @@ variables:
 stages:
   - stage: scanlnx
     displayName: "Coverity Scan Linux"
-    dependsOn:
-      - buildlnx
     condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'Schedule', 'Manual') 
-      )
+      in( variables['Build.Reason'], 'Schedule', 'Manual') 
     jobs:
       - template: ci/coverity.yml
         parameters:
