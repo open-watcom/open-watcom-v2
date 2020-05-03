@@ -2,13 +2,6 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-schedules:
-- cron: "7 0 * * *"
-  displayName: "Daily midnight build"
-  branches:
-    include:
-    - master
-
 variables: 
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
