@@ -4,7 +4,8 @@
 
 [![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master) - Coverity Scan](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)
 
-![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg) 
+![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)
+ 
 ![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)
 
 Open Watcom v2 Fork
