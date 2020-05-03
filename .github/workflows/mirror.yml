@@ -25,7 +25,7 @@ jobs:
           export SSH_ASKPASS=$HOME/askpass.sh
           mkdir $HOME/.ssh
           ssh-keyscan git.code.sf.net > $HOME/.ssh/known_hosts
-          git push ssh://$OWSFUSER@git.code.sf.net/p/openwatcom/open-watcom-v2
+          git push --force ssh://$OWSFUSER@git.code.sf.net/p/openwatcom/open-watcom-v2
       env:
         OWSFUSER:     ${{ secrets.OWSFTOKEN1 }}
         SSH_PASSWORD: ${{ secrets.OWSFTOKEN2 }}
