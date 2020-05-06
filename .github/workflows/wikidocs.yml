@@ -14,6 +14,7 @@ on:
       - 'bld/wv/doc/**'
 jobs:
   boot:
+    if: github.ref == 'refs/heads/master'
     name: Build Tools
     runs-on: windows-latest
     steps:
@@ -55,6 +56,7 @@ jobs:
         name: boot
         path: build\binbuild
   wikihtml:
+    if: github.ref == 'refs/heads/master'
     name: Wiki Html Documentation
     needs: boot
     runs-on: windows-latest
@@ -101,6 +103,7 @@ jobs:
         name: wikihtml
         path: artifact
   wikipdf:
+    if: github.ref == 'refs/heads/master'
     name: Wiki PDF Documentation
     needs: boot
     runs-on: windows-latest
@@ -145,6 +148,7 @@ jobs:
         name: wikipdf
         path: artifact
   wikiupdate:
+    if: github.ref == 'refs/heads/master'
     name: Wiki Documentation Update
     needs: [wikihtml, wikipdf]
     runs-on: windows-latest
@@ -191,3 +195,10 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
+  finished:
+    if: github.ref != 'refs/heads/master'
+    name: Finalize
+    needs: wikiupdate
+    runs-on: windows-latest
+    steps:
+    - run: exit 0
