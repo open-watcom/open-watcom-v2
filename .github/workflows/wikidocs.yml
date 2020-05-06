@@ -18,9 +18,6 @@ jobs:
     name: Build Tools
     runs-on: windows-latest
     steps:
-    - name: Test 'master' branch
-      if: github.ref != 'refs/heads/master'
-      run: exit 1
     - name: OW Repo clone
       uses: actions/checkout@v1
     - name: Build Bootstrap Tools
