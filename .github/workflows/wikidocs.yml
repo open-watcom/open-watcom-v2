@@ -194,7 +194,7 @@ jobs:
         git push -v
   finished:
     if: github.ref != 'refs/heads/master'
-    name: Finalize
+    name: Nothing to do
     needs: wikiupdate
     runs-on: windows-latest
     steps:
