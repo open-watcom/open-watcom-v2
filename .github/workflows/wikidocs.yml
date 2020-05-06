@@ -6,20 +6,20 @@ name: WikiDocs
 
 on:
   push:
-    branch:
-      - master
     paths:
       - '.github/workflows/wikidocs.yml'
       - 'docs/**'
       - 'bld/cg/doc/**'
       - 'bld/dwarf/dw/doc/**'
       - 'bld/wv/doc/**'
-
 jobs:
   boot:
     name: Build Tools
     runs-on: windows-latest
     steps:
+    - name: Test 'master' branch
+      if: github.ref != 'refs/heads/master'
+      run: exit 1
     - name: OW Repo clone
       uses: actions/checkout@v1
     - name: Build Bootstrap Tools
@@ -191,4 +191,3 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
-
