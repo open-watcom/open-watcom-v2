@@ -195,7 +195,6 @@ jobs:
   finished:
     if: github.ref != 'refs/heads/master'
     name: Nothing to do
-    needs: wikiupdate
     runs-on: windows-latest
     steps:
     - run: exit 0
