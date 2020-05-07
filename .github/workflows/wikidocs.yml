@@ -193,8 +193,10 @@ jobs:
         git commit -v -m "GitHub Workflow build"
         git push -v
   finished:
-    if: github.ref != 'refs/heads/master'
     name: Nothing to do
     runs-on: windows-latest
+    needs: [wikiupdate]
     steps:
-    - run: exit 0
+      - name: OK
+        if: github.ref != 'refs/heads/master'
+        run: exit 0
