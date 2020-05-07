@@ -13,6 +13,15 @@ on:
       - 'bld/dwarf/dw/doc/**'
       - 'bld/wv/doc/**'
 jobs:
+  info:
+    name: Info
+    runs-on: windows-latest
+    steps:
+    - name: Branch Info
+      env:
+        MESSAGE: ${{ github.ref }}
+      shell: cmd
+      run: echo %MESSAGE%
   boot:
     if: github.ref == 'refs/heads/master'
     name: Build Tools
