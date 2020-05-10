@@ -1,4 +1,6 @@
-# Pipeline
+#
+# Pipeline for Coverity Scan build and upload
+#
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
@@ -22,8 +24,18 @@ variables:
   owcibin64:        $(owciroot_nt)\ntx64
 
 stages:
+  - stage: start
+    displayName: "Start"
+    jobs:
+      - job: start
+        pool:
+          vmImage: $(owimage_lnx)
+        steps:
+        - checkout: none
   - stage: scanlnx
     displayName: "Coverity Scan Linux"
+    dependsOn:
+      - start
     condition: >
       in( variables['Build.Reason'], 'Schedule', 'Manual') 
     jobs:

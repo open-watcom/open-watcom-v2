@@ -1,5 +1,5 @@
 #
-# Pipeline for CI build and upload
+# Pipeline for Release build and upload
 #
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -57,15 +57,6 @@ stages:
         parameters:
           arch:     osx
           title:    Build OSX
-  - stage: bootlnxow
-    displayName: "Bootstrap Linux OW"
-    dependsOn:
-      - start
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     lnxow
-          title:    Bootstrap Linux OW
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
@@ -93,8 +84,8 @@ stages:
         parameters:
           arch:     lnx
           title:    Tests Linux
-  - stage: lastbuild
-    displayName: "Last CI build"
+  - stage: installnx
+    displayName: "Installers Build Linux"
     dependsOn:
       - testslnx
       - testsnt
@@ -102,21 +93,28 @@ stages:
     condition: >
       and(
         succeeded(), 
-        in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI' )
+        in( variables['Build.Reason'], 'Schedule', 'Manual' )
       )
     jobs:
-      - template: ci/lastbld.yml
+      - template: ci/install.yml
         parameters:
-          title:    Last CI Build
-  - stage: bootntow
-    displayName: "Bootstrap Windows OW"
+          arch:     lnx
+          title:    Installers Build Linux
+  - stage: release
+    displayName: "GitHub Release"
     dependsOn:
-      - start
+      - installnx
+      - instalnt
+    condition: >
+      and(
+        succeeded(), 
+        in( variables['Build.Reason'], 'Schedule', 'Manual' )
+      )
     jobs:
-      - template: ci/boot.yml
+      - template: ci/release.yml
         parameters:
-          arch:     ntow
-          title:    Bootstrap Windows OW
+          arch:     lnx
+          title:    GitHub Release
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
@@ -179,3 +177,19 @@ stages:
           arch:     nt
           title:    Documentation Build WIN
           doctype:  docwin
+  - stage: instalnt
+    displayName: "Installers Build Windows"
+    dependsOn:
+      - testsnt
+      - testslnx
+      - docsnt
+    condition: >
+      and(
+        succeeded(), 
+        in( variables['Build.Reason'], 'Schedule', 'Manual' )
+      )
+    jobs:
+      - template: ci/install.yml
+        parameters:
+          arch:     nt
+          title:    Installers Build Windows
