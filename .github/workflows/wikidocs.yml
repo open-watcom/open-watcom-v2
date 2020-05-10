@@ -62,7 +62,6 @@ jobs:
         name: boot
         path: build\binbuild
   wikihtml:
-    if: github.ref == 'refs/heads/master'
     name: Wiki Html Documentation
     needs: boot
     runs-on: windows-latest
@@ -109,7 +108,6 @@ jobs:
         name: wikihtml
         path: artifact
   wikipdf:
-    if: github.ref == 'refs/heads/master'
     name: Wiki PDF Documentation
     needs: boot
     runs-on: windows-latest
@@ -154,7 +152,6 @@ jobs:
         name: wikipdf
         path: artifact
   wikiupdate:
-    if: github.ref == 'refs/heads/master'
     name: Wiki Documentation Update
     needs: [wikihtml, wikipdf]
     runs-on: windows-latest
@@ -201,11 +198,3 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
-  finished:
-    name: Nothing to do
-    runs-on: windows-latest
-    needs: [wikiupdate]
-    steps:
-      - name: OK
-        if: github.ref != 'refs/heads/master'
-        run: exit 0
