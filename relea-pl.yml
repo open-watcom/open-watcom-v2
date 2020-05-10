@@ -39,24 +39,24 @@ stages:
           vmImage: $(owimage_lnx)
         steps:
         - checkout: none
-  - stage: bootosx
-    displayName: "Bootstrap OSX"
-    dependsOn:
-      - start
-    jobs:
-      - template: ci/boot.yml
-        parameters:
-          arch:     osx
-          title:    Bootstrap OSX
-  - stage: buildosx
-    displayName: "Build OSX"
-    dependsOn:
-      - bootosx
-    jobs:
-      - template: ci/build.yml
-        parameters:
-          arch:     osx
-          title:    Build OSX
+#  - stage: bootosx
+#    displayName: "Bootstrap OSX"
+#    dependsOn:
+#      - start
+#    jobs:
+#      - template: ci/boot.yml
+#        parameters:
+#          arch:     osx
+#          title:    Bootstrap OSX
+#  - stage: buildosx
+#    displayName: "Build OSX"
+#    dependsOn:
+#      - bootosx
+#    jobs:
+#      - template: ci/build.yml
+#        parameters:
+#          arch:     osx
+#          title:    Build OSX
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
