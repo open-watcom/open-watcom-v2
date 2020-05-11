@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,13 +36,14 @@
 #include "bool.h"
 
 
-static char     cpyright[] = "* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
+static char     cpyright[] = ";* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
 static size_t   line = 1;
 static size_t   size = 0;
 static int      status = 0;
 static char     *buffer = NULL;
 static FILE     *fi = NULL;
 static FILE     *fo = NULL;
+static char     asm = 0;
 
 static void output_buffer( void )
 {
@@ -55,10 +56,18 @@ static void output_buffer( void )
     } else if( line == 5 ) {
         if( status == 1 ) {
             if( strstr( buffer, "-2002 Sybase, Inc. All Rights Reserved." ) != NULL ) {
-                fputs( cpyright, fo );
+                if( asm ) {
+                    fputs( cpyright, fo );
+                } else {
+                    fputs( cpyright + 1, fo );
+                }
                 status = 2;
-            } else if( strstr( buffer, cpyright + 25 ) != NULL ) {
-                memcpy( buffer + 21, cpyright + 21, 4 );
+            } else if( strstr( buffer, cpyright + 26 ) != NULL ) {
+                if( asm ) {
+                    memcpy( buffer + 22, cpyright + 22, 4 );
+                } else {
+                    memcpy( buffer + 21, cpyright + 22, 4 );
+                }
                 status = 2;
             }
         }
@@ -88,6 +97,26 @@ static bool filecopy( void )
     return( ok );
 }
 
+int is_asm( const char *p )
+{
+    if( p[0] == '.' ) {
+        if( p[1] == 'a' || p[1] == 'A' ) {
+            if( p[2] == 's' || p[2] == 'S' ) {
+                if( p[3] == 'm' || p[3] == 'M' ) {
+                    return( 1 );
+                }
+            }
+        } else if( p[1] == 'i' || p[1] == 'I' ) {
+            if( p[2] == 'n' || p[2] == 'N' ) {
+                if( p[3] == 'c' || p[3] == 'C' ) {
+                    return( 1 );
+                }
+            }
+        }
+    }
+    return( 0 );
+}
+
 int main( int argc, char *argv[] )
 {
     size_t          len;
@@ -95,17 +124,19 @@ int main( int argc, char *argv[] )
     time_t          ltime;
     const struct tm *t;
     int             c;
+    const char      *p;
 
     time( &ltime );
     t = localtime( &ltime );
     sprintf( cyear, "%4.4d", 1900 + t->tm_year );
-    memcpy( cpyright + 21, cyear, 4 );
-    if( argc > 2 ) {
-        fi = fopen( argv[1], "rt" );
-    } else if( argc == 2 ) {
-        fi = fopen( argv[1], "rt" );
+    memcpy( cpyright + 22, cyear, 4 );
+    if( argc > 1 ) {
+        p = argv[1];
+        fi = fopen( p, "rt" );
+        asm = is_asm( p + strlen( p ) - 4 );
     } else {
         fi = stdin;
+        asm = 0;
     }
     if( fi == NULL )
         return( 1 );
