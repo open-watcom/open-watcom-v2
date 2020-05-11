@@ -32,43 +32,6 @@
 #ifndef _INTDATA_H_INCLUDED
 #define _INTDATA_H_INCLUDED
 
-#pragma pack( __push, 1 )
-
-typedef struct {
-    unsigned short      SS;
-    unsigned short      GS;
-    unsigned short      FS;
-    unsigned short      ES;
-    unsigned short      DS;
-    unsigned long       EDI;
-    unsigned long       ESI;
-    unsigned long       EBP;
-    unsigned long       ESP;
-    unsigned long       EBX;
-    unsigned long       EDX;
-    unsigned long       ECX;
-    unsigned long       oldEAX;
-    unsigned long       oldEBP;
-    unsigned short      retIP;
-    unsigned short      retCS;
-    unsigned short      AX;
-    unsigned short      intnumber;
-    unsigned short      handle;
-    unsigned short      IP;
-    unsigned short      CS;
-    unsigned short      FLAGS;
-} fault_frame;
-
-#pragma pack( __pop )
-
-enum {
-    KILL_APP = 0,
-    RESTART_APP,
-    CHAIN
-};
-
-#define EXCESS_CRAP_ON_STACK    0x14
-
 void    RestoreState( interrupt_struct *idata, fault_frame *ff );
 void    SaveState( interrupt_struct *idata, fault_frame *ff );
 

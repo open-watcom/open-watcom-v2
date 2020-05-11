@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "stdwin.h"
+#include "winfault.h"
 #include "dbgrmsg.h"
 #include "trpsys.h"
 
@@ -112,8 +113,7 @@ static void EnableMainMenu( UINT bit )
 /*
  * DebuggerWaitForMessage - wait for a message from a debugee
  */
-private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task,
-                                        WORD dbgeemsg )
+private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, appl_action appl_act )
 {
     MSG         msg;
     HCURSOR     cursor;
@@ -124,10 +124,10 @@ private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task,
      * restart specified task
      */
     if( task != NULL ) {
-        AppMessage = dbgeemsg;
+        AppMessage = appl_act;
         if( SystemDebugState != SDS_NOTASKQUEUE ) {
             Out((OUT_MSG,"Posting message to task=%4.4x",task));
-            PostAppMessage( task, WM_NULL, dbgeemsg, MAGIC_COOKIE );
+            PostAppMessage( task, WM_NULL, appl_act, MAGIC_COOKIE );
         }
         Out((OUT_RUN,"Directed Yield to=%4.4x",task));
         DirectedYield( task );

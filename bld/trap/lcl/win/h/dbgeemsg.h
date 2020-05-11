@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,46 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Handle interrupts for trap file (called from asm wrapper).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-/*
- * this is the crap that was on the stack before IntHandler (in int.asm)
- * pushed its registers
- */
-typedef struct {
-    DWORD oldEBP;       // pushed at start of IntHandler
-    WORD retIP;         // far call into
-    WORD retCS;         //        IntHandler
-    WORD AX;            // set by Windows for us (since AX is trashed)
-    WORD intnumber;     // set by Windows for us
-    WORD handle;        // set by Windows for us
-    WORD IP;            // this
-    WORD CS;            //   is the
-    WORD FLAGS;         //     interrupt frame
-} int_frame;
-
-/*
- * this is everything that is on the stack that we need to know about
- * (all of our registers, plus "int_frame" above).
- */
-typedef struct {
-    WORD SS;
-    WORD GS;
-    WORD FS;
-    WORD ES;
-    WORD DS;
-    DWORD EDI;
-    DWORD ESI;
-    DWORD EBP;
-    DWORD ESP;
-    DWORD EBX;
-    DWORD EDX;
-    DWORD ECX;
-    DWORD oldEAX;
-    int_frame intf;
-} fault_frame;
-
-extern void __loadds __cdecl FaultHandler( volatile fault_frame ff );
+extern void         EnterSoftMode( void );
+extern void         ExitSoftMode( void );
+extern appl_action  DebugeeWaitForMessage( void );

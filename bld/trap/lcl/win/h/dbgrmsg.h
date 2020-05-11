@@ -30,5 +30,7 @@
 ****************************************************************************/
 
 
+extern volatile appl_action     AppMessage;
+
 extern BOOL        ToDebugger( private_msg pmsg );
-extern private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, WORD dbgeemsg );
+extern private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, appl_action appl_act );

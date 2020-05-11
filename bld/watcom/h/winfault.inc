@@ -31,7 +31,7 @@
 ;*****************************************************************************
 
 
-; fault_action enum values, defined in watcom/h/winfault.h
+; appl_action enum values, defined in watcom/h/winfault.h
 
 KILL_APP        equ 0
 RESTART_APP     equ 1

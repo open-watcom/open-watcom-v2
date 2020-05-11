@@ -55,6 +55,9 @@
 
 #define BUFF_SIZE 512
 
+/* commonui/asm/inth.asm */
+void FAR PASCAL IntHandler( void );
+
 unsigned short win386sig[] = { 0xDEAD,0xBEEF };
 unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
 
@@ -237,7 +240,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     MODULEENTRY         me;
     int                 rc;
     LPFNNOTIFYCALLBACK  notify_fn;
-    FARPROC             fault_fn;
+    LPFNINTHCALLBACK    fault_fn;
     char                buffer[10];
 
     /* unused parameters */ (void)cmd; (void)dos_args;
@@ -277,13 +280,22 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     /*
      * register as interrupt and notify handler
      */
-    fault_fn = MakeProcInstance( (FARPROC)IntHandler, InstanceHandle );
-    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
+    fault_fn = MakeProcInstance_INTH( IntHandler, InstanceHandle );
     if( !InterruptRegister( NULL, fault_fn ) ) {
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
         internalErrorMsg( MSG_SAMPLE_2 );
     }
+    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
     if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
         InterruptUnRegister( NULL );
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
+        if( notify_fn != NULL ) {
+            FreeProcInstance_NOTIFY( notify_fn );
+        }
         internalErrorMsg( MSG_SAMPLE_3 );
     }
     Start386Debug();
@@ -296,6 +308,12 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     if( rc ) {
         InterruptUnRegister( NULL );
         NotifyUnRegister( NULL );
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
+        if( notify_fn != NULL ) {
+            FreeProcInstance_NOTIFY( notify_fn );
+        }
         DebuggerIsExecuting( -1 );
         Done386Debug();
         internalErrorMsg( MSG_SAMPLE_4 );
@@ -321,6 +339,12 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     Done386Debug();
     InterruptUnRegister( NULL );
     NotifyUnRegister( NULL );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
+    }
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
+    }
     OutputMsg( MSG_SAMPLE_13 );
     Output( itoa( TotalTime/1000, buffer, 10 ) );
     Output( "." );

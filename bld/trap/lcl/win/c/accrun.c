@@ -43,6 +43,8 @@
 #include "trpimp.h"
 #include "trpld.h"
 #include "trpsys.h"
+#include "winfault.h"
+#include "dbgrmsg.h"
 
 
 /*
@@ -72,7 +74,7 @@ static trap_elen runProg( bool single_step )
     BOOL                watch386;
     BOOL                dowatch;
     BOOL                ton;
-    restart_opts        restart_option;
+    appl_action         appl_act;
     prog_go_ret         *ret;
 
     ret = GetOutPtr( 0 );
@@ -96,13 +98,13 @@ static trap_elen runProg( bool single_step )
     }
 
     ret->conditions = 0;
-    restart_option = RESTART_APP;
+    appl_act = RESTART_APP;
     while( DebugeeTask != NULL ) {
         if( dowatch && !watch386 ) {
             SingleStepMode();
         }
         ton = TraceOn;
-        pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, restart_option );
+        pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, appl_act );
         TraceOn = FALSE;
 
         if( pmsg == FAULT_HIT ) {
@@ -114,7 +116,7 @@ static trap_elen runProg( bool single_step )
                         ret->conditions = COND_WATCH;
                         if( DebugDebugeeOnly ) {
                             if( !CheckWatchPoints() ) {
-                                restart_option = CHAIN;
+                                appl_act = CHAIN;
                                 continue;
                             }
                         }
@@ -122,14 +124,14 @@ static trap_elen runProg( bool single_step )
                     break;
                 }
                 if( !ton && DebugDebugeeOnly ) {
-                    restart_option = CHAIN;
+                    appl_act = CHAIN;
                     continue;
                 }
                 if( dowatch ) {
                     if( CheckWatchPoints() ) {
                         ret->conditions = COND_WATCH;
                     } else {
-                        restart_option = RESTART_APP;
+                        appl_act = RESTART_APP;
                         continue;
                     }
                 }
@@ -138,7 +140,7 @@ static trap_elen runProg( bool single_step )
                 if( DebugDebugeeOnly ) {
                     if( !IsOurBreakpoint( IntResult.CS, IntResult.EIP ) ) {
                         IntResult.EIP++;
-                        restart_option = CHAIN;
+                        appl_act = CHAIN;
                         continue;
                     }
                 }
@@ -147,7 +149,7 @@ static trap_elen runProg( bool single_step )
             default:
                 if( DebugDebugeeOnly ) {
                     if( TaskAtFault != DebugeeTask ) {
-                        restart_option = CHAIN;
+                        appl_act = CHAIN;
                         continue;
                     }
                 }

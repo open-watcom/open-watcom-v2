@@ -36,7 +36,6 @@
 #include "segmem.h"
 #include "mythelp.h"
 #include "di386cli.h"
-#include "intdata.h"
 
 
 #define MAX_SAMPLES     10000
@@ -77,9 +76,6 @@ extern void FAR_PTR *alloc( int );
 /* getidata.c */
 extern int          GetIData( HINSTANCE inst, void __near *data, unsigned int size );
 
-/* inth.asm */
-extern void         FAR PASCAL IntHandler( void );
-
 /* libload.c */
 extern void         HandleLibLoad( int type, HANDLE hmod );
 
@@ -97,8 +93,5 @@ extern char         *ResName( char * );
 
 /* winopts.c */
 extern bool         GetFileName( HINSTANCE, int, char * );
-
-/* fault.c */
-extern WORD         __cdecl FAR FaultHandler( fault_frame ff );
 
 #endif

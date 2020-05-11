@@ -34,6 +34,8 @@
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"
+#include "winfault.h"
+#include "dbgrmsg.h"
 
 BYTE                    DLLLoadSaveByte;
 WORD                    DLLLoadIP;
@@ -48,7 +50,7 @@ volatile debugger_state DebuggerState = ACTIVE;
 break_point             StopNewTask;
 DWORD                   SystemDebugState;
 unsigned_8              FPUType;
-volatile restart_opts   AppMessage;
+volatile appl_action    AppMessage;
 DWORD                   TerminateCSIP;
 HWND                    DebuggerWindow;
 bool                    FaultHandlerEntered;

@@ -28,21 +28,12 @@
 ;*
 ;*****************************************************************************
 
-
 .386p
 
+include toolhelp.inc
+include winfault.inc
+
 ;** Set up values for cMacros
-
-;** TOOLHELP.INC is not included in OpenWatcom
-;** but we need only the declaration of NO_UAE_BOX
-;**        INCLUDE TOOLHELP.INC
-
-;** TerminateApp() flag values (taken from TOOLHELP.INC)
-NO_UAE_BOX      EQU     1
-
-
-extrn _FaultHandler:FAR
-extrn TerminateApp:FAR
 
 DGROUP group _DATA
 _DATA segment word public 'DATA' use16
@@ -58,7 +49,7 @@ assume cs:_TEXT
 
 ;**************************************************************************
 ;***                                                                    ***
-;*** IntHandler - takes all interrupts                                  ***
+;*** INTHANDLER - takes all interrupts                                  ***
 ;***                                                                    ***
 ;*** entry frame:                                                       ***
 ;***                                                                    ***
@@ -74,8 +65,8 @@ assume cs:_TEXT
 ;***                                                                    ***
 ;**************************************************************************
 
-PUBLIC IntHandler
-IntHandler PROC FAR
+PUBLIC INTHANDLER
+INTHANDLER PROC FAR
         nop
         nop
         nop
@@ -121,9 +112,9 @@ IntHandler PROC FAR
         ;**
         call    _FaultHandler
 
-        cmp     ax,0                    ; kill application?
+        cmp     ax,KILL_APP             ; kill application?
         je      KillApp
-        cmp     ax,1
+        cmp     ax,RESTART_APP
         je      RestartApp              ; restart application?
 
         pop     ax                      ; was SS
@@ -157,9 +148,9 @@ KillApp:
         add     sp,10                   ; Point to IRET frame
         push    0
         push    NO_UAE_BOX
-        call    TerminateApp
+        call    TERMINATEAPP
         iret
-IntHandler ENDP
+INTHANDLER ENDP
 
 
 _TEXT ends

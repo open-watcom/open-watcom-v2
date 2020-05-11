@@ -35,13 +35,13 @@
 #include <dos.h>
 #include "wclbproc.h"
 #include "wdebug.h"
+#include "winfault.h"
 #include "intdata.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WORD __cdecl FAR FaultHandler( fault_frame ff );
 
 static BOOL doLog;
 
@@ -148,10 +148,10 @@ INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 /*
  * FaultHandler - C handler for a fault
  */
-WORD __cdecl FAR FaultHandler( fault_frame ff )
+appl_action __cdecl __far FaultHandler( fault_frame ff )
 {
     DLGPROC     dlgproc;
-    INT_PTR     rc;
+    appl_action appl_act;
     char        *fault_str;
     msg_id      faultid;
 
@@ -162,18 +162,18 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
         }
         WasFault32 = (bool)GetDebugInterruptData( &IntData );
         if( WasFault32 ) {
-            ff.intnumber = IntData.InterruptNumber;
-            if( ff.intnumber == WGOD_ASYNCH_STOP_INT ) {
+            ff.intf.intnumber = IntData.InterruptNumber;
+            if( ff.intf.intnumber == WGOD_ASYNCH_STOP_INT ) {
                 DoneWithInterrupt( &IntData );
                 return( RESTART_APP );
             }
         }
     }
 
-    if( (!DumpAny.dump_pending && (ff.intnumber == INT_3) ) ||
-        (ff.intnumber == INT_1) ) {
+    if( (!DumpAny.dump_pending && (ff.intf.intnumber == INT_3) ) ||
+        (ff.intf.intnumber == INT_1) ) {
         if( WasFault32 ) {
-            if( ff.intnumber == INT_3 ) {
+            if( ff.intf.intnumber == INT_3 ) {
                 IntData.EIP++;
             }
             DoneWithInterrupt( &IntData );
@@ -208,7 +208,7 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     MyModuleFindHandle( &DTModuleEntry, DTTaskEntry.hModule );
     IsWin32App = CheckIsWin32App( DeadTask );
     MinAddrSpaces = 15;
-    faultid = GetFaultString( ff.intnumber, NULL );
+    faultid = GetFaultString( ff.intf.intnumber, NULL );
     fault_str = AllocRCString( faultid );
     LBPrintf( ListBox, STR_FAULT_IN_TASK, fault_str,
                 (WORD)DeadTask, DTModuleEntry.szModule );
@@ -222,13 +222,13 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     LoadDbgInfo();
     if( LogInfo.flags[LOGFL_AUTOLOG] != '1' ) {
         dlgproc = MakeProcInstance_DLG( IntDialogDlgProc, Instance );
-        rc = JDialogBox( Instance, "INTERRUPT", NULL, dlgproc );
+        appl_act = JDialogBox( Instance, "INTERRUPT", NULL, dlgproc );
         FreeProcInstance_DLG( dlgproc );
     } else {
-        rc = KILL_APP;
+        appl_act = KILL_APP;
     }
 
-    if( rc == RESTART_APP ) {
+    if( appl_act == RESTART_APP ) {
         if( !WasFault32 ) {
             RestoreState( &IntData, &ff );
         } else {
@@ -250,6 +250,6 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     }
     FaultHandlerEntered = false;
 
-    return( rc );
+    return( appl_act );
 
 } /* FaultHandler */

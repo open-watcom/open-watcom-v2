@@ -39,6 +39,9 @@
 static HHOOK hookHandle;
 //static FARPROC debugHookInstance;
 
+/* exported DebugHook function prototypes */
+DWORD FAR PASCAL DebugHook( int ncode, WPARAM wparam, LPARAM lparam );
+
 /*
  * DebugHook - don't allow any hook functions in debugee to get called
  */

@@ -46,6 +46,8 @@
 #include "dosextx.h"
 #include "dosfile.h"
 #include "pathgrp2.h"
+#include "winfault.h"
+#include "dbgrmsg.h"
 
 
 #define SIG_OFF         0
@@ -263,13 +265,11 @@ trap_retval ReqProg_load( void )
             ret->flags |= LD_FLAG_IS_BIG;
             if( tid == 0 ) {
                 WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
-                pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START,
-                                DebugeeTask, RESTART_APP );
+                pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                 if( pmsg == FAULT_HIT && IntResult.InterruptNumber == INT_3 ) {
                     IntResult.EIP++;
                     SingleStepMode();
-                    pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START,
-                                DebugeeTask, RESTART_APP );
+                    pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                     if( pmsg != FAULT_HIT || IntResult.InterruptNumber != INT_1 ) {
                         Out((OUT_ERR,"Expected INT_1 not found"));
                         ret->err = WINERR_NOINT1;
@@ -331,7 +331,7 @@ trap_retval ReqProg_kill( void )
             DebuggerWaitForMessage( RELEASE_DEBUGEE, DebugeeTask, RESTART_APP );
         } else {
             TerminateApp( DebugeeTask, NO_UAE_BOX );
-            DebuggerWaitForMessage( KILLING_DEBUGEE, NULL, -1 );
+            DebuggerWaitForMessage( KILLING_DEBUGEE, NULL, NOACTION );
             Out((OUT_LOAD,"Task Terminated(not current)"));
             {
                 DWORD   a;

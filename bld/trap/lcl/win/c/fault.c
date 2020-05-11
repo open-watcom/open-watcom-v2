@@ -37,7 +37,9 @@
 #include "mad.h"
 #include "madregs.h"
 #include "miscx87.h"
-#include "fault.h"
+#include "winfault.h"
+#include "dbgeemsg.h"
+#include "dbgrmsg.h"
 #include "di386cli.h"
 
 /*
@@ -204,13 +206,13 @@ static void newStack( WORD SS, DWORD ESP )
  * the code segment because we lack data segemtn addressability when we
  * need it.
  */
-static void setRetHow( WORD rc )
+static void setRetHow( appl_action appl_act )
 {
-    WORD        __far *wptr;
+    appl_action     __far *wptr;
 
     wptr = MK_FP( CSAlias, FP_OFF( &RetHow ) );
 
-    *wptr = rc;
+    *wptr = appl_act;
 
 } /* setRetHow */
 
@@ -251,9 +253,9 @@ volatile int AVolatileInt;
  * for a 32-bit fault), re-enable the hot key for async stopping,
  * and return to IntHandler to allow it to restart the debuggee.
  */
-void __loadds __cdecl FaultHandler( volatile fault_frame ff )
+void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
 {
-    restart_opts        rc=CHAIN;
+    appl_action         appl_act = CHAIN;
     private_msg         pmsg = FAULT_HIT;
     WORD                sig[2];
 
@@ -345,18 +347,17 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     /*
      * switch to debugger
      */
-    while( 1 ) {
-        if( !ToDebugger( pmsg ) ) break;
-        rc = DebugeeWaitForMessage();
-        if( rc == RUN_REDIRECT ) {
+    while( ToDebugger( pmsg ) ) {
+        appl_act = DebugeeWaitForMessage();
+        if( appl_act == RUN_REDIRECT ) {
             ExecuteRedirect();
-        } else if( rc == ACCESS_SEGMENT ) {
+        } else if( appl_act == ACCESS_SEGMENT ) {
             AVolatileInt = *(LPINT) MK_FP( SegmentToAccess+1, 0 );
         } else {
             break;
         }
     }
-    Out((OUT_RUN,"***** ---> restarting app, rc=%d",rc));
+    Out((OUT_RUN,"***** ---> restarting app, rc=%d", (int)appl_act));
 
     if( FPUType >= X86_387 ) {
         Write387( &FPResult );
@@ -374,7 +375,7 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     TaskAtFault = NULL;
 
     FaultHandlerEntered = false;
-    setRetHow( rc );
+    setRetHow( appl_act );
     UseHotKey( 1 );
 
 } /* FaultHandler */

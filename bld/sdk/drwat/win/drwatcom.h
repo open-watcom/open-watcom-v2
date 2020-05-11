@@ -164,9 +164,6 @@ void DoDump( HWND );
 /* heapex.c */
 void DoHeapDialog( HWND );
 
-/* inth.asm */
-void FAR PASCAL IntHandler( void );
-
 /* drwatlog.c */
 void StartLogFile( void );
 void FinishLogFile( void );

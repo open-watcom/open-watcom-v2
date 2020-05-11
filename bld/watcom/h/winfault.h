@@ -37,8 +37,8 @@ typedef enum {
     CHAIN           = 2,
     RUN_REDIRECT    = 3,
     ACCESS_SEGMENT  = 4,
-    ENUM_MAXSIZE    = 0xFFFF
-} fault_action;
+    NOACTION        = 0xFFFF,
+} appl_action;
 
 /*
  * this is the crap that was on the stack before IntHandler (in int.asm)
@@ -84,5 +84,5 @@ typedef struct {
 #ifdef TRAP
 extern void __loadds __cdecl __near FaultHandler( volatile fault_frame ff );
 #else
-extern unsigned short __cdecl __far FaultHandler( volatile fault_frame ff );
+extern appl_action __cdecl __far FaultHandler( volatile fault_frame ff );
 #endif

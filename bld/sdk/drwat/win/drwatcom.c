@@ -42,9 +42,12 @@
 #include "wclbtool.h"
 
 
+/* commonui/asm/inth.asm */
+void FAR PASCAL IntHandler( void );
+
 static char     className[] = "drwatcom";
-static FARPROC  faultFN;
-static LPFNNOTIFYCALLBACK notifyFN;
+static LPFNINTHCALLBACK     fault_fn;
+static LPFNNOTIFYCALLBACK   notify_fn;
 
 extern WORD     _STACKLOW;
 
@@ -155,13 +158,12 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         /*
          * set up handlers
          */
-        faultFN = MakeProcInstance( (FARPROC)IntHandler, Instance );
-        notifyFN = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
-        if( !InterruptRegister( NULL, faultFN ) ) {
+        fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
+        if( !InterruptRegister( NULL, fault_fn ) ) {
             Death( STR_CANT_HOOK_INTER );
         }
-        if( !NotifyRegister( NULL, notifyFN, NF_NORMAL | NF_RIP ) ) {
-            InterruptUnRegister( NULL );
+        notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
+        if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_RIP ) ) {
             Death( STR_CANT_HOOK_NOTIF );
         }
 
@@ -195,12 +197,12 @@ void Death( msg_id msgid, ... )
 
 
     InterruptUnRegister( NULL );
-    if( faultFN != NULL ) {
-        FreeProcInstance( faultFN );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
     }
     NotifyUnRegister( NULL );
-    if( notifyFN != NULL ) {
-        FreeProcInstance_NOTIFY( notifyFN );
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
     }
     Done386Debug();
 

@@ -42,6 +42,9 @@
 #include <dos.h>
 #include "stdwin.h"
 #include "ismod32.h"
+#include "winfault.h"
+#include "dbgrmsg.h"
+
 
 #define MAX_MODULE      256
 

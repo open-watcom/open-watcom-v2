@@ -50,8 +50,8 @@
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
-static FARPROC              faultInstance;
-static LPFNNOTIFYCALLBACK   notifyInstance;
+static LPFNINTHCALLBACK     fault_fn;
+static LPFNNOTIFYCALLBACK   notify_fn;
 
 void SetInputLock( bool lock_status )
 {
@@ -87,16 +87,16 @@ char *InitDebugging( void )
         WDebug386 = TRUE;
         UseHotKey( 1 );
     }
-    faultInstance = MakeProcInstance( (FARPROC)IntHandler, Instance );
-    if( !InterruptRegister( NULL, faultInstance ) ) {
+    fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
+    if( !InterruptRegister( NULL, fault_fn ) ) {
         return( TRP_WIN_Failed_to_get_interrupt_hook );
     }
-    notifyInstance = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
-    if( !NotifyRegister( NULL, notifyInstance, NF_NORMAL | NF_RIP ) ) {
+    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
+    if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_RIP ) ) {
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
     Out(( OUT_INIT,"ds=%04x, faultInstance=%Fp, notifyInstance=%Fp,Instance=%04x",
-        FP_SEG( &faultInstance ), faultInstance, notifyInstance, Instance ));
+        FP_SEG( &fault_fn ), fault_fn, notify_fn, Instance ));
     if( WDebug386 ) {
         if( Start386Debug() ) {
             DebuggerIsExecuting( 1 );
@@ -118,12 +118,12 @@ void FinishDebugging( void )
 {
 
     InterruptUnRegister( NULL );
-    if( faultInstance != NULL ) {
-        FreeProcInstance( faultInstance );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
     }
     NotifyUnRegister( NULL );
-    if( notifyInstance != NULL ) {
-        FreeProcInstance_NOTIFY( notifyInstance );
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
     }
     if( WDebug386 ) {
         ResetDebugInterrupts32();

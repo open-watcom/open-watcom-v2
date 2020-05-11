@@ -37,24 +37,36 @@
 extern "C" {
 #endif
 
+#if defined( __WINDOWS__ )
+typedef void (CALLBACK *LPFNINTHCALLBACK)( void );
+#endif
+
 #if defined( __WINDOWS_386__ )
+typedef void                (CALLBACK *LPFNINTHCALLBACKx)( void );
 typedef BOOL                (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
 #else
+#define LPFNINTHCALLBACKx LPFNINTHCALLBACK
 #define LPFNNOTIFYCALLBACKx LPFNNOTIFYCALLBACK
 #endif
 
 #if defined( __WINDOWS__ )
+extern LPFNINTHCALLBACK   MakeProcInstance_INTH( LPFNINTHCALLBACKx fn, HINSTANCE instance );
 extern LPFNNOTIFYCALLBACK   MakeProcInstance_NOTIFY( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance );
+#pragma aux MakeProcInstance_INTH = MAKEPROCINSTANCE_INLINE
 #pragma aux MakeProcInstance_NOTIFY = MAKEPROCINSTANCE_INLINE
 #else
-#define MakeProcInstance_NOTIFY(f,i)   ((void)i,f)
+#define MakeProcInstance_INTH(f,i)      ((void)i,f)
+#define MakeProcInstance_NOTIFY(f,i)    ((void)i,f)
 #endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
+extern void FreeProcInstance_INTH( LPFNINTHCALLBACK f );
 extern void FreeProcInstance_NOTIFY( LPFNNOTIFYCALLBACK f );
+#pragma aux FreeProcInstance_INTH = FREEPROCINSTANCE_INLINE
 #pragma aux FreeProcInstance_NOTIFY = FREEPROCINSTANCE_INLINE
 #else
-#define FreeProcInstance_NOTIFY(f)     ((void)f)
+#define FreeProcInstance_INTH(f)        ((void)f)
+#define FreeProcInstance_NOTIFY(f)      ((void)f)
 #endif
 
 #ifdef __cplusplus

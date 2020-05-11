@@ -37,6 +37,9 @@
 #include "stdwin.h"
 #include "trpsys.h"
 #include "wclbproc.h"
+#include "winfault.h"
+#include "dbgeemsg.h"
+#include "dbgrmsg.h"
 
 
 #ifndef WM_PAINTICON
@@ -53,6 +56,11 @@ static WORD         SCCount;
 static WNDPROC      DefaultProcInstance;
 static WNDENUMPROC  EnumChildProcInstance;
 static WNDENUMPROC  EnumTaskProcInstance;
+
+/* Local Windows CALLBACK function prototypes */
+BOOL __export FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam );
+BOOL __export FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam );
+LRESULT __export FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 
 /*
  * SubClassProc - handle all messages for the stopped task
@@ -245,7 +253,7 @@ static BOOL IsTaskWnd( HWND wnd )
 HWND ActiveWnd;
 HWND FocusWnd;
 
-restart_opts DebugeeWaitForMessage( void )
+appl_action DebugeeWaitForMessage( void )
 {
     MSG         msg;
     HANDLE      huser;
