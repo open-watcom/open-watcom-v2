@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,8 +86,6 @@ extern WORD     __far NewSS;
 extern DWORD    __far NewESP;
 
 extern WORD     __far RetHow;
-
-#define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
 
 bool                WasInt32 = false;
 struct fp_state     FPResult;
