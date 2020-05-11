@@ -183,7 +183,7 @@ extra_c_flags_win_i86 = -bd
 
 # aflags stuff
 ###############
-extra_a_flags += $(model_switch_$(host_cpu))
+extra_a_flags += $(model_switch_$(host_cpu)) -D$(which)
 !ifeq target_os ads
 extra_a_flags += -3s -DACAD
 !endif
