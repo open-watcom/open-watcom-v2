@@ -33,6 +33,7 @@
 
 include toolhelp.inc
 include winfault.inc
+include winintrf.inc
 
 ;** Set up values for cMacros
 

@@ -36,7 +36,7 @@
 #include <dos.h>
 #include "wclbproc.h"
 #include "watcom.h"
-#include "wdebug.h"
+#include "winintrf.h"
 #include "segmap.rh"
 #include "jdlg.h"
 #include "memwnd.h"

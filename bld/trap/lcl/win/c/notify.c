@@ -35,7 +35,6 @@
 #include <dos.h>
 #include "wdebug.h"
 #include "stdwin.h"
-#include "winfault.h"
 #include "dbgrmsg.h"
 
 

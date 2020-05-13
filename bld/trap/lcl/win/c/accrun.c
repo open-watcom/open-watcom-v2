@@ -43,7 +43,6 @@
 #include "trpimp.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "winfault.h"
 #include "dbgrmsg.h"
 
 

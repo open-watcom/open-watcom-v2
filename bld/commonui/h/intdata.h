@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Fault context structure for Windows 3.x.
+* Description:  Save/restore Windows 3.x interrupt data.
 *
 ****************************************************************************/
 

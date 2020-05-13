@@ -1,4 +1,4 @@
-;*****************************************************************************
+;****************************************************************************
 ;*
 ;*                            Open Watcom Project
 ;*
@@ -25,14 +25,16 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Windows 3.x interrupts and faults handling
-;*                (assembly language definition)
+;* Description:  Windows 3.x Interrupt and fault handling related data
 ;*
-;*****************************************************************************
+;****************************************************************************
 
 
-ifdef TRAP
-extrn _FaultHandler:NEAR
-else
-extrn _FaultHandler:FAR
-endif
+; appl_action enum values, defined in watcom/h/winintrf.h
+
+KILL_APP        equ 0
+RESTART_APP     equ 1
+CHAIN           equ 2
+RUN_REDIRECT    equ 3
+ACCESS_SEGMENT  equ 4
+

@@ -34,6 +34,7 @@
 
 include toolhelp.inc
 include winfault.inc
+include winintrf.inc
 
 DGROUP group _DATA
 _DATA segment word public 'DATA'  use16

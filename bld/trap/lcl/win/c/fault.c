@@ -107,7 +107,7 @@ static void saveState( volatile fault_frame *ff )
     IntResult.ESI = ff->ESI;
     // we modify ESP be the "real" esp; i.e., the one without the
     // excess crap pushed on by Windows before giving us the fault
-    IntResult.ESP = ff->ESP+EXCESS_CRAP_ON_STACK;
+    IntResult.ESP = ff->ESP + sizeof( int_frame );
     IntResult.EBX = ff->EBX;
     IntResult.EDX = ff->EDX;
     IntResult.ECX = ff->ECX;
@@ -160,7 +160,7 @@ static void restoreState( volatile fault_frame *ff )
     ff->EDI = IntResult.EDI;
     ff->ESI = IntResult.ESI;
     // have ESP include the excess crap again
-    ff->ESP = IntResult.ESP-EXCESS_CRAP_ON_STACK;
+    ff->ESP = IntResult.ESP - sizeof( int_frame );
     ff->EBX = IntResult.EBX;
     ff->EDX = IntResult.EDX;
     ff->ECX = IntResult.ECX;

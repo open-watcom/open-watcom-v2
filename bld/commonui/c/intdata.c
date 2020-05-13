@@ -25,14 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Save/restore register state.
+* Description:  Save/restore Windows 3.x interrupt data.
 *
 ****************************************************************************/
 
 
 #include "commonui.h"
-#include "wdebug.h"
-#include "winfault.h"
+#include "winintrf.h"
 #include "intdata.h"
 
 /*
@@ -48,7 +47,7 @@ void SaveState( interrupt_struct *idata, fault_frame *ff )
     idata->EDI = ff->EDI;
     idata->ESI = ff->ESI;
     idata->EBP = ff->EBP;
-    idata->ESP = ff->ESP + EXCESS_CRAP_ON_STACK;
+    idata->ESP = ff->ESP + sizeof( int_frame );
     idata->EBX = ff->EBX;
     idata->EDX = ff->EDX;
     idata->ECX = ff->ECX;
@@ -74,7 +73,7 @@ void RestoreState( interrupt_struct *idata, fault_frame *ff )
     ff->EDI = idata->EDI;
     ff->ESI = idata->ESI;
     ff->intf.oldEBP = idata->EBP;
-    ff->ESP = idata->ESP - EXCESS_CRAP_ON_STACK;
+    ff->ESP = idata->ESP - sizeof( int_frame );
     ff->EBX = idata->EBX;
     ff->EDX = idata->EDX;
     ff->ECX = idata->ECX;

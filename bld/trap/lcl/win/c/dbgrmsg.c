@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "stdwin.h"
-#include "winfault.h"
 #include "dbgrmsg.h"
 #include "trpsys.h"
 

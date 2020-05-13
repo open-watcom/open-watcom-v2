@@ -37,6 +37,7 @@
 #include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
+#include "winintrf.h"
 
 #define MAGIC_COOKIE    0x66600666L
 typedef enum {

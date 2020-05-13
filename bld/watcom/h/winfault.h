@@ -31,56 +31,6 @@
 ****************************************************************************/
 
 
-typedef enum {
-    KILL_APP        = 0,
-    RESTART_APP     = 1,
-    CHAIN           = 2,
-    RUN_REDIRECT    = 3,
-    ACCESS_SEGMENT  = 4,
-    NOACTION        = 0xFFFF,
-} appl_action;
-
-/*
- * this is the crap that was on the stack before IntHandler (in int.asm)
- * pushed its registers
- */
-#pragma pack( __push, 1 )
-typedef struct {
-    unsigned long       oldEBP;
-    unsigned short      retIP;
-    unsigned short      retCS;
-    unsigned short      AX;
-    unsigned short      intnumber;
-    unsigned short      handle;
-    unsigned short      IP;
-    unsigned short      CS;
-    unsigned short      FLAGS;
-} int_frame;
-
-#define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
-
-/*
- * this is everything that is on the stack that we need to know about
- * (all of our registers, plus "int_frame" above).
- */
-typedef struct {
-    unsigned short      SS;
-    unsigned short      GS;
-    unsigned short      FS;
-    unsigned short      ES;
-    unsigned short      DS;
-    unsigned long       EDI;
-    unsigned long       ESI;
-    unsigned long       EBP;
-    unsigned long       ESP;
-    unsigned long       EBX;
-    unsigned long       EDX;
-    unsigned long       ECX;
-    unsigned long       oldEAX;
-    int_frame           intf;
-} fault_frame;
-#pragma pack( __pop )
-
 #ifdef TRAP
 extern void __loadds __cdecl __near FaultHandler( volatile fault_frame ff );
 #else

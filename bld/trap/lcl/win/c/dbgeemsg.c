@@ -37,7 +37,6 @@
 #include "stdwin.h"
 #include "trpsys.h"
 #include "wclbproc.h"
-#include "winfault.h"
 #include "dbgeemsg.h"
 #include "dbgrmsg.h"
 
