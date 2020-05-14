@@ -99,13 +99,13 @@ ReflectInt1Int3_ ENDP
 ; InterruptCallback:
 ;
 ; this code is executed after any 32-bit fault occurs.  WDEBUG.386 traps
-; the fault, copies all the registers to the SaveEAX et al above,
+; the fault, copies all the registers to the _IntRegsSave structure above,
 ; and then sets the Windows VM to start execution here.  We flag
 ; that we got one of our special interrupts, and then do an int 3,
 ; which will be processed by a normal fault handler.
 ;
 ; once we return from the normal fault handler, we make call WDEBUG.386
-; to load all registers from the save area (SaveEAX etc) and restart the
+; to load all registers from the save area _IntRegsSave and restart the
 ; Windows VM at the new location.
 ;
 public InterruptCallback_
