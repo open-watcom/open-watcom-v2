@@ -43,6 +43,7 @@
 #include "wsample.rh"
 #include "wreslang.h"
 #include "wclbproc.h"
+#include "di386cli.h"
 
 
 #define TMPSLEN 256

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 
 
 typedef int         FAR PASCAL IsDebuggerExecuting_func( void );
-typedef void        FAR PASCAL DoneWithInterrupt_func( LPVOID );
-typedef int         FAR PASCAL GetDebugInterruptData_func( LPVOID );
+typedef void        FAR PASCAL DoneWithInterrupt_func( interrupt_struct FAR * );
+typedef int         FAR PASCAL GetDebugInterruptData_func( interrupt_struct FAR * );
 typedef void        FAR PASCAL ResetDebugInterrupts32_func( void );
 typedef int         FAR PASCAL SetDebugInterrupts32_func( void );
 typedef void        FAR PASCAL DebuggerIsExecuting_func( int );

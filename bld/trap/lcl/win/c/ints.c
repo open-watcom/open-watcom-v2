@@ -160,7 +160,7 @@ void FAR PASCAL ResetDebugInterrupts32( void )
  * This routine must be followed by a DoneWithInterrupt call, otherwise
  * the INT1/INT3 IDT hooks will not be restored.
  */
-int FAR PASCAL GetDebugInterruptData( LPVOID data )
+int FAR PASCAL GetDebugInterruptData( interrupt_struct FAR *data )
 {
     if( !OurOwnInt ) {
         return( false );
@@ -180,7 +180,7 @@ int FAR PASCAL GetDebugInterruptData( LPVOID data )
  * are copied back to the data area for reloading by WDEBUG.386, and
  * the IDT is reset to point at our int1/3 handler.
  */
-void FAR PASCAL DoneWithInterrupt( LPVOID data )
+void FAR PASCAL DoneWithInterrupt( interrupt_struct FAR *data )
 {
     if( data != NULL ) {
         _fmemcpy( &IntSave, data, sizeof( interrupt_struct ) );

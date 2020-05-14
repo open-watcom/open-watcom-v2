@@ -51,6 +51,7 @@
 #include "exeos2.h"
 #include "exedos.h"
 #include "wclbtool.h"
+#include "di386cli.h"
 
 
 #define BUFF_SIZE 512

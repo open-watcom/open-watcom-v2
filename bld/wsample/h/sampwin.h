@@ -36,7 +36,6 @@
 
 #include "segmem.h"
 #include "mythelp.h"
-#include "di386cli.h"
 
 
 #define MAX_SAMPLES     10000

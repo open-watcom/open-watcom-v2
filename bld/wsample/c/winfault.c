@@ -37,6 +37,7 @@
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "intdata.h"
+#include "di386cli.h"
 
 
 /*

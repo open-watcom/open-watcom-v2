@@ -52,13 +52,13 @@
 #include "font.h"
 #include "segmem.h"
 #include "ismod32.h"
+#include "winintrf.h"
 #include "di386cli.h"
 #include "rcstr.gh"
 #include "ldstr.h"
 #include "dbgopt.rh"
 #include "rvalue.h"
 #include "listbox.h"
-#include "winintrf.h"
 
 
 #define INT_PTR int
