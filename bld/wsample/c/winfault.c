@@ -36,7 +36,6 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
-#include "winfault.h"
 #include "intdata.h"
 
 

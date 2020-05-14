@@ -1,7 +1,8 @@
-;*****************************************************************************
+;****************************************************************************
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -24,10 +25,9 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Watcom wdebug VxD for Win16 interface.
 ;*
-;*****************************************************************************
+;****************************************************************************
 
 
 ERR_SERVER_EXISTS               equ     0ffffh          ; -1
@@ -55,4 +55,3 @@ Declare_Watcom_Debug_Virtual_Device macro Major_Ver, Minor_Ver, Ctrl_Proc, Devic
   WDEBUG_DDB VxD_Desc_Block <,,Device_Num,Major_Ver,Minor_Ver,,"WDEBUG  ",Init_Order, OFFSET Ctrl_Proc, 0, 0,,, 0, 0, 0>
   VxD_LOCKED_DATA_ENDS
 endm
-

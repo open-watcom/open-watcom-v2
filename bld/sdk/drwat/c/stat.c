@@ -34,7 +34,6 @@
 #include "drwatcom.h"
 #include <ctype.h>
 #include <dos.h>
-#include "wdebug.h"
 #include "segmap.rh"
 #include "jdlg.h"
 

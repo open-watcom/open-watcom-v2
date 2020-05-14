@@ -32,8 +32,9 @@
 .386p
 
 include toolhelp.inc
-include winfault.inc
 include winintrf.inc
+include winfault.inc
+
 
 ;** Set up values for cMacros
 

@@ -46,7 +46,6 @@
 #include "dosextx.h"
 #include "dosfile.h"
 #include "pathgrp2.h"
-#include "winfault.h"
 #include "dbgrmsg.h"
 
 

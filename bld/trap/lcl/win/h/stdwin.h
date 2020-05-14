@@ -39,6 +39,7 @@
 #include "packet.h"
 #include "winintrf.h"
 
+
 #define MAGIC_COOKIE    0x66600666L
 typedef enum {
     FAULT_HIT,
@@ -97,7 +98,7 @@ extern HTASK                    DebuggerTask;
 extern HTASK                    DebugeeTask;
 extern HINSTANCE                DebugeeInstance;
 extern DWORD                    WindowsFlags;
-extern struct interrupt_struct  IntResult;
+extern interrupt_struct         IntResult;
 extern struct fp_state          FPResult;
 extern volatile debugger_state  DebuggerState;
 extern break_point              StopNewTask;

@@ -58,6 +58,7 @@
 #include "dbgopt.rh"
 #include "rvalue.h"
 #include "listbox.h"
+#include "winintrf.h"
 
 
 #define INT_PTR int
@@ -113,7 +114,7 @@ typedef struct {
 /*
  * global variables
  */
-extern struct interrupt_struct  IntData;
+extern interrupt_struct         IntData;
 extern HANDLE                   Instance;
 extern HTASK                    DeadTask;
 extern TASKENTRY                DTTaskEntry;

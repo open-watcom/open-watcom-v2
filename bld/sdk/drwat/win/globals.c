@@ -32,7 +32,6 @@
 
 
 #include "drwatcom.h"
-#include "winintrf.h"
 
 
 interrupt_struct        IntData;

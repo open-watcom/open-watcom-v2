@@ -25,9 +25,10 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Windows 3.x Interrupt and fault handling related data
+;* Description:  Windows 3.x interrupts and faults handling
+;*                (assembly language definition)
 ;*
-;****************************************************************************
+;*****************************************************************************
 
 
 ; appl_action enum values, defined in watcom/h/winintrf.h
@@ -38,3 +39,22 @@ CHAIN           equ 2
 RUN_REDIRECT    equ 3
 ACCESS_SEGMENT  equ 4
 
+Interrupt_struct struc
+SaveEAX               dd ?
+SaveEBX               dd ?
+SaveECX               dd ?
+SaveEDX               dd ?
+SaveEDI               dd ?
+SaveESI               dd ?
+SaveEFLAGS            dd ?
+SaveEBP               dd ?
+SaveEIP               dd ?
+SaveESP               dd ?
+SaveSS                dw ?
+SaveCS                dw ?
+SaveDS                dw ?
+SaveES                dw ?
+SaveFS                dw ?
+SaveGS                dw ?
+InterruptNumber       dw ?
+Interrupt_struct        ends

@@ -25,7 +25,8 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 3.x Interrupt and fault handling related data
+* Description:  Windows 3.x interrupts and faults handling
+*                (called from asm wrapper)
 *
 ****************************************************************************/
 
@@ -39,7 +40,7 @@ typedef enum {
     NOACTION        = 0xFFFF,
 } appl_action;
 
-#pragma pack( __push, 1 )
+#pragma pack ( __push, 1 )
 typedef struct interrupt_struct {
     unsigned long   EAX;
     unsigned long   EBX;
@@ -97,3 +98,9 @@ typedef struct {
     int_frame           intf;
 } fault_frame;
 #pragma pack( __pop )
+
+#ifdef TRAP
+extern void __loadds __cdecl __near FaultHandler( volatile fault_frame ff );
+#else
+extern appl_action __cdecl __far FaultHandler( volatile fault_frame ff );
+#endif

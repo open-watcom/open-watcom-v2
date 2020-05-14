@@ -38,6 +38,9 @@
 .386p
 .387
 
+include winintrf.inc
+
+
 DGROUP group _DATA
 
 ;*
@@ -61,42 +64,11 @@ public _InterruptStackOff
 ;*
 ;*** save area for registers
 ;*
-_SaveEAX        dd 0
-_SaveEBX        dd 0
-_SaveECX        dd 0
-_SaveEDX        dd 0
-_SaveEDI        dd 0
-_SaveESI        dd 0
-_SaveEFLAGS     dd 0
-_SaveEBP        dd 0
-_SaveEIP        dd 0
-_SaveESP        dd 0
-_SaveSS         dw 0
-_SaveCS         dw 0
-_SaveDS         dw 0
-_SaveES         dw 0
-_SaveFS         dw 0
-_SaveGS         dw 0
-_FaultNumber    dw 0
+public _IntSave
+_IntSave Interrupt_struct    <0>
+
                 dw 0
                 dw 0
-public _SaveEAX
-public _SaveEBX
-public _SaveECX
-public _SaveEDX
-public _SaveEDI
-public _SaveESI
-public _SaveEFLAGS
-public _SaveEBP
-public _SaveEIP
-public _SaveESP
-public _SaveSS
-public _SaveCS
-public _SaveDS
-public _SaveES
-public _SaveFS
-public _SaveGS
-public _FaultNumber
 
 idt             LABEL FWORD
 _idt            db 8 dup(0)

@@ -32,11 +32,10 @@
 
 
 #include <stddef.h>
-#include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"
-#include "winfault.h"
 #include "dbgrmsg.h"
+
 
 BYTE                    DLLLoadSaveByte;
 WORD                    DLLLoadIP;
@@ -46,7 +45,7 @@ BOOL                    TraceOn;
 HTASK                   DebuggerTask;
 HTASK                   DebugeeTask;
 HINSTANCE               DebugeeInstance;
-struct interrupt_struct IntResult;
+interrupt_struct        IntResult;
 volatile debugger_state DebuggerState = ACTIVE;
 break_point             StopNewTask;
 DWORD                   SystemDebugState;

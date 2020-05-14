@@ -38,7 +38,6 @@
 #include "mad.h"
 #include "madregs.h"
 #include "miscx87.h"
-#include "winfault.h"
 #include "dbgeemsg.h"
 #include "dbgrmsg.h"
 #include "di386cli.h"

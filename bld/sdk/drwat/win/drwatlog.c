@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include "wclbproc.h"
 #include "tinyio.h"
-#include "winintrf.h"
 #include "commdlg.h"
 #include "jdlg.h"
 
