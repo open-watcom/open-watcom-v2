@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -64,8 +65,8 @@ public _InterruptStackOff
 ;*
 ;*** save area for registers
 ;*
-public _IntSave
-_IntSave Interrupt_struct    <0>
+public _IntRegsSave
+_IntRegsSave Interrupt_struct    <0>
 
                 dw 0
                 dw 0

@@ -49,7 +49,7 @@ typedef union {
     unsigned short  words[4];
 } idt;
 
-extern interrupt_struct IntSave;
+extern interrupt_struct IntRegsSave;
 extern WORD             DPL;
 extern bool             OurOwnInt;
 extern WORD             IDTSel;
@@ -88,7 +88,7 @@ static int     DebuggerCount = 0;
  * - register our interrupt callback routine with WDEBUG.386.  This routine
  *   is invoked whenever a 32-bit fault occurs.  The routine runs on a
  *   stack that we specify.  WDEBUG.386 copies the register information
- *   into the provided structure (&IntSave) before it invokes the callback
+ *   into the provided structure (&IntRegsSave) before it invokes the callback
  *   routine. NOTE:  "invoking" the callback routine really means that
  *   WDEBUG.386 changes the registers of the Windows VM such that the
  *   next time it runs, it begins execution at the callback routine.
@@ -122,7 +122,7 @@ int FAR PASCAL SetDebugInterrupts32( void )
      * set up to be notified of faults by wgod
      */
     RegisterInterruptCallback( (LPVOID) InterruptCallback,
-                        (LPVOID) &IntSave,
+                        (LPVOID) &IntRegsSave,
                         (LPVOID) &IStack[MAX_ISTACK-16] );
 
     return( 1 );
@@ -166,7 +166,7 @@ int FAR PASCAL GetDebugInterruptData( interrupt_struct FAR *data )
         return( false );
     }
     if( data != NULL ) {
-        _fmemcpy( data, &IntSave, sizeof( interrupt_struct ) );
+        _fmemcpy( data, &IntRegsSave, sizeof( interrupt_struct ) );
     }
     IntAccessed++;
     return( true );
@@ -183,7 +183,7 @@ int FAR PASCAL GetDebugInterruptData( interrupt_struct FAR *data )
 void FAR PASCAL DoneWithInterrupt( interrupt_struct FAR *data )
 {
     if( data != NULL ) {
-        _fmemcpy( &IntSave, data, sizeof( interrupt_struct ) );
+        _fmemcpy( &IntRegsSave, data, sizeof( interrupt_struct ) );
     }
     IntAccessed--;
     if( IntAccessed <= 0 ) {
