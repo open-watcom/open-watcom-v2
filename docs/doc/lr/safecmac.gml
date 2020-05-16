@@ -51,7 +51,8 @@ The Safer C Library extension provides the
 .seekw &functiong. &funcsafe.
 function which is a safer alternative to
 .id &funcb.
-~. This newer
+.dot
+This newer
 .id &funcsafe.
 function is recommended to be used instead of the traditional "unsafe"
 .id &funcb.
