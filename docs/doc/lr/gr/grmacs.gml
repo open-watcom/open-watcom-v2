@@ -28,7 +28,7 @@
 .dm gfunc begin
 .gfuncinit
 .topsect _&*
-:set symbol="function" value="_&*".
+:set symbol="functiong" value="_&*".
 :set symbol="funcb" value="_&*".
 :set symbol="headtxt0$" value="_&*".
 :set symbol="headtxt1$" value="_&*".
@@ -40,7 +40,7 @@
 .dm gfuncw begin
 .gfuncinit
 .topsect _&*, _&*._w
-:set symbol="function" value="_&*".
+:set symbol="functiong" value="_&*".
 :set symbol="funcb" value="_&*".
 :set symbol="func2" value="_&*._w".
 :set symbol="headtxt0$" value="_&* &rroutines".
@@ -55,7 +55,7 @@
 .dm gfuncwxy begin
 .gfuncinit
 .topsect _&*, _&*._w, _&*._wxy
-:set symbol="function" value="_&*".
+:set symbol="functiong" value="_&*".
 :set symbol="funcb" value="_&*".
 :set symbol="func2" value="_&*._w".
 :set symbol="func3" value="_&*._wxy".
@@ -73,7 +73,7 @@
 .dm gfuncms begin
 .gfuncinit
 .topsect _&*, _&*.ms
-:set symbol="function" value="_&*".
+:set symbol="functiong" value="_&*".
 :set symbol="funcb" value="_&*".
 :set symbol="func1" value="_&*.ms".
 :set symbol="headtxt0$" value="_&* &rroutines".
@@ -89,7 +89,7 @@
 .if '&*' eq 'begin' .do begin
 .  .newcode Synopsis:
 .  .if '&lang' eq 'C' .do begin
-.  .  .if '&'substr(&function.,1,4)' eq '_pg_' .do begin
+.  .  .if '&'substr(&functiong.,1,4)' eq '_pg_' .do begin
 #include <pgchart.h>
 .  .  .do end
 .  .  .el .do begin

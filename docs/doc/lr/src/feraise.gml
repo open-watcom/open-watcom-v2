@@ -13,7 +13,7 @@ function attempts to raise the floating-point exceptions specified by the
 argument.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
+.seekw &functiong. fegetexceptflag
 .ct .li .
 .desc end
 .*

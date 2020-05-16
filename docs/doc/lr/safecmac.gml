@@ -44,14 +44,14 @@ See xxx for a list of available functions.
 .   .sr funcsafe=&*
 .do end
 .el .do begin
-.   .sr funcsafe=&function._s
+.   .sr funcsafe=&functiong._s
 .do end
 .newtext Safer C:
 The Safer C Library extension provides the
-.seekw &function. &funcsafe.
+.seekw &functiong. &funcsafe.
 function which is a safer alternative to
 .id &funcb.
-. This newer
+~. This newer
 .id &funcsafe.
 function is recommended to be used instead of the traditional "unsafe"
 .id &funcb.

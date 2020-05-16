@@ -101,7 +101,7 @@ int _wexecvpe( file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &function.
+.idbold &functiong.
 functions load and execute a new child process, named by
 .arg path
 or
@@ -116,7 +116,7 @@ No return is made to the original program.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &function.
+.idbold &functiong.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -234,7 +234,7 @@ functions are extensions to POSIX 1003.1.
 .desc end
 .return begin
 When the invoked program is successfully initiated, no return occurs.
-When an error is detected while invoking the indicated program, &function
+When an error is detected while invoking the indicated program, &functiong
 returns &minus.1 and
 .kw errno
 is set to indicate the error.

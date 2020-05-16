@@ -183,10 +183,10 @@
 .*  generate title and start of code (declaration)
 .   .topsect &fncttl.
 .   .if '&funcgrp.' ne '' .do begin
-.   .   .sr function=&funcgrp.
+.   .   .sr functiong=&funcgrp.
 .   .   .ixm '&funcgrp. Functions'
 .   .do end
-.   .el .sr function=&funcb.
+.   .el .sr functiong=&funcb.
 .   .sr *i=0
 .   .pe &__fnx.;.sr *i=&*i.+1;.ixm '&$$fnc(&*i.)'
 .do end
@@ -509,7 +509,7 @@ Prototype in
 .se *i=1
 .se *j=2
 .pe &*0.
-.   .seekw '&function.' &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
+.   .seekw '&functiong.' &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
 .dm seelist end
 .*
 .dm seekw begin
