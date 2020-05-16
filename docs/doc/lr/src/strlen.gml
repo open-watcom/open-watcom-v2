@@ -26,7 +26,7 @@ size_t _fmbslen( const unsigned char __far *s );
 .do end
 .synop end
 .*
-.safealt
+.safealt strnlen_s
 .*
 .desc begin
 The
