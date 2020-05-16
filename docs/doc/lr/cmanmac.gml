@@ -2,6 +2,24 @@
 :set symbol="XMPset" value="of".
 :set symbol="grpsfx" value="...".
 .*
+.dm dot begin
+.if '&*' ne '' .do begin
+.ct ~. &*
+.do end
+.el .do begin
+.ct ~.
+.do end
+.dm dot end
+.*
+.dm comma begin
+.if '&*' ne '' .do begin
+.ct , &*
+.do end
+.el .do begin
+.ct ,
+.do end
+.dm comma end
+.*
 .dm funcinit begin
 .sr funcb=''
 .sr funcn=''
@@ -261,7 +279,8 @@
 .dm seexmp begin
 .newtext Example:
 See example provided with
-.mono &*..
+.mono &*
+.dot
 .oldtext
 .dm seexmp end
 .*
