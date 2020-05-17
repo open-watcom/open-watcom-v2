@@ -9,7 +9,7 @@ and
 :CONT., that are used for communicating with these "standard" devices,
 which are opened before the user program starts execution at
 :MONO.main()
-:PERIOD.
+.dot
 These three values are
 :MONO.FILE
 pointers and can be used in virtually any
@@ -41,7 +41,7 @@ which correspond to
 :MONO.stderr
 and buffered
 :MONO.stderr
-:PERIOD.
+.dot
 :SECTION.cin
 &cin. is an
 :MONO.istream

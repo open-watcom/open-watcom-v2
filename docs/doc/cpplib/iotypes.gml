@@ -5,7 +5,7 @@ They are declared in
 :MONO.<iostream.h>
 and
 :MONO.<fstream.h>
-:PERIOD.
+.dot
 :TYPL.
 :TYP index='streampos'.typedef long streampos;
 :TYP index='streamoff'.typedef long streamoff;

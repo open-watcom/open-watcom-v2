@@ -38,4 +38,4 @@ marks in it (identified via the letters 'a' through 'z').  Marks may also
 be set with the
 &cmdline command
 .keyref mark
-:period.
+.dot

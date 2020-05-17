@@ -20,7 +20,8 @@ the &obj. automatically grows the buffer when necessary.
 :INCLUDE file='ssb_desc'.
 :P.
 C++ programmers who wish to use string streams without deriving new
-objects will probably never explicitly create or use a &obj.:PERIOD.
+objects will probably never explicitly create or use a &obj.
+.dot
 :HDG.Protected Member Functions
 The following member function is declared in the protected interface:
 :MFNL.
@@ -125,14 +126,16 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='freeze'.void strstreambuf::freeze( int frozen = 1 );
 :eSNPL.
 :SMTICS.
-The &fn. enables and disables automatic deletion of the &rsvarea.:PERIOD.
+The &fn. enables and disables automatic deletion of the &rsvarea.
+.dot
 If the &fn. is called with no parameter or a non-zero parameter, the
 &obj. is frozen.
 If the &fn. is called with a zero parameter, the &obj. is unfrozen.
 :P.
 A frozen &obj. does not free the &rsvarea. in the destructor. If the &obj. is
 destroyed while it is frozen, it is the program's responsibility to also
-free the &rsvarea.:PERIOD.
+free the &rsvarea.
+.dot
 :P.
 If characters are written to the &obj. while it is frozen, the
 effect is undefined since the &rsvarea. may be reallocated and therefore
@@ -155,7 +158,8 @@ The &fn. returns the previous frozen state.
 :SMTICS.
 The &fn. provides the output communication between the
 :MONO.streambuf
-member functions and the &obj.:PERIOD.
+member functions and the &obj.
+.dot
 Member functions in the
 :MONO.streambuf
 class call the &fn. when the &putarea. is full. The &fn. attempts to grow
@@ -193,17 +197,20 @@ The &fn. returns &noteof. when it successfully extends the &putarea., otherwise
 :eSNPL.
 :SMTICS.
 The &fn. positions the &getptr. and/or &putptr. to the specified position
-in the &rsvarea.:PERIOD.
+in the &rsvarea.
+.dot
 If the &getptr. is moved, it is moved to a position
 relative to the start of the &rsvarea. (which is also the start of the
 &getarea.). If a position is specified that is beyond the end of the
 &getarea. but is in the &putarea., the &getarea. is extended to include
-the &putarea.:PERIOD.
+the &putarea.
+.dot
 If the &putptr. is moved, it is moved to a position
 relative to the start of the &putarea.,
 :HILITE.not
 relative to the start of the
-&rsvarea.:PERIOD.
+&rsvarea.
+.dot
 :P.
 The &fn. seeks
 :ARG.offset
@@ -216,7 +223,7 @@ is not valid if the
 :ARG.dir
 parameter is
 :MONO.ios::cur
-:PERIOD.
+.dot
 :INCLUDE file='seekdir'.
 :RSLTS.
 The &fn. returns the new position in the file on success, otherwise &eof. is
@@ -227,7 +234,8 @@ are specified and the
 :ARG.dir
 parameter is
 :MONO.ios::cur
-the returned position refers to the &putptr.:PERIOD.
+the returned position refers to the &putptr.
+.dot
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public virtual'.setbuf
@@ -251,7 +259,8 @@ If a program is going to write a large number of characters to the &obj., it
 should call the &fn. to indicate the size of the next allocation, to prevent
 multiple allocations as the buffer gets larger.
 :RSLTS.
-The &fn. returns a pointer to the &obj.:PERIOD.
+The &fn. returns a pointer to the &obj.
+.dot
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -265,7 +274,8 @@ The &fn. returns a pointer to the &obj.:PERIOD.
 :SNPF index='str'.char *strstreambuf::str();
 :eSNPL.
 :SMTICS.
-The &fn. freezes the &obj. and returns a pointer to the &rsvarea.:PERIOD.
+The &fn. freezes the &obj. and returns a pointer to the &rsvarea.
+.dot
 This pointer
 remains valid after the &obj. is destroyed provided the &obj. remains
 frozen, since the destructor does not free the &rsvarea. if it is frozen.
@@ -282,7 +292,8 @@ If the pointer returned by the &fn. is to be interpreted as a C string,
 it is the program's responsibility to ensure that the null character is
 present.
 :RSLTS.
-The &fn. returns a pointer to the &rsvarea. and freezes the &obj.:PERIOD.
+The &fn. returns a pointer to the &rsvarea. and freezes the &obj.
+.dot
 :SALSO.
 :SAL typ='mfun'.freeze
 :eSALSO.
@@ -307,7 +318,8 @@ The default allocation size is determined by the constant
 :MONO.DEFAULT_MAINBUF_SIZE
 :CONT., which is 512.
 :RSLTS.
-This form of the &fn. creates a &obj.:PERIOD.
+This form of the &fn. creates a &obj.
+.dot
 :SALSO.
 :SAL typ='mfun'.doallocate
 :SAL typ='dtor'.
@@ -343,7 +355,8 @@ or
 :MONO.alloc_size_increment
 member functions have been called to specify a new allocation size.
 :RSLTS.
-This form of the &fn. creates a &obj.:PERIOD.
+This form of the &fn. creates a &obj.
+.dot
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -398,7 +411,8 @@ is &null., the
 :MONO.operator~bdelete
 intrinsic function is used.
 :RSLTS.
-This form of the &fn. creates a &obj.:PERIOD.
+This form of the &fn. creates a &obj.
+.dot
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -429,11 +443,13 @@ is &null.). The &obj. is said to be using static allocation. The
 :ARG.str
 and
 :ARG.len
-parameters specify the bounds of the &rsvarea.:PERIOD.
+parameters specify the bounds of the &rsvarea.
+.dot
 :INCLUDE file='str_b'.
 :P.
 If the &getarea. is exhausted and characters have been written to the
-&putarea., the &getarea. is extended to include the &putarea.:PERIOD.
+&putarea., the &getarea. is extended to include the &putarea.
+.dot
 :P.
 The &getptr. and &putptr. do not necessarily point at the
 same position in the &rsvarea., so a read followed by a write does not
@@ -445,9 +461,11 @@ member function has been used to reposition the pointer(s).
 :P.
 Note that if
 :ARG.str
-is &null. the effect is to create an empty dynamic &obj.:PERIOD.
+is &null. the effect is to create an empty dynamic &obj.
+.dot
 :RSLTS.
-This form of the &fn. creates a &obj.:PERIOD.
+This form of the &fn. creates a &obj.
+.dot
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -460,7 +478,8 @@ This form of the &fn. creates a &obj.:PERIOD.
 :SNPCD cd_idx='d'.strstreambuf::~~strstreambuf();
 :eSNPL.
 :SMTICS.
-The &fn. destroys the &obj. after discarding the &rsvarea.:PERIOD.
+The &fn. destroys the &obj. after discarding the &rsvarea.
+.dot
 The &rsvarea. is
 discarded only if the &obj. is using dynamic allocation and is not frozen.
 The &rsvarea. is freed using the free function specified by the form of the
@@ -489,7 +508,8 @@ The &obj. is destroyed.
 The &fn. does nothing because there is no external device with which to
 synchronize.
 :RSLTS.
-The &fn. returns &noteof.:PERIOD.
+The &fn. returns &noteof.
+.dot
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public virtual'.underflow
@@ -501,14 +521,16 @@ The &fn. returns &noteof.:PERIOD.
 :SMTICS.
 The &fn. provides the input communication between the
 :MONO.streambuf
-member functions and the &obj.:PERIOD.
+member functions and the &obj.
+.dot
 Member functions in the
 :MONO.streambuf
 class call the &fn. when the &getarea. is empty.
 :P.
 If there is a non-empty &putarea. present following the &getarea.,
 the &getarea. is extended to include the &putarea., allowing the
-input operation to continue using the &putarea.:PERIOD.
+input operation to continue using the &putarea.
+.dot
 Otherwise the &getarea. cannot be extended.
 :RSLTS.
 The &fn. returns the first available character in the &getarea. on successful

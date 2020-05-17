@@ -708,7 +708,8 @@ equivalent to the passed value.
 :SNPF index='operator ='   .WC&lpref.SkipListSet & operator =( const WC&lpref.SkipListSet & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+.dot
 The left hand side list is first cleared using the
 .MONO clear
 member function, and then the right hand side list is copied.
@@ -737,7 +738,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.SkipListSet & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

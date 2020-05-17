@@ -12,7 +12,8 @@ function.
 :RSLTS.
 The &fn. produces an &obj. that is connected to the file specified by
 :ARG.name
-:PERIOD.
+.dot
 If the
 :MONO.open
-fails, &failbit. and &badbit. are set in the &errstate.:PERIOD.
+fails, &failbit. and &badbit. are set in the &errstate.
+.dot

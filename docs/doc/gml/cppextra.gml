@@ -90,11 +90,6 @@
 
 .gt cont add cont
 
-.gt period add @period cont
-.dm @period begin
-.ct .li .;
-.dm @period end
-
 .gt blankline add blankline
 .dm blankline begin
 .sp

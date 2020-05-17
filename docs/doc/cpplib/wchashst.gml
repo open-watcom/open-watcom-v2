@@ -838,7 +838,8 @@ The &fn. returns the number of elements in the hash.
 :SNPF index='operator ='   .WC&lpref.HashTable & operator =( const WC&lpref.HashTable & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+.dot
 The left hand side hash is first cleared using the
 .MONO clear
 member function, and then the right hand side hash is copied.
@@ -872,7 +873,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.HashTable & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two hash objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

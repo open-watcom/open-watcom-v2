@@ -41,7 +41,7 @@ or
 .param insert
 mode, depending on the mode you were in last time you were in
 .keyword text insertion mode
-:period.
+.dot
 .sp
 This key is useful to
 .keyref keyadd
@@ -52,5 +52,5 @@ to return to the exact same type of
 .keyword text insertion mode
 the user was in before leaving
 .keyword text insertion mode
-:period.
+.dot
 .endkey

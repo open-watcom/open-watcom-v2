@@ -169,7 +169,8 @@ set to the given value.
 :SNPCD cd_idx='c'.WC&lpref.Vector( const WC&lpref.Vector & );
 :eSNPL.
 :SMTICS.
-The &fn. is the copy constructor for the &cls.:PERIOD.
+The &fn. is the copy constructor for the &cls.
+.dot
 The new vector is created with the same length as the given vector.
 All of the vector elements and exception trap states are copied.
 :P.
@@ -192,7 +193,8 @@ The &fn. creates a &obj. which is a copy of the passed vector.
 :SNPCD cd_idx='d'.virtual ~~WC&lpref.Vector();
 :eSNPL.
 :SMTICS.
-The &fn. is the destructor for the &cls.:PERIOD.
+The &fn. is the destructor for the &cls.
+.dot
 If the vector is not length zero and the
 .MONO not_empty
 .ix 'not_empty' 'exception'
@@ -208,7 +210,8 @@ member function is explicitly called before the destructor is called.
 .do end
 :INCLUDE file='_DTOR'.
 :RSLTS.
-The &fn. destroys an &obj.:PERIOD.
+The &fn. destroys an &obj.
+.dot
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -280,7 +283,8 @@ vector elements and makes the vector zero length.
 :eSNPL.
 :SMTICS.
 The &fn. is used to find the number of elements which can be stored in
-the &obj.:PERIOD.
+the &obj.
+.dot
 :RSLTS.
 The &fn. returns the length of the vector.
 :SALSO.
@@ -377,7 +381,8 @@ The result of the non-constant index operator may be assigned to.
 :SNPF index='operator ='   .WC&lpref.Vector & operator =( const WC&lpref.Vector & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+.dot
 The left hand side vector is first cleared using the
 .MONO clear
 member function, and then the right hand side vector is copied.
@@ -408,7 +413,8 @@ The &fn. assigns the left hand side vector to be a copy of the right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.Vector & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two vector objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.
@@ -463,7 +469,8 @@ If the resize cannot be performed and the
 .ix 'out_of_memory' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
-The vector is resized to :HP1.new_size:eHP1.:PERIOD.
+The vector is resized to :HP1.new_size:eHP1.
+.dot
 A TRUE value (non-zero) is returned if the resize is successful.
 A FALSE (zero) result is returned if the resize fails.
 :SALSO.

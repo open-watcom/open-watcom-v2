@@ -1520,7 +1520,8 @@ If the resize cannot be performed and the
 .ix 'out_of_memory' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
-The vector is resized to :HP1.new_size:eHP1.:PERIOD.
+The vector is resized to :HP1.new_size:eHP1.
+.dot
 A TRUE value (non-zero) is returned if the resize is successful.
 A FALSE (zero) result is returned if the resize fails.
 :SALSO.

@@ -55,7 +55,7 @@ Along with the &edname executable, there are a number of files that are needed:
 .keyref execute
 and
 .keyref keyadd
-:period.
+.dot
 :DT.errmsg.dat
 :DD.The text strings for &edvi's various error messages.
 :DT.error.dat
@@ -138,7 +138,7 @@ files are searched for in the following order:
 :LI.The current directory.
 :LI.The directories in the environment variable
 .ev EDPATH
-:period.
+.dot
 :LI.The directories in the environment variable PATH
 :eOL.
 .* ******************************************************************
@@ -163,7 +163,7 @@ The parameters cause the following:
 :DT.--         
 :DD.Starts &edvi in
 .keyword stdio mode
-:period.
+.dot
 In this mode, &edvi reads from standard in to get the file to edit.
 When the file is written, the lines are written to standard out.
 This is useful for including &edvi in a pipe.
@@ -228,7 +228,7 @@ The parameters are associated with the most recently specified startup script.
 :DT.-t <tag>   
 :DD.Edits the file containing the tag
 .param <tag>
-:period.
+.dot
 
 :DT.-c <cfg>   
 :DD.Runs the configuration script
@@ -236,7 +236,7 @@ The parameters are associated with the most recently specified startup script.
 :cont.,
 instead of the default
 :fname.ed.cfg:efname.
-:period.
+.dot
 .*
 :eDL.
 .* ******************************************************************
@@ -261,14 +261,14 @@ is set to 0, then the autosave feature is disabled.
 .keyword alock_?.fil
 in its
 .keyref tmpdir
-:period.
+.dot
 The question mark ('?') will be a letter.  There may be more than
 one lock file, if more than one copy of &edvi is running on
 the current machine.
 .np
 &edvi keeps a checkpoint file called
 .keyword asave_?.fil
-:period.
+.dot
 The question mark ('?') will be a letter.
 Once a file is autosaved, its name is added to this checkpoint file.
 When the file is discarded, its name is removed from this checkpoint file.

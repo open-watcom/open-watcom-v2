@@ -67,7 +67,7 @@ vi test.c
 .millust end
 will edit the file
 .mono test.c
-:period.
+.dot
 Typing
 .millust begin
 vi test.c other.c
@@ -76,14 +76,14 @@ will edit the files
 .mono test.c
 and
 .mono other.c
-:period.
+.dot
 Typing
 .millust begin
 vi *.c
 .millust end
 will edit all files that have the extension
 .mono .c
-:period.
+.dot
 .np
 :INCLUDE file='exitvi'.
 .* ******************************************************************
@@ -93,7 +93,7 @@ will edit all files that have the extension
 A modal editor is one where keystrokes have different meaning, depending
 on what mode you are in.  &edvi has two main modes, &cmdmode and
 &tinsmode.
-:period.
+.dot
 .np
 While in &cmdmode, pressing a key on your keyboard can cause something
 different to happen.  For example, pressing the letter D (capital 'd')
@@ -135,11 +135,11 @@ key is one of the more important keys in &edvi.. Pressing
 .param ESC
 once will stop whatever you are doing and
 return you to &cmdmode.
-:period.
+.dot
 If you have started a &cmdmode sequence, pressing
 .param ESC
 will cancel the command and return you to &cmdmode.
-:period.
+.dot
 .exercises
 Start up &edvi by typing
 .millust begin
@@ -202,7 +202,7 @@ various cursor keys.  The basic keys that you use to move around are:
 :INCLUDE file='basicmv'
 .np
 These same cursor keys may also be used when entering text in &tinsmode.
-:period.
+.dot
 .* ******************************************************************
 .section *refid=savexit 'Saving and Exiting a File'
 .* ******************************************************************
@@ -240,7 +240,7 @@ The main menu option
 each edit window has a menu associated with it that you can access
 by pressing
 .param ALT_G
-:period.
+.dot
 You can also access this menu by clicking on the gadget ('ð') in the top left hand
 corner of an edit window.  This menu has a number of choices for dealing with
 the file.
@@ -308,7 +308,7 @@ your text in whatever way you choose.  Once you are done, you
 may press the
 .param ESC
 key to return to &cmdmode.
-:period.
+.dot
 .np
 While you are in &tinsmode, the basic keys that allow you to move through
 the text are:
@@ -556,7 +556,7 @@ noted that pressing
 .param CTRL_DEL
 (control-delete) deleted a line when inputting
 text.  This same command can be used while in &cmdmode.
-:period.
+.dot
 .np
 If you want to delete more than one line at once, you may precede
 this delete command with a
@@ -564,7 +564,7 @@ this delete command with a
 You enter a repeat count
 simply by typing numbers before you press
 .param CTRL_DEL
-:period.
+.dot
 As you type a number in &cmdmode, it will appear in a special window,
 as follows:
 .figure *depth='2.47' *scale='59' *file='vi008' Repeat Count Display
@@ -602,17 +602,17 @@ the line(s) you deleted will be pasted in before the current line (which
 reverses the action of
 .param CTRL_DEL
 :cont.)
-:period.
+.dot
 .np
 There are two other keys for pasting, the letters
 'p' and 'P' (small p and capital p).  Small 'p' pastes the line(s) you deleted after
 the current line, just like
 .param SHIFT_INS
-:period.
+.dot
 Capital p ('P') pastes the line(s) you deleted before the current line,
 just like
 .param CTRL_INS
-:period.
+.dot
 .np
 If you do not wish to delete some lines, but you do wish to copy them
 so you can paste them somewhere else, then you may use the "yank"
@@ -692,11 +692,11 @@ There are two other keys for pasting, the letters
 (small p and capital p).  Small p pastes the character(s) you deleted after
 the current cursor position on the current line, just like
 .param SHIFT_INS
-:period.
+.dot
 Capital p ('P') pastes the character(s) you deleted before the cursor
 position on the current line, just like
 .param CTRL_INS
-:period.
+.dot
 .*
 .exercises
 Edit the file "test" created in the previous examples by typing:
@@ -765,7 +765,8 @@ This is a test line.
 :LI.Paste the line above the current line by pressing capital p ('P')
 or
 .param CTRL_INS
-:period.  The line should appear above the first line:
+.dot
+The line should appear above the first line:
 .millust begin
 This is a test line.
 This is another test line.
@@ -775,7 +776,7 @@ This is a test line.
 :LI.Delete all 3 lines of text.  Make sure your cursor is on the
 first line in the file, and type
 .mono 3dd
-:period.
+.dot
 This will delete all three lines, and you will have an empty edit buffer.
 
 :LI.Paste the lines back in by typing 'p'.  The three lines will be pasted
@@ -809,7 +810,7 @@ hTTis is a test line.
 
 :LI.Cursor to the first column and type
 .mono 6x
-:period.
+.dot
 This will delete the first word and the space:
 .millust begin
 is a test line.
@@ -824,7 +825,7 @@ The cursor will remain on the 't'.
 
 :LI.Type
 .mono 3X
-:period.
+.dot
 You will now see
 .millust begin
 itest line.
@@ -1163,7 +1164,7 @@ regular expressions.
 
 :DT.Starting up
 :DD.Gives help on the various command line parameters for &edvi.
-:period.
+.dot
 
 :eDL.
 .*

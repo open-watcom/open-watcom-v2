@@ -9,7 +9,7 @@ parameters are interpreted as follows:
 :OL.
 :LI.The buffer starts at
 :ARG.str
-:PERIOD.
+.dot
 :LI.If
 :ARG.len
 is positive, the buffer is

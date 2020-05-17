@@ -47,7 +47,7 @@ double quotes are used to indicate a literal option that you may supply.
 You are not required to type the quotes.  For example, "-c" indicates
 that in the corresponding place in the command you may enter
 .param -c
-:period.
+.dot
 .np
 In the syntax model for each command, the upper-case characters represent
 the minimal truncation of the command.

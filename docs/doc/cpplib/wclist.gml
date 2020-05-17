@@ -1164,7 +1164,8 @@ a reference to the left hand side.
 :SNPF index='operator =='.int WC&lpref.DList::operator ==( const WC&lpref.DList & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

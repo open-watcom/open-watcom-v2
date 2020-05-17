@@ -35,7 +35,7 @@
 .chap Advanced Usage
 .np
 This chapter discusses a number of the less commonly used features of the &edname.
-:period.
+.dot
 The knowledge of the information in the chapter
 :HDREF page=no refid='basic'.
 and 
@@ -70,14 +70,14 @@ The first occurrence of the search string
 .param &lt.string&gt.
 on each line is replaced with the string
 .param &lt.subs&gt.
-:period.
+.dot
 .np
 If the letter 'g' is specified at the end, then every occurrence of
 the search string
 .param &lt.string&gt.
 on each line is replaced with the string
 .param &lt.subs&gt.
-:period.
+.dot
 .np
 If the letter 'i' is specified at the end, then the substitution is
 interactive.  You will be prompted before each replacement to verify
@@ -90,7 +90,7 @@ that you want it to be done.
 :HDREF refid='maiaf'
 in the previous chapter
 :HDREF page=no refid='inter'.
-:period.
+.dot
 Enter the &cmdline command (remember to press colon (':') to bring up the
 command window):
 .millust begin
@@ -143,13 +143,13 @@ The &cmdline command
 .param &lt.cmd&gt.
 will be executed on every line that has the string
 .param &lt.string&gt.
-:period.
+.dot
 .np
 If the exclamation mark ('!') is used, then the &cmdline command
 .param &lt.cmd&gt.
 will be executed on every line that does not have the string
 .param &lt.string&gt.
-:period.
+.dot
 .*
 .exercises
 :OL.
@@ -158,7 +158,7 @@ will be executed on every line that does not have the string
 :HDREF refid='maiaf'
 in the previous chapter
 :HDREF page=no refid='inter'.
-:period.
+.dot
 Enter the &cmdline command (remember to press colon (':') to bring up the
 command window):
 .millust begin
@@ -197,7 +197,7 @@ than files that are being edited. These file search commands are
 .keyref fgrep
 and
 .keyref egrep
-:period.
+.dot
 .np
 The
 .keyref fgrep
@@ -210,7 +210,8 @@ The file list
 .param &lt.files&gt.
 is searched for the string
 .param &lt.string&gt.
-:period. The file list may contain wild cards.
+.dot
+The file list may contain wild cards.
 .np
 If you wish to have spaces in your string, then you can enclose the
 string in either double quotes ('"') or forward slashes ('/').
@@ -243,7 +244,8 @@ The file list
 .param &lt.files&gt.
 is searched for the regular expression
 .param &lt.regexp&gt.
-:period. The file list may contain wild cards.
+.dot
+The file list may contain wild cards.
 .np
 If you wish to have spaces in your regular expression, then you can enclose
 the string in either double quotes ('"') or forward slashes ('/').
@@ -255,7 +257,7 @@ For example, entering the following command:
 searches all files in the current directory ending in the extension .c
 for the string
 .param window
-:period.
+.dot
 While searching for the item, &edname displays a window that shows
 all files being searched. 
 .np
@@ -270,7 +272,7 @@ The selection window appears as follows:
 .np
 A powerful feature in &edname is the ability to change the meaning of
 any key in &cmdmode or &tinsmode
-:period.
+.dot
 Using this feature, you can configure the editor any way which suits your
 needs.
 .np
@@ -289,17 +291,17 @@ Both commands remap the specified key
 .param &lt.key&gt.
 to execute the characters in
 .param &lt.string&gt.
-:period.
+.dot
 Whenever the specified key is pressed while in &cmdmode, it is equivalent
 to typing the characters in
 .param &lt.string&gt.
-:period.
+.dot
 .np
 In the
 .keyref map
 command, specifying the exclamation point ('!') causes the map to be
 for &tinsmode, rather than &cmdmode
-:period.
+.dot
 .np
 It is possible for
 .param &lt.string&gt.
@@ -323,7 +325,7 @@ There are a number of pre-defined key
 symbols that are recognized when specifying which key is being
 mapped or unmapped. These are described in the Appendix
 :HDREF refid='symkey'.
-:period.
+.dot
 .np
 If you need to use one or more special keys (e.g. ENTER, F1, etc) in
 .param &lt.string&gt.
@@ -338,7 +340,7 @@ then you may enter:
 :HDREF refid='maiaf'
 in the previous chapter
 :HDREF page=no refid='inter'.
-:period.
+.dot
 Enter the following &cmdline command:
 .millust begin
 :map F5 dd
@@ -363,11 +365,11 @@ and try pressing F5 again.  It will no longer delete lines.
 .millust end
 Press
 .param F6
-:period.
+.dot
 The time and date will be displayed in the message window.
 You will notice that the command window flashes as you push
 .param F6
-:period.
+.dot
 
 :LI.
 .millust begin
@@ -375,7 +377,7 @@ You will notice that the command window flashes as you push
 .millust end
 Press
 .param F6
-:period.
+.dot
 The time and date will be displayed in the message window.
 You will notice that the command window no longer flashes.
 
@@ -401,11 +403,11 @@ in &tinsmode, you will exit insert mode (the \e is like pressing the
 key), delete the current word, and then re-enter insert mode.
 Try entering &tinsmode and pressing
 .param F6
-:period.
+.dot
 
 :LI.Exit &tinsmode and press
 .param F6
-:period.
+.dot
 You will notice that the date is still displayed, since the &tinsmode
 and &cmdmode mappings for
 .param F6

@@ -113,7 +113,7 @@ white-space when ENTER is pressed.
 .setsyntx
 .begdescr
 Automatically erases the message window when a key is typed in &cmdmode.
-:period.
+.dot
 .enddescr
 
 .setcmd *short=bf beepflag
@@ -185,7 +185,7 @@ Causes the current column to be added to file status display
 Enables the display of the current status on the menu bar. The position
 on the menu bar is controlled with
 .keyref currentstatuscolumn
-:period.
+.dot
 .enddescr
 
 .setcmd *short=dt drawtildes
@@ -212,7 +212,7 @@ characters.
 Display the current file status whenever the
 .keyword ESC
 key is pressed in &cmdmode.
-:period.
+.dot
 .enddescr
 
 .setcmd *short=xm extendedmemory
@@ -230,7 +230,7 @@ Normally, a CTRL_Z in a file acts as an end-of-file indicator.  Setting
 &cmd_long causes &edvi to treat CTRL_Z as just another character in
 the file.  This option may also be selected using the '-z' option
 when invoking &edvi.
-:period.
+.dot
 .enddescr
 
 .setcmd *short=it ignoretagcase
@@ -429,7 +429,7 @@ When &cmd_long is set, the right and left mouse buttons are inverted.
 .setsyntx
 .begdescr
 This option enables/disables the use of the mouse in &edvi.
-:period.
+.dot
 .enddescr
 .*
 .fnlist end
@@ -553,7 +553,7 @@ parameter.
 .setsyntx
 .begdescr
 Sets the size of the cursor when in &cmdmode.
-:period.
+.dot
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
 
@@ -564,7 +564,7 @@ If
 .keyref marklonglines
 is set, and &cmd_parm is non-zero, then the character in the last column
 of a line wider than the screen is displayed as the ASCII value &cmd_parm.
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=attr exitattr
@@ -598,7 +598,7 @@ commands.
 &cmd_parm is a file matching regular expression, the default is *.(c|h)
 For more information, see the section
 :HDREF refid='fmrx'.
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=dist hardtab
@@ -613,14 +613,14 @@ default is 8 (4 on QNX).
 .begdescr
 If the history file is defined, your command and search history is
 saved across editing sessions in the file &cmd_parm.
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=size insertcursortype
 .setsyntx
 .begdescr
 Sets the size of the cursor when inserting text in &tinsmode
-:period.
+.dot
 Values for &cmd_parm
 are 0 to 100 (0=full size, 100=thin).
 .enddescr
@@ -642,7 +642,7 @@ Magic characters are:
 .setsyntx
 .begdescr
 &edvi keeps a history of commands entered at the &cmdline.
-:period.
+.dot
 &cmd_parm sets the number of commands kept in the history.
 .enddescr
 
@@ -673,7 +673,7 @@ number of search commands kept in the history.
 .setsyntx
 .begdescr
 This parameter controls the maximum line length allowed by &edvi.
-:period.
+.dot
 The default value is 512 bytes.  Any lines longer than &cmd_parm
 are broken up into multiple lines.
 .enddescr
@@ -694,7 +694,7 @@ commands have been issued, the first pushed positions are lost.
 .begdescr
 Sets the maximum number of kilobytes of disk space to be used for
 temporary storage by &edvi.
-:period.
+.dot
 .np
 This option can only be set during editor initialization.
 .enddescr
@@ -722,7 +722,7 @@ top of the new page.
 .begdescr
 Sets the size of the cursor when in overstriking text in
 .keyword text insertion mode
-:period.
+.dot
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
 
@@ -732,7 +732,7 @@ Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 Sets the radix (base) of the results of using the
 &cmdline command
 .keyref eval
-:period.
+.dot
 The default is base 10.
 .enddescr
 
@@ -751,7 +751,7 @@ when they are indenting.
 .setsyntx
 .begdescr
 Sets the size (in kilobytes) of the stack used by &edvi.
-:period.
+.dot
 The minimum is 10.  This can be set higher if you plan on using
 nested scripts that go deeper than 4 or 5 levels.
 .np
@@ -839,7 +839,7 @@ a text insertion mode.  If
 .keyref realtabs 1
 is set, these spaces will be changed into tabs, based on the setting of
 .keyref hardtab
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=fname tagfilename
@@ -848,7 +848,7 @@ is set, these spaces will be changed into tabs, based on the setting of
 This defines the file name that &edvi is to use to locate tags
 in.  The default is the name
 .us tags
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=dir tmpdir
@@ -864,7 +864,7 @@ This option can only be set during editor initialization.
 .setsyntx
 .begdescr
 This defines the word used by &edvi.
-:period.
+.dot
 &cmd_parm is a group of character pairs.
 Each pair defines a range; e.g. 09az defines the characters 0 through 9
 and a thorough z.
@@ -877,7 +877,7 @@ The default for &cmd_long is "__09AZaz".
 The word will be delimited by
 white space (spaces or tabs) and all characters not in the ranges
 defined by &cmd_parm.
-:period.
+.dot
 .enddescr
 
 .setcmd *parm=margin wrapmargin
@@ -1127,13 +1127,13 @@ to have the foreground color
 .param &lt.fg&gt.
 and the background color
 .param &lt.bg&gt.
-:period.
+.dot
 .np
 The tile area
 .param &lt.n&gt.
 must be in the range 1 to
 .keyref maxtilecolors
-:period.
+.dot
 .np
 The colors may be in the range 0-15, or one of
 the previously defined color keywords.

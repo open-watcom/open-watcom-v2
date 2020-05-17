@@ -49,15 +49,15 @@ is filled in when you see it.  These special characters are:
 .*
 :DT.%s
 :DD.An appropriate string is filled in by &edvi
-:period.
+.dot
 
 :DT.%c
 :DD.An appropriate character is filled in by &edvi
-:period.
+.dot
 
 :DT.%d
 :DD.An appropriate number is filled in by &edvi
-:period.
+.dot
 .*
 :eDL.
 .*

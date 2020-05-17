@@ -7,10 +7,10 @@ Manipulators are designed to be inserted into or extracted from a stream.
 Manipulators come in two forms, non-parameterized and parameterized.
 The non-parameterized manipulators are simpler and are declared in
 :MONO.<iostream.h>
-:PERIOD.
+.dot
 The parameterized manipulators require more complexity and are declared in
 :MONO.<iomanip.h>
-:PERIOD.
+.dot
 :P.
 :MONO.<iomanip.h>
 defines two macros

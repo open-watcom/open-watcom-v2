@@ -82,12 +82,14 @@ The following member functions are declared in the public interface:
 :SNPCD cd_idx='c'.WCQueue();
 :eSNPL.
 :SMTICS.
-The &fn. creates an empty &obj.:PERIOD.
+The &fn. creates an empty &obj.
+.dot
 The
 .MONO FType
 storage class constructor performs the initialization.
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+.dot
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -103,7 +105,8 @@ The &fn. creates an initialized &obj.:PERIOD.
 :SNPFLF          .         void (*deallocator)( void *, size_t ) );
 :eSNPL.
 :SMTICS.
-The &fn. creates an empty &obj.:PERIOD.
+The &fn. creates an empty &obj.
+.dot
 If
 .MONO FType
 is either the

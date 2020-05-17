@@ -75,11 +75,6 @@
 .   .do end
 .dm getid end
 
-.dm @period begin
-.ct .li .
-.dm @period end
-.gt period add @period cont
-
 .gt cont add cont
 
 .dm keyword begin
@@ -568,7 +563,7 @@
 .   .do end
 Only valid in
 .keyword EX mode
-:period.
+.dot
 .if &e'&dohelp eq 0 .do begin
 .   :eDL.
 .   .do end
@@ -628,7 +623,7 @@ Also see the
 :SF font=2.command line:eSF.
 command
 .keyref &*.
-:period.
+.dot
 .dm seecmd end
 
 .* Used in non-hlp portions

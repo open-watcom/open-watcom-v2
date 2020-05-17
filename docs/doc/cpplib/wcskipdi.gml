@@ -189,7 +189,8 @@ exception is thrown if the
 exception is enabled.
 
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+.dot
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='omtyp' ocls='WCExcept'.out_of_memory
@@ -224,7 +225,8 @@ required to allocate and free, the following macro may be used:
 .br
 .MONO WC&lpref.SkipListDictItemSize( Key, Value, num_of_pointers )
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+.dot
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='omtyp' ocls='WCExcept'.out_of_memory
@@ -238,7 +240,8 @@ The &fn. creates an initialized &obj.:PERIOD.
 :SNPCD cd_idx='c'.WC&lpref.SkipListDict( const WC&lpref.SkipListDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the copy constructor for the &cls.:PERIOD.
+The &fn. is the copy constructor for the &cls.
+.dot
 The new skip list is created with the same probability and maximum pointers,
 all values or pointers stored in the list, and the exception trap states.
 If there is not enough memory to copy all of
@@ -263,7 +266,8 @@ The &fn. creates an &obj. which is a copy of the passed dictionary.
 :SNPCD cd_idx='d'.virtual ~~WC&lpref.SkipListDict();
 :eSNPL.
 :SMTICS.
-The &fn. is the destructor for the &cls.:PERIOD.
+The &fn. is the destructor for the &cls.
+.dot
 If the number of dictionary elements is not zero and the
 .MONO not_empty
 .ix 'not_empty' 'exception'
@@ -278,7 +282,8 @@ member function is explicitly called before the destructor is called.
 .do end
 :INCLUDE file='_DTOR'.
 :RSLTS.
-The &fn. destroys an &obj.:PERIOD.
+The &fn. destroys an &obj.
+.dot
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -637,7 +642,8 @@ The result of the operator may not be assigned to.
 :SNPF index='operator ='   .WC&lpref.SkipListDict & operator =( const WC&lpref.SkipListDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+.dot
 The left hand side dictionary is first cleared using the
 .MONO clear
 member function, and then the right hand side dictionary is copied.
@@ -665,7 +671,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.SkipListDict & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two dictionary objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

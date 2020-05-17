@@ -13,7 +13,8 @@ for the &cin., &cout., &cerr. and &clog. predefined objects.
 :INCLUDE file='std_desc'.
 :P.
 C++ programmers who wish to use the standard input/output streams without
-deriving new objects do not need to explicitly create or use a &obj.:PERIOD.
+deriving new objects do not need to explicitly create or use a &obj.
+.dot
 :HDG.Public Member Functions
 The following member functions are declared in the public interface:
 :MFNL.
@@ -59,7 +60,8 @@ class call the &fn. for the derived class when the &putarea. is full.
 This form of the &fn. creates a &obj. that is initialized but not yet connected
 to a file.
 :RSLTS.
-This form of the &fn. creates a &obj.:PERIOD.
+This form of the &fn. creates a &obj.
+.dot
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -99,7 +101,8 @@ library FILE stream.
 :SMTICS.
 The &fn. does not do anything explicit. The
 :MONO.streambuf
-destructor is called for that portion of the &obj.:PERIOD.
+destructor is called for that portion of the &obj.
+.dot
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.

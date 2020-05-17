@@ -115,7 +115,7 @@ in their definition.
 :DT.'<?>
 :DD.Go to the mark
 .param ?
-:period.
+.dot
 
 :DT.<n>+
 :DD.Go to the start of the next line.
@@ -197,7 +197,7 @@ current line.
 
 :DT.O
 :DD.Open a blank line above the current line, and enter &tinsmode
-:period.
+.dot
 
 :DT.<"?>P
 :DD.Insert a copy buffer before the current position.
@@ -205,7 +205,7 @@ current line.
 :DT.Q
 :DD.Enter
 .keyword EX mode
-:period.
+.dot
 
 :DT.R
 :DD.Enter text overstrike mode.
@@ -243,7 +243,7 @@ saves the current file (if it has been modified) and quits the file.
 :DT.`<?>
 :DD.Go to the line and column with the mark
 .param <?>
-:period.
+.dot
 
 :DT.a
 :DD.Start inserting text at the character after the current cursor position.
@@ -283,7 +283,7 @@ on the current line.
 :DT.m<?>
 :DD.Set the mark
 .param <?>
-:period.
+.dot
 
 :DT.n
 :DD.Repeat the last find command.

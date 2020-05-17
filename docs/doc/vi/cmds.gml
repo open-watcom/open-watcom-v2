@@ -64,10 +64,10 @@ Commands may be up to 512 bytes in length; the command window scrolls.
 .np
 There are a special set of commands that may be entered at the command
 line for controlling the various windows and menus of &edvi.
-:period.
+.dot
 These commands are discussed in the next chapter,
 :HDREF refid=winmenu.
-:period.
+.dot
 .np
 The &cmdline has a command history associated with it; the size
 of this command history is controlled using the
@@ -138,7 +138,7 @@ may be used.
 :DD.Indicates the first line following the current line that has
 the regular expression
 .var regexp
-:period.
+.dot
 If
 .param regexp
 is not specified, then the last regular expression search is used.
@@ -147,7 +147,7 @@ is not specified, then the last regular expression search is used.
 :DD.Indicates the first line previous to the current line that has
 the regular expression
 .param regexp
-:period.
+.dot
 If
 .param regexp
 is not specified, then the last regular expression search is used.
@@ -157,7 +157,7 @@ is not specified, then the last regular expression search is used.
 .np
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
-:period.
+.dot
 .np
 If a line address is not specified, then the current line is assumed.
 If + or - are the first character, then they are assumed to operate
@@ -319,10 +319,10 @@ Temporarily leaves &edvi. and enters an operating system command shell.
 .syntx * ABbrev &lt.short&gt. &lt.long&gt.
 .begdescr
 Create an abbreviation of &parm1 for &parm2.
-:period.
+.dot
 Whenever &parm1 is typed
 as a word during &tinsmode, it is expanded to &parm2.
-:period.
+.dot
 .keyref unabbrev
 is used to remove the abbreviation.
 .enddescr
@@ -344,7 +344,7 @@ is substituted.
 .syntx * ALias &lt.alias&gt. &lt.data&gt.
 .begdescr
 Creates an &cmdline alias of &parm1 for &parm2.
-:period.
+.dot
 Whenever &parm1
 is typed on the &cmdline, the full command &parm2 is substituted.
 .keyref unalias
@@ -368,7 +368,7 @@ is executed.
 .syntx &lt.line_num&gt. Append
 .begdescr
 Appends source lines after line &range.
-:period.
+.dot
 Append is terminated when a line
 with nothing but a dot ('.') is entered.
 .exmode
@@ -399,7 +399,7 @@ border of each visible).
 .syntx * CD &lt.dir&gt.
 .begdescr
 Changes current working directory to &parm1.
-:period.
+.dot
 If &parm1 is not specified,
 then the current directory is displayed in the message window.  &parm1
 may be specified with drive and path.
@@ -432,7 +432,7 @@ nothing on it but a dot ('.') is entered.
 .syntx * COMPile '"-a"' '"-A"' &lt.script&gt. &lt.result&gt.
 .begdescr
 Compiles the editor script &parm3
-:period.
+.dot
 .np
 If
 .param -a
@@ -440,7 +440,7 @@ is specified,
 all local variables are translated at compile time (rather
 than at run time) - this is useful for the
 .keyword configuration script
-:period.
+.dot
 .np
 If
 .param -A
@@ -456,7 +456,7 @@ For information on editor
 :cont.,
 see the chapter
 :HDREF refid='scripts'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl comp -a ed.cfg
@@ -477,7 +477,7 @@ Compiles the script
 :fname.test.vi:efname.
 and generates the compiled script file
 :fname.test.out:efname.
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -499,7 +499,7 @@ a quoted string are not replaced with a tab.
 .syntx &lt.line_range&gt. COpy &lt.line_number&gt.
 .begdescr
 Copies the specified range of lines &range after the line &parm1.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl % copy $
@@ -524,15 +524,15 @@ Display the current time and date in the message window.
 .syntx &lt.line_range&gt. Delete &lt.buffer&gt.
 .begdescr
 Deletes the specified line range &range.
-:period.
+.dot
 .np
 If &parm1 is not specified,
 the text is deleted into the active &copybuffer
-:period.
+.dot
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is deleted into
 that &copybuffer
-:period.
+.dot
 .np
 The
 .keyref put
@@ -541,12 +541,12 @@ command may be used to place contents of a &copybuffer into the file.
 .xmplsect begin
 .begxmpl % d
 Deletes all lines into the active &copybuffer
-:period.
+.dot
 .endxmpl
 .begxmpl 1,10 d a
 Deletes lines 1 to 10 into the named &copybuffer
 .param a
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -602,7 +602,7 @@ will appear on line 2 of the message window.
 .syntx * Edit '"!"' &lt.files&gt.
 .begdescr
 Edits the specified files &parm2.
-:period.
+.dot
 &parm2 may be a single file or a list of files.
 .np
 Each file name may contain file regular expressions, see the section
@@ -667,7 +667,7 @@ Gives a file selection display:
 .syntx * EGRep &lt.regexp&gt. &lt.files&gt.
 .begdescr
 Searches the file list &parm2 for the regular expression &parm1.
-:period.
+.dot
 .np
 &parm1 may be surrounded by double quotes (") or a forward slash (/)
 if it contains any spaces.
@@ -681,15 +681,15 @@ for more information.
 .np
 If &parm2 is not specified, it defaults to the setting of
 .keyref grepdefault
-:period.
+.dot
 If a directory is specified for &parm2, then the files in that directory
 are searched, based on the setting of
 .keyref grepdefault
-:period.
+.dot
 .np
 When all matches are found, a selection window is presented with
 all the files that contained &parm1.
-:period.
+.dot
 .np
 If you are not using regular
 expressions, the
@@ -697,28 +697,28 @@ expressions, the
 command is much faster.
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl egrep ((if)|(while)) *.c
 Searches all files in the current directory ending in the extension .c
 for the regular expression
 .param ((if)|(while))
-:period.
+.dot
 .endxmpl
 .begxmpl egrep [a-z]a+
 Searches all files specified by
 .keyref grepdefault
 for the regular expression
 .param [a-z]a+
-:period.
+.dot
 .endxmpl
 .begxmpl egrep [a-z]a+ ..\c
 Searches all files in the directory ..\c specified by
 .keyref grepdefault
 for the regular expression
 .param [a-z]a+
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -733,7 +733,7 @@ Evalutes a given mathematical expression, and displays the result on
 line 1 of the message window.  For a full explanation of the rules
 for formulating the expression &parm1, see the chapter
 :HDREF refid='scripts'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl eval 5+7*3
@@ -758,7 +758,7 @@ and displays the result (27) in the message window.
 .syntx * EXECUTE &lt.str&gt.
 .begdescr
 Execute the string &parm1.
-:period.
+.dot
 This causes the editor to behave as if
 the string &parm1 was typed at the keyboard.
 .np
@@ -811,7 +811,7 @@ Replaces all tabs in the current edit buffer with spaces.
 .syntx * FGRep '"-c"' '"-u"' &lt.string&gt. &lt.files&gt.
 .begdescr
 Searches the file list &parm4 for the string &parm3.
-:period.
+.dot
 .np
 The search is by default case insensitive, unless
 .param -c
@@ -834,20 +834,20 @@ for more information.
 .np
 If &parm4 is not specified, it defaults to the setting of
 .keyref grepdefault
-:period.
+.dot
 .np
 While searching for the item, &edvi. displays a window that shows
 all files being searched.
 When all matches are found, a selection window is presented with
 all the files that contained &parm4.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl fgrep window *.c
 Searches all files in the current directory ending in the extension .c
 for the string
 .param window
-:period.
+.dot
 This will produce out similar to the following:
 .figure *depth='2.47' *scale='59' *file='vi023' Grep Result display
 .endxmpl
@@ -922,7 +922,7 @@ at all other corners of the string.
 .syntx * GENCONFIG &lt.filename&gt.
 .begdescr
 Writes the current editor configuration out to the file &parm1.
-:period.
+.dot
 If &parm1 is not specified, then the file name "ed.cfg" is assumed.
 .enddescr
 .endfunc
@@ -941,7 +941,7 @@ for more information.
 If &parm1 is specified, then the command &parm3 is executed on every line
 that does NOT match the regular expression
 .param &lt.regexp&gt.
-:period.
+.dot
 .np
 If &range is not specified, then the
 .keyword global
@@ -951,13 +951,13 @@ command operates on the entire line range of the current edit buffer.
 .begxmpl g/printf/d
 Deletes all lines in the current edit buffer that have the word
 .param printf
-:period.
+.dot
 .endxmpl
 .begxmpl g!/[a-c]123/ d
 Deletes all lines in the current edit buffer that DO not match the
 regular expression
 .param [a-c]123
-:period.
+.dot
 .endxmpl
 .begxmpl g/(abc)*/ execute Iabc\e
 For every line that matches the regular expression
@@ -985,7 +985,7 @@ topics are:
 
 :DT.KEYS
 :DD.What different keystrokes do in &cmdmode
-:period.
+.dot
 
 :DT.REGularexpressions
 :DD.How to use regular expressions.
@@ -1019,7 +1019,7 @@ Gives list of help topics.
 .syntx &lt.line_number&gt. Insert
 .begdescr
 Inserts text after a the specified line number &range.
-:period.
+.dot
 Insert is terminated when a line with nothing but a '.' is entered.
 .exmode
 .enddescr
@@ -1109,12 +1109,12 @@ since the data structures for the script do not have to be built
 every time the script is invoked.  This is especially important
 for a
 .keyword hook script
-:period.
+.dot
 .np
 For information on editor scripts,
 see the chapter
 :HDREF refid='scripts'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl load rdme._vi
@@ -1134,12 +1134,12 @@ and makes it resident.
 .begdescr
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in &cmdmode
-:period.
+.dot
 .np
 If &parm1 is specified,
 then the string of keys &parm3 is executed whenever &parm2 is pressed
 in &tinsmode
-:period.
+.dot
 .np
 When a mapped key is pressed, it acts is if the characters in &parm3
 are being typed at the keyboard.
@@ -1158,7 +1158,7 @@ There are a number of pre-defined keys
 symbols that are recognized when specifying which key is being
 mapped/unmapped. These are described in the Appendix
 :HDREF refid='symkey'.
-:period.
+.dot
 .np
 If you need to use one or more special keys (e.g. ENTER, F1, etc) in &parm3,
 then you may enter:
@@ -1176,17 +1176,17 @@ Whenever K is pressed in &cmdmode, the
 command is executed. The command window will not be displayed,
 because of the
 .param \x
-:period.
+.dot
 .endxmpl
 .begxmpl map CTRL_T \x:\hda\n
 Whenever CTRL_T is pressed in &cmdmode,
 the current date is displayed. The command window will not be
 displayed, because of the
 .param \x
-:period.
+.dot
 The command will not be added to the command history, because of the
 .param \h
-:period.
+.dot
 .endxmpl
 .begxmpl map CTRL_W \x:fgrep \&lt.CTRL_W&gt.\n
 Whenever CTRL_W is pressed in &cmdmode, an fgrep command, searching for
@@ -1196,7 +1196,7 @@ keeps the command window from opening.
 .param \&lt.CTRL_W&gt.
 simulates CTRL_W being pressed, so the current word is inserted into
 the &cmdline
-:period.
+.dot
 .endxmpl
 .begxmpl map! CTRL_W \edwi
 Whenever CTRL_W is pressed in &tinsmode, &tinsmode
@@ -1204,7 +1204,7 @@ is exited (\e simulates the ESC key being pressed), the current word is
 deleted, and &tinsmode is re-entered.  This has the effect of
 deleting the current word in &tinsmode
 and appearing to remain in &tinsmode
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1219,7 +1219,7 @@ and appearing to remain in &tinsmode
 .begdescr
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in &cmdmode
-:period.
+.dot
 .np
 This works the same as the
 .keyref map
@@ -1241,12 +1241,12 @@ behaviour.
 Sets the
 .keyword text mark
 &parm1 on the line &range.
-:period.
+.dot
 The mark name is a single letter from
 .param a
 to
 .param z
-:period.
+.dot
 This mark may then be referred to on the &cmdline or in &cmdmode
 by using a front quote (') before the mark name, e.g.:
 .millust begin
@@ -1297,7 +1297,7 @@ have their meaning, and do not need to be escaped).
 .np
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl match /# *if/# *endif/
@@ -1356,7 +1356,7 @@ Minimizes the current edit buffer window.
 .begdescr
 Deletes the specified range of lines &range and places them
 after the line &parm1.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl 1,10 move $
@@ -1479,13 +1479,13 @@ command does an implicit push.
 Puts (pastes) the &copybuffer
 &parm2 ('1'-'9', or 'a'-'z') after the
 line &range.
-:period.
+.dot
 .np
 If &parm2 is not specified, the active &copybuffer is assumed.
 .np
 If &parm1 is specified, then the lines are put before the
 line &range.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl put
@@ -1557,7 +1557,7 @@ If files have been modified, the following prompt is displayed:
 .begdescr
 Reads the text from file &parm1 into the current edit buffer.
 The lines are placed after line specified by &range.
-:period.
+.dot
 If &range is not specified, the current line is assumed.
 .np
 Line 0 may be specified as &range in order to read a file
@@ -1653,7 +1653,7 @@ cursor keys are used as follows:
 .begdescr
 Certain variables within &edvi. may be changed after &edvi. is
 executing.  &parm2 is assigned to &parm1.
-:period.
+.dot
 .np
 If &parm1 and
 &parm2 are not specified, the a window containing a list
@@ -1686,7 +1686,7 @@ Note that the '=' operator is optional.
 For information on all the different settable options,
 see the chapter
 :HDREF refid='edset'.
-:period.
+.dot
 .enddescr
 .endfunc
 
@@ -1694,7 +1694,7 @@ see the chapter
 .syntx * SETCOLOR &lt.c&gt. &lt.r&gt. &lt.g&gt. &lt.b&gt.
 .begdescr
 Set the color number &parm1 to have the RGB value &parm2, &parm3, &parm4.
-:period.
+.dot
 &parm1 may have a value of 0 to 15.
 &parm1, &parm2, and &parm3 may have values from 0 to 63.
 .np
@@ -1748,7 +1748,7 @@ upper left-hand corner at (0,0) and lower right-hand corner at (10,10).
 .syntx * SOurce &lt.script&gt. &lt.p1&gt. &lt.p2&gt. ... &lt.pn&gt.
 .begdescr
 Execute &edvi. source script file &parm1.
-:period.
+.dot
 Optional parameters &parm2 to
 &parm5 may be specified, these are passed to the specified script.
 .np
@@ -1758,7 +1758,7 @@ file being edited is run as a script.
 For information on editor scripts,
 see the chapter
 :HDREF refid='scripts'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl source foo.vi abc
@@ -1767,11 +1767,11 @@ Executes the script
 :cont.,
 passing it the parm
 .param abc
-:period.
+.dot
 .endxmpl
 .begxmpl source .
 Executes the current edit buffer as a script
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1788,7 +1788,7 @@ replace each occurrence of regular expression
 .param &lt.regexp&gt.
 with the replacement expression
 .param &lt.replexp&gt.
-:period.
+.dot
 .np
 Only the first occurrence on each line is replaced, unless
 .param &lt.g&gt.
@@ -1815,7 +1815,7 @@ Changes all occurrences of the regular expression
 .param (([a-z]bc)*)
 to the substitution expression
 .param Abc\2
-:period.
+.dot
 The changes are only applied on lines 1 to the current line of the
 current edit buffer.
 .endxmpl
@@ -1830,7 +1830,7 @@ from the line containing mark
 .param a
 to the line containing mark
 .param b
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1842,14 +1842,14 @@ to the line containing mark
 .syntx * TAG &lt.tagname&gt.
 .begdescr
 Searches for the tag &parm1.
-:period.
+.dot
 Tags are kept in a special file,
 which must be located somewhere in your path.
 This file is controlled with the
 .keyref tagfilename
 setting; the default for this setting is
 .param tags
-:period.
+.dot
 The tags file contains a collection of procedure names and typedefs,
 along with the file in which they are located and a search command/line
 number with which to exactly locate the tag.
@@ -1922,7 +1922,7 @@ Tile windows according to default tile grid.
 .syntx * UNABbrev &lt.abbrev&gt.
 .begdescr
 Removes the abbreviation &parm1.
-:period.
+.dot
 See the
 .keyref abbrev
 command for how to set an abbreviation.
@@ -1931,7 +1931,7 @@ command for how to set an abbreviation.
 .begxmpl unabbrev wh
 Remove the abbreviation
 .param wh
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1943,7 +1943,7 @@ Remove the abbreviation
 .syntx * UNALias &lt.alias&gt.
 .begdescr
 Removes the &cmdline alias &parm1.
-:period.
+.dot
 See the
 .keyref alias
 command for how to set a &cmdline alias.
@@ -1952,7 +1952,7 @@ command for how to set a &cmdline alias.
 .begxmpl unalias ai
 Remove the &cmdline alias
 .param ai
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1982,30 +1982,30 @@ last undo.
 .syntx * UNMAP '"!"' &lt.key&gt.
 .begdescr
 Removes the mapping of the key &parm2 for &cmdmode
-:period.
+.dot
 If &parm1 is specified, then the key mapping is removed for &tinsmode
-:period.
+.dot
 See the
 .keyref map
 command for details on mapping keys.
 .np
 There are a number of pre-defined
 symbols that are recognized for &parm1.
-:period.
+.dot
 These are described in the Appendix
 :HDREF refid='symkey'.
-:period.
+.dot
 .enddescr
 .xmplsect begin
 .begxmpl unmap CTRL_W
 Removes the mapping of CTRL_W for &cmdmode
-:period.
+.dot
 Pressing CTRL_W in command
 mode will now do the default action.
 .endxmpl
 .begxmpl unmap! F1
 Removes the mapping of F1 for &tinsmode
-:period.
+.dot
 Typing F1 in &tinsmode will now do the default action.
 .endxmpl
 .xmplsect end
@@ -2053,7 +2053,7 @@ in view-only mode.
 Causes &edvi. to re-enter visual mode (full screen editing mode)
 if &edvi. is in
 .keyword EX mode
-:period.
+.dot
 If the filename &parm1 is specified,
 this functions just like the
 .keyref edit
@@ -2071,7 +2071,7 @@ test.c
 Return to full screen editing mode (if in
 .keyword EX mode
 :cont.)
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -2085,7 +2085,7 @@ Return to full screen editing mode (if in
 .syntx &lt.line_range&gt. Write '"!"' &lt.file_name&gt.
 .begdescr
 Writes the specified range of lines &range to the file &parm2.
-:period.
+.dot
 .np
 If no line range is specified, then all lines are written.
 .np
@@ -2133,15 +2133,15 @@ Writes current file, and exits.
 .syntx &lt.line_range&gt. Yank &lt.buffer&gt.
 .begdescr
 Yank (make a copy of) the specified line range &range.
-:period.
+.dot
 .np
 If &parm1 is not specified, the text is yanked (copied) into the active
 &copybuffer
-:period.
+.dot
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is yanked into
 that &copybuffer
-:period.
+.dot
 .np
 The
 .keyref put
@@ -2150,13 +2150,13 @@ command may be used to place the contents of a &copybuffer into the file.
 .xmplsect begin
 .begxmpl % y
 Yanks (copies) all lines into the active &copybuffer
-:period.
+.dot
 .endxmpl
 .begxmpl .,$ y z
 Yanks the lines from the current line to the last line in the file
 into the &copybuffer
 .param z
-:period.
+.dot
 .endxmpl
 .xmplsect end
 .alsosee begin

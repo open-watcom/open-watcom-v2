@@ -95,7 +95,8 @@ The following member functions are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The &fn. computes the number of characters that have been written to the
-&obj.:PERIOD.
+&obj.
+.dot
 This value is particularly useful if the &obj. does not contain a C
 string (terminated by a null character), so that the number of
 characters cannot be determined with the C library
@@ -105,7 +106,8 @@ If the &obj. was created by appending to a C string in a static buffer,
 the length of the original string is included in the character
 count.
 :RSLTS.
-The &fn. returns the number of characters contained in the &obj.:PERIOD.
+The &fn. returns the number of characters contained in the &obj.
+.dot
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.str

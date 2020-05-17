@@ -266,7 +266,8 @@ hash function.
 :SNPCD cd_idx='c'.WC&lpref.HashDict( const WC&lpref.HashDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the copy constructor for the &cls.:PERIOD.
+The &fn. is the copy constructor for the &cls.
+.dot
 The new dictionary is created with the same number of buckets, hash function,
 all values or pointers stored in the dictionary, and the exception trap states.
 If the hash dictionary object can be created, but an allocation failure
@@ -295,7 +296,8 @@ The &fn. creates an &obj. which is a copy of the passed dictionary.
 :SNPCD cd_idx='d'.virtual ~~WC&lpref.HashDict();
 :eSNPL.
 :SMTICS.
-The &fn. is the destructor for the &cls.:PERIOD.
+The &fn. is the destructor for the &cls.
+.dot
 If the number of dictionary elements is not zero and the
 .MONO not_empty
 .ix 'not_empty' 'exception'
@@ -310,7 +312,8 @@ member function is explicitly called before the destructor is called.
 .do end
 :INCLUDE file='_DTOR'.
 :RSLTS.
-The &fn. destroys an &obj.:PERIOD.
+The &fn. destroys an &obj.
+.dot
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -355,7 +358,8 @@ a user defined hash function.
 :eSNPL.
 :SMTICS.
 The &fn. is used to find the number of buckets contained in
-the &obj.:PERIOD.
+the &obj.
+.dot
 :RSLTS.
 The &fn. returns the number of buckets in the dictionary.
 :SALSO.
@@ -738,7 +742,8 @@ The result of the operator may not be assigned to.
 :SNPF index='operator ='   .WC&lpref.HashDict & operator =( const WC&lpref.HashDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+.dot
 The left hand side dictionary is first cleared using the
 .MONO clear
 member function, and then the right hand side dictionary is copied.
@@ -771,7 +776,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.HashDict & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+.dot
 Two dictionary objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.
