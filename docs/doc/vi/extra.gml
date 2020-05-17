@@ -80,10 +80,7 @@
 .dm @period end
 .gt period add @period cont
 
-.dm @cont begin
-.ct &*.
-.dm @cont end
-.gt cont add @cont
+.gt cont add cont
 
 .dm keyword begin
 :cmt. .ix '&*'

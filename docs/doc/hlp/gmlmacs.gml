@@ -674,6 +674,10 @@ from the pop-up menu
 .do end
 .dm dot end
 
+.dm cont begin
+.ct &*
+.dm cont end
+
 .dm cmddef begin
 .section &*
 .ix 'command' '&*'

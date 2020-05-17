@@ -89,9 +89,6 @@
 .dm mno end
 
 .gt cont add cont
-.dm cont begin
-.ct &*.
-.dm cont end
 
 .gt period add @period cont
 .dm @period begin
