@@ -37,6 +37,7 @@
 
 
 #define IS_ASM(p)   (p[0] == ';' && p[1] == '*')
+#define IS_GML(p)   (p[0] == '.' && p[1] == '*')
 
 static char     cpyright[] = ";* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
 static size_t   line = 1;
@@ -58,13 +59,17 @@ static void output_buffer( void )
         if( status == 1 ) {
             if( strstr( buffer, "-2002 Sybase, Inc. All Rights Reserved." ) != NULL ) {
                 if( IS_ASM( buffer ) ) {
+                    cpyright[0] = ';';
+                    fputs( cpyright, fo );
+                } else if( IS_GML( buffer ) ) {
+                    cpyright[0] = '.';
                     fputs( cpyright, fo );
                 } else {
                     fputs( cpyright + 1, fo );
                 }
                 status = 2;
             } else if( strstr( buffer, cpyright + 26 ) != NULL ) {
-                if( IS_ASM( buffer ) ) {
+                if( IS_ASM( buffer ) || IS_GML( buffer ) ) {
                     memcpy( buffer + 22, cpyright + 22, 4 );
                 } else {
                     memcpy( buffer + 21, cpyright + 22, 4 );
