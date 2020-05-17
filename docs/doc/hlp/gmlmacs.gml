@@ -666,7 +666,12 @@ from the pop-up menu
 .dm popup end
 
 .dm dot begin
-.ct .li .
+.if '&*' ne '' .do begin
+.ct ~. &*
+.do end
+.el .do begin
+.ct ~.
+.do end
 .dm dot end
 
 .dm cmddef begin

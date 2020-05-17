@@ -2,15 +2,6 @@
 :set symbol="XMPset" value="of".
 :set symbol="grpsfx" value="...".
 .*
-.dm dot begin
-.if '&*' ne '' .do begin
-.ct ~. &*
-.do end
-.el .do begin
-.ct ~.
-.do end
-.dm dot end
-.*
 .dm comma begin
 .if '&*' ne '' .do begin
 .ct , &*
