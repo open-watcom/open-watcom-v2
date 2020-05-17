@@ -171,7 +171,7 @@ _WCRTLINK int _nheapshrink( void )
                 // only shrink if we can shave off at MINIMAL_LEN
               && last_free->len >= MINIMAL_LEN
                 /* make sure there hasn't been an external change in _curbrk */
-              && sbrk( 0 ) == (void_nptr)BLK2CPTR( end_tag ) ) {
+              && sbrk( 0 ) == (void_nptr)BLK2CSTG( end_tag ) ) {
                 /* calculate adjustment factor */
                 if( heap->len - last_free->len > sizeof( heapblk ) ) {
                     // this miniheapblk is still being used
@@ -199,7 +199,7 @@ _WCRTLINK int _nheapshrink( void )
                     }
 #endif
                     SET_BLK_END( last_free );
-                    new_brk = (unsigned)BLK2CPTR( last_free );
+                    new_brk = (unsigned)BLK2CSTG( last_free );
                 } else {
                     // this miniheapblk is not used, we can remove it
                     if( heap->prev.nptr != NULL ) { // Not the first miniheapblk

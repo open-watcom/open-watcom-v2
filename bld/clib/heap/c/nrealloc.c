@@ -123,10 +123,10 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
         if( _IsRational() ) {
             freelist_nptr  flp, newflp;
 
-            flp = (freelist_nptr)CPTR2BLK( cstg_old );
+            flp = (freelist_nptr)CSTG2BLK( cstg_old );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
-                return( (void_nptr)BLK2CPTR( newflp ) );
+                return( (void_nptr)BLK2CSTG( newflp ) );
             }
         }
 #endif

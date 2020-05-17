@@ -57,5 +57,5 @@ void _WCFAR __HeapInit( heapblk_nptr heap, unsigned int amount )
     SET_BLK_INUSE( FIRST_FRL( heap ) );
     heap->numalloc++;
     heap->largest_blk = /*0x....ffff*/ ~0U;   /* set to largest value to be safe */
-    _nfree( (void_nptr)BLK2CPTR( FIRST_FRL( heap ) ) );
+    _nfree( (void_nptr)BLK2CSTG( FIRST_FRL( heap ) ) );
 }

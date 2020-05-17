@@ -165,7 +165,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
                 SET_BLK_SIZE_INUSE( frl2, size );
                 heap->numalloc++;
                 heap->largest_blk = 0;
-                _nfree( (void_nptr)BLK2CPTR( frl2 ) );
+                _nfree( (void_nptr)BLK2CSTG( frl2 ) );
             } else {
                 SET_BLK_INUSE( frl_new );   // set allocated bit
             }
@@ -186,7 +186,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
         return( 0 );
     }
     frl_last = __nheapbeg->freehead.prev.nptr; /* point to last free block */
-    brk_value = BLK2CPTR( NEXT_BLK( frl_last ) );
+    brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
@@ -395,7 +395,7 @@ static int __CreateNewNHeap( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = 0;
-    _nfree( (void_nptr)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CSTG( frl ) );
     return( 1 );
 }
 #endif
@@ -452,18 +452,18 @@ int __ExpandDGROUP( unsigned amount )
     for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
         if( heap->next.nptr == NULL )
             break;
-        if( (unsigned)heap <= brk_value && BLK2CPTR( NEXT_BLK( heap ) ) >= brk_value ) {
+        if( (unsigned)heap <= brk_value && BLK2CSTG( NEXT_BLK( heap ) ) >= brk_value ) {
             break;
         }
     }
-    if( ( heap != NULL ) && CPTR2BLK( brk_value ) == NEXT_BLK( heap ) ) {
+    if( ( heap != NULL ) && CSTG2BLK( brk_value ) == NEXT_BLK( heap ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         amount += TAG_SIZE;
         /* adjust current entry in heap list */
         heap->len += amount;
         /* fix up end of heap links */
-        frl = (freelist_nptr)CPTR2BLK( brk_value );
+        frl = (freelist_nptr)CSTG2BLK( brk_value );
         frl->len = amount;
         SET_BLK_END( (freelist_nptr)NEXT_BLK( frl ) );
     } else {
@@ -482,7 +482,7 @@ int __ExpandDGROUP( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = /*0x....ffff*/ ~0U;     /* set to largest value to be safe */
-    _nfree( (void_nptr)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CSTG( frl ) );
     return( 1 );
 #endif
 }

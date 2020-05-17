@@ -133,7 +133,7 @@ void_bptr __MemAllocator( unsigned req_size, heap_bptr heap )
                 }
                 SET_BLK_INUSE( pcur );                  // mark as allocated
                                                         // get pointer to user area
-                cstg = (void_bptr)BLK2CPTR( pcur );
+                cstg = (void_bptr)BLK2CSTG( pcur );
             }
         }
     }
@@ -162,7 +162,7 @@ void __MemFree( void_bptr cstg, heap_bptr heap )
     if( cstg != NULL ) {                                // quit if pointer is zero
         FREELIST   pfree;
 
-        pfree = (FREELIST)CPTR2BLK( cstg );
+        pfree = (FREELIST)CSTG2BLK( cstg );
         if( IS_BLK_INUSE( pfree ) ) {                   // quit if storage is free
             FREELIST   pnext;
             FREELIST   pprev;

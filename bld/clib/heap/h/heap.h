@@ -46,8 +46,8 @@
 
 #define FAR2NEAR(t,f)   ((t __near *)(long)(f))
 
-#define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
-#define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
+#define BLK2CSTG(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
+#define CSTG2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
 #if defined( __DOS_EXT__ )
 #define DPMI2BLK(h)     ((heapblk_nptr)(h + 1))
