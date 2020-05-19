@@ -88,8 +88,6 @@
 :SF font=4.&*:eSF.
 .dm mno end
 
-.gt cont add cont
-
 .gt blankline add blankline
 .dm blankline begin
 .sp

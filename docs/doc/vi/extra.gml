@@ -75,8 +75,6 @@
 .   .do end
 .dm getid end
 
-.gt cont add cont
-
 .dm keyword begin
 :cmt. .ix '&*'
 :SF font=2.&*:eSF.

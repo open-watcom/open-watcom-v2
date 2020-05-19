@@ -739,6 +739,7 @@ from the pop-up menu
 .dm cont begin
 .ct &*
 .dm cont end
+.gt cont add cont
 
 .dm cmddef begin
 .section &*

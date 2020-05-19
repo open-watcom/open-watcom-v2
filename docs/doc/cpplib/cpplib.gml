@@ -5,6 +5,7 @@
 :INCLUDE file='wnohelp'.
 .do end
 :INCLUDE file='fmtmacro'.
+:INCLUDE file='gmlmacs'.
 :INCLUDE file='xdefs'.
 :set symbol="lang"       value="C/C++".
 :INCLUDE file='defs'.
