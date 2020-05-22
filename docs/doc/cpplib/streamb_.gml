@@ -32,7 +32,7 @@ so that the proper action can take place.
 :I1.get area
 :I1.put area
 A &obj. can be unbuffered, but most often has one buffer which can be used
-for both input and output operations. The buffer (called the &rsvarea.)
+for both input and output operations. The buffer (called the &resvarea.)
 is divided into two areas, called the &getarea. and the &putarea.
 .dot
 For a &obj. being used exclusively to write, the &getarea. is empty or not
@@ -47,7 +47,7 @@ derived from the &cls.
 :INCLUDE file='std_desc'.
 :INCLUDE file='ssb_desc'.
 :P.
-The &rsvarea. is marked by two pointer values. The
+The &resvarea. is marked by two pointer values. The
 :MONO.base
 member function returns the pointer to the start of the buffer. The
 :MONO.ebuf
@@ -56,7 +56,7 @@ member function returns the pointer to the end of the buffer
 :MONO.setb
 protected member function is used to set both pointers.
 :P.
-Within the &rsvarea., the &getarea. is marked by three pointer values. The
+Within the &resvarea., the &getarea. is marked by three pointer values. The
 :MONO.eback
 member function returns a pointer to the start of the &getarea.
 .dot
@@ -79,7 +79,7 @@ member function is used to set all three pointer values. If any of these
 pointers are &null., there is no &getarea.
 .dot
 :P.
-Also within the &rsvarea., the &putarea. is marked by three pointer values.
+Also within the &resvarea., the &putarea. is marked by three pointer values.
 The
 :MONO.pbase
 member function returns a pointer to the start of the &putarea.
@@ -185,14 +185,14 @@ The following member functions are declared in the public interface:
 The &fn. works in tandem with the
 :MONO.doallocate
 protected virtual member function to manage allocation of the &obj.
-&rsvarea.
+&resvarea.
 .dot
 Classes derived from the &cls. should call the &fn., rather than the
 :MONO.doallocate
 protected virtual member function. The &fn. determines whether or not the &obj.
-is allowed to allocate a buffer for use as the &rsvarea.
+is allowed to allocate a buffer for use as the &resvarea.
 .dot
-If a &rsvarea.
+If a &resvarea.
 already exists or if the &obj. unbuffering state is non-zero, the &fn.
 fails. Otherwise, it calls the
 :MONO.doallocate
@@ -213,12 +213,12 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='base'.char *streambuf::base() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &rsvarea. that the &obj.
+The &fn. returns a pointer to the start of the &resvarea. that the &obj.
 is using.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the start of the &rsvarea. that the &obj.
-is using. If the &obj. currently does not have a &rsvarea., &null. is
+The &fn. returns a pointer to the start of the &resvarea. that the &obj.
+is using. If the &obj. currently does not have a &resvarea., &null. is
 returned.
 :SALSO.
 :SAL typ='mfun'.blen
@@ -234,11 +234,11 @@ returned.
 :SNPF index='blen'.int streambuf::blen() const;
 :eSNPL.
 :SMTICS.
-The &fn. reports the length of the &rsvarea. that the &obj. is using.
+The &fn. reports the length of the &resvarea. that the &obj. is using.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns the length of the &rsvarea. that the &obj. is using.
-If the &obj. currently does not have a &rsvarea., zero is returned.
+The &fn. returns the length of the &resvarea. that the &obj. is using.
+If the &obj. currently does not have a &resvarea., zero is returned.
 :SALSO.
 :SAL typ='mfun'.base
 :SAL typ='mfun'.ebuf
@@ -361,7 +361,7 @@ If an error occurs, this number may be less than
 :SNPF index='doallocate'.virtual int streambuf::doallocate();
 :eSNPL.
 :SMTICS.
-The &fn. manages allocation of the &obj.'s &rsvarea. in tandem with the
+The &fn. manages allocation of the &obj.'s &resvarea. in tandem with the
 :MONO.allocate
 protected member function.
 :P.
@@ -380,7 +380,7 @@ the following:
 :LI.attempts to allocate an area of memory,
 :LI.calls the
 :MONO.setb
-protected member function to initialize the &rsvarea. pointers,
+protected member function to initialize the &resvarea. pointers,
 :LI.performs any class specific operations required.
 :eOL.
 :DEFIMPL.
@@ -389,7 +389,7 @@ with the
 :MONO.operator~bnew
 intrinsic function. It then calls the
 :MONO.setb
-protected member function to set up the pointers to the &rsvarea.
+protected member function to set up the pointers to the &resvarea.
 .dot
 :RSLTS.
 The &fn. returns &noteof. on success, otherwise &eof. is returned.
@@ -405,7 +405,7 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='eback'.char *streambuf::eback() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &getarea. within the &rsvarea.
+The &fn. returns a pointer to the start of the &getarea. within the &resvarea.
 used by the &obj.
 .dot
 :INCLUDE file='sb_rgp'.
@@ -428,15 +428,15 @@ currently does not have a &getarea., &null. is returned.
 :SNPF index='ebuf'.char *streambuf::ebuf() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &rsvarea. that the &obj.
+The &fn. returns a pointer to the end of the &resvarea. that the &obj.
 is using.  The character pointed at is actually the first character past
-the end of the &rsvarea.
+the end of the &resvarea.
 .dot
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the end of the &rsvarea.
+The &fn. returns a pointer to the end of the &resvarea.
 .dot
-If the &obj. currently does not have a &rsvarea., &null. is returned.
+If the &obj. currently does not have a &resvarea., &null. is returned.
 :SALSO.
 :SAL typ='mfun'.base
 :SAL typ='mfun'.blen
@@ -451,7 +451,7 @@ If the &obj. currently does not have a &rsvarea., &null. is returned.
 :SNPF index='egptr'.char *streambuf::egptr() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &getarea. within the &rsvarea.
+The &fn. returns a pointer to the end of the &getarea. within the &resvarea.
 used by the &obj.
 .dot
 The character pointed at is actually the first character
@@ -477,7 +477,7 @@ currently does not have a &getarea., &null. is returned.
 :SNPF index='epptr'.char *streambuf::epptr() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &putarea. within the &rsvarea.
+The &fn. returns a pointer to the end of the &putarea. within the &resvarea.
 used by the &obj.
 .dot
 The character pointed at is actually the first character
@@ -528,7 +528,7 @@ The &fn. returns nothing.
 :eSNPL.
 :SMTICS.
 The &fn. returns a pointer to the next available character in the &getarea.
-within the &rsvarea. used by the &obj.
+within the &resvarea. used by the &obj.
 .dot
 This pointer is called the &getptr.
 .dot
@@ -598,13 +598,13 @@ The &fn. is used to flush the &putarea. when it is full.
 Classes derived from the &cls. should implement the &fn. so that it performs
 the following:
 :OL.
-:LI.if no &rsvarea. is present and the &obj. is not unbuffered, allocate a
-&rsvarea. using the
+:LI.if no &resvarea. is present and the &obj. is not unbuffered, allocate a
+&resvarea. using the
 :MONO.allocate
-member function and set up the &rsvarea. pointers using the
+member function and set up the &resvarea. pointers using the
 :MONO.setb
 protected member function,
-:LI.flush any other uses of the &rsvarea.,
+:LI.flush any other uses of the &resvarea.,
 :LI.write any characters in the &putarea. to the &obj.'s destination,
 :LI.set up the &putarea. pointers to reflect the characters that were written,
 :LI.return &noteof. on success, otherwise return &eof.
@@ -659,7 +659,7 @@ Otherwise, &eof. is returned.
 :SNPF index='pbase'.char *streambuf::pbase() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &putarea. within the &rsvarea.
+The &fn. returns a pointer to the start of the &putarea. within the &resvarea.
 used by the &obj.
 .dot
 :INCLUDE file='sb_rgp'.
@@ -706,7 +706,7 @@ The &fn. returns nothing.
 :eSNPL.
 :SMTICS.
 The &fn. returns a pointer to the next available space in the &putarea.
-within the &rsvarea. used by the &obj.
+within the &resvarea. used by the &obj.
 .dot
 This pointer is called the &putptr.
 .dot
@@ -841,31 +841,31 @@ is returned.
 :SNPF index='setb'.void streambuf::setb( char *base, char *ebuf, int autodel );
 :eSNPL.
 :SMTICS.
-The &fn. is used to set the pointers to the &rsvarea. that the &obj. is using.
+The &fn. is used to set the pointers to the &resvarea. that the &obj. is using.
 :P.
 The
 :ARG.base
-parameter is a pointer to the start of the &rsvarea. and
+parameter is a pointer to the start of the &resvarea. and
 corresponds to the value that the
 :MONO.base
 member function returns.
 :P.
 The
 :ARG.ebuf
-parameter is a pointer to the end of the &rsvarea. and corresponds to the
+parameter is a pointer to the end of the &resvarea. and corresponds to the
 value that the
 :MONO.ebuf
 member function returns.
 :P.
 The
 :ARG.autodel
-parameter indicates whether or not the &obj. can free the &rsvarea. when the
-&obj. is destroyed or when a new &rsvarea. is set up in a subsequent call to
+parameter indicates whether or not the &obj. can free the &resvarea. when the
+&obj. is destroyed or when a new &resvarea. is set up in a subsequent call to
 the &fn.
 .dot
 If the
 :ARG.autodel
-parameter is non-zero, the &obj. can delete the &rsvarea., using the
+parameter is non-zero, the &obj. can delete the &resvarea., using the
 :MONO.operator~bdelete
 intrinsic function. Otherwise, a zero value indicates that the buffer will be
 deleted elsewhere.
@@ -881,7 +881,7 @@ parameters are &null. or if
 :CONT., the &obj. does not have a buffer and input/output operations
 are unbuffered, unless another buffer is set up.
 :P.
-Note that the &fn. is used to set the &rsvarea. pointers, while the
+Note that the &fn. is used to set the &resvarea. pointers, while the
 :MONO.setbuf
 protected member function is used to offer a buffer to the &obj.
 .dot
@@ -904,11 +904,11 @@ The &fn. is used to offer a buffer specified by the
 :ARG.buf
 and
 :ARG.len
-parameters to the &obj. for use as its &rsvarea.
+parameters to the &obj. for use as its &resvarea.
 .dot
 Note that the &fn. is used to offer a buffer, while the
 :MONO.setb
-protected member function is used to set the &rsvarea. pointers once a
+protected member function is used to set the &resvarea. pointers once a
 buffer has been accepted.
 :PRTCL.
 Classes derived from the &cls. may implement the &fn. if the default behavior
@@ -1251,7 +1251,7 @@ virtual member function is called to fetch more characters and then the
 :eSNPL.
 :SMTICS.
 This form of the &fn. creates an empty &obj. with all fields initialized to
-zero. No &rsvarea. is yet allocated, but the &obj. is buffered unless a
+zero. No &resvarea. is yet allocated, but the &obj. is buffered unless a
 subsequent call to the
 :MONO.setbuf
 or
@@ -1259,7 +1259,7 @@ or
 member functions dictate otherwise.
 :RSLTS.
 This form of the &fn. creates an initialized &obj. with no
-associated &rsvarea.
+associated &resvarea.
 .dot
 :SALSO.
 :SAL typ='dtor'.
@@ -1287,7 +1287,7 @@ parameter is &null. or the
 :ARG.len
 parameter is not positive).
 :RSLTS.
-This form of the &fn. creates an initialized &obj. with an associated &rsvarea.
+This form of the &fn. creates an initialized &obj. with an associated &resvarea.
 .dot
 :SALSO.
 :SAL typ='dtor'.
@@ -1391,13 +1391,13 @@ The &fn. is used to fill the &getarea. when it is empty.
 Classes derived from the &cls. should implement the &fn. so that it performs
 the following:
 :OL.
-:LI.if no &rsvarea. is present and the &obj. is buffered, allocate the
-&rsvarea. using the
+:LI.if no &resvarea. is present and the &obj. is buffered, allocate the
+&resvarea. using the
 :MONO.allocate
-member function and set up the &rsvarea. pointers using the
+member function and set up the &resvarea. pointers using the
 :MONO.setb
 protected member function,
-:LI.flush any other uses of the &rsvarea.,
+:LI.flush any other uses of the &resvarea.,
 :LI.read some characters from the &obj.'s source into the &getarea.,
 :LI.set up the &getarea. pointers to reflect the characters that were read,
 :LI.return the first character of the &getarea., or &eof. if no characters

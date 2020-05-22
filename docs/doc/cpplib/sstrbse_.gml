@@ -104,7 +104,7 @@ buffer specified by the
 :ARG.str
 and
 :ARG.len
-parameters as its &rsvarea. within the associated
+parameters as its &resvarea. within the associated
 :MONO.strstreambuf
 object. Dynamic allocation is not used.
 :P.

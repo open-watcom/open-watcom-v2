@@ -205,7 +205,7 @@ and
 :ARG.len
 parameters, is offered via the
 :MONO.setbuf
-virtual member function to be used as the &rsvarea. for the
+virtual member function to be used as the &resvarea. for the
 :MONO.filebuf
 associated with the &obj.
 .dot

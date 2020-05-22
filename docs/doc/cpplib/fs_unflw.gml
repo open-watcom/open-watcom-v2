@@ -1,14 +1,14 @@
 :P.
 The &fn. performs the following steps:
 :OL.
-:LI.If no &rsvarea. is present, a buffer is allocated with the
+:LI.If no &resvarea. is present, a buffer is allocated with the
 :MONO.streambuf::allocate
 member function, which may call the
 :MONO.doallocate
 virtual member function. If, after calling
 :MONO.allocate
-:CONT., no &rsvarea. is present, the &obj. is unbuffered and a
-one-character &rsvarea. (plus putback area) is set up to do unbuffered input.
+:CONT., no &resvarea. is present, the &obj. is unbuffered and a
+one-character &resvarea. (plus putback area) is set up to do unbuffered input.
 This buffer is embedded in the &obj.
 .dot
 The &getarea. is set up as empty.

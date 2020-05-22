@@ -19,7 +19,7 @@ Seek operations are supported when the underlying file supports seeking.
 Both input and output operations may be performed using a &obj.,
 again when the underlying file supports read/write access.
 :P.
-&obj.s are buffered by default, so the &rsvarea. is allocated automatically
+&obj.s are buffered by default, so the &resvarea. is allocated automatically
 unless one is specified when the &obj. is created.
 The &getarea. and &putarea. pointers operate as if they were tied together.
 There is only one current position in a &obj.

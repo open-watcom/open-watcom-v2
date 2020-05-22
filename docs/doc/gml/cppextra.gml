@@ -114,7 +114,7 @@
 .'se null=';.mno NULL;.ct '
 .'se putarea=';.i put area;.ct '
 .'se putptr=';.i put pointer;.ct '
-.'se rsvarea=';.i reserve area;.ct '
+.'se resvarea=';.i reserve area;.ct '
 .'se fmtwidth=';.i format width;.ct '
 .'se fmtprec=';.i format precision;.ct '
 .'se fillchar=';.i fill character;.ct '
