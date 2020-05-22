@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,7 @@ int main( int argc, char *argv[] )
         printf( "Unable to open input file %s!\n", argv[1] );
         return -1;
     }
-    while( fgets( buf, sizeof( buf ), in ) ) {
+    while( fgets( buf, sizeof( buf ), in ) != NULL ) {
         /* Skip comment and blank lines */
         p = skipwhite( buf );
         if( p == NULL || *p == '#' )

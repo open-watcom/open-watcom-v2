@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ static ULONG   search( ULONG, ULONG, SLONG );
 static USHORT  hash( char * );
 static char    *myalloc( ULONG, char * );
 static char    *compact( char *, ULONG, char * );
-static char    *fgetss( char *, int, FILE * );
+static char    *my_fgets( char *, int, FILE * );
 static void    cant( char *, char *, SLONG );
 static void    input( SLONG );
 static void    squish( void );
@@ -1049,7 +1049,7 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
             seekvec[first], ( fd == infd[0] ) ? 'A' : 'B' );
     } else {
         for( i = first; i <= last; i++ ) {
-            if( fgetss( text, sizeof( text ), fd ) == NULL ) {
+            if( my_fgets( text, sizeof( text ), fd ) == NULL ) {
                 fatal( "** Unexpected end of file\n" );
                 break;
             }
@@ -1078,7 +1078,7 @@ INT getinpline( FILE *fd, char *buffer, int max_len )
     char     *fromp;
     char      c;
 
-    if( fgetss( buffer, max_len, fd ) == NULL ) {
+    if( my_fgets( buffer, max_len, fd ) == NULL ) {
         *buffer = EOS;
         return( true );
     }
@@ -1202,7 +1202,7 @@ void noroom( char *why )
         printf( "d1 %ld\n", lenA );
         printf( "a1 %ld\n", lenB );
         fseek( infd[1], 0, 0 );
-        while( fgetss( text, sizeof( text ), infd[1] ) != NULL )
+        while( my_fgets( text, sizeof( text ), infd[1] ) != NULL )
             printf( "%s\n", text );
         exit( xflag + DIFF_HAVE_DIFFS );
     } else {
@@ -1350,11 +1350,11 @@ void fputss( char *s, FILE *iop )
 }
 
 /*
- * Fgetss() is like fgets() except that the terminating newline
+ * my_fgets() is like fgets() except that the terminating newline
  * is removed.
  */
 
-char *fgetss( char *s, int max_len, FILE *iop )
+char *my_fgets( char *s, int max_len, FILE *iop )
 {
     char    *cs;
     size_t  len1;

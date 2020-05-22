@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -355,13 +355,12 @@ static bool PopInclude( void )
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        (void)fgets( line, max_len, includeStk->fp );
-        if( ferror( includeStk->fp ) ) {
-            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
-        }
-        if( !feof( includeStk->fp ) ) {
+        if( fgets( line, max_len, includeStk->fp ) != NULL ) {
             includeStk->lineno++;
             break;
+        }
+        if( ferror( includeStk->fp ) ) {
+            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
         }
         if( !PopInclude() ) {
             return( false );
