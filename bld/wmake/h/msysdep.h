@@ -198,6 +198,6 @@ extern void         CheckForBreak( void );
 extern void         InitSignals( void );
 extern void         DLLFini( void );
 extern char         *GetEnvExt( const char *str );
-extern int          PutEnvExt( const char *str );
+extern int          PutEnvExt( char *str );
 
 #endif

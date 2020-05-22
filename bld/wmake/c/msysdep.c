@@ -432,7 +432,7 @@ char *GetEnvExt( const char *str )
     return( getenv( str ) );
 }
 
-int PutEnvExt( const char *str )
+int PutEnvExt( char *str )
 {
 #if defined( __OS2__ ) && !defined( _M_I86 )
     if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
