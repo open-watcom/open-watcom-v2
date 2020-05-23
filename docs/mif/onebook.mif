@@ -555,7 +555,7 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
-    $(noecho)set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
+    $(noecho)set OWGMLINC=.;$(whelp_incs);$(hlp_incs);$(book_incs);$(gml_incs);
     @%make prepare_wgml_opts
 !ifeq verbose 0
     @echo wgml $@
