@@ -37,6 +37,468 @@
 :set symbol="INDlvl"    value="7".
 .do end
 .*
+.dm ix begin
+.se ixmajor=''
+.ix1 &*
+.dm ix end
+.*
+.dm ixm begin
+.se ixmajor='pg=major'
+.ix1 &*
+.dm ixm end
+.*
+.dm ix1 begin
+.pu 1 .ixline &*
+.* The next 2 lines correct problems with ".ix NAME="
+.se *iwrd=&*
+.if ›&*1› ne ›› .do begin
+.se *iwrd=&*1
+.do end
+.se *iwrd="&'strip('&*iwrd.','T',',')"
+.if ›&*iwrd.› ne ›.› .do begin
+.se *iwrd="&'strip('&*iwrd.','T','.')"
+.do end
+.se *iwrd2='&*iwrd.'
+.if '&'left(&*iwrd2.,1)' eq '_' .do begin
+.se *iwrd2=&'right(&*iwrd2.,&'length(&*iwrd2.)-1)_
+.do end
+.if '&'left(&*iwrd2.,1)' eq '_' .do begin
+.se *iwrd2=&'right(&*iwrd2.,&'length(&*iwrd2.)-1)_
+.do end
+.if &e'&dohelp eq 0 .do begin
+:IH1 print='&*iwrd.'.&*iwrd2.
+.   .if '&*2' eq '' .do begin
+.   .   .:I1 &ixmajor..&*iwrd2.
+.   .do end
+.   .el .do begin
+.   .   .ix2 &*2
+.   .do end
+.   .if '&*3' ne '' .do begin
+.   .   .:I3.&*3
+.   .do end
+.do end
+.el .do begin
+.   .if ›&*3› ne ›› .do begin
+.   .   .sr *ixstr="&*iwrd., &*2, &*3"
+.   .do end
+.   .el .if ›&*2› ne ›› .do begin
+.   .   .sr *ixstr="&*iwrd., &*2"
+.   .do end
+.   .el .do begin
+.   .   .sr *ixstr="&*iwrd."
+.   .do end
+:ZI1.&*ixstr.
+.do end
+.dm ix1 end
+.*
+.dm ix2 begin
+.se *iw="&*"
+.if ›&*iw.› ne ›,› .do begin
+.se *iw="&'strip('&*iw.','T',',')"
+.do end
+.if ›&*iw.› ne ›.› .do begin
+.se *iw="&'strip('&*iw.','T','.')"
+.do end
+.se *iw2='&*iw.'
+.if '&'left(&*iw2.,1)' eq '_' .do begin
+.se *iw2=&'right(&*iw2.,&'length(&*iw2.)-1)_
+.do end
+.if '&'left(&*iw2.,1)' eq '_' .do begin
+.se *iw2=&'right(&*iw2.,&'length(&*iw2.)-1)_
+.do end
+:IH2 print='&*iw.'.&*iw2.:I2 &ixmajor..&*iw2.
+.dm ix2 end
+.*
+.dm fn begin
+.if '&*' eq 'begin' .do begin
+:FN.
+.do end
+.el .if '&*' eq 'end' .do begin
+:eFN.
+.do end
+.dm fn end
+.*
+:cmt. .dm us begin
+:cmt. :SF font=1.&*:eSF.
+:cmt. .dm us end
+:cmt. .*
+:cmt. .dm bd begin
+:cmt. :SF font=2.&*:eSF.
+:cmt. .dm bd end
+:cmt. .*
+:cmt. .dm bi begin
+:cmt. :SF font=3.&*:eSF.
+:cmt. .dm bi end
+:cmt. .*
+.dm pp begin
+:P.
+.dm pp end
+.*
+.dm np begin
+:P.
+.dm np end
+.*
+.dm pc begin
+:PC.
+.dm pc end
+.*
+.dm illust begin
+.if '&*' eq 'begin' .do begin
+:XMP.:SF font=0.~b
+.do end
+.el .if '&*' eq 'end' .do begin
+:eSF.:eXMP.
+.do end
+.el .if '&*' eq 'break' .do begin
+:eSF.:eXMP.:XMP.:SF font=0.
+.do end
+.el .do begin
+:XMP.:SF font=0.~b
+&*
+:eSF.:eXMP.:P.
+.do end
+.dm illust end
+.*
+.dm millust begin
+.if '&*' eq 'begin' .do begin
+:XMP.~b
+.do end
+.el .if '&*' eq 'end' .do begin
+:eXMP.
+.do end
+.el .if '&*' eq 'break' .do begin
+:eXMP.:XMP.
+.do end
+.el .do begin
+:XMP.~b
+&*
+:eXMP.:P.
+.do end
+.dm millust end
+.*
+.dm code begin
+.if '&*' eq 'begin' .do begin
+:XMP.:SF font=5.~b
+.do end
+.el .if '&*' eq 'end' .do begin
+:eSF.:eXMP.
+.do end
+.el .if '&*' eq 'break' .do begin
+:eSF.:eXMP.:XMP.:SF font=5.
+.do end
+.el .do begin
+:XMP.:SF font=5.~b
+&*
+:eSF.:eXMP.:P.
+.do end
+.dm code end
+.*
+.dm listing begin
+.if '&*' eq 'begin' .do begin
+.se *lvl=&INDlvl-3
+.in &*lvl.
+:XMP.:SF font=5.~b
+.do end
+.el .if '&*' eq 'end' .do begin
+:eSF.:eXMP.
+.in &INDlvl
+.do end
+.el .if '&*' eq 'break' .do begin
+:eSF.:eXMP. :XMP.:SF font=5.
+.do end
+.el .do begin
+:XMP.:SF font=5.~b
+&*
+:eSF.:eXMP.:P.
+.do end
+.dm listing end
+.*
+.dm codeon begin
+:SF font=5.
+.dm codeon end
+.*
+.dm codeoff begin
+:eSF.
+.dm codeoff end
+.*
+.dm mono begin
+:SF font=4.&*:eSF.
+.dm mono end
+.*
+.dm monoon begin
+:SF font=4.
+.dm monoon end
+.*
+.dm monooff begin
+:eSF.
+.dm monooff end
+.*
+.dm autonote begin
+.if '&*' ne '' .do begin
+.   .sr tmplvl=&WDWlvl-3
+.   .cp &tmplvl
+.   :P.:HP1.&*:eHP1.
+.do end
+.if &e'&dohelp eq 0 .do begin
+:OL &ANTset .
+.do end
+.el .do begin
+:ZOL &ANTset .
+.do end
+:set symbol="NTEpr2" value="&NTEpr1".
+:set symbol="NTEpr1" value="&NTEset".
+:set symbol="NTEset" value="ol".
+.dm autonote end
+.*
+.dm autopoint begin
+.if '&*' ne '' .do begin
+.   .sr tmplvl=&WDWlvl-3
+.   .cp &tmplvl
+.   :P.:HP1.&*:eHP1.
+.do end
+.if &e'&dohelp eq 0 .do begin
+:OL &APTset .
+.do end
+.el .do begin
+:ZOL &APTset .
+.do end
+:set symbol="NTEpr2" value="&NTEpr1".
+:set symbol="NTEpr1" value="&NTEset".
+:set symbol="NTEset" value="ol".
+.dm autopoint end
+.*
+.dm begnote begin
+.sr tmplvl=&WDWlvl-3
+.cp &tmplvl
+:set symbol="NTEop1" value="".
+:set symbol="NTEop2" value="".
+:set symbol="NTEop3" value="".
+.if '&*1' eq '$break' or '&*2' eq '$break' or '&*3' eq '$break' .do begin
+:set symbol="NTEop1" value="break".
+.do end
+.if '&*1' eq '$compact' or '&*2' eq '$compact' or '&*3' eq '$compact' .do begin
+:set symbol="NTEop2" value="compact".
+.do end
+.if '&*1' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*2".
+.do end
+.if '&*2' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*3".
+.do end
+.if '&*3' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*4".
+.do end
+.if &e'&dohelp eq 0 .do begin
+:DL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
+.do end
+.el .do begin
+:ZDL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
+.do end
+.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
+.if '&*1' ne '' .do begin
+.if &e'&dohelp eq 0 .do begin
+:DTHD.&*
+:DDHD.~b
+.do end
+.el .do begin
+:ZDT.&*
+:ZDD.~b
+.do end
+.do end
+.do end
+:set symbol="NTEpr2" value="&NTEpr1".
+:set symbol="NTEpr1" value="&NTEset".
+:set symbol="NTEset" value="dl".
+.dm begnote end
+.*
+.dm begpoint begin
+.sr tmplvl=&WDWlvl-3
+.cp &tmplvl
+:set symbol="NTEop1" value="".
+:set symbol="NTEop2" value="".
+:set symbol="NTEop3" value="".
+.if '&*1' eq '$break' or '&*2' eq '$break' or '&*3' eq '$break' .do begin
+:set symbol="NTEop1" value="break".
+.do end
+.if '&*1' eq '$compact' or '&*2' eq '$compact' or '&*3' eq '$compact' .do begin
+:set symbol="NTEop2" value="compact".
+.do end
+.if '&*1' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*2".
+.do end
+.if '&*2' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*3".
+.do end
+.if '&*3' eq '$setptnt' .do begin
+:set symbol="NTEop3" value="tsize=&*4".
+.do end
+.if &e'&dohelp eq 0 .do begin
+:DL &NTEphi. &NTEop1. &NTEop2. &NTEop3..
+.do end
+.el .do begin
+:ZDL &NTEphi. &NTEop1. &NTEop2. &NTEop3..
+.do end
+.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
+.if '&*1' ne '' .do begin
+.if &e'&dohelp eq 0 .do begin
+:DTHD.&*
+:DDHD.~b
+.do end
+.el .do begin
+:ZDT.:SF font=2.&*:eSF.
+:ZDD.~b
+.do end
+.do end
+.do end
+:set symbol="NTEpr2" value="&NTEpr1".
+:set symbol="NTEpr1" value="&NTEset".
+:set symbol="NTEset" value="dl".
+.dm begpoint end
+.*
+.dm setptnt begin
+.dm setptnt end
+.*
+.dm notehd1 begin
+.if &e'&dohelp eq 0 .do begin
+:DTHD.&*
+.do end
+.el .do begin
+:ZDT.&*
+.do end
+.dm notehd1 end
+.*
+.dm notehd2 begin
+.if &e'&dohelp eq 0 .do begin
+:DDHD.&*
+.do end
+.el .do begin
+:ZDD.&*
+.do end
+.dm notehd2 end
+.*
+.dm endnote begin
+.if '&NTEset' eq 'ol' .endOL
+.el .if '&NTEset' eq 'dl' .endDL
+:set symbol="NTEset" value="&NTEpr1".
+:set symbol="NTEpr1" value="&NTEpr2".
+:set symbol="NTEpr2" value=" ".
+.dm endnote end
+.*
+.dm endpoint begin
+.endnote
+.dm endpoint end
+.*
+.dm endOL begin
+.if &e'&dohelp eq 0 .do begin
+:eOL.
+.do end
+.el .do begin
+:ZeOL.
+.do end
+.dm endOL end
+.*
+.dm endDL begin
+.if &e'&dohelp eq 0 .do begin
+:eDL.
+.do end
+.el .do begin
+:ZeDL.
+.do end
+.dm endDL end
+.*
+.dm note begin
+.if '&NTEset' eq 'ol' .noteOL
+.el .if '&NTEset' eq 'dl' .noteDL &*
+.dm note end
+.*
+.dm point begin
+.if '&NTEset' eq 'ol' .noteOL
+.el .if '&NTEset' eq 'dl' .noteDL &*
+.dm point end
+.*
+.dm noteOL begin
+.if '&*' ne '' .ty ***ERROR*** argument specified with autonote/autopoint list item
+.if &e'&dohelp eq 0 .do begin
+:LI.
+.do end
+.el .do begin
+:ZLI.
+.do end
+.dm noteOL end
+.*
+.dm noteDL begin
+.sr tmplvl=3
+.cp &tmplvl
+.if '&*1' eq '.mono' .ty ***ERROR*** .mono with .point/.note
+.if &e'&dohelp eq 0 .do begin
+:DT.&*
+:DD.
+.do end
+.el .do begin
+:ZDT.&*
+:ZDD.
+.do end
+.dm noteDL end
+.*
+.dm begbull begin
+.sr tmplvl=&WDWlvl-5
+.cp &tmplvl
+.if &e'&dohelp eq 0 .do begin
+.   .if '&*1' eq '$compact' .do begin
+:UL compact
+.   .do end
+.   .el .do begin
+:UL
+.   .do end
+.do end
+.el .do begin
+.   .if '&*1' eq '$compact' .do begin
+:ZUL compact
+.   .do end
+.   .el .do begin
+:ZUL
+.   .do end
+.do end
+.dm begbull end
+.*
+.dm bull begin
+.if &e'&dohelp eq 0 .do begin
+:LI
+.do end
+.el .do begin
+:ZLI
+.do end
+.dm bull end
+.*
+.dm endbull begin
+.if &e'&dohelp eq 0 .do begin
+:eUL.
+.do end
+.el .do begin
+:ZeUL.
+.do end
+.dm endbull end
+.*
+.dm keep begin
+.if '&*' eq 'begin' .do begin
+.   .if &keeplvl ne 0 .me
+.   .sr keeplvl=1
+.   .cp &WDWlvl
+.do end
+.el .if '&*' eq 'break' .do begin
+.   .br;.cp &WDWlvl
+.do end
+.el .if '&*' eq 'end' .do begin
+.   .sr keeplvl=0
+.do end
+.el .if '&*' eq '' .do begin
+.   .cp &WDWlvl
+.do end
+.el .do begin
+.   .cp &*
+.do end
+.dm keep end
+.*
 .dm sepsect begin
 .if &e'&dohelp eq 0 .do begin
 :H0.&*
@@ -311,468 +773,6 @@
 .dm csect begin
 :H6.&*
 .dm csect end
-.*
-.dm ix begin
-.se ixmajor=''
-.ix1 &*
-.dm ix end
-.*
-.dm ixm begin
-.se ixmajor='pg=major'
-.ix1 &*
-.dm ixm end
-.*
-.dm ix1 begin
-.pu 1 .ixline &*
-.* The next 2 lines correct problems with ".ix NAME="
-.se *iwrd=&*
-.if ›&*1› ne ›› .do begin
-.se *iwrd=&*1
-.do end
-.se *iwrd="&'strip('&*iwrd.','T',',')"
-.if ›&*iwrd.› ne ›.› .do begin
-.se *iwrd="&'strip('&*iwrd.','T','.')"
-.do end
-.se *iwrd2='&*iwrd.'
-.if '&'left(&*iwrd2.,1)' eq '_' .do begin
-.se *iwrd2=&'right(&*iwrd2.,&'length(&*iwrd2.)-1)_
-.do end
-.if '&'left(&*iwrd2.,1)' eq '_' .do begin
-.se *iwrd2=&'right(&*iwrd2.,&'length(&*iwrd2.)-1)_
-.do end
-.if &e'&dohelp eq 0 .do begin
-:IH1 print='&*iwrd.'.&*iwrd2.
-.   .if '&*2' eq '' .do begin
-.   .   .:I1 &ixmajor..&*iwrd2.
-.   .do end
-.   .el .do begin
-.   .   .ix2 &*2
-.   .do end
-.   .if '&*3' ne '' .do begin
-.   .   .:I3.&*3
-.   .do end
-.do end
-.el .do begin
-.   .if ›&*3› ne ›› .do begin
-.   .   .sr *ixstr="&*iwrd., &*2, &*3"
-.   .do end
-.   .el .if ›&*2› ne ›› .do begin
-.   .   .sr *ixstr="&*iwrd., &*2"
-.   .do end
-.   .el .do begin
-.   .   .sr *ixstr="&*iwrd."
-.   .do end
-:ZI1.&*ixstr.
-.do end
-.dm ix1 end
-.*
-.dm ix2 begin
-.se *iw="&*"
-.if ›&*iw.› ne ›,› .do begin
-.se *iw="&'strip('&*iw.','T',',')"
-.do end
-.if ›&*iw.› ne ›.› .do begin
-.se *iw="&'strip('&*iw.','T','.')"
-.do end
-.se *iw2='&*iw.'
-.if '&'left(&*iw2.,1)' eq '_' .do begin
-.se *iw2=&'right(&*iw2.,&'length(&*iw2.)-1)_
-.do end
-.if '&'left(&*iw2.,1)' eq '_' .do begin
-.se *iw2=&'right(&*iw2.,&'length(&*iw2.)-1)_
-.do end
-:IH2 print='&*iw.'.&*iw2.:I2 &ixmajor..&*iw2.
-.dm ix2 end
-.*
-.dm fn begin
-.if '&*' eq 'begin' .do begin
-:FN.
-.do end
-.el .if '&*' eq 'end' .do begin
-:eFN.
-.do end
-.dm fn end
-.*
-:cmt. .dm us begin
-:cmt. :SF font=1.&*:eSF.
-:cmt. .dm us end
-:cmt. .*
-:cmt. .dm bd begin
-:cmt. :SF font=2.&*:eSF.
-:cmt. .dm bd end
-:cmt. .*
-:cmt. .dm bi begin
-:cmt. :SF font=3.&*:eSF.
-:cmt. .dm bi end
-:cmt. .*
-.dm pp begin
-:P.
-.dm pp end
-.*
-.dm np begin
-:P.
-.dm np end
-.*
-.dm pc begin
-:PC.
-.dm pc end
-.*
-.dm codeon begin
-:SF font=5.
-.dm codeon end
-.*
-.dm codeoff begin
-:eSF.
-.dm codeoff end
-.*
-.dm mono begin
-:SF font=4.&*:eSF.
-.dm mono end
-.*
-.dm monoon begin
-:SF font=4.
-.dm monoon end
-.*
-.dm monooff begin
-:eSF.
-.dm monooff end
-.*
-.dm illust begin
-.if '&*' eq 'begin' .do begin
-:XMP.:SF font=0.~b
-.do end
-.el .if '&*' eq 'end' .do begin
-:eSF.:eXMP.
-.do end
-.el .if '&*' eq 'break' .do begin
-:eSF.:eXMP.:XMP.:SF font=0.
-.do end
-.el .do begin
-:XMP.:SF font=0.~b
-&*
-:eSF.:eXMP.:P.
-.do end
-.dm illust end
-.*
-.dm millust begin
-.if '&*' eq 'begin' .do begin
-:XMP.~b
-.do end
-.el .if '&*' eq 'end' .do begin
-:eXMP.
-.do end
-.el .if '&*' eq 'break' .do begin
-:eXMP.:XMP.
-.do end
-.el .do begin
-:XMP.~b
-&*
-:eXMP.:P.
-.do end
-.dm millust end
-.*
-.dm code begin
-.if '&*' eq 'begin' .do begin
-:XMP.:SF font=5.~b
-.do end
-.el .if '&*' eq 'end' .do begin
-:eSF.:eXMP.
-.do end
-.el .if '&*' eq 'break' .do begin
-:eSF.:eXMP.:XMP.:SF font=5.
-.do end
-.el .do begin
-:XMP.:SF font=5.~b
-&*
-:eSF.:eXMP.:P.
-.do end
-.dm code end
-.*
-.dm listing begin
-.if '&*' eq 'begin' .do begin
-.se *lvl=&INDlvl-3
-.in &*lvl.
-:XMP.:SF font=5.~b
-.do end
-.el .if '&*' eq 'end' .do begin
-:eSF.:eXMP.
-.in &INDlvl
-.do end
-.el .if '&*' eq 'break' .do begin
-:eSF.:eXMP. :XMP.:SF font=5.
-.do end
-.el .do begin
-:XMP.:SF font=5.~b
-&*
-:eSF.:eXMP.:P.
-.do end
-.dm listing end
-.*
-.dm autonote begin
-.if '&*' ne '' .do begin
-.   .sr tmplvl=&WDWlvl-3
-.   .cp &tmplvl
-.   :P.:HP1.&*:eHP1.
-.do end
-.if &e'&dohelp eq 0 .do begin
-:OL &ANTset .
-.do end
-.el .do begin
-:ZOL &ANTset .
-.do end
-:set symbol="NTEpr2" value="&NTEpr1".
-:set symbol="NTEpr1" value="&NTEset".
-:set symbol="NTEset" value="ol".
-.dm autonote end
-.*
-.dm autopoint begin
-.if '&*' ne '' .do begin
-.   .sr tmplvl=&WDWlvl-3
-.   .cp &tmplvl
-.   :P.:HP1.&*:eHP1.
-.do end
-.if &e'&dohelp eq 0 .do begin
-:OL &APTset .
-.do end
-.el .do begin
-:ZOL &APTset .
-.do end
-:set symbol="NTEpr2" value="&NTEpr1".
-:set symbol="NTEpr1" value="&NTEset".
-:set symbol="NTEset" value="ol".
-.dm autopoint end
-.*
-.dm begnote begin
-.sr tmplvl=&WDWlvl-3
-.cp &tmplvl
-:set symbol="NTEop1" value="".
-:set symbol="NTEop2" value="".
-:set symbol="NTEop3" value="".
-.if '&*1' eq '$break' or '&*2' eq '$break' or '&*3' eq '$break' .do begin
-:set symbol="NTEop1" value="break".
-.do end
-.if '&*1' eq '$compact' or '&*2' eq '$compact' or '&*3' eq '$compact' .do begin
-:set symbol="NTEop2" value="compact".
-.do end
-.if '&*1' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*2".
-.do end
-.if '&*2' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*3".
-.do end
-.if '&*3' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*4".
-.do end
-.if &e'&dohelp eq 0 .do begin
-:DL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
-.do end
-.el .do begin
-:ZDL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
-.do end
-.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
-.if '&*1' ne '' .do begin
-.if &e'&dohelp eq 0 .do begin
-:DTHD.&*
-:DDHD.~b
-.do end
-.el .do begin
-:ZDT.&*
-:ZDD.~b
-.do end
-.do end
-.do end
-:set symbol="NTEpr2" value="&NTEpr1".
-:set symbol="NTEpr1" value="&NTEset".
-:set symbol="NTEset" value="dl".
-.dm begnote end
-.*
-.dm begpoint begin
-.sr tmplvl=&WDWlvl-3
-.cp &tmplvl
-:set symbol="NTEop1" value="".
-:set symbol="NTEop2" value="".
-:set symbol="NTEop3" value="".
-.if '&*1' eq '$break' or '&*2' eq '$break' or '&*3' eq '$break' .do begin
-:set symbol="NTEop1" value="break".
-.do end
-.if '&*1' eq '$compact' or '&*2' eq '$compact' or '&*3' eq '$compact' .do begin
-:set symbol="NTEop2" value="compact".
-.do end
-.if '&*1' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*2".
-.do end
-.if '&*2' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*3".
-.do end
-.if '&*3' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*4".
-.do end
-.if &e'&dohelp eq 0 .do begin
-:DL &NTEphi. &NTEop1. &NTEop2. &NTEop3..
-.do end
-.el .do begin
-:ZDL &NTEphi. &NTEop1. &NTEop2. &NTEop3..
-.do end
-.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
-.if '&*1' ne '' .do begin
-.if &e'&dohelp eq 0 .do begin
-:DTHD.&*
-:DDHD.~b
-.do end
-.el .do begin
-:ZDT.:SF font=2.&*:eSF.
-:ZDD.~b
-.do end
-.do end
-.do end
-:set symbol="NTEpr2" value="&NTEpr1".
-:set symbol="NTEpr1" value="&NTEset".
-:set symbol="NTEset" value="dl".
-.dm begpoint end
-.*
-.dm setptnt begin
-.dm setptnt end
-.*
-.dm notehd1 begin
-.if &e'&dohelp eq 0 .do begin
-:DTHD.&*
-.do end
-.el .do begin
-:ZDT.&*
-.do end
-.dm notehd1 end
-.*
-.dm notehd2 begin
-.if &e'&dohelp eq 0 .do begin
-:DDHD.&*
-.do end
-.el .do begin
-:ZDD.&*
-.do end
-.dm notehd2 end
-.*
-.dm endnote begin
-.if '&NTEset' eq 'ol' .endOL
-.el .if '&NTEset' eq 'dl' .endDL
-:set symbol="NTEset" value="&NTEpr1".
-:set symbol="NTEpr1" value="&NTEpr2".
-:set symbol="NTEpr2" value=" ".
-.dm endnote end
-.*
-.dm endpoint begin
-.endnote
-.dm endpoint end
-.*
-.dm endOL begin
-.if &e'&dohelp eq 0 .do begin
-:eOL.
-.do end
-.el .do begin
-:ZeOL.
-.do end
-.dm endOL end
-.*
-.dm endDL begin
-.if &e'&dohelp eq 0 .do begin
-:eDL.
-.do end
-.el .do begin
-:ZeDL.
-.do end
-.dm endDL end
-.*
-.dm note begin
-.if '&NTEset' eq 'ol' .noteOL
-.el .if '&NTEset' eq 'dl' .noteDL &*
-.dm note end
-.*
-.dm point begin
-.if '&NTEset' eq 'ol' .noteOL
-.el .if '&NTEset' eq 'dl' .noteDL &*
-.dm point end
-.*
-.dm noteOL begin
-.if '&*' ne '' .ty ***ERROR*** argument specified with autonote/autopoint list item
-.if &e'&dohelp eq 0 .do begin
-:LI.
-.do end
-.el .do begin
-:ZLI.
-.do end
-.dm noteOL end
-.*
-.dm noteDL begin
-.sr tmplvl=3
-.cp &tmplvl
-.if '&*1' eq '.mono' .ty ***ERROR*** .mono with .point/.note
-.if &e'&dohelp eq 0 .do begin
-:DT.&*
-:DD.
-.do end
-.el .do begin
-:ZDT.&*
-:ZDD.
-.do end
-.dm noteDL end
-.*
-.dm begbull begin
-.sr tmplvl=&WDWlvl-5
-.cp &tmplvl
-.if &e'&dohelp eq 0 .do begin
-.   .if '&*1' eq '$compact' .do begin
-:UL compact
-.   .do end
-.   .el .do begin
-:UL
-.   .do end
-.do end
-.el .do begin
-.   .if '&*1' eq '$compact' .do begin
-:ZUL compact
-.   .do end
-.   .el .do begin
-:ZUL
-.   .do end
-.do end
-.dm begbull end
-.*
-.dm bull begin
-.if &e'&dohelp eq 0 .do begin
-:LI
-.do end
-.el .do begin
-:ZLI
-.do end
-.dm bull end
-.*
-.dm endbull begin
-.if &e'&dohelp eq 0 .do begin
-:eUL.
-.do end
-.el .do begin
-:ZeUL.
-.do end
-.dm endbull end
-.*
-.dm keep begin
-.if '&*' eq 'begin' .do begin
-.   .if &keeplvl ne 0 .me
-.   .sr keeplvl=1
-.   .cp &WDWlvl
-.do end
-.el .if '&*' eq 'break' .do begin
-.   .br;.cp &WDWlvl
-.do end
-.el .if '&*' eq 'end' .do begin
-.   .sr keeplvl=0
-.do end
-.el .if '&*' eq '' .do begin
-.   .cp &WDWlvl
-.do end
-.el .do begin
-.   .cp &*
-.do end
-.dm keep end
 .*
 .dm endfmt begin
 .dm endfmt end
