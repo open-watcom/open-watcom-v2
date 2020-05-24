@@ -7,7 +7,8 @@ effect.
 The facilities of the C standard library can be used in C++ programs by
 including the appropriate "cname" header. In that case all of the C
 standard library functions are in namespace
-:MONO.std.
+:MONO.std
+:PERIOD.
 For example, to use function
 :MONO.std::~printf
 one should include the header cstdio. Note that the cname headers
@@ -15,15 +16,18 @@ declare in the global namespace any non-standard names they contain as
 extensions. It is also possible to include in a C++ program the same
 headers used by C programs. In that case, the standard functions are in
 both the global namespace as well as in namespace
-:MONO.std.
+:MONO.std
+:PERIOD.
 :P.
 Some of C++ standard library headers described below come in a form with
 a .h extension and in a form without an extension. The extensionless
 headers declare their library classes and functions in namespace
-:MONO.std.
+:MONO.std
+:PERIOD.
 The headers with a .h extension declare their library classes and
 functions in both the global namespace and in namespace
-:MONO.std.
+:MONO.std
+:PERIOD.
 Such headers are provided as a convenience and for compatibility with
 legacy code. Programs that intend to conform to Standard C++ should use
 the extensionless headers to access the facilities of the C++ standard
@@ -154,7 +158,8 @@ along with the non-parameterized manipulators.
 This header file defines class
 :MONO.istream
 and class
-:MONO.iostream.
+:MONO.iostream
+:PERIOD.
 It also defines their associated parameterless manipulators.
 :DT.iterator
 :DD.
@@ -193,8 +198,8 @@ class templates. They provide ways to associate keys to values.
 :DD.
 .ix 'header files' 'memory'
 This header file defines the default allocator template,
-:MONO.std::~allocator,
-as well as several function templates for manipulating raw
+:MONO.std::~allocator
+:CONT., as well as several function templates for manipulating raw
 (uninitialized) memory regions. In addition this header defines the
 :MONO.std::~auto_ptr
 template.
@@ -202,7 +207,8 @@ template.
 Note that the header
 :MONO.memory.h
 is part of the Open Watcom C library and is unrelated to
-:MONO.memory.
+:MONO.memory
+:PERIOD.
 :DT.new/new.h
 :DD.
 .ix 'header files' 'new'
@@ -221,7 +227,8 @@ to numerical computation.
 :DD.
 .ix 'header files' 'ostream'
 This header file defines class
-:MONO.ostream.
+:MONO.ostream
+:PERIOD.
 It also defines its associated parameterless manipulators.
 :DT.set
 :DD.
@@ -256,7 +263,8 @@ This header file defines the
 class template. It also contains the type definitions for
 :MONO.std::~string
 and
-:MONO.std::~wstring.
+:MONO.std::~wstring
+:PERIOD.
 In addition, this header contains specializations of the
 :MONO.std::~char_traits
 template for both characters and wide characters.

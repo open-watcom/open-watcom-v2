@@ -16,14 +16,14 @@ When creating a single linked intrusive list, the &cls. is used to derive the
 user defined class that holds the data to be inserted into the list.
 :P.
 The
-.MONO wclcom.h
+:MONO.wclcom.h
 header file is included by the
-.MONO wclist.h
+:MONO.wclist.h
 header file.
 There is no need to explicitly include the
-.MONO wclcom.h
+:MONO.wclcom.h
 header file unless the
-.MONO wclist.h
+:MONO.wclist.h
 header file is not included.
 No errors will result if it is included unnecessarily.
 :P.

@@ -10,7 +10,8 @@ The class documented here is the Open Watcom legacy string class. It
 is not related to the
 :MONO.std::basic_string
 class template nor to its corresponding specialization
-:MONO.std::string.
+:MONO.std::string
+:PERIOD.
 .*
 :CLFNM.String
 :CMT.========================================================================

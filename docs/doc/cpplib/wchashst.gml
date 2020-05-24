@@ -19,7 +19,7 @@ The equality operator of the element's type is used to locate the
 value.
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining
 .if &lpref. eq Val .do begin
 the type of the data to be stored in the hash.
@@ -31,9 +31,9 @@ the type of the data pointed to by the pointers stored in the hash.
 :P.
 The constructor for the &cls.
 requires a hashing function, which given a reference to
-.MONO Type,
-returns an
-.MONO unsigned
+:MONO.Type
+:CONT., returns an
+:MONO.unsigned
 value.
 The returned value modulo the number of buckets determines the
 bucket into which the element will be located.
@@ -42,7 +42,8 @@ can be spread over the entire range of unsigned numbers.
 The hash function return value
 must be the same for values which are equivalent by the
 equivalence operator for
-.MONO Type.
+:MONO.Type
+:PERIOD.
 
 .if &lpref. eq Val .do begin
 :P.
@@ -66,27 +67,27 @@ that the equivalence to the old value is modified.
 :HDG.Requirements of Type
 
 The &cls requires
-.MONO Type
+:MONO.Type
 to have:
 .if &lpref. eq Val .do begin
 :P.
 A default constructor (
-.MONO Type::Type()
+:MONO.Type::Type()
 ).
 :P.
 A well defined copy constructor (
-.MONO Type::Type( const Type & )
+:MONO.Type::Type( const Type & )
 ).
 :P.
 A well defined assignment operator (
-.MONO Type & operator =( const Type & )
+:MONO.Type & operator =( const Type & )
 ).
 .do end
 :P.
 A well defined equivalence operator with constant parameters
 .br
 (
-.MONO int operator ==( const Type & ) const
+:MONO.int operator ==( const Type & ) const
 ).
 
 :HDG.Public Member Functions
@@ -133,7 +134,7 @@ The following member functions are declared in the public interface:
 :MFN index='resize'         .void resize( unsigned );
 :eMFNL.
 The following public member functions are available for the
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 class only:
 :MFNL.
 .if &lpref eq Val .do begin
@@ -169,12 +170,12 @@ The following member operators are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 constructor creates a
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object with no entries and with the number of buckets
 in the second optional parameter, which defaults to the constant
-.MONO WC_DEFAULT_HASH_SIZE
+:MONO.WC_DEFAULT_HASH_SIZE
 (currently defined as 101).
 The number of buckets specified must be greater than zero, and will be forced
 to at least one.
@@ -182,26 +183,26 @@ If the hash object can be created, but an allocation failure
 occurs when creating the buckets, the
 table will be created with zero buckets.
 If the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled, then attempting to insert into a hash
 table with zero buckets with throw an
-.MONO out_of_memory
+:MONO.out_of_memory
 error.
 :P.
 The hash function
-.MONO hash_fn
+:MONO.hash_fn
 is used to determine which bucket each value will be assigned to.
 If no hash function exists, the
 static member function
-.MONO bitHash
+:MONO.bitHash
 is available to help create one.
 
 :RSLTS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 constructor creates an initialized
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object with the specified number of buckets and
 hash function.
 :SALSO.
@@ -237,12 +238,12 @@ To determine the size of
 the objects that the memory management functions will be
 required to allocate and free, the following macro may be used:
 .br
-.MONO WC&lpref.HashSetItemSize( Type )
+:MONO.WC&lpref.HashSetItemSize( Type )
 :RSLTS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 constructor creates an initialized
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object with the specified number of buckets and
 hash function.
 :SALSO.
@@ -260,9 +261,9 @@ hash function.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 is the copy constructor for the
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 class.
 The new hash is created with the same number of buckets, hash function,
 all values or pointers stored in the hash, and the exception trap states.
@@ -273,14 +274,14 @@ If there is not enough memory to copy all of
 the values, then only some will be copied,
 and the number of entries will correctly reflect the number copied.
 If all of the elements cannot be copied, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 :RSLTS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 constructor creates a
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object which is a copy of the passed hash.
 :SALSO.
 :SAL typ='fun'.~~WC&lpref.HashSet
@@ -297,33 +298,33 @@ object which is a copy of the passed hash.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 destructor is the destructor for the
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 class.
 If the number of elements is not zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the hash elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .if &lpref. eq Ptr .do begin
 The objects which the hash elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 destructor is inserted implicitly by the compiler
 at the point where the
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object goes out of scope.
 :RSLTS.
 The call to the
-.MONO WC&lpref.HashSet<Type>
+:MONO.WC&lpref.HashSet<Type>
 destructor destroys a
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -343,12 +344,12 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 constructor creates a
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object with no entries and with the number of buckets
 in the second optional parameter, which defaults to the constant
-.MONO WC_DEFAULT_HASH_SIZE
+:MONO.WC_DEFAULT_HASH_SIZE
 (currently defined as 101).
 The number of buckets specified must be greater than zero, and will be forced
 to at least one.
@@ -356,26 +357,26 @@ If the hash object can be created, but an allocation failure
 occurs when creating the buckets, the
 table will be created with zero buckets.
 If the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled, then attempting to insert into a hash
 table with zero buckets with throw an
-.MONO out_of_memory
+:MONO.out_of_memory
 error.
 :P.
 The hash function
-.MONO hash_fn
+:MONO.hash_fn
 is used to determine which bucket each value will be assigned to.
 If no hash function exists, the
 static member function
-.MONO bitHash
+:MONO.bitHash
 is available to help create one.
 
 :RSLTS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 constructor creates an initialized
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object with the specified number of buckets and
 hash function.
 :SALSO.
@@ -411,12 +412,12 @@ To determine the size of
 the objects that the memory management functions will be
 required to allocate and free, the following macro may be used:
 .br
-.MONO WC&lpref.HashTableItemSize( Type )
+:MONO.WC&lpref.HashTableItemSize( Type )
 :RSLTS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 constructor creates an initialized
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object with the specified number of buckets and
 hash function.
 :SALSO.
@@ -434,9 +435,9 @@ hash function.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 is the copy constructor for the
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 class.
 The new hash is created with the same number of buckets, hash function,
 all values or pointers stored in the hash, and the exception trap states.
@@ -447,14 +448,14 @@ If there is not enough memory to copy all of
 the values, then only some will be copied,
 and the number of entries will correctly reflect the number copied.
 If all of the elements cannot be copied, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 :RSLTS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 constructor creates a
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object which is a copy of the passed hash.
 :SALSO.
 :SAL typ='fun'.~~WC&lpref.HashTable
@@ -471,33 +472,33 @@ object which is a copy of the passed hash.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 destructor is the destructor for the
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 class.
 If the number of elements is not zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the hash elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .if &lpref. eq Ptr .do begin
 The objects which the hash elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 destructor is inserted implicitly by the compiler
 at the point where the
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object goes out of scope.
 :RSLTS.
 The call to the
-.MONO WC&lpref.HashTable<Type>
+:MONO.WC&lpref.HashTable<Type>
 destructor destroys a
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -564,7 +565,8 @@ The number of buckets remain unaffected.
 .if &lpref. eq Val .do begin
 Elements stored in the hash are destroyed using
 the destructors of
-.MONO Type.
+:MONO.Type
+:PERIOD.
 .do end
 .el .do begin
 Objects pointed to by the hash elements are not deleted.
@@ -707,7 +709,7 @@ void user_func( Type * value, void * data );
 As the elements are visited, the user function is invoked with the
 element passed as the first.
 The second parameter of the
-.MONO forAll
+:MONO.forAll
 function is passed as the second parameter to the user function.
 This value can be used to pass any appropriate data from the main code to the
 user function.
@@ -736,17 +738,17 @@ a value into the hash, using the hash function to
 determine to which bucket it should be stored.
 If allocation of the
 node to store the value fails, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, the insert will not be completed.
 :P.
 With a
-.MONO WC&lpref.HashSet,
-there must be only one equivalent element in the set.
+:MONO.WC&lpref.HashSet
+:CONT., there must be only one equivalent element in the set.
 If an element equivalent to the inserted element is already
 in the hash set, the hash set will remain unchanged, and the
-.MONO not_unique
+:MONO.not_unique
 .ix 'not_unique' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, the insert will not be completed.
@@ -755,16 +757,16 @@ At some point, the number of buckets initially selected may be too small
 for the number of elements inserted.
 The resize of the hash can be controlled by the insertion mechanism
 by using
-.MONO WC&lpref.HashSet
+:MONO.WC&lpref.HashSet
 (or
-.MONO WC&lpref.HashTable
+:MONO.WC&lpref.HashTable
 .ct )
 as a base class, and providing an insert member function to
 do a resize when appropriate.
 This insert could then call
-.MONO WC&lpref.HashSet::insert
+:MONO.WC&lpref.HashSet::insert
 (or
-.MONO WC&lpref.HashTable::insert
+:MONO.WC&lpref.HashTable::insert
 .ct )
 to insert the element.
 Note that copy constructors and assignment operators are not
@@ -841,18 +843,18 @@ The &fn. returns the number of elements in the hash.
 The &fn. is the assignment operator for the &cls.
 .dot
 The left hand side hash is first cleared using the
-.MONO clear
+:MONO.clear
 member function, and then the right hand side hash is copied.
 The hash function, exception trap states, and all of the hash
 elements are copied.
 If an allocation failure occurs when creating the buckets, the
 table will be created with zero buckets, and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 If there is not enough memory to copy all of
 the values or pointers in the hash, then only some will be copied, and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 The number of entries will correctly reflect the number copied.
@@ -946,12 +948,12 @@ hash function will be used on all of the stored elements to determine
 which bucket they should be stored into.
 Entries are not destroyed or created in the process of being moved.
 If there is not enough memory to resize the hash, the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled, and the hash will contain
 the number of buckets it contained before the resize.
 If the new number is zero, then the
-.MONO zero_buckets
+:MONO.zero_buckets
 .ix 'zero_buckets' 'exception'
 exception is thrown if it is enabled, and no resize will be performed.
 The hash is guaranteed to contain the same number of entries after

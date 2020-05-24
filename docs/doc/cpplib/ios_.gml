@@ -999,7 +999,8 @@ is specified if the file is to be treated as a
 file. A text file is divided into records, and each record is terminated by a
 :ITALICS.new-line
 character, usually represented as
-:MONO.'\n'.
+:MONO.'\n'
+:PERIOD.
 The new-line character is translated into a form that is compatible
 with the underlying file system's concept of text files.
 This conversion happens automatically whenever the new-line is written

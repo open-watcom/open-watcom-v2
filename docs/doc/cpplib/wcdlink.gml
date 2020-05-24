@@ -8,7 +8,7 @@
 :CLSS.
 The &cls. is the building block for all of the double linked list classes.
 It is implemented in terms of the
-.MONO WCSLink
+:MONO.WCSLink
 base class.
 Since no user data is stored directly with it,
 the &cls. should only be used as a base class to derive a user defined class.
@@ -17,14 +17,14 @@ When creating a double linked intrusive list, the &cls. is used to derive the
 user defined class that holds the data to be inserted into the list.
 :P.
 The
-.MONO wclcom.h
+:MONO.wclcom.h
 header file is included by the
-.MONO wclist.h
+:MONO.wclist.h
 header file.
 There is no need to explicitly include the
-.MONO wclcom.h
+:MONO.wclcom.h
 header file unless the
-.MONO wclist.h
+:MONO.wclist.h
 header file is not included.
 No errors will result if it is included.
 :P.

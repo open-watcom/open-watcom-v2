@@ -5,14 +5,14 @@ a time.
 The choice of which type of iterator to use is determined
 by the list you wish to iterate over.
 For example, to iterate over a non-constant
-.MONO WCIsvDList<Type>
+:MONO.WCIsvDList<Type>
 object, use the
-.MONO WCIsvDListIter<Type>
+:MONO.WCIsvDListIter<Type>
 class.
 A constant
-.MONO WCValSList<Type>
+:MONO.WCValSList<Type>
 object can be iterated using the
-.MONO WCValConstSListIter<Type>
+:MONO.WCValConstSListIter<Type>
 class.
 The iterators which correspond to the single link list containers
 have some functionality inhibited.
@@ -26,7 +26,7 @@ or call operator.
 An increment operation causing the iterator to be positioned after the end
 of the list returns zero.
 Further increments will cause the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undex_iter' 'exception'
 exception to be thrown, if it is enabled.
 This behaviour allows lists to be traversed simply using a while loop, and is
@@ -34,7 +34,7 @@ demonstrated in the examples for the iterator classes.
 :P.
 The classes are presented in alphabetical order.
 The
-.MONO WCIterExcept
+:MONO.WCIterExcept
 class provides the common exception handling
 control interface for all of the iterators.
 :P.

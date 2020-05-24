@@ -6,10 +6,11 @@ use of any data type as the queue data.
 :P.
 A second template parameter specifies the storage class used to implement the
 queue.  The
-.MONO WCValSList,
-.MONO WCIsvSList
+:MONO.WCValSList
+:CONT:,
+:MONO.WCIsvSList
 and
-.MONO WCPtrSList
+:MONO.WCPtrSList
 classes are appropriate storage classes.
 .*
 :CLFNM.WCQueue<Type,FType>
@@ -21,38 +22,38 @@ The &cls. is a templated class used to create objects which
 maintain data in a queue.
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining the type of the
 elements stored in the queue.
 The text
-.MONO FType
+:MONO.FType
 is used to indicate the template parameter defining the storage class
 used to maintain the queue.
 :P.
 For example, to create a queue of integers, the
-.MONO WCQueue<int,WCValSList<int> >
+:MONO.WCQueue<int,WCValSList<int> >
 class can be used.
 The
-.MONO WCQueue<int *,WCPtrSList<int> >
+:MONO.WCQueue<int *,WCPtrSList<int> >
 class will create a queue of pointers to integers.
 To create an intrusive queue of objects of type
 :HP1.isv_link:eHP1.
 (derived from the
-.MONO WCSLink
+:MONO.WCSLink
 class), the
-.MONO WCQueue<
+:MONO.WCQueue<
 :HP1.isv_link:eHP1.
-.MONO *,WCIsvSList<
+:MONO.*,WCIsvSList<
 :HP1.isv_link:eHP1.
-.MONO > >
+:MONO.> >
 class can be used.
 :P.
 :CMT. state WCExcept is base class
 :INCLUDE file='_EXPT_BC'.
 :HDG.Requirements of Type
-.MONO Type
+:MONO.Type
 must provide any constructors and/or operators required by the
-.MONO FType
+:MONO.FType
 class.
 :HDG.Public Member Functions
 The following member functions are declared in the public interface:
@@ -85,7 +86,7 @@ The following member functions are declared in the public interface:
 The &fn. creates an empty &obj.
 .dot
 The
-.MONO FType
+:MONO.FType
 storage class constructor performs the initialization.
 :RSLTS.
 The &fn. creates an initialized &obj.
@@ -108,19 +109,19 @@ The &fn. creates an initialized &obj.
 The &fn. creates an empty &obj.
 .dot
 If
-.MONO FType
+:MONO.FType
 is either the
-.MONO WCValSList
+:MONO.WCValSList
 or
-.MONO WCPtrSList
+:MONO.WCPtrSList
 class, then the :HP1.allocator:eHP1.
 function is registered to perform all memory allocations of the queue
 elements, and the :HP1.deallocator:eHP1.
 function to perform all freeing of the queue elements' memory.
 The :HP1.allocator:eHP1. and :HP1.deallocator:eHP1. functions are ignored if
-.MONO FType
+:MONO.FType
 is the
-.MONO WCIsvSList
+:MONO.WCIsvSList
 class.
 :INCLUDE file='_ALOCFNS'.
 :P.
@@ -128,21 +129,21 @@ The :HP1.allocator:eHP1. and :HP1.deallocator:eHP1. functions may assume that
 for a list object instance, the
 :HP1.allocator:eHP1. is always called with the same first argument
 (the size of the memory to be allocated).  If
-.MONO FType
+:MONO.FType
 is the
-.MONO WCValSList<Type>
+:MONO.WCValSList<Type>
 class, then the
-.MONO WCValSListItemSize( Type )
+:MONO.WCValSListItemSize( Type )
 .ix 'WCValSListItemSize' 'macro'
 macro returns the size of the elements which are allocated by the
 :HP1.allocator:eHP1. function.  Similarly, the
-.MONO WCPtrSListItemSize( Type )
+:MONO.WCPtrSListItemSize( Type )
 .ix 'WCPtrSListItemSize' 'macro'
 macro returns the size of
-.MONO WCPtrSList<Type>
+:MONO.WCPtrSList<Type>
 elements.
 :P.The
-.MONO FType
+:MONO.FType
 storage class constructor performs the initialization of the queue.
 :RSLTS.
 The &fn. creates an initialized &obj. and registers the :HP1.allocator:eHP1.
@@ -162,12 +163,12 @@ and :HP1.deallocator:eHP1. functions.
 :SMTICS.
 The &fn. destroys the &obj.:PERIOD
 The
-.MONO FType
+:MONO.FType
 storage class destructor performs the destruction.
 :INCLUDE file='_DTOR'.
 :P.
 If the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled,
 the exception is thrown if the queue is not empty of queue elements.
@@ -193,8 +194,8 @@ The queue object is not destroyed and re-created by this operator, so
 the object destructor is not invoked.
 The queue elements are not cleared by the queue class.
 However, the class used to maintain the queue,
-.MONO FType,
-may clear the items as part of the clear function for that class.
+:MONO.FType
+:CONT., may clear the items as part of the clear function for that class.
 If it does not clear the items,
 any queue items still in the list are lost unless pointed to by some
 pointer object in the program code.
@@ -236,19 +237,19 @@ The queue element is not removed from the queue.
 :P.
 If the queue is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, then it will be thrown.
 Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception will be thrown, if enabled.
 :RSLTS.
 The first queue element is returned.
 If there are no elements in the queue, the return value is determined by the
-.MONO find
+:MONO.find
 member function of the
-.MONO FType
+:MONO.FType
 class.
 :SALSO.
 :SAL typ='fun'.get
@@ -273,19 +274,19 @@ The queue element is also removed from the queue.
 :P.
 If the queue is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, then it will be thrown.
 Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception will be thrown, if enabled.
 :RSLTS.
 The first element in the queue is removed and returned.
 If there are no elements in the queue, the return value is determined by the
-.MONO get
+:MONO.get
 member function of the
-.MONO FType
+:MONO.FType
 class.
 :SALSO.
 :SAL typ='fun'.first
@@ -308,7 +309,7 @@ The &fn. is used to insert the data into the queue.
 It will be the last element in the queue, and the last to be retrieved.
 :P.
 If the insert fails, the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception will be thrown, if enabled.
 The queue will remain unchanged.
@@ -352,19 +353,19 @@ The queue element is not removed from the queue.
 :P.
 If the queue is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, then it will be thrown.
 Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception will be thrown, if enabled.
 :RSLTS.
 The last queue element is returned.
 If there are no elements in the queue, the return value is determined by the
-.MONO find
+:MONO.find
 member function of the
-.MONO FType
+:MONO.FType
 class.
 :SALSO.
 :SAL typ='fun'.first

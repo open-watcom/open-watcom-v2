@@ -12,10 +12,10 @@ The class definition must take care of the implementation details.
 It also provides an interface for manipulating and accessing the information.
 :P.
 The WATCOM container classes are all
-.MONO template
+:MONO.template
 classes.
 Each class will take as a minimal template parameter a
-.MONO type
+:MONO.type
 value.
 The following definition
 .exam begin
@@ -23,10 +23,10 @@ WCValSList<int>     list_one;
 .exam end
 uses a templated class definition to create a list object.
 The object
-.MONO list_one
+:MONO.list_one
 is a value based single linked list of integers.
 The
-.MONO type
+:MONO.type
 value is integer.
 This list stores copies of integers in each list item.
 The implementation detail of this list is that it is a single linked list.
@@ -44,7 +44,7 @@ WCValDList<String>  list_two;
 illustrates that the type of the data in the list does not need to be
 a scalar value such as integer or character.
 The
-.MONO String
+:MONO.String
 class is a product (or user) defined class for operating on character strings.
 :P.
 Some of the container classes have template parameters in addition to
@@ -55,7 +55,7 @@ following:
 WCStack<int,WCValSList<int> >  int_stack;
 .exam end
 The class
-.MONO int_stack
+:MONO.int_stack
 is a stack of integers, with the implementation of the stack supplied
 by the single linked list value class.
 Note that there is a space between the two '>' characters.
@@ -64,7 +64,7 @@ as the right shift operator.
 :SECTION.Intrusive Classes
 :P.
 Some classes use the
-.MONO intrusive
+:MONO.intrusive
 .ix 'intrusive classes'
 method of storing data.
 These classes require the data being stored in the container to be
@@ -81,19 +81,19 @@ class str_sdata : public WCSLink {
 }
 .exam end
 will create a new class
-.MONO str_sdata
+:MONO.str_sdata
 which can be used in single link intrusive list classes.
 The information contained in
-.MONO str_sdata
+:MONO.str_sdata
 is a
-.MONO String
+:MONO.String
 value stored in the member data
-.MONO information
+:MONO.information
 :PERIOD
 :SECTION.Value Classes
 :P.
 Some classes use the
-.MONO value
+:MONO.value
 .ix 'value classes'
 method of storing data.
 These classes make a copy of the data when creating a new element.
@@ -104,16 +104,16 @@ when the data is a complex definition or contains large elements.
 :SECTION.Pointer Classes
 :P.
 Some classes use the
-.MONO pointer
+:MONO.pointer
 method of storing data.
 These classes store a pointer to the data when creating a new element.
 A new storage class definition is not required
 when defining a pointer class.
 Although the
-.MONO pointer
+:MONO.pointer
 .ix 'pointer classes'
 container class is really a specialization of the
-.MONO value
+:MONO.value
 class,
 The storage of pointers to a particular data type
 is a common use of container classes.
