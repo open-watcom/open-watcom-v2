@@ -51,24 +51,24 @@ static int          Curr_head_skip = 0;
 
 static char         *Font_match[] = {
     "",             // 0: PLAIN
-    "<B>",          // 1: BOLD
-    "<I>",          // 2: ITALIC
-    "<B><I>",       // 3: BOLD + ITALIC
-    "<U>",          // 4: UNDERLINE
-    "<B><U>",       // 5: BOLD + UNDERLINE
-    "<I><U>",       // 6: ITALIC + UNDERLINE
-    "<I><U><B>",    // 7: ITALIC + BOLD + UNDERLINE
+    "<b>",          // 1: BOLD
+    "<i>",          // 2: ITALIC
+    "<b><i>",       // 3: BOLD + ITALIC
+    "<u>",          // 4: UNDERLINE
+    "<b><u>",       // 5: BOLD + UNDERLINE
+    "<i><u>",       // 6: ITALIC + UNDERLINE
+    "<i><u><b>",    // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static char         *Font_end[] = {
     "",             // 0: PLAIN
-    "</B>",         // 1: BOLD
-    "</I>",         // 2: ITALIC
-    "</I></B>",     // 3: BOLD + ITALIC
-    "</U>",         // 4: UNDERLINE
-    "</U></B>",     // 5: BOLD + UNDERLINE
-    "</U></I>",     // 6: ITALIC + UNDERLINE
-    "</B></U></I>", // 7: ITALIC + BOLD + UNDERLINE
+    "</b>",         // 1: BOLD
+    "</i>",         // 2: ITALIC
+    "</i></b>",     // 3: BOLD + ITALIC
+    "</u>",         // 4: UNDERLINE
+    "</u></b>",     // 5: BOLD + UNDERLINE
+    "</u></i>",     // 6: ITALIC + UNDERLINE
+    "</b></u></i>", // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static int          Font_list[100];         // up to 100 nested fonts
@@ -86,7 +86,7 @@ static int          tabs_num = 0;
 static void draw_line( section_def *section )
 /*******************************************/
 {
-    trans_add_str( "<HR>\n", section );
+    trans_add_str( "<hr>\n", section );
 }
 
 static size_t translate_char_html( char ch, char next_ch, char *buf )
@@ -278,35 +278,35 @@ void html_trans_line( char *line_buf, section_def *section )
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_START:
-        trans_add_list( "<OL>\n", section, ptr );
+        trans_add_list( "<ol>\n", section, ptr );
         Blank_line_pfx = false;
         return;
     case WHP_LIST_START:
-        trans_add_list( "<UL>\n", section, ptr );
+        trans_add_list( "<ul>\n", section, ptr );
         Blank_line_pfx = false;
         return;
     case WHP_DLIST_START:
-        trans_add_str( "<DL>\n", section );
+        trans_add_str( "<dl>\n", section );
         Blank_line_pfx = false;
         return;
     case WHP_SLIST_START:
-        trans_add_list( "<UL>\n", section, ptr );
+        trans_add_list( "<ul>\n", section, ptr );
         Blank_line_pfx = false;
         return;
     case WHP_SLIST_END:
-        trans_add_str( "</UL>\n", section );
+        trans_add_str( "</ul>\n", section );
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_END:
-        trans_add_str( "</OL>\n", section );
+        trans_add_str( "</ol>\n", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_END:
-        trans_add_str( "</UL>\n", section );
+        trans_add_str( "</ul>\n", section );
         Blank_line_sfx = false;
         return;
     case WHP_DLIST_END:
-        trans_add_str( "</DL>\n", section );
+        trans_add_str( "</dl>\n", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_ITEM:
@@ -343,7 +343,7 @@ void html_trans_line( char *line_buf, section_def *section )
 
     if( Blank_line_pfx ) {
         if( Blank_line_sfx ) {
-            line_len += trans_add_str( "<BR>", section );
+            line_len += trans_add_str( "<br>", section );
         }
         Blank_line_pfx = false;
     }
@@ -361,7 +361,7 @@ void html_trans_line( char *line_buf, section_def *section )
     ch = *ptr;
     if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
-        line_len += trans_add_str( "<BR>", section );
+        line_len += trans_add_str( "<br>", section );
     }
 
     term_fix = false;
@@ -390,11 +390,11 @@ void html_trans_line( char *line_buf, section_def *section )
             }
             *ptr = '\0';
             add_link( ctx_name );
-            sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
+            sprintf( buf, "<a href=\"#%s\">", ctx_name );
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_html( ctx_text, section );
             ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section );
+            line_len += trans_add_str( "</a>", section );
             ++ptr;
         } else if( ch == WHP_FLINK ) {
             Curr_ctx->empty = false;
@@ -416,22 +416,22 @@ void html_trans_line( char *line_buf, section_def *section )
             ctx_name = file_name + 1;
             *file_name = '\0';
             file_name = ptr + 1;
-            sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
+            sprintf( buf, "<a href=\"#%s\">", ctx_name );
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_html( ctx_text, section );
             ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section );
+            line_len += trans_add_str( "</a>", section );
             ptr = ctx_text + strlen( ctx_text ) + 1;
         } else if( ch == WHP_LIST_ITEM ) {
             /* list item */
-            line_len += trans_add_str( "<LI>", section );
+            line_len += trans_add_str( "<li>", section );
             ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_DESC ) {
-            trans_add_str( "<DD>", section );
+            trans_add_str( "<dd>", section );
             ptr = skip_blanks( ptr + 1 );
         } else if( ch == WHP_DLIST_TERM ) {
             /* definition list term */
-            line_len += trans_add_str( "<DT>", section );
+            line_len += trans_add_str( "<dt>", section );
             term_fix = true;
             ptr = skip_blanks( ptr + 1 );
             Blank_line_sfx = false;
@@ -462,16 +462,16 @@ void html_trans_line( char *line_buf, section_def *section )
             strlwr( ptr );
             switch( ch ) {
             case 'i':
-                sprintf( buf, "<IMG SRC=\"%s\">", ptr );
+                sprintf( buf, "<img src=\"%s\">", ptr );
                 break;
             case 'l':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", ptr );
+                sprintf( buf, "<img src=\"%s\" align=top>", ptr );
                 break;
             case 'r':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", ptr );
+                sprintf( buf, "<img src=\"%s\" align=bottom>", ptr );
                 break;
             case 'c':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
+                sprintf( buf, "<img src=\"%s\" align=middle>", ptr );
                 break;
             default:
                 *buf = '\0';
@@ -511,10 +511,10 @@ void html_trans_line( char *line_buf, section_def *section )
             *end = '\0';
 
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
-                strcpy( buf, "<TT>" );
+                strcpy( buf, "<tt>" );
             } else {
                 /* default system font */
-                strcpy( buf, "</TT>" );
+                strcpy( buf, "</tt>" );
             }
             ptr = end + 1;
             end = strchr( ptr, WHP_FONTTYPE );
@@ -549,12 +549,12 @@ void html_trans_line( char *line_buf, section_def *section )
 static void output_hdr( void )
 /****************************/
 {
-    whp_fprintf( Out_file, "<HEAD>\n" );
+    whp_fprintf( Out_file, "<head>\n" );
     if( Ipf_or_Html_title != NULL && Ipf_or_Html_title[0] != '\0' ) {
-        whp_fprintf( Out_file, "<TITLE> %s </TITLE>\n", Ipf_or_Html_title );
+        whp_fprintf( Out_file, "<title> %s </title>\n", Ipf_or_Html_title );
     }
-    whp_fprintf( Out_file, "</HEAD>\n" );
-    whp_fprintf( Out_file, "<BODY>\n" );
+    whp_fprintf( Out_file, "</head>\n" );
+    whp_fprintf( Out_file, "<body>\n" );
 }
 
 static void output_ctx_hdr( ctx_def *ctx )
@@ -589,9 +589,9 @@ static void output_ctx_hdr( ctx_def *ctx )
 
     Curr_head_level = head_level;
 
-    whp_fprintf( Out_file, "<H%d", head_level );
-    whp_fprintf( Out_file, " ID=\"%s\">", translate_str_html( ctx->ctx_name ) );
-    whp_fprintf( Out_file, " %s </H%d>\n", translate_str_html( ctx->title ), head_level );
+    whp_fprintf( Out_file, "<h%d", head_level );
+    whp_fprintf( Out_file, " id=\"%s\">", translate_str_html( ctx->ctx_name ) );
+    whp_fprintf( Out_file, " %s </h%d>\n", translate_str_html( ctx->title ), head_level );
 
 #if 0
     if( ctx->keylist != NULL ) {
@@ -631,7 +631,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 static void output_end( void )
 /****************************/
 {
-    whp_fprintf( Out_file, "</BODY>\n" );
+    whp_fprintf( Out_file, "</body>\n" );
 }
 
 static void output_ctx_sections( ctx_def *ctx )
