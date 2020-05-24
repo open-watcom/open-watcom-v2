@@ -17,7 +17,7 @@ This class maintains state information about the stream. (the
 name can be thought of as a short-form for I/O State).
 Error flags, formatting flags, and values and the connection to the
 buffers used for the input and output are all maintained by the &cls.
-.dot
+:PERIOD.
 No information about the buffer itself is stored in an &obj., merely the
 pointer to the buffer information.
 :HDG.Protected Member Functions
@@ -91,7 +91,7 @@ The following member operators are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The &fn. queries the state of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if &badbit. is set in the &errstate.,
 otherwise zero is returned.
@@ -121,7 +121,7 @@ user derived classes.
 :P.
 The bit value allocated may be used with the member functions that query
 and affect &fmtflags.
-.dot
+:PERIOD.
 In particular, the bit can be set with the
 :MONO.setf
 or
@@ -143,7 +143,7 @@ which indicate the number of bits available when a program starts.
 :MONO._LAST_FORMAT_FLAG
 indicates the last bit used by the built-in format flags described by
 &fmtflags.
-.dot
+:PERIOD.
 :MONO._LAST_FLAG_BIT
 indicates the last bit that is available for the &fn. to allocate.
 The difference between the bit positions indicates how many bits are
@@ -165,13 +165,13 @@ derived classes. If no more bits are available, zero is returned.
 :SMTICS.
 The &fn. is used to change the current value of &iostate. in the
 &obj.
-.dot
+:PERIOD.
 &iostate. is cleared, all bits specified in
 :ARG.flags
 are set.
 :RSLTS.
 The &fn. returns the previous value of &iostate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.bad
 :SAL typ='mfun'.eof
@@ -193,7 +193,7 @@ The &fn. returns the previous value of &iostate.
 :eSNPL.
 :SMTICS.
 The &fn. queries the state of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if &eofbit. is set in the &errstate.,
 otherwise zero is returned.
@@ -226,7 +226,7 @@ If so, an exception is thrown. Otherwise, no exception is thrown.
 :P.
 The first form of the &fn. looks up the current setting of the exception bits.
 The bit values are those described by &iostate.
-.dot
+:PERIOD.
 :P.
 The second form of the &fn. sets the exceptions bits to those specified in the
 :ARG.enable
@@ -250,7 +250,7 @@ The &fn. returns the previous setting of the exception bits.
 :eSNPL.
 :SMTICS.
 The &fn. queries the state of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if &failbit. or &badbit. is set
 in the &errstate., otherwise zero is returned.
@@ -280,16 +280,16 @@ The &fn. queries and/or sets the &fillchar. used when the size of a
 formatted object is smaller than the &fmtwidth. specified.
 :P.
 The first form of the &fn. looks up the current value of the &fillchar.
-.dot
+:PERIOD.
 :P.
 The second form of the &fn. sets the &fillchar. to
 :ARG.fillchar
-.dot
+:PERIOD.
 :P.
 By default, the &fillchar. is a space.
 :RSLTS.
 The &fn. returns the previous value of the &fillchar.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mtyp'.fmtflags
 :SAL typ='mnp'.setfill
@@ -306,7 +306,7 @@ The &fn. returns the previous value of the &fillchar.
 :SMTICS.
 The &fn. is used to query and/or set the value of &fmtflags.
 in the &obj.
-.dot
+:PERIOD.
 :P.
 The first form of the &fn. looks up the current &fmtflags. value.
 :P.
@@ -370,7 +370,7 @@ represents the same set of bits, but uses a
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.  All uses of
 these bits should use the &fn.
-.dot
+:PERIOD.
 :P.
 The bit values defined by the &fn. are set and read by the member functions
 :MONO.setf
@@ -383,7 +383,7 @@ manipulators
 :MONO.setiosflags
 and
 :MONO.resetiosflags
-.dot
+:PERIOD.
 :P.
 Because one field is used to store all of these bits, there are three special
 values used to mask various groups of bits. These values are named
@@ -417,7 +417,7 @@ control the alignment of items written using an
 :MONO.operator~b<<
 inserter.
 These bits are usually used in conjunction with the &fmtwidth. and &fillchar.
-.dot
+:PERIOD.
 :P.
 :MONO.ios::adjustfield
 can be used to mask the alignment bits returned by the
@@ -533,7 +533,7 @@ or
 :MONO.0X
 depending on the setting of
 :MONO.ios::uppercase
-.dot
+:PERIOD.
 If the
 :MONO.ios::showbase
 is not set, no prefixes are written.
@@ -543,7 +543,7 @@ is used to control whether or not the decimal point and trailing zeroes are
 trimmed when floating-point numbers are written to the stream. If the bit is
 set, no trimming is done, causing the number to appear with the
 specified &fmtprec.
-.dot
+:PERIOD.
 If the bit is not set, any trailing zeroes after
 the decimal point are trimmed, and if not followed by any digits, the
 decimal point is removed as well.
@@ -603,7 +603,7 @@ or
 sign, and two or three digits representing the exponent. The digit
 before the decimal is not zero unless the number is zero. The total number of
 digits before and after the decimal is equal to the specified &fmtprec.
-.dot
+:PERIOD.
 If
 :MONO.ios::showpoint
 is not set, trimming of the decimal and digits following the decimal
@@ -615,7 +615,7 @@ is set, the floating-point number is written with a
 :MONO.-
 sign (for negative numbers), at least one digit, the decimal point,
 and as many digits following the decimal as specified by the &fmtprec.
-.dot
+:PERIOD.
 If
 :MONO.ios::showpoint
 is not set, trimming of the decimal and digits following the decimal
@@ -630,7 +630,7 @@ notation provided one or both of the following conditions are met:
 :UL.
 :LI.the exponent is less than -4, or,
 :LI.the exponent is greater than the &fmtprec.
-.dot
+:PERIOD.
 :eUL.
 :P.
 Otherwise, fixed-point notation is used.
@@ -675,7 +675,7 @@ function on the appropriate stream before resuming C++ output operations.
 :eSNPL.
 :SMTICS.
 The &fn. queries the state of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if none of &iostate. is clear,
 otherwise zero is returned.
@@ -702,7 +702,7 @@ The &fn. is used by derived classes to explicitly initialize the
 portion of the derived object, and to associate a
 :MONO.streambuf
 with the &obj.
-.dot
+:PERIOD.
 The &fn. performs the following steps:
 :OL.
 :LI.The default &fillchar. is set to a space.
@@ -713,7 +713,7 @@ pointer (returned by the
 :MONO.rdbuf
 member function) is set to
 :ARG.sb
-.dot
+:PERIOD.
 :LI.The remaining fields of the &obj. are initialized to zero.
 :eOL.
 :RSLTS.
@@ -721,7 +721,7 @@ If
 :ARG.sb
 is &null.
 the &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='ctor'.
 :SAL typ='mfun'.rdbuf
@@ -738,13 +738,13 @@ the &badbit. is set in the &errstate.
 This form of the &fn. creates a default &obj. that is initialized,
 but does not have an associated
 :MONO.streambuf
-.dot
+:PERIOD.
 Initialization of an &obj. is handled by the
 :MONO.init
 protected member function.
 :RSLTS.
 This &fn. creates an &obj. and sets &badbit. in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.init
@@ -760,7 +760,7 @@ This &fn. creates an &obj. and sets &badbit. in the &errstate.
 :SMTICS.
 This form of the &fn. creates an &obj. that is initialized and has an associated
 :MONO.streambuf
-.dot
+:PERIOD.
 Initialization of an &obj. is handled by the
 :MONO.init
 protected member function.
@@ -770,17 +770,17 @@ protected member function is completed, the &obj.'s
 :MONO.streambuf
 pointer is set to
 :ARG.sb
-.dot
+:PERIOD.
 If
 :ARG.sb
 is not &null., &badbit. is cleared from the &errstate.
-.dot
+:PERIOD.
 :RSLTS.
 This &fn. creates an &obj. and, if
 :ARG.sb
 is &null.
 :CONT., sets &badbit. in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.init
@@ -795,7 +795,7 @@ is &null.
 :eSNPL.
 :SMTICS.
 The &fn. destroys an &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -826,7 +826,7 @@ The &fn. represents the same set of bits, but uses an
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
 All uses of these bits should use the &fn.
-.dot
+:PERIOD.
 :P.
 The bit values defined by the &fn. can be read and set by the
 member functions
@@ -836,7 +836,7 @@ and
 :CONT.,
 and can be used to control exception handling with the member function
 :MONO.exceptions
-.dot
+:PERIOD.
 :P.
 &badbit. represents the state where the stream is
 no longer usable because of some error condition.
@@ -889,7 +889,7 @@ static member function.
 :RSLTS.
 The &fn. returns a reference to a
 :MONO.long int
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.pword
 :SAL typ='mfun'.xalloc
@@ -926,7 +926,7 @@ The &fn. represents the same set of bits, but uses an
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
 All uses of these bits should use the &fn.
-.dot
+:PERIOD.
 :P.
 The bit values defined by &fn. can be specified in the constructors
 for stream objects, as well as in various member functions.
@@ -1059,7 +1059,7 @@ is assumed.
 :eSNPL.
 :SMTICS.
 The &fn. tests the &errstate. of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if either of &failbit. or &badbit. bits
 are set in the &errstate., otherwise zero is returned.
@@ -1084,10 +1084,10 @@ are set in the &errstate., otherwise zero is returned.
 :SMTICS.
 The &fn. converts the &obj. into a pointer to
 :MONO.void
-.dot
+:PERIOD.
 The actual pointer value returned is meaningless and intended only for
 comparison with &null. to determine the &errstate. of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a &null. pointer
 if either of &failbit. or &badbit. bits are set in the
@@ -1113,7 +1113,7 @@ if either of &failbit. or &badbit. bits are set in the
 :eSNPL.
 :SMTICS.
 The &fn. is used to query and/or set the &fmtprec.
-.dot
+:PERIOD.
 :I1.format precision
 The &fmtprec. is used to control the number of digits of precision used when
 formatting floating-point numbers. For scientific notation, the
@@ -1124,11 +1124,11 @@ For fixed-point notation, the &fmtprec. describes the number of digits
 after the decimal point.
 :P.
 The first form of the &fn. looks up the current &fmtprec.
-.dot
+:PERIOD.
 :P.
 The second form of the &fn. sets the &fmtprec. to
 :ARG.prec
-.dot
+:PERIOD.
 :P.
 By default, the &fmtprec. is six. If
 :ARG.prec
@@ -1181,12 +1181,12 @@ pointer.
 The &fn. looks up the pointer to the
 :MONO.streambuf
 object which maintains the buffer associated with the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the pointer to the
 :MONO.streambuf
 object associated with the &obj.
-.dot
+:PERIOD.
 If there is no associated
 :MONO.streambuf
 object, &null. is returned.
@@ -1203,7 +1203,7 @@ The &fn. is used to query the current value of &iostate. in the &obj.
 without modifying it.
 :RSLTS.
 The &fn. returns the current value of &iostate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.bad
 :SAL typ='mfun'.clear
@@ -1238,7 +1238,7 @@ The &fn. represents the same set of bits, but uses an
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
 All uses of these bits should use the &fn.
-.dot
+:PERIOD.
 :P.
 The bit values defined by &fn. are used by the member functions
 :MONO.seekg
@@ -1278,7 +1278,7 @@ stream. The offset is specified as a negative value.
 :eSNPL.
 :SMTICS.
 The &fn. is used to set bits in &fmtflags. in the &obj.
-.dot
+:PERIOD.
 :P.
 The first form is used to turn on the bits that are on in the
 :ARG.onbits
@@ -1321,7 +1321,7 @@ Both forms of the &fn. return the previous &fmtflags. value.
 :eSNPL.
 :SMTICS.
 The &fn. is provided as a convenience for classes derived from the &cls.
-.dot
+:PERIOD.
 It turns on the &errstate. bits that are set in the
 :ARG.or_bits
 parameter, and leaves the other &errstate. bits unchanged.
@@ -1329,7 +1329,7 @@ parameter, and leaves the other &errstate. bits unchanged.
 The &fn. sets the bits specified by
 :ARG.or_bits
 in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.bad
 :SAL typ='mfun'.clear
@@ -1375,7 +1375,7 @@ The first form of the &fn. is used to query the current tie.
 :P.
 The second form of the &fn. is used to set the tied stream to
 :ARG.ostrm
-.dot
+:PERIOD.
 :P.
 Normally, the predefined streams &cin. and &cerr. set up ties to &cout. so that
 any input from the terminal flushes any buffered output, and any writes to
@@ -1444,7 +1444,7 @@ Therefore, any non-zero &fmtwidth. must be set before each item that is
 to be formatted.
 :RSLTS.
 The &fn. returns the previous &fmtwidth.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mtyp'.fmtflags
 :SAL typ='mnp'.setw
@@ -1464,7 +1464,7 @@ use for any purpose. Each item can be either a
 :MONO.long int
 or a pointer to
 :MONO.void
-.dot
+:PERIOD.
 The index can be used with the
 :MONO.iword
 and

@@ -23,7 +23,7 @@ Objects of this type may be concatenated, substringed, compared and
 searched without the need for memory management by the user.
 Unlike a C string, a &obj. has no delimiting character, so any character
 in the collating sequence, or character set, may be stored in a &obj.
-.dot
+:PERIOD.
 :HDG.Public Functions
 The following constructors and destructors are declared:
 :MFNL.
@@ -169,18 +169,18 @@ is found.
 The first form searches the &obj. for the contents of the
 :ARG.str
 &obj.
-.dot
+:PERIOD.
 :P.
 The second form searches the &obj. for the sequence of characters pointed
 at by
 :ARG.pch
-.dot
+:PERIOD.
 :P.
 If
 :ARG.pos
 is specified, the search begins at that offset from the start of the
 &obj.
-.dot
+:PERIOD.
 Otherwise, the search begins at offset zero (the first character).
 :P.
 The &fn. treats upper and lower case letters as not equal.
@@ -204,10 +204,10 @@ If the substring is not found, -1 is returned.
 :eSNPL.
 :SMTICS.
 The &fn. computes the number of characters contained in the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the number of characters contained in the &obj.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.lower
@@ -222,7 +222,7 @@ object's value, except that all upper-case letters have been converted
 to lower-case.
 :RSLTS.
 The &fn. returns a lower-case &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.upper
 :eSALSO.
@@ -242,7 +242,7 @@ where they differ.
 The first form compares the &obj. to the
 :ARG.str
 &obj.
-.dot
+:PERIOD.
 :P.
 The second form compares the &obj. to the
 :ARG.pch
@@ -270,7 +270,7 @@ If the character sequences are equal, -1 is returned.
 :eSNPL.
 :SMTICS.
 The &fn. tests the validity of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is invalid,
 otherwise zero is returned.
@@ -344,7 +344,7 @@ parameter are different, otherwise zero is returned.
 :eSNPL.
 :SMTICS.
 This form of the &fn. extracts a sub-sequence of characters from the &obj.
-.dot
+:PERIOD.
 A new &obj. is created that contains the sub-sequence of characters.
 The sub-sequence begins at offset
 :ARG.pos
@@ -368,10 +368,10 @@ exceeds the length of the object, the result is
 the sub-sequence of characters from the &obj. starting at offset
 :ARG.pos
 and running to the end of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b[]
 :SAL typ='mfun'.operator~bchar
@@ -391,7 +391,7 @@ The &fn. returns a &obj.
 :eSNPL.
 :SMTICS.
 The &fn. concatenates two sequences of characters into a new &obj.
-.dot
+:PERIOD.
 The new &obj. contains the sequence of characters from the
 :ARG.lft
 parameter followed by the sequence of characters from the
@@ -419,17 +419,17 @@ parameter.
 :eSNPL.
 :SMTICS.
 The &fn. appends the contents of the parameter to the end of the &obj.
-.dot
+:PERIOD.
 :P.
 The first form of the &fn. appends the contents of the
 :ARG.str
 &obj. to the &obj.
-.dot
+:PERIOD.
 :P.
 The second form appends the null-terminated sequence of characters stored at
 :ARG.pch
 to the &obj.
-.dot
+:PERIOD.
 If the
 :ARG.pch
 parameter is &null., nothing is appended.
@@ -571,12 +571,12 @@ The first form of the &fn. sets the value of the
 &obj. to be the same as the value of the
 :ARG.str
 &obj.
-.dot
+:PERIOD.
 :P.
 The second form sets the value of the &obj. to the null-terminated
 sequence of characters stored at
 :ARG.pch
-.dot
+:PERIOD.
 If the
 :ARG.pch
 parameter is &null., the &obj. is empty.
@@ -720,7 +720,7 @@ The &fn. is used to read a sequence of characters from the
 object into the
 :ARG.str
 &obj.
-.dot
+:PERIOD.
 Like C strings, the gathering of characters for a
 :ARG.str
 &obj. ends at the first whitespace encountered, so that the last
@@ -748,7 +748,7 @@ The &fn. creates either a const or a non-const reference to the character
 at offset
 :ARG.pos
 within the &obj.
-.dot
+:PERIOD.
 The non-const reference may be used to modify that character.
 The first character of a &obj. is at position zero.
 :P.
@@ -784,7 +784,7 @@ The &fn. converts a &obj. into the first character it contains.
 If the &obj. is empty, the result is the null character.
 :RSLTS.
 The &fn. returns the first character contained in the &obj.
-.dot
+:PERIOD.
 If the
 &obj. is empty, the null character is returned.
 :SALSO.
@@ -818,7 +818,7 @@ used in some way to modify the C string, the behavior is undefined.
 :RSLTS.
 The &fn. returns a pointer to a null-terminated constant C string
 that contains the same characters as the &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b()
 :SAL typ='mfun'.operator~b[]
@@ -836,16 +836,16 @@ that contains the same characters as the &obj.
 The &fn. modifies the character at offset
 :ARG.pos
 within the &obj.
-.dot
+:PERIOD.
 The character at the specified offset is set to the value of
 :ARG.chr
-.dot
+:PERIOD.
 If
 :ARG.pos
 is greater than the number of characters within the &obj.,
 :ARG.chr
 is appended to the &obj.
-.dot
+:PERIOD.
 :P.
 :RSLTS.
 The &fn. has no return value.
@@ -869,7 +869,7 @@ This form of the &fn. creates a default &obj. containing no characters.
 The created &obj. has length zero.
 :RSLTS.
 This form of the &fn. produces a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b=
 :SAL typ='mfun'.operator~b+=
@@ -885,25 +885,25 @@ This form of the &fn. produces a &obj.
 :eSNPL.
 :SMTICS.
 This form of the &fn. creates a &obj.
-.dot
+:PERIOD.
 The function constructs a &obj. of length
 :ARG.size
 if
 :ARG.cap
 is equal to the enumerated
 :ITALICS.default_size
-.dot
+:PERIOD.
 The function reserves
 :ARG.size
 bytes of memory and sets the length of the &obj. to be zero if
 :ARG.cap
 is equal to the enumerated
 :ITALICS.reserve
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. produces a &obj. of size
 :ARG.size
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b=
 :SAL typ='dtor'.
@@ -956,7 +956,7 @@ Characters are included up to
 :ARG.num
 or the end of the C string pointed at by
 :ARG.pch
-.dot
+:PERIOD.
 Note that C strings are terminated by a null character and that
 the value of the created &obj. does not contain that character, nor any
 following it.
@@ -1008,7 +1008,7 @@ parameter.
 :eSNPL.
 :SMTICS.
 The &fn. destroys the &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -1029,7 +1029,7 @@ The &fn. creates a new &obj. whose value is the same as the original &obj.,
 except that all lower-case letters have been converted to upper-case.
 :RSLTS.
 The &fn. returns a new upper-case &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.lower
 :eSALSO.
@@ -1045,7 +1045,7 @@ The &fn. returns a new upper-case &obj.
 The &fn. tests the validity of the
 :ARG.str
 &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the
 :ARG.str
@@ -1064,7 +1064,7 @@ The &fn. returns a non-zero value if the
 :eSNPL.
 :SMTICS.
 The &fn. tests the validity of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is valid,
 otherwise zero is returned.

@@ -1169,7 +1169,7 @@ a reference to the left hand side.
 :eSNPL.
 :SMTICS.
 The &fn. is the equivalence operator for the &cls.
-.dot
+:PERIOD.
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

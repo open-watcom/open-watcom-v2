@@ -153,16 +153,16 @@ input member function.
 :SMTICS.
 This form of the &fn. performs an unformatted read of a single character from
 the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. returns the character read from the &obj.
-.dot
+:PERIOD.
 If the &obj. is positioned at end-of-file before the read, &eof. is returned
 and &eofbit. bit is set in the &errstate.
-.dot
+:PERIOD.
 &failbit. bit is not
 set by this form of the &fn.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.putback
 :eSALSO.
@@ -183,7 +183,7 @@ from the &obj. and store the character in the
 parameter.
 :RSLTS.
 These forms of the &fn. return a reference to the &obj.
-.dot
+:PERIOD.
 &eofbit. is set in the &errstate. if the &obj. is positioned at
 end-of-file before the attempt to read the character.
 &failbit. is set in the &errstate. if no character is read.
@@ -221,21 +221,21 @@ After the read terminates, whether or not an error occurred, a null
 character is stored in
 :ARG.buf
 following the last character read from the &obj.
-.dot
+:PERIOD.
 :P.
 If the
 :ARG.delim
 parameter is not specified, the new-line character is assumed.
 :RSLTS.
 These forms of the &fn. return a reference to the &obj.
-.dot
+:PERIOD.
 If end-of-file is encountered as the first character, &eofbit. is set in
 the &errstate.
-.dot
+:PERIOD.
 If no characters are stored into
 :ARG.buf,
 &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.getline
 :SAL typ='mfun'.read
@@ -272,7 +272,7 @@ If the
 parameter is not specified, the new-line character is assumed.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 &failbit. is set in the &errstate. if the store into the
 :MONO.streambuf
 object fails.
@@ -318,23 +318,23 @@ character, it is not extracted.
 After the read terminates, whether or not an error occurred, a null
 character is stored in the buffer following the last character
 read from the &obj.
-.dot
+:PERIOD.
 :P.
 If the
 :ARG.delim
 parameter is not specified, the new-line character is assumed.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If end-of-file is encountered as the first character, &eofbit. is set in
 the &errstate.
-.dot
+:PERIOD.
 If end-of-file is encountered before
 :ARG.len
 characters are transferred or the
 :ARG.delim
 character is reached, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.get
 :SAL typ='mfun'.read
@@ -352,7 +352,7 @@ character is reached, &failbit. is set in the &errstate.
 The &fn. extracts and discards up to
 :ARG.num
 characters from the &obj.
-.dot
+:PERIOD.
 If the
 :ARG.num
 parameter is not specified, the &fn. extracts and discards one character.
@@ -373,10 +373,10 @@ The operation continues until the delimiting character is found and
 discarded, or until end-of-file.  This behavior is a WATCOM extension.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If end-of-file is encountered as the first character, &eofbit. is
 set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.eatwhite
 :eSALSO.
@@ -409,7 +409,7 @@ integers and floating-point numbers) call the &fn. with the
 parameter set to zero, allowing leading whitespaces to be discarded if the
 :MONO.ios::skipws
 bit is on in &fmtflags.
-.dot
+:PERIOD.
 The unformatted input functions that read
 characters without interpretation call the &fn. with a the
 :ARG.noskipws
@@ -456,9 +456,9 @@ This form of the &fn. is only used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
 This form of the &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -486,13 +486,13 @@ will continue to use the
 object.
 :RSLTS.
 This form of the &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 If there is no
 :MONO.streambuf
 object currently associated with the
 :ARG.istrm
 parameter, &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -515,14 +515,14 @@ This function is likely to be used for the creation of an &obj. that is
 associated with the same
 :MONO.streambuf
 object as another &obj.
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 If the
 :ARG.sb
 parameter is &null., &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -538,7 +538,7 @@ parameter is &null., &badbit. is set in the &errstate.
 The &fn. does not do anything explicit. The
 :MONO.ios
 destructor is called for that portion of the &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -560,7 +560,7 @@ This form of the &fn. is used to associate a
 object, specified by the
 :ARG.sb
 parameter, with an existing &obj.
-.dot
+:PERIOD.
 The &obj. is initialized and will use the specified
 :MONO.streambuf
 object for subsequent operations.
@@ -570,7 +570,7 @@ the assignment.
 If the
 :ARG.sb
 parameter is &null., &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.operator =
@@ -602,7 +602,7 @@ the assignment. If there is no
 object currently associated with the
 :ARG.istrm
 parameter, &badbit. is set in the &errstate.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.operator >>
@@ -620,23 +620,23 @@ and place them in the buffer specified by the
 parameter.  Characters are read until a whitespace character is found or
 the maximum size has been read.  If a whitespace character is found, it
 is not transferred to the buffer and remains in the &obj.
-.dot
+:PERIOD.
 :P.
 If a non-zero &fmtwidth. has been specified, it is interpreted as the
 maximum number of characters that may be placed in
 :ARG.buf
-.dot
+:PERIOD.
 No more than &fmtwidth.-1 characters are read
 from the &obj. and transferred to
 :ARG.buf
-.dot
+:PERIOD.
 If &fmtwidth. is zero, characters are transferred until a whitespace
 character is found.
 :P.
 Since these forms of the &fn. use &fmtwidth., it is reset to zero after each
 use. It must be set before each input operation that requires a
 non-zero &fmtwidth.
-.dot
+:PERIOD.
 :P.
 A null character is added following the last transferred character,
 even if the transfer fails because of an error.
@@ -646,10 +646,10 @@ extraction operations may be specified in the same statement.
 If no characters are transferred to
 :ARG.buf
 :CONT., &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 If the first character read yielded end-of-file, &eofbit. is set in the
 &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.get
 :SAL typ='mfun'.getline
@@ -675,7 +675,7 @@ These forms of the &fn. return a reference to the &obj. so that further
 extraction operations may be specified in the same statement.
 If the character read yielded end-of-file, &eofbit. is set in the
 &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.get
 :eSALSO.
@@ -711,7 +711,7 @@ is the only bit set in the
 bits of &fmtflags., the number is interpreted as a decimal (base 10)
 integer, composed of the digits
 :MONO.0123456789
-.dot
+:PERIOD.
 :P.
 If
 :MONO.ios::oct
@@ -720,7 +720,7 @@ is the only bit set in the
 bits of &fmtflags., the number is interpreted as an octal (base 8)
 integer, composed of the digits
 :MONO.01234567
-.dot
+:PERIOD.
 :P.
 If
 :MONO.ios::hex
@@ -733,7 +733,7 @@ and the letters
 :MONO.abcdef
 or
 :MONO.ABCDEF
-.dot
+:PERIOD.
 :P.
 If no bits are set in the
 :MONO.ios::basefield
@@ -760,10 +760,10 @@ These forms of the &fn. return a reference to the &obj. so that further
 extraction operations may be specified in the same statement.
 If end-of-file is encountered as the first character, &eofbit. is set in
 the &errstate.
-.dot
+:PERIOD.
 If an overflow occurs while converting to the required integer type, the
 &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='omtyp' ocls='ios'.fmtflags
 :eSALSO.
@@ -790,10 +790,10 @@ These forms of the &fn. return a reference to the &obj. so that further
 extraction operations may be specified in the same statement.
 If end-of-file is encountered as the first character, &eofbit. is set in
 the &errstate.
-.dot
+:PERIOD.
 If an overflow occurs while converting to the required type, the
 &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.operator >>
@@ -821,7 +821,7 @@ extraction operations may be specified in the same statement.
 :SMTICS.
 These forms of the &fn. are used to implement the non-parameterized
 manipulators for the &cls.
-.dot
+:PERIOD.
 The function specified by the
 :ARG.fn
 parameter is called with the &obj. as its parameter.
@@ -841,7 +841,7 @@ The &fn. looks up the next character to be extracted from the &obj.,
 without extracting the character.
 :RSLTS.
 The &fn. returns the next character to be extracted from the &obj.
-.dot
+:PERIOD.
 If the &obj. is positioned at end-of-file, &eof. is returned.
 :SALSO.
 :SAL typ='mfun'.get
@@ -858,7 +858,7 @@ If the &obj. is positioned at end-of-file, &eof. is returned.
 The &fn. attempts to put the extracted character specified by the
 :ARG.ch
 parameter back into the &obj.
-.dot
+:PERIOD.
 The
 :ARG.ch
 character must be the same as the character before the current position of
@@ -871,11 +871,11 @@ is usually at least 4. Depending on the status of the buffers used for input,
 it may be possible to put back more than 4 characters.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If the &fn. is unable to put back the
 :ARG.ch
 parameter, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.get
 :eSALSO.
@@ -894,26 +894,26 @@ The &fn. performs an unformatted read of at most
 :ARG.len
 characters from the &obj. and stores them in the memory locations starting at
 :ARG.buf
-.dot
+:PERIOD.
 If end-of-file is encountered before
 :ARG.len
 characters have been transferred, the transfer stops and &failbit.
 is set in the &errstate.
-.dot
+:PERIOD.
 :P.
 The number of characters extracted can be determined with the
 :MONO.gcount
 member function.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If end-of-file is encountered as the first character, &eofbit. is set in
 the &errstate.
-.dot
+:PERIOD.
 If end-of-file is encountered before
 :ARG.len
 characters are transferred, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.gcount
 :SAL typ='mfun'.get
@@ -933,9 +933,9 @@ The &fn. positions the &obj. to the position specified by the
 parameter so that the next input operation commences from that position.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If the seek operation fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.tellg
 :SAL typ='ofun' ocls='ostream'.tellp
@@ -955,9 +955,9 @@ operation commences from that position.
 :INCLUDE file='seekdir'.
 :RSLTS.
 The &fn. returns a reference to the &obj.
-.dot
+:PERIOD.
 If the seek operation fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='ofun' ocls='ostream'.tellp
 :SAL typ='ofun' ocls='ostream'.seekp
@@ -982,7 +982,7 @@ virtual member function to carry out the synchronization.
 The specific behavior is dependent on what type of
 :MONO.streambuf
 derived object is associated with the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :eLIBF.

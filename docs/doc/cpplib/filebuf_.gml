@@ -23,12 +23,12 @@ again when the underlying file supports read/write access.
 unless one is specified when the &obj. is created.
 The &getarea. and &putarea. pointers operate as if they were tied together.
 There is only one current position in a &obj.
-.dot
+:PERIOD.
 :INCLUDE file='flb_desc'.
 :P.
 C++ programmers who wish to use files without deriving new objects
 do not need to explicitly create or use a &obj.
-.dot
+:PERIOD.
 :HDG.Public Data Members
 The following data member is declared in the public interface.
 Its value is the default file protection that is used when
@@ -77,11 +77,11 @@ The following member functions are declared in the public interface:
 The &fn. connects an existing &obj. to an open file via the file's descriptor
 or handle specified by
 :ARG.hdl
-.dot
+:PERIOD.
 If the &obj. is already connected to a file, the &fn. fails. Otherwise,
 the &fn. extracts information from the file system to determine the
 capabilities of the file and hence the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a pointer to the &obj. on success, otherwise &null. is
 returned.
@@ -171,11 +171,11 @@ member function. A call to the
 :MONO.fd
 member function for this created &obj. returns
 :ARG.hdl
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. produces a &obj. that is connected to
 :ARG.hdl
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -195,7 +195,7 @@ connected to an open file and that uses the buffer specified by
 :ARG.buf
 and
 :ARG.len
-.dot
+:PERIOD.
 The file is specified via the
 :ARG.hdl
 parameter, which is a file descriptor or handle. If
@@ -214,7 +214,7 @@ member functions.
 :RSLTS.
 The &fn. constructor produces a &obj. that is connected to
 :ARG.hdl
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -237,7 +237,7 @@ member function. Otherwise, the destructor takes no explicit action.
 The
 :MONO.streambuf
 destructor is called to destroy that portion of the &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -281,12 +281,12 @@ The &fn. is used to connect the &obj. to a file specified by the
 parameter.
 The file is opened using the specified
 :ARG.mode
-.dot
+:PERIOD.
 For details about the
 :ARG.mode
 parameter, see the description of
 :MONO.ios::openmode
-.dot
+:PERIOD.
 The
 :ARG.prot
 parameter specifies the file protection
@@ -354,7 +354,7 @@ class call the &fn. for the derived class when the &putarea. is full.
 :SMTICS.
 The &fn. handles an attempt to put back a character when there is no room at
 the beginning of the &getarea.
-.dot
+:PERIOD.
 The &fn. first calls the
 :MONO.sync
 virtual member function to flush the &putarea. and then it attempts to
@@ -419,7 +419,7 @@ The &fn. is used to offer a buffer, specified by
 and
 :ARG.len
 to the &obj.
-.dot
+:PERIOD.
 If the
 :ARG.buf
 parameter is &null. or the

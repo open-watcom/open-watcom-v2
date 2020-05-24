@@ -21,7 +21,7 @@ the &obj. automatically grows the buffer when necessary.
 :P.
 C++ programmers who wish to use string streams without deriving new
 objects will probably never explicitly create or use a &obj.
-.dot
+:PERIOD.
 :HDG.Protected Member Functions
 The following member function is declared in the protected interface:
 :MFNL.
@@ -127,7 +127,7 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :eSNPL.
 :SMTICS.
 The &fn. enables and disables automatic deletion of the &resvarea.
-.dot
+:PERIOD.
 If the &fn. is called with no parameter or a non-zero parameter, the
 &obj. is frozen.
 If the &fn. is called with a zero parameter, the &obj. is unfrozen.
@@ -135,7 +135,7 @@ If the &fn. is called with a zero parameter, the &obj. is unfrozen.
 A frozen &obj. does not free the &resvarea. in the destructor. If the &obj. is
 destroyed while it is frozen, it is the program's responsibility to also
 free the &resvarea.
-.dot
+:PERIOD.
 :P.
 If characters are written to the &obj. while it is frozen, the
 effect is undefined since the &resvarea. may be reallocated and therefore
@@ -159,7 +159,7 @@ The &fn. returns the previous frozen state.
 The &fn. provides the output communication between the
 :MONO.streambuf
 member functions and the &obj.
-.dot
+:PERIOD.
 Member functions in the
 :MONO.streambuf
 class call the &fn. when the &putarea. is full. The &fn. attempts to grow
@@ -198,19 +198,19 @@ The &fn. returns &noteof. when it successfully extends the &putarea., otherwise
 :SMTICS.
 The &fn. positions the &getptr. and/or &putptr. to the specified position
 in the &resvarea.
-.dot
+:PERIOD.
 If the &getptr. is moved, it is moved to a position
 relative to the start of the &resvarea. (which is also the start of the
 &getarea.). If a position is specified that is beyond the end of the
 &getarea. but is in the &putarea., the &getarea. is extended to include
 the &putarea.
-.dot
+:PERIOD.
 If the &putptr. is moved, it is moved to a position
 relative to the start of the &putarea.,
 :HILITE.not
 relative to the start of the
 &resvarea.
-.dot
+:PERIOD.
 :P.
 The &fn. seeks
 :ARG.offset
@@ -223,7 +223,7 @@ is not valid if the
 :ARG.dir
 parameter is
 :MONO.ios::cur
-.dot
+:PERIOD.
 :INCLUDE file='seekdir'.
 :RSLTS.
 The &fn. returns the new position in the file on success, otherwise &eof. is
@@ -235,7 +235,7 @@ are specified and the
 parameter is
 :MONO.ios::cur
 the returned position refers to the &putptr.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public virtual'.setbuf
@@ -260,7 +260,7 @@ should call the &fn. to indicate the size of the next allocation, to prevent
 multiple allocations as the buffer gets larger.
 :RSLTS.
 The &fn. returns a pointer to the &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -275,7 +275,7 @@ The &fn. returns a pointer to the &obj.
 :eSNPL.
 :SMTICS.
 The &fn. freezes the &obj. and returns a pointer to the &resvarea.
-.dot
+:PERIOD.
 This pointer
 remains valid after the &obj. is destroyed provided the &obj. remains
 frozen, since the destructor does not free the &resvarea. if it is frozen.
@@ -293,7 +293,7 @@ it is the program's responsibility to ensure that the null character is
 present.
 :RSLTS.
 The &fn. returns a pointer to the &resvarea. and freezes the &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.freeze
 :eSALSO.
@@ -319,7 +319,7 @@ The default allocation size is determined by the constant
 :CONT., which is 512.
 :RSLTS.
 This form of the &fn. creates a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.doallocate
 :SAL typ='dtor'.
@@ -356,7 +356,7 @@ or
 member functions have been called to specify a new allocation size.
 :RSLTS.
 This form of the &fn. creates a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -412,7 +412,7 @@ is &null., the
 intrinsic function is used.
 :RSLTS.
 This form of the &fn. creates a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.alloc_size_increment
 :SAL typ='mfun'.doallocate
@@ -444,12 +444,12 @@ is &null.). The &obj. is said to be using static allocation. The
 and
 :ARG.len
 parameters specify the bounds of the &resvarea.
-.dot
+:PERIOD.
 :INCLUDE file='str_b'.
 :P.
 If the &getarea. is exhausted and characters have been written to the
 &putarea., the &getarea. is extended to include the &putarea.
-.dot
+:PERIOD.
 :P.
 The &getptr. and &putptr. do not necessarily point at the
 same position in the &resvarea., so a read followed by a write does not
@@ -462,10 +462,10 @@ member function has been used to reposition the pointer(s).
 Note that if
 :ARG.str
 is &null. the effect is to create an empty dynamic &obj.
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. creates a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -479,7 +479,7 @@ This form of the &fn. creates a &obj.
 :eSNPL.
 :SMTICS.
 The &fn. destroys the &obj. after discarding the &resvarea.
-.dot
+:PERIOD.
 The &resvarea. is
 discarded only if the &obj. is using dynamic allocation and is not frozen.
 The &resvarea. is freed using the free function specified by the form of the
@@ -509,7 +509,7 @@ The &fn. does nothing because there is no external device with which to
 synchronize.
 :RSLTS.
 The &fn. returns &noteof.
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public virtual'.underflow
@@ -522,7 +522,7 @@ The &fn. returns &noteof.
 The &fn. provides the input communication between the
 :MONO.streambuf
 member functions and the &obj.
-.dot
+:PERIOD.
 Member functions in the
 :MONO.streambuf
 class call the &fn. when the &getarea. is empty.
@@ -530,7 +530,7 @@ class call the &fn. when the &getarea. is empty.
 If there is a non-empty &putarea. present following the &getarea.,
 the &getarea. is extended to include the &putarea., allowing the
 input operation to continue using the &putarea.
-.dot
+:PERIOD.
 Otherwise the &getarea. cannot be extended.
 :RSLTS.
 The &fn. returns the first available character in the &getarea. on successful

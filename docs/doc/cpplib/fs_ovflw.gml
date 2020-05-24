@@ -22,12 +22,12 @@ is not &eof., it is added to the &putarea., if possible.
 :LI.Any characters in the &putarea. are written to the file.
 :LI.The &putarea. pointers are updated to reflect the new state of the
 &putarea.
-.dot
+:PERIOD.
 If the write did not complete, the unwritten portion of the
 &putarea. is still present. If the &putarea. was full before the write,
 :ARG.ch
 (if not &eof.) is placed at the start of the &putarea.
-.dot
+:PERIOD.
 Otherwise, the
 &putarea. is empty.
 :eOL.

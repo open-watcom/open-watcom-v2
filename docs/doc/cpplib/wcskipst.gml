@@ -710,7 +710,7 @@ equivalent to the passed value.
 :eSNPL.
 :SMTICS.
 The &fn. is the assignment operator for the &cls.
-.dot
+:PERIOD.
 The left hand side list is first cleared using the
 :MONO.clear
 member function, and then the right hand side list is copied.
@@ -740,7 +740,7 @@ right hand side.
 :eSNPL.
 :SMTICS.
 The &fn. is the equivalence operator for the &cls.
-.dot
+:PERIOD.
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

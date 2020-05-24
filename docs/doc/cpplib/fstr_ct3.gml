@@ -5,6 +5,6 @@ parameter.
 :RSLTS.
 The &fn. produces an &obj. that is attached to
 :ARG.hdl
-.dot
+:PERIOD.
 If the attach fails, &failbit. and &badbit. are set in the &errstate.
-.dot
+:PERIOD.

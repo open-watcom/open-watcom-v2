@@ -9,7 +9,7 @@ The
 :MONO.operator~b>>
 function is used to read formatted values from a stream. It is called an
 :ITALICS.extractor
-.dot
+:PERIOD.
 :I1.extractor
 Characters are read and interpreted according to the type of object
 being extracted.
@@ -24,14 +24,14 @@ is called with a parameter of zero, causing
 leading whitespace characters to be discarded if
 :MONO.ios::skipws
 is set in &fmtflags.
-.dot
+:PERIOD.
 If the input prefix function fails and returns zero, the
 :MONO.operator~b>>
 function also fails and returns immediately.
 If the input prefix function succeeds, characters are read from the stream
 and interpreted in terms of the type of object being extracted and
 &fmtflags.
-.dot
+:PERIOD.
 Finally, the input suffix function
 :MONO.isfx
 is called.
@@ -42,7 +42,7 @@ functions return a reference to the specified stream so that multiple
 extractions can be done in one statement.
 :P.
 Errors are indicated via &iostate.
-.dot
+:PERIOD.
 &failbit. is set if the
 characters read from the stream could not be interpreted for the
 required type. &badbit. is set if the extraction of characters from

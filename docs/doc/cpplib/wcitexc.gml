@@ -50,7 +50,7 @@ The following public member functions are declared:
 :eSNPL.
 :SMTICS.
 This form of the &fn. creates an &obj.
-.dot
+:PERIOD.
 :P.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
@@ -99,7 +99,7 @@ The first form of the &fn. returns the current settings of the
 exception bits.
 The second form of the function sets the exception bits to those
 specified by :HP1.set_flags:eHP1.
-.dot
+:PERIOD.
 :RSLTS.
 The current exception bits are returned.
 If a new set of bits are being set, the returned value is the old
@@ -130,7 +130,7 @@ The &fn. represents the same set of bits, but uses an
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
 All uses of these bits should use the &fn.
-.dot
+:PERIOD.
 :P.
 The bit values defined by the &fn. can be read and set by the
 member function

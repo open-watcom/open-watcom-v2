@@ -5,7 +5,7 @@ const
 reference to the character at offset
 :ARG.pos
 within the &obj.
-.dot
+:PERIOD.
 This reference may
 .if '&str_sub_pm' = 'constant' .do begin
 not

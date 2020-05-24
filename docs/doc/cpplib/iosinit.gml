@@ -7,6 +7,6 @@ pointer (returned by the
 :MONO.rdbuf
 member function) is set to
 :ARG.sb
-.dot
+:PERIOD.
 :LI.The remaining fields of the &obj. are initialized to zero.
 :eUL.

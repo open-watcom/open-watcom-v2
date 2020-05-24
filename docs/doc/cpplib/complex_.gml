@@ -136,7 +136,7 @@ is represented in polar coordinates.
 :RSLTS.
 The &fn. returns the magnitude of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.arg
 :SAL typ='fun'.norm
@@ -152,11 +152,11 @@ The &fn. returns the magnitude of
 :SMTICS.
 The &fn. computes the arccosine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the arccosine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.asin
 :SAL typ='fun'.atan
@@ -172,11 +172,11 @@ The &fn. returns the arccosine of
 :SMTICS.
 The &fn. computes the inverse hyperbolic cosine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the inverse hyperbolic cosine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.asinh
 :SAL typ='fun'.atanh
@@ -195,7 +195,7 @@ The &fn. computes the angle of the vector when the
 is represented in polar coordinates.
 The angle has the same sign as the real component of the
 :ARG.num
-.dot
+:PERIOD.
 It is positive in the 1st and 2nd quadrants, and negative in the 3rd
 and 4th quadrants.
 :RSLTS.
@@ -217,11 +217,11 @@ is represented in polar coordinates.
 :SMTICS.
 The &fn. computes the arcsine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the arcsine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acos
 :SAL typ='fun'.atan
@@ -237,11 +237,11 @@ The &fn. returns the arcsine of
 :SMTICS.
 The &fn. computes the inverse hyperbolic sine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the inverse hyperbolic sine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acosh
 :SAL typ='fun'.atanh
@@ -257,11 +257,11 @@ The &fn. returns the inverse hyperbolic sine of
 :SMTICS.
 The &fn. computes the arctangent of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the arctangent of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acos
 :SAL typ='fun'.asin
@@ -277,11 +277,11 @@ The &fn. returns the arctangent of
 :SMTICS.
 The &fn. computes the inverse hyperbolic tangent of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the inverse hyperbolic tangent of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acosh
 :SAL typ='fun'.asinh
@@ -300,7 +300,7 @@ This form of the &fn. creates a default &obj. with value zero for both
 the real and imaginary components.
 :RSLTS.
 This form of the &fn. produces a default &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -317,10 +317,10 @@ This form of the &fn. produces a default &obj.
 :SMTICS.
 This form of the &fn. creates a &obj. with the same value as
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. produces a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -339,13 +339,13 @@ This form of the &fn. creates a &obj. with the real component set to
 :ARG.real
 and the imaginary component set to
 :ARG.imag
-.dot
+:PERIOD.
 If no imaginary component is specified,
 :ARG.imag
 takes the default value of zero.
 :RSLTS.
 This form of the &fn. produces a &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -361,7 +361,7 @@ This form of the &fn. produces a &obj.
 :eSNPL.
 :SMTICS.
 The &fn. destroys the &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -379,13 +379,13 @@ The &obj. is destroyed.
 :SMTICS.
 The &fn. computes the conjugate of
 :ARG.num
-.dot
+:PERIOD.
 The conjugate consists of the unchanged real component, and the negative of
 the imaginary component.
 :RSLTS.
 The &fn. returns the conjugate of
 :ARG.num
-.dot
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='fun'.cos
@@ -396,11 +396,11 @@ The &fn. returns the conjugate of
 :SMTICS.
 The &fn. computes the cosine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the cosine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acos
 :SAL typ='fun'.sin
@@ -416,11 +416,11 @@ The &fn. returns the cosine of
 :SMTICS.
 The &fn. computes the hyperbolic cosine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the hyperbolic cosine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.acosh
 :SAL typ='fun'.sinh
@@ -438,13 +438,13 @@ The &fn. computes the value of
 :HILITE.e
 raised to the power
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the value of
 :HILITE.e
 raised to the power
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.log
 :SAL typ='fun'.log10
@@ -461,10 +461,10 @@ raised to the power
 :eSNPL.
 :SMTICS.
 The &fn. extracts the imaginary component of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the imaginary component of the &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.imag
 :SAL typ='fun'.real
@@ -480,11 +480,11 @@ The &fn. returns the imaginary component of the &obj.
 :SMTICS.
 The &fn. extracts the imaginary component of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the imaginary component of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.real
 :SAL typ='mfun'.imag
@@ -503,14 +503,14 @@ The &fn. computes the natural, or base
 :CONT.,
 logarithm of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the natural, or base
 :HILITE.e
 :CONT.,
 logarithm of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.exp
 :SAL typ='fun'.log10
@@ -527,11 +527,11 @@ logarithm of
 :SMTICS.
 The &fn. computes the base 10 logarithm of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the base 10 logarithm of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.exp
 :SAL typ='fun'.log
@@ -555,7 +555,7 @@ is represented in polar coordinates.
 :RSLTS.
 The &fn. returns the square of the magnitude of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.arg
 :SAL typ='fun'.polar
@@ -604,7 +604,7 @@ The &fn. is used to multiply
 by
 :ARG.num2
 yielding a &obj.
-.dot
+:PERIOD.
 :P.
 The first &fn. multiplies two &obj.s.
 :P.
@@ -613,7 +613,7 @@ In effect, the real and imaginary components of the &obj.
 are multiplied by the floating-point value.
 :P.
 The third &fn. multiplies a floating-point value and a &obj.
-.dot
+:PERIOD.
 In effect, the real and imaginary components of the &obj.
 are multiplied by the floating-point value.
 :INCLUDE file='cpx_op'.
@@ -622,7 +622,7 @@ The &fn. returns a &obj. that is the product of
 :ARG.num1
 and
 :ARG.num2
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b+
 :SAL typ='fun'.operator~b-
@@ -642,7 +642,7 @@ and
 The &fn. is used to multiply the
 :ARG.num
 argument into the &obj.
-.dot
+:PERIOD.
 :P.
 The first form of the &fn. multiplies the &obj. by the
 :MONO.Complex
@@ -651,7 +651,7 @@ parameter.
 The second form of the &fn. multiplies the real and imaginary
 components of the &obj. by
 :ARG.num
-.dot
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -673,11 +673,11 @@ The &fn. returns a reference to the target of the assignment.
 :SMTICS.
 The unary &fn. is provided for completeness.
 It performs no operation on the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The unary &fn. returns a &obj. with the same value as the original
 &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b+
 :SAL typ='mfun'.operator~b+=
@@ -698,27 +698,27 @@ The &fn. is used to add
 to
 :ARG.num2
 yielding a &obj.
-.dot
+:PERIOD.
 :P.
 The first &fn. adds two &obj.s.
 :P.
 The second &fn. adds a &obj. and a floating-point value.
 In effect, the floating-point value is added to the real component
 of the &obj.
-.dot
+:PERIOD.
 :P.
 The third &fn. adds a floating-point value and a &obj.
-.dot
+:PERIOD.
 In effect, the floating-point value is added to the real component
 of the &obj.
-.dot
+:PERIOD.
 :INCLUDE file='cpx_op'.
 :RSLTS.
 The &fn. returns a &obj. that is the sum of
 :ARG.num1
 and
 :ARG.num2
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b*
 :SAL typ='fun'.operator~b-
@@ -739,11 +739,11 @@ and
 The &fn. is used to add
 :ARG.num
 to the value of the &obj.
-.dot
+:PERIOD.
 The second form of the &fn. adds
 :ARG.num
 to the real component of the &obj.
-.dot
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -789,7 +789,7 @@ The &fn. is used to subtract
 from
 :ARG.num1
 yielding a &obj.
-.dot
+:PERIOD.
 :P.
 The first &fn. computes the difference between two &obj.s.
 :P.
@@ -797,11 +797,11 @@ The second &fn. computes the difference between a &obj.
 and a floating-point value.
 In effect, the floating-point value is subtracted from the real component
 of the &obj.
-.dot
+:PERIOD.
 :P.
 The third &fn. computes the difference between a floating-point value and a
 &obj.
-.dot
+:PERIOD.
 In effect, the real component of the result is
 :ARG.num1
 minus the real component of
@@ -810,14 +810,14 @@ minus the real component of
 and the imaginary component of the result is the negative of the imaginary
 component of
 :ARG.num2
-.dot
+:PERIOD.
 :INCLUDE file='cpx_op'.
 :RSLTS.
 The &fn. returns a &obj. that is the difference between
 :ARG.num1
 and
 :ARG.num2
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b*
 :SAL typ='fun'.operator~b+
@@ -838,11 +838,11 @@ and
 The &fn. is used to subtract
 :ARG.num
 from the value of the &obj.
-.dot
+:PERIOD.
 The second form of the &fn. subtracts
 :ARG.num
 from the real component of the *obj.
-.dot
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -869,7 +869,7 @@ The &fn. is used to divide
 by
 :ARG.num2
 yielding a &obj.
-.dot
+:PERIOD.
 :P.
 The first &fn. divides two &obj.s.
 :P.
@@ -878,7 +878,7 @@ real and imaginary components of the complex number are divided by the
 floating-point value.
 :P.
 The third &fn. divides a floating-point value by a &obj.
-.dot
+:PERIOD.
 Conceptually, the
 floating-point value is converted to a &obj. and then the division is done.
 :INCLUDE file='cpx_op'.
@@ -887,7 +887,7 @@ The &fn. returns a &obj. that is the quotient of
 :ARG.num1
 divided by
 :ARG.num2
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b*
 :SAL typ='fun'.operator~b+
@@ -906,11 +906,11 @@ divided by
 :SMTICS.
 The &fn. is used to divide the &obj. by
 :ARG.num
-.dot
+:PERIOD.
 The second form of the &fn. divides the real and imaginary
 components of the &obj. by
 :ARG.num
-.dot
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -964,11 +964,11 @@ object.
 :SMTICS.
 The &fn. is used to set the value of the &obj. to
 :ARG.num
-.dot
+:PERIOD.
 The first assignment operator copies the value of
 :ARG.num
 into the &obj.
-.dot
+:PERIOD.
 :P.
 The second assignment operator sets the real component of the &obj. to
 :ARG.num
@@ -1034,11 +1034,11 @@ While reading a &obj., whitespace is ignored before and between the various
 components of the number if the
 :MONO.ios::skipws
 bit is set in &fmtflags.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a reference to
 :ARG.strm
-.dot
+:PERIOD.
 :ARG.num
 contains the value read from
 :ARG.strm
@@ -1088,7 +1088,7 @@ The &fn. computes
 :ARG.num
 raised to the power
 :ARG.exp
-.dot
+:PERIOD.
 The various forms are provided to minimize the amount of floating-point
 calculation performed.
 :RSLTS.
@@ -1096,7 +1096,7 @@ The &fn. returns a &obj. that is
 :ARG.num
 raised to the power a &obj. that is
 :ARG.exp
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.exp
 :SAL typ='fun'.log
@@ -1113,10 +1113,10 @@ raised to the power a &obj. that is
 :eSNPL.
 :SMTICS.
 The &fn. extracts the real component of the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the real component of the &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.imag
 :SAL typ='fun'.real
@@ -1132,11 +1132,11 @@ The &fn. returns the real component of the &obj.
 :SMTICS.
 The &fn. extracts the real component of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the real component of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.imag
 :SAL typ='mfun'.imag
@@ -1152,11 +1152,11 @@ The &fn. returns the real component of
 :SMTICS.
 The &fn. computes the sine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the sine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.asin
 :SAL typ='fun'.cos
@@ -1172,11 +1172,11 @@ The &fn. returns the sine of
 :SMTICS.
 The &fn. computes the hyperbolic sine of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the hyperbolic sine of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.asinh
 :SAL typ='fun'.cosh
@@ -1192,11 +1192,11 @@ The &fn. returns the hyperbolic sine of
 :SMTICS.
 The &fn. computes the square root of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the square root of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.exp
 :SAL typ='fun'.log
@@ -1213,11 +1213,11 @@ The &fn. returns the square root of
 :SMTICS.
 The &fn. computes the tangent of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the tangent of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.atan
 :SAL typ='fun'.cos
@@ -1233,11 +1233,11 @@ The &fn. returns the tangent of
 :SMTICS.
 The &fn. computes the hyperbolic tangent of
 :ARG.num
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the hyperbolic tangent of
 :ARG.num
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.atanh
 :SAL typ='fun'.cosh

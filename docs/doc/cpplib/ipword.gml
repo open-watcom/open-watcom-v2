@@ -16,5 +16,5 @@ the
 :MONO.xalloc
 static member function invalidates all previous references returned by the
 &fn.
-.dot
+:PERIOD.
 Therefore, the &fn. should be called each time the reference is needed.

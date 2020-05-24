@@ -10,11 +10,11 @@ The
 function is used to write formatted values to a stream.
 It is called an
 :ITALICS.inserter
-.dot
+:PERIOD.
 :I1.inserter
 Values are formatted and written according to the type of object
 being inserted and &fmtflags.
-.dot
+:PERIOD.
 :P.
 All
 :MONO.operator~b<<
@@ -27,7 +27,7 @@ is called.  If it fails and returns zero, the
 function also fails and returns immediately.
 If the output prefix function succeeds, the object is formatted according
 to its type and &fmtflags.
-.dot
+:PERIOD.
 The formatted sequence of characters is
 then written to the specified stream.  Finally, the output suffix function
 :MONO.osfx
@@ -42,7 +42,7 @@ For details on the interpretation of &fmtflags., see the &fmtflags.
 section of the Library Functions and Types Chapter.
 :P.
 Errors are indicated via &iostate.
-.dot
+:PERIOD.
 &failbit. is set if the
 :MONO.operator~b<<
 function fails while writing the characters to the stream.
@@ -62,6 +62,6 @@ the output suffix function
 is called.
 :P.
 Errors are indicated via &iostate.
-.dot
+:PERIOD.
 &failbit. is set if the function fails while writing the characters to
 the stream.

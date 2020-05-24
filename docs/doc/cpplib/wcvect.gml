@@ -172,7 +172,7 @@ set to the given value.
 :eSNPL.
 :SMTICS.
 The &fn. is the copy constructor for the &cls.
-.dot
+:PERIOD.
 The new vector is created with the same length as the given vector.
 All of the vector elements and exception trap states are copied.
 :P.
@@ -196,7 +196,7 @@ The &fn. creates a &obj. which is a copy of the passed vector.
 :eSNPL.
 :SMTICS.
 The &fn. is the destructor for the &cls.
-.dot
+:PERIOD.
 If the vector is not length zero and the
 :MONO.not_empty
 .ix 'not_empty' 'exception'
@@ -213,7 +213,7 @@ member function is explicitly called before the destructor is called.
 :INCLUDE file='_DTOR'.
 :RSLTS.
 The &fn. destroys an &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -286,7 +286,7 @@ vector elements and makes the vector zero length.
 :SMTICS.
 The &fn. is used to find the number of elements which can be stored in
 the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the length of the vector.
 :SALSO.
@@ -384,7 +384,7 @@ The result of the non-constant index operator may be assigned to.
 :eSNPL.
 :SMTICS.
 The &fn. is the assignment operator for the &cls.
-.dot
+:PERIOD.
 The left hand side vector is first cleared using the
 :MONO.clear
 member function, and then the right hand side vector is copied.
@@ -416,7 +416,7 @@ The &fn. assigns the left hand side vector to be a copy of the right hand side.
 :eSNPL.
 :SMTICS.
 The &fn. is the equivalence operator for the &cls.
-.dot
+:PERIOD.
 Two vector objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.
@@ -472,7 +472,7 @@ If the resize cannot be performed and the
 exception is enabled, the exception is thrown.
 :RSLTS.
 The vector is resized to :HP1.new_size:eHP1.
-.dot
+:PERIOD.
 A TRUE value (non-zero) is returned if the resize is successful.
 A FALSE (zero) result is returned if the resize fails.
 :SALSO.

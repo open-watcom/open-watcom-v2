@@ -21,12 +21,12 @@ operation reads or writes a single character at a time.
 :RSLTS.
 The &fn. produces an &obj. that is attached to
 :ARG.hdl
-.dot
+:PERIOD.
 If the connection to
 :ARG.hdl
 fails, &failbit. and &badbit. are set in the &errstate.
-.dot
+:PERIOD.
 If the
 :MONO.setbuf
 fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.

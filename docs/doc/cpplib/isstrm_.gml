@@ -55,10 +55,10 @@ parameter.
 The inherited
 :MONO.istream
 member functions can be used to read from the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -83,10 +83,10 @@ and ending at
 The inherited
 :MONO.istream
 member functions can be used to read from the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 This form of the &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

@@ -84,13 +84,13 @@ The following member functions are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty &obj.
-.dot
+:PERIOD.
 The
 :MONO.FType
 storage class constructor performs the initialization.
 :RSLTS.
 The &fn. creates an initialized &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -107,7 +107,7 @@ The &fn. creates an initialized &obj.
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty &obj.
-.dot
+:PERIOD.
 If
 :MONO.FType
 is either the

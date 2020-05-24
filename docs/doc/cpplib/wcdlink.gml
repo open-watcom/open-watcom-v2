@@ -37,7 +37,7 @@ typed as a &obj. will not invoke the destructor of the derived class.
 :CMT.and
 :CMT.:MONO.WCValDList
 :CMT.are examples of classes derived from the &cls.
-.dot
+:PERIOD.
 :HDG.Public Member Functions
 The following public member functions are declared:
 :MFNL.
@@ -58,12 +58,12 @@ The following public member functions are declared:
 :eSNPL.
 :SMTICS.
 The &fn. creates an &obj.
-.dot
+:PERIOD.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
 The &fn. produces an initialized &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

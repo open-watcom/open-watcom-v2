@@ -1038,6 +1038,11 @@ from the pop-up menu
 .ct .li .
 .dm dot end
 .*
+.dm @period begin
+.ct .li .
+.dm @period end
+.gt period add @period
+.*
 .dm cmddef begin
 .section &*
 .ix 'command' '&*'

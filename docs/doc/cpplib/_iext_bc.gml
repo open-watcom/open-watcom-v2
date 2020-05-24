@@ -5,8 +5,7 @@ The
 class is a base class of the &cls and provides the
 :MONO.exceptions
 member function.  This member function controls the exceptions
-which can be thrown by the &obj.
-.dot
+which can be thrown by the &obj.:PERIOD.
 No exceptions are enabled unless they are set by the
 :MONO.exceptions
 member function.

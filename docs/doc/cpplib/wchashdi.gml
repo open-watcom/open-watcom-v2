@@ -268,7 +268,7 @@ hash function.
 :eSNPL.
 :SMTICS.
 The &fn. is the copy constructor for the &cls.
-.dot
+:PERIOD.
 The new dictionary is created with the same number of buckets, hash function,
 all values or pointers stored in the dictionary, and the exception trap states.
 If the hash dictionary object can be created, but an allocation failure
@@ -298,7 +298,7 @@ The &fn. creates an &obj. which is a copy of the passed dictionary.
 :eSNPL.
 :SMTICS.
 The &fn. is the destructor for the &cls.
-.dot
+:PERIOD.
 If the number of dictionary elements is not zero and the
 :MONO.not_empty
 .ix 'not_empty' 'exception'
@@ -314,7 +314,7 @@ member function is explicitly called before the destructor is called.
 :INCLUDE file='_DTOR'.
 :RSLTS.
 The &fn. destroys an &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -360,7 +360,7 @@ a user defined hash function.
 :SMTICS.
 The &fn. is used to find the number of buckets contained in
 the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns the number of buckets in the dictionary.
 :SALSO.
@@ -747,7 +747,7 @@ The result of the operator may not be assigned to.
 :eSNPL.
 :SMTICS.
 The &fn. is the assignment operator for the &cls.
-.dot
+:PERIOD.
 The left hand side dictionary is first cleared using the
 :MONO.clear
 member function, and then the right hand side dictionary is copied.
@@ -781,7 +781,7 @@ right hand side.
 :eSNPL.
 :SMTICS.
 The &fn. is the equivalence operator for the &cls.
-.dot
+:PERIOD.
 Two dictionary objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

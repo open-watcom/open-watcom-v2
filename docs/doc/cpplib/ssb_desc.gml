@@ -16,4 +16,4 @@ and the &getarea. is empty, the
 :MONO.underflow
 virtual member function checks to see if the &putarea. is present and not
 empty. If so, the &getarea. is extended to overlap the &putarea.
-.dot
+:PERIOD.

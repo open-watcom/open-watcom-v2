@@ -18,7 +18,7 @@ functionality for the three file-based classes,
 :MONO.ofstream
 and
 :MONO.fstream
-.dot
+:PERIOD.
 The &cls. is derived from the
 :MONO.ios
 class, providing the stream state information, plus it provides member
@@ -80,7 +80,7 @@ The &fn. connects the &obj. to the file specified by the
 parameter.
 :RSLTS.
 If the &fn. fails, &failbit. bit is set in the &errstate.
-.dot
+:PERIOD.
 The &errstate. is cleared on success.
 :SALSO.
 :SAL typ='mfun'.fd
@@ -100,7 +100,7 @@ The &fn. disconnects the &obj. from the file with which it is associated.
 If the &obj. is not associated with a file, the &fn. fails.
 :RSLTS.
 If the &fn. fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.fd
 :SAL typ='mfun'.is_open
@@ -123,7 +123,7 @@ or
 member function should be used to connect the &obj. to a file.
 :RSLTS.
 The &fn. produces an &obj.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -147,17 +147,17 @@ using the specified
 :ARG.mode
 and
 :ARG.prot
-.dot
+:PERIOD.
 The &obj. is connected to the specified file via the
 :MONO.open
 C library function.
 :RSLTS.
 The &fn. produces an &obj.
-.dot
+:PERIOD.
 If the call to
 :MONO.open
 for the file fails, &failbit. and &badbit. are set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.open
@@ -179,10 +179,10 @@ specified by the
 parameter.
 :RSLTS.
 The &fn. produces an &obj.
-.dot
+:PERIOD.
 If the attach to the file fails,
 &failbit. and &badbit. are set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -208,13 +208,13 @@ parameters, is offered via the
 virtual member function to be used as the &resvarea. for the
 :MONO.filebuf
 associated with the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. produces an &obj.
-.dot
+:PERIOD.
 If the attach to the file fails,
 &failbit. and &badbit. are set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -237,7 +237,7 @@ object associated with the &obj. is embedded within the &obj., so the
 destructor is called. The
 :MONO.ios
 destructor is called for that portion of the &obj.
-.dot
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -256,11 +256,11 @@ The &obj. is destroyed.
 :eSNPL.
 :SMTICS.
 The &fn. queries the current state of the file associated with the &obj.
-.dot
+:PERIOD.
 Calling the &fn. is equivalent to calling the
 :MONO.fd
 member function and testing for &eof.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is currently
 connected to a file, otherwise zero is returned.
@@ -306,13 +306,13 @@ The &fn. connects the &obj. to the file specified by
 :ARG.mode
 and
 :ARG.prot
-.dot
+:PERIOD.
 The connection is made via the C library
 :MONO.open
 function.
 :RSLTS.
 If the open fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 The &errstate. is cleared on success.
 :SALSO.
 :SAL typ='mfun'.attach
@@ -334,7 +334,7 @@ The &errstate. is cleared on success.
 The &fn. returns the address of the
 :MONO.filebuf
 object currently associated with the &obj.
-.dot
+:PERIOD.
 :RSLTS.
 The &fn. returns a pointer to the
 :MONO.filebuf
@@ -356,13 +356,13 @@ object currently associated with the &obj. If there is no associated
 The &fn. offers the specified buffer to the
 :MONO.filebuf
 object associated with the &obj.
-.dot
+:PERIOD.
 The
 :MONO.filebuf
 may or may not reject the offer, depending upon its state.
 :RSLTS.
 If the offer is rejected, &failbit. is set in the &errstate.
-.dot
+:PERIOD.
 :SALSO.
 :SAL typ='ofun' ocls='filebuf'.setbuf
 :eSALSO.

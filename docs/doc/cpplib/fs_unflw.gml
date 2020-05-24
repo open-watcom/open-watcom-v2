@@ -10,7 +10,7 @@ virtual member function. If, after calling
 :CONT., no &resvarea. is present, the &obj. is unbuffered and a
 one-character &resvarea. (plus putback area) is set up to do unbuffered input.
 This buffer is embedded in the &obj.
-.dot
+:PERIOD.
 The &getarea. is set up as empty.
 :CMT.=======================================================================
 :CMT. start of conditional section for filebuf inclusion
@@ -25,9 +25,9 @@ virtual member function.
 :CMT.=======================================================================
 :LI.The unused part of the &getarea. is used to read characters from the file
 connected to the &obj.
-.dot
+:PERIOD.
 The &getarea. pointers are then set up to reflect the new &getarea.
-.dot
+:PERIOD.
 :eOL.
 :RSLTS.
 The &fn. returns the first unread character of the &getarea., on success,

@@ -18,4 +18,4 @@ The connection is made via the C library
 function.
 :RSLTS.
 If the open fails, &failbit. is set in the &errstate.
-.dot
+:PERIOD.

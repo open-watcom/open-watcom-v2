@@ -1,10 +1,10 @@
 The &fn. returns the next available character in the &getarea.
-.dot
+:PERIOD.
 The &getptr. is not advanced. If the &getarea. is empty, the
 :MONO.underflow
 virtual member function is called to fetch more characters from the
 source into the &getarea.
-.dot
+:PERIOD.
 :P.
 Due to the
 :MONO.sgetc
@@ -15,5 +15,5 @@ function does advance the pointer), the
 member function was added to take its place in the WATCOM implementation.
 :RSLTS.
 The &fn. returns the next available character in the &getarea.
-.dot
+:PERIOD.
 If no character is available, &eof. is returned.
