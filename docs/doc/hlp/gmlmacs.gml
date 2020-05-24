@@ -674,10 +674,15 @@ from the pop-up menu
 .do end
 .dm dot end
 
-.dm cont begin
+.dm @period begin
+.ct .li .
+.dm @period end
+.gt period add @period
+
+.dm @cont begin
 .ct &*
-.dm cont end
-.gt cont add cont
+.dm @cont end
+.gt cont add @cont
 
 .dm cmddef begin
 .section &*

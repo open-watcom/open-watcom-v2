@@ -2645,6 +2645,14 @@ whelp_objs =                      &
 ../doc/whelp/whelplay.gml  &
 ../doc/whelp/wnohelp.gml
 
+# ps sub-directory
+ps_incs = ../doc/ps
+ps_objs =                     &
+../doc/hlp/banner.gml   &
+../doc/hlp/bantop.gml   &
+../doc/hlp/fmtmacro.gml &
+../doc/hlp/gmlmacs.gml
+
 # hlp sub-directory
 hlp_incs = ../doc/hlp
 hlp_objs =                     &
