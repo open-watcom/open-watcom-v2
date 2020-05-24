@@ -2638,7 +2638,8 @@ gml_objs = &
 
 # whelp sub-directory
 whelp_incs = ../doc/whelp
-whelp_objs =                      &
+whelp_objs =		   &
+../doc/whelp/mono01.cop    &
 ../doc/whelp/whelp.gml     &
 ../doc/whelp/whelp.cop     &
 ../doc/whelp/whelpdrv.cop  &
