@@ -99,6 +99,12 @@ static size_t translate_char_html( char ch, char next_ch, char *buf )
     case '>':
         strcpy( buf, "&gt;" );
         break;
+    case '[':
+        strcpy( buf, "&#91;" );
+        break;
+    case ']':
+        strcpy( buf, "&#93;" );
+        break;
     case '&':
         strcpy( buf, "&amp;" );
         break;
