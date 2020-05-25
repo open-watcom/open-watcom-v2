@@ -63,152 +63,152 @@
 .*
 .dm br begin
 ..br
-<BR>
+<br>
 .dm br end
 .*
 .dm us begin
-<EM>&*</EM>
+<em>&*</em>
 .dm us end
 .*
 .dm bd begin
-<STRONG>&*</STRONG>
+<strong>&*</strong>
 .dm bd end
 .*
 .dm bi begin
-<EM><STRONG>&*</STRONG></EM>
+<em><strong>&*</strong></em>
 .dm bi end
 .*
 .dm pp begin
-:P.<P>
+:P.<p>
 .ct
 .dm pp end
 .*
 .dm np begin
-:P.<P>
+:P.<p>
 .ct
 .dm np end
 .*
 .dm pc begin
-:PC.<P>
+:PC.<p>
 .ct
 .dm pc end
 .*
 .dm illust begin
 .if '&*' eq 'begin' .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 .do end
 .el .if '&*' eq 'end' .do begin
-</PRE>
+</pre>
 :eXMP.
 .do end
 .el .if '&*' eq 'break' .do begin
-</PRE>
+</pre>
 :eXMP.:XMP.
-<PRE>
+<pre>
 .do end
 .el .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 &*
-</PRE>
-:eXMP.:P.<P>
+</pre>
+:eXMP.:P.<p>
 .do end
 .dm illust end
 .*
 .dm millust begin
 .if '&*' eq 'begin' .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 .do end
 .el .if '&*' eq 'end' .do begin
-</PRE>
+</pre>
 :eXMP.
 .do end
 .el .if '&*' eq 'break' .do begin
-</PRE>:eXMP.:XMP.<PRE>
+</pre>:eXMP.:XMP.<pre>
 .do end
 .el .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 &*
-</PRE>
-:eXMP.:P.<P>
+</pre>
+:eXMP.:P.<p>
 .do end
 .dm millust end
 .*
 .dm code begin
 .if '&*' eq 'begin' .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 .do end
 .el .if '&*' eq 'end' .do begin
-</PRE>
+</pre>
 :eXMP.
 .do end
 .el .if '&*' eq 'break' .do begin
-</PRE>
+</pre>
 :eXMP.:XMP.
-<PRE>
+<pre>
 .do end
 .el .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 &*
-</PRE>
-:eXMP.:P.<P>
+</pre>
+:eXMP.:P.<p>
 .do end
 .dm code end
 .*
 .dm listing begin
 .if '&*' eq 'begin' .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 .do end
 .el .if '&*' eq 'end' .do begin
-</PRE>
+</pre>
 :eXMP.
 .do end
 .el .if '&*' eq 'break' .do begin
-</PRE>
+</pre>
 :eXMP.:XMP.
-<PRE>
+<pre>
 .do end
 .el .do begin
 :XMP.
-<P><PRE>
+<p><pre>
 &*
-</PRE>
-:eXMP.:P.<P>
+</pre>
+:eXMP.:P.<p>
 .do end
 .dm listing end
 .*
 .dm codeon begin
-<CODE><PRE>
+<code><pre>
 .dm codeon end
 .*
 .dm codeoff begin
-</PRE></CODE>
+</pre></code>
 .dm codeoff end
 .*
 .dm mono begin
-<TT>&*</TT>
+<tt>&*</tt>
 .dm mono end
 .*
 .dm monoon begin
-<TT>
+<tt>
 .dm monoon end
 .*
 .dm monooff begin
-</TT>
+</tt>
 .dm monooff end
 .*
 .dm autonote begin
 .if '&*' ne '' .do begin
 .  .sr tmplvl=&WDWlvl-3
-.  :P.<P><I>&*</I>
+.  :P.<p><i>&*</i>
 .do end
-:P.<OL>
+:P.<ol>
 :set symbol="NTEpr2" value="&NTEpr1".
 :set symbol="NTEpr1" value="&NTEset".
 :set symbol="NTEset" value="ol".
@@ -216,9 +216,9 @@
 .*
 .dm autopoint begin
 .if '&*' ne '' .do begin
-.  :P.<P><I>&*</I>
+.  :P.<p><i>&*</i>
 .do end
-:P.<OL>
+:P.<ol>
 :set symbol="NTEpr2" value="&NTEpr1".
 :set symbol="NTEpr1" value="&NTEset".
 :set symbol="NTEset" value="ol".
@@ -244,10 +244,10 @@
 .if '&*3' eq '$setptnt' .do begin
 :set symbol="NTEop3" value="tsize=&*4".
 .do end
-:P.<DL>
+:P.<dl>
 .if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
 .if '&*1' ne '' .do begin
-:P.<DT>&*<DD>
+:P.<dt>&*<dd>
 .do end
 .do end
 :set symbol="NTEpr2" value="&NTEpr1".
@@ -275,10 +275,10 @@
 .if '&*3' eq '$setptnt' .do begin
 :set symbol="NTEop3" value="tsize=&*4".
 .do end
-:P.<DL>
+:P.<dl>
 .if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
 .if '&*1' ne '' .do begin
-:P.<DT>&*<DD>
+:P.<dt>&*<dd>
 .do end
 .do end
 :set symbol="NTEpr2" value="&NTEpr1".
@@ -290,11 +290,11 @@
 .dm setptnt end
 .*
 .dm notehd1 begin
-:P.<DT><B>&*</B>
+:P.<dt><b>&*</b>
 .dm notehd1 end
 .*
 .dm notehd2 begin
-:P.<DD><B>&*</B>
+:P.<dd><b>&*</b>
 .dm notehd2 end
 .*
 .dm endnote begin
@@ -311,12 +311,12 @@
 .*
 .dm endOL begin
 ..br
-</OL>
+</ol>
 .dm endOL end
 .*
 .dm endDL begin
 ..br
-</DL>
+</dl>
 .dm endDL end
 .*
 .dm note begin
@@ -330,52 +330,52 @@
 .dm point end
 .*
 .dm noteOL begin
-:P.<LI>
+:P.<li>
 .dm noteOL end
 .*
 .dm noteDL begin
 .sr tmplvl=3
 .if '&*1' eq '.mono' .do begin
-:P.<DT> &*2 &*3 &*4 &*5 &*6
+:P.<dt> &*2 &*3 &*4 &*5 &*6
 .do end
 .el .do begin
-:P.<DT> &*
+:P.<dt> &*
 .do end
-<DD>
+<dd>
 .dm noteDL end
 .*
 .dm begbull begin
 .sr tmplvl=&WDWlvl-5
 .if '&*1' eq '$compact' .do begin
-:P.<UL>
+:P.<ul>
 .do end
 .el .do begin
-:P.<UL>
+:P.<ul>
 .do end
 .dm begbull end
 .*
 .dm bull begin
-:P.<LI>
+:P.<li>
 .dm bull end
 .*
 .dm endbull begin
 ..br
-</UL>
+</ul>
 .dm endbull end
 .*
 .dm keep begin
 .dm keep end
 .*
 .dm sepsect begin
-:P.<HEAD>
+:P.<head>
 ..br
-<TITLE>&*
+<title>&*
 ..br
-</TITLE>
+</title>
 ..br
-</HEAD>
+</head>
 ..br
-<BODY>
+<body>
 :set symbol="headtext$" value=" ".
 :set symbol="headtxt0$" value="&*".
 .pa odd
@@ -389,13 +389,13 @@
 .if '&*refid.' ne '' .do begin
 .  .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
 .  .se *reftx="id='&*refid.'"
-.  .se *reftxb='<A NAME = "&*refid.">'
-.  .se *reftxe='</A>'
+.  .se *reftxb='<a name="&*refid.">'
+.  .se *reftxe='</a>'
 .do end
-:P.<HR>
+:P.<hr>
 ..br
-<H1>&*reftxb.:H1 &*reftx..&*secttl$.
-&*reftxe.</H1>
+<h1>&*reftxb.:H1 &*reftx..&*secttl$.
+&*reftxe.</h1>
 .pu 1 .ixchap &*secttl$.
 :set symbol="SCTlvl" value = "0".
 .if '&headtxt0$' eq ' ' .do begin
@@ -404,7 +404,7 @@
 .se headtxt1$=&*secttl$.
 .se headtext$=&*secttl$.
 ..br
-<HR>
+<hr>
 .dm chap end
 .*
 .dm chapnum begin
@@ -434,30 +434,30 @@
 .se *reftxe=""
 .if '&*refid.' ne '' .do begin
 .   .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
-.   .se *reftxb='<A NAME = "&*refid.">'
-.   .se *reftxe='</A>'
+.   .se *reftxb='<a name="&*refid.">'
+.   .se *reftxe='</a>'
 .   .se *reftx="id='&*refid.'"
 .do end
 :P.
 .if '&SCTlvl' eq '0' .do begin
-.   :P.<H2>&*reftxb.:H2 &*reftx..&*secttl$.
-.   &*reftxe.</H2>
+.   :P.<h2>&*reftxb.:H2 &*reftx..&*secttl$.
+.   &*reftxe.</h2>
 .   .se headtext$=&*secttl$.
 .do end
 .el .if '&SCTlvl' eq '1' .do begin
-.   :P.<H3>&*reftxb.:H3 &*reftx..&*secttl$.
-.   &*reftxe.</H3>
+.   :P.<h3>&*reftxb.:H3 &*reftx..&*secttl$.
+.   &*reftxe.</h3>
 .do end
 .el .if '&SCTlvl' eq '2' .do begin
-.   :P.<H4>&*reftxb.:H4 &*reftx..&*secttl$.
-.   &*reftxe.</H4>
+.   :P.<h4>&*reftxb.:H4 &*reftx..&*secttl$.
+.   &*reftxe.</h4>
 .do end
 .el .if '&SCTlvl' eq '3' .do begin
-.   :P.<H5>&*reftxb.:H5 &*reftx..&*secttl$.
-.   &*reftxe.</H5>
+.   :P.<h5>&*reftxb.:H5 &*reftx..&*secttl$.
+.   &*reftxe.</h5>
 .do end
 .el .if '&SCTlvl' eq '4' .do begin
-.   :P.<H6>&*reftxb.&*secttl$.&*reftxe.</H6>
+.   :P.<h6>&*reftxb.&*secttl$.&*reftxe.</h6>
 .do end
 .pu 1 .ixsect &*secttl$.
 .dm section end
@@ -469,23 +469,23 @@
 .dm sect begin
 :P.
 .if '&SCTlvl' eq '0' .do begin
-.  <P><EM>&*</EM>
+.  <p><em>&*</em>
 .  ..br
 .do end
 .el .if '&SCTlvl' eq '1' .do begin
-.  <P><EM>&*</EM>
+.  <p><em>&*</em>
 .  ..br
 .do end
 .el .if '&SCTlvl' eq '2' .do begin
-.  <P><EM>&*</EM>
+.  <p><em>&*</em>
 .  ..br
 .do end
 .el .if '&SCTlvl' eq '3' .do begin
-.  <P><EM>&*</EM>
+.  <p><em>&*</em>
 .  ..br
 .do end
 .el .if '&SCTlvl' eq '4' .do begin
-.  <P><EM>&*</EM>
+.  <p><em>&*</em>
 .  ..br
 .do end
 .dm sect end
@@ -496,16 +496,16 @@
 .*
 .dm preface begin
 :P.
-<TITLE>&*</TITLE>
+<title>&*</title>
 ..br
-<HR>
+<hr>
 :P.
-<P>
+<p>
 .dm preface end
 .*
 .dm csect begin
 :P.
-<H1>&*</H1>
+<h1>&*</h1>
 .dm csect end
 .*
 .dm endfmt begin
@@ -545,40 +545,40 @@
 .do end
 .*
 .dm sy begin
-<VAR>&*</EVAR>
+<var>&*</var>
 .dm sy end
 .*
 .dm ev begin
-<DFN>&*</DFN>
+<dfn>&*</dfn>
 .ix 'environment variables' '&*'
 .ix '&* environment variable'
 .dm ev end
 .*
 .dm kw begin
-<DFN>&*</DFN>
+<dfn>&*</dfn>
 .ix '&*'
 .dm kw end
 .*
 .dm kwm begin
-<KBD>&*</KBD>
+<kbd>&*</kbd>
 .ix '&*'
 .dm kwm end
 .*
 .dm id begin
-<CODE>&*</CODE>
+<code>&*</code>
 .dm id end
 .*
 .dm book begin
-<CITE>&*</CITE>
+<cite>&*</cite>
 .dm book end
 .*
 .dm fie begin
-<CODE>&*
+<code>&*
 .dm fie end
 .*
 .dm fi begin
 .fie &*.
-</CODE>
+</code>
 .dm fi end
 .*
 .dm fname begin
@@ -588,10 +588,10 @@
 .dm efname begin
 .if &l'&*. eq 0 .do begin
 .   ..ct
-</CODE>
+</code>
 .do end
 .el .do begin
-</CODE>&*.
+</code>&*.
 .do end
 .dm efname end
 .*
@@ -610,9 +610,9 @@
 .do end
 .se *figttl=&'substr(&*,&'pos(&*file.,&*)+&'length(&*file.)+1)
 :P.
-<IMG ALIGN=MIDDLE SRC="&*file..bmp" ALT="&*figttl.">
+<img align=middle src="&*file..bmp" alt="&*figttl.">
 :P.
-<P>&*figttl.
+<p>&*figttl.
 .dm figure end
 .gt figure add figure att
 .ga * depth any
@@ -620,9 +620,9 @@
 .*
 .dm pict begin
 :P.
-<IMG ALIGN=MIDDLE SRC="&*file..bmp" ALT="&*text.">
+<img align=middle src="&*file..bmp" alt="&*text.">
 :P.
-<P>&*text.
+<p>&*text.
 .dm pict end
 .if &$cmacpass. eq 'ugh' .do begin
 .gt picture delete
@@ -634,9 +634,9 @@
 .*
 .dm image begin
 :P.
-<IMG ALIGN=MIDDLE SRC="&*file..bmp" ALT="&*text.">
+<img align=middle src="&*file..bmp" alt="&*text.">
 :P.
-<P>&*text.
+<p>&*text.
 .dm image end
 .if &$cmacpass. eq 'ugh' .do begin
 .gt image delete
@@ -648,7 +648,7 @@
 .ga * text any
 .*
 .dm @hdref begin
-<A HREF="#&*refid.">:HDREF refid='&*refid.' page=no.</A>&*
+<a href="#&*refid.">:HDREF refid='&*refid.' page=no.</a>&*
 .dm @hdref end
 .gt HDREF add @HDREF continue attributes
 .ga * REFID any
@@ -658,20 +658,20 @@
 .dm box begin
 .if '&*' eq 'begin' .do begin
 .   :P.
-.   <P>
-.   <HR>
+.   <p>
+.   <hr>
 .   :P.
 .do end
 .el .if '&*' eq 'end' .do begin
 .   :P.
-.   <P>
-.   <HR>
+.   <p>
+.   <hr>
 .   :P.
 .do end
 .el .do begin
 .   :P.
-.   <P>
-.   <HR>
+.   <p>
+.   <hr>
 .   :P.
 .do end
 .dm box end
@@ -679,28 +679,28 @@
 .dm mbox begin
 .if '&*1' eq 'on' .do begin
 .   :XMP.
-.   <P>
-.   <HR>
-.   <PRE>
+.   <p>
+.   <hr>
+.   <pre>
 .do end
 .el .if '&*' eq 'off' .do begin
-.   </PRE>
-.   <HR>
+.   </pre>
+.   <hr>
 .   :eXMP.
 .do end
 .el .if '&*' eq 'begin' .do begin
 .   :XMP.
-.   <P>
-.   <HR>
-.   <PRE>
+.   <p>
+.   <hr>
+.   <pre>
 .do end
 .el .if '&*' eq 'end' .do begin
-.   </PRE>
-.   <HR>
+.   </pre>
+.   <hr>
 .   :eXMP.
 .do end
 .el .do begin
-.   <HR>
+.   <hr>
 .do end
 .dm mbox end
 .*
@@ -710,24 +710,24 @@
 .*
 .dm mbigbox begin
 :XMP.
-<P>
-<HR>
-<PRE>
+<p>
+<hr>
+<pre>
 .dm mbigbox end
 .*
 .dm embigbox begin
-</PRE>
-<HR>
+</pre>
+<hr>
 :eXMP.
 .dm embigbox end
 .*
 .dm syntax begin
 :XMP.
-<P><PRE>
+<p><pre>
 .dm syntax end
 .*
 .dm esyntax begin
-</PRE>
+</pre>
 :eXMP.
 .dm esyntax end
 .*
@@ -738,19 +738,19 @@
 .*
 .dm list begin
 :XMP.
-<P><PRE>
+<p><pre>
 .dm list end
 .*
 .dm elist begin
-</PRE>
+</pre>
 :eXMP.
 .dm elist end
 .*
 .dm synote begin
 .begnote
 :P.
-<DT>where:
-<DD>description:
+<dt>where:
+<dd>description:
 ..br
 .dm synote end
 .*
@@ -787,109 +787,109 @@
 .*
 .dm optref begin
 :P.
-(see <A HREF="#&*refid.">:HDREF refid='&*refid.' page=no.</A>)
+(see <a href="#&*refid.">:HDREF refid='&*refid.' page=no.</a>)
 .dm optref end
 .gt optref add optref attr
 .ga * refid any
 .*
 .dm contents begin
 :P.
-<P>
+<p>
 ..br
-<PRE>
+<pre>
 .dm contents end
 .*
 .dm econtents begin
 ..br
-</PRE>
+</pre>
 .dm econtents end
 .*
 .dm hint begin
 :P.
-<BLOCKQUOTE>
-<STRONG>Hint:</STRONG>
+<blockquote>
+<strong>Hint:</strong>
 .dm hint end
 .*
 .dm ehint begin
 ..br
-</BLOCKQUOTE>
+</blockquote>
 .dm ehint end
 .*
 .dm remark begin
 :P.
-<BLOCKQUOTE>
-<STRONG>Note:</STRONG>
+<blockquote>
+<strong>Note:</strong>
 .dm remark end
 .*
 .dm eremark begin
 ..br
-</BLOCKQUOTE>
+</blockquote>
 .dm eremark end
 .*
 .dm warn begin
 :P.
-<BLOCKQUOTE>
-<STRONG>WARNING!</STRONG>
+<blockquote>
+<strong>WARNING!</strong>
 .dm warn end
 .*
 .dm ewarn begin
 ..br
-</BLOCKQUOTE>
+</blockquote>
 .dm ewarn end
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
 .  .  :P.
-.  .  <P><I>Example:</I>
+.  .  <p><i>Example:</i>
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .do end
 .  .el .if '&*1' eq 'end' .do begin
-.  .  </PRE>
+.  .  </pre>
 .  .  :eXMP.
 .  .do end
 .  .el .if '&*1' eq 'break' .do begin
-.  .  </PRE>
+.  .  </pre>
 .  .  :eXMP.
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .do end
 .  .el .do begin
 .  .  :P.
-.  .  <P><I>Example:</I>
+.  .  <p><i>Example:</i>
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .  &*
-.  .  </PRE>
-.  .  :eXMP.:P.<P>
+.  .  </pre>
+.  .  :eXMP.:P.<p>
 .  .do end
 .dm exam end
 .*
 .dm tinyexam begin
 .  .if '&*1' eq 'begin' .do begin
 .  .  :P.
-.  .  <P><I>Example:</I>
+.  .  <p><i>Example:</i>
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .do end
 .  .el .if '&*1' eq 'end' .do begin
-.  .  </PRE>
+.  .  </pre>
 .  .  :eXMP.
 .  .do end
 .  .el .if '&*1' eq 'break' .do begin
-.  .  </PRE>
+.  .  </pre>
 .  .  :eXMP.
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .do end
 .  .el .do begin
 .  .  :P.
-.  .  <P><I>Example:</I>
+.  .  <p><i>Example:</i>
 .  .  :XMP.
-.  .  <PRE>
+.  .  <pre>
 .  .  &*
-.  .  </PRE>
-.  .  :eXMP.:P.<P>
+.  .  </pre>
+.  .  :eXMP.:P.<p>
 .  .do end
 .dm tinyexam end
 .*
@@ -908,40 +908,40 @@
 .dm begstep end
 .*
 .dm initstep begin
-:P.<DL>
+:P.<dl>
 .if '&*1' ne '' .do begin
-:P.<DT>&*<DD>
+:P.<dt>&*<dd>
 .do end
 .dm initstep end
 .*
 .dm step begin
 .sr stplvl=&stplvl.+1
 .if &stplvl. eq 0 .do begin
-:P.<DT>
+:P.<dt>
 .do end
 .el .do begin
-:P.<DT>(&stplvl.)
+:P.<dt>(&stplvl.)
 .do end
-<DD>
-<B>&*</B>
+<dd>
+<b>&*</b>
 .dm step end
 .*
 .dm orstep begin
-:P.<P>
+:P.<p>
 or
-:P.<DT>
-<DD>
-<B>&*</B>
+:P.<dt>
+<dd>
+<b>&*</b>
 .dm orstep end
 .*
 .dm result begin
 :P.
-<P>
+<p>
 .dm result end
 .*
 .dm endstep begin
 ..br
-</DL>
+</dl>
 .dm endstep end
 .*
 .dm topsect begin
@@ -1009,15 +1009,15 @@ or
 .dm endmenu end
 .*
 .dm seealso begin
-See <A HREF="#&*">:HDREF refid='&*' page=no.</A>
+See <a href="#&*">:HDREF refid='&*' page=no.</a>
 .dm seealso end
 .*
 .dm mi begin
-<B><I>&*</I></B>
+<b><i>&*</i></b>
 .dm mi end
 .*
 .dm mm begin
-<B><I>&*</I></B>
+<b><i>&*</i></b>
 .ix '&* menu'
 .dm mm end
 .*
