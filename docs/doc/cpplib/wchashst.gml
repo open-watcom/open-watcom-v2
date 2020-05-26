@@ -760,14 +760,14 @@ by using
 :MONO.WC&lpref.HashSet
 (or
 :MONO.WC&lpref.HashTable
-.ct )
+:CONT.)
 as a base class, and providing an insert member function to
 do a resize when appropriate.
 This insert could then call
 :MONO.WC&lpref.HashSet::insert
 (or
 :MONO.WC&lpref.HashTable::insert
-.ct )
+:CONT.)
 to insert the element.
 Note that copy constructors and assignment operators are not
 inherited in your class, but you can provide the following inline
