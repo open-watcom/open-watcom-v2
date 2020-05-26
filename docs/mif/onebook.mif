@@ -522,6 +522,7 @@ prepare_wgml_opts : .PROCEDURE
 # details about wgml processing
 #
 !ifeq doc_verbose 1
+    @%append $(wgml_optfile) ( warning
     @%append $(wgml_optfile) ( verbose
     @%append $(wgml_optfile) ( statistics
 !else
