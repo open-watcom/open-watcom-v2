@@ -219,7 +219,7 @@ commands
 .keyref edit
 or
 .keyref read
-.dot
+.period
 .enddescr
 .endfunc
 
@@ -242,7 +242,7 @@ It is displayed when selecting results from the &cmdline commands
 :cont.,
 and
 .keyref files
-.dot
+.period
 .enddescr
 .endfunc
 
@@ -365,7 +365,7 @@ windows. These commands may be issued from the &cmdline
 one at at time, or may be executed from a &edname script.
 Typically, these commands will be found in the &edname
 .keyword configuration script
-.dot
+.period
 
 .np
 .keyword Commandwindow
@@ -556,7 +556,7 @@ There are 4 floating menus,
 .param float0
 through
 .param float3
-.dot
+.period
 :eDL.
 .np
 Menus will attempt to open up where they are told to; however, if the menu
@@ -573,7 +573,7 @@ commands for controlling menus.
 .syntx * ADDMENUItem &lt.menuname&gt. &lt.itemname&gt. &lt.cmd&gt.
 .begdescr
 Adds a new item to a previously created menu &parm1.
-.dot
+.period
 The item &parm2 is added to the menu.
 .np
 This command is similar to the &cmdline command
@@ -602,7 +602,7 @@ command, and is run whenever the item is selected.
 .syntx * DELETEMENU &lt.menuname&gt.
 .begdescr
 Destroys menu with name &parm1.
-.dot
+.period
 .enddescr
 .endfunc
 
@@ -610,7 +610,7 @@ Destroys menu with name &parm1.
 .syntx * DELETEMENUItem &lt.menuname&gt. &lt.index&gt.
 .begdescr
 Deletes item number &parm2 from menu &parm1.
-.dot
+.period
 The item number &parm2
 is 0 based.
 .np
@@ -633,7 +633,7 @@ Finishes the creation of a new menu.
 .syntx * MENU &lt.menuname&gt.
 .begdescr
 Starts the creation of a new menu &parm1.
-.dot
+.period
 If a menu exists with the name already, it is destroyed and re-created.
 A character preceded with an ampersand ('&') will be the hot key
 for activating the menu, e.g. &Control would have 'C' as
@@ -687,7 +687,7 @@ one at at time, or may be contained in a
 and executed in the script.
 Typically, these commands will be found in the &edname
 .keyword configuration script
-.dot
+.period
 .np
 This configures the menu that is popped up whenever the top left-hand
 corner of an edit window is clicked with the mouse.

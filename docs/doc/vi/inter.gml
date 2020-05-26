@@ -37,7 +37,7 @@
 .*
 .np
 This chapter discusses a number of the commonly used features of the &edname.
-.dot
+.period
 The knowledge of the information in the chapter
 :HDREF page=no refid='basic'.
 is assumed.
@@ -59,7 +59,7 @@ item under the
 menu.
 
 :LI.Press the colon (':') key when in &cmdmode
-.dot
+.period
 Remember to press the
 .param ESC
 key to ensure that you are in &cmdmode
@@ -85,7 +85,7 @@ If you cursor up, you will go through a list of commands
 that you have entered at the command window (newest to oldest).  This
 is your command
 .keyword history
-.dot
+.period
 Cursoring
 down will take you through the history from oldest to newest.  This is
 very useful if you have typed a complicated command and did not get it
@@ -149,7 +149,7 @@ Some examples of line addresses and line ranges are:
 .millust end
 Line addresses are discussed in greater detail in the section
 :HDREF refid='lineadd'.
-.dot
+.period
 .np
 If you just enter a line address on its own on the &cmdline, then
 you will go directly to that line.
@@ -203,14 +203,14 @@ option.
 .np
 The general way to edit a new file is to use the &cmdline command
 .keyref edit
-.dot
+.period
 To enter this command, make sure that you are in &cmdmode and press
 the colon (':') key.  Once the command prompt is displayed, then
 simply type
 .keyref edit
 (optionally followed by a file name or a list of files), and then press
 .param ENTER
-.dot
+.period
 .np
 If you do not specify a file, then a directory listing is displayed.
 :INCLUDE file='fsdesc'.
@@ -272,14 +272,14 @@ and specifying the name of the file you wish to move to.
 You may press the
 .param F1
 key while in &cmdmode or &tinsmode
-.dot
+.period
 This function key moves you to the next file in the list of files that
 you are editing.
 .np
 You may press the
 .param F2
 key while in &cmdmode or &tinsmode
-.dot
+.period
 This function key moves you to the previous file in the list of files that
 you are editing.
 .np
@@ -298,7 +298,7 @@ editing.  You may press the
 .param F7
 key in either &cmdmode or &tinsmode, or enter the &cmdline command
 .keyref files
-.dot
+.period
 Doing any one of these things will cause a list of all files currently
 being edited to appear.  An asterisk ('*') will precede files that
 have been modified.
@@ -319,7 +319,7 @@ key.  The following will appear:
 .figure *depth='2.47' *scale='59' *file='vi017' Current File List
 Select the file
 .param b
-.dot
+.period
 That file will become the current file being edited.
 
 :LI.Type the &cmdline
@@ -352,7 +352,7 @@ pressing
 .param F1
 and
 .param F2
-.dot
+.period
 
 :eOL.
 .* ******************************************************************
@@ -386,7 +386,7 @@ For a list of all of the movement commands, see the section
 :HDREF refid='mvement'
 in the chapter
 :HDREF page=no refid='modes'
-.dot
+.period
 The following list of movement commands move you around on the
 current line:
 .*
@@ -515,12 +515,12 @@ This will move you to line 15.
 .param CTRL_F
 and
 .param CTRL_B
-.dot
+.period
 Notice that they behave just like
 .param PAGEUP
 and
 .param PAGEDOWN
-.dot
+.period
 
 :LI.Try using 'w' and 'b' to move forward and backwards through words
 in the file.
@@ -550,7 +550,7 @@ will move your cursor to the 3rd line from the top of the edit window.
 
 :LI.Press
 .param CTRL_D
-.dot
+.period
 You will move down half a page
 
 :LI.Type the number '2' and then press CTRL_D.  Notice that you
@@ -558,12 +558,12 @@ only move down 2 lines.
 
 :LI.Press
 .param CTRL_D
-.dot
+.period
 You will move down 2 lines.
 
 :LI.Press
 .param CTRL_U
-.dot
+.period
 You will move up 2 lines.
 
 :LI.Press 'ZZ' to save the file.  This file will be used in later exercises.
@@ -626,7 +626,7 @@ To quit every file that you are editing, the
 .keyref quitall
 command is used.  If no files have been modified, then you will immediately
 exit &edvi.
-.dot
+.period
 If files have been modified, you will be asked to
 verify whether or not you really want to exit the editor.
 .np
@@ -640,7 +640,7 @@ with that name.
 .millust end
 writes out a new file with the name
 :fname.new.txt:efname.
-.dot
+.period
 .np
 If the file name you specify already exists, you will see the message:
 .millust begin
@@ -669,7 +669,7 @@ The
 (exit) commands both do the same thing.  They write out the current file
 if it has been modified, and then exit the file.  This is the exact
 same as typing 'ZZ' in &cmdmode
-.dot
+.period
 .*
 .exercises
 :OL.
@@ -694,7 +694,7 @@ File modified - use :q! to force
 .millust end
 Press
 .param CTRL_G
-.dot
+.period
 The message window will indicate the following:
 .millust begin
 "abc" [modified] line 3 of 3  -- 100% --
@@ -705,7 +705,7 @@ allowed to quit.
 
 :LI.Enter the &cmdline command
 .keyref write
-.dot
+.period
 You will see the message:
 .millust begin
 "abc" 3 lines, 27 bytes
@@ -732,7 +732,7 @@ the file has been written, and is no longer marked as modified.
 .millust end
 This will write out a new file called "def".
 Now quit &edvi.
-.dot
+.period
 
 :LI.Edit the file "def".  Notice that it contains the lines
 .millust begin
@@ -767,15 +767,15 @@ You will exit the file, even though it has been modified.
 :LI.Re-edit the file "abc", and delete the last line.  Enter the
 &cmdline command
 .keyref xit
-.dot
+.period
 This will save the file and exit it,
 and because you are not editing any other files, you will exit &edvi
-.dot
+.period
 You could also use the command
 .keyref wq
 to do the same thing.  Both of these commands do the same thing as
 pressing 'ZZ' while in &cmdmode
-.dot
+.period
 
 :LI.Start up &edvi as follows:
 .millust begin
@@ -784,12 +784,12 @@ vi abc def
 This will edit two files, "abc" and "def". Enter the &cmdline command
 .keyref quitall
 and you will exit &edvi
-.dot
+.period
 
 :LI.Repeat the previous example, but add a line to one of the two files.
 Now enter the &cmdline command
 .keyref quitall
-.dot
+.period
 In this case, you will be prompted with
 .millust begin
 Files are modified, really exit?
@@ -808,7 +808,7 @@ use the menus.
 Text selection will be discussed in the next section.  Using menus with
 the mouse was discussed in the previous chapter, in the section
 :HDREF refid='basmenu'.
-.dot
+.period
 .np
 By simply moving your mouse cursor to a location in an edit window
 and clicking the left mouse button, the cursor will move to that
@@ -903,7 +903,7 @@ entire path.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Click the left mouse button when the mouse cursor is on the top line,
 and drag your mouse down until the first 10 lines are selected.
 If you do not have a mouse, then press the shift key and cursor down
@@ -1072,18 +1072,18 @@ Mark 'a' set
 .np
 You can set a mark with the &cmdline command
 .keyref mark
-.dot
+.period
 The syntax of the command is
 .millust begin
 &lt.line&gt. mark &lt.letter&gt.
 .millust end
 You specify which line the mark is to be set on with
 .param &lt.line&gt.
-.dot
+.period
 If no line is specified, the current line is assumed.  You specify
 the mark id ('a'-'z') with
 .param &lt.letter&gt.
-.dot
+.period
 .np
 For example, the following &cmdline commands may be used to set marks:
 .millust begin
@@ -1114,14 +1114,14 @@ For more information on marks, see the section
 :HDREF refid='marks'
 in the chapter
 :HDREF page=no refid='modes'
-.dot
+.period
 .*
 .exercises
 :OL.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Cursor to the letter 'i' in the word 'is' on the first line, and type
 .millust begin
 ma
@@ -1215,7 +1215,7 @@ describes the searching in more detail.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Press the forward slash ('/') key, and enter the string "this".
 The word "This" on the first line will be highlighted, and your cursor
 will be on the 'T'. (notice that the search is case insensitive).
@@ -1295,7 +1295,7 @@ The active copy buffer may be selected by pressing
 through
 .param CTRL_F9
 in &cmdmode.
-.dot
+.period
 When you do this, a message appears showing you which buffer
 has been selected, how many lines/characters are in the buffer, and the first
 line of the buffer.
@@ -1308,7 +1308,7 @@ For more information on copy buffers, see the section
 :HDREF refid='cpybuff'
 in the chapter
 :HDREF page=no refid='modes'
-.dot
+.period
 .np
 There is also a
 .keyref delete
@@ -1374,7 +1374,7 @@ are pasted before the specified line.  Otherwise, the contents of the
 The
 .param &lt."?&gt.
 is an optional &copybuffer.
-.dot
+.period
 If it is not specified, then the active &copybuffer is used.  The double
 quotes (") must be specified.
 .np
@@ -1382,20 +1382,20 @@ Deleting text is discussed in more detail in the section
 :HDREF refid='deltext'.
 in the chapter
 :HDREF page=no refid='modes'.
-.dot
+.period
 .np
 Copying text is discussed in more detail in the section
 :HDREF refid='cpytext'.
 in the chapter
 :HDREF page=no refid='modes'.
-.dot
+.period
 .*
 .exercises
 :OL.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Press 'dd'.  This will delete the first line of the file.
 
 :LI.Press 'dw'. This will delete the first word of the line.
@@ -1479,11 +1479,11 @@ If you press the
 key, the change will be cancelled.
 Once you type a character, the characters will be deleted and you will
 enter &tinsmode.
-.dot
+.period
 .np
 If you are changing whole lines, the lines are deleted and you enter
 &tinsmode.
-.dot
+.period
 .np
 Once you have entered the change sub-mode, you can then specify one of the
 following operations:
@@ -1506,17 +1506,17 @@ The changing of text is discussed in greater detail in the section
 :HDREF refid='cmchg'.
 of the chapter
 :HDREF page=no refid='modes'
-.dot
+.period
 .*
 .exercises
 :OL.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Type 'cw'.  This first word "01" will be highlighted.  Press
 .param ESC
-.dot
+.period
 The word will return to normal, and nothing will happen.
 
 :LI.Type 'cw' again.  This time, type the following:
@@ -1526,7 +1526,7 @@ This is new text.
 and press the
 .param ESC
 key to exit &tinsmode
-.dot
+.period
 Your original line:
 .millust begin
 01 This is a test line.
@@ -1566,7 +1566,7 @@ you made the changes.
 .np
 A change can be undone by pressing the letter 'u' while in
 &cmdmode
-.dot
+.period
 You can undo further changes by pressing 'u' repeatedly.
 .np
 If you undo a change you wanted to keep, you can
@@ -1598,7 +1598,7 @@ for more information.
 
 :LI.Edit the file "atest" created in the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Delete the first line, delete the second line, then delete the third
 line (one at a time).  Then, press 'u' in command mode.  The third
 line will come back.
@@ -1623,7 +1623,7 @@ No more undos
 appear.
 
 :LI.Press the capital u ('U') key in &cmdmode.
-.dot
+.period
 The first line will now disappear, as you are undoing your undo.
 
 :LI.Press 'U' again.  The second line will disappear.
@@ -1663,7 +1663,7 @@ known as
 .keyword memorize mode
 and
 .keyword alternate memorize mode
-.dot
+.period
 You enter memorize mode
 by pressing the letter 'm' (also used to set a mark) followed by a dot ('.').
 You will then see the message
@@ -1686,7 +1686,7 @@ The memorized sequence will be lost the next time you
 change the text other than with '.'.  To memorize a sequence that will
 always be remembered, you can use
 .keyword alternate memorize mode
-.dot
+.period
 This mode is used the same way as memorize mode,
 only you use an equals sign ('=') instead of a dot ('.').
 .*
@@ -1695,7 +1695,7 @@ only you use an equals sign ('=') instead of a dot ('.').
 
 :LI.Edit the file "atest" from the Exercises section of
 :HDREF refid='maiaf'
-.dot
+.period
 Delete the first two lines by typing the &cmdmode command:
 .millust begin
 2dd

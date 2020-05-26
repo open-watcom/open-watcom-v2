@@ -54,7 +54,7 @@ The name of the tag file is determined by the setting of
 .keyword tagfilename
 :cont., the default is
 .param tags
-.dot
+.period
 .np
 If the tag is located in the tag file, then &edname edits the file
 that contains the tag that you specified and goes to the line with
@@ -69,7 +69,7 @@ environment variable.
 There is a special program provided for the creation of tag files.  This
 program is called
 .bd ctags
-.dot
+.period
 It is used as follows:
 
 .millust begin

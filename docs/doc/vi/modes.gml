@@ -53,7 +53,7 @@ When in &tinsmode, text may be entered.  There are two aspects to
 .keyword insert
 and
 .keyword overstrike
-.dot
+.period
 .keyword Text insertion mode
 is entered via a number of different commands from &cmdmode,
 and is indicated by a
@@ -85,7 +85,7 @@ may enter text and freely cursor about through the file.  When you
 are finished adding text, the
 .param ESC
 key returns you to &cmdmode
-.dot
+.period
 .np
 It should be remembered that an undo applies to
 changes caused by commands; so all changes made while in &tinsmode
@@ -109,18 +109,18 @@ current line in the edit buffer.
 :DT.C
 :DD.Changes text from the current position to the end of the current line.
 Deletes the text, and enters &tinsmode
-.dot
+.period
 
 :DT.&lt.n&gt.c&lt.oper&gt.
 :DD.Change command.  Deletes the text in the range specified by
 .param &lt.oper&gt.
 :cont., and enters &tinsmode
-.dot
+.period
 
 :DT.g
 :DD.Starts inserting or overstriking text at the current cursor position,
 depending on how you were adding text the last time you were in &tinsmode
-.dot
+.period
 
 :DT.i
 :DD.Starts inserting text at the current cursor position.
@@ -131,11 +131,11 @@ the current line.
 
 :DT.o
 :DD.Opens a line after the current line, and enters &tinsmode
-.dot
+.period
 
 :DT.O
 :DD.Opens a line before the current line, and enters &tinsmode
-.dot
+.period
 
 :DT.R
 :DD.Starts overstriking text at the current character in the edit buffer.
@@ -192,7 +192,7 @@ of the current edit buffer.
 
 :DT.SHIFT_DEL
 :DD.Deletes the currently selected region into the active &copybuffer
-.dot
+.period
 
 :DT.SHIFT_INS
 :DD.Pastes the active &copybuffer
@@ -204,7 +204,7 @@ cursor.
 
 :DT.CTRL_DEL (ctrl-delete)
 :DD.Delete the current line into the active &copybuffer
-.dot
+.period
 
 :DT.CTRL_INS (ctrl-insert)
 :DD.Pastes the active &copybuffer into the text before the current position.
@@ -240,7 +240,7 @@ cursor.
 .keyword DEL
 has the same effect as pressing
 .keyword BS
-.dot
+.period
 
 :DT.ENTER
 :DD.Start a new line.
@@ -289,12 +289,12 @@ that a 1 was entered for the repeat count. As long as the setting
 .keyref repeatinfo
 is enabled, the number that is typed appears in a special window called the
 .keyref countwindow
-.dot
+.period
 .np
 Other commands may be preceded with a &copybuffer
 name, which is indicated with a
 .param &lt."?&gt.
-.dot
+.period
 If you do not want the result of the operation to be copied into the
 active buffer, then an alternate buffer may be specified.
 The double quotes (")
@@ -316,7 +316,7 @@ current edit buffer.
 .begkey "|" "&lt.n&gt.|" '(or bar)'
 Move to the column number specified by
 .param &lt.n&gt.
-.dot
+.period
 .np
 .xmplsect begin
 .begxmpl |
@@ -340,7 +340,7 @@ for more information.
 .begxmpl `a
 Move to the line and column with mark
 .param a
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -348,7 +348,7 @@ Move to the line and column with mark
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of line with the mark
 .param &lt.?&gt.
-.dot
+.period
 See the section
 :HDREF refid='marks'.
 for more information.
@@ -358,7 +358,7 @@ for more information.
 .begxmpl 'z
 Move to the start of the line with mark
 .param z
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -376,7 +376,7 @@ moves the cursor to the last closing brace (')') on the line.
 It is possible to set arbitrary pairs of match strings using the
 &cmdline command
 .keyref match
-.dot
+.period
 .endkey
 
 .begkey '$' '$' (dollar)
@@ -644,7 +644,7 @@ then the cursor moves to the
 .param f
 in
 .param foo
-.dot
+.period
 .endxmpl
 .begxmpl 2B
 If the cursor was on the right parenthesis (')') of
@@ -673,7 +673,7 @@ then the cursor moves to the letter
 .param a
 in
 .param abc
-.dot
+.period
 .endxmpl
 .begxmpl 2b
 If the cursor was on the right parenthesis (')') of
@@ -682,7 +682,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to left parenthesis 
 .param (
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -701,7 +701,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the right parenthesis
 .param )
-.dot
+.period
 .endxmpl
 .begxmpl 2E
 If the cursor was on the letter
@@ -733,7 +733,7 @@ then the cursor moves to the second letter
 .param o
 in
 .param foo
-.dot
+.period
 .endxmpl
 .begxmpl 2e
 If the cursor was on the letter
@@ -744,7 +744,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the left parenthesis
 .param (
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -777,7 +777,7 @@ The the cursor is moved to the first
 .param o
 in
 .param foo
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -816,7 +816,7 @@ The the cursor is moved to the second
 .param o
 in
 .param foo
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -824,7 +824,7 @@ in
 .begkey G &lt.n&gt.G
 Goes to the line specified by the repeat count
 .param &lt.n&gt.
-.dot
+.period
 If no repeat count is specified, you move the the last line in the
 current edit buffer.
 .np
@@ -934,7 +934,7 @@ The the cursor is moved to the second
 .param o
 in
 .param foo
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -973,7 +973,7 @@ The the cursor is moved to the first
 .param o
 in
 .param foo
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1003,7 +1003,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the number
 .param 3
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1023,7 +1023,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the left parenthesis
 .param (
-.dot
+.period
 .endxmpl
 .begxmpl 2w
 If the cursor was on the letter
@@ -1036,7 +1036,7 @@ then the cursor moves to the letter
 .param a
 in
 .param abc
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1105,7 +1105,7 @@ Mark commands are:
 .begkey m m&lt.?&gt.
 Allows the setting of mark
 .param &lt.?&gt.
-.dot
+.period
 .np
 If
 .param &lt.?&gt.
@@ -1117,7 +1117,7 @@ If
 is a dot ('.')
 instead of a letter, it puts &edvi in
 .keyword memorize mode
-.dot
+.period
 All characters typed are memorized until another dot ('.')
 is pressed.  The memorized keystrokes may be repeated by pressing
 a dot ('.').
@@ -1128,7 +1128,7 @@ If
 is an equals sign ('=')
 instead of a letter, it puts &edvi in alternate
 .keyword memorize mode
-.dot
+.period
 All characters typed are memorized until another equals sign ('=')
 is pressed.  The memorized keystrokes may be repeated by pressing
 an equals sign ('=').
@@ -1151,13 +1151,13 @@ Clear any marks set on the current line.
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of the line with the mark
 .param &lt.?&gt.
-.dot
+.period
 .np
 .xmplsect begin
 .begxmpl 'a
 Moves to the first column of the line with mark
 .param a
-.dot
+.period
 .endxmpl
 .begxmpl ''
 Moves to the first column of line of the last position before the last
@@ -1169,13 +1169,13 @@ non-linear movement command was issued.
 .begkey '`' '`&lt.?&gt.' (back quote)
 Move to the position in the edit buffer with the mark
 .param &lt.?&gt.
-.dot
+.period
 .np
 .xmplsect begin
 .begxmpl `a
 Moves to the column and line with mark
 .param a
-.dot
+.period
 .endxmpl
 .begxmpl ``
 Moves to the last position before the last
@@ -1222,14 +1222,14 @@ and
 later in this chapter).
 These buffers are numbered 1 through 9, and any of these buffers may
 be the active &copybuffer
-.dot
+.period
 .np
 The active &copybuffer may be selected using function keys. 
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
 When a buffer is selected,
 information about its contents is displayed in the message window.
 This buffer becomes the active &copybuffer
-.dot
+.period
 All yanked/deleted text is copied into this buffer.
 .np
 When text is yanked/deleted into the active &copybuffer,
@@ -1376,7 +1376,7 @@ Repeat last search command, in the opposite direction of the last search.
 .np
 For more information on regular expressions, see
 :HDREF refid='rxchap'.
-.dot
+.period
 .np
 Once you press the
 .keyword /
@@ -1450,12 +1450,12 @@ edit buffer.
 
 .begkey o o
 Opens a line after the current line, and enters &tinsmode
-.dot
+.period
 .endkey
 
 .begkey O O
 Opens a line before the current line, and enters &tinsmode
-.dot
+.period
 .endkey
 .*
 .keylist end
@@ -1469,7 +1469,7 @@ key. See the previous section,
 :HDREF refid='timode'.
 :cont.,
 for more information on manipulating text in &tinsmode
-.dot
+.period
 .* ******************************************************************
 .section 'Replacing Text'
 .* ******************************************************************
@@ -1491,29 +1491,29 @@ key. See the previous section,
 :HDREF refid='timode'.
 :cont.,
 for more information on manipulating text in &tinsmode
-.dot
+.period
 .endkey
 
 .begkey r &lt.n&gt.r&lt.?&gt.
 Replaces the current character with the next character typed,
 .param &lt.?&gt.
-.dot
+.period
 If a repeat count is specified, then the next
 .param &lt.n&gt.
 characters are replaced with the character
 .param &lt.?&gt.
-.dot
+.period
 .np
 .xmplsect begin
 .begxmpl ra
 Replaces the current character with the letter
 .param a
-.dot
+.period
 .endxmpl
 .begxmpl 10rZ
 Replaces the next 10 characters with the letter
 .param Z
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1527,7 +1527,7 @@ The commands in this section are for deleting text in
 an edit buffer.  All deleted text is copied into a &copybuffer
 for later use, see the section
 :HDREF refid='cpybuff'.
-.dot
+.period
 .*
 .keylist begin 'Deleting Text'
 .*
@@ -1539,7 +1539,7 @@ Deletes the characters from the current position to the end of line.
 Deletes characters from current position to the end of line into the named
 buffer
 .param a
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1557,7 +1557,7 @@ Delete the 10 previous characters.
 .begxmpl "z5X
 Delete the 5 previous characters into the named buffer
 .param z
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1575,7 +1575,7 @@ Delete the next 3 characters.
 .begxmpl "217x
 Delete the next 17 characters into the numbered buffer
 .param 2
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1584,7 +1584,7 @@ Delete the next 17 characters into the numbered buffer
 Delete the character at the current cursor position. This behaves
 the same as the &cmdmode command
 .keyword x
-.dot
+.period
 .np
 .xmplsect begin
 .begxmpl DEL
@@ -1596,7 +1596,7 @@ Delete the next 12 characters.
 .begxmpl "a5DEL
 Delete the next 5 characters into the named buffer
 .param a
-.dot
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1613,10 +1613,10 @@ Delete the next 5 characters into the named buffer
 Delete text from the current position in the file to the
 position specified by
 .param &lt.oper&gt.
-.dot
+.period
 A copy of the text is placed into the specified &copybuffer
 .param &lt."?&gt.
-.dot
+.period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
@@ -1638,12 +1638,12 @@ which causes a single line to be deleted.
 .begxmpl dr
 Deletes the current selected (highlighted) region in the edit buffer.
 A copy is placed into the active &copybuffer
-.dot
+.period
 .endxmpl
 .begxmpl "zdd
 Deletes the current line. A copy is placed into the named &copybuffer
 .param z
-.dot
+.period
 .endxmpl
 .begxmpl 95dd
 Deletes 95 lines, starting at the current. A copy of the lines
@@ -1656,14 +1656,14 @@ the first
 on the current line.  A copy of the text is placed
 in the named buffer
 .param c
-.dot
+.period
 .endxmpl
 .begxmpl "5d'a
 Deletes the lines from the current line to the line with mark
 .param m
 into the numbered buffer
 .param 5
-.dot
+.period
 .endxmpl
 .begxmpl dG
 Deletes all lines from the current line to the end of the current edit
@@ -1693,7 +1693,7 @@ lines are copied.
 .np
 This command is the same as typing
 .param yy
-.dot
+.period
 .endkey
 .*
 .keylist end
@@ -1708,10 +1708,10 @@ This command is the same as typing
 Yanks (copies) text from the current position in the file to the
 position specified by
 .param &lt.oper&gt.
-.dot
+.period
 Text is placed into the specified &copybuffer
 .param &lt."?&gt.
-.dot
+.period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
@@ -1732,7 +1732,7 @@ which causes a single line to be yanked.
 .xmplsect begin
 .begxmpl yy
 Yanks (copies) the current line into the active &copybuffer
-.dot
+.period
 .endxmpl
 .begxmpl 10yy
 Copies 10 lines, starting at the current, into the active buffer.
@@ -1747,7 +1747,7 @@ Yanks the lines from the current line to the line with mark
 .param m
 into the named buffer
 .param a
-.dot
+.period
 .endxmpl
 .begxmpl y/foo
 Copies:
@@ -1774,7 +1774,7 @@ from the start of the line to the first letter in the string
 The following commands are for changing text.
 If a range of lines is being changed, the lines are deleted and &edvi
 enters &tinsmode
-.dot
+.period
 .np
 If the change is taking place on the single line, the range of
 characters being changed is highlighted, and the last character in the
@@ -1788,7 +1788,7 @@ is not set, then the change command is cancelled. If
 is set, then the highlighted area is deleted.  If anything other than the
 .keyword ESC
 key is pressed, the highlighted area is deleted and &edvi enters &tinsmode
-.dot
+.period
 .*
 .keylist begin 'Changing Text'
 .*
@@ -1801,7 +1801,7 @@ is entered.
 .np
 This command is the same as typing
 .param c$
-.dot
+.period
 .endkey
 
 .begkey S &lt.n&gt.S
@@ -1814,7 +1814,7 @@ lines are deleted.
 .np
 This command is the same as typing
 .keyword cc
-.dot
+.period
 .endkey
 
 .begkey s &lt.n&gt.s
@@ -1831,7 +1831,7 @@ This command is the same as typing
 :cont.,
 or
 .param cSPACE
-.dot
+.period
 .endkey
 .*
 .keylist end
@@ -1846,7 +1846,7 @@ or
 Change text from the current position in the file to the
 position specified by
 .param &lt.oper&gt.
-.dot
+.period
 A repeat count
 .param &lt.n&gt.
 may precede the command, this causes
@@ -2072,7 +2072,7 @@ Toggles the case of the current line and the 9 lines following.
 The &cmdmode filter command has the same functionality as the
 &cmdline command
 .keyword filter
-.dot
+.period
 .se plural = 0
 :INCLUDE file='oper'.
 .*
@@ -2213,7 +2213,7 @@ Simulates the right mouse being clicked at the current cursor position.
 If a region is not selected, then the current word will be selected.
 The word is defined using the &cmdline command
 .keyref word
-.dot
+.period
 .endkey
 .*
 .keylist end
@@ -2272,7 +2272,7 @@ Char 'e': 0x65 (101)
 Go to the tag given by the current word.  The word is defined using the
 &cmdline command
 .keyref word
-.dot
+.period
 .seecmd tag
 .np
 See the appendix
@@ -2285,7 +2285,7 @@ Activates the current edit window's menu.  This menu is defined
 using the
 .keyword windowgadgetmenu
 .keyref menu
-.dot
+.period
 See the chapter
 :HDREF refid='winmenu'.
 for more information on setting this menu.
@@ -2302,7 +2302,7 @@ be inserted directly into the edit buffer.
 
 .begkey : : (colon)
 Allows entry of a &cmdline
-.dot
+.period
 See the chapter
 :HDREF refid='cmds'
 for full details on &cmdline commands.
@@ -2311,7 +2311,7 @@ for full details on &cmdline commands.
 .begkey @ @&lt.?&gt. (at sign)
 This command executes the &copybuffer
 .param &lt.?&gt.
-.dot
+.period
 &edvi behaves as if the contents
 of the buffer were being typed at the keyboard.
 .endkey
@@ -2338,11 +2338,11 @@ Joins the next 3 lines to the current line.
 .begkey Q Q
 Enters
 .keyword EX mode
-.dot
+.period
 .keyword EX mode
 is a line-oriented mode of
 &edvi.
-.dot
+.period
 To exit
 .keyword EX mode
 :cont.,
@@ -2413,7 +2413,7 @@ Push the current file and position.  If you press
 you will be restored to this position.  These positions are stacked
 up, up to a maximum of
 .keyref maxpush
-.dot
+.period
 .seecmd push
 .endkey
 

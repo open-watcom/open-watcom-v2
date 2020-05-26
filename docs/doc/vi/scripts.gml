@@ -47,7 +47,7 @@ by starting the line with pound sign ('#').
 .np
 A script is invoked using the &cmdline command
 .keyref source
-.dot
+.period
 Examples are:
 
 .millust begin
@@ -62,7 +62,7 @@ source test.vi parm1 parm2 parm3 parm4
 A script may be invoked with a set of optional parameters.
 These optional parameters are accessed in the script by using
 .var %n
-.dot
+.period
 Every occurrence of
 .var %n
 in the script is replaced by the corresponding parameter.
@@ -79,7 +79,7 @@ cannot be distinguished from the variable
 followed by a 0, and
 the variable
 .var %10
-.dot
+.period
 To remove the ambiguity, brackets are used:
 
 .millust begin
@@ -89,7 +89,7 @@ To remove the ambiguity, brackets are used:
 .np
 All parameters can be accessed by using
 .var %*
-.dot
+.period
 .np
 To allow multiple words
 in a single parameter, delimit the sequence by forward slashes ('/') or
@@ -131,11 +131,11 @@ commands dealing with &edvi scripts, they are:
 :DD.Used to compile a script.
 This allows much faster execution of the script
 by &edvi.
-.dot
+.period
 
 :DT.load
 :DD.Used to make a script resident in &edvi.
-.dot
+.period
 This allows much faster invocation of the script,
 since &edvi does not have to search for it or parse it.
 .*
@@ -283,7 +283,7 @@ to change its behaviour.  A script
 that is invoked at a hook point
 is referred to as a
 .keyword hook script
-.dot
+.period
 .np
 Each hook script
 is identified by a particular global variable.  Whenever &edvi
@@ -296,7 +296,7 @@ The hook points are:
 :LI.after a new file has been read.
 :LI.before a modified file is saved and exited.
 :LI.after return is pressed on the &cmdline
-.dot
+.period
 :LI.whenever an unmodified file is modified.
 :LI.whenever a selected (highlighted) column range is
 chosen (via mouse click or keyboard).
@@ -312,7 +312,7 @@ is called just after a new file has been read into the editor.
 .np
 The script invoked is the file specified by the global variable
 .var %(Rdhook)
-.dot
+.period
 
 :DT.Write Hook
 :DD.The hook script
@@ -325,7 +325,7 @@ The script invoked is the file specified by the global variable
 :DT.Command Hook
 :DD.The hook script
 is called after the return is pressed from the &cmdline
-.dot
+.period
 The global variable
 .var %(Com)
 contains the current command string, and may be modified.
@@ -334,7 +334,7 @@ processor.
 .np
 The script invoked is the file specified by the global variable
 .var %(Cmdhook)
-.dot
+.period
 
 :DT.Modified Hook
 :DD.The hook script
@@ -344,7 +344,7 @@ modified, the hook is not called.
 .np
 The script invoked is the file specified by the global variable
 .var %(Modhook)
-.dot
+.period
 
 :DT.Mouse Columns Sel Hook
 :DD.The hook script
@@ -367,7 +367,7 @@ The script is invoked with the following parameters:
 :eDL.
 The script invoked is the file is specified by the global variable
 .var %(MCselhook)
-.dot
+.period
 
 :DT.Mouse Lines Sel Hook
 :DD.The hook script
@@ -389,7 +389,7 @@ the region with the mouse, or by using the underscore ('_')
 The script invoked is the file specified by the global
 variable
 .var %(MLselhook)
-.dot
+.period
 .*
 :eDL.
 .*
@@ -522,19 +522,19 @@ Special keyword tokens are:
 :DD.These are symbolic representations of all possible errors while
 executing in &edvi..  These values are found in
 :fname.error.dat:efname.
-.dot
+.period
 These values are described in the appendix
 :HDREF refid=errcode.
-.dot
+.period
 
 :DT.lastrc
 :DD.This keyword evaluates to the return code issued by the last command run
 in the script. Possible values to compare against are found in
 :fname.error.dat:efname.
-.dot
+.period
 These values may are described in the appendix
 :HDREF refid=errcode.
-.dot
+.period
 
 :DT.rdonly
 :DD.This keyword evaluates to 1 if the current file is read only, and
@@ -556,7 +556,7 @@ This may be used to have different configurations built into
 your
 .keyword configuration script
 :fname.ed.cfg:efname.
-.dot
+.period
 
 :DT.black
 :DD.This keyword evalutes to the integer representing the color black (0).
@@ -731,7 +731,7 @@ This section gives a brief overview of the control flow commands of the
 &edvi script language.  For a full description of all
 script commands, see the next section
 :HDREF refid='scrcmds'.
-.dot
+.period
 .*
 .beglevel
 .*
@@ -892,7 +892,7 @@ script can be eliminated with a single
 This command is used to assign the value
 .param &lt.val&gt.
 to the variable &parm1.
-.dot
+.period
 .np
 The forward slashes ('/') around
 .param &lt.val&gt.
@@ -922,7 +922,7 @@ may contain regular expression replacement
 strings (using the last regular expression searched for). 
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
-.dot
+.period
 
 :DT.l
 :DD.When this flag is used,
@@ -930,14 +930,14 @@ For more information on regular expressions, see the chapter
 is assumed to be an expression that indicates a line number. The expression
 is evaluated, and the data on the corresponding line number is assigned
 to &parm1
-.dot
+.period
 
 :DT.x
 :DD.When this flag is used,
 .param &lt.val&gt.
 is assumed to be an expression, and is evaluated. The result is
 assigned to &parm1.
-.dot
+.period
 For another way of assigning expression results to a variable, see the
 .keyref expr
 script command.
@@ -947,7 +947,7 @@ script command.
 .param &lt.val&gt.
 is assumed to be the name of an operating system environment variable,
 and the contents of that environment variable is what is assigned to &parm1.
-.dot
+.period
 
 :DT.@
 :DD.When this flag is used,
@@ -971,35 +971,35 @@ The special operators are:
 :DT.strlen &lt.v&gt.
 :DD.Computes the length of the variable
 .param &lt.v&gt.
-.dot
+.period
 This value is assigned to &parm1.
-.dot
+.period
 
 :DT.strchr &lt.v&gt. &lt.c&gt.
 :DD.Computes the offset of the character
 .param &lt.c&gt.
 in the variable
 .param &lt.v&gt.
-.dot
+.period
 The offset is assigned to &parm1.
-.dot
+.period
 Note that the character
 .param &lt.c&gt.
 may be a variable, the value of which will be expanded before offset
 is computed.
-.dot
+.period
 
 :DT.substr &lt.v&gt. &lt.n1&gt. &lt.n2&gt.
 :DD.Computes a substring of the string contained in the variable
 .param &lt.v&gt.
-.dot
+.period
 The substring is composed of characters from offset
 .param &lt.n1&gt.
 to offset
 .param &lt.n2&gt.
-.dot
+.period
 The substring is assigned to &parm1.
-.dot
+.period
 Note that the parameters 
 .param &lt.n1&gt.
 and
@@ -1031,7 +1031,7 @@ Assigns the length of the contents of the local variable
 .var %a
 to the local variable
 .var %b
-.dot
+.period
 Assuming the local variable
 .var %a
 has the string
@@ -1050,7 +1050,7 @@ in the string contained in the local variable
 .var %a
 to the local variable
 .var %b
-.dot
+.period
 Assuming the local variable
 .var %a
 has the string
@@ -1068,7 +1068,7 @@ in the string contained in the local variable
 .var %a
 to the global variable
 .var %(Substr)
-.dot
+.period
 Assuming the local variable
 .var %a
 has the string
@@ -1097,7 +1097,7 @@ The value
 .param 3330
 is assigned to the global variable
 .var %(Result)
-.dot
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1271,7 +1271,7 @@ command is executed.
 .syntx * EXPR &lt.v1&gt. "=" &lt.expr&gt.
 .begdescr
 Assigns the expression &parm3 to the variable &parm1
-.dot
+.period
 .np
 Any variables contained in &parm3 are expanded before the expression
 is evaluated.
@@ -1282,14 +1282,14 @@ Assigns the value
 .param 3050
 to the global variable
 .var %(Num)
-.dot
+.period
 .endxmpl
 .begxmpl expr %a = %(SW)-10
 Assuming a screen width of 80, then this assigns the value
 .param 70
 to the local variable
 .var %a
-.dot
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1321,7 +1321,7 @@ Closes file 1.
 .syntx * FOPEN &lt.name&gt. &lt.n&gt. &lt.how&gt.
 .begdescr
 This command opens file &parm1, assigning it file handle &parm2.
-.dot
+.period
 .np
 &parm2 may be a value from 1 to 9.  This number is used to identify
 the file for future
@@ -1387,9 +1387,9 @@ Opens file test.dat for append, and uses file handle 9.
 .syntx * FREAD &lt.n&gt. &lt.v1&gt.
 .begdescr
 Reads a line from the file identified by handle &parm1.
-.dot
+.period
 The line is stored in the variable &parm2
-.dot
+.period
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1405,13 +1405,13 @@ The setting of
 .keyword lastrc
 if the file being read was not opened with
 .keyref fopen
-.dot
+.period
 .returns end
 .xmplsect begin
 .begxmpl fread 1 %(line)
 Reads the next line from file handle 1 into the variable
 .var %(line)
-.dot
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1426,7 +1426,7 @@ Reads the next line from file handle 1 into the variable
 .begdescr
 Writes the contents of the variable &parm2 to the file identified
 by handle &parm1.
-.dot
+.period
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1438,14 +1438,14 @@ The setting of
 .keyword lastrc
 if the file being written was not opened with
 .keyref fopen
-.dot
+.period
 .returns end
 .xmplsect begin
 .begxmpl fwrite 3 %(line)
 Writes the contents of the variable 
 .var %(line)
 to file handle 3
-.dot
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1460,14 +1460,14 @@ to file handle 3
 .begdescr
 Waits for the user to type a single keystroke, and then assigns
 the keystroke into variable &parm1
-.dot
+.period
 .enddescr
 .xmplsect begin
 .begxmpl get %(ch)
 Waits for a key to be pressed, and then assigns the key to the local
 variable
 .var %(ch)
-.dot
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1520,7 +1520,7 @@ Open a window (the
 .keyref commandwindow
 :cont.) and get a string from the user.  The string is assigned to the
 variable &parm1.
-.dot
+.period
 .np
 If &parm1 was assigned a value before the
 .keyword input
@@ -1543,7 +1543,7 @@ to cancel the input string.
 .begxmpl input %(str)
 Get a string from the user, placing the result in the local variable
 .var %(str)
-.dot
+.period
 If
 .var %(str)
 had no previous value, then the user would be prompted with:
@@ -1606,9 +1606,9 @@ command.
 .syntx * NEXTWORD &lt.srcvar&gt. &lt.resvar&gt.
 .begdescr
 Remove the next space-delimited word from the variable &parm1
-.dot
+.period
 The word is placed in the variable specified by &parm1.
-.dot
+.period
 Both &parm1 and &parm2 must be variables only.
 .enddescr
 .xmplsect begin
@@ -1653,21 +1653,21 @@ If &parm1 is false, execution continues at the next line.
 .syntx * RETURN &lt.rc&gt.
 .begdescr
 Exit the script, returning &parm1.
-.dot
+.period
 .np
 If the script was invoked by another script, then this value becomes
 .keyword lastrc
-.dot
+.period
 .np
 If the script was invoked at the &cmdline, then this return code
 is reported as the appropriate error, if &parm1 is not
 .param ERR_NO_ERR
-.dot
+.period
 .np
 There are symbolic values for various error codes.
 These values are described in the appendix
 :HDREF refid=errcode.
-.dot
+.period
 .enddescr
 .endfunc
 
@@ -1777,7 +1777,7 @@ These lines assigns the string
 .param Enter Line Number:
 to the local variable
 .var %a
-.dot
+.period
 This value will be used by the
 .keyref input
 command on line 2 to prompt the user.
@@ -1830,7 +1830,7 @@ Assigns the string
 .param Save "&lt.filename&gt." (y/n)?
 to the local variable
 .var %a
-.dot
+.period
 This value will be used by the
 .keyref input
 command on line 6 to prompt the user.
@@ -1844,7 +1844,7 @@ exited, otherwise the contents of the edit buffer are discarded.
 This exits the main loop if any of the previous commands did
 not return the "everything is OK" return code,
 .param ERR_NO_ERR
-.dot
+.period
 .serefer 17
 Ends the loop.  Control is returned to line 3.
 .seref end
@@ -1852,7 +1852,7 @@ Ends the loop.  Control is returned to line 3.
 
 .sesect begin 'wrme.vi'
 This example is the default write hook script
-.dot
+.period
 This is called just before a edit buffer is saved and exited.
 If the file has a null name, then the user is prompted for a name. If
 he cancels the prompt, then the save is aborted. Otherwise, the
@@ -1880,7 +1880,7 @@ to indicate that processing is to continue.
 .serefer 4 8
 The user is prompted with
 .param Enter a file name:
-.dot
+.period
 If he cancels the
 .keyref input
 command by pressing the ESC key, then the script returns
@@ -1943,7 +1943,7 @@ closing bracket (')').
 .serefer 1 5
 The user is prompted with
 .param Procedure Name:
-.dot
+.period
 If he cancels the
 .keyref input
 command by pressing the ESC key, then the script exits.
@@ -1953,7 +1953,7 @@ The script is an
 one; so all modifications to the edit buffer can be undone with a
 single
 .keyref 'undo (command)'
-.dot
+.period
 .serefer 7
 Disables any output to the message window.
 .serefer 8
@@ -1961,7 +1961,7 @@ This line gets the current state of the
 .keyref autoindent 1
 setting, and saves it the the local variable
 .var %x
-.dot
+.period
 .serefer 9
 Turns off autoindent, so that the text to be inserted will line up
 properly.
@@ -1982,7 +1982,7 @@ The local variable
 .var %x
 is set to the previous value of
 .keyref autoindent 1
-.dot
+.period
 If
 .keyref autoindent 1
 was on before, then this turns it back on.

@@ -87,17 +87,17 @@ then
 .bd *+?
 :cont., then concatenation, then
 .bd |
-.dot
+.period
 :LI.
 All regular expressions following an at sign ('@') are to be treated
 as case sensitive, regardless of the setting of
 .keyref caseignore 1
-.dot
+.period
 :LI.
 All regular expressions following a tilde ('&tilde.') are to be treated
 as case insensitive, regardless of the setting of
 .keyref caseignore 1
-.dot
+.period
 :LI.
 If an exclamation point ('!') occurs as the first character in a
 regular expression, it causes the ignoring of the
@@ -315,7 +315,7 @@ is encountered
 :DD.Terminate a
 .param \U or
 .param \L
-.dot
+.period
 
 :DT.\|&lt.n&gt.
 :DD.Substitutes spaces up to column
@@ -323,7 +323,7 @@ is encountered
 :cont.,
 so that the item that follows occurs at column
 .param &lt.n&gt.
-.dot
+.period
 
 :DT.\#
 :DD.Substitutes current line number that the match occurred on.
@@ -339,7 +339,7 @@ use a special character, like
 :cont.,
 it must be escaped:
 .keyword \(
-.dot
+.period
 .np
 However, it is possible to change this using the
 .keyref magic 1
@@ -365,7 +365,7 @@ lose their special meaning.
 To use the characters in their "magical" way, they must be escaped
 with a
 .keyword \
-.dot
+.period
 .np
 Replacement strings special character sequences can be disabled
 by turning off the

@@ -561,7 +561,7 @@
 .   .do end
 Only valid in
 .keyword EX mode
-.dot
+.period
 .if &e'&dohelp eq 0 .do begin
 .   :eDL.
 .   .do end
@@ -621,7 +621,7 @@ Also see the
 :SF font=2.command line:eSF.
 command
 .keyref &*.
-.dot
+.period
 .dm seecmd end
 
 .* Used in non-hlp portions

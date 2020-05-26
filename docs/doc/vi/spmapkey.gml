@@ -35,12 +35,12 @@
 :DT.\&lt."key"&gt.
 :DD.Any special key may be inserted for
 .param "key"
-.dot
+.period
 The angle brackets are required.
 There are a number of pre-defined keys
 symbols that are recognized. These are described in the Appendix
 :HDREF refid='symkey'.
-.dot
+.period
 
 :DT.\e
 :DD.Short form for the escape key (rather than \&lt.ESC&gt.).
