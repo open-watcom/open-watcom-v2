@@ -639,5 +639,9 @@ command
 .ix 'QNX command' '&*'
 .dm qnxcmd end
 .*
+.dm period begin
+.ct .li .
+.dm period end
+.*
 :cmt. include 'Safer C Library' related macros
 :INCLUDE file='safecmac'.
