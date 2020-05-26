@@ -90,7 +90,7 @@ set breakpoints in the assembly window in a similar fashion. Setting a
 break-on-write breakpoint is equally simple. Select the variable with
 the right mouse button and choose
 .popup Break
-.dot
+.period
 .np
 .ix 'breakpoint' 'state'
 Break points have three states.  They are:
@@ -243,7 +243,7 @@ later debugging session.
 .ix 'breakpoint' 'restoring'
 Restore a set of breakpoints that were saved by using
 .menuref 'Save' 'Break'
-.dot
+.period
 .*
 .endmenu
 .*

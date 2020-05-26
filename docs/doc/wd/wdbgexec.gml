@@ -108,11 +108,11 @@ need to do the following.
 .note
 Select
 .menuref 'Debug Startup' 'Run'
-.dot
+.period
 .note
 Select
 .menuref 'On Image Load' 'Break'
-.dot
+.period
 Type the name of the DLL in which you are interested.
 .note
 Select
@@ -128,7 +128,7 @@ startup code.
 If you have hard-coded int3 instructions in your DLL startup, the
 debugger will skip them, unless you use
 .menuref 'Debug Startup' 'Run'
-.dot
+.period
 .np
 All breakpoints in your program will be preserved.
 Breakpoints in DLLs will not be preserved.
@@ -315,7 +315,7 @@ is equivalent to using
 .menuref 'Unwind' 'Undo'
 or
 .menuref 'Rewind' 'Undo'
-.dot
+.period
 .menuitem Break
 .ix 'breakpoint' 'setting in caller'
 .ix 'breakpoint' 'up call stack'
@@ -366,13 +366,13 @@ Make the selected thread current.
 .ix 'threads' 'freezing'
 Change the state of the selected thread to be
 .bi frozen
-.dot
+.period
 You cannot
 freeze the current thread.
 .menuitem Thaw
 .ix 'threads' 'thawing'
 Change the state of the selected thread to be
 .bi runnable.
-.dot
+.period
 The current thread is always runnable.
 .endmenu

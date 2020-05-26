@@ -146,7 +146,7 @@ The default file name is "&dbgcmdup..&dbgsuffup".
 Debugger configuration files are found in the current directory or one
 of the directories in your
 .ev PATH
-.dot
+.period
 
 .note /NOInvoke
 .ix 'options' 'NOInvoke'

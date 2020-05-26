@@ -675,7 +675,7 @@ Among these are:
 .note
 Task execution cannot be restarted using
 .menuref 'Go' 'Run'
-.dot
+.period
 .note
 A register can be modified for the purposes of expression evaluation.
 You can choose

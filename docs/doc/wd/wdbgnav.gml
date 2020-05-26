@@ -220,7 +220,7 @@ You can open the
 .wnddef Globals
 window by choosing
 .menuref 'Globals' 'Data'
-.dot
+.period
 This window displays the names of all global variables defined in the program.
 You can add a variable to the Watches window by
 double-clicking on it, or cursoring to it and pressing ENTER.

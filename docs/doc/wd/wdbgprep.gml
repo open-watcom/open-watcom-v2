@@ -182,4 +182,4 @@ filename is no longer valid (i.e., you have moved the source to another
 directory), you must tell the debugger where to find the source files
 by choosing
 .menuref 'Source Path' 'File'
-.dot
+.period
