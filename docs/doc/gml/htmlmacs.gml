@@ -1034,14 +1034,10 @@ menu
 from the pop-up menu
 .dm popref end
 .*
-.dm dot begin
+.dm period begin
 .ct .li .
-.dm dot end
-.*
-.dm @period begin
-.ct .li .
-.dm @period end
-.gt period add @period
+.dm period end
+.gt period add period
 .*
 .dm cmddef begin
 .section &*

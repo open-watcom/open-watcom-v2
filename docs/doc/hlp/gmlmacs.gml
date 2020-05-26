@@ -665,19 +665,10 @@ menu
 from the pop-up menu
 .dm popup end
 
-.dm dot begin
-.if '&*' ne '' .do begin
-.ct ~. &*
-.do end
-.el .do begin
-.ct ~.
-.do end
-.dm dot end
-
-.dm @period begin
+.dm period begin
 .ct .li .
-.dm @period end
-.gt period add @period
+.dm period end
+.gt period add period
 
 .dm @cont begin
 .ct &*
