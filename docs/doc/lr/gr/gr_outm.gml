@@ -14,7 +14,7 @@ The
 .id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
-.ct .li .
+.period
 The argument
 .arg length
 specifies the number of characters to be displayed.

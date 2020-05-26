@@ -17,7 +17,7 @@ function stores the multibyte character
 .arg ch
 into the string pointed to by
 .arg addr
-.ct .li .
+.period
 .im farparm
 .desc end
 .return begin
@@ -25,7 +25,7 @@ The
 .id &funcb.
 function returns the value of the argument
 .arg addr
-.ct .li .
+.period
 .return end
 .see begin
 .im seembc

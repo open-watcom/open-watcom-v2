@@ -40,7 +40,7 @@ function locates the first occurrence of
 .arg c
 (converted to a char) in the string pointed to by
 .arg s
-.ct .li .
+.period
 The terminating null character is considered to be part of the string.
 .im farfunc
 .im widefun1

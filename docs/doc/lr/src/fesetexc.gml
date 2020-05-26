@@ -24,7 +24,7 @@ floating-point exceptions, but only sets the state of the flags.
 .np
 For valid exception values see
 .seekw &functiong. fegetexceptflag
-.ct .li .
+.period
 .desc end
 .*
 .return begin

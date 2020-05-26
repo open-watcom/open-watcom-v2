@@ -49,7 +49,7 @@ characters from the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 .im farparm
 .im widefun1
 .im mbsffunc
@@ -62,7 +62,7 @@ than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strcmp stricmp strncmp strnicmp

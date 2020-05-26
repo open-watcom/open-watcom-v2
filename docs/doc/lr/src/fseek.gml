@@ -10,7 +10,7 @@ The
 function changes the read/write position of the file
 specified by
 .arg fp
-.ct .li .
+.period
 This position defines the character that will be read or written on
 the next I/O operation on the file.
 The argument
@@ -19,13 +19,13 @@ is a file pointer returned by
 .kw fopen
 or
 .kw freopen
-.ct .li .
+.period
 The argument
 .arg offset
 is the position to seek to relative to one of three positions
 specified by the argument
 .arg where
-.ct .li .
+.period
 Allowable values for
 .arg where
 are:
@@ -65,7 +65,7 @@ with the
 .arg where
 parameter set to
 .kw SEEK_SET
-.ct .li .
+.period
 .desc end
 .return begin
 The

@@ -43,7 +43,7 @@ to by
 .arg str
 of any character from the string pointed to by
 .arg charset
-.ct .li .
+.period
 .im farfunc
 .im widefun1
 .im mbsffunc
@@ -57,7 +57,7 @@ if no character from
 .arg charset
 occurs in
 .arg str
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strchr strpbrk strrchr strtok

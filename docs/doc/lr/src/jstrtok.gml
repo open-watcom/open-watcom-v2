@@ -29,13 +29,13 @@ used to break the Kanji string pointed to by
 into a sequence of tokens, each of which is delimited by a single- or
 double-byte character from the string pointed to by
 .arg s2
-.ct .li .
+.period
 The first call to
 .id &funcb.
 will return a pointer to the first token in
 the Kanji string pointed to by
 .arg s1
-.ct .li .
+.period
 Subsequent calls to
 .id &funcb.
 must pass a NULL pointer as the first
@@ -50,7 +50,7 @@ The first call in the sequence searches
 for the first single- or double-byte character that is not contained
 in the current delimiter string
 .arg s2
-.ct .li .
+.period
 If no such character is found, then there are no tokens in
 .arg s1
 and the
@@ -65,7 +65,7 @@ double-byte character that is contained in the current delimiter
 If no such character is found, the current token extends to the end of
 the string pointed to by
 .arg s1
-.ct .li .
+.period
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
 The

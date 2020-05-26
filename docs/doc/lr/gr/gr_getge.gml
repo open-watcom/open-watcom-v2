@@ -15,7 +15,7 @@ The
 .arg text
 as it would be displayed in the current font by the &routine
 .kw _outgtext
-.ct .li .
+.period
 Note that the text is not displayed on the screen, only its length
 is determined.
 .desc end

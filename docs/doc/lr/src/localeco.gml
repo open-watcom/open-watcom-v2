@@ -123,23 +123,23 @@ is interpreted as follows:
 .note 0
 Parentheses surround the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 1
 The sign string precedes the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 2
 The sign string follows the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 3
 The sign string immediately precedes the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 4
 The sign string immediately follows the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .endnote
 .desc end
 .return begin

@@ -23,13 +23,13 @@ in the specified buffer
 .arg buffer
 of length
 .arg size
-.ct .li .
+.period
 .np
 The maximum size that might be required for
 .arg buffer
 is
 .kw _MAX_PATH
-.ct .li .
+.period
 If the buffer provided is too small,
 .mono NULL
 is returned and
@@ -44,7 +44,7 @@ then a buffer of size
 .kw _MAX_PATH
 is allocated using
 .kw malloc
-.ct .li .
+.period
 This buffer may be freed using the
 .kw free
 function.
@@ -56,7 +56,7 @@ is
 or points to a null string ("") then the current working directory is
 returned in
 .arg buffer
-.ct .li .
+.period
 .im widefun1
 .desc end
 .return begin

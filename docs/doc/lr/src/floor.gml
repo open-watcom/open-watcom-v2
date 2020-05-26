@@ -9,7 +9,7 @@ The
 .id &funcb.
 function computes the largest integer not greater than
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The

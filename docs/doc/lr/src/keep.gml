@@ -14,7 +14,7 @@ The amount of memory kept for the program is
 paragraphs (a paragraph is 16 bytes) from the Program Segment Prefix
 which is stored in the variable
 .kw _psp
-.ct .li .
+.period
 The value of
 .arg retcode
 is returned to the parent process.

@@ -12,7 +12,7 @@ The
 function computes the principal value of the
 arccosine of
 .arg x
-.ct .li .
+.period
 A domain error occurs for arguments not in the range [&minus.1,1].
 .desc end
 .return begin

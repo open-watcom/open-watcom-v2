@@ -33,7 +33,7 @@ characters from the buffer pointed to by
 .arg src
 to the buffer pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects will take place properly.
 See the
 .kw memcpy
@@ -52,7 +52,7 @@ The
 .id &funcb.
 function returns
 .arg dst
-.ct .li .
+.period
 .return end
 .*
 .see begin

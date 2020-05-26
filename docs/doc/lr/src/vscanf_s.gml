@@ -54,7 +54,7 @@ function is identical to
 except that it accepts a
 wide-character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

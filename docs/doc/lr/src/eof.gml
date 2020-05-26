@@ -15,7 +15,7 @@ function determines, at the operating system level, if the
 end of the file has been reached for the file whose file &handle is
 given by
 .arg &fd
-.ct .li .
+.period
 Because the current file position is set following an input operation,
 the
 .id &funcb.

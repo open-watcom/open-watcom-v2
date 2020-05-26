@@ -24,7 +24,7 @@ function scans input from the character string
 .arg in_string
 under control of the argument
 .arg format
-.ct .li .
+.period
 Following the format string is the list of addresses of items to
 receive values.
 .pp

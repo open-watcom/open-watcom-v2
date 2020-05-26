@@ -18,7 +18,7 @@ and
 .kw closedir
 to obtain the list of file names contained in the directory specified by
 .arg dirname
-.ct .li .
+.period
 The path indicated by
 .arg dirname
 can be either relative to the current working directory or it can be
@@ -61,7 +61,7 @@ If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
 .kw closedir
-.ct .li .
+.period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -96,7 +96,7 @@ matching the pattern
 .do end
 specified by
 .arg dirname
-.ct .li .
+.period
 The
 .id &funcb.
 function returns
@@ -109,7 +109,7 @@ is not a valid pathname.
 .el .do begin
 is not a valid pathname, or if there are no files matching
 .arg dirname
-.ct .li .
+.period
 .do end
 .return end
 .error begin
@@ -121,7 +121,7 @@ Search permission is denied for a component of
 .arg dirname
 or read permission is denied for
 .arg dirname
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 .term ENAMETOOLONG
 The length of the argument

@@ -22,7 +22,7 @@ function writes output to the file designated by
 .kw stdout
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .arg format
 string is described below.

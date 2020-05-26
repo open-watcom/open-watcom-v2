@@ -16,7 +16,7 @@ into a structure of type
 .ct , of time information, expressed as local time.
 The information is stored in the structure pointed to by
 .arg tmbuf
-.ct .li .
+.period
 Whenever
 .id &funcb.
 is called, the

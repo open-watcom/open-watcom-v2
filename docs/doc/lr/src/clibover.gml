@@ -902,7 +902,7 @@ function is used.
 .np
 It is also possible to allocate memory from a based heap using
 .kw _bmalloc
-.ct .li .
+.period
 Based heaps are similar to far heaps in that they are located
 outside the normal data segment.
 Based pointers only store the offset portion of the full address,

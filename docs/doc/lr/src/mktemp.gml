@@ -61,7 +61,7 @@ The
 .id &funcb.
 function returns a pointer to the modified
 .arg template
-.ct .li .
+.period
 The
 .id &funcb.
 function returns NULL if

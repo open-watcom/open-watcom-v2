@@ -24,7 +24,7 @@ characters from the string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
 .kw memmove

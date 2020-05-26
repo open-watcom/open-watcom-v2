@@ -10,7 +10,7 @@ The
 function returns the single-byte ASCII character equivalent
 to the double-byte character
 .arg c
-.ct .li .
+.period
 The ASCII character will be in the range 0x20 to 0x7E.
 .desc end
 .return begin

@@ -22,7 +22,7 @@ The
 .id &funcb.
 function makes disk access operations specified by
 .arg service
-.ct .li .
+.period
 Please exercise caution when using this function because it accesses
 disks directly.
 Information for the desired
@@ -31,7 +31,7 @@ is passed the
 .kw diskinfo_t
 structure pointed to by
 .arg diskinfo
-.ct .li .
+.period
 The value for
 .arg service
 can be one of the following values:
@@ -46,7 +46,7 @@ _DISK_WRITE        _DISK_WRITEDDAM
 .np
 In the following description, <sector> etc. means the field of the structure
 .kw diskinfo_t
-.ct .li .
+.period
 .begterm 12
 .termhd1 Value
 .termhd2 Meaning

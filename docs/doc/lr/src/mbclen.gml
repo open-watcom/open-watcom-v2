@@ -14,7 +14,7 @@ The
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
-.ct .li .
+.period
 .im farparm
 .desc end
 .return begin

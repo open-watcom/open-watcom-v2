@@ -20,7 +20,7 @@ This
 .id int
 item contains the number of arguments passed to
 .kw main
-.ct .li .
+.period
 .df __argv
 .proto stdlib.h
 This
@@ -28,7 +28,7 @@ This
 item contains a pointer to a vector containing the actual arguments
 passed to
 .kw main
-.ct .li .
+.period
 .do end
 .df daylight
 .proto time.h
@@ -378,7 +378,7 @@ This
 .id int
 variable contains the number of messages declared in
 .kw sys_errlist
-.ct .li .
+.period
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .df _threadid
@@ -432,7 +432,7 @@ This
 .id int
 item contains the number of arguments passed to
 .kw wmain
-.ct .li .
+.period
 .df __wargv
 .proto stdlib.h
 This
@@ -440,7 +440,7 @@ This
 item contains a pointer to a vector containing the actual arguments
 passed to
 .kw wmain
-.ct .li .
+.period
 .df _wenviron
 .proto stdlib.h
 This

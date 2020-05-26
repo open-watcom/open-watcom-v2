@@ -14,7 +14,7 @@ The
 .id &funcb.
 function copies the current time to the buffer pointed to by
 .arg timestr
-.ct .li .
+.period
 The time is formatted as "HH:MM:SS"
 where "HH" is two digits representing the hour in 24-hour notation,
 where "MM" is two digits representing the minutes past the hour, and
@@ -27,7 +27,7 @@ The
 .id &funcb.
 function returns a pointer to the resulting text string
 .arg timestr
-.ct .li .
+.period
 .return end
 .see begin
 .seelist asctime Functions ctime Functions gmtime localtime mktime

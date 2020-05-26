@@ -23,7 +23,7 @@ If the multibyte character is valid and
 .arg pwc
 is not a NULL pointer, the code is stored in the object pointed to by
 .arg pwc
-.ct .li .
+.period
 At most
 .arg n
 bytes of the array pointed to by

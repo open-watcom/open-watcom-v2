@@ -9,7 +9,7 @@ The
 function returns the absolute value
 of its long long integer argument
 .arg j
-.ct .li .
+.period
 .desc end
 .return begin
 The

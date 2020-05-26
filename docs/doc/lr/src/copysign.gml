@@ -12,14 +12,14 @@ to the absolute value of the argument
 .arg x
 and whose sign matches argument
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 A value of the same magnitude as
 .arg x
 and the same sign as
 .arg y
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

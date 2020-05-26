@@ -32,7 +32,7 @@ The
 .id &funcb.
 &routine returns the previous setting for
 .arg mode
-.ct .li .
+.period
 .return end
 .see begin
 .seelist _gettextcursor _settextcursor

@@ -45,10 +45,10 @@ which consists entirely of characters
 .us not
 from the string pointed to by
 .arg charset
-.ct .li .
+.period
 The terminating null character is not considered part of
 .arg str
-.ct .li .
+.period
 .im farparm
 .im widefun1
 .im mbsfunc

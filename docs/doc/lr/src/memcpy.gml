@@ -33,7 +33,7 @@ characters from the buffer pointed to by
 .arg src
 into the buffer pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
 .kw memmove

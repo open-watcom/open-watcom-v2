@@ -68,7 +68,7 @@ The
 .id &funcb.
 function first attempts to close any file that is associated with
 .arg stream
-.ct .li .
+.period
 Failure to close the file is ignored. The error and end-of-file indicators for the stream are
 cleared.
 If the file was opened successfully, then the pointer to FILE pointed to by

@@ -33,12 +33,12 @@ single or double-byte characters of the Kanji string pointed to by
 .arg src
 to the end of the Kanji string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
+.period
 A terminating null character is always appended to the result.
 .im ffarfunc
 .desc end
@@ -57,7 +57,7 @@ functions return
 .do end
 the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrcat jstrncat strcat strncat

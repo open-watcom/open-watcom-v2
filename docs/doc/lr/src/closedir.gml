@@ -16,7 +16,7 @@ function closes the directory specified by
 .arg dirp
 and frees the memory allocated by
 .kw opendir
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 .np
 The result of using a directory stream after one of the
@@ -47,7 +47,7 @@ function is identical to
 except that it closes a
 directory of wide-character filenames opened by
 .kw _wopendir
-.ct .li .
+.period
 .do end
 .desc end
 .return begin

@@ -33,7 +33,7 @@ single- or double-byte characters from the Kanji string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
 .kw memmove
@@ -72,7 +72,7 @@ functions return
 .do end
 the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrncpy strcpy strdup strncpy

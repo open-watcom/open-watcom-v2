@@ -8,7 +8,7 @@ The 64-bit quad-word in
 .arg m
 is shifted to the left by the scalar shift count in
 .arg count
-.ct .li .
+.period
 The low-order bits are filled with zeros.
 The shift count is interpreted as unsigned.
 Shift counts greater than 63 yield all zeros.

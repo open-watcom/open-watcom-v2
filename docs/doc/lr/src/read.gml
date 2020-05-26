@@ -16,7 +16,7 @@ The number of bytes transmitted is given by
 .arg len
 and the data is transmitted starting at the address specified by
 .arg buffer
-.ct .li .
+.period
 .np
 The
 .arg &fd

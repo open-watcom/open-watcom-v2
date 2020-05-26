@@ -16,7 +16,7 @@ or
 .kw getche
 functions) and will be detected by the function
 .kw kbhit
-.ct .li .
+.period
 Only the last character returned in this way is remembered.
 .pp
 The
@@ -25,7 +25,7 @@ function clears the end-of-file indicator, unless the value of
 .arg c
 is
 .kw EOF
-.ct .li .
+.period
 .desc end
 .return begin
 The

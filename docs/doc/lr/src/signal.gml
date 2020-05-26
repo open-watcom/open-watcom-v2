@@ -101,7 +101,7 @@ You can use
 .kw siglongjmp
 to restore the mask to the state saved in a previous call to
 .kw sigsetjmp
-.ct .li .
+.period
 .do end
 .np
 After returning from the signal-catching function, the receiving
@@ -123,7 +123,7 @@ It is not possible to catch the signals
 .kw SIGKILL
 and
 .kw SIGSTOP
-.ct .li .
+.period
 .do end
 .np
 Since signal-catching functions are invoked asynchronously with
@@ -178,7 +178,7 @@ or
 .kw SIGSTOP
 cannot be set to
 .kw SIG_IGN
-.ct .li .
+.period
 .np
 Setting a signal action to
 .kw SIG_IGN
@@ -261,7 +261,7 @@ indicates that the request could not be handled, and
 .kw errno
 is set to the value
 .kw EINVAL
-.ct .li .
+.period
 .np
 Otherwise, the previous value of
 .arg func

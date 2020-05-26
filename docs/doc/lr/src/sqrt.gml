@@ -9,7 +9,7 @@ The
 .id &funcb.
 function computes the non-negative square root of
 .arg x
-.ct .li .
+.period
 A domain error occurs if the argument is negative.
 .desc end
 .return begin

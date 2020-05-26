@@ -18,7 +18,7 @@ function extracts extended error information following
 a failed DOS function.
 This information is placed in the structure located by
 .arg err_info
-.ct .li .
+.period
 This function is only useful with DOS version 3.0 or later.
 .np
 You should consult the technical documentation for the DOS system on

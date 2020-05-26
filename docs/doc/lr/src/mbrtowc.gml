@@ -33,7 +33,7 @@ shift sequences) pointed to by
 .arg pwc
 is not a null pointer, stores that value in the object pointed to by
 .arg pwc
-.ct .li .
+.period
 If the corresponding wide character is the null wide character, the
 resulting state described will be the initial conversion state.
 .im farparm

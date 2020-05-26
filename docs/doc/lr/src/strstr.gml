@@ -49,7 +49,7 @@ to by
 of the sequence of characters (excluding the terminating null
 character) in the string pointed to by
 .arg substr
-.ct .li .
+.period
 .im farfunc
 .im widefun1
 .im mbsffunc

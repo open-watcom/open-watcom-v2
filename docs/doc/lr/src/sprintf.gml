@@ -43,7 +43,7 @@ written to a stream.
 The maximum number of wide characters to write, including a
 terminating null wide character, is specified by
 .arg n
-.ct .li .
+.period
 .do end
 .desc end
 .*

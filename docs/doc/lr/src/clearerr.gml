@@ -11,7 +11,7 @@ The
 function clears the end-of-file and error indicators
 for the stream pointed to by
 .arg fp
-.ct .li .
+.period
 These indicators are cleared only when the file is opened or by an
 explicit call to the
 .id &funcb.

@@ -14,10 +14,10 @@ function uses system call 0x3C to create a new file named
 .arg path
 .ct , with the access attributes specified by
 .arg attribute
-.ct .li .
+.period
 The &handle for the new file is returned in the word pointed to by
 .arg &fd
-.ct .li .
+.period
 If the file already exists, the contents will be erased, and the
 attributes of the file will remain unchanged.
 .im creatatt

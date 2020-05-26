@@ -9,7 +9,7 @@ The &funcb
 function gets a string of characters directly from the console
 and stores the string and its length in the array pointed to by
 .arg buf
-.ct .li .
+.period
 The first element of the array
 .arg buf[0]
 must contain the maximum length in characters of the string to be read.
@@ -28,7 +28,7 @@ carriage-return line-feed combination
 is read, or until the specified number of characters is read.
 The string is stored in the array starting at
 .arg buf[2]
-.ct .li .
+.period
 The
 .if '&machsys' eq 'QNX' .do begin
 newline character,
@@ -39,7 +39,7 @@ carriage-return line-feed combination,
 if read, is replaced by a null character.
 The actual length of the string read is placed in
 .arg buf[1]
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -47,7 +47,7 @@ The
 function returns a pointer to the start of the string
 which is at
 .arg buf[2]
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fgets getch getche gets

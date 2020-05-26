@@ -24,7 +24,7 @@ function scans input from the file designated by
 .arg fp
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the

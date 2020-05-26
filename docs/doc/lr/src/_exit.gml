@@ -43,7 +43,7 @@ process executes an appropriate subsequent
 .kw wait
 or
 .kw waitpid
-.ct .li .
+.period
 .note
 Termination of a process does not directly terminate its children.
 The sending of a

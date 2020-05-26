@@ -33,7 +33,7 @@ The header file
 .hdrfile tchar.h
 defines the generic-text routine
 .kw _tcsnextc
-.ct .li .
+.period
 This macro maps to
 .id &mfunc.
 if
@@ -67,7 +67,7 @@ string.
 These functions return the integer value of the next character
 (single-byte, wide, or multibyte) pointed to by
 .arg string
-.ct .li .
+.period
 .return end
 .see begin
 .seelist _mbsnextc _strdec _strinc _strninc

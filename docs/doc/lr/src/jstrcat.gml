@@ -29,12 +29,12 @@ a copy of the Kanji string pointed to by
 (including the terminating null character)
 to the end of the Kanji string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
+.period
 .im ffarfunc
 .desc end
 .return begin

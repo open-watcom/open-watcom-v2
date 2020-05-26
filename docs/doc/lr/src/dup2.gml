@@ -13,7 +13,7 @@ The
 .id &funcb.
 function duplicates the file &handle given by the argument
 .arg &fd
-.ct .li .
+.period
 The new file &handle is identical to the original in that it references
 the same file or device, it has the same open mode (read and/or write)
 and it will have identical file position to the original (changing the
@@ -22,7 +22,7 @@ other).
 .pp
 The number of the new &handle is
 .arg &fd.2
-.ct .li .
+.period
 If a file already is opened with this &handle, the file is closed
 before the duplication is attempted.
 .im ansiconf

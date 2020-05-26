@@ -13,7 +13,7 @@ function determines whether the wide character
 .arg wc
 has the property described by
 .arg desc
-.ct .li .
+.period
 Valid values of
 .arg desc
 are defined by the use of the
@@ -72,7 +72,7 @@ the wide character
 .arg wc
 has the property described by
 .arg desc
-.ct .li .
+.period
 .return end
 .*
 .see begin

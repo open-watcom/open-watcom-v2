@@ -24,7 +24,7 @@ shall be a null pointer. The
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a

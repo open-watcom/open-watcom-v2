@@ -10,7 +10,7 @@ The
 .id &funcb.
 function uses system call 0x3E to close the file indicated by
 .arg &fd
-.ct .li .
+.period
 The value for
 .arg &fd
 is the one returned by a function call that created or last opened the file.

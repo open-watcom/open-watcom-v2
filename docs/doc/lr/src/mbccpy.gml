@@ -17,7 +17,7 @@ function copies one multibyte character from
 .arg ch
 to
 .arg dest
-.ct .li .
+.period
 .im farparm
 .desc end
 .return begin

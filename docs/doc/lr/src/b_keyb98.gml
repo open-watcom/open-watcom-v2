@@ -27,14 +27,14 @@ returned data is the ASCII code and the high-order byte is the scan code
 It checks whether there is a key code in the key data buffer. If key
 data is in the key data buffer, it operates the same as
 .kw _KEYBRD_READ
-.ct .li .
+.period
 But the status of the buffer is not changed. It returns zero if no
 data.
 .term _KEYBRD_SENSE
 It checks the status of key input and returns it in the 16 bytes of
 the area pointed to by the argument
 .arg keytable
-.ct .li .
+.period
 Each byte corresponds to a code group.
 .term _KEYBRD_SHIFTSTATUS
 It checks whether any of the SHIFT, CAPS, KANA, GRPH, or CTRL keys are
@@ -58,7 +58,7 @@ The
 services return zero if there was no character available, otherwise
 it returns the same value returned by
 .kw _KEYBRD_READ
-.ct .li .
+.period
 .np
 The shift status is returned in the low-order byte with one bit
 for each special key defined as follows:

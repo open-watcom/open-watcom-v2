@@ -52,7 +52,7 @@ characters from the string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
 .kw memmove
@@ -82,7 +82,7 @@ The
 .id &funcb.
 function returns the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strncpy strlcpy strcpy strdup strncpy_s strcpy_s

@@ -33,7 +33,7 @@ The
 .id &funcb.
 function computes the length of the string pointed to by
 .arg s
-.ct .li .
+.period
 .im farparm
 .im widefun1
 .im mbsffunc

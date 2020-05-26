@@ -9,7 +9,7 @@ The
 .id &funcb.
 function computes the cubed root of the argument
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The cubed root of the value.

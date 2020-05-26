@@ -30,7 +30,7 @@ is not a null pointer, then
 .arg smax
 shall not equal zero and shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg s
 is not a null pointer,
@@ -39,7 +39,7 @@ then
 shall be not be less than the number of bytes to be stored in the array pointed
 to by
 .arg s
-.ct .li .
+.period
 If
 .arg s
 is a null pointer, then
@@ -95,7 +95,7 @@ by
 (including any shift sequences), and stores the multibyte character representation
 in the array whose first element is pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .kw MB_CUR_MAX
 bytes are
@@ -120,7 +120,7 @@ function stores into
 the number of bytes (including any shift sequences) stored in the array pointed
 to by
 .arg s
-.ct .li .
+.period
 .im safefarw
 .desc end
 .*

@@ -18,7 +18,7 @@ function writes the character string pointed to by
 .arg buf
 to the output stream designated by
 .arg fp
-.ct .li .
+.period
 The terminating null character is not written.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

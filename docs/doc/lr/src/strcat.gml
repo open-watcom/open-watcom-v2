@@ -45,12 +45,12 @@ by
 (including the terminating null character)
 to the end of the string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
+.period
 .im farfunc
 .im widefun1
 .im mbsfunc

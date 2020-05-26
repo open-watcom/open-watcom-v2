@@ -61,7 +61,7 @@ are specified, the default value in the global variable
 is used to set the file translation mode.
 When the program begins execution, this variable has a value of
 .kw O_TEXT
-.ct .li .
+.period
 .do end
 .np
 .kw O_CREAT

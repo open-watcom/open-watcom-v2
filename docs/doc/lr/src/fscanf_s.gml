@@ -48,7 +48,7 @@ suppression is indicated by a
 .ct ).
 The first of these arguments is the same as for
 .kw fscanf
-.ct .li .
+.period
 That argument is immediately followed in the argument list by the second
 argument, which has type
 .kw size_t
@@ -68,7 +68,7 @@ function is identical to
 except that it accepts a
 wide-character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

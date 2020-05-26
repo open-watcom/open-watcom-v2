@@ -14,7 +14,7 @@ shall not be a null pointer.
 .arg maxsize
 shall neither be equal to zero nor be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg maxsize
 is not equal to zero, then
@@ -34,7 +34,7 @@ The
 function searches the environment list for an entry matching
 the string pointed to by
 .arg name
-.ct .li .
+.period
 .np
 If that entry is found,
 .id &funcb.
@@ -43,12 +43,12 @@ performs the following actions. If
 is not a null pointer, the length of the string associated with the matched
 entry is stored in the integer pointed to by
 .arg len
-.ct .li .
+.period
 If the length of the associated string is less than
 .arg maxsize
 .ct , then the associated string is copied to the array pointed to by
 .arg value
-.ct .li .
+.period
 .np
 If that entry is not found,
 .id &funcb.
@@ -56,7 +56,7 @@ performs the following actions. If
 .arg len
 is not a null pointer, zero is stored in the integer pointed to by
 .arg len
-.ct .li .
+.period
 If
 .arg maxsize
 is greater than zero, then
@@ -148,7 +148,7 @@ function returns zero if the environment string specified by
 .arg name
 was found and successfully stored in the buffer pointed to by
 .arg value
-.ct .li .
+.period
 Otherwise, a non-zero value is returned.
 .return end
 .*

@@ -21,14 +21,14 @@ and
 .arg argv
 are the argument count and argument array as passed to
 .kw main
-.ct .li .
+.period
 The argument
 .arg optstring
 is a string of recognised option characters; if a character is followed by a
 colon, the option takes an argument. All option characters allowed by Utility
 Syntax Guideline 3 are allowed in
 .arg optstring
-.ct .li .
+.period
 .np
 The global variable
 .kw optind
@@ -37,7 +37,7 @@ is the index of the next element of the
 vector to be processed. It is initialised to 1 by the system, and &funcb
 updates it when it finishes with each element of
 .arg argv[]
-.ct .li .
+.period
 When an element of
 .arg argv[]
 contains multiple option characters,
@@ -102,14 +102,14 @@ points to the string "-"
 .id &funcb.
 returns -1 without changing
 .kw optind
-.ct .li .
+.period
 If
 .arg argv[optind]
 points to the string "--",
 .id &funcb.
 returns -1 after incrementing
 .kw optind
-.ct .li .
+.period
 .np
 If
 .id &funcb.
@@ -130,7 +130,7 @@ is not a colon,
 .id &funcb.
 also prints a diagnostic message to
 .kw stderr
-.ct .li .
+.period
 .np
 The
 .id &funcb.

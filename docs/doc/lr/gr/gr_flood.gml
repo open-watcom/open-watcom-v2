@@ -43,17 +43,17 @@ If the argument
 is a valid pixel value, filling will occur in each direction until a
 pixel is encountered with a pixel value of
 .arg stop_color
-.ct .li .
+.period
 The filled area will be the area around
 .coord x y ,
 bordered by
 .arg stop_color
-.ct .li .
+.period
 No filling will occur if the point
 .coord x y
 has the pixel value
 .arg stop_color
-.ct .li .
+.period
 .pp
 If
 .arg stop_color

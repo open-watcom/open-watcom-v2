@@ -77,7 +77,7 @@ The number of values used from each series is given by the argument
 .arg n
 is less than or equal to
 .arg dim
-.ct .li .
+.period
 The argument
 .arg labels
 is an array of &strings..

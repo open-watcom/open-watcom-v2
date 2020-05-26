@@ -35,7 +35,7 @@ shall not be a null pointer. The value of
 .arg *s1max
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 The end of the token found shall occur within the first
 .arg *s1max
 characters of
@@ -52,7 +52,7 @@ or
 .arg s2
 pointers, and does not store a value in the object pointed to by
 .arg ptr
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin
@@ -63,7 +63,7 @@ function breaks the string pointed to by
 into a sequence of tokens, each of which is delimited by a character
 from the string pointed to by
 .arg s2
-.ct .li .
+.period
 The fourth argument points to a caller-provided char pointer into which the
 .id &funcb.
 function stores information necessary for it to continue scanning the same
@@ -79,7 +79,7 @@ and updates the value pointed to by
 to reflect the number of elements that remain in
 relation to
 .arg ptr
-.ct .li .
+.period
 Subsequent calls in the sequence have a null first argument and the
 objects pointed to by
 .arg s1max
@@ -94,7 +94,7 @@ The first call in the sequence searches the string pointed to by
 for the first character that is not contained in the current separator
 string pointed to by
 .arg s2
-.ct .li .
+.period
 If no such character is found, then there are no tokens in the string pointed to by
 .arg s1
 and the

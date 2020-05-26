@@ -29,7 +29,7 @@ occupy the last two positions of the string.
 .pp
 The string is placed in the buffer pointed to by
 .arg buf
-.ct .li .
+.period
 .pp
 Whenever
 .id &funcb.

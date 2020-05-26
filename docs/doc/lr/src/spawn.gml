@@ -105,7 +105,7 @@ The
 .idbold &functiong.
 functions create and execute a new child process, named by
 .arg pgm
-.ct .li .
+.period
 The value of
 .arg mode
 determines how the program is loaded and how the invoking
@@ -359,7 +359,7 @@ then the return value from
 is the process ID of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
-.ct .li .
+.period
 .term P_DETACH
 then the return value from
 .idbold &functiong.

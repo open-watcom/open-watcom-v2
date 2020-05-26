@@ -25,7 +25,7 @@ characters, the string pointed to by
 .arg src
 to the buffer pointed to by
 .arg dst
-.ct .li .
+.period
 The transformation uses the collating sequence selected by the
 .kw setlocale
 function so that two transformed strings will compare identically

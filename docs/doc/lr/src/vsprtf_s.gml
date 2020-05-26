@@ -30,13 +30,13 @@ result to be written to the array pointed to by
 .arg s
 shall not be greater than
 .arg n
-.ct .li .
+.period
 The
 .mono %n
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a

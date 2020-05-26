@@ -16,7 +16,7 @@ The
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .arg n
 bytes of the array pointed to by

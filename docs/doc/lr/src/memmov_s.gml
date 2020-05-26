@@ -28,11 +28,11 @@ nor
 .arg n
 shall be greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 .arg n
 shall not be greater than
 .arg s1max
-.ct .li .
+.period
 .np
 If there is a runtime-constraint violation, the
 .id &funcb.
@@ -47,7 +47,7 @@ is not a null pointer and
 is
 not greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin
@@ -59,7 +59,7 @@ characters from the buffer pointed to by
 .arg s2
 into the buffer pointed to by
 .arg s1
-.ct .li .
+.period
 This copying takes place as if the
 .arg n
 characters from the buffer
@@ -75,7 +75,7 @@ or
 .arg n
 characters from the temporary array are copied into the object pointed to by
 .arg s1
-.ct .li .
+.period
 .np
 See the
 .arg memcpy_s

@@ -24,7 +24,7 @@ The
 .id &funcb.
 &routines display the screen image indicated by the argument
 .arg image
-.ct .li .
+.period
 The
 .id &funcb.
 &routine uses the view coordinate system.

@@ -12,7 +12,7 @@ The
 function uses INT 0x14 to provide serial communications
 services to the serial port specified by
 .arg serial_port
-.ct .li .
+.period
 0 represents COM1, 1 represents COM2, etc.
 The values for service are:
 .begterm 12
@@ -21,7 +21,7 @@ The values for service are:
 .term _COM_INIT
 Initializes the serial port to the parameters specified in
 .arg data
-.ct .li .
+.period
 .term _COM_SEND
 Transmits the low-order byte of
 .arg data

@@ -15,7 +15,7 @@ function changes the size of the file associated with
 .arg &fd
 by extending or truncating the file to the length specified by
 .arg size
-.ct .li .
+.period
 If the file needs to be extended, the file is padded with NULL ('\0')
 characters.
 .im ansiconf

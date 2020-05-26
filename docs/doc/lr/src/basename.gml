@@ -41,7 +41,7 @@ The
 .id &funcb.
 function returns a pointer to the final component of
 .arg path
-.ct .li .
+.period
 .return end
 .*
 .see begin

@@ -8,7 +8,7 @@ The
 .id &funcb.
 function takes a POSIX-style file handle specified by
 .arg handle
-.ct .li .
+.period
 It returns the corresponding operating system level handle.
 .desc end
 .return begin

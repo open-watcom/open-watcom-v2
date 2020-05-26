@@ -31,11 +31,11 @@ which consists entirely of characters
 .us not
 from the Kanji string pointed to by
 .arg charset
-.ct .li .
+.period
 A double-byte character is treated as one character.
 The terminating null character is not considered part of
 .arg str
-.ct .li .
+.period
 .im ffarparm
 .desc end
 .return begin

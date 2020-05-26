@@ -43,10 +43,10 @@ segment of the string pointed to by
 .arg str
 which consists of characters from the string pointed to by
 .arg charset
-.ct .li .
+.period
 The terminating null character is not considered to be part of
 .arg charset
-.ct .li .
+.period
 .im farparm
 .im widefun1
 .im mbsffunc

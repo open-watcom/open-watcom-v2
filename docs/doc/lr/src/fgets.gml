@@ -19,7 +19,7 @@ designated by
 .arg fp
 and stores them in the array pointed to by
 .arg buf
-.ct .li .
+.period
 The
 .id &funcb.
 function stops reading characters when end-of-file is
@@ -42,7 +42,7 @@ by
 .ct , converts them to wide characters, and stores them in the
 wide-character array pointed to by
 .arg buf
-.ct .li .
+.period
 In this case,
 .arg n
 specifies the number of wide characters, less one, to be read.

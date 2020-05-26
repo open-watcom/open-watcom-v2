@@ -36,7 +36,7 @@ nor
 .arg dstmax
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg dst
 is a null pointer, then
@@ -88,7 +88,7 @@ the initial shift state. If
 is not a null pointer,the converted characters are then stored
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating
 null wide character, which is also stored.
 .np
@@ -104,7 +104,7 @@ limit of
 .arg n
 total bytes to be stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 If the wide
 character being converted is the null wide character, then
 .arg n
@@ -112,14 +112,14 @@ is the lesser of
 .arg len
 or
 .arg dstmax
-.ct .li .
+.period
 Otherwise,
 .arg n
 is the lesser of
 .arg len
 or
 .arg dstmax-1
-.ct .li .
+.period
 .np
 If the conversion stops without converting a null wide character and
 .arg dst
@@ -139,7 +139,7 @@ occurs: the
 .id &funcb.
 function stores the value (size_t)(-1) into
 .arg *retval
-.ct .li .
+.period
 Otherwise, the
 .id &funcb.
 function stores into

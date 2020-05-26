@@ -35,11 +35,11 @@ nor
 .arg n
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg n
 shall not be greater than
 .arg s1max
-.ct .li .
+.period
 . Copying shall not take place between
 objects that overlap.
 .np
@@ -56,7 +56,7 @@ is not a null pointer and
 is
 not greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin
@@ -68,7 +68,7 @@ characters from the buffer pointed to by
 .arg s2
 into the buffer pointed to by
 .arg s1
-.ct .li .
+.period
 Copying between overlapping objects is not allowed.
 See the
 .kw memmove_s

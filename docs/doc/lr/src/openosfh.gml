@@ -9,7 +9,7 @@ The
 function allocates a POSIX-level file handle and sets it to
 point to the operating system's internal file handle specified by
 .arg osfhandle
-.ct .li .
+.period
 The value returned by
 .kw _get_osfhandle
 can be used as an argument to the

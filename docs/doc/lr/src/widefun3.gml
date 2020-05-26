@@ -4,6 +4,6 @@ The
 .id &wfunc.
 function is a wide-character version of
 .id &funcb.
-.ct .li .
+.period
 It produces a wide-character string.
 .do end

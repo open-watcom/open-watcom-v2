@@ -15,7 +15,7 @@ The
 The color values in the palette are replaced by the array of
 color values given by the argument
 .arg colors
-.ct .li .
+.period
 This &routine is supported in all video modes, but only works
 with EGA, MCGA and VGA adapters.
 .np

@@ -26,10 +26,10 @@ at the position
 using the current text settings.
 The concatenation point is returned in the argument
 .arg concat
-.ct .li .
+.period
 The text extent parallelogram is returned in the array
 .arg extent
-.ct .li .
+.period
 .pp
 The concatenation point is the position to use to output text after
 the given string.

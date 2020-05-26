@@ -63,7 +63,7 @@ function identified by
 .arg start_address
 with a single parameter identified by
 .arg arglist
-.ct .li .
+.period
 .np
 For each operating environment under which
 .id &funcb.
@@ -120,7 +120,7 @@ in a running or suspended state specified by
 .ct .li ,
 with security attributes specified by
 .arg security
-.ct .li .
+.period
 .np
 The initial state of the new thread (running or suspended) is
 specified by the
@@ -144,7 +144,7 @@ structure (see Microsoft's
 for more information).
 For default behaviour, the security structure pointer can be
 .kw NULL
-.ct .li .
+.period
 .np
 The thread identifier is returned in the location identified by the
 .arg thrdid
@@ -160,7 +160,7 @@ The thread ends when it exits from its main function or calls
 .kw _endthread
 or
 .kw _endthreadex
-.ct .li .
+.period
 .np
 The variable/function
 .kw _threadid

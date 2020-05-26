@@ -48,7 +48,7 @@ The
 macro returns the value of the number classification macro
 appropriate to the value of its argument
 .arg x
-.ct .li .
+.period
 .return end
 .*
 .see begin

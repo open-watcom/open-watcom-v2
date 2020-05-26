@@ -19,7 +19,7 @@ The
 function deletes the file whose name is the string
 pointed to by
 .arg path
-.ct .li .
+.period
 This function is equivalent to the
 .kw remove
 function.

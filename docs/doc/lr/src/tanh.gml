@@ -11,7 +11,7 @@ The
 .id &funcb.
 function computes the hyperbolic tangent of
 .arg x
-.ct .li .
+.period
 .np
 When the
 .arg x

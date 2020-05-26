@@ -27,7 +27,7 @@ The
 function returns a pointer to the next character
 (single-byte, wide, or multibyte) in the string pointed to by
 .arg current
-.ct .li .
+.period
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.

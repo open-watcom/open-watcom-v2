@@ -38,7 +38,7 @@ function fills the string pointed to by
 .arg s1
 with the character
 .arg fill
-.ct .li .
+.period
 The terminating null character in the original string remains
 unchanged.
 .im ansiconf

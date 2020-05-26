@@ -12,10 +12,10 @@ function copies the byte string pointed to by
 .arg src
 (including any null characters) into the array pointed to by
 .arg dst
-.ct .li .
+.period
 The number of bytes to copy is specified by
 .arg n
-.ct .li .
+.period
 Copying of overlapping objects is guaranteed to work properly.
 .np
 Note that this function is similar to the ISO C

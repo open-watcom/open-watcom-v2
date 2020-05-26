@@ -9,7 +9,7 @@ The
 function writes to disk all the currently queued data for
 the open file specified by
 .arg fd
-.ct .li .
+.period
 All necessary file system information required to retrieve the data is
 also written to disk.
 The file access times are also updated.

@@ -9,7 +9,7 @@ The
 macro can be used to obtain the offset portion of the far
 pointer value given in
 .arg far_ptr
-.ct .li .
+.period
 .desc end
 .return begin
 The macro returns an unsigned integer value which is the offset portion

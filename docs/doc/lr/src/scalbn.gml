@@ -21,7 +21,7 @@ The value of
 .arg x
 times two raised to 
 .arg y
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

@@ -11,14 +11,14 @@ function returns the larger of
 .arg x
 and
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 The routine will return the larger of
 .arg x
 or
 .arg y
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fdim fmin

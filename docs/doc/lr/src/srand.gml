@@ -12,7 +12,7 @@ function uses the argument
 to start a new sequence of pseudo-random integers to be returned by
 subsequent calls to
 .kw rand
-.ct .li .
+.period
 A particular sequence of pseudo-random integers can be repeated by
 calling
 .id &funcb.

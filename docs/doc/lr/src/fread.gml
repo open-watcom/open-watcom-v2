@@ -18,7 +18,7 @@ bytes each from the file specified by
 .arg fp
 into the buffer specified by
 .arg buf
-.ct .li .
+.period
 .desc end
 .return begin
 The

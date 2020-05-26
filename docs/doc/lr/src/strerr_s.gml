@@ -23,7 +23,7 @@ shall not be a null pointer.
 .arg maxsize
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg maxsize
 shall not equal zero.
 .np
@@ -46,7 +46,7 @@ If the length of the desired string is less than
 .arg maxsize
 .ct , then the string is copied to the array pointed to by
 .arg s
-.ct .li .
+.period
 Otherwise, if
 .arg maxsize
 is greater than zero, then

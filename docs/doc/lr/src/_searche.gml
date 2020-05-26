@@ -21,7 +21,7 @@ function searches for the file specified by
 in the list of directories assigned to the environment variable
 specified by
 .arg env_var
-.ct .li .
+.period
 Common values for
 .arg env_var
 are PATH, LIB and INCLUDE.
@@ -33,7 +33,7 @@ specified by the environment variable is searched.
 .pp
 The full pathname is placed in the buffer pointed to by the argument
 .arg pathname
-.ct .li .
+.period
 If the specified file cannot be found, then
 .arg pathname
 will contain an empty string.

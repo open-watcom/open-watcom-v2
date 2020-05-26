@@ -10,7 +10,7 @@ The
 function writes output directly to the console under control
 of the argument
 .arg format
-.ct .li .
+.period
 The
 .kw putch
 function is used to output characters to the console.

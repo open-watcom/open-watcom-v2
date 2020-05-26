@@ -12,7 +12,7 @@ function loads the float pointed to by
 in IEEE format and converts it to Microsoft binary format, storing the
 result into the float pointed to by
 .arg dest
-.ct .li .
+.period
 .np
 For
 .id &funcb.

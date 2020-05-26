@@ -8,7 +8,7 @@ The signed or unsigned 16-bit words of
 .arg m1
 are multiplied with the respective signed or unsigned 16-bit words of
 .arg m2
-.ct .li .
+.period
 The low-order 16-bits of each result are placed in the respective
 elements of the result.
 .desc end

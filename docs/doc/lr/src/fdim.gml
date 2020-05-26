@@ -11,7 +11,7 @@ function computes the positive difference of
 .arg x
 and
 .arg y
-.ct .li .  The function is equivalent to:
+.period  The function is equivalent to:
 .blkcode begin
 fmax( x - y, 0.0 );
 .blkcode end

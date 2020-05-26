@@ -27,7 +27,7 @@ Disabled to output data
 .term _PRN_WRITE
 It outputs one byte of data from the area pointed to by the argument
 .arg data
-.ct .li .
+.period
 Bit 0 of the return value indicates the following:.
 .begnote $compact
 .termhd1 Value

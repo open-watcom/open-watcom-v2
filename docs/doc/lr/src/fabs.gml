@@ -9,14 +9,14 @@ The
 .id &funcb.
 function computes the absolute value of the argument
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the absolute value of
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fabs abs labs imaxabs

@@ -11,7 +11,7 @@ function computes
 .arg x
 raised to the power
 .arg y
-.ct .li .
+.period
 A domain error occurs if
 .arg x
 is zero and
@@ -30,7 +30,7 @@ function returns the value of
 .arg x
 raised to the power
 .arg y
-.ct .li .
+.period
 .im errnodom
 .return end
 .see begin

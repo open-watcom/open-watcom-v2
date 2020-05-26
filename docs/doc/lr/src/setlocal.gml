@@ -18,7 +18,7 @@ according to the category given by
 .arg category
 and the locale specified by
 .arg locale
-.ct .li .
+.period
 A
 .us locale
 affects the collating sequence (the order in which characters compare

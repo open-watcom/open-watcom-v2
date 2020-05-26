@@ -54,7 +54,7 @@ The non-ISO C function
 .kw _asctime
 places the result string in the buffer pointed to by
 .arg buf
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

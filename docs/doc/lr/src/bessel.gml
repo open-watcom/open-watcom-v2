@@ -64,7 +64,7 @@ routine.
 .return begin
 These functions return the result of the desired Bessel function of
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist matherr

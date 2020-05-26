@@ -15,7 +15,7 @@ function locks or unlocks
 .arg nbyte
 bytes of the file specified by
 .arg &fd
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 The file must be opened with write access to lock it.
 .np
@@ -47,13 +47,13 @@ until successful or until 10 attempts have been made.
 .term _LK_RLCK, LK_RLCK
 Same action as
 .kw _LK_LOCK
-.ct .li .
+.period
 .term _LK_NBLCK, LK_NBLCK
 Non-blocking lock: makes only 1 attempt to lock the specified region.
 .term _LK_NBRLCK, LK_NBRLCK
 Same action as
 .kw _LK_NBLCK
-.ct .li .
+.period
 .term _LK_UNLCK, LK_UNLCK
 Unlocks the specified region. The region must have been previously locked.
 .endterm

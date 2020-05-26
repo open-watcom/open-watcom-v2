@@ -11,14 +11,14 @@ function computes remainder of the division of
 .arg x
 by
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 The remainder of the division of
 .arg x
 by
 .arg y
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

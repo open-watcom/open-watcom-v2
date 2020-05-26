@@ -17,7 +17,7 @@ numerator
 .arg numer
 by the denominator
 .arg denom
-.ct .li .
+.period
 .desc end
 .*
 .return begin

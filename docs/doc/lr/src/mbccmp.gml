@@ -17,7 +17,7 @@ function compares one multibyte character from
 .arg s1
 to one multibyte character from
 .arg s2
-.ct .li .
+.period
 .im farparm
 .desc end
 .return begin

@@ -13,7 +13,7 @@ disk drive to be the drive specified by
 .ct , where 1 = drive A, 2 = drive B, etc.
 The total number of disk drives is returned in the word pointed to by
 .arg total
-.ct .li .
+.period
 For DOS versions 3.0 or later, the minimum number of drives returned
 is 5.
 .desc end

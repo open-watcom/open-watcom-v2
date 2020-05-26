@@ -25,7 +25,7 @@ the type of an 8-bit character indicated as a byte offset
 .arg n
 from the start of the string
 .arg str
-.ct .li .
+.period
 .begterm 10
 .termhd1 Constant
 .termhd2 Meaning
@@ -52,14 +52,14 @@ If the character is a null character,
 .id &funcb.
 returns
 .kw CT_ILGL
-.ct .li .
+.period
 If the offset
 .arg n
 is beyond the end of the string,
 .id &funcb.
 returns
 .kw CT_ILGL
-.ct .li .
+.period
 In all other cases, it returns one of
 .kw CT_ANK
 .ct ,
@@ -68,7 +68,7 @@ In all other cases, it returns one of
 .kw CT_KJ2
 .ct , or
 .kw CT_ILGL
-.ct .li .
+.period
 .return end
 .see begin
 .seelist chkctype iskanji iskanji2 jiszen nthctype

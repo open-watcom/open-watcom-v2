@@ -34,7 +34,7 @@ to the wide character given by
 (including any shift sequences), and stores the resulting bytes in the
 array whose first element is pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .kw MB_CUR_MAX
 bytes will be stored.

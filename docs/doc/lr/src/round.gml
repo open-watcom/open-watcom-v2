@@ -15,7 +15,7 @@ always rounded away from zero.
 .return begin
 The rounded value of 
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist nearbyint rint trunc

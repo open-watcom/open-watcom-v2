@@ -49,10 +49,10 @@ function returns a pointer to the first character in
 .arg str
 that does not belong to the set of characters in
 .arg charset
-.ct .li .
+.period
 The terminating null character is not considered to be part of
 .arg charset
-.ct .li .
+.period
 .im ansiconf
 .im farparm
 .im widefun1
@@ -67,7 +67,7 @@ if
 .arg str
 consists entirely of characters from
 .arg charset
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strspnp strcspn strspn

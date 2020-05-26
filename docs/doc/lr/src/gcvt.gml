@@ -25,7 +25,7 @@ function converts the floating-point number
 .arg value
 into a character string and stores the result in
 .arg buffer
-.ct .li .
+.period
 The parameter
 .arg ndigits
 specifies the number of significant digits desired.

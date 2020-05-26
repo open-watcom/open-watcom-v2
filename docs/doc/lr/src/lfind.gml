@@ -18,7 +18,7 @@ in the array of
 .arg num
 elements pointed to by
 .arg base
-.ct .li .
+.period
 Each element of the array is
 .arg width
 bytes in size.
@@ -27,12 +27,12 @@ The argument
 is a pointer to a user-supplied routine that will be called by &funcb
 to determine the relationship of an array element with the
 .arg key
-.ct .li .
+.period
 One of the arguments to the
 .arg compare
 function will be an array element, and the other will be
 .arg key
-.ct .li .
+.period
 .pp
 The
 .arg compare

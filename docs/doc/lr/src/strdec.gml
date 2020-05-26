@@ -31,10 +31,10 @@ function returns a pointer to the previous character
 .arg start
 which must precede
 .arg current
-.ct .li .
+.period
 The current character in the string is pointed to by
 .arg current
-.ct .li .
+.period
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.

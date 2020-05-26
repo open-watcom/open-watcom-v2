@@ -23,11 +23,11 @@ The
 functions obtain information about an open file whose file
 &handle is
 .arg &fd
-.ct .li .
+.period
 This information is placed in the structure located at the address
 indicated by
 .arg buf
-.ct .li .
+.period
 .im statdesc
 .im ansiconf
 .np

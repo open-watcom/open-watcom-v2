@@ -62,7 +62,7 @@ wide-character string arguments for
 .arg s
 and
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

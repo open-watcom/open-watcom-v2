@@ -21,13 +21,13 @@ function determines the number of bytes required to
 represent the multibyte character corresponding to the wide character
 contained in
 .arg wc
-.ct .li .
+.period
 If
 .arg s
 is not a NULL pointer, the multibyte character representation is
 stored in the array pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .kw MB_CUR_MAX
 characters will be stored.
@@ -56,7 +56,7 @@ does not correspond to a valid multibyte character
 the number of bytes that comprise the multibyte character
 corresponding to the value of
 .arg wc
-.ct .li .
+.period
 .endnote
 .return end
 .see begin

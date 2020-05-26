@@ -46,7 +46,7 @@ The
 .id &funcb.
 function may manipulate the value of the pointer
 .kw environ
-.ct .li .
+.period
 .desc end
 .return begin
 The

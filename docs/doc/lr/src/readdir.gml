@@ -15,7 +15,7 @@ The
 function obtains information about the next matching file
 name from the argument
 .arg dirp
-.ct .li .
+.period
 The argument
 .arg dirp
 is the value returned from the
@@ -26,12 +26,12 @@ The
 function can be called repeatedly to obtain the list of file
 names contained in the directory specified by the pathname given to
 .kw opendir
-.ct .li .
+.period
 The function
 .kw closedir
 must be called to close the directory and free the memory allocated by
 .kw opendir
-.ct .li .
+.period
 .im dirent
 .if '&machsys' eq 'QNX' .do begin
 .np
@@ -52,7 +52,7 @@ If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
 .kw closedir
-.ct .li .
+.period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np

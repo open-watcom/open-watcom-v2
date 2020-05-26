@@ -12,7 +12,7 @@ The
 .id &funcb.
 function sets the runtime-constraint handler to be
 .arg handler
-.ct .li .
+.period
 The runtime-constraint handler is the function called when a library function
 detect a runtime-constraint violation. Only the most recent handler registered
 with

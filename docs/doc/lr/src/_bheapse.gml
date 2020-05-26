@@ -24,7 +24,7 @@ space available within the heap to satisfy an allocation request by
 .ct,
 or
 .kw _brealloc
-.ct .li .
+.period
 .np
 The value returned by
 .id &funcb.

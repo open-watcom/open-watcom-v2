@@ -343,7 +343,7 @@ function. The file also contains declarations for the constants
 .ct,
 and
 .kw P_OVERLAY
-.ct .li .
+.period
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
 .df pwd.h
@@ -444,7 +444,7 @@ This ISO C90 header file declares the standard input/output functions.
 Files, devices and directories are referenced using pointers to objects
 of the type
 .kw FILE
-.ct .li .
+.period
 .*------------------------------
 .df stdlib.h
 This ISO C90 header file declares many standard functions excluding those
@@ -476,7 +476,7 @@ This POSIX header file contains terminal I/O system types.
 This ISO/ANSI header file declares functions related to times and dates and
 defines the structure
 .kw struct tm
-.ct .li .
+.period
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
 .df unistd.h

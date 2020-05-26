@@ -4,7 +4,7 @@ The
 .id &wfunc.
 function is a wide-character version of
 .id &funcb.
-.ct .li .
+.period
 It accepts a wide-character string argument for
 .arg format
 and produces wide character output.

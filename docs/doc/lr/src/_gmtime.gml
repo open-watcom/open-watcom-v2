@@ -15,7 +15,7 @@ into a broken-down time, expressed as Coordinated Universal Time (UTC)
 (formerly known as Greenwich Mean Time (GMT)).
 The time information is stored in the structure pointed to by
 .arg tmbuf
-.ct .li .
+.period
 .im tzref
 .desc end
 .return begin

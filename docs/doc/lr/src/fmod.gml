@@ -26,7 +26,7 @@ is non-zero, the result has the same sign as
 .arg x
 and magnitude less than the magnitude of
 .arg y
-.ct .li .
+.period
 If the value of
 .arg y
 is zero, then the value returned is zero.

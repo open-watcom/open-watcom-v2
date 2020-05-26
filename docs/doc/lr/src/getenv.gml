@@ -18,7 +18,7 @@ The
 function searches the environment list for an entry matching
 the string pointed to by
 .arg name
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 The matching is case-sensitive; all lowercase letters are treated
 as different from uppercase letters.
@@ -101,7 +101,7 @@ assignments:
 :CMT. .kw _wenviron
 :CMT. global variable is a wide-character version of
 :CMT. .kw _environ
-:CMT. .ct .li .
+:CMT. .period
 :CMT. .np
 :CMT. In an MBCS program (for example, in an SBCS ASCII program),
 :CMT. .kw _wenviron
@@ -115,7 +115,7 @@ assignments:
 :CMT. wide-character string environment is created and is then
 :CMT. pointed to by
 :CMT. .kw _wenviron
-:CMT. .ct .li .
+:CMT. .period
 :CMT. .do end
 .desc end
 .*

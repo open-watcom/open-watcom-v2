@@ -37,7 +37,7 @@ or directory
 .do end
 identified by
 .arg path
-.ct .li .
+.period
 .im ansiconf
 .np
 If the

@@ -11,7 +11,7 @@ The
 function causes the command line information, with the program
 name removed, to be copied to
 .arg cmd_line
-.ct .li .
+.period
 The information is terminated with a null character.
 .if '&machsys' eq 'QNX' .do begin
 This provides a method of obtaining the original parameters to a program

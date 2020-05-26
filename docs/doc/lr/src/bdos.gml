@@ -18,7 +18,7 @@ Before the interrupt, the DX register is loaded from
 .arg dos_func
 and the AL register is loaded from
 .arg al
-.ct .li .
+.period
 The remaining registers are passed unchanged to DOS.
 .np
 You should consult the technical documentation for the DOS operating

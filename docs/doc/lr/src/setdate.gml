@@ -19,7 +19,7 @@ The date information is passed in a
 .kw dosdate_t
 structure pointed to by
 .arg date
-.ct .li .
+.period
 .desc end
 .return begin
 The

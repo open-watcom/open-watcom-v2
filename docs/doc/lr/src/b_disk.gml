@@ -24,7 +24,7 @@ is passed the
 .kw diskinfo_t
 structure pointed to by
 .arg diskinfo
-.ct .li .
+.period
 The value for
 .arg service
 can be one of the following values:

@@ -14,7 +14,7 @@ The
 .id &funcb.
 function is used to terminate a thread created by
 .kw _beginthread
-.ct .li .
+.period
 For each operating environment under which
 .id &funcb.
 is supported,
@@ -27,7 +27,7 @@ The
 .kw _endthreadex
 function is used to terminate a thread created by
 .kw _beginthreadex
-.ct .li .
+.period
 The thread exit code
 .arg retval
 must be specified.

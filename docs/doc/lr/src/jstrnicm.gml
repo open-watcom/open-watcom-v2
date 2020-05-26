@@ -57,7 +57,7 @@ the Kanji string pointed to by
 .arg s1
 is less than, equal to, or greater than the Kanji string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrnicmp jstrcmp jstricmp jstrncmp strnicmp strcmp stricmp strncmp

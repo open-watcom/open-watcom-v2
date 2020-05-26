@@ -16,10 +16,10 @@ The
 &routine sets the current bit-map definition
 for the character
 .arg ch
-.ct .li .
+.period
 The bit-map is contained in the array
 .arg def
-.ct .li .
+.period
 The current font must be an 8-by-8 bit-mapped font.
 .desc end
 .return begin

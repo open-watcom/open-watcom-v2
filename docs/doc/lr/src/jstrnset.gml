@@ -27,7 +27,7 @@ the string
 .arg s1
 with the value of the argument
 .arg fill
-.ct .li .
+.period
 If
 .arg fill
 is a single-byte character, its value must be in the low-order byte

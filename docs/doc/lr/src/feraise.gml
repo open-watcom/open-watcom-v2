@@ -14,7 +14,7 @@ argument.
 .np
 For valid exception values see
 .seekw &functiong. fegetexceptflag
-.ct .li .
+.period
 .desc end
 .*
 .return begin

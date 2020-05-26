@@ -14,10 +14,10 @@ function uses system call 0x5B to create a new file named
 .arg path
 .ct , with the access attributes specified by
 .arg attribute
-.ct .li .
+.period
 The &handle for the new file is returned in the word pointed to by
 .arg &fd.
-.ct .li .
+.period
 If the file already exists, the create will fail.
 .im creatatt
 .desc end
@@ -27,7 +27,7 @@ The
 function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
-.ct .li .
+.period
 Possible values and their interpretations:
 .begterm 10
 .termhd1 Constant

@@ -28,7 +28,7 @@ the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by
 .arg s2
-.ct .li .
+.period
 The rule of comparison is:
 .illust begin
 ASCII and numeric characters < Katakana characters < Kanji characters
@@ -53,7 +53,7 @@ the Kanji string pointed to by
 .arg s1
 is less than, equal to, or greater than the Kanji string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrcmp jstricmp jstrncmp jstrnicmp

@@ -12,7 +12,7 @@ It must be used with the associated macros
 .kw va_start
 and
 .kw va_end
-.ct .li .
+.period
 A sequence such as
 .millust begin
 void example( char *dst, ... )

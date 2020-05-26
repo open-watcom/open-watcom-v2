@@ -18,7 +18,7 @@ The information is returned in the
 .id videoconfig
 structure indicated by the argument
 .arg config
-.ct .li .
+.period
 The structure contains the following fields (all are
 .id &short
 fields):

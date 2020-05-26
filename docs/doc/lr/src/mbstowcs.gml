@@ -24,7 +24,7 @@ into their corresponding wide character codes and stores not more than
 .arg n
 codes into the array pointed to by
 .arg pwcs
-.ct .li .
+.period
 The
 .id &funcb.
 function does not convert any multibyte characters beyond

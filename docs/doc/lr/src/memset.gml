@@ -26,7 +26,7 @@ characters of the object pointed to by
 .arg dst
 with the value
 .arg c
-.ct .li .
+.period
 .im farfunc
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
@@ -40,7 +40,7 @@ The
 .id &funcb.
 function returns the pointer
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist memchr memcmp memcpy memicmp memmove memset

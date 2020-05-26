@@ -28,11 +28,11 @@ The
 functions obtain information about the file or directory
 referenced in
 .arg path
-.ct .li .
+.period
 This information is placed in the structure located at the address
 indicated by
 .arg buf
-.ct .li .
+.period
 .im statdesc
 .im ansiconf
 .np
@@ -64,7 +64,7 @@ on non-UNIX platforms.
 .term EACCES
 Search permission is denied for a component of
 .arg path
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 .term EIO
 A physical error occurred on the block device.

@@ -26,7 +26,7 @@ function compares the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 The comparison uses the collating sequence selected by the
 .kw setlocale
 function.

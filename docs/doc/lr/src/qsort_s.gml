@@ -16,7 +16,7 @@ nor
 .arg size
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg nmemb
 is not equal to zero, then neither
@@ -37,10 +37,10 @@ function sorts an array of
 objects, the initial element of which is
 pointed to by
 .arg base
-.ct .li .
+.period
 The size of each object is specified by
 .arg size
-.ct .li .
+.period
 The contents of the array are sorted into ascending order according to a comparison
 function pointed to by
 .arg compar

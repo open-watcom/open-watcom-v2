@@ -35,7 +35,7 @@ nor
 .arg dstmax
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg dst
 is a null
@@ -55,7 +55,7 @@ is not less than
 .arg dstmax
 multibyte characters of the array pointed to by
 .arg *src
-.ct .li .
+.period
 .np
 If there is a runtime-constraint violation, then
 .id &funcb.
@@ -91,7 +91,7 @@ into a sequence of corresponding wide characters. If
 is not a null pointer, the converted characters are stored into the array
 pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null character,
 which is also stored.
 .np
@@ -102,7 +102,7 @@ is not a null pointer) when
 .arg len
 wide characters have been stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 If
 .arg dst
 is not a null pointer and no null wide character was stored

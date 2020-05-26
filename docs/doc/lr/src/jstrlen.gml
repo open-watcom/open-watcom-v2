@@ -23,7 +23,7 @@ functions compute
 .do end
 the number of characters in the Kanji string pointed to by
 .arg s
-.ct .li .
+.period
 A double-byte character is treated as one character.
 .im ffarparm
 .desc end

@@ -92,7 +92,7 @@ digit-nondigit sequence is ignored. If the subject sequence contains
 .ct , the value of infinity (with appropriate sign) will be returned.
 This case can be distinguished from overflow by checking
 .kw errno
-.ct .li .
+.period
 .np
 For a hexadecimal floating-point number, the optional exponent is
 binary (that is, denotes a power of two), not decimal.
@@ -124,12 +124,12 @@ is returned according to the sign, and
 .kw errno
 is set to
 .kw ERANGE
-.ct .li .
+.period
 If the correct value would cause underflow, then zero is returned, and
 .kw errno
 is set to
 .kw ERANGE
-.ct .li .
+.period
 .im errnocnv
 .return end
 .*

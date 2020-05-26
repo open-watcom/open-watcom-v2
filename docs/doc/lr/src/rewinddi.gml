@@ -40,7 +40,7 @@ If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
 .kw closedir
-.ct .li .
+.period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -51,7 +51,7 @@ function is identical to
 except that it rewinds a
 directory of wide-character filenames opened by
 .kw _wopendir
-.ct .li .
+.period
 .do end
 .desc end
 .return begin

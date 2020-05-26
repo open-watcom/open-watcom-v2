@@ -31,7 +31,7 @@ execution continues as if the corresponding call to
 .kw setjmp
 had just returned the value specified by
 .arg return_value
-.ct .li .
+.period
 If the value of
 .arg return_value
 is 0, the value returned is 1.

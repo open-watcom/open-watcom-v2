@@ -16,7 +16,7 @@ a request to invoke a specific DOS function.
 Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg in_regs
-.ct .li .
+.period
 The AH register contains a number indicating the function requested.
 Following the interrupt, the structure located by
 .arg out_regs
@@ -34,7 +34,7 @@ register after the interrupt has completed.
 The CARRY flag (when set, an error has occurred) is copied into the
 structure located by
 .arg out_regs
-.ct .li .
+.period
 .im errnoref
 .return end
 .see begin

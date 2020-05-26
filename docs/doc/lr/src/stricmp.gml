@@ -46,7 +46,7 @@ pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 All uppercase characters from
 .arg s1
 and
@@ -65,7 +65,7 @@ than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strcmp strcmpi stricmp strncmp strnicmp

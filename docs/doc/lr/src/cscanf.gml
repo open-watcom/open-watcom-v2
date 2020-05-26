@@ -10,7 +10,7 @@ The
 function scans input from the console
 under control of the argument
 .arg format
-.ct .li .
+.period
 Following the format string is a list of addresses to receive values.
 The
 .id &funcb.

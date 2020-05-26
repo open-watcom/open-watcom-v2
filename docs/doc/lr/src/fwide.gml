@@ -11,7 +11,7 @@ The
 function determines the orientation of the stream pointed
 to by
 .arg fp
-.ct .li .
+.period
 If
 .arg mode
 is greater than zero, the function first attempts to make the stream

@@ -12,7 +12,7 @@ The
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
-.ct .li .
+.period
 The
 .id &funcb.
 function is equivalent to the following call:

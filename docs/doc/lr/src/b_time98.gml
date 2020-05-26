@@ -16,11 +16,11 @@ The values for service are:
 .term _TIME_GETCLOCK
 Places the current system clock value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 .term _TIME_SETCLOCK
 Sets the system clock to the value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 .endterm
 .np
 The area pointed to by the argument

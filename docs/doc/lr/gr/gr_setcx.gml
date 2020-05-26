@@ -19,7 +19,7 @@ The
 &routines set the current character spacing to have the value
 of the argument
 .arg space
-.ct .li .
+.period
 For the
 .id &funcb.
 &routine,

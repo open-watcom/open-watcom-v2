@@ -38,7 +38,7 @@ shall not be less than
 .arg smax
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg s
 is a null pointer, then
@@ -77,7 +77,7 @@ number of characters stored never exceeds
 .kw MB_CUR_MAX
 or
 .arg smax
-.ct .li .
+.period
 If
 .arg wc
 is a null wide character, a null byte is stored, preceded by any shift

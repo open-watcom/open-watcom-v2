@@ -26,7 +26,7 @@ The
 function changes the current working directory to the
 specified
 .arg path
-.ct .li .
+.period
 The
 .arg path
 can be either relative to the current working directory or it can be
@@ -39,7 +39,7 @@ The
 function changes the current directory on the specified
 drive to the specified
 .arg path
-.ct .li .
+.period
 .ix 'current drive'
 If no drive is specified in
 .arg path
@@ -78,7 +78,7 @@ remains unchanged.
 .term EACCES
 Search permission is denied for a component of
 .arg path
-.ct .li .
+.period
 .term ENAMETOOLONG
 The argument
 .arg path

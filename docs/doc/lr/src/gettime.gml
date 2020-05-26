@@ -19,7 +19,7 @@ The time information is returned in a
 .kw dostime_t
 structure pointed to by
 .arg time
-.ct .li .
+.period
 .desc end
 .return begin
 The

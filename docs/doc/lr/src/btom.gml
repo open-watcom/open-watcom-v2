@@ -28,7 +28,7 @@ and
 .arg nb
 bytes from
 .arg str
-.ct .li .
+.period
 A double-byte character is treated as one character.
 Counting stops when either
 .arg nb

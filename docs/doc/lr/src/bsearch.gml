@@ -20,7 +20,7 @@ elements, which is pointed to by
 .arg base
 .ct , for an item which matches the object pointed to by
 .arg key
-.ct .li .
+.period
 Each element in the array is
 .arg width
 bytes in size.
@@ -31,7 +31,7 @@ The first argument
 .arg pkey
 points to the same object pointed to by
 .arg key
-.ct .li .
+.period
 The second argument
 .arg pbase
 points to a element in the array.

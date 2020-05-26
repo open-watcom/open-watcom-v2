@@ -25,7 +25,7 @@ array pointed to by
 into a sequence of multibyte characters and stores them in the
 array pointed to by
 .arg s
-.ct .li .
+.period
 The
 .id &funcb.
 function stops if a multibyte character would exceed the limit of

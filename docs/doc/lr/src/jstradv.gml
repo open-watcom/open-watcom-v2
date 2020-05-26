@@ -28,7 +28,7 @@ over
 .arg n
 single- or double-byte characters in the Kanji string
 .arg src
-.ct .li .
+.period
 A pointer to the next character is returned.
 .im ffarfunc
 .desc end

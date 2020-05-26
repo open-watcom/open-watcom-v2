@@ -10,7 +10,7 @@ The
 function returns the number of the file &handle for the file
 designated by
 .arg stream
-.ct .li .
+.period
 This number can be used in POSIX input/output calls anywhere the
 value returned by
 .kw open
@@ -81,7 +81,7 @@ The
 function returns the number of the file &handle for the file
 designated by
 .arg stream
-.ct .li .
+.period
 If an error occurs, a value of -1 is returned and
 .kw errno
 is set to indicate the error.

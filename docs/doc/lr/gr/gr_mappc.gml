@@ -16,7 +16,7 @@ The
 .arg pixval
 to be the color
 .arg color
-.ct .li .
+.period
 This &routine is supported in all video modes, but only works
 with EGA, MCGA and VGA adapters.
 .pp
@@ -28,7 +28,7 @@ The argument
 specifies the actual color displayed on the screen by pixels with
 pixel value
 .arg pixval
-.ct .li .
+.period
 Color values are selected by specifying the red, green and
 blue intensities that make up the color.
 Each intensity can be in the range from 0 to 63, resulting in 262144
@@ -57,7 +57,7 @@ All pixels on the complete screen which have a pixel value equal to the value of
 .arg pixval
 will now have the color indicated by the argument
 .arg color
-.ct .li .
+.period
 .desc end
 .return begin
 The

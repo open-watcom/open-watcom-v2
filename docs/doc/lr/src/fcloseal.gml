@@ -15,7 +15,7 @@ function closes all open stream files, except
 .ct,
 and
 .kw stderr
-.ct .li .
+.period
 .do end
 .el .do begin
 .kw stdin
@@ -28,7 +28,7 @@ and
 .ct,
 and
 .kw stdprn
-.ct .li .
+.period
 .do end
 This includes streams created (and not yet closed) by
 .kw fdopen
@@ -36,7 +36,7 @@ This includes streams created (and not yet closed) by
 .kw fopen
 and
 .kw freopen
-.ct .li .
+.period
 .if '&machsys' eq 'DOS' .do begin
 The
 .us stdaux

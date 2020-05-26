@@ -3,7 +3,7 @@ The file
 .hdrfile sys/stat.h
 contains definitions for the structure
 .kw stat
-.ct .li .
+.period
 .if '&machsys' ne 'QNX' .do begin
 .begterm 10
 .termhd1 Field
@@ -153,7 +153,7 @@ is the bitwise inclusive OR of
 .kw S_IWUSR
 .ct , and
 .kw S_IXUSR
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .if '&machsys' eq 'QNX' .do begin
@@ -179,7 +179,7 @@ is the bitwise inclusive OR of
 .kw S_IWGRP
 .ct , and
 .kw S_IXGRP
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .if '&machsys' eq 'QNX' .do begin
@@ -205,7 +205,7 @@ is the bitwise inclusive OR of
 .kw S_IWOTH
 .ct , and
 .kw S_IXOTH
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .termhd2 Meaning

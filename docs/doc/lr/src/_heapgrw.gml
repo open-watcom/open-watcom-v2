@@ -25,7 +25,7 @@ and
 .kw _fmalloc
 or
 .kw halloc
-.ct .li .
+.period
 Once a call to
 .kw _fmalloc
 or
@@ -38,7 +38,7 @@ unless space has been reserved for the near heap using either
 .kw sbrk
 or
 .kw _nheapgrow
-.ct .li .
+.period
 .np
 The
 .kw _fheapgrow

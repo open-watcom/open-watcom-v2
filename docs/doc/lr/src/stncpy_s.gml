@@ -31,7 +31,7 @@ nor
 .arg n
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg s1max
 shall not equal zero. If
 .arg n
@@ -41,7 +41,7 @@ is not less than
 .arg s1max
 shall be greater than
 .arg strnlen_s(s2, s1max)
-.ct .li .
+.period
 .np
 Copying shall not take place between
 objects that overlap.
@@ -69,7 +69,7 @@ copied) from the array pointed to by
 .arg s2
 to the array pointed to by
 .arg s1
-.ct .li .
+.period
 If no null character was copied from
 .arg s2
 .ct , then

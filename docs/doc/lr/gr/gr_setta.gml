@@ -16,7 +16,7 @@ specified by the arguments
 .arg horiz
 and
 .arg vert
-.ct .li .
+.period
 When text is displayed with the
 .kw _grtext
 &routine, it is aligned (justified) horizontally and vertically

@@ -15,7 +15,7 @@ The
 &routine copies the current fill mask into the area
 located by the argument
 .arg mask
-.ct .li .
+.period
 The fill mask is used by the
 .kw _ellipse
 .ct ,
@@ -39,7 +39,7 @@ the
 .id &funcb.
 &routine returns
 .arg mask
-.ct .li .
+.period
 .return end
 .do end
 .see begin

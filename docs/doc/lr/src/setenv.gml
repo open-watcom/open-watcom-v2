@@ -60,7 +60,7 @@ The
 function searches the environment list for an entry of the
 form
 .arg name=value
-.ct .li .
+.period
 If no such string is present,
 .id &funcb.
 adds an entry of the form
@@ -76,7 +76,7 @@ or will delete the string
 .arg name=value
 and add the string
 .arg name=newvalue
-.ct .li .
+.period
 .np
 If the
 .arg newvalue
@@ -96,7 +96,7 @@ function will make copies of the strings associated with
 .arg name
 and
 .arg newvalue
-.ct .li .
+.period
 .np
 .if '&machsys' eq 'QNX' .do begin
 The matching is case-sensitive; all lowercase letters are treated

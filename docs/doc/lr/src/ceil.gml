@@ -10,7 +10,7 @@ The
 function (ceiling function)
 computes the smallest integer not less than
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The

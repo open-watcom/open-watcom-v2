@@ -28,13 +28,13 @@ result to be written to the array pointed to by
 .arg s
 shall not be greater than
 .arg n
-.ct .li .
+.period
 The
 .mono %n
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a
@@ -67,7 +67,7 @@ function, unlike
 .kw sprintf_s
 .ct , will truncate the result to fit within the array pointed to by
 .arg s
-.ct .li .
+.period
 .im widefun4
 .desc end
 .*
@@ -82,7 +82,7 @@ negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the
 returned value is nonnegative and less than
 .arg n
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -95,7 +95,7 @@ a negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the
 returned value is nonnegative and less than
 .arg n
-.ct .li .
+.period
 .return end
 .*
 .see begin

@@ -28,7 +28,7 @@ function counts the number of characters in the first
 .arg n
 bytes of
 .arg string
-.ct .li .
+.period
 .np
 The
 .id &mfunc.
@@ -37,7 +37,7 @@ first
 .arg n
 bytes of
 .arg string
-.ct .li .
+.period
 If
 .id &mfunc.
 finds a null byte as the second byte of a double-byte
@@ -60,7 +60,7 @@ The header file
 .hdrfile tchar.h
 defines the generic-text routine
 .kw _tcsnccnt
-.ct .li .
+.period
 This macro maps to
 .id &mfunc.
 if
@@ -90,17 +90,17 @@ used otherwise.
 returns the number of characters from the beginning
 of the string to byte
 .arg n
-.ct .li .
+.period
 .id &wfunc.
 returns the number of wide characters from the beginning
 of the string to byte
 .arg n
-.ct .li .
+.period
 .id &mfunc.
 returns the number of multibyte characters from the beginning
 of the string to byte
 .arg n
-.ct .li .
+.period
 If these functions find a null character before byte
 .arg n
 .ct , they return the number of characters before the null character.

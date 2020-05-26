@@ -28,7 +28,7 @@ and
 .kw tm_mon
 are not restricted to ranges described for
 .kw struct tm
-.ct .li .
+.period
 If these fields are not in their proper ranges, they are adjusted
 so that they are in the proper ranges.
 Values for the fields

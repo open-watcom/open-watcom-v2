@@ -10,16 +10,16 @@ The
 function returns the natural logarithm of the
 absolute value of the Gamma function of 
 .arg x
-.ct .li . The sign of the Gamma function will be returned
+.period The sign of the Gamma function will be returned
 in the location pointed to by
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 If successful, the return value is the natural logarithm of
 the absolute value of the Gamma function computed for
 .arg x
-.ct .li .  When the argument is not-a-number, the function 
+.period  When the argument is not-a-number, the function 
 returns NAN.  For arguments of the values positive or negative
 infinity, the function returns positive or negative infinity
 respectively.

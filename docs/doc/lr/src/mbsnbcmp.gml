@@ -23,7 +23,7 @@ bytes from the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 .im farparm
 .desc end
 .return begin
@@ -34,7 +34,7 @@ than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .id &funcb.
 is similar to
 .kw _mbsncmp

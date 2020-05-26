@@ -25,10 +25,10 @@ function formats data under control of the
 .arg format
 control string and stores the result in
 .arg buf
-.ct .li .
+.period
 The maximum number of characters to store is specified by
 .arg count
-.ct .li .
+.period
 A null character is placed at the end of the generated character
 string if fewer than
 .arg count
@@ -56,7 +56,7 @@ is to be written, rather than converted to multibyte characters and
 written to a stream.
 The maximum number of wide characters to write is specified by
 .arg count
-.ct .li .
+.period
 A null wide character is placed at the end of the generated wide
 character string if fewer than
 .arg count

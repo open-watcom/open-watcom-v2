@@ -14,7 +14,7 @@ specified by
 .arg dbch
 at the start of the buffer specified by
 .arg mbstr
-.ct .li .
+.period
 .im ffarfunc
 .desc end
 .return begin

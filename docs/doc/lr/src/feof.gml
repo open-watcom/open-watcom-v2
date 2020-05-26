@@ -11,7 +11,7 @@ The
 function tests the end-of-file indicator for the stream
 pointed to by
 .arg fp
-.ct .li .
+.period
 Because this indicator is set when an input operation attempts to read
 past the end of the file the &funcb
 function will detect the end of the file only after an attempt
@@ -28,7 +28,7 @@ The
 function returns non-zero
 if the end-of-file indicator is set for
 .arg fp
-.ct .li .
+.period
 .return end
 .see begin
 .seelist clearerr feof ferror fopen freopen perror read strerror

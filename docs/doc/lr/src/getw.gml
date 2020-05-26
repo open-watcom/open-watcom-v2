@@ -34,7 +34,7 @@ or end-of-file occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 Since
 .kw EOF
 is a legitimate value to read from

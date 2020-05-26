@@ -26,10 +26,10 @@ function opens a file at the operating system level for
 shared access.
 The name of the file to be opened is given by
 .arg filename
-.ct .li .
+.period
 The file will be accessed according to the access mode specified by
 .arg access
-.ct .li .
+.period
 When the file is to be created, the optional argument must be given
 which establishes the future access permissions for the file.
 Additionally, the sharing mode of the file is given by the

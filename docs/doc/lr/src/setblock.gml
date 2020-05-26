@@ -19,7 +19,7 @@ paragraphs.
 If the request fails, the maximum number of paragraphs that this
 memory block can be changed to is returned in the word pointed to by
 .arg maxsize
-.ct .li .
+.period
 .np
 For 32-bit DOS applications, it is recommended that the corresponding
 DPMI services be used.

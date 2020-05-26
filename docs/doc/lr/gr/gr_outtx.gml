@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
-.ct .li .
+.period
 The string must be terminated by a null character
 .if '&lang' eq 'C' .do begin
 ('\0').

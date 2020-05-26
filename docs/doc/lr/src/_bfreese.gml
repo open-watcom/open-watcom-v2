@@ -13,7 +13,7 @@ The argument
 .arg seg
 indicates the segment returned by an earlier call to
 .kw _bheapseg
-.ct .li .
+.period
 .desc end
 .return begin
 The

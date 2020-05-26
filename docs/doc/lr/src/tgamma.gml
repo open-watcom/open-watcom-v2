@@ -9,13 +9,13 @@ The
 .id &funcb.
 function returns the value of the Gamma function of 
 .arg x
-.ct .li . 
+.period 
 .desc end
 .return begin
 If successful, the return value is the value of the Gamma 
 function computed for
 .arg x
-.ct .li .  When the argument is not-a-number or negative infinity, 
+.period  When the argument is not-a-number or negative infinity, 
 the function returns NAN.  If the argument is positive infinity, 
 the function returns positive infinity.
 .return end

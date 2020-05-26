@@ -9,7 +9,7 @@ The
 .id &funcb.
 function turns on the PC's speaker at the specified
 .arg frequency
-.ct .li .
+.period
 The frequency is in Hertz (cycles per second).
 The speaker can be turned off by calling the
 .kw nosound

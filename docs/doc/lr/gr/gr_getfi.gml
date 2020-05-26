@@ -19,7 +19,7 @@ The font information is returned in the
 .id _fontinfo
 structure indicated by the argument
 .arg info
-.ct .li .
+.period
 The structure contains the following fields:
 .begterm 15
 .note type

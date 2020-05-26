@@ -19,7 +19,7 @@ function fills the string
 .arg str
 with the value of the argument
 .arg fill
-.ct .li .
+.period
 When the value of
 .arg len
 is greater than the length of the string, the entire string is filled.

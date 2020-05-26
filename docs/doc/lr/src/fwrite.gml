@@ -16,7 +16,7 @@ elements of
 .arg elsize
 bytes each to the file specified by
 .arg fp
-.ct .li .
+.period
 .desc end
 .return begin
 The

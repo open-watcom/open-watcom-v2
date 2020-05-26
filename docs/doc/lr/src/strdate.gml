@@ -14,7 +14,7 @@ The
 .id &funcb.
 function copies the current date to the buffer pointed to by
 .arg datestr
-.ct .li .
+.period
 The date is formatted as "MM/DD/YY"
 where "MM" is two digits representing the month,
 where "DD" is two digits representing the day, and
@@ -27,7 +27,7 @@ The
 .id &funcb.
 function returns a pointer to the resulting text string
 .arg datestr
-.ct .li .
+.period
 .return end
 .see begin
 .seelist asctime Functions ctime Functions gmtime localtime mktime

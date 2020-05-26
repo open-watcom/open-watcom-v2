@@ -24,7 +24,7 @@ function writes output to the file
 .kw stdout
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the

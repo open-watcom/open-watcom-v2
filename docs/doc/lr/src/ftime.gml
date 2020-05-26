@@ -17,14 +17,14 @@ The
 function gets the current time and stores it in the
 structure pointed to by
 .arg timeptr
-.ct .li .
+.period
 .desc end
 .return begin
 The
 .id &funcb.
 function fills in the fields of the structure pointed to by
 .arg timeptr
-.ct .li .
+.period
 The
 .id &funcb.
 function returns &minus.1 if not successful, and no useful

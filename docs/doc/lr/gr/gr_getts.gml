@@ -20,7 +20,7 @@ The information is stored in the
 .id textsettings
 structure indicated by the argument
 .arg settings
-.ct .li .
+.period
 The structure contains the following fields (all are
 .id &short
 fields):

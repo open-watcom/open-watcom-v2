@@ -38,7 +38,7 @@ The header file
 .hdrfile tchar.h
 defines the generic-text routine
 .kw _tcsninc
-.ct .li .
+.period
 This macro maps to
 .id &mfunc.
 if
@@ -75,7 +75,7 @@ if
 .arg str
 was
 .kw NULL
-.ct .li .
+.period
 If
 .arg count
 exceeds the number of characters remaining in the string, the result is

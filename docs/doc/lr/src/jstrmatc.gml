@@ -29,7 +29,7 @@ the first occurrence in the Kanji string pointed to by
 of a single- or double-byte character that appears
 in the Kanji string pointed to by
 .arg charset
-.ct .li .
+.period
 .im ffarfunc
 .desc end
 .return begin

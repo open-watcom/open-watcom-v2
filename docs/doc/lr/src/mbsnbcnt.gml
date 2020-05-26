@@ -27,7 +27,7 @@ function counts the number of bytes in the first
 .arg n
 multibyte characters of the string
 .arg string
-.ct .li .
+.period
 .np
 .us Note:
 This function was called
@@ -46,7 +46,7 @@ The header file
 .hdrfile tchar.h
 defines the generic-text routine
 .kw _tcsnbcnt
-.ct .li .
+.period
 This macro maps to
 .id &mfunc.
 if
@@ -80,7 +80,7 @@ in the first
 .arg n
 bytes of the single-byte string
 .arg string
-.ct .li .
+.period
 The
 .id &wfunc.
 function returns the number of bytes (i.e., 2 *
@@ -90,7 +90,7 @@ in the first
 .arg n
 wide characters of the wide-character string
 .arg string
-.ct .li .
+.period
 .desc end
 .return begin
 The

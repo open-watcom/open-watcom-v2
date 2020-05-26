@@ -106,7 +106,7 @@ functions load and execute a new child process, named by
 .arg path
 or
 .arg file
-.ct .li .
+.period
 If the child process is successfully loaded, it replaces the current
 process in memory.
 No return is made to the original program.

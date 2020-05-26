@@ -12,7 +12,7 @@ function sets interrupt vector number
 .arg intnum
 to point to the interrupt handling function pointed to by
 .arg handler
-.ct .li .
+.period
 .desc end
 .return begin
 The

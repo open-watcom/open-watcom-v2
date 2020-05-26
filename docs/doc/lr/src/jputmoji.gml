@@ -25,7 +25,7 @@ the next single- or double-byte character specified by
 .arg c
 at the start of the buffer specified by
 .arg str
-.ct .li .
+.period
 .im ffarfunc
 .desc end
 .return begin

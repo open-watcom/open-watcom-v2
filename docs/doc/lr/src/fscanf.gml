@@ -23,7 +23,7 @@ function scans input from the file designated by
 .arg fp
 under control of the argument
 .arg format
-.ct .li .
+.period
 Following the format string is a list of addresses to receive values.
 The
 .arg format
@@ -39,7 +39,7 @@ function is identical to
 except that it accepts a
 wide-character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

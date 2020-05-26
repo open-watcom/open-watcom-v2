@@ -16,7 +16,7 @@ The number of bytes transmitted is given by
 .arg len
 and the data to be transmitted is located at the address specified by
 .arg buffer
-.ct .li .
+.period
 .im ansiconf
 .np
 The

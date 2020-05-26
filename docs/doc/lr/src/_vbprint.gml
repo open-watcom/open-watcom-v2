@@ -19,7 +19,7 @@ function formats data under control of the
 .arg format
 control string and writes the result to
 .arg buf
-.ct .li .
+.period
 The argument
 .arg bufsize
 specifies the size of the character array

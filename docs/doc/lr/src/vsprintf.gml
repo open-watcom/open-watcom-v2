@@ -29,7 +29,7 @@ function formats data under control of the
 .arg format
 control string and writes the result to
 .arg buf
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the
@@ -54,7 +54,7 @@ written to a stream.
 The maximum number of wide characters to write, including a
 terminating null wide character, is specified by
 .arg count
-.ct .li .
+.period
 .do end
 .desc end
 .*

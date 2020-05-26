@@ -16,12 +16,12 @@ The
 function returns, as a 32-bit long integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
-.ct .li .
+.period
 .np
 The &func64 function returns, as a 64-bit integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
-.ct .li .
+.period
 .im ansiconf
 .desc end
 .return begin

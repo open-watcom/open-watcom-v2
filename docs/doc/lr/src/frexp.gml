@@ -13,7 +13,7 @@ It stores the integral power of 2 in the
 .arg int
 object pointed to by
 .arg exp
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -30,7 +30,7 @@ equals
 .arg x
 times 2 raised to the power
 .arg *exp
-.ct .li .
+.period
 If
 .arg value
 is zero, then both parts of the result are zero.

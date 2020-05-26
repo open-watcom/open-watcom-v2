@@ -13,7 +13,7 @@ function maps the wide character
 .arg wc
 using the mapping described by
 .arg desc
-.ct .li .
+.period
 Valid values of
 .arg desc
 are defined by the use of the
@@ -42,7 +42,7 @@ function returns the mapped value of
 .arg wc
 using the mapping described by
 .arg desc
-.ct .li .
+.period
 .return end
 .*
 .see begin

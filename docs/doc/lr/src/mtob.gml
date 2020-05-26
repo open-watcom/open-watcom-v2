@@ -27,7 +27,7 @@ and
 .arg nm
 characters from
 .arg str
-.ct .li .
+.period
 A double-byte Kanji character is treated as one character.
 Processing stops when either
 .arg nm

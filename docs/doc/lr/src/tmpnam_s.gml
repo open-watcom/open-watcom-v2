@@ -20,7 +20,7 @@ shall not be a null pointer.
 .arg maxsize
 shall be less than or equal to
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg maxsize
 shall be greater than the length of the generated file name string.
 .rtconst end

@@ -12,7 +12,7 @@ It must be used with the associated macros
 .kw va_start
 and
 .kw va_arg
-.ct .li .
+.period
 See the description for
 .kw va_arg
 for complete documentation on these macros.

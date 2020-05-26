@@ -21,10 +21,10 @@ The
 function opens a file at the operating system level.
 The name of the file to be opened is given by
 .arg path
-.ct .li .
+.period
 The file will be accessed according to the access mode specified by
 .arg access
-.ct .li .
+.period
 The optional argument is the file permissions to be used when the
 .kw O_CREAT
 flag is on in the
@@ -40,7 +40,7 @@ function is identical to
 except that it
 accepts a wide character string argument for
 .arg path
-.ct .li .
+.period
 .do end
 .im openacc
 .im openper

@@ -38,7 +38,7 @@ The &handle was returned by one of
 .do end
 or
 .kw sopen
-.ct .li .
+.period
 The open mode
 .arg mode
 must match the mode with which the file or device was originally

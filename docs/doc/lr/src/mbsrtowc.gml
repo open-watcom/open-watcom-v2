@@ -29,7 +29,7 @@ into a sequence of corresponding wide characters, which, if
 .arg dst
 is not a null pointer, are then stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null character,
 but the terminating null wide character will not be stored.
 Conversion will stop earlier in two cases: when a sequence of bytes is
@@ -40,7 +40,7 @@ when
 .arg len
 codes have been stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Each conversion takes place as if by a call to the
 .kw mbrtowc
 function.

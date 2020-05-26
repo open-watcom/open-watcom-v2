@@ -18,7 +18,7 @@ The time information is passed in a
 .kw dostime_t
 structure pointed to by
 .arg time
-.ct .li .
+.period
 .desc end
 .return begin
 The

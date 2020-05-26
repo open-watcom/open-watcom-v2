@@ -23,7 +23,7 @@ function writes output to the file pointed to by
 .arg fp
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the

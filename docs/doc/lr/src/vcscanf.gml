@@ -11,7 +11,7 @@ The
 function scans input from the console
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .id &funcb.
 function uses the function

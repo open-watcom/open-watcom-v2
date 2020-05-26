@@ -16,7 +16,7 @@ function returns the value of
 .arg x
 times 2 raised to the power
 .arg exp
-.ct .li .
+.period
 .return end
 .see begin
 .seelist ldexp frexp modf

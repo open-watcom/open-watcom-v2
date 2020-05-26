@@ -21,7 +21,7 @@ The
 .id &funcb.
 function sets the process's file mode creation mask to
 .arg cmask
-.ct .li .
+.period
 The process's file mode creation mask is used during
 .if '&machsys' eq 'QNX' .do begin
 .kw creat
@@ -65,7 +65,7 @@ The
 .id &funcb.
 function returns the previous value of
 .arg cmask
-.ct .li .
+.period
 .return end
 .see begin
 .seelist umask chmod creat mkdir mkfifo open sopen

@@ -21,7 +21,7 @@ specified by the arguments
 .arg height
 and
 .arg width
-.ct .li .
+.period
 For the
 .id &funcb.
 &routine, the arguments

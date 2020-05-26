@@ -9,7 +9,7 @@ The
 function returns the operating system's internal file handle
 that corresponds to the POSIX-level file handle specified by
 .arg posixhandle
-.ct .li .
+.period
 .np
 The value returned by
 .id &funcb.
@@ -38,7 +38,7 @@ If successful,
 returns an operating system file handle
 corresponding to
 .arg posixhandle
-.ct .li .
+.period
 Otherwise, it returns -1 and sets
 .kw errno
 to

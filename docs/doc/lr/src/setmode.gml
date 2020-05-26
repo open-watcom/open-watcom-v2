@@ -25,7 +25,7 @@ translation mode to be the value of
 .arg mode
 for the file whose file &handle is given by
 .arg &fd
-.ct .li .
+.period
 The mode, defined in the
 .hdrfile fcntl.h
 header file, can be one of:

@@ -12,7 +12,7 @@ function rotates the unsigned integer, determined by
 .arg value
 .ct , to the right by the number of bits specified in
 .arg shift
-.ct .li .
+.period
 If you port an application using
 .id &funcb.
 between a 16-bit and a 32-bit

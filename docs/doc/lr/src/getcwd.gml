@@ -32,7 +32,7 @@ character) which can be be used to store this name.
 An error occurs if the length of the path (including the terminating
 null character) exceeds
 .arg maxlen
-.ct .li .
+.period
 .np
 The maximum size that might be required for
 .arg buffer

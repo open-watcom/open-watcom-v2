@@ -30,7 +30,7 @@ characters of the object pointed to by
 .arg s1
 to the object pointed to by
 .arg s2
-.ct .li .
+.period
 .im farparm
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
@@ -47,7 +47,7 @@ than zero, indicating that the object pointed to by
 .arg s1
 is less than, equal to, or greater than the object pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
 .seelist memchr memcmp memcpy memicmp memset

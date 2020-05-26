@@ -47,7 +47,7 @@ wide character string argument.
 .np
 The name of the file to be created is given by
 .arg path
-.ct .li .
+.period
 When the file exists (it must be writeable), it is truncated to
 contain no data and the preceding
 .arg mode

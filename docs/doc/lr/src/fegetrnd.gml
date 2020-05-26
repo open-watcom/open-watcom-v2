@@ -21,7 +21,7 @@ rounding direction macro or the current rounding direction is not determinable.
 .np
 For valid rounding modes see
 .seekw &functiong. fesetround
-.ct .li .
+.period
 .return end
 .*
 .see begin

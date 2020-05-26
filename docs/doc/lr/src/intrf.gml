@@ -10,14 +10,14 @@ The
 functions cause the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
-.ct .li .
+.period
 Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg regs
-.ct .li .
+.period
 Low 8-bit of the CPU flags is set to the flags member of the structure
 .arg regs
-.ct .li .
+.period
 .np
 All of the segment registers must contain valid values.
 Failure to do so will cause a segment violation when running

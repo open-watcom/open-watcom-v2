@@ -21,7 +21,7 @@ modifies the interpretation of
 .arg pattern
 and
 .arg string
-.ct .li .
+.period
 .begterm 6
 .termhd1 Flag
 .termhd2 Meaning
@@ -30,7 +30,7 @@ If set, a path separator in
 .arg string
 is explicitly matched by a slash in
 .arg pattern
-.ct .li .
+.period
 It isn't matched by either the asterisk or question mark special characters,
 or by a bracket expression.
 .term FNM_PERIOD
@@ -48,7 +48,7 @@ If FNM_PATHNAME is set, a period is leading if it's the first character in
 If FNM_PATHNAME isn't set, a period is leading only if it's
 the first character in
 .arg string
-.ct .li .
+.period
 .endbull
 .term FNM_NOESCAPE
 If set, disables backslash escaping:
@@ -60,10 +60,10 @@ If FNM_NOESCAPE isn't set in
 .arg pattern
 followed by any other character matches that second character in
 .arg string
-.ct .li .
+.period
 In particular, \\ matches a backslash in
 .arg string
-.ct .li .
+.period
 .bull
 If FNM_NOESCAPE is set, a backslash character is treated as an
 ordinary character.
@@ -160,7 +160,7 @@ function returns zero when
 .arg string
 matches the pattern specified by 
 .arg pattern
-.ct .li .
+.period
 If there is no match, FNM_NOMATCH is returned. If an error occurs, &funcb
 returns another non-zero value.
 .return end

@@ -507,7 +507,7 @@ function if the size requested is zero (7.10.3).
 .np
 The value returned will be
 .kw NULL
-.ct .li .
+.period
 No actual memory is allocated.
 .*-------------------------
 .section The abort Function

@@ -20,7 +20,7 @@ function prints, on the file designated by
 the error message corresponding to the error number
 contained in
 .kw errno
-.ct .li .
+.period
 The
 .id &funcb.
 function writes first the string pointed to by

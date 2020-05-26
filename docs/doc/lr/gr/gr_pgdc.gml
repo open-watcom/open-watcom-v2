@@ -22,7 +22,7 @@ The chart type in the structure is initialized to the value
 .arg type
 .ct , and the chart style is initialized to
 .arg style
-.ct .li .
+.period
 .pp
 The argument
 .arg type

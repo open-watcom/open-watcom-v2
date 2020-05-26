@@ -27,13 +27,13 @@ function changes the permissions for a file specified by
 .arg path
 to be the settings in the mode given by
 .arg permission
-.ct .li .
+.period
 .im openperv
 .if '&machsys' eq 'QNX' .do begin
 .np
 The following bits may also be specified in
 .arg permission
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Permission
 .termhd2 Meaning
@@ -77,7 +77,7 @@ is set to indicate the error.
 .term EACCES
 Search permission is denied for a component of
 .arg path
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 .term ENAMETOOLONG
 The argument

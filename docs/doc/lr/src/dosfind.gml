@@ -71,7 +71,7 @@ The information is returned in a
 .kw find_t
 structure pointed to by
 .arg buffer
-.ct .li .
+.period
 The
 .arg path
 argument may contain wildcard characters ('?' and '*').

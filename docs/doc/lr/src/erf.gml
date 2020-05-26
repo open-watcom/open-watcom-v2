@@ -10,7 +10,7 @@ The
 function computes the value of the error function, also
 known as the Gauss error function, for the argument
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 For non-infinite values of 

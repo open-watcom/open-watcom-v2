@@ -40,7 +40,7 @@ or
 .kw iswdigit
 is true for
 .arg c
-.ct .li .
+.period
 .do end
 .return end
 .see begin

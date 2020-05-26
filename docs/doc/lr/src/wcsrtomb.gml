@@ -31,7 +31,7 @@ in the shift state described by
 .arg dst
 is not a null pointer, are then stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null wide
 character, but the terminating null character (byte) will not be
 stored.
@@ -43,7 +43,7 @@ the limit of
 .arg len
 total bytes to be stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Each conversion takes place as if by a call to the
 .kw wcrtomb
 function.

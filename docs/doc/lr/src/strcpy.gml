@@ -43,7 +43,7 @@ function copies the string pointed to by
 .arg src
 (including the terminating null character) into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the description for the
 .kw memmove

@@ -47,7 +47,7 @@ as appropriate.
 .*
 .el .do begin
 .kw dirent
-.ct .li .
+.period
 .blkcode begin
 #if defined(__OS2__) || defined(__NT__)
 #define NAME_MAX 255    /* maximum for HPFS or NTFS */

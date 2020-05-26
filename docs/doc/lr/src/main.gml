@@ -36,10 +36,10 @@ separated by blanks and are passed to
 as an array of pointers
 to character strings in the parameter
 .arg argv
-.ct .li .
+.period
 The number of arguments found is passed in the parameter
 .arg argc
-.ct .li .
+.period
 The first element of
 .arg argv
 will be a pointer to a character string containing the program name.
@@ -126,7 +126,7 @@ The
 .kw wWinMain
 function is a wide-character version of
 .kw WinMain
-.ct .li .
+.period
 .begterm 10
 .termhd1 Parameters
 .termhd2 Meaning

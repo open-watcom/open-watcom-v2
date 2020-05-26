@@ -14,7 +14,7 @@ function prints, on the file designated by
 the Kanji error message corresponding to the error number
 contained in
 .kw errno
-.ct .li .
+.period
 The
 .id &funcb.
 function is implemented as follows:

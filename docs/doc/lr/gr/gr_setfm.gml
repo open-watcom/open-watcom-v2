@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine sets the current fill mask to the value of the argument
 .arg mask
-.ct .li .
+.period
 .if '&lang' eq 'C' .do begin
 When the value of the
 .arg mask

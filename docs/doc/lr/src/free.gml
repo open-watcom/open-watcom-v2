@@ -23,7 +23,7 @@ which points to a memory block previously allocated through a call to
 .kw malloc
 or
 .kw realloc
-.ct .li .
+.period
 After the call, the freed block is available for allocation.
 .desc end
 .return begin
@@ -94,7 +94,7 @@ the appropriate version of
 .kw malloc
 or
 .kw realloc
-.ct .li .
+.period
 After the call, the freed block is available for allocation.
 .np
 Each function deallocates memory from a particular heap, as listed below:

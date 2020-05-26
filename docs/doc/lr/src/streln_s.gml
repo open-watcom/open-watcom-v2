@@ -22,7 +22,7 @@ message string that the
 .kw strerror_s
 function maps to
 .arg errnum
-.ct .li .
+.period
 
 .im widefun1
 .desc end

@@ -52,30 +52,30 @@ In small data models (small and medium memory models),
 .id &funcb.
 maps to
 .kw _nmsize
-.ct .li .
+.period
 In large data models (compact, large and huge memory models), &funcb
 maps to
 .kw _fmsize
-.ct .li .
+.period
 :cmt. .pp
 :cmt. The
 :cmt. .kw _nmsize
 :cmt. function returns the size of the memory block allocated by a call to
 :cmt. .kw _nmalloc
-:cmt. .ct .li .
+:cmt. .period
 :cmt. .pp
 :cmt. The
 :cmt. .kw _fmsize
 :cmt. function returns the size of the memory block allocated by a call to
 :cmt. .kw _fmalloc
-:cmt. .ct .li .
+:cmt. .period
 .desc end
 .return begin
 The
 .id &funcb.
 functions return the size of the memory block pointed to by
 .arg buffer
-.ct .li .
+.period
 .return end
 .see begin
 .im seealloc
