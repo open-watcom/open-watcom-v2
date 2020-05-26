@@ -54,7 +54,7 @@ time as it executes.
 .np
 First, you must run the
 .us Sampler
-.dot
+.period
 The sampler starts your application and, at a predetermined interval,
 records the location where your program is executing.
 This information is saved in a "sample file".
@@ -65,7 +65,7 @@ useful tool to enhance your program's performance.
 .np
 Second, you run the
 .us Profiler
-.dot
+.period
 It reads the sample file and displays the sample information
 graphically. You can use the profiler to examine the sample data
 and narrow in on the places where your program spends large
