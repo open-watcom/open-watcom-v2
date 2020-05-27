@@ -25,22 +25,22 @@ Restrictions arise solely because of memory limitations.
 .bull
 15 nesting levels of compound statements,
 iteration control structures (
-..ct .kw for
+.ct .kw for
 .ct ,
 .kw do
 .ct /
-..ct .kw while
+.ct .kw while
 .ct ,
 .kw while
 .ct ),
 and selection control structures (
-..ct .kw if
+.ct .kw if
 .ct ,
 .kw switch
 .ct ),
 .bull
 8 nesting levels of conditional inclusion (
-..ct .kwpp #if
+.ct .kwpp #if
 .ct ),
 .bull
 12 pointer, array and function declarators (in any order)
@@ -104,8 +104,7 @@ wide string literal
 .bull
 8 nesting levels for
 .kwpp #include
-..ct d
-files,
+.ct d files,
 .bull
 257
 .ix 'case label'

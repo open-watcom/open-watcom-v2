@@ -155,14 +155,12 @@ discarding the high-order portion of the larger type.
 .shade end
 .pp
 Consider the following examples of 32-bit quantities (
-..ct .kw unsigned long int
-..ct )
-being converted
-to 16-bit quantities (
-..ct .kw signed short int
+.ct .kw unsigned long int
+.ct ) being converted to 16-bit quantities (
+.ct .kw signed short int
 or
 .kw unsigned short int
-..ct ):
+.ct ):
 ..sk 1 c
 .if &e'&nobox eq 0 .do begin
 .boxdef
@@ -235,13 +233,12 @@ is then treated as an unsigned value.
 .shade end
 .pp
 Consider the following examples of 16-bit signed quantities (
-..ct .kw signed short int
-..ct ) being
-converted to 32-bit quantities (
-..ct .kw signed long int
+.ct .kw signed short int
+.ct ) being converted to 32-bit quantities (
+.ct .kw signed long int
 and
 .kw unsigned long int
-..ct ):
+.ct ):
 ..sk 1 c
 .if &e'&nobox eq 0 .do begin
 .boxdef
@@ -372,7 +369,7 @@ is 0.)
 .note Rule:
 When a floating-point value is converted to a larger floating-point
 type (
-..ct .kw float
+.ct .kw float
 to
 .kw double
 .ct ,
@@ -383,7 +380,7 @@ to
 .kw double
 to
 .kw long double
-..ct ), the value remains unchanged.
+.ct ), the value remains unchanged.
 .note Rule:
 When any floating-point type is demoted to a
 floating-point type with a smaller range,

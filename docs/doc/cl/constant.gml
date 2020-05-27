@@ -72,11 +72,11 @@ and the letters
 .mono a
 (or
 .mono A
-..ct ) through
+.ct ) through
 .mono f
 (or
 .mono F
-..ct ), then the constant is interpreted as a hexadecimal (base 16)
+.ct ), then the constant is interpreted as a hexadecimal (base 16)
 constant.
 The letters
 .mono A
@@ -111,11 +111,10 @@ The following table describes what type the compiler will give to a
 constant. The left column indicates what
 base (decimal, octal or hexadecimal) is used
 and what suffixes (
-..ct .mono U
+.ct .mono U
 or
 .mono L
-..ct )
-are present.
+.ct ) are present.
 The right column indicates the types that may be given to such a
 constant.
 The type of an integer constant is the first type from the table
@@ -475,7 +474,7 @@ followed by one, two or three octal digits
 .mono 0
 through
 .mono 7
-..ct ):
+.ct ):
 .millust begin
 '\0'
 '\377'
@@ -532,12 +531,9 @@ and
 .mono A
 through
 .mono F
-..ct ).
-(The
-values
-of these character constants are the same as the first examples of
-octal values
-presented above.)
+.ct ).
+(The values of these character constants are the same as the first
+examples of octal values presented above.)
 .millust begin
 '\x0'
 '\xFF'
@@ -650,13 +646,9 @@ and has the value of the letter
 in the execution character set.
 The latter is of type "pointer to
 .kw char
-..ct "
-and its value is the address of the first character
-(
-..ct .mono a
-..ct )
-of the
-string literal.
+.ct " and its value is the address of the first character (
+.ct .mono a
+.ct ) of the string literal.
 .*
 .beglevel
 .section Wide Character Constants
@@ -764,7 +756,7 @@ null character at the end.
 .pp
 The type of a string literal is "array of
 .kw char
-..ct ".
+.ct ".
 .pp
 The following are examples of string literals:
 .millust begin
@@ -823,8 +815,8 @@ a poor programming practice. (Constants should be constant!)
 A string literal normally is a string. It is not a string if one of the
 characters within double-quotes is the null character
 (
-..ct .mono \0
-..ct ).
+.ct .mono \0
+.ct ).
 If such a string literal is treated as a string, then only those
 characters before the first null character will be considered part of
 the string. The characters following the first null character
@@ -883,7 +875,7 @@ string is preceded by the character
 The type of a wide string literal is "array of
 .ix 'wchar_t'
 .kw wchar_t
-..ct ".
+.ct ".
 .ix 'wchar_t'
 .kw wchar_t
 is one of the integral types, and is described in the header
@@ -924,7 +916,7 @@ and
 Its type is "array [3] of
 .ix 'wchar_t'
 .kw wchar_t
-..ct ", and the values of its elements are
+.ct ", and the values of its elements are
 .mono L'a'
 .ct ,
 .mono L'b'
@@ -935,7 +927,7 @@ In contrast, the string literal
 .mono "ab"
 has type "array [3] of
 .kw char
-..ct ", and the values of its elements are
+.ct ", and the values of its elements are
 .mono 'a'
 .ct ,
 .mono 'b'

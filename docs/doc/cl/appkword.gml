@@ -30,10 +30,10 @@ The &company. compilers also reserve the following extended keywords:
 The keywords
 .kwix &kwbased_sp.
 .kwfont &kwbased.
-..ct ,
+.ct ,
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
-..ct ,
+.ct ,
 .kwix &kwsegnm_sp.
 .kwfont &kwsegname.
 and
@@ -77,7 +77,7 @@ It may be used in place of
 The keywords
 .kwix &kwfar_sp.
 .kwfont &kwfar.
-..ct ,
+.ct ,
 .kwix &kwhuge_sp.
 .kwfont &kwhuge.
 and

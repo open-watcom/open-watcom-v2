@@ -39,8 +39,7 @@ If the declaration of an object does not include
 .kw volatile
 appearing anywhere in the type specifier (including any
 .kw typedef
-..ct 's)
-indicates that the object is volatile and may be changed at any time
+.ct 's) indicates that the object is volatile and may be changed at any time
 without the program knowing.
 If the object is a pointer and
 .kw volatile

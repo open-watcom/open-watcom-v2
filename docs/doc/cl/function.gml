@@ -66,18 +66,14 @@ arguments.
 .pp
 Any parameter declared as "array of
 .us type
-..ct "
-is changed to
-"pointer to
+.ct " is changed to "pointer to
 .us type
-..ct ".
+.ct ".
 Any parameter declared as "
 .us function
-..ct "
-is changed to
-"pointer to
+.ct " is changed to "pointer to
 .us function
-..ct ".
+.ct ".
 .keep begin
 .pp
 The following examples illustrate several function definitions:
@@ -201,7 +197,7 @@ will automatically be promoted to
 .kw double
 (assuming that it was declared as
 .kw float
-..ct ..li ).
+.ct ).
 For similar reasons, it is not possible to pass an object of type
 .kw char
 or
@@ -266,10 +262,9 @@ casting the object to the type.
 .keep end
 .pp
 The last example using the ellipsis (
-..ct .mono ,...
-..ct )
-notation is not
-directly representable using the second form of function definition.
+.ct .mono ,...
+.ct ) notation is not directly representable using the second form
+of function definition.
 With most compilers it is possible to handle variable argument lists
 in this form,
 but knowledge of the mechanism used to pass arguments to functions
@@ -401,8 +396,7 @@ This argument usually describes, in some fashion, how many other
 arguments to expect.
 It may be a simple count, or may involve (as with
 .libfn printf
-..ct )
-an encoding of the number and types of arguments.
+.ct ) an encoding of the number and types of arguments.
 .pp
 All arguments that correspond to a variable argument list have the
 default argument promotions performed on them, since it is not possible
@@ -487,7 +481,7 @@ is the same object named in the call to
 is the type of argument expected.
 The types expected should only be those that result from the default
 argument promotions (
-..ct .kw int
+.ct .kw int
 .ct ,
 .kw long int
 and
@@ -496,8 +490,7 @@ and their unsigned varieties,
 .kw double
 and
 .kw long double
-..ct ),
-and those that are not subject to promotion
+.ct ), and those that are not subject to promotion
 (pointers, structures and unions).
 The type must be determined
 by the program.
@@ -519,11 +512,11 @@ The first invocation of the
 .mkw va_arg
 macro (after executing a
 .mkw va_start
-..ct ) returns the value of the parameter following
+.ct ) returns the value of the parameter following
 .us lastparm
 (as specified in
 .mkw va_start
-..ct ). Each subsequent invocation of
+.ct ). Each subsequent invocation of
 .mkw va_arg
 returns the next parameter in the list.
 At each invocation, the value of

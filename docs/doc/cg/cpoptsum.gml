@@ -953,7 +953,7 @@ place each function in separate segment (near functions allowed)
 :CMT.(C++ only) use exception-handling for a specific operating system
 :CMT.:optref refid='SWzo'.
 .*
-.note zp[{1,2,4,8,16}]
+.note zp{1,2,4,8,16}
 :CMT. .ix 'options' 'zp'
 set minimal structure packing (member alignment)
 :optref refid='SWzp'.

@@ -156,7 +156,7 @@ struct tokendef * tokenptr;
 .keep break
 .pc
 (
-..ct .mono tokenptr
+.ct .mono tokenptr
 is a pointer to a
 .mono tokendef
 structure), then,
@@ -177,8 +177,8 @@ the
 .ix 'operator' '->'
 .us arrow
 operator (
-..ct .mono ->
-..ct ) is used:
+.ct .mono ->
+.ct ) is used:
 .keep break
 .millust tokenptr->length
 is equivalent to,

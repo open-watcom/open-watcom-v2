@@ -22,13 +22,13 @@ However, a brief explanation of the notation used is offered here:
 .note
 Required keywords are in normal lettering style
 (for example,&SYSRB.
-..ct .mono enum
-..ct ).
+.ct .mono enum
+.ct ).
 .note
 Terms that describe a class of object that replace the term are in
 italics (for example,&SYSRB.
-..ct .us identifier
-..ct ).
+.ct .us identifier
+.ct ).
 .note
 When two or more optional forms are available, they are shown
 as follows:

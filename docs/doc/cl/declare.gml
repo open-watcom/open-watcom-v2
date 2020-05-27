@@ -437,7 +437,7 @@ and may also include the following
 .shade begin
 The &company. compilers also provide the following extended
 .us type qualifiers
-..ct :
+.ct :
 ..sk 1 c
 .im tqwatcom
 .sk 1

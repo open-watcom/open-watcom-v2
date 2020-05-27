@@ -44,8 +44,7 @@ have a storage class associated with it.
 .pp
 Only one of these keywords (excluding
 .kw typedef
-..ct ) may be specified in a declaration of
-an object.
+.ct ) may be specified in a declaration of an object.
 .pp
 If an object or function is declared with a storage class, but no
 type specifier, then the type of the object or function is assumed to be

@@ -87,7 +87,7 @@ or a function. The term
 .us lvalue
 is derived from
 .us l
-..ct eft
+.ct eft
 .us value,
 which refers to the fact that an
 .us lvalue
@@ -162,7 +162,7 @@ A string literal is a primary expression whose
 type is
 "array of
 .kw char
-..ct ".
+.ct ".
 A string literal is also an
 .us lvalue
 (but is not modifiable).
@@ -237,15 +237,14 @@ where
 .mono array
 must have the type "array of
 .us type
-..ct " or
-"pointer to
+.ct " or "pointer to
 .us type
-..ct ", and
+.ct ", and
 .mono index
 must have an integral type. The result has
 type "
-..ct .us type
-..ct ".
+.ct .us type
+.ct ".
 .pp
 .mono array[index]
 is equivalent to
@@ -254,7 +253,7 @@ is equivalent to
 ..se hyphenmode=&syshy
 ..hy off
 .mono index
-..ct -th
+.ct -th
 ..hy &hyphenmode
 element of the array
 .mono array
@@ -373,9 +372,8 @@ undefined.
 If the
 .ix 'ellipsis'
 ellipsis (
-..ct .mono ,...
-..ct )
-notation is used in a function prototype,
+.ct .mono ,...
+.ct ) notation is used in a function prototype,
 then those arguments in a function call that correspond to the
 ellipsis have only the default argument promotions performed on
 them.
@@ -466,7 +464,7 @@ the operand is incremented or decremented by 1, adjusted for the
 type of the operand. For example, if the operand is declared to be
 a "pointer to
 .us type
-..ct ", then the increment or decrement will be by the value
+.ct ", then the increment or decrement will be by the value
 .monoon
 sizeof(&SYSRB.:HP1.type:eHP1.&SYSRB.)
 .monooff
@@ -592,7 +590,7 @@ type of the operand.
 For example, if the operand is declared to be
 a "pointer to
 .us type
-..ct ", then the increment or decrement will be by the value
+.ct ", then the increment or decrement will be by the value
 .monoon
 sizeof(&SYSRB.:HP1.type:eHP1.&SYSRB.)
 .period
@@ -635,17 +633,16 @@ object that is not a bit-field and is not declared with the
 .kw register
 storage-class specifier.
 If the type of the operand is "
-..ct .us type
-..ct ",
-then the type of the result is "pointer to
+.ct .us type
+.ct ", then the type of the result is "pointer to
 .us type
-..ct " and the result is the address of the operand.
+.ct " and the result is the address of the operand.
 .pp
 If the type of the operand is "array of
 .us type
-..ct ", then the type of the result is "pointer to
+.ct ", then the type of the result is "pointer to
 .us type
-..ct " and the result is the address of the first element of the array.
+.ct " and the result is the address of the first element of the array.
 .pp
 The
 .mono *
@@ -666,10 +663,9 @@ be a pointer to
 .period
 If the operand is a "pointer to
 .us type
-..ct ", then the type of the result is "
-..ct .us type
-..ct ",
-and the result is the object to which the operand points.
+.ct ", then the type of the result is "
+.ct .us type
+.ct ", and the result is the object to which the operand points.
 .pp
 No checking is performed to ensure that the value of the pointer is
 valid. If an invalid pointer value is used, the behavior of
@@ -1011,12 +1007,12 @@ Pointers may be freely converted from "pointer to
 .ix 'pointer' 'to void'
 .ix 'void' 'pointer to'
 .kw void
-..ct " to any other pointer type without
+.ct " to any other pointer type without
 using an explicit cast operator.
 Pointers also may be converted
 from any pointer type to "pointer to
 .kw void
-..ct ".
+.ct ".
 .pp
 A pointer may be converted to a pointer to another type.
 However,
@@ -1103,8 +1099,7 @@ and
 pointers are treated as
 .kw unsigned long int
 .ct , with the pointer's segment value in the high-order
-(most significant)
-two bytes.
+(most significant) two bytes.
 All the usual integer conversion rules then apply.
 Note that
 huge
@@ -1127,8 +1122,7 @@ and
 pointers are also treated as
 .kw unsigned int
 .ct , with the pointer's segment value in the high-order
-(most significant)
-two bytes.
+(most significant) two bytes.
 All the usual integer conversion rules then apply.
 Note that
 .kwix &kwfar_sp.
@@ -1374,7 +1368,7 @@ If both operands are pointers to the same type, the difference is
 divided by the size of the type, representing the difference of
 the subscripts of the two array members (assuming the type is "array of
 .us type
-..ct ").
+.ct ").
 The type of the result is implementation-defined, and is represented
 by
 .ix 'ptrdiff_t'
@@ -1996,11 +1990,9 @@ then the result has that type.
 If both operands are pointers, and one is
 "pointer to
 .kw void
-..ct ",
-then the result type is
-"pointer to
+.ct ", then the result type is "pointer to
 .kw void
-..ct ".
+.ct ".
 .pp
 If one operand is a pointer, and the other is a null pointer constant
 (0), the result type is that of the pointer.

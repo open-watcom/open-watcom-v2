@@ -55,9 +55,8 @@ and
 directives are each contained on one
 line (after concatenation of lines ending with
 .mono \
-..ct ),
-while the
-conditional compilation directives span multiple lines.
+.ct ), while the conditional compilation directives span
+multiple lines.
 .pp
 A preprocessor directive is not terminated by a semi-colon.
 .*
@@ -355,7 +354,7 @@ the preprocessor looks for a corresponding
 .period
 This directive means "else if", and has a similar form as
 .kwpp #if
-..ct :
+.ct :
 .ppix #elif
 .cillust begin
 .kwpp #elif

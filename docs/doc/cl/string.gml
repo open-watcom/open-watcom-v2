@@ -30,10 +30,10 @@ null character.
 An array can be initialized to be a string using the following form:
 .cillust begin
 type identifier
-..ct .mono [] = { "
-..ct string value
+.ct .mono [] = { "
+.ct string value
 .monoon
-..'ct " };
+.'ct " };
 .monooff
 .cillust end
 .pc
@@ -60,8 +60,7 @@ String literals are described in the "Constants" chapter.
 .pp
 A string may be used anywhere in a program where a "pointer to
 .kw char
-..ct "
-may be used. For example, if the declaration,
+.ct " may be used. For example, if the declaration,
 .millust begin
 char * ident;
 .millust end

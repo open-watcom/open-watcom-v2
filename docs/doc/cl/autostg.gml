@@ -16,8 +16,7 @@ outside the function (using
 .kw static
 or
 .kw extern
-..ct ),
-then the outside object is hidden from the function.
+.ct ), then the outside object is hidden from the function.
 .pp
 Within a function, any object that does not have its declaration
 preceded by the keyword

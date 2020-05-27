@@ -90,8 +90,7 @@ since the storage for that object is defined elsewhere.
 An object declared in a block,
 without the keyword
 .kw extern
-..ct ,
-may not be redeclared within the same block,
+.ct , may not be redeclared within the same block,
 except in a block contained within the current block.
 .*
 .section Expression Statements
@@ -113,8 +112,7 @@ count = 3;
 .pc
 consists of the expression
 .mono count = 3
-..ct ,
-which has the side effect of assigning the value 3 to the object
+.ct , which has the side effect of assigning the value 3 to the object
 .mono count.
 The result of the expression is 3, with the type the same as the
 type of
@@ -235,8 +233,7 @@ if( delay > 5 ) {
 .pp
 In the classic case of the dangling
 .kw else
-..ct ,
-the
+.ct , the
 .kw else
 is bound to the nearest
 .kw if
@@ -262,8 +259,7 @@ is false, because the
 .kw else
 is bound to the second
 .kw if
-..ct ,
-not the first.
+.ct , not the first.
 To correct this example, it would have to be changed to,
 .millust begin
 if( x > 0 ) {
@@ -423,10 +419,10 @@ the following output is produced:
 Iteration statements control looping. There are three forms of
 iteration statements:
 .kw while
-..ct ,
+.ct ,
 .kw do
-..ct /
-..ct .kw while
+.ct /
+.ct .kw while
 and
 .kw for
 .period
@@ -507,8 +503,8 @@ expression
 .pp
 The evaluation of the controlling expression takes place after each
 execution of the loop body (
-..ct .us statement
-..ct ).
+.ct .us statement
+.ct ).
 If the expression evaluates to zero the first time, the loop body
 is executed exactly once.
 .pp
@@ -659,14 +655,13 @@ is incremented by one. The loop is executed 101 times, with
 .mono i
 having the successive values
 .mono 0
-..ct ,
+.ct ,
 .mono 1
-..ct ,
+.ct ,
 .mono 2 ... 99
-..ct ,
+.ct ,
 .mono 100
-..ct ,
-and having the value
+.ct , and having the value
 .mono 101
 after termination of the loop.
 .cillust begin
@@ -694,9 +689,9 @@ a specific place in a program, without executing any other intervening
 statements.
 There are four jump statements:
 .kw goto
-..ct ,
+.ct ,
 .kw continue
-..ct ,
+.ct ,
 .kw break
 and
 .kw return
@@ -803,9 +798,7 @@ that contains the
 .kw break
 is enclosed inside another loop or
 .kw switch
-..ct ,
-only the
-inner-most loop or
+.ct , only the inner-most loop or
 .kw switch
 is terminated.
 The
@@ -855,8 +848,7 @@ statement within that function may return a value.
 .pp
 If the function is declared as having a return type of other than
 .kw void
-..ct ,
-then any
+.ct , then any
 .kw return
 statement with an expression
 will evaluate the expression and convert it to the return type.

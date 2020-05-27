@@ -30,7 +30,7 @@ is optional, with only one occurrence being allowed if present.
 .discuss begin
 Choose one of
 .mono A
-..ct ,
+.ct ,
 .mono B
 or
 .mono C.
@@ -230,9 +230,9 @@ $or$:MONO.L':eMONO.{c-char}&SUPER1.:MONO.':eMONO.
 $$any character in the source character set except
 $$the single-quote
 .mono '
-..ct , backslash
+.ct , backslash
 .mono \
-..ct , or new-line character
+.ct , or new-line character
 $or$escape-sequence
 .keep break
 ..sk
@@ -262,9 +262,9 @@ $or$:MONO.L":eMONO.{s-char}&SUPER0.:MONO.":eMONO.
 $$any character in the source character set except
 $$the double-quote
 .mono "
-..ct , backslash
+.ct , backslash
 .mono \
-..ct , or new-line character
+.ct , or new-line character
 $or$escape-sequence
 .keep break
 .*
@@ -347,7 +347,7 @@ $$conditional-expression
 :ITAL.expression:eITAL.
 $$assignment-expression{
 .monoon
-..ct ,
+.ct ,
 .monooff
 assignment-expression}&SUPER0.
 .keep break
@@ -607,7 +607,7 @@ $$&LANGLE.pointer&RANGLE. direct-declarator
 :ITAL.direct-declarator:eITAL.
 $$identifier
 $or$
-..ct .mono (
+.ct .mono (
 declarator
 .mono )
 $or$direct-declarator
@@ -887,7 +887,7 @@ $or$each non-white-space character that cannot be one of the above
 :ITAL.header-name:eITAL.
 $$:MONO.<:eMONO.
 ..ct {h-char}&SUPER0.
-..ct .mono >
+.ct .mono >
 .keep break
 ..sk 1 c
 :ITAL.h-char:eITAL.

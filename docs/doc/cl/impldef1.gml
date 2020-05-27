@@ -199,55 +199,55 @@ $Sequence$Value$Meaning
 .monoon
 $\a$07
 .monooff
-..ct $Bell or alert
+.ct $Bell or alert
 .monoon
 $\b$08
 .monooff
-..ct $Backspace
+.ct $Backspace
 .monoon
 $\f$0C
 .monooff
-..ct $Form feed
+.ct $Form feed
 .monoon
 $\n$0A
 .monooff
-..ct $New-line
+.ct $New-line
 .monoon
 $\r$0D
 .monooff
-..ct $Carriage return
+.ct $Carriage return
 .monoon
 $\t$09
 .monooff
-..ct $Horizontal tab
+.ct $Horizontal tab
 .monoon
 $\v$0B
 .monooff
-..ct $Vertical tab
+.ct $Vertical tab
 .monoon
 $\'$27
 .monooff
-..ct $Apostrophe or single quote
+.ct $Apostrophe or single quote
 .monoon
 $\"$22
 .monooff
-..ct $Double quote
+.ct $Double quote
 .monoon
 $\?$3F
 .monooff
-..ct $Question mark
+.ct $Question mark
 .monoon
 $\\$5C
 .monooff
-..ct $Backslash
+.ct $Backslash
 .monoon
 $\:HP1.ddd:eHP1.$
 .monooff
-..ct $Octal value
+.ct $Octal value
 .monoon
 $\x:HP1.ddd:eHP1.$
 .monooff
-..ct $Hexadecimal value
+.ct $Hexadecimal value
 .boxend
 .do end
 .el .do begin
@@ -356,12 +356,11 @@ For example, converting the signed long integer
 .mono -15584170
 (hexadecimal
 .mono 0xFF123456
-..ct )
-to a signed short integer yields the result
+.ct ) to a signed short integer yields the result
 .mono 13398
 (hexadecimal
 .mono 0x3456
-..ct ).
+.ct ).
 .pp
 When converting an unsigned integer to a signed integer of equal length,
 the bits are simply re-interpreted according to the new type.
@@ -370,12 +369,11 @@ For example, converting the unsigned short integer
 .mono 65535
 (hexadecimal
 .mono 0xFFFF
-..ct )
-to a signed short integer yields the result
+.ct ) to a signed short integer yields the result
 .mono -1
 (hexadecimal
 .mono 0xFFFF
-..ct ).
+.ct ).
 .bigterm
 The results of bitwise operations on signed integers (6.3).
 .bigdesc

@@ -574,7 +574,7 @@ The
 statement is a very powerful tool, but it is very easy to misuse.
 Here are some general rules for the use of
 .kw goto
-..ct 's:
+.ct 's:
 .begbull
 .bull
 don't use them!
@@ -607,8 +607,7 @@ statement is not appropriate.
 .pp
 Above all, keep the use of
 .kw goto
-..ct 's
-to a minimum.
+.ct 's to a minimum.
 .*
 .section Use Comments
 .*

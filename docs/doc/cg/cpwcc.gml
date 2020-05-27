@@ -2458,10 +2458,8 @@ The expression
 .id aptr->next->next
 illustrates the difference of using a self based pointer.
 The first part of the expression (
-..ct
-.id aptr->next
-..ct )
-occurs as described above.
+.ct .id aptr->next
+.ct ) occurs as described above.
 However, using the result to point to the next member occurs by using
 the offset value found in the
 .id next
@@ -2527,8 +2525,7 @@ This includes global data objects (both
 .kwm static
 and
 .kwm extern
-.ct ),
-local static objects, and static data members of classes.
+.ct ), local static objects, and static data members of classes.
 Automatic data objects cannot be declared with the
 .kwm thread
 attribute.

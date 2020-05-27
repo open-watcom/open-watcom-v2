@@ -4,7 +4,7 @@
 The declaration of an object in a function that does not contain
 the keywords
 .kw static
-..ct ,
+.ct ,
 .kw extern
 or
 .kw register
@@ -51,4 +51,4 @@ and
 .mono finish
 are passed to
 .mono FindEnds
-..ct , which, presumably, modifies them.
+.ct , which, presumably, modifies them.

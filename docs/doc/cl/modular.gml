@@ -143,14 +143,12 @@ Getting or setting a value in the structure requires a function call.
 The advantage of this technique is that the complete data
 structure may be
 totally redesigned without affecting other modules. The definitions of
-the individual structures
-(
-..ct .kw struct
-..ct 's,
+the individual structures (
+.ct .kw struct
+.ct 's,
 .kw union
-..ct 's, arrays)
-may be changed and no other module will have to be changed, or even
-recompiled.
+.ct 's, arrays) may be changed and no other module will have
+to be changed, or even recompiled.
 .pp
 The main disadvantage of complete data hiding is that even simple
 accesses require a function call, which is less efficient

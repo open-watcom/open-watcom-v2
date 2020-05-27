@@ -20,8 +20,7 @@ modify its value indirectly by storing its address
 in another object
 declared to be a pointer to the same type (without the
 .mono const
-..ct ),
-and then using the second
+.ct ), and then using the second
 object to modify the value to which it points.
 However, this should be done with caution,
 and may fail on computers with protected
@@ -33,8 +32,7 @@ If the declaration of an object does not include
 .kw const
 appearing anywhere in the type specifier (including any
 .kw typedef
-..ct 's)
-indicates that the object is constant and may not be changed.
+.ct 's) indicates that the object is constant and may not be changed.
 If the object is a pointer and
 .kw const
 appears to the left of the

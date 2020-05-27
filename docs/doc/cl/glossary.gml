@@ -194,7 +194,7 @@ and
 .monoon
 '\n'
 .monooff
-..ct ).
+.ct ).
 .*
 .************************************************************************
 .*
@@ -349,8 +349,7 @@ points.
 .ix 'index'
 An index (or
 .us subscript
-..ct )
-is a number used to reference an element of an
+.ct ) is a number used to reference an element of an
 .us array.
 It is an integral value. The first element of an array has the index
 zero.
@@ -518,15 +517,13 @@ In particular, if
 .mono E
 is declared as a "pointer to
 .kw int
-..ct ",
-then both
+.ct ", then both
 .mono E
 and
 .mono *E
 are lvalues having the respective types "pointer to
 .kw int
-..ct "
-and
+.ct " and
 .kw int
 .period
 .*
@@ -780,9 +777,8 @@ concatenated into one string literal. The value of a string literal is
 the sequence of characters within the quotes, plus a
 .us null character
 (
-..ct .mono \0
-..ct )
-placed at the end.
+.ct .mono \0
+.ct ) placed at the end.
 .*
 .note structure
 .ix 'structure'
@@ -797,8 +793,7 @@ storage locations.
 .ix 'subscript'
 A subscript (or
 .us index
-..ct )
-is a number used to reference an element of an
+.ct ) is a number used to reference an element of an
 .us array.
 It is a non-negative integral value. The first element of an array has
 the subscript zero.
@@ -895,8 +890,7 @@ The
 is a special type that really indicates "no particular type". An
 object that is a "pointer to
 .kw void
-..ct " may not be used to point at
-anything without it first being
+.ct " may not be used to point at anything without it first being
 .us cast
 to the appropriate type.
 .pp

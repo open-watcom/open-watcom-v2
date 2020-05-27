@@ -3531,7 +3531,7 @@ will be predefined if "zc" is selected.
 .do end
 .*
 .if &e'&$SWzp eq 1 .do begin
-:OPT refid='SWzp' name='zp'.[{1,2,4,8,16}]
+:OPT refid='SWzp' name='zp'.{1,2,4,8,16}
 .ix 'options' 'zp'
 The "zp" option allows you to specify the alignment of members in
 a structure.

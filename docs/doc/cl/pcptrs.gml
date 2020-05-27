@@ -292,8 +292,7 @@ precedes
 .mono *
 (as in
 .mono &kwfar. *
-..ct ),
-then the pointer points to something far. Otherwise, if
+.ct ), then the pointer points to something far. Otherwise, if
 .kwix &kwfar_sp.
 .kwfont &kwfar.
 precedes the identifier of the object or function being declared
@@ -469,8 +468,7 @@ precedes
 .mono *
 (as in
 .mono &kwnear. *
-..ct ),
-then the pointer points to something near. Otherwise, if
+.ct ), then the pointer points to something near. Otherwise, if
 .kwix &kwnear_sp.
 .kwfont &kwnear.
 precedes the identifier of the object or function being declared
@@ -509,9 +507,8 @@ extern int &kwnear. * x;
 .discuss begin
 declares the object
 .mono x
-to be a pointer to a near integer.
-(
-..ct .mono x
+to be a pointer to a near integer. (
+.ct .mono x
 is not necessarily
 within the 64K data area that is near, but the integer that it
 points to is.)
@@ -522,9 +519,8 @@ extern int * &kwnear. nx;
 .discuss begin
 declares the object
 .mono nx
-to be near, and is a pointer to a far integer.
-(
-..ct .mono nx
+to be near, and is a pointer to a far integer. (
+.ct .mono nx
 is within the 64K data area that is near, but the integer that it
 points to might not be.)
 .discuss end
@@ -534,9 +530,8 @@ extern int &kwnear. * &kwnear. nnx;
 .discuss begin
 declares the object
 .mono nnx
-to be near, and is a pointer to a near integer.
-(
-..ct .mono nnx
+to be near, and is a pointer to a near integer. (
+.ct .mono nnx
 and the integer that it points to are both within the 64K data area
 that is near.)
 .discuss end
@@ -723,14 +718,14 @@ precedes
 .mono *
 (as in
 .mono &kwfar. *
-..ct ), then the pointer points to something that is far (not in the
+.ct ), then the pointer points to something that is far (not in the
 normal data region).
 Otherwise, if
 .kwix &kwfar_sp.
 .kwfont &kwfar.
 precedes the identifier of the object or function being declared (as in
 .mono &kwfar. x
-..ct ), then the object or function is far.
+.ct ), then the object or function is far.
 .pp
 The keyword
 .kwix &kwfar_sp.
@@ -865,14 +860,14 @@ precedes
 .mono *
 (as in
 .mono &kwnear. *
-..ct ), then the pointer points to something that is near (in the
+.ct ), then the pointer points to something that is near (in the
 normal data region).
 Otherwise, if
 .kwix &kwnear_sp.
 .kwfont &kwnear.
 precedes the identifier of the object or function being declared (as in
 .mono &kwnear. x
-..ct ), then the object or function is near.
+.ct ), then the object or function is near.
 .pp
 The keyword
 .kwix &kwnear_sp.

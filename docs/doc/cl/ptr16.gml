@@ -80,7 +80,7 @@ parameter will be converted from a flat 32-bit pointer to a far16
 pointer
 (which, in the 16-bit environment, would be declared as
 .mono char&SYSRB.&kwfar.&SYSRB.*
-..ct ).
+.ct ).
 The
 .mono buflen
 parameter will be converted from a 32-bit integer to a 16-bit integer.

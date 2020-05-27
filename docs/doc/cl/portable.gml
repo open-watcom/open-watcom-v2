@@ -277,8 +277,7 @@ refer to the macro
 .mono FLT_ROUNDS
 (defined in the header
 .hdr <float.h>
-..ct ),
-which is a value describing the type of rounding performed.
+.ct ), which is a value describing the type of rounding performed.
 .*
 .section Special Features
 .*

@@ -74,9 +74,8 @@ or union, or another enumerated type.
 .pp
 Enumeration constants may be given a specific value
 by specifying '
-..ct .mono =
-..ct '
-followed by the value. For example,
+.ct .mono =
+.ct ' followed by the value. For example,
 .millust begin
 enum colors { RED = 1, BLUE = 2, GREEN = 4 };
 .millust end

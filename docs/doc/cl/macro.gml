@@ -73,7 +73,7 @@ A directive of the form,
 .cillust begin
 .kwpp #define
 identifier
-..ct .mono (
+.ct .mono (
 identifier-list
 .mono )
 replacement-list
@@ -630,7 +630,7 @@ the preprocessor will not process it.
 .pp
 A macro definition lasts until it is undefined (with
 .kwpp #undef
-..ct ) or until the end of the module.
+.ct ) or until the end of the module.
 .endlevel
 .*
 .section More Examples of Macro Replacement

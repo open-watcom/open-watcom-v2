@@ -200,9 +200,8 @@ two functions that return the same type,
 one containing no parameter information,
 and the other containing a fixed
 number of parameters (no "
-..ct .mono ,...
-..ct ")
-that are not affected by the default argument promotions,
+.ct .mono ,...
+.ct ") that are not affected by the default argument promotions,
 .bull
 two structures, defined in separate modules,
 that have the same number and names of members, in the same order,

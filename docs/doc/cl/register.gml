@@ -49,7 +49,7 @@ The &wlooc. compiler may place
 .* .kw signed
 .* and
 .* .kw unsigned
-.* ..ct ) values in registers.
+.* .ct ) values in registers.
 any integer, floating-point or pointer values in registers.
 .pp
 The compiler will decide which objects will be placed in registers.
