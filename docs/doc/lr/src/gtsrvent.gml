@@ -9,7 +9,7 @@ The
 function retrieves the next entry in the service database.  If
 not proceeded by an appropriate call to
 .kw setservent
-, the function will always return the first service in the
+.ct , the function will always return the first service in the
 database.  The routine will query the local database only.
 .np
 The structure returned is defined as:

@@ -14,18 +14,17 @@ function.
 .if '&machsys' eq 'QNX' .do begin
 Note that this clears the
 .kw PATH
-.ct,
+.ct ,
 .kw SHELL
-.ct,
+.ct ,
 .kw TERM
-.ct,
+.ct ,
 .kw TERMINFO
-.ct,
+.ct ,
 .kw LINES
-.ct,
+.ct ,
 .kw COLUMNS
-.ct,
-and
+.ct , and
 .kw TZ
 environment variables which may then affect the operation of other
 library functions.
@@ -33,10 +32,9 @@ library functions.
 .el .do begin
 Note that this clears the
 .kw PATH
-.ct,
+.ct ,
 .kw COMSPEC
-.ct,
-and
+.ct , and
 .kw TZ
 environment variables which may then affect the operation of other
 library functions.

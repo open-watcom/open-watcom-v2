@@ -21,28 +21,26 @@ if an object is being declared, it is called
 .mono x
 or
 .mono X
-..ct ,
+.ct ,
 .note
 if a function is being declared, it is called
 .mono F
-..ct ,
+.ct ,
 .note
 if an object is being declared, it usually has type
 .kw int
-..ct ,
-although any other type may be substituted,
+.ct , although any other type may be substituted,
 .note
 if a function is being declared, it usually returns type
 .kw int
-..ct ,
-although any other type may be substituted.
+.ct , although any other type may be substituted.
 .endnote
 .pp
 Storage class specifiers (
 ..ct .kw extern
-..ct ,
+.ct ,
 .kw static
-..ct ,
+.ct ,
 .kw auto
 or
 .kw register
@@ -267,7 +265,7 @@ is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.integer.
 .* ..ct .mono F
 .* is a &SUPER2.function returning a (pointer to a) &SUPER3.function returning &SUPER4.
 .* ..ct .kw int
-.* ..ct ..li .
+.* .period
 .* .discuss end
 .keep break
 .millust begin
@@ -292,7 +290,7 @@ is a &SUPER2.function returning a &SUPER3.pointer to a
 .* is a &SUPER2.function returning a (pointer to a) &SUPER3.function returning
 .* a &SUPER4.pointer to an &SUPER5.
 .* ..ct .kw int
-.* ..ct ..li .
+.* .period
 .* .discuss end
 .keep break
 .millust begin
@@ -329,7 +327,7 @@ is a &SUPER2.function returning a &SUPER3.pointer to an
 .* is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.array of
 .* (pointers to) &SUPER5.functions returning &SUPER6.
 .* ..ct .kw int
-.* ..ct ..li .
+.* .period
 .* .discuss end
 .keep break
 .millust begin

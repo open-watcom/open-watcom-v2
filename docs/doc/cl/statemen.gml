@@ -104,7 +104,7 @@ assignment operator.
 The result of the expression is discarded. This discarding may be
 made explicit by casting the expression as a
 .kw void
-..ct ..li .
+.period
 .pp
 For example, the statement,
 .millust begin
@@ -242,7 +242,7 @@ is bound to the nearest
 .kw if
 that does not yet have an
 .kw else
-..ct ..li .
+.period
 For example,
 .millust begin
 if( x > 0 )
@@ -429,7 +429,7 @@ iteration statements:
 ..ct .kw while
 and
 .kw for
-..ct ..li .
+.period
 .pp
 The controlling expression must have a scalar type.
 The
@@ -643,7 +643,7 @@ statement is executed which exits the function.
 This is sometimes called
 .ix 'loop forever'
 .us loop forever
-..ct ..li .
+.period
 .cillust begin
 .monoon
 for( i = 0; i <= 100; ++i )
@@ -700,7 +700,7 @@ There are four jump statements:
 .kw break
 and
 .kw return
-..ct ..li .
+.period
 .beglevel
 .*
 .section The goto Statement
@@ -750,14 +750,14 @@ In a
 .kw while
 statement, the jump is effectively back to the
 .kw while
-..ct ..li .
+.period
 .pp
 In a
 .ix 'continue statement' 'in a do'
 .kw do
 statement, the jump is effectively down to the
 .kw while
-..ct ..li .
+.period
 .pp
 In a
 .ix 'continue statement' 'in a for'
@@ -812,7 +812,7 @@ The
 .kw goto
 statement may be used to terminate more than one loop or
 .kw switch
-..ct ..li .
+.period
 .*
 .section The return Statement
 .ix 'return statement'

@@ -91,7 +91,7 @@ An Open Dialog Resource dialog appears listing all resource files.
 .orstep Click on the resource file you want to open
 to select it, then
 .bd click on OK
-.ct .li .
+.period
 .result
 A Select Dialog(s) dialog appears listing all of the dialog resources
 in the selected resource file. You can select one, several, or all of the
@@ -101,7 +101,7 @@ select will open on the editor window of the Dialog Editor window.
 .orstep Click on the dialogs you want to open
 to select them, then
 .bd click on OK
-.ct .li .
+.period
 .result
 The selected dialog(s) appears in the &company Dialog Editor window in
 the editor window.

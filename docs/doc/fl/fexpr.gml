@@ -112,7 +112,8 @@ For example, to evaluate the expression
 .pc
 .id B
 is raised to the exponent 4 first and the result is then subtracted from
-.id A.
+.id A
+.period
 .np
 Parentheses can be used to alter the evaluation sequence of an
 arithmetic expression.
@@ -481,7 +482,8 @@ is the left operand and
 is the right operand, then the result is
 .id y
 concatenated to
-.id x.
+.id x
+.period
 The length of the result is the sum of the lengths of the two
 operands.
 For example, the result of
@@ -1034,7 +1036,8 @@ Consider the following example.
 .pc
 Since the .NOT. operator has highest precedence we first logically
 negate
-.id B.
+.id B
+.period
 The result is then combined with
 .id C
 using the .AND. operator.
@@ -1063,8 +1066,10 @@ a relational expression in which each primary is a constant expression
 .np
 The following are examples of a logical constant expression (assume
 that
-.id A,
-.id B,
+.id A
+.ct ,
+.id B
+.ct ,
 .id C
 and
 .id D
@@ -1091,11 +1096,15 @@ Consider the following example.
 .millust end
 .pc
 where
-.id A, B
+.id A
+.ct ,
+.id B
 and
 .id C
 are of numeric type,
-.id X, Y
+.id X
+.ct ,
+.id Y
 and
 .id Z
 are of type CHARACTER

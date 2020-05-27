@@ -9,7 +9,7 @@ The
 function retrieves the next entry in the protocol database.  If
 not proceeded by an appropriate call to
 .kw setprotoent
-, the function will always return the first protocol in the
+.ct , the function will always return the first protocol in the
 database.  The routine will query the local database only.
 .np
 The structure returned is defined as:

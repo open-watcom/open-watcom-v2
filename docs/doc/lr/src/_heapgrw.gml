@@ -34,7 +34,7 @@ has been made, you may not be able to allocate any memory with
 .kw malloc
 unless space has been reserved for the near heap using either
 .kw malloc
-.ct,
+.ct ,
 .kw sbrk
 or
 .kw _nheapgrow

@@ -549,7 +549,8 @@ The code for the functions
 and
 .id fn2
 will be placed in the segment
-.id my_text.
+.id my_text
+.period
 Note: function prototypes for the named functions must exist prior
 to the "alloc_text" pragma.
 .*
@@ -607,7 +608,8 @@ The code for the functions
 and
 .id decr
 will be placed in the segment
-.id my_text.
+.id my_text
+.period
 .np
 To return to the default segment, do not specify any string between
 the opening and closing parenthesis.
@@ -699,7 +701,8 @@ The data for
 and
 .id j
 will be placed in the segment
-.id my_data.
+.id my_data
+.period
 .np
 To return to the default segment, do not specify any string between
 the opening and closing parenthesis.
@@ -1502,7 +1505,8 @@ code in which symbol z is referenced
 .millust end
 .np
 Auxiliary attributes are assigned to
-.id x,
+.id x
+.ct ,
 .id y
 and
 .id z
@@ -1515,19 +1519,22 @@ is assigned the initial default attributes merged with the attributes
 specified by
 .id <attrs_2>
 and
-.id <attrs_3>.
+.id <attrs_3>
+.period
 .note
 Symbol
 .id y
 is assigned the initial default attributes merged with the attributes
 specified by
-.id <attrs_1>.
+.id <attrs_1>
+.period
 .note
 Symbol
 .id z
 is assigned the initial default attributes merged with the attributes
 specified by
-.id <attrs_2>.
+.id <attrs_2>
+.period
 .endnote
 .*
 .section Alias Names
@@ -1607,14 +1614,15 @@ that specifies the mechanism to be used to pass arguments.
 The mechanism is to pass all arguments on the stack.
 The second auxiliary pragma associates the attributes specified
 in the first pragma with the type definition
-.id func_type.
+.id func_type
+.period
 Since
 .id rtn1
 and
 .id rtn2
 are of type
-.id func_type,
-arguments to either of those functions will be passed on the stack.
+.id func_type
+.ct , arguments to either of those functions will be passed on the stack.
 .do end
 .el .do begin
 are passed by value.
@@ -1674,7 +1682,8 @@ Consider the following example.
 .do end
 .pc
 The routines
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
 .id rtn3
@@ -1687,11 +1696,12 @@ Note that register ES must also be specified in the "modify" register
 set when using a memory model that is not a small data model.
 .do end
 Whenever calls are made to
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
-.id rtn3,
-the &other_cmp calling convention will be used.
+.id rtn3
+.ct , the &other_cmp calling convention will be used.
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that arguments must be passed by value.
 .ix 'passing arguments by value'
@@ -1703,11 +1713,12 @@ Note that if the attributes of
 change, only one pragma needs to be changed.
 If we had not used an alias name and specified the attributes in each
 of the three pragmas for
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
-.id rtn3,
-we would have to change all three pragmas.
+.id rtn3
+.ct , we would have to change all three pragmas.
 This approach also reduces the amount of memory required by the
 compiler to process the source file.
 .warn
@@ -1718,7 +1729,8 @@ If
 .id &alias_name
 appeared in your source code, it would assume the attributes specified
 in the pragma for
-.id &alias_name..
+.id &alias_name.
+.period
 .ewarn
 .*
 .if '&cmpclass' ne 'load-n-go' .do begin
@@ -1817,7 +1829,7 @@ or
 .kwm system
 are identical to
 .kwm __syscall
-.ct .li .
+.period
 .do end
 .note __watcall
 .ix 'alias names' '__watcall'
@@ -2072,8 +2084,8 @@ is any character string enclosed in double quotes.
 .esynote
 .pc
 When specifying
-.id obj_name,
-some characters have a special meaning:
+.id obj_name
+.ct , some characters have a special meaning:
 .synote
 .note *
 is unmodified symbol name
@@ -2289,10 +2301,12 @@ so that special fixups are applied to the 80x87 instruction.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .note seg
 specifies the segment of the symbol
-.id id.
+.id id
+.period
 .note offset
 specifies the offset of the symbol
-.id id.
+.id id
+.period
 .note reloff
 specifies the relative offset of the symbol
 .id id
@@ -2304,7 +2318,8 @@ is an assembly language instruction or directive.
 .pc
 In the following example, &cmpname will generate a far call to the
 &function
-.id myrtn.
+.id myrtn
+.period
 .millust begin
 &pragma aux myrtn far&epragma
 .millust end
@@ -2316,7 +2331,8 @@ for a memory model with a small code model.
 .np
 In the following example, &cmpname will generate a near call to the
 &function
-.id myrtn.
+.id myrtn
+.period
 .millust begin
 &pragma aux myrtn near&epragma
 .millust end
@@ -2774,13 +2790,13 @@ For example, if an argument of type
 is passed to a subprogram that
 has an argument attribute of "VALUE*8", the argument will be converted to
 .bd DOUBLE PRECISION
-.ct .li .
+.period
 If an argument of type
 .bd DOUBLE PRECISION
 is passed to a subprogram that
 has an argument attribute of "VALUE*4", the argument will be converted to
 .bd REAL
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*4
 is passed to a subprogram that
@@ -2789,7 +2805,7 @@ converted to
 .bd INTEGER*2
 or
 .bd INTEGER*1
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*2
 is passed to a subprogram that
@@ -2798,7 +2814,7 @@ converted to
 .bd INTEGER*4
 or
 .bd INTEGER*1
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*1
 is passed to a subprogram that
@@ -2807,7 +2823,7 @@ converted to
 .bd INTEGER*4
 or
 .bd INTEGER*2
-.ct .li .
+.period
 .note
 If the number of arguments exceeds the number of entries in the
 argument-attribute list, the last attribute will be assumed for the
@@ -3112,7 +3128,7 @@ Suppose
 .id myrtn
 is a routine with 3 arguments each of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that the arguments are passed by value.
 .do end
@@ -3125,7 +3141,7 @@ The second argument will be passed in the register pair &cxup:&bxup..
 The third argument will be pushed on the stack since &bpup:&siup is
 not a valid register pair for arguments of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .endpoint
 .np
 It is possible for registers from the second register set to be used
@@ -3150,7 +3166,7 @@ the first of type
 .bd &int
 and the second and third of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that all arguments are passed by value.
 .do end
@@ -3225,7 +3241,8 @@ the description of the argument list must be very explicit.
 To achieve this, &cmpname assumes that each register set corresponds
 to an argument.
 Consider the following DOS example of an in-line &function called
-.id scrollactivepgup.
+.id scrollactivepgup
+.period
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void scrollactivepgup(char,char,char,char,char,char);
@@ -3287,12 +3304,12 @@ In general, &cmpname assigns the following types to register sets.
 A register set consisting of a single 8-bit register (1 byte) is
 assigned a type of
 .bd &uchar
-.ct .li .
+.period
 .note
 A register set consisting of a single 16-bit register (2 bytes) is
 assigned a type of
 .bd &ushort_int
-.ct .li .
+.period
 .note
 A register set consisting of
 .if '&machine' eq '8086' .do begin
@@ -3304,7 +3321,7 @@ a single 32-bit register
 (4 bytes) is assigned
 a type of
 .bd &ulong_int
-.ct .li .
+.period
 .note
 A register set consisting of
 .if '&machine' eq '8086' .do begin
@@ -3315,7 +3332,7 @@ two 32-bit
 .do end
 registers (8 bytes) is assigned a type of
 .bd &double
-.ct .li .
+.period
 .endnote
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
@@ -3368,7 +3385,7 @@ actual character data terminated by a null character.
 By default, the address of a string descriptor is passed for arguments
 of type
 .bd CHARACTER
-.ct .li .
+.period
 See the chapter entitled "Assembly Language Considerations" for more
 information on string descriptors.
 The second argument is of type
@@ -3814,7 +3831,8 @@ For example, it may call
 to return to the system.
 In this case, &cmpname generates a "jmp" instruction instead of a
 "call" instruction to invoke
-.id exitrtn.
+.id exitrtn
+.period
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
 .section Describing How &ufunctions Use Variables in Common
@@ -4442,8 +4460,8 @@ Notice that the value of
 .id i
 is in register &dxup after completion of the "while" loop.
 After the call to
-.id myrtn,
-the value of
+.id myrtn
+.ct , the value of
 .id i
 is not loaded from memory into a register to perform the final
 addition.
@@ -4459,7 +4477,8 @@ indirectly by
 .do end
 .id Rtn
 and hence register &dxup contains the correct value of
-.id i.
+.id i
+.period
 .np
 The preceding auxiliary pragma deals with routines that modify
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -4766,7 +4785,8 @@ Notice that after completion of the "while" loop we did not have to
 update
 .id i
 with the value in register &dxup before calling
-.id myrtn.
+.id myrtn
+.period
 The auxiliary pragma informs the compiler that
 .id myrtn
 does not reference any
@@ -4781,7 +4801,8 @@ indirectly by
 so updating
 .id i
 was not necessary before calling
-.id myrtn.
+.id myrtn
+.period
 .keep 12
 .*
 .section Describing the Registers Modified by a &ufunction

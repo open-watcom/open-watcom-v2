@@ -17,7 +17,7 @@ function is called whenever
 .kw main
 returns, or
 .kw exit
-, or
+.ct , or
 .kw _Exit
 or
 .kw _exit

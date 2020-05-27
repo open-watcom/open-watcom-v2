@@ -33,28 +33,39 @@ In this example
 .id A
 is a 1-dimensional array containing 10 elements, each element referenced
 as
-.id A(1),
-.id A(2),
-.id ...,
-.id A(9),
-.id A(10).
+.id A(1)
+.ct ,
+.id A(2)
+.ct ,
+.id '...'
+.ct ,
+.id A(9)
+.ct ,
+.id A(10)
+.period
 .id B
 is a 1-dimensional array containing 11 elements, each element referenced
 as
-.id B(-5),
-.id B(-4),
-.id ...,
-.id B(4),
-.id B(5).
+.id B(-5)
+.ct ,
+.id B(-4)
+.ct ,
+.id '...'
+.ct ,
+.id B(4)
+.ct ,
+.id B(5)
+.period
 .id C
 is a 2-dimensional array containing
 .id I
 rows and
 .id J
 columns.
-.id C,
-.id I,
-and
+.id C
+.ct ,
+.id I
+, and
 .id J
 must be
 .us dummy arguments

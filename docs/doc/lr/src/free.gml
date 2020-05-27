@@ -19,7 +19,7 @@ deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
 .kw calloc
-.ct,
+.ct ,
 .kw malloc
 or
 .kw realloc
@@ -90,7 +90,7 @@ deallocates the memory block located by the argument
 which points to a memory block previously allocated through a call to
 the appropriate version of
 .kw calloc
-.ct,
+.ct ,
 .kw malloc
 or
 .kw realloc

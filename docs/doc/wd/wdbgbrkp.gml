@@ -177,8 +177,7 @@ If the current line does not contain any executable code, the
 breakpoint is set on the closest preceding line of code that does
 contain executable code. When you choose
 .mi At Cursor
-.ct ,
-the Breakpoint dialog appears.
+.ct , the Breakpoint dialog appears.
 .*
 .menuitem New
 .*
@@ -356,8 +355,7 @@ command again.
 .np
 When you choose
 .mi New
-.ct ,
-this field is empty. You can type any valid address expression in this
+.ct , this field is empty. You can type any valid address expression in this
 field. It can be the name of a function, global variable. Refer to the
 section entitled :HDREF refid='videxpr'. for more information about
 address expressions.

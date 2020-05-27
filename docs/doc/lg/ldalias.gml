@@ -29,4 +29,4 @@ for
 .id sine
 and begin searching for the symbol
 .id mysine
-.ct .li .
+.period

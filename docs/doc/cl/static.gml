@@ -5,7 +5,7 @@
 Any declaration of an object
 may be preceded by the keyword
 .kw static
-..ct ..li .
+.period
 A declaration inside a function
 indicates to the compiler that the object
 has

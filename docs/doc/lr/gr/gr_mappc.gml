@@ -34,7 +34,8 @@ blue intensities that make up the color.
 Each intensity can be in the range from 0 to 63, resulting in 262144
 possible different colors.
 A given color value can be conveniently specified as a value of type
-.mono &long..
+.mono &long.
+.period
 The color value is of the form
 .hex 00bbggrr ,
 where

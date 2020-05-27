@@ -21,7 +21,9 @@ shall be greater than
 If
 .arg nmemb
 is not equal to zero, then none of
-.arg key, base
+.arg key
+.ct ,
+.arg base
 .ct , or
 .arg compar
 shall be a null pointer.

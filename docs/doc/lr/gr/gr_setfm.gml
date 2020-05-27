@@ -18,8 +18,8 @@ The
 When the value of the
 .arg mask
 argument is
-.id NULL,
-there will be no fill mask set.
+.id NULL
+.ct , there will be no fill mask set.
 .do end
 .pp
 .im gr_fillm

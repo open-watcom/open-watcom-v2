@@ -34,7 +34,8 @@ For each project with name X you wish to have on the build machine,
 must be set to the directory containing the project. That is, if you want the
 code generator on your machine (and who wouldn't?), it is officially
 named cg (see Project Names below) and so you would define
-.id cg_dir.
+.id cg_dir
+.period
 .np
 Alternatively, if all of your projects are in directories which correspond
 to their project names under a common directory, you can set dev_dir and
@@ -47,7 +48,8 @@ to take any extra action to use it.
 Alternatively, you can do the above and then redefine
 .id X_dir
 for any projects which are not under the
-.id dev_dir.
+.id dev_dir
+.period
 
 .section Project Names
 .*
@@ -207,7 +209,8 @@ important future consideration will be the ability to build on a different
 architecture. Please try and avoid weirdo tools that have no hope of running
 on an Alpha or PPC running NT or on Linux. These tools should be referenced 
 from the makefile as
-.id $(bld_dir)\tool.
+.id $(bld_dir)\tool
+.period
 If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
@@ -352,8 +355,8 @@ Also, it is suggested that the object file directory name be a combination
 of the
 .id host_os
 followed by the
-.id host_cpu,
-if convenient. For example, NT versions for the PPC should be genned into
+.id host_cpu
+, if convenient. For example, NT versions for the PPC should be genned into
 a ntppc directory. If a directory structure which is different than this
 is used for some reason, then comments explaining exactly what is built
 where would be nice in the
@@ -369,8 +372,8 @@ This is also why the macro names are somewhat counterintuitive &mdash most
 people would think of the
 .id host_os
 and
-.id host_cpu,
-as target OS and CPU. However, the 'target' designation is reserved for
+.id host_cpu
+, as target OS and CPU. However, the 'target' designation is reserved for
 the target architecture of the generated binary. In the above case of
 a compiler that runs on Alpha AXP NT and produces 386 code, the makefile
 contains:
@@ -422,13 +425,15 @@ which is part of the default include directory set.
 If it needs to, a project can override any and all of these &mdash for instance,
 the clib needs to be built with the next release header files, and so would
 redefine
-.id inc_dirs_lang.
+.id inc_dirs_lang
+.period
 .np
 Any OS-specific header files needed by the project can be set in
 .id inc_dirs_$(host_os)
 &mdash again, this should not include the standard system
 header files, which will be defined in
-.id inc_dirs_sys_$(host_os).
+.id inc_dirs_sys_$(host_os)
+.period
 .np
 Note that the build system previously used to set the
 .id INCLUDE

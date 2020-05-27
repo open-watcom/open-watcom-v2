@@ -161,8 +161,7 @@ You cannot use a DOS device name (such as
 .kw CON
 or
 .kw PRN
-.ct,
-for example) for a file name.
+.ct , for example) for a file name.
 See the section
 .us DOS Devices
 for a list of these reserved names.
@@ -272,19 +271,19 @@ DOS interrupts and 8086 interrupts are documented in the technical
 documentation for your DOS system.
 These may be generated from a C or C++ program by calling the
 .kw bdos
-.ct,
+.ct ,
 .kw intdos
-.ct,
+.ct ,
 .kw intdosx
-.ct,
+.ct ,
 .kw intr
-.ct,
+.ct ,
 .kw intrf
-.ct,
+.ct ,
 .kw int386
-.ct,
+.ct ,
 .kw int386x
-.ct,
+.ct ,
 .kw int86
 and
 .kw int86x
@@ -300,13 +299,12 @@ Thus, when a process is initiated with the
 .kw spawn&grpsfx
 parameter
 .kw P_WAIT
-.ct,
-the new process will execute to completion before control returns to
+.ct , the new process will execute to completion before control returns to
 the initiating program.
 Otherwise, the new task replaces the initial task.
 Tasks can be started by using the
 .kw system
-.ct,
+.ct ,
 .kw exec&grpsfx
 and
 .kw spawn&grpsfx

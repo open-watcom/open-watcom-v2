@@ -77,12 +77,11 @@ and their order.
 .pp
 There are four characters in an
 .kw int
-..ct ,
-with the high order portion of the integer being stored at a lower
+.ct , with the high order portion of the integer being stored at a lower
 address than the low order portion.
 There are two characters in a
 .kw short int
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -128,7 +127,7 @@ unsigned.
 .discuss begin
 .pp
 .kw unsigned
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -236,15 +235,12 @@ The value is rounded towards zero.
 The type of
 .ix 'size_t'
 .kw size_t
-..ct ,
-the result of the
-sizeof
-operator.
+.ct , the result of the sizeof operator.
 .bd off
 .discuss begin
 .pp
 .kw unsigned int
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -256,7 +252,7 @@ an integer.
 .pp
 For the sake of conversion, the pointer type is treated as
 .kw unsigned int
-..ct ..li .
+.period
 The usual arithmetic conversions then take place.
 .discuss end
 .keep break
@@ -265,13 +261,12 @@ The usual arithmetic conversions then take place.
 The type of
 .ix 'ptrdiff_t'
 .kw ptrdiff_t
-..ct ,
-the result of subtracting two pointers.
+.ct , the result of subtracting two pointers.
 .bd off
 .discuss begin
 .pp
 .kw int
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -330,7 +325,7 @@ unsigned.
 .discuss begin
 .pp
 .kw signed
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -344,7 +339,7 @@ int, or straddles the boundary.
 .pp
 Placed in the next
 .kw int
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c
@@ -364,7 +359,7 @@ The type allocated for enumerated types.
 .discuss begin
 .pp
 .kw int
-..ct ..li .
+.period
 .discuss end
 .keep break
 ..sk 1 c

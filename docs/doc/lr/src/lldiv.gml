@@ -29,8 +29,7 @@ that contains the fields
 .kw quot
 and
 .kw rem
-.ct,
-which are both of type
+.ct , which are both of type
 .id long long int.
 .return end
 .*

@@ -477,7 +477,8 @@ macro will be replaced by
 and for Windows NT, the
 .id __MSDOS__
 macro will be replaced by
-.id __NT__.
+.id __NT__
+.period
 .np
 For UNIX make compatibility (when you use the "u" option), the
 following default definition is established.
@@ -3866,8 +3867,10 @@ These definitions are both readable and useful.
 .ix '&makcmdup' 'checking macro values'
 .ix 'checking macro values'
 A makefile can handle differences between compilers with the
-.id !ifeq,
-.id !ifneq,
+.id !ifeq
+.ct ,
+.id !ifneq
+.ct ,
 .id !ifeqi
 and
 .id !ifneqi
@@ -4254,9 +4257,10 @@ The
 command list will be executed only if there were no errors detected
 during the updating of the targets.
 The
-.id &sysper.BEFORE,
-.id &sysper.DEFAULT,
-and
+.id &sysper.BEFORE
+.ct ,
+.id &sysper.DEFAULT
+.ct , and
 .id &sysper.AFTER
 command list directives provide the capability to execute commands
 before, during, and after the makefile processing.
@@ -4809,10 +4813,12 @@ suicide :
 .millust end
 .np
 The
-.id %append,
-.id %create,
-.id %erase,
-and
+.id %append
+.ct ,
+.id %create
+.ct ,
+.id %erase
+.ct , and
 .id %write
 internal commands allow &makcmdup to generate files under makefile
 control.

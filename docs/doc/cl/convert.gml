@@ -13,8 +13,7 @@ cannot be directly added. Instead, the
 .kw short int
 must first be converted to a
 .kw long int
-..ct ,
-then the two values can be added.
+.ct , then the two values can be added.
 .pp
 Fortunately, C provides most conversions as
 .us implicit
@@ -41,20 +40,20 @@ the following sections.
 .note Rule:
 A
 .kw char
-..ct ,
+.ct ,
 .kw short int
 or
 .kw int
 bit-field in either of their signed or unsigned forms, or an object
 that has an enumerated type, is always converted to an
 .kw int
-..ct ..li .
+.period
 If the type
 .kw int
 cannot contain the entire range of the object being converted, then
 the object will be converted to an
 .kw unsigned int
-..ct ..li .
+.period
 .endnote
 .pp
 A
@@ -73,18 +72,15 @@ With &wc286., a
 .kw short int
 has the same range as
 .kw int
-..ct ,
-therefore a
+.ct , therefore a
 .kw signed short int
 is converted to a
 .kw signed int
-..ct ,
-and an
+.ct , and an
 .kw unsigned short int
 is converted to an
 .kw unsigned int
-..ct ,
-without changing the value.
+.ct , without changing the value.
 .pp
 With &wc386., a
 .kw signed
@@ -139,8 +135,7 @@ remain unchanged. If the value cannot be represented, then if
 the result type is signed, the result is implementation-defined.
 If the result type is
 .kw unsigned
-..ct ,
-the result is the integer modulo (1+the largest unsigned number that
+.ct , the result is the integer modulo (1+the largest unsigned number that
 can be stored in the shorter type).
 .shade begin
 With
@@ -347,7 +342,7 @@ macro
 .mkw FLT_ROUNDS
 found in the header
 .hdr <float.h>
-..ct ..li .
+.period
 The following table describes the meaning of the various values:
 ..sk 1 c
 .im fltround
@@ -380,11 +375,11 @@ type (
 ..ct .kw float
 to
 .kw double
-..ct ,
+.ct ,
 .kw float
 to
 .kw long double
-..ct , or
+.ct , or
 .kw double
 to
 .kw long double
@@ -448,7 +443,7 @@ have
 .us integral promotions
 performed on them to promote them to
 .kw int
-..ct ..li .
+.period
 .keep begin
 .pp
 The following table illustrates the result type of performing
@@ -523,7 +518,7 @@ all arguments of type
 .kw float
 are promoted to
 .kw double
-..ct ..li .
+.period
 .endbull
 .pp
 If the definition of the function does not have parameters with types that

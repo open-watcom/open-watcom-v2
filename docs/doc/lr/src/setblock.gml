@@ -13,7 +13,7 @@ function uses system call 0x4A to change the size of
 .arg segment
 .ct , which was previously allocated by
 .kw _dos_allocmem
-.ct, to
+.ct , to
 .arg size
 paragraphs.
 If the request fails, the maximum number of paragraphs that this

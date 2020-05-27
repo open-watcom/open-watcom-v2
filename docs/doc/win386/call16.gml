@@ -14,7 +14,7 @@ DWORD _Call16( FARPROC lpFunc, char *fmt, ... );
 .desc begin
 The &funcb function performs the same function as
 .kw GetIndirectFunctionHandle
-.ct,
+.ct ,
 .kw InvokeIndirectFunctionHandle
 and
 .kw FreeIndirectFunctionHandle

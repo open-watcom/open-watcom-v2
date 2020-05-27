@@ -17,14 +17,13 @@ encoding used by the
 function.
 The original values of the fields
 .kw tm_sec
-.ct,
+.ct ,
 .kw tm_min
-.ct,
+.ct ,
 .kw tm_hour
-.ct,
+.ct ,
 .kw tm_mday
-.ct,
-and
+.ct , and
 .kw tm_mon
 are not restricted to ranges described for
 .kw struct tm

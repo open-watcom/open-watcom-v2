@@ -51,7 +51,7 @@ function returns the next option character (if one is found) from
 .arg argv
 that matches a character in
 .arg optstring
-.ct, if there is one that matches. If the option takes an argument,
+.ct , if there is one that matches. If the option takes an argument,
 .id &funcb.
 sets
 the variable
@@ -60,17 +60,17 @@ to point to the option-argument as follows:
 .np
 If the option was the last character in the string pointed to by an element of
 .arg argv
-.ct, then
+.ct , then
 .kw optarg
 contains the next element of
 .arg argv
-.ct, and
+.ct , and
 .kw optind
 is incremented by 2. If the resulting value of
 .kw optind
 is not less than
 .arg argc
-.ct, this indicates a missing option-argument, and
+.ct , this indicates a missing option-argument, and
 .id &funcb.
 returns an error
 indication.
@@ -79,7 +79,7 @@ Otherwise,
 .kw optarg
 points to the string following the option character in that element of
 .arg argv
-.ct, and
+.ct , and
 .kw optind
 is incremented by 1.
 .np
@@ -115,7 +115,7 @@ If
 .id &funcb.
 encounters an option character that is not contained in
 .arg optstring
-.ct, it returns the question-mark (?) character. If it detects a missing
+.ct , it returns the question-mark (?) character. If it detects a missing
 option-argument, it returns the colon character (:) if the first character of
 .arg optstring
 was a colon, or a question-mark character (?) otherwise. In either case, &funcb

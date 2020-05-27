@@ -176,12 +176,11 @@ System Interface for Computer Environments" (POSIX 1003.1).
 The POSIX input/output functions provide the capability to perform I/O
 at a "lower level" than the C Language "stream I/O" functions (e.g.,
 .kw fopen
-.ct,
+.ct ,
 .kw fread
-.ct,
+.ct ,
 .kw fwrite
-.ct,
-and
+.ct , and
 .kw fclose
 .ct ).
 .do end
@@ -311,7 +310,8 @@ provides a complete description of each function and macro.
 .np
 .ix '&CharTest'
 These functions operate upon single characters of type
-.id char.
+.id char
+.period
 The functions test characters in various ways and convert them between
 upper and lowercase.
 .fdbeg
@@ -340,7 +340,8 @@ upper and lowercase.
 .ix '&CharTest'
 .ix '&Wide'
 These functions operate upon wide characters of type
-.id wchar_t.
+.id wchar_t
+.period
 The functions test wide characters in various ways and convert them
 between upper and lowercase.
 .fdbeg
@@ -839,25 +840,25 @@ and wide character strings.
 .np
 See also
 .kw tolower
-.ct,
+.ct ,
 .kw towlower
-.ct,
+.ct ,
 .kw _mbctolower
-.ct,
+.ct ,
 .kw toupper
-.ct,
+.ct ,
 .kw towupper
-.ct,
+.ct ,
 .kw _mbctoupper
-.ct,
+.ct ,
 .kw strlwr
-.ct,
+.ct ,
 .kw _wcslwr
-.ct,
+.ct ,
 .kw _mbslwr
-.ct,
+.ct ,
 .kw strupr
-.ct,
+.ct ,
 .kw _wcsupr
 and
 .kw _mbsupr
@@ -890,7 +891,7 @@ function allocates space outside the area (if it is available).
 .np
 In a small data model, the
 .kw malloc
-.ct,
+.ct ,
 .kw calloc
 and
 .kw realloc
@@ -917,30 +918,27 @@ The
 .kw _nfree
 function should be used to free space acquired by the
 .kw _ncalloc
-.ct,
+.ct ,
 .kw _nmalloc
-.ct,
-or
+.ct , or
 .kw _nrealloc
 functions.
 The
 .kw _ffree
 function should be used to free space acquired by the
 .kw _fcalloc
-.ct,
+.ct ,
 .kw _fmalloc
-.ct,
-or
+.ct , or
 .kw _frealloc
 functions.
 The
 .kw _bfree
 function should be used to free space acquired by the
 .kw _bcalloc
-.ct,
+.ct ,
 .kw _bmalloc
-.ct,
-or
+.ct , or
 .kw _brealloc
 functions.
 .np
@@ -1032,8 +1030,8 @@ as well as, find heap related problems.
 .ix '&Math'
 .ix '&Trig'
 These functions operate with objects of type
-.id double,
-also known as floating-point numbers.
+.id double
+.ct , also known as floating-point numbers.
 The Intel 8087 processor (and its successor chips) is commonly used
 to implement floating-point operations on personal computers.
 Functions ending in "87" pertain to this specific hardware

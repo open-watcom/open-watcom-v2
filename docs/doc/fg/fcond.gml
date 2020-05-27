@@ -132,7 +132,8 @@ In the following example, a form-feed character will be generated
 immediately before the source for subroutine
 .id sub2
 and immediately before the source for subroutine
-.id sub3.
+.id sub3
+.period
 .exam begin
     subroutine sub1
     ! source code

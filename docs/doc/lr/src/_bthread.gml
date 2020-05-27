@@ -117,8 +117,7 @@ The
 function can be used to create a new thread,
 in a running or suspended state specified by
 .arg initflag
-.ct .li ,
-with security attributes specified by
+.ct , with security attributes specified by
 .arg security
 .period
 .np
@@ -152,11 +151,11 @@ argument.
 .np
 The thread ends when it exits from its main function or calls
 .kw exit
-.ct,
+.ct ,
 .kw _Exit
-.ct,
+.ct ,
 .kw _exit
-.ct,
+.ct ,
 .kw _endthread
 or
 .kw _endthreadex
@@ -180,7 +179,8 @@ under 16-bit OS/2 and 32-bit NetWare.
 The default limit is 32.
 This limit can be adjusted by statically initializing the unsigned
 global variable
-.id __MaxThreads.
+.id __MaxThreads
+.period
 .np
 Under 32-bit OS/2, there is no limit to the number of threads an
 application can create.
@@ -191,7 +191,8 @@ includes the initial thread).
 If you are creating more than 32 threads and wish to avoid this
 performance penalty, you can redefine the threshold value of 32.
 You can statically initialize the global variable
-.id __MaxThreads.
+.id __MaxThreads
+.period
 .np
 By adding the following line to your multi-threaded application, the
 new threshold value will be set to 48.

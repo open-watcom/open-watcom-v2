@@ -9,7 +9,7 @@ The
 function searches the protocol database for a protocol
 matching the specified
 .arg name
-, considering both the official name and aliases. The 
+.ct , considering both the official name and aliases. The 
 routine will query the local database only.
 .np
 The structure returned is defined as:

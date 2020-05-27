@@ -22,10 +22,9 @@ functions return the size of the memory block pointed to by
 .arg buffer
 that was allocated by a call to the appropriate version of the
 .kw calloc
-.ct,
+.ct ,
 .kw malloc
-.ct,
-or
+.ct , or
 .kw realloc
 functions.
 .np

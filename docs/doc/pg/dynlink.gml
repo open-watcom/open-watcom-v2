@@ -255,7 +255,7 @@ This function is called when the DLL is attaching to the address space
 of the current process as a result of the process starting up or as a
 result of a call to
 .kw LoadLibrary
-.ct .li .
+.period
 A DLL can use this opportunity to initialize any instance data.
 .np
 During initial process startup or after a call to
@@ -270,7 +270,7 @@ This call is made in the context of the thread that caused the process
 address space to change, such as the primary thread of the process or
 the thread that called
 .kw LoadLibrary
-.ct .li .
+.period
 .*
 .note __FTHRD_INITIALIZE_
 .*
@@ -342,7 +342,7 @@ space of the calling process as a result of either a normal
 termination or
 of a call to
 .kw FreeLibrary
-.ct .li .
+.period
 When a DLL detaches from a process as a result of process termination
 or as a result of a call to
 .kw FreeLibrary
@@ -498,7 +498,7 @@ EXTERNC void dll_entry_2( void )
 This is a handle for the DLL.
 It can be used as a argument to other functions such as
 .kw GetModuleFileName
-.ct .li .
+.period
 .*
 .note fdwReason
 .*
@@ -517,7 +517,7 @@ This value indicates that the DLL is attaching to the address space of
 the current process as a result of the process starting up or as a
 result of a call to
 .kw LoadLibrary
-.ct .li .
+.period
 A DLL can use this opportunity to initialize any instance data or to
 use the
 .kw TlsAlloc
@@ -535,7 +535,7 @@ This call is made in the context of the thread that caused the process
 address space to change, such as the primary thread of the process or
 the thread that called
 .kw LoadLibrary
-.ct .li .
+.period
 .*
 .note DLL_THREAD_ATTACH
 .*
@@ -605,7 +605,7 @@ This value indicates that the DLL is detaching from the address space
 of the calling process as a result of either a normal termination or
 of a call to
 .kw FreeLibrary
-.ct .li .
+.period
 The DLL can use this opportunity to call the
 .kw TlsFree
 function to free any TLS indices allocated by using
@@ -633,13 +633,15 @@ cleanup.
 If
 .id fdwReason
 is
-.id DLL_PROCESS_ATTACH,
+.id DLL_PROCESS_ATTACH
+.ct ,
 .id lpvReserved
 is NULL for dynamic loads and non-NULL for static loads.
 If
 .id fdwReason
 is
-.id DLL_PROCESS_DETACH,
+.id DLL_PROCESS_DETACH
+.ct ,
 .id lpvReserved
 is NULL if
 .kw LibMain
@@ -672,13 +674,13 @@ is called during process initialization, the process terminates with
 an error.
 To get extended error information, call
 .kw GetLastError
-.ct .li .
+.period
 .np
 When the system calls
 .kw LibMain
 with any value other than
-.id DLL_PROCESS_ATTACH,
-the return value is ignored.
+.id DLL_PROCESS_ATTACH
+, the return value is ignored.
 .endnote
 .do end
 .el .if '&targetos' eq 'OS/2 2.x' .do begin
@@ -698,14 +700,14 @@ A 0 value indicates that the DLL is attaching to the address space of
 the current process as a result of the process starting up or as a
 result of a call to
 .kw DosLoadModule
-.ct .li .
+.period
 A DLL can use this opportunity to initialize any instance data.
 .np
 A non-zero value indicates that the DLL is detaching from the address
 space of the calling process as a result of either a normal
 termination or of a call to
 .kw DosFreeModule
-.ct .li .
+.period
 .*
 .note Return Value
 .*

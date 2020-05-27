@@ -18,7 +18,7 @@ declares the identifier to be a pointer to the given type. If
 .us type
 is
 .kw void
-..ct ,
+.ct ,
 .ix 'void'
 .ix 'pointer' 'to void'
 then the identifier is a pointer to no particular type of object
@@ -33,7 +33,7 @@ int * intptr;
 .mono intptr
 is a pointer to an
 .kw int
-..ct ..li .
+.period
 .discuss end
 .keep break
 .millust begin
@@ -43,7 +43,7 @@ char * charptr;
 .mono charptr
 is a pointer to a
 .mono char
-..ct ..li .
+.period
 .discuss end
 .keep break
 .millust begin
@@ -72,7 +72,7 @@ char ** strptr;
 .mono strptr
 is a pointer to a pointer to
 .kw char
-..ct ..li .
+.period
 .discuss end
 .keep break
 .millust begin
@@ -97,8 +97,6 @@ does not currently point at anything.
 The macro
 .ix 'NULL' 'macro'
 .mkw NULL
-..ct ,
-defined in the header
+.ct , defined in the header
 .hdr <stddef.h>
-..ct ,
-may also be used in place of 0.
+.ct , may also be used in place of 0.

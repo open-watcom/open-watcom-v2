@@ -10,7 +10,7 @@ function sets the
 global
 variables
 .kw daylight
-.ct,
+.ct ,
 .kw timezone
 and
 .kw tzname

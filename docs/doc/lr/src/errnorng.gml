@@ -7,7 +7,6 @@ function is replaced, it will set the global variable
 .kw errno
 to
 .kw ERANGE
-.ct ,
-and print a "RANGE error" diagnostic message using the
+.ct , and print a "RANGE error" diagnostic message using the
 .kw stderr
 stream.

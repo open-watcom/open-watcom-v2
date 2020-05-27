@@ -185,7 +185,8 @@ require two arguments.
 .point
 The first argument is an interrupt number. These subroutines will generate 
 the software interrupt given by the this argument. The type must be
-.id INTEGER.
+.id INTEGER
+.period
 .point
 The second argument is an
 .id INTEGER
@@ -575,8 +576,8 @@ included in the
 environment variable so that the compiler can locate the include file.
 .note
 The INTEGER function
-.id FSYSTEM,
-which is described in a later section, implements a more general form
+.id FSYSTEM
+, which is described in a later section, implements a more general form
 of the example given above.
 We recommend its use.
 .endnote
@@ -699,10 +700,11 @@ allows an application to obtain the current date.
 The subroutine
 .id GETDAT
 has three arguments of type
-.id INTEGER*2.
+.id INTEGER*2
+.period
 When control is returned from
-.id GETDAT,
-they contain the year, month and day
+.id GETDAT
+, they contain the year, month and day
 of the current date.
 .np
 The following program prints the current date in the form
@@ -743,10 +745,11 @@ allows an application to obtain the current time.
 The subroutine
 .id GETTIM
 has four arguments of type
-.id INTEGER*2.
+.id INTEGER*2
+.period
 When control is returned from
-.id GETTIM,
-they contain the hours, minutes, seconds, and hundredths of seconds
+.id GETTIM
+, they contain the hours, minutes, seconds, and hundredths of seconds
 of the current time.
 .np
 The following program prints the current time in the form
@@ -1281,8 +1284,8 @@ In the following example, 100 random numbers are printed.
 .autonote Notes:
 .note
 Upon each invocation of
-.id URAND,
-the seed argument is updated by the random number generator.
+.id URAND
+, the seed argument is updated by the random number generator.
 Therefore, the argument must not be a constant and, once the seed
 value has been set, it must
 .us not

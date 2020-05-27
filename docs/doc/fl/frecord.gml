@@ -64,7 +64,8 @@ For example, the following statements describe two objects,
 and
 .id STUDENT_2
 .ct , to be of type
-.id NAME.
+.id NAME
+.period
 .millust begin
       RECORD /NAME/ STUDENT_1
       RECORD /NAME/ STUDENT_2
@@ -124,17 +125,19 @@ The "." or "%" is called a
 The previous example contained both a structure called
 .id NAME (RECORD /NAME/)
 and a structure member called
-.id NAME (RECORD /NAME/ NAME).
+.id NAME (RECORD /NAME/ NAME)
+.period
 The structure name is enclosed within slashes ("/").
 A structure name must be unique among structure names.
 However, the same name can also be used to name either variables or
 structure members (fields).
 Thus it is possible to have a variable named
-.id X,
-a structure named
-.id X,
-and one or more fields named
-.id X.
+.id X
+.ct , a structure named
+.id X
+.ct , and one or more fields named
+.id X
+.period
 .np
 Structure, field, and variable names are all local to the program unit
 in which they are defined.
@@ -271,15 +274,19 @@ offset  +0          +4          +8
 .millust end
 .pc
 The first 4 bytes of storage are occupied by
-.id TYPE.
+.id TYPE
+.period
 The next 4 to 8 bytes of storage are occupied by either
-.id LGL,
-.id INT,
-.id FLT,
-or
+.id LGL
+.ct ,
+.id INT
+.ct ,
+.id FLT
+.ct , or
 .id DBL
 depending on the interpretation of the contents of the variable
-.id TYPE.
+.id TYPE
+.period
 The size of the record
 .id ITEM
 is a total of 12 bytes.

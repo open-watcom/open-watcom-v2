@@ -175,7 +175,7 @@ The
 window displays a list of the modules that make up the current
 program. To open the Modules window, choose
 .menuref 'Modules' 'Code'
-.ct .li .
+.period
 .np
 Three items are displayed for each module.  At the left, there is
 a button.  You can click the mouse on it to see the source or

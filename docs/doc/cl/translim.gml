@@ -26,22 +26,22 @@ Restrictions arise solely because of memory limitations.
 15 nesting levels of compound statements,
 iteration control structures (
 ..ct .kw for
-..ct ,
+.ct ,
 .kw do
-..ct /
+.ct /
 ..ct .kw while
-..ct ,
+.ct ,
 .kw while
-..ct ),
+.ct ),
 and selection control structures (
 ..ct .kw if
-..ct ,
+.ct ,
 .kw switch
-..ct ),
+.ct ),
 .bull
 8 nesting levels of conditional inclusion (
 ..ct .kwpp #if
-..ct ),
+.ct ),
 .bull
 12 pointer, array and function declarators (in any order)
 modifying an arithmetic,

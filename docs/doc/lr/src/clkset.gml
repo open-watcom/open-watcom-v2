@@ -18,7 +18,7 @@ to the time contained in the
 .arg ts
 pointer.  Depending on the value of
 .arg clockid
-, the function may fail if the user has insufficient
+.ct , the function may fail if the user has insufficient
 privileges.
 .np
 Values of

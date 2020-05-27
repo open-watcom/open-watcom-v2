@@ -127,19 +127,17 @@ DOS systems.
 .np
 The arguments may be passed as a list of arguments (
 .ct .kw execl
-.ct,
+.ct ,
 .kw execle
-.ct,
+.ct ,
 .kw execlp
-.ct,
-and
+.ct , and
 .kw execlpe
-.ct )
-or as a vector of pointers (
+.ct ) or as a vector of pointers (
 .ct .kw execv
-.ct,
+.ct ,
 .kw execve
-.ct,
+.ct ,
 .kw execvp
 .ct , and
 .kw execvpe

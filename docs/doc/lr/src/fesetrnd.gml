@@ -9,7 +9,7 @@ The
 .id &funcb.
 function sets the rounding direction mode, specified by
 .arg mode
-.ct .li , for the current floating point environment.
+.ct , for the current floating point environment.
 .np
 The rounding direction mode can be one of the following values:
 .begnote $setptnt 15

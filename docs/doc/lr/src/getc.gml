@@ -24,8 +24,7 @@ The
 .id &funcb.
 function is equivalent to
 .kw fgetc
-.ct,
-except that it may be implemented as a macro.
+.ct , except that it may be implemented as a macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The

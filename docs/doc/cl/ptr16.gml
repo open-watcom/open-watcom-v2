@@ -44,7 +44,7 @@ declares the object
 .mono bufptr
 to be a far16 pointer to
 .kw char
-..ct ..li .
+.period
 .pp
 A function declared as,
 .cillust begin
@@ -72,7 +72,7 @@ char * &kwfar16. Scan( char * buffer, int buflen, short err );
 .pc
 declares the 16-bit function
 .mono Scan
-..ct ..li .
+.period
 When this function is called from the 32-bit environment,
 the
 .mono buffer
@@ -104,7 +104,7 @@ is
 interchangeable with
 .kwix &kwfar16_sp.
 .kwfont &kwfar16.
-..ct ..li .
+.period
 .pp
 A pointer declared as,
 .cillust begin
@@ -155,6 +155,6 @@ char * &kwiseg16. Scan( char * buffer, int buflen, short err );
 .pc
 declares the 32-bit function
 .mono Scan
-..ct ..li .
+.period
 No conversion of the parameter list will take place.
 The return value is a far16 pointer.

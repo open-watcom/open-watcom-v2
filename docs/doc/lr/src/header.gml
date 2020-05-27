@@ -154,7 +154,7 @@ which describes an entry in a directory.
 This header file declares functions that interact with DOS. It includes
 the definitions of the
 .kw FP_OFF
-.ct,
+.ct ,
 .kw FP_SEG
 and
 .kw MK_FP
@@ -198,10 +198,9 @@ header file.
 .if '&machsys' eq 'QNX' .do begin
 .kw creat
 .kw fcntl
-.ct,
+.ct ,
 .kw open
-.ct,
-and
+.ct , and
 .kw sopen
 functions.
 .do end
@@ -240,7 +239,7 @@ and output registers for the Intel 80x86 and 80386/80486 interrupt
 interface routines. It includes prototypes for the interrupt functions,
 definitions for the
 .kw FP_OFF
-.ct,
+.ct ,
 .kw FP_SEG
 and
 .kw MK_FP
@@ -336,12 +335,11 @@ functions, and the
 .kw system
 function. The file also contains declarations for the constants
 .kw P_WAIT
-.ct,
+.ct ,
 .kw P_NOWAIT
-.ct,
+.ct ,
 .kw P_NOWAITO
-.ct,
-and
+.ct , and
 .kw P_OVERLAY
 .period
 .*------------------------------
@@ -398,9 +396,9 @@ for use in C programs. If this header is included in a C++ program there
 is no effect. The C++ reserved words will not be redefined. However the
 definition of
 .kw bool
-,
+.ct ,
 .kw true
-, and
+.ct , and
 .kw false
 used in a C program will be compatible with their C++ counterparts. In
 particular, a C function declared as taking a

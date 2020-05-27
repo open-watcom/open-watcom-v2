@@ -22,7 +22,7 @@ specifies the address type.  Accepted types, such as
 .kw AF_INET
 or
 .kw AF_INET6
-, are expected.  The routine will query only the local network
+.ct , are expected.  The routine will query only the local network
 hosts database.
 .np
 The structure returned is defined as:

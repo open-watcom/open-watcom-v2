@@ -50,7 +50,7 @@ an object.
 If an object or function is declared with a storage class, but no
 type specifier, then the type of the object or function is assumed to be
 .kw int
-..ct ..li .
+.period
 .pp
 While a storage class specifier may be placed
 .ix 'storage class' 'following a type specifier'

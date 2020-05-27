@@ -56,7 +56,8 @@ the executing program through use of the library function
 or the functions
 .id IARGC
 and
-.id IGETARG.
+.id IGETARG
+.period
 See the chapter entitled "The &cmpname Subprogram Library" for
 more information on these functions.
 .endnote

@@ -58,15 +58,15 @@ the bottom of the text string is aligned at the given point
 The default is to use
 .id _LEFT
 alignment for the horizontal component unless the text path is
-.id _PATH_LEFT,
-in which case
+.id _PATH_LEFT
+.ct , in which case
 .id _RIGHT
 alignment is used.
 The default value for the vertical component is
 .id _TOP
 unless the text path is
-.id _PATH_UP,
-in which case
+.id _PATH_UP
+.ct , in which case
 .id _BOTTOM
 alignment is used.
 .desc end

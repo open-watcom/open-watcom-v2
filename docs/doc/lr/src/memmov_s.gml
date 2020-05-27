@@ -71,7 +71,7 @@ characters that does not overlap the objects pointed to by
 .arg s1
 or
 .arg s2
-,and then the
+.ct , and then the
 .arg n
 characters from the temporary array are copied into the object pointed to by
 .arg s1

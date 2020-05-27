@@ -17,8 +17,7 @@ function writes the character string pointed to by
 .arg buf
 to the output stream designated by
 .kw stdout
-.ct,
-and appends a new-line character to the output.
+.ct , and appends a new-line character to the output.
 The terminating null character is not written.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

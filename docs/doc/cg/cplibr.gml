@@ -1048,7 +1048,8 @@ The assembler files,
 It is
 .fi cmain.c
 that calls your mainline routine
-.id (main).
+.id (main)
+.period
 .do end
 .el .do begin
 .ix 'DOS' 'initialization'
@@ -1132,7 +1133,8 @@ is continued in the file
 It is
 .fi CMAIN086.C
 that calls your main routine
-.id (main).
+.id (main)
+.period
 .np
 .ix 'Tenberry Software' 'DOS/16M'
 .ix 'DOS/16M'
@@ -1173,7 +1175,8 @@ is continued in the file
 It is
 .fi cmain.c
 that calls your mainline routine
-.id (main).
+.id (main)
+.period
 .do end
 .el .do begin
 The initialization code directories/files are listed below:
@@ -1211,7 +1214,8 @@ continued in the file
 It is
 .fi CMAIN386.C
 that calls your main routine
-.id (main).
+.id (main)
+.period
 .do end
 .* ------------------------------------------------------
 .np

@@ -213,7 +213,8 @@ The stack size should be a multiple of 4K.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .mnote arglist
 is passed as an argument to the &function specified by
-.id start_address.
+.id start_address
+.period
 If no argument is required, a value of &null can be specified.
 .do end
 .esynote
@@ -230,7 +231,8 @@ function.
 .if '&targetos' eq 'Windows NT' .do begin
 .np
 Another thread related function for &targetos is
-.id _beginthreadex.
+.id _beginthreadex
+.period
 See the
 .book &company C Library Reference
 for more information.
@@ -415,12 +417,14 @@ int main( void )
 .autonote Note:
 .note
 In the &function
-.id a_thread,
+.id a_thread
+.ct ,
 .id DosEnterCritSec
 and
 .id DosExitCritSec
 are called when we modify the variable
-.id NumThreads.
+.id NumThreads
+.period
 This ensures that the action of extracting the value of
 .id NumThreads
 from memory, incrementing the value, and storing the new result into
@@ -584,12 +588,14 @@ int main( void )
 .autonote Note:
 .note
 In the &function
-.id a_thread,
+.id a_thread
+.ct ,
 .id EnterCriticalSection
 and
 .id LeaveCriticalSection
 are called when we modify the variable
-.id NumThreads.
+.id NumThreads
+.period
 This ensures that the action of extracting the value of
 .id NumThreads
 from memory, incrementing the value, and storing the new result into
@@ -675,7 +681,8 @@ which returns the new thread limit.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 This limit can be adjusted by statically initializing the unsigned
 global variable
-.id __MaxThreads.
+.id __MaxThreads
+.period
 .do end
 .np
 Under 32-bit OS/2, there is no limit to the number of threads an
@@ -687,7 +694,8 @@ initial thread).
 If you are creating more than 32 threads and wish to avoid this
 performance penalty, you can redefine the threshold value of 32.
 You can statically initialize the global variable
-.id __MaxThreads.
+.id __MaxThreads
+.period
 .np
 .if '&lang' eq 'FORTRAN 77' .do begin
 This limit can be adjusted by defining the integer function
@@ -708,7 +716,8 @@ will replace the default function that is included in the run-time
 library.
 The default function simply returns the current value of the internal
 variable
-.id __MaxThreads.
+.id __MaxThreads
+.period
 Your version of this function will return a new value for this
 variable.
 Internally, the run-time system executes code similar to the

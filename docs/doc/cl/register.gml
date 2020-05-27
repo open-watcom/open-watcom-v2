@@ -4,8 +4,7 @@
 An object that is declared within a function, and whose
 declaration includes the keyword
 .kw register
-..ct ,
-is considered to have automatic storage duration.
+.ct , is considered to have automatic storage duration.
 The
 .kw register
 keyword merely provides a hint to the compiler that this object

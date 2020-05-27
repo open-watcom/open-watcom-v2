@@ -81,4 +81,4 @@ Windows supervisor
 .kw WIN386.EXT
 using
 .kw WBIND.EXE
-.ct .li .
+.period

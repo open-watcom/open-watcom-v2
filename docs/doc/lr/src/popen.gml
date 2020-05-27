@@ -77,9 +77,9 @@ may also set
 .kw errno
 values as described by the
 .kw pipe
-,
+.ct ,
 .kw fork
-, and
+.ct , and
 .kw execl
 functions.
 .error end

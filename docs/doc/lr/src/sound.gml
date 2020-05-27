@@ -22,9 +22,10 @@ The
 function only works if either the program is owned by
 .id root
 and is
-.id setuid,
-or if the invoking user is
-.id root.
+.id setuid
+.ct , or if the invoking user is
+.id root
+.period
 .do end
 .desc end
 .return begin

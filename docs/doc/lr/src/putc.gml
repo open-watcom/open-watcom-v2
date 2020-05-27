@@ -16,8 +16,7 @@ The
 .id &funcb.
 function is equivalent to
 .kw fputc
-.ct,
-except it may be implemented as a macro.
+.ct , except it may be implemented as a macro.
 The
 .id &funcb.
 function writes the character specified by the argument

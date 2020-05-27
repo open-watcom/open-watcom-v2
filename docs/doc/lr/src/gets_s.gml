@@ -20,12 +20,12 @@ shall not be a null pointer.
 .arg n
 shall neither be equal to zero nor be greater than
 .kw RSIZE_MAX
- .
+.period
 A new-line character, end-of-file, or read error shall occur within reading
 .arg n-1
 characters from
 .kw stdin
- .
+.period
 .rtconst end
 
 .desc begin
@@ -41,7 +41,7 @@ Size of the array
 .arg s
 is specified by the argument
 .arg n
-, this information is used to protect buffer from overflow. If buffer
+.ct , this information is used to protect buffer from overflow. If buffer
 .arg s
 is about to be overflown, runtime-constraint is activated. Any new-line character
 is discarded, and a null character is placed immediately after the last character

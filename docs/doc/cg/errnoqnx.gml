@@ -32,7 +32,8 @@ The specified file or directory cannot be found.
 .us Arg list too big
 .np
 The argument list passed to the
-.id spawn...,
+.id spawn...
+.ct ,
 .id exec...
 or
 .id system

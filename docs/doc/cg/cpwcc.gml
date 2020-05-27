@@ -547,7 +547,7 @@ and changed the keyword
 .kwm void
 to
 .kwm int
-.ct .li .
+.period
 .np
 We compile the program with the "warning" option.
 .exam begin 1
@@ -577,7 +577,8 @@ Here we see an example of both types of messages.
 An error and a warning message have been issued.
 As indicated by the error message, we require a declarative
 statement for the identifier
-.id y.
+.id y
+.period
 The warning message indicates that, while it is not a violation of
 the rules of &lang. to define a variable without ever using it, we
 probably did not intend to do so.
@@ -591,7 +592,8 @@ should have been assigned a value, and
 the variable
 .id y
 has probably been incorrectly typed and should have been entered as
-.id x.
+.id x
+.period
 .endpoint
 .if &e'&dohelp eq 0 .do begin
 .np
@@ -1638,7 +1640,7 @@ keyword:
 .kwm __stdcall
 .ct , and
 .kwm __syscall
-.ct .li .
+.period
 These attributes are a property only of the declaration of the
 object or function to which they are applied.
 Unlike the
@@ -1874,7 +1876,7 @@ declares the object
 .id bufptr
 to be a far16 pointer to
 .kw char
-.ct .li .
+.period
 .np
 A function declared as,
 .illust begin
@@ -1899,7 +1901,8 @@ char * __far16 Scan( char *buffer, int len, short err );
 .code end
 .pc
 declares the 16-bit function
-.id Scan.
+.id Scan
+.period
 When this function is called from the 32-bit environment, the
 .id buffer
 argument will be converted from a flat 32-bit pointer to a far16
@@ -1937,7 +1940,7 @@ is
 .bd not
 interchangeable with
 .kwm __far16
-.ct .li .
+.period
 .np
 A pointer declared as,
 .illust begin
@@ -2255,15 +2258,16 @@ data objects), but points at an integer which resides in the default
 code segment.
 .id iptr
 is suitable for pointing at
-.id ival.
+.id ival
+.period
 .exam begin
 char __based( __segname( "GOODTHINGS" ) ) thing;
 .exam end
 .pc
 .id thing
 is an object which resides in the segment
-.id GOODTHINGS,
-which will be created if it does not already exist.
+.id GOODTHINGS
+.ct , which will be created if it does not already exist.
 (The creation of segments is done by the linker, and is a method
 of grouping objects and functions.
 Nothing is implicitly created during the execution of the program.)
@@ -2283,7 +2287,7 @@ where
 .id segment
 is an object defined as type
 .kwm __segment
-.ct .li .
+.period
 .np
 An object of type
 .kwm __segment
@@ -2306,7 +2310,8 @@ is used to point to a character, the actual pointer value will be made
 up of the segment value found in
 .mono seg
 and the offset value found in
-.id cptr.
+.id cptr
+.period
 The object
 .id seg
 might be assigned values such as the following:
@@ -2321,7 +2326,7 @@ the result of the library function
 the segment portion of another pointer value, by casting it to the
 type
 .kwm __segment
-.ct .li .
+.period
 .endbull
 .*
 .section Void Based Pointers
@@ -2370,7 +2375,8 @@ is an expression of type
 .ct , and
 .id offset
 is an expression of type
-.id __based( void ) *.
+.id __based( void ) *
+.period
 .*
 .section Self Based Pointers
 .*
@@ -2426,7 +2432,8 @@ The object
 .id aptr
 is given the offset portion, and is described as being based in the
 segment stored in
-.id seg.
+.id seg
+.period
 .np
 The expression
 .id aptr->next
@@ -2436,9 +2443,10 @@ member of the structure stored in memory at the offset stored in
 .id aptr
 and
 the segment implied by
-.id aptr,
-which is the value stored in
-.id seg.
+.id aptr
+.ct , which is the value stored in
+.id seg
+.period
 So far, the behavior is no different than if
 .id next
 had been declared as,
@@ -2460,19 +2468,21 @@ the offset value found in the
 member and combining it with the segment value of the
 .ul pointer used to get to that member,
 which is still the segment implied by
-.id aptr,
-which is the value stored in
-.id seg.
+.id aptr
+.ct , which is the value stored in
+.id seg
+.period
 If
 .id next
 had not been declared using
-.id __based( __self ),
-then the second pointing operation would refer to the offset value
+.id __based( __self )
+.ct , then the second pointing operation would refer to the offset value
 found in the
 .id next
 member, but with the default data segment (DGROUP), which may or may
 not be the same segment as stored in
-.id seg.
+.id seg
+.period
 .*
 .endlevel
 .*
@@ -2669,7 +2679,8 @@ is defined to be a function that does not return. For example, it call
 .id exit
 to return to the system. In this case, &cmpname generates a "jmp" instruction
 instead of a "call" instruction to invoke
-.id foo.
+.id foo
+.period
 .np
 The following rules apply to the use of the
 .kwm noreturn

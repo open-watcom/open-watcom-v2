@@ -610,7 +610,7 @@ option permits the assembler to use the
 .kw $at
 register for macros, but generates warnings if the source program uses
 .kw $at
-.ct .li .
+.period
 
 .bull
 When you use the
@@ -645,7 +645,7 @@ The
 .kw move
 option cancels the effect of
 .kw nomove
-.ct .li .
+.period
 
 .bull
 The

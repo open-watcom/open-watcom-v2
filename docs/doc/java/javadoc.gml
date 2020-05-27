@@ -69,7 +69,7 @@ is allowed only in comment blocks for a
 .kw class
 or
 .kw interface
-.ct .li .
+.period
 .np
 .id @exception
 is allowed only in comment blocks for a method or constructor.
@@ -91,7 +91,7 @@ is allowed only in comment blocks for a
 .kw class
 or
 .kw interface
-.ct .li .
+.period
 
 :MSGSYM. WARN_JD_TAG_NAKED
 :MSGTXT. JavaDoc tag not followed by text

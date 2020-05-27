@@ -26,14 +26,14 @@ numbers.
 There are three floating-point number types,
 .ix 'type' 'float'
 .kw float
-..ct ,
+.ct ,
 .ix 'type' 'double'
 .kw double
-..ct ,
+.ct ,
 and
 .ix 'type' 'long double'
 .kw long double
-..ct ..li .
+.period
 .pp
 The appendix "&numlimit."
 discusses a set of macro definitions
@@ -41,8 +41,7 @@ describing the range and other characteristics
 of the various numeric types.
 The macros from the header
 .hdr <float.h>
-..ct ,
-which describe the floating-point types,
+.ct , which describe the floating-point types,
 are discussed.
 .*
 .************************************************************************

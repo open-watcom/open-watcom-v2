@@ -30,7 +30,7 @@ declares the identifier
 .mono COUNTER
 to be equivalent to the type
 .kw signed int
-..ct ..li .
+.period
 A subsequent declaration like,
 .millust begin
 COUNTER ctr;
@@ -81,7 +81,7 @@ In this case, the identifier
 refers to the entire structure definition,
 including the keyword
 .kw struct
-..ct ..li .
+.period
 Therefore, an object can be declared as follows:
 .millust begin
 COMPLEX cnum;
@@ -141,8 +141,7 @@ The last example simply declares
 .mono fnptr
 to be a pointer to a
 .mono DIM3FN
-..ct ,
-while
+.ct , while
 .mono DIM3FN
 is declared to be a function with two parameters,
 a pointer to a
@@ -190,7 +189,7 @@ for example,
 .kw unsigned long int
 and
 .kw int long unsigned
-..ct ,
+.ct ,
 .bull
 two arrays of members of compatible type, where
 both arrays have the same size, or where

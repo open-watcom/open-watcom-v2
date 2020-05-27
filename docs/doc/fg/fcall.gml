@@ -446,16 +446,20 @@ resemble the following.
 .autopoint
 .point
 The first argument would be the address of
-.id A.
+.id A
+.period
 .point
 The second argument would be the address of the string descriptor for
-.id B.
+.id B
+.period
 .point
 The third argument would be the address of
-.id C.
+.id C
+.period
 .point
 The fourth argument would be the address of the string descriptor for
-.id D.
+.id D
+.period
 .endpoint
 .pc
 If we specified the "nodescriptor" option, the argument list would be as
@@ -463,16 +467,20 @@ follows.
 .autopoint
 .point
 The first argument would be the address of
-.id A.
+.id A
+.period
 .point
 The second argument would be the address of the character data for
-.id B.
+.id B
+.period
 .point
 The third argument would be the address of
-.id C.
+.id C
+.period
 .point
 The fourth argument would be the address of the character data for
-.id D.
+.id D
+.period
 .point
 A hidden argument for the length of
 .id B
@@ -650,7 +658,8 @@ on the stack.
 .endpoint
 .pc
 The following is an assembly language subprogram which implements
-.id GETTIM.
+.id GETTIM
+.period
 .if '&machine' eq '80386' .do begin
 .if '&cmpclass' ne 'load-n-go' .do begin
 .sk 1
@@ -778,7 +787,8 @@ and hence must be saved and restored.
 .endnote
 .np
 Let us look at the stack upon entry to
-.id GETTIM.
+.id GETTIM
+.period
 .np
 .keep 14
 .us Large Model (big code, big data)
@@ -905,7 +915,8 @@ These arguments will be passed to
 on the stack.
 .pc
 The following is an assembly language subprogram which implements
-.id GETTIM.
+.id GETTIM
+.period
 .sk 1
 .us Small or Flat Memory Model (small code, small data)
 .code begin
@@ -954,11 +965,13 @@ the caller.
 .note
 Registers ESI and EBP were saved and restored since they
 were used in
-.id GETTIM.
+.id GETTIM
+.period
 .endnote
 .np
 Let us look at the stack upon entry to
-.id GETTIM.
+.id GETTIM
+.period
 .millust begin
 Offset
     0     +----------------+ <- ESP points here

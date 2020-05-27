@@ -11,14 +11,12 @@ the contents of the header.
 ..sk 1 c
 If the header name is of the form
 .mono <headername>
-..ct ,
-then the preprocessor checks a set of implementation-defined locations
+.ct , then the preprocessor checks a set of implementation-defined locations
 for the header. These locations may or may not be actual files.
 ..sk 1 c
 If the header name is of the form
 .mono "headername"
-..ct ,
-then the preprocessor looks for the file named within the quotes.
+.ct , then the preprocessor looks for the file named within the quotes.
 If it is not found, then the preprocessor treats the header name as if
 it had been specified as
 .mono <headername>.
@@ -26,7 +24,7 @@ it had been specified as
 Otherwise,
 macro substitutions are performed on the tokens following the
 .kwpp #include
-..ct ..li .
+.period
 After substitution,
 the directive
 must match either the
@@ -66,7 +64,7 @@ The macro named following the directive is discarded.
 If the condition following the directive evaluates to a non-zero
 value, then the source lines up to the next corresponding
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
 or
 .kwpp #endif
@@ -85,7 +83,7 @@ directive conditions evaluated to zero, then
 the condition following the directive is evaluated, and a non-zero
 value causes the source lines up to the next corresponding
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
 or
 .kwpp #endif
@@ -126,7 +124,7 @@ This directive determines if the macro named in the directive is
 currently defined. If so, the source lines following the directive, up
 to the corresponding
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
 or
 .kwpp #endif
@@ -139,7 +137,7 @@ This directive determines if the macro named in the directive is
 currently defined. If not, the source lines following the directive, up
 to the next corresponding
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
 or
 .kwpp #endif

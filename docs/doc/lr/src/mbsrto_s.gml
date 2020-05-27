@@ -21,11 +21,11 @@ errno_t _fmbsrtowcs_s( size_t __far * restrict retval,
 .rtconst begin
 None of
 .arg retval
-,
+.ct ,
 .arg src
-,
+.ct ,
 .arg *src
-, or
+.ct , or
 .arg ps
 shall be null pointers. If
 .arg dst
@@ -51,7 +51,7 @@ is not a null pointer and
 .arg len
 is not less than
 .arg dstmax
-,then a null character shall occur within the first
+.ct , then a null character shall occur within the first
 .arg dstmax
 multibyte characters of the array pointed to by
 .arg *src
@@ -71,7 +71,7 @@ is not a null pointer and
 .arg dstmax
 is greater than zero and less than
 .kw RSIZE_MAX
-, then
+.ct , then
 .id &funcb.
 sets
 .arg dst[0]

@@ -130,8 +130,7 @@ Note that, in this case, the argument is evaluated twice. If
 .mono StrFn(&SYSRB.ptr&SYSRB.)
 was specified instead of
 .mono ptr
-..ct ,
-then the function would get called twice, because the substitution
+.ct , then the function would get called twice, because the substitution
 would yield,
 .millust begin
 endptr = (StrFn( ptr ) + strlen( StrFn( ptr ) ));
@@ -156,14 +155,13 @@ mymemcpy( destptr, srcptr, (t=0, t=strlen(srcptr)) );
 .pc
 will, for the parameters
 .mono dest
-..ct ,
+.ct ,
 .mono src
 and
 .mono len
-..ct ,
-use the arguments
+.ct , use the arguments
 .mono destptr
-..ct ,
+.ct ,
 .mono srcptr
 and
 .monoon
@@ -186,8 +184,7 @@ Alternatively, the definition,
 may be used.
 When the module or program is recompiled using this new definition for
 .mono alive
-..ct ,
-all of the calls to
+.ct , all of the calls to
 .libfn printf
 made as a result of the macro replacement will disappear, without
 the necessity of deleting the appropriate lines in each module.
@@ -235,12 +232,11 @@ occurrences of
 .mono "
 (double-quote) are replaced by
 .mono \"
-..ct , and any
-occurrences of
+.ct , and any occurrences of
 .mono \
 (backslash) are replaced by
 .mono \\
-..ct ..li .
+.period
 .pp
 The following table gives a number of examples of the result of the
 application of the macro,
@@ -287,8 +283,7 @@ string( f(x) )          "f(x)"
 In the replacement-list, if a parameter is preceded or followed by
 .ix 'preprocessor directive' '#define' '## operator'
 .mono ##
-..ct ,
-then the parameter is replaced by the argument itself, without
+.ct , then the parameter is replaced by the argument itself, without
 examining the argument for any further replacements.
 After all such substitutions, each
 .mono ##
@@ -931,13 +926,11 @@ Any other macros predefined by the compiler will begin with an
 underscore (_) character. None of the predefined macros,
 nor the identifier
 .mono defined
-..ct ,
-may be undefined
-(with
+.ct , may be undefined (with
 .kwpp #undef
-..ct ) or redefined (with
+.ct ) or redefined (with
 .kwpp #define
-..ct ).
+.ct ).
 .*
 .************************************************************************
 .*
@@ -967,12 +960,12 @@ type, member
 expands to a constant expression with type
 .ix 'size_t'
 .kw size_t
-..ct ..li .
+.period
 The value of the expression is the offset in bytes of
 .us member
 from the start of the structure
 .us type
-..ct ..li .
+.period
 .us member
 should not be a bit-field.
 .pp
@@ -994,8 +987,7 @@ anything.
 .pp
 It is recommended that
 .mkw NULL
-..ct ,
-instead of 0, be used for null pointer constants.
+.ct , instead of 0, be used for null pointer constants.
 .pp
 To use this macro, include the
 .hdr <stddef.h>

@@ -18,7 +18,7 @@ An
 is a set of identifiers that correspond to
 constants of type
 .kw int
-..ct ..li .
+.period
 These identifiers are called
 .ix 'enumeration constant'
 .us enumeration constants.
@@ -51,8 +51,7 @@ An enumerated type may be given an optional
 (name) with which it may be identified elsewhere in the program.
 In the example above, the tag of the enumerated type is
 .mono actions
-..ct ,
-which becomes a
+.ct , which becomes a
 .ix 'type' 'new'
 .ix 'type' 'defining'
 .ix 'new type'
@@ -152,7 +151,7 @@ The type of an enumeration is implementation-defined,
 although it must be compatible with an integer type.
 Many compilers will use
 .mono int
-..ct ..li .
+.period
 .*
 .************************************************************************
 .*
@@ -169,7 +168,7 @@ constants of a particular enumeration:
 .pc
 A command-line option may be used to force all enumerations to
 .kw int
-..ct ..li .
+.period
 .shade end
 ..do end
 .*

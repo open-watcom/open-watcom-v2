@@ -10,8 +10,7 @@ The
 .id &funcb.
 function prints, on the file designated by
 .kw stderr
-.ct,
-the Kanji error message corresponding to the error number
+.ct , the Kanji error message corresponding to the error number
 contained in
 .kw errno
 .period

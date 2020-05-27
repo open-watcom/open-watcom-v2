@@ -72,8 +72,7 @@ are also provided:
 .pc
 They are used in a similar manner to
 .mkw NULL
-..ct ,
-but are used with objects declared as
+.ct , but are used with objects declared as
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
 and
@@ -140,7 +139,7 @@ which resides in the default code segment.
 .mono iptr
 is suitable for pointing at
 .mono ival
-..ct ..li .
+.period
 .millust begin
 char &kwbased.( &kwsegname.( "GOODTHINGS" ) ) thing;
 .millust end
@@ -148,8 +147,7 @@ char &kwbased.( &kwsegname.( "GOODTHINGS" ) ) thing;
 .mono thing
 is an object which resides in the segment
 .mono GOODTHINGS
-..ct ,
-which will be created if it does not already exist.
+.ct , which will be created if it does not already exist.
 (The creation of segments is done by the linker, and is a method
 of grouping objects and functions.
 Nothing is implicitly created during the
@@ -176,7 +174,7 @@ is an object defined
 as type
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
-..ct ..li .
+.period
 .pp
 An object of type
 .kwix &kwsegm_sp.
@@ -224,7 +222,7 @@ made up of the segment value found in
 .mono seg
 and the offset value found in
 .mono cptr
-..ct ..li .
+.period
 The object
 .mono seg
 might be assigned values such as the following:
@@ -234,13 +232,13 @@ a constant value (eg. the segment containing screen memory),
 .bull
 the result of the library function
 .libfn _bheapseg
-..ct ,
+.ct ,
 .bull
 the segment portion of another pointer value, by casting it to the
 type
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
-..ct ..li .
+.period
 .endbull
 .*
 .section Void Based Pointers
@@ -289,12 +287,11 @@ where
 is an expression of type
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
-..ct ,
-and
+.ct , and
 .ul offset
 is an expression of type
 .mono &kwbased.(&SYSRB.void&SYSRB.)&SYSRB.*
-..ct ..li .
+.period
 .*
 .section Self Based Pointers
 .*
@@ -360,8 +357,7 @@ the offset stored in
 and
 the segment implied by
 .mono aptr
-..ct ,
-which is the value stored in
+.ct , which is the value stored in
 .mono seg.
 So far, the behavior is no different than if
 .mono next
@@ -382,18 +378,15 @@ using the offset value found in the
 .mono next
 member and combining it with the segment value of the
 .ul pointer used to get to that member
-..ct ,
-which is still the segment implied by
+.ct , which is still the segment implied by
 .mono aptr
-..ct ,
-which is the value stored in
+.ct , which is the value stored in
 .mono seg.
 If
 .mono next
 had not been declared using
 .mono &kwbased.(&SYSRB.&kwself.&SYSRB.)
-..ct ,
-then the second pointing operation would refer to the offset value
+.ct , then the second pointing operation would refer to the offset value
 found in the
 .mono next
 member, but with the default data segment (DGROUP), which may or may

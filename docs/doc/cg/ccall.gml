@@ -660,7 +660,8 @@ double
 The integral type of an enumerated type is determined by the values of the
 enumeration constants.
 In strict ISO/ANSI C mode, all enumerated constants are of type
-.id int.
+.id int
+.period
 In the extensions mode, the compiler will use the smallest integral
 type possible (excluding
 .id long
@@ -671,7 +672,8 @@ equivalent to a
 .id signed char
 (size = 1 byte).
 All references to enumerated constants in the previous instance will have type
-.id signed char.
+.id signed char
+.period
 An enumerated constant is always promoted to an
 .id int
 when passed as an argument.
@@ -721,8 +723,8 @@ register EDX.
 .do end
 .np
 If no function prototype is given, as is the case for the function
-.id rtn,
-the first argument will be passed as a "double" and the
+.id rtn
+.ct , the first argument will be passed as a "double" and the
 second argument would be passed as an "int".
 This results in the first argument being passed in registers
 .if '&machine' eq '8086' .do begin
@@ -797,7 +799,8 @@ and hence will be pushed on the stack.
 .endnote
 .np
 Let us look at the stack upon entry to
-.id myrtn.
+.id myrtn
+.period
 .if '&machine' eq '8086' .do begin
 .millust begin
 .us Small Code Model
@@ -975,8 +978,8 @@ As the above diagrams show, the third argument is at offset &s_o2 from
 register &bpup in a small code model and offset &b_o2 in a big code model.
 .np
 Upon exit from
-.id myrtn,
-we must restore the value of &bpup..
+.id myrtn
+.ct , we must restore the value of &bpup..
 The following two instructions achieve this.
 .millust begin
 mov     &spup,&bpup      &fill; restore stack pointer
@@ -985,7 +988,8 @@ pop     &bpup           ; restore &bpup
 .pc
 The following is a sample assembly language function which
 implements
-.id myrtn.
+.id myrtn
+.period
 .if '&machine' eq '8086' .do begin
 :set symbol="argsize" value="4".
 .do end
@@ -1122,7 +1126,8 @@ pass arguments.
 Instead, all arguments are passed on the stack.
 .np
 Let us look at the stack upon entry to
-.id myrtn.
+.id myrtn
+.period
 .millust begin
 .us Small Code Model
 .monoon
@@ -1235,8 +1240,8 @@ As the above diagrams show, the argument are all on the stack and are
 referenced by specifying an offset from register &bpup..
 .np
 Upon exit from
-.id myrtn,
-we must restore the value of &bpup..
+.id myrtn
+.ct , we must restore the value of &bpup..
 The following two instructions achieve this.
 .millust begin
 mov     &spup,&bpup      &fill; restore stack pointer
@@ -1245,7 +1250,8 @@ pop     &bpup           ; restore &bpup
 .pc
 The following is a sample assembly language function which
 implements
-.id myrtn.
+.id myrtn
+.period
 .tb set $
 .tb 20 28 38
 .millust begin
@@ -1693,7 +1699,8 @@ All arguments passed on the stack must be removed by the called function.
 .np
 The following is a sample assembly language function which
 implements
-.id myrtn.
+.id myrtn
+.period
 .cp 13
 .exam begin
         .8087

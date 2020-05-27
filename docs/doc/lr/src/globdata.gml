@@ -112,9 +112,9 @@ The value of
 .kw _fmode
 may be changed by a program to change the default behavior of the
 .kw open
-.ct,
+.ct ,
 .kw fopen
-.ct,
+.ct ,
 .kw creat
 and
 .kw sopen

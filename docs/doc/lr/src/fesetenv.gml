@@ -17,7 +17,7 @@ argument shall point to an object set by a call to
 .kw fegetenv
 or
 .kw feholdexcept
-, or equal the
+.ct , or equal the
 .kw FE_DFL_ENV
 macro. Note that fesetenv merely installs the state of the floating-point
 status flags represented through its argument, and does not raise these

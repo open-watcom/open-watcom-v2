@@ -35,8 +35,7 @@ specification: one of "hh", "h", "l", "ll", "j", "z", "t", "L", "I64", "w"
 ; and
 .do end
 .el .do begin
-.ct ,
-"N" or "W"; and
+.ct , "N" or "W"; and
 .do end
 .bull
 a character that specifies the type of conversion to be performed: one of

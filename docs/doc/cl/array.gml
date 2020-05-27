@@ -45,7 +45,7 @@ the array is fully declared later in the same module.
 An array of undetermined size is an
 .ix 'incomplete type'
 .us incomplete type
-..ct ..li .
+.period
 .keep begin
 .pp
 An array declaration is of the following form:

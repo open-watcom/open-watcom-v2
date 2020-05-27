@@ -106,18 +106,20 @@ presented.
 The messages contain references to
 .id %s
 and
-.id %d.
+.id %d
+.period
 They represent strings that are substituted by &cmpname to make the
 error message more exact.
 .id %d
 represents a string of digits;
 .id %s
 any string, usually a symbolic name such as
-.id AMOUNT,
-a type such as
-.id INTEGER,
-or a symbol class such as
-.id SUBROUTINE.
+.id AMOUNT
+, a type such as
+.id INTEGER
+, or a symbol class such as
+.id SUBROUTINE
+.period
 An error message may contain more than one reference to %d.
 In such a case, the description will reference them as %dn where n is
 the occurrence of %d in the error message.

@@ -194,8 +194,7 @@ With partial data hiding, the actual types used to implement the
 structure would have to remain unchanged, otherwise at least a
 recompilation would be required. Changing a
 .kw struct
-..ct ,
-for example, would probably require a recompilation if only the
+.ct , for example, would probably require a recompilation if only the
 types changed, or new members were added.
 If, however, the names of the
 members changed, or some other fundamental change occurred, then

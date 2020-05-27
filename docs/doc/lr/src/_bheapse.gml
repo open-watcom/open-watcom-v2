@@ -17,12 +17,11 @@ indicates the initial size for the heap.
 The heap will automatically be enlarged as needed if there is not enough
 space available within the heap to satisfy an allocation request by
 .kw _bcalloc
-.ct,
+.ct ,
 .kw _bexpand
-.ct,
+.ct ,
 .kw _bmalloc
-.ct,
-or
+.ct , or
 .kw _brealloc
 .period
 .np

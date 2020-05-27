@@ -111,17 +111,20 @@ A type length specifier affects the conversion as follows:
 assign the converted value to an object of type
 .id signed char
 or
-.id unsigned char.
+.id unsigned char
+.period
 .bull
 "hh" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id signed char.
+.id signed char
+.period
 .bull
 "h" causes a "d", "i", "o", "u" or "x" (integer) conversion to
 assign the converted value to an object of type
 .id short int
 or
-.id unsigned short int.
+.id unsigned short int
+.period
 .bull
 .ix 'fixed-point'
 "h" causes an "f" conversion to assign a fixed-point number to an object
@@ -145,7 +148,8 @@ struct fixpt foo2 =
 .bull
 "h" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id short int.
+.id short int
+.period
 *.
 .if &'length(&wfunc.) ne 0 .do begin
 .bull
@@ -164,16 +168,18 @@ will not be converted.
 assign the converted value to an object of type
 .id long int
 or
-.id unsigned long int.
+.id unsigned long int
+.period
 .bull
 "l" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id long int.
+.id long int
+.period
 .bull
 "l" causes an "e", "f" or "g" (floating-point) conversion to assign
 the converted value to an object of type
-.id double.
-
+.id double
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .bull
 "l" or "w" cause an "s" operation to convert the input string to a
@@ -195,7 +201,8 @@ or
 .bull
 "ll" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id long long int.
+.id long long int
+.period
 .bull
 .ix 'intmax_t'
 .ix 'uintmax_t'
@@ -203,11 +210,13 @@ number of characters that have been read to an object of type
 assign the converted value to an object of type
 .id intmax_t
 or
-.id uintmax_t.
+.id uintmax_t
+.period
 .bull
 "j" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id intmax_t.
+.id intmax_t
+.period
 .bull
 .ix 'size_t'
 "z" causes a "d", "i", "o", "u" or "x" (integer) conversion to
@@ -218,7 +227,8 @@ or the corresponding signed integer type.
 "z" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of signed integer
 type corresponding to
-.id size_t.
+.id size_t
+.period
 .bull
 .ix 'ptrdiff_t'
 "t" causes a "d", "i", "o", "u" or "x" (integer) conversion to
@@ -228,7 +238,8 @@ or the corresponding unsigned integer type.
 .bull
 "t" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
-.id ptrdiff_t.
+.id ptrdiff_t
+.period
 .bull
 .ix '__int64'
 "I64" causes a "d", "i", "o", "u" or "x" (integer) conversion to
@@ -241,7 +252,8 @@ or
 .ix 'long double'
 "L" causes an "e", "f" or "g" (floating-point) conversion to assign
 the converted value to an object of type
-.id long double.
+.id long double
+.period
 .endbull
 .np
 The valid conversion type specifiers are:
@@ -260,7 +272,8 @@ is sufficient.
 .note C
 A sequence of multibyte characters in the input stream is matched.
 Each multibyte character is converted to a wide character of type
-.id wchar_t.
+.id wchar_t
+.period
 The number of wide characters matched is specified by the field width
 (1 if no field width is specified).
 The argument is assumed to point to the first element of an array of
@@ -275,7 +288,8 @@ is sufficient.
 A decimal integer, consisting of an optional sign, followed by one or
 more decimal digits, is matched.
 The argument is assumed to point to an object of type
-.id int.
+.id int
+.period
 .note e, f, g
 A floating-point number, consisting of an optional sign ("+" or
 "&minus."), followed by one or more decimal digits, optionally
@@ -285,7 +299,8 @@ digits, is matched.
 The exponent, if present, specifies the power of ten by which the
 decimal fraction is multiplied.
 The argument is assumed to point to an object of type
-.id float.
+.id float
+.period
 .note i
 An optional sign, followed by an octal, decimal or hexadecimal
 constant is matched.
@@ -295,7 +310,8 @@ more decimal digits.
 A hexadecimal constant consists of the characters "0x" or "0X"
 followed by one or more (upper- or lowercase) hexadecimal digits.
 The argument is assumed to point to an object of type
-.id int.
+.id int
+.period
 .note n
 No input data is processed.
 Instead, the number of characters that have already been read is
@@ -308,7 +324,8 @@ value) is not affected by the "n" conversion type specifier.
 An octal integer, consisting of an optional sign, followed by one or
 more (zero or non-zero) octal digits, is matched.
 The argument is assumed to point to an object of type
-.id int.
+.id int
+.period
 .note p
 A hexadecimal integer, as described for "x" conversions below, is
 matched.
@@ -333,13 +350,15 @@ character, which is added by the conversion operation.
 An unsigned decimal integer, consisting of one or more decimal digits,
 is matched.
 The argument is assumed to point to an object of type
-.id unsigned int.
+.id unsigned int
+.period
 .note x
 A hexadecimal integer, consisting of an optional sign, followed by an
 optional prefix "0x" or "0X", followed by one or more (upper- or
 lowercase) hexadecimal digits, is matched.
 The argument is assumed to point to an object of type
-.id int.
+.id int
+.period
 .note [c1c2...]
 The longest, non-empty sequence of characters, consisting of any of
 the characters
@@ -398,18 +417,18 @@ some_string 34.555e-3 abc1234
 will copy
 .mono "some_string"
 into the array
-.id name,
-skip
+.id name
+.ct , skip
 .mono 34.555e-3
-..ct ,
-assign
+.ct , assign
 .mono 0xabc
 to
 .id hexnum
 and
 .id 1234
 to
-.id decnum.
+.id decnum
+.period
 The return value will be 3.
 .np
 The program
@@ -441,8 +460,8 @@ will assign
 .blkcode end
 .blktext begin
 to
-.id string1,
-skip the comma (the
+.id string1
+.ct , skip the comma (the
 .mono "%*2s"
 will match only the comma; the following blank terminates that field),
 and assign
@@ -452,7 +471,8 @@ and assign
 .blkcode end
 .blktext begin
 to
-.id string2.
+.id string2
+.period
 .blktext end
 .oldtext end
 .if &farfnc eq 0 .do begin

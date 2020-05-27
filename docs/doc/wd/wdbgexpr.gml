@@ -52,7 +52,7 @@ lower level commands such
 .kw Examine
 and
 .kw Modify
-.ct .li .
+.period
 If the notation for a particular command argument is <address>,
 it is an address expression.
 If it ends in just "expr" then it is a normal expression.
@@ -1257,8 +1257,8 @@ which is a
 .id DERIVED
 type.
 To display all the fields of
-.id x,
-you can type cast it as follows.
+.id x
+, you can type cast it as follows.
 .exam begin 1
 *(DERIVED *)p
 .exam end
@@ -1313,7 +1313,8 @@ The example above permits us to set a breakpoint at the source code for the
 function
 .id foo
 in the class
-.id BASE.
+.id BASE
+.period
 .millust begin
     virtual void foo()
     {
@@ -1344,7 +1345,8 @@ base::~~base
 .np
 The examples above permit us to reference the source code for the
 constructor and destructor functions in the class
-.id BASE.
+.id BASE
+.period
 .*
 .endlevel
 .*

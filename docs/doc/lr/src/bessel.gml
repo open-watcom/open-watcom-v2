@@ -25,19 +25,17 @@ double yn( int n, double x );
 .ix '&Math' 'bessel Functions'
 Functions
 .kw j0
-.ct,
+.ct ,
 .kw j1
-.ct,
-and
+.ct , and
 .kw jn
 return Bessel functions of the first kind.
 .pp
 Functions
 .kw y0
-.ct,
+.ct ,
 .kw y1
-.ct,
-and
+.ct , and
 .kw yn
 return Bessel functions of the second kind.
 The argument
@@ -49,14 +47,13 @@ is negative,
 .kw _matherr
 will be called to print a DOMAIN error message to
 .kw stderr
-.ct,
-set
+.ct , set
 .kw errno
 to
 .kw EDOM
-.ct,
-and return the value
-.id -HUGE_VAL.
+.ct , and return the value
+.id -HUGE_VAL
+.period
 This error handling can be modified by using the
 .kw matherr
 routine.

@@ -21,7 +21,7 @@ functions convert the calendar time pointed to by
 .arg timer
 into a structure of type
 .kw tm
-.ct, of time information, expressed as local time.
+.ct , of time information, expressed as local time.
 Whenever
 .id &funcb.
 is called, the

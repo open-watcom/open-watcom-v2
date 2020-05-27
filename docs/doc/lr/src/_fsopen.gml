@@ -16,8 +16,7 @@ The
 .id &funcb.
 function opens the file whose name is the string pointed to by
 .arg filename
-.ct .li ,
-and associates a stream with it.
+.ct , and associates a stream with it.
 The arguments
 .arg mode
 and
@@ -155,9 +154,9 @@ intervening call to the
 .kw fflush
 function or to a file positioning function (
 .ct .kw fseek
-,
+.ct ,
 .kw fsetpos
-,
+.ct ,
 .kw rewind
 .ct ).
 Similarly, reading may not be followed by writing without an

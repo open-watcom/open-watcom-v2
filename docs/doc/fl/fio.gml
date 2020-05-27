@@ -371,7 +371,7 @@ A record may be read only if the variable, array element, or substring
 is defined (i.e., it has been assigned some value).
 Definition may not only result from an output statement such as
 .kw WRITE
-.ct .li .
+.period
 It may also be defined through other means; for example, a character
 assignment statement.
 .note Position
@@ -435,8 +435,8 @@ After checking for an
 or
 .mono "R"
 as the first character of the character variable
-.id INPUT,
-the appropriate internal
+.id INPUT
+.ct , the appropriate internal
 .kw READ
 statement is executed.
 .endlevel
@@ -776,7 +776,8 @@ The form of an error specifier in an input/output statement is:
 is a statement label.
 When an error occurs, execution is transferred to the statement
 labelled by
-.id s.
+.id s
+.period
 .endnote
 .np
 If an input/output error occurs during the execution of an input/output
@@ -798,7 +799,8 @@ The form of an end-of-file specifier in an input/output statement is:
 is a statement label.
 When an end-of-file condition occurs, execution is transferred to
 the statement labelled by
-.id s.
+.id s
+.period
 .endnote
 .np
 If an end-of-file condition occurs during the execution of an

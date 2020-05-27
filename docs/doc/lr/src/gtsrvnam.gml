@@ -11,7 +11,7 @@ matching
 .arg name
 and
 .arg protocol
-, returning a pointer the a
+.ct , returning a pointer the a
 .kw struct servent
 if found.  The function will search for matching aliases as
 well.  If

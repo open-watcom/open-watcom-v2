@@ -33,7 +33,7 @@ Perhaps
 the most important aspect of style is
 .ix 'style' 'consistency'
 .us consistency
-..ct ..li .
+.period
 Try, as much as possible, to use the same rules throughout the entire
 program.
 Having a mixed bag of styles within one program will confuse even the
@@ -188,8 +188,7 @@ declared to be.
 .pp
 Appropriate function names are also very important. Names such as
 .mono DoIt
-..ct ,
-while saving the original programmer from trying to think of a good
+.ct , while saving the original programmer from trying to think of a good
 name, make it more difficult for the next programmer to figure out
 what is going on.
 .*
@@ -241,7 +240,7 @@ an
 .kw if
 statement is always indented 4 spaces inside the
 .kw if
-..ct ..li .
+.period
 In this manner, all loop and selection statements will stand out,
 making it easier to determine when the statements end.
 .pp
@@ -412,7 +411,7 @@ automatically given
 .ix 'external linkage'
 .ix 'linkage' 'external'
 .us external linkage
-..ct ..li .
+.period
 This can lead to a proliferation of external symbols, which
 may cause naming conflicts.
 Also, some linking programs may impose limitations.
@@ -421,13 +420,12 @@ Only those functions that must have external linkage
 should be made external. All other definitions
 of functions should start with the keyword
 .kw static
-..ct ..li .
+.period
 .pp
 It also is a good idea to start definitions for external
 functions with the keyword
 .kw extern
-..ct ,
-even though it is the default case.
+.ct , even though it is the default case.
 .*
 .section Group Static Objects Together
 .*
@@ -466,8 +464,7 @@ has
 .ix 'internal linkage'
 .ix 'linkage' 'internal'
 .us internal linkage
-..ct ,
-then another object with the same name should not be declared in another
+.ct , then another object with the same name should not be declared in another
 module.
 The programmer may confuse them.
 .pp
@@ -475,10 +472,9 @@ Even more importantly, if an object exists with
 .ix 'external linkage'
 .ix 'linkage' 'external'
 .us external linkage
-..ct ,
-a module should not declare another object with the same name with
+.ct , a module should not declare another object with the same name with
 .us internal linkage
-..ct ..li .
+.period
 This second object will overshadow the first within the module, but
 the next programmer to look at the code will likely be confused.
 .*
@@ -529,10 +525,9 @@ For example,
 .pc
 would include the structures and related values from
 .mono symbols.h
-..ct ,
-and the function prototypes from
+.ct , and the function prototypes from
 .mono symbols.fn
-..ct ..li .
+.period
 .*
 .section Do Not Do Too Much In One Statement
 .*
@@ -593,7 +588,7 @@ Never
 a label that is above. That is the beginning of
 .ix 'spaghetti code'
 .us spaghetti code
-..ct ..li .
+.period
 Loop statements can always be used.
 .bull
 Never
@@ -635,8 +630,7 @@ and when it was modified.
 This last collection of information is commonly called an
 .ix 'audit trail'
 .us audit trail
-..ct ,
-as it leaves a trail allowing a programmer to see the evolution of
+.ct , as it leaves a trail allowing a programmer to see the evolution of
 the module, along with who has been changing it.
 .pp
 The following audit trail is from

@@ -299,8 +299,7 @@ then the pointer points to something far. Otherwise, if
 precedes the identifier of the object or function being declared
 (as in
 .mono &kwfar. x)
-..ct ,
-then the object itself is far.
+.ct , then the object itself is far.
 .pp
 The keyword
 .kwix &kwfar_sp.
@@ -308,7 +307,7 @@ The keyword
 can only be applied to function and object names
 and the indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 Parameters to functions may
 .us not
 be declared as
@@ -324,7 +323,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwfar_sp.
 .kwfont &kwfar.
-..ct ..li .
+.period
 .shade end
 .pp
 The following examples illustrate the use of the
@@ -420,7 +419,7 @@ which is a pointer
 .* (which is near)
 to a far function that returns a
 .kw float
-..ct ..li .
+.period
 .discuss end
 .keep begin
 .millust begin
@@ -477,8 +476,7 @@ then the pointer points to something near. Otherwise, if
 precedes the identifier of the object or function being declared
 (as in
 .mono &kwnear. x)
-..ct ,
-then the object itself is near.
+.ct , then the object itself is near.
 .pp
 The keyword
 .kwix &kwnear_sp.
@@ -495,7 +493,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwnear_sp.
 .kwfont &kwnear.
-..ct ..li .
+.period
 .shade end
 .pp
 The following examples illustrate the use of the
@@ -605,7 +603,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwhuge_sp.
 .kwfont &kwhuge.
-..ct ..li .
+.period
 .shade end
 .pp
 These examples illustrate the use of the
@@ -740,13 +738,13 @@ The keyword
 can only be applied to function and object names and the
 indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 Parameters to functions may
 .us not
 be declared as
 .kwix &kwfar_sp.
 .kwfont &kwfar.
-..ct , since they are always in the normal data region.
+.ct , since they are always in the normal data region.
 .pp
 These examples illustrate the use of the
 .kwix &kwfar_sp.
@@ -838,7 +836,7 @@ which is a pointer
 .* which is near
 to a far function that returns a
 .kw char
-..ct ..li .
+.period
 .discuss end
 .keep break
 .millust begin
@@ -882,7 +880,7 @@ The keyword
 can only be applied to function and object names and the
 indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 .pp
 For programmers using the small memory model, the
 .kwix &kwnear_sp.

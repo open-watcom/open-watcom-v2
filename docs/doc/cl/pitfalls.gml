@@ -55,8 +55,7 @@ if( chr = 'a' ) {
 .pc
 will never print the message
 .mono letter is not 'a'
-..ct ,
-regardless of the value of
+.ct , regardless of the value of
 .mono chr.
 .keep begin
 .pp
@@ -93,7 +92,7 @@ changing the
 .mono =
 to
 .mono ==
-..ct ..li .
+.period
 This statement says to compare the value of
 .mono chr
 against the constant
@@ -123,24 +122,22 @@ if( chr = getc() != EOF ) {
 .pc
 will always print
 .mono 1
-..ct ,
-as long as end-of-file is not detected in
+.ct , as long as end-of-file is not detected in
 .libfn getc
-..ct ..li .
+.period
 The intention was to assign the value from
 .libfn getc
 to
 .mono chr
-..ct ,
-then to test the value against
+.ct , then to test the value against
 .mono EOF
-..ct ..li .
+.period
 .pp
 The problem occurs in the first line, which
 says to call the
 library function
 .libfn getc
-..ct ..li .
+.period
 The return value from
 .libfn getc
 (an integer value representing a character, or
@@ -149,8 +146,7 @@ if end-of-file
 is detected),
 is compared against
 .mono EOF
-..ct ,
-and if they are not equal (it's not end-of-file),
+.ct , and if they are not equal (it's not end-of-file),
 then 1 is assigned to the object
 .mono chr.
 Otherwise, they are equal and 0 is assigned to
@@ -253,8 +249,7 @@ Error! Expecting ')' but found ';' on line 372
 The problem is easily spotted when the macro substitution is
 performed on line 372. Using the definition for
 .mono MAXVAL
-..ct ,
-the substituted version of line 372 reads,
+.ct , the substituted version of line 372 reads,
 .millust begin
 if( value >= 10; ) break;
 .millust end
@@ -299,7 +294,7 @@ to be displayed.
 .pp
 The problem occurs because of the
 .kw else
-..ct ..li .
+.period
 The program is indented incorrectly according to the syntax that the
 compiler will determine from the statements. The correct indentation
 should clearly show where the error lies:
@@ -316,8 +311,7 @@ The
 belongs to the
 .us second
 .kw if
-..ct ,
-not the first. Whenever there is more than one
+.ct , not the first. Whenever there is more than one
 .kw if
 statement without braces and without an
 .kw else
@@ -376,7 +370,7 @@ occurs. Then the
 label is encountered. Labels are ignored in execution, so the next
 statement executed is the second
 .libfn printf
-..ct ..li .
+.period
 .pp
 To correct this example, it should be changed to,
 .millust begin

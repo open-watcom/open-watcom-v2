@@ -27,7 +27,7 @@ If the parent process of the calling process is executing a
 .kw wait
 or
 .kw waitpid
-, it is notified of the calling process's termination and the low order
+.ct , it is notified of the calling process's termination and the low order
 8 bits of
 .arg status
 are made available to it.
@@ -104,7 +104,8 @@ set to some other value to indicate an error.
 The
 .id _exit
 is functionaly equivalent to
-.id &funcb..
+.id &funcb.
+.period
 .desc end
 .return begin
 The

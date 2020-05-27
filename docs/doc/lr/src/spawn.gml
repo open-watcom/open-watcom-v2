@@ -176,20 +176,19 @@ DOS systems.
 .np
 The arguments may be passed as a list of arguments (
 .ct .kw spawnl
-.ct,
+.ct ,
 .kw spawnle
-.ct,
+.ct ,
 .kw spawnlp
 and
 .kw spawnlpe
 .ct ) or as a vector of pointers (
 .ct .kw spawnv
-.ct,
+.ct ,
 .kw spawnve
-.ct,
+.ct ,
 .kw spawnvp
-.ct,
-and
+.ct , and
 .kw spawnvpe
 .ct ).
 At least one argument,
@@ -212,18 +211,18 @@ pointer.
 The environment for the invoked program is inherited from the parent
 process when you use the
 .kw spawnl
-.ct,
+.ct ,
 .kw spawnlp
-.ct,
+.ct ,
 .kw spawnv
 and
 .kw spawnvp
 functions.
 The
 .kw spawnle
-.ct,
+.ct ,
 .kw spawnlpe
-.ct,
+.ct ,
 .kw spawnve
 and
 .kw spawnvpe
@@ -337,8 +336,7 @@ is the process ID (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
 .kw P_NOWAIT
-.ct,
-you must call the
+.ct , you must call the
 .kw wait
 (under OS/2 or QNX)
 .if '&machsys' ne 'QNX' .do begin

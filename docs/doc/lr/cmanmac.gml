@@ -518,7 +518,7 @@ Prototype in
 .   .if '&*2' ne 'Functions' .do begin
 .   .   .if '&*1' ne '&*2' .do begin
 .   .   .   .if &'vecpos(&*2,fnclst) ne 0 .do begin
-.   .   .   .   .if &seecnt. ne 0 .ct,
+.   .   .   .   .if &seecnt. ne 0 .ct ,
 .   .   .   .   .se seecnt=1
 .   .   .   .   .if &e'&dohelp eq 0 .do begin
 .   .   .   .   .   .mono &*2

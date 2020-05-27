@@ -40,9 +40,9 @@ could not be found
 .term EINVAL
 The process ID
 .arg pid
-, policy value
+.ct , policy value
 .arg policy
-, or the pointer
+.ct , or the pointer
 .arg sp
 is invalid
 .term EFAULT

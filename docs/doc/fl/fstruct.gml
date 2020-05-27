@@ -323,8 +323,8 @@ statement.
 If the value of variable
 .id A
 is less than the value of variable
-.id B,
-the string
+.id B
+.ct , the string
 .mono A LESS THAN B
 will be printed and variable
 .id A
@@ -396,7 +396,7 @@ statement is treated in the same manner as if the word
 .kw CONTINUE
 had been used instead of
 .kw END DO
-.ct .li .
+.period
 .np
 Some examples follow.
 .keep 10
@@ -683,8 +683,8 @@ becomes equal to zero.
 The effect of this loop will be to assign values to elements of array
 .id A
 from array
-.id B,
-starting with the element of
+.id B
+.ct , starting with the element of
 .id A
 corresponding to the initial value of variable
 .id J
@@ -931,7 +931,8 @@ statement and none of the CASE-blocks is executed.
 .pc
 This example will execute in the manner described below for each of
 the possible values of variable
-.id I.
+.id I
+.period
 .begpoint
 .point (i)
 .id I
@@ -964,7 +965,9 @@ will be assigned the value of the expression
 .mono Y**2 + X
 .br
 - the values of
-.id X, Y
+.id X
+.ct ,
+.id Y
 and
 .id Z
 will be printed
@@ -991,7 +994,9 @@ statement
 .id I = 4:
 .br
 -
-.id Z, Y
+.id Z
+.ct ,
+.id Y
 and
 .id X
 will be assigned new values
@@ -999,7 +1004,9 @@ will be assigned new values
 - the string
 .mono CASE 4,
 followed by the values of
-.id X, Y
+.id X
+.ct ,
+.id Y
 and
 .id Z
 will be printed
@@ -1947,7 +1954,7 @@ control statement such as
 .kw GO TO
 or the arithmetic
 .kw IF
-.ct .li .
+.period
 .np
 Consider the following example.
 .keep 10

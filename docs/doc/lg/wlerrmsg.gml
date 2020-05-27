@@ -52,14 +52,20 @@
 .im wlerrfmt
 .np
 The messages listed contain references to
-.id %s,
-.id %S,
-.id %a,
-.id %x,
-.id %d,
-.id %l,
-and
-.id %f.
+.id %s
+.ct ,
+.id %S
+.ct ,
+.id %a
+.ct ,
+.id %x
+.ct ,
+.id %d
+.ct ,
+.id %l
+.ct , and
+.id %f
+.period
 They represent strings that are substituted by the &lnkname to make
 the error message more precise.
 .autonote

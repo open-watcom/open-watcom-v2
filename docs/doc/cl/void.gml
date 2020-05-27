@@ -47,7 +47,7 @@ For example,
 .pc
 calls the library function
 .libfn getchar
-..ct , which normally returns a character.
+.ct , which normally returns a character.
 In this case, the character is discarded, effectively advancing
 one character in the file without caring what character is read.
 This use of
@@ -73,9 +73,8 @@ int getchar( void );
 .pc
 declares the standard library function
 .libfn getchar
-..ct ,
-which takes no parameters and returns an integer.
+.ct , which takes no parameters and returns an integer.
 .pp
 No object (other than a function) may be declared with type
 .kw void
-..ct ..li .
+.period

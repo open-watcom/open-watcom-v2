@@ -90,8 +90,7 @@ For example, for the command line,
 .mono argc
 would have the value
 .mono 5
-..ct ,
-and the five elements of
+.ct , and the five elements of
 .mono argv
 would be,
 .millust begin
@@ -323,11 +322,9 @@ or
 .kw char
 as
 .kw unsigned
-..ct ,
-although a compiler command line switch
-can be used to make it
+.ct , although a compiler command line switch can be used to make it
 .kw signed
-..ct ..li .
+.period
 .endbigterms
 .*
 .section Integers
@@ -394,11 +391,10 @@ interpreted according to the result type.
 :CMT. .pp
 :CMT. There are two characters in an
 :CMT. .kw int
-:CMT. ..ct ,
-:CMT. with the low-order portion of the integer being stored at a lower
+:CMT. .ct , with the low-order portion of the integer being stored at a lower
 :CMT. address than the high-order portion. There are four characters in a
 :CMT. .kw long int
-:CMT. ..ct ..li .
+:CMT. .period
 .bigterm
 The sign of the remainder on integer division (6.3.5).
 .bigdesc
@@ -447,7 +443,7 @@ Truncation is only possible when converting a
 .kw long int
 (signed or unsigned) to
 .kw float
-..ct ..li .
+.period
 The 24 most-significant bits (including sign bit) are used.
 The 25th is examined,
 and if it is 1, the value is rounded up by adding one to the 24-bit
@@ -677,14 +673,14 @@ huge memory model is being used,
 .kw ptrdiff_t
 has type
 .kw long int
-..ct ..li .
+.period
 .pp
 For all other memory models,
 .ix 'ptrdiff_t'
 .kw ptrdiff_t
 has type
 .kw int
-..ct ..li .
+.period
 .pp
 If two huge pointers are subtracted and the huge memory model is
 not being used,
@@ -695,7 +691,7 @@ even though
 .kw ptrdiff_t
 is
 .kw int
-..ct ..li .
+.period
 .endbigterms
 .*
 .section Registers
@@ -784,7 +780,7 @@ will be chosen according to the following table:
 Both compilers have a command-line switch that force all enumerations
 to type
 .kw int
-..ct ..li .
+.period
 See the &userguide. for details.
 .endbigterms
 .*

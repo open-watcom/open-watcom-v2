@@ -47,7 +47,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwbased_sp.
 .kwfont &kwbased.
-..ct ..li .
+.period
 .*
 &wcboth. provide the predefined macro
 .mkw _segment
@@ -55,7 +55,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwsegm_sp.
 .kwfont &kwsegment.
-..ct ..li .
+.period
 .*
 &wcboth. provide the predefined macro
 .mkw _segname
@@ -63,7 +63,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwsegnm_sp.
 .kwfont &kwsegname.
-..ct ..li .
+.period
 .*
 &wcboth. provide the predefined macro
 .mkw _self
@@ -71,7 +71,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwself_sp.
 .kwfont &kwself.
-..ct ..li .
+.period
 .sk 1
 .*
 The keywords
@@ -93,7 +93,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwfar_sp.
 .kwfont &kwfar.
-..ct ..li .
+.period
 .*
 &wcboth. provide the predefined macros
 .mkw huge
@@ -103,7 +103,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwhuge_sp.
 .kwfont &kwhuge.
-..ct ..li .
+.period
 .*
 &wcboth. provide the predefined macros
 .mkw near
@@ -113,7 +113,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwnear_sp.
 .kwfont &kwnear.
-..ct ..li .
+.period
 .pp
 The keywords
 .kwix &kwfar16_sp.
@@ -132,7 +132,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwfar16_sp.
 .kwfont &kwfar16.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwipckd_sp.
@@ -163,7 +163,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwcdecl_sp.
 .kwfont &kwcdecl.
-..ct ..li .
+.period
 .pp
 .ix 'Win32 convention'
 The
@@ -184,7 +184,7 @@ It may be used in place of
 .kwix &kwfastc_sp.
 .kwfont &kwfastcall.
 See the &userguide..
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwfortr_sp.
@@ -206,7 +206,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwfortr_sp.
 .kwfont &kwfortran.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwpascl_sp.
@@ -221,7 +221,7 @@ calling a function written in Pascal.
 All parameters are pushed onto the stack, but in reverse order to the
 order specified by
 .kwfont &kwcdecl.
-..ct ..li .
+.period
 This calling convention may be controlled by a
 .kwpp #pragma
 directive.
@@ -234,7 +234,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwpascl_sp.
 .kwfont &kwpascal.
-..ct ..li .
+.period
 .pp
 .ix 'OS/2 convention'
 The
@@ -259,7 +259,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwsyscl_sp.
 .kwfont &kwsyscall.
-..ct ..li .
+.period
 .pp
 .ix 'Win32 convention'
 The
@@ -325,7 +325,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwexprt_sp.
 .kwfont &kwexport.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwintr_sp.
@@ -344,7 +344,7 @@ are suitable for attaching to the
 interrupt vector using the library
 function
 .libfn _dos_setvect
-..ct ..li .
+.period
 &wcboth. provide the predefined macros
 .mkw interrupt
 and
@@ -353,7 +353,7 @@ for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
 .kwix &kwintr_sp.
 .kwfont &kwintrpt.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwlodds_sp.
@@ -370,7 +370,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwlodds_sp.
 .kwfont &kwloadds.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwsvreg_sp.
@@ -384,7 +384,7 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwsvreg_sp.
 .kwfont &kwsaveregs.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwtry_sp.
@@ -418,28 +418,28 @@ for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwtry_sp.
 .kwfont &kwtry.
-..ct ..li .
+.period
 &wcboth. provide the predefined macro
 .mkw _except
 for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwexcpt_sp.
 .kwfont &kwexcept.
-..ct ..li .
+.period
 &wcboth. provide the predefined macro
 .mkw _finally
 for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwfnly_sp.
 .kwfont &kwfinally.
-..ct ..li .
+.period
 &wcboth. provide the predefined macro
 .mkw _leave
 for convenience and compatibility with the Microsoft C compiler.
 It may be used in place of
 .kwix &kwleave_sp.
 .kwfont &kwleave.
-..ct ..li .
+.period
 .pp
 The
 .kwix &kwimagu_sp.

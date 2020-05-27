@@ -15,14 +15,14 @@ file descriptor, returning a static pointer to the name.
 Subsequent calls may change the contents of the string 
 pointed to by the original call to 
 .id &funcb.
-, and the memory to which the return value points should not
+.ct , and the memory to which the return value points should not
 be freed.
 .np
 The 
 .kw ttyname_r
 function performs the same function as
 .id &funcb.
-, but the name of the TTY is returned in the
+.ct , but the name of the TTY is returned in the
 .arg buf
 argument.  The argument
 .arg buflen

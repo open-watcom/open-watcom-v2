@@ -208,13 +208,13 @@ When compiled and executed using WATFIV or WATFOR-11, the values
 of
 .id M
 and
-.id N,
-at the PRINT statement, are 2 and 1 respectively.
+.id N
+, at the PRINT statement, are 2 and 1 respectively.
 When compiled and executed using &cmpname, the values of
 .id M
 and
-.id N,
-at the PRINT statement, are both 2.
+.id N
+, at the PRINT statement, are both 2.
 .note
 WATFIV/WATFOR-11 permit the association of a scalar variable
 actual argument with a single-element array dummy argument.

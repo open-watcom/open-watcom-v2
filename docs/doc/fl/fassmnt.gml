@@ -46,12 +46,12 @@ The following are examples of arithmetic assignment statements.
 .pc
 Executing an arithmetic assignment statement causes the evaluation of the
 arithmetic expression
-.id e,
-converting the type of the expression
+.id e
+.ct , converting the type of the expression
 .id e
 to the type of
-.id v,
-and defining
+.id v
+.ct , and defining
 .id v
 with the result.
 .np
@@ -74,7 +74,8 @@ is such that &minus.32768 <=
 <= 32767,
 .id v
 will be assigned the value of
-.id e.
+.id e
+.period
 Otherwise,
 .id v
 will be undefined.
@@ -88,7 +89,8 @@ is such that &minus.128 <=
 <= 127,
 .id v
 will be assigned the value of
-.id e.
+.id e
+.period
 Otherwise,
 .id v
 will be undefined.
@@ -121,8 +123,8 @@ The following are examples of logical assignment statements.
 .pc
 Executing a logical assignment statement causes the evaluation of the
 logical expression
-.id e,
-and defining
+.id e
+.ct , and defining
 .id v
 with the result.
 Note that the type of
@@ -156,7 +158,8 @@ The result of executing an
 statement causes the integer variable
 .id i
 to be defined with the value of the statement label
-.id s.
+.id s
+.period
 .id s
 must be the statement label of an executable statement or a format
 statement in the same program unit in which the
@@ -238,7 +241,8 @@ with the result.
 None of the character positions defined in
 .id v
 may be referenced in
-.id e.
+.id e
+.period
 The following example is illegal since the 4th and 5th character
 positions of
 .id A
@@ -262,17 +266,19 @@ then
 the assignment has the effect of truncating
 .id e
 from the right to the length of
-.id v.
+.id v
+.period
 If the length of
 .id v
 is greater than the length of
-.id e,
-the value assigned to
+.id e
+.ct , the value assigned to
 .id v
 is the value of
 .id e
 padded on the right with blanks to the length of
-.id v.
+.id v
+.period
 .*
 .section Extended Assignment Statement
 .*

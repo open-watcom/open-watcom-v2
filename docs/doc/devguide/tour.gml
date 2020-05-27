@@ -101,7 +101,8 @@ out and unified, although there still may be some warts.
 The root of the Open Watcom directory tree can be in the root of
 any drive (if your OS uses drive letters) or in any directory, for
 instance
-.id e:\ow.
+.id e:\ow
+.period
 Long filenames are not recommended if compatibility with DOS tools is
 desired. Directory names which include spaces are highly discouraged in
 any case.
@@ -116,8 +117,8 @@ This file controls the operation of wmake and is the key to understanding
 of the build process. Since wmake looks for
 .us makeinit
 along the
-.id PATH,
-the
+.id PATH
+.ct , the
 .us build
 directory should be placed at or near the start of your
 .id PATH
@@ -421,7 +422,8 @@ If you set up everything correctly, you will end up with working binaries
 that were automatically copied into the right subdirectory of the
 .us build
 directory, and that directory is already on the
-.id PATH.
+.id PATH
+.period
 If not, it's back to square one &mdash the most likely source of problems
 is incorrectly set up
 .us setvars

@@ -10,29 +10,27 @@ The
 function closes all open stream files, except
 .if '&machsys' eq 'QNX' .do begin
 .kw stdin
-.ct,
+.ct ,
 .kw stdout
-.ct,
-and
+.ct , and
 .kw stderr
 .period
 .do end
 .el .do begin
 .kw stdin
-.ct,
+.ct ,
 .kw stdout
-.ct,
+.ct ,
 .kw stderr
-.ct,
+.ct ,
 .kw stdaux
-.ct,
-and
+.ct , and
 .kw stdprn
 .period
 .do end
 This includes streams created (and not yet closed) by
 .kw fdopen
-.ct,
+.ct ,
 .kw fopen
 and
 .kw freopen

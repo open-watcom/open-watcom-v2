@@ -58,9 +58,9 @@ The sleep was interrupted by a signal.
 .term EINVAL
 The value of
 .arg clockid
-,
+.ct ,
 .arg request
-, or
+.ct , or
 .arg flags
 is invalid.
 .term ENOTSUP

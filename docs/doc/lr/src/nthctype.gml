@@ -90,7 +90,7 @@ void main()
 .exmp break
     for( i = 0; i < 9; i++ )
         printf( "%s\n",
-            types[ 1 + nthctype( "abA¡Bc", i ) ]
+            types[ 1 + nthctype( "ab?A¡?Bc", i ) ]
             );
   }
 .exmp output

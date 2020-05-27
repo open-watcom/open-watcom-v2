@@ -27,24 +27,24 @@ The file is referenced using the file &handle
 returned by a successful execution of one of the
 .if '&machsys' eq 'QNX' .do begin
 .kw creat
-.ct,
+.ct ,
 .kw dup
-.ct,
+.ct ,
 .kw dup2
-.ct,
+.ct ,
 .kw fcntl
-.ct,
+.ct ,
 .kw open
 or
 .kw sopen
 .do end
 .el .do begin
 .kw creat
-.ct,
+.ct ,
 .kw dup
-.ct,
+.ct ,
 .kw dup2
-.ct,
+.ct ,
 .kw open
 or
 .kw sopen

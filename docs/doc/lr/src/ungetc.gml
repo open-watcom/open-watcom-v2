@@ -24,7 +24,7 @@ The pushed-back character will be discarded if a call is made to the
 .kw fflush
 function or to a file positioning function (
 .ct .kw fseek
-.ct,
+.ct ,
 .kw fsetpos
 or
 .kw rewind

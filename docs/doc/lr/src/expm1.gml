@@ -16,7 +16,7 @@ is significantly less than 1.0.
 .desc end
 .return begin
 The function returns a the exponential of
-,arg x
+.arg x
 minus 1 without loss of accuracy due to subtractive cancelation.
 .return end
 .see begin

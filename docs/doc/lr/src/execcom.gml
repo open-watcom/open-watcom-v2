@@ -89,12 +89,11 @@ concatenated to the end of the program name.
 When no directory specification is given as part of the program name,
 the
 .kw &*1.lp
-.ct,
+.ct ,
 .kw &*1.lpe
-.ct,
+.ct ,
 .kw &*1.vp
-.ct,
-and
+.ct , and
 .kw &*1.vpe
 functions will repeat
 the preceding three steps for each of the directories

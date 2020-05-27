@@ -11,9 +11,9 @@ a matching address type, specified by
 .arg type
 as
 .kw AF_INET
-, 
+.ct , 
 .kw AF_INET6
-, etc., and address matching the
+.ct , etc., and address matching the
 .arg net
 argument.
 The function returns information about said network if a match

@@ -528,8 +528,7 @@ Save the debugger's current configuration. This saves the positions
 and sizes of all windows as well as all options and settings. By
 default, this information is saved into the file
 .fi setup.dbg
-.ct ,
-however, you can save this information into another file to
+.ct , however, you can save this information into another file to
 create alternate debugger configurations.
 .*
 .menuitem Load Setup

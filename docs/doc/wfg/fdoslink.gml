@@ -41,8 +41,8 @@ found in your program.
 Directories are searched in the order they were specified in the
 &setcmdup command.
 When an undefined symbol, say
-.id SYM,
-is detected, &cmpname will attempt to resolve it.
+.id SYM
+, is detected, &cmpname will attempt to resolve it.
 First, if the
 .ev LIBRARY
 environment variable is not set, an error is issued indicating the
@@ -77,9 +77,12 @@ Consider the following program.
 .millust end
 .np
 The above program uses three subroutines, namely
-.id PLOTINIT, PLOTPNT,
-and
-.id PLOT.
+.id PLOTINIT
+.ct ,
+.id PLOTPNT
+.ct , and
+.id PLOT
+.period
 If we were to compile this program, an error message for each
 subroutine would be issued indicating that they are undefined.
 .np

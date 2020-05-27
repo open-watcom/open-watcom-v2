@@ -84,10 +84,12 @@ The meaning of this will be discussed later.
 If the lower dimension bound is not specified then a default of 1
 is assumed.
 The size of a dimension is defined as
-.id hi &minus. lo + 1.
+.id hi &minus. lo + 1
+.period
 Note that if the lower dimension bound is not specified the size of the
 dimension is just
-.id hi.
+.id hi
+.period
 The size of the array (or the number of elements in the array)
 is defined as the product of all the sizes of the
 dimensions of the array.
@@ -483,7 +485,8 @@ The first
 statement is used to allocate the array
 .id A
 with bounds
-.id 1:N.
+.id 1:N
+.period
 The second
 .kw ALLOCATE
 statement is used to allocate the array

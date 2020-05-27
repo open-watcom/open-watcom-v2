@@ -76,16 +76,15 @@ Assertion failed: [expression], file [name], line [number]
 .bigterm
 The sets of characters tested for by the
 .kw isalnum
-.ct,
+.ct ,
 .kw isalpha
-.ct,
+.ct ,
 .kw iscntrl
-.ct,
+.ct ,
 .kw islower
-.ct,
+.ct ,
 .kw isprint
-.ct,
-and
+.ct , and
 .kw isupper
 functions (7.3.1).
 .bigdesc
@@ -497,10 +496,9 @@ function generates the following messages.
 .bigterm
 The behavior of the
 .kw calloc
-.ct,
+.ct ,
 .kw malloc
-.ct,
-or
+.ct , or
 .kw realloc
 function if the size requested is zero (7.10.3).
 .bigdesc
@@ -528,8 +526,7 @@ The status returned by the
 .kw exit
 function if the value of the argument is other than zero,
 .kw EXIT_SUCCESS
-.ct,
-or
+.ct , or
 .kw EXIT_FAILURE
 (7.10.4.3).
 .bigdesc

@@ -206,7 +206,8 @@ C>&ccmd16 ..\source\modabs
 .exam end
 .pc
 The options
-.id /short,
+.id /short
+.ct ,
 .id /d2
 and
 .id /fo=*.dbj

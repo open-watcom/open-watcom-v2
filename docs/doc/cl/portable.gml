@@ -231,7 +231,7 @@ not be the same as contained in the source code.
 Another implementation-defined behavior occurs with the type
 .ix 'type' 'char'
 .kw char
-..ct ..li .
+.period
 The standard does not impose a
 .kw signed
 or
@@ -264,10 +264,10 @@ may be required.
 The same argument applies to objects with type
 .ix 'type' 'float'
 .kw float
-..ct ..li .
+.period
 It may make more sense to declare them with type
 .kw double
-..ct ..li .
+.period
 .pp
 When converting floating-point numbers to integers,
 the rounding behavior
@@ -326,14 +326,12 @@ For example, consider the macros,
 .pc
 They describe a set of operating systems
 .mono (OS)
-..ct ,
-hardware
+.ct , hardware
 .mono (HW)
 and
 processors
 .mono (PR)
-..ct ,
-which together can completely describe a computer and
+.ct , which together can completely describe a computer and
 its operating system.
 If the program was being ported to a IBM 370 running the MVS operating
 system, then it could include a header defining the macros above, and

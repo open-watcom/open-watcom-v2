@@ -17,7 +17,8 @@ The
 function computes the largest integer not greater than
 .arg x
 .ct , expressed as a
-.id double.
+.id double
+.period
 .return end
 .see begin
 .seelist floor ceil fmod

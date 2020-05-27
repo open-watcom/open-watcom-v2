@@ -25,18 +25,18 @@ function sets the process's file mode creation mask to
 The process's file mode creation mask is used during
 .if '&machsys' eq 'QNX' .do begin
 .kw creat
-.ct,
+.ct ,
 .kw mkdir
-.ct,
+.ct ,
 .kw mkfifo
-.ct,
+.ct ,
 .kw open
 or
 .kw sopen
 .do end
 .el .do begin
 .kw creat
-.ct,
+.ct ,
 .kw open
 or
 .kw sopen

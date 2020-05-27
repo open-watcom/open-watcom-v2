@@ -2161,7 +2161,8 @@ in your application.
 .endnote
 .np
 The following example illustrates the use of
-.id &growhndl..
+.id &growhndl.
+.period
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .exam begin
 /*

@@ -22,5 +22,5 @@ one of the alias names
 .kwm __cdecl
 or
 .kwm __pascal
-.ct .li .
+.period
 These alias names will be described in a later section.

@@ -61,7 +61,7 @@ the
 .arg stream
 to that specified by
 .arg mode
-,as if the name of the file currently associated with
+.ct , as if the name of the file currently associated with
 the stream had been used. It is implementation-defined which changes of mode are
 permitted (if any), and under what circumstances.
 The

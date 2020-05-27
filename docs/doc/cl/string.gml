@@ -12,7 +12,7 @@ a character with the value zero, represented as
 .mono \0
 within a string, or as the character constant
 .mono '\0'
-..ct ..li .
+.period
 Because string processing is such a common task in programming,
 C provides a set of
 library functions

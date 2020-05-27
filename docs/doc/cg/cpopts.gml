@@ -1469,7 +1469,7 @@ Defines the macros
 .kwm _DOS
 and
 .kwm MSDOS
-.ct .li .
+.period
 .note WINDOWS
 Same as specifying one of the "zw" options.
 Defines the macros
@@ -1483,15 +1483,15 @@ and
 Causes the compiler to use stack-based calling conventions.
 Also defines the macro
 .kwm __NETWARE_386__
-.ct .li .
+.period
 .note QNX
 Defines the macro
 .kwm __UNIX__
-.ct .li .
+.period
 .note LINUX
 Defines the macro
 .kwm __UNIX__
-.ct .li .
+.period
 .endnote
 .np
 Specifying "bt" with no target name following restores the default
@@ -1508,8 +1508,10 @@ The presence of
 .id LibMain/DLLMain
 in the source code does not influence the selection of startup code.
 Only
-.id main,
-.id wmain,
+.id main
+.ct ,
+.id wmain
+.ct ,
 .id WinMain
 and
 .id wWinMain
@@ -1667,7 +1669,8 @@ requirements.
 Hence the requirement for a stack-growing run-time routine.
 .ix '__GRO' 'stack growing'
 The stack-growing run-time routine is called
-.id __GRO.
+.id __GRO
+.period
 .np
 The "stack=" linker option specifies how much stack is available and
 committed for the primary thread when an executable starts.
@@ -2316,7 +2319,7 @@ If, for example, the option was specified as
 .mono fo=&dr4&pc.proj&pc.prep
 then the output file would be called
 .fi &dr4.&pc.proj&pc.prep.i
-.ct ~.
+.period
 A default filename extension must be preceded by a period (".").
 .exam begin 1
 &prompt.:SF font=1.compiler_name:eSF. report &sw.p &sw.fo=&dr4.&pc.proj&pc.prep&pc..cpr
@@ -2816,7 +2819,7 @@ If, for example, the option was specified as
 .mono fo=&dr4.&pc.proj&pc.obj
 then the dependency file will be called
 .fi &dr4.&pc.proj&pc.obj.d
-.ct ~.
+.period
 .np
 A default filename extension must be preceded by a period (".").
 .exam begin 1
@@ -2895,7 +2898,7 @@ If, for example, the option was specified as
 .mono fo=&dr4.&pc.proj&pc.obj
 then the dependency file would be called
 .fi &dr4.&pc.proj&pc.obj&obj.
-.ct ~.
+.period
 .np
 A default filename extension must be preceded by a period (".").
 .exam begin 1
@@ -3040,7 +3043,7 @@ If, for example, the option was specified as
 .mono fo=&dr4.&pc.proj&pc.obj
 then the object file would be called
 .fi &dr4.&pc.proj&pc.obj&obj.
-.ct ~.
+.period
 .np
 A default filename extension must be preceded by a period (".").
 .exam begin 1
@@ -3071,7 +3074,7 @@ If, for example, the option was specified as
 .mono fr=&dr4&pc.proj&pc.errs
 then the output file would be called
 .fi &dr4.&pc.proj&pc.errs&err
-.ct ~.
+.period
 A default filename extension must be preceded by a period (".").
 .exam begin 1
 &prompt.:SF font=1.compiler_name:eSF. report &sw.fr=&dr4.&pc.proj&pc.errs&pc..erf
@@ -3515,9 +3518,10 @@ In the above example,
 and
 .id ctable
 and the strings
-.id "robin",
-.id "finch",
-etc. are placed in the code segment.
+.id "robin"
+.ct ,
+.id "finch"
+, etc. are placed in the code segment.
 This option is supported in large data or flat memory models only, or
 if the item is explicitly "far".
 .ix 'macros' '__SW_ZC'
@@ -5214,8 +5218,10 @@ Generate in-line 80x87 code for math functions like sin, cos, tan, etc.
 If this option is selected, it is the programmer's responsibility to
 make sure that arguments to these functions are within the range
 accepted by the
-.id fsin, fcos,
-etc. instructions since no run-time check is made.
+.id fsin
+.ct ,
+.id fcos
+.ct , etc. instructions since no run-time check is made.
 For 16-bit, you must also include the "fp3" option to get in-line
 80x87 code (except for fabs).
 The functions that can be generated in-line are:

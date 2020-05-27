@@ -8,20 +8,18 @@ For example, the value
 .mono 1
 may have the type
 .kw signed int
-..ct ,
-while the value
+.ct , while the value
 .mono 400000
 may have the type
 .kw signed long
-..ct ..li .
+.period
 In many cases, the type of the constant does not matter.
 If, for
 example, the value
 .mono 1
 is assigned to an object of type
 .kw long int
-..ct ,
-then the value
+.ct , then the value
 .mono 1
 will be converted to a
 long integer before the assignment takes place.
@@ -42,15 +40,15 @@ or
 .mono U
 indicating an
 .kw unsigned int
-..ct , or by
+.ct , or by
 .mono l
 or
 .mono L
 indicating a
 .kw long int
-..ct , or by both indicating an
+.ct , or by both indicating an
 .kw unsigned long int
-..ct ..li .
+.period
 .pp
 If a constant does not start with a zero and contains a sequence of
 digits, then it is interpreted as a decimal (base 10) constant.
@@ -318,7 +316,7 @@ a period, an
 .mono e
 or
 .mono E
-..ct , or both.
+.ct , or both.
 It consists of a value part
 (mantissa) optionally followed by an exponent.
 The mantissa may
@@ -340,17 +338,16 @@ or
 may be added indicating the constant
 has type
 .kw float
-..ct ,
-or the suffix
+.ct , or the suffix
 .mono l
 or
 .mono L
 indicating the constant has type
 .kw long double
-..ct ..li .
+.period
 If no suffix is present then the constant has type
 .kw double
-..ct ..li .
+.period
 .pp
 In the mantissa, either the whole number part or the fractional part
 must be present. If only the whole number part is present and no
@@ -409,7 +406,7 @@ and indicates a constant whose value
 is the representation of the character in the execution character set.
 A character constant has type
 .kw int
-..ct ..li .
+.period
 .pp
 The character enclosed in quotes may be any character in the source
 character set. Certain characters in the character set may not be
@@ -514,7 +511,7 @@ If more than one octal value is to be specified in a character
 constant, then each octal value must
 be specified starting with
 .mono \
-..ct ..li .
+.period
 .pp
 The meaning of character constants with more than one character
 is implementation-defined.
@@ -527,8 +524,7 @@ followed by one or more hexadecimal digits
 .mono 0
 through
 .mono 9
-..ct ,
-and the letters
+.ct , and the letters
 .mono a
 through
 .mono f
@@ -571,7 +567,7 @@ characters
 .mono '\xF'
 and
 .mono 'x'
-..ct ..li .
+.period
 .pp
 If more hexadecimal digits are found than are required to specify
 one character, the behavior is implementation-defined.
@@ -582,7 +578,7 @@ If more than one hexadecimal value is to be specified in a character
 constant, then each hexadecimal value must
 be specified starting with
 .mono \x
-..ct ..li .
+.period
 .pp
 The meaning of character constants with more than one character
 is implementation-defined.
@@ -609,7 +605,7 @@ character constants with more than one
 character.
 These may be used to initialize larger types, such as
 .kw int
-..ct .li .
+.period
 For example, the program fragment:
 .millust begin
 int code;
@@ -621,7 +617,7 @@ assigns the constant value
 .mono 'ab'
 to the integer object
 .mono code
-..ct ..li .
+.period
 The letter
 .mono b
 is placed in the lowest order (least significant)
@@ -646,7 +642,7 @@ Note that a character constant such as
 .mono 'a'
 is different from the corresponding string literal
 .mono "a"
-..ct ..li .
+.period
 The former is of type
 .kw int
 and has the value of the letter
@@ -677,15 +673,14 @@ Its form is similar to normal character constants,
 except that the
 constant is preceded by the character
 .mono L
-..ct ..li .
+.period
 .pp
 The type of a wide character constant is
 .ix 'wchar_t'
 .kw wchar_t
-..ct ,
-which is one of the integral types, and is described in the header
+.ct , which is one of the integral types, and is described in the header
 .hdr <stddef.h>
-..ct ..li .
+.period
 .*
 .************************************************************************
 .*
@@ -696,7 +691,7 @@ With &wcboth.,
 .kw wchar_t
 is defined as
 .kw unsigned short
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -705,7 +700,7 @@ With &wlooc.,
 .kw wchar_t
 is defined as
 .kw ??????????????
-..ct ..li .
+.period
 ..do end
 .*
 .************************************************************************
@@ -718,15 +713,14 @@ is a wide character constant containing the letter
 from the source character set, and has type
 .ix 'wchar_t'
 .kw wchar_t
-..ct ..li .
+.period
 In contrast, the constant
 .mono 'a'
 is a character constant containing the letter
 .mono a
-..ct ,
-and has type
+.ct , and has type
 .kw int
-..ct ..li .
+.period
 .pp
 How the multibyte character maps onto the wide character value is
 defined by the
@@ -800,19 +794,19 @@ In the examples,
 the first string, after joining, consists of three characters, with
 the values
 .mono '\xFAB'
-..ct ,
+.ct ,
 .mono '\xFA'
 and
 .mono 'B'
-..ct ..li .
+.period
 The second string, after joining, also consists of three characters,
 with the values
 .mono '\012'
-..ct ,
+.ct ,
 .mono '\01'
 and
 .mono '2'
-..ct ..li .
+.period
 .pp
 A program should not attempt to modify a string literal, as
 this behavior is undefined.
@@ -884,7 +878,7 @@ Its form is similar to normal string literals,
 except that the
 string is preceded by the character
 .mono L
-..ct ..li .
+.period
 .pp
 The type of a wide string literal is "array of
 .ix 'wchar_t'
@@ -894,7 +888,7 @@ The type of a wide string literal is "array of
 .kw wchar_t
 is one of the integral types, and is described in the header
 .hdr <stddef.h>
-..ct ..li .
+.period
 .*
 .************************************************************************
 .*
@@ -905,7 +899,7 @@ With &wcboth.,
 .kw wchar_t
 is defined as
 .kw unsigned short
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -914,7 +908,7 @@ With &wlooc.,
 .kw wchar_t
 is defined as
 .kw ??????????????
-..ct ..li .
+.period
 ..do end
 .*
 .************************************************************************
@@ -926,28 +920,28 @@ is a wide string literal containing the letters
 .mono a
 and
 .mono b
-..ct ..li .
+.period
 Its type is "array [3] of
 .ix 'wchar_t'
 .kw wchar_t
 ..ct ", and the values of its elements are
 .mono L'a'
-..ct ,
+.ct ,
 .mono L'b'
 and
 .mono '\0'
-..ct ..li .
+.period
 In contrast, the string literal
 .mono "ab"
 has type "array [3] of
 .kw char
 ..ct ", and the values of its elements are
 .mono 'a'
-..ct ,
+.ct ,
 .mono 'b'
 and
 .mono '\0'
-..ct ..li .
+.period
 .pp
 How the multibyte characters map onto wide character values is
 defined by the
