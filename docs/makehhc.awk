@@ -1,46 +1,46 @@
 BEGIN {
-    print "<HTML><BODY>"
-    print "<OBJECT TYPE=\"text/site properties\">"
-    print "<PARAM NAME=\"ImageType\" VALUE=\"Folder\">"
-    print "</OBJECT>"
-    print "<UL>"
+    print "<html><body>"
+    print "<object type=\"text/site properties\">"
+    print "<param name=\"ImageType\" value=\"Folder\">"
+    print "</object>"
+    print "<ul>"
     level = 1
 }
 
-/<H. ID=\"(.*)\"> (.*) <\/H.>/ {
+/<h. id=\"(.*)\"> (.*) <\/h.>/ {
     newlevel = $0
-    gsub( /<H/, "", newlevel )
-    gsub( / ID=\"(.*)\" (.*) <\/H.>/, "", newlevel )
+    gsub( /<h/, "", newlevel )
+    gsub( / id=\"(.*)\" (.*) <\/h.>/, "", newlevel )
     file = $0
-    gsub( /<H. ID=\"/, "", file )
-    gsub( /\"> (.*) <\/H.>/, "", file )
+    gsub( /<h. id=\"/, "", file )
+    gsub( /\"> (.*) <\/h.>/, "", file )
     if( file == "Index_of_Topics" ) {
         next
     }
     title = $0
-    gsub( /<H. ID=\"(.*)\"> /, "", title )
-    gsub( / <\/H.>/, "", title )
+    gsub( /<h. id=\"(.*)\"> /, "", title )
+    gsub( / <\/h.>/, "", title )
     gsub( /\&nbsp\;/, "", title )
     newlevel = newlevel + 0
     if( newlevel < level ) {
         while( newlevel < level ) {
-            print "</UL>"
+            print "</ul>"
             level--
         }
     } else if( newlevel > level ) {
-        print "<UL>"
+        print "<ul>"
         level = newlevel
     }
-    print "<LI><OBJECT TYPE=\"text/sitemap\">"
-    print "<PARAM NAME=\"Name\" VALUE=\"" title "\">"
-    print "<PARAM NAME=\"Local\" VALUE=\"" file ".htm\">"
-    print "</OBJECT>"
+    print "<li><object type=\"text/sitemap\">"
+    print "<param name=\"Name\" value=\"" title "\">"
+    print "<param name=\"Local\" value=\"" file ".htm\">"
+    print "</object>"
 }
 
 END {
     while( level > 0 ) {
-        print "</UL>"
+        print "</ul>"
         level--
     }
-    print "</BODY></HTML>"
+    print "</body></html>"
 }

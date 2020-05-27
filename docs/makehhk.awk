@@ -1,5 +1,5 @@
 BEGIN {
-    print "<HTML><BODY><UL>"
+    print "<html><body><ul>"
 }
 
 function transsym( str ) {
@@ -80,16 +80,16 @@ function fname() {
     name2 = $0
     gsub( /\.ixline '(.*)' '/, "", name2 )
     gsub( /'[\r]?/, "", name2 )
-    print "<LI><OBJECT TYPE=\"text/sitemap\">"
-    print "<PARAM NAME=\"Name\" VALUE=\"" name1 "\">"
-    print "<PARAM NAME=\"See also\" VALUE=\"" name1 "\">"
-    print "</OBJECT>"
-    print "<UL>"
-    print "<LI><OBJECT TYPE=\"text/sitemap\">"
-    print "<PARAM NAME=\"Name\" VALUE=\"" name2 "\">"
-    print "<PARAM NAME=\"Local\" VALUE=\"" fname() ".htm\">"
-    print "</OBJECT>"
-    print "</UL>"
+    print "<li><object type=\"text/sitemap\">"
+    print "<param name=\"Name\" value=\"" name1 "\">"
+    print "<param name=\"See also\" value=\"" name1 "\">"
+    print "</object>"
+    print "<ul>"
+    print "<li><object type=\"text/sitemap\">"
+    print "<param name=\"Name\" value=\"" name2 "\">"
+    print "<param name=\"Local\" value=\"" fname() ".htm\">"
+    print "</object>"
+    print "</ul>"
     next
 }
 
@@ -97,12 +97,12 @@ function fname() {
     name = $0
     gsub( /\.ixline /, "", name )
     gsub( /'[\r]?/, "", name )
-    print "<LI><OBJECT TYPE=\"text/sitemap\">"
-    print "<PARAM NAME=\"Name\" VALUE=\"" name "\">"
-    print "<PARAM NAME=\"Local\" VALUE=\"" fname() ".htm\">"
-    print "</OBJECT>"
+    print "<li><object type=\"text/sitemap\">"
+    print "<param name=\"Name\" value=\"" name "\">"
+    print "<param name=\"Local\" value=\"" fname() ".htm\">"
+    print "</object>"
 }
 
 END {
-    print "</UL></BODY></HTML>"
+    print "</ul></body></html>"
 }

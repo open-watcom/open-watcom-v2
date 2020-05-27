@@ -1,13 +1,13 @@
-/<H. ID=\"(.*)\"> (.*) <\/H.>/ {
+/<h. id=\"(.*)\"> (.*) <\/h.>/ {
     newlevel = $0
-    gsub( /<H/, "", newlevel )
-    gsub( / ID=\"(.*)\" (.*) <\/H.>/, "", newlevel )
+    gsub( /<h/, "", newlevel )
+    gsub( / id=\"(.*)\" (.*) <\/h.>/, "", newlevel )
     file = $0
-    gsub( /<H. ID=\"/, "", file )
-    gsub( /\"> (.*) <\/H.>/, "", file )
+    gsub( /<h. id=\"/, "", file )
+    gsub( /\"> (.*) <\/h.>/, "", file )
     title = $0
-    gsub( /<H. ID=\"(.*)\"> /, "", title )
-    gsub( / <\/H.>/, "", title )
+    gsub( /<h. id=\"(.*)\"> /, "", title )
+    gsub( / <\/h.>/, "", title )
     gsub( /\&nbsp\;/, "", title )
     print "HLP_" toupper( file ) " = " file ".htm"
 }
