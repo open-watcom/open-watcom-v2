@@ -31,7 +31,6 @@ jobs:
         vmImage: $(owimage_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         vmImage: $(owimage_nt)
-    timeoutInMinutes: 90
     steps:
     - template: artfload.yml
       parameters:

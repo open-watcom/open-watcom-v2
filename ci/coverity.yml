@@ -5,7 +5,7 @@ parameters:
 jobs:
   - job: scan${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    timeoutInMinutes: 240
+    timeoutInMinutes: 90
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
