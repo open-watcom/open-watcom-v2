@@ -79,3 +79,7 @@ The directory layout is as follows:
         Note: the rel directory structure is created on the fly. The
         location of rel tree can be changed by `OWRELROOT` environment
         variable.
+
+Installation of OW
+------------------
+[Installer installation instruction](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installing_Open_Watcom_CDCPP)
