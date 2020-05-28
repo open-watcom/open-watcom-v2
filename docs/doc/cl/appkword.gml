@@ -184,7 +184,6 @@ It may be used in place of
 .kwix &kwfastc_sp.
 .kwfont &kwfastcall.
 See the &userguide..
-.period
 .pp
 The
 .kwix &kwfortr_sp.

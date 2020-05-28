@@ -572,8 +572,7 @@ commands for controlling menus.
 .begfunc ADDMENUITEM
 .syntx * ADDMENUItem &lt.menuname&gt. &lt.itemname&gt. &lt.cmd&gt.
 .begdescr
-Adds a new item to a previously created menu &parm1.
-.period
+Adds a new item to a previously created menu &parm1..
 The item &parm2 is added to the menu.
 .np
 This command is similar to the &cmdline command
@@ -601,16 +600,14 @@ command, and is run whenever the item is selected.
 .begfunc DELETEMENU
 .syntx * DELETEMENU &lt.menuname&gt.
 .begdescr
-Destroys menu with name &parm1.
-.period
+Destroys menu with name &parm1..
 .enddescr
 .endfunc
 
 .begfunc DELETEMENUITEM
 .syntx * DELETEMENUItem &lt.menuname&gt. &lt.index&gt.
 .begdescr
-Deletes item number &parm2 from menu &parm1.
-.period
+Deletes item number &parm2 from menu &parm1..
 The item number &parm2
 is 0 based.
 .np
@@ -632,8 +629,7 @@ Finishes the creation of a new menu.
 .begfunc MENU
 .syntx * MENU &lt.menuname&gt.
 .begdescr
-Starts the creation of a new menu &parm1.
-.period
+Starts the creation of a new menu &parm1..
 If a menu exists with the name already, it is destroyed and re-created.
 A character preceded with an ampersand ('&') will be the hot key
 for activating the menu, e.g. &Control would have 'C' as

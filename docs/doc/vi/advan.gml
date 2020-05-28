@@ -34,8 +34,7 @@
 .****************************************************************************/
 .chap Advanced Usage
 .np
-This chapter discusses a number of the less commonly used features of the &edname.
-.period
+This chapter discusses a number of the less commonly used features of the &edname..
 The knowledge of the information in the chapter
 :HDREF page=no refid='basic'.
 and 
@@ -271,8 +270,7 @@ The selection window appears as follows:
 .* ******************************************************************
 .np
 A powerful feature in &edname is the ability to change the meaning of
-any key in &cmdmode or &tinsmode
-.period
+any key in &cmdmode or &tinsmode..
 Using this feature, you can configure the editor any way which suits your
 needs.
 .np
@@ -300,8 +298,7 @@ to typing the characters in
 In the
 .keyref map
 command, specifying the exclamation point ('!') causes the map to be
-for &tinsmode, rather than &cmdmode
-.period
+for &tinsmode, rather than &cmdmode..
 .np
 It is possible for
 .param &lt.string&gt.

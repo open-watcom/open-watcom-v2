@@ -84,8 +84,7 @@ When in &tinsmode (either inserting or overstriking), you
 may enter text and freely cursor about through the file.  When you
 are finished adding text, the
 .param ESC
-key returns you to &cmdmode
-.period
+key returns you to &cmdmode..
 .np
 It should be remembered that an undo applies to
 changes caused by commands; so all changes made while in &tinsmode
@@ -108,19 +107,17 @@ current line in the edit buffer.
 
 :DT.C
 :DD.Changes text from the current position to the end of the current line.
-Deletes the text, and enters &tinsmode
-.period
+Deletes the text, and enters &tinsmode..
 
 :DT.&lt.n&gt.c&lt.oper&gt.
 :DD.Change command.  Deletes the text in the range specified by
 .param &lt.oper&gt.
-:cont., and enters &tinsmode
-.period
+:cont., and enters &tinsmode..
 
 :DT.g
 :DD.Starts inserting or overstriking text at the current cursor position,
-depending on how you were adding text the last time you were in &tinsmode
-.period
+depending on how you were adding text the last time you were in &tinsmode..
+
 
 :DT.i
 :DD.Starts inserting text at the current cursor position.
@@ -130,12 +127,10 @@ depending on how you were adding text the last time you were in &tinsmode
 the current line.
 
 :DT.o
-:DD.Opens a line after the current line, and enters &tinsmode
-.period
+:DD.Opens a line after the current line, and enters &tinsmode..
 
 :DT.O
-:DD.Opens a line before the current line, and enters &tinsmode
-.period
+:DD.Opens a line before the current line, and enters &tinsmode..
 
 :DT.R
 :DD.Starts overstriking text at the current character in the edit buffer.
@@ -191,8 +186,7 @@ of the current edit buffer.
 of the current edit buffer.
 
 :DT.SHIFT_DEL
-:DD.Deletes the currently selected region into the active &copybuffer
-.period
+:DD.Deletes the currently selected region into the active &copybuffer..
 
 :DT.SHIFT_INS
 :DD.Pastes the active &copybuffer
@@ -203,8 +197,7 @@ into the text after the current position.
 cursor.
 
 :DT.CTRL_DEL (ctrl-delete)
-:DD.Delete the current line into the active &copybuffer
-.period
+:DD.Delete the current line into the active &copybuffer..
 
 :DT.CTRL_INS (ctrl-insert)
 :DD.Pastes the active &copybuffer into the text before the current position.
@@ -1221,15 +1214,13 @@ and
 :HDREF refid='cpytext'
 later in this chapter).
 These buffers are numbered 1 through 9, and any of these buffers may
-be the active &copybuffer
-.period
+be the active &copybuffer..
 .np
 The active &copybuffer may be selected using function keys. 
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
 When a buffer is selected,
 information about its contents is displayed in the message window.
-This buffer becomes the active &copybuffer
-.period
+This buffer becomes the active &copybuffer..
 All yanked/deleted text is copied into this buffer.
 .np
 When text is yanked/deleted into the active &copybuffer,
@@ -1449,13 +1440,11 @@ edit buffer.
 .endkey
 
 .begkey o o
-Opens a line after the current line, and enters &tinsmode
-.period
+Opens a line after the current line, and enters &tinsmode..
 .endkey
 
 .begkey O O
-Opens a line before the current line, and enters &tinsmode
-.period
+Opens a line before the current line, and enters &tinsmode..
 .endkey
 .*
 .keylist end
@@ -1467,9 +1456,7 @@ key.  You exit &tinsmode by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont.,
-for more information on manipulating text in &tinsmode
-.period
+:cont., for more information on manipulating text in &tinsmode..
 .* ******************************************************************
 .section 'Replacing Text'
 .* ******************************************************************
@@ -1489,9 +1476,7 @@ key.   You exit &tinsmode by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont.,
-for more information on manipulating text in &tinsmode
-.period
+:cont., for more information on manipulating text in &tinsmode..
 .endkey
 
 .begkey r &lt.n&gt.r&lt.?&gt.
@@ -1637,8 +1622,7 @@ which causes a single line to be deleted.
 .xmplsect begin
 .begxmpl dr
 Deletes the current selected (highlighted) region in the edit buffer.
-A copy is placed into the active &copybuffer
-.period
+A copy is placed into the active &copybuffer..
 .endxmpl
 .begxmpl "zdd
 Deletes the current line. A copy is placed into the named &copybuffer
@@ -1731,8 +1715,7 @@ which causes a single line to be yanked.
 .np
 .xmplsect begin
 .begxmpl yy
-Yanks (copies) the current line into the active &copybuffer
-.period
+Yanks (copies) the current line into the active &copybuffer..
 .endxmpl
 .begxmpl 10yy
 Copies 10 lines, starting at the current, into the active buffer.
@@ -1773,8 +1756,7 @@ from the start of the line to the first letter in the string
 .np
 The following commands are for changing text.
 If a range of lines is being changed, the lines are deleted and &edvi
-enters &tinsmode
-.period
+enters &tinsmode..
 .np
 If the change is taking place on the single line, the range of
 characters being changed is highlighted, and the last character in the
@@ -1787,8 +1769,7 @@ is not set, then the change command is cancelled. If
 .keyref changelikevi 1
 is set, then the highlighted area is deleted.  If anything other than the
 .keyword ESC
-key is pressed, the highlighted area is deleted and &edvi enters &tinsmode
-.period
+key is pressed, the highlighted area is deleted and &edvi enters &tinsmode..
 .*
 .keylist begin 'Changing Text'
 .*
@@ -2301,8 +2282,7 @@ be inserted directly into the edit buffer.
 .endkey
 
 .begkey : : (colon)
-Allows entry of a &cmdline
-.period
+Allows entry of a &cmdline..
 See the chapter
 :HDREF refid='cmds'
 for full details on &cmdline commands.
@@ -2340,9 +2320,7 @@ Enters
 .keyword EX mode
 .period
 .keyword EX mode
-is a line-oriented mode of
-&edvi.
-.period
+is a line-oriented mode of &edvi..
 To exit
 .keyword EX mode
 :cont.,

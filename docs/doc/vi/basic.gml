@@ -91,9 +91,7 @@ will edit all files that have the extension
 .* ******************************************************************
 .np
 A modal editor is one where keystrokes have different meaning, depending
-on what mode you are in.  &edvi has two main modes, &cmdmode and
-&tinsmode.
-.period
+on what mode you are in.  &edvi has two main modes, &cmdmode and &tinsmode..
 .np
 While in &cmdmode, pressing a key on your keyboard can cause something
 different to happen.  For example, pressing the letter D (capital 'd')
@@ -134,12 +132,10 @@ The
 key is one of the more important keys in &edvi.. Pressing
 .param ESC
 once will stop whatever you are doing and
-return you to &cmdmode.
-.period
+return you to &cmdmode..
 If you have started a &cmdmode sequence, pressing
 .param ESC
-will cancel the command and return you to &cmdmode.
-.period
+will cancel the command and return you to &cmdmode..
 .exercises
 Start up &edvi by typing
 .millust begin
@@ -201,8 +197,7 @@ When you are in &cmdmode, you may move around in your text using
 various cursor keys.  The basic keys that you use to move around are:
 :INCLUDE file='basicmv'
 .np
-These same cursor keys may also be used when entering text in &tinsmode.
-.period
+These same cursor keys may also be used when entering text in &tinsmode..
 .* ******************************************************************
 .section *refid=savexit 'Saving and Exiting a File'
 .* ******************************************************************
@@ -307,8 +302,7 @@ may enter whatever text you like.  You may cursor around and modify
 your text in whatever way you choose.  Once you are done, you
 may press the
 .param ESC
-key to return to &cmdmode.
-.period
+key to return to &cmdmode..
 .np
 While you are in &tinsmode, the basic keys that allow you to move through
 the text are:
@@ -554,9 +548,8 @@ The section
 :HDREF refid='intext'.
 noted that pressing
 .param CTRL_DEL
-(control-delete) deleted a line when inputting
-text.  This same command can be used while in &cmdmode.
-.period
+(control-delete) deleted a line when inputting text.
+This same command can be used while in &cmdmode..
 .np
 If you want to delete more than one line at once, you may precede
 this delete command with a
@@ -601,8 +594,7 @@ you press
 the line(s) you deleted will be pasted in before the current line (which
 reverses the action of
 .param CTRL_DEL
-:cont.)
-.period
+:cont.).
 .np
 There are two other keys for pasting, the letters
 'p' and 'P' (small p and capital p).  Small 'p' pastes the line(s) you deleted after
@@ -1163,8 +1155,7 @@ regular expressions.
 :DD.Gives help on &edvi's script language.
 
 :DT.Starting up
-:DD.Gives help on the various command line parameters for &edvi.
-.period
+:DD.Gives help on the various command line parameters for &edvi..
 
 :eDL.
 .*

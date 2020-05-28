@@ -36,8 +36,7 @@
 .chap *refid=inter 'Intermediate Usage'
 .*
 .np
-This chapter discusses a number of the commonly used features of the &edname.
-.period
+This chapter discusses a number of the commonly used features of the &edname..
 The knowledge of the information in the chapter
 :HDREF page=no refid='basic'.
 is assumed.
@@ -58,8 +57,7 @@ item under the
 .keyword File
 menu.
 
-:LI.Press the colon (':') key when in &cmdmode
-.period
+:LI.Press the colon (':') key when in &cmdmode..
 Remember to press the
 .param ESC
 key to ensure that you are in &cmdmode
@@ -271,15 +269,13 @@ and specifying the name of the file you wish to move to.
 .np
 You may press the
 .param F1
-key while in &cmdmode or &tinsmode
-.period
+key while in &cmdmode or &tinsmode..
 This function key moves you to the next file in the list of files that
 you are editing.
 .np
 You may press the
 .param F2
-key while in &cmdmode or &tinsmode
-.period
+key while in &cmdmode or &tinsmode..
 This function key moves you to the previous file in the list of files that
 you are editing.
 .np
@@ -625,8 +621,7 @@ This discards the contents of the current edit buffer.
 To quit every file that you are editing, the
 .keyref quitall
 command is used.  If no files have been modified, then you will immediately
-exit &edvi.
-.period
+exit &edvi..
 If files have been modified, you will be asked to
 verify whether or not you really want to exit the editor.
 .np
@@ -668,8 +663,7 @@ The
 .keyref xit
 (exit) commands both do the same thing.  They write out the current file
 if it has been modified, and then exit the file.  This is the exact
-same as typing 'ZZ' in &cmdmode
-.period
+same as typing 'ZZ' in &cmdmode..
 .*
 .exercises
 :OL.
@@ -731,8 +725,7 @@ the file has been written, and is no longer marked as modified.
 :1,2 w def
 .millust end
 This will write out a new file called "def".
-Now quit &edvi.
-.period
+Now quit &edvi..
 
 :LI.Edit the file "def".  Notice that it contains the lines
 .millust begin
@@ -769,13 +762,11 @@ You will exit the file, even though it has been modified.
 .keyref xit
 .period
 This will save the file and exit it,
-and because you are not editing any other files, you will exit &edvi
-.period
+and because you are not editing any other files, you will exit &edvi..
 You could also use the command
 .keyref wq
 to do the same thing.  Both of these commands do the same thing as
-pressing 'ZZ' while in &cmdmode
-.period
+pressing 'ZZ' while in &cmdmode..
 
 :LI.Start up &edvi as follows:
 .millust begin
@@ -783,8 +774,7 @@ vi abc def
 .millust end
 This will edit two files, "abc" and "def". Enter the &cmdline command
 .keyref quitall
-and you will exit &edvi
-.period
+and you will exit &edvi..
 
 :LI.Repeat the previous example, but add a line to one of the two files.
 Now enter the &cmdline command
@@ -1294,8 +1284,7 @@ The active copy buffer may be selected by pressing
 .param CTRL_F1
 through
 .param CTRL_F9
-in &cmdmode.
-.period
+in &cmdmode..
 When you do this, a message appears showing you which buffer
 has been selected, how many lines/characters are in the buffer, and the first
 line of the buffer.
@@ -1373,8 +1362,7 @@ are pasted before the specified line.  Otherwise, the contents of the
 .np
 The
 .param &lt."?&gt.
-is an optional &copybuffer.
-.period
+is an optional &copybuffer..
 If it is not specified, then the active &copybuffer is used.  The double
 quotes (") must be specified.
 .np
@@ -1478,12 +1466,9 @@ If you press the
 .param ESC
 key, the change will be cancelled.
 Once you type a character, the characters will be deleted and you will
-enter &tinsmode.
-.period
+enter &tinsmode..
 .np
-If you are changing whole lines, the lines are deleted and you enter
-&tinsmode.
-.period
+If you are changing whole lines, the lines are deleted and you enter &tinsmode..
 .np
 Once you have entered the change sub-mode, you can then specify one of the
 following operations:
@@ -1525,8 +1510,7 @@ This is new text.
 .millust end
 and press the
 .param ESC
-key to exit &tinsmode
-.period
+key to exit &tinsmode..
 Your original line:
 .millust begin
 01 This is a test line.
@@ -1564,9 +1548,7 @@ disk space).  Every change that you make
 to a file is remembered, and can be undone in the reverse order that
 you made the changes.
 .np
-A change can be undone by pressing the letter 'u' while in
-&cmdmode
-.period
+A change can be undone by pressing the letter 'u' while in &cmdmode..
 You can undo further changes by pressing 'u' repeatedly.
 .np
 If you undo a change you wanted to keep, you can
@@ -1622,8 +1604,7 @@ No more undos
 .millust end
 appear.
 
-:LI.Press the capital u ('U') key in &cmdmode.
-.period
+:LI.Press the capital u ('U') key in &cmdmode..
 The first line will now disappear, as you are undoing your undo.
 
 :LI.Press 'U' again.  The second line will disappear.

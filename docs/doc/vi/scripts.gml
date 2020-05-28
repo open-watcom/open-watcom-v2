@@ -129,13 +129,10 @@ commands dealing with &edvi scripts, they are:
 .*
 :DT.compile
 :DD.Used to compile a script.
-This allows much faster execution of the script
-by &edvi.
-.period
+This allows much faster execution of the script by &edvi..
 
 :DT.load
-:DD.Used to make a script resident in &edvi.
-.period
+:DD.Used to make a script resident in &edvi..
 This allows much faster invocation of the script,
 since &edvi does not have to search for it or parse it.
 .*
@@ -295,8 +292,7 @@ The hook points are:
 :UL.
 :LI.after a new file has been read.
 :LI.before a modified file is saved and exited.
-:LI.after return is pressed on the &cmdline
-.period
+:LI.after return is pressed on the &cmdline..
 :LI.whenever an unmodified file is modified.
 :LI.whenever a selected (highlighted) column range is
 chosen (via mouse click or keyboard).
@@ -324,8 +320,7 @@ The script invoked is the file specified by the global variable
 
 :DT.Command Hook
 :DD.The hook script
-is called after the return is pressed from the &cmdline
-.period
+is called after the return is pressed from the &cmdline..
 The global variable
 .var %(Com)
 contains the current command string, and may be modified.
@@ -891,8 +886,7 @@ script can be eliminated with a single
 .begdescr
 This command is used to assign the value
 .param &lt.val&gt.
-to the variable &parm1.
-.period
+to the variable &parm1..
 .np
 The forward slashes ('/') around
 .param &lt.val&gt.
@@ -929,15 +923,13 @@ For more information on regular expressions, see the chapter
 .param &lt.val&gt.
 is assumed to be an expression that indicates a line number. The expression
 is evaluated, and the data on the corresponding line number is assigned
-to &parm1
-.period
+to &parm1..
 
 :DT.x
 :DD.When this flag is used,
 .param &lt.val&gt.
 is assumed to be an expression, and is evaluated. The result is
-assigned to &parm1.
-.period
+assigned to &parm1..
 For another way of assigning expression results to a variable, see the
 .keyref expr
 script command.
@@ -946,8 +938,7 @@ script command.
 :DD.When this flag is used,
 .param &lt.val&gt.
 is assumed to be the name of an operating system environment variable,
-and the contents of that environment variable is what is assigned to &parm1.
-.period
+and the contents of that environment variable is what is assigned to &parm1..
 
 :DT.@
 :DD.When this flag is used,
@@ -972,8 +963,7 @@ The special operators are:
 :DD.Computes the length of the variable
 .param &lt.v&gt.
 .period
-This value is assigned to &parm1.
-.period
+This value is assigned to &parm1..
 
 :DT.strchr &lt.v&gt. &lt.c&gt.
 :DD.Computes the offset of the character
@@ -981,13 +971,11 @@ This value is assigned to &parm1.
 in the variable
 .param &lt.v&gt.
 .period
-The offset is assigned to &parm1.
-.period
+The offset is assigned to &parm1..
 Note that the character
 .param &lt.c&gt.
 may be a variable, the value of which will be expanded before offset
 is computed.
-.period
 
 :DT.substr &lt.v&gt. &lt.n1&gt. &lt.n2&gt.
 :DD.Computes a substring of the string contained in the variable
@@ -998,8 +986,7 @@ The substring is composed of characters from offset
 to offset
 .param &lt.n2&gt.
 .period
-The substring is assigned to &parm1.
-.period
+The substring is assigned to &parm1..
 Note that the parameters 
 .param &lt.n1&gt.
 and
@@ -1270,8 +1257,7 @@ command is executed.
 .begfunc EXPR
 .syntx * EXPR &lt.v1&gt. "=" &lt.expr&gt.
 .begdescr
-Assigns the expression &parm3 to the variable &parm1
-.period
+Assigns the expression &parm3 to the variable &parm1..
 .np
 Any variables contained in &parm3 are expanded before the expression
 is evaluated.
@@ -1320,8 +1306,7 @@ Closes file 1.
 .begfunc FOPEN
 .syntx * FOPEN &lt.name&gt. &lt.n&gt. &lt.how&gt.
 .begdescr
-This command opens file &parm1, assigning it file handle &parm2.
-.period
+This command opens file &parm1, assigning it file handle &parm2..
 .np
 &parm2 may be a value from 1 to 9.  This number is used to identify
 the file for future
@@ -1386,10 +1371,8 @@ Opens file test.dat for append, and uses file handle 9.
 .begfunc FREAD
 .syntx * FREAD &lt.n&gt. &lt.v1&gt.
 .begdescr
-Reads a line from the file identified by handle &parm1.
-.period
-The line is stored in the variable &parm2
-.period
+Reads a line from the file identified by handle &parm1..
+The line is stored in the variable &parm2..
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1425,8 +1408,7 @@ Reads the next line from file handle 1 into the variable
 .syntx * FWRITE &lt.n&gt. &lt.v1&gt.
 .begdescr
 Writes the contents of the variable &parm2 to the file identified
-by handle &parm1.
-.period
+by handle &parm1..
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1444,8 +1426,7 @@ if the file being written was not opened with
 .begxmpl fwrite 3 %(line)
 Writes the contents of the variable 
 .var %(line)
-to file handle 3
-.period
+to file handle 3.
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1459,8 +1440,7 @@ to file handle 3
 .syntx * GET &lt.v1&gt.
 .begdescr
 Waits for the user to type a single keystroke, and then assigns
-the keystroke into variable &parm1
-.period
+the keystroke into variable &parm1..
 .enddescr
 .xmplsect begin
 .begxmpl get %(ch)
@@ -1519,8 +1499,7 @@ command.
 Open a window (the
 .keyref commandwindow
 :cont.) and get a string from the user.  The string is assigned to the
-variable &parm1.
-.period
+variable &parm1..
 .np
 If &parm1 was assigned a value before the
 .keyword input
@@ -1605,10 +1584,8 @@ command.
 .begfunc NEXTWORD
 .syntx * NEXTWORD &lt.srcvar&gt. &lt.resvar&gt.
 .begdescr
-Remove the next space-delimited word from the variable &parm1
-.period
-The word is placed in the variable specified by &parm1.
-.period
+Remove the next space-delimited word from the variable &parm1..
+The word is placed in the variable specified by &parm1..
 Both &parm1 and &parm2 must be variables only.
 .enddescr
 .xmplsect begin
@@ -1652,8 +1629,7 @@ If &parm1 is false, execution continues at the next line.
 .begfunc RETURN
 .syntx * RETURN &lt.rc&gt.
 .begdescr
-Exit the script, returning &parm1.
-.period
+Exit the script, returning &parm1..
 .np
 If the script was invoked by another script, then this value becomes
 .keyword lastrc
@@ -1851,8 +1827,7 @@ Ends the loop.  Control is returned to line 3.
 .sesect end
 
 .sesect begin 'wrme.vi'
-This example is the default write hook script
-.period
+This example is the default write hook script.
 This is called just before a edit buffer is saved and exited.
 If the file has a null name, then the user is prompted for a name. If
 he cancels the prompt, then the save is aborted. Otherwise, the

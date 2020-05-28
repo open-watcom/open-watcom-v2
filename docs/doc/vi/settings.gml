@@ -112,8 +112,7 @@ white-space when ENTER is pressed.
 .setcmd *short=ac automessageclear
 .setsyntx
 .begdescr
-Automatically erases the message window when a key is typed in &cmdmode.
-.period
+Automatically erases the message window when a key is typed in &cmdmode..
 .enddescr
 
 .setcmd *short=bf beepflag
@@ -211,8 +210,7 @@ characters.
 .begdescr
 Display the current file status whenever the
 .keyword ESC
-key is pressed in &cmdmode.
-.period
+key is pressed in &cmdmode..
 .enddescr
 
 .setcmd *short=xm extendedmemory
@@ -229,8 +227,7 @@ DOS version of &edvi only.
 Normally, a CTRL_Z in a file acts as an end-of-file indicator.  Setting
 &cmd_long causes &edvi to treat CTRL_Z as just another character in
 the file.  This option may also be selected using the '-z' option
-when invoking &edvi.
-.period
+when invoking &edvi..
 .enddescr
 
 .setcmd *short=it ignoretagcase
@@ -428,8 +425,7 @@ When &cmd_long is set, the right and left mouse buttons are inverted.
 .setcmd *short=um usemouse
 .setsyntx
 .begdescr
-This option enables/disables the use of the mouse in &edvi.
-.period
+This option enables/disables the use of the mouse in &edvi..
 .enddescr
 .*
 .fnlist end
@@ -552,8 +548,7 @@ parameter.
 .setcmd *parm=size commandcursortype
 .setsyntx
 .begdescr
-Sets the size of the cursor when in &cmdmode.
-.period
+Sets the size of the cursor when in &cmdmode..
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
 
@@ -563,8 +558,7 @@ Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 If
 .keyref marklonglines
 is set, and &cmd_parm is non-zero, then the character in the last column
-of a line wider than the screen is displayed as the ASCII value &cmd_parm.
-.period
+of a line wider than the screen is displayed as the ASCII value &cmd_parm..
 .enddescr
 
 .setcmd *parm=attr exitattr
@@ -612,15 +606,13 @@ default is 8 (4 on QNX).
 .setsyntx
 .begdescr
 If the history file is defined, your command and search history is
-saved across editing sessions in the file &cmd_parm.
-.period
+saved across editing sessions in the file &cmd_parm..
 .enddescr
 
 .setcmd *parm=size insertcursortype
 .setsyntx
 .begdescr
-Sets the size of the cursor when inserting text in &tinsmode
-.period
+Sets the size of the cursor when inserting text in &tinsmode..
 Values for &cmd_parm
 are 0 to 100 (0=full size, 100=thin).
 .enddescr
@@ -641,8 +633,7 @@ Magic characters are:
 .setcmd *parm=numcmds maxclhistory
 .setsyntx
 .begdescr
-&edvi keeps a history of commands entered at the &cmdline.
-.period
+&edvi keeps a history of commands entered at the &cmdline..
 &cmd_parm sets the number of commands kept in the history.
 .enddescr
 
@@ -672,8 +663,7 @@ number of search commands kept in the history.
 .setcmd *parm=maxlne maxlinelen
 .setsyntx
 .begdescr
-This parameter controls the maximum line length allowed by &edvi.
-.period
+This parameter controls the maximum line length allowed by &edvi..
 The default value is 512 bytes.  Any lines longer than &cmd_parm
 are broken up into multiple lines.
 .enddescr
@@ -693,8 +683,7 @@ commands have been issued, the first pushed positions are lost.
 .setsyntx
 .begdescr
 Sets the maximum number of kilobytes of disk space to be used for
-temporary storage by &edvi.
-.period
+temporary storage by &edvi..
 .np
 This option can only be set during editor initialization.
 .enddescr
@@ -750,8 +739,7 @@ when they are indenting.
 .setcmd *parm=kbytes stackk
 .setsyntx
 .begdescr
-Sets the size (in kilobytes) of the stack used by &edvi.
-.period
+Sets the size (in kilobytes) of the stack used by &edvi..
 The minimum is 10.  This can be set higher if you plan on using
 nested scripts that go deeper than 4 or 5 levels.
 .np
@@ -863,8 +851,7 @@ This option can only be set during editor initialization.
 .setcmd *parm=str word
 .setsyntx
 .begdescr
-This defines the word used by &edvi.
-.period
+This defines the word used by &edvi..
 &cmd_parm is a group of character pairs.
 Each pair defines a range; e.g. 09az defines the characters 0 through 9
 and a thorough z.
@@ -876,8 +863,7 @@ The default for &cmd_long is "__09AZaz".
 .np
 The word will be delimited by
 white space (spaces or tabs) and all characters not in the ranges
-defined by &cmd_parm.
-.period
+defined by &cmd_parm..
 .enddescr
 
 .setcmd *parm=margin wrapmargin
