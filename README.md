@@ -82,4 +82,4 @@ The directory layout is as follows:
 
 Installation of OW
 ------------------
-[Installer installation instruction](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installing_Open_Watcom_CDCPP)
+[Installer installation instruction](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installation)
