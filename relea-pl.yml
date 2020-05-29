@@ -90,11 +90,6 @@ stages:
       - testslnx
       - testsnt
       - docsnt
-    condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'Schedule', 'Manual' )
-      )
     jobs:
       - template: ci/install.yml
         parameters:
@@ -105,11 +100,6 @@ stages:
     dependsOn:
       - installnx
       - instalnt
-    condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'Schedule', 'Manual' )
-      )
     jobs:
       - template: ci/release.yml
         parameters:
@@ -183,11 +173,6 @@ stages:
       - testsnt
       - testslnx
       - docsnt
-    condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'Schedule', 'Manual' )
-      )
     jobs:
       - template: ci/install.yml
         parameters:

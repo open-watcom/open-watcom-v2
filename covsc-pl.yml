@@ -36,8 +36,6 @@ stages:
     displayName: "Coverity Scan Linux"
     dependsOn:
       - start
-    condition: >
-      in( variables['Build.Reason'], 'Schedule', 'Manual') 
     jobs:
       - template: ci/coverity.yml
         parameters:

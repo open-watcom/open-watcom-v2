@@ -99,11 +99,6 @@ stages:
       - testslnx
       - testsnt
       - docsnt
-    condition: >
-      and(
-        succeeded(), 
-        in( variables['Build.Reason'], 'IndividualCI', 'BatchedCI' )
-      )
     jobs:
       - template: ci/lastbld.yml
         parameters:
