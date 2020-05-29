@@ -104,7 +104,9 @@ int main( int argc, char **argv )
         res = ChgDir( argv[1] );
     }
     if( res == 0 ) {
-        getcwd( cwd, sizeof( cwd ) );
+        if( getcwd( cwd, sizeof( cwd ) ) == NULL ) {
+            cwd[0] = '\0';
+        }
 #ifdef __UNIX__
         LogDir( cwd );
 #else

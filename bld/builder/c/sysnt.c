@@ -49,7 +49,8 @@ char    Title[TITLESIZE];
 
 static void SysInitTitle( int argc, char *argv[] )
 {
-    int i;
+    int     i;
+    size_t  len;
 
     strcpy( Title, "Builder " );
     for( i = 1; i < argc; i++ ) {
@@ -59,21 +60,26 @@ static void SysInitTitle( int argc, char *argv[] )
         strcat( Title, " " );
     }
     strcat( Title, "[" );
-    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
+    len = strlen( Title );
+    if( getcwd( Title + len, (int)( TITLESIZE - len - 2 ) ) == NULL )
+        Title[len] = '\0';
     strcat( Title, "]" );
     SetConsoleTitle( Title );
 }
 
 static void SysSetTitle( char *title )
 {
-    char        *end;
+    char    *end;
+    size_t  len;
 
     title = title;
     end = strchr( Title, ']' );
     *( end + 1 ) = '\0';
 
     strcat( Title, " (" );
-    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
+    len = strlen( Title );
+    if( getcwd( Title + len, (int)( TITLESIZE - len - 2 ) ) == NULL )
+        Title[len] = '\0';
     strcat( Title, ")" );
     SetConsoleTitle( Title );
 }

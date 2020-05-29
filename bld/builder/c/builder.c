@@ -732,7 +732,9 @@ const char *GetIncludeCWD( void )
 
 void SetIncludeCWD( void )
 {
-    getcwd( includeStk->cwd, sizeof( includeStk->cwd ) );
+    if( getcwd( includeStk->cwd, sizeof( includeStk->cwd ) ) == NULL ) {
+        includeStk->cwd[0] = '\0';
+    }
 }
 
 void SetArchive( copy_entry entry )
