@@ -24,8 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This header define the structure of the Program Segment
+*               Prefix, an area of memory that DOS fills after loading the
+*               COM/EXE file.
 *
 ****************************************************************************/
 
