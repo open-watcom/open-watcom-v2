@@ -55,15 +55,15 @@ typedef struct target_list {
 } target_list;
 
 typedef struct {
-    unsigned    verbose : 1;
-    unsigned    notargets : 1;
-    unsigned    reverse : 1;
-    unsigned    batch : 1;
-    unsigned    display : 1;
-    unsigned    optimize : 1;
-    unsigned    want_help : 1;
-    unsigned    signaled : 1;
-    unsigned    ignore_errors : 1;
+    boolbit     verbose         : 1;
+    boolbit     notargets       : 1;
+    boolbit     reverse         : 1;
+    boolbit     batch           : 1;
+    boolbit     display         : 1;
+    boolbit     optimize        : 1;
+    boolbit     want_help       : 1;
+    boolbit     signaled        : 1;
+    boolbit     ignore_errors   : 1;
     unsigned    levels;
     char        *command;
     char        *cmd_args;

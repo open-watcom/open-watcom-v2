@@ -84,7 +84,7 @@ static int              NumDirectories;
 
 static dirqueue         *QueueHead = NULL;
 static dirqueue         *QueueTail = NULL;
-static volatile int     DoneFlag;
+static volatile bool    DoneFlag;
 static jmp_buf          exit_buff;
 
 static pmake_data       Options;
@@ -416,7 +416,7 @@ static void SetDoneFlag( int sig_no )
 {
     /* unused parameters */ (void)sig_no;
 
-    DoneFlag = 1;
+    DoneFlag = true;
 }
 
 static void NextSubdir( void )
@@ -612,7 +612,7 @@ static void DoIt( void )
     Options.levels = INT_MAX;
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
-        Options.want_help = 1;
+        Options.want_help = true;
         return;
     }
     /* gather options */
@@ -620,7 +620,7 @@ static void DoIt( void )
         SKIP_SPACES( CmdLine );
         if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
             CmdLine += 2;
-            Options.notargets = 1;
+            Options.notargets = true;
             break;
         }
         if( *CmdLine != '-' && *CmdLine != '/' )
@@ -628,15 +628,15 @@ static void DoIt( void )
         ++CmdLine;
         switch( *CmdLine++ ) {
         case 'b':
-            Options.batch = 1;
+            Options.batch = true;
             break;
         case 'd':
-            Options.display = 1;
+            Options.display = true;
             break;
         case 'f':
             arg = GetString( &len );
             if( arg == NULL ) {
-                Options.want_help = 1;
+                Options.want_help = true;
                 return;
             }
             MFree( Options.makefile );
@@ -644,7 +644,7 @@ static void DoIt( void )
             StringCopyLen( Options.makefile, arg, len );
             break;
         case 'i':
-            Options.ignore_errors = 1;
+            Options.ignore_errors = true;
             break;
         case 'l':
             Options.levels = GetNumber( 1 );
@@ -652,7 +652,7 @@ static void DoIt( void )
         case 'm':
             arg = GetString( &len );
             if( arg == NULL ) {
-                Options.want_help = 1;
+                Options.want_help = true;
                 return;
             }
             MFree( Options.command );
@@ -660,17 +660,17 @@ static void DoIt( void )
             StringCopyLen( Options.command, arg, len );
             break;
         case 'o':
-            Options.optimize = 1;
+            Options.optimize = true;
             break;
         case 'r':
-            Options.reverse = 1;
+            Options.reverse = true;
             break;
         case 'v':
-            Options.verbose = 1;
+            Options.verbose = true;
             break;
         case '?':
         default:
-            Options.want_help = 1;
+            Options.want_help = true;
             return;
         }
     }
@@ -717,7 +717,7 @@ pmake_data *PMakeBuild( const char *cmd )
     volatile int        ret;
 
     getcwd( SaveDir, _MAX_PATH );
-    DoneFlag = 0;
+    DoneFlag = false;
     old_sig = signal( SIGINT, SetDoneFlag );
     CmdLine = cmd;
     ret = setjmp( exit_buff );
@@ -726,7 +726,7 @@ pmake_data *PMakeBuild( const char *cmd )
     signal( SIGINT, old_sig );
     chdir( SaveDir );
     if( DoneFlag )
-        Options.signaled = 1;
+        Options.signaled = true;
     while( QueueHead != NULL ) {
         DeQueue();
     }

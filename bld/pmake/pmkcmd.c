@@ -166,7 +166,7 @@ static int DoPMake( pmake_data *data )
         rc = RunCommand( buffer );
         if( rc != 0 ) {
             res = rc;
-            if( data->ignore_errors == 0 ) {
+            if( !data->ignore_errors ) {
                 break;
             }
         }
