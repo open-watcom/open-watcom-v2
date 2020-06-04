@@ -96,9 +96,9 @@ typedef struct dd {
 
 char            tmp_buf[MAX_LINE];
 
-static int      rflag = false;
-static int      fflag = false;
-static int      sflag = true;
+static int      rm_rflag;
+static int      rm_fflag;
+static int      rm_sflag;
 
 static int RecursiveRM( const char *dir );
 
@@ -572,7 +572,7 @@ static int remove_item( const char *name, bool dir )
         inf_msg = "File %s deleted\n";
         rc = unlink( name );
     }
-    if( fflag && rc != 0 && errno == EACCES ) {
+    if( rm_fflag && rc != 0 && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
         if( rc == 0 ) {
             if( dir ) {
@@ -582,14 +582,14 @@ static int remove_item( const char *name, bool dir )
             }
         }
     }
-    if( fflag && rc != 0 && errno == ENOENT ) {
+    if( rm_fflag && rc != 0 && errno == ENOENT ) {
         rc = 0;
     }
     if( rc != 0 ) {
         rc = errno;
         Log( false, err_msg, name );
         return( rc );
-    } else if( !sflag ) {
+    } else if( !rm_sflag ) {
         Log( false, inf_msg, name );
     }
     return( 0 );
@@ -655,7 +655,7 @@ static int DoRM( const char *f )
         fpathend[len] = '\0';
         if( ENTRY_SUBDIR( fpath, dire ) ) {
             /* process a directory */
-            if( rflag ) {
+            if( rm_rflag ) {
                 /* build directory list */
                 len += i + 1;
                 tmp = MAlloc( offsetof( iolist, name ) + len );
@@ -671,7 +671,7 @@ static int DoRM( const char *f )
                 Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
-        } else if( !fflag && ENTRY_RDONLY( fpath, dire ) ) {
+        } else if( !rm_fflag && ENTRY_RDONLY( fpath, dire ) ) {
             Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
@@ -739,6 +739,9 @@ static int ProcRm( const char *cmd )
     int     retval = 0;
 
     /* gather options */
+    rm_rflag = false;
+    rm_fflag = false;
+    rm_sflag = true;
     for( ;; ) {
         while( isspace( *cmd ) )
             ++cmd;
@@ -748,14 +751,14 @@ static int ProcRm( const char *cmd )
         while( isalpha( *cmd ) ) {
             switch( *cmd++ ) {
             case 'f':
-                fflag = true;
+                rm_fflag = true;
                 break;
             case 'R':
             case 'r':
-                rflag = true;
+                rm_rflag = true;
                 break;
             case 'v':
-                sflag = false;
+                rm_sflag = false;
                 break;
             default:
                 return( 1 );
@@ -763,7 +766,7 @@ static int ProcRm( const char *cmd )
         }
     }
 
-    if( rflag ) {
+    if( rm_rflag ) {
         /* process -r option */
         while( (cmd = GetString( cmd, buffer )) != NULL ) {
             if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
