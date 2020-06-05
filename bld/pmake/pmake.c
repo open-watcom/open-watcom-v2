@@ -124,7 +124,7 @@ static void error( const char *fmt, ... )
     longjmp( exit_buff, 1 );
 }
 
-static int _comparison( const void *pp1, const void *pp2 )
+static int _comparison( const void *pp1, const void *pp2, bool reverse )
 {
     pmake_list  *p1;
     pmake_list  *p2;
@@ -136,7 +136,7 @@ static int _comparison( const void *pp1, const void *pp2 )
     if( p1->priority < p2->priority )
         return( -1 );
 
-    if( Options.reverse ) {
+    if( reverse ) {
         pmake_list  *t;
 
         t = p1;
@@ -148,6 +148,16 @@ static int _comparison( const void *pp1, const void *pp2 )
     if( p1->depth < p2->depth )
         return( +1 );
     return( stricmp( p1->dir_name, p2->dir_name ) );
+}
+
+static int _comparison_fwd( const void *pp1, const void *pp2 )
+{
+    return( _comparison( pp1, pp2, false ) );
+}
+
+static int _comparison_rev( const void *pp1, const void *pp2 )
+{
+    return( _comparison( pp1, pp2, true ) );
 }
 
 static void ResetMatches( void )
@@ -242,12 +252,12 @@ static void InitQueue( const char *cwd )
     QueueTail = qp;
 }
 
-static void EnQueue( const char *path )
+static void EnQueue( const char *path, unsigned levels )
 {
     dirqueue    *qp;
     char        *p;
 
-    if( QueueHead->depth < Options.levels ) {
+    if( QueueHead->depth < levels ) {
         qp = MAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
@@ -463,7 +473,7 @@ static void ProcessDirectoryQueue( void )
                     if( DOT_OR_DOTDOT( dire ) )
                         continue;
                     /* queue subdirectory */
-                    EnQueue( dire->d_name );
+                    EnQueue( dire->d_name, Options.levels );
                 } else if( stricmp( dire->d_name, makefile ) == 0 ) {
                     /* add directory with makefile to the list for next processing */
                     TestDirectory( makefile );
@@ -565,7 +575,7 @@ static void SortDirectories( void )
     for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
     }
-    qsort( dir_array, NumDirectories, sizeof( *dir_array ), &_comparison );
+    qsort( dir_array, NumDirectories, sizeof( *dir_array ), ( Options.reverse ) ? _comparison_rev : _comparison_fwd );
     /* rebuild list in sorted order */
     Options.dir_list = NULL;
     for( i = NumDirectories - 1; i >= 0; --i ) {
