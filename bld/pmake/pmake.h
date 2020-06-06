@@ -42,10 +42,13 @@ typedef enum {
 
 typedef unsigned        priority_type;
 
+typedef unsigned        depth_type;
+#define MAX_DEPTH       INT_MAX
+
 typedef struct pmake_list {
     struct pmake_list   *next;
     priority_type       priority;
-    unsigned            depth;
+    depth_type          depth;
     char                dir_name[1];    /* variable sized */
 } pmake_list;
 
@@ -66,7 +69,7 @@ typedef struct {
     boolbit     want_help       : 1;
     boolbit     signaled        : 1;
     boolbit     ignore_errors   : 1;
-    unsigned    levels;
+    depth_type  levels;
     char        *command;
     char        *cmd_args;
     char        *makefile;

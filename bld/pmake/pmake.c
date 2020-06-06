@@ -78,7 +78,7 @@
 
 typedef struct dirqueue {
     struct dirqueue     *next;
-    unsigned            depth;
+    depth_type          depth;
     char                name[1];
 } dirqueue;
 
@@ -254,12 +254,12 @@ static void InitQueue( const char *cwd )
     QueueTail = qp;
 }
 
-static void EnQueue( const char *path, unsigned levels )
+static void EnQueue( const char *path, depth_type depth )
 {
     dirqueue    *qp;
     char        *p;
 
-    if( QueueHead->depth < levels ) {
+    if( QueueHead->depth < depth ) {
         qp = MAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
@@ -286,15 +286,15 @@ static void DeQueue( void )
     }
 }
 
-static unsigned CountDepth( const char *path, unsigned slashcount )
+static depth_type CountDepth( const char *path, depth_type depth )
 {
     while( *path != '\0' ) {
         if( IS_DIR_SEP( *path ) ) {
-            slashcount++;
+            depth++;
         }
         path++;
     }
-    return( slashcount );
+    return( depth );
 }
 
 static char *PrependDotDotSlash( char *str, int count )
@@ -313,8 +313,8 @@ static const char *RelativePath( const char *oldpath, const char *newpath )
 {
     int         ofs;
     char        *tp;
-    unsigned    newdepth;
-    unsigned    olddepth;
+    depth_type  newdepth;
+    depth_type  olddepth;
 
     if( oldpath == NULL )
         return( newpath );
@@ -328,12 +328,15 @@ static const char *RelativePath( const char *oldpath, const char *newpath )
     if( oldpath[ofs] == '\0' && IS_DIR_SEP( newpath[ofs] ) ) {
         return( newpath + ofs + 1 );
     }
+    Buff[0] = '\0';
     // newpath is a prefix of oldpath
     if( newpath[0] == '\0' && IS_DIR_SEP( oldpath[ofs] ) ) {
         newdepth = CountDepth( newpath, 0 );
         olddepth = CountDepth( oldpath, 0 );
-        tp = PrependDotDotSlash( Buff, olddepth - newdepth );
-        *(--tp) = '\0'; // remove trailing slash
+        if( olddepth > newdepth ) {
+            tp = PrependDotDotSlash( Buff, olddepth - newdepth );
+            *(--tp) = '\0'; // remove trailing slash
+        }
         return( Buff );
     }
     /* back up to start of directory */
@@ -621,7 +624,7 @@ static void DoIt( void )
     size_t      len;
 
     memset( &Options, 0, sizeof( Options ) );
-    Options.levels = INT_MAX;
+    Options.levels = MAX_DEPTH;
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
         Options.want_help = true;
