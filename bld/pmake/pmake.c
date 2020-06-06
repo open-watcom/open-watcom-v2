@@ -162,21 +162,19 @@ static int _comparison_rev( const void *pp1, const void *pp2 )
     return( _comparison( pp1, pp2, true ) );
 }
 
-static void ResetMatches( void )
+static void ResetMatches( target_list *target )
 {
-    target_list *curr;
-
-    for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-        if( curr->flags == TARGET_USED ) {
-            curr->flags = TARGET_NOT_USED;
+    for( ; target != NULL; target = target->next ) {
+        if( target->flags == TARGET_USED ) {
+            target->flags = TARGET_NOT_USED;
         }
     }
 }
 
-static priority_type CompareTargets( const char *line )
+static priority_type CompareTargets( target_list *targets, const char *line )
 {
     priority_type   priority;
-    target_list     *curr;
+    target_list     *target;
     char            *numend;
 
     priority = DEFAULT_PRIORITY;
@@ -202,13 +200,13 @@ static priority_type CompareTargets( const char *line )
     line++;
     SKIP_SPACES( line );
     while( *line != '\0' ) {
-        for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-            if( curr->flags == TARGET_NOT_USED ) {
-                size_t len = curr->len;
-                if( strnicmp( line, curr->string, len ) == 0 ) {
+        for( target = targets; target != NULL; target = target->next ) {
+            if( target->flags == TARGET_NOT_USED ) {
+                size_t len = target->len;
+                if( strnicmp( line, target->string, len ) == 0 ) {
                     unsigned char c = line[len];
                     if( c == '\0' || isspace( c ) ) {
-                        curr->flags = TARGET_USED;
+                        target->flags = TARGET_USED;
                     }
                 }
             }
@@ -219,7 +217,7 @@ static priority_type CompareTargets( const char *line )
     return( priority );
 }
 
-static priority_type CheckTargets( const char *filename )
+static priority_type CheckTargets( target_list *targets, const char *filename )
 {
     FILE            *mf;
     priority_type   curr_priority;
@@ -228,10 +226,10 @@ static priority_type CheckTargets( const char *filename )
     mf = fopen( filename, "r" );
     if( mf == NULL )
         return( NONE_PRIORITY );
-    ResetMatches();
+    ResetMatches( targets );
     priority = NONE_PRIORITY;
     while( fgets( Buff, sizeof( Buff ), mf ) != NULL ) {
-        curr_priority = CompareTargets( Buff );
+        curr_priority = CompareTargets( targets, Buff );
         if( priority != NONE_PRIORITY && curr_priority == NONE_PRIORITY )
             break;
         priority = curr_priority;
@@ -355,16 +353,15 @@ static const char *RelativePath( const char *oldpath, const char *newpath )
 
 #define MAX_EVAL_DEPTH  64
 
-static bool TrueTarget( void )
+static bool TrueTarget( target_list *target )
 {
-    target_list *curr;
     bool        eval_stk[MAX_EVAL_DEPTH];
     int         sp;
 
     eval_stk[0] = false;
     sp = -1;
-    for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
-        switch( curr->flags ) {
+    for( ; target != NULL; target = target->next ) {
+        switch( target->flags ) {
         case TARGET_OPERATOR_AND:
             if( sp < 1 )
                 error( "too few elements on expr stack" );
@@ -392,7 +389,7 @@ static bool TrueTarget( void )
             if( ++sp >= MAX_EVAL_DEPTH ) {
                 error( "expr stack depth exceeds max of %u", MAX_EVAL_DEPTH );
             }
-            eval_stk[sp] = ( curr->flags == TARGET_USED );
+            eval_stk[sp] = ( target->flags == TARGET_USED );
             break;
         }
     }
@@ -403,19 +400,19 @@ static bool TrueTarget( void )
     return( eval_stk[0] );
 }
 
-static void TestDirectory( const char *makefile )
+static void TestDirectory( target_list *targets, const char *makefile, bool verbose )
 {
     priority_type   priority;
     pmake_list      *new;
     size_t          len;
 
-    if( Options.verbose ) {
+    if( verbose ) {
         sprintf( Buff, ">>> PMAKE >>> %s/%s", QueueHead->name, makefile );
         PMakeOutput( "" );
         PMakeOutput( Buff );
     }
-    priority = CheckTargets( makefile );
-    if( priority != NONE_PRIORITY && TrueTarget() ) {
+    priority = CheckTargets( targets, makefile );
+    if( priority != NONE_PRIORITY && TrueTarget( targets ) ) {
         len = strlen( QueueHead->name );
         new = MAlloc( sizeof( *new ) + len );
         new->next = Options.dir_list;
@@ -459,7 +456,7 @@ static void NextSubdir( void )
     DeQueue();
 }
 
-static void ProcessDirectoryQueue( void )
+static void ProcessDirectoryQueue( target_list *targets, depth_type depth, bool verbose )
 {
     DIR                 *dirp;
     struct dirent       *dire;
@@ -478,10 +475,10 @@ static void ProcessDirectoryQueue( void )
                     if( DOT_OR_DOTDOT( dire ) )
                         continue;
                     /* queue subdirectory */
-                    EnQueue( dire->d_name, Options.levels );
+                    EnQueue( dire->d_name, depth );
                 } else if( stricmp( dire->d_name, makefile ) == 0 ) {
                     /* add directory with makefile to the list for next processing */
-                    TestDirectory( makefile );
+                    TestDirectory( targets, makefile, verbose );
                 }
                 if( DoneFlag ) {
                     break;
@@ -554,11 +551,11 @@ static target_list *GetTargetItem( void )
         flags = TARGET_NOT_USED;
     }
     if( flags == TARGET_NOT_USED ) {
-        curr = MAlloc( sizeof( *Options.targ_list ) + len );
+        curr = MAlloc( sizeof( *curr ) + len );
         StringCopyLen( curr->string, arg, len );
         curr->len = len;
     } else {
-        curr = MAlloc( sizeof( *Options.targ_list ) - 1 );
+        curr = MAlloc( sizeof( *curr ) - 1 );
         curr->len = 0;
     }
     curr->flags = flags;
@@ -622,20 +619,27 @@ static void DoIt( void )
 {
     const char  *arg;
     size_t      len;
+    bool        verbose;
+    bool        notargets;
+    depth_type	depth;
+    target_list *targets;
+    target_list *next;
 
     memset( &Options, 0, sizeof( Options ) );
-    Options.levels = MAX_DEPTH;
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
         Options.want_help = true;
         return;
     }
+    verbose = false;
+    notargets = false;
+    depth = MAX_DEPTH;
     /* gather options */
     for( ;; ) {
         SKIP_SPACES( CmdLine );
         if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
             CmdLine += 2;
-            Options.notargets = true;
+            notargets = true;
             break;
         }
         if( *CmdLine != '-' && *CmdLine != '/' )
@@ -662,7 +666,7 @@ static void DoIt( void )
             Options.ignore_errors = true;
             break;
         case 'l':
-            Options.levels = GetNumber( 1 );
+            depth = GetNumber( 1 );
             break;
         case 'm':
             arg = GetString( &len );
@@ -681,7 +685,7 @@ static void DoIt( void )
             Options.reverse = true;
             break;
         case 'v':
-            Options.verbose = true;
+            verbose = true;
             break;
         case '?':
         default:
@@ -689,16 +693,16 @@ static void DoIt( void )
             return;
         }
     }
-    /* gather targ_list */
-    Options.targ_list = NULL;
-    if( !Options.notargets ) {
-        getTargets( &Options.targ_list );
+    /* gather targets */
+    targets = NULL;
+    if( !notargets ) {
+        getTargets( &targets );
     }
-    if( Options.targ_list == NULL ) {
-        Options.targ_list = MAlloc( sizeof( *Options.targ_list ) - 1 );
-        Options.targ_list->next = NULL;
-        Options.targ_list->flags = TARGET_ALL;
-        Options.targ_list->len = 0;
+    if( targets == NULL ) {
+        targets = MAlloc( sizeof( *targets ) - 1 );
+        targets->next = NULL;
+        targets->flags = TARGET_ALL;
+        targets->len = 0;
     }
     SKIP_SPACES( CmdLine );
     Options.cmd_args = MAlloc( strlen( CmdLine ) + 1 );
@@ -720,9 +724,14 @@ static void DoIt( void )
     /* start directory tree processing */
     NumDirectories = 0;
     InitQueue( SaveDir );
-    ProcessDirectoryQueue();
+    ProcessDirectoryQueue( targets, depth, verbose );
     if( NumDirectories > 0 ) {
         SortDirectories();
+    }
+    while( targets != NULL ) {
+        next = targets->next;
+        MFree( targets );
+        targets = next;
     }
 }
 
@@ -731,19 +740,21 @@ pmake_data *PMakeBuild( const char *cmd )
     void                (*old_sig)( int );
     volatile int        ret;
 
-    getcwd( SaveDir, _MAX_PATH );
-    DoneFlag = false;
-    old_sig = signal( SIGINT, SetDoneFlag );
-    CmdLine = cmd;
-    ret = setjmp( exit_buff );
-    if( ret == 0 )
-        DoIt();
-    signal( SIGINT, old_sig );
-    chdir( SaveDir );
-    if( DoneFlag )
-        Options.signaled = true;
-    while( QueueHead != NULL ) {
-        DeQueue();
+    ret = 1;
+    if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
+        DoneFlag = false;
+        old_sig = signal( SIGINT, SetDoneFlag );
+        CmdLine = cmd;
+        ret = setjmp( exit_buff );
+        if( ret == 0 )
+            DoIt();
+        signal( SIGINT, old_sig );
+        ret = chdir( SaveDir );
+        if( DoneFlag )
+            Options.signaled = true;
+        while( QueueHead != NULL ) {
+            DeQueue();
+        }
     }
     if( ret != 0 ) {
         PMakeCleanup( &Options );
@@ -765,11 +776,6 @@ void PMakeCleanup( pmake_data *data )
         tmp = data->dir_list->next;
         MFree( data->dir_list );
         data->dir_list = tmp;
-    }
-    while( data->targ_list != NULL ) {
-        tmp = data->targ_list->next;
-        MFree( data->targ_list );
-        data->targ_list = tmp;
     }
     if( data->command != NULL ) {
         MFree( data->command );

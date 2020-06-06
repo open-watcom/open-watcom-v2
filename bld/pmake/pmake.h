@@ -60,8 +60,6 @@ typedef struct target_list {
 } target_list;
 
 typedef struct {
-    boolbit     verbose         : 1;
-    boolbit     notargets       : 1;
     boolbit     reverse         : 1;
     boolbit     batch           : 1;
     boolbit     display         : 1;
@@ -69,7 +67,6 @@ typedef struct {
     boolbit     want_help       : 1;
     boolbit     signaled        : 1;
     boolbit     ignore_errors   : 1;
-    depth_type  levels;
     char        *command;
     char        *cmd_args;
     char        *makefile;
