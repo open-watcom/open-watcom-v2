@@ -102,7 +102,7 @@ typedef struct dirstack {
 } dirstack;
 
 dirstack        *Stack = NULL;
-int             DoneFlag = 0;
+volatile int    DoneFlag = 0;
 
 
 static void SetDoneFlag( int dummy )
@@ -118,7 +118,7 @@ static void *SafeMalloc( size_t n )
     void *p = malloc( n );
     if( p == NULL ) {
         puts( "Out of memory!" );
-        SetDoneFlag( 17 /* dummy - could be any value */  );
+        DoneFlag = 1;
     }
     return( p );
 }
@@ -434,11 +434,13 @@ static int GetNumber( int default_num )
 
 
 #ifndef __WATCOMC__
-int main( int argc, char **argv ) {
+int main( int argc, char **argv ) 
+{
     _argv = argv;
     _argc = argc;
 #else
-int main( void ) {
+int main( void ) 
+{
 #endif
 
     getcmd( CmdBuff );
@@ -476,18 +478,22 @@ int main( void ) {
             PrintHelp();
         }
         ++CmdLine;
-        while( *CmdLine == ' ' )
+        while( *CmdLine == ' ' ) {
             ++CmdLine;
+        }
     }
     Stack = SafeMalloc( sizeof( *Stack ) );
     Stack->name_len = 1;
     Stack->prev = NULL;
     StringCopy( Stack->name, "." );
-    getcwd( SaveDir, _MAX_PATH );
-    signal( SIGINT, SetDoneFlag );
-    ProcessCurrentDirectory();
-    free( Stack );
-    Stack = NULL;
-    chdir( SaveDir );
-    return( EXIT_SUCCESS );
+    if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
+        signal( SIGINT, SetDoneFlag );
+        ProcessCurrentDirectory();
+        free( Stack );
+        Stack = NULL;
+        if( chdir( SaveDir ) == 0 ) {
+            return( EXIT_SUCCESS );
+        }
+    }
+    return( EXIT_FAILURE );
 }
