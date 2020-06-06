@@ -525,7 +525,7 @@ static target_list *GetTargetItem( void )
     size_t          len1;
     size_t          i;
     target_flags    flags;
-    target_list     *curr;
+    target_list     *target;
     char            item[6];
 
     arg = GetString( &len );
@@ -548,16 +548,16 @@ static target_list *GetTargetItem( void )
         flags = TARGET_NOT_USED;
     }
     if( flags == TARGET_NOT_USED ) {
-        curr = MAlloc( sizeof( *curr ) + len );
-        StringCopyLen( curr->string, arg, len );
-        curr->len = len;
+        target = MAlloc( sizeof( *target ) + len );
+        StringCopyLen( target->string, arg, len );
+        target->len = len;
     } else {
-        curr = MAlloc( sizeof( *curr ) - 1 );
-        curr->len = 0;
+        target = MAlloc( sizeof( *target ) - 1 );
+        target->len = 0;
     }
-    curr->flags = flags;
-    curr->next = NULL;
-    return( curr );
+    target->flags = flags;
+    target->next = NULL;
+    return( target );
 }
 
 static void SortDirectories( pmake_data *data )
@@ -594,9 +594,9 @@ static void SortDirectories( pmake_data *data )
     }
 }
 
-static void getTargets( target_list **owner )
+static void getTargets( target_list **targets )
 {
-    target_list *curr;
+    target_list *target;
 
     for( ;; ) {
         SKIP_SPACES( CmdLine );
@@ -606,9 +606,9 @@ static void getTargets( target_list **owner )
         }
         if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
             break;
-        curr = GetTargetItem();
-        *owner = curr;
-        owner = &curr->next;
+        target = GetTargetItem();
+        *targets = target;
+        targets = &target->next;
     }
 }
 
@@ -618,7 +618,7 @@ static void DoIt( pmake_data *data )
     size_t      len;
     bool        verbose;
     bool        notargets;
-    depth_type	depth;
+    depth_type  depth;
     target_list *targets;
     target_list *next;
 
