@@ -110,7 +110,8 @@ static int RunCommand( char *cmd )
 {
     char        *p;
     const char  **argv;
-    int         i;
+    int         rc;
+    size_t      i;
     bool        skip_sp;
 
     skip_sp = true;
@@ -140,9 +141,9 @@ static int RunCommand( char *cmd )
         }
     }
     argv[i] = NULL;
-    i = (int)spawnvp( P_WAIT, cmd, argv );
+    rc = (int)spawnvp( P_WAIT, cmd, argv );
     MFree( (void *)argv );
-    return( i );
+    return( rc );
 }
 
 static int DoPMake( pmake_data *data )

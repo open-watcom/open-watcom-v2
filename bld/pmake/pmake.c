@@ -525,8 +525,8 @@ static target_list *GetTargetItem( void )
 {
     const char      *arg;
     size_t          len;
-    unsigned        len1;
-    unsigned        i;
+    size_t          len1;
+    size_t          i;
     target_flags    flags;
     target_list     *curr;
     char            item[6];
@@ -534,7 +534,7 @@ static target_list *GetTargetItem( void )
     arg = GetString( &len );
     len1 = sizeof( item ) - 1;
     if( len1 > len )
-        len1 = (unsigned)len;
+        len1 = len;
     for( i = 0; i < len1; i++ ) {
         item[i] = (char)tolower( (unsigned char)arg[i] );
     }
