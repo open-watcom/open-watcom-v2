@@ -89,7 +89,6 @@ static dirqueue         *QueueTail = NULL;
 static volatile bool    DoneFlag;
 static jmp_buf          exit_buff;
 
-static pmake_data       Options;
 static char             Buff[512];
 static const char       *CmdLine;
 static char             saveDirBuff[_MAX_PATH];
@@ -400,23 +399,23 @@ static bool TrueTarget( target_list *target )
     return( eval_stk[0] );
 }
 
-static void TestDirectory( target_list *targets, const char *makefile, bool verbose )
+static void TestDirectory( pmake_data *data, target_list *targets, bool verbose )
 {
     priority_type   priority;
     pmake_list      *new;
     size_t          len;
 
     if( verbose ) {
-        sprintf( Buff, ">>> PMAKE >>> %s/%s", QueueHead->name, makefile );
+        sprintf( Buff, ">>> PMAKE >>> %s/%s", QueueHead->name, data->makefile );
         PMakeOutput( "" );
         PMakeOutput( Buff );
     }
-    priority = CheckTargets( targets, makefile );
+    priority = CheckTargets( targets, data->makefile );
     if( priority != NONE_PRIORITY && TrueTarget( targets ) ) {
         len = strlen( QueueHead->name );
         new = MAlloc( sizeof( *new ) + len );
-        new->next = Options.dir_list;
-        Options.dir_list = new;
+        new->next = data->dir_list;
+        data->dir_list = new;
         new->depth = QueueHead->depth;
         new->priority = priority;
         StringCopy( new->dir_name, QueueHead->name );
@@ -456,16 +455,14 @@ static void NextSubdir( void )
     DeQueue();
 }
 
-static void ProcessDirectoryQueue( target_list *targets, depth_type depth, bool verbose )
+static void ProcessDirectoryQueue( pmake_data *data, target_list *targets, depth_type depth, bool verbose )
 {
     DIR                 *dirp;
     struct dirent       *dire;
-    const char          *makefile;
 #ifdef __UNIX__
     struct stat         buf;
 #endif
 
-    makefile = Options.makefile;
     while( QueueHead != NULL ) {
         /* process directory */
         dirp = opendir( "." );
@@ -476,9 +473,9 @@ static void ProcessDirectoryQueue( target_list *targets, depth_type depth, bool 
                         continue;
                     /* queue subdirectory */
                     EnQueue( dire->d_name, depth );
-                } else if( stricmp( dire->d_name, makefile ) == 0 ) {
+                } else if( stricmp( dire->d_name, data->makefile ) == 0 ) {
                     /* add directory with makefile to the list for next processing */
-                    TestDirectory( targets, makefile, verbose );
+                    TestDirectory( data, targets, verbose );
                 }
                 if( DoneFlag ) {
                     break;
@@ -563,7 +560,7 @@ static target_list *GetTargetItem( void )
     return( curr );
 }
 
-static void SortDirectories( void )
+static void SortDirectories( pmake_data *data )
 {
     pmake_list  **dir_array;
     pmake_list  *curr;
@@ -574,21 +571,21 @@ static void SortDirectories( void )
 
     dir_array = MAlloc( sizeof( *dir_array ) * NumDirectories );
     i = 0;
-    for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
+    for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
     }
-    qsort( dir_array, NumDirectories, sizeof( *dir_array ), ( Options.reverse ) ? _comparison_rev : _comparison_fwd );
+    qsort( dir_array, NumDirectories, sizeof( *dir_array ), ( data->reverse ) ? _comparison_rev : _comparison_fwd );
     /* rebuild list in sorted order */
-    Options.dir_list = NULL;
+    data->dir_list = NULL;
     for( i = NumDirectories - 1; i >= 0; --i ) {
         curr = dir_array[i];
-        curr->next = Options.dir_list;
-        Options.dir_list = curr;
+        curr->next = data->dir_list;
+        data->dir_list = curr;
     }
     MFree( dir_array );
-    if( Options.optimize ) {
+    if( data->optimize ) {
         prev_name = NULL;
-        for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
+        for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
             new_name = RelativePath( prev_name, curr->dir_name );
             StringCopy( buff, curr->dir_name );
             prev_name = buff;
@@ -615,7 +612,7 @@ static void getTargets( target_list **owner )
     }
 }
 
-static void DoIt( void )
+static void DoIt( pmake_data *data )
 {
     const char  *arg;
     size_t      len;
@@ -625,10 +622,10 @@ static void DoIt( void )
     target_list *targets;
     target_list *next;
 
-    memset( &Options, 0, sizeof( Options ) );
+    memset( data, 0, sizeof( *data ) );
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
-        Options.want_help = true;
+        data->want_help = true;
         return;
     }
     verbose = false;
@@ -647,23 +644,23 @@ static void DoIt( void )
         ++CmdLine;
         switch( *CmdLine++ ) {
         case 'b':
-            Options.batch = true;
+            data->batch = true;
             break;
         case 'd':
-            Options.display = true;
+            data->display = true;
             break;
         case 'f':
             arg = GetString( &len );
             if( arg == NULL ) {
-                Options.want_help = true;
+                data->want_help = true;
                 return;
             }
-            MFree( Options.makefile );
-            Options.makefile = MAlloc( len + 1 );
-            StringCopyLen( Options.makefile, arg, len );
+            MFree( data->makefile );
+            data->makefile = MAlloc( len + 1 );
+            StringCopyLen( data->makefile, arg, len );
             break;
         case 'i':
-            Options.ignore_errors = true;
+            data->ignore_errors = true;
             break;
         case 'l':
             depth = GetNumber( 1 );
@@ -671,25 +668,25 @@ static void DoIt( void )
         case 'm':
             arg = GetString( &len );
             if( arg == NULL ) {
-                Options.want_help = true;
+                data->want_help = true;
                 return;
             }
-            MFree( Options.command );
-            Options.command = MAlloc( len + 1 );
-            StringCopyLen( Options.command, arg, len );
+            MFree( data->command );
+            data->command = MAlloc( len + 1 );
+            StringCopyLen( data->command, arg, len );
             break;
         case 'o':
-            Options.optimize = true;
+            data->optimize = true;
             break;
         case 'r':
-            Options.reverse = true;
+            data->reverse = true;
             break;
         case 'v':
             verbose = true;
             break;
         case '?':
         default:
-            Options.want_help = true;
+            data->want_help = true;
             return;
         }
     }
@@ -705,28 +702,28 @@ static void DoIt( void )
         targets->len = 0;
     }
     SKIP_SPACES( CmdLine );
-    Options.cmd_args = MAlloc( strlen( CmdLine ) + 1 );
-    StringCopy( Options.cmd_args, CmdLine );
+    data->cmd_args = MAlloc( strlen( CmdLine ) + 1 );
+    StringCopy( data->cmd_args, CmdLine );
     /* end of command line processing */
 
     /* setup default value if not defined on command line */
-    if( Options.makefile == NULL || *Options.makefile == '\0' ) {
-        MFree( Options.makefile );
-        Options.makefile = MAlloc( sizeof( DEFAULT_MAKE_FILE ) );
-        StringCopy( Options.makefile, DEFAULT_MAKE_FILE );
+    if( data->makefile == NULL || *data->makefile == '\0' ) {
+        MFree( data->makefile );
+        data->makefile = MAlloc( sizeof( DEFAULT_MAKE_FILE ) );
+        StringCopy( data->makefile, DEFAULT_MAKE_FILE );
     }
-    if( Options.command == NULL || *Options.command == '\0' ) {
-        MFree( Options.command );
-        Options.command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
-        StringCopy( Options.command, DEFAULT_MAKE_CMD );
+    if( data->command == NULL || *data->command == '\0' ) {
+        MFree( data->command );
+        data->command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
+        StringCopy( data->command, DEFAULT_MAKE_CMD );
     }
 
     /* start directory tree processing */
     NumDirectories = 0;
     InitQueue( SaveDir );
-    ProcessDirectoryQueue( targets, depth, verbose );
+    ProcessDirectoryQueue( data, targets, depth, verbose );
     if( NumDirectories > 0 ) {
-        SortDirectories();
+        SortDirectories( data );
     }
     while( targets != NULL ) {
         next = targets->next;
@@ -735,7 +732,7 @@ static void DoIt( void )
     }
 }
 
-pmake_data *PMakeBuild( const char *cmd )
+pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
 {
     void                (*old_sig)( int );
     volatile int        ret;
@@ -747,20 +744,20 @@ pmake_data *PMakeBuild( const char *cmd )
         CmdLine = cmd;
         ret = setjmp( exit_buff );
         if( ret == 0 )
-            DoIt();
+            DoIt( data );
         signal( SIGINT, old_sig );
         ret = chdir( SaveDir );
         if( DoneFlag )
-            Options.signaled = true;
+            data->signaled = true;
         while( QueueHead != NULL ) {
             DeQueue();
         }
     }
     if( ret != 0 ) {
-        PMakeCleanup( &Options );
+        PMakeCleanup( data );
         return( NULL );
     }
-    return( &Options );
+    return( data );
 }
 
 void PMakeCommand( pmake_data *data, char *cmd )

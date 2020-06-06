@@ -537,11 +537,12 @@ static int DoPMake( pmake_data *data )
 
 static int ProcPMake( const char *cmd, bool ignore_errors )
 {
+    pmake_data  pmake;
     pmake_data  *data;
     int         res;
     char        save[_MAX_PATH];
 
-    data = PMakeBuild( cmd );
+    data = PMakeBuild( &pmake, cmd );
     if( data == NULL )
         return( 1 );
     if( data->want_help || data->signaled ) {

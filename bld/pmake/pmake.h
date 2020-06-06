@@ -71,10 +71,9 @@ typedef struct {
     char        *cmd_args;
     char        *makefile;
     pmake_list  *dir_list;
-    target_list *targ_list;
 } pmake_data;
 
-extern pmake_data   *PMakeBuild( const char *cmd );
+extern pmake_data   *PMakeBuild( pmake_data *, const char *cmd );
 extern void         PMakeCommand( pmake_data *, char * );
 extern void         PMakeCleanup( pmake_data * );
 

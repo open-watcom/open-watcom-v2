@@ -246,6 +246,7 @@ int main( int argc, char **argv )
 int main( void )
 {
 #endif
+    pmake_data  pmake;
     pmake_data  *data;
     int         rc;
 
@@ -256,7 +257,7 @@ int main( void )
 
     MOpen();
     getcmd( CmdBuff );
-    data = PMakeBuild( CmdBuff );
+    data = PMakeBuild( &pmake, CmdBuff );
     if( data == NULL ) {
         MClose();
         exit( EXIT_FAILURE );
