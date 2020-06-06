@@ -40,9 +40,11 @@ typedef enum {
     TARGET_OPERATOR_NOT
 } target_flags;
 
+typedef unsigned        priority_type;
+
 typedef struct pmake_list {
     struct pmake_list   *next;
-    unsigned            priority;
+    priority_type       priority;
     unsigned            depth;
     char                dir_name[1];    /* variable sized */
 } pmake_list;

@@ -62,6 +62,8 @@
 #define DEFAULT_MAKE_FILE       "makefile"
 #define DEFAULT_PRIORITY        100
 
+#define NONE_PRIORITY           0
+
 #define COOKIE          "pmake"
 
 #define SKIP_SPACES(p)  while( isspace(*(p)) ) ++(p)
@@ -171,32 +173,32 @@ static void ResetMatches( void )
     }
 }
 
-static unsigned CompareTargets( const char *line )
+static priority_type CompareTargets( const char *line )
 {
-    unsigned    priority;
-    target_list *curr;
-    char        *numend;
+    priority_type   priority;
+    target_list     *curr;
+    char            *numend;
 
     priority = DEFAULT_PRIORITY;
     SKIP_SPACES( line );
     if( *line != '#' )
-        return( 0 );
+        return( NONE_PRIORITY );
     line++;
     SKIP_SPACES( line );
     if( strnicmp( line, COOKIE, sizeof( COOKIE ) - 1 ) != 0 )
-        return( 0 );
+        return( NONE_PRIORITY );
     line += ( sizeof( COOKIE ) - 1 );
     SKIP_SPACES( line );
     if( *line == '/' ) {
         ++line;
         priority = strtoul( line, &numend, 0 );
-        if( priority == 0 )
-            return( 0 );
+        if( priority == NONE_PRIORITY )
+            return( NONE_PRIORITY );
         line = numend;
         SKIP_SPACES( line );
     }
     if( *line != ':' )
-        return( 0 );
+        return( NONE_PRIORITY );
     line++;
     SKIP_SPACES( line );
     while( *line != '\0' ) {
@@ -217,25 +219,25 @@ static unsigned CompareTargets( const char *line )
     return( priority );
 }
 
-static unsigned CheckTargets( const char *filename )
+static priority_type CheckTargets( const char *filename )
 {
-    FILE        *mf;
-    unsigned    curr_prio;
-    unsigned    prio;
+    FILE            *mf;
+    priority_type   curr_priority;
+    priority_type   priority;
 
     mf = fopen( filename, "r" );
     if( mf == NULL )
-        return( 0 );
+        return( NONE_PRIORITY );
     ResetMatches();
-    prio = 0;
+    priority = NONE_PRIORITY;
     while( fgets( Buff, sizeof( Buff ), mf ) != NULL ) {
-        curr_prio = CompareTargets( Buff );
-        if( prio != 0 && curr_prio == 0 )
+        curr_priority = CompareTargets( Buff );
+        if( priority != NONE_PRIORITY && curr_priority == NONE_PRIORITY )
             break;
-        prio = curr_prio;
+        priority = curr_priority;
     }
     fclose( mf );
-    return( prio );
+    return( priority );
 }
 
 static void InitQueue( const char *cwd )
@@ -400,23 +402,23 @@ static bool TrueTarget( void )
 
 static void TestDirectory( const char *makefile )
 {
-    unsigned    prio;
-    pmake_list  *new;
-    size_t      len;
+    priority_type   priority;
+    pmake_list      *new;
+    size_t          len;
 
     if( Options.verbose ) {
         sprintf( Buff, ">>> PMAKE >>> %s/%s", QueueHead->name, makefile );
         PMakeOutput( "" );
         PMakeOutput( Buff );
     }
-    prio = CheckTargets( makefile );
-    if( prio != 0 && TrueTarget() ) {
+    priority = CheckTargets( makefile );
+    if( priority != NONE_PRIORITY && TrueTarget() ) {
         len = strlen( QueueHead->name );
         new = MAlloc( sizeof( *new ) + len );
         new->next = Options.dir_list;
         Options.dir_list = new;
         new->depth = QueueHead->depth;
-        new->priority = prio;
+        new->priority = priority;
         StringCopy( new->dir_name, QueueHead->name );
         ++NumDirectories;
     }
