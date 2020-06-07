@@ -126,10 +126,9 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> clean build rel cprel clean1 build1 rel1 cprel1 passclean pass ]
-#===========================================================================
+[ BLOCK <1> clean build rel cprel passclean pass ]
+#=================================================
 # Build all of Open Watcom using freshly built tools.
-# part 1
 #
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
@@ -146,11 +145,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean2 build2 rel2 cprel2 passclean pass ]
-#===========================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
 #
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
@@ -185,12 +179,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
-#===========================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 3
-#
 # Continue with SDK tools
 [ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]

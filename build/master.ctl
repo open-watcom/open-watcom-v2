@@ -42,37 +42,37 @@ set BLDRULE=
 
 [ BLOCK <1> boot ]
 #=================
-    set BLDRULE=boot
+    set BLDRULE=<1>
     set LOGFNAME=<1>
     echo **** Building the <PROJNAME> bootstrap
 
 [ BLOCK <1> bootclean ]
 #======================
-    set BLDRULE=bootclean
+    set BLDRULE=<1>
     set LOGFNAME=btclean
     echo **** BOOTCLEAN rule
 
-[ BLOCK <1> build build1 build2 build3 ]
-#=======================================
-    set BLDRULE=build
+[ BLOCK <1> build ]
+#==================
+    set BLDRULE=<1>
     set LOGFNAME=<1>
     echo **** BUILD rule
 
-[ BLOCK <1> rel rel1 rel2 rel3 pass ]
-#====================================
+[ BLOCK <1> rel pass ]
+#=====================
     set BLDRULE=rel
     set LOGFNAME=<1>
     echo **** REL rule
 
-[ BLOCK <1> clean clean1 clean2 clean3 passclean ]
-#=================================================
+[ BLOCK <1> clean passclean ]
+#============================
     set BLDRULE=clean
     set LOGFNAME=<1>
     echo **** CLEAN rule
 
-[ BLOCK <1> cprel cprel1 cprel2 cprel3 ]
-#=======================================
-    set BLDRULE=cprel
+[ BLOCK <1> cprel ]
+#==================
+    set BLDRULE=<1>
     set LOGFNAME=<1>
     # with 'cprel', we want to force the copy to occur
     set CPCMD=copy
@@ -99,7 +99,7 @@ set BLDRULE=
 
 [ BLOCK <1> test ]
 #=================
-    set BLDRULE=test
+    set BLDRULE=<1>
     set LOGFNAME=<1>
     echo **** TEST rule
 
@@ -112,25 +112,25 @@ set BLDRULE=
 
 [ BLOCK <1> testclean ]
 #======================
-    set BLDRULE=testclean
+    set BLDRULE=<1>
     set LOGFNAME=tstclean
     echo **** TESTCLEAN rule
 
 [ BLOCK <1> cleanlog ]
 #======================
-    set BLDRULE=cleanlog
-    set LOGFNAME=cleanlog
+    set BLDRULE=<1>
+    set LOGFNAME=<1>
     echo **** CLEANLOG rule
 
 [ BLOCK <1> docs ]
 #=================
-    set BLDRULE=docs
+    set BLDRULE=<1>
     set LOGFNAME=doc
     echo **** DOC rule
 
 [ BLOCK <1> docsclean ]
 #======================
-    set BLDRULE=docsclean
+    set BLDRULE=<1>
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule
 
