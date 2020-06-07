@@ -289,7 +289,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     size_t              argbufsize;
     const char          *optstring;
     size_t              varlen;         // size to hold name copy.
-    bool                result;         // doScanParams Result.
+    bool                contok;         // doScanParams Result.
     char                fbuf[512];
 
     optstring = PP_GetEnv( name );
@@ -301,9 +301,12 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
 //            RcWarning( ERR_ENV_VAR_NOT_FOUND, name );
             return( true );
         }
-        fgets( fbuf, sizeof( fbuf ), fh );
+        optstring = fgets( fbuf, sizeof( fbuf ), fh );
         fclose( fh );
-        optstring = fbuf;
+        if( optstring == NULL ) {
+            fprintf( stderr, "Error reading file '%s'\n", name );
+            return( true );
+        }
     }
     // This used to cause stack overflow: set foo=@foo && wrc @foo.
     for( info = stack; info != NULL; info = info->next ) {
@@ -326,11 +329,11 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     ParseVariable( optstring, info->argv, info->buf + argvsize );
     info->name = info->buf + argvsize + argbufsize;
     strcpy( info->name, name );
-    result = doScanParams( argc, info->argv, ppflags );
+    contok = doScanParams( argc, info->argv, ppflags );
 
     stack = info->next;                             // pop stack
     free( info );
-    return( result );
+    return( contok );
 }
 
 static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )

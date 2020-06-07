@@ -538,23 +538,20 @@ static int DoPMake( pmake_data *data )
 static int ProcPMake( const char *cmd, bool ignore_errors )
 {
     pmake_data  pmake;
-    pmake_data  *data;
     int         res;
     char        save[_MAX_PATH];
 
-    data = PMakeBuild( &pmake, cmd );
-    if( data == NULL )
-        return( 1 );
-    if( data->want_help || data->signaled ) {
-        PMakeCleanup( data );
-        return( 2 );
+    res = -1;
+    if( PMakeBuild( &pmake, cmd ) != NULL ) {
+        if( !pmake.want_help && !pmake.signaled ) {
+            pmake.ignore_errors = ignore_errors;
+            strcpy( save, GetIncludeCWD() );
+            res = DoPMake( &pmake );
+            SysChdir( save );
+            SetIncludeCWD();
+        }
+        PMakeCleanup( &pmake );
     }
-    data->ignore_errors = ignore_errors;
-    strcpy( save, GetIncludeCWD() );
-    res = DoPMake( data );
-    PMakeCleanup( data );
-    SysChdir( save );
-    SetIncludeCWD();
     return( res );
 }
 
