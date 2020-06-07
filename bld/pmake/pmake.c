@@ -622,7 +622,6 @@ static void DoIt( pmake_data *data )
     target_list *targets;
     target_list *next;
 
-    memset( data, 0, sizeof( *data ) );
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
         data->want_help = true;
@@ -737,7 +736,7 @@ pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
     void                (*old_sig)( int );
     volatile int        ret;
 
-    ret = 1;
+    memset( data, 0, sizeof( *data ) );
     if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
         DoneFlag = false;
         old_sig = signal( SIGINT, SetDoneFlag );
@@ -752,12 +751,12 @@ pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
         while( QueueHead != NULL ) {
             DeQueue();
         }
-    }
-    if( ret != 0 ) {
+        if( ret == 0 ) {
+            return( data );
+        }
         PMakeCleanup( data );
-        return( NULL );
     }
-    return( data );
+    return( NULL );
 }
 
 void PMakeCommand( pmake_data *data, char *cmd )
