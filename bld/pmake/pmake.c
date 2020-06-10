@@ -576,6 +576,35 @@ static target_list *GetTargetItem( void )
     return( target );
 }
 
+static void getTargets( target_list **targets )
+{
+    target_list *target;
+
+    for( ;; ) {
+        SKIP_SPACES( CmdLine );
+        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
+            CmdLine += 2;
+            break;
+        }
+        if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
+            break;
+        target = GetTargetItem();
+        *targets = target;
+        targets = &target->next;
+    }
+}
+
+static void freeTargets( target_list *targets )
+{
+    target_list *next;
+
+    while( targets != NULL ) {
+        next = targets->next;
+        MFree( targets );
+        targets = next;
+    }
+}
+
 static void SortDirectories( pmake_data *data )
 {
     pmake_list  **dir_array;
@@ -610,24 +639,6 @@ static void SortDirectories( pmake_data *data )
     }
 }
 
-static void getTargets( target_list **targets )
-{
-    target_list *target;
-
-    for( ;; ) {
-        SKIP_SPACES( CmdLine );
-        if( CmdLine[0] == '-' && CmdLine[1] == '-' ) {
-            CmdLine += 2;
-            break;
-        }
-        if( CmdLine[0] == '-' || CmdLine[0] == '/' || CmdLine[0] == '\0' )
-            break;
-        target = GetTargetItem();
-        *targets = target;
-        targets = &target->next;
-    }
-}
-
 static void DoIt( pmake_data *data )
 {
     const char  *arg;
@@ -636,7 +647,6 @@ static void DoIt( pmake_data *data )
     bool        notargets;
     depth_type  depth;
     target_list *targets;
-    target_list *next;
 
     SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
@@ -740,11 +750,7 @@ static void DoIt( pmake_data *data )
     if( NumDirectories > 0 ) {
         SortDirectories( data );
     }
-    while( targets != NULL ) {
-        next = targets->next;
-        MFree( targets );
-        targets = next;
-    }
+    freeTargets( targets );
 }
 
 pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
