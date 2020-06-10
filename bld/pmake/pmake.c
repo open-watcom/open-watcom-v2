@@ -486,6 +486,8 @@ static void ProcessDirectoryQueue( pmake_data *data, target_list *targets, depth
     struct stat         buf;
 #endif
 
+    NumDirectories = 0;
+    InitQueue( SaveDir );
     while( QueueHead != NULL ) {
         /* process directory */
         dirp = opendir( "." );
@@ -507,11 +509,12 @@ static void ProcessDirectoryQueue( pmake_data *data, target_list *targets, depth
             closedir( dirp );
         }
         if( DoneFlag ) {
-            return;
+            break;
         }
         /* set current directory to first possible queued subdirectory */
         NextSubdir();
     }
+    FiniQueue();
 }
 
 static int GetNumber( int default_num )
@@ -751,14 +754,11 @@ static void DoIt( pmake_data *data )
     }
 
     /* start directory tree processing */
-    NumDirectories = 0;
-    InitQueue( SaveDir );
     ProcessDirectoryQueue( data, targets, depth, verbose );
+    freeTargets( targets );
     if( NumDirectories > 0 ) {
         SortDirectories( data );
     }
-    FiniQueue();
-    freeTargets( targets );
 }
 
 pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
