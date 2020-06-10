@@ -31,15 +31,6 @@
 
 #define PMAKE_COMMAND_SIZE  512
 
-typedef enum {
-    TARGET_NOT_USED,
-    TARGET_USED,
-    TARGET_ALL,
-    TARGET_OPERATOR_AND,
-    TARGET_OPERATOR_OR,
-    TARGET_OPERATOR_NOT
-} target_flags;
-
 typedef unsigned        priority_type;
 
 typedef unsigned        depth_type;
@@ -51,13 +42,6 @@ typedef struct pmake_list {
     depth_type          depth;
     char                dir_name[1];    /* variable sized */
 } pmake_list;
-
-typedef struct target_list {
-    struct target_list  *next;
-    size_t              len;
-    target_flags        flags;
-    char                string[1];      /* variable sized */
-} target_list;
 
 typedef struct {
     boolbit     reverse         : 1;

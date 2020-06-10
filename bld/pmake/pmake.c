@@ -76,6 +76,22 @@
 #endif
 #define DOT_OR_DOTDOT(d) (d->d_name[0] == '.' && (d->d_name[1] == '\0' || d->d_name[1] == '.' && d->d_name[2] == '\0'))
 
+typedef enum {
+    TARGET_NOT_USED,
+    TARGET_USED,
+    TARGET_ALL,
+    TARGET_OPERATOR_AND,
+    TARGET_OPERATOR_OR,
+    TARGET_OPERATOR_NOT
+} target_flags;
+
+typedef struct target_list {
+    struct target_list  *next;
+    size_t              len;
+    target_flags        flags;
+    char                string[1];      /* variable sized */
+} target_list;
+
 typedef struct dirqueue {
     struct dirqueue     *next;
     depth_type          depth;
