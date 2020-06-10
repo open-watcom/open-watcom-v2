@@ -299,6 +299,13 @@ static void DeQueue( void )
     }
 }
 
+static void FiniQueue( void )
+{
+    while( QueueHead != NULL ) {
+        DeQueue();
+    }
+}
+
 static depth_type CountDepth( const char *path, depth_type depth )
 {
     while( *path != '\0' ) {
@@ -750,6 +757,7 @@ static void DoIt( pmake_data *data )
     if( NumDirectories > 0 ) {
         SortDirectories( data );
     }
+    FiniQueue();
     freeTargets( targets );
 }
 
@@ -770,9 +778,6 @@ pmake_data *PMakeBuild( pmake_data *data, const char *cmd )
         ret = chdir( SaveDir );
         if( DoneFlag )
             data->signaled = true;
-        while( QueueHead != NULL ) {
-            DeQueue();
-        }
         if( ret == 0 ) {
             return( data );
         }
