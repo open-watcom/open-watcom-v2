@@ -9,12 +9,6 @@ if [ -z "$OWROOT" ]; then
     . ./setvars.sh
 fi
 
-if [ -z "$1" ]; then
-    BUILDER_ARG=build
-else
-    BUILDER_ARG=$1
-fi
-
 if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 
 OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/bootx.log
@@ -63,14 +57,18 @@ else
     rm -f $OWBINDIR/builder
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-    if [ "$BUILDER_ARG" != "preboot" ]; then
+    if [ "$1" != "preboot" ]; then
         cd $OWSRCDIR
         builder boot
         RC=$?
         if [ $RC -ne 0 ]; then
             echo "builder bootstrap build error"
-        else
-            builder $BUILDER_ARG
+        elif [ "$1" != "boot" ]; then
+            if [ -z "$1" ]; then
+                builder build
+            else
+                builder $1
+            fi
             RC=$?
         fi
     fi
