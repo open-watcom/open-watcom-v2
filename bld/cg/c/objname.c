@@ -263,22 +263,23 @@ void    DoOutObjectName( cg_sym_handle sym,
     char        *dst;
     char        buffer[TS_MAX_OBJNAME + TRUNC_SYMBOL_HASH_LEN];
     unsigned    pref_len;
+    const char  *p;
 
     dst = buffer;
     switch( kind ) {
     case SPECIAL:
-        pref_len = (sizeof( SPEC_PREFIX )-1);
+        pref_len = (sizeof( SPEC_PREFIX ) - 1);
         dst = CopyStr( SPEC_PREFIX, dst );
         break;
     case DLLIMPORT:
-        dst = FEExtName( sym, EXTN_IMPPREFIX );
-        if( dst == NULL )
-            dst = "";
-        pref_len = strlen( dst );
-        dst = CopyStr( dst, buffer );
+        p = FEExtName( sym, EXTN_IMPPREFIX );
+        if( p == NULL )
+            p = "";
+        pref_len = strlen( p );
+        dst = CopyStr( p, buffer );
         break;
     case PIC_RW:
-        pref_len = (sizeof( PIC_RW_PREFIX )-1);
+        pref_len = (sizeof( PIC_RW_PREFIX ) - 1);
         dst = CopyStr( PIC_RW_PREFIX, dst );
         break;
     default:
