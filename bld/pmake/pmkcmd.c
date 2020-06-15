@@ -69,7 +69,7 @@ void PMakeOutput( const char *out )
     puts( out );
 }
 
-static void WriteCmdFile( pmake_data *data )
+static int WriteCmdFile( pmake_data *data )
 {
     FILE        *fp;
     pmake_list  *curr;
@@ -77,8 +77,7 @@ static void WriteCmdFile( pmake_data *data )
     fp = fopen( TMPBAT, "w+t" );
     if( fp == NULL ) {
         printf( "PMAKE: unable to open %s for writing: %s\n", TMPBAT, strerror( errno ) );
-        MClose();
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
 #ifdef __UNIX__
     fprintf( fp, "#!/bin/sh\n" );
@@ -101,9 +100,9 @@ static void WriteCmdFile( pmake_data *data )
     fprintf( fp, "cd %s\n", buffer );
     if( fclose( fp ) ) {
         printf( "PMAKE: unable to close %s: %s\n", TMPBAT, strerror( errno ) );
-        MClose();
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
+    return( EXIT_SUCCESS );
 }
 
 static int RunCommand( char *cmd )
@@ -231,10 +230,9 @@ static void PrintHelp( void )
 {
     int         i;
 
-    for( i = 0; Help[i] != NULL; ++i )
+    for( i = 0; Help[i] != NULL; ++i ) {
         puts( Help[i] );
-    MClose();
-    exit( EXIT_FAILURE );
+    }
 }
 
 static char     CmdBuff[512];
@@ -247,7 +245,6 @@ int main( void )
 {
 #endif
     pmake_data  pmake;
-    pmake_data  *data;
     int         rc;
 
 #if !defined( __WATCOMC__ )
@@ -255,32 +252,24 @@ int main( void )
     _argc = argc;
 #endif
 
+    rc = EXIT_FAILURE;
     MOpen();
     getcmd( CmdBuff );
-    data = PMakeBuild( &pmake, CmdBuff );
-    if( data == NULL ) {
-        MClose();
-        exit( EXIT_FAILURE );
+    if( PMakeBuild( &pmake, CmdBuff ) != NULL ) {
+        if( pmake.want_help ) {
+            PrintHelp();
+        } else if( !pmake.signaled ) {
+            /* If -b was given, only write out a batch file. By default,
+             * execute the commands directly.
+             */
+            if( pmake.batch ) {
+                rc = WriteCmdFile( &pmake );
+            } else {
+                rc = ProcPMake( &pmake );
+            }
+        }
+        PMakeCleanup( &pmake );
     }
-    if( data->want_help ) {
-        PrintHelp();
-    }
-    if( data->want_help || data->signaled ) {
-        PMakeCleanup( data );
-        MClose();
-        exit( EXIT_FAILURE );
-    }
-    /* If -b was given, only write out a batch file. By default,
-     * execute the commands directly.
-     */
-    if( data->batch ) {
-        WriteCmdFile( data );
-        rc = 0;
-    } else {
-        rc = ProcPMake( data );
-    }
-
-    PMakeCleanup( data );
     MClose();
     return( rc );
 }
