@@ -790,6 +790,8 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
         return( GetNamePattern( (SYM_HANDLE)sym_handle ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( (SYM_HANDLE)sym_handle ) );
+    case EXTN_IMPPREFIX:
+        return( ( TargSys == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );

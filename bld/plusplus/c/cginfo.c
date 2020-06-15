@@ -728,6 +728,8 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( sym ) );
+    case EXTN_IMPPREFIX:
+        return( ( TargetSystem == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
         return( CallbackName( sym ) );
     default:

@@ -51,7 +51,6 @@
 #include "langenv.h"
 
 #define SPEC_PREFIX             ".PREFIX_DATA."
-#define DLLIMPORT_PREFIX        "__imp_"
 #define PIC_RW_PREFIX           "__rw_"
 
 #define TRUNC_SYMBOL_HASH_LEN        4
@@ -272,8 +271,11 @@ void    DoOutObjectName( cg_sym_handle sym,
         dst = CopyStr( SPEC_PREFIX, dst );
         break;
     case DLLIMPORT:
-        pref_len = (sizeof( DLLIMPORT_PREFIX )-1);
-        dst = CopyStr( DLLIMPORT_PREFIX, dst );
+        dst = FEExtName( sym, EXTN_IMPPREFIX );
+        if( dst == NULL )
+            dst = "";
+        pref_len = strlen( dst );
+        dst = CopyStr( dst, buffer );
         break;
     case PIC_RW:
         pref_len = (sizeof( PIC_RW_PREFIX )-1);
