@@ -139,7 +139,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         FiniPPScan( ppscan_mode );
     }
     MacroSegmentAddToken( &mlen, T_NULL );
-    if( IS_OPER_DEFINED( mentry->macro_name ) ) {
+    if( IS_PPOPERATOR_DEFINED( mentry->macro_name ) ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
     } else {
         MacroDefine( mlen, mflags );

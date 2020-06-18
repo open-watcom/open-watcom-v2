@@ -200,7 +200,7 @@ void GetMacroToken( void )
             case T_UNEXPANDABLE_ID:
                 CalcHash( Buffer, TokenLen );
                 if( !CompFlags.doing_macro_expansion ) {
-                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
+                    if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                         TokenList = mtok->next;
                         CMemFree( mtok );
                         CurToken = Process_Pragma();

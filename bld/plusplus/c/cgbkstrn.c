@@ -107,7 +107,7 @@ void SymTransPush(              // ADD A SYMBOL TO BE TRANSLATED
     tr->src = src;
     tr->tgt = tgt;
     tr->id  = sym_trans_id;
-    dump( OPER_DEFINED, tr );
+    dump( PPOPERATOR_DEFINED, tr );
 }
 
 

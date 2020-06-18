@@ -345,7 +345,7 @@ MEPTR MacroScan( void )
         ExpectIdentifier();
         return( NULL );
     }
-    if( IS_OPER_DEFINED( Buffer ) ) {
+    if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return( NULL );
     }
@@ -712,7 +712,7 @@ bool MacroDel( const char *name )
     bool        ret;
 
     ret = false;
-    if( IS_OPER_DEFINED( name ) ) {
+    if( IS_PPOPERATOR_DEFINED( name ) ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
@@ -889,7 +889,7 @@ TOKEN Process_Pragma( void )
         }
     } else {
         InsertToken( CurToken, Buffer );
-        CPYLIT( Buffer, OPER_PRAGMA );
+        CPYLIT( Buffer, PPOPERATOR_PRAGMA );
         TokenLen = strlen( Buffer );
         CurToken = T_ID;
     }

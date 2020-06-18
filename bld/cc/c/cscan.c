@@ -259,7 +259,7 @@ static TOKEN doScanName( void )
         return( T_ID );
     mentry = MacroLookup( Buffer );
     if( mentry == NULL ) {
-        if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
+        if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
             token = Process_Pragma();
         } else {
             token = KwLookup( Buffer, TokenLen );
@@ -280,7 +280,7 @@ static TOKEN doScanName( void )
                     Buffer[TokenLen] = '\0';
                     token = T_ID;
                 } else {
-                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
+                    if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                         token = Process_Pragma();
                     } else {
                         token = KwLookup( Buffer, TokenLen );

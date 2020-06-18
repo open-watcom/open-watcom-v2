@@ -211,7 +211,7 @@ static void doGetMacroToken(        // GET NEXT TOKEN
             case T_ID:
             case T_UNEXPANDABLE_ID:
                 if( !doing_macro_expansion ) {
-                    if( IS_OPER_PRAGMA( Buffer, TokenLen ) ) {
+                    if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                         *mlist = mtok->next;
                         CMemFree( mtok );
                         CurToken = Process_Pragma( internal );

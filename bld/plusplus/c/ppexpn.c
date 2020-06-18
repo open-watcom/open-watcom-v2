@@ -387,7 +387,7 @@ static bool COperand( void )
         SrcFileGetTokenLocn( &loc.locn ); // need this to store result
         loc.pos = Pos;
         Pos++;
-        if( IS_OPER_DEFINED( Buffer ) ) {
+        if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
             ppctl_t old_ppctl;
 
             old_ppctl = PPControl;

@@ -541,7 +541,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     DbgAssert( mentry == (MEPTR)MacroOffset );
     new_mentry = NULL;
     mac_name = mentry->macro_name;
-    if( IS_OPER_DEFINED( mac_name ) ) {
+    if( IS_PPOPERATOR_DEFINED( mac_name ) ) {
         CErr2p( ERR_DEFINE_IMPOSSIBLE, mac_name );
     } else {
         name_len = strlen( mac_name );
@@ -656,7 +656,7 @@ static void doMacroUndef( const char *name, size_t len, bool quiet )
     MEPTR mentry;           // - current macro entry
     unsigned hash;          // - current macro hash
 
-    if( IS_OPER_DEFINED( name ) ) {
+    if( IS_PPOPERATOR_DEFINED( name ) ) {
         if( !quiet ) {
             CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
         }
