@@ -6949,7 +6949,7 @@ WINCOMMCTRLAPI HRESULT WINAPI       LoadIconWithScaleDown( HINSTANCE, PCWSTR, in
 #define Animate_Open( x, p ) \
     (BOOL)SNDMSG( x, ACM_OPEN, 0, (LPARAM)(LPTSTR)(p) )
 #define Animate_OpenEx( x, p1, p2 ) \
-    (BOOL)SNDMSG( x, ACM_OPEN, (WPARAM)(p1), (LPARAM)(LPTSTR)(p) )
+    (BOOL)SNDMSG( x, ACM_OPEN, (WPARAM)(p1), (LPARAM)(LPTSTR)(p2) )
 #define Animate_Play( x, p1, p2, p3 ) \
     (BOOL)SNDMSG( x, ACM_PLAY, (WPARAM)(p3), (LPARAM)MAKELONG( p1, p2 ) )
 #define Animate_Stop( x ) \
