@@ -1098,11 +1098,11 @@ static bool set_build_target( void )
     if( stricmp( Options.build_target, "DOS" ) == 0 ) {
         add_constant( "MSDOS", true );
     } else if( stricmp( Options.build_target, "NETWARE" ) == 0 ) {
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( SWData.cpu >= 3 ) {
             add_constant( "NETWARE_386", true );
         }
     } else if( stricmp( Options.build_target, "WINDOWS" ) == 0 ) {
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( SWData.cpu >= 3 ) {
             add_constant( "WINDOWS_386", true );
         }
     } else if( stricmp( Options.build_target, "QNX" ) == 0
@@ -1214,7 +1214,9 @@ int main( void )
 
     main_init();
     SwitchChar = _dos_switch_char();
-#ifndef __UNIX__
+#ifdef __UNIX__
+    do_init_stuff( &argv[1] );
+#else
     len = _bgetcmd( NULL, INT_MAX ) + 1;
     buff = malloc( len );
     if( buff != NULL ) {
@@ -1226,8 +1228,6 @@ int main( void )
     }
     do_init_stuff( argv );
     free( buff );
-#else
-    do_init_stuff( &argv[1] );
 #endif
     SetMemoryModel();
     WriteObjModule();           // main body: parse the source file
@@ -1237,7 +1237,7 @@ int main( void )
 }
 
 static void set_cpu_parameters( void )
-/*****************************/
+/************************************/
 {
     asm_token   token;
 
@@ -1272,7 +1272,7 @@ static void set_cpu_parameters( void )
 }
 
 static void set_fpu_parameters( void )
-/*****************************/
+/************************************/
 {
     asm_token   token;
 
