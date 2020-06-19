@@ -169,13 +169,13 @@ static void write_init( void )
 
     AddLnameData( dir_insert( "", TAB_CLASS_LNAME ) );
     ModuleInit();
-    FixInit();
+    FixInit();      /* womp init */
 }
 
 static void write_fini( void )
 /****************************/
 {
-    FixFini();
+    FixFini();      /* womp fini */
     ModuleFini();
     FreeFlist();
 }
