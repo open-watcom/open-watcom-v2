@@ -294,47 +294,6 @@ static void SetMM( void )
     memory_model = (char)OptValue;
 }
 
-static void SetMemoryModel( void )
-/********************************/
-{
-    char buffer[20];
-    char *model;
-
-    switch( memory_model ) {
-    case 'c':
-        model = "COMPACT";
-        break;
-    case 'f':
-        model = "FLAT";
-        break;
-    case 'h':
-        model = "HUGE";
-        break;
-    case 'l':
-        model = "LARGE";
-        break;
-    case 'm':
-        model = "MEDIUM";
-        break;
-    case 's':
-        model = "SMALL";
-        break;
-    case 't':
-        model = "TINY";
-        break;
-    default:
-        return;
-    }
-
-    if( Options.mode & MODE_IDEAL ) {
-        strcpy( buffer, "MODEL " );
-    } else {
-        strcpy( buffer, ".MODEL " );
-    }
-    strcat( buffer, model );
-    InputQueueLine( buffer );
-}
-
 static bool isvalidident( char *id )
 /**********************************/
 {
@@ -1142,100 +1101,6 @@ static void set_fpu_mode( void )
     }
 }
 
-static void parse_cmdline( char **cmdline )
-/*****************************************/
-{
-    char msgbuf[MAX_MESSAGE_SIZE];
-    int  level = 0;
-
-    if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
-        usage_msg();
-    }
-    for( ;*cmdline != NULL; ++cmdline ) {
-        ProcOptions( *cmdline, &level );
-    }
-    if( AsmFiles.fname[ASM] == NULL ) {
-        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
-        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
-    }
-}
-
-static void do_init_stuff( char **cmdline )
-/*****************************************/
-{
-    char        *env;
-
-    if( !MsgInit() )
-        exit(1);
-
-    add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
-    ForceInclude = AsmStrDup( getenv( "FORCE" ) );
-    do_envvar_cmdline( "WASM" );
-    parse_cmdline( cmdline );
-    set_build_target();
-    set_cpu_mode();
-    set_fpu_mode();
-    get_os_include();
-    env = getenv( "INCLUDE" );
-    if( env != NULL )
-        AddItemToIncludePath( env, NULL );
-    PrintBanner();
-    open_files();
-    PushLineQueue();
-}
-
-static void do_fini_stuff( void )
-/*******************************/
-{
-    MsgFini();
-}
-
-#ifdef __UNIX__
-
-int main( int argc, char **argv )
-/*******************************/
-{
-  #if !defined( __WATCOMC__ )
-    _argc = argc;
-    _argv = argv;
-  #else
-    /* unused parameters */ (void)argc;
-  #endif
-
-#else
-
-int main( void )
-/**************/
-{
-    char       *argv[2];
-    int        len;
-    char       *buff;
-#endif
-
-    main_init();
-    SwitchChar = _dos_switch_char();
-#ifdef __UNIX__
-    do_init_stuff( &argv[1] );
-#else
-    len = _bgetcmd( NULL, INT_MAX ) + 1;
-    buff = malloc( len );
-    if( buff != NULL ) {
-        argv[0] = buff;
-        argv[1] = NULL;
-        _bgetcmd( buff, len );
-    } else {
-        return( -1 );
-    }
-    do_init_stuff( argv );
-    free( buff );
-#endif
-    SetMemoryModel();
-    WriteObjModule();           // main body: parse the source file
-    do_fini_stuff();
-    main_fini();
-    return( Options.error_count ); /* zero if no errors */
-}
-
 static void set_cpu_parameters( void )
 /************************************/
 {
@@ -1319,6 +1184,142 @@ static void set_fpu_parameters( void )
         break;
     }
     cpu_directive( token );
+}
+
+static void SetMemoryModel( void )
+/********************************/
+{
+    char buffer[20];
+    char *model;
+
+    switch( memory_model ) {
+    case 'c':
+        model = "COMPACT";
+        break;
+    case 'f':
+        model = "FLAT";
+        break;
+    case 'h':
+        model = "HUGE";
+        break;
+    case 'l':
+        model = "LARGE";
+        break;
+    case 'm':
+        model = "MEDIUM";
+        break;
+    case 's':
+        model = "SMALL";
+        break;
+    case 't':
+        model = "TINY";
+        break;
+    default:
+        return;
+    }
+
+    if( Options.mode & MODE_IDEAL ) {
+        strcpy( buffer, "MODEL " );
+    } else {
+        strcpy( buffer, ".MODEL " );
+    }
+    strcat( buffer, model );
+    InputQueueLine( buffer );
+}
+
+static void parse_cmdline( char **cmdline )
+/*****************************************/
+{
+    char msgbuf[MAX_MESSAGE_SIZE];
+    int  level = 0;
+
+    if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
+        usage_msg();
+    }
+    for( ;*cmdline != NULL; ++cmdline ) {
+        ProcOptions( *cmdline, &level );
+    }
+    if( AsmFiles.fname[ASM] == NULL ) {
+        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
+        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
+    }
+}
+
+static void do_init_stuff( char **cmdline )
+/*****************************************/
+{
+    char        *env;
+
+    if( !MsgInit() )
+        exit(1);
+
+    add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
+    ForceInclude = AsmStrDup( getenv( "FORCE" ) );
+    do_envvar_cmdline( "WASM" );
+    parse_cmdline( cmdline );
+    set_build_target();
+    set_cpu_mode();
+    set_fpu_mode();
+    get_os_include();
+    env = getenv( "INCLUDE" );
+    if( env != NULL )
+        AddItemToIncludePath( env, NULL );
+    PrintBanner();
+    open_files();
+    PushLineQueue();
+}
+
+static void do_fini_stuff( void )
+/*******************************/
+{
+    MsgFini();
+}
+
+#ifdef __UNIX__
+
+int main( int argc, char **argv )
+/*******************************/
+{
+  #if !defined( __WATCOMC__ )
+    _argc = argc;
+    _argv = argv;
+  #else
+    /* unused parameters */ (void)argc;
+  #endif
+
+#else
+
+int main( void )
+/**************/
+{
+    char       *argv[2];
+    int        len;
+    char       *buff;
+
+#endif
+
+    main_init();
+    SwitchChar = _dos_switch_char();
+#ifdef __UNIX__
+    do_init_stuff( &argv[1] );
+#else
+    len = _bgetcmd( NULL, INT_MAX ) + 1;
+    buff = malloc( len );
+    if( buff != NULL ) {
+        argv[0] = buff;
+        argv[1] = NULL;
+        _bgetcmd( buff, len );
+    } else {
+        return( -1 );
+    }
+    do_init_stuff( argv );
+    free( buff );
+#endif
+    SetMemoryModel();
+    WriteObjModule();           // main body: parse the source file
+    do_fini_stuff();
+    main_fini();
+    return( Options.error_count ); /* zero if no errors */
 }
 
 void CmdlParamsInit( void )
