@@ -587,8 +587,8 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
     return( RC_OK );
 }
 
-static asm_cpu comp_opt( asm_token direct )
-/*****************************************/
+static asm_cpu get_cpu_flags( asm_token direct )
+/**********************************************/
 /*
   Compare function for CPU directive
 */
@@ -696,10 +696,9 @@ static asm_cpu comp_opt( asm_token direct )
     case T_PXMM3:
 #endif
         return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
-    default:
-        // not found
-        return( P_EMPTY );
     }
+    // not found
+    return( P_EMPTY );
 }
 
 static asm_cpu def_fpu( asm_token direct )
@@ -793,26 +792,35 @@ static void MakeCPUConstant( asm_token tok )
 }
 #endif
 
-bool cpu_directive( asm_token token )
-/***********************************/
+bool cpu_directive_value( asm_cpu *cpu, asm_token token )
+/*******************************************************/
 {
     asm_cpu     temp;
 
-    if( (temp = comp_opt( token )) != P_EMPTY ) {
-        if( token == T_DOT_NO87 ) {
-            Code->info.cpu &= ~P_FPU_MASK;                 // turn off FPU bits
-        } else if( temp & P_EXT_MASK ) {
-            Code->info.cpu |= temp & P_EXT_MASK;           // turn on desired bit(s)
-        } else if( temp & P_FPU_MASK ) {
-            Code->info.cpu &= ~P_FPU_MASK;
-            Code->info.cpu |= temp & P_FPU_MASK;           // setup FPU bits
-        } else {
-            Code->info.cpu &= ~( P_CPU_MASK | P_PM );
-            Code->info.cpu |= temp & ( P_CPU_MASK | P_PM );// setup CPU bits
-            Code->info.cpu &= ~P_FPU_MASK;
-            Code->info.cpu |= def_fpu( token ) & P_FPU_MASK;   // setup FPU bits
-        }
+    if( (temp = get_cpu_flags( token )) == P_EMPTY )
+        return( RC_ERROR );
+    if( token == T_DOT_NO87 ) {
+        *cpu &= ~P_FPU_MASK;                    // turn off FPU bits
+    } else if( temp & P_EXT_MASK ) {
+        *cpu |= temp & P_EXT_MASK;              // turn on desired bit(s)
+    } else if( temp & P_FPU_MASK ) {
+        *cpu &= ~P_FPU_MASK;
+        *cpu |= temp & P_FPU_MASK;              // setup FPU bits
     } else {
+        *cpu &= ~( P_CPU_MASK | P_PM );
+        *cpu |= temp & ( P_CPU_MASK | P_PM );   // setup CPU bits
+        *cpu &= ~P_FPU_MASK;
+        *cpu |= def_fpu( token ) & P_FPU_MASK;  // setup FPU bits
+    }
+    return( RC_OK );
+}
+
+bool cpu_directive( asm_token token )
+/***********************************/
+{
+    bool    rc;
+
+    if( cpu_directive_value( &Code->info.cpu, token ) != RC_OK ) {
         AsmError( UNKNOWN_DIRECTIVE );
         return( RC_ERROR );
     }
@@ -946,7 +954,7 @@ static bool proc_check( const char *curline, bool *prolog )
 
     if( Token_Count > 1 ) {
         if( ( AsmBuffer[1].class == TC_DIRECTIVE )
-            || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
+          || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
             return( RC_OK );
         }
     }

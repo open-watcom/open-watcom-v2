@@ -188,7 +188,7 @@ static void SetCPUPMC( void )
 {
     char                *tmp;
 
-    for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
+    for( tmp = OptParm; tmp < OptScanPtr; tmp++ ) {
         if( *tmp == 'p' ) {
             if( SWData.cpu >= 2 ) { // set protected mode
                 SWData.protect_mode = true;
