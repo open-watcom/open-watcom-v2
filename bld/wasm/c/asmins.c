@@ -792,8 +792,8 @@ static void MakeCPUConstant( asm_token tok )
 }
 #endif
 
-bool cpu_directive_value( asm_cpu *cpu, asm_token token )
-/*******************************************************/
+static bool cpu_directive_value( asm_cpu *cpu, asm_token token )
+/**************************************************************/
 {
     asm_cpu     temp;
 
