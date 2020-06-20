@@ -818,8 +818,6 @@ bool cpu_directive_value( asm_cpu *cpu, asm_token token )
 bool cpu_directive( asm_token token )
 /***********************************/
 {
-    bool    rc;
-
     if( cpu_directive_value( &Code->info.cpu, token ) != RC_OK ) {
         AsmError( UNKNOWN_DIRECTIVE );
         return( RC_ERROR );
