@@ -355,7 +355,7 @@ bool jmp( expr_list *opndx, int *flags )
                 break;
             }
 
-            if( (Code->info.cpu&P_CPU_MASK) < P_386 && IS_JMP( Code->info.token ) ) {
+            if( (Code->info.cpu & P_CPU_MASK) < P_386 && IS_JMP( Code->info.token ) ) {
                 /* look into jump extension */
                 switch( Code->info.token ) {
                 case T_JMP:
@@ -599,7 +599,7 @@ bool jmp( expr_list *opndx, int *flags )
             fixup_type = FIX_RELOFF8;
             break;
         default:
-            if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+            if( (Code->info.cpu & P_CPU_MASK) >= P_386 ) {
                 switch( Code->mem_type ) {
                 case MT_SHORT:
                     fixup_option = OPTJ_EXPLICIT;

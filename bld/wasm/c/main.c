@@ -1142,29 +1142,12 @@ static void set_fpu_parameters( void )
     asm_token   token;
 
     switch( floating_point ) {
+    case NO_FP_ALLOWED:
+        token = T_DOT_NO87;
+        break;
     case DO_FP_EMULATION:
     case NO_FP_EMULATION:
-        break;
-    case NO_FP_ALLOWED:
-        cpu_directive( T_DOT_NO87 );
-        return;
-    }
-    switch( SWData.fpu ) {
-    case 0:
-    case 1:
-        token = T_DOT_8087;
-        break;
-    case 2:
-        token = T_DOT_287;
-        break;
-    case 3:
-    case 5:
-    case 6:
-        token = T_DOT_387;
-        break;
-    case 7:
-    default: // unspecified FPU
-        switch( SWData.cpu ) {
+        switch( SWData.fpu ) {
         case 0:
         case 1:
             token = T_DOT_8087;
@@ -1173,15 +1156,35 @@ static void set_fpu_parameters( void )
             token = T_DOT_287;
             break;
         case 3:
-        case 4:
         case 5:
         case 6:
             token = T_DOT_387;
             break;
-        default:
-            return;
+        case 7:
+        default: // unspecified FPU
+            // derive FPU from CPU value
+            switch( SWData.cpu ) {
+            case 0:
+            case 1:
+                token = T_DOT_8087;
+                break;
+            case 2:
+                token = T_DOT_287;
+                break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                token = T_DOT_387;
+                break;
+            default: // unspecified CPU
+                return;
+            }
+            break;
         }
         break;
+    default: // unknown floating_point value
+        return;
     }
     cpu_directive( token );
 }

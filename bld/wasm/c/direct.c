@@ -2722,7 +2722,7 @@ static int find_size( int type )
         return( 16 );
     case TOK_EXT_PTR:
         /* first determine offset size */
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( (Code->info.cpu & P_CPU_MASK) >= P_386 ) {
             ptr_size = 4;
         } else {
             ptr_size = 2;
