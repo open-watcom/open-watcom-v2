@@ -1105,11 +1105,13 @@ static void set_cpu_parameters( void )
 /************************************/
 {
     asm_token   token;
+    char        buffer[MAX_KEYWORD_LEN + 1];
 
     // Start in masm mode
     Options.mode &= ~MODE_IDEAL;
     switch( SWData.cpu ) {
     case 0:
+    default:
         token = T_DOT_8086;
         break;
     case 1:
@@ -1130,16 +1132,17 @@ static void set_cpu_parameters( void )
     case 6:
         token =  SWData.protect_mode ? T_DOT_686P : T_DOT_686;
         break;
-    default:
-        return;
     }
-    cpu_directive( token );
+    buffer[0] = '.';
+    GetInsString( token, buffer + 1 );
+    InputQueueLine( buffer );
 }
 
 static void set_fpu_parameters( void )
 /************************************/
 {
     asm_token   token;
+    char        buffer[MAX_KEYWORD_LEN + 1];
 
     switch( floating_point ) {
     case NO_FP_ALLOWED:
@@ -1186,7 +1189,9 @@ static void set_fpu_parameters( void )
     default: // unknown floating_point value
         return;
     }
-    cpu_directive( token );
+    buffer[0] = '.';
+    GetInsString( token, buffer + 1 );
+    InputQueueLine( buffer );
 }
 
 static void SetMemoryModel( void )
@@ -1269,7 +1274,17 @@ static void do_init_stuff( char **cmdline )
         AddItemToIncludePath( env, NULL );
     PrintBanner();
     open_files();
+
+    /*
+     * insert CPU/FPU directives and model directive
+     * for command line parameters if any
+     * add it to input line queue to be processed
+     * before source file
+     */
     PushLineQueue();
+    set_cpu_parameters();
+    set_fpu_parameters();
+    SetMemoryModel();
 }
 
 static void do_fini_stuff( void )
@@ -1318,7 +1333,6 @@ int main( void )
     do_init_stuff( argv );
     free( buff );
 #endif
-    SetMemoryModel();
     WriteObjModule();           // main body: parse the source file
     do_fini_stuff();
     main_fini();
@@ -1329,13 +1343,12 @@ void CmdlParamsInit( void )
 /*************************/
 {
     Code->use32 = false;            // default is 16-bit segment
-    Code->info.cpu = P_86 | P_87;   // default is 8086 CPU and 8087 FPU
+    Code->info.cpu = ModuleInfo.cpu_init;
+    ModuleInfo.def_use32 = ModuleInfo.def_use32_init;
 
-    if( ForceInclude != NULL )
+    if( ForceInclude != NULL ) {
         InputQueueFile( ForceInclude );
-
-    set_cpu_parameters();
-    set_fpu_parameters();
+    }
 }
 
 void FreeForceInclude( void )

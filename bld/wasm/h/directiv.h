@@ -301,20 +301,22 @@ enum assume_reg {
 #define ASSUME_LAST     ASSUME_ERROR
 
 typedef struct {
-    dist_type           distance;        // stack distance;
-    mod_type            model;           // memory model;
+    dist_type           distance;       // stack distance;
+    mod_type            model;          // memory model;
 #if defined( _STANDALONE_ )
-    lang_type           langtype;        // language;
+    lang_type           langtype;       // language;
     bool                model_cmdline;
-    bool                def_use32;       // default segment size 32-bit
+    bool                def_use32;      // default segment size 32-bit
+    bool                def_use32_init; // default segment size from cmdline
+    asm_cpu             cpu_init;
 #endif
-    os_type             ostype;          // operating system;
-    bool                use32;           // If 32-bit segment is used
-    bool                mseg;            // mixed segments (16/32-bit)
-    struct asm_sym      *flat_grp;       // FLAT group symbol
-    char                *name;           // name of module
+    os_type             ostype;         // operating system;
+    bool                use32;          // If 32-bit segment is used
+    bool                mseg;           // mixed segments (16/32-bit)
+    struct asm_sym      *flat_grp;      // FLAT group symbol
+    char                *name;          // name of module
     const FNAME         *srcfile;
-} module_info;                           // Information about the module
+} module_info;                          // Information about the module
 
 extern module_info      ModuleInfo;
 

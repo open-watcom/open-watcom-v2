@@ -823,6 +823,10 @@ bool cpu_directive( asm_token token )
     Code->info.cpu = add_cpu_flags( token, Code->info.cpu, new_cpu );
 
 #if defined( _STANDALONE_ )
+    if( LineNumber == 0 ) {
+        ModuleInfo.cpu_init = Code->info.cpu;
+    }
+
     MakeCPUConstant( token );
     switch( token ) {
     case T_DOT_686P:

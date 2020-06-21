@@ -1350,6 +1350,9 @@ bool SetUse32Def( bool use32 )
         if( ModuleInfo.model == MOD_NONE    // model not defined
           || ModuleInfo.model_cmdline ) {   // model defined on cmdline by -m?
             ModuleInfo.def_use32 = use32;
+            if( LineNumber == 0 ) {
+                ModuleInfo.def_use32_init = use32;
+            }
         }
     }
     return( SetUse32() );
@@ -2143,8 +2146,10 @@ void ModuleInit( void )
     ModuleInfo.distance = STACK_NONE;
     ModuleInfo.langtype = LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
+    ModuleInfo.cpu_init = P_86 | P_87;
     ModuleInfo.use32 = false;
     ModuleInfo.def_use32 = false;
+    ModuleInfo.def_use32_init = false;
     ModuleInfo.model_cmdline = false;
     ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
