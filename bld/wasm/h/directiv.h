@@ -305,13 +305,11 @@ typedef struct {
     mod_type            model;           // memory model;
 #if defined( _STANDALONE_ )
     lang_type           langtype;        // language;
+    bool                model_cmdline;
+    bool                def_use32;       // default segment size 32-bit
 #endif
     os_type             ostype;          // operating system;
     bool                use32;           // If 32-bit segment is used
-#if defined( _STANDALONE_ )
-    bool                model_cmdline;
-#endif
-    bool                defUse32;        // default segment size 32-bit
     bool                mseg;            // mixed segments (16/32-bit)
     struct asm_sym      *flat_grp;       // FLAT group symbol
     char                *name;           // name of module

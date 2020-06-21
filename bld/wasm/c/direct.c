@@ -1331,7 +1331,7 @@ static bool SetUse32( void )
 /**************************/
 {
     if( CurrSeg == NULL ) {
-        Use32 = ModuleInfo.defUse32;
+        Use32 = ModuleInfo.def_use32;
     } else {
         Globals.code_seg = SEGISCODE( CurrSeg );
         Use32 = CurrSeg->seg->e.seginfo->use32;
@@ -1349,7 +1349,7 @@ bool SetUse32Def( bool use32 )
     if( CurrSeg == NULL ) {                 // outside any segments
         if( ModuleInfo.model == MOD_NONE    // model not defined
           || ModuleInfo.model_cmdline ) {   // model defined on cmdline by -m?
-            ModuleInfo.defUse32 = use32;
+            ModuleInfo.def_use32 = use32;
         }
     }
     return( SetUse32() );
@@ -1537,7 +1537,7 @@ bool SegDef( token_idx i )
         if( new == old ) {
             new->align = ALIGN_PARA;
             new->combine = COMB_INVALID;
-            new->use32 = ModuleInfo.defUse32;
+            new->use32 = ModuleInfo.def_use32;
             new->class_name = InsertClassLname( "" );
             new->readonly = false;
             new->iscode = SEGTYPE_UNDEF;
@@ -1549,7 +1549,7 @@ bool SegDef( token_idx i )
             if( !old->ignore ) {
                 new->use32 = old->use32;
             } else {
-                new->use32 = ModuleInfo.defUse32;
+                new->use32 = ModuleInfo.def_use32;
             }
             new->class_name = old->class_name;
         }
@@ -1898,7 +1898,7 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
     unsigned    bit;
     unsigned    ideal;
 
-    bit = ( ModuleInfo.defUse32 != 0 ) ? 1 : 0;
+    bit = ( ModuleInfo.def_use32 != 0 ) ? 1 : 0;
     ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
     skip = 0;
     *buffer = '\0';
@@ -2144,7 +2144,7 @@ void ModuleInit( void )
     ModuleInfo.langtype = LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
     ModuleInfo.use32 = false;
-    ModuleInfo.defUse32 = false;
+    ModuleInfo.def_use32 = false;
     ModuleInfo.model_cmdline = false;
     ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
