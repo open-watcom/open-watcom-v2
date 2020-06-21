@@ -376,7 +376,7 @@ static void write_seg( void )
         objr->d.segdef.seg_length = dir->e.seginfo->length;
         objr->d.segdef.align = dir->e.seginfo->align;
         objr->d.segdef.combine = dir->e.seginfo->combine;
-        objr->d.segdef.use_32 = dir->e.seginfo->use_32;
+        objr->d.segdef.use32 = dir->e.seginfo->use32;
         objr->d.segdef.access_valid = 0;
         objr->d.segdef.abs.frame = dir->e.seginfo->abs_frame;
         objr->d.segdef.abs.offset = 0;

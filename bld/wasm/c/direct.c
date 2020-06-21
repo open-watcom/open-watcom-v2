@@ -1334,7 +1334,7 @@ static bool SetUse32( void )
         Use32 = ModuleInfo.defUse32;
     } else {
         Globals.code_seg = SEGISCODE( CurrSeg );
-        Use32 = CurrSeg->seg->e.seginfo->use_32;
+        Use32 = CurrSeg->seg->e.seginfo->use32;
         if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 ) ) {
             AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
             return( RC_ERROR );
@@ -1343,13 +1343,14 @@ static bool SetUse32( void )
     return( RC_OK );
 }
 
-bool SetUse32Def( bool flag )
-/***************************/
+bool SetUse32Def( bool use32 )
+/****************************/
 {
-    if( ( CurrSeg == NULL )               // outside any segments
-        && ( ModuleInfo.model == MOD_NONE // model not defined
-            || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
-        ModuleInfo.defUse32 = flag;
+    if( CurrSeg == NULL ) {                 // outside any segments
+        if( ModuleInfo.model == MOD_NONE    // model not defined
+          || ModuleInfo.model_cmdline ) {   // model defined on cmdline by -m?
+            ModuleInfo.defUse32 = use32;
+        }
     }
     return( SetUse32() );
 }
@@ -1536,7 +1537,7 @@ bool SegDef( token_idx i )
         if( new == old ) {
             new->align = ALIGN_PARA;
             new->combine = COMB_INVALID;
-            new->use_32 = ModuleInfo.defUse32;
+            new->use32 = ModuleInfo.defUse32;
             new->class_name = InsertClassLname( "" );
             new->readonly = false;
             new->iscode = SEGTYPE_UNDEF;
@@ -1546,9 +1547,9 @@ bool SegDef( token_idx i )
             new->align = old->align;
             new->combine = old->combine;
             if( !old->ignore ) {
-                new->use_32 = old->use_32;
+                new->use32 = old->use32;
             } else {
-                new->use_32 = ModuleInfo.defUse32;
+                new->use32 = ModuleInfo.defUse32;
             }
             new->class_name = old->class_name;
         }
@@ -1617,7 +1618,7 @@ bool SegDef( token_idx i )
                 break;
             case TOK_USE16:
             case TOK_USE32:
-                new->use_32 = ( TypeInfo[type].value != 0 );
+                new->use32 = ( TypeInfo[type].value != 0 );
                 break;
             case TOK_IGNORE:
                 new->ignore = true;
@@ -1664,7 +1665,7 @@ bool SegDef( token_idx i )
             if( ( old->readonly != new->readonly )
                 || ( old->align != new->align )
                 || ( old->combine != new->combine )
-                || ( old->use_32 != new->use_32 )
+                || ( old->use32 != new->use32 )
                 || ( old->class_name != new->class_name ) ) {
                 AsmError( SEGDEF_CHANGED );
                 goto error;
@@ -1678,7 +1679,7 @@ bool SegDef( token_idx i )
             old->readonly = new->readonly;
             old->iscode = new->iscode;
             old->ignore = new->ignore;
-            old->use_32 = new->use_32;
+            old->use32 = new->use32;
             old->class_name = new->class_name;
         } else {    // new->ignore
             /* keep the old values */
@@ -1687,13 +1688,13 @@ bool SegDef( token_idx i )
             new->readonly = old->readonly;
             new->iscode = old->iscode;
             new->ignore = old->ignore;
-            new->use_32 = old->use_32;
+            new->use32 = old->use32;
             new->class_name = old->class_name;
         }
-        if( !ModuleInfo.mseg && ( seg->e.seginfo->use_32 != ModuleInfo.use32 ) ) {
+        if( !ModuleInfo.mseg && ( seg->e.seginfo->use32 != ModuleInfo.use32 ) ) {
             ModuleInfo.mseg = true;
         }
-        if( seg->e.seginfo->use_32 ) {
+        if( seg->e.seginfo->use32 ) {
             ModuleInfo.use32 = true;
         }
         if( new != old )
@@ -1838,7 +1839,7 @@ bool Startup( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
 
     switch( AsmBuffer[i].u.token ) {
     case T_DOT_STARTUP:
@@ -1969,7 +1970,7 @@ bool SimSeg( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
     close_lastseg();
     type = AsmBuffer[i].u.token;
     i++; /* get past the directive token */
@@ -2144,7 +2145,7 @@ void ModuleInit( void )
     ModuleInfo.ostype = OPSYS_DOS;
     ModuleInfo.use32 = false;
     ModuleInfo.defUse32 = false;
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
     ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
     ModuleInfo.name = NULL;
@@ -2223,11 +2224,11 @@ bool Model( token_idx i )
         return( RC_OK );
     }
 
-    if( ModuleInfo.model != MOD_NONE && !ModuleInfo.cmdline ) {
+    if( ModuleInfo.model != MOD_NONE && !ModuleInfo.model_cmdline ) {
         AsmError( MODEL_DECLARED_ALREADY );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
 
     get_module_name();
 
@@ -2321,7 +2322,7 @@ bool Model( token_idx i )
     module_prologue();
     lastseg.seg = SIM_NONE;
     lastseg.stack_size = 0;
-    ModuleInfo.cmdline = ( LineNumber == 0 );
+    ModuleInfo.model_cmdline = ( LineNumber == 0 );
     return( RC_OK );
 }
 
@@ -2486,7 +2487,7 @@ bool SymIs32( struct asm_sym *sym )
             }
         }
     } else {
-        return( curr->e.seginfo->use_32 );
+        return( curr->e.seginfo->use32 );
     }
     return( RC_OK );
 }
@@ -2559,12 +2560,12 @@ int Use32Assume( enum assume_reg prefix )
         return( EMPTY );
     if( sym_assume->state == SYM_SEG ) {
         dir = (dir_node *)sym_assume;
-        return( dir->e.seginfo->use_32 );
+        return( dir->e.seginfo->use32 );
     } else if( sym_assume->state == SYM_GRP ) {
         dir = (dir_node *)sym_assume;
         seg_l = dir->e.grpinfo->seglist;
         dir = seg_l->seg;
-        return( dir->e.seginfo->use_32 );
+        return( dir->e.seginfo->use32 );
     }
     return( EMPTY );
 }

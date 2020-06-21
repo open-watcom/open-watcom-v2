@@ -577,7 +577,7 @@ static void log_segment( struct asm_sym *sym, struct asm_sym *group )
 
         if( seg->group == group ) {
             LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-            if( seg->use_32 ) {
+            if( seg->use32 ) {
                 LstMsg( "32 Bit   %08lX ", seg->current_loc );
             } else {
                 LstMsg( "16 Bit   %04lX     ", seg->current_loc );

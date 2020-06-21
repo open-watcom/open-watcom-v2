@@ -378,7 +378,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     }
                     break;
                 case 6:
-                    // fixme -- this needs work .... check USE_32, etc
+                    // fixme -- this needs work .... check USE32, etc
                     fixup_type = FIX_PTR32;
                     Code->info.opnd_type[OPND1] = OP_J48;
                     break;

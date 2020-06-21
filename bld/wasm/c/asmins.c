@@ -792,36 +792,35 @@ static void MakeCPUConstant( asm_token tok )
 }
 #endif
 
-static bool cpu_directive_value( asm_cpu *cpu, asm_token token )
-/**************************************************************/
+static asm_cpu cpu_flags_value( asm_token token, asm_cpu cpu, asm_cpu temp )
+/**************************************************************************/
 {
-    asm_cpu     temp;
-
-    if( (temp = get_cpu_flags( token )) == P_EMPTY )
-        return( RC_ERROR );
     if( token == T_DOT_NO87 ) {
-        *cpu &= ~P_FPU_MASK;                    // turn off FPU bits
+        cpu &= ~P_FPU_MASK;                    // turn off FPU bits
     } else if( temp & P_EXT_MASK ) {
-        *cpu |= temp & P_EXT_MASK;              // turn on desired bit(s)
+        cpu |= temp & P_EXT_MASK;              // turn on desired bit(s)
     } else if( temp & P_FPU_MASK ) {
-        *cpu &= ~P_FPU_MASK;
-        *cpu |= temp & P_FPU_MASK;              // setup FPU bits
+        cpu &= ~P_FPU_MASK;
+        cpu |= temp & P_FPU_MASK;              // setup FPU bits
     } else {
-        *cpu &= ~( P_CPU_MASK | P_PM );
-        *cpu |= temp & ( P_CPU_MASK | P_PM );   // setup CPU bits
-        *cpu &= ~P_FPU_MASK;
-        *cpu |= def_fpu( token ) & P_FPU_MASK;  // setup FPU bits
+        cpu &= ~( P_CPU_MASK | P_PM );
+        cpu |= temp & ( P_CPU_MASK | P_PM );   // setup CPU bits
+        cpu &= ~P_FPU_MASK;
+        cpu |= def_fpu( token ) & P_FPU_MASK;  // setup FPU bits
     }
-    return( RC_OK );
+    return( cpu );
 }
 
 bool cpu_directive( asm_token token )
 /***********************************/
 {
-    if( cpu_directive_value( &Code->info.cpu, token ) != RC_OK ) {
+    asm_cpu     temp;
+
+    if( (temp = get_cpu_flags( token )) == P_EMPTY ) {
         AsmError( UNKNOWN_DIRECTIVE );
         return( RC_ERROR );
     }
+    Code->info.cpu = cpu_flags_value( token, Code->info.cpu, temp );
 
 #if defined( _STANDALONE_ )
     MakeCPUConstant( token );

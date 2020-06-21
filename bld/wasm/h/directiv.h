@@ -139,7 +139,7 @@ typedef struct {
     uint_8              combine     :4; // combine field (values in pcobj.h)
     boolbit             readonly    :1; // if the segment is readonly
     boolbit             ignore      :1; // ignore this if the seg is redefined
-    boolbit             use_32      :1; // 32-bit segment
+    boolbit             use32       :1; // 32-bit segment
     seg_type            iscode;         // segment is belonging to "CODE" or 'DATA' class
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length

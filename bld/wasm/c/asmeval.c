@@ -1228,7 +1228,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                     token_1->value = sym->total_size;
                 } else if( sym->mem_type == MT_NEAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use_32 ) {
+                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF04;
                         } else {
                             token_1->value = 0xFF02;
@@ -1238,7 +1238,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                     }
                 } else if( sym->mem_type == MT_FAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use_32 ) {
+                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF06;
                         } else {
                             token_1->value = 0xFF05;
