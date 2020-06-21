@@ -308,7 +308,9 @@ typedef struct {
 #endif
     os_type             ostype;          // operating system;
     bool                use32;           // If 32-bit segment is used
-    bool                cmdline;
+#if defined( _STANDALONE_ )
+    bool                model_cmdline;
+#endif
     bool                defUse32;        // default segment size 32-bit
     bool                mseg;            // mixed segments (16/32-bit)
     struct asm_sym      *flat_grp;       // FLAT group symbol
