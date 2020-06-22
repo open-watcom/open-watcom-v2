@@ -1346,9 +1346,8 @@ static bool SetUse32( void )
 bool SetUse32Def( bool use32 )
 /****************************/
 {
-    if( CurrSeg == NULL ) {                 // outside any segments
-        if( ModuleInfo.model == MOD_NONE    // model not defined
-          || ModuleInfo.model_cmdline ) {   // model defined on cmdline by -m?
+    if( CurrSeg == NULL ) {                     // outside any segments
+        if( ModuleInfo.model == MOD_NONE ) {    // model undefined
             ModuleInfo.def_use32 = use32;
             if( LineNumber == 0 ) {
                 ModuleInfo.def_use32_init = use32;
@@ -2279,7 +2278,10 @@ bool Model( token_idx i )
         switch( type ) {
         case TOK_FLAT:
             DefFlatGroup();
-            SetUse32Def( true );
+            if( (Code->info.cpu & P_CPU_MASK) < P_386 ) {
+                AsmError( CPU_OR_MODEL_MISMATCH );
+                cpu_directive( T_DOT_386P );
+            }
             // fall through
         case TOK_TINY:
         case TOK_SMALL:
@@ -2288,6 +2290,9 @@ bool Model( token_idx i )
         case TOK_LARGE:
         case TOK_HUGE:
             set_def_seg_name( type );
+            if( ModuleInfo.model != MOD_NONE && ModuleInfo.model != TypeInfo[type].value ) {
+                AsmError( CPU_OR_MODEL_MISMATCH );
+            }
             ModuleInfo.model = TypeInfo[type].value;
             break;
         case TOK_NEARSTACK:

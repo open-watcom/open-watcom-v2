@@ -352,3 +352,6 @@ pick( ARGUMENT_SIZE_NOT_SUPPORTED,
 pick( USES_MEANINGLESS_WITHOUT_LANGUAGE,
                                 "USES is meaningless without language" ,
                                 "USES is meaningless without language" )
+pick( CPU_OR_MODEL_MISMATCH,
+                                "The CPU or MODEL directive does not match the command line" ,
+                                "The CPU or MODEL directive does not match the command line" )
