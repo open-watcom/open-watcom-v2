@@ -440,7 +440,7 @@ void heap( char *func ) // for debugging only
     case _HEAPBADBEGIN:
     DebugMsg(("Function : %s - ", func ));
         DebugMsg(("ERROR - heap is damaged\n"));
-        exit(1);
+        exit( EXIT_ERROR );
         break;
     default:
         break;

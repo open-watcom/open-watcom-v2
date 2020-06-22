@@ -247,7 +247,7 @@ static void AsmSuicide( void )
 /****************************/
 {
     AsmShutDown();
-    exit( 1 );
+    exit( EXIT_ERROR );
 }
 
 void PrintStats( void )

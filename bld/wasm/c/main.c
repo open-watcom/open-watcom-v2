@@ -223,7 +223,7 @@ static void SetCPUPMC( void )
             *dest = NULLC;
         } else {
             MsgPrintf1( MSG_UNKNOWN_OPTION, CopyOfParm() );
-            exit( 1 );
+            exit( EXIT_ERROR );
         }
     }
     if( SWData.cpu < 3 ) {
@@ -288,7 +288,7 @@ static void SetMM( void )
         buffer[2] = (char)OptValue;
         buffer[3] = '\0';
         MsgPrintf1( MSG_UNKNOWN_OPTION, buffer );
-        exit( 1 );
+        exit( EXIT_ERROR );
     }
 
     memory_model = (char)OptValue;
@@ -507,7 +507,7 @@ static void usage_msg( void )
 /***************************/
 {
     PrintfUsage();
-    exit(1);
+    exit( EXIT_ERROR );
 }
 
 static void Ignore( void ) {}
@@ -950,7 +950,7 @@ static int ProcOptions( char *str, int *level )
         if( *str == '-' || *str == SwitchChar ) {
             str = ProcessOption( str + 1, str );
             if( str == NULL ) {
-                exit( 1 );
+                exit( EXIT_ERROR );
             }
         } else {  /* collect file name */
             char *beg, *p;
@@ -1259,7 +1259,7 @@ static void do_init_stuff( char **cmdline )
     char        *env;
 
     if( !MsgInit() )
-        exit(1);
+        exit( EXIT_ERROR );
 
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );

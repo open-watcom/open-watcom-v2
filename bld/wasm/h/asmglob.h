@@ -49,6 +49,8 @@
 #define RC_ERROR                true
 #define RC_OK                   false
 
+#define EXIT_ERROR              1
+
 #define EMPTY                   -2
 
 /* these come back from the jmp() routine as jump_flags */
