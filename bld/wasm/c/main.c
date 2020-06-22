@@ -72,7 +72,7 @@ static struct SWData {
     int     fpu;
 } SWData = {
     false, // real mode CPU instructions set
-    0,     // default CPU 8086
+    -1,    // unspecified CPU
     -1     // unspecified FPU
 };
 
@@ -1111,7 +1111,6 @@ static void set_cpu_parameters( void )
     Options.mode &= ~MODE_IDEAL;
     switch( SWData.cpu ) {
     case 0:
-    default:
         token = T_DOT_8086;
         break;
     case 1:
@@ -1132,6 +1131,8 @@ static void set_cpu_parameters( void )
     case 6:
         token =  SWData.protect_mode ? T_DOT_686P : T_DOT_686;
         break;
+    default:
+        return;
     }
     buffer[0] = '.';
     GetInsString( token, buffer + 1 );
@@ -1281,6 +1282,16 @@ static void do_init_stuff( char **cmdline )
      * add it to input line queue to be processed
      * before source file
      */
+    if( memory_model != '\0' ) {
+        if( SWData.cpu < 0 ) {
+            if( memory_model == 'f' ) {
+                SWData.cpu = 3;
+                SWData.protect_mode = true;
+            } else {
+                SWData.cpu = 0;
+            }
+        }
+    }
     PushLineQueue();
     set_cpu_parameters();
     set_fpu_parameters();

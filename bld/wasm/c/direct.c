@@ -2186,17 +2186,17 @@ static void get_module_name( void )
     }
 }
 
-static void set_def_seg_name( void )
-/***********************************/
+static void set_def_seg_name( int type )
+/**************************************/
 {
     size_t  len;
 
     /* set Options.text_seg based on module name */
     if( Options.text_seg == NULL ) {
-        switch( ModuleInfo.model ) {
-        case MOD_MEDIUM:
-        case MOD_LARGE:
-        case MOD_HUGE:
+        switch( type ) {
+        case TOK_MEDIUM:
+        case TOK_LARGE:
+        case TOK_HUGE:
             len = strlen( ModuleInfo.name );
             Options.text_seg = AsmAlloc( len + sizeof( SIM_NAME_CODE ) );
             memcpy( Options.text_seg, ModuleInfo.name, len );
@@ -2206,7 +2206,6 @@ static void set_def_seg_name( void )
             break;
         }
     }
-    return;
 }
 
 void DefFlatGroup( void )
@@ -2288,8 +2287,8 @@ bool Model( token_idx i )
         case TOK_MEDIUM:
         case TOK_LARGE:
         case TOK_HUGE:
+            set_def_seg_name( type );
             ModuleInfo.model = TypeInfo[type].value;
-            set_def_seg_name();
             break;
         case TOK_NEARSTACK:
         case TOK_FARSTACK:
