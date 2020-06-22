@@ -1117,19 +1117,19 @@ static void set_cpu_parameters( void )
         token = T_DOT_186;
         break;
     case 2:
-        token =  SWData.protect_mode ? T_DOT_286P : T_DOT_286;
+        token = ( SWData.protect_mode ) ? T_DOT_286P : T_DOT_286;
         break;
     case 3:
-        token =  SWData.protect_mode ? T_DOT_386P : T_DOT_386;
+        token = ( SWData.protect_mode ) ? T_DOT_386P : T_DOT_386;
         break;
     case 4:
-        token =  SWData.protect_mode ? T_DOT_486P : T_DOT_486;
+        token = ( SWData.protect_mode ) ? T_DOT_486P : T_DOT_486;
         break;
     case 5:
-        token =  SWData.protect_mode ? T_DOT_586P : T_DOT_586;
+        token = ( SWData.protect_mode ) ? T_DOT_586P : T_DOT_586;
         break;
     case 6:
-        token =  SWData.protect_mode ? T_DOT_686P : T_DOT_686;
+        token = ( SWData.protect_mode ) ? T_DOT_686P : T_DOT_686;
         break;
     default:
         return;

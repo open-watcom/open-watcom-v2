@@ -108,9 +108,9 @@ static void jumpExtend( int far_flag )
 
     p = buffer + getJumpNegation( AsmBuffer[i].u.token, buffer );
     if( far_flag ) {
-        next_ins_size = Code->use32 ? 7 : 5;
+        next_ins_size = ( Code->use32 ) ? 7 : 5;
     } else {
-        next_ins_size = Code->use32 ? 5 : 3;
+        next_ins_size = ( Code->use32 ) ? 5 : 3;
     }
     sprintf( buffer + strlen( buffer ), " SHORT $+%d ", next_ins_size + 2 );
     InputQueueLine( buffer );

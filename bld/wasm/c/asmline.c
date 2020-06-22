@@ -491,7 +491,7 @@ bool    ScanLine( char *string, size_t max_len )
     char        buffer[MAX_LINE_LEN];
     size_t      len;
 
-    line = ( max_len < MAX_LINE_LEN ? buffer : string );
+    line = ( max_len < MAX_LINE_LEN ) ? buffer : string;
     line = ReadTextLine( line );
     if( line != NULL ) {
         prep_line_for_conditional_assembly( line );

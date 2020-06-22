@@ -286,7 +286,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
 #endif
     AsmBuffer[idx].class = TC_NUM;
     if( base == 0 ) {
-        base = first_char_0 ? 8 : 10;
+        base = ( first_char_0 ) ? 8 : 10;
     }
     switch( base ) {
     case 10:

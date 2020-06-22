@@ -1335,7 +1335,7 @@ static bool SetUse32( void )
     } else {
         Globals.code_seg = SEGISCODE( CurrSeg );
         Use32 = CurrSeg->seg->e.seginfo->use32;
-        if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 ) ) {
+        if( Use32 && ( (Code->info.cpu & P_CPU_MASK) < P_386 ) ) {
             AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
             return( RC_ERROR );
         }
@@ -1901,8 +1901,8 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
     unsigned    bit;
     unsigned    ideal;
 
-    bit = ( ModuleInfo.def_use32 != 0 ) ? 1 : 0;
-    ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
+    bit = ( ModuleInfo.def_use32 ) ? 1 : 0;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     skip = 0;
     *buffer = '\0';
     if( name != NULL ) {
@@ -1926,7 +1926,7 @@ static char *get_sim_segment_end( char *buffer, char *name, sim_seg seg )
 {
     unsigned    ideal;
 
-    ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     if( name != NULL ) {
         if( ideal ) {
             strcpy( buffer, "ENDS ");
@@ -2175,7 +2175,7 @@ static void get_module_name( void )
     ModuleInfo.name = AsmStrDup( pg.fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
-            || ( *p == '@' ) || ( *p == '?') ) ) {
+            || ( *p == '@' ) || ( *p == '?' ) ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }
@@ -3309,7 +3309,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
 
     /* Obtain all the default value */
 
-    info->mem_type = IS_PROC_FAR() ? MT_FAR : MT_NEAR;
+    info->mem_type = ( IS_PROC_FAR() ) ? MT_FAR : MT_NEAR;
     info->parasize = 0;
     info->localsize = 0;
     info->export = false;
@@ -3702,7 +3702,7 @@ bool WritePrologue( const char *curline )
     unsigned long       size;
     int                 register_count = 0;
     bool                parameter_on_stack = true;
-    int                 align = Use32 ? 4 : 2;
+    int                 align = ( Use32 ) ? 4 : 2;
     char                *p;
 
     /**/myassert( CurrProc != NULL );
@@ -3721,14 +3721,14 @@ bool WritePrologue( const char *curline )
             if( Options.mode & MODE_IDEAL ) {
                 if( curr->sym != NULL ) {
                     sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
-                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                             ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 } else {
                     sprintf( buffer + strlen(buffer), "%s%lu",
-                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                             ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 }
             } else {
                 sprintf( buffer + strlen(buffer), "%s%lu]",
-                         Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
+                         ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
             curr->replace = AsmStrDup( buffer );
         }

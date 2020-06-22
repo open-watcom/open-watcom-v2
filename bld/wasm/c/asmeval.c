@@ -1209,7 +1209,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                 } else if( sym->mem_type == MT_EMPTY ) {
                     token_1->value = 0;
                 } else {
-                    token_1->value = sym->first_length ? sym->first_length : 1;
+                    token_1->value = ( sym->first_length ) ? sym->first_length : 1;
                 }
                 break;
             case T_LENGTHOF:
@@ -1359,22 +1359,22 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
         }
         switch( AsmBuffer[index].u.token ) {
         case T_EQ:
-            token_1->value = ( token_1->value == token_2->value ? -1:0 );
+            token_1->value = ( token_1->value == token_2->value ) ? -1 : 0;
             break;
         case T_NE:
-            token_1->value = ( token_1->value != token_2->value ? -1:0 );
+            token_1->value = ( token_1->value != token_2->value ) ? -1 : 0;
             break;
         case T_LT:
-            token_1->value = ( token_1->value < token_2->value ? -1:0 );
+            token_1->value = ( token_1->value < token_2->value ) ? -1 : 0;
             break;
         case T_LE:
-            token_1->value = ( token_1->value <= token_2->value ? -1:0 );
+            token_1->value = ( token_1->value <= token_2->value ) ? -1 : 0;
             break;
         case T_GT:
-            token_1->value = ( token_1->value > token_2->value ? -1:0 );
+            token_1->value = ( token_1->value > token_2->value ) ? -1 : 0;
             break;
         case T_GE:
-            token_1->value = ( token_1->value >= token_2->value ? -1:0 );
+            token_1->value = ( token_1->value >= token_2->value ) ? -1 : 0;
             break;
         }
         break;

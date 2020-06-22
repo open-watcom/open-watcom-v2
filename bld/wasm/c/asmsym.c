@@ -682,7 +682,7 @@ static void log_symbol( struct asm_sym *sym )
         if( cst->count && cst->data[0].class != TC_NUM ) {
             LstMsg( "Text     %s\n", cst->data[0].string_ptr );
         } else {
-            LstMsg( "Number   %04Xh\n", cst->count ? cst->data[0].u.value : 0 );
+            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->data[0].u.value : 0 );
         }
     } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );

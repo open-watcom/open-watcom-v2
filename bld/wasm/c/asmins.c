@@ -2851,7 +2851,7 @@ static bool check_size( void )
             InsFixups[OPND2] = NULL;
         } else {
             // absolute ptr nnnn,nnnn
-            Code->info.opnd_type[OPND1] = Code->use32 ? OP_I32 : OP_I16;
+            Code->info.opnd_type[OPND1] = ( Code->use32 ) ? OP_I32 : OP_I16;
         }
         temp = Code->data[OPND1];
         Code->data[OPND1] = Code->data[OPND2];

@@ -395,7 +395,7 @@ TB_LD * strtotb(char *p, TB_LD * ld, bool negative)
         break;
     }
     if( negative ) {
-        sign = (sign > 0) ? -1 : +1;
+        sign = ( sign > 0 ) ? -1 : +1;
     }
     memset(&value, 0, sizeof(value));
     memset(&value_tmp, 0, sizeof(value_tmp));
