@@ -223,42 +223,42 @@ static unsigned char SimCodeSkip[2][SIM_LAST] = {
 static const char * const SimCodeBegin[2][2][SIM_LAST] = {
     {
         {
-            SIM_NAME_CODE       " SEGMENT WORD PUBLIC '"         SIM_CLASS_CODE       "' IGNORE",
-            SIM_NAME_STACK      " SEGMENT PARA STACK '"          SIM_CLASS_STACK      "' IGNORE",
-            SIM_NAME_DATA       " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA       "' IGNORE",
-            SIM_NAME_DATA_UN    " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA_UN    "' IGNORE",
-            SIM_NAME_FARDATA    " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA    "' IGNORE",
-            SIM_NAME_FARDATA_UN " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "' IGNORE",
-            SIM_NAME_CONST      " SEGMENT WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY IGNORE"
+            SIM_NAME_CODE       " SEGMENT WORD PUBLIC '"         SIM_CLASS_CODE       "'",
+            SIM_NAME_STACK      " SEGMENT PARA STACK '"          SIM_CLASS_STACK      "'",
+            SIM_NAME_DATA       " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA       "'",
+            SIM_NAME_DATA_UN    " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA_UN    "'",
+            SIM_NAME_FARDATA    " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA    "'",
+            SIM_NAME_FARDATA_UN " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "'",
+            SIM_NAME_CONST      " SEGMENT WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY"
         },
         {
-            SIM_NAME_CODE       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "' IGNORE",
-            SIM_NAME_STACK      " SEGMENT DWORD USE32 STACK '"   SIM_CLASS_STACK      "' IGNORE",
-            SIM_NAME_DATA       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "' IGNORE",
-            SIM_NAME_DATA_UN    " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "' IGNORE",
-            SIM_NAME_FARDATA    " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "' IGNORE",
-            SIM_NAME_FARDATA_UN " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "' IGNORE",
-            SIM_NAME_CONST      " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY IGNORE"
+            SIM_NAME_CODE       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "'",
+            SIM_NAME_STACK      " SEGMENT DWORD USE32 STACK '"   SIM_CLASS_STACK      "'",
+            SIM_NAME_DATA       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "'",
+            SIM_NAME_DATA_UN    " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "'",
+            SIM_NAME_FARDATA    " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "'",
+            SIM_NAME_FARDATA_UN " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "'",
+            SIM_NAME_CONST      " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY"
         }
     },
     {
         {
-            "SEGMENT " SIM_NAME_CODE       " WORD PUBLIC '"         SIM_CLASS_CODE       "' IGNORE",
-            "SEGMENT " SIM_NAME_STACK      " PARA STACK '"          SIM_CLASS_STACK      "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA       " WORD PUBLIC '"         SIM_CLASS_DATA       "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA_UN    " WORD PUBLIC '"         SIM_CLASS_DATA_UN    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA    " PARA PRIVATE '"        SIM_CLASS_FARDATA    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA_UN " PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "' IGNORE",
-            "SEGMENT " SIM_NAME_CONST      " WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY IGNORE"
+            "SEGMENT " SIM_NAME_CODE       " WORD PUBLIC '"         SIM_CLASS_CODE       "'",
+            "SEGMENT " SIM_NAME_STACK      " PARA STACK '"          SIM_CLASS_STACK      "'",
+            "SEGMENT " SIM_NAME_DATA       " WORD PUBLIC '"         SIM_CLASS_DATA       "'",
+            "SEGMENT " SIM_NAME_DATA_UN    " WORD PUBLIC '"         SIM_CLASS_DATA_UN    "'",
+            "SEGMENT " SIM_NAME_FARDATA    " PARA PRIVATE '"        SIM_CLASS_FARDATA    "'",
+            "SEGMENT " SIM_NAME_FARDATA_UN " PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "'",
+            "SEGMENT " SIM_NAME_CONST      " WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY"
         },
         {
-            "SEGMENT " SIM_NAME_CODE       " DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "' IGNORE",
-            "SEGMENT " SIM_NAME_STACK      " DWORD USE32 STACK '"   SIM_CLASS_STACK      "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA       " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA_UN    " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA    " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA_UN " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "' IGNORE",
-            "SEGMENT " SIM_NAME_CONST      " DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY IGNORE"
+            "SEGMENT " SIM_NAME_CODE       " DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "'",
+            "SEGMENT " SIM_NAME_STACK      " DWORD USE32 STACK '"   SIM_CLASS_STACK      "'",
+            "SEGMENT " SIM_NAME_DATA       " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "'",
+            "SEGMENT " SIM_NAME_DATA_UN    " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "'",
+            "SEGMENT " SIM_NAME_FARDATA    " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "'",
+            "SEGMENT " SIM_NAME_FARDATA_UN " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "'",
+            "SEGMENT " SIM_NAME_CONST      " DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY"
         }
     }
 };
@@ -1893,8 +1893,8 @@ bool Startup( token_idx i )
     return( RC_OK );
 }
 
-static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
-/***********************************************************************/
+static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg, bool ignore )
+/************************************************************************************/
 {
     unsigned    skip;
     unsigned    bit;
@@ -1915,7 +1915,10 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
     if( seg == SIM_CODE && Options.code_class != NULL ) {
         name = strchr( buffer, '\'' ) + 1;
         strcpy( name , Options.code_class );
-        strcat( name, "' IGNORE");
+        strcat( name, "'");
+    }
+    if( ignore ) {
+        strcat( buffer, " IGNORE");
     }
     return( buffer );
 }
@@ -1987,7 +1990,7 @@ bool SimSeg( token_idx i )
         if( name == NULL )
             name = Options.text_seg;
         set_macro__at_code( name );
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -1996,7 +1999,7 @@ bool SimSeg( token_idx i )
     case T_STACK:
         seg = SIM_STACK;
         name = NULL;
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_segment_end( buffer, name, seg ) );
         if( ModuleInfo.model != MOD_FLAT ) {
             InputQueueLine( input_dgroup( name, seg, buffer ) );
@@ -2033,11 +2036,11 @@ bool SimSeg( token_idx i )
             name = NULL;
         }
         if( ModuleInfo.model != MOD_FLAT ) {
-            InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+            InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
             InputQueueLine( get_sim_segment_end( buffer, name, seg ) );
             InputQueueLine( input_dgroup( name, seg, buffer ) );
         }
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -2051,7 +2054,7 @@ bool SimSeg( token_idx i )
         } else {
             seg = SIM_FARDATA_UN;
         }
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -2075,11 +2078,11 @@ static void module_prologue( void )
     AddPredefinedConstant( "@code", &info_code );
 
     /* Generates codes for code segment */
-    InputQueueLine( get_sim_segment_beg( buffer, Options.text_seg, SIM_CODE ) );
+    InputQueueLine( get_sim_segment_beg( buffer, Options.text_seg, SIM_CODE, true ) );
     InputQueueLine( get_sim_segment_end( buffer, Options.text_seg, SIM_CODE ) );
 
     /* Generates codes for data segment */
-    InputQueueLine( get_sim_segment_beg( buffer, NULL, SIM_DATA ) );
+    InputQueueLine( get_sim_segment_beg( buffer, NULL, SIM_DATA, true ) );
     InputQueueLine( get_sim_segment_end( buffer, NULL, SIM_DATA ) );
 
     if( ModuleInfo.model != MOD_FLAT ) {
