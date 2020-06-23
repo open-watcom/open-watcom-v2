@@ -2293,7 +2293,7 @@ bool Model( token_idx i )
         case TOK_LARGE:
         case TOK_HUGE:
             set_def_seg_name( type );
-            if( ModuleInfo.model != MOD_NONE && ModuleInfo.model != TypeInfo[type].value ) {
+            if( ModuleInfo.model != MOD_NONE && ModuleInfo.model != (mod_type)TypeInfo[type].value ) {
                 AsmError( CPU_OR_MODEL_MISMATCH );
             }
             ModuleInfo.model = TypeInfo[type].value;
