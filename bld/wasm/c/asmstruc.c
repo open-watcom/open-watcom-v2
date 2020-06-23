@@ -46,7 +46,7 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
     size_t          len;
 
     len = strlen( name ) + 1;
-    for( field = ((dir_node *)symbol)->e.structinfo->head ; field != NULL; field = field->next ) {
+    for( field = ((dir_node *)symbol)->e.structinfo->head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
             if( memcmp( name, sym->name, len ) == 0 ) {
                 return( sym );

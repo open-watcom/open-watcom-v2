@@ -1245,7 +1245,7 @@ static void parse_cmdline( char **cmdline )
     if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
         usage_msg();
     }
-    for( ;*cmdline != NULL; ++cmdline ) {
+    for( ; *cmdline != NULL; ++cmdline ) {
         ProcOptions( *cmdline, &level );
     }
     if( AsmFiles.fname[ASM] == NULL ) {

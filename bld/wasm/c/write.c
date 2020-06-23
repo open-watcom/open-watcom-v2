@@ -257,7 +257,7 @@ static void write_lib( void )
     char                *name;
     size_t                              len;
 
-    for( curr = Tables[TAB_LIB].head; curr; curr = curr->next ) {
+    for( curr = Tables[TAB_LIB].head; curr != NULL; curr = curr->next ) {
         name = curr->sym.name;
         len = strlen( name );
         if( len > 255 )
@@ -323,7 +323,7 @@ static void write_grp( void )
 
     line_num = LineNumber;
     grp_idx = 0;
-    for( grp = Tables[TAB_GRP].head; grp; grp = grp->next ) {
+    for( grp = Tables[TAB_GRP].head; grp != NULL; grp = grp->next ) {
         objr = ObjNewRec( CMD_GRPDEF );
         /**/myassert( objr != NULL );
         grp_idx++;
@@ -362,7 +362,7 @@ static void write_seg( void )
     direct_idx  seg_idx;
 
     seg_idx = 0;
-    for( dir = Tables[TAB_SEG].head; dir; dir = dir->next ) {
+    for( dir = Tables[TAB_SEG].head; dir != NULL; dir = dir->next ) {
         if( dir->sym.segment == NULL ) {
             AsmErr( SEG_NOT_DEFINED, dir->sym.name );
             continue;
@@ -1128,7 +1128,7 @@ static void reset_seg_len( void )
 {
     dir_node    *curr;
 
-    for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
+    for( curr = Tables[TAB_SEG].head; curr != NULL; curr = curr->next ) {
         if( ( curr->sym.state != SYM_SEG ) || ( curr->sym.segment == NULL ) )
             continue;
         if( curr->e.seginfo->combine != COMB_STACK ) {

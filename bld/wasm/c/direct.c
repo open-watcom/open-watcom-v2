@@ -1134,7 +1134,7 @@ bool ExtDef( token_idx i, bool glob_def )
         } else {
             mem_type = TypeInfo[type].value;
         }
-        for( ; i< Token_Count && AsmBuffer[i].class != TC_COMMA; i++ );
+        for( ; i < Token_Count && AsmBuffer[i].class != TC_COMMA; i++ );
 
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
@@ -3610,10 +3610,10 @@ static void ProcFini( void )
     CurrProc->sym.total_size = GetCurrAddr() - CurrProc->sym.offset;
 
     if( Parse_Pass == PASS_1 ) {
-        for( curr = info->paralist; curr; curr = curr->next ) {
+        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
-        for( curr = info->locallist; curr; curr = curr->next ) {
+        for( curr = info->locallist; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
     }
@@ -3756,7 +3756,7 @@ bool WritePrologue( const char *curline )
             !info->is_vararg ) {
             parameter_on_stack = false;
         }
-        for( curr = info->paralist; curr; curr = curr->next ) {
+        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
             if( !parameter_on_stack ) {
                 if( get_watcom_argument_string( buffer, curr->size, &register_count, &parameter_on_stack ) ) {
                     return( RC_ERROR );
