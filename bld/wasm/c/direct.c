@@ -1915,10 +1915,10 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg, bool ig
     if( seg == SIM_CODE && Options.code_class != NULL ) {
         name = strchr( buffer, '\'' ) + 1;
         strcpy( name , Options.code_class );
-        strcat( name, "'");
+        strcat( name, "'" );
     }
     if( ignore ) {
-        strcat( buffer, " IGNORE");
+        strcat( buffer, " IGNORE" );
     }
     return( buffer );
 }
