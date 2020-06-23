@@ -420,7 +420,7 @@ bool ProcOS2Alignment( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }
-    FmtData.u.os2fam.segment_shift = blog_32( value - 1 ) + 1;     //round up.
+    FmtData.u.os2fam.segment_shift = log2_32( value - 1 ) + 1;     //round up.
     return( true );
 }
 

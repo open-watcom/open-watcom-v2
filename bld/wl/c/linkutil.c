@@ -322,7 +322,7 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
     return( imp );
 }
 
-unsigned_16 blog_16( unsigned_16 value )
+unsigned_16 log2_16( unsigned_16 value )
 /**************************************/
 // This calculates the binary log of value, truncating decimals.
 {
@@ -342,7 +342,7 @@ unsigned_16 blog_16( unsigned_16 value )
     return( log );
 }
 
-unsigned_16 blog_32( unsigned_32 value )
+unsigned_16 log2_32( unsigned_32 value )
 /**************************************/
 // This calculates the binary log of a 32-bit value, truncating decimals.
 {
