@@ -125,7 +125,7 @@ static bool ProcRdosDev( void )
 /*****************************/
 {
     if( !ProcOne( RdosSubFormats, SEP_NO ) ) {
-        HintFormat( MK_RDOS_FLAT );     // set to 32-bit RDOS mode
+        HintFormat( MK_RDOS_32 );       // set to 32-bit RDOS mode
     }
     Extension = E_RDV;
     FmtData.u.rdos.driver = 1;
@@ -137,7 +137,7 @@ static bool ProcRdosBin( void )
 /*******************************/
 {
     if( !ProcOne( RdosSubFormats, SEP_NO ) ) {
-        HintFormat( MK_RDOS_FLAT );     // set to 32-bit RDOS mode
+        HintFormat( MK_RDOS_32 );       // set to 32-bit RDOS mode
     }
     Extension = E_BIN;
     FmtData.u.rdos.driver = 0;
