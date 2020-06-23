@@ -110,9 +110,23 @@ bool ProcRdosOptions( void )
  * "Format" Directive
  ****************************************************************/
 
+static bool ProcRdos16( void )
+/*******************************/
+{
+    return( true );
+}
+
+static parse_entry  RdosSubFormats[] = {
+    "16",           ProcRdos16,      MK_RDOS_16, 0,
+    NULL
+};
+
 static bool ProcRdosDev( void )
 /*****************************/
 {
+    if( !ProcOne( RdosSubFormats, SEP_NO ) ) {
+        HintFormat( MK_RDOS_FLAT );     // set to 32-bit RDOS mode
+    }
     Extension = E_RDV;
     FmtData.u.rdos.driver = 1;
     FmtData.u.rdos.mboot = 0;
@@ -122,6 +136,9 @@ static bool ProcRdosDev( void )
 static bool ProcRdosBin( void )
 /*******************************/
 {
+    if( !ProcOne( RdosSubFormats, SEP_NO ) ) {
+        HintFormat( MK_RDOS_FLAT );     // set to 32-bit RDOS mode
+    }
     Extension = E_BIN;
     FmtData.u.rdos.driver = 0;
     FmtData.u.rdos.mboot = 0;
@@ -140,7 +157,7 @@ static bool ProcRdosMboot( void )
 static parse_entry  RdosFormats[] = {
     "DEV",          ProcRdosDev,        MK_RDOS, 0,
     "BIN",          ProcRdosBin,        MK_RDOS, 0,
-    "MBOOT",        ProcRdosMboot,      MK_RDOS, 0,
+    "MBOOT",        ProcRdosMboot,      MK_RDOS_16, 0,
     NULL
 };
 

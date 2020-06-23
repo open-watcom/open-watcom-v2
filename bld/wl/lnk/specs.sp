@@ -790,7 +790,7 @@ system begin rdos_dev16
     ARCH i86 -bt=rdos_dev16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Device driver'
-    format rdos dev ^
+    format rdos dev 16 ^
 :endsegment
 end
 system begin rdosdev
@@ -817,7 +817,7 @@ system begin rdos_bin16
     ARCH i86 -bt=rdos_bin16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Binary'
-    format rdos bin ^
+    format rdos bin 16 ^
 :endsegment
 end
 system begin rdos_mboot

@@ -86,6 +86,8 @@ pick( MSG_FILE_TYPES_19,        "RAW Binary Image" ,
                                 "Raw" )
 pick( MSG_FILE_TYPES_20,        "RDOS" ,
                                 "RDOS" )
+pick( MSG_FILE_TYPES_21,        "RDOS 16-bit" ,
+                                "RDOS 16-bit" )
 pick( MSG_CREATE_TYPE_DLL,      "dynamic link library" ,
                                 "ダイナミック・リンク・ライブラリ" )
 pick( MSG_CREATE_TYPE_EXE,      "executable" ,

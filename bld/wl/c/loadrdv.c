@@ -315,6 +315,9 @@ void FiniRdosLoadFile( void )
  * finish writing of load file
  */
 {
+    if( (FmtData.type & MK_RDOS_16) && (LinkState & LS_FMT_SEEN_32BIT) ) {
+        LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
+    }
     HeaderSize = getHeaderSize();
     SeekLoad( HeaderSize );
     Root->u.file_loc = HeaderSize;

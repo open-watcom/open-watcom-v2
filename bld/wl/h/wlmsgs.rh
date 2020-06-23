@@ -251,8 +251,8 @@
 #define    MSG_FILE_TYPES_17                    268 + MSG_BASE  /* DOS 16m */
 #define    MSG_FILE_TYPES_18                    269 + MSG_BASE  /* ZDOS */
 #define    MSG_FILE_TYPES_19                    270 + MSG_BASE  /* RAW */
-#define    MSG_FILE_TYPES_20                    271 + MSG_BASE  /* RDOS */
-#define    MSG_FILE_TYPES_21                    272 + MSG_BASE  /* unused bit 21 */
+#define    MSG_FILE_TYPES_20                    271 + MSG_BASE  /* RDOS flat */
+#define    MSG_FILE_TYPES_21                    272 + MSG_BASE  /* RDOS 16-bit */
 #define    MSG_FILE_TYPES_22                    273 + MSG_BASE  /* unused bit 22 */
 #define    MSG_FILE_TYPES_23                    274 + MSG_BASE  /* unused bit 23 */
 #define    MSG_FILE_TYPES_24                    275 + MSG_BASE  /* unused bit 24 */
