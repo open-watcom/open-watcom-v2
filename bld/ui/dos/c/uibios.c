@@ -70,14 +70,10 @@ static MONITOR ui_data = {
 
 void IdleInterrupt( void )
 {
-#ifdef _M_I86
-    DOSIdle();
-#elif defined( __OSI__ )
+#if defined( __OSI__ )
     /* Can't do anything */
 #else
-    if( _IsRational() ) {
-        ReleaseVMTimeSlice(); /* Assume DPMI if Rational; else dunno */
-    }
+    ReleaseVMTimeSlice();
 #endif
 }
 

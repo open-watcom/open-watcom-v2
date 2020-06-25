@@ -410,7 +410,7 @@ bool KeyboardHit( void )
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
 #endif
-        DOSIdle();
+        ReleaseVMTimeSlice();
     }
     return( rc );
 
