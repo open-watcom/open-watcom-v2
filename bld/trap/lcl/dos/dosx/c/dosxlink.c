@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#define DEBUG_TRAP
+//#define DEBUG_TRAP
 
 #include <setjmp.h>
 #include <stdio.h>
