@@ -83,13 +83,13 @@ static  opcnt   CountOps( instruction *ins, name *cons )
 }
 
 
-static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
-/******************************************************************
+static  type_class_def  FindMaxClass( name *cons, int *prefs )
+/*************************************************************
 
     Run through the instructions and find the maximimum class of
     all instructions in which "cons" is used.
 */
-
+{
     block               *blk;
     instruction         *ins;
     opcnt               i;
@@ -180,7 +180,8 @@ void    ConstToTemp( block *pre, block *head, block*(*next)(block*) )
     Head = head;
     Next = next;
     for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
-        if( cons->c.const_type == CONS_TEMP_ADDR ) continue;
+        if( cons->c.const_type == CONS_TEMP_ADDR )
+            continue;
         type_class = FindMaxClass( cons, &num_refs );
         if( type_class == XX )
             continue;
@@ -217,8 +218,10 @@ void            MemConstTemp( conflict_node *conf )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
-                if( ins->operands[i]->n.class != N_TEMP ) continue;
-                if( DeAlias( ins->operands[i] ) != temp ) continue;
+                if( ins->operands[i]->n.class != N_TEMP )
+                    continue;
+                if( DeAlias( ins->operands[i] ) != temp )
+                    continue;
                 ins->head.state = INS_NEEDS_WORK;
                 ins->operands[i] = ins->operands[i]->v.symbol;
                 if( ins->head.opcode == OP_CONVERT ) {

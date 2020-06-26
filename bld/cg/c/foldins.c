@@ -197,19 +197,19 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
 /*********************************************************
     See below.
 */
-    instruction *new_ins;
-    opcnt       num_operands;
-    name        *result;
-    tn          fold;
-    type_def    *tipe;
-    type_def    *left_tipe;
-    type_def    *rite_tipe;
-    type_def    *fold_tipe;
-    pointer     left;
-    pointer     rite;
-    name        *tmp;
-    name        *new_const;
-    float_handle value;
+    instruction     *new_ins;
+    opcnt           num_operands;
+    name            *result;
+    tn              fold;
+    type_def        *tipe;
+    type_def        *left_tipe;
+    type_def        *rite_tipe;
+    type_def        *fold_tipe;
+    pointer         left;
+    pointer         rite;
+    name            *tmp;
+    name            *new_const;
+    float_handle    cf_value;
 
     tipe = ClassType( ins->type_class );
     left_tipe = ClassType( _OpClass( ins ) );
@@ -339,9 +339,9 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         /* change sub t1, k -> add t1, -k */
         if( ins->operands[1]->n.class == N_CONSTANT &&
             ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
-            value = OkToNegate( ins->operands[1]->c.value, tipe );
-            if( value != NULL ) {
-                new_const = AllocConst( value );
+            cf_value = OkToNegate( ins->operands[1]->c.value, tipe );
+            if( cf_value != NULL ) {
+                new_const = AllocConst( cf_value );
                 new_ins = MakeBinary( OP_ADD, ins->operands[0], new_const, ins->result, ins->type_class );
                 SetCSEBits( ins, new_ins );
                 DupSeg( ins, new_ins );
