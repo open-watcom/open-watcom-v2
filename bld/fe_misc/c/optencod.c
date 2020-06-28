@@ -229,7 +229,8 @@ static void (*processTag[])( const char * ) = {
 #define TAG( s )        do##s ,
 #include "opttags.h"
 #undef TAG
-    NULL };
+    NULL
+};
 
 static const char *validTargets[] = {
     "any",

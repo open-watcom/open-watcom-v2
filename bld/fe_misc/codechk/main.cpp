@@ -107,7 +107,7 @@ void main(int argc, char *argv[]) {
                     system(sysCommand);
                     break;
                 }
-            };
+            }
         } else {
             while( ! codeFrags->AtEOF() ) {
                 errCode=codeFrags->DumpNextCodeFrag(targetName);
@@ -122,7 +122,7 @@ void main(int argc, char *argv[]) {
                 } else {
                     printf("** unverified error: %s.**\n",errCode);
                 }
-            };
+            }
             system("del /Q d");
             system("del /Q codeout.*");
         }
