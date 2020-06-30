@@ -217,7 +217,7 @@ $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(resfile) $(v
     @for %i in ($(objs_exe)) do @%append exe.lnk file %i
     @for %i in ($(xlibs)) do @%append exe.lnk lib %i
     @%make echo_link
-    $(linker) name $(lname) @exe.lnk
+    $(linker) name $@ @exe.lnk
 !endif
     @%make bind_res_version_exe
 !ifndef bootstrap

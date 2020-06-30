@@ -68,7 +68,7 @@ $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) wresui.res $(
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk lib %i
     @%make echo_link
-    $(linker) name $(lname) $(lflags) @$^&.lnk
+    $(linker) name $@ $(lflags) @$^&.lnk
 !endif
     @%make bind_res_version_exe
     @%make bind_res_wresui

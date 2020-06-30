@@ -69,4 +69,4 @@ extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
 $(name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $(lname) $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}

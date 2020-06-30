@@ -171,7 +171,7 @@ $(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(version_r
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
     @for %i in ($(libs)) do @%append exe.lnk lib %i
     @%make echo_link
-    $(linker) name $(lname) @exe.lnk
+    $(linker) name $@ @exe.lnk
 !endif
     @%make bind_res_version_exe
 

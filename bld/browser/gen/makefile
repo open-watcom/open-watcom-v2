@@ -1,4 +1,4 @@
-#pmake/50: build os_nt os_os2 os_osi os_win cpu_axp cpu_i86 cpu_386
+#pmake/50: build os_nt os_os2 os_win cpu_axp cpu_i86 cpu_386
 
 dialogs = &
 dgenums.$(ext) &

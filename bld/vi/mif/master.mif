@@ -65,7 +65,7 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
     @%append $^&.lnk $(final_flags)
     @for %l in ($(libs)) do @%append $^&.lnk lib %l
     @%make echo_link
-    $(linker) name $(lname) $(lflags) @$^&.lnk
+    $(linker) name $@ $(lflags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
 !ifdef win386
