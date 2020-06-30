@@ -46,9 +46,6 @@
 #include "cgswitch.h"
 #include "iopath.h"
 #include "pathlist.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -260,20 +257,7 @@ static void SetTargSystem( void )
     PreDefine_Macro( "_INTEGRAL_MAX_BITS=64" );
     if( SwData.sys_name == NULL ) {
 #if _CPU == 386 || _CPU == 8086
-    #if defined( __OSI__ )
-        switch( __OS ) {
-        case OS_DOS:
-        case OS_WIN:
-            _SetConstTarg( "dos" );
-            break;
-        case OS_OS2:
-            _SetConstTarg( "os2" );
-            break;
-        case OS_NT:
-            _SetConstTarg( "nt" );
-            break;
-        }
-    #elif defined( __NOVELL__ )
+    #if defined( __NOVELL__ )
         _SetConstTarg( "netware" );
     #elif defined( __QNX__ )
         _SetConstTarg( "qnx" );

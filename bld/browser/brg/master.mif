@@ -9,7 +9,6 @@ merge_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
-!include osi.mif
 
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browse_dir)/cpp
@@ -68,7 +67,6 @@ extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
-$(name).exe : $(objs) $(osildr) $(__MAKEFILES__)
+$(name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $(lname) $(lflags) file {$(objs)}
-    @%make bind_osildr

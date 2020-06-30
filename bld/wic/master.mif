@@ -15,7 +15,6 @@ wic_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include osi.mif
 !include wres.mif
 !include trmem.mif
 
@@ -38,7 +37,7 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 
 inc_dirs = -I"../h"
 
-libs = $(wres_lib) $(osildr)
+libs = $(wres_lib)
 
 ##############################################################################
 
@@ -48,7 +47,6 @@ $(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__
 !else
     $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
 !endif
-    @%make bind_osildr
     @%make bind_res_wresui
 
 ##############################################################################

@@ -38,9 +38,6 @@
 #include "codegen.h"
 #include "pragdefn.h"
 #include "compinfo.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"

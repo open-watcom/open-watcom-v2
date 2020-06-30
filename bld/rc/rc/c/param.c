@@ -36,9 +36,6 @@
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
 #include "leadbyte.h"
 #include "rccore.h"
 #include "pathgrp2.h"
@@ -661,13 +658,7 @@ static void defaultParms( void )
     CmdLineParms.PreprocessOnly = false;
     CmdLineParms.ExtraResFiles = NULL;
     CmdLineParms.FindReplaceStrings = NULL;
-#ifdef __OSI__
-    if( __OS == OS_NT ) {
-        CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-    } else {
-        CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
-    }
-#elif defined( __NT__ )
+#if defined( __NT__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
 #elif defined( __OS2__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_OS2;

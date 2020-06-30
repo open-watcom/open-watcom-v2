@@ -21,13 +21,11 @@ fpu_flags_dos_386 = -fpc
 fpu_flags_linux_386 = -fpc
 fpu_flags_nt_386 = -fpc
 fpu_flags_os2_386 = -fpc
-fpu_flags_osi_386 = -fpc
 fpu_flags_qnx_386 = -fpc
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include osi.mif
 !include wres.mif
 !include trmem.mif
 
@@ -116,7 +114,7 @@ version_res_exe_nt_x64 = exever.res
 #explicit rules
 ######
 
-$(name).exe : $(depend_objs) $(objs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
+$(name).exe : $(depend_objs) $(objs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
 ! ifdef bootstrap
@@ -129,7 +127,6 @@ $(name).exe : $(depend_objs) $(objs) wresui.res $(version_res_exe_$(host_os)_$(h
     @%append $^&.lnk file { $(objs) }
     @%make echo_link
     $(linker) name $(lname) @$^&.lnk
-    @%make bind_osildr
 !endif
     @%make bind_res_version_exe
     @%make bind_res_wresui

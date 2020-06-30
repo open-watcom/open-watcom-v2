@@ -62,10 +62,6 @@ static  unsigned        MsgShift;
 
 #endif
 
-#ifdef __OSI__
-extern char             *_Copyright;
-#endif
-
 static const char *FingerMsg[] = {
     banner1w( "Assembler", _WASM_VERSION_ ),
     banner2,
@@ -114,12 +110,6 @@ void PrintfUsage( void )
     unsigned    first_ln;
 
     count = PrintBanner();
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        puts( _Copyright );
-        count += 1;
-    }
-#endif
     first_ln = MSG_USAGE_BASE;
     MsgGet( first_ln++, page_text );
     for( ; ; first_ln++ ) {

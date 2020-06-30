@@ -1569,7 +1569,7 @@ static TOKEN ScanCarriageReturn( void )
     }
 }
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
     #define     SYS_EOF_CHAR 0x1A
 #elif defined(__UNIX__) || defined(__RDOS__)
     #undef      SYS_EOF_CHAR

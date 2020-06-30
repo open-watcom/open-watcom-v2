@@ -340,7 +340,7 @@ pick(   USAGE_MSG_6,
 pick(   USAGE_MSG_7,
         "-ad             - generate auto dependency information for use by wmake",
         "-ad             - generate auto dependency information for use by wmake" )
-#if defined( __OSI__ ) || defined( __NT__ )
+#if defined( __NT__ )
 pick(   USAGE_MSG_8,
         "-bt=windows     - build a Win16 resource file",
         "-bt=windows     - build a Win16 resource file" )

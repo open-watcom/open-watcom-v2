@@ -33,7 +33,6 @@ set PROJDIR=<CWD>
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
 
-#    <CCCMD> osi386/wrc.exe          <OWRELROOT>/binw/
     <CCCMD> dos386/wrc.exe          <OWRELROOT>/binw/
     <CCCMD> dos386/wrc.sym          <OWRELROOT>/binw/
     <CCCMD> dos386/*.uni            <OWRELROOT>/binw/

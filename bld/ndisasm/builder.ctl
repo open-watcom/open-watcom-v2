@@ -27,8 +27,6 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-#    <CCCMD> osi386/wdis.exe     <OWRELROOT>/binw/
-#    <CCCMD> osi386/wdis.sym     <OWRELROOT>/binw/
     <CCCMD> dos386/wdis.exe     <OWRELROOT>/binw/
     <CCCMD> dos386/wdis.sym     <OWRELROOT>/binw/
     <CCCMD> os2386/wdis.exe     <OWRELROOT>/binp/

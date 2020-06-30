@@ -56,7 +56,6 @@ static void _WFC_FPEHandler( int fpe_type )
 }
 
 
-#if !defined( __OSI__ )
 static  void    WFC_FPEHandler( int sig_num, int fpe_type )
 //=========================================================
 {
@@ -66,7 +65,6 @@ static  void    WFC_FPEHandler( int sig_num, int fpe_type )
     SET_SIGFPE( WFC_FPEHandler );
     _WFC_FPEHandler( fpe_type );
 }
-#endif
 
 #endif /* !defined( __UNIX__ ) */
 
@@ -74,11 +72,7 @@ void    FTrapInit( void )
 //=======================
 {
 #if !defined( __UNIX__ )
-#if defined( __OSI__ )
-    _RWD_FPE_handler = _WFC_FPEHandler;
-#else
     SET_SIGFPE( WFC_FPEHandler );
-#endif
 #endif
 }
 

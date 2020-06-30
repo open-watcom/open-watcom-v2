@@ -44,9 +44,6 @@
 #include "swchar.h"
 #include "asminput.h"
 #include "banner.h"
-#ifdef __OSI__
-    #include "ostype.h"
-#endif
 #include "directiv.h"
 #include "standalo.h"
 #include "pathgrp2.h"
@@ -1013,19 +1010,7 @@ static bool set_build_target( void )
 /**********************************/
 {
     if( Options.build_target == NULL ) {
-#if defined(__OSI__)
-        if( __OS == OS_DOS ) {
-            SetTargName( "DOS", 3 );
-        } else if( __OS == OS_OS2 ) {
-            SetTargName( "OS2", 3 );
-        } else if( __OS == OS_NT ) {
-            SetTargName( "NT", 2 );
-        } else if( __OS == OS_WIN ) {
-            SetTargName( "WINDOWS", 7 );
-        } else {
-            SetTargName( "XXX", 3 );
-        }
-#elif defined(__QNX__)
+#if defined(__QNX__)
         SetTargName( "QNX", 3 );
 #elif defined(__LINUX__)
         SetTargName( "LINUX", 5 );

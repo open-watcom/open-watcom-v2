@@ -38,9 +38,6 @@
 #include "codegen.h"
 #include "pragdefn.h"
 #include "compinfo.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
@@ -200,20 +197,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     PreDefineStringMacro( "__X86__" );
     PreDefineStringMacro( "_X86_" );
     if( target_name == NULL ) {
-#if defined( __OSI__ )
-        switch( __OS ) {
-        case OS_DOS:
-        case OS_WIN:
-            SetTargetLiteral( &target_name, "DOS" );
-            break;
-        case OS_OS2:
-            SetTargetLiteral( &target_name, "OS2" );
-            break;
-        case OS_NT:
-            SetTargetLiteral( &target_name, "NT" );
-            break;
-        }
-#elif defined( __QNX__ )
+#if defined( __QNX__ )
         SetTargetLiteral( &target_name, "QNX" );
 #elif defined( __LINUX__ )
         SetTargetLiteral( &target_name, "LINUX" );

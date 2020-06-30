@@ -36,9 +36,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#ifdef __OSI__
-    #include "ostype.h"
-#endif
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"

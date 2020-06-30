@@ -60,10 +60,6 @@ extern void InitGlobs( void );
 extern void FiniGlobs( void );
 extern void RCmain( void );
 
-#ifdef __OSI__
-extern char *_Copyright;
-#endif
-
 jmp_buf     jmpbuf_RCFatalError;
 
 static IDECBHdl         IdeHdl;
@@ -232,12 +228,6 @@ static void RcIoPrintUsage( void )
 
     count = RcIoPrintBanner();
     _cmdname( imageName );
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        ConsoleMessage( "%s\n", _Copyright );
-        ++count;
-    }
-#endif
     if( console_tty && count ) {
         ConsoleMessage( "\n" );
         ++count;
