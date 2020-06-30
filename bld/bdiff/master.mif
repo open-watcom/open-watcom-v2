@@ -29,13 +29,13 @@ inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h"
 
 all : $(all_execs)
 
-subdir_wcpatch	= wcpatch
-subdir_wpatch	= wpatch
-subdir_bpatch	= bpatch
-subdir_bdump	= bdump
-subdir_bdiff	= bdiff
-subdir_bpcmt	= bpcmt
-subdir_bplevel	= bplevel
+subdir_wcpatch  = wcpatch
+subdir_wpatch   = wpatch
+subdir_bpatch   = bpatch
+subdir_bdump    = bdump
+subdir_bdiff    = bdiff
+subdir_bpcmt    = bpcmt
+subdir_bplevel  = bplevel
 
 #
 # WCPATCH. Create patch.
@@ -70,7 +70,7 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_manifest
     @%make bind_res_bdiff
@@ -102,7 +102,7 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_manifest
     @%make bind_res_bpatch
@@ -134,7 +134,7 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_manifest
     @%make bind_res_bpatch
@@ -165,7 +165,7 @@ bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bdump_objs)) do @%append $^&.lnk file %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_bdump
 
@@ -200,7 +200,7 @@ bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bdiff_objs)) do @%append $^&.lnk file %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_bdiff
 
@@ -220,7 +220,7 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(bpcmt_objs)}
+    $(linker) name $@ $(lflags) file {$(bpcmt_objs)}
 !endif
 
 #
@@ -239,7 +239,7 @@ bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bplevel_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(bplevel_objs) }
+    $(linker) name $@ $(lflags) file { $(bplevel_objs) }
 !endif
 
 # resources
@@ -258,30 +258,30 @@ dusage.gh : ../usage.sp
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
-    $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
+    $(rc_aui) -I.. -DBPATCH $[@ -fo=$@
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
+    $(rc_aui) -I.. -DBDIFF $[@ -fo=$@
 
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
+    $(rc_aui) -I.. -DBDUMP $[@ -fo=$@
 
 bind_res_bdiff: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(wstrip) -q -a -r $^@ . bdiff.res
+    $(wstrip) -q -a -r $@ . bdiff.res
 
 bind_res_bpatch: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(wstrip) -q -a -r $^@ . bpatch.res
+    $(wstrip) -q -a -r $@ . bpatch.res
 
 bind_res_bdump: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(wstrip) -q -a -r $^@ . bdump.res
+    $(wstrip) -q -a -r $@ . bdump.res

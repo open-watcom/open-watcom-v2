@@ -16,4 +16,4 @@ fscopy_autodepends = .AUTODEPEND
 
 wfscopy.exe : fscopy.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file $[@
+    $(linker) name $@ $(lflags) file $[@

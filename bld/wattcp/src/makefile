@@ -171,8 +171,8 @@ clean: .SYMBOLIC
 
 $(LIBARG): $(__MAKEFILES__)
           @echo Building librarian command script
-          @%create $^@
-          @for %f in ($(OBJS)) do @%append $^@ +- %f
+          @%create $@
+          @for %f in ($(OBJS)) do @%append $@ +- %f
 
 ########################################################################
 

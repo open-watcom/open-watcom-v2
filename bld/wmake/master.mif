@@ -105,7 +105,7 @@ wmk.exe :: usage.gh usagej.gh $(objs) $(libs) wresui.res $(version_res_exe_$(hos
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
     @%make bind_res_version_exe
     @%make bind_res_wresui

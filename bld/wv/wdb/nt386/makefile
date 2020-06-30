@@ -13,5 +13,5 @@ all : wdb.exe .SYMBOLIC
 
 wdb.exe : $(resfile_dll) wdbstub.obj wd.lib $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ sys nt debug all op symf,map file wdbstub.obj lib wd.lib
+    $(linker) name $@ sys nt debug all op symf,map file wdbstub.obj lib wd.lib
     @%make bind_res_dll

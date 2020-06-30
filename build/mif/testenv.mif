@@ -1196,39 +1196,39 @@ bld_incl    = -I"$(hdr_dir)/linux"
 !ifdef __OS2__
 bld_sys     = os2v2
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=os2
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __MSDOS__
 bld_sys     = dos4g
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=dos
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NTAXP__
 bld_sys     = ntaxp
 bld_cl      = $(buildtest_prefix)wclaxp $(wcl_any) -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NT386__
 bld_sys     = nt
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __NTX64__
 bld_sys     = nt
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXPPC__
 bld_sys     = linuxppc
 bld_cl      = $(buildtest_prefix)wclppc $(wcl_any) -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXMIPS__
 bld_sys     = linuxmips
 bld_cl      = $(buildtest_prefix)wclmps $(wcl_any) -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUX386__
 bld_sys     = linux
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !else ifdef __LINUXX64__
 bld_sys     = linux
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 !endif
 
 set_path_wcc : .PROCEDURE .EXPLICIT

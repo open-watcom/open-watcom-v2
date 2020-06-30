@@ -78,7 +78,7 @@ cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(cfc_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(cfc_objs) }
+    $(linker) name $@ $(lflags) file { $(cfc_objs) }
 !endif
 
 cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
@@ -86,7 +86,7 @@ cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(cfp_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(cfp_objs) }
+    $(linker) name $@ $(lflags) file { $(cfp_objs) }
 !endif
 
 copparse.exe : wresui.res $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
@@ -94,7 +94,7 @@ copparse.exe : wresui.res $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(copp_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(copp_objs) }
+    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(copp_objs) }
 !endif
     @%make bind_res_wresui
 
@@ -103,7 +103,7 @@ devldchk.exe : wresui.res $(devld_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(devld_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(devld_objs) }
+    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(devld_objs) }
 !endif
     @%make bind_res_wresui
 
@@ -112,7 +112,7 @@ findfunc.exe : $(ff_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(ff_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(ff_objs) }
+    $(linker) name $@ $(lflags) file { $(ff_objs) }
 !endif
 
 outcheck.exe : wresui.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
@@ -120,7 +120,7 @@ outcheck.exe : wresui.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(outc_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(outc_objs) }
+    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(outc_objs) }
 !endif
     @%make bind_res_wresui
 

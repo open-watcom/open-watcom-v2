@@ -44,7 +44,7 @@ objs = qnxemu87.obj emu387.obj fpeqnx.obj
 
 emu387.exe: $(extra_link_res_qnx) $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=$(extra_link_res_qnx) file {$(objs)}
+    $(linker) name $@ $(lflags) opt priv=0,map,long,quiet,res=$(extra_link_res_qnx) file {$(objs)}
 
 usage.u : ../../usage.sp
     @%make echo_wsplice

@@ -18,8 +18,8 @@ extra_c_flags = -oaxs
 
 wstub.exe : wstub.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file $[@
+    $(linker) name $@ $(lflags) file $[@
 
 wstubq.exe : wstubq.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file $[@
+    $(linker) name $@ $(lflags) file $[@

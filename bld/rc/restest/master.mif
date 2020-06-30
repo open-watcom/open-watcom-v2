@@ -42,7 +42,7 @@ $(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(win_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} lib {$(win_libs)}
 !endif
     @%make bind_res
 

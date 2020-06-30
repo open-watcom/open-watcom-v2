@@ -75,13 +75,13 @@ $(name).dll: rcstr.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk lib %i
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk
+    $(linker) name $@ @$^&.lnk
 !endif
     @%make bind_res_add_version_dll
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
 
 rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -89,4 +89,4 @@ rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh: ../res/$(name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../../res" -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -I"../../res" -o$@ $[@

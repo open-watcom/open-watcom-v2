@@ -32,4 +32,4 @@ extra_l_flags_dll_win += segment CLASS 'BSS' PRELOAD FIXED
 
 wint32.dll: $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}

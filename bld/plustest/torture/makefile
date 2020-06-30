@@ -48,9 +48,9 @@ tort.lib : tort.lbc $(objs)
     @%make set_old_path
 
 tort.lbc : $(__MAKEFILES__)
-    $(noecho)%create $^@
-    @%append $^@ $^*.lib
-    @for %i in ( $(objs) ) do @%append $^@ -+%i
+    $(noecho)%create $@
+    @%append $@ $^*.lib
+    @for %i in ( $(objs) ) do @%append $@ -+%i
 
 clean : .procedure
     @%make echo_clean

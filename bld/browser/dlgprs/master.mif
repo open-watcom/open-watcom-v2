@@ -52,7 +52,7 @@ dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs) $(__MAKEFILES__)
     $(cl) $(clflags) $(c_objs) $(ldflags)
 ! endif
 !else
-    $(linker) name $^@ $(lflags) file {$(c_objs)}
+    $(linker) name $@ $(lflags) file {$(c_objs)}
 !endif
 
 bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db

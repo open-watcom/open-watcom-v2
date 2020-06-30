@@ -29,5 +29,5 @@ $(proj_name).exe : $(objs) $(libs) $(__MAKEFILES__)
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 ! endif
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif

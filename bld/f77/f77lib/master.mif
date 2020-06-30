@@ -57,7 +57,7 @@ $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     $(noecho)%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     @%make echo_lib
-    $(librarian) $(flib_lib_flags) $^@ @$(libname).lbc
+    $(librarian) $(flib_lib_flags) $@ @$(libname).lbc
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r
@@ -67,4 +67,4 @@ jerrmsg.grc:  ../../../h/error.msg
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
+    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$@

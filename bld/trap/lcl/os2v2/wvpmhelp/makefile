@@ -28,7 +28,7 @@ w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
 tmplnk = tmp.lnk
 
 wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
-    @%write  $^&.lnk name $^@ sys os2v2 dll
+    @%write  $^&.lnk name $@ sys os2v2 dll
     @%append $^&.lnk debug all op symf
     @%append $^&.lnk option map
     @%append $^&.lnk file pmhook.obj
@@ -38,7 +38,7 @@ wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
     $(linker) @$^&.lnk
 
 wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
-    @%write  $^&.lnk name $^@ system os2v2 pm
+    @%write  $^&.lnk name $@ system os2v2 pm
     @%append $^&.lnk debug all op symf
     @%append $^&.lnk option map
     @%append $^&.lnk import WinLockInput PMMERGE.5225

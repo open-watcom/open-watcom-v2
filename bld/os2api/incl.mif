@@ -25,7 +25,7 @@ wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
 !endif
-wsplice_opts = $(wsplice_extra_opts) -i"$(hdr_dir)" $[@ $^@
+wsplice_opts = $(wsplice_extra_opts) -i"$(hdr_dir)" $[@ $@
 
 .EXTENSIONS : .sp .mh .sp1
 

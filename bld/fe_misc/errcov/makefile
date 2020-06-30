@@ -18,10 +18,10 @@ jobjs = TestFile.obj ErrTable.obj j_main.obj
         wpp386 $[@ -bt=nt -w4 -d2 -i=$(%WATCOM)\h
 
 c_errcov.exe : $(cobjs)
-        wlink op map name $^@ debug all sys nt file { $(cobjs) }
+        wlink op map name $@ debug all sys nt file { $(cobjs) }
 
 j_errcov.exe : $(jobjs)
-        wlink op map name $^@ debug all sys nt file { $(jobjs) }
+        wlink op map name $@ debug all sys nt file { $(jobjs) }
 
 c_main.obj : main.cpp
         wpp386 -dAPP_TYPE=1 main.cpp -fo=c_main.obj -bt=nt -w4 -d2 -i=$(%WATCOM)\h

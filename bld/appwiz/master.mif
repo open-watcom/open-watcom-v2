@@ -23,7 +23,7 @@ all : appwiz.exe .SYMBOLIC
 
 appwiz.exe: $(gendeps)
     @%make echo_link
-    $(linker) name $^@ @appwiz.lnk
+    $(linker) name $@ @appwiz.lnk
     @%make bind_res
 
 appwiz.lnk : makefile ../master.mif
@@ -39,4 +39,4 @@ rcstr.gh : ../h/appwiz.msg
 
 appwiz.res : ../h/appwiz.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@
+    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$@

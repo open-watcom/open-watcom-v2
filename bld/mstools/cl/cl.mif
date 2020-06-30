@@ -19,6 +19,6 @@ $(exename).exe : $(prebuild) $(objs) $(version$(target_cpu)_res_exe_$(host_os)_$
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif
     @%make bind_res_version$(target_cpu)_exe

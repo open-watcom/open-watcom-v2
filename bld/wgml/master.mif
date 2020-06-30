@@ -47,7 +47,7 @@ wgml.exe: wresui.res $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
+    $(linker) name $@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
     @%make bind_res_wresui
 

@@ -145,7 +145,7 @@ dos_s.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -ms -bt=dos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos NAME $^@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos NAME $@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
     @%make set_old_path
 
 dos_c.exe : $(srcfile)
@@ -153,7 +153,7 @@ dos_c.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -mc -bt=dos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos NAME $^@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos NAME $@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
     @%make set_old_path
 
 dos_m.exe : $(srcfile)
@@ -161,7 +161,7 @@ dos_m.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -mm -bt=dos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos NAME $^@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos NAME $@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
     @%make set_old_path
 
 dos_l.exe : $(srcfile)
@@ -169,7 +169,7 @@ dos_l.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -ml -bt=dos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos NAME $^@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos NAME $@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
     @%make set_old_path
 
 dos_h.exe : $(srcfile)
@@ -177,7 +177,7 @@ dos_h.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_i86) -mh -bt=dos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos NAME $^@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos NAME $@ $(link_opts) $(link_x86) OPTION stack=5k FILE $^*.obj
     @%make set_old_path
 
 cw_3s.exe : $(srcfile)
@@ -185,7 +185,7 @@ cw_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3s -bt=dos -d__CAUSEWAY__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM causeway NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM causeway NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 cw_3r.exe : $(srcfile)
@@ -193,7 +193,7 @@ cw_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3r -bt=dos -d__CAUSEWAY__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM causeway NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM causeway NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 pls_3s.exe : $(srcfile)
@@ -219,7 +219,7 @@ rdos_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_rdos) $(test_flags) $(test_flags_386) -mf -3r -bt=rdos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM rdos NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM rdos NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 rdos_3s.exe : $(srcfile)
@@ -227,7 +227,7 @@ rdos_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_rdos) $(test_flags) $(test_flags_386) -mf -3s -bt=rdos $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM rdos NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM rdos NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 rdosdev_3r.exe : $(srcfile)
@@ -235,7 +235,7 @@ rdosdev_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_rdos) $(test_flags) $(test_flags_386) -mf -3r -bt=rdosdev $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM rdosdev NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM rdosdev NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 d4g_3s.exe : $(srcfile)
@@ -243,7 +243,7 @@ d4g_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3s -bt=dos -d__DOS4G__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos4g NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos4g NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 d4g_3r.exe : $(srcfile)
@@ -251,7 +251,7 @@ d4g_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3r -bt=dos -d__DOS4G__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM dos4g NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM dos4g NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 x32_3s.exe : $(srcfile)
@@ -259,7 +259,7 @@ x32_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3s -bt=dos -d__X32__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM x32s NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj libpath $(flashtek)
+    $(noecho)$(linker) SYSTEM x32s NAME $@ $(link_opts) $(link_x86) FILE $^*.obj libpath $(flashtek)
     @%make set_old_path
     $(flashtek)x32fix $^*.exe>nul
 
@@ -268,7 +268,7 @@ x32_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(test_flags) $(test_flags_386) -mf -3r -bt=dos -d__X32__ $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM x32r NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj libpath $(flashtek)
+    $(noecho)$(linker) SYSTEM x32r NAME $@ $(link_opts) $(link_x86) FILE $^*.obj libpath $(flashtek)
     @%make set_old_path
     $(flashtek)x32fix $^*.exe>nul
 
@@ -277,7 +277,7 @@ os2_s.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -ms -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 os2_c.exe : $(srcfile)
@@ -285,7 +285,7 @@ os2_c.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -mc -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 os2_m.exe : $(srcfile)
@@ -293,7 +293,7 @@ os2_m.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -mm -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 os2_l.exe : $(srcfile)
@@ -301,7 +301,7 @@ os2_l.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -ml -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 os2_h.exe : $(srcfile)
@@ -309,7 +309,7 @@ os2_h.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -mh -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 os2_mt.exe : $(srcfile)
@@ -317,7 +317,7 @@ os2_mt.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2286) $(test_flags) $(test_flags_i86) -ml -bm -2 -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $^@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2 pmcompatible NAME $@ $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
 !ifdef os3_dll
@@ -334,9 +334,9 @@ os3_3r.exe : $(srcfile)
     @%make set_path_wlink
     @%make echo_link
 !ifdef os3_dll
-    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3rd.lib
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3rd.lib
 !else
-    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
 !endif
     @%make set_old_path
 
@@ -345,7 +345,7 @@ os3_3rd.dll : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2386) $(test_flags) $(test_flags_386) -mf -3r -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_dll NAME $^@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2_dll NAME $@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
 !ifdef os3_dll
@@ -362,9 +362,9 @@ os3_3s.exe : $(srcfile)
     @%make set_path_wlink
     @%make echo_link
 !ifdef os3_dll
-    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3sd.lib
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3sd.lib
 !else
-    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
 !endif
     @%make set_old_path
 
@@ -373,7 +373,7 @@ os3_3sd.dll : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2386) $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_dll NAME $^@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2_dll NAME $@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
 os3pm_3r.exe : $(srcfile)
@@ -381,7 +381,7 @@ os3pm_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2386) $(test_flags) $(test_flags_386) -mf -3r -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_pm NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2_pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 os3pm_3s.exe : $(srcfile)
@@ -389,7 +389,7 @@ os3pm_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_os2386) $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_pm NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2_pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 win_s.exe : $(srcfile)
@@ -397,7 +397,7 @@ win_s.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_win) $(test_flags) $(test_flags_i86) -ms -zw $(defwin) -bt=windows $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM windows NAME $^@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM windows NAME $@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
     @%make set_old_path
 
 win_c.exe : $(srcfile)
@@ -405,7 +405,7 @@ win_c.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_win) $(test_flags) $(test_flags_i86) -mc -zw $(defwin) -bt=windows $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM windows NAME $^@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM windows NAME $@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
     @%make set_old_path
 
 win_m.exe : $(srcfile)
@@ -413,7 +413,7 @@ win_m.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_win) $(test_flags) $(test_flags_i86) -mm -zw $(defwin) -bt=windows $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM windows NAME $^@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM windows NAME $@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
     @%make set_old_path
 
 win_l.exe : $(srcfile)
@@ -421,7 +421,7 @@ win_l.exe : $(srcfile)
     $(noecho)$(comp_wcc_i86) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_win) $(test_flags) $(test_flags_i86) -ml -zw $(defwin) -bt=windows $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM windows NAME $^@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
+    $(noecho)$(linker) SYSTEM windows NAME $@ $(link_opts) $(link_x86) OPTION heap=10k, stack=5k FILE $^*.obj
     @%make set_old_path
 
 w386_3r.exe : $(srcfile)
@@ -458,9 +458,9 @@ wnt_3r.exe : $(srcfile)
     @%make set_path_wlink
     @%make echo_link
 !ifdef wnt_dll
-    $(noecho)$(linker) SYSTEM nt NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY $^*d.lib
+    $(noecho)$(linker) SYSTEM nt NAME $@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY $^*d.lib
 !else
-    $(noecho)$(linker) SYSTEM nt NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM nt NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
 !endif
     @%make set_old_path
 
@@ -469,7 +469,7 @@ wnt_3rd.dll : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM nt_dll NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj opt offset=0x01000000, impl
+    $(noecho)$(linker) SYSTEM nt_dll NAME $@ $(link_opts) $(link_x86) FILE $^*.obj opt offset=0x01000000, impl
     @%make set_old_path
 
 !ifdef wnt_dll
@@ -486,9 +486,9 @@ wnt_3s.exe : $(srcfile)
     @%make set_path_wlink
     @%make echo_link
 !ifdef wnt_dll
-    $(noecho)$(linker) SYSTEM nt NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY wnt_3sd.lib
+    $(noecho)$(linker) SYSTEM nt NAME $@ $(link_opts) $(link_x86) FILE $^*.obj LIBRARY wnt_3sd.lib
 !else
-    $(noecho)$(linker) SYSTEM nt NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM nt NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
 !endif
     @%make set_old_path
 
@@ -497,7 +497,7 @@ wnt_3sd.dll : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM nt_dll NAME $^@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
+    $(noecho)$(linker) SYSTEM nt_dll NAME $@ $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
 wntw_3r.exe : $(srcfile)
@@ -505,7 +505,7 @@ wntw_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM nt_win NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM nt_win NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 wntw_3s.exe : $(srcfile)
@@ -513,7 +513,7 @@ wntw_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM nt_win NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM nt_win NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 wnt_axp.exe : $(srcfile)
@@ -521,7 +521,7 @@ wnt_axp.exe : $(srcfile)
     $(noecho)$(wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM ntaxp NAME $^@ $(link_opts) $(link_axp) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM ntaxp NAME $@ $(link_opts) $(link_axp) FILE $^*.obj
     @%make set_old_path
 
 wntw_axp.exe : $(srcfile)
@@ -529,7 +529,7 @@ wntw_axp.exe : $(srcfile)
     $(noecho)$(wcc_axp) $[@ -fo=$^*.obj $(incl_sys_dos) $(incl_sys_nt) $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM ntaxp_win NAME $^@ $(link_opts) $(link_axp) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM ntaxp_win NAME $@ $(link_opts) $(link_axp) FILE $^*.obj
     @%make set_old_path
 
 lnx_3r.exe : $(srcfile)
@@ -537,7 +537,7 @@ lnx_3r.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_linux) $(test_flags) $(test_flags_386) -3r -bt=linux $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM linux NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM linux NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 lnx_3s.exe : $(srcfile)
@@ -545,7 +545,7 @@ lnx_3s.exe : $(srcfile)
     $(noecho)$(comp_wcc_386) $(wcc_any) $[@ -fo=$^*.obj $(incl_sys_linux) $(test_flags) $(test_flags_386) -3s -bt=linux $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM linux NAME $^@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM linux NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 # Run 16-bit DOS executables

@@ -85,7 +85,7 @@ $(stdlibdir)/posix.lib : $+$(posixlib_objs)$-
     @%make make_posix_lib
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$^@/makefile
+    !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
 
 $(clean_dirs) : .symbolic
     cd $@

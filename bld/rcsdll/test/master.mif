@@ -24,10 +24,10 @@ test.exe : $(objs) test.res $(libs)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
+    $(linker) name $@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
     @%make bind_res
 
 test.res: ../test.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@

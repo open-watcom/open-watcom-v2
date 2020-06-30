@@ -34,7 +34,7 @@ extra_cpp_flags_novldbg  = -DOVL_WHOOSH
 extra_cpp_flags_movldbg  = -DOVL_WHOOSH -DOVL_MULTITHREAD
 extra_cpp_flags_dovlboth = -DOVL_DEBUG
 
-extra_c_flags = $(inc_path) -Fo=$^@ -r -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
+extra_c_flags = $(inc_path) -Fo=$@ -r -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
 
 extra_c_flags_sovlldr  = -mc
 extra_c_flags_dsovlldr = -mc
@@ -50,7 +50,7 @@ extra_c_flags_novldbg  = -I"$(dig_dir)/h"
 extra_c_flags_movldbg  = -I"$(dig_dir)/h"
 extra_c_flags_dovlboth =
 
-extra_a_flags = -Fo=$^@ -i"$(watcom_h)" -i"../h" -nc=_OVLCODE -nt=_TEXT
+extra_a_flags = -Fo=$@ -i"$(watcom_h)" -i"../h" -nc=_OVLCODE -nt=_TEXT
 
 extra_a_flags_ovldata  =
 extra_a_flags_dovldata = -DOVL_DEBUG

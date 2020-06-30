@@ -104,7 +104,7 @@ $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__M
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
 !else
-    $(linker) name $^@ $(lflags_dll) file {$(objs)}
+    $(linker) name $@ $(lflags_dll) file {$(objs)}
 !endif
     @%make bind_res_version_dll
 

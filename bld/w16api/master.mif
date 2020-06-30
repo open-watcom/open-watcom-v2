@@ -17,7 +17,7 @@ wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
 !endif
-wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $^@
+wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
 
 .EXTENSIONS : .lbc .sp .def .mh .sp1
 
@@ -110,7 +110,7 @@ all : $(headers) $(libs) .SYMBOLIC
 $(libs):
 
 windows.lbc : $(winlibs)
-    @for %i in ($(winlibs)) do @%append $^@ @ %i
+    @for %i in ($(winlibs)) do @%append $@ @ %i
 
 windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
     @%make echo_lib

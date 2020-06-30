@@ -19,7 +19,7 @@ w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null
 
 wdpmhook.dll: pmhook.obj loadstd.obj $(__MAKEFILES__)
-    @%write  $^&.lnk name $^@ sys os2 dll initglobal
+    @%write  $^&.lnk name $@ sys os2 dll initglobal
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk option dosseg,quiet
     @%append $^&.lnk option map
@@ -31,7 +31,7 @@ wdpmhook.dll: pmhook.obj loadstd.obj $(__MAKEFILES__)
     $(linker) @$^&.lnk
 
 wdpmhelp.exe: wdpmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
-    @%write  $^&.lnk name $^@ system os2 pm
+    @%write  $^&.lnk name $@ system os2 pm
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk file pmhelp.obj
     @%append $^&.lnk library clibl.lib

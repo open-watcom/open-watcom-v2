@@ -119,7 +119,7 @@ all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
 
 $(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs)}
     @%make bind_res_add_version_exe
 !ifdef gen_browse_file
     $(noecho)%create browser.wbr

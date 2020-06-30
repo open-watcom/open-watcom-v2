@@ -172,7 +172,7 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
 
-bld_libflags = -out:$^@
+bld_libflags = -out:$@
 
 !ifndef __WATCOM_TOOLS__
 
@@ -441,7 +441,7 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
 
-bld_libflags = crs $^@
+bld_libflags = crs $@
 
 !ifndef __WATCOM_TOOLS__
 

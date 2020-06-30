@@ -172,7 +172,7 @@ $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
 !else
     $(hc_nt) -xn $*.hpj
 !ifndef __UNIX__
-    %ren $@ $@	    	# change file name to lower case
+    %ren $@ $@          # change file name to lower case
 !endif
 !endif
 
@@ -308,7 +308,7 @@ $(hbook).inf : $(hbook).ipf
     $(noecho)set WIPFC=$(wipfc_dir)/helper
     $(wipfc) -q -inf $(hbook).ipf
 !ifndef __UNIX__
-    %ren $@ $@	    	# change file name to lower case
+    %ren $@ $@          # change file name to lower case
 !endif
 
 !ifdef book_os2_help
@@ -317,7 +317,7 @@ $(hbook).hlp : $(hbook).ipf
     $(noecho)set WIPFC=$(wipfc_dir)/helper
     $(wipfc) -q $(hbook).ipf
 !ifndef __UNIX__
-    %ren $@ $@	    	# change file name to lower case
+    %ren $@ $@          # change file name to lower case
 !endif
 !else
 $(hbook).hlp : .symbolic
@@ -583,66 +583,66 @@ compile_gml_to_xxx : .PROCEDURE
 
 ####################################################
 compile_hpj_win : .PROCEDURE
-    @%create $^@
-    @%append $^@ ; This file is maintained by WMAKE. Do not modify this file directly.
-    @%append $^@
-    @%append $^@ [Options]
-    @%append $^@ COMPRESS=TRUE
-    @%append $^@ WARNING=3
-    @%append $^@ CONTENTS=table_of_contents
-    @%append $^@ Title=$(book_title) Help
+    @%create $@
+    @%append $@ ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $@
+    @%append $@ [Options]
+    @%append $@ COMPRESS=TRUE
+    @%append $@ WARNING=3
+    @%append $@ CONTENTS=table_of_contents
+    @%append $@ Title=$(book_title) Help
 !ifdef book_bmroot
-    @%append $^@ BMROOT=$(book_bmroot)
+    @%append $@ BMROOT=$(book_bmroot)
 !else
-    @%append $^@ BMROOT=$(book_incs)
+    @%append $@ BMROOT=$(book_incs)
 !endif
-    @%append $^@ OLDKEYPHRASE=NO
-    @%append $^@ ROOT=.
-    @%append $^@ [Config]
-    @%append $^@ BrowseButtons()
-    @%append $^@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
-    @%append $^@ CreateButton( "btn_up", "&Up", "Contents()" )
-    @%append $^@ [Files]
-    @%append $^@ $(hbook).rtf
-    @%append $^@ [MAP]
-    @%append $^@ $#include <$(hbook).hh>
-    @%append $^@ ; end of HPJ file
+    @%append $@ OLDKEYPHRASE=NO
+    @%append $@ ROOT=.
+    @%append $@ [Config]
+    @%append $@ BrowseButtons()
+    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
+    @%append $@ [Files]
+    @%append $@ $(hbook).rtf
+    @%append $@ [MAP]
+    @%append $@ $#include <$(hbook).hh>
+    @%append $@ ; end of HPJ file
 
 ####################################################
 compile_hpj_nt : .PROCEDURE
-    @%create $^@
-    @%append $^@ ; This file is maintained by WMAKE. Do not modify this file directly.
-    @%append $^@
-    @%append $^@ [OPTIONS]
-    @%append $^@ HCW=0
-    @%append $^@ COMPRESS=60 Hall Zeck
-    @%append $^@ LCID=0x409 0x0 0x0 ;English (United States)
-    @%append $^@ REPORT=Yes
-    @%append $^@ CONTENTS=table_of_contents
-    @%append $^@ TITLE=$(book_title) Help
-    @%append $^@ COPYRIGHT=Copyright 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
+    @%create $@
+    @%append $@ ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $@
+    @%append $@ [OPTIONS]
+    @%append $@ HCW=0
+    @%append $@ COMPRESS=60 Hall Zeck
+    @%append $@ LCID=0x409 0x0 0x0 ;English (United States)
+    @%append $@ REPORT=Yes
+    @%append $@ CONTENTS=table_of_contents
+    @%append $@ TITLE=$(book_title) Help
+    @%append $@ COPYRIGHT=Copyright 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
 !ifdef book_bmroot
-    @%append $^@ BMROOT=$(book_bmroot:/=\)
+    @%append $@ BMROOT=$(book_bmroot:/=\)
 !else
-    @%append $^@ BMROOT=$(book_incs:/=\)
+    @%append $@ BMROOT=$(book_incs:/=\)
 !endif
-    @%append $^@ ROOT=.
-    @%append $^@ HLP=.\$(hbook).hlp
-    @%append $^@ ERRORLOG=.\$(hbook).err
-    @%append $^@
-    @%append $^@ [FILES]
-    @%append $^@ $(hbook).rtf
-    @%append $^@
-    @%append $^@ [MAP]
-    @%append $^@ $#include <$(hbook).hh>
-    @%append $^@
-    @%append $^@ [WINDOWS]
-    @%append $^@ main="$(book_title) Help",,28932
-    @%append $^@
-    @%append $^@ [CONFIG]
-    @%append $^@ BrowseButtons()
-    @%append $^@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
-    @%append $^@ CreateButton( "btn_up", "&Up", "Contents()" )
+    @%append $@ ROOT=.
+    @%append $@ HLP=.\$(hbook).hlp
+    @%append $@ ERRORLOG=.\$(hbook).err
+    @%append $@
+    @%append $@ [FILES]
+    @%append $@ $(hbook).rtf
+    @%append $@
+    @%append $@ [MAP]
+    @%append $@ $#include <$(hbook).hh>
+    @%append $@
+    @%append $@ [WINDOWS]
+    @%append $@ main="$(book_title) Help",,28932
+    @%append $@
+    @%append $@ [CONFIG]
+    @%append $@ BrowseButtons()
+    @%append $@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $@ CreateButton( "btn_up", "&Up", "Contents()" )
 
 ####################################################
 

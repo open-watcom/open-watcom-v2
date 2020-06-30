@@ -21,5 +21,5 @@ extra_l_flags = op dosseg imp DOS32WRITE DOSCALLS.282,DOS32DEBUG DOSCALLS.317
 
 os2v2hlp.exe : os2v2hlp.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file {os2v2hlp.obj}
+    $(linker) name $@ $(lflags) file {os2v2hlp.obj}
                 

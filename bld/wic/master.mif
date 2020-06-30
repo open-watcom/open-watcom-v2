@@ -46,7 +46,7 @@ $(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(sys_objs) $(libs) $(sys_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
 !endif
     @%make bind_osildr
     @%make bind_res_wresui
@@ -55,12 +55,12 @@ $(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__
 
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$^@
+    $(rc_aui) $[@ -fo=$@
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
+    $(wsplice) -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $@
 
 usagej.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
+    $(wsplice) -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $@

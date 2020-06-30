@@ -21,4 +21,4 @@ task.exe : task.3bj
 .c.3bj :
     wcc386.exe $[@ -zq -w4 -mf -ox -d2 -bt=$(platform)  -fo=.3bj
 .asm.obj :
-    wasm -zq -ml -bt=dos $[@ -fo=$^@
+    wasm -zq -ml -bt=dos $[@ -fo=$@

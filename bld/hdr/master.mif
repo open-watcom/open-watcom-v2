@@ -14,12 +14,12 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 
-wsplice_opts = $(wsplice_extra_opts) -i.. $($(system)_options) ../common.sp $[@ $^@
-wsplice_opts_p = $(wsplice_extra_opts) -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $^@
-wsplice_opts_c = $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $^@
+wsplice_opts = $(wsplice_extra_opts) -i.. $($(system)_options) ../common.sp $[@ $@
+wsplice_opts_p = $(wsplice_extra_opts) -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $@
+wsplice_opts_c = $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $@
 
-wsplice_opts_i386 = $(wsplice_extra_opts) -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
-wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_i386 = $(wsplice_extra_opts) -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $@
+wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $@
 
 # order of directories is important for DOS
 # multi level tree must be created from top to bottom

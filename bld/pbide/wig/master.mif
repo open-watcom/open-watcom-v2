@@ -65,7 +65,7 @@ $(xname) : ytab.h $(objs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @@%append $(lnk) library %i
     @for %i in ($(objs)) do @@%append $(lnk) file %i
     @%make echo_link
-    $(linker) name $^@ $(lflags) @$(lnk)
+    $(linker) name $@ $(lflags) @$(lnk)
 
 ytab.c ytab.h: sruparse.y ../c/yydriver.c
     @%make echo_yacc

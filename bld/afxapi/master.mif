@@ -32,7 +32,7 @@ statname = owfs$(bld_ver)
 
 inc_path += -I"../$(host_os)" -I"../h"
 
-wsplice_opts = -i"$(hdr_dir)" $[@ $^@
+wsplice_opts = -i"$(hdr_dir)" $[@ $@
 
 headers =               &
         afx.h           &
@@ -367,4 +367,4 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
 
 $(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@

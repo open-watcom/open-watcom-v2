@@ -41,7 +41,7 @@ wsplice_opts_x64   = -k FOR_X64
 
 .sp.cfg:
     @%make echo_wsplice
-    $(wsplice) $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
+    $(wsplice) $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $@
 
 clean : .symbolic
     rm -f *.cfg

@@ -66,13 +66,13 @@ all: $(objs_$(cpu_size)) .SYMBOLIC
 
 emu86.exe : $(extra_link_res_qnx) qemu87.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) opt res=$(extra_link_res_qnx) file {qemu87.obj}
+    $(linker) name $@ $(lflags) opt res=$(extra_link_res_qnx) file {qemu87.obj}
 
 objs = qnxemu87.obj emu8087.obj fpeqnx.obj
 
 emu86_$(cpu_size).exe: $(extra_link_res_qnx) $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) opt priv=0,long,res=$(extra_link_res_qnx) file {$(objs)}
+    $(linker) name $@ $(lflags) opt priv=0,long,res=$(extra_link_res_qnx) file {$(objs)}
 
 usage.u : ../../usage.sp
     @%make echo_wsplice

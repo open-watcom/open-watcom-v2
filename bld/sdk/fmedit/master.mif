@@ -75,10 +75,10 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}
+    $(linker) name $@ $(lflags) file {$(objs) verimp.obj}
 !endif
     @%make bind_res_add_version_dll
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

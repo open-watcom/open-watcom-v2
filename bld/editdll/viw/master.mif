@@ -38,7 +38,7 @@ wedit.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cp
     @%write $^&.lnk $(lflags)
     @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
     @%make echo_link
-    $(linker) name $^@ op implib @$^&.lnk file $[@
+    $(linker) name $@ op implib @$^&.lnk file $[@
 !endif
     @%make bind_res_version_dll
 
@@ -50,6 +50,6 @@ weditviw.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host
     @%write $^&.lnk $(lflags)
     @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
     @%make echo_link
-    $(linker) name $^@ @$^&.lnk file $[@
+    $(linker) name $@ @$^&.lnk file $[@
 !endif
     @%make bind_res_version_dll

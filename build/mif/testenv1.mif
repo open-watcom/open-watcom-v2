@@ -105,21 +105,21 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @%make set_old_path
 
 .cpp.obj:
-    @set ERROR_MSG=failure to compile $^@
+    @set ERROR_MSG=failure to compile $@
     @%make set_path_wpp
     @%make echo_cxx
     $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .for.obj:
-    @set ERROR_MSG=failure to compile $^@
+    @set ERROR_MSG=failure to compile $@
     @%make set_path_wfc
     @%make echo_wfc
     $(noecho)$(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
     @%make set_old_path
 
 .asm.obj:
-    @set ERROR_MSG=failure to compile $^@
+    @set ERROR_MSG=failure to compile $@
     %write xxxxxxxx.tmp  -zld -wx -nm=$[@ $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
     @%make echo_as
     -$(noecho)$(wasm_$(arch)) @xxxxxxxx.tmp
@@ -133,7 +133,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 # Rule for compiling via preprocessor
 .p.obj:
-    @set ERROR_MSG=failure to preprocess $^@
+    @set ERROR_MSG=failure to preprocess $@
     @%make set_path_wcc
     $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
     @set ERROR_MSG=failure to compile $[&.i
@@ -255,7 +255,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
+    $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&
     @%make set_path_rtdll

@@ -13,6 +13,6 @@ nmake.exe : cmdlnprs.gc $(objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MA
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif
     @%make bind_res_version_exe

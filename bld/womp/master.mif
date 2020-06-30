@@ -63,7 +63,7 @@ $(proj_name).exe : wmpmsg.gh wresui.res $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(wres_lib) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
+    $(linker) name $@ $(lflags) file { $(objs) } lib $(wres_lib)
 !endif
     @%make bind_res_wresui
 
@@ -73,7 +73,7 @@ wmpmsg.gh : $(womp_dir)/womp.msg
 
 wresui.res :  usage.grc ../h/$(proj_name).rc
     @%make echo_rc
-    $(rc_aui) $(extra_rc_flags) -I"$(womp_dir)" -I"$(wrc_dir)/h" $]@ -fo=$^@
+    $(rc_aui) $(extra_rc_flags) -I"$(womp_dir)" -I"$(wrc_dir)/h" $]@ -fo=$@
 
 usage.grc : ../usage.sp
     @%make echo_wsplice

@@ -12,7 +12,7 @@ extra_c_flags_win =-zW
 
 dlldbg.exe : dlldbg.obj dlldbg.res $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file {dlldbg.obj}
+    $(linker) name $@ $(lflags) file {dlldbg.obj}
     @%make bind_res
 
 dlldbg.res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)

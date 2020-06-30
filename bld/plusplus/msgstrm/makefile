@@ -23,20 +23,20 @@ msgstrm.stb : $(OBJS) makefile msgstrm.dos $(__MAKEFILES__)
     $(linker) @msgstrm.dos
 
 msgstrm.os2 : makefile $(objs)
-    %create $^@
-    %append $^@ SYSTEM os2 pmc
-    @%append $^@ OPTION quiet, eliminate, map, stub=msgstrm.stb
-    @%append $^@ NAME   $^*
-    @%append $^@ DEBUG  all
-    @for %i in ( $(OBJS) ) do @%append $^@ FILE %i
+    %create $@
+    %append $@ SYSTEM os2 pmc
+    @%append $@ OPTION quiet, eliminate, map, stub=msgstrm.stb
+    @%append $@ NAME   $^*
+    @%append $@ DEBUG  all
+    @for %i in ( $(OBJS) ) do @%append $@ FILE %i
 
 msgstrm.dos : makefile $(objs)
-    %create $^@
-    %append $^@ SYSTEM dos
-    @%append $^@ OPTION quiet, eliminate, map
-    @%append $^@ NAME   $^*.stb
-    @%append $^@ DEBUG  all
-    @for %i in ( $(OBJS) ) do @%append $^@ FILE %i
+    %create $@
+    %append $@ SYSTEM dos
+    @%append $@ OPTION quiet, eliminate, map
+    @%append $@ NAME   $^*.stb
+    @%append $@ DEBUG  all
+    @for %i in ( $(OBJS) ) do @%append $@ FILE %i
 
 .cpp.obj:
     $(comp286plus) $[* $(compiler)

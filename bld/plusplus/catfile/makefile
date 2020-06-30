@@ -43,29 +43,29 @@ catfaxp.exe : makefile catfaxp.lnk catfile.abj
     wlink @catfaxp.lnk file catfile.abj
 
 catfile.lnk : makefile
-    @%create  $^@
-    @%append $^@ NAME $^*
-    @%append $^@ SYSTEM os2v2 pmc
-    @%append $^@ OPTION quiet, heap=16k, stub=dosstub.exe
-#   @%append $^@ OPTION quiet, heap=16k
-    @%append $^@ DEBUG   all
+    @%create  $@
+    @%append $@ NAME $^*
+    @%append $@ SYSTEM os2v2 pmc
+    @%append $@ OPTION quiet, heap=16k, stub=dosstub.exe
+#   @%append $@ OPTION quiet, heap=16k
+    @%append $@ DEBUG   all
 
 dosstub.exe : catfile.dbj dosstub.lnk
     wlink @dosstub.lnk file catfile.dbj
 
 dosstub.lnk : makefile
-    %create $^@
-    @%append $^@ NAME dosstub
-    @%append $^@ SYSTEM dos
-    @%append $^@ OPTION quiet
-    @%append $^@ DEBUG  all
+    %create $@
+    @%append $@ NAME dosstub
+    @%append $@ SYSTEM dos
+    @%append $@ OPTION quiet
+    @%append $@ DEBUG  all
 
 catfaxp.lnk : makefile
-    %create $^@
-    @%append $^@ NAME catfaxp
-    @%append $^@ SYSTEM ntaxp
-    @%append $^@ OPTION quiet
-    @%append $^@ DEBUG  codeview
+    %create $@
+    @%append $@ NAME catfaxp
+    @%append $@ SYSTEM ntaxp
+    @%append $@ OPTION quiet
+    @%append $@ DEBUG  codeview
 
 
 global: .symbolic

@@ -104,18 +104,18 @@ $(proj_name).exe : rcstr.gh $(dis_prereq) $(link_name) $(proj_name).res $(proj_o
     @%make bind_res_add_version_exe
 
 $(link_name) : $(__MAKEFILES__)
-    @%write $^@ $(lflags)
-    @%append $^@ file { $(proj_obj) }
-    @%append $^@ lib { $(xlibs) }
+    @%write $@ $(lflags)
+    @%append $@ file { $(proj_obj) }
+    @%append $@ lib { $(xlibs) }
 
 !ifeq host_os win
 $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk $(cppflags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !else
 $(proj_name).res : ../res/$(host_os)/drnt.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$@
 !endif
 
 rcstr.gh : rcstrmsg.gh
@@ -124,4 +124,4 @@ rcstr.gh : rcstrmsg.gh
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$^@ $[@
+    $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$@ $[@

@@ -208,11 +208,11 @@ msg.gh : wlibmsg.gh
 
 incltext.gh : ../h/incltext.h ../wlib.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I.. -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -I.. -o$@ $[@
 
 wlibmsg.gh : ../wlib.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 wresui.res : ../wlib.rc ../wlib.msg msg.gh
     @%make echo_rc

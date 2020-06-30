@@ -41,19 +41,19 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
 
 .cpp: $(afxapitest_dir)
 .cpp.obj:
-    @set error_msg=failure to compile $^@
+    @set error_msg=failure to compile $@
     $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
 
 .rc: $(afxapitest_dir)
 .rc.res:
-    @set error_msg=failure to compile $^@
+    @set error_msg=failure to compile $@
     wrc -q -r -fo=$@ $[@
 
 .obj.$(exe):
-    @set error_msg=failure to link $^@
-    $(linker) name $^@ @test.lnk $(opt_link_$^*) file $[@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
+    @set error_msg=failure to link $@
+    $(linker) name $@ @test.lnk $(opt_link_$^*) file $[@
+    @set error_msg=failure to execute $@
+    @%append exec.out PASS executing $@
     $(run) $(exec_prefix)$@ >>exec.out
     rm $[@
 
@@ -71,13 +71,13 @@ test : .symbolic start_test $(test_exes) ./chk_exec.exe
     %append $(log_file) PASS $(%__CWD__)
 
 string04.$(exe) : string04.obj string04.res
-    @set error_msg=failure to link $^@
-    $(linker) name $^@ @test.lnk file $[@
-    @set error_msg=failure to add resources to $^@
+    @set error_msg=failure to link $@
+    $(linker) name $@ @test.lnk file $[@
+    @set error_msg=failure to add resources to $@
     wrc -q $]@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >>exec.out
+    @set error_msg=failure to execute $@
+    @%append exec.out PASS executing $@
+    $(run) $(exec_prefix)$@ >>exec.out
 
 start_test : .symbolic test.lnk
     %create exec.out
@@ -86,18 +86,18 @@ start_test : .symbolic test.lnk
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
 
 test.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION quiet, noredef
-    @%append $^@ LIBPATH ../dnt386
-    @%append $^@ LIBPATH ../dnt386.dll
-    @%append $^@ LIBPATH ../dnt386u
-    @%append $^@ LIBPATH ../dnt386u.dll
-    @%append $^@ LIBPATH ../nt386
-    @%append $^@ LIBPATH ../nt386.dll
-    @%append $^@ LIBPATH ../nt386u
-    @%append $^@ LIBPATH ../nt386u.dll
+    %create $@
+    @%append $@ $(ldebug_$(arch))
+    @%append $@ $(lnk_$(arch))
+    @%append $@ OPTION quiet, noredef
+    @%append $@ LIBPATH ../dnt386
+    @%append $@ LIBPATH ../dnt386.dll
+    @%append $@ LIBPATH ../dnt386u
+    @%append $@ LIBPATH ../dnt386u.dll
+    @%append $@ LIBPATH ../nt386
+    @%append $@ LIBPATH ../nt386.dll
+    @%append $@ LIBPATH ../nt386u
+    @%append $@ LIBPATH ../nt386u.dll
 
 save : .symbolic
     @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav

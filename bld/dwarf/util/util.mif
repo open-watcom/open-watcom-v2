@@ -33,7 +33,7 @@ all: dwdump.exe testcli.exe .symbolic
 dwdump.exe : $(dwdump_objs) $(orl_lib) $(__MAKEFILES__)
     @%make echo_link
 !ifdef bootstrap
-    $(cc) $(c_flags) -o $^@ $(dwdump_objs) $(orl_lib) $(clib_dir)/$(objs_subdir)/libwatcom.a
+    $(cc) $(c_flags) -o $@ $(dwdump_objs) $(orl_lib) $(clib_dir)/$(objs_subdir)/libwatcom.a
 !else
     $(linker) name $@ $(lflags) file {$(dwdump_objs)} lib {$(orl_lib)}
 !endif

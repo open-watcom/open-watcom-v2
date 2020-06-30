@@ -43,12 +43,12 @@ $(target_lib) : $(target_objs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(target_objs)) do @%append $^&.lbc +%i
     @%make echo_lib
-    $(librarian) $(plib_lib_flags) $^@ @$^&.lbc
+    $(librarian) $(plib_lib_flags) $@ @$^&.lbc
 
 !ifdef target_lib_x
 $(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(target_xobjs)) do @%append $^&.lbc +%i
     @%make echo_lib
-    $(librarian) $(plib_lib_flags) $^@ @$^&.lbc
+    $(librarian) $(plib_lib_flags) $@ @$^&.lbc
 !endif

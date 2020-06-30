@@ -6,7 +6,7 @@
     wcc$(v)p $[* -oalit -d1 -zq -w4
 
 .obj.exe:
-    wlink form dos DEBUG line OPTION quiet NAME $^@ FILE $[@
+    wlink form dos DEBUG line OPTION quiet NAME $@ FILE $[@
 
 all : .symbolic testtiny.exe testdir.exe
     @%null

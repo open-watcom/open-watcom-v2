@@ -8,7 +8,7 @@
 lname = $^&.rex
 win386ldr = $(win386_dir)/ext/win386.ext
 !else
-lname = $^@
+lname = $@
 !endif
 
 !ifeq verbose 0
@@ -20,5 +20,5 @@ bind_win386_add_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo wbind $(win386ldr) $@
 !endif
-    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $^&.res $^@
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $^&.res $@
 !endif

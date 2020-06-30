@@ -16,4 +16,4 @@ objs =  resdump.obj  &
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}

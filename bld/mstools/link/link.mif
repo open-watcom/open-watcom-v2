@@ -31,9 +31,9 @@ $(exename).exe : $(prebuild) $(objs) $(libs) $(version$(target_cpu)_res_exe_$(ho
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
 !ifdef libs
-    $(linker) name $^@ $(lflags) file {$(objs)} library {$(libs)}
+    $(linker) name $@ $(lflags) file {$(objs)} library {$(libs)}
 !else
-    $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif
 !endif
     @%make bind_res_version$(target_cpu)_exe

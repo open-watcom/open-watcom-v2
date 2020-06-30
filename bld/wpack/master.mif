@@ -40,7 +40,7 @@ $(proj_name).exe : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(sys_objs) $(wildcards_objs) #$(libs) $(sys_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs) $(wildcards_objs)} #lib { $(libs) $(sys_libs) }
+    $(linker) name $@ $(lflags) file {$(objs) $(wildcards_objs)} #lib { $(libs) $(sys_libs) }
 !endif
 
 dtparse.obj : msg.gh

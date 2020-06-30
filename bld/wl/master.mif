@@ -169,7 +169,7 @@ $(dllname).dll : rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_
 
 wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
+    $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$@
 
 rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
     @%make echo_awk

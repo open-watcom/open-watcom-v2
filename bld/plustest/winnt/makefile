@@ -63,12 +63,12 @@ tomdll.obj : tomdll.c
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)
-    $(noecho)%create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_any)
-    @%append $^@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
-    @%append $^@ OPTION map, caseexact, stack=128k, quiet
-    @%append $^@ FILE tomdll.obj
+    $(noecho)%create $@
+    @%append $@ $(ldebug_$(arch))
+    @%append $@ $(lnk_any)
+    @%append $@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
+    @%append $@ OPTION map, caseexact, stack=128k, quiet
+    @%append $@ FILE tomdll.obj
 
 clean : .procedure
     @%make echo_clean

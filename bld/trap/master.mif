@@ -218,7 +218,7 @@ $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
-    $(noecho)$[@ $^@
+    $(noecho)$[@ $@
 
 !ifndef extra_dobjs
 extra_dobjs = $(extra_objs)
@@ -251,7 +251,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(mode_lflags)
     @%append $^&.lnk op elim
-    @%append $^&.lnk name $^@
+    @%append $^&.lnk name $@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP
     @%append $^&.lnk op dosseg
@@ -297,7 +297,7 @@ rc_inc_dirs = -I"$(trap_dir)/common"
 #################
 .rc.res: $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice
