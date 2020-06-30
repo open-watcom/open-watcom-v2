@@ -135,6 +135,7 @@ extra_c_flags_pathlist = -fh=$^:pch06.pch
 
 !ifdef __WATCOM_TOOLS__
 stand_pch_c_flags = -fh=stand.pch
+lib_pch_c_flags = -fh=lib.pch
 !endif
 
 # lflags
@@ -270,7 +271,7 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
 .c{$(lib_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @if not exist $(lib_subdir) mkdir $(lib_subdir)
     @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(lib_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 echo_re2c : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
