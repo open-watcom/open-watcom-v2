@@ -16,9 +16,9 @@ asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
 asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).dll/asinline.lib
 !else
 #
-# AS in-line OSI library used
+# AS in-line library used
 #
-asminline_lib = $(as_dir)/$(target_cpu)/osi$(host_cpu)/asinline.lib
+asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
 !endif
 
 #

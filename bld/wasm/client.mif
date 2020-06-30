@@ -1,7 +1,3 @@
-wasm_inline_i86 = 1
-wasm_inline_386 = 1
-
-!ifdef wasm_inline_$(target_cpu)
 asminline_c = $(wasm_dir)/c
 asminline_inc_dirs = -I"$(wasm_dir)/h"
 asminline_objs = &
@@ -27,4 +23,3 @@ asminline_deps = asmops.gh asmopsd.gh
 !endif
 
 asminline_lib =
-!endif
