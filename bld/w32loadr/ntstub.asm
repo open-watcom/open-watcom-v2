@@ -30,6 +30,8 @@
 
         name    ntstub
 
+        DOSSEG
+
 STACK   segment use16 word stack 'STACK'
         db      128 dup(?)
 STACK   ends
