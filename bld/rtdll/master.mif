@@ -17,7 +17,6 @@ rtdll_host_os_generic =dos
 rtdll_host_os_msdos   =dos
 rtdll_host_os_netware =nov
 rtdll_host_os_os2     =os2
-rtdll_host_os_osi     =osi
 rtdll_host_os_qnx     =qnx
 rtdll_host_os_windows =win
 rtdll_host_os_winnt   =nt

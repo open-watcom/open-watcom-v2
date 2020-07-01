@@ -160,8 +160,6 @@ set PROJDIR=<CWD>
     <CCCMD> handleio/library/winnt.axp/_s/binmode.obj       <OWRELROOT>/libaxp/nt/binmode.obj
     <CCCMD> startup/library/winnt.axp/_s/commode.obj        <OWRELROOT>/libaxp/nt/commode.obj
 
-    <CCCMD> library/osi.386/ms_r/clib3r.lib                 <OWRELROOT>/lib386/osi/clib3r.lib
-
     <CCCMD> library/linux.mps/_s/clib.lib                   <OWRELROOT>/libmps/linux/clib.lib
 
 [ BLOCK <1> clibqa ]

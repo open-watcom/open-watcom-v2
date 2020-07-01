@@ -16,7 +16,6 @@ clib_host_os_nw_clibl   =nov_clibl
 clib_host_os_nw_libc    =nov_libc
 clib_host_os_nw_libcl   =nov_libcl
 clib_host_os_os2        =os2
-clib_host_os_osi        =osi
 clib_host_os_qnx        =qnx
 clib_host_os_windows    =win
 clib_host_os_winnt      =nt
