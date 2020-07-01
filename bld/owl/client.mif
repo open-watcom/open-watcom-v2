@@ -16,9 +16,9 @@ owl_lib = $(owl_dir)/$(objs_subdir).rtd/owl.lib
 owl_lib = $(owl_dir)/$(objs_subdir).dll/owl.lib
 !else
 #
-# OWL OSI library used
+# OWL library used
 #
-owl_lib = $(owl_dir)/osi$(host_cpu)/owl.lib
+owl_lib = $(owl_dir)/$(objs_subdir)/owl.lib
 !endif
 
 owl_inc_dirs = -I"$(owl_dir)/h"

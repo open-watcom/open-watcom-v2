@@ -11,7 +11,7 @@ orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
 orl_lib = $(orl_dir)/$(objs_subdir).dll/orl.lib
 !else
 #
-# ORL OSI library used
+# ORL library used
 #
-orl_lib = $(orl_dir)/osi$(host_cpu)/orl.lib
+orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
 !endif
