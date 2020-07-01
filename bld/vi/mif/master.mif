@@ -68,11 +68,8 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
     $(linker) name $(lname) $(lflags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
-!ifdef win386
     @%make bind_win386_add_res
-!else
     @%make bind_res_add_version_exe
-!endif
 !else
     @%make bind_res_version_exe
 !endif

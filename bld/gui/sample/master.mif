@@ -65,7 +65,7 @@ sample.$(exe_ext) : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKE
         @%append $(lnk) option symfile=$(name).sym
         @%append $(lnk) library {$(gui_lib) $(ui_lib) $(wres_lib)}
         @for %i in ($(objs)) do @%append $(lnk) file %i
-        $(linker) name $@ @$(lnk)
+        $(linker) name $(lname) @$(lnk)
 !endif
 !ifneq sys_windowed 1
         @%make bind_res_wresui
