@@ -8,14 +8,6 @@ os2_objs = &
     cgmemmgr.obj &
     stackcg.obj
 
-osi_objs = &
-    objio.obj &
-    memlimit.obj &
-    envvar.obj &
-    cgosi.obj &
-    cgmemmgr.obj &
-    stackcg.obj
-
 nt_objs = &
     objio.obj &
     memlimit.obj &
