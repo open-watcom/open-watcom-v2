@@ -18,9 +18,6 @@ set PROJDIR=<CWD>
 # NT, OS2 32-bit version
     <CCCMD> flat386/mf_r/wres.lib   <OWRELROOT>/lib386/wresf.lib
     <CCCMD> flat386/mf_s/wres.lib   <OWRELROOT>/lib386/wresfs.lib
-# OSI 32-bit version
-#    <CCCMD> osi386/ms_r/wres.lib    <OWRELROOT>/lib386/osi/wresf.lib
-#    <CCCMD> osi386/ms_s/wres.lib    <OWRELROOT>/lib386/osi/wresfs.lib
 # DOS 32-bit version
     <CCCMD> dos386/ms_r/wres.lib    <OWRELROOT>/lib386/dos/wresf.lib
     <CCCMD> dos386/ms_s/wres.lib    <OWRELROOT>/lib386/dos/wresfs.lib
@@ -42,8 +39,8 @@ set PROJDIR=<CWD>
 #    <CCCMD> wini86/ml/wres.lib      <OWRELROOT>/lib286/win/wresl.lib
 
 # Netware version
-    <CCCMD> osi386/ms_r/wres.lib    <OWRELROOT>/lib386/netware/wresf.lib
-    <CCCMD> osi386/ms_s/wres.lib    <OWRELROOT>/lib386/netware/wresfs.lib
+    <CCCMD> nov386/ms_r/wres.lib    <OWRELROOT>/lib386/netware/wresf.lib
+    <CCCMD> nov386/ms_s/wres.lib    <OWRELROOT>/lib386/netware/wresfs.lib
 
 [ BLOCK . . ]
 

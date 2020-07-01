@@ -34,9 +34,8 @@ name_i86_l = $(wres_dir)/$(wres_i86_dir)/ml/wres.lib
 name_i86_h = $(wres_dir)/$(wres_i86_dir)/mh/wres.lib
 
 name_386_dos      = $(wres_dir)/dos386/$(name_model_conv)
-name_386_zdos     = $(wres_dir)/osi386/$(name_model_conv)
-name_386_osi      = $(wres_dir)/osi386/$(name_model_conv)
-name_386_nov      = $(wres_dir)/osi386/$(name_model_conv)
+name_386_zdos     = $(wres_dir)/zdos386/$(name_model_conv)
+name_386_nov      = $(wres_dir)/nov386/$(name_model_conv)
 name_386_qnx      = $(wres_dir)/qnx386/$(name_model_conv)
 name_386_linux    = $(wres_dir)/linux386/$(name_model_conv)
 name_386_rdos     = $(wres_dir)/flat386/$(name_model_conv)
