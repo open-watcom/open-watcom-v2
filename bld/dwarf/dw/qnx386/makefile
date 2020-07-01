@@ -1,8 +1,7 @@
-#pmake: nobuild os_qnx cpu_386
+#pmake: build os_qnx cpu_386 dwarf
 
 host_os  = qnx
 host_cpu = 386
 
-use_virtmem = 1
-
 !include ../master.mif
+

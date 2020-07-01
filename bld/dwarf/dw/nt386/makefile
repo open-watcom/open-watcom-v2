@@ -1,8 +1,7 @@
-#pmake: build dwarf os_nt cpu_386
+#pmake: build os_nt cpu_386 dwarf
 
 host_os  = nt
 host_cpu = 386
 
-sys_dll = 1
-
 !include ../master.mif
+
