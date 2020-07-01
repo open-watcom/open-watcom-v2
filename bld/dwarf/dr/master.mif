@@ -4,6 +4,10 @@ proj_name = dwarfr
 dwarfr_autodepends = .AUTODEPEND
 !endif
 
+!ifeq host_cpu x64
+sys_dll = 1
+!endif
+
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
 fpu_flags_os2_i86   = -fpc
