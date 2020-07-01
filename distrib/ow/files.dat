@@ -41,7 +41,6 @@
 [ INCLUDE <OWSRCDIR>/dmpobj/files.dat ]
 [ INCLUDE <OWSRCDIR>/exedump/files.dat ]
 [ INCLUDE <OWSRCDIR>/cvpack/files.dat ]
-[ INCLUDE <OWSRCDIR>/w32loadr/files.dat ]
 [ INCLUDE <OWSRCDIR>/f77/files.dat ]
 [ INCLUDE <OWSRCDIR>/win386/files.dat ]
 [ INCLUDE <OWSRCDIR>/misc/files.dat ]
