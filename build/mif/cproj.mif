@@ -666,6 +666,7 @@ inc_dirs_sys_rdosdev =
 inc_dirs_sys_zdos  =
 
 inc_dirs_lang_osi  =
+inc_dirs_lang_dos  =
 
 !else
 
@@ -684,6 +685,7 @@ inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
 
 inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
+inc_dirs_lang_dos     = -I"$(hdr_dir)/dos"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
 inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
 inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"

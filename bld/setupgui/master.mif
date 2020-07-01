@@ -76,30 +76,17 @@ objs += loadfind.obj
 
 libs_dos   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_linux = $(gui_lib) $(ui_lib) $(wres_lib)
-libs_osx   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_nt    = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
 libs_osx   = $(gui_lib) $(ui_lib) $(wres_lib)
 
 !endif
 
-libs_dos    += ../ziplib/osi386/ziplib.lib
-libs_linux  += ../ziplib/linux$(host_cpu)/ziplib.lib
-libs_osx    += ../ziplib/osx$(host_cpu)/ziplib.lib
-libs_nt     += ../ziplib/osi$(host_cpu)/ziplib.lib
-libs_os2    += ../ziplib/osi386/ziplib.lib
-libs_win386 += ../ziplib/osi386/ziplib.lib
-libs_osx    += ../ziplib/osx$(host_cpu)/ziplib.lib
-
-libs_dos    += ../zlib/osi386/zlib.lib
-libs_linux  += ../zlib/osi$(host_cpu)/zlib.lib
-libs_osx    += ../zlib/osi$(host_cpu)/zlib.lib
-libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib
-libs_os2    += ../zlib/osi386/zlib.lib
-libs_win386 += ../zlib/osi386/zlib.lib
-libs_osx    += ../zlib/osi$(host_cpu)/zlib.lib
-
+!ifeq host_cpu i86
 libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
+!else
+libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu)) ../ziplib/$(host_os)$(host_cpu)/ziplib.lib ../zlib/$(host_os)$(host_cpu)/zlib.lib
+!endif
 
 !ifeq sys_windowed 1
 !ifeq host_os win
@@ -263,7 +250,7 @@ setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$@
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
-    $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_osi) -I"$(watcom_dir)/h" $[@
+    $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
 
 csetup.exe : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
 f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
