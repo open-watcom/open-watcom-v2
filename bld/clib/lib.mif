@@ -5,11 +5,11 @@
 # point the linker directly at the build directories.
 
 # General naming convention
-clib_suffix_ms 	     = s
-clib_suffix_mm 	     = m
-clib_suffix_mc 	     = c
-clib_suffix_ml 	     = l
-clib_suffix_mh 	     = h
+clib_suffix_ms       = s
+clib_suffix_mm       = m
+clib_suffix_mc       = c
+clib_suffix_ml       = l
+clib_suffix_mh       = h
 clib_suffix_register = 3r
 clib_suffix_stack    = 3s
 libname_086 = $(clib_suffix_$(model))
