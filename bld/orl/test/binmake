@@ -1,4 +1,4 @@
-#pmake: binmake
+#pmake/150: binmake
 
 host_os  = $(bld_os)
 host_cpu = $(bld_cpu)
