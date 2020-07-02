@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,6 @@
 #include "clibext.h"
 
 
-#ifdef __OSI__
-//If or when OSI builds are re-enabled, we need to find the header for this
-//extern  char    *_BreakFlagPtr;
-#endif
-
 static int      OpenFiles;      // the number of open files
 static unsigned LastResult;
 static bool     CaughtBreak;    // set to true if break hit.
@@ -67,17 +63,10 @@ void TrapBreak( int sig_num )
 void CheckBreak( void )
 /*********************/
 {
-#ifdef __OSI__
-    if( *_BreakFlagPtr ) {
-        *_BreakFlagPtr = 0;
-        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
-    }
-#else
     if( CaughtBreak ) {
         CaughtBreak = false;                  /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
-#endif
 }
 
 void SetBreak( void )

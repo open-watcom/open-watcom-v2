@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,14 +305,7 @@ static char *CopyEnv( void )
     char        __far *envarea;
     uint_16     envsize;
 
-#ifdef __OSI__
-    {
-        extern char *_EnvPtr;
-        envarea = _EnvPtr;
-    }
-#else
     envarea = MK_FP( *(addr_seg __far *)MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
-#endif
     envsize = EnvAreaSize( envarea );
     PMData->envseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
     if( PMData->envseg.pm == 0 ) {

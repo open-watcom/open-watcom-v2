@@ -65,9 +65,6 @@ essentially no worst case performance scenario.
 #include <stdio.h>
 #if defined( __NT__ )
     #include <windows.h>
-#elif defined( __OSI__ )
-    #define __CALL21__
-    #include "tinyio.h"
 #elif defined( __DOS__ )
     #include <i86.h>
     #include "extender.h"
@@ -265,7 +262,7 @@ static  void    CalcMemSize( void )
             MemorySize = memory_available;
         }
     }
-#elif defined( __OS2__ ) || defined( __OSI__ )
+#elif defined( __OS2__ )
     if( size_requested != 0 ) {
         MemorySize = size_requested;
     } else {

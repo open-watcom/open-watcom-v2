@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #define _RTDATA_H_INCLUDED
 
 /* DOS based platforms have stdaux/stdprn in addition to stdin/out/err */
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #define NUM_STD_STREAMS 5
 #else
     #define NUM_STD_STREAMS 3
@@ -145,7 +145,7 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
     #define _RWD_curbrk         _curbrk
     #define _RWD_dynend         _dynend
 #endif
-#if defined( __DOS__ ) || defined( __OSI__ ) || defined( _M_I86 ) && !defined( __QNX__ )
+#if defined( __DOS__ ) || defined( _M_I86 ) && !defined( __QNX__ )
     #define _RWD_psp            _psp
 #endif
 #if defined( _M_IX86 ) && !defined( __UNIX__ )

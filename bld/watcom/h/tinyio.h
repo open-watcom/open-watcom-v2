@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -820,7 +820,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #define _INT            0xcd
 
-#if defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ )
+#if defined( __WINDOWS_386__ ) || defined( __CALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"
@@ -831,7 +831,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #define _INT_25         _INT 0x25
 #define _INT_26         _INT 0x26
 
-#if defined( __OSI__ ) && defined( __CALL31__ )
+#if defined( __CALL31__ )
  extern  void   __Int31( void );
  #pragma aux __Int31 "*"
  #define _INT_31        "call __Int31"

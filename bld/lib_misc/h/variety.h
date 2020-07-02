@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,13 +143,6 @@
         #define __DOS_386__
     #else
         #error unrecognized processor for DOS
-    #endif
-#elif defined(__OSI__)
-    #if defined( _M_IX86 ) && !defined( _M_I86 )
-        #define __PROTECT_MODE__
-        #define __OSI_386__
-    #else
-        #error unrecognized processor for OSI
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@
     // and IDE_PGM. note that IDE_PGM needs to be defined anywhere that
     // IDEAPI is used and/or idedll.h is included
 
-    #if defined( __OS2__ ) && !defined( __OSI__ )
+    #if defined( __OS2__ )
         #define DLLS_IMPLEMENTED
 
         // The following are defined in os2.h
@@ -388,11 +389,6 @@ static IDEInitInfo  *InfoPtr = NULL;
 static IDEDRV   *Inf;
 #endif
 
-#ifdef __OSI__
-#define NO_CTRL_HANDLERS
-#endif
-
-#ifndef NO_CTRL_HANDLERS
 static void StopRunning( void )
 {
 // Provide static and dynamic linking
@@ -406,35 +402,28 @@ static void StopRunning( void )
     }
 #endif
 }
-#endif // NO_CTRL_HANDLERS
 
-#ifndef NO_CTRL_HANDLERS
 static void intHandler( int sig_num )
 {
     /* unused parameters */ (void)sig_num;
 
     StopRunning();
 }
-#endif // NO_CTRL_HANDLERS
 
 static void initInterrupt( void )
 {
-#ifndef NO_CTRL_HANDLERS
     signal( SIGINT, intHandler );
 #ifndef __UNIX__
     signal( SIGBREAK, intHandler );
 #endif // __UNIX__
-#endif // NO_CTRL_HANDLERS
 }
 
 static void finiInterrupt( void )
 {
-#ifndef NO_CTRL_HANDLERS
     signal( SIGINT, SIG_DFL );
 #ifndef __UNIX__
     signal( SIGBREAK, SIG_DFL );
 #endif // __UNIX__
-#endif // NO_CTRL_HANDLERS
 }
 
 #ifndef NDEBUG

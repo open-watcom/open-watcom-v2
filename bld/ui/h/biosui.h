@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,21 +38,10 @@
 #include "extender.h"
 #endif
 
-
-#if defined(__OSI__)
- #define _INT_10        "call __Int10"
- #define _INT_16        "call __Int16"
- #define _INT_21        "call __Int21"
- #define _INT_33        "call __Int33"
-#else
- #define _INT_10        "int 10h"
- #define _INT_16        "int 16h"
- #define _INT_21        "int 21h"
- #define _INT_33        "int 33h"
-#endif
-
-#define STR(...)        #__VA_ARGS__
-#define INSTR(...)      STR(__VA_ARGS__)
+#define _INT_10        "int 10h"
+#define _INT_16        "int 16h"
+#define _INT_21        "int 21h"
+#define _INT_33        "int 33h"
 
 #define BIOS_VIDEO      0x10
 #define BIOS_MOUSE      0x33
@@ -109,19 +98,19 @@ extern unsigned short MouseDrvReset( void );
 extern void MouseDrvCallRetState( unsigned short, md_stk_ptr );
 #ifdef _M_I86
 #pragma aux MouseDrvCallRetState = \
-        _INT_33                         \
-        INSTR( mov ss:[si+0],bx )  \
-        INSTR( mov ss:[si+2],cx )  \
-        INSTR( mov ss:[si+4],dx )  \
+        _INT_33                 \
+        "mov ss:[si+0],bx"      \
+        "mov ss:[si+2],cx"      \
+        "mov ss:[si+4],dx"      \
     __parm      [__ax] [__si] \
     __value     \
     __modify    [__bx __cx __dx]
 #else
 #pragma aux MouseDrvCallRetState = \
-        _INT_33                         \
-        INSTR( mov ss:[esi+0],bx )  \
-        INSTR( mov ss:[esi+2],cx )  \
-        INSTR( mov ss:[esi+4],dx )  \
+        _INT_33                 \
+        "mov ss:[esi+0],bx"     \
+        "mov ss:[esi+2],cx"     \
+        "mov ss:[esi+4],dx"     \
     __parm      [__ax] [__esi] \
     __value     \
     __modify    [__bx __cx __dx]
@@ -318,12 +307,5 @@ extern unsigned short BIOSTestKeyboard( void );
     __modify    []
 
 extern unsigned short   Points;     /* Number of lines per char */
-
-#if defined(__OSI__)
-extern void         __Int10();
-extern void         __Int16();
-extern void         __Int21();
-extern void         __Int33();
-#endif
 
 #endif // _BIOSUI_H_

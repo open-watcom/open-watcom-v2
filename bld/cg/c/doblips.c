@@ -158,7 +158,7 @@ void    InitBlip( void )
     SetNextBlipCount();
     Zoiks2 = false;
     BlipsOn = false;
-#if defined( __NT__ ) || defined( __OSI__ )
+#if defined( __NT__ )
     buff[0] = 0;
 #else
     if( GetEnvVar( "WCGBLIPON", buff, 9 ) ) {

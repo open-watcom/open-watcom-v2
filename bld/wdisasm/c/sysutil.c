@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,6 @@
 #include "wdismsg.h"
 
 
-#ifdef __OSI__
- extern char    *_Copyright;
-#endif
-
 void  SysHelp()
 /*************/
 
@@ -52,12 +49,6 @@ void  SysHelp()
         banner3a "\n",
         stdout
     );
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {
-            fputs( _Copyright, stdout );
-            fputs( "\n", stdout );
-        }
-    #endif
     MsgPutUsage();
     MsgFini();
     exit( 1 );

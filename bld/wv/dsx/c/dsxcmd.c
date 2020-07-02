@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,6 @@
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
 
-#ifdef __OSI__
-extern char             *_LpCmdLine;
-#endif
 extern char             DPMICheck;
 
 static char             *cmdStart;
@@ -131,16 +128,9 @@ void ProcSysOptInit( void )
 
     CheckSize = 0;
     MemSize = 2L*1024*1024;
-#ifdef __OSI__
-    {
-        cmdStart = _LpCmdLine;
-        ptr = ptr;
-    }
-#else
     ptr = (char *)( (unsigned_8 *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF );
     ptr[*(unsigned_8 *)ptr + 1] = NULLCHAR;
     cmdStart = (char *)( (unsigned_8 *)ptr + 1 );
-#endif
 }
 
 

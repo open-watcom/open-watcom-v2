@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 #define _INT            0xcd
 
-#if defined( __OSI__ ) && defined( __CALL31__ )
+#if defined( __CALL31__ )
  extern  void   __Int31();
  #define _INT_31        "call __Int31"
 #else

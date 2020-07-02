@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,9 +119,6 @@ typedef unsigned_8      sbit;
 #elif defined( THINK_C )  ||  defined( __SC__ ) || defined( __MWERKS__ )
     #undef  OS_MACINTOSH
     #define OS_MACINTOSH        1
-#elif defined( __OSI__ )
-    #undef  OS_OSI
-    #define OS_OSI              1
 #elif defined( __sun__ ) || defined( __sun )
     #undef OS_SOLARIS
     #define OS_SOLARIS          1

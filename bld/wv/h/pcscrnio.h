@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #define STR(...)    #__VA_ARGS__
 #define INSTR(...)  STR(__VA_ARGS__)
 
-#if defined(__OSI__)
+#if defined(__CALL10__)
  extern  void   __Int10();
  #define _INT_10        "call __Int10"
 #else

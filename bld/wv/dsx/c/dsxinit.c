@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,10 +59,6 @@ static memptr                   Orig28;
 
 dpmi_dos_block  RMData;
 rm_data         __far *PMData;
-
-#if defined(__OSI__)
-unsigned short  _ExtenderRealModeSelector;
-#endif
 
 #define CTRL_BREAK_VECTOR      0x1b
 
@@ -143,19 +140,6 @@ void KillDebugger( int rc )
 
 void GUImain( void )
 {
-#if defined(__OSI__)
-    long    sel;
-
-    _Extender = DOSX_RATIONAL;
-    sel = DPMIAllocateLDTDescriptors( 1 );
-    if( sel < 0 ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
-    _ExtenderRealModeSelector = sel;
-    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
-#endif
     SaveOrigVectors();
     Orig28.a = MyGetRMVector( 0x28 );
 
