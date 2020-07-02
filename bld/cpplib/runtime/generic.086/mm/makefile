@@ -1,4 +1,4 @@
-#pmake: build medium cpu_i86 os_osi os_os2
+#pmake: build medium cpu_i86 os_dos os_os2 os_win os_qnx
 #
 # plibm -- 16-bit medium memory-model PLIB
 #
