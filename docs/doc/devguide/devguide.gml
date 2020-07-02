@@ -7,7 +7,7 @@
 :INCLUDE file='GMLMACS'.
 .*
 :INCLUDE file='XDEFS'.
-:set symbol="product"    value="Open Watcom".
+:set symbol="product" value="Open Watcom".
 :INCLUDE file='DEFS'.
 .*
 :GDOC.
