@@ -1028,8 +1028,6 @@ static bool set_build_target( void )
         SetTargName( "OS2", 3 );
 #elif defined(__NT__)
         SetTargName( "NT", 2 );
-#elif defined(__ZDOS__)
-        SetTargName( "ZDOS", 4 );
 #elif defined(__RDOS__)
         SetTargName( "RDOS", 4 );
 #else

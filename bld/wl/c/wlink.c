@@ -343,22 +343,12 @@ static void SetSegments( void )
 
 static void set_signal( void )
 {
-#if defined( __OSI__ )
-#elif defined( __ZDOS__ )
-    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
-#else
     signal( SIGINT, &TrapBreak );   /* so we can clean up */
-#endif
 }
 
 static void ignore_signal( void )
 {
-#if defined( __OSI__ )
-#elif defined( __ZDOS__ )
-    signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
-#else
     signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
-#endif
 }
 
 static void DoLink( const char *cmdline )

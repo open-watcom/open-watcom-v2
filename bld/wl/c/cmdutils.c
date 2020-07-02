@@ -65,7 +65,7 @@ cmdfilelist     *CmdFile = NULL;
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
-#if defined( __UNIX__ ) || defined( __ZDOS__ )
+#if defined( __UNIX__ )
     /* unused parameters */ (void)ctrl;
 
     //opendir - readdir wildcarding not supported here.
