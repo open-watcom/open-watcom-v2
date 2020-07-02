@@ -18,7 +18,7 @@
 !inject cmodel.obj      d16 d32     nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 !inject crtinit.obj                 nt  nta ntp
 !inject crwd086.obj     d16                                             q16
-!inject crwd386.obj         d32     nt          nvc ncl nvl nll     o32     q32                     rdu rdk
+!inject crwd386.obj         d32     nt          nvc ncl nvl nll     o32     q32         l32         rdu rdk
 !inject crwdata.obj                     nta ntp                                             lpc lmp
 !inject cstrt086.obj    d16
 !inject cstrt386.obj        d32
