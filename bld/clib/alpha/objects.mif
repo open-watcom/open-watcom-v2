@@ -2,7 +2,7 @@
 #===================================================================================================
 !inject align.obj                       nta
 !inject divdat.obj                      nta
-#!inject floatu8.obj                     nta
+#!inject floatu8.obj                    nta
 !inject fpcraxp.obj                     nta
 !inject fclexaxp.obj                    nta
 !inject otsdiv.obj                      nta

@@ -175,7 +175,7 @@ Previously Implemented Changes:
 
    where:
     <system> is one of:
-        msdos|qnx|os2|windows|winnt|netware|kanji|linux|osi
+        msdos|qnx|os2|windows|winnt|netware|kanji|linux
     <processor> is one of
         086|286|386|axp|ppc|mps|...
     <model> is one of:
@@ -234,8 +234,6 @@ Previously Implemented Changes:
             mf_r mf_s
         rdosdev.386
             mc_r
-        osi.386
-            ms_r
 
 8.  The makefile systems is organized around a tree structure.
 

@@ -21,7 +21,7 @@
 #define _MAX_FNAME  256         /* maximum length of file name component */
 #define _MAX_EXT    256         /* maximum length of extension component */
 :elsesegment DOS
-#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
+#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__)
 #define _MAX_DRIVE  3           /* maximum length of drive component     */
 #define _MAX_DIR    256         /* maximum length of path component      */
 #define _MAX_FNAME  256         /* maximum length of file name component */
@@ -44,7 +44,7 @@
 :elsesegment RDOS
 #define FILENAME_MAX    260
 :elsesegment DOS
-#if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
+#if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__)
  #define FILENAME_MAX   260
 #else
  #define FILENAME_MAX   144
@@ -63,8 +63,8 @@
 :elsesegment DOS
  #if defined(__OS2__)
   #define NAME_MAX      255     /* maximum filename for HPFS and RDOS */
- #elif defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
-  #define NAME_MAX      259     /* maximum filename for NTFS, FAT LFN, DOS LFN and OSI */
+ #elif defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__)
+  #define NAME_MAX      259     /* maximum filename for NTFS, FAT LFN and DOS LFN */
  #else
 #define NAME_MAX        12      /* 8 chars + '.' +  3 chars */
  #endif
@@ -82,7 +82,7 @@
 :segment RDOS
 #define PATH_MAX        259     /* maximum length of full pathname excl. '\0' */
 :elsesegment DOS
-#if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
+#if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__)
  #define PATH_MAX       259     /* maximum length of full pathname excl. '\0' */
 #else
  #define PATH_MAX       143     /* maximum length of full pathname excl. '\0' */
@@ -102,7 +102,7 @@
 :elsesegment RDOS
  #define _MAX_PATH      260     /* maximum length of full pathname */
 :elsesegment DOS
- #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
+ #if defined(__OS2__) || defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__)
   #define _MAX_PATH     260     /* maximum length of full pathname */
  #else
   #define _MAX_PATH     144     /* maximum length of full pathname */

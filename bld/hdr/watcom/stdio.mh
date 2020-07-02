@@ -289,7 +289,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
 :segment DOS
 :include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
+#if defined(__DOS__) || defined(__WINDOWS__)
 #define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
 #define stdprn  ((__w_FILE *)&__iob[4])     /* standard printer file  */
 #endif
