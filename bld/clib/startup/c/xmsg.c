@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,11 +90,7 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, int retcode )
     __do_exit_with_msg( msg, retcode );
     // never return
 #else
-  #if defined( __OSI__ )
-    cputs( msg );
-    putch( '\r' );
-    putch( '\n' );
-  #elif defined( __LINUX__ )
+  #if defined( __LINUX__ )
     char    eol[1];
 
     write( STDERR_FILENO, msg, strlen( msg ) );

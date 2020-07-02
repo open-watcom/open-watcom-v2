@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,32 +112,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __modify __exact    [__ax]
 
   #endif
-#elif defined( __OSI__ )    // 32-bit near data
-    #pragma aux __dos_find_first_dta = \
-            _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
-            "call __doserror_"  \
-        __parm __caller     [__edx] [__ecx] [__ebx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
-    #pragma aux __dos_find_next_dta = \
-            _MOV_AX_W 0 DOS_FIND_NEXT \
-            _INT_21             \
-            "call __doserror_"  \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
-    #pragma aux __dos_find_close_dta = \
-            _MOV_AX_W 1 DOS_FIND_NEXT \
-            _INT_21             \
-            "call __doserror_"  \
-            "xor    eax,eax"    \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
 #elif defined( __CALL21__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
@@ -370,14 +344,10 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
             return( 0 );
         return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
-#elif !defined( __OSI__ )
+#else
 
     /* unused parameters */ (void)fdta;
 
 #endif
-#ifdef __OSI__
-    return( __dos_find_close_dta( fdta ) );
-#else
     return( 0 );
-#endif
 }

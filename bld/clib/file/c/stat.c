@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,7 @@
 #endif
 #include "rterrno.h"
 #include "_doslfn.h"
-#ifndef __OSI__
 #include "_dtaxxx.h"
-#endif
 #include "dosdir.h"
 #include "d2ttime.h"
 #ifdef __INT64__

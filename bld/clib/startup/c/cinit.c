@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
-#if defined(__DOS_386__) && !defined(__OSI__)
+#if defined(__DOS_386__)
     #include "extender.h"
     #include "dpmi.h"
     #include "dpmihost.h"
@@ -53,7 +54,7 @@
     unsigned            __hmodule;
 #endif
 
-#if defined(__DOS_386__) && !defined(__OSI__)
+#if defined(__DOS_386__)
     extern int __GETDSStart_;
     extern int __GETDSEnd_;
 #endif
@@ -61,7 +62,7 @@
 void    __CommonInit( void )
 /**************************/
 {
-#if defined(__DOS_386__) && !defined(__OSI__)
+#if defined(__DOS_386__)
     /*
      * If we are running under DOS/4G then we need to page lock interrupt
      * handlers (since we could be running under VMM).

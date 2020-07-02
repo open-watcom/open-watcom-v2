@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@
         return cmd;
     }
 
-#elif defined(_NETWARE_CLIB) || defined(__OSI__)
+#elif defined(_NETWARE_CLIB)
 
     #define OS_GET_CMD_LINE()    _LpCmdLine
 

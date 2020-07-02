@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #endif
 
 
-#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__OSI__) && !defined(__CALL21__)
+#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__CALL21__)
 #define __DOS_EXT__
 #endif
 

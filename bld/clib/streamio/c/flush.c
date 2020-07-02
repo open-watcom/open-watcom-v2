@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +109,7 @@ _WCRTLINK int __flush( FILE *fp )
     }
     fp->_ptr = _FP_BASE( fp );   /* reset ptr to start of buffer */
     fp->_cnt = 0;
-#if !defined( __NETWARE__ ) && !defined( __OSI__ )
+#if !defined( __NETWARE__ )
     if( ret == 0  &&  (_FP_EXTFLAGS(fp) & _COMMIT) ) {
         if( fsync( fileno( fp ) ) == -1 ) {
             ret = EOF;
