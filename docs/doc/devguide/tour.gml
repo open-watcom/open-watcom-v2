@@ -306,8 +306,6 @@ Open Watcom vi editor, clone of the popular (or not) Unix editor.
 headers and libraries for the Windows 3.x API.
 .note w32api
 headers and libraries for the Win32 API.
-.note w32loadr
-loaders for OS independent (OSI) binaries.
 .note wasm
 the x86 assembler. Large parts of the source are shared between standalone
 wasm and inline assembler support for compilers targeting x86 platforms.

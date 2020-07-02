@@ -214,7 +214,7 @@ from the makefile as
 If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
-More general tools (yacc, re2c, w32bind) that are likely to be used by several
+More general tools (yacc, re2c) that are likely to be used by several
 projects should be copied up into the build/bin directory.
 
 .section The Runtime DLL Libraries
