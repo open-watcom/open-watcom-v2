@@ -61,7 +61,6 @@ edbind          = $(noecho)bedbind
 ide2make        = bide2mak
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
-w32bind         = $(noecho)w32bind
 wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
