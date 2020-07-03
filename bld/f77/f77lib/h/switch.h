@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,10 +30,10 @@
 ****************************************************************************/
 
 
-#if defined( __386__ )
-#define _CPU 386
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
 #define _CPU 8086
+#elif defined( _M_IX86 )
+#define _CPU 386
 #elif defined( __AXP__ )
 #define _CPU _AXP
 #elif defined( __PPC__ )

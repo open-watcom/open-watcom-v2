@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,13 @@
 // that functions do not modify CPU registers.
 
 #if defined( _M_IX86 )
-  #if defined( __386__ )
+  #if defined( _M_I86 )
+    #pragma aux if_rtn "IF@*" __parm [__ax __bx __cx __dx __8087];
+    #pragma aux if_va "IF@*" __parm __caller [];
+    #pragma aux xf_rtn "IF@*";
+    #pragma aux (if_rtn) flt_if_rtn;
+    #pragma aux (if_va) flt_if_va;
+  #else
     #pragma aux if_rtn "IF@*" __parm __routine [__eax __ebx __ecx __edx __8087];
     #pragma aux if_va  "IF@*" __parm __caller [];
     #pragma aux xf_rtn "IF@*";
@@ -63,12 +70,6 @@
       #pragma aux (if_rtn) flt_if_rtn;
       #pragma aux (if_va) flt_if_va;
     #endif
-  #else
-    #pragma aux if_rtn "IF@*" __parm [__ax __bx __cx __dx __8087];
-    #pragma aux if_va "IF@*" __parm __caller [];
-    #pragma aux xf_rtn "IF@*";
-    #pragma aux (if_rtn) flt_if_rtn;
-    #pragma aux (if_va) flt_if_va;
   #endif
 
   // Define the following if the C library contains alternate definitions

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,10 +56,10 @@
 #include "clibext.h"
 
 
-#if defined( __386__ )
-  #define WFC_PAGE_SIZE     ((obj_ptr)(16 * 1024))
-#else
+#if defined( _M_I86 )
   #define WFC_PAGE_SIZE     ((obj_ptr)(1 * 1024))
+#else
+  #define WFC_PAGE_SIZE     ((obj_ptr)(16 * 1024))
 #endif
 #define _PageNumber( v_ptr ) ((v_ptr) / WFC_PAGE_SIZE)
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))

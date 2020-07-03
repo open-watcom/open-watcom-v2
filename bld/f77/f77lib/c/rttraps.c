@@ -294,7 +294,7 @@ void    R_TrapInit( void ) {
     ZSave = _dos_getvect( IntDivBy0 );
     _dos_setvect( IntDivBy0, IDivZHandler );
 #elif defined( __WINDOWS__ )
- #if !defined( __386__ )
+ #if defined( _M_I86 )
     ISave = _dos_getvect( IntOverFlow );
     _dos_setvect( IntOverFlow, IOvFlHandler );
     ZSave = _dos_getvect( IntDivBy0 );
@@ -327,7 +327,7 @@ void    R_TrapFini( void ) {
     _dos_setvect( IntOverFlow, ISave );
     _dos_setvect( IntDivBy0, ZSave );
 #elif defined( __WINDOWS__ )
- #if !defined( __386__ )
+ #if defined( _M_I86 )
     _dos_setvect( IntOverFlow, ISave );
     _dos_setvect( IntDivBy0, ZSave );
  #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,11 @@ void    SetComBlkSize( sym_id com, intstar4 com_size ) {
 
 // Set size of common block.
 
-#if defined( __386__ )
-    com->u.ns.xt.size = com_size;
-#else
+#if defined( _M_I86 )
     com->u.ns.xt.size = com_size / 0x10000L;
     com->u.ns.u1.xsize = com_size % 0x10000L;
+#else
+    com->u.ns.xt.size = com_size;
 #endif
 }
 
@@ -58,9 +59,9 @@ intstar4    GetComBlkSize( sym_id com ) {
 
 // Get size of common block.
 
-#if defined( __386__ )
-    return( com->u.ns.xt.size );
-#else
+#if defined( _M_I86 )
     return( (intstar4)com->u.ns.xt.size * 0x10000L + com->u.ns.u1.xsize );
+#else
+    return( com->u.ns.xt.size );
 #endif
 }
