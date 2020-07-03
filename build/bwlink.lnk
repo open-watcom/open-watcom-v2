@@ -527,15 +527,6 @@ system begin win_vxd
     format windows vxd ^
 end
 
-system begin osi
-    option osname='OS Independent'
-    libpath %OWSRCDIR%/fpuemu/386/stub386
-    libpath %OWSRCDIR%/clib/library/osi.386/ms_r
-    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
-    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
-    format pharlap rex ^
-end
-
 system begin dos16m
     option osname='DOS/16M'
     libpath %OWSRCDIR%/fpuemu/i86/stubi86
