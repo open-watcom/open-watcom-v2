@@ -199,11 +199,11 @@ static int IsTextMode( void )
     /* get current video page */
     page = BIOSGetPage();
     /* get cursor position for current page */
-    cursor_position = BIOSGetCurPos( page );
+    cursor_position = BIOSGetCursorPos( page );
     if( mode < GR_MED_4COL || mode == MONOCHROME || mode > VGA_256COL ) {
         video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
-        BIOSSetCurPos( 0, 0, page );
+        BIOSSetCursorPos( 0, 0, page );
         /* get character/attribute at that location */
         pixel_bios.u.pixel = BIOSGetCharPixel( page );
         /* get character/attribute from screen memory */
@@ -224,7 +224,7 @@ static int IsTextMode( void )
         }
     }
     /* restore cursor position for current page */
-    BIOSSetCurPos( cursor_position.row, cursor_position.col, page );
+    BIOSSetCursorPos( cursor_position.row, cursor_position.col, page );
     return( text_mode );
 }
 
@@ -245,7 +245,7 @@ static bool initmonitor( void )
     UIData->height = 25;
     info = BIOSEGAInfo();
     if( info.switches < 0x0C && info.mono <= 0x01 && info.mem <= 0x03 ) {
-        UIData->height = BIOSGetRows();
+        UIData->height = BIOSGetRowCount();
         ega = true;
     } else {
         ega = false;

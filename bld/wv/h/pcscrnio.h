@@ -465,29 +465,29 @@ extern void BIOSSetMode( unsigned char mode );
     __value             \
     __modify __exact    [__ax]
 
-extern unsigned short BIOSGetCurPos( unsigned char pagenb );
-#pragma aux BIOSGetCurPos = \
+extern unsigned short BIOSGetCursorPos( unsigned char pagenb );
+#pragma aux BIOSGetCursorPos = \
         CALL_INT10( 3 )     \
     __parm              [__bh] \
     __value             [__dx] \
     __modify __exact    [__ax __cx __dx]
 
-extern void BIOSSetCurPos( unsigned short rowcol, unsigned char pagenb );
-#pragma aux BIOSSetCurPos = \
+extern void BIOSSetCursorPos( unsigned short rowcol, unsigned char pagenb );
+#pragma aux BIOSSetCursorPos = \
         CALL_INT10( 2 )     \
     __parm              [__dx] [__bh] \
     __value             \
     __modify __exact    [__ah]
 
-extern unsigned short BIOSGetCurTyp( unsigned char pagenb );
-#pragma aux BIOSGetCurTyp = \
+extern unsigned short BIOSGetCursorTyp( unsigned char pagenb );
+#pragma aux BIOSGetCursorTyp = \
         CALL_INT10( 3 )     \
     __parm              [__bh] \
     __value             [__cx] \
     __modify __exact    [__ax __cx __dx]
 
-extern void BIOSSetCurTyp( unsigned short startend );
-#pragma aux BIOSSetCurTyp = \
+extern void BIOSSetCursorTyp( unsigned short startend );
+#pragma aux BIOSSetCursorTyp = \
         CALL_INT10( 1 )     \
     __parm              [__cx] \
     __value             \
@@ -510,9 +510,9 @@ extern void BIOSSetAttr( unsigned char attr );
     __value             \
     __modify __exact    [__ax __cx __dx]
 
-extern unsigned char BIOSGetRows( void );
+extern unsigned char BIOSGetRowCount( void );
 #ifdef _M_I86
-#pragma aux BIOSGetRows = \
+#pragma aux BIOSGetRowCount = \
         "push   es"         \
         "mov    al,30h"     \
         "xor    bh,bh"      \
@@ -523,7 +523,7 @@ extern unsigned char BIOSGetRows( void );
     __value             [__dl] \
     __modify __exact    [__ax __bh __cx __dl]
 #else
-#pragma aux BIOSGetRows = \
+#pragma aux BIOSGetRowCount = \
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \

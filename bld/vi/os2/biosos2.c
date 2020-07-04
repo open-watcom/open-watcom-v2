@@ -121,25 +121,20 @@ static void setIntensity( int value )
     VioSetState( &vio_int, 0 );
 }
 
-void BIOSSetNoBlinkAttr( void )
+void BIOSSetBlinkAttr( unsigned char on )
 {
-    setIntensity( 0 );
+    setIntensity( on );
 }
 
-void BIOSSetBlinkAttr( void )
-{
-    setIntensity( 1 );
-}
-
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
     /* unused parameters */ (void)page;
 
     VioSetCurPos( row, col, 0);
 
-} /* BIOSSetCursor */
+} /* BIOSSetCursorPos */
 
-unsigned short BIOSGetCursor( unsigned char page )
+unsigned short BIOSGetCursorPos( unsigned char page )
 {
     USHORT      r, c;
 
@@ -148,9 +143,9 @@ unsigned short BIOSGetCursor( unsigned char page )
     VioGetCurPos( &r, &c, 0 );
     return( ( r << 8 ) + ( c & 0xFF ) );
 
-} /* BIOSGetCursor */
+} /* BIOSGetCursorPos */
 
-void BIOSNewCursor( unsigned char top, unsigned char bottom )
+void BIOSSetCursorTyp( unsigned char top, unsigned char bottom )
 {
     VIOCURSORINFO       vioCursor;
 
@@ -160,7 +155,7 @@ void BIOSNewCursor( unsigned char top, unsigned char bottom )
     vioCursor.yStart = top;
     VioSetCurType( &vioCursor, 0);
 
-} /* BIOSNewCursor */
+} /* BIOSSetCursorTyp */
 
 /*
  * BIOSGetKeyboard - get a keyboard char

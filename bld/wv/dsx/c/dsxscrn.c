@@ -467,7 +467,7 @@ static void SetEGA_VGA( unsigned char double_rows )
         DbgRows = double_rows;
         DbgChrSet = DOUBLE_DOT_CHR_SET;
     } else if( FlipMech == FLIP_SWAP || FlipMech == FLIP_CHEAPSWAP ) {
-        DbgChrSet = GetChrSet( BIOSGetRows() );
+        DbgChrSet = GetChrSet( BIOSGetRowCount() );
         switch( DbgChrSet ) {
         case USER_CHR_SET:
             DbgRows = 25;
@@ -480,7 +480,7 @@ static void SetEGA_VGA( unsigned char double_rows )
             break;
         }
     } else {
-        DbgRows = BIOSGetRows();
+        DbgRows = BIOSGetRowCount();
         DbgChrSet = USER_CHR_SET;
     }
 }
@@ -528,8 +528,8 @@ static void SaveBIOSSettings( void )
     SaveScrn.swtchs = BIOSData( BD_EQUIP_LIST, unsigned char );
     SaveScrn.mode = BIOSGetMode();
     SaveScrn.save.page = BIOSGetPage();
-    SaveScrn.save.curpos = BIOSGetCurPos( SaveScrn.save.page );
-    SaveScrn.curtyp = BIOSGetCurTyp( SaveScrn.save.page );
+    SaveScrn.save.curpos = BIOSGetCursorPos( SaveScrn.save.page );
+    SaveScrn.curtyp = BIOSGetCursorTyp( SaveScrn.save.page );
     if( ( SaveScrn.curtyp == CGA_CURSOR_ON ) && ( SaveScrn.mode == 7 ) ) {
         /* screwy hercules card lying about cursor type */
         SaveScrn.curtyp = MON_CURSOR_ON;
@@ -590,7 +590,7 @@ unsigned ConfigScreen( void )
     case DISP_EGA_COLOUR:
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
-        StartScrn.strt.rows = BIOSGetRows();
+        StartScrn.strt.rows = BIOSGetRowCount();
         break;
     }
     GetAdapter();
@@ -614,7 +614,7 @@ unsigned ConfigScreen( void )
         FlipMech = FLIP_CHEAPSWAP;
     }
     SetMonitor();
-    BIOSSetCurTyp( StartScrn.curtyp );
+    BIOSSetCursorTyp( StartScrn.curtyp );
     return( PageSize );
 }
 
@@ -1066,8 +1066,8 @@ bool UserScreen( void )
         break;
     }
     BIOSSetPage( SaveScrn.save.page );
-    BIOSSetCurTyp( SaveScrn.curtyp );
-    BIOSSetCurPos( SaveScrn.save.curpos, SaveScrn.save.page );
+    BIOSSetCursorTyp( SaveScrn.curtyp );
+    BIOSSetCursorPos( SaveScrn.save.curpos, SaveScrn.save.page );
     BIOSData( BD_EQUIP_LIST, unsigned char ) = SaveScrn.swtchs;
     RestoreMouse( PgmMouse );
     return( dbg_vis );
@@ -1091,7 +1091,7 @@ static void ReInitScreen( void )
             break;
         }
     }
-    BIOSSetCurTyp( StartScrn.curtyp );
+    BIOSSetCursorTyp( StartScrn.curtyp );
     if( StartScrn.strt.attr ) {
         BIOSSetAttr( StartScrn.strt.attr );
     }

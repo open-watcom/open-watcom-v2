@@ -85,7 +85,7 @@ void NewCursor( window_id wid, cursor_type ct )
         base = 16;
     }
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    BIOSSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 

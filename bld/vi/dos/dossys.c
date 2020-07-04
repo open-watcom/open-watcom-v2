@@ -64,7 +64,7 @@ void NewCursor( window_id wid, cursor_type ct )
         base = 16;
     }
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    BIOSSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -141,7 +141,7 @@ static void getExitAttr( void )
     unsigned short  cursor;
     unsigned short  x, y;
 
-    cursor = BIOSGetCursor( VideoPage );
+    cursor = BIOSGetCursorPos( VideoPage );
     x = cursor >> 8;
     y = cursor & 0xff;
     EditVars.ExitAttr = Scrn[y * EditVars.WindMaxWidth + x].cinfo_attr;
@@ -174,7 +174,7 @@ void ScreenInit( void )
         break;
     }
     ScreenPage( 0 );
-    EditVars.WindMaxHeight = BIOSGetRowCount() + 1;
+    EditVars.WindMaxHeight = BIOSGetRowCount();
     getExitAttr();
 
 } /* ScreenInit */

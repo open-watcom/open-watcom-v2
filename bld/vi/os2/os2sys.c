@@ -65,7 +65,7 @@ void NewCursor( window_id wid, cursor_type ct )
     VioGetCurType( &vioCursor, 0 );
     base = vioCursor.cEnd;
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    BIOSSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 

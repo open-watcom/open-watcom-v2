@@ -151,32 +151,32 @@ extern void BIOSSetMode( unsigned char );
     __value     \
     __modify    [__ah]
 
-extern void BIOSSetCurTyp( unsigned char top_line, unsigned char bot_line );
-#pragma aux BIOSSetCurTyp = \
+extern void BIOSSetCursorTyp( unsigned char top_line, unsigned char bot_line );
+#pragma aux BIOSSetCursorTyp = \
         "mov    ah,1"           \
         _INT_10                 \
     __parm      [__ch] [__cl] \
     __value     \
     __modify    [__ah]
 
-extern void BIOSSetCurPos( unsigned char row, unsigned char col, unsigned char page );
-#pragma aux BIOSSetCurPos = \
+extern void BIOSSetCursorPos( unsigned char row, unsigned char col, unsigned char page );
+#pragma aux BIOSSetCursorPos = \
         "mov    ah,2"       \
         _INT_10             \
     __parm      [__dh] [__dl] [__bh] \
     __value     \
     __modify    [__ah]
 
-extern struct cursor_pos  BIOSGetCurPos( unsigned char page );
-#pragma aux BIOSGetCurPos = \
+extern struct cursor_pos  BIOSGetCursorPos( unsigned char page );
+#pragma aux BIOSGetCursorPos = \
         "mov    ah,3"       \
         _INT_10             \
     __parm      [__bh] \
     __value     [__dx] \
     __modify    [__ax __cx]
 
-extern unsigned short BIOSGetCurTyp( unsigned char page );
-#pragma aux BIOSGetCurTyp = \
+extern unsigned short BIOSGetCursorTyp( unsigned char page );
+#pragma aux BIOSGetCursorTyp = \
         "mov    ah,3"       \
         _INT_10             \
     __parm      [__bh] \
@@ -225,33 +225,25 @@ extern unsigned char BIOSGetColumns( void );
     __value     [__ah] \
     __modify    [__al __bh]
 
-extern unsigned char BIOSGetRows( void );
+extern unsigned char BIOSGetRowCount( void );
 #ifdef _M_I86
-#pragma aux BIOSGetRows = \
-        "push   bp"         \
-        "push   es"         \
+#pragma aux BIOSGetRowCount = \
         "mov    ax,1130h"   \
         "xor    bh,bh"      \
         _INT_10             \
         "inc    dl"         \
-        "pop    es"         \
-        "pop    bp"         \
     __parm      [] \
     __value     [__dl] \
-    __modify    [__ax __bh __cx]
+    __modify __exact    [__ax __bh __cx __es __bp]
 #else
-#pragma aux BIOSGetRows = \
-        "push   ebp"        \
-        "push   es"         \
+#pragma aux BIOSGetRowCount = \
         "mov    ax,1130h"   \
         "xor    bh,bh"      \
         _INT_10             \
         "inc    dl"         \
-        "pop    es"         \
-        "pop    ebp"        \
     __parm      [] \
     __value     [__dl] \
-    __modify    [__ax __bh __cx]
+    __modify __exact    [__ax __bh __cx __es __ebp]
 #endif
 
 extern struct ega_info BIOSEGAInfo( void );

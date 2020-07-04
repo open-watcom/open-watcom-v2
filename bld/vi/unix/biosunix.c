@@ -43,27 +43,32 @@ void    BIOSGetColorPalette( void *a )
 {
     /* unused parameters */ (void)a;
 }
+
 uint_32 BIOSGetColorRegister( unsigned short a )
 {
     /* unused parameters */ (void)a;
 
     return( 0 );
 }
-void    BIOSSetNoBlinkAttr( void ) {}
-void    BIOSSetBlinkAttr( void ) {}
+
+void    BIOSSetBlinkAttr( unsigned char on )
+{
+    /* unused parameters */ (void)on;
+}
+
 void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
 {
     /* unused parameters */ (void)reg; (void)r; (void)g; (void)b;
 }
 
-void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void    BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
     /* unused parameters */ (void)page;
 
     TermSetCursor( row, col );
 }
 
-unsigned short BIOSGetCursor( unsigned char page )
+unsigned short BIOSGetCursorPos( unsigned char page )
 {
     CURSORORD   row;
     CURSORORD   col;

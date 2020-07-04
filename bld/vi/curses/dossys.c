@@ -256,8 +256,7 @@ void MyVioShowBuf( size_t offset, unsigned short nchars )
 
 // void            BIOSSetColorRegister( unsigned short, unsigned char, unsigned char, unsigned char );
 // void            BIOSGetColorPalette( void _FAR * );
-// void            BIOSSetBlinkAttr( void );
-// void            BIOSSetNoBlinkAttr( void );
+// void            BIOSSetBlinkAttr( unsigned char );
 // short           BIOSTestKeyboard( void );
 // short           BIOSGetKeyboard( char );
 // short           BIOSKeyboardHit( char );
@@ -265,7 +264,7 @@ void MyVioShowBuf( size_t offset, unsigned short nchars )
 // uint_32         BIOSGetVideoMode( void );
 // uint_32         BIOSGetColorRegister( unsigned short );
 
-unsigned short BIOSGetCursor( unsigned char type )
+unsigned short BIOSGetCursorPos( unsigned char type )
 {
     short   x, y;
 
@@ -273,7 +272,7 @@ unsigned short BIOSGetCursor( unsigned char type )
     return( ( y << 8 ) | ( x & 0xFF ) );
 }
 
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
     wmove( CursesWindow, row, col );
     refresh();

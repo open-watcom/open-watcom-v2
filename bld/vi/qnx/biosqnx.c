@@ -186,17 +186,31 @@ static struct map events[] = {
     { 0xfa,     VI_KEY( ALT_Z )         },
 };
 
-#pragma off (unreferenced);
-void BIOSGetColorPalette( void __far *a ) {}
-uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr() {}
-void BIOSSetBlinkAttr() {}
-void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
-#pragma on (unreferenced);
+void BIOSGetColorPalette( void __far *a )
+{
+    /* unused parameters */ (void)a;
+}
+
+uint_32 BIOSGetColorRegister( unsigned short a )
+{
+    /* unused parameters */ (void)a;
+
+    return( 0 );
+}
+
+void BIOSSetBlinkAttr( unsigned char on )
+{
+    /* unused parameters */ (void)on;
+}
+
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+{
+    /* unused parameters */ (void)reg; (void)r; (void)g; (void)b;
+}
 
 static unsigned short _crow, _ccol, _ctype;
 
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
@@ -229,17 +243,17 @@ void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 
     Sendmx( QNXCon->driver, 2, 1, &sx, &rx );
 
-} /* BIOSSetCursor */
+} /* BIOSSetCursorPos */
 
-unsigned short BIOSGetCursor( unsigned char page )
+unsigned short BIOSGetCursorPos( unsigned char page )
 {
     /* unused parameters */ (void)page;
 
     return( ( _crow << 8 ) + ( _crow & 0xFF ) );
 
-} /* BIOSGetCursor */
+} /* BIOSGetCursorPos */
 
-void BIOSNewCursor( unsigned char top, unsigned char bottom )
+void BIOSSetCursorTyp( unsigned char top, unsigned char bottom )
 {
     if( bottom - top > 5 ) {
         _ctype = CURSOR_BLOCK;
@@ -247,7 +261,7 @@ void BIOSNewCursor( unsigned char top, unsigned char bottom )
         _ctype = CURSOR_UNDERLINE;
     }
 
-} /* BIOSNewCursor */
+} /* BIOSSetCursorTyp */
 
 static int CompareEvents( const void *d1, const void *d2 )
 {

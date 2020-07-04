@@ -65,7 +65,7 @@ static void getCursor( int *row, int *col )
 {
     unsigned short  x;
 
-    x = BIOSGetCursor( VideoPage );
+    x = BIOSGetCursorPos( VideoPage );
     *row = ( x >> 8 );
     *col = x & 0xff;
 
@@ -76,7 +76,7 @@ static void getCursor( int *row, int *col )
  */
 static void setCursor( int row, int col )
 {
-    BIOSSetCursor( VideoPage, row, col );
+    BIOSSetCursorPos( VideoPage, row, col );
 
 } /* setCursor */
 
@@ -248,7 +248,7 @@ void InitColors( void )
      */
     if( EditFlags.Color && !EditFlags.Quiet ) {
 
-        BIOSSetNoBlinkAttr();
+        BIOSSetBlinkAttr( false );
         getColorPalette( colorPalette );
 
     }
@@ -260,7 +260,7 @@ void ResetColors( void )
     int i;
 
     if( EditFlags.Color && !EditFlags.Quiet ) {
-        BIOSSetNoBlinkAttr();
+        BIOSSetBlinkAttr( false );
         for( i = 0; i < MAX_COLOR_REGISTERS; i++ ) {
             if( colorChanged[i] ) {
                 setColorRegister( i, &newColors[i] );
@@ -282,7 +282,7 @@ void FiniColors( void )
                 setColorRegister( i, &oldColors[i] );
             }
         }
-        BIOSSetBlinkAttr();
+        BIOSSetBlinkAttr( true );
     }
 
 } /* FiniColors */

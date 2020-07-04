@@ -79,9 +79,9 @@ int GetConsoleHeight( void )
     return( buffer_info.dwMaximumWindowSize.Y );
 }
 #elif defined( __DOS__ )
-unsigned char getVideoMode( void );
+extern unsigned char getVideoMode( void );
 #pragma aux getVideoMode = \
-        "mov  ah,0fh"   \
+        "mov    ah,0fh" \
         "int 10h"       \
     __parm      [] \
     __value     [__ah] \
@@ -92,23 +92,20 @@ int GetConsoleWidth( void )
     return( getVideoMode() );
 }
 
-unsigned char getRowCount( void );
-#pragma aux getRowCount = \
-        "push   es" \
-        "push   bp" \
+extern unsigned char _BIOSGetRowCount( void );
+#pragma aux _BIOSGetRowCount = \
         "mov    ax,1130h" \
         "xor    bh,bh" \
         "mov    dl,18h" \
         "int 10h" \
-        "pop    bp" \
-        "pop    es" \
+        "inc    dl" \
     __parm      [] \
     __value     [__dl] \
-    __modify    [__ax __bx __cx __dx]
+    __modify __exact    [__ax __bh __cx __dl __es __bp]
 
 int GetConsoleHeight( void )
 {
-    return( getRowCount() + 1 );
+    return( _BIOSGetRowCount() );
 }
 #else
 int GetConsoleWidth( void )

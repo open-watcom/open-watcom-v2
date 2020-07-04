@@ -33,12 +33,11 @@
 extern void             BIOSSetColorRegister( unsigned short, unsigned char, unsigned char, unsigned char );
 extern uint_32          BIOSGetColorRegister( unsigned short );
 extern void             BIOSGetColorPalette( void _FAR * );
-extern void             BIOSSetBlinkAttr( void );
-extern void             BIOSSetNoBlinkAttr( void );
+extern void             BIOSSetBlinkAttr( unsigned char );
 // screen cursor functions
-extern unsigned short   BIOSGetCursor( unsigned char );
-extern void             BIOSSetCursor( unsigned char, unsigned char, unsigned char );
-extern void             BIOSNewCursor( unsigned char top, unsigned char bottom );
+extern unsigned short   BIOSGetCursorPos( unsigned char );
+extern void             BIOSSetCursorPos( unsigned char, unsigned char, unsigned char );
+extern void             BIOSSetCursorTyp( unsigned char top, unsigned char bottom );
 // screen info functions
 extern unsigned char    BIOSGetRowCount( void );
 extern uint_32          BIOSGetVideoMode( void );
