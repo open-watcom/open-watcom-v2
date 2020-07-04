@@ -34,26 +34,29 @@
 #include "uidef.h"
 #include "uiattrs.h"
 
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+#if defined( __DOS__ ) && defined( _M_IX86 )
    #define PROGRAM_VGA
 #endif
 
 #if defined( PROGRAM_VGA )
-extern void SetColourRegister( unsigned, char, char, char );
-#pragma aux SetColourRegister = \
+extern void _BIOSSetColourRegister( unsigned, unsigned char, unsigned char, unsigned char );
+#pragma aux _BIOSSetColourRegister = \
         "mov  ax,1010h" \
         "int 10h"       \
     __parm __caller [__bx] [__dh] [__ch] [__cl] \
-    __modify        [__ax]
+    __value     \
+    __modify __exact    [__ax]
 
-extern void SetBlinkAttr( char );
-#pragma aux SetBlinkAttr =              \
-        "mov  ax,1030h" \
+extern void _BIOSSetBlinkAttr( unsigned char );
+#pragma aux _BIOSSetBlinkAttr =              \
+        "mov  ax,1003h" \
+        "xor  bh,bh"    \
         "int 10h"       \
-    __parm __caller [__bl] \
-    __modify        [__ax]
+    __parm      [__bl] \
+    __value     \
+    __modify __exact    [__ax __bh]
 
-static char     BlinkAttr = 1;
+static bool     BlinkAttr = true;
 
 a_colour    VGAcolours[16] = {
 //      RED   GREEN    BLUE
@@ -113,7 +116,7 @@ static ATTR local_attrs[] = {
     #undef pick
 };
 
-bool uiattrs( void )
+bool UIAPI uiattrs( void )
 {
     ATTR    *from;
 
@@ -140,12 +143,12 @@ static void setvgacolours( void )
 
     for( i = 0; i < 16; i++ ) {
         col = VGAcolours[i];
-        SetColourRegister( i, col.red, col.green, col.blue );
+        _BIOSSetColourRegister( i, col.red, col.green, col.blue );
     }
-    uisetblinkattr( 0 );
+    uisetblinkattr( false );
 }
 
-bool uivgaattrs( void )
+bool UIAPI uivgaattrs( void )
 {
     if( UIData->colour == M_VGA || UIData->colour == M_EGA ) {
         setvgacolours();
@@ -155,24 +158,39 @@ bool uivgaattrs( void )
     return( false );
 }
 
-void uisetblinkattr( int on )
+void UIAPI uisetblinkattr( bool on )
 {
     if( on ) {
-        if( BlinkAttr != 1 ) {
-            SetBlinkAttr( 1 );
+        if( !BlinkAttr ) {
+            _BIOSSetBlinkAttr( true );
         }
-        BlinkAttr = 1;
+        BlinkAttr = true;
     } else {
-        if( BlinkAttr != 0 ) {
-            SetBlinkAttr( 0 );
-            BlinkAttr = 0;
+        if( BlinkAttr ) {
+            _BIOSSetBlinkAttr( false );
+            BlinkAttr = false;
         }
     }
 }
 
-char uigetblinkattr( void )
+bool UIAPI uigetblinkattr( void )
 {
     return( BlinkAttr );
+}
+#else
+bool UIAPI uivgaattrs( void )
+{
+    return( false );
+}
+
+void UIAPI uisetblinkattr( bool on )
+{
+    /* unused parameters */ (void)on;
+}
+
+bool UIAPI uigetblinkattr( void )
+{
+    return( false );
 }
 #endif
 
@@ -184,4 +202,3 @@ ATTR UIAPI uisetattr( UIATTR uiattr, ATTR new_attr )
     UIData->attrs[uiattr] = new_attr;
     return( old_attr );
 }
-
