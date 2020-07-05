@@ -72,11 +72,6 @@
 #define COMPRESSED_CHR_SET  0x11
 #define USER_CHR_SET        0
 
-#define EGA_CURSOR_OFF      0x1e00
-#define NORM_CURSOR_OFF     0x2000
-#define CGA_CURSOR_ON       0x0607
-#define MON_CURSOR_ON       0x0b0c
-
 #define CURS_LOCATION_LOW   0x0f
 #define CURS_LOCATION_HI    0x0e
 #define CURS_START_SCANLINE 0x0a

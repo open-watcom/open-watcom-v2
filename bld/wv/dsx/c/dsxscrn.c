@@ -48,6 +48,11 @@
 #include "dsxscrn.h"
 
 
+#define EGA_CURSOR_OFF      0x1e00
+#define NORM_CURSOR_OFF     0x2000
+#define CGA_CURSOR_ON       0x0607
+#define MONO_CURSOR_ON      0x0b0c
+
 #define EGA_VIDEO_BUFF          (LP_PIXEL)RealModeSegmPtr( 0xa000 )
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
@@ -532,7 +537,7 @@ static void SaveBIOSSettings( void )
     SaveScrn.curtyp = BIOSGetCursorTyp( SaveScrn.save.page );
     if( ( SaveScrn.curtyp == CGA_CURSOR_ON ) && ( SaveScrn.mode == 7 ) ) {
         /* screwy hercules card lying about cursor type */
-        SaveScrn.curtyp = MON_CURSOR_ON;
+        SaveScrn.curtyp = MONO_CURSOR_ON;
     }
     switch( HWDisplay.active ) {
     case DISP_EGA_MONO:
@@ -875,7 +880,7 @@ static void SetCursorTypes( void )
 
     switch( HWDisplay.active ) {
     case DISP_MONOCHROME:
-        RegCur = MON_CURSOR_ON;
+        RegCur = MONO_CURSOR_ON;
         NoCur = NORM_CURSOR_OFF;
         break;
     case DISP_CGA:
