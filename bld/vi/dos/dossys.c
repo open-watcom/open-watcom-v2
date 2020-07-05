@@ -202,7 +202,7 @@ void ChkExtendedKbd( void )
 
     unsigned    x;
 
-    EditVars.ExtendedKeyboard = 0;
+    EditFlags.ExtendedKeyboard = false;
 
     x = BIOSTestKeyboard();
     if( (x & 0xff) == 0xff ) {
@@ -215,7 +215,7 @@ void ChkExtendedKbd( void )
     if( CT( x ) != (RCT( x ) || LCT( x )) ) {
         return;
     }
-    EditVars.ExtendedKeyboard = 0x10;
+    EditFlags.ExtendedKeyboard = true;
 
 } /* ChkExtendedKbd */
 
@@ -405,7 +405,7 @@ bool KeyboardHit( void )
 {
     bool        rc;
 
-    rc = _BIOSKeyboardHit( EditVars.ExtendedKeyboard + 1 );
+    rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard ? 0x11 : 1 );
     if( !rc ) {
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
@@ -425,7 +425,7 @@ vi_key GetKeyboard( void )
     unsigned    scan;
     bool        shift;
 
-    code = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
+    code = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard ? 0x10 : 0 );
     shift = ShiftDown();
     scan = code >> 8;
     code &= 0xff;
