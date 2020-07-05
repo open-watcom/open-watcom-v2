@@ -31,26 +31,31 @@
 ****************************************************************************/
 
 
-#include <dos.h>
-#include "uidef.h"
-#include "biosui.h"
-#include "realmod.h"
+#include "extender.h"
 
+#define BDATA_SEG               0x40
+/*
+ *  BIOS data area
+ */
+#define BDATA_EQUIP_LIST        0x10
+#define BDATA_CURR_VIDEO_MODE   0x49    /* byte */
+#define BDATA_REGEN_LEN         0x4c
+#define BDATA_SCREEN_OFFSET     0x4e    /* word */
+#define BDATA_CURPOS            0x50
+#define BDATA_ACT_VPAGE         0x62
+#define BDATA_MODE_CTRL         0x65
+#define BDATA_SYSTEM_CLOCK      0x6c    /* dword */
+#define BDATA_POINT_HEIGHT      0x85    /* byte */
+#define BDATA_VID_CTRL1         0x87
 
-#define IRET        0xCF
+#ifdef _M_I86
+#define RealModeDataPtr( segm, off )    _MK_FP( segm, off )
+#define RealModeSegmPtr( segm )         _MK_FP( segm, 0 )
+#else
+#define RealModeDataPtr( segm, off )    EXTENDER_RM2PM( segm, off )
+#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
+#endif
+#define RealModeData( segm, off, type ) *(type __far *)RealModeDataPtr( segm, off )
 
-typedef union {
-    struct {
-        unsigned short  offset;
-        unsigned short  segment;
-    }               s;
-    unsigned long   a;
-} memptr;
-
-bool intern mouse_installed( void )
-{
-    memptr      vect;
-
-    vect = RealModeData( 0, VECTOR_MOUSE * 4, memptr );
-    return( vect.a || RealModeData( vect.s.segment, vect.s.offset, unsigned char ) != IRET );
-}
+#define BIOSData( off, type )           RealModeData( BDATA_SEG, off, type )
+#define VIDEOData( segm, off )          RealModeData( segm, off, unsigned char )

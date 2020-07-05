@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +173,7 @@ static bool mouse_installed( void )
     char            __far *intrtn;
 
     /* get mouse driver interrupt vector */
-    vector = _MK_FP( 0, BIOS_MOUSE * 4 );
+    vector = _MK_FP( 0, VECTOR_MOUSE * 4 );
     intrtn = _MK_FP( vector[1], vector[0] );
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "dbglkup.h"
 #include "dbgerr.h"
 #include "dsxscrn.h"
+#include "realmod.h"
 
 
 #define EGA_CURSOR_OFF      0x1e00
@@ -69,6 +70,23 @@
 #define restore_from_swap( off, data, size )    _fmemcpy( data, RegenSave + off, size )
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+
+typedef struct {
+    unsigned char           points;
+    unsigned char           mode;
+    unsigned char           swtchs;
+    unsigned short          curtyp;
+    union {
+        struct {
+            unsigned char   rows;
+            unsigned char   attr;
+        } strt;
+        struct {
+            unsigned char   page;
+            unsigned short  curpos;
+        } save;
+    };
+} screen_info;
 
 extern bool                     UserScreen( void );
 
@@ -117,7 +135,7 @@ static uint_16 _VidStateSize( uint_16 requested_state )
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1c00;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
     if( (CallStruct.eax & 0xff) != 0x1c )
         return( 0 );
     return( CallStruct.ebx );
@@ -130,7 +148,7 @@ static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg, addr32_
     CallStruct.es = buff_rmseg;
     CallStruct.ebx = buff_offset;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
@@ -140,7 +158,7 @@ static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr
     CallStruct.es = buff_rmseg;
     CallStruct.ebx = buff_offset;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 static void BIOSCharSet( unsigned char vidroutine, unsigned char bytesperchar,
@@ -154,14 +172,14 @@ static void BIOSCharSet( unsigned char vidroutine, unsigned char bytesperchar,
     CallStruct.edx = charoffset;
     CallStruct.es = table_rmseg;
     CallStruct.ebp = table_offset;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 static uint_16 BIOSDevCombCode( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1a00;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
     if( (CallStruct.eax & 0xff) != 0x1a )
         return( 0 );
     return( CallStruct.ebx );
@@ -171,7 +189,7 @@ static uint_16 MouseStateSize( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x15;
-    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
     return( CallStruct.ebx );
 }
 
@@ -182,7 +200,7 @@ static void MouseStateSave( addr_seg buff_rmseg, addr32_off buff_offset, uint_16
     CallStruct.ebx = size;
     CallStruct.es = buff_rmseg;
     CallStruct.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
 }
 
 static void MouseStateRestore( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
@@ -192,7 +210,7 @@ static void MouseStateRestore( addr_seg buff_rmseg, addr32_off buff_offset, uint
     CallStruct.ebx = size;
     CallStruct.es = buff_rmseg;
     CallStruct.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &CallStruct );
 }
 
 static void _DoRingBell( unsigned char page )
@@ -200,12 +218,12 @@ static void _DoRingBell( unsigned char page )
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.ebx = page * 0x100U;
     CallStruct.eax = 0x0e07;
-    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &CallStruct );
 }
 
 void Ring_Bell( void )
 {
-    _DoRingBell( BIOSData( BD_ACT_VPAGE, unsigned char ) );
+    _DoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
 }
 
 static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
@@ -251,7 +269,7 @@ static void DoSetMode( unsigned char mode )
     } else {
         equip |= 0x20;
     }
-    BIOSData( BD_EQUIP_LIST, unsigned char ) = equip;
+    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = equip;
     BIOSSetMode( mode );
 }
 
@@ -522,7 +540,7 @@ static void SetMonitor( void )
     }
     VIDPort = ( DbgBiosMode == 7 ) ? VIDMONOINDXREG : VIDCOLORINDXREG;
     if( ( (StartScrn.mode & 0x7f) == DbgBiosMode ) && ( StartScrn.strt.rows == DbgRows ) ) {
-        PageSize = BIOSData( BD_REGEN_LEN, uint_16 );   /* get size from BIOS */
+        PageSize = BIOSData( BDATA_REGEN_LEN, uint_16 );   /* get size from BIOS */
     } else {
         PageSize = ( DbgRows == 25 ) ? 4096 : ( 2 * DbgRows * 80 + 256 );
     }
@@ -530,7 +548,7 @@ static void SetMonitor( void )
 
 static void SaveBIOSSettings( void )
 {
-    SaveScrn.swtchs = BIOSData( BD_EQUIP_LIST, unsigned char );
+    SaveScrn.swtchs = BIOSData( BDATA_EQUIP_LIST, unsigned char );
     SaveScrn.mode = BIOSGetMode();
     SaveScrn.save.page = BIOSGetPage();
     SaveScrn.save.curpos = BIOSGetCursorPos( SaveScrn.save.page );
@@ -634,7 +652,7 @@ static bool SetMode( unsigned char mode )
 
 static void SetRegenClear( void )
 {
-    BIOSData( BD_VID_CTRL1, unsigned char ) = (BIOSData( BD_VID_CTRL1, unsigned char ) & 0x7f) | (SaveScrn.mode & 0x80);
+    BIOSData( BDATA_VID_CTRL1, unsigned char ) = (BIOSData( BDATA_VID_CTRL1, unsigned char ) & 0x7f) | (SaveScrn.mode & 0x80);
 }
 
 static uint_16 RegenSize( void )
@@ -867,7 +885,7 @@ static void CheckMSMouse( void )
 {
     addr32_ptr      vect;
 
-    vect = RealModeData( 0, MSMOUSE_VECTOR * 4, addr32_ptr );
+    vect = RealModeData( 0, VECTOR_MOUSE * 4, addr32_ptr );
     if( vect.segment == 0 && vect.offset == 0
       || RealModeData( vect.segment, vect.offset, unsigned char ) == IRET ) {
         _SwitchOff( SW_USE_MOUSE );
@@ -922,7 +940,7 @@ static void InitScreenMode( void )
         SetChrSet( DbgChrSet );
         SaveBIOSSettings();
         BIOSSetPage( 1 );
-        CurOffst = BIOSData( BD_REGEN_LEN, uint_16 ) / 2;
+        CurOffst = BIOSData( BDATA_REGEN_LEN, uint_16 ) / 2;
         break;
     case FLIP_TWO:
         DoSetMode( DbgBiosMode );
@@ -979,7 +997,7 @@ bool UsrScrnMode( void )
         SaveMouse( PgmMouse );
         RestoreMouse( DbgMouse );
     }
-    SaveScrn.swtchs = BIOSData( BD_EQUIP_LIST, unsigned char );
+    SaveScrn.swtchs = BIOSData( BDATA_EQUIP_LIST, unsigned char );
     if( ( HWDisplay.active == DISP_VGA_COLOUR ) || ( HWDisplay.active == DISP_VGA_MONO ) ) {
         UIData->colour = M_VGA;
     }
@@ -1073,7 +1091,7 @@ bool UserScreen( void )
     BIOSSetPage( SaveScrn.save.page );
     BIOSSetCursorTyp( SaveScrn.curtyp );
     BIOSSetCursorPos( SaveScrn.save.curpos, SaveScrn.save.page );
-    BIOSData( BD_EQUIP_LIST, unsigned char ) = SaveScrn.swtchs;
+    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = SaveScrn.swtchs;
     RestoreMouse( PgmMouse );
     return( dbg_vis );
 }
@@ -1083,7 +1101,7 @@ static void ReInitScreen( void )
     unsigned char   mode;
 
     RestoreMouse( PgmMouse );
-    BIOSData( BD_EQUIP_LIST, unsigned char ) = StartScrn.swtchs;
+    BIOSData( BDATA_EQUIP_LIST, unsigned char ) = StartScrn.swtchs;
     BIOSSetMode( StartScrn.mode );
     mode = StartScrn.mode & 0x7f;
     if( ISTEXTMODE( mode ) ) {
@@ -1152,7 +1170,7 @@ void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATT
         OldTyp = ctype;
         OldRow = crow;
         OldCol = ccol;
-        bios_cur_pos = BD_CURPOS;
+        bios_cur_pos = BDATA_CURPOS;
         if( FlipMech == FLIP_PAGE ) {
             bios_cur_pos += 2;
         }

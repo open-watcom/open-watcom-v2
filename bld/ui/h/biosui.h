@@ -42,24 +42,13 @@
 #define _INT_21        "int 21h"
 #define _INT_33        "int 33h"
 
-#define BIOS_VIDEO      0x10
-#define BIOS_MOUSE      0x33
+#define VECTOR_VIDEO    0x10
+#define VECTOR_MOUSE    0x33
 
 #define BIOS_CURR_VIDEO_MODE    0x49    /* byte */
 #define BIOS_SCREEN_OFFSET      0x4e    /* word */
 #define BIOS_SYSTEM_CLOCK       0x6c    /* dword */
 #define BIOS_POINT_HEIGHT       0x85    /* byte */
-
-#ifdef _M_I86
-#define RealModeDataPtr( s, o ) _MK_FP((s),(o))
-#else
-#define RealModeDataPtr( s, o ) EXTENDER_RM2PM( s, o )
-#endif
-#define RealModeData( s, o, t ) *(t __far *)RealModeDataPtr( s, o )
-
-#define BIOSData( p, t )        RealModeData( 0x0040, p, t )
-#define VIDEOData( s, p )       RealModeData( s, p, unsigned char )
-
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
 

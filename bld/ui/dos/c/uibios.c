@@ -42,6 +42,7 @@
 #include "getltdos.h"
 #include "osidle.h"
 #include "uicurshk.h"
+#include "realmod.h"
 
 
 typedef struct {
@@ -128,7 +129,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         regs.h.ah = 0xfe;
         regs.x.edi = _FP_OFF( vbuff );
         regs.w.es = _FP_SEG( vbuff );
-        intr( BIOS_VIDEO, &regs );
+        intr( VECTOR_VIDEO, &regs );
         if( _FP_OFF( vbuff ) != regs.x.edi ) {
             /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
@@ -140,7 +141,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         dblock.eax = 0xfe00;                /* get video buffer addr */
         dblock.es = _FP_OFF( vbuff ) >> 4;
         dblock.edi = (_FP_OFF( vbuff ) & 0x0f);
-        DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
         vbuff = RealModeDataPtr( dblock.es, dblock.edi );
     }
     return( vbuff );
@@ -297,7 +298,7 @@ bool intern initbios( void )
         UIData->desqview = desqview_present();
         UIData->f10menus = true;
         UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
-                                        BIOSData( BIOS_SCREEN_OFFSET, unsigned short ) );
+                                        BIOSData( BDATA_SCREEN_OFFSET, unsigned short ) );
         if( UIData->desqview ) {
             UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
@@ -357,7 +358,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
 
         memset( &pblock, 0, sizeof( pblock ) );
         memset( &regs, 0, sizeof( regs ) );
-        pblock.int_num = BIOS_VIDEO;        /* VIDEO call */
+        pblock.int_num = VECTOR_VIDEO;      /* VIDEO call */
         pblock.real_eax = 0xff00;           /* update from v-screen */
         pblock.real_es = _FP_OFF( UIData->screen.origin ) >> 4;
         regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
@@ -374,7 +375,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         dblock.es = _FP_OFF( UIData->screen.origin ) >> 4;
         dblock.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
         dblock.ecx = count;
-        DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
     }
 #endif
 }

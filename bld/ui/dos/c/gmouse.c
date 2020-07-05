@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include "charmap.h"
 #include "uimouse.h"
 #include "uibmous.h"
+#include "realmod.h"
 
 
 #define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
@@ -233,7 +234,7 @@ static bool MouInit( void )
     unsigned short  s2;
     unsigned short  ret;
 
-    Points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
+    Points = BIOSData( BDATA_POINT_HEIGHT, unsigned char );
 
     /*
      * MASSIVE KLUDGE: It turns out that the DOS debugger ends up
@@ -246,10 +247,10 @@ static bool MouInit( void )
      */
     if( first_time ) {
         first_time = false;
-        savedmode = BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
-        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
+        savedmode = BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
+        BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
         ret = MouseDrvReset();                                          /* Reset driver for change */
-        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
+        BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
         if( ret != MOUSE_DRIVER_OK ) {
             return( false );
         }
@@ -323,7 +324,7 @@ bool UIAPI uiinitgmouse( init_mode install )
         if( install == INIT_MOUSE_INITIALIZED ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
-                    UIData->mouse_yscale = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
+                    UIData->mouse_yscale = BIOSData( BDATA_POINT_HEIGHT, unsigned char );
                     UIData->mouse_xscale = 8;
                 } else {
                     install = INIT_MOUSELESS;

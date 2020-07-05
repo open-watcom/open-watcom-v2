@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,22 +37,13 @@
 #include "dpmi.h"
 #include "swapline.h"
 #include "swap.h"
+#include "realmod.h"
 
-
-enum {
-    BD_SEG          = 0x40,
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87
-};
 
 #define GetBIOSData( offset, var ) \
-    MyMoveData( BD_SEG, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
+    MyMoveData( BDATA_SEG, offset, _FP_SEG( &var ), _FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
-    MyMoveData( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
+    MyMoveData( _FP_SEG( &var ), _FP_OFF( &var ), BDATA_SEG, offset, sizeof( var ) );
 
 #define VIDCOLORINDXREG  0x03D4
 
@@ -387,10 +378,10 @@ static void setRegenClear( void )
 {
     unsigned char regen;
 
-    GetBIOSData( BD_VID_CTRL1, regen );
+    GetBIOSData( BDATA_VID_CTRL1, regen );
     regen &= 0x7f;
     regen |= saveMode & 0x80;
-    SetBIOSData( BD_VID_CTRL1, regen );
+    SetBIOSData( BDATA_VID_CTRL1, regen );
 
 } /* setREgenClear */
 
@@ -530,7 +521,7 @@ static void initSwapperFast( void )
     size = pageSize * 2 + FONT_SIZE;
     swapHandle = GlobalAlloc( GMEM_FIXED, size );
     tmp = GlobalLock( swapHandle );
-    swapSeg = FP_SEG( tmp );
+    swapSeg = _FP_SEG( tmp );
 
     fontType = 0x1114;
     scanLines = 0x1202;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ void UIHOOK _uioffcursor( void )
         r.h.ah = 1;
         r.h.ch = BIOS_CURSOR_OFF;
         r.h.cl = 0;
-        intx86( BIOS_VIDEO, &r, &r );
+        intx86( VECTOR_VIDEO, &r, &r );
         UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
@@ -89,27 +89,27 @@ void UIHOOK _uioncursor( void )
     } else {
         r.h.ch = r.h.cl - 1;
     }
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     /* get video state */
     r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     /* set OldCursor position */
     r.h.ah = 2;
     r.h.dh = (unsigned char)UIData->cursor_row;
     r.h.dl = (unsigned char)UIData->cursor_col;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get video state */
         r.h.ah = 15;
-        intx86( BIOS_VIDEO, &r, &r );
+        intx86( VECTOR_VIDEO, &r, &r );
         /* get current character and attribute */
         r.h.ah = 8;
-        intx86( BIOS_VIDEO, &r, &r );
+        intx86( VECTOR_VIDEO, &r, &r );
         /* write out the character and the new attribute */
         r.h.bl = UIData->cursor_attr;
         r.w.cx = 1;
         r.h.ah = 9;
-        intx86( BIOS_VIDEO, &r, &r );
+        intx86( VECTOR_VIDEO, &r, &r );
     }
     UIData->cursor_on = true;
 }
@@ -121,10 +121,10 @@ static void savecursor( void )
 
     /* get current video state */
     r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     /* read OldCursor position */
     r.h.ah = 3;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     OldCursorRow = r.h.dh;
     OldCursorCol = r.h.dl;
     if( r.h.cl - r.h.ch > 1 ) {
@@ -138,7 +138,7 @@ static void savecursor( void )
     }
     /* read character and attribute */
     r.h.ah = 8;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     OldCursorAttr = r.h.ah;
 }
 
@@ -172,10 +172,10 @@ void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, 
 
     /* get current video state */
     r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     /* read OldCursor position */
     r.h.ah = 3;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     *crow = r.h.dh;
     *ccol = r.h.dl;
     if( r.h.cl > r.h.ch + 1 ) {
@@ -188,7 +188,7 @@ void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, 
     }
     /* read character and attribute */
     r.h.ah = 8;
-    intx86( BIOS_VIDEO, &r, &r );
+    intx86( VECTOR_VIDEO, &r, &r );
     *cattr = r.h.ah;
 }
 

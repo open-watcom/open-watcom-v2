@@ -36,25 +36,16 @@
 
 #if defined(__CALL10__)
  extern  void   __Int10();
- #define _INT_10        "call __Int10"
+ #define _INT_10            "call __Int10"
 #else
- #define _INT_10        "int 10h"
+ #define _INT_10            "int 10h"
 #endif
 
 #ifdef _M_I86
-#define CALL_INT10(n)   "push bp" INSTR( mov ah, n ) "int 10h" "pop bp"
+#define _INT_10_FN(n)       "push bp" INSTR( mov ah, n ) "int 10h" "pop bp"
 #else
-#define CALL_INT10(n)   "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
+#define _INT_10_FN(n)       "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
 #endif
-
-#ifdef _M_I86
-#define RealModeSegmPtr( segm )         MK_FP( segm, 0 )
-#define RealModeData( segm, off, type ) *(type __far *)MK_FP( segm, off )
-#else
-#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
-#define RealModeData( segm, off, type ) *(type __far *)EXTENDER_RM2PM( segm, off )
-#endif
-#define BIOSData( off, type )           RealModeData( 0x0040, off, type )
 
 #define _1k                 1024UL
 #define _64k                (64 * _1k)
@@ -89,8 +80,8 @@
 #define VIDGetCol( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_HI )
 #define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
 
-#define VIDEO_VECTOR        0x10
-#define MSMOUSE_VECTOR      0x33
+#define VECTOR_VIDEO        0x10
+#define VECTOR_MOUSE        0x33
 
 #define IRET                0xCF
 
@@ -214,16 +205,6 @@ typedef enum {
     VID_STATE_SWAP          = VID_STATE_ALL
 } vid_state_info;
 
-enum {
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_ACT_VPAGE    = 0x62,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87,
-};
-
 typedef enum {
     ADAPTER_MONO = -1,  // -1
     ADAPTER_NONE,       // 0
@@ -287,28 +268,11 @@ typedef enum {
     #undef pick_opt
 } screen_opt;
 
-typedef struct {
-    unsigned char           points;
-    unsigned char           mode;
-    unsigned char           swtchs;
-    unsigned short          curtyp;
-    union {
-        struct {
-            unsigned char   rows;
-            unsigned char   attr;
-        } strt;
-        struct {
-            unsigned char   page;
-            unsigned short  curpos;
-        } save;
-    };
-} screen_info;
-
 #ifdef _M_I86
 extern unsigned BIOSDevCombCode( void );
 #pragma aux BIOSDevCombCode = \
         "xor  al,al"        \
-        CALL_INT10( 0x1a )  \
+        _INT_10_FN( 0x1a )  \
         "cmp  al,1ah"       \
         "jz short L1"       \
         "sub  bx,bx"        \
@@ -320,7 +284,7 @@ extern unsigned BIOSDevCombCode( void );
 
 extern unsigned char BIOSGetMode( void );
 #pragma aux BIOSGetMode = \
-        CALL_INT10( 0x0f )  \
+        _INT_10_FN( 0x0f )  \
     __parm              [] \
     __value             [__al] \
     __modify __exact    [__ax __bh]
@@ -329,14 +293,14 @@ extern unsigned long BIOSEGAInfo( void );
 #ifdef _M_I86
 #pragma aux BIOSEGAInfo = \
         "mov    bx,0ff10h"  \
-        CALL_INT10( 0x12 )  \
+        _INT_10_FN( 0x12 )  \
     __parm              [] \
     __value             [__cx __bx] \
     __modify __exact    [__ah __bx __cx]
 #else
 #pragma aux BIOSEGAInfo = \
         "mov  bx,0ff10h"    \
-        CALL_INT10( 0x12 )  \
+        _INT_10_FN( 0x12 )  \
         "shl  ecx,10h"      \
         "mov  cx,bx"        \
     __parm              [] \
@@ -348,7 +312,7 @@ extern unsigned long BIOSEGAInfo( void );
 extern void _DoRingBell( unsigned char );
 #pragma aux _DoRingBell = \
         "mov    al,7"       \
-        CALL_INT10( 0x0e )  \
+        _INT_10_FN( 0x0e )  \
     __parm              [__bh] \
     __value             \
     __modify __exact    [__ax]
@@ -441,56 +405,56 @@ extern void _enablev( unsigned short );
 
 extern void BIOSSetPage( unsigned char pagenb );
 #pragma aux BIOSSetPage = \
-        CALL_INT10( 5 )     \
+        _INT_10_FN( 5 )     \
     __parm              [__al] \
     __value             \
     __modify __exact    [__ah]
 
 extern unsigned char BIOSGetPage( void );
 #pragma aux BIOSGetPage = \
-        CALL_INT10( 0x0f )  \
+        _INT_10_FN( 0x0f )  \
     __parm              [] \
     __value             [__bh] \
     __modify __exact    [__ax __bh]
 
 extern void BIOSSetMode( unsigned char mode );
 #pragma aux BIOSSetMode = \
-        CALL_INT10( 0 )     \
+        _INT_10_FN( 0 )     \
     __parm              [__al] \
     __value             \
     __modify __exact    [__ax]
 
 extern unsigned short BIOSGetCursorPos( unsigned char pagenb );
 #pragma aux BIOSGetCursorPos = \
-        CALL_INT10( 3 )     \
+        _INT_10_FN( 3 )     \
     __parm              [__bh] \
     __value             [__dx] \
     __modify __exact    [__ax __cx __dx]
 
 extern void BIOSSetCursorPos( unsigned short rowcol, unsigned char pagenb );
 #pragma aux BIOSSetCursorPos = \
-        CALL_INT10( 2 )     \
+        _INT_10_FN( 2 )     \
     __parm              [__dx] [__bh] \
     __value             \
     __modify __exact    [__ah]
 
 extern unsigned short BIOSGetCursorTyp( unsigned char pagenb );
 #pragma aux BIOSGetCursorTyp = \
-        CALL_INT10( 3 )     \
+        _INT_10_FN( 3 )     \
     __parm              [__bh] \
     __value             [__cx] \
     __modify __exact    [__ax __cx __dx]
 
 extern void BIOSSetCursorTyp( unsigned short startend );
 #pragma aux BIOSSetCursorTyp = \
-        CALL_INT10( 1 )     \
+        _INT_10_FN( 1 )     \
     __parm              [__cx] \
     __value             \
     __modify __exact    [__ah]
 
 extern unsigned char BIOSGetAttr( unsigned char pagenb );
 #pragma aux BIOSGetAttr = \
-        CALL_INT10( 8 )     \
+        _INT_10_FN( 8 )     \
     __parm              [__bh] \
     __value             [__ah] \
     __modify __exact    [__ax]
@@ -500,7 +464,7 @@ extern void BIOSSetAttr( unsigned char attr );
         "xor  cx,cx"        \
         "mov  dx,3250h"     \
         "xor  al,al"        \
-        CALL_INT10( 6 )     \
+        _INT_10_FN( 6 )     \
     __parm              [__bh] \
     __value             \
     __modify __exact    [__ax __cx __dx]
@@ -511,7 +475,7 @@ extern unsigned char BIOSGetRowCount( void );
         "push   es"         \
         "mov    al,30h"     \
         "xor    bh,bh"      \
-        CALL_INT10( 0x11 )  \
+        _INT_10_FN( 0x11 )  \
         "inc    dl"         \
         "pop    es"         \
     __parm              [] \
@@ -522,7 +486,7 @@ extern unsigned char BIOSGetRowCount( void );
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \
-        CALL_INT10( 0x11 )  \
+        _INT_10_FN( 0x11 )  \
         "inc  dl"           \
         "pop  es"           \
     __parm              [] \
@@ -536,7 +500,7 @@ extern unsigned short BIOSGetPoints( void );
         "push   es"         \
         "mov    al,30h"     \
         "xor    bh,bh"      \
-        CALL_INT10( 0x11 )  \
+        _INT_10_FN( 0x11 )  \
         "pop    es"         \
     __parm              [] \
     __value             [__cx] \
@@ -546,7 +510,7 @@ extern unsigned short BIOSGetPoints( void );
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \
-        CALL_INT10( 0x11 )  \
+        _INT_10_FN( 0x11 )  \
         "pop  es"           \
     __parm              [] \
     __value             [__cx] \
@@ -556,7 +520,7 @@ extern unsigned short BIOSGetPoints( void );
 extern void BIOSEGAChrSet( unsigned char vidroutine );
 #pragma aux BIOSEGAChrSet = \
         "xor  bl,bl"        \
-        CALL_INT10( 0x11 )  \
+        _INT_10_FN( 0x11 )  \
     __parm              [__al] \
     __value             \
     __modify __exact    [__ah __bl]
