@@ -54,7 +54,7 @@ enum {
 #define SetBIOSData( offset, var ) \
     MyMoveData( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
 
-#define VIDCOLRINDXREG  0x03D4
+#define VIDCOLORINDXREG  0x03D4
 
 typedef enum {
     DISP_NONE,
@@ -399,7 +399,7 @@ static void setRegenClear( void )
  */
 static void setupEGA( void )
 {
-    _disable_video( VIDCOLRINDXREG + 6 );
+    _disable_video( VIDCOLORINDXREG + 6 );
     _seq_write( SEQ_MEM_MODE, MEM_NOT_ODD_EVEN );
     _graph_write( GRA_MISC, MIS_A000_64 | MIS_GRAPH_MODE );
     _graph_write( GRA_ENABLE_SR, 0 );

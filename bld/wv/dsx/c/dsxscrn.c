@@ -55,7 +55,7 @@
 #define RmSwapSegPtr( offs )    SwapSeg.rm, offs
 
 #define TstMono()               ChkCntrlr( VIDMONOINDXREG )
-#define TstColour()             ChkCntrlr( VIDCOLRINDXREG )
+#define TstColour()             ChkCntrlr( VIDCOLORINDXREG )
 
 #define save_to_rm_swap( off, data, size )      _fmemcpy( EXTENDER_RM2PM( SwapSeg.rm, off ), data, size )
 #define restore_from_rm_swap( off, data, size ) _fmemcpy( data, EXTENDER_RM2PM( SwapSeg.rm, off ), size )
@@ -515,7 +515,7 @@ static void SetMonitor( void )
     if( DbgRows == 0 ) {
         DbgRows = 25;
     }
-    VIDPort = ( DbgBiosMode == 7 ) ? VIDMONOINDXREG : VIDCOLRINDXREG;
+    VIDPort = ( DbgBiosMode == 7 ) ? VIDMONOINDXREG : VIDCOLORINDXREG;
     if( ( (StartScrn.mode & 0x7f) == DbgBiosMode ) && ( StartScrn.strt.rows == DbgRows ) ) {
         PageSize = BIOSData( BD_REGEN_LEN, uint_16 );   /* get size from BIOS */
     } else {

@@ -55,7 +55,7 @@
 
 
 #define TstMono()       ChkCntrlr( VIDMONOINDXREG )
-#define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
+#define TstColour()     ChkCntrlr( VIDCOLORINDXREG )
 
 static bool             WantFast;
 static int              ScrnLines = 25;

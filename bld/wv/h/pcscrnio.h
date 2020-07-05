@@ -63,7 +63,7 @@
 #define FONT_TABLE_SIZE     (8 * _1k)
 
 #define VIDMONOINDXREG      0x03B4
-#define VIDCOLRINDXREG      0x03D4
+#define VIDCOLORINDXREG     0x03D4
 
 #define ISTEXTMODE( mode )  ((mode) < 4 || (mode) == 7)
 #define ISMONOMODE( mode )  ((mode) == 7 || (mode) == 15)
