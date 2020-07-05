@@ -39,7 +39,6 @@
 #endif
 
 #define _INT_10        "int 10h"
-#define _INT_16        "int 16h"
 #define _INT_21        "int 21h"
 #define _INT_33        "int 33h"
 
@@ -269,35 +268,5 @@ extern struct ega_info BIOSEGAInfo( void );
     __value     [__eax] \
     __modify    [__bx __cx]
 #endif
-
-extern unsigned short BIOSGetKeyboard( char );
-#pragma aux  BIOSGetKeyboard = \
-        _INT_16                 \
-    __parm      [__ah] \
-    __value     [__ax] \
-    __modify    []
-
-
-extern unsigned char BIOSKeyboardHit( char );
-#pragma aux BIOSKeyboardHit = \
-        _INT_16                 \
-        "jz short L1"           \
-        "mov    al,1"           \
-        "jmp short L2"          \
-    "L1: xor    al,al"          \
-    "L2:"                       \
-    __parm      [__ah] \
-    __value     [__al] \
-    __modify    []
-
-extern unsigned short BIOSTestKeyboard( void );
-#pragma aux BIOSTestKeyboard =  \
-        "mov    ax,12ffh"       \
-        _INT_16                 \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    []
-
-extern unsigned short   Points;     /* Number of lines per char */
 
 #endif // _BIOSUI_H_

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #include "getopt.h"
 #include "argvrx.h"
 #include "console.h"
+#include "int16.h"
 
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
@@ -91,27 +92,17 @@ static long     BufferPos;
 static long     FilePos;        // actually BUFF_HIGH(current file position)
 static long     FileSize;
 
-#if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
-char GetRawChar( void );
-#pragma aux GetRawChar = \
-        "xor  ah,ah"    \
-        "int 16h"       \
-    __parm      [] \
-    __value     [__al] \
-    __modify    [__ah]
-#endif
-
 /*
  * getChar - get a char from the keyboard
  */
 static int getChar( void )
 {
 #if defined( __DOS__ )
-    return( GetRawChar() );
+    return( _BIOSGetKeyboard( KEYB_STD ) & 0xff );
 #else
 #if defined( __OS2__ ) && defined( _M_I86 )
     if( _osmode_REALMODE() ) {
-        return GetRawChar();
+        return( _BIOSGetKeyboard( KEYB_STD ) & 0xff );
     }
 #endif
     return( getch() );

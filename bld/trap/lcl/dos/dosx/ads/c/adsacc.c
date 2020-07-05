@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,7 @@
 #include "cpuglob.h"
 #include "adsintr.h"
 #include "adsacc.h"
+#include "int16.h"
 
 
 typedef struct watch_point {
@@ -781,21 +782,12 @@ trap_retval ReqGet_next_alias( void )
 }
 
 #if 0
-extern int GtKey( void );
-#pragma aux GtKey = \
-        "xor  ah,ah"    \
-        "int 16h"       \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    [__ax]
-
-
 static unsigned_16 AccReadUserKey()
 {
     rd_key_return FAR *retblk;
 
     retblk = GetOutPtr( 0 );
-    retblk->key = GtKey();
+    retblk->key = _BIOSGetKeyboard( KEYB_STD );
     return( sizeof( rd_key_return ) );
 }
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,6 @@ extern void             Out42( unsigned char );
 
 extern void (__interrupt _FAR *DosGetVect( char ))( void );
 extern void DosSetVect( char, void (__interrupt *)( void ) );
-
-extern unsigned short _BIOSGetKeyboard( char );
-extern unsigned char _BIOSKeyboardHit( char );
 
 extern int DoSpawn( void *, void * );
 extern int GetFcb( void *, void * );
@@ -98,21 +96,6 @@ extern unsigned DosMaxAlloc( void );
     __modify    []
 
 #ifndef __CURSES__
-
-#pragma aux _BIOSGetKeyboard = \
-        "int 16h"   \
-    __parm      [__ah] \
-    __value     [__ax]
-
-#pragma aux _BIOSKeyboardHit = \
-        "int 16h"       \
-        "jz short L1"   \
-        "mov    al,1"   \
-        "jmp short L2"  \
-    "L1: xor    al,al"  \
-    "L2:"               \
-    __parm      [__ah] \
-    __value     [__al]
 
 #pragma aux BIOSGetCursorPos = \
         "mov    ah,3"   \
@@ -180,11 +163,6 @@ extern unsigned DosMaxAlloc( void );
         "int 10h"           \
     __parm      [__bl] \
     __modify __exact    [__ax __bh]
-
-#pragma aux BIOSTestKeyboard = \
-        "mov    ax,12ffh"   \
-        "int 16h"           \
-    __value     [__ax]
 
 #pragma aux BIOSGetRowCount = \
         "mov    ax,1130h"   \
@@ -263,11 +241,6 @@ extern unsigned DosMaxAlloc( void );
         "int 10h"           \
     __parm      [__bl] \
     __modify __exact    [__ax __bh]
-
-#pragma aux BIOSTestKeyboard = \
-        "mov    eax,12ffh"  \
-        "int 16h"           \
-    __value     [__eax]
 
 #pragma aux BIOSGetRowCount = \
         "mov    ax,1130h"   \

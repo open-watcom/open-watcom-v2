@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "vibios.h"
 #include "pragmas.h"
 #include "osidle.h"
+#include "int16.h"
 
 
 extern void UpdateDOSClock( void );
@@ -204,7 +206,7 @@ void ChkExtendedKbd( void )
 
     EditFlags.ExtendedKeyboard = false;
 
-    x = BIOSTestKeyboard();
+    x = _BIOSTestKeyboard( KEYB_STD );
     if( (x & 0xff) == 0xff ) {
         return; /* too many damn keys pressed! */
     }
@@ -405,7 +407,7 @@ bool KeyboardHit( void )
 {
     bool        rc;
 
-    rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard ? 0x11 : 1 );
+    rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
@@ -425,7 +427,7 @@ vi_key GetKeyboard( void )
     unsigned    scan;
     bool        shift;
 
-    code = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard ? 0x10 : 0 );
+    code = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
     shift = ShiftDown();
     scan = code >> 8;
     code &= 0xff;

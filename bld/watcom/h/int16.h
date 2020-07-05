@@ -31,7 +31,53 @@
 ****************************************************************************/
 
 
-extern unsigned short   Points;     /* Number of lines per char */
+#ifndef _INT16_H_
+#define _INT16_H_
 
-extern void         (intern * DrawCursor)( void );
-extern void         (intern * EraseCursor)( void );
+#if defined( _M_I86 ) || defined( __DOS__ )
+
+#define STR(...)            #__VA_ARGS__
+#define INSTR(...)          STR(__VA_ARGS__)
+
+#define _INT                0xcd
+
+#define _INT_16             _INT 0x16
+
+#define BIOS_KEYB           0x16
+
+#define KEYB_STD            0
+#define KEYB_EXT            0x10
+
+extern unsigned short _BIOSGetKeyboard( unsigned char );
+#pragma aux  _BIOSGetKeyboard = \
+        _INT_16                 \
+    __parm      [__ah] \
+    __value     [__ax] \
+    __modify __exact    [__ax]
+
+extern unsigned char _BIOSKeyboardHit( unsigned char );
+#pragma aux _BIOSKeyboardHit = \
+        "or     ah,1"           \
+        _INT_16                 \
+        "jz short L1"           \
+        "mov    al,1"           \
+        "jmp short L2"          \
+    "L1: xor    al,al"          \
+    "L2:"                       \
+    __parm      [__ah] \
+    __value     [__al] \
+    __modify __exact    [__ax]
+
+extern unsigned char _BIOSTestKeyboard( unsigned char );
+#pragma aux _BIOSTestKeyboard =  \
+        "or     ah,2"           \
+        "mov    al,0ffh"        \
+        _INT_16                 \
+    __parm      [__ah] \
+    __value     [__al] \
+    __modify __exact   [__ax]
+
+
+#endif
+
+#endif
