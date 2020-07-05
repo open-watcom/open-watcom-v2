@@ -34,21 +34,13 @@
 #ifndef _BIOSUI_H_
 #define _BIOSUI_H_
 
-#ifndef _M_I86
 #include "extender.h"
-#endif
 
 #define _INT_10        "int 10h"
-#define _INT_21        "int 21h"
 #define _INT_33        "int 33h"
 
 #define VECTOR_VIDEO    0x10
 #define VECTOR_MOUSE    0x33
-
-#define BIOS_CURR_VIDEO_MODE    0x49    /* byte */
-#define BIOS_SCREEN_OFFSET      0x4e    /* word */
-#define BIOS_SYSTEM_CLOCK       0x6c    /* dword */
-#define BIOS_POINT_HEIGHT       0x85    /* byte */
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
 
