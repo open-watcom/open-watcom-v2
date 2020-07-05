@@ -37,15 +37,16 @@
 #include "extender.h"
 
 #define _INT_10        "int 10h"
+#define _INT_21        "int 21h"
 #define _INT_33        "int 33h"
 
 #define VECTOR_VIDEO    0x10
 #define VECTOR_MOUSE    0x33
 
-#define MOUSE_DRIVER_OK     ((unsigned short)-1)
-
 #define VIDMONOINDXREG      0x03B4
 #define VIDCOLORINDXREG     0x03D4
+
+#define MOUSE_DRIVER_OK     ((unsigned short)-1)
 
 struct cursor_pos {
     unsigned char   col;
@@ -249,5 +250,16 @@ extern struct ega_info BIOSEGAInfo( void );
     __value     [__eax] \
     __modify    [__bx __cx]
 #endif
+
+#ifdef _M_I86
+extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
+#pragma aux desqview_shadow_buffer = \
+        "mov ah,0feh"   \
+        _INT_10         \
+    __parm      [__es __di] \
+    __value     [__es __di] \
+    __modify    [__ah]
+#endif
+
 
 #endif // _BIOSUI_H_

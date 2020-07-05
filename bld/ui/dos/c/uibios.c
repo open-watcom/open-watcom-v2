@@ -106,16 +106,6 @@ bool UIAPI uiset80col( void )
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-#ifdef _M_I86
-extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
-#pragma aux desqview_shadow_buffer = \
-        "mov ah,0feh"   \
-        _INT_10         \
-    __parm      [__es __di] \
-    __value     [__es __di] \
-    __modify    [__ah]
-#endif
-
 LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
 /*************************************************/
 {
@@ -336,16 +326,6 @@ void intern finibios( void )
     The code for desqview_update is identical for DOS/V
     (Update Video Display: int 10h, AH=FFh, CX=count, ES:DI=buffer)
 */
-
-#ifdef _M_I86
-extern void _desqview_update( LP_PIXEL, unsigned );
-#pragma aux _desqview_update = \
-        "mov  ah,0ffh"      \
-        _INT_10             \
-    __parm      [__es __di] [__cx] \
-    __value     \
-    __modify    [__ah]
-#endif
 
 static void desqview_update( unsigned short offset, unsigned short count )
 {

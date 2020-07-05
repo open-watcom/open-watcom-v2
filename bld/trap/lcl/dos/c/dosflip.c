@@ -34,6 +34,7 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "int16.h"
+#include "realmod.h"
 
 
 trap_retval ReqRead_user_keyboard( void )
@@ -46,9 +47,9 @@ trap_retval ReqRead_user_keyboard( void )
     ret->key = 0;
     if( acc->wait != 0 ) {
         unsigned long   end_time;
-        unsigned long   *cur_time;
+        unsigned long   __far *cur_time;
 
-        cur_time = MK_FP( 0x40, 0x6c ); /* set up pointer to the BIOS clock */
+        cur_time = RealModeDataPtr( BDATA_SEG, BDATA_SYSTEM_CLOCK ); /* set up pointer to the BIOS clock */
         end_time = *cur_time + ( acc->wait * 18 );
         while( !_BIOSKeyboardHit( KEYB_STD ) ) {
             if( end_time <= *cur_time ) {
