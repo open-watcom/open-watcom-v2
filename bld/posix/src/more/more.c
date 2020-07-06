@@ -98,11 +98,11 @@ static long     FileSize;
 static int getChar( void )
 {
 #if defined( __DOS__ )
-    return( _BIOSGetKeyboard( KEYB_STD ) & 0xff );
+    return( _BIOSKeyboardGet( KEYB_STD ) & 0xff );
 #else
 #if defined( __OS2__ ) && defined( _M_I86 )
     if( _osmode_REALMODE() ) {
-        return( _BIOSGetKeyboard( KEYB_STD ) & 0xff );
+        return( _BIOSKeyboardGet( KEYB_STD ) & 0xff );
     }
 #endif
     return( getch() );

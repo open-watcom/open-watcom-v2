@@ -206,7 +206,7 @@ void ChkExtendedKbd( void )
 
     EditFlags.ExtendedKeyboard = false;
 
-    x = _BIOSTestKeyboard( KEYB_STD );
+    x = _BIOSKeyboardTest( KEYB_STD );
     if( (x & 0xff) == 0xff ) {
         return; /* too many damn keys pressed! */
     }
@@ -427,7 +427,7 @@ vi_key GetKeyboard( void )
     unsigned    scan;
     bool        shift;
 
-    code = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
+    code = _BIOSKeyboardGet( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
     shift = ShiftDown();
     scan = code >> 8;
     code &= 0xff;

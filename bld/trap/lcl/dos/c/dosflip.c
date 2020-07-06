@@ -57,7 +57,7 @@ trap_retval ReqRead_user_keyboard( void )
             }
         }
     }
-    ret->key = _BIOSGetKeyboard( KEYB_STD );
+    ret->key = _BIOSKeyboardGet( KEYB_STD );
     return( sizeof( *ret ) );
 }
 

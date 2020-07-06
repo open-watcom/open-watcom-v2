@@ -75,7 +75,7 @@ bool UIAPI uiextkeyboard( void )
 unsigned intern getkey( void )
 /****************************/
 {
-    return( _BIOSGetKeyboard( ReadReq ) );
+    return( _BIOSKeyboardGet( ReadReq ) );
 }
 
 
@@ -98,7 +98,7 @@ void intern flushkey( void )
 unsigned char intern checkshift( void )
 /*************************************/
 {
-    return( _BIOSTestKeyboard( ReadReq ) );
+    return( _BIOSKeyboardTest( ReadReq ) );
 }
 
 
@@ -125,7 +125,7 @@ bool intern initkeyboard( void )
     unsigned x;
 
     ReadReq = KEYB_STD;
-    x = _BIOSTestKeyboard( KEYB_STD );
+    x = _BIOSKeyboardTest( KEYB_STD );
     if( (x & 0xff) == 0xff )
         return( true ); /* too many damn keys pressed! */
     if( AL( x ) != ( RAL( x ) || LAL( x ) ) )

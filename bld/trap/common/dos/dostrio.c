@@ -72,7 +72,7 @@ int KeyPress( void )
 
 int KeyGet( void )
 {
-    return( _BIOSGetKeyboard( KEYB_STD ) );
+    return( _BIOSKeyboardGet( KEYB_STD ) );
 }
 
 int WantUsage( const char *ptr )

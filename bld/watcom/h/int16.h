@@ -48,8 +48,8 @@
 #define KEYB_STD            0
 #define KEYB_EXT            0x10
 
-extern unsigned short _BIOSGetKeyboard( unsigned char );
-#pragma aux  _BIOSGetKeyboard = \
+extern unsigned short _BIOSKeyboardGet( unsigned char );
+#pragma aux  _BIOSKeyboardGet = \
         _INT_16                 \
     __parm      [__ah] \
     __value     [__ax] \
@@ -68,8 +68,8 @@ extern unsigned char _BIOSKeyboardHit( unsigned char );
     __value     [__al] \
     __modify __exact    [__ax]
 
-extern unsigned char _BIOSTestKeyboard( unsigned char );
-#pragma aux _BIOSTestKeyboard =  \
+extern unsigned char _BIOSKeyboardTest( unsigned char );
+#pragma aux _BIOSKeyboardTest =  \
         "or     ah,2"           \
         "mov    al,0ffh"        \
         _INT_16                 \

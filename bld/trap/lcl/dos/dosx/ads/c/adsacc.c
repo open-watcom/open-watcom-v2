@@ -787,7 +787,7 @@ static unsigned_16 AccReadUserKey()
     rd_key_return FAR *retblk;
 
     retblk = GetOutPtr( 0 );
-    retblk->key = _BIOSGetKeyboard( KEYB_STD );
+    retblk->key = _BIOSKeyboardGet( KEYB_STD );
     return( sizeof( rd_key_return ) );
 }
 #endif
