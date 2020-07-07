@@ -43,6 +43,7 @@
 #include "osidle.h"
 #include "uicurshk.h"
 #include "realmod.h"
+#include "int10.h"
 
 
 typedef struct {
@@ -77,7 +78,7 @@ void IdleInterrupt( void )
 void intern setvideomode( unsigned char mode )
 /********************************************/
 {
-    BIOSSetMode( mode );
+    _BIOSVideoSetMode( mode );
 }
 
 
@@ -180,15 +181,15 @@ static int IsTextMode( void )
     unsigned char       text_mode = 0;
 
     /* get current video mode */
-    mode = BIOSGetMode();
+    mode = _BIOSVideoGetMode();
     /* get current video page */
-    page = BIOSGetPage();
+    page = _BIOSVideoGetPage();
     /* get cursor position for current page */
     pos = _BIOSVideoGetCursorPos( page );
     if( mode < GR_MED_4COL || mode == MONOCHROME || mode > VGA_256COL ) {
         video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
-        _BIOSVideoSetCursorPos( 0, 0, page );
+        _BIOSVideoSetCursorPosValues( page, 0, 0 );
         /* get character/attribute at that location */
         pixel_bios = _BIOSVideoGetCharPixel( page );
         /* get character/attribute from screen memory */
@@ -198,7 +199,7 @@ static int IsTextMode( void )
             /* change the character we read through BIOS call */
             pixel_bios.s.ch ^= 1;
             /* write out character using BIOS */
-            _BIOSVideoSetCharPixel( pixel_bios, page );
+            _BIOSVideoSetCharPixel( page, pixel_bios );
             /* get character/attribute from screen memory */
             pixel_vmem.s.ch = video_mem->ch;
             pixel_vmem.s.attr = video_mem->attr;
@@ -212,7 +213,7 @@ static int IsTextMode( void )
         }
     }
     /* restore cursor position for current page */
-    _BIOSVideoSetCursorPos( pos.s.row, pos.s.col, page );
+    _BIOSVideoSetCursorPos( page, pos );
     return( text_mode );
 }
 
@@ -227,8 +228,8 @@ static bool initmonitor( void )
         UIData = &ui_data;
     }
 
-    BIOSVidPage = BIOSGetPage();
-    mode = BIOSGetMode();
+    BIOSVidPage = _BIOSVideoGetPage();
+    mode = _BIOSVideoGetMode();
     UIData->width = _BIOSVideoGetColumnCount();
     UIData->height = 25;
     info = _BIOSVideoEGAInfo();

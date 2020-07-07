@@ -38,6 +38,7 @@
 #include "uicurshk.h"
 #include "biosui.h"
 #include "uicurshk.h"
+#include "int10.h"
 
 
 #define _swap(t,a,b)    {t i; i=a; a=b; b=i;}
