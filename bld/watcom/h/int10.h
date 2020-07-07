@@ -451,6 +451,13 @@ extern void __far * _BIOSVideo_desqview_shadow_buffer( void __far * );
     __parm              [__es __di] \
     __value             [__es __di] \
     __modify __exact    [__ah __es __di]
+
+extern void __far * _BIOSVideo_desqview_update( void __far * buff, unsigned size );
+#pragma aux _BIOSVideo_desqview_update = \
+        _INT_10_FN( 0xff )      \
+    __parm              [__es __di] [__cx] \
+    __value             [__es __di] \
+    __modify __exact    [__ah __cx __es __di]
 #endif
 
 #endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */

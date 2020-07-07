@@ -59,15 +59,9 @@ static CURSOR_TYPE      OldCursorType;
 void UIHOOK _uioffcursor( void )
 /******************************/
 {
-    union REGS      r;
-
     if( UIData->cursor_on ) {
         /* set OldCursor size */
-        r.h.ah = 1;
-        r.h.ch = BIOS_CURSOR_OFF;
-        r.h.cl = 0;
-        intx86( VECTOR_VIDEO, &r, &r );
-        UIData->cursor_on = false;
+        _BIOSVideoSetCursorTypValues( 0, BIOS_CURSOR_OFF );
     }
     UIData->cursor_type = C_OFF;
 }
@@ -76,41 +70,30 @@ void UIHOOK _uioffcursor( void )
 void UIHOOK _uioncursor( void )
 /*****************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
+    unsigned char       chr;
 
-    /* set OldCursor type */
-    r.h.ah = 1;
     if( ( UIData->colour == M_CGA ) || ( UIData->colour == M_EGA ) ) {
-        r.h.cl = 0x07;
+        c.typ.s.bot_line = 0x07;
     } else {
-        r.h.cl = 0x0c;
+        c.typ.s.bot_line = 0x0c;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        r.h.ch = r.h.cl / 2;
+        c.typ.s.top_line = c.typ.s.bot_line / 2;
     } else {
-        r.h.ch = r.h.cl - 1;
+        c.typ.s.top_line = c.typ.s.bot_line - 1;
     }
-    intx86( VECTOR_VIDEO, &r, &r );
-    /* get video state */
-    r.h.ah = 15;
-    intx86( VECTOR_VIDEO, &r, &r );
-    /* set OldCursor position */
-    r.h.ah = 2;
-    r.h.dh = (unsigned char)UIData->cursor_row;
-    r.h.dl = (unsigned char)UIData->cursor_col;
-    intx86( VECTOR_VIDEO, &r, &r );
+    _BIOSVideoSetCursorTyp( c.typ );
+    info = _BIOSVideoGetModeInfo();
+    c.pos.s.row = UIData->cursor_row;
+    c.pos.s.col = UIData->cursor_col;
+    _BIOSVideoSetCursorPos( c.pos );
     if( UIData->cursor_attr != CATTR_VOFF ) {
-        /* get video state */
-        r.h.ah = 15;
-        intx86( VECTOR_VIDEO, &r, &r );
         /* get current character and attribute */
-        r.h.ah = 8;
-        intx86( VECTOR_VIDEO, &r, &r );
+        chr = _BIOSVideoGetCharChr( info.page );
         /* write out the character and the new attribute */
-        r.h.bl = UIData->cursor_attr;
-        r.w.cx = 1;
-        r.h.ah = 9;
-        intx86( VECTOR_VIDEO, &r, &r );
+        _BIOSVideoSetCharPixelValues( info.page, chr, UIData->cursor_attr );
     }
     UIData->cursor_on = true;
 }
@@ -118,29 +101,23 @@ void UIHOOK _uioncursor( void )
 static void savecursor( void )
 /****************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
 
-    /* get current video state */
-    r.h.ah = 15;
-    intx86( VECTOR_VIDEO, &r, &r );
-    /* read OldCursor position */
-    r.h.ah = 3;
-    intx86( VECTOR_VIDEO, &r, &r );
-    OldCursorRow = r.h.dh;
-    OldCursorCol = r.h.dl;
-    if( r.h.cl - r.h.ch > 1 ) {
+    info = _BIOSVideoGetModeInfo();
+    c = _BIOSVideoGetCursor( info.page );
+    OldCursorRow = c.pos.s.row;
+    OldCursorCol = c.pos.s.col;
+    if( c.typ.s.bot_line - c.typ.s.top_line > 1 ) {
         OldCursorType = C_INSERT;
     } else {
         OldCursorType = C_NORMAL;
     }
-    UIData->cursor_on = ( ( r.h.ch & BIOS_CURSOR_OFF ) == 0 );
+    UIData->cursor_on = ( (c.typ.s.top_line & BIOS_CURSOR_OFF) == 0 );
     if( !UIData->cursor_on ) {
         OldCursorType = C_OFF;
     }
-    /* read character and attribute */
-    r.h.ah = 8;
-    intx86( VECTOR_VIDEO, &r, &r );
-    OldCursorAttr = r.h.ah;
+    OldCursorAttr = _BIOSVideoGetCharAttr( info.page );
 }
 
 
@@ -169,17 +146,14 @@ static void swapcursor( void )
 void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
 /********************************************************************************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
 
-    /* get current video state */
-    r.h.ah = 15;
-    intx86( VECTOR_VIDEO, &r, &r );
-    /* read OldCursor position */
-    r.h.ah = 3;
-    intx86( VECTOR_VIDEO, &r, &r );
-    *crow = r.h.dh;
-    *ccol = r.h.dl;
-    if( r.h.cl > r.h.ch + 1 ) {
+    info = _BIOSVideoGetModeInfo();
+    c = _BIOSVideoGetCursor( info.page );
+    *crow = c.pos.s.row;
+    *ccol = c.pos.s.col;
+    if( c.typ.s.bot_line - c.typ.s.top_line > 1 ) {
         *ctype = C_INSERT;
     } else {
         *ctype = C_NORMAL;
@@ -187,10 +161,7 @@ void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, 
     if( !UIData->cursor_on ) {
         *ctype = C_OFF;
     }
-    /* read character and attribute */
-    r.h.ah = 8;
-    intx86( VECTOR_VIDEO, &r, &r );
-    *cattr = r.h.ah;
+    *cattr = _BIOSVideoGetCharAttr( info.page );
 }
 
 
