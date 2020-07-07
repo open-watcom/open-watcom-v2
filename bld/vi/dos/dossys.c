@@ -52,6 +52,26 @@ int FileSysNeedsCR( int handle )
     return( true );
 }
 
+void BIOSSetBlinkAttr( unsigned char on )
+{
+    _BIOSVideoSetBlinkAttr( on );
+}
+
+void BIOSGetColorPalette( void _FAR *palette )
+{
+    _BIOSVideoGetColorPalette( palette );
+}
+
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+{
+    _BIOSVideoSetColorRegister( reg, r, g, b );
+}
+
+uint_32 BIOSGetColorRegister( unsigned short reg )
+{
+    return( _BIOSVideoGetColorRegister( reg ) );
+}
+
 /*
  * NewCursor - change cursor to insert mode type
  */
@@ -66,7 +86,7 @@ void NewCursor( window_id wid, cursor_type ct )
         base = 16;
     }
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSSetCursorTyp( nbase, base - 1 );
+    _BIOSVideoSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -154,16 +174,16 @@ static void getExitAttr( void )
  */
 void ScreenInit( void )
 {
-    uint_32     mode;
+    int10_mode_info mode_info;
 
-    mode = BIOSGetVideoMode();
-    EditVars.WindMaxWidth = (mode >> 8) & 0xFF;
-    VideoPage = mode >> 24;
+    mode_info = _BIOSVideoGetModeInfo();
+    EditVars.WindMaxWidth = mode_info.columns;
+    VideoPage = mode_info.page;
 
     /*
      * mode _ get apropos screen ptr
      */
-    switch( (unsigned char)mode ) {
+    switch( mode_info.mode ) {
     case 0x00:
     case 0x02:
         EditFlags.BlackAndWhite = true;
@@ -176,7 +196,7 @@ void ScreenInit( void )
         break;
     }
     ScreenPage( 0 );
-    EditVars.WindMaxHeight = BIOSGetRowCount();
+    EditVars.WindMaxHeight = _BIOSVideoGetRowCount();
     getExitAttr();
 
 } /* ScreenInit */

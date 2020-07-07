@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,11 +230,11 @@ static void setColorRegister( vi_color reg, rgb *c )
  */
 static void getColorPalette( char *p )
 {
-#if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( __4G__ ) */
+//#if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( __4G__ ) */
     BIOSGetColorPalette( p );
-#else
+//#else
     /* unused parameters */ (void)p;
-#endif
+//#endif
 
 } /* getColorPalette */
 

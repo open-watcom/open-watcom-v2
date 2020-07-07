@@ -47,8 +47,8 @@ extern void _BIOSSetColourRegister( unsigned, unsigned char, unsigned char, unsi
     __value     \
     __modify __exact    [__ax]
 
-extern void _BIOSSetBlinkAttr( unsigned char );
-#pragma aux _BIOSSetBlinkAttr =              \
+extern void _BIOSVideoSetBlinkAttr( unsigned char );
+#pragma aux _BIOSVideoSetBlinkAttr =              \
         "mov  ax,1003h" \
         "xor  bh,bh"    \
         "int 10h"       \
@@ -162,12 +162,12 @@ void UIAPI uisetblinkattr( bool on )
 {
     if( on ) {
         if( !BlinkAttr ) {
-            _BIOSSetBlinkAttr( true );
+            _BIOSVideoSetBlinkAttr( true );
         }
         BlinkAttr = true;
     } else {
         if( BlinkAttr ) {
-            _BIOSSetBlinkAttr( false );
+            _BIOSVideoSetBlinkAttr( false );
             BlinkAttr = false;
         }
     }

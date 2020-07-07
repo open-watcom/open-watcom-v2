@@ -168,21 +168,15 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
 #define DELL_43X132    84           // Text Mode
 #define DELL_25X132    85           // Text Mode
 
-typedef struct {
-    union {
-        PIXEL           pixel;
-        unsigned short  value;
-    } u;
-} pixel_value;
 
 static int IsTextMode( void )
 {
     unsigned char       mode;
     unsigned char       page;
-    struct cursor_pos   cursor_position;
+    int10_cursor_pos    pos;
     LP_PIXEL            video_mem;
-    pixel_value         pixel_bios;
-    pixel_value         pixel_vmem;
+    int10_pixel_data    pixel_bios;
+    int10_pixel_data    pixel_vmem;
     unsigned char       text_mode = 0;
 
     /* get current video mode */
@@ -190,32 +184,35 @@ static int IsTextMode( void )
     /* get current video page */
     page = BIOSGetPage();
     /* get cursor position for current page */
-    cursor_position = BIOSGetCursorPos( page );
+    pos = _BIOSVideoGetCursorPos( page );
     if( mode < GR_MED_4COL || mode == MONOCHROME || mode > VGA_256COL ) {
         video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
-        BIOSSetCursorPos( 0, 0, page );
+        _BIOSVideoSetCursorPos( 0, 0, page );
         /* get character/attribute at that location */
-        pixel_bios.u.pixel = BIOSGetCharPixel( page );
+        pixel_bios = _BIOSVideoGetCharPixel( page );
         /* get character/attribute from screen memory */
-        pixel_vmem.u.pixel = *video_mem;
-        if( pixel_bios.u.value == pixel_vmem.u.value ) {
+        pixel_vmem.s.ch = video_mem->ch;
+        pixel_vmem.s.attr = video_mem->attr;
+        if( pixel_bios.value == pixel_vmem.value ) {
             /* change the character we read through BIOS call */
-            pixel_bios.u.pixel.ch ^= 1;
+            pixel_bios.s.ch ^= 1;
             /* write out character using BIOS */
-            BIOSSetCharPixel( pixel_bios.u.pixel, page );
+            _BIOSVideoSetCharPixel( pixel_bios, page );
             /* get character/attribute from screen memory */
-            pixel_vmem.u.pixel = *video_mem;
-            if( pixel_bios.u.value == pixel_vmem.u.value ) {
+            pixel_vmem.s.ch = video_mem->ch;
+            pixel_vmem.s.attr = video_mem->attr;
+            if( pixel_bios.value == pixel_vmem.value ) {
                 /* restore character that was there */
-                pixel_bios.u.pixel.ch ^= 1;
-                *video_mem = pixel_bios.u.pixel;
+                pixel_bios.s.ch ^= 1;
+                video_mem->ch = pixel_bios.s.ch;
+                video_mem->attr = pixel_bios.s.attr;
                 text_mode = 1;
             }
         }
     }
     /* restore cursor position for current page */
-    BIOSSetCursorPos( cursor_position.row, cursor_position.col, page );
+    _BIOSVideoSetCursorPos( pos.s.row, pos.s.col, page );
     return( text_mode );
 }
 
@@ -224,7 +221,7 @@ static bool initmonitor( void )
 {
     bool                ega;
     unsigned char       mode;
-    struct ega_info     info;
+    int10_ega_info      info;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -232,11 +229,11 @@ static bool initmonitor( void )
 
     BIOSVidPage = BIOSGetPage();
     mode = BIOSGetMode();
-    UIData->width = BIOSGetColumns();
+    UIData->width = _BIOSVideoGetColumnCount();
     UIData->height = 25;
-    info = BIOSEGAInfo();
+    info = _BIOSVideoEGAInfo();
     if( info.switches < 0x0C && info.mono <= 0x01 && info.mem <= 0x03 ) {
-        UIData->height = BIOSGetRowCount();
+        UIData->height = _BIOSVideoGetRowCount();
         ega = true;
     } else {
         ega = false;

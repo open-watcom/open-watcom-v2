@@ -35,24 +35,70 @@
 
 #if defined( __WATCOMC__ ) && defined( __DOS__ ) && defined( _M_IX86 )
 
+typedef struct int10_mode_info {
+    unsigned char   mode;
+    unsigned char   columns;
+    unsigned char   dummy;
+    unsigned char   page;
+} int10_mode_info;
+
 extern unsigned char    In61( void );
-extern void             Out61( unsigned char );
-extern void             Out43( unsigned char );
-extern void             Out42( unsigned char );
-
-extern void (__interrupt _FAR *DosGetVect( char ))( void );
-extern void DosSetVect( char, void (__interrupt *)( void ) );
-
-extern int DoSpawn( void *, void * );
-extern int GetFcb( void *, void * );
-
 #pragma aux In61 = 0xe4 0x61 __value [__al]
+
+extern void             Out61( unsigned char );
 #pragma aux Out61 = 0xe6 0x61 __parm [__al]
+
+extern void             Out43( unsigned char );
 #pragma aux Out43 = 0xe6 0x43 __parm [__al]
+
+extern void             Out42( unsigned char );
 #pragma aux Out42 = 0xe6 0x42 __parm [__al]
 
-extern unsigned DosMaxAlloc( void );
+extern void (__interrupt _FAR *DosGetVect( char ))( void );
+#ifdef _M_I86
+#pragma aux DosGetVect = \
+        "mov    ah,35h" \
+        "int 21h"       \
+        "mov    ax,bx"  \
+        "mov    dx,es"  \
+    __parm      [__al] \
+    __value     [__dx __ax] \
+    __modify    [__es __bx]
+#else
+#pragma aux DosGetVect =    \
+        "push   es"         \
+        "mov    ah,35h"     \
+        "int 21h"           \
+        "mov    eax,ebx"    \
+        "mov    edx,es"     \
+        "pop    es"         \
+    __parm      [__al] \
+    __value     [__dx __eax] \
+    __modify    [__ebx]
+#endif
 
+extern void DosSetVect( char, void (__interrupt *)( void ) );
+#ifdef _M_I86
+#pragma aux DosSetVect = \
+        "mov    ah,25h" \
+        "int 21h"       \
+    __parm      [__al] [__ds __dx] \
+    __value     \
+    __modify    [__ah]
+#else
+#pragma aux DosSetVect = \
+        "push   ds"     \
+        "push   fs"     \
+        "pop    ds"     \
+        "mov    ah,25h" \
+        "int 21h"       \
+        "pop    ds"     \
+    __parm      [__al] [__fs __edx] \
+    __value     \
+    __modify    [__ah]
+#endif
+
+extern int DoSpawn( void *, void * );
 #pragma aux DoSpawn = \
         "push   ds"     \
         "push   es"     \
@@ -76,6 +122,8 @@ extern unsigned DosMaxAlloc( void );
     __value     [__ax] \
     __modify    []
 
+
+extern int GetFcb( void *, void * );
 #pragma aux GetFcb = \
         "push   ds"     \
         "push   es"     \
@@ -95,47 +143,8 @@ extern unsigned DosMaxAlloc( void );
     __value     [__ax] \
     __modify    []
 
-#ifndef __CURSES__
-
-#pragma aux BIOSGetCursorPos = \
-        "mov    ah,3"   \
-        "int 10h"       \
-    __parm      [__bh] \
-    __value     [__dx] \
-    __modify    [__ax __cx]
-
-#pragma aux BIOSSetCursorPos = \
-        "mov    ah,2"   \
-        "int 10h"       \
-    __parm      [__bh] [__dh] [__dl] \
-    __modify    [__ax]
-
-#pragma aux BIOSSetCursorTyp = \
-        "mov    ah,1"   \
-        "int 10h"       \
-    __parm      [__ch] [__cl] \
-    __modify    [__ax __cx]
-
-#endif
-
-#if defined( _M_I86 )
-
-#pragma aux DosSetVect = \
-        "mov    ah,25h" \
-        "int 21h"       \
-    __parm      [__al] [__ds __dx] \
-    __value     \
-    __modify    [__ah]
-
-#pragma aux DosGetVect = \
-        "mov    ah,35h" \
-        "int 21h"       \
-        "mov    ax,bx"  \
-        "mov    dx,es"  \
-    __parm      [__al] \
-    __value     [__dx __ax] \
-    __modify    [__es __bx]
-
+extern unsigned DosMaxAlloc( void );
+#ifdef _M_I86
 #pragma aux DosMaxAlloc = \
         "xor    bx,bx"  \
         "dec    bx"     \
@@ -144,51 +153,7 @@ extern unsigned DosMaxAlloc( void );
     __parm      [] \
     __value     [__bx] \
     __modify    [__ax]
-
-#pragma aux BIOSSetColorRegister = \
-        "mov    ax,1010h"   \
-        "int 10h"           \
-    __parm      [__bx] [__dh] [__ch] [__cl] \
-    __modify    [__ax]
-
-#pragma aux BIOSGetColorPalette = \
-        "mov    ax,1009h"   \
-        "int 10h"           \
-    __parm      [__es __dx] \
-    __modify    [__ax]
-
-#pragma aux BIOSSetBlinkAttr = \
-        "mov    ax,1003h"   \
-        "xor    bh,bh"      \
-        "int 10h"           \
-    __parm      [__bl] \
-    __modify __exact    [__ax __bh]
-
-#pragma aux BIOSGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        "mov    dl,18h"     \
-        "int 10h"           \
-        "inc    dl"         \
-    __parm      [] \
-    __value     [__dl] \
-    __modify __exact    [__ax __bx __cx __dx __es __bp]
-
-#pragma aux BIOSGetVideoMode = \
-        "mov    ah,0fh" \
-        "int 10h"       \
-    __value     [__bx __ax] \
-    __modify    [__bx]
-
-#pragma aux BIOSGetColorRegister = \
-        "mov    ax,1015h"   \
-        "int 10h"           \
-    __parm      [__bx] \
-    __value     [__cx __dx] \
-    __modify    [__ax __cx __dx]
-
 #else
-
 #pragma aux DosMaxAlloc = \
         "xor    ebx,ebx"  \
         "dec    ebx"      \
@@ -197,36 +162,32 @@ extern unsigned DosMaxAlloc( void );
     __parm      [] \
     __value     [__ebx] \
     __modify    [__eax]
+#endif
 
-#pragma aux DosSetVect = \
-        "push   ds"     \
-        "push   fs"     \
-        "pop    ds"     \
-        "mov    ah,25h" \
-        "int 21h"       \
-        "pop    ds"     \
-    __parm      [__al] [__fs __edx] \
-    __value     \
-    __modify    [__ah]
-
-#pragma aux DosGetVect =    \
-        "push   es"         \
-        "mov    ah,35h"     \
-        "int 21h"           \
-        "mov    eax,ebx"    \
-        "mov    edx,es"     \
-        "pop    es"         \
-    __parm      [__al] \
-    __value     [__dx __eax] \
-    __modify    [__ebx]
-
-#pragma aux BIOSSetColorRegister = \
+void _BIOSVideoSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoSetColorRegister = \
         "mov    ax,1010h"   \
         "int 10h"           \
     __parm      [__bx] [__dh] [__ch] [__cl] \
     __modify    [__ax]
+#else
+#pragma aux _BIOSVideoSetColorRegister = \
+        "mov    ax,1010h"   \
+        "int 10h"           \
+    __parm      [__bx] [__dh] [__ch] [__cl] \
+    __modify    [__ax]
+#endif
 
-#pragma aux BIOSGetColorPalette = \
+extern void _BIOSVideoGetColorPalette( void _FAR * );
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoGetColorPalette = \
+        "mov    ax,1009h"   \
+        "int 10h"           \
+    __parm      [__es __dx] \
+    __modify    [__ax]
+#else
+#pragma aux _BIOSVideoGetColorPalette = \
         "push   es"         \
         "mov    es,ax"      \
         "mov    ax,1009h"   \
@@ -234,15 +195,38 @@ extern unsigned DosMaxAlloc( void );
         "pop    es"         \
     __parm      [__ax __dx] \
     __modify    [__ax]
+#endif
 
-#pragma aux BIOSSetBlinkAttr = \
+extern void _BIOSVideoSetBlinkAttr( unsigned char );
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoSetBlinkAttr = \
         "mov    ax,1003h"   \
         "xor    bh,bh"      \
         "int 10h"           \
     __parm      [__bl] \
     __modify __exact    [__ax __bh]
+#else
+#pragma aux _BIOSVideoSetBlinkAttr = \
+        "mov    ax,1003h"   \
+        "xor    bh,bh"      \
+        "int 10h"           \
+    __parm      [__bl] \
+    __modify __exact    [__ax __bh]
+#endif
 
-#pragma aux BIOSGetRowCount = \
+extern unsigned char _BIOSVideoGetRowCount( void );
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoGetRowCount = \
+        "mov    ax,1130h"   \
+        "xor    bh,bh"      \
+        "mov    dl,18h"     \
+        "int 10h"           \
+        "inc    dl"         \
+    __parm      [] \
+    __value     [__dl] \
+    __modify __exact    [__ax __bx __cx __dx __es __bp]
+#else
+#pragma aux _BIOSVideoGetRowCount = \
         "mov    ax,1130h"   \
         "xor    bh,bh"      \
         "mov    dl,18h"     \
@@ -251,16 +235,36 @@ extern unsigned DosMaxAlloc( void );
     __parm      [] \
     __value     [__dl] \
     __modify __exact    [__ax __bx __cx __dx __es __ebp]
+#endif
 
-#pragma aux BIOSGetVideoMode = \
+extern int10_mode_info _BIOSVideoGetModeInfo( void );
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoGetModeInfo = \
+        "mov    ah,0fh" \
+        "int 10h"       \
+    __value     [__bx __ax] \
+    __modify    [__bx]
+
+#else
+#pragma aux _BIOSVideoGetModeInfo = \
         "mov    ah,0fh"     \
         "int 10h"           \
         "shl    ebx,16"     \
         "mov    bx,ax"      \
     __value     [__ebx] \
     __modify    [__ax]
+#endif
 
-#pragma aux BIOSGetColorRegister = \
+extern uint_32 _BIOSVideoGetColorRegister( unsigned short );
+#if defined( _M_I86 )
+#pragma aux _BIOSVideoGetColorRegister = \
+        "mov    ax,1015h"   \
+        "int 10h"           \
+    __parm      [__bx] \
+    __value     [__cx __dx] \
+    __modify    [__ax __cx __dx]
+#else
+#pragma aux _BIOSVideoGetColorRegister = \
         "mov    ax,1015h"   \
         "int 10h"           \
         "mov    ax,cx"      \
@@ -269,8 +273,8 @@ extern unsigned DosMaxAlloc( void );
     __parm      [__bx] \
     __value     [__eax] \
     __modify    [__ax __cx __dx]
-
 #endif
+
 
 #endif
 
