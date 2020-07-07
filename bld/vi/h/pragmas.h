@@ -164,7 +164,7 @@ extern unsigned DosMaxAlloc( void );
     __modify    [__eax]
 #endif
 
-void _BIOSVideoSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+extern void _BIOSVideoSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b );
 #if defined( _M_I86 )
 #pragma aux _BIOSVideoSetColorRegister = \
         "mov    ax,1010h"   \
