@@ -31,19 +31,17 @@
 ****************************************************************************/
 
 
-#ifndef _INT16_H_
-#define _INT16_H_
+#ifndef _INT16_H_INCLUDED
+#define _INT16_H_INCLUDED
 
-#if defined( _M_I86 ) || defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
 
-#define STR(...)            #__VA_ARGS__
-#define INSTR(...)          STR(__VA_ARGS__)
 
 #define _INT                0xcd
 
-#define _INT_16             _INT 0x16
+#define VECTOR_KEYB         0x16
 
-#define BIOS_KEYB           0x16
+#define _INT_16             _INT VECTOR_KEYB
 
 #define KEYB_STD            0
 #define KEYB_EXT            0x10
@@ -78,6 +76,6 @@ extern unsigned char _BIOSKeyboardTest( unsigned char );
     __modify __exact   [__ax]
 
 
-#endif
+#endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */
 
-#endif
+#endif  /* _INT16_H_INCLUDED */
