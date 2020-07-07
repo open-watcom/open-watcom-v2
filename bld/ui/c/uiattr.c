@@ -39,22 +39,8 @@
 #endif
 
 #if defined( PROGRAM_VGA )
-extern void _BIOSSetColourRegister( unsigned, unsigned char, unsigned char, unsigned char );
-#pragma aux _BIOSSetColourRegister = \
-        "mov  ax,1010h" \
-        "int 10h"       \
-    __parm __caller [__bx] [__dh] [__ch] [__cl] \
-    __value     \
-    __modify __exact    [__ax]
 
-extern void _BIOSVideoSetBlinkAttr( unsigned char );
-#pragma aux _BIOSVideoSetBlinkAttr =              \
-        "mov  ax,1003h" \
-        "xor  bh,bh"    \
-        "int 10h"       \
-    __parm      [__bl] \
-    __value     \
-    __modify __exact    [__ax __bh]
+#include "int10.h"
 
 static bool     BlinkAttr = true;
 
@@ -136,6 +122,7 @@ bool UIAPI uiattrs( void )
 
 
 #if defined( PROGRAM_VGA )
+
 static void setvgacolours( void )
 {
     int             i;
@@ -143,7 +130,7 @@ static void setvgacolours( void )
 
     for( i = 0; i < 16; i++ ) {
         col = VGAcolours[i];
-        _BIOSSetColourRegister( i, col.red, col.green, col.blue );
+        _BIOSVideoSetColorRegister( i, col.red, col.green, col.blue );
     }
     uisetblinkattr( false );
 }
@@ -177,7 +164,9 @@ bool UIAPI uigetblinkattr( void )
 {
     return( BlinkAttr );
 }
+
 #else
+
 bool UIAPI uivgaattrs( void )
 {
     return( false );
@@ -192,6 +181,7 @@ bool UIAPI uigetblinkattr( void )
 {
     return( false );
 }
+
 #endif
 
 ATTR UIAPI uisetattr( UIATTR uiattr, ATTR new_attr )

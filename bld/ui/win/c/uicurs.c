@@ -34,6 +34,7 @@
 #include <stdui.h>
 #include "biosui.h"
 #include "uicurshk.h"
+#include "int10.h"
 
 
 #define NoCur   0x2000      /* outside screen */

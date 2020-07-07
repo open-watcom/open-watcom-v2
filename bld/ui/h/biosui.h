@@ -36,45 +36,13 @@
 
 #include "extender.h"
 
-#define _INT_10        "int 10h"
 #define _INT_21        "int 21h"
 #define _INT_33        "int 33h"
 
-#define VECTOR_VIDEO    0x10
 #define VECTOR_MOUSE    0x33
-
-#define VIDMONOINDXREG      0x03B4
-#define VIDCOLORINDXREG     0x03D4
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
 
-typedef union int10_cursor_pos {
-    struct {
-        unsigned char   col;
-        unsigned char   row;
-    } s;
-    unsigned short  value;
-} int10_cursor_pos;
-
-typedef union int10_pixel_data {
-    struct {
-        unsigned char   ch;
-        unsigned char   attr;
-    } s;
-    unsigned short  value;
-} int10_pixel_data;
-
-typedef struct int10_cursor_typ {
-    unsigned char   bot_line;
-    unsigned char   top_line;
-} int10_cursor_typ;
-
-typedef struct int10_ega_info {
-    unsigned char   mem;
-    unsigned char   mono;
-    unsigned char   switches;
-    unsigned char   adapter_bits;
-} int10_ega_info;
 
 struct mouse_data {
     unsigned    bx;
@@ -139,143 +107,6 @@ extern unsigned short MouseDrvCall4( unsigned short );
     __parm      [__ax] \
     __value     [__ax] \
     __modify    [__bx __cx __dx]
-
-extern void BIOSSetMode( unsigned char );
-#pragma aux BIOSSetMode = \
-        "xor    ah,ah"      \
-        _INT_10             \
-    __parm      [__al] \
-    __value     \
-    __modify    [__ah]
-
-extern void _BIOSVideoSetCursorTyp( unsigned char top_line, unsigned char bot_line );
-#pragma aux _BIOSVideoSetCursorTyp = \
-        "mov    ah,1"           \
-        _INT_10                 \
-    __parm      [__ch] [__cl] \
-    __value     \
-    __modify    [__ah]
-
-extern void _BIOSVideoSetCursorPos( unsigned char row, unsigned char col, unsigned char page );
-#pragma aux _BIOSVideoSetCursorPos = \
-        "mov    ah,2"       \
-        _INT_10             \
-    __parm      [__dh] [__dl] [__bh] \
-    __value     \
-    __modify    [__ah]
-
-extern int10_cursor_pos _BIOSVideoGetCursorPos( unsigned char page );
-#pragma aux _BIOSVideoGetCursorPos = \
-        "mov    ah,3"       \
-        _INT_10             \
-    __parm      [__bh] \
-    __value     [__dx] \
-    __modify    [__ax __cx]
-
-extern int10_cursor_typ _BIOSVideoGetCursorTyp( unsigned char page );
-#pragma aux _BIOSVideoGetCursorTyp = \
-        "mov    ah,3"       \
-        _INT_10             \
-    __parm      [__bh] \
-    __value     [__cx] \
-    __modify    [__ax __dx]
-
-extern int10_pixel_data _BIOSVideoGetCharPixel( unsigned char page );
-#pragma aux  _BIOSVideoGetCharPixel = \
-        "mov    ah,8"           \
-        _INT_10                 \
-    __parm      [__bh] \
-    __value     [__ax] \
-    __modify    []
-
-extern void _BIOSVideoSetCharPixel( int10_pixel_data char_attr, unsigned char page );
-#pragma aux _BIOSVideoSetCharPixel = \
-        "mov    bl,ah"          \
-        "mov    cx,1"           \
-        "mov    ah,9"           \
-        _INT_10                 \
-    __parm      [__ax] [__bh] \
-    __value     \
-    __modify    [__ah __bl __cx]
-
-extern unsigned char BIOSGetPage( void );
-#pragma aux BIOSGetPage = \
-        "mov    ah,0fh"     \
-        _INT_10             \
-    __parm      [] \
-    __value     [__bh] \
-    __modify    [__ax]
-
-extern unsigned char BIOSGetMode( void );
-#pragma aux BIOSGetMode = \
-        "mov    ah,0fh"     \
-        _INT_10             \
-    __parm      [] \
-    __value     [__al] \
-    __modify    [__ah __bh]
-
-extern unsigned char _BIOSVideoGetColumnCount( void );
-#pragma aux _BIOSVideoGetColumnCount = \
-        "mov    ah,0fh"     \
-        _INT_10             \
-    __parm      [] \
-    __value     [__ah] \
-    __modify    [__al __bh]
-
-extern unsigned char _BIOSVideoGetRowCount( void );
-#ifdef _M_I86
-#pragma aux _BIOSVideoGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        _INT_10             \
-        "inc    dl"         \
-    __parm      [] \
-    __value     [__dl] \
-    __modify __exact    [__ax __bh __cx __es __bp]
-#else
-#pragma aux _BIOSVideoGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        _INT_10             \
-        "inc    dl"         \
-    __parm      [] \
-    __value     [__dl] \
-    __modify __exact    [__ax __bh __cx __es __ebp]
-#endif
-
-extern struct int10_ega_info _BIOSVideoEGAInfo( void );
-#ifdef _M_I86
-#pragma aux _BIOSVideoEGAInfo = \
-        "mov    ah,12h"     \
-        "mov    bx,0ff10h"  \
-        _INT_10             \
-        "mov    ax,bx"      \
-        "mov    dx,cx"      \
-    __parm      [] \
-    __value     [__dx __ax] \
-    __modify    [__bx __cx]
-#else
-#pragma aux _BIOSVideoEGAInfo = \
-        "mov    ah,12h"     \
-        "mov    bx,0ff10h"  \
-        _INT_10             \
-        "mov    eax,ecx"    \
-        "shl    eax,10h"    \
-        "or     ax,bx"      \
-    __parm      [] \
-    __value     [__eax] \
-    __modify    [__bx __cx]
-#endif
-
-#ifdef _M_I86
-extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
-#pragma aux desqview_shadow_buffer = \
-        "mov ah,0feh"   \
-        _INT_10         \
-    __parm      [__es __di] \
-    __value     [__es __di] \
-    __modify    [__ah]
-#endif
 
 
 #endif // _BIOSUI_H_

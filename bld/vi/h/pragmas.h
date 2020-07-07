@@ -30,17 +30,10 @@
 ****************************************************************************/
 
 
-#ifndef _PRAGMAS_INCLUDED
-#define _PRAGMAS_INCLUDED
+#ifndef _PRAGMAS_H_INCLUDED
+#define _PRAGMAS_H_INCLUDED
 
-#if defined( __WATCOMC__ ) && defined( __DOS__ ) && defined( _M_IX86 )
-
-typedef struct int10_mode_info {
-    unsigned char   mode;
-    unsigned char   columns;
-    unsigned char   dummy;
-    unsigned char   page;
-} int10_mode_info;
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
 
 extern unsigned char    In61( void );
 #pragma aux In61 = 0xe4 0x61 __value [__al]
@@ -164,118 +157,7 @@ extern unsigned DosMaxAlloc( void );
     __modify    [__eax]
 #endif
 
-extern void _BIOSVideoSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoSetColorRegister = \
-        "mov    ax,1010h"   \
-        "int 10h"           \
-    __parm      [__bx] [__dh] [__ch] [__cl] \
-    __modify    [__ax]
-#else
-#pragma aux _BIOSVideoSetColorRegister = \
-        "mov    ax,1010h"   \
-        "int 10h"           \
-    __parm      [__bx] [__dh] [__ch] [__cl] \
-    __modify    [__ax]
-#endif
 
-extern void _BIOSVideoGetColorPalette( void _FAR * );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoGetColorPalette = \
-        "mov    ax,1009h"   \
-        "int 10h"           \
-    __parm      [__es __dx] \
-    __modify    [__ax]
-#else
-#pragma aux _BIOSVideoGetColorPalette = \
-        "push   es"         \
-        "mov    es,ax"      \
-        "mov    ax,1009h"   \
-        "int 10h"           \
-        "pop    es"         \
-    __parm      [__ax __dx] \
-    __modify    [__ax]
-#endif
+#endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */
 
-extern void _BIOSVideoSetBlinkAttr( unsigned char );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoSetBlinkAttr = \
-        "mov    ax,1003h"   \
-        "xor    bh,bh"      \
-        "int 10h"           \
-    __parm      [__bl] \
-    __modify __exact    [__ax __bh]
-#else
-#pragma aux _BIOSVideoSetBlinkAttr = \
-        "mov    ax,1003h"   \
-        "xor    bh,bh"      \
-        "int 10h"           \
-    __parm      [__bl] \
-    __modify __exact    [__ax __bh]
-#endif
-
-extern unsigned char _BIOSVideoGetRowCount( void );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        "mov    dl,18h"     \
-        "int 10h"           \
-        "inc    dl"         \
-    __parm      [] \
-    __value     [__dl] \
-    __modify __exact    [__ax __bx __cx __dx __es __bp]
-#else
-#pragma aux _BIOSVideoGetRowCount = \
-        "mov    ax,1130h"   \
-        "xor    bh,bh"      \
-        "mov    dl,18h"     \
-        "int 10h"           \
-        "inc    dl"         \
-    __parm      [] \
-    __value     [__dl] \
-    __modify __exact    [__ax __bx __cx __dx __es __ebp]
-#endif
-
-extern int10_mode_info _BIOSVideoGetModeInfo( void );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoGetModeInfo = \
-        "mov    ah,0fh" \
-        "int 10h"       \
-    __value     [__bx __ax] \
-    __modify    [__bx]
-
-#else
-#pragma aux _BIOSVideoGetModeInfo = \
-        "mov    ah,0fh"     \
-        "int 10h"           \
-        "shl    ebx,16"     \
-        "mov    bx,ax"      \
-    __value     [__ebx] \
-    __modify    [__ax]
-#endif
-
-extern uint_32 _BIOSVideoGetColorRegister( unsigned short );
-#if defined( _M_I86 )
-#pragma aux _BIOSVideoGetColorRegister = \
-        "mov    ax,1015h"   \
-        "int 10h"           \
-    __parm      [__bx] \
-    __value     [__cx __dx] \
-    __modify    [__ax __cx __dx]
-#else
-#pragma aux _BIOSVideoGetColorRegister = \
-        "mov    ax,1015h"   \
-        "int 10h"           \
-        "mov    ax,cx"      \
-        "shr    eax,16"     \
-        "mov    ax,dx"      \
-    __parm      [__bx] \
-    __value     [__eax] \
-    __modify    [__ax __cx __dx]
-#endif
-
-
-#endif
-
-#endif
+#endif  /* _PRAGMAS_H_INCLUDED */

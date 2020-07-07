@@ -38,6 +38,7 @@
 #include "pragmas.h"
 #include "osidle.h"
 #include "int16.h"
+#include "int10.h"
 
 
 extern void UpdateDOSClock( void );
@@ -72,6 +73,17 @@ uint_32 BIOSGetColorRegister( unsigned short reg )
     return( _BIOSVideoGetColorRegister( reg ) );
 }
 
+unsigned short BIOSGetCursorPos( unsigned char page )
+{
+    return( _BIOSVideoGetCursorPos( page ).value );
+}
+
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
+{
+    _BIOSVideoSetCursorPosValues( page, row, col );
+}
+
+
 /*
  * NewCursor - change cursor to insert mode type
  */
@@ -86,7 +98,7 @@ void NewCursor( window_id wid, cursor_type ct )
         base = 16;
     }
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    _BIOSVideoSetCursorTyp( nbase, base - 1 );
+    _BIOSVideoSetCursorTypValues( nbase, base - 1 );
 
 } /* NewCursor */
 
