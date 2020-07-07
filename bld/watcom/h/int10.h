@@ -193,6 +193,13 @@ extern void _BIOSVideoSetAttr( unsigned char attr );
     __value             \
     __modify __exact    [__ax __cx __dx]
 
+extern unsigned char _BIOSVideoGetAttr( unsigned char page );
+#pragma aux _BIOSVideoGetAttr = \
+        _INT_10_FN_xBP( 8 )     \
+    __parm              [__bh] \
+    __value             [__ah] \
+    __modify __exact    [__ax]
+
 extern int10_pixel_data _BIOSVideoGetCharPixel( unsigned char page );
 #pragma aux  _BIOSVideoGetCharPixel = \
         _INT_10_FN_xBP( 8 )     \
@@ -295,7 +302,7 @@ extern void _BIOSVideoSetBlinkAttr( unsigned char on );
     __value             \
     __modify __exact    [__ax __bh]
 
-extern void _BIOSVideoGetColorPalette( void _FAR * );
+extern void _BIOSVideoGetColorPalette( void __far * );
 #ifdef _M_I86
 #pragma aux _BIOSVideoGetColorPalette = \
         "mov    al,9"           \
