@@ -31,21 +31,19 @@
 ****************************************************************************/
 
 
-#define _1k                 1024UL
-#define _64k                (64 * _1k)
-#define RoundTo1K(s)        (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
+#define _1k                     1024UL
+#define _64k                    (64 * _1k)
+#define RoundTo1K(s)            (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
 
-#define FONT_TABLE_SIZE     (8 * _1k)
+#define FONT_TABLE_SIZE         (8 * _1k)
 
-#define ISTEXTMODE( mode )  ((mode) < 4 || (mode) == 7)
-#define ISMONOMODE( mode )  ((mode) == 7 || (mode) == 15)
+#define ISTEXTMODE( mode )      ((mode) < 4 || (mode) == 7)
+#define ISMONOMODE( mode )      ((mode) == 7 || (mode) == 15)
 
-#define CURS_LOCATION_LOW   0x0f
-#define CURS_LOCATION_HI    0x0e
-#define CURS_START_SCANLINE 0x0a
-#define CURS_END_SCANLINE   0x0b
-
-#define CURSOR_REG2INS(r)   ((((r) + 0x100U) / 2U + 0x100U) & 0xff00U) + ((r) & 0x00ffU)
+#define CURS_LOCATION_LOW       0x0f
+#define CURS_LOCATION_HI        0x0e
+#define CURS_START_SCANLINE     0x0a
+#define CURS_END_SCANLINE       0x0b
 
 #define _seq_write( reg, val )      _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )    _ega_write( GRA_PORT, reg, val )
@@ -323,5 +321,3 @@ extern void _enablev( unsigned short );
     __parm              [__dx] \
     __value             \
     __modify __exact    [__al __dx]
-
-

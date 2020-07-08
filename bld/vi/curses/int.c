@@ -256,20 +256,6 @@ static void newIntVect( int vect, void __far *rtn )
 
 } /* newIntVect */
 
-extern void LockMemory( void __far *, long size );
-#pragma aux LockMemory = \
-        "push es"       \
-        "mov  ax,gs"    \
-        "mov  es,ax"    \
-        "mov  ax,252bh" \
-        "mov  bh,5"     \
-        "mov  bl,1"     \
-        "int 21h"       \
-        "pop  es"       \
-    __parm      [__gs __ecx] [__edx] \
-    __value     \
-    __modify    [__bx]
-
 /*
  * setStupid1c - don't set timer tick interrupt in DOS boxes!!?!?!
  */

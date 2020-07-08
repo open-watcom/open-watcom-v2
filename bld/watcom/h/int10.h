@@ -39,18 +39,16 @@
 #define STR(...)            #__VA_ARGS__
 #define INSTR(...)          STR(__VA_ARGS__)
 
-#define _INT                0xcd
-
 #define VECTOR_VIDEO        0x10
 
-#define _INT_10             _INT VECTOR_VIDEO
+#define _INT_10             0xcd VECTOR_VIDEO
 
 /*
  * NOTE:
  *  some video BIOS implementations destroy BP/EBP registers on some BIOS functions
  *  to work properly with any video BIOS we preserve BP/EBP register for each INT 10h call
  *  by macro _INT_10_FN_xBP
- *  only function returning BP/EBP register use _INT_10_FN macro
+ *  only function returning BP/EBP register must use _INT_10_FN macro
  */
 #ifdef _M_I86
 #define _INT_10_FN(n)       INSTR( mov ah, n ) _INT_10

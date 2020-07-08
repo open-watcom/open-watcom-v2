@@ -36,13 +36,13 @@
 #include "watcom.h"
 
 
-#define _INT            0xcd
+#define VECTOR_DPMI     0x31
 
 #if defined( __CALL31__ )
  extern  void   __Int31();
  #define _INT_31        "call __Int31"
 #else
- #define _INT_31        _INT 0x31
+ #define _INT_31        0xcd VECTOR_DPMI
 #endif
 
 /*

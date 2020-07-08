@@ -104,9 +104,9 @@ static screen_info              SaveScrn;
 static uint_16                  VIDPort;
 static uint_16                  PageSize;
 static uint_16                  CurOffst;
-static uint_16                  RegCur;
-static uint_16                  InsCur;
-static uint_16                  NoCur;
+static int10_cursor_typ         RegCur;
+static int10_cursor_typ         InsCur;
+static int10_cursor_typ         NoCur;
 static unsigned char            DbgBiosMode;
 static unsigned char            DbgCharPattSet;
 static unsigned char            DbgRows;
@@ -232,16 +232,19 @@ static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
     VIDSetCol( vidport, cursorpos >> 8 );
 }
 
-static void VIDSetCurTyp( uint_16 vidport, uint_16 cursortyp )
+static void VIDSetCurTyp( uint_16 vidport, int10_cursor_typ cursortyp )
 {
-    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp >> 8 );
-    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp & 0xf );
+    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp.top_line );
+    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp.bot_line );
 }
 
-static uint_16 VIDGetCurTyp( uint_16 vidport )
+static int10_cursor_typ VIDGetCurTyp( uint_16 vidport )
 {
-    return( _ReadCRTCReg( vidport, CURS_START_SCANLINE ) * 0x100U
-            | _ReadCRTCReg( vidport, CURS_END_SCANLINE ) );
+    int10_cursor_typ    ct;
+
+    ct.s.top_line = _ReadCRTCReg( vidport, CURS_START_SCANLINE );
+    ct.s.bot_line = _ReadCRTCReg( vidport, CURS_END_SCANLINE );
+    return( ct );
 }
 
 static bool ChkCntrlr( uint_16 port )
@@ -892,30 +895,32 @@ static void SetCursorTypes( void )
 
     switch( HWDisplay.active ) {
     case DISP_MONOCHROME:
-        RegCur = MONO_CURSOR_ON;
-        NoCur = NORM_CURSOR_OFF;
+        RegCur.value = MONO_CURSOR_ON;
+        NoCur.value = NORM_CURSOR_OFF;
         break;
     case DISP_CGA:
     case DISP_PGA:              /* just guessing here */
-        RegCur = CGA_CURSOR_ON;
-        NoCur = NORM_CURSOR_OFF;
+        RegCur.value = CGA_CURSOR_ON;
+        NoCur.value = NORM_CURSOR_OFF;
         break;
     case DISP_EGA_MONO:
     case DISP_EGA_COLOUR:
         /* scan lines per character */
         scan_lines = _BIOSVideoGetPoints();
-        RegCur = ( scan_lines - 1 ) + ( ( scan_lines - 2 ) * 0x100U );
-        NoCur = EGA_CURSOR_OFF;
+        RegCur.s.top_line = scan_lines - 2;
+        RegCur.s.bot_line = scan_lines - 1;
+        NoCur.value = EGA_CURSOR_OFF;
         break;
     case DISP_MODEL30_MONO:
     case DISP_MODEL30_COLOUR:
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
         RegCur = VIDGetCurTyp( VIDPort );
-        NoCur = NORM_CURSOR_OFF;
+        NoCur.value = NORM_CURSOR_OFF;
         break;
     }
-    InsCur = CURSOR_REG2INS( RegCur );
+    InsCur.s.top_line = ( RegCur.s.bot_line + 1 ) / 2;
+    InsCur.s.bot_line = RegCur.s.bot_line;
 }
 
 static void InitScreenMode( void )

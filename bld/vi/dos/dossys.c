@@ -89,8 +89,8 @@ void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col 
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
-    unsigned char   	base;
-    int10_cursor_typ	int10ct;
+    unsigned char       base;
+    int10_cursor_typ    int10ct;
 
     wid = wid;
     if( EditFlags.Monocolor ) {
@@ -174,10 +174,10 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    int10_cursor_pos	c;
+    int10_cursor_pos  pos;
 
-    c = _BIOSVideoGetCursorPos( VideoPage );
-    EditVars.ExitAttr = Scrn[c.s.row * EditVars.WindMaxWidth + c.s.col].cinfo_attr;
+    pos = _BIOSVideoGetCursorPos( VideoPage );
+    EditVars.ExitAttr = Scrn[pos.s.row * EditVars.WindMaxWidth + pos.s.col].cinfo_attr;
 }
 
 /*

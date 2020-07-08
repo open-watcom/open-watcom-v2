@@ -35,16 +35,9 @@
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
 
-
 #define VECTOR_DOS     0x21
 
-#ifdef __CALL21__
- extern  void   __Int21( void );
- #pragma aux __Int21 "*"
- #define _INT_21        "call __Int21"
-#else
- #define _INT_21        0xcd VECTOR_DOS
-#endif
+#define _INT_21        0xcd VECTOR_DOS
 
 extern unsigned char    In61( void );
 #pragma aux In61 = 0xe4 0x61 __value [__al]
@@ -62,7 +55,7 @@ extern void (__interrupt _FAR *DosGetVect( char ))( void );
 #ifdef _M_I86
 #pragma aux DosGetVect = \
         "mov    ah,35h" \
-        "int 21h"       \
+        _INT_21         \
         "mov    ax,bx"  \
         "mov    dx,es"  \
     __parm      [__al] \
@@ -72,7 +65,7 @@ extern void (__interrupt _FAR *DosGetVect( char ))( void );
 #pragma aux DosGetVect =    \
         "push   es"         \
         "mov    ah,35h"     \
-        "int 21h"           \
+        _INT_21             \
         "mov    eax,ebx"    \
         "mov    edx,es"     \
         "pop    es"         \
@@ -85,7 +78,7 @@ extern void DosSetVect( char, void (__interrupt *)( void ) );
 #ifdef _M_I86
 #pragma aux DosSetVect = \
         "mov    ah,25h" \
-        "int 21h"       \
+        _INT_21         \
     __parm      [__al] [__ds __dx] \
     __value     \
     __modify    [__ah]
@@ -95,7 +88,7 @@ extern void DosSetVect( char, void (__interrupt *)( void ) );
         "push   fs"     \
         "pop    ds"     \
         "mov    ah,25h" \
-        "int 21h"       \
+        _INT_21         \
         "pop    ds"     \
     __parm      [__al] [__fs __edx] \
     __value     \
@@ -112,10 +105,10 @@ extern int DoSpawn( void *, void * );
         "mov    dx,ax"    /*  exe offset */ \
         "mov    es,cx"    /*  parm block segment (offset in bx already) */ \
         "mov    ax,4b00h" /*  exec process */ \
-        "int 21h"       \
+        _INT_21         \
         "jc short rcisright" \
         "mov    ax,4d00h" \
-        "int 21h"       \
+        _INT_21         \
         "xor    ah,ah"  \
     "rcisright:"        \
         "pop    di"     \
@@ -138,7 +131,7 @@ extern int GetFcb( void *, void * );
         "mov    es,cx"    /*  parm block segment (offset in bx already) */ \
         "mov    di,bx"    \
         "mov    ax,2901h" /*  parse filename/get fcb */ \
-        "int 21h"       \
+        _INT_21         \
         "pop    di"     \
         "pop    si"     \
         "pop    es"     \
@@ -153,16 +146,16 @@ extern unsigned DosMaxAlloc( void );
         "xor    bx,bx"  \
         "dec    bx"     \
         "mov    ah,48h" \
-        "int 21h"       \
+        _INT_21         \
     __parm      [] \
     __value     [__bx] \
     __modify    [__ax]
 #else
 #pragma aux DosMaxAlloc = \
-        "xor    ebx,ebx"  \
-        "dec    ebx"      \
-        "mov    ah,48h"   \
-        "int 21h"       \
+        "xor    ebx,ebx"    \
+        "dec    ebx"        \
+        "mov    ah,48h"     \
+        _INT_21             \
     __parm      [] \
     __value     [__ebx] \
     __modify    [__eax]
@@ -171,7 +164,7 @@ extern unsigned DosMaxAlloc( void );
 extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
         "mov  ax,4408h"     \
-        "int 21h"           \
+        _INT_21             \
         "cmp  ax,0fh"       \
         "jne short ok"      \
         "xor  ax,ax"        \
@@ -191,7 +184,7 @@ extern void LockMemory( void __far *, long size );
         "mov  ax,252bh" \
         "mov  bh,5"     \
         "mov  bl,1"     \
-        "int 21h"       \
+        _INT_21         \
         "pop  es"       \
     __parm      [__gs __ecx] [__edx] \
     __value     \

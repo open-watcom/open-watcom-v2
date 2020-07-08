@@ -37,11 +37,9 @@
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
 
 
-#define _INT                0xcd
-
 #define VECTOR_KEYB         0x16
 
-#define _INT_16             _INT VECTOR_KEYB
+#define _INT_16             0xcd VECTOR_KEYB
 
 #define KEYB_STD            0
 #define KEYB_EXT            0x10
