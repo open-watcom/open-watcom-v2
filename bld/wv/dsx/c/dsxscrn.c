@@ -48,6 +48,7 @@
 #include "dsxscrn.h"
 #include "realmod.h"
 #include "int10.h"
+#include "int33.h"
 
 
 #define EGA_VIDEO_BUFF          (LP_PIXEL)RealModeSegmPtr( 0xa000 )
@@ -66,10 +67,6 @@
 #define restore_from_swap( off, data, size )    _fmemcpy( data, RegenSave + off, size )
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
-
-#define VECTOR_MOUSE        0x33
-
-#define IRET                0xcf
 
 typedef struct {
     unsigned char           points;
