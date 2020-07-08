@@ -33,7 +33,7 @@
 #include "vi.h"
 #include <dos.h>
 #include "mouse.h"
-#include "dosmouse.h"
+#include "int33.h"
 
 /*
  * SetMouseSpeed - set mouse movement speed

@@ -36,7 +36,6 @@
 #include "uidos.h"
 #include "uiattrs.h"
 #include "uicurshk.h"
-#include "biosui.h"
 
 
 // these functions get overridden by the OW Debugger if it's doing its own

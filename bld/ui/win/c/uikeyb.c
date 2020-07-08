@@ -35,7 +35,6 @@
 #include "uidef.h"
 #include "uidos.h"
 #include "uishift.h"
-#include "biosui.h"
 #include "uiwin.h"
 #include <windows.h>
 #include "setevent.h"

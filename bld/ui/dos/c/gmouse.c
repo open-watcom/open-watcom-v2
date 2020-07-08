@@ -33,7 +33,7 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "biosui.h"
+#include "int33.h"
 #include "charmap.h"
 #include "uimouse.h"
 #include "uibmous.h"
@@ -249,7 +249,7 @@ static bool MouInit( void )
         first_time = false;
         savedmode = BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
         BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
-        ret = MouseDrvReset();                                          /* Reset driver for change */
+        ret = _BIOSMouseDriverReset();                                   /* Reset driver for change */
         BIOSData( BDATA_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
         if( ret != MOUSE_DRIVER_OK ) {
             return( false );
@@ -294,7 +294,7 @@ static void MouDeinit( void )
     }
     ResetSequencer();
     /* MASSIVE KLUDGE: See comment in MouInit routine
-//    MouseDrvReset();
+//    _BIOSMouseDriverReset();
     */
 }
 
@@ -329,7 +329,7 @@ bool UIAPI uiinitgmouse( init_mode install )
                 } else {
                     install = INIT_MOUSELESS;
                 }
-            } else if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
+            } else if( _BIOSMouseDriverReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;
             }
         }

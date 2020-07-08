@@ -33,7 +33,7 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "biosui.h"
+#include "int33.h"
 #include "realmod.h"
 
 

@@ -36,7 +36,6 @@
 #include "extender.h"
 #include "uidef.h"
 #include "uidos.h"
-#include "biosui.h"
 #include "dpmi.h"
 #include "uigchar.h"
 #include "getltdos.h"
@@ -263,7 +262,7 @@ extern bool desqview_present( void );
         "mov  ax,2b01h"     \
         "mov  cx,4445h"     \
         "mov  dx,5351h"     \
-        _INT_21             \
+        "int 21h"           \
         "cmp  al,0ffh"      \
         "jz L1"             \
         "xor  al,al"        \

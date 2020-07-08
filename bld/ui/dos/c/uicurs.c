@@ -36,7 +36,6 @@
 #include "uidos.h"
 #include "uiattrs.h"
 #include "uicurshk.h"
-#include "biosui.h"
 #include "uicurshk.h"
 #include "int10.h"
 

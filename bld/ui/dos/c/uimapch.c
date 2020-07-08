@@ -34,7 +34,6 @@
 #include <dos.h>
 #include <string.h>
 #include "uidef.h"
-#include "biosui.h"
 #include "charmap.h"
 #include "uigchar.h"
 #include "realmod.h"

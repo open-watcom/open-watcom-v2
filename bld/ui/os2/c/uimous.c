@@ -34,8 +34,9 @@
 #include "uidef.h"
 #include "doscall.h"
 #include "uimouse.h"
-#include "biosui.h"
-
+#ifdef _M_I86
+    #include "int33.h"
+#endif
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 #define _osmode_PROTMODE()  (_osmode == OS2_MODE)
@@ -126,12 +127,12 @@ void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUS
 {
 #ifdef _M_I86
     if( _osmode_REALMODE() ) {
-        struct  mouse_data state;
+        mouse_status    state;
 
-        MouseDrvCallRetState( 3, &state );
-        *pstatus = state.bx;
-        *prow  = state.dx / MOUSE_SCALE;
-        *pcol  = state.cx / MOUSE_SCALE;
+        _BIOSMouseGetPositionAndButtonStatus( &state );
+        *pstatus = state.button_status;
+        *prow  = state.y / MOUSE_SCALE;
+        *pcol  = state.x / MOUSE_SCALE;
     } else {
 #endif
         GetMouseInfo();
@@ -156,16 +157,13 @@ void uimousespeed( unsigned speed )
     }
 #ifdef _M_I86
     if( _osmode_REALMODE() ) {
-        MouseDrvCall3( 0x0F, speed, speed * 2, 0, 0 );
+        _BIOSMouseSetMickeysToPixelsRatio( speed, speed * 2 );
         UIData->mouse_speed = speed;
     }
 #endif
 }
 
 #ifdef _M_I86
-
-#define IRET       '\xCF'
-
 static bool mouse_installed( void )
 /*********************************/
 {
@@ -186,20 +184,20 @@ static void DOS_initmouse( init_mode install )
 
     if( install != INIT_MOUSELESS && mouse_installed() ) {
         if( install == INIT_MOUSE_INITIALIZED ) {
-            if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
+            if( _BIOSMouseDriverReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
         if( install != INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
-            MouseDrvCall2( 7, 0, 0, dx );
+            _BIOSMouseSetHorizontalLimitsForPointer( 0, dx );
             dx = ( UIData->height - 1 ) * MOUSE_SCALE;
-            MouseDrvCall2( 8, 0, 0, dx );
+            _BIOSMouseSetVerticalLimitsForPointer( 0, dx );
 
             cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
             dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
-            MouseDrvCall2( 0x0A, 0, cx, dx );
-            MouseDrvCall3( 0x10, 0, 0, 0, 0 );
+            _BIOSMouseSetTextPointerType( SOFTWARE_CURSOR, cx, dx );
+            _BIOSMouseSetPointerExclusionArea( 0, 0, 0, 0 );
 
             UIData->mouse_swapped = false;
             UIData->mouse_xscale = 1;
@@ -299,7 +297,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     if( _osmode_REALMODE() ) {
         MouseRow = row;
         MouseCol = col;
-        MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+        _BIOSMouseSetPointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
 #endif
         uisetmouse( row, col );

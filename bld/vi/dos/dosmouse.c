@@ -32,14 +32,14 @@
 #include "vi.h"
 #include <i86.h>
 #include "mouse.h"
-#include "dosmouse.h"
+#include "int33.h"
 
 /*
  * SetMouseSpeed - set mouse movement speed
  */
 void SetMouseSpeed( int speed )
 {
-    SetMickeysToPixelsRatio( speed, speed * 2 );
+    _BIOSMouseSetMickeysToPixelsRatio( speed, speed * 2 );
     EditVars.MouseSpeed = speed;
 
 } /* SetMouseSpeed */
@@ -51,7 +51,7 @@ void SetMousePosition( windim row, windim col )
 {
     MouseRow = row;
     MouseCol = col;
-    SetMousePointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
+    _BIOSMouseSetPointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
 
 } /* SetMousePosition */
 
@@ -60,12 +60,12 @@ void SetMousePosition( windim row, windim col )
  */
 void PollMouse( int *status, windim *row, windim *col )
 {
-    mouse_status        ms;
+    mouse_status        state;
 
-    GetMousePositionAndButtonStatus( &ms );
-    *status = ms.button_status;
-    *col = ms.x / MOUSE_SCALE;
-    *row = ms.y / MOUSE_SCALE;
+    _BIOSMouseGetPositionAndButtonStatus( &state );
+    *status = state.button_status;
+    *col = state.x / MOUSE_SCALE;
+    *row = state.y / MOUSE_SCALE;
 
 } /* PollMouse */
 
@@ -84,13 +84,13 @@ void InitMouse( void )
     }
 
 #if defined( _M_I86 )
-    vector = MK_FP( 0, MOUSE_INT * 4 );
+    vector = MK_FP( 0, VECTOR_MOUSE * 4 );
     intrtn = MK_FP( vector[1], vector[0] );
 #elif defined( __4G__ )
-    vector = (unsigned short _FAR *)(MOUSE_INT * 4);
+    vector = (unsigned short _FAR *)(VECTOR_MOUSE * 4);
     intrtn = (unsigned char _FAR *)((((unsigned)vector[1]) << 4) + vector[0]);
 #else
-    vector = MK_FP( 0x34, MOUSE_INT * 4 );
+    vector = MK_FP( 0x34, VECTOR_MOUSE * 4 );
     intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
 #endif
     if( ( intrtn == NULL ) || ( *intrtn == 0xcf ) ) {
@@ -98,10 +98,10 @@ void InitMouse( void )
         return;
     }
 
-    MouseFunction( RESET_MOUSE_DRIVER );
+    _BIOSMouseDriverResetSoft();
 
-    SetHorizontalLimitsForPointer( 0, (EditVars.WindMaxWidth - 1) * MOUSE_SCALE );
-    SetVerticalLimitsForPointer( 0, (EditVars.WindMaxHeight - 1) * MOUSE_SCALE );
+    _BIOSMouseSetHorizontalLimitsForPointer( 0, (EditVars.WindMaxWidth - 1) * MOUSE_SCALE );
+    _BIOSMouseSetVerticalLimitsForPointer( 0, (EditVars.WindMaxHeight - 1) * MOUSE_SCALE );
 
     if( EditFlags.Monocolor ) {
         and_mask = 0x79ff;
@@ -110,8 +110,8 @@ void InitMouse( void )
         and_mask = 0x7fff;
         or_mask = 0x7700;
     }
-    SetTextPointerType( SOFTWARE_CURSOR, and_mask, or_mask );
-    SetMousePointerExclusionArea( 0, 0, 0, 0 );
+    _BIOSMouseSetTextPointerType( SOFTWARE_CURSOR, and_mask, or_mask );
+    _BIOSMouseSetPointerExclusionArea( 0, 0, 0, 0 );
     SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
     SetMouseSpeed( EditVars.MouseSpeed );
     PollMouse( &MouseStatus, &MouseRow, &MouseCol );

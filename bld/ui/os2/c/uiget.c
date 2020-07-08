@@ -37,9 +37,6 @@
 #include "uidef.h"
 #include "doscall.h"
 #include "uiforce.h"
-#ifdef _M_I86
-#include "biosui.h"
-#endif
 #include "realmod.h"
 
 

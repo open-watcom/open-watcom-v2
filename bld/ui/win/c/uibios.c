@@ -35,7 +35,6 @@
 #include <conio.h>
 #include "uidef.h"
 #include "uidos.h"
-#include "biosui.h"
 #include "uicurshk.h"
 #include "int10.h"
 

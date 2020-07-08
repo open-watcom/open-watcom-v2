@@ -32,7 +32,6 @@
 
 
 #include <stdui.h>
-#include "biosui.h"
 #include "uicurshk.h"
 #include "int10.h"
 

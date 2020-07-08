@@ -46,32 +46,32 @@
 
 extern unsigned short _BIOSKeyboardGet( unsigned char );
 #pragma aux  _BIOSKeyboardGet = \
-        _INT_16                 \
-    __parm      [__ah] \
-    __value     [__ax] \
+        _INT_16         \
+    __parm              [__ah] \
+    __value             [__ax] \
     __modify __exact    [__ax]
 
 extern unsigned char _BIOSKeyboardHit( unsigned char );
 #pragma aux _BIOSKeyboardHit = \
-        "or     ah,1"           \
-        _INT_16                 \
-        "jz short L1"           \
-        "mov    al,1"           \
-        "jmp short L2"          \
-    "L1: xor    al,al"          \
-    "L2:"                       \
-    __parm      [__ah] \
-    __value     [__al] \
+        "or     ah,1"   \
+        _INT_16         \
+        "jz short L1"   \
+        "mov    al,1"   \
+        "jmp short L2"  \
+    "L1: xor    al,al"  \
+    "L2:"               \
+    __parm              [__ah] \
+    __value             [__al] \
     __modify __exact    [__ax]
 
 extern unsigned char _BIOSKeyboardTest( unsigned char );
 #pragma aux _BIOSKeyboardTest =  \
-        "or     ah,2"           \
-        "mov    al,0ffh"        \
-        _INT_16                 \
-    __parm      [__ah] \
-    __value     [__al] \
-    __modify __exact   [__ax]
+        "or     ah,2"       \
+        "mov    al,0ffh"    \
+        _INT_16             \
+    __parm              [__ah] \
+    __value             [__al] \
+    __modify __exact    [__ax]
 
 
 #endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */

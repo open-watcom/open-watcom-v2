@@ -32,7 +32,7 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "biosui.h"
+#include "extender.h"
 #include "charmap.h"
 
 
