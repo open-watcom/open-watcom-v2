@@ -67,7 +67,7 @@ mem_objs = &
     $(trmem_objs)
 
 
-objs = $(common_objs) $(mem_objs) $(extra_objs) $(sysobjs)
+objs = $(common_objs) $(mem_objs) $(sysobjs)
 
 libs = $(wpi_lib) $(commonui_lib)
 

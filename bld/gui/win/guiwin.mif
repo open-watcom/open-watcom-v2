@@ -85,11 +85,9 @@ win_sysobjs = &
     guif1hk.obj	 &
     guigetrc.obj
 
-!ifeq host_os nt
-win_sysobjs +=	&
+win_sysobjs_nt = &
     guisystr.obj
-!endif
 
-sysobjs = $(win_sysobjs) $(wpi_sysobjs)
+sysobjs = $(win_sysobjs) $(win_sysobjs_$(host_os)) $(wpi_sysobjs)
 
 !include ../../master.mif
