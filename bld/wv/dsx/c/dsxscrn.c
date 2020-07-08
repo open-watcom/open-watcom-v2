@@ -67,6 +67,10 @@
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
+#define VECTOR_MOUSE        0x33
+
+#define IRET                0xcf
+
 typedef struct {
     unsigned char           points;
     unsigned char           mode;

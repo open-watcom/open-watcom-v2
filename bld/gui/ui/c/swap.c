@@ -38,14 +38,13 @@
 #include "swapline.h"
 #include "swap.h"
 #include "realmod.h"
+#include "int10.h"
 
 
 #define GetBIOSData( offset, var ) \
     MyMoveData( BDATA_SEG, offset, _FP_SEG( &var ), _FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
     MyMoveData( _FP_SEG( &var ), _FP_OFF( &var ), BDATA_SEG, offset, sizeof( var ) );
-
-#define VIDCOLORINDXREG  0x03D4
 
 typedef enum {
     DISP_NONE,
@@ -68,43 +67,6 @@ typedef struct {
     hw_display_type active;
     hw_display_type alt;
 } display_configuration;
-
-extern display_configuration BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode = \
-        "push bp"       \
-        "mov  ax,1a00h" \
-        "int 10h"       \
-        "cmp  al,1ah"   \
-        "jz short L1"   \
-        "sub  bx,bx"    \
-    "L1: pop  bp"       \
-    __parm              [] \
-    __value             [__bx] \
-    __modify __exact    [__ax __bx]
-
-extern char BIOSGetMode( void );
-#pragma aux BIOSGetMode = \
-        "push bp"       \
-        "mov  ah,0fh"   \
-        "int 10h"       \
-        "pop  bp"       \
-    __parm              [] \
-    __value             [__al] \
-    __modify __exact    [__ax __bh]
-
-extern signed long BIOSEGAInfo( void );
-#pragma aux BIOSEGAInfo = \
-        "push bp"       \
-        "mov  ah,12h"   \
-        "mov  bl,10h"   \
-        "mov  bh,0ffh"  \
-        "int 10h"       \
-        "mov  ax,bx"    \
-        "mov  dx,cx"    \
-        "pop  bp"       \
-    __parm              [] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx]
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,
@@ -561,13 +523,9 @@ void ToGraphical( void )
     restoreCursor();
 }
 
-#define DOUBLE_DOT_CHR_SET      0x12
-#define COMPRESSED_CHR_SET      0x11
-#define USER_CHR_SET            0x00
-
-static void SetCharSet( unsigned char c )
+static void SetCharPattSet( unsigned char pattset )
 {
-    rmRegs.eax = 0x1100 + c;
+    rmRegs.eax = 0x1100 + pattset;
     rmRegs.ebx = 0;
     doAnInt10();
 }
@@ -585,9 +543,9 @@ void ToCharacter( void )
     }
     isGraphical = false;
     if( SwapScrnLines() >=43 ) {
-        SetCharSet( DOUBLE_DOT_CHR_SET );
+        SetCharPattSet( DOUBLE_DOT_CHAR_PATTSET );
     } else if( SwapScrnLines() >= 28 ) {
-        SetCharSet( COMPRESSED_CHR_SET );
+        SetCharPattSet( COMPRESSED_CHAR_PATTSET );
     }
 }
 

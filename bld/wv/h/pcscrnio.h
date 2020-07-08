@@ -31,8 +31,6 @@
 ****************************************************************************/
 
 
-#include "int10.h"
-
 #define _1k                 1024UL
 #define _64k                (64 * _1k)
 #define RoundTo1K(s)        (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
@@ -58,10 +56,6 @@
 #define VIDSetRow( vidport, row )   _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row )
 #define VIDGetCol( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_HI )
 #define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
-
-#define VECTOR_MOUSE        0x33
-
-#define IRET                0xCF
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,

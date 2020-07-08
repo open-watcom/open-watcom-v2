@@ -35,6 +35,17 @@
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
 
+
+#define VECTOR_DOS     0x21
+
+#ifdef __CALL21__
+ extern  void   __Int21( void );
+ #pragma aux __Int21 "*"
+ #define _INT_21        "call __Int21"
+#else
+ #define _INT_21        0xcd VECTOR_DOS
+#endif
+
 extern unsigned char    In61( void );
 #pragma aux In61 = 0xe4 0x61 __value [__al]
 
@@ -157,6 +168,35 @@ extern unsigned DosMaxAlloc( void );
     __modify    [__eax]
 #endif
 
+extern unsigned short CheckRemovable( unsigned char );
+#pragma aux CheckRemovable = \
+        "mov  ax,4408h"     \
+        "int 21h"           \
+        "cmp  ax,0fh"       \
+        "jne short ok"      \
+        "xor  ax,ax"        \
+        "jmp short done"    \
+    "ok: inc  ax"           \
+    "done:"                 \
+    __parm      [__bl] \
+    __value     [__ax] \
+    __modify    []
+
+#if defined( _M_IX86 ) && !defined( _M_I86 )
+extern void LockMemory( void __far *, long size );
+#pragma aux LockMemory = \
+        "push es"       \
+        "mov  ax,gs"    \
+        "mov  es,ax"    \
+        "mov  ax,252bh" \
+        "mov  bh,5"     \
+        "mov  bl,1"     \
+        "int 21h"       \
+        "pop  es"       \
+    __parm      [__gs __ecx] [__edx] \
+    __value     \
+    __modify    [__bx]
+#endif
 
 #endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */
 

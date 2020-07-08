@@ -43,12 +43,6 @@
 
 #define _swap(t,a,b)    {t i; i=a; a=b; b=i;}
 
-#ifdef _M_I86
-    #define intx86      int86
-#else
-    #define intx86      int386
-#endif
-
 static CATTR            OldCursorAttr;
 static CURSORORD        OldCursorRow;
 static CURSORORD        OldCursorCol;
@@ -63,6 +57,7 @@ void UIHOOK _uioffcursor( void )
         /* set OldCursor size */
         ct.value = NORM_CURSOR_OFF;
         _BIOSVideoSetCursorTyp( ct );
+        UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
 }
@@ -81,7 +76,7 @@ void UIHOOK _uioncursor( void )
         c.typ.value = MONO_CURSOR_ON;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        c.typ.s.top_line = ( c.typ.s.top_line + 1 ) / 2;
+        c.typ.s.top_line = c.typ.s.bot_line / 2;
     }
     _BIOSVideoSetCursorTyp( c.typ );
     info = _BIOSVideoGetModeInfo();
@@ -116,7 +111,7 @@ static void savecursor( void )
     if( !UIData->cursor_on ) {
         OldCursorType = C_OFF;
     }
-    OldCursorAttr = _BIOSVideoGetCharAttr( info.page );
+    OldCursorAttr = _BIOSVideoGetAttr( info.page );
 }
 
 
@@ -160,17 +155,17 @@ void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, 
     if( !UIData->cursor_on ) {
         *ctype = C_OFF;
     }
-    *cattr = _BIOSVideoGetCharAttr( info.page );
+    *cattr = _BIOSVideoGetAttr( info.page );
 }
 
 
 void UIHOOK _uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctyp, CATTR cattr )
 /***************************************************************************************/
 {
-    if( ( ctyp != UIData->cursor_type ) ||
-        ( crow != UIData->cursor_row ) ||
-        ( ccol != UIData->cursor_col ) ||
-        ( cattr != UIData->cursor_attr ) ) {
+    if( ( ctyp != UIData->cursor_type )
+      || ( crow != UIData->cursor_row )
+      || ( ccol != UIData->cursor_col )
+      || ( cattr != UIData->cursor_attr ) ) {
         UIData->cursor_type = ctyp;
         UIData->cursor_row = crow;
         UIData->cursor_col = ccol;

@@ -89,16 +89,18 @@ void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col 
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
-    unsigned char   base, nbase;
+    unsigned char   	base;
+    int10_cursor_typ	int10ct;
 
     wid = wid;
     if( EditFlags.Monocolor ) {
-        base = 14;
+        base = 0x0e;
     } else {
-        base = 16;
+        base = 0x10;
     }
-    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    _BIOSVideoSetCursorTypValues( nbase, base - 1 );
+    int10ct.s.bot_line = base - 1;
+    int10ct.s.top_line = ( base * ( 100 - ct.height ) ) / 100;
+    _BIOSVideoSetCursorTyp( int10ct );
 
 } /* NewCursor */
 
@@ -172,13 +174,10 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    unsigned short  cursor;
-    unsigned short  x, y;
+    int10_cursor_pos	c;
 
-    cursor = BIOSGetCursorPos( VideoPage );
-    x = cursor >> 8;
-    y = cursor & 0xff;
-    EditVars.ExitAttr = Scrn[y * EditVars.WindMaxWidth + x].cinfo_attr;
+    c = _BIOSVideoGetCursorPos( VideoPage );
+    EditVars.ExitAttr = Scrn[c.s.row * EditVars.WindMaxWidth + c.s.col].cinfo_attr;
 }
 
 /*
@@ -385,20 +384,6 @@ void TurnOffCapsLock( void )
     }
 
 } /* TurnOffCapsLock */
-
-extern unsigned short CheckRemovable( unsigned char );
-#pragma aux CheckRemovable = \
-        "mov  ax,4408h"     \
-        "int 21h"           \
-        "cmp  ax,0fh"       \
-        "jne short ok"      \
-        "xor  ax,ax"        \
-        "jmp short done"    \
-    "ok: inc  ax"           \
-    "done:"                 \
-    __parm      [__bl] \
-    __value     [__ax] \
-    __modify    []
 
 /*
  * DoGetDriveType - get the type of drive A-Z

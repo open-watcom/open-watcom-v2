@@ -37,13 +37,15 @@
 #include <limits.h>
 #include "wio.h"
 #include "common.h"
-#if defined( __WINDOWS__ ) || defined( __NT__ )
+#if defined( __DOS__ )
+    #include <i86.h>
+    #include "tinyio.h"
+    #include "int10.h"
+    #include "realmod.h"
+#elif defined( __WINDOWS__ )
     #include <windows.h>
-#endif
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
-    #if defined( __WATCOMC__ )
-        #include "tinyio.h"
-    #endif
+#elif defined( __NT__ )
+    #include <windows.h>
 #elif defined( __OS2__ )
     #define INCL_DOS
     #include "os2.h"
@@ -258,23 +260,11 @@ void InitPaths( void )
 #endif
 }
 
-#if defined( __DOS__ )
-extern void DoRingBell( void );
-#pragma aux DoRingBell = \
-        "push ebp"      \
-        "mov  ax,0e07h" \
-        "int 10h"       \
-        "pop  ebp"      \
-    __parm              [] \
-    __value             \
-    __modify __exact    [__ax]
-#endif
-
 void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    DoRingBell();
+    _BIOSVideoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )
