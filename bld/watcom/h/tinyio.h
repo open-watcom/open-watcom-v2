@@ -831,13 +831,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #define _INT_25         _INT 0x25
 #define _INT_26         _INT 0x26
 
-#if defined( __CALL31__ )
- extern  void   __Int31( void );
- #pragma aux __Int31 "*"
- #define _INT_31        "call __Int31"
-#else
- #define _INT_31        _INT 0x31
-#endif
+#define _INT_31         _INT 0x31
 
 #define _GET_           0x00
 #define _SET_           0x01
