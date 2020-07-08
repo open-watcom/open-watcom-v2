@@ -51,7 +51,7 @@
 #define EXT_KEY_STAT            0x11
 #define EXT_KEY_SHFT            0x12
 
-static unsigned char    ReadReq = KEYB_STD;      /* this will be 0x00 or 0x10 */
+static unsigned char    ReadReq = KEYB_STD;     /* this will be KEYB_STD or KEYB_EXT */
 
 static shiftkey_event   ShiftkeyEvents[] = {
     EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,

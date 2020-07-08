@@ -424,7 +424,7 @@ bool KeyboardHit( void )
 {
     bool        rc;
 
-    rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
+    rc = _BIOSKeyboardHit( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
@@ -444,7 +444,7 @@ vi_key GetKeyboard( void )
     unsigned    scan;
     bool        shift;
 
-    code = _BIOSKeyboardGet( EditFlags.ExtendedKeyboard ? KEYB_EXT : KEYB_STD );
+    code = _BIOSKeyboardGet( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     shift = ShiftDown();
     scan = code >> 8;
     code &= 0xff;
