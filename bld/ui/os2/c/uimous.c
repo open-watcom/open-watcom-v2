@@ -41,8 +41,6 @@
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 #define _osmode_PROTMODE()  (_osmode == OS2_MODE)
 
-#define MOUSE_SCALE     8
-
 /* Process Type codes (local information segment typeProcess field)           */
 
 #define _PT_FULLSCREEN              0 /* Full screen application               */
@@ -168,7 +166,7 @@ static bool mouse_installed( void )
 /*********************************/
 {
     unsigned short  __far *vector;
-    char            __far *intrtn;
+    unsigned char   __far *intrtn;
 
     /* get mouse driver interrupt vector */
     vector = _MK_FP( 0, VECTOR_MOUSE * 4 );

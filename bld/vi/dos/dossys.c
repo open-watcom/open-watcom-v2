@@ -174,7 +174,7 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    int10_cursor_pos  pos;
+    int10_cursor_pos    pos;
 
     pos = _BIOSVideoGetCursorPos( VideoPage );
     EditVars.ExitAttr = Scrn[pos.s.row * EditVars.WindMaxWidth + pos.s.col].cinfo_attr;

@@ -37,8 +37,6 @@
 #include "uibmous.h"
 
 
-#define MOUSE_SCALE     8
-
 unsigned short          Points;         /* Number of lines per character */
 
 /* MickeyRow and MickeyCol are accurate under DOS and OS2's DOS */

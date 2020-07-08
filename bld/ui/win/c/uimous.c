@@ -39,8 +39,6 @@
 #include "uiwin.h"
 
 
-#define MOUSE_SCALE     8
-
 static MOUSESTAT    MouseStatusBits;
 static int          MouseX;
 static int          MouseY;
