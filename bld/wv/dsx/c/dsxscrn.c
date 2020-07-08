@@ -234,8 +234,8 @@ static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
 
 static void VIDSetCurTyp( uint_16 vidport, int10_cursor_typ cursortyp )
 {
-    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp.top_line );
-    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp.bot_line );
+    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp.s.top_line );
+    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp.s.bot_line );
 }
 
 static int10_cursor_typ VIDGetCurTyp( uint_16 vidport )
