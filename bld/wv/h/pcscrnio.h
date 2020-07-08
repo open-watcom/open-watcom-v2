@@ -31,21 +31,7 @@
 ****************************************************************************/
 
 
-#define STR(...)    #__VA_ARGS__
-#define INSTR(...)  STR(__VA_ARGS__)
-
-#if defined(__CALL10__)
- extern  void   __Int10();
- #define _INT_10            "call __Int10"
-#else
- #define _INT_10            "int 10h"
-#endif
-
-#ifdef _M_I86
-#define _INT_10_FN(n)       "push bp" INSTR( mov ah, n ) "int 10h" "pop bp"
-#else
-#define _INT_10_FN(n)       "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
-#endif
+#include "int10.h"
 
 #define _1k                 1024UL
 #define _64k                (64 * _1k)
@@ -53,15 +39,8 @@
 
 #define FONT_TABLE_SIZE     (8 * _1k)
 
-#define VIDMONOINDXREG      0x03B4
-#define VIDCOLORINDXREG     0x03D4
-
 #define ISTEXTMODE( mode )  ((mode) < 4 || (mode) == 7)
 #define ISMONOMODE( mode )  ((mode) == 7 || (mode) == 15)
-
-#define DOUBLE_DOT_CHR_SET  0x12
-#define COMPRESSED_CHR_SET  0x11
-#define USER_CHR_SET        0
 
 #define CURS_LOCATION_LOW   0x0f
 #define CURS_LOCATION_HI    0x0e
@@ -80,7 +59,6 @@
 #define VIDGetCol( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_HI )
 #define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
 
-#define VECTOR_VIDEO        0x10
 #define VECTOR_MOUSE        0x33
 
 #define IRET                0xCF
@@ -269,56 +247,6 @@ typedef enum {
 } screen_opt;
 
 #ifdef _M_I86
-extern unsigned BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode = \
-        "xor  al,al"        \
-        _INT_10_FN( 0x1a )  \
-        "cmp  al,1ah"       \
-        "jz short L1"       \
-        "sub  bx,bx"        \
-    "L1:"                   \
-    __parm              [] \
-    __value             [__bx] \
-    __modify __exact    [__ax __bx]
-#endif
-
-extern unsigned char BIOSGetMode( void );
-#pragma aux BIOSGetMode = \
-        _INT_10_FN( 0x0f )  \
-    __parm              [] \
-    __value             [__al] \
-    __modify __exact    [__ax __bh]
-
-extern unsigned long BIOSEGAInfo( void );
-#ifdef _M_I86
-#pragma aux BIOSEGAInfo = \
-        "mov    bx,0ff10h"  \
-        _INT_10_FN( 0x12 )  \
-    __parm              [] \
-    __value             [__cx __bx] \
-    __modify __exact    [__ah __bx __cx]
-#else
-#pragma aux BIOSEGAInfo = \
-        "mov  bx,0ff10h"    \
-        _INT_10_FN( 0x12 )  \
-        "shl  ecx,10h"      \
-        "mov  cx,bx"        \
-    __parm              [] \
-    __value             [__ecx] \
-    __modify __exact    [__ah __bx __ecx]
-#endif
-
-#ifdef _M_I86
-extern void _DoRingBell( unsigned char );
-#pragma aux _DoRingBell = \
-        "mov    al,7"       \
-        _INT_10_FN( 0x0e )  \
-    __parm              [__bh] \
-    __value             \
-    __modify __exact    [__ax]
-#endif
-
-#ifdef _M_I86
 extern void Fillb( unsigned, unsigned, unsigned char, unsigned );
 #pragma aux Fillb = \
         "rep stosb"     \
@@ -403,124 +331,3 @@ extern void _enablev( unsigned short );
     __modify __exact    [__al __dx]
 
 
-extern void BIOSSetPage( unsigned char pagenb );
-#pragma aux BIOSSetPage = \
-        _INT_10_FN( 5 )     \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned char BIOSGetPage( void );
-#pragma aux BIOSGetPage = \
-        _INT_10_FN( 0x0f )  \
-    __parm              [] \
-    __value             [__bh] \
-    __modify __exact    [__ax __bh]
-
-extern void BIOSSetMode( unsigned char mode );
-#pragma aux BIOSSetMode = \
-        _INT_10_FN( 0 )     \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ax]
-
-extern unsigned short BIOSGetCursorPos( unsigned char pagenb );
-#pragma aux BIOSGetCursorPos = \
-        _INT_10_FN( 3 )     \
-    __parm              [__bh] \
-    __value             [__dx] \
-    __modify __exact    [__ax __cx __dx]
-
-extern void BIOSSetCursorPos( unsigned short rowcol, unsigned char pagenb );
-#pragma aux BIOSSetCursorPos = \
-        _INT_10_FN( 2 )     \
-    __parm              [__dx] [__bh] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned short BIOSGetCursorTyp( unsigned char pagenb );
-#pragma aux BIOSGetCursorTyp = \
-        _INT_10_FN( 3 )     \
-    __parm              [__bh] \
-    __value             [__cx] \
-    __modify __exact    [__ax __cx __dx]
-
-extern void BIOSSetCursorTyp( unsigned short startend );
-#pragma aux BIOSSetCursorTyp = \
-        _INT_10_FN( 1 )     \
-    __parm              [__cx] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned char BIOSGetAttr( unsigned char pagenb );
-#pragma aux BIOSGetAttr = \
-        _INT_10_FN( 8 )     \
-    __parm              [__bh] \
-    __value             [__ah] \
-    __modify __exact    [__ax]
-
-extern void BIOSSetAttr( unsigned char attr );
-#pragma aux BIOSSetAttr = \
-        "xor  cx,cx"        \
-        "mov  dx,3250h"     \
-        "xor  al,al"        \
-        _INT_10_FN( 6 )     \
-    __parm              [__bh] \
-    __value             \
-    __modify __exact    [__ax __cx __dx]
-
-extern unsigned char BIOSGetRowCount( void );
-#ifdef _M_I86
-#pragma aux BIOSGetRowCount = \
-        "push   es"         \
-        "mov    al,30h"     \
-        "xor    bh,bh"      \
-        _INT_10_FN( 0x11 )  \
-        "inc    dl"         \
-        "pop    es"         \
-    __parm              [] \
-    __value             [__dl] \
-    __modify __exact    [__ax __bh __cx __dl]
-#else
-#pragma aux BIOSGetRowCount = \
-        "push es"           \
-        "mov  al,30h"       \
-        "xor  bh,bh"        \
-        _INT_10_FN( 0x11 )  \
-        "inc  dl"           \
-        "pop  es"           \
-    __parm              [] \
-    __value             [__dl] \
-    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
-#endif
-
-extern unsigned short BIOSGetPoints( void );
-#ifdef _M_I86
-#pragma aux BIOSGetPoints = \
-        "push   es"         \
-        "mov    al,30h"     \
-        "xor    bh,bh"      \
-        _INT_10_FN( 0x11 )  \
-        "pop    es"         \
-    __parm              [] \
-    __value             [__cx] \
-    __modify __exact    [__ax __bh __cx __dl]
-#else
-#pragma aux BIOSGetPoints = \
-        "push es"           \
-        "mov  al,30h"       \
-        "xor  bh,bh"        \
-        _INT_10_FN( 0x11 )  \
-        "pop  es"           \
-    __parm              [] \
-    __value             [__cx] \
-    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
-#endif
-
-extern void BIOSEGAChrSet( unsigned char vidroutine );
-#pragma aux BIOSEGAChrSet = \
-        "xor  bl,bl"        \
-        _INT_10_FN( 0x11 )  \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ah __bl]

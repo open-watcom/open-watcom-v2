@@ -52,6 +52,7 @@
 #include "wininit.h"
 #include "setevent.h"
 #include "uiwinhk.h"
+#include "int10.h"
 
 
 #define TstMono()       ChkCntrlr( VIDMONOINDXREG )
@@ -188,28 +189,22 @@ static bool ChkCntrlr( unsigned port )
 
 static void GetDispConfig( void )
 {
-    unsigned long       info;
-    unsigned char       colour;
-    unsigned char       memory;
-    unsigned char       swtchs;
+    int10_ega_info      info;
     unsigned char       curr_mode;
     hw_display_type     temp;
     unsigned            dev_config;
 
-    dev_config = BIOSDevCombCode();
+    dev_config = _BIOSVideoDevCombCode();
     HWDisplay.active = dev_config & 0xff;
     HWDisplay.alt = (dev_config >> 8) & 0xff;
     if( HWDisplay.active != DISP_NONE )
         return;
     /* have to figure it out ourselves */
-    curr_mode = BIOSGetMode() & 0x7f;
-    info = BIOSEGAInfo();
-    memory = info;
-    colour = info >> 8;
-    swtchs = info >> 16;
-    if( swtchs < 12 && memory <= 3 && colour <= 1 ) {
+    curr_mode = _BIOSVideoGetMode() & 0x7f;
+    info = _BIOSVideoEGAInfo();
+    if( info.switches < 12 && info.mem <= 3 && info.mono <= 1 ) {
         /* we have an EGA */
-        if( colour == 0 ) {
+        if( info.mono == 0 ) {
             HWDisplay.active = DISP_EGA_COLOUR;
             if( TstMono() ) {
                 HWDisplay.alt = DISP_MONOCHROME;

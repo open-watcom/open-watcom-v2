@@ -60,12 +60,19 @@
 #define _INT_10_FN_xBP(n)   "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
 #endif
 
-#define DOUBLE_DOT_CHR_SET  0x12
-#define COMPRESSED_CHR_SET  0x11
-#define USER_CHR_SET        0
+#define DOUBLE_DOT_CHAR_PATTSET 0x12
+#define COMPRESSED_CHAR_PATTSET 0x11
+#define USER_CHAR_PATTSET       0
 
 #define VIDMONOINDXREG      0x03B4
 #define VIDCOLORINDXREG     0x03D4
+
+#define EGA_CURSOR_OFF      0x1e00
+#define NORM_CURSOR_OFF     0x2000
+#define CGA_CURSOR_ON       0x0607
+#define MONO_CURSOR_ON      0x0b0c
+
+#define CURSOR_INVISIBLE    0x20
 
 typedef union int10_cursor_pos {
     struct {
@@ -388,17 +395,17 @@ extern unsigned short _BIOSVideoGetPoints( void );
     __modify __exact    [__ax __bh __cx __dl __edi __es]    /* EDI workaround bug in DOS4G */
 #endif
 
-extern void _BIOSVideoEGAChrSet( unsigned char vidroutine );
-#pragma aux _BIOSVideoEGAChrSet = \
+extern void _BIOSVideoEGACharPattSet( unsigned char vidroutine );
+#pragma aux _BIOSVideoEGACharPattSet = \
         "xor  bl,bl"            \
         _INT_10_FN_xBP( 0x11 )  \
     __parm              [__al] \
     __value             \
     __modify __exact    [__ah __bl]
 
-extern void _BIOSVideoCharSet( unsigned char vidroutine, unsigned char bytesperchar, unsigned short patterncount, unsigned short charoffset, unsigned short table_rmseg, unsigned table_offset );
+extern void _BIOSVideoCharPattSet( unsigned char vidroutine, unsigned char bytesperchar, unsigned short patterncount, unsigned short charoffset, unsigned short table_rmseg, unsigned table_offset );
 #ifdef _M_I86
-#pragma aux _BIOSVideoCharSet = \
+#pragma aux _BIOSVideoCharPattSet = \
         "xchg   bp,si"          \
         "xor    bl,bl"          \
         _INT_10_FN_xBP( 0x11 )  \
@@ -407,7 +414,7 @@ extern void _BIOSVideoCharSet( unsigned char vidroutine, unsigned char bytesperc
     __value             \
     __modify __exact    [__ah __bl]
 #else
-#pragma aux _BIOSVideoCharSet = \
+#pragma aux _BIOSVideoCharPattSet = \
         "xchg   ebp,esi"        \
         "xor    bl,bl"          \
         _INT_10_FN_xBP( 0x11 )  \
@@ -416,7 +423,6 @@ extern void _BIOSVideoCharSet( unsigned char vidroutine, unsigned char bytesperc
     __value             \
     __modify __exact    [__ah __bl]
 #endif
-
 
 extern int10_ega_info _BIOSVideoEGAInfo( void );
 #ifdef _M_I86

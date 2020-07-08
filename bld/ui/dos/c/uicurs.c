@@ -43,8 +43,6 @@
 
 #define _swap(t,a,b)    {t i; i=a; a=b; b=i;}
 
-#define BIOS_CURSOR_OFF 0x20
-
 #ifdef _M_I86
     #define intx86      int86
 #else
@@ -59,9 +57,12 @@ static CURSOR_TYPE      OldCursorType;
 void UIHOOK _uioffcursor( void )
 /******************************/
 {
+    int10_cursor_typ    ct;
+
     if( UIData->cursor_on ) {
         /* set OldCursor size */
-        _BIOSVideoSetCursorTypValues( 0, BIOS_CURSOR_OFF );
+        ct.value = NORM_CURSOR_OFF;
+        _BIOSVideoSetCursorTyp( ct );
     }
     UIData->cursor_type = C_OFF;
 }
@@ -75,14 +76,12 @@ void UIHOOK _uioncursor( void )
     unsigned char       chr;
 
     if( ( UIData->colour == M_CGA ) || ( UIData->colour == M_EGA ) ) {
-        c.typ.s.bot_line = 0x07;
+        c.typ.value = CGA_CURSOR_ON;
     } else {
-        c.typ.s.bot_line = 0x0c;
+        c.typ.value = MONO_CURSOR_ON;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        c.typ.s.top_line = c.typ.s.bot_line / 2;
-    } else {
-        c.typ.s.top_line = c.typ.s.bot_line - 1;
+        c.typ.s.top_line = ( c.typ.s.top_line + 1 ) / 2;
     }
     _BIOSVideoSetCursorTyp( c.typ );
     info = _BIOSVideoGetModeInfo();
@@ -113,7 +112,7 @@ static void savecursor( void )
     } else {
         OldCursorType = C_NORMAL;
     }
-    UIData->cursor_on = ( (c.typ.s.top_line & BIOS_CURSOR_OFF) == 0 );
+    UIData->cursor_on = ( (c.typ.s.top_line & CURSOR_INVISIBLE) == 0 );
     if( !UIData->cursor_on ) {
         OldCursorType = C_OFF;
     }
