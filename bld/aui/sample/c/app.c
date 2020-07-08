@@ -192,9 +192,9 @@ void GUImain( void )
     }
     while( *p == ' ' ) ++p;
     if( p[0] == '-' && p[1] == '1' ) {
-        #ifdef __DOS__
-            BIOSSetPage( 1 ); // just make sure it works for the debugger
-        #endif
+#ifdef __DOS__
+        BIOSSetPage( 1 ); // just make sure it works for the debugger
+#endif
         p += 2;
     }
     WndGadgetInit();
