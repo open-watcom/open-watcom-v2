@@ -51,6 +51,8 @@
 #include "int33.h"
 
 
+#define IRET                    0xcf
+
 #define EGA_VIDEO_BUFF          (LP_PIXEL)RealModeSegmPtr( 0xa000 )
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
