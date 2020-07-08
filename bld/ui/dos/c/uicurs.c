@@ -88,7 +88,7 @@ void UIHOOK _uioncursor( void )
     info = _BIOSVideoGetModeInfo();
     c.pos.s.row = UIData->cursor_row;
     c.pos.s.col = UIData->cursor_col;
-    _BIOSVideoSetCursorPos( c.pos );
+    _BIOSVideoSetCursorPos( info.page, c.pos );
     if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get current character and attribute */
         chr = _BIOSVideoGetCharChr( info.page );
