@@ -37,7 +37,6 @@
 #include <conio.h>
 #endif
 #include "uidef.h"
-#include "uidos.h"
 #include "uishift.h"
 #include "int16.h"
 

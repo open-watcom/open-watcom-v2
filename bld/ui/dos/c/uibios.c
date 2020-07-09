@@ -35,11 +35,9 @@
 #include <string.h>
 #include "extender.h"
 #include "uidef.h"
-#include "uidos.h"
 #include "dpmi.h"
 #include "uigchar.h"
 #include "getltdos.h"
-#include "osidle.h"
 #include "uicurshk.h"
 #include "realmod.h"
 #include "int10.h"
@@ -55,7 +53,7 @@ typedef struct {
     long            real_edx;
 } PHARLAP_block;
 
-unsigned    BIOSVidPage;
+static unsigned     BIOSVidPage;
 
 static MONITOR ui_data = {
     25,
@@ -69,18 +67,6 @@ static MONITOR ui_data = {
     1
 };
 
-void IdleInterrupt( void )
-{
-    ReleaseVMTimeSlice();
-}
-
-void intern setvideomode( unsigned char mode )
-/********************************************/
-{
-    _BIOSVideoSetMode( mode );
-}
-
-
 bool UIAPI uiset80col( void )
 /****************************/
 
@@ -90,11 +76,11 @@ bool UIAPI uiset80col( void )
     status = false;
     if( UIData->width != 80 ) {
         if( UIData->colour == M_MONO ) {
-            setvideomode( 7 );
+            _BIOSVideoSetMode( 7 );
         } else if( UIData->colour == M_BW ) {
-            setvideomode( 2 );
+            _BIOSVideoSetMode( 2 );
         } else {
-            setvideomode( 3 );
+            _BIOSVideoSetMode( 3 );
         }
         status = true;
     }

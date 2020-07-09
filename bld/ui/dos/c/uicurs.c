@@ -33,7 +33,6 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "uidos.h"
 #include "uiattrs.h"
 #include "uicurshk.h"
 #include "uicurshk.h"

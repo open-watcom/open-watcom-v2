@@ -34,11 +34,16 @@
 #include <dos.h>
 #include "uidef.h"
 #include "uiforce.h"
-#include "uidos.h"
+#include "osidle.h"
 #include "realmod.h"
 
 
 #define MILLISEC_PER_TICK       55L
+
+static void IdleInterrupt( void )
+{
+    ReleaseVMTimeSlice();
+}
 
 MOUSETIME UIAPI uiclock( void )
 /*****************************

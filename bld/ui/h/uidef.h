@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,6 @@ extern void             intern permit_refresh( void );
 extern ui_event         intern saveevent( void );
 extern ui_event         intern getprime( VSCREEN * );
 extern void             intern setupmouse( void );
-extern void             intern setvideomode( unsigned char );
 extern int              intern videopage( void );
 extern void             intern vertretrace( void );
 extern ui_event         intern getanyevent( void );
