@@ -129,13 +129,6 @@ extern void _BIOSVideoSetCursorTyp( int10_cursor_typ );
     __value             \
     __modify __exact    [__ah]
 
-extern void _BIOSVideoSetCursorTypValues( unsigned char bot, unsigned char top );
-#pragma aux _BIOSVideoSetCursorTypValues = \
-        _INT_10_FN_xBP( 1 )     \
-    __parm              [__cl] [__ch] \
-    __value             \
-    __modify __exact    [__ah]
-
 extern void _BIOSVideoSetCursorPos( unsigned char page, int10_cursor_pos );
 #pragma aux _BIOSVideoSetCursorPos = \
         _INT_10_FN_xBP( 2 )     \
@@ -143,12 +136,13 @@ extern void _BIOSVideoSetCursorPos( unsigned char page, int10_cursor_pos );
     __value             \
     __modify __exact    [__ah]
 
-extern void _BIOSVideoSetCursorPosValues( unsigned char page, unsigned char col, unsigned char row );
-#pragma aux _BIOSVideoSetCursorPosValues = \
+extern void _BIOSVideoSetCursorPosZero( unsigned char page );
+#pragma aux _BIOSVideoSetCursorPosZero = \
+        "xor    dx,dx"          \
         _INT_10_FN_xBP( 2 )     \
-    __parm              [__bh] [__dl] [__dh] \
+    __parm              [__bh] \
     __value             \
-    __modify __exact    [__ah]
+    __modify __exact    [__ah __dx]
 
 extern int10_cursor _BIOSVideoGetCursor( unsigned char page );
 #ifdef _M_I86
@@ -212,34 +206,12 @@ extern int10_pixel_data _BIOSVideoGetCharPixel( unsigned char page );
     __value             [__ax] \
     __modify __exact    [__ax]
 
-extern unsigned char _BIOSVideoGetCharChr( unsigned char page );
-#pragma aux _BIOSVideoGetCharChr = \
-        _INT_10_FN_xBP( 8 )     \
-    __parm              [__bh] \
-    __value             [__al] \
-    __modify __exact    [__ax]
-
-extern unsigned char _BIOSVideoGetCharAttr( unsigned char page );
-#pragma aux _BIOSVideoGetCharAttr = \
-        _INT_10_FN_xBP( 8 )     \
-    __parm              [__bh] \
-    __value             [__ah] \
-    __modify __exact    [__ax]
-
 extern void _BIOSVideoSetCharPixel( unsigned char page, int10_pixel_data );
 #pragma aux _BIOSVideoSetCharPixel = \
         "mov    bl,ah"          \
         "mov    cx,1"           \
         _INT_10_FN_xBP( 9 )     \
     __parm              [__bh] [__ax] \
-    __value             \
-    __modify __exact    [__ah __bl __cx]
-
-extern void _BIOSVideoSetCharPixelValues( unsigned char page, unsigned char ch, unsigned char attr );
-#pragma aux _BIOSVideoSetCharPixelValues = \
-        "mov    cx,1"           \
-        _INT_10_FN_xBP( 9 )     \
-    __parm              [__bh] [__al] [__bl] \
     __value             \
     __modify __exact    [__ah __bl __cx]
 

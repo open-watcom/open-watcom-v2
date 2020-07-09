@@ -185,7 +185,7 @@ static int IsTextMode( void )
     if( info.mode < GR_MED_4COL || info.mode == MONOCHROME || info.mode > VGA_256COL ) {
         video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
-        _BIOSVideoSetCursorPosValues( info.page, 0, 0 );
+        _BIOSVideoSetCursorPosZero( info.page );
         /* get character/attribute at that location */
         pixel_bios = _BIOSVideoGetCharPixel( info.page );
         /* get character/attribute from screen memory */

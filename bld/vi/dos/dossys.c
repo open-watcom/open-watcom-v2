@@ -80,7 +80,11 @@ unsigned short BIOSGetCursorPos( unsigned char page )
 
 void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
-    _BIOSVideoSetCursorPosValues( page, row, col );
+    int10_cursor_pos    pos;
+
+    pos.s.row = row;
+    pos.s.col = col;
+    _BIOSVideoSetCursorPos( page, pos );
 }
 
 
@@ -89,17 +93,15 @@ void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col 
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
-    unsigned char       base;
     int10_cursor_typ    int10ct;
 
     wid = wid;
     if( EditFlags.Monocolor ) {
-        base = 0x0e;
+        int10ct.s.bot_line = 14 - 1;
     } else {
-        base = 0x10;
+        int10ct.s.bot_line = 16 - 1;
     }
-    int10ct.s.bot_line = base - 1;
-    int10ct.s.top_line = ( base * ( 100 - ct.height ) ) / 100;
+    int10ct.s.top_line = ( ( int10ct.s.bot_line + 1 ) * ( 100 - ct.height ) ) / 100;
     _BIOSVideoSetCursorTyp( int10ct );
 
 } /* NewCursor */

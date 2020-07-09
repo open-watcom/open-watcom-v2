@@ -103,13 +103,8 @@ void InitMouse( void )
     _BIOSMouseSetHorizontalLimitsForPointer( 0, (EditVars.WindMaxWidth - 1) * MOUSE_SCALE );
     _BIOSMouseSetVerticalLimitsForPointer( 0, (EditVars.WindMaxHeight - 1) * MOUSE_SCALE );
 
-    if( EditFlags.Monocolor ) {
-        and_mask = 0x79ff;
-        or_mask = 0x7100;
-    } else {
-        and_mask = 0x7fff;
-        or_mask = 0x7700;
-    }
+    and_mask = ( EditFlags.Monocolor ? 0x79ff : 0x7fff );
+    or_mask = ( EditFlags.Monocolor ? 0x7100 : 0x7700 );
     _BIOSMouseSetTextPointerType( SOFTWARE_CURSOR, and_mask, or_mask );
     _BIOSMouseSetPointerExclusionArea( 0, 0, 0, 0 );
     SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );

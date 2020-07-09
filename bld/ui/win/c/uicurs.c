@@ -109,7 +109,7 @@ void UIHOOK uiinitcursor( void )
         RegCur.value = CGA_CURSOR_ON;
     }
     InsCur.s.bot_line = RegCur.s.bot_line;
-    InsCur.s.top_line = RegCur.s.bot_line / 2;
+    InsCur.s.top_line = ( RegCur.s.bot_line + 1 ) / 2;
 }
 
 void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )

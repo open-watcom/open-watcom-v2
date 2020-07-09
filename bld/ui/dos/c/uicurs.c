@@ -67,7 +67,7 @@ void UIHOOK _uioncursor( void )
 {
     int10_mode_info     info;
     int10_cursor        c;
-    unsigned char       chr;
+    int10_pixel_data    cursor_pixel;
 
     if( ( UIData->colour == M_CGA ) || ( UIData->colour == M_EGA ) ) {
         c.typ.value = CGA_CURSOR_ON;
@@ -75,7 +75,7 @@ void UIHOOK _uioncursor( void )
         c.typ.value = MONO_CURSOR_ON;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        c.typ.s.top_line = c.typ.s.bot_line / 2;
+        c.typ.s.top_line = ( c.typ.s.bot_line + 1 ) / 2;
     }
     _BIOSVideoSetCursorTyp( c.typ );
     info = _BIOSVideoGetModeInfo();
@@ -84,9 +84,10 @@ void UIHOOK _uioncursor( void )
     _BIOSVideoSetCursorPos( info.page, c.pos );
     if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get current character and attribute */
-        chr = _BIOSVideoGetCharChr( info.page );
+        cursor_pixel = _BIOSVideoGetCharPixel( info.page );
         /* write out the character and the new attribute */
-        _BIOSVideoSetCharPixelValues( info.page, chr, UIData->cursor_attr );
+        cursor_pixel.s.attr = UIData->cursor_attr;
+        _BIOSVideoSetCharPixel( info.page, cursor_pixel );
     }
     UIData->cursor_on = true;
 }
