@@ -4,7 +4,7 @@ setupgui_autodepends = .AUTODEPEND
 
 setupgui_trmem = 1
 
-#setupgui_dos_extender = causeway
+setupgui_dos_extender = causeway
 
 .EXTENSIONS: .rc .ico .res
 
