@@ -182,24 +182,24 @@ typedef enum {
 } adapter_type;
 
 #define DISP_TYPES() \
-    pick_disp( DISP_NONE,           ADAPTER_NONE ) \
-    pick_disp( DISP_MONOCHROME,     ADAPTER_MONO ) \
-    pick_disp( DISP_CGA,            ADAPTER_COLOUR ) \
-    pick_disp( DISP_RESERVED1,      ADAPTER_NONE ) \
-    pick_disp( DISP_EGA_COLOUR,     ADAPTER_COLOUR ) \
-    pick_disp( DISP_EGA_MONO,       ADAPTER_MONO ) \
-    pick_disp( DISP_PGA,            ADAPTER_COLOUR ) \
-    pick_disp( DISP_VGA_MONO,       ADAPTER_COLOUR ) \
-    pick_disp( DISP_VGA_COLOUR,     ADAPTER_COLOUR ) \
-    pick_disp( DISP_RESERVED2,      ADAPTER_NONE ) \
-    pick_disp( DISP_RESERVED3,      ADAPTER_NONE ) \
-    pick_disp( DISP_MODEL30_MONO,   ADAPTER_COLOUR ) \
-    pick_disp( DISP_MODEL30_COLOUR, ADAPTER_COLOUR )
+    pick( DISP_NONE,            ADAPTER_NONE ) \
+    pick( DISP_MONOCHROME,      ADAPTER_MONO ) \
+    pick( DISP_CGA,             ADAPTER_COLOUR ) \
+    pick( DISP_RESERVED1,       ADAPTER_NONE ) \
+    pick( DISP_EGA_COLOUR,      ADAPTER_COLOUR ) \
+    pick( DISP_EGA_MONO,        ADAPTER_MONO ) \
+    pick( DISP_PGA,             ADAPTER_COLOUR ) \
+    pick( DISP_VGA_MONO,        ADAPTER_COLOUR ) \
+    pick( DISP_VGA_COLOUR,      ADAPTER_COLOUR ) \
+    pick( DISP_RESERVED2,       ADAPTER_NONE ) \
+    pick( DISP_RESERVED3,       ADAPTER_NONE ) \
+    pick( DISP_MODEL30_MONO,    ADAPTER_COLOUR ) \
+    pick( DISP_MODEL30_COLOUR,  ADAPTER_COLOUR )
 
 typedef enum {
-    #define pick_disp(e,t) e,
+    #define pick(e,t)   e,
         DISP_TYPES()
-    #undef pick_disp
+    #undef pick
 } hw_display_type;
 
 typedef struct {
@@ -209,33 +209,33 @@ typedef struct {
 
 #ifdef __WINDOWS__
 #define SCREEN_OPTS() \
-    pick_opt( OPT_MONO,         "Monochrome" ) \
-    pick_opt( OPT_COLOR,        "Color" ) \
-    pick_opt( OPT_COLOUR,       "Colour" ) \
-    pick_opt( OPT_EGA43,        "Ega43" ) \
-    pick_opt( OPT_FASTSWAP,     "FAstswap" ) \
-    pick_opt( OPT_VGA50,        "Vga50" ) \
-    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
-    pick_opt( OPT_PAGE,         "Page" ) \
-    pick_opt( OPT_SWAP,         "Swap" ) \
-    pick_opt( OPT_TWO,          "Two" )
+    pick( OPT_MONO,         "Monochrome" ) \
+    pick( OPT_COLOR,        "Color" ) \
+    pick( OPT_COLOUR,       "Colour" ) \
+    pick( OPT_EGA43,        "Ega43" ) \
+    pick( OPT_FASTSWAP,     "FAstswap" ) \
+    pick( OPT_VGA50,        "Vga50" ) \
+    pick( OPT_OVERWRITE,    "Overwrite" ) \
+    pick( OPT_PAGE,         "Page" ) \
+    pick( OPT_SWAP,         "Swap" ) \
+    pick( OPT_TWO,          "Two" )
 #else
 #define SCREEN_OPTS() \
-    pick_opt( OPT_MONO,         "Monochrome" ) \
-    pick_opt( OPT_COLOR,        "Color" ) \
-    pick_opt( OPT_COLOUR,       "Colour" ) \
-    pick_opt( OPT_EGA43,        "Ega43" ) \
-    pick_opt( OPT_VGA50,        "Vga50" ) \
-    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
-    pick_opt( OPT_PAGE,         "Page" ) \
-    pick_opt( OPT_SWAP,         "Swap" ) \
-    pick_opt( OPT_TWO,          "Two" )
+    pick( OPT_MONO,         "Monochrome" ) \
+    pick( OPT_COLOR,        "Color" ) \
+    pick( OPT_COLOUR,       "Colour" ) \
+    pick( OPT_EGA43,        "Ega43" ) \
+    pick( OPT_VGA50,        "Vga50" ) \
+    pick( OPT_OVERWRITE,    "Overwrite" ) \
+    pick( OPT_PAGE,         "Page" ) \
+    pick( OPT_SWAP,         "Swap" ) \
+    pick( OPT_TWO,          "Two" )
 #endif
 
 typedef enum {
-    #define pick_opt(e,t) e,
+    #define pick(e,t)   e,
         SCREEN_OPTS()
-    #undef pick_opt
+    #undef pick
 } screen_opt;
 
 #ifdef _M_I86

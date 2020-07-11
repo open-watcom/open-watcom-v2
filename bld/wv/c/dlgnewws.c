@@ -52,28 +52,28 @@
 #define DLG_SIZE_DATA   4,      W,      70
 
 #define DLGNEW_CTLS() \
-    pick_p4id( EDIT,     DLG_EDIT,       "",     C0, R0, W - 1 ) \
-    pick_p4id( OK,       DLG_DEFBUTTON,  NULL,   B1, R1, B1 + BW ) \
-    pick_p4id( SYMBOL,   DLG_BUTTON,     NULL,   B2, R1, B2 + BW ) \
-    pick_p4id( CANCEL,   DLG_BUTTON,     NULL,   B3, R1, B3 + BW )
+    pick( EDIT,     DLG_EDIT,       "",     C0, R0, W - 1 ) \
+    pick( OK,       DLG_DEFBUTTON,  NULL,   B1, R1, B1 + BW ) \
+    pick( SYMBOL,   DLG_BUTTON,     NULL,   B2, R1, B2 + BW ) \
+    pick( CANCEL,   DLG_BUTTON,     NULL,   B3, R1, B3 + BW )
 
 enum {
     DUMMY_ID = 100,
-    #define pick_p4id(id,m,p1,p2,p3,p4) CTL_ ## id,
+    #define pick(id,m,p1,p2,p3,p4) CTL_ ## id,
     DLGNEW_CTLS()
-    #undef pick_p4id
+    #undef pick
 };
 
 enum {
-    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    #define pick(id,m,p1,p2,p3,p4) id ## _IDX,
     DLGNEW_CTLS()
-    #undef pick_p4id
+    #undef pick
 };
 
 static gui_control_info Controls[] = {
-    #define pick_p4id(id,m,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
+    #define pick(id,m,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
     DLGNEW_CTLS()
-    #undef pick_p4id
+    #undef pick
 };
 
 static void     (*CompRtn)( gui_window *gui, gui_ctl_id id );

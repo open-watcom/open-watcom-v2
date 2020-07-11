@@ -65,9 +65,9 @@ static mode_types       ScrnMode;
 static display_config   HWDisplay;
 
 static const char ScreenOptNameTab[] = {
-    #define pick_opt(e,t) t "\0"
+    #define pick(e,t) t "\0"
         SCREEN_OPTS()
-    #undef pick_opt
+    #undef pick
 };
 
 void InitHookFunc( void )
