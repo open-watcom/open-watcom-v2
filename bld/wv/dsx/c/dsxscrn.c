@@ -118,13 +118,13 @@ static unsigned char            *RegenSave;
 static LP_PIXEL                 VirtScreen;
 
 static const adapter_type       ColourAdapters[] = {
-    #define pick(e,t) t,
+    #define pick(e,t)   t,
         DISP_TYPES()
     #undef pick
 };
 
 static const char               ScreenOptNameTab[] = {
-    #define pick(e,t) t "\0"
+    #define pick(e,t)   t "\0"
         SCREEN_OPTS()
     #undef pick
 };

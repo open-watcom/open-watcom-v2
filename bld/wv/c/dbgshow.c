@@ -142,7 +142,7 @@ void ConfigLine( char *conf )
 
 void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), bool *do_all )
 {
-    int         num;
+    char        *p;
     const char  *start;
     char        *ptr;
     int         cmdx;
@@ -151,11 +151,17 @@ void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), b
     *ptr++ = ' ';
     if( ScanEOC() ) {
         /* show configuration on everything */
-        for( num = 0; jmp_tab[num] != NULL; ++num ) {
-            GetCmdEntry( name_tab, num, ptr );
-            if( do_all[num] ) {
-                (*jmp_tab[num])();
+        while( name_tab[0] != '\0' ) {
+            p = ptr;
+            for( ;; ) {
+                *p = tolower( *name_tab++ );
+                if( *p == NULLCHAR )
+                    break;
+                ++p;
             }
+            if( *do_all++ )
+                (**jmp_tab)();
+            jmp_tab++;
         }
     } else {
         start = ScanPos();
