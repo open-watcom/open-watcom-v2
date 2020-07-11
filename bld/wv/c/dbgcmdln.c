@@ -47,80 +47,25 @@
 #include "dbgerr.h"
 
 
+#define MIN_MEM_SIZE    (500UL*1024)
+
+enum {
+    #define pick(e,t)   e,
+    #include "_dbgopts.h"
+    #undef pick
+};
+
+bool                    DownLoadTask = false;
+
 static char             *(*GetArg)( int );
 static int              CurrArgc;
 static char             *CurrArgp;
 static char             CurrChar;
 
-bool                    DownLoadTask = false;
-
-#define MIN_MEM_SIZE    (500UL*1024)
-
-
 static const char OptNameTab[] = {
-    "Invoke\0"
-    "NOInvoke\0"
-    "NOSYmbols\0"
-    "NOMouse\0"
-    "DIp\0"
-    "DYnamic\0"
-    "TRap\0"
-    "REMotefiles\0"
-#ifdef BACKWARDS
-    "NOFpu\0"
-#endif
-    "LInes\0"
-    "COlumns\0"
-#ifdef BACKWARDS
-    "NOAltsym\0"
-    "REGisters\0"
-#endif
-    "INItcmd\0"
-    "POWerbuilder\0"
-    "LOcalinfo\0"
-    "NOExports\0"
-    "DOwnload\0"
-    "DEfersymbols\0"
-    "NOSOurcecheck\0"
-    "CONtinueunexpectedbreak\0"
-    "Help\0"
-#ifdef ENABLE_TRAP_LOGGING
-    "TDebug\0"
-    "TFDebug\0"
-#endif
-};
-
-enum {
-    OPT_INVOKE,
-    OPT_NOINVOKE,
-    OPT_NOSYMBOLS,
-    OPT_NOMOUSE,
-    OPT_DIP,
-    OPT_DYNAMIC,
-    OPT_TRAP,
-    OPT_REMOTE_FILES,
-#ifdef BACKWARDS
-    OPT_NO_FPU,
-#endif
-    OPT_LINES,
-    OPT_COLUMNS,
-#ifdef BACKWARDS
-    OPT_NO_ALTSYM,
-    OPT_REGISTERS,
-#endif
-    OPT_INITCMD,
-    OPT_POWERBUILDER,
-    OPT_LOCALINFO,
-    OPT_NOEXPORTS,
-    OPT_DOWNLOAD,
-    OPT_DEFERSYM,
-    OPT_NOSOURCECHECK,
-    OPT_CONTINUE_UNEXPECTED_BREAK,
-    OPT_HELP,
-#ifdef ENABLE_TRAP_LOGGING
-    OPT_TRAP_DEBUG,
-    OPT_TRAP_DEBUG_FLUSH,
-#endif
+    #define pick(e,t)   t "\0"
+    #include "_dbgopts.h"
+    #undef pick
 };
 
 

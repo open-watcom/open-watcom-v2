@@ -86,21 +86,21 @@ extern void             RestoreHandlers( void );
 
 extern int              ScanSavePtr;
 
-#define pick( a, b, c ) extern void b( void );
-#include "_dbgcmd.h"
+#define pick(a,b,c)     extern void b( void );
+#include "_dbgcmds.h"
 #undef pick
 
 static void         ProcNil( void );
 
 static const char CmdNameTab[] = {
-    #define pick( a, b, c ) c
-    #include "_dbgcmd.h"
+    #define pick(a,b,c)     c "\0"
+    #include "_dbgcmds.h"
     #undef pick
 };
 
 static void ( * const CmdJmpTab[] )( void ) = {
-    #define pick( a, b, c ) &b,
-    #include "_dbgcmd.h"
+    #define pick(a,b,c)     &b,
+    #include "_dbgcmds.h"
     #undef pick
 };
 

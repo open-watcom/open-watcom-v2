@@ -165,12 +165,12 @@ typedef struct {
 #define DECIMAL_WORD_LEN    5               // 65535
 #define DECIMAL_DWORD_LEN   10              // 4294967295
 
-#define OVL_MAP_CURR    0
-#define OVL_MAP_EXE     1
+#define OVL_MAP_CURR        0
+#define OVL_MAP_EXE         1
 
 typedef enum {
-    #define pick( a,b,c ) a,
-    #include "_dbgcmd.h"
+    #define pick(a,b,c)     a,
+    #include "_dbgcmds.h"
     #undef pick
 } wd_cmd;
 
