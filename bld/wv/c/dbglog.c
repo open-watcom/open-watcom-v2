@@ -179,16 +179,21 @@ static void BadLog( void )
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_LOG ) );
 }
 
+#define LOG_DEFS \
+    pick( "Append", LogAppend ) \
+    pick( "Start",  LogStart )
 
 static const char LogNameTab[] = {
-    "Append\0"
-    "Start\0"
+    #define pick(t,p)   t "\0"
+    LOG_DEFS
+    #undef pick
 };
 
 
 static void (* const LogJmpTab[])( void ) = {
-    &LogAppend,
-    &LogStart
+    #define pick(t,p)   p,
+    LOG_DEFS
+    #undef pick
 };
 
 

@@ -156,16 +156,22 @@ static void XTimeSymComp( void )
     }
 }
 
+#define INTERNAL_DEFS \
+    pick( "Dumpmenu",   XDumpMenus ) \
+    pick( "Symcomp",    XTimeSymComp )
+
 static const char InternalNameTab[] =
 {
-    "Dumpmenu\0"
-    "Symcomp\0"
+    #define pick(t,p)   t "\0"
+    INTERNAL_DEFS
+    #undef pick
 };
 
 static void (*InternalJmpTab[])() =
 {
-    &XDumpMenus,
-    &XTimeSymComp,
+    #define pick(t,p)   p,
+    INTERNAL_DEFS
+    #undef pick
 };
 #endif
 

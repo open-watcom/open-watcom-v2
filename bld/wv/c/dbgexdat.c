@@ -113,14 +113,20 @@ static void TypeExam( void )
     }
 }
 
+#define FMT_DEFS \
+    pick( "Assembly",   AsmExam ) \
+    pick( "Source",     SrcExam )
+
 static const char FmtNameTab[] = {
-    "Assembly\0"
-    "Source\0"
+    #define pick(t,p)   t "\0"
+    FMT_DEFS
+    #undef pick
 };
 
 static void (* const ExamJmpTab[])( void ) = {
-    &AsmExam,
-    &SrcExam,
+    #define pick(t,p)   p,
+    FMT_DEFS
+    #undef pick
 };
 
 

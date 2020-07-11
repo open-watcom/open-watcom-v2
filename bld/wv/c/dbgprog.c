@@ -1571,21 +1571,25 @@ bool SymUserModUnload( char *fname )
     return( true );
 }
 
+#define NEW_DEFS \
+    pick( "Program",    ProgNew ) \
+    pick( "Restart",    ResNew ) \
+    pick( "STDIn",      StdInNew ) \
+    pick( "STDOut",     StdOutNew ) \
+    pick( "SYmbol",     SymFileNew )
+
+
 static const char NewNameTab[] = {
-    "Program\0"
-    "Restart\0"
-    "STDIn\0"
-    "STDOut\0"
-    "SYmbol\0"
+    #define pick(t,p)   t "\0"
+    NEW_DEFS
+    #undef pick
 };
 
 
 static void (* const NewJmpTab[])( void ) = {
-    &ProgNew,
-    &ResNew,
-    &StdInNew,
-    &StdOutNew,
-    &SymFileNew
+    #define pick(t,p)   p,
+    NEW_DEFS
+    #undef pick
 };
 
 
