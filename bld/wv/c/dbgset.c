@@ -184,13 +184,35 @@ static void (* SetConfJmpTab[])( void ) = {
 };
 
 
-static void (* SetNotAllTab[])( void ) =
-{
-    CallConf,
-    LevelConf,
-    LangConf,
-    InputConf,
-    NULL,
+static bool do_all[] = {
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
 };
 
 
@@ -241,7 +263,7 @@ void ProcSet( void )
 
 void ConfigSet( void )
 {
-    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, SetNotAllTab );
+    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, do_all );
 }
 
 

@@ -140,12 +140,11 @@ void ConfigLine( char *conf )
 }
 
 
-void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
+void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), bool *do_all )
 {
     int         num;
     const char  *start;
     char        *ptr;
-    unsigned    i;
     int         cmdx;
 
     ptr = StrCopy( cmd, NameBuff );
@@ -154,12 +153,7 @@ void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), v
         /* show configuration on everything */
         for( num = 0; jmp_tab[num] != NULL; ++num ) {
             GetCmdEntry( name_tab, num, ptr );
-            for( i = 0; not_all[i] != NULL; ++i ) {
-                if( jmp_tab[num] == not_all[i] ) {
-                    break;
-                }
-            }
-            if( not_all[i] == NULL ) {
+            if( do_all[num] ) {
                 (*jmp_tab[num])();
             }
         }

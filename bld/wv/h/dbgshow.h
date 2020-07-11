@@ -32,7 +32,7 @@
 extern char *GetCmdEntry( const char *tab, int index, char *buff );
 extern void ConfigCmdList( char *cmds, int indent );
 extern void ConfigLine( char *conf );
-extern void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) );
+extern void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), bool *do_all );
 extern void ProcShow( void );
 extern void SaveConfigToFile( const char *name );
 extern void RestoreConfigFromFile( const char *name );
