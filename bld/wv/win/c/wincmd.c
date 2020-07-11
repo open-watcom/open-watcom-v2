@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,13 +42,13 @@
     pick( OPT_POPUPS,  "Popups" )
 
 enum {
-    #define pick(e,t) e,
+    #define pick(e,t)   e,
     SYS_OPT_DEFS
     #undef pick
 };
 
 static const char SysOptNameTab[] = {
-    #define pick(e,t) t "\0"
+    #define pick(e,t)   t "\0"
     SYS_OPT_DEFS
     #undef pick
 };

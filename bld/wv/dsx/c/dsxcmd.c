@@ -56,7 +56,7 @@
     pick( OPT_XXDPMI,       "XXDPMI" )    /* DON'T DOCUMENT: Internal use only */
 
 enum {
-    #define pick(e,t) e,
+    #define pick(e,t)   e,
     SYS_OPT_DEFS
     #undef pick
 };
@@ -68,7 +68,7 @@ gui_window_styles WndStyle = GUI_PLAIN + GUI_GMOUSE;
 static char             *cmdStart;
 
 static const char SysOptNameTab[] = {
-    #define pick(e,t) t "\0"
+    #define pick(e,t)   t "\0"
     SYS_OPT_DEFS
     #undef pick
 };
