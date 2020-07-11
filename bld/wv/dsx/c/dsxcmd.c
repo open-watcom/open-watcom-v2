@@ -47,29 +47,31 @@
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
 
+#define SYS_OPT_DEFS \
+    pick( OPT_CHECKSIZE,    "CHecksize" ) \
+    pick( OPT_NOREMAP,      "NOCHarremap" ) \
+    pick( OPT_NOGMOUSE,     "NOGraphicsmouse" ) \
+    pick( OPT_HEAPENABLE,   "Heapenable" ) \
+    pick( OPT_XXNODPMI,     "XXNODPMI" )  /* DON'T DOCUMENT: Internal use only */ \
+    pick( OPT_XXDPMI,       "XXDPMI" )    /* DON'T DOCUMENT: Internal use only */
+
+enum {
+    #define pick(e,t) e,
+    SYS_OPT_DEFS
+    #undef pick
+};
+
 extern char             DPMICheck;
+
+gui_window_styles WndStyle = GUI_PLAIN + GUI_GMOUSE;
 
 static char             *cmdStart;
 
 static const char SysOptNameTab[] = {
-    "CHecksize\0"
-    "NOCHarremap\0"
-    "NOGraphicsmouse\0"
-    "Heapenable\0"
-    "XXNODPMI\0"                /* DON'T DOCUMENT: Internal use only */
-    "XXDPMI\0"                  /* DON'T DOCUMENT: Internal use only */
+    #define pick(e,t) t "\0"
+    SYS_OPT_DEFS
+    #undef pick
 };
-
-enum {
-   OPT_CHECKSIZE,
-   OPT_NOREMAP,
-   OPT_NOGMOUSE,
-   OPT_HEAPENABLE,
-   OPT_XXNODPMI,
-   OPT_XXDPMI,
-};
-
-gui_window_styles WndStyle = GUI_PLAIN + GUI_GMOUSE;
 
 
 bool OptDelim( char ch )

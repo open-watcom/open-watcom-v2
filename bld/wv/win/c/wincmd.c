@@ -36,14 +36,20 @@
 #include "dbglkup.h"
 
 
-static const char SysOptNameTab[] = {
-    "NOSNow\0"
-    "Popups\0"
-};
+#define SYS_OPT_DEFS \
+    pick( OPT_NOSNOW,  "NOSNow" ) \
+    pick( OPT_POPUPS,  "Popups" )
 
 enum {
-    OPT_NOSNOW,
-    OPT_POPUPS
+    #define pick(e,t) e,
+    SYS_OPT_DEFS
+    #undef pick
+};
+
+static const char SysOptNameTab[] = {
+    #define pick(e,t) t "\0"
+    SYS_OPT_DEFS
+    #undef pick
 };
 
 bool OptDelim( char ch )

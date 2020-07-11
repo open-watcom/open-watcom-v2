@@ -39,20 +39,27 @@
 #include "dbglkup.h"
 
 
-static const char SysOptNameTab[] = {
-    "Popups\0"
 #ifdef __AXP__
-    "XXAT\0"
-    "XXAE\0"
+#define SYS_OPT_DEFS \
+    pick( OPT_POPUPS,           "Popups" ) \
+    pick( OPT_ALIGN_TRAP,       "XXAT" ) \
+    pick( OPT_ALIGN_EMULATE,    "XXAE" )
+#else
+#define SYS_OPT_DEFS \
+    pick( OPT_POPUPS,           "Popups" )
 #endif
-};
 
 enum {
-    OPT_POPUPS,
-    OPT_ALIGN_TRAP,
-    OPT_ALIGN_EMULATE
+    #define pick(e,t) e,
+    SYS_OPT_DEFS
+    #undef pick
 };
 
+static const char SysOptNameTab[] = {
+    #define pick(e,t) t "\0"
+    SYS_OPT_DEFS
+    #undef pick
+};
 
 bool OptDelim( char ch )
 {

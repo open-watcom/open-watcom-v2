@@ -38,7 +38,25 @@
 #include "dbgname.h"
 #include "dbgmem.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
+#include "dbgscrn.h"
 
+
+#define SYS_OPT_DEFS \
+    pick( OPT_CONSOLE,  "Console" ) \
+    pick( OPT_XCONFIG,  "XConfig" )
+
+enum {
+    #define pick(e,t) e,
+    SYS_OPT_DEFS
+    #undef pick
+};
+
+static const char SysOptNameTab[] = {
+    #define pick(e,t) t "\0"
+    SYS_OPT_DEFS
+    #undef pick
+};
 
 bool OptDelim( char ch )
 {
@@ -52,8 +70,25 @@ bool OptDelim( char ch )
 
 bool ProcSysOption( const char *start, unsigned len, int pass )
 {
-    start=start;len=len;pass=pass;
-    return( false );
+    char        *p;
+
+    switch( Lookup( SysOptNameTab, start, len ) ) {
+    case OPT_CONSOLE:
+        _Free( DbgTerminal );
+        DbgTerminal = GetFileName( pass );
+        break;
+    case OPT_XCONFIG:
+        WantEquals();
+        p = XConfig + strlen( XConfig );
+        *p++ = ' ';
+        GetRawItem( p );
+        if( pass == 1 )
+            XConfig[0] = NULLCHAR;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
 }
 
 

@@ -40,12 +40,20 @@
 
 
 #if 0
-static const char SysOptNameTab[] = {
-    "\0"
-    ""
+#define SYS_OPT_DEFS \
+    pick( OPT_LINES,    "" )
+
+enum {
+    #define pick(e,t) e,
+    SYS_OPT_DEFS
+    #undef pick
 };
 
-enum { OPT_LINES };
+static const char SysOptNameTab[] = {
+    #define pick(e,t) t "\0"
+    SYS_OPT_DEFS
+    #undef pick
+};
 #endif
 
 
