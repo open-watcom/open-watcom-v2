@@ -59,13 +59,12 @@ typedef enum thread_state_enum {
     THD_DEAD = 0x40
 } thread_state_enum;
 
-typedef struct thread_state     thread_state;
-struct thread_state {
-    thread_state        *link;
+typedef struct thread_state {
+    struct thread_state *link;
     dtid_t              tid;
     thread_state_enum   state;
     unsigned_16         cs;
     unsigned_32         eip;
     char                extra[MAX_THD_EXTRA_SIZE + 1];
     char                name[1];        /* variable size */
-};
+} thread_state;
