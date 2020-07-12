@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +31,19 @@
 ****************************************************************************/
 
 
-pick( T_LT,             "<"  )
-pick( T_GT,             ">"  )
-pick( T_MUL,            "*"  )
-pick( T_DIV,            "/"  )
-pick( T_LEFT_PAREN,     "("  )
-pick( T_RIGHT_PAREN,    ")"  )
-pick( T_COMMA,          ","  )
-pick( T_LEFT_BRACE,     "{"  )
-pick( T_RIGHT_BRACE,    "}"  )
-pick( T_EXCLAMATION,    "!"  )
-pick( T_QUESTION,       "?"  )
-pick( T_CMD_SEPARATOR,  ";"  )
-pick( T_LEFT_BRACKET,   "["  )
-pick( T_RIGHT_BRACKET,  "]"  )
-pick( T_TILDE,          "~"  )
-pick( T_SHARP,          "#"  )
+pick( "<",  T_LT            )
+pick( ">",  T_GT            )
+pick( "*",  T_MUL           )
+pick( "/",  T_DIV           )
+pick( "(",  T_LEFT_PAREN    )
+pick( ")",  T_RIGHT_PAREN   )
+pick( ",",  T_COMMA         )
+pick( "{",  T_LEFT_BRACE    )
+pick( "}",  T_RIGHT_BRACE   )
+pick( "!",  T_EXCLAMATION   )
+pick( "?",  T_QUESTION      )
+pick( ";",  T_CMD_SEPARATOR )
+pick( "[",  T_LEFT_BRACKET  )
+pick( "]",  T_RIGHT_BRACKET )
+pick( "~",  T_TILDE         )
+pick( "#",  T_SHARP         )
