@@ -38,11 +38,11 @@
 #include "dipwv.h"
 
 
-typedef unsigned_8 inspect_type; enum {
+typedef enum inspect_type {
     INSP_CODE,
     INSP_DATA,
     INSP_RAW_DATA,
-};
+} inspect_type;
 
 enum ll_flags {
     LLF_CONST = 0x01,

@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-typedef unsigned_8 node_class; enum {
+typedef enum node_class {
     NODE_ROOT,
     NODE_FIELD,
     NODE_SUBSCR,
     NODE_INHERIT,
     NODE_POINTS,
-};
+} node_class;
 
-typedef unsigned_8 var_gadget_type; enum {
+typedef enum var_gadget_type {
     VARGADGET_NONE,
     VARGADGET_OPEN,
     VARGADGET_CLOSED,
@@ -48,9 +48,9 @@ typedef unsigned_8 var_gadget_type; enum {
     VARGADGET_INHERIT_OPEN,
     VARGADGET_INHERIT_CLOSED,
     VARGADGET_LAST
-};
+} var_gadget_type;
 
-typedef unsigned_8 var_type_bits; enum {
+typedef enum var_type_bits {
     VARNODE_CODE                = 0x01,
     VARNODE_INHERIT             = 0x02,
     VARNODE_COMPILER            = 0x04,
@@ -58,9 +58,9 @@ typedef unsigned_8 var_type_bits; enum {
     VARNODE_PROTECTED           = 0x10,
     VARNODE_THIS                = 0x20,
     VARNODE_STATIC              = 0x40
-};
+} var_type_bits;
 
-typedef unsigned_8 var_display_bits; enum {
+typedef enum var_display_bits {
     VARDISP_HEX                 = 0x01,
     VARDISP_DECIMAL             = 0x02,
     VARDISP_CHARACTER           = 0x04,
@@ -68,10 +68,9 @@ typedef unsigned_8 var_display_bits; enum {
     VARDISP_POINTER             = 0x10,
     // free slot here!
     VARDISP_INHERIT_CLOSED      = 0x40,
-};
+} var_display_bits;
 
 typedef struct var_node {
-
     struct var_node     *next;          // link to next element
 //      VarFirstNode, VarExpandNode, VarNextNode and VarNextRowNode must always be used
 //      when drawing the window. Never reference ->next or ->expand directly

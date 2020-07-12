@@ -44,7 +44,7 @@ struct machine_state {
     mad_registers       mr;     /* variable size */
 };
 
-typedef unsigned_8 thread_state_enum; enum {
+typedef enum thread_state_enum {
                   /* states for clients that freeze execution */
     THD_THAW,
     THD_FREEZE,
@@ -57,7 +57,7 @@ typedef unsigned_8 thread_state_enum; enum {
     THD_DEBUG,                  /* thread is in a debug-state */
                   /* special dead state */
     THD_DEAD = 0x40
-};
+} thread_state_enum;
 
 typedef struct thread_state     thread_state;
 struct thread_state {

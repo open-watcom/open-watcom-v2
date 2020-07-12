@@ -33,7 +33,9 @@
 
 #define IN_BUFF_SIZE    64
 
-typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
+typedef enum inv_flags {
+    AT_EOF = 0x1
+} inv_flags;
 
 typedef struct invokes {
     char_ring           *prmlst;

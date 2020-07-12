@@ -58,18 +58,18 @@ typedef unsigned                error_handle;
 typedef int                     file_handle;
 #define NIL_HANDLE              ((file_handle)-1)
 
-typedef unsigned_8 debug_level; enum {
+typedef enum debug_level {
     #define pick( a,b ) a,
     #include "dbglevel.h"
     #undef pick
-};
+} debug_level;
 
-typedef unsigned_8 screen_state; enum {
-        DBG_SCRN_ACTIVE  = 0x01,
-        DBG_SCRN_VISIBLE = 0x02,
-        USR_SCRN_ACTIVE  = 0x04,
-        USR_SCRN_VISIBLE = 0x08
-};
+typedef enum screen_state {
+    DBG_SCRN_ACTIVE  = 0x01,
+    DBG_SCRN_VISIBLE = 0x02,
+    USR_SCRN_ACTIVE  = 0x04,
+    USR_SCRN_VISIBLE = 0x08
+} screen_state;
 
 #ifdef _M_I86
 #define ENUMU32(x)      x ## UL
@@ -107,29 +107,29 @@ typedef enum {
     UP_SYM_CHANGE           = (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
 } update_flags;
 
-typedef unsigned_8 task_status; enum {
-        TASK_NONE,
-        TASK_NOT_LOADED,
-        TASK_NEW
-};
+typedef enum task_status {
+    TASK_NONE,
+    TASK_NOT_LOADED,
+    TASK_NEW
+} task_status;
 
-typedef unsigned_8 memory_expr; enum {
-        EXPR_CODE,
-        EXPR_DATA,
-        EXPR_GIVEN
-};
+typedef enum memory_expr {
+    EXPR_CODE,
+    EXPR_DATA,
+    EXPR_GIVEN
+} memory_expr;
 
-typedef unsigned_8 cnvaddr_option; enum {
+typedef enum cnvaddr_option {
     CAO_NORMAL_PLUS,
     CAO_OMIT_PLUS,
     CAO_NO_PLUS
-};
+} cnvaddr_option;
 
-typedef unsigned_8 trace_cmd_type; enum {
+typedef enum trace_cmd_type {
     #define pick( a,b ) a,
     #include "_dbgtrac.h"
     #undef pick
-};
+} trace_cmd_type;
 
 typedef struct {
     unsigned char use;
