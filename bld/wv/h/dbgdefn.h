@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,7 @@ typedef int                     file_handle;
 #define NIL_HANDLE              ((file_handle)-1)
 
 typedef enum debug_level {
-    #define pick( a,b ) a,
+    #define pick(a,b)   b,
     #include "dbglevel.h"
     #undef pick
 } debug_level;

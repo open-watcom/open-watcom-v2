@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,13 +117,13 @@ extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
 
 static const char LevelTab[] = {
-    #define pick( a,b ) b
+    #define pick(a,b)   a "\0"
     #include "dbglevel.h"
     #undef pick
 };
 
 static const char TraceTab2[] = {
-    #define pick( a,b ) b
+    #define pick(a,b)   b
     #include "_dbgtrac.h"
     #undef pick
 };
@@ -282,7 +282,7 @@ static void TracePostponed( void )
 
 bool SourceStep( void )
 {
-    return( TraceState.cur_level == SOURCE );
+    return( TraceState.cur_level == LEVEL_SOURCE );
 }
 
 /*
@@ -352,7 +352,7 @@ static bool CheckTraceSourceStop( bool *have_source )
         }
         return( false );
     }
-    if( TraceState.req_level == MIX ) {
+    if( TraceState.req_level == LEVEL_MIX ) {
         if( sr == SR_NONE )
             return( true );
         if( !IsSupportRoutine( sym ) ) {
@@ -437,7 +437,7 @@ unsigned TraceCheck( unsigned conditions )
         DbgTmpBrk.status.b.active = true;
         return( conditions & ~COND_STOPPERS );
     }
-    if( TraceState.cur_level == ASM )
+    if( TraceState.cur_level == LEVEL_ASM )
         return( conditions | COND_TRACE );
     if( CheckTraceSourceStop( &have_source ) ) {
         if( CheckForDLLThunk() )
@@ -489,7 +489,7 @@ static char DoTrace( debug_level curr_level )
     unsigned    conditions;
     DIPHDL( cue, cueh_line );
 
-    if( curr_level == SOURCE ) {
+    if( curr_level == LEVEL_SOURCE ) {
         if( TraceState.type == TRACE_NEXT ) {
             if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line ) == SR_NONE
               || DIPCueAdjust( cueh_line, 1, cueh_line ) != DS_OK ) {
@@ -626,14 +626,14 @@ void ExecTrace( trace_cmd_type type, debug_level level )
     SetCodeLoc( TraceState.saveaddr );
     TraceState.req_level = level;
     switch( level ) {
-    case MIX:
-        if( ActiveWindowLevel == ASM || !HasLineInfo( TraceState.saveaddr ) ) {
-            TraceState.cur_level = ASM;
+    case LEVEL_MIX:
+        if( ActiveWindowLevel == LEVEL_ASM || !HasLineInfo( TraceState.saveaddr ) ) {
+            TraceState.cur_level = LEVEL_ASM;
         } else {
-            TraceState.cur_level = SOURCE;
+            TraceState.cur_level = LEVEL_SOURCE;
         }
         break;
-    case SOURCE:
+    case LEVEL_SOURCE:
         if( !HasLineInfo( TraceState.saveaddr ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_SOURCE_INFO ) );
         }

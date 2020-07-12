@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -788,7 +788,7 @@ static bool FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
-        ActiveWindowLevel = SOURCE;
+        ActiveWindowLevel = LEVEL_SOURCE;
         if( IS_NIL_ADDR( file->dotaddr ) )
             return( true );
         SetCodeDot( file->dotaddr );

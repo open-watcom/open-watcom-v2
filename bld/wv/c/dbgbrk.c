@@ -133,7 +133,7 @@ static bpjmptab_type BPJmpTab[] = {
 
 static const char *BrkFmt( void )
 {
-    return( ( DbgLevel != ASM ) ? "%l" : "%a" );
+    return( ( DbgLevel != LEVEL_ASM ) ? "%l" : "%a" );
 }
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,7 +346,7 @@ void InternalValue( internal_idx index, void *d )
         *(unsigned_16 *)d = 1;
         break;
     case INTERNAL_src:
-        *(unsigned_16 *)d = ( ActiveWindowLevel == SOURCE );
+        *(unsigned_16 *)d = ( ActiveWindowLevel == LEVEL_SOURCE );
         break;
     case INTERNAL_NIL:
         *(address *)d = NilAddr;
