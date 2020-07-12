@@ -136,10 +136,9 @@ static void (* SetConfJmpTab[])( void ) = {
     #define pick(t,s,c,f)   c,
     SET_DEFS
     #undef pick
-    NULL,
 };
 
-static bool do_all[] = {
+static bool DoForAll[] = {
     #define pick(t,s,c,f)   f,
     SET_DEFS
     #undef pick
@@ -191,7 +190,7 @@ void ProcSet( void )
 
 void ConfigSet( void )
 {
-    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, do_all );
+    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, DoForAll );
 }
 
 
