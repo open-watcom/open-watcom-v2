@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,6 +70,7 @@
 #include "dbgstdio.h"
 #include "dlgfile.h"
 #include "posixfp.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
@@ -1257,12 +1258,6 @@ void ReStart( void )
 
 #define SKIP_SPACES     while( *start == ' ' && len != 0 ) { ++start; --len; }
 
-static const char NogoTab[] = {
-    "NOgo\0"
-};
-
-
-
 static void ProgNew( void )
 {
     const char  *start;
@@ -1281,7 +1276,7 @@ static void ProgNew( void )
     progstarthook = true;
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( NogoTab ) != 0 ) {
+        if( !ScanCmdNogo() ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
         }
         progstarthook = false;
@@ -1623,7 +1618,7 @@ void RecordNewProg( void )
     GetCmdEntry( NewNameTab, 0, buff );
     p = Format( TxtBuff, "%s/%s", GetCmdName( CMD_NEW ), buff );
     if( !ProgStartHook ) {
-        GetCmdEntry( NogoTab, 0, buff );
+        GetCmdNogo( buff );
         p = Format( p, "/%s", buff );
     }
     *p++ = ' ';

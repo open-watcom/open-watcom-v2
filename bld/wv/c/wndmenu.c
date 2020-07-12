@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,8 +131,6 @@ wnd_info *WndInfoTab[] = {
     #include "wndnames.h"
     #undef pick
 };
-
-const char MainTab[] = { "MAin\0" };
 
 void PlayDead( bool dead )
 {
@@ -293,7 +291,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu, gui_menu_item
     *menu = NULL;
     *parent = NoMenu;
     child = NULL;
-    if( ScanCmd( MainTab ) == 0 ) {
+    if( ScanCmdMain() ) {
         main_menu = FindMainMenu();
         if( main_menu == NULL ) {
             if( add_to_menu )

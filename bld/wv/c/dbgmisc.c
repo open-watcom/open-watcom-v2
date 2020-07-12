@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,11 +75,6 @@
     pick( THREAD_THAW,      "Thaw" ) \
     pick( THREAD_CHANGE,    "Change" )
 
-#define ELSEIF_DEFS \
-    pick( ELSEIF_ELSEIF,    "ELSEIF" )
-
-#define ELSE_DEFS \
-    pick( ELSE_ELSE,  "ELSE" )
 
 enum {
     #define pick(e,t)   e,
@@ -98,18 +94,6 @@ typedef enum thread_cmd {
     THREAD_DEFS
     #undef pick
 } thread_cmd;
-
-enum {
-    #define pick(e,t)   e,
-    ELSEIF_DEFS
-    #undef pick
-};
-
-enum {
-    #define pick(e,t)   e,
-    ELSE_DEFS
-    #undef pick
-};
 
 extern void             FlipScreen( void );
 
@@ -131,17 +115,41 @@ static const char ThreadOps[] = {
     #undef pick
 };
 
-static const char ElseifTab[] = {
-    #define pick(e,t)   t "\0"
-    ELSEIF_DEFS
-    #undef pick
-};
+static const char AddTab[] = "Add\0";
 
-static const char ElseTab[] = {
-    #define pick(e,t)   t "\0"
-    ELSE_DEFS
-    #undef pick
-};
+static const char MainTab[] = "MAin\0";
+
+static const char NogoTab[] = "NOgo\0";
+
+bool ScanCmdAdd( void )
+{
+    return( ScanCmd( AddTab ) == 0 );
+}
+
+char *GetCmdAdd( char *buffer )
+{
+    return( GetCmdEntry( AddTab, 0, buffer ) );
+}
+
+bool ScanCmdMain( void )
+{
+    return( ScanCmd( MainTab ) == 0 );
+}
+
+char *GetCmdMain( char *buffer )
+{
+    return( GetCmdEntry( MainTab, 0, buffer ) );
+}
+
+bool ScanCmdNogo( void )
+{
+    return( ScanCmd( NogoTab ) == 0 );
+}
+
+char *GetCmdNogo( char *buffer )
+{
+    return( GetCmdEntry( NogoTab, 0, buffer ) );
+}
 
 int SwitchOnOffOnly( void )
 {
@@ -458,11 +466,11 @@ void ProcIf( void )
             true_len   = len;
             have_true  = true;
         }
-        if( ScanCmd( ElseifTab ) < 0 ) {
+        if( ScanCmd( "ELSEIF\0" ) != 0 ) {
             break;
         }
     }
-    ScanCmd( ElseTab ); /* optional else */
+    ScanCmd( "ELSE\0" ); /* optional else */
     if( ScanQuote( &start, &len ) && !have_true ) {
         true_start = start;
         true_len   = len;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "dipinter.h"
 #include "dbglkup.h"
 #include "dbgsetfg.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
@@ -61,8 +62,6 @@ static const char CaseTab[] = { "Ignore\0Respect\0" };
 
 
 static  lookup      *DefLookup;
-
-static const char AddTab[] = { "Add\0" };
 
 static void FreeList( lookup *curr )
 {
@@ -143,7 +142,7 @@ void LookSet( void )
     just_respect = false;
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( AddTab ) == 0 ) {
+        if( ScanCmdAdd() ) {
             add = true;
         } else {
             switch( ScanCmd( CaseTab ) ) {
