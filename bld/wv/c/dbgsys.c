@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,21 @@
 #include "dbginit.h"
 
 
-static const char SystemOps[] = { "Remote\0Local\0" };
+#define SYSTEM_OPTS \
+    pick( "Remote", OPT_REMOTE  ) \
+    pick( "Local",  OPT_LOCAL   )
+
+enum {
+    #define pick(t,e)   e,
+    SYSTEM_OPTS
+    #undef pick
+};
+
+static const char SystemOps[] = {
+    #define pick(t,e)   t "\0"
+    SYSTEM_OPTS
+    #undef pick
+};
 
 void DoSystem( const char *cmd, size_t len, object_loc loc )
 {
@@ -81,10 +96,10 @@ void ProcSystem( void )
     if( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( SystemOps ) ) {
-        case 0:
+        case OPT_REMOTE:
             loc = LOC_REMOTE;
             break;
-        case 1:
+        case OPT_LOCAL:
             loc = LOC_LOCAL;
             break;
         default:

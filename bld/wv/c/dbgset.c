@@ -678,19 +678,19 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
 */
 
 #define ASM_DEFS \
-    pick( IDX_ASM_SOURCE,   "Source" ) \
-    pick( IDX_ASM_NOSOURCE, "NOSource" ) \
-    pick( IDX_ASM_HEX,      "Hexadecimal" ) \
-    pick( IDX_ASM_DECIMAL,  "Decimal" )
+    pick( "Source",         IDX_ASM_SOURCE      ) \
+    pick( "NOSource",       IDX_ASM_NOSOURCE    ) \
+    pick( "Hexadecimal",    IDX_ASM_HEX         ) \
+    pick( "Decimal",        IDX_ASM_DECIMAL     )
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     ASM_DEFS
     #undef pick
 };
 
 static const char AsmSettings[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     ASM_DEFS
     #undef pick
 };
@@ -731,32 +731,32 @@ static void FPUConf( void )
 */
 
 #define VAR_DEFS \
-    pick( IDX_VAR_ENTIRE,       "Entire" ) \
-    pick( IDX_VAR_PARTIAL,      "Partial" ) \
-    pick( IDX_VAR_CODE,         "CODe" ) \
-    pick( IDX_VAR_NOCODE,       "NOCODe" ) \
-    pick( IDX_VAR_INHERIT,      "INherit" ) \
-    pick( IDX_VAR_NOINHERIT,    "NOINherit" ) \
-    pick( IDX_VAR_COMPILER,     "COMpiler" ) \
-    pick( IDX_VAR_NOCOMPILER,   "NOCOMpiler" ) \
-    pick( IDX_VAR_PRIVATE,      "PRIvate" ) \
-    pick( IDX_VAR_NOPRIVATE,    "NOPRIvate" ) \
-    pick( IDX_VAR_PROTECTED,    "PROtected" ) \
-    pick( IDX_VAR_NOPROTECTED,  "NOPROTected" ) \
-    pick( IDX_VAR_STATIC,       "STatic" ) \
-    pick( IDX_VAR_NOSTATIC,     "NOSTatic" ) \
-    pick( IDX_VAR_MEMBERS,      "Members" ) \
-    pick( IDX_VAR_NOMEMBERS,    "NOMembers" )
+    pick( "Entire",         IDX_VAR_ENTIRE      ) \
+    pick( "Partial",        IDX_VAR_PARTIAL     ) \
+    pick( "CODe",           IDX_VAR_CODE        ) \
+    pick( "NOCODe",         IDX_VAR_NOCODE      ) \
+    pick( "INherit",        IDX_VAR_INHERIT     ) \
+    pick( "NOINherit",      IDX_VAR_NOINHERIT   ) \
+    pick( "COMpiler",       IDX_VAR_COMPILER    ) \
+    pick( "NOCOMpiler",     IDX_VAR_NOCOMPILER  ) \
+    pick( "PRIvate",        IDX_VAR_PRIVATE     ) \
+    pick( "NOPRIvate",      IDX_VAR_NOPRIVATE   ) \
+    pick( "PROtected",      IDX_VAR_PROTECTED   ) \
+    pick( "NOPROTected",    IDX_VAR_NOPROTECTED ) \
+    pick( "STatic",         IDX_VAR_STATIC      ) \
+    pick( "NOSTatic",       IDX_VAR_NOSTATIC    ) \
+    pick( "Members",        IDX_VAR_MEMBERS     ) \
+    pick( "NOMembers",      IDX_VAR_NOMEMBERS   )
 
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     VAR_DEFS
     #undef pick
 };
 
 static const char VarSettings[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     VAR_DEFS
     #undef pick
 };
@@ -784,17 +784,17 @@ static void VarConf( void )
 }
 
 #define FUNC_DEFS \
-    pick( IDX_FUNC_TYPED,   "Typed" ) \
-    pick( IDX_FUNC_ALL,     "All" )
+    pick( "Typed",  IDX_FUNC_TYPED  ) \
+    pick( "All",    IDX_FUNC_ALL    )
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     FUNC_DEFS
     #undef pick
 };
 
 static const char FuncSettings[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     FUNC_DEFS
     #undef pick
 };

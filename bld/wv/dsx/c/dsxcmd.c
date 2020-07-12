@@ -48,15 +48,15 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 #define SYS_OPT_DEFS \
-    pick( OPT_CHECKSIZE,    "CHecksize" ) \
-    pick( OPT_NOREMAP,      "NOCHarremap" ) \
-    pick( OPT_NOGMOUSE,     "NOGraphicsmouse" ) \
-    pick( OPT_HEAPENABLE,   "Heapenable" ) \
-    pick( OPT_XXNODPMI,     "XXNODPMI" )  /* DON'T DOCUMENT: Internal use only */ \
-    pick( OPT_XXDPMI,       "XXDPMI" )    /* DON'T DOCUMENT: Internal use only */
+    pick( "CHecksize",          OPT_CHECKSIZE   ) \
+    pick( "NOCHarremap",        OPT_NOREMAP     ) \
+    pick( "NOGraphicsmouse",    OPT_NOGMOUSE    ) \
+    pick( "Heapenable",         OPT_HEAPENABLE  ) \
+    pick( "XXNODPMI",           OPT_XXNODPMI    )  /* DON'T DOCUMENT: Internal use only */ \
+    pick( "XXDPMI",             OPT_XXDPMI      )    /* DON'T DOCUMENT: Internal use only */
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     SYS_OPT_DEFS
     #undef pick
 };
@@ -68,7 +68,7 @@ gui_window_styles WndStyle = GUI_PLAIN + GUI_GMOUSE;
 static char             *cmdStart;
 
 static const char SysOptNameTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     SYS_OPT_DEFS
     #undef pick
 };

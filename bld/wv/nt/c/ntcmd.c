@@ -42,22 +42,22 @@
 
 #ifdef __AXP__
 #define SYS_OPT_DEFS \
-    pick( OPT_POPUPS,           "Popups" ) \
-    pick( OPT_ALIGN_TRAP,       "XXAT" ) \
-    pick( OPT_ALIGN_EMULATE,    "XXAE" )
+    pick( "Popups", OPT_POPUPS          ) \
+    pick( "XXAT",   OPT_ALIGN_TRAP      ) \
+    pick( "XXAE",   OPT_ALIGN_EMULATE   )
 #else
 #define SYS_OPT_DEFS \
-    pick( OPT_POPUPS,           "Popups" )
+    pick( "Popups", OPT_POPUPS          )
 #endif
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     SYS_OPT_DEFS
     #undef pick
 };
 
 static const char SysOptNameTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     SYS_OPT_DEFS
     #undef pick
 };

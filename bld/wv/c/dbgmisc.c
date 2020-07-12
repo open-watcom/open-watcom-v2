@@ -61,36 +61,36 @@
 
 
 #define SWITCH_DEFS \
-    pick( SWITCH_ON,    "ON" ) \
-    pick( SWITCH_OFF,   "OFf" )
+    pick( "ON",         SWITCH_ON   ) \
+    pick( "OFf",        SWITCH_OFF  )
 
 #define GO_DEFS \
-    pick( GO_KEEP,      "Keep" ) \
-    pick( GO_NOFLIP,    "Noflip" ) \
-    pick( GO_UNTIL,     "Until" )
+    pick( "Keep",       GO_KEEP     ) \
+    pick( "Noflip",     GO_NOFLIP   ) \
+    pick( "Until",      GO_UNTIL    )
 
 #define THREAD_DEFS \
-    pick( THREAD_SHOW,      "Show" ) \
-    pick( THREAD_FREEZE,    "Freeze" ) \
-    pick( THREAD_THAW,      "Thaw" ) \
-    pick( THREAD_CHANGE,    "Change" )
+    pick( "Show",       THREAD_SHOW     ) \
+    pick( "Freeze",     THREAD_FREEZE   ) \
+    pick( "Thaw",       THREAD_THAW     ) \
+    pick( "Change",     THREAD_CHANGE   )
 
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     SWITCH_DEFS
     #undef pick
 };
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     GO_DEFS
     #undef pick
 };
 
 typedef enum thread_cmd {
     THREAD_BAD = -1,
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     THREAD_DEFS
     #undef pick
 } thread_cmd;
@@ -98,19 +98,19 @@ typedef enum thread_cmd {
 extern void             FlipScreen( void );
 
 static const char SwitchNameTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     SWITCH_DEFS
     #undef pick
 };
 
 static const char GoOptionTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     GO_DEFS
     #undef pick
 };
 
 static const char ThreadOps[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     THREAD_DEFS
     #undef pick
 };

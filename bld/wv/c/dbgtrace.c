@@ -117,13 +117,13 @@ extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
 
 static const char LevelTab[] = {
-    #define pick(a,b)   a "\0"
+    #define pick(t,e)   t "\0"
     #include "dbglevel.h"
     #undef pick
 };
 
 static const char TraceTab2[] = {
-    #define pick(a,b)   b
+    #define pick(t,e)   t "\0"
     #include "_dbgtrac.h"
     #undef pick
 };

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@
 #define MIN_MEM_SIZE    (500UL*1024)
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     #include "_dbgopts.h"
     #undef pick
 };
@@ -63,7 +64,7 @@ static char             *CurrArgp;
 static char             CurrChar;
 
 static const char OptNameTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     #include "_dbgopts.h"
     #undef pick
 };

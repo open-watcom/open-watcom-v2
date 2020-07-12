@@ -60,7 +60,7 @@ typedef int                     file_handle;
 #define NIL_HANDLE              ((file_handle)-1)
 
 typedef enum debug_level {
-    #define pick(a,b)   b,
+    #define pick(t,e)   e,
     #include "dbglevel.h"
     #undef pick
 } debug_level;
@@ -127,7 +127,7 @@ typedef enum cnvaddr_option {
 } cnvaddr_option;
 
 typedef enum trace_cmd_type {
-    #define pick( a,b ) a,
+    #define pick(t,e)   e,
     #include "_dbgtrac.h"
     #undef pick
 } trace_cmd_type;
@@ -170,7 +170,7 @@ typedef struct {
 #define OVL_MAP_EXE         1
 
 typedef enum {
-    #define pick(a,b,c)     a,
+    #define pick(t,e,c)     e,
     #include "_dbgcmds.h"
     #undef pick
 } wd_cmd;

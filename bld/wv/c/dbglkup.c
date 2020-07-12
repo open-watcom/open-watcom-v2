@@ -52,16 +52,29 @@
 #include "clibext.h"
 
 
+#define CASE_OPTS \
+    pick( "Ignore",     CASE_IGNORE  ) \
+    pick( "Respect",    CASE_RESPECT )
+
+enum {
+    #define pick(t,e)   e,
+    CASE_OPTS
+    #undef pick
+};
+
 typedef struct lookup_list {
     struct lookup_list  *next;
     bool                respect_case;
     char                data[1];
 } lookup;
 
-static const char CaseTab[] = { "Ignore\0Respect\0" };
-
-
 static  lookup      *DefLookup;
+
+static const char CaseTab[] = {
+    #define pick(t,e)   t "\0"
+    CASE_OPTS
+    #undef pick
+};
 
 static void FreeList( lookup *curr )
 {
@@ -146,11 +159,11 @@ void LookSet( void )
             add = true;
         } else {
             switch( ScanCmd( CaseTab ) ) {
-            case 0:
+            case CASE_IGNORE:
                 respect = false;
                 just_respect = true;
                 break;
-            case 1:
+            case CASE_RESPECT:
                 respect = true;
                 just_respect = true;
                 break;
@@ -165,12 +178,12 @@ void LookSet( void )
         if( CurrToken == T_DIV ) {
             Scan();
             switch( ScanCmd( CaseTab ) ) {
-            case 0:
+            case CASE_IGNORE:
                 respect = false;
                 need_item = true;
                 just_respect = false;
                 break;
-            case 1:
+            case CASE_RESPECT:
                 respect = true;
                 need_item = true;
                 just_respect = false;

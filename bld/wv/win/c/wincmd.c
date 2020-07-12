@@ -38,17 +38,17 @@
 
 
 #define SYS_OPT_DEFS \
-    pick( OPT_NOSNOW,  "NOSNow" ) \
-    pick( OPT_POPUPS,  "Popups" )
+    pick( "NOSNow", OPT_NOSNOW ) \
+    pick( "Popups", OPT_POPUPS )
 
 enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
     SYS_OPT_DEFS
     #undef pick
 };
 
 static const char SysOptNameTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
     SYS_OPT_DEFS
     #undef pick
 };

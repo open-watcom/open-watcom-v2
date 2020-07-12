@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,27 +49,27 @@
 
 
 #define DISP_OPTS() \
-    pick( DISP_OPEN,        "Open" ) \
-    pick( DISP_CLOSE,       "Close" ) \
-    pick( DISP_NEW,         "New" ) \
-    pick( DISP_MINIMIZE,    "MInimize" ) \
-    pick( DISP_MAXIMIZE,    "MAximize" ) \
-    pick( DISP_RESTORE,     "Restore" ) \
-    pick( DISP_FLOATING,    "FLoating" ) \
-    pick( DISP_FIXED,       "Fixed" )
+    pick( "Open",       DISP_OPEN       ) \
+    pick( "Close",      DISP_CLOSE      ) \
+    pick( "New",        DISP_NEW        ) \
+    pick( "MInimize",   DISP_MINIMIZE   ) \
+    pick( "MAximize",   DISP_MAXIMIZE   ) \
+    pick( "Restore",    DISP_RESTORE    ) \
+    pick( "FLoating",   DISP_FLOATING   ) \
+    pick( "Fixed",      DISP_FIXED      )
 
 #define MISC_OPTS() \
-    pick( MISC_TOOL,        "TOolbar" ) \
-    pick( MISC_STATUS,      "Status" )
+    pick( "TOolbar",    MISC_TOOL       ) \
+    pick( "Status",     MISC_STATUS     )
 
 typedef enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
         DISP_OPTS()
     #undef pick
 } disp_optn;
 
 typedef enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
         MISC_OPTS()
     #undef pick
 } misc_optn;
@@ -80,13 +80,13 @@ gui_rect            WndMainRect;
 static char         *WndFontInfo[NUM_WNDCLS_ALL];
 
 static const char   DispOptions[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
         DISP_OPTS()
     #undef pick
 };
 
 static const char   MiscTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
         MISC_OPTS()
     #undef pick
 };

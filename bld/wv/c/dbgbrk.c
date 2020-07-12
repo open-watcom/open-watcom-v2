@@ -93,28 +93,28 @@ static brkp         *SetWatch( memory_expr );
 static brkp         *SetPoint( memory_expr def_seg, mad_type_handle );
 
 #define POINT_DEFS \
-    pick( B_ACTIVATE,   "Activate",   ActivatePoint,   EXPR_CODE ) \
-    pick( B_CLEAR,      "Clear",      ClearPoint,      EXPR_CODE ) \
-    pick( B_DEACTIVATE, "Deactivate", DeactivatePoint, EXPR_CODE ) \
-    pick( B_SET,        "Set",        SetBreak,        EXPR_CODE ) \
-    pick( B_MODIFY,     "Modify",     SetWatch,        EXPR_DATA ) \
-    pick( B_TOGGLE,     "Toggle",     TogglePoint,     EXPR_CODE ) \
-    pick( B_RESUME,     "Resume",     ResumePoint,     EXPR_CODE ) \
-    pick( B_UNRESUME,   "UNResume",   UnResumePoint,   EXPR_CODE ) \
-    pick( B_INDEX,      "INdex",      BadPoint,        EXPR_DATA ) \
-    pick( B_IMAGE,      "IMage",      ImageBreak,      EXPR_DATA ) \
-    pick( B_UNMAPPED,   "Unmapped",   BadPoint,        EXPR_DATA ) \
-    pick( B_MAPADDRESS, "MAPaddress", BadPoint,        EXPR_DATA ) \
-    pick( B_SYMADDRESS, "SYMaddress", BadPoint,        EXPR_DATA )
+    pick( "Activate",   B_ACTIVATE,   ActivatePoint,   EXPR_CODE ) \
+    pick( "Clear",      B_CLEAR,      ClearPoint,      EXPR_CODE ) \
+    pick( "Deactivate", B_DEACTIVATE, DeactivatePoint, EXPR_CODE ) \
+    pick( "Set",        B_SET,        SetBreak,        EXPR_CODE ) \
+    pick( "Modify",     B_MODIFY,     SetWatch,        EXPR_DATA ) \
+    pick( "Toggle",     B_TOGGLE,     TogglePoint,     EXPR_CODE ) \
+    pick( "Resume",     B_RESUME,     ResumePoint,     EXPR_CODE ) \
+    pick( "UNResume",   B_UNRESUME,   UnResumePoint,   EXPR_CODE ) \
+    pick( "INdex",      B_INDEX,      BadPoint,        EXPR_DATA ) \
+    pick( "IMage",      B_IMAGE,      ImageBreak,      EXPR_DATA ) \
+    pick( "Unmapped",   B_UNMAPPED,   BadPoint,        EXPR_DATA ) \
+    pick( "MAPaddress", B_MAPADDRESS, BadPoint,        EXPR_DATA ) \
+    pick( "SYMaddress", B_SYMADDRESS, BadPoint,        EXPR_DATA )
 
 static const char PointNameTab[] = {
-    #define pick(e,t,p,x)   t "\0"
+    #define pick(t,e,p,x)   t "\0"
     POINT_DEFS
     #undef pick
 };
 
 typedef enum {
-    #define pick(e,t,p,x)   e,
+    #define pick(t,e,p,x)   e,
     POINT_DEFS
     #undef pick
 } brk_event;
@@ -125,7 +125,7 @@ typedef struct {
 } bpjmptab_type;
 
 static bpjmptab_type BPJmpTab[] = {
-    #define pick(e,t,p,x)   { p, x },
+    #define pick(t,e,p,x)   { p, x },
     POINT_DEFS
     #undef pick
 };

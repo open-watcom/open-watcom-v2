@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,15 +123,14 @@ void InputConf( void )
     }
 }
 
-static char     *KeyNamePieces[] =
-{
-    #define pick(e,n) n,
+static char *KeyNamePieces[] = {
+    #define pick(t,e)   t,
     #include "keynames.h"
     #undef pick
 };
 
 typedef enum {
-    #define pick(e,n) e,
+    #define pick(t,e)   e,
     #include "keynames.h"
     #undef pick
     DBG_KEY_CTRL    = 0x2000,
@@ -590,18 +589,22 @@ void TabConf( void )
     ConfigLine( TxtBuff );
 }
 
-static const char SearchSettings[] = {
-    "CASEIgnore\0"
-    "CASEREspect\0"
-    "Rx\0"
-    "NORx\0"
-};
+#define SEARCH_OPTS \
+    pick( "CASEIgnore",     SEARCH_IGNORE   ) \
+    pick( "CASEREspect",    SEARCH_RESPECT  ) \
+    pick( "Rx",             SEARCH_RX       ) \
+    pick( "NORx",           SEARCH_NORX     )
 
 enum {
-    SEARCH_IGNORE,
-    SEARCH_RESPECT,
-    SEARCH_RX,
-    SEARCH_NORX
+    #define pick(t,e)   e,
+    SEARCH_OPTS
+    #undef pick
+};
+
+static const char SearchSettings[] = {
+    #define pick(t,e)   t "\0"
+    SEARCH_OPTS
+    #undef pick
 };
 
 

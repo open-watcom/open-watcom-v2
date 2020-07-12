@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,11 +67,27 @@
 
 #define FMT2RADIX(x)   (((x)<0)?(mad_radix)-(x):(mad_radix)(x))
 
-extern void             GraphicDisplay( void );
-extern bool             DlgNewWithSym( const char *title, char *, size_t );
-
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
+
+#define PRINT_OPTS \
+    pick( "Program",    PRINT_PROGRAM ) \
+    pick( "Window",     PRINT_WINDOW  )
+
+enum {
+    #define pick(t,e)   e,
+    PRINT_OPTS
+    #undef pick
+};
+
+typedef enum {
+    NUM_SIGNED,
+    NUM_UNSIGNED,
+    NUM_CHECK
+} sign_class;
+
+extern void             GraphicDisplay( void );
+extern bool             DlgNewWithSym( const char *title, char *, size_t );
 
 static char             *OutPtr;
 static char             *OutBuff;
@@ -79,9 +95,11 @@ static unsigned         OutLen;
 static bool             OutPgm;
 static bool             First;
 
-static const char PrintOps[] = { "Program\0Window\0" };
-
-typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
+static const char PrintOps[] = {
+    #define pick(t,e)   t "\0"
+    PRINT_OPTS
+    #undef pick
+};
 
 
 void StartPrintBuff( char *buff, unsigned len )
@@ -981,10 +999,10 @@ void ProcPrint( void )
     if( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( PrintOps ) ) {
-        case 0:
+        case PRINT_PROGRAM:
             DoPrintList( true );
             break;
-        case 1:
+        case PRINT_WINDOW:
             GraphicDisplay();
             break;
         default:

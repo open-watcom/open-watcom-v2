@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,33 +31,33 @@
 ****************************************************************************/
 
 
-pick( OPT_INVOKE,                   "Invoke" )
-pick( OPT_NOINVOKE,                 "NOInvoke" )
-pick( OPT_NOSYMBOLS,                "NOSYmbols" )
-pick( OPT_NOMOUSE,                  "NOMouse" )
-pick( OPT_DIP,                      "DIp" )
-pick( OPT_DYNAMIC,                  "DYnamic" )
-pick( OPT_TRAP,                     "TRap" )
-pick( OPT_REMOTE_FILES,             "REMotefiles" )
+pick( "Invoke",                     OPT_INVOKE                      )
+pick( "NOInvoke",                   OPT_NOINVOKE                    )
+pick( "NOSYmbols",                  OPT_NOSYMBOLS                   )
+pick( "NOMouse",                    OPT_NOMOUSE                     )
+pick( "DIp",                        OPT_DIP                         )
+pick( "DYnamic",                    OPT_DYNAMIC                     )
+pick( "TRap",                       OPT_TRAP                        )
+pick( "REMotefiles",                OPT_REMOTE_FILES                )
 #ifdef BACKWARDS
-pick( OPT_NO_FPU,                   "NOFpu" )
+pick( "NOFpu",                      OPT_NO_FPU                      )
 #endif
-pick( OPT_LINES,                    "LInes" )
-pick( OPT_COLUMNS,                  "COlumns" )
+pick( "LInes",                      OPT_LINES                       )
+pick( "COlumns",                    OPT_COLUMNS                     )
 #ifdef BACKWARDS
-pick( OPT_NO_ALTSYM,                "NOAltsym" )
-pick( OPT_REGISTERS,                "REGisters" )
+pick( "NOAltsym",                   OPT_NO_ALTSYM                   )
+pick( "REGisters",                  OPT_REGISTERS                   )
 #endif
-pick( OPT_INITCMD,                  "INItcmd" )
-pick( OPT_POWERBUILDER,             "POWerbuilder" )
-pick( OPT_LOCALINFO,                "LOcalinfo" )
-pick( OPT_NOEXPORTS,                "NOExports" )
-pick( OPT_DOWNLOAD,                 "DOwnload" )
-pick( OPT_DEFERSYM,                 "DEfersymbols" )
-pick( OPT_NOSOURCECHECK,            "NOSOurcecheck" )
-pick( OPT_CONTINUE_UNEXPECTED_BREAK, "CONtinueunexpectedbreak" )
-pick( OPT_HELP,                     "Help" )
+pick( "INItcmd",                    OPT_INITCMD                     )
+pick( "POWerbuilder",               OPT_POWERBUILDER                )
+pick( "LOcalinfo",                  OPT_LOCALINFO                   )
+pick( "NOExports",                  OPT_NOEXPORTS                   )
+pick( "DOwnload",                   OPT_DOWNLOAD                    )
+pick( "DEfersymbols",               OPT_DEFERSYM                    )
+pick( "NOSOurcecheck",              OPT_NOSOURCECHECK               )
+pick( "CONtinueunexpectedbreak",    OPT_CONTINUE_UNEXPECTED_BREAK   )
+pick( "Help",                       OPT_HELP                        )
 #ifdef ENABLE_TRAP_LOGGING
-pick( OPT_TRAP_DEBUG,               "TDebug" )
-pick( OPT_TRAP_DEBUG_FLUSH,         "TFDebug" )
+pick( "TDebug",                     OPT_TRAP_DEBUG                  )
+pick( "TFDebug",                    OPT_TRAP_DEBUG_FLUSH            )
 #endif

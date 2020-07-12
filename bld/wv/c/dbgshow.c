@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +200,7 @@ static void BadShow( void )
 
 
 static const char ShowNameTab[] = {
-    #define pick(t,p,f) t "\0"
+    #define pick(t,p,f)     t "\0"
     SHOW_DEFS
     #undef pick
 };
@@ -215,7 +215,7 @@ static void ConfigTypes( void )
 }
 
 static  show_rtn ShowJmpTab[] = {
-    #define pick(t,p,f) { p, f },
+    #define pick(t,p,f)     { p, f },
     SHOW_DEFS
     #undef pick
 };

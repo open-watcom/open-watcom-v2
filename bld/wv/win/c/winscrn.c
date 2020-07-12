@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static mode_types       ScrnMode;
 static display_config   HWDisplay;
 
 static const char ScreenOptNameTab[] = {
-    #define pick(e,t) t "\0"
+    #define pick(t,e)   t "\0"
         SCREEN_OPTS()
     #undef pick
 };
