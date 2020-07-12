@@ -36,7 +36,7 @@ typedef enum
 /* Debugger tokens */
 
     /* one character command line delimiters */
-    #define pick(c,t)   t,
+    #define pick(chr,tok)   tok,
     #include "_dbgtok.h"
     #undef pick
     T_LINE_SEPARATOR,
