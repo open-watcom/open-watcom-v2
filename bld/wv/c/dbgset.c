@@ -91,34 +91,34 @@ char    *Language = NULL;
 static pending_toggle_list *PendToggleList[MWT_LAST];
 
 #define SET_DEFS \
-    pick( "AUtosave",       AutoSet,                AutoConf,                   true ) \
-    pick( "ASsembly",       AsmSet,                 AsmConf,                    true ) \
-    pick( "Variable",       VarSet,                 VarConf,                    true ) \
-    pick( "FUnctions",      FuncSet,                FuncConf,                   true ) \
-    pick( "GLobals",        GlobSet,                GlobConf,                   true ) \
-    pick( "MOdules",        ModSet,                 ModConf,                    true ) \
-    pick( "REGister",       RegSet,                 RegConf,                    true ) \
-    pick( "Fpu",            FPUSet,                 FPUConf,                    true ) \
-    pick( "MMx",            MMXSet,                 MMXConf,                    true ) \
-    pick( "XMm",            XMMSet,                 XMMConf,                    true ) \
-    pick( "BEll",           BellSet,                BellConf,                   true ) \
-    pick( "Call",           CallSet,                CallConf,                   false ) \
-    pick( "Dclick",         DClickSet,              DClickConf,                 true ) \
-    pick( "Implicit",       ImplicitSet,            ImplicitConf,               true ) \
-    pick( "INput",          InputSet,               InputConf,                  false ) \
-    pick( "Radix",          RadixSet,               RadixConf,                  true ) \
-    pick( "RECursion",      RecursionSet,           RecursionConf,              true ) \
-    pick( "SEarch",         SearchSet,              SearchConf,                 true ) \
-    pick( "SOurce",         SourceSet,              SourceConf,                 true ) \
-    pick( "SYmbol",         LookSet,                LookConf,                   true ) \
-    pick( "TAb",            TabSet,                 TabConf,                    true ) \
-    pick( "TYpes",          TypeSet,                TypeConf,                   true ) \
-    pick( "Level",          LevelSet,               LevelConf,                  false ) \
-    pick( "LAnguage",       LangSet,                LangConf,                   false ) \
-    pick( "MAcro",          MacroSet,               MacroConf,                  true ) \
-    pick( "SUpportroutine", SupportSet,             SupportConf,                true ) \
-    pick( "BReakonwrite",   BreakOnWriteSet,        BreakOnWriteConf,           true ) \
-    pick( "DOntexpandhex",  DontExpandHexStringSet, DontExpandHexStringConf,    true )
+    pick( "AUtosave",       AutoSet,                AutoConf,                true  ) \
+    pick( "ASsembly",       AsmSet,                 AsmConf,                 true  ) \
+    pick( "Variable",       VarSet,                 VarConf,                 true  ) \
+    pick( "FUnctions",      FuncSet,                FuncConf,                true  ) \
+    pick( "GLobals",        GlobSet,                GlobConf,                true  ) \
+    pick( "MOdules",        ModSet,                 ModConf,                 true  ) \
+    pick( "REGister",       RegSet,                 RegConf,                 true  ) \
+    pick( "Fpu",            FPUSet,                 FPUConf,                 true  ) \
+    pick( "MMx",            MMXSet,                 MMXConf,                 true  ) \
+    pick( "XMm",            XMMSet,                 XMMConf,                 true  ) \
+    pick( "BEll",           BellSet,                BellConf,                true  ) \
+    pick( "Call",           CallSet,                CallConf,                false ) \
+    pick( "Dclick",         DClickSet,              DClickConf,              true  ) \
+    pick( "Implicit",       ImplicitSet,            ImplicitConf,            true  ) \
+    pick( "INput",          InputSet,               InputConf,               false ) \
+    pick( "Radix",          RadixSet,               RadixConf,               true  ) \
+    pick( "RECursion",      RecursionSet,           RecursionConf,           true  ) \
+    pick( "SEarch",         SearchSet,              SearchConf,              true  ) \
+    pick( "SOurce",         SourceSet,              SourceConf,              true  ) \
+    pick( "SYmbol",         LookSet,                LookConf,                true  ) \
+    pick( "TAb",            TabSet,                 TabConf,                 true  ) \
+    pick( "TYpes",          TypeSet,                TypeConf,                true  ) \
+    pick( "Level",          LevelSet,               LevelConf,               false ) \
+    pick( "LAnguage",       LangSet,                LangConf,                false ) \
+    pick( "MAcro",          MacroSet,               MacroConf,               true  ) \
+    pick( "SUpportroutine", SupportSet,             SupportConf,             true  ) \
+    pick( "BReakonwrite",   BreakOnWriteSet,        BreakOnWriteConf,        true  ) \
+    pick( "DOntexpandhex",  DontExpandHexStringSet, DontExpandHexStringConf, true  )
 
 static const char SetNameTab[] = {
     #define pick(t,s,c,f)   t "\0"
@@ -678,10 +678,10 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
 */
 
 #define ASM_DEFS \
-    pick( "Source",         IDX_ASM_SOURCE      ) \
-    pick( "NOSource",       IDX_ASM_NOSOURCE    ) \
-    pick( "Hexadecimal",    IDX_ASM_HEX         ) \
-    pick( "Decimal",        IDX_ASM_DECIMAL     )
+    pick( "Source",      IDX_ASM_SOURCE   ) \
+    pick( "NOSource",    IDX_ASM_NOSOURCE ) \
+    pick( "Hexadecimal", IDX_ASM_HEX      ) \
+    pick( "Decimal",     IDX_ASM_DECIMAL  )
 
 enum {
     #define pick(t,e)   e,
@@ -731,22 +731,22 @@ static void FPUConf( void )
 */
 
 #define VAR_DEFS \
-    pick( "Entire",         IDX_VAR_ENTIRE      ) \
-    pick( "Partial",        IDX_VAR_PARTIAL     ) \
-    pick( "CODe",           IDX_VAR_CODE        ) \
-    pick( "NOCODe",         IDX_VAR_NOCODE      ) \
-    pick( "INherit",        IDX_VAR_INHERIT     ) \
-    pick( "NOINherit",      IDX_VAR_NOINHERIT   ) \
-    pick( "COMpiler",       IDX_VAR_COMPILER    ) \
-    pick( "NOCOMpiler",     IDX_VAR_NOCOMPILER  ) \
-    pick( "PRIvate",        IDX_VAR_PRIVATE     ) \
-    pick( "NOPRIvate",      IDX_VAR_NOPRIVATE   ) \
-    pick( "PROtected",      IDX_VAR_PROTECTED   ) \
-    pick( "NOPROTected",    IDX_VAR_NOPROTECTED ) \
-    pick( "STatic",         IDX_VAR_STATIC      ) \
-    pick( "NOSTatic",       IDX_VAR_NOSTATIC    ) \
-    pick( "Members",        IDX_VAR_MEMBERS     ) \
-    pick( "NOMembers",      IDX_VAR_NOMEMBERS   )
+    pick( "Entire",      IDX_VAR_ENTIRE      ) \
+    pick( "Partial",     IDX_VAR_PARTIAL     ) \
+    pick( "CODe",        IDX_VAR_CODE        ) \
+    pick( "NOCODe",      IDX_VAR_NOCODE      ) \
+    pick( "INherit",     IDX_VAR_INHERIT     ) \
+    pick( "NOINherit",   IDX_VAR_NOINHERIT   ) \
+    pick( "COMpiler",    IDX_VAR_COMPILER    ) \
+    pick( "NOCOMpiler",  IDX_VAR_NOCOMPILER  ) \
+    pick( "PRIvate",     IDX_VAR_PRIVATE     ) \
+    pick( "NOPRIvate",   IDX_VAR_NOPRIVATE   ) \
+    pick( "PROtected",   IDX_VAR_PROTECTED   ) \
+    pick( "NOPROTected", IDX_VAR_NOPROTECTED ) \
+    pick( "STatic",      IDX_VAR_STATIC      ) \
+    pick( "NOSTatic",    IDX_VAR_NOSTATIC    ) \
+    pick( "Members",     IDX_VAR_MEMBERS     ) \
+    pick( "NOMembers",   IDX_VAR_NOMEMBERS   )
 
 
 enum {
@@ -784,8 +784,8 @@ static void VarConf( void )
 }
 
 #define FUNC_DEFS \
-    pick( "Typed",  IDX_FUNC_TYPED  ) \
-    pick( "All",    IDX_FUNC_ALL    )
+    pick( "Typed", IDX_FUNC_TYPED ) \
+    pick( "All",   IDX_FUNC_ALL   )
 
 enum {
     #define pick(t,e)   e,

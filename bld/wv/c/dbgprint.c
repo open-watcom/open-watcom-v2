@@ -71,8 +71,8 @@
 #define _SetMaxPrec( x )
 
 #define PRINT_OPTS \
-    pick( "Program",    PRINT_PROGRAM ) \
-    pick( "Window",     PRINT_WINDOW  )
+    pick( "Program", PRINT_PROGRAM ) \
+    pick( "Window",  PRINT_WINDOW  )
 
 enum {
     #define pick(t,e)   e,

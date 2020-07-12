@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1732,10 +1732,14 @@ static bool ProcDrive( int argc, char **argv )
 char    *TrapClientString( tc_error err )
 {
     switch( err ) {
-        case TC_BAD_TRAP_FILE:      return( "Bad trap file" );
-        case TC_CANT_LOAD_TRAP:     return( "Cannot load trap file %s" );
-        case TC_WRONG_TRAP_VERSION: return( "Incorrect trap file version" );
-        case TC_OUT_OF_DOS_MEMORY:  return( "Out of DOS memory" );
+    case TC_BAD_TRAP_FILE:
+        return( "Bad trap file" );
+    case TC_CANT_LOAD_TRAP:
+        return( "Cannot load trap file %s" );
+    case TC_WRONG_TRAP_VERSION:
+        return( "Incorrect trap file version" );
+    case TC_OUT_OF_DOS_MEMORY:
+        return( "Out of DOS memory" );
     }
     return( NULL );
 }

@@ -49,18 +49,18 @@
 
 
 #define DISP_OPTS() \
-    pick( "Open",       DISP_OPEN       ) \
-    pick( "Close",      DISP_CLOSE      ) \
-    pick( "New",        DISP_NEW        ) \
-    pick( "MInimize",   DISP_MINIMIZE   ) \
-    pick( "MAximize",   DISP_MAXIMIZE   ) \
-    pick( "Restore",    DISP_RESTORE    ) \
-    pick( "FLoating",   DISP_FLOATING   ) \
-    pick( "Fixed",      DISP_FIXED      )
+    pick( "Open",     DISP_OPEN     ) \
+    pick( "Close",    DISP_CLOSE    ) \
+    pick( "New",      DISP_NEW      ) \
+    pick( "MInimize", DISP_MINIMIZE ) \
+    pick( "MAximize", DISP_MAXIMIZE ) \
+    pick( "Restore",  DISP_RESTORE  ) \
+    pick( "FLoating", DISP_FLOATING ) \
+    pick( "Fixed",    DISP_FIXED    )
 
 #define MISC_OPTS() \
-    pick( "TOolbar",    MISC_TOOL       ) \
-    pick( "Status",     MISC_STATUS     )
+    pick( "TOolbar",  MISC_TOOL     ) \
+    pick( "Status",   MISC_STATUS   )
 
 typedef enum {
     #define pick(t,e)   e,

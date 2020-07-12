@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,30 +49,30 @@
 extern type_display     *TypeDisplay;
 
 #define TYPE_DEFS \
-    pick( "Ontop",          TY_ONTOP        ) \
-    pick( "Hastop",         TY_HASTOP       ) \
-    pick( "Autoexpand",     TY_AUTOEXPAND   ) \
-    pick( "ISstruct",       TY_ISSTRUCT     ) \
-    pick( "HEx",            TY_HEX          ) \
-    pick( "Decimal",        TY_DECIMAL      ) \
-    pick( "Character",      TY_CHARACTER    ) \
-    pick( "STRIng",         TY_STRING       ) \
-    pick( "Pointer",        TY_POINTER      ) \
-    pick( "HIde",           TY_HIDE         ) \
-    pick( "Field",          TY_FIELD        ) \
-    pick( "STRUct",         TY_STRUCT       ) \
-    pick( "NOCODe",         TY_NOCODE       ) \
-    pick( "NOInherit",      TY_NOINHERIT    ) \
-    pick( "NOCOMpiler",     TY_NOCOMPILER   ) \
-    pick( "NOPRIvate",      TY_NOPRIVATE    ) \
-    pick( "NOPROtected",    TY_NOPROTECTED  ) \
-    pick( "NOSTAtic",       TY_NOSTATIC     ) \
-    pick( "CODe",           TY_CODE         ) \
-    pick( "INherit",        TY_INHERIT      ) \
-    pick( "COMpiler",       TY_COMPILER     ) \
-    pick( "PRIvate",        TY_PRIVATE      ) \
-    pick( "PROtected",      TY_PROTECTED    ) \
-    pick( "STAtic",         TY_STATIC       )
+    pick( "Ontop",       TY_ONTOP       ) \
+    pick( "Hastop",      TY_HASTOP      ) \
+    pick( "Autoexpand",  TY_AUTOEXPAND  ) \
+    pick( "ISstruct",    TY_ISSTRUCT    ) \
+    pick( "HEx",         TY_HEX         ) \
+    pick( "Decimal",     TY_DECIMAL     ) \
+    pick( "Character",   TY_CHARACTER   ) \
+    pick( "STRIng",      TY_STRING      ) \
+    pick( "Pointer",     TY_POINTER     ) \
+    pick( "HIde",        TY_HIDE        ) \
+    pick( "Field",       TY_FIELD       ) \
+    pick( "STRUct",      TY_STRUCT      ) \
+    pick( "NOCODe",      TY_NOCODE      ) \
+    pick( "NOInherit",   TY_NOINHERIT   ) \
+    pick( "NOCOMpiler",  TY_NOCOMPILER  ) \
+    pick( "NOPRIvate",   TY_NOPRIVATE   ) \
+    pick( "NOPROtected", TY_NOPROTECTED ) \
+    pick( "NOSTAtic",    TY_NOSTATIC    ) \
+    pick( "CODe",        TY_CODE        ) \
+    pick( "INherit",     TY_INHERIT     ) \
+    pick( "COMpiler",    TY_COMPILER    ) \
+    pick( "PRIvate",     TY_PRIVATE     ) \
+    pick( "PROtected",   TY_PROTECTED   ) \
+    pick( "STAtic",      TY_STATIC      )
 
 
 static const char TypeSettings[] = {

@@ -31,6 +31,6 @@
 ****************************************************************************/
 
 
-pick( "Source",     LEVEL_SOURCE )
-pick( "Assembly",   LEVEL_ASM )
-pick( "Mixed",      LEVEL_MIX )
+pick( "Source",   LEVEL_SOURCE )
+pick( "Assembly", LEVEL_ASM    )
+pick( "Mixed",    LEVEL_MIX    )

@@ -47,8 +47,8 @@
 
 
 #define SYSTEM_OPTS \
-    pick( "Remote", OPT_REMOTE  ) \
-    pick( "Local",  OPT_LOCAL   )
+    pick( "Remote", OPT_REMOTE ) \
+    pick( "Local",  OPT_LOCAL  )
 
 enum {
     #define pick(t,e)   e,

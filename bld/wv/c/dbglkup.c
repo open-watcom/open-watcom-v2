@@ -53,8 +53,8 @@
 
 
 #define CASE_OPTS \
-    pick( "Ignore",     CASE_IGNORE  ) \
-    pick( "Respect",    CASE_RESPECT )
+    pick( "Ignore",  CASE_IGNORE  ) \
+    pick( "Respect", CASE_RESPECT )
 
 enum {
     #define pick(t,e)   e,

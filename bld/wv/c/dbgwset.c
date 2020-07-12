@@ -233,64 +233,64 @@ typedef struct {
 } alt_key_name;
 
 static alt_key_name AltKeyNames[] = {
-        '`',    GUI_KEY_ALT_BACKQUOTE,
-        '1',    GUI_KEY_ALT_1,
-        '2',    GUI_KEY_ALT_2,
-        '3',    GUI_KEY_ALT_3,
-        '4',    GUI_KEY_ALT_4,
-        '5',    GUI_KEY_ALT_5,
-        '6',    GUI_KEY_ALT_6,
-        '7',    GUI_KEY_ALT_7,
-        '8',    GUI_KEY_ALT_8,
-        '9',    GUI_KEY_ALT_9,
-        '0',    GUI_KEY_ALT_0,
-        '-',    GUI_KEY_ALT_MINUS,
-        '=',    GUI_KEY_ALT_EQUAL,
-        '[',    GUI_KEY_ALT_LEFT_BRACKET,
-        ']',    GUI_KEY_ALT_RIGHT_BRACKET,
-        '\\',   GUI_KEY_ALT_BACKSLASH,
-        ';',    GUI_KEY_ALT_SEMICOLON,
-        '\'',   GUI_KEY_ALT_QUOTE,
-        ',',    GUI_KEY_ALT_COMMA,
-        '.',    GUI_KEY_ALT_PERIOD,
-        '/',    GUI_KEY_ALT_SLASH,
-        0,      0
+    '`',  GUI_KEY_ALT_BACKQUOTE,
+    '1',  GUI_KEY_ALT_1,
+    '2',  GUI_KEY_ALT_2,
+    '3',  GUI_KEY_ALT_3,
+    '4',  GUI_KEY_ALT_4,
+    '5',  GUI_KEY_ALT_5,
+    '6',  GUI_KEY_ALT_6,
+    '7',  GUI_KEY_ALT_7,
+    '8',  GUI_KEY_ALT_8,
+    '9',  GUI_KEY_ALT_9,
+    '0',  GUI_KEY_ALT_0,
+    '-',  GUI_KEY_ALT_MINUS,
+    '=',  GUI_KEY_ALT_EQUAL,
+    '[',  GUI_KEY_ALT_LEFT_BRACKET,
+    ']',  GUI_KEY_ALT_RIGHT_BRACKET,
+    '\\', GUI_KEY_ALT_BACKSLASH,
+    ';',  GUI_KEY_ALT_SEMICOLON,
+    '\'', GUI_KEY_ALT_QUOTE,
+    ',',  GUI_KEY_ALT_COMMA,
+    '.',  GUI_KEY_ALT_PERIOD,
+    '/',  GUI_KEY_ALT_SLASH,
+    0,    0
 };
 
 static alt_key_name CtrlKeyNames[] = {
-        'a',    GUI_KEY_CTRL_A,
-        'b',    GUI_KEY_CTRL_B,
-        'c',    GUI_KEY_CTRL_C,
-        'd',    GUI_KEY_CTRL_D,
-        'e',    GUI_KEY_CTRL_E,
-        'f',    GUI_KEY_CTRL_F,
-        'g',    GUI_KEY_CTRL_G,
-        'h',    GUI_KEY_CTRL_H,
-        'i',    GUI_KEY_CTRL_I,
-        'j',    GUI_KEY_CTRL_J,
-        'k',    GUI_KEY_CTRL_K,
-        'l',    GUI_KEY_CTRL_L,
-        'm',    GUI_KEY_CTRL_M,
-        'n',    GUI_KEY_CTRL_N,
-        'o',    GUI_KEY_CTRL_O,
-        'p',    GUI_KEY_CTRL_P,
-        'q',    GUI_KEY_CTRL_Q,
-        'r',    GUI_KEY_CTRL_R,
-        's',    GUI_KEY_CTRL_S,
-        't',    GUI_KEY_CTRL_T,
-        'u',    GUI_KEY_CTRL_U,
-        'v',    GUI_KEY_CTRL_V,
-        'w',    GUI_KEY_CTRL_W,
-        'x',    GUI_KEY_CTRL_X,
-        'y',    GUI_KEY_CTRL_Y,
-        'z',    GUI_KEY_CTRL_Z,
-        '2',    GUI_KEY_CTRL_2,
-        '\\',   GUI_KEY_CTRL_BACKSLASH,
-        '[',    GUI_KEY_CTRL_LEFT_BRACKET,
-        ']',    GUI_KEY_CTRL_RIGHT_BRACKET,
-        '6',    GUI_KEY_CTRL_6,
-        '-',    GUI_KEY_CTRL_MINUS,
-        0,      0
+    'a',  GUI_KEY_CTRL_A,
+    'b',  GUI_KEY_CTRL_B,
+    'c',  GUI_KEY_CTRL_C,
+    'd',  GUI_KEY_CTRL_D,
+    'e',  GUI_KEY_CTRL_E,
+    'f',  GUI_KEY_CTRL_F,
+    'g',  GUI_KEY_CTRL_G,
+    'h',  GUI_KEY_CTRL_H,
+    'i',  GUI_KEY_CTRL_I,
+    'j',  GUI_KEY_CTRL_J,
+    'k',  GUI_KEY_CTRL_K,
+    'l',  GUI_KEY_CTRL_L,
+    'm',  GUI_KEY_CTRL_M,
+    'n',  GUI_KEY_CTRL_N,
+    'o',  GUI_KEY_CTRL_O,
+    'p',  GUI_KEY_CTRL_P,
+    'q',  GUI_KEY_CTRL_Q,
+    'r',  GUI_KEY_CTRL_R,
+    's',  GUI_KEY_CTRL_S,
+    't',  GUI_KEY_CTRL_T,
+    'u',  GUI_KEY_CTRL_U,
+    'v',  GUI_KEY_CTRL_V,
+    'w',  GUI_KEY_CTRL_W,
+    'x',  GUI_KEY_CTRL_X,
+    'y',  GUI_KEY_CTRL_Y,
+    'z',  GUI_KEY_CTRL_Z,
+    '2',  GUI_KEY_CTRL_2,
+    '\\', GUI_KEY_CTRL_BACKSLASH,
+    '[',  GUI_KEY_CTRL_LEFT_BRACKET,
+    ']',  GUI_KEY_CTRL_RIGHT_BRACKET,
+    '6',  GUI_KEY_CTRL_6,
+    '-',  GUI_KEY_CTRL_MINUS,
+    0,    0
 };
 
 #define STR_DBG_KEY_CTRL    "CTRL-"
@@ -590,10 +590,10 @@ void TabConf( void )
 }
 
 #define SEARCH_OPTS \
-    pick( "CASEIgnore",     SEARCH_IGNORE   ) \
-    pick( "CASEREspect",    SEARCH_RESPECT  ) \
-    pick( "Rx",             SEARCH_RX       ) \
-    pick( "NORx",           SEARCH_NORX     )
+    pick( "CASEIgnore",  SEARCH_IGNORE  ) \
+    pick( "CASEREspect", SEARCH_RESPECT ) \
+    pick( "Rx",          SEARCH_RX      ) \
+    pick( "NORx",        SEARCH_NORX    )
 
 enum {
     #define pick(t,e)   e,

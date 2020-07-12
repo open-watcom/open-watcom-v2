@@ -188,15 +188,15 @@ static void BadShow( void )
 }
 
 #define SHOW_DEFS \
-    pick( "Paint",      ConfigPaint,   true ) \
-    pick( "Display",    ConfigDisp,    true ) \
-    pick( "Font",       ConfigFont,    true ) \
-    pick( "Set",        ConfigSet,     true ) \
-    pick( "Flip",       ConfigFlip,    true ) \
-    pick( "Hook",       ConfigHook,    true ) \
-    pick( "Event",      ConfigEvent,   false ) \
-    pick( "Calls",      ConfigCalls,   false ) \
-    pick( "Types",      ConfigTypes,   false )
+    pick( "Paint",   ConfigPaint, true  ) \
+    pick( "Display", ConfigDisp,  true  ) \
+    pick( "Font",    ConfigFont,  true  ) \
+    pick( "Set",     ConfigSet,   true  ) \
+    pick( "Flip",    ConfigFlip,  true  ) \
+    pick( "Hook",    ConfigHook,  true  ) \
+    pick( "Event",   ConfigEvent, false ) \
+    pick( "Calls",   ConfigCalls, false ) \
+    pick( "Types",   ConfigTypes, false )
 
 
 static const char ShowNameTab[] = {

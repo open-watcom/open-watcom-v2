@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-pick( "Into",   TRACE_INTO  )
-pick( "Over",   TRACE_OVER  )
-pick( "Next",   TRACE_NEXT  )
-pick( "",       TRACE_NONE  )
+pick( "Into", TRACE_INTO )
+pick( "Over", TRACE_OVER )
+pick( "Next", TRACE_NEXT )
+pick( "",     TRACE_NONE )

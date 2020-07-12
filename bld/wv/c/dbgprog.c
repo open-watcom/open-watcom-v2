@@ -1567,11 +1567,11 @@ bool SymUserModUnload( char *fname )
 }
 
 #define NEW_DEFS \
-    pick( "Program",    ProgNew ) \
-    pick( "Restart",    ResNew ) \
-    pick( "STDIn",      StdInNew ) \
-    pick( "STDOut",     StdOutNew ) \
-    pick( "SYmbol",     SymFileNew )
+    pick( "Program", ProgNew    ) \
+    pick( "Restart", ResNew     ) \
+    pick( "STDIn",   StdInNew   ) \
+    pick( "STDOut",  StdOutNew  ) \
+    pick( "SYmbol",  SymFileNew )
 
 
 static const char NewNameTab[] = {

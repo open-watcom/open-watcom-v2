@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,36 +94,36 @@ wnd_attr    WndGadgetAttr = WND_HOTSPOT;
 int         MaxGadgetLength;
 
 #define WINDOW_DEFS \
-    pick( "CLose",          WndClose ) \
-    pick( "CURSORStart",    WndCursorStart ) \
-    pick( "CURSOREnd",      WndCursorEnd ) \
-    pick( "CURSORDown",     WndCursorDown ) \
-    pick( "CURSORLeft",     WndCursorLeft ) \
-    pick( "CURSORRight",    WndCursorRight ) \
-    pick( "CURSORUp",       WndCursorUp ) \
-    pick( "Dump",           WndDumpFile ) \
-    pick( "Log",            WndDumpLog ) \
-    pick( "FINDNext",       ProcWndFindNext ) \
-    pick( "FINDPrev",       ProcWndFindPrev ) \
-    pick( "Next",           ToWndChooseNew ) \
-    pick( "PAGEDown",       WndPageDown ) \
-    pick( "PAGEUp",         WndPageUp ) \
-    pick( "POpup",          ProcWndPopUp ) \
-    pick( "SEarch",         ProcWndSearch ) \
-    pick( "SCROLLDown",     WndScrollDown ) \
-    pick( "SCROLLUp",       WndScrollUp ) \
-    pick( "SCROLLTop",      WndScrollTop ) \
-    pick( "SCROLLBottom",   WndScrollBottom ) \
-    pick( "TABLeft",        ProcWndTabLeft ) \
-    pick( "TABRight",       ProcWndTabRight ) \
-    pick( "MAXimize",       WndMaximizeWindow ) \
-    pick( "MINimize",       WndMinimizeWindow ) \
-    pick( "REStore",        WndRestoreWindow ) \
-    pick( "TIle",           ProcPUINYI ) \
-    pick( "CAscade",        ProcPUINYI ) \
-    pick( "Move",           ProcPUINYI ) \
-    pick( "SIze",           ProcPUINYI ) \
-    pick( "PRevious",       ProcPUINYI )
+    pick( "CLose",        WndClose          ) \
+    pick( "CURSORStart",  WndCursorStart    ) \
+    pick( "CURSOREnd",    WndCursorEnd      ) \
+    pick( "CURSORDown",   WndCursorDown     ) \
+    pick( "CURSORLeft",   WndCursorLeft     ) \
+    pick( "CURSORRight",  WndCursorRight    ) \
+    pick( "CURSORUp",     WndCursorUp       ) \
+    pick( "Dump",         WndDumpFile       ) \
+    pick( "Log",          WndDumpLog        ) \
+    pick( "FINDNext",     ProcWndFindNext   ) \
+    pick( "FINDPrev",     ProcWndFindPrev   ) \
+    pick( "Next",         ToWndChooseNew    ) \
+    pick( "PAGEDown",     WndPageDown       ) \
+    pick( "PAGEUp",       WndPageUp         ) \
+    pick( "POpup",        ProcWndPopUp      ) \
+    pick( "SEarch",       ProcWndSearch     ) \
+    pick( "SCROLLDown",   WndScrollDown     ) \
+    pick( "SCROLLUp",     WndScrollUp       ) \
+    pick( "SCROLLTop",    WndScrollTop      ) \
+    pick( "SCROLLBottom", WndScrollBottom   ) \
+    pick( "TABLeft",      ProcWndTabLeft    ) \
+    pick( "TABRight",     ProcWndTabRight   ) \
+    pick( "MAXimize",     WndMaximizeWindow ) \
+    pick( "MINimize",     WndMinimizeWindow ) \
+    pick( "REStore",      WndRestoreWindow  ) \
+    pick( "TIle",         ProcPUINYI        ) \
+    pick( "CAscade",      ProcPUINYI        ) \
+    pick( "Move",         ProcPUINYI        ) \
+    pick( "SIze",         ProcPUINYI        ) \
+    pick( "PRevious",     ProcPUINYI        )
 
 static const char WindowNameTab[] =
 {
@@ -159,7 +159,7 @@ wnd_metrics *WndMetrics[] = {
     #undef pick
 };
 
-wnd_metrics NoMetrics = { 0, 0, 0, 0 };
+
 
 bool DbgWndSearch( a_window wnd, bool from_top, int direction )
 {

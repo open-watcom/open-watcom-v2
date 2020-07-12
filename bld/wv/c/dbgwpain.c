@@ -62,42 +62,42 @@ static gui_colour_set   WndDlgColours[] = {
 };
 
 gui_colour_set WndColours[] = {
-    { GUI_WHITE,        GUI_BLUE },         /* GUI_MENU_PLAIN           */
-    { GUI_BR_WHITE,     GUI_BLUE },         /* GUI_MENU_STANDOUT        */
-    { GUI_GREY,         GUI_BLUE },         /* GUI_MENU_GRAYED          */
-    { GUI_BR_WHITE,     GUI_BLACK },        /* GUI_MENU_ACTIVE          */
-    { GUI_BR_YELLOW,    GUI_BLACK },        /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BR_WHITE },     /* GUI_BACKGROUND           */
-    { GUI_BR_YELLOW,    GUI_BLUE },         /* GUI_MENU_FRAME           */
-    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_TITLE_INACTIVE       */
-    { GUI_BLUE,         GUI_CYAN },         /* GUI_FRAME_ACTIVE         */
-    { GUI_GREY,         GUI_BR_WHITE },     /* GUI_FRAME_INACTIVE       */
-    { GUI_BR_WHITE,     GUI_RED },          /* GUI_ICON                 */
-    { GUI_GREY,         GUI_BLACK },        /* GUI_MENU_GRAYED_ACTIVE   */
-    { GUI_GREY,         GUI_CYAN },         /* GUI_FRAME_RESIZE         */
-    { GUI_GREY,         GUI_BLACK },        /* GUI_CONTROL_BACKGROUND   */
-    { GUI_BLACK,        GUI_BR_WHITE },     /* WND_PLAIN                */
-    { GUI_BR_WHITE,     GUI_BLACK },        /* WND_TABSTOP == ACTIVE    */
-    { GUI_BR_WHITE,     GUI_RED },          /* WND_SELECTED             */
-    { GUI_RED,          GUI_BR_WHITE },     /* WND_STANDOUT             */
-    { GUI_RED,          GUI_BR_WHITE },     /* WND_HOTSPOT              */
-    { GUI_BR_RED,       GUI_BLACK },        /* WND_STANDOUT_TABSTOP     */
+    { GUI_WHITE,     GUI_BLUE },        /* GUI_MENU_PLAIN           */
+    { GUI_BR_WHITE,  GUI_BLUE },        /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,      GUI_BLUE },        /* GUI_MENU_GRAYED          */
+    { GUI_BR_WHITE,  GUI_BLACK },       /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW, GUI_BLACK },       /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,     GUI_BR_WHITE },    /* GUI_BACKGROUND           */
+    { GUI_BR_YELLOW, GUI_BLUE },        /* GUI_MENU_FRAME           */
+    { GUI_GREY,      GUI_BR_WHITE },    /* GUI_TITLE_INACTIVE       */
+    { GUI_BLUE,      GUI_CYAN },        /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,      GUI_BR_WHITE },    /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,  GUI_RED },         /* GUI_ICON                 */
+    { GUI_GREY,      GUI_BLACK },       /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,      GUI_CYAN },        /* GUI_FRAME_RESIZE         */
+    { GUI_GREY,      GUI_BLACK },       /* GUI_CONTROL_BACKGROUND   */
+    { GUI_BLACK,     GUI_BR_WHITE },    /* WND_PLAIN                */
+    { GUI_BR_WHITE,  GUI_BLACK },       /* WND_TABSTOP == ACTIVE    */
+    { GUI_BR_WHITE,  GUI_RED },         /* WND_SELECTED             */
+    { GUI_RED,       GUI_BR_WHITE },    /* WND_STANDOUT             */
+    { GUI_RED,       GUI_BR_WHITE },    /* WND_HOTSPOT              */
+    { GUI_BR_RED,    GUI_BLACK },       /* WND_STANDOUT_TABSTOP     */
 };
 
 int WndNumColours = { ArraySize( WndColours ) };
 
 #define ATTR_BITS() \
-    pick( "Active",     DBG_ATTR_ACTIVE,    0x0001  ) \
-    pick( "SElected",   DBG_ATTR_SELECTED,  0x0002  ) \
-    pick( "STandout",   DBG_ATTR_STANDOUT,  0x0004  ) \
-    pick( "Disabled",   DBG_ATTR_DISABLED,  0x0008  ) \
-    pick( "Plain",      DBG_ATTR_PLAIN,     0x0010  ) \
-    pick( "Frame",      DBG_ATTR_FRAME,     0x0020  ) \
-    pick( "ICon",       DBG_ATTR_ICON,      0x0040  ) \
-    pick( "MEnu",       DBG_ATTR_MENU,      0x0080  ) \
-    pick( "TItle",      DBG_ATTR_TITLE,     0x0100  ) \
-    pick( "BUtton",     DBG_ATTR_BUTTON,    0x0200  ) \
-    pick( "SHadow",     DBG_ATTR_SHADOW,    0x0400  )
+    pick( "Active",   DBG_ATTR_ACTIVE,   0x0001 ) \
+    pick( "SElected", DBG_ATTR_SELECTED, 0x0002 ) \
+    pick( "STandout", DBG_ATTR_STANDOUT, 0x0004 ) \
+    pick( "Disabled", DBG_ATTR_DISABLED, 0x0008 ) \
+    pick( "Plain",    DBG_ATTR_PLAIN,    0x0010 ) \
+    pick( "Frame",    DBG_ATTR_FRAME,    0x0020 ) \
+    pick( "ICon",     DBG_ATTR_ICON,     0x0040 ) \
+    pick( "MEnu",     DBG_ATTR_MENU,     0x0080 ) \
+    pick( "TItle",    DBG_ATTR_TITLE,    0x0100 ) \
+    pick( "BUtton",   DBG_ATTR_BUTTON,   0x0200 ) \
+    pick( "SHadow",   DBG_ATTR_SHADOW,   0x0400 )
 
 typedef enum {
     #define pick(t,e,v)     e = v,
@@ -153,18 +153,18 @@ static attr_map DlgAttrMap[] = {
 };
 
 #define COLOUR_BITS() \
-    pick( "BLAck",      CLR_BLACK,      0x0001  ) \
-    pick( "BLUe",       CLR_BLUE,       0x0002  ) \
-    pick( "BRIght",     CLR_BRIGHT,     0x0004  ) \
-    pick( "BROwn",      CLR_BROWN,      0x0008  ) \
-    pick( "Cyan",       CLR_CYAN,       0x0010  ) \
-    pick( "GRAy",       CLR_GRAY,       0x0020  ) \
-    pick( "GREEn",      CLR_GREEN,      0x0040  ) \
-    pick( "GREY",       CLR_GREY,       0x0080  ) \
-    pick( "MAgenta",    CLR_MAGENTA,    0x0100  ) \
-    pick( "Red",        CLR_RED,        0x0200  ) \
-    pick( "White",      CLR_WHITE,      0x0400  ) \
-    pick( "Yellow",     CLR_YELLOW,     0x0800  )
+    pick( "BLAck",   CLR_BLACK,   0x0001 ) \
+    pick( "BLUe",    CLR_BLUE,    0x0002 ) \
+    pick( "BRIght",  CLR_BRIGHT,  0x0004 ) \
+    pick( "BROwn",   CLR_BROWN,   0x0008 ) \
+    pick( "Cyan",    CLR_CYAN,    0x0010 ) \
+    pick( "GRAy",    CLR_GRAY,    0x0020 ) \
+    pick( "GREEn",   CLR_GREEN,   0x0040 ) \
+    pick( "GREY",    CLR_GREY,    0x0080 ) \
+    pick( "MAgenta", CLR_MAGENTA, 0x0100 ) \
+    pick( "Red",     CLR_RED,     0x0200 ) \
+    pick( "White",   CLR_WHITE,   0x0400 ) \
+    pick( "Yellow",  CLR_YELLOW,  0x0800 )
 
 typedef enum {
     CLR_NONE = 0,

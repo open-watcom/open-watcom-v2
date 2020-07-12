@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -652,20 +652,20 @@ bool InspectDebuggerVar( const char *item )
     if( WndEvalInspectExpr( item, false ) ) {
         t = WndGetExprSPInspectType( &addr );
         switch( t ) {
-            //case INSP_CODE:
-            //    WndSrcOrAsmInspect( addr );
-            //    return( true );
-            case INSP_DATA:
-                {
-                    v = VarAdd1( &InspectVars, item, strlen( item ), true, false );
-                    if( v != NULL ) {
-                        DisplayDebuggerVarValue( &InspectVars );
-                    }
-                    return( v != NULL );
+        //case INSP_CODE:
+        //    WndSrcOrAsmInspect( addr );
+        //    return( true );
+        case INSP_DATA:
+            {
+                v = VarAdd1( &InspectVars, item, strlen( item ), true, false );
+                if( v != NULL ) {
+                    DisplayDebuggerVarValue( &InspectVars );
                 }
-            case INSP_RAW_DATA:
-                //WndAddrInspect( addr );
-                return( true );
+                return( v != NULL );
+            }
+        case INSP_RAW_DATA:
+            //WndAddrInspect( addr );
+            return( true );
         }
     }
     return( false );

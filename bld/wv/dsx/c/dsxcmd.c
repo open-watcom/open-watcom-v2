@@ -48,12 +48,12 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 #define SYS_OPT_DEFS \
-    pick( "CHecksize",          OPT_CHECKSIZE   ) \
-    pick( "NOCHarremap",        OPT_NOREMAP     ) \
-    pick( "NOGraphicsmouse",    OPT_NOGMOUSE    ) \
-    pick( "Heapenable",         OPT_HEAPENABLE  ) \
-    pick( "XXNODPMI",           OPT_XXNODPMI    )  /* DON'T DOCUMENT: Internal use only */ \
-    pick( "XXDPMI",             OPT_XXDPMI      )    /* DON'T DOCUMENT: Internal use only */
+    pick( "CHecksize",       OPT_CHECKSIZE  ) \
+    pick( "NOCHarremap",     OPT_NOREMAP    ) \
+    pick( "NOGraphicsmouse", OPT_NOGMOUSE   ) \
+    pick( "Heapenable",      OPT_HEAPENABLE ) \
+    pick( "XXNODPMI",        OPT_XXNODPMI   ) /* DON'T DOCUMENT: Internal use only */ \
+    pick( "XXDPMI",          OPT_XXDPMI     ) /* DON'T DOCUMENT: Internal use only */
 
 enum {
     #define pick(t,e)   e,

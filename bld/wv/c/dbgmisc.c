@@ -61,19 +61,19 @@
 
 
 #define SWITCH_DEFS \
-    pick( "ON",         SWITCH_ON   ) \
-    pick( "OFf",        SWITCH_OFF  )
+    pick( "ON",     SWITCH_ON     ) \
+    pick( "OFf",    SWITCH_OFF    )
 
 #define GO_DEFS \
-    pick( "Keep",       GO_KEEP     ) \
-    pick( "Noflip",     GO_NOFLIP   ) \
-    pick( "Until",      GO_UNTIL    )
+    pick( "Keep",   GO_KEEP       ) \
+    pick( "Noflip", GO_NOFLIP     ) \
+    pick( "Until",  GO_UNTIL      )
 
 #define THREAD_DEFS \
-    pick( "Show",       THREAD_SHOW     ) \
-    pick( "Freeze",     THREAD_FREEZE   ) \
-    pick( "Thaw",       THREAD_THAW     ) \
-    pick( "Change",     THREAD_CHANGE   )
+    pick( "Show",   THREAD_SHOW   ) \
+    pick( "Freeze", THREAD_FREEZE ) \
+    pick( "Thaw",   THREAD_THAW   ) \
+    pick( "Change", THREAD_CHANGE )
 
 
 enum {
