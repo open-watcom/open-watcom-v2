@@ -55,3 +55,5 @@ extern void         CheckForNewThreads( bool set_exec );
 extern thread_state *FindThread( dtid_t tid );
 extern void         ProcThread( void );
 extern void         FreeThreads( void );
+extern int          SwitchOnOffOnly( void );
+extern void         GetSwitchOnly( bool on, char *buffer );

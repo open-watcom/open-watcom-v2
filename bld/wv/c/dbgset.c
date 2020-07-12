@@ -57,6 +57,7 @@
 #include "dbgchopt.h"
 #include "dbgsetfn.h"
 #include "dbgsetfg.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
@@ -149,17 +150,17 @@ bool SwitchOnOff( void )
 {
     int     cmd;
 
-    cmd = ScanCmd( "ON\0OFf\0" );
+    cmd = SwitchOnOffOnly();
     if( cmd < 0 )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
     ReqEOC();
-    return( cmd == 0 );
+    return( cmd != false );
 }
 
 
 void ShowSwitch( bool on )
 {
-    GetCmdEntry( "ON\0OFf\0", on ? 0 : 1, TxtBuff );
+    GetSwitchOnly( on, TxtBuff );
     ConfigLine( TxtBuff );
 }
 
@@ -677,18 +678,22 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
         Assembly window
 */
 
-static const char AsmSettings[] = {
-    "Source\0"
-    "NOSource\0"
-    "Hexadecimal\0"
-    "Decimal\0"
-};
+#define ASM_DEFS \
+    pick( IDX_ASM_SOURCE,   "Source" ) \
+    pick( IDX_ASM_NOSOURCE, "NOSource" ) \
+    pick( IDX_ASM_HEX,      "Hexadecimal" ) \
+    pick( IDX_ASM_DECIMAL,  "Decimal" )
 
 enum {
-    IDX_ASM_SOURCE,
-    IDX_ASM_NOSOURCE,
-    IDX_ASM_HEX,
-    IDX_ASM_DECIMAL,
+    #define pick(e,t)   e,
+    ASM_DEFS
+    #undef pick
+};
+
+static const char AsmSettings[] = {
+    #define pick(e,t)   t "\0"
+    ASM_DEFS
+    #undef pick
 };
 
 static window_toggle    AsmToggle[] = {
@@ -726,42 +731,35 @@ static void FPUConf( void )
         Variables window
 */
 
-static const char VarSettings[] = {
-    "Entire\0"
-    "Partial\0"
-    "CODe\0"
-    "NOCODe\0"
-    "INherit\0"
-    "NOINherit\0"
-    "COMpiler\0"
-    "NOCOMpiler\0"
-    "PRIvate\0"
-    "NOPRIvate\0"
-    "PROtected\0"
-    "NOPROTected\0"
-    "STatic\0"
-    "NOSTatic\0"
-    "Members\0"
-    "NOMembers\0"
-};
+#define VAR_DEFS \
+    pick( IDX_VAR_ENTIRE,       "Entire" ) \
+    pick( IDX_VAR_PARTIAL,      "Partial" ) \
+    pick( IDX_VAR_CODE,         "CODe" ) \
+    pick( IDX_VAR_NOCODE,       "NOCODe" ) \
+    pick( IDX_VAR_INHERIT,      "INherit" ) \
+    pick( IDX_VAR_NOINHERIT,    "NOINherit" ) \
+    pick( IDX_VAR_COMPILER,     "COMpiler" ) \
+    pick( IDX_VAR_NOCOMPILER,   "NOCOMpiler" ) \
+    pick( IDX_VAR_PRIVATE,      "PRIvate" ) \
+    pick( IDX_VAR_NOPRIVATE,    "NOPRIvate" ) \
+    pick( IDX_VAR_PROTECTED,    "PROtected" ) \
+    pick( IDX_VAR_NOPROTECTED,  "NOPROTected" ) \
+    pick( IDX_VAR_STATIC,       "STatic" ) \
+    pick( IDX_VAR_NOSTATIC,     "NOSTatic" ) \
+    pick( IDX_VAR_MEMBERS,      "Members" ) \
+    pick( IDX_VAR_NOMEMBERS,    "NOMembers" )
+
 
 enum {
-    IDX_VAR_ENTIRE,
-    IDX_VAR_PARTIAL,
-    IDX_VAR_CODE,
-    IDX_VAR_NOCODE,
-    IDX_VAR_INHERIT,
-    IDX_VAR_NOINHERIT,
-    IDX_VAR_COMPILER,
-    IDX_VAR_NOCOMPILER,
-    IDX_VAR_PRIVATE,
-    IDX_VAR_NOPRIVATE,
-    IDX_VAR_PROTECTED,
-    IDX_VAR_NOPROTECTED,
-    IDX_VAR_STATIC,
-    IDX_VAR_NOSTATIC,
-    IDX_VAR_MEMBERS,
-    IDX_VAR_NOMEMBERS,
+    #define pick(e,t)   e,
+    VAR_DEFS
+    #undef pick
+};
+
+static const char VarSettings[] = {
+    #define pick(e,t)   t "\0"
+    VAR_DEFS
+    #undef pick
 };
 
 static window_toggle VarToggle[] = {
@@ -786,15 +784,20 @@ static void VarConf( void )
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
 }
 
-
-static const char FuncSettings[] = {
-    "Typed\0"
-    "All\0"
-};
+#define FUNC_DEFS \
+    pick( IDX_FUNC_TYPED,   "Typed" ) \
+    pick( IDX_FUNC_ALL,     "All" )
 
 enum {
-    IDX_FUNC_TYPED,
-    IDX_FUNC_ALL,
+    #define pick(e,t)   e,
+    FUNC_DEFS
+    #undef pick
+};
+
+static const char FuncSettings[] = {
+    #define pick(e,t)   t "\0"
+    FUNC_DEFS
+    #undef pick
 };
 
 static window_toggle FuncToggle[] = {
