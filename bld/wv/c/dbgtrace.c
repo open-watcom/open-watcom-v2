@@ -120,7 +120,7 @@ static const char LevelTab[] = {
     #undef pick
 };
 
-static const char TraceTab2[] = {
+static const char TraceTab[] = {
     #define pick(t,e)   t "\0"
     #include "_dbgtrac.h"
     #undef pick
@@ -533,7 +533,7 @@ void PerformTrace( void )
     switch( TraceState.state ) {
     case TS_ACTIVE:
         GetCmdEntry( LevelTab, TraceState.cur_level, level );
-        GetCmdEntry( TraceTab2, TraceState.type, over );
+        GetCmdEntry( TraceTab, TraceState.type, over );
         Format( TxtBuff, "%s/%s/%s", GetCmdName( CMD_TRACE ), level, over );
         RecordEvent( TxtBuff );
         ret = DoTrace( TraceState.cur_level );
@@ -660,14 +660,14 @@ void ProcTrace( void )
         Scan();                         /* try first set of commands */
         level_index = ScanCmd( LevelTab );
         if( level_index < 0 ) {
-            type_index = ScanCmd( TraceTab2 );
+            type_index = ScanCmd( TraceTab );
             if( type_index < 0 ) {
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
             }
         } else {
             if( CurrToken == T_DIV ) {  /* do second set of commands */
                 Scan();
-                type_index = ScanCmd( TraceTab2 );
+                type_index = ScanCmd( TraceTab );
                 if( type_index < 0 ) {
                     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
                 }
