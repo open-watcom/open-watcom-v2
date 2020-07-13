@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-_WCRTLINK in_addr_t inet_netof( struct in_addr __in )
+_WCRTLINK in_addr_t inet_netof( struct in_addr in )
 {
-    unsigned long a = ntohl( __in.s_addr );
+    in_addr_t a = ntohl( in.s_addr );
 
     if( IN_CLASSA( a ) )
         return( ( a & IN_CLASSA_NET ) >> IN_CLASSA_NSHIFT );

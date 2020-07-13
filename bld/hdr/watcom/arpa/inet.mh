@@ -20,7 +20,7 @@
 
 #include <netinet/in.h>
 
-_WCRTLINK extern int            inet_aton( const char *__cp, struct in_addr *__inp );
+_WCRTLINK extern int            inet_aton( const char *__cp, struct in_addr *__op );
 _WCRTLINK extern in_addr_t      inet_addr( const char *__cp );
 _WCRTLINK extern in_addr_t      inet_network( const char *__cp );
 _WCRTLINK extern char           *inet_ntoa( struct in_addr __in );

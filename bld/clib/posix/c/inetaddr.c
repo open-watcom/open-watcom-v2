@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,14 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-_WCRTLINK uint32_t inet_addr(const char *cp)
+_WCRTLINK in_addr_t inet_addr( const char *cp )
 {
-    uint32_t ret, val;
+    in_addr_t ret;
+    in_addr_t val;
     int shift = 0;
 
-    ret = val = 0;
+    ret = 0;
+    val = 0;
     if ( *cp != '\0' ) {
         do {
             if ( *cp >= '0' && *cp <= '9' ) {
