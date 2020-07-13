@@ -91,7 +91,7 @@ DEF_VAR         *ExtraVariables;
 bool            Invisible;
 bool            ProgramGroups;
 bool            StartupChange;
-char            InstallerFile[PATH_MAX] = { 0 };
+char            InstallerFile[_MAX_PATH] = { 0 };
 
 static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
@@ -2514,9 +2514,9 @@ static void dispUsage( void )
 static void setInstallerFile( const char *arg )
 {
     if( _cmdname( InstallerFile ) == NULL ) {
-        strncpy( InstallerFile, arg, PATH_MAX );
+        strncpy( InstallerFile, arg, sizeof( InstallerFile ) - 1);
     }
-    InstallerFile[PATH_MAX - 1] = '\0';
+    InstallerFile[sizeof( InstallerFile ) - 1] = '\0';
 }
 
 bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *arc_name )
