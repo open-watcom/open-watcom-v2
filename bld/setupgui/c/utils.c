@@ -91,6 +91,7 @@ DEF_VAR         *ExtraVariables;
 bool            Invisible;
 bool            ProgramGroups;
 bool            StartupChange;
+char            InstallerFile[PATH_MAX] = { 0 };
 
 static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
@@ -2252,8 +2253,6 @@ void DeleteObsoleteFiles( void )
 void GetInstallName( VBUF *name )
 /*******************************/
 {
-    int         argc;
-    char        **argv;
     VBUF        argv0;
 
     if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
@@ -2261,8 +2260,7 @@ void GetInstallName( VBUF *name )
     } else {
         VbufInit( &argv0 );
 
-        GUIGetArgs( &argv, &argc );
-        VbufSetStr( &argv0, argv[0] );
+        VbufSetStr( &argv0, InstallerFile );
         VbufSplitpath( &argv0, NULL, NULL, name, NULL );
 //        strupr( name );
 
@@ -2471,31 +2469,6 @@ static void FreeDefinedVars( void )
     }
 }
 
-static void GetSelfWithPath( VBUF *vbuf, const VBUF *argv0 )
-/**********************************************************/
-{
-#if defined( __UNIX__ )
-    int     result;
-    char    buff[_MAX_PATH];
-
-    // code stolen from watcom/c/clibext.c
-
-    result = readlink( "/proc/self/exe", buff, sizeof( buff ) );
-    if( result == -1 ) {
-        // try another way for BSD
-        result = readlink( "/proc/curproc/file", buff, sizeof( buff ) );
-    }
-    if( result != -1 && result != sizeof( buff ) ) {
-        // readlink does not add a NUL so we need to do it ourselves
-        buff[result] = '\0';
-        VbufSetStr( vbuf, buff );
-        return;
-    }
-    // fall back to argv[0] if readlink doesn't work
-#endif
-    VbufSetVbuf( vbuf, argv0 );
-}
-
 #if defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWow64( void )
 {
@@ -2538,13 +2511,20 @@ static void dispUsage( void )
     MsgBox( NULL, "IDS_USAGE", GUI_OK, msg );
 }
 
+static void setInstallerFile( const char *arg )
+{
+    if( _cmdname( InstallerFile ) == NULL ) {
+        strncpy( InstallerFile, arg, PATH_MAX );
+    }
+    InstallerFile[PATH_MAX - 1] = '\0';
+}
+
 bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *arc_name )
 /****************************************************************************************/
 {
     VBUF                dir;
     VBUF                drive;
     int                 i;
-    VBUF                argv0;
 
 #if defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWow64() ) {
@@ -2606,12 +2586,13 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             break;
         }
     }
-    VbufInit( &argv0 );
-    VbufConcStr( &argv0, argv[0] );
+
+    setInstallerFile( argv[0] );
+
     if( i < argc ) {
         VbufSetStr( arc_name, argv[i++] );
     } else {
-        GetSelfWithPath( arc_name, &argv0 );
+        VbufSetStr( arc_name, InstallerFile );
     }
 
     VbufInit( &drive );
@@ -2628,7 +2609,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
 
             VbufInit( &temp );
 
-            GetSelfWithPath( inf_name, &argv0 );
+            VbufSetStr( inf_name, InstallerFile );
             VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
             VbufSetStr( inf_name, "setup.inf" );
             VbufMakepath( &temp, &drive, &dir, inf_name, NULL );

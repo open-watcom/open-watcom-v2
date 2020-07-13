@@ -272,7 +272,7 @@ static bool CheckWin95Uninstall( int argc, char **argv )
         VbufInit( &argv0 );
 
         // copy setup program to unsetup.exe in system directory
-        VbufSetStr( &argv0, argv[0] );
+        VbufSetStr( &argv0, InstallerFile );
         GetWindowsDirectoryVbuf( &unsetup );
         VbufConcStr( &unsetup, "\\UnSetup.exe" );
         if( DoCopyFile( &argv0, &unsetup, false ) == CFE_NOERROR ) {
