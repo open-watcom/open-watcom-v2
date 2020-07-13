@@ -151,7 +151,7 @@ extern gui_coord        GUIScale;
 extern char             *VariablesFile;
 extern bool             VisibilityCondition;
 extern gui_ord          BitMapBottom;
-extern char             InstallerFile[PATH_MAX];
+extern char             InstallerFile[];
 
 extern void             ReplaceVars( VBUF *dst, const char *src );
 #define ReplaceVars1(d) ReplaceVars(d, NULL)
