@@ -46,8 +46,6 @@
 #include "dbgsetfg.h"
 
 
-extern type_display     *TypeDisplay;
-
 #define TYPE_DEFS \
     pick( "Ontop",       TY_ONTOP       ) \
     pick( "Hastop",      TY_HASTOP      ) \
@@ -74,15 +72,16 @@ extern type_display     *TypeDisplay;
     pick( "PROtected",   TY_PROTECTED   ) \
     pick( "STAtic",      TY_STATIC      )
 
-
-static const char TypeSettings[] = {
-    #define pick(t,e)   t "\0"
+enum {
+    #define pick(t,e)   e,
     TYPE_DEFS
     #undef pick
 };
 
-enum {
-    #define pick(t,e)   e,
+extern type_display     *TypeDisplay;
+
+static const char TypeSettings[] = {
+    #define pick(t,e)   t "\0"
     TYPE_DEFS
     #undef pick
 };

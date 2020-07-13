@@ -1729,7 +1729,7 @@ static bool ProcDrive( int argc, char **argv )
     return( false );
 }
 
-char    *TrapClientString( tc_error err )
+char *TrapClientString( tc_error err )
 {
     switch( err ) {
     case TC_BAD_TRAP_FILE:

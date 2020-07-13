@@ -75,6 +75,19 @@
 #include "clibext.h"
 
 
+#define SYM_FILE_IND ':'
+
+#define SKIP_SPACES     while( *start == ' ' && len != 0 ) { ++start; --len; }
+
+#define NO_SEG          0
+
+#define NEW_DEFS \
+    pick( "Program", ProgNew    ) \
+    pick( "Restart", ResNew     ) \
+    pick( "STDIn",   StdInNew   ) \
+    pick( "STDOut",  StdOutNew  ) \
+    pick( "SYmbol",  SymFileNew )
+
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SetNoSectSeg( void );
@@ -87,18 +100,24 @@ extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void))
 extern bool             DownLoadTask;
 
 const char              *RealFName( const char *name, obj_attrs *oattrs );
+char_ring               *LocalDebugInfo;
 
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 
 static char             *SymFileName;
 static char             *TaskCmd;
 static process_info     *CurrProcess; //NYI: multiple processes
+static bool             ProgStartHook = true;
 
-char_ring               *LocalDebugInfo;
+static const char       NewNameTab[] = {
+    #define pick(t,p)   t "\0"
+    NEW_DEFS
+    #undef pick
+};
 
-#define SYM_FILE_IND ':'
 
 bool InitCmd( void )
+/******************/
 {
     unsigned    argc;
     char        *curr;
@@ -175,6 +194,7 @@ bool InitCmd( void )
 }
 
 void FindLocalDebugInfo( const char *name )
+/*****************************************/
 {
     char        *buff, *symfile;
     size_t      len;
@@ -196,7 +216,7 @@ void FindLocalDebugInfo( const char *name )
 }
 
 static void DoDownLoadCode( void )
-/************************************/
+/********************************/
 {
     file_handle     fh;
 
@@ -219,27 +239,32 @@ bool DownLoadCode( void )
 }
 
 void FiniCmd( void )
+/******************/
 {
     _Free( TaskCmd );
 }
 
 void InitLocalInfo( void )
+/************************/
 {
     LocalDebugInfo = NULL;
 }
 
 void FiniLocalInfo( void )
+/************************/
 {
     FreeRing( LocalDebugInfo );
     LocalDebugInfo = NULL;
 }
 
 image_entry *ImagePrimary( void )
+/*******************************/
 {
     return( DbgImageList );
 }
 
 image_entry *ImageEntry( mod_handle mh )
+/**************************************/
 {
     image_entry         **image_ptr;
 
@@ -248,6 +273,7 @@ image_entry *ImageEntry( mod_handle mh )
 }
 
 address DefAddrSpaceForMod( mod_handle mh )
+/*****************************************/
 {
     image_entry *image;
     address     def_addr;
@@ -264,6 +290,7 @@ address DefAddrSpaceForMod( mod_handle mh )
 }
 
 address DefAddrSpaceForAddr( address addr )
+/*****************************************/
 {
     mod_handle  mod;
 
@@ -279,6 +306,7 @@ static void MapAddrSystem( image_entry *image, addr_ptr *addr,
 }
 
 static bool InMapEntry( map_entry *curr, addr_ptr *addr )
+/*******************************************************/
 {
     if( addr->segment != curr->map_addr.segment )
         return( false );
@@ -290,6 +318,7 @@ static bool InMapEntry( map_entry *curr, addr_ptr *addr )
 }
 
 void MapAddrForImage( image_entry *image, addr_ptr *addr )
+/********************************************************/
 {
     map_entry           **owner;
     map_entry           *curr;
@@ -324,6 +353,7 @@ void MapAddrForImage( image_entry *image, addr_ptr *addr )
 
 
 bool UnMapAddress( mappable_addr *loc, image_entry *image )
+/*********************************************************/
 {
     map_entry           *map;
     mod_handle          himage;
@@ -349,6 +379,7 @@ bool UnMapAddress( mappable_addr *loc, image_entry *image )
 
 
 static void UnMapOnePoint( brkp *bp, image_entry *image )
+/*******************************************************/
 {
     mod_handle          himage;
 
@@ -370,6 +401,7 @@ static void UnMapOnePoint( brkp *bp, image_entry *image )
 
 
 void UnMapPoints( image_entry *image )
+/************************************/
 {
     brkp                *bp;
 
@@ -383,6 +415,7 @@ void UnMapPoints( image_entry *image )
 
 
 void FreeImage( image_entry *image )
+/**********************************/
 {
     image_entry         **owner;
     image_entry         *curr;
@@ -413,6 +446,7 @@ void FreeImage( image_entry *image )
 
 
 static image_entry *DoCreateImage( const char *exe, const char *symfile )
+/***********************************************************************/
 {
     image_entry         *image;
     image_entry         **owner;
@@ -444,6 +478,7 @@ static image_entry *DoCreateImage( const char *exe, const char *symfile )
 }
 
 char *GetLastImageName( void )
+/****************************/
 {
     image_entry         *image;
 
@@ -453,6 +488,7 @@ char *GetLastImageName( void )
 }
 
 static image_entry *CreateImage( const char *exe, const char *symfile )
+/*********************************************************************/
 {
     image_entry         *image;
     bool                local;
@@ -614,6 +650,7 @@ static bool ProcImgSymInfo( image_entry *image )
 
 
 void UnLoadImgSymInfo( image_entry *image, bool nofree )
+/******************************************************/
 {
     if( image->dip_handle != NO_MOD ) {
         image->nofree = nofree;
@@ -628,6 +665,7 @@ void UnLoadImgSymInfo( image_entry *image, bool nofree )
 }
 
 remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
+/**********************************************************************/
 {
     map_entry           *map;
 
@@ -651,6 +689,7 @@ remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
 }
 
 bool ReMapAddress( mappable_addr *loc )
+/*************************************/
 {
     image_entry         *image;
     for( image = DbgImageList; image != NULL; image = image->link ) {
@@ -662,6 +701,7 @@ bool ReMapAddress( mappable_addr *loc )
 }
 
 static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
+/***************************************************************/
 {
     mod_handle  himage, mod;
     bool        ok;
@@ -717,6 +757,7 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
 
 
 void ReMapPoints( image_entry *image )
+/************************************/
 {
     brkp        *bp;
 
@@ -744,6 +785,7 @@ void ReMapPoints( image_entry *image )
 
 
 static void InitImageInfo( image_entry *image )
+/*********************************************/
 {
     if( !FindNullSym( image->dip_handle, &image->def_addr_space ) ) {
         image->def_addr_space = GetRegSP();
@@ -756,6 +798,7 @@ static void InitImageInfo( image_entry *image )
 
 
 bool ReLoadImgSymInfo( image_entry *image )
+/*****************************************/
 {
     if( ProcImgSymInfo( image ) ) {
         DIPMapInfo( image->dip_handle, image );
@@ -768,6 +811,7 @@ bool ReLoadImgSymInfo( image_entry *image )
 
 
 bool LoadDeferredSymbols( void )
+/******************************/
 {
     image_entry *image;
     bool        rc = false;
@@ -790,6 +834,7 @@ bool LoadDeferredSymbols( void )
 
 
 bool AddLibInfo( bool already_stopping, bool *force_stop )
+/********************************************************/
 {
     unsigned long       module;
     bool                added;
@@ -829,9 +874,8 @@ bool AddLibInfo( bool already_stopping, bool *force_stop )
     return( added );
 }
 
-static bool ProgStartHook = true;
-
 bool SetProgStartHook( bool new )
+/*******************************/
 {
     bool        old;
 
@@ -907,6 +951,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
 }
 
 void LoadProg( void )
+/*******************/
 {
     error_handle        errh = 0;
     int                 ret;
@@ -938,6 +983,7 @@ void LoadProg( void )
  */
 
 void ReleaseProgOvlay( bool free_sym )
+/************************************/
 {
     if( _IsOn( SW_PROC_ALREADY_STARTED ) ) {
         /* detaching from a running proc just lets it go */
@@ -964,17 +1010,20 @@ void ReleaseProgOvlay( bool free_sym )
 
 
 static void BadNew( void )
+/************************/
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
 }
 
 
 void InitMappableAddr( mappable_addr *loc )
+/*****************************************/
 {
     loc->image_name = NULL;
 }
 
 void FiniMappableAddr( mappable_addr *loc )
+/*****************************************/
 {
     if( loc->image_name != NULL ) {
         DbgFree( loc->image_name );
@@ -983,6 +1032,7 @@ void FiniMappableAddr( mappable_addr *loc )
 
 
 size_t GetProgName( char *where, size_t len )
+/*******************************************/
 {
     size_t      l;
 
@@ -1004,6 +1054,7 @@ size_t GetProgName( char *where, size_t len )
 }
 
 static bool ArgNeedsQuotes( const char *src )
+/*******************************************/
 {
     char        ch;
 
@@ -1020,6 +1071,7 @@ static bool ArgNeedsQuotes( const char *src )
 }
 
 static void AddString( char **dstp, size_t *lenp, const char *src )
+/*****************************************************************/
 {
     size_t      len;
 
@@ -1032,6 +1084,7 @@ static void AddString( char **dstp, size_t *lenp, const char *src )
 }
 
 static size_t PrepProgArgs( char *where, size_t len )
+/***************************************************/
 {
     char        *src;
     char        *dst;
@@ -1054,6 +1107,7 @@ static size_t PrepProgArgs( char *where, size_t len )
 }
 
 size_t GetProgArgs( char *where, size_t len )
+/*******************************************/
 {
     len = PrepProgArgs( where, len );
     _SwitchOff( SW_TRUE_ARGV );
@@ -1061,6 +1115,7 @@ size_t GetProgArgs( char *where, size_t len )
 }
 
 void SetSymFileName( const char *file )
+/*************************************/
 {
     if( SymFileName != NULL )
         _Free( SymFileName );
@@ -1091,6 +1146,7 @@ static void DoResNew( bool have_parms, const char *cmd,
 
 
 void LoadNewProg( const char *cmd, const char *parms )
+/****************************************************/
 {
     size_t      clen, plen;
     char        prog[FILENAME_MAX];
@@ -1239,6 +1295,7 @@ static void ResNew( void )
 }
 
 void ReStart( void )
+/******************/
 {
     char                prog[FILENAME_MAX];
     char                args[UTIL_LEN];
@@ -1255,8 +1312,6 @@ void ReStart( void )
 /*
  *
  */
-
-#define SKIP_SPACES     while( *start == ' ' && len != 0 ) { ++start; --len; }
 
 static void ProgNew( void )
 {
@@ -1324,8 +1379,6 @@ static void ProgNew( void )
     VarFreeScopes();
     SetProgStartHook( old );
 }
-
-#define NO_SEG          0
 
 static void PostProcMapExpr( address *addr )
 {
@@ -1502,6 +1555,7 @@ static void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
  */
 
 bool SymUserModLoad( const char *fname, address *loadaddr )
+/*********************************************************/
 {
     image_entry *image;
     map_entry   **owner;
@@ -1552,6 +1606,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
  */
 
 bool SymUserModUnload( char *fname )
+/**********************************/
 {
     image_entry *image;
 
@@ -1566,20 +1621,6 @@ bool SymUserModUnload( char *fname )
     return( true );
 }
 
-#define NEW_DEFS \
-    pick( "Program", ProgNew    ) \
-    pick( "Restart", ResNew     ) \
-    pick( "STDIn",   StdInNew   ) \
-    pick( "STDOut",  StdOutNew  ) \
-    pick( "SYmbol",  SymFileNew )
-
-
-static const char NewNameTab[] = {
-    #define pick(t,p)   t "\0"
-    NEW_DEFS
-    #undef pick
-};
-
 
 static void (* const NewJmpTab[])( void ) = {
     #define pick(t,p)   p,
@@ -1593,6 +1634,7 @@ static void (* const NewJmpTab[])( void ) = {
  */
 
 void ProcNew( void )
+/******************/
 {
     int     cmd;
 
@@ -1611,6 +1653,7 @@ void ProcNew( void )
 }
 
 void RecordNewProg( void )
+/************************/
 {
     char        buff[40];
     char        *p;
