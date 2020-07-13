@@ -1876,6 +1876,9 @@ bool GenerateBatchFile( bool uninstall )
             SetBoolVariableByName( "IsOS2DosBox", isOS2DosBox );
 #endif
             fclose( fp );
+#ifdef __UNIX__
+            chmod_vbuf( &batch_file, PMODE_RX_USR_W );
+#endif
         }
     }
     VbufInit( &ext );
