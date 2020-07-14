@@ -35,11 +35,11 @@ cmdfiles = &
     $(_subdir_)cmdutil.obj
 
 _subdir_ = $(dll_subdir)/
-os2zuobjs = $+ $(cmdfiles) $(_subdir_)noshell.obj $-
+os2zuobjs = $+$(cmdfiles) $(_subdir_)noshell.obj$-
 
 _subdir_ =
-dosobjs = $+ $(cmdfiles) $- cmdio.obj noshell.obj
-os2objs = $+ $(cmdfiles) $-
+dosobjs = $+$(cmdfiles)$- cmdio.obj noshell.obj
+os2objs = $+$(cmdfiles)$-
 
 extra_cpp_dll_flags = -zu
 
@@ -56,9 +56,9 @@ extra_a_flags = -ms
 !ifeq host_os dos
 
 !ifeq release 0
-all: $(dll_subdir) cmdedit.exe dcmdedit.exe
+all: cmdedit.exe dcmdedit.exe
 !else
-all: $(dll_subdir) cmdedit.exe
+all: cmdedit.exe
 !endif
 
 #
@@ -91,9 +91,9 @@ dcmdedit.exe: $(tstobjs) $(__MAKEFILES__)
 !else ifeq host_os os2
 
 !ifeq release 0
-all: os2edit.dll os2edit.exe os22edit.exe dos2edit.exe cmdshell.exe
+all: $(dll_subdir) os2edit.dll os2edit.exe os22edit.exe dos2edit.exe cmdshell.exe
 !else
-all: os2edit.dll os2edit.exe os22edit.exe
+all: $(dll_subdir) os2edit.dll os2edit.exe os22edit.exe
 !endif
 
 #

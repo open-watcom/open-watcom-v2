@@ -41,20 +41,20 @@ alt_posixlib = 1
 !endif
 
 posixlib_objs = &
-    $(subdir_$(subdir_key))alloc.obj &
-    $(subdir_$(subdir_key))argvenv.obj &
-    $(subdir_$(subdir_key))argvrx.obj &
-    $(subdir_$(subdir_key))console.obj &
-    $(subdir_$(subdir_key))die.obj &
-    $(subdir_$(subdir_key))filerx.obj &
-    $(subdir_$(subdir_key))fnlower.obj &
-    $(subdir_$(subdir_key))fncomp.obj &
-    $(subdir_$(subdir_key))getclsz.obj &
-    $(subdir_$(subdir_key))getopt.obj &
-    $(subdir_$(subdir_key))isdotdot.obj &
-    $(subdir_$(subdir_key))lineprt.obj &
-    $(subdir_$(subdir_key))quit.obj &
-    $(subdir_$(subdir_key))regexp.obj
+    $(_subdir_)alloc.obj &
+    $(_subdir_)argvenv.obj &
+    $(_subdir_)argvrx.obj &
+    $(_subdir_)console.obj &
+    $(_subdir_)die.obj &
+    $(_subdir_)filerx.obj &
+    $(_subdir_)fnlower.obj &
+    $(_subdir_)fncomp.obj &
+    $(_subdir_)getclsz.obj &
+    $(_subdir_)getopt.obj &
+    $(_subdir_)isdotdot.obj &
+    $(_subdir_)lineprt.obj &
+    $(_subdir_)quit.obj &
+    $(_subdir_)regexp.obj
 
 make_posix_lib : .procedure .explicit
 !ifndef __WATCOM_TOOLS__

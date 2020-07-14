@@ -35,10 +35,11 @@ model_switch_386=
 inc_dirs += -I"$(posix_dir)/h"
 .c: $(posix_dir)/misc
 
-subdir_stdlib = $(stdlibdir)/
-!ifdef alt_posixlib
-subdir_altlib = $(altlibdir)/
-!endif
+subdir_stdlib = $(stdlibdir)
+subdir_altlib = $(altlibdir)
+
+stdlib = $(stdlibdir)/posix.lib
+altlib = $(altlibdir)/posix.lib
 
 extra_cpp_stdlib_i86_flags = -m$(model)
 extra_cpp_stdlib_386_flags = -m$(model)
@@ -49,17 +50,17 @@ extra_cpp_altlib_i86c_flags = -ms
 extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
 !endif
 
-libs = $(stdlibdir)/posix.lib
+libs = $(stdlib)
 !ifdef alt_posixlib
-libs += $(altlibdir)/posix.lib
+libs += $(altlib)
+!endif
+
+libdirs = $(stdlibdir)
+!ifdef alt_posixlib
+libdirs += $(altlibdir)
 !endif
 
 curr_dir=$+$(%__CWD__)$-
-
-clean_dirs = $(curr_dir) $(subdir_stdlib)
-!ifdef alt_posixlib
-clean_dirs += $(subdir_altlib)
-!endif
 
 wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
 !ifdef bootstrap
@@ -69,31 +70,39 @@ wmake_opts += bootstrap=$(bootstrap)
 wmake_opts += release=$(release)
 !endif
 
-all : $(libs) $(commands) .symbolic
+all : $(libdirs) $(libs) $(commands) .symbolic
     @%null
 
 !ifdef alt_posixlib
 subdir_key = altlib
 !include subdrule.mif
-$(altlibdir)/posix.lib : $+$(posixlib_objs)$-
+_subdir_ = $(altlibdir)/
+$(altlib) : $+$(posixlib_objs)$-
     @%make make_posix_lib
 !endif
 
 subdir_key = stdlib
 !include subdrule.mif
-$(stdlibdir)/posix.lib : $+$(posixlib_objs)$-
+_subdir_ = $(stdlibdir)/
+$(stdlib) : $+$(posixlib_objs)$-
     @%make make_posix_lib
 
 $(commands) : .symbolic $(__MAKEFILES__)
     !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
 
-$(clean_dirs) : .symbolic
-    cd $@
+clean : .symbolic
+    cd $(subdir_stdlib)
+    @%make killobjs
+!ifdef alt_posixlib
+    cd $(subdir_altlib)
+    @%make killobjs
+!endif
+    cd $(curr_dir) 
+    @%make killobjs
+
+killobjs : .PROCEDURE .EXPLICIT
     rm -f *.obj *.lnk *.exe *.exp *.lib *.lbc *.lst *.err *.pch *.map *.sym
     rm -f *.tmp *.trk $(additional_cleanup_sys)
-    @cd $(curr_dir)
-    
-clean : $(clean_dirs) .symbolic
 
 !else
 

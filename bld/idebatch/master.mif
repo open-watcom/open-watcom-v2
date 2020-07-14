@@ -67,22 +67,21 @@ tstos2.exe : $(tst_objs) $(__MAKEFILES__)
 
 name = winint
 
-subdir_key = editor_objs
+subdir_editor = eobjs
 
-subdir_editor_objs = eobjs
+additional_cleanup_subdir = $(subdir_editor)
 
-additional_cleanup_subdir = $(subdir_editor_objs)
-
+subdir_key = editor
 !include subdrule.mif
 
 .c: ../win;../dos
 
 objs = $(name).obj link.obj
-eobjs = $(subdir_editor_objs)/$(name).obj link.obj
+eobjs = $(subdir_editor)/$(name).obj link.obj
 lnk = $(name).lnk
 
 extra_cpp_flags = -DSERVER
-extra_cpp_editor_objs_flags = -D__EDITOR__
+extra_cpp_editor_flags = -D__EDITOR__
 
 extra_c_flags = -zW -zu
 
@@ -95,7 +94,7 @@ $(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
     @%make bind_res
 
-$(name)e.exe : $(eobjs) $(lnk) $(name)e.res $(__MAKEFILES__)
+$(name)e.exe : $(subdir_editor) $(eobjs) $(lnk) $(name)e.res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(eobjs) }
     @%make bind_res
