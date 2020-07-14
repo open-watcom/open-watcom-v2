@@ -91,9 +91,9 @@ dcmdedit.exe: $(tstobjs) $(__MAKEFILES__)
 !else ifeq host_os os2
 
 !ifeq release 0
-all: $(dll_subdir) os2edit.dll os2edit.exe os22edit.exe dos2edit.exe cmdshell.exe
+all: os2edit.dll os2edit.exe os22edit.exe dos2edit.exe cmdshell.exe
 !else
-all: $(dll_subdir) os2edit.dll os2edit.exe os22edit.exe
+all: os2edit.dll os2edit.exe os22edit.exe
 !endif
 
 #
@@ -101,7 +101,7 @@ all: $(dll_subdir) os2edit.dll os2edit.exe os22edit.exe
 #
 cmd2objs = cmdstart.obj $(os2zuobjs)
 
-os2edit.dll: $(cmd2objs) $(__MAKEFILES__)
+os2edit.dll: $(dll_subdir) $(cmd2objs) $(__MAKEFILES__)
     @%write $^&d.lnk name $@
     @%append $^&d.lnk $(lflags_dll) initinstance
     @%append $^&d.lnk option map=os2editd.map, symfile=os2editd.sym
