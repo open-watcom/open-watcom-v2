@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@
 #include "x86table.h"
 #include "x86rtrn.h"
 #include "_split.h"
-#include "_x86split.h"
-#include "_x86splt2.h"
+#include "x86splt1.h"
+#include "x86splt2.h"
 #include "_x86rtrn.h"
 #include "_x86half.h"
 
