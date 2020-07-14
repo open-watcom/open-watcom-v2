@@ -59,10 +59,10 @@
 :segment DOS | RDOS
 #ifndef NAME_MAX
 :segment RDOS
- #define NAME_MAX       255     /* maximum filename for HPFS and RDOS */
+ #define NAME_MAX       255     /* maximum filename for RDOS          */
 :elsesegment DOS
  #if defined(__OS2__)
-  #define NAME_MAX      255     /* maximum filename for HPFS and RDOS */
+  #define NAME_MAX      255     /* maximum filename for HPFS          */
  #elif defined(__NT__) || defined(__WATCOM_LFN__) && defined(__DOS__)
   #define NAME_MAX      259     /* maximum filename for NTFS, FAT LFN and DOS LFN */
  #else
