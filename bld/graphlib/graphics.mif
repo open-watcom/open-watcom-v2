@@ -6,6 +6,9 @@ crwatpro_sp = crwatpro.sp
 
 additional_cleanup_subdir = $(v2subdir)
 
+$(v2subdir) : .EXPLICIT
+    mkdir $@
+
 additional_cleanup = $(crwatpro_sp)
 
 graph_autodepends = .AUTODEPEND
@@ -222,7 +225,7 @@ graphi.lib : graph.gh $(special_objs) $(objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
 
-graphi2.lib : graph2.gh $(special_objs) $(v2_objs) $(__MAKEFILES__)
+graphi2.lib : $(v2subdir) graph2.gh $(special_objs) $(v2_objs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(v2_objs)) do @%append $^&.lbc +%i
     @%make echo_lib
@@ -242,11 +245,9 @@ wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
 !include $(graphlib_dir)/headers.mif
 
 .c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
-    @if not exist $(v2subdir) mkdir $(v2subdir)
     @%make echo_cc
     $(cc) $(cflags) $(c_flags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
 
 .asm{$(v2subdir)}.obj: $($(proj_name)_autodepends)
-    @if not exist $(v2subdir) mkdir $(v2subdir)
     @%make echo_as
     $(as) $(aflags) -DVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@

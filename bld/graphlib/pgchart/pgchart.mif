@@ -7,6 +7,9 @@ v2subdir = v2objs
 
 additional_cleanup_subdir = $(v2subdir)
 
+$(v2subdir) : .EXPLICIT
+    mkdir $@
+
 crwatpro_sp = crwatpro.sp
 
 additional_cleanup = $(crwatpro_sp)
@@ -93,7 +96,7 @@ chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @pgchart.lbc
 
-chart2.lib : graph2.gh pgchart2.lbc $(__MAKEFILES__)
+chart2.lib : $(v2subdir) graph2.gh pgchart2.lbc $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @pgchart2.lbc
 
@@ -113,6 +116,5 @@ wsplice_opts_win = -kDOS
 !include $(graphlib_dir)/headers.mif
 
 .c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
-    @if not exist $(v2subdir) mkdir $(v2subdir)
     @%make echo_cc
     $(cc) $(cflags) $(c_flags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@

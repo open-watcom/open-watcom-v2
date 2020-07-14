@@ -82,7 +82,7 @@ $(name).exe : rcstr.gh $(dllname).dll $(objs) $(libs) $(name).res $(version_res_
 !endif
     @%make bind_res_add_version_exe
 
-$(dllname).dll : $(dll_objs) $(__MAKEFILES__)
+$(dllname).dll : $(dll_subdir) $(dll_objs) $(__MAKEFILES__)
     @%make echo_link
 !ifdef __WATCOM_TOOLS__
     $(linker) name $@ $(lflags_dll) file {$(dll_objs)}

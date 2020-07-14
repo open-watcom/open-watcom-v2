@@ -148,7 +148,7 @@ libs = $(asminline_lib) $(cg_libs)
 #
 
 depends_exe = $(pre_obj_deps)
-depends_dll = $(pre_obj_deps)
+depends_dll = $(dll_subdir) $(pre_obj_deps)
 depends_drv =
 
 # systems where version resources must be added to .DLL

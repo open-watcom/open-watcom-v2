@@ -60,7 +60,7 @@ extra_cpp_flags += -DUSE_VIRTMEM
 extra_cpp_flags += -DIDE_PGM
 !endif
 
-extra_cpp_flags_idedrv	    = -DCHAIN_CALLBACK
+extra_cpp_flags_idedrv      = -DCHAIN_CALLBACK
 extra_cpp_flags_ideentry    = -DCHAIN_CALLBACK
 extra_cpp_flags_maindrv     = -DDLL_NAME=$(dllname)
 extra_cpp_flags_rcstr       = -DINSIDE_WLINK
@@ -69,7 +69,7 @@ extra_cpp_flags_exerespe    = -DINSIDE_WLINK
 extra_cpp_flags_mergedir    = -DINSIDE_WLINK
 extra_cpp_flags_sharedio    = -DINSIDE_WLINK
 extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
-extra_cpp_flags_wlmem	    = $(trmem_cpp_flags)
+extra_cpp_flags_wlmem       = $(trmem_cpp_flags)
 
 extra_c_flags_trmem         = $(trmem_cflags)
 extra_c_flags_wlmem         = $(trmem_cover_cflags)
@@ -150,7 +150,7 @@ $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wresui.res $(comp_objs_ex
 
 !endif
 
-$(dllname).dll : rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll : $(dll_subdir) rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)

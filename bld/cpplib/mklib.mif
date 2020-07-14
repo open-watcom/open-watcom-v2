@@ -4,6 +4,9 @@ x_subdir = xobjs
 
 additional_cleanup_subdir = $(x_subdir)
 
+$(x_subdir) : .EXPLICIT
+    mkdir $@
+
 !include $(cpplib_dir)/master.mif
 
 # make targets for libraries
@@ -39,14 +42,14 @@ target_xobjs = $(xobjs)
 libs : .symbolic $(target_lib) $(target_lib_x) $(files)
     @%null
 
-$(target_lib) : $(target_objs) $(__MAKEFILES__)
+$(target_lib) : $(dep_dirs) $(target_objs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(target_objs)) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $@ @$^&.lbc
 
 !ifdef target_lib_x
-$(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
+$(target_lib_x) : $(dep_dirs_x) $(target_xobjs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(target_xobjs)) do @%append $^&.lbc +%i
     @%make echo_lib

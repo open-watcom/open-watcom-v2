@@ -158,4 +158,7 @@ pch_flags_x_undefmbd = -fh=$(x_subdir)/pch07.pch
 pch_flags_rtdbgst = -fh=pch08.pch
 pch_flags_x_rtdbgst = -fh=$(x_subdir)/pch08.pch
 
+dep_dirs = $(x_subdir)
+dep_dirs_x = $(x_subdir)
+
 !include $(cpplib_dir)/mklib.mif

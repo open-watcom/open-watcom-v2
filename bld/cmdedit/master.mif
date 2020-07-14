@@ -56,9 +56,9 @@ extra_a_flags = -ms
 !ifeq host_os dos
 
 !ifeq release 0
-all: cmdedit.exe dcmdedit.exe
+all: $(dll_subdir) cmdedit.exe dcmdedit.exe
 !else
-all: cmdedit.exe
+all: $(dll_subdir) cmdedit.exe
 !endif
 
 #

@@ -481,8 +481,8 @@ winresrc.h: winresrc.mh
 {$(hdr_dir)}.sp1.sp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
-$(dirs):
-    @if not exist $@ mkdir $@
+$(dirs): .EXPLICIT
+    mkdir $@
 
 !include $(incl_dir)/deps.mif
 

@@ -199,8 +199,8 @@ all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 !ifdef dirs$(hdr_cpu)
-$(dirs$(hdr_cpu)):
-    @if not exist $@ mkdir $@
+$(dirs$(hdr_cpu)): .EXPLICIT
+    mkdir $@
 !endif
 
 !include $(incl_dir_$(hdr_cpu))/deps.mif

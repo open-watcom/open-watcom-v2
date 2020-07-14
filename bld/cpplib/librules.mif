@@ -3,7 +3,6 @@
     $(cxx) $[@ $(plib_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pchflags) $(c_dbg_flags)
 
 .cpp{$(x_subdir)}.obj : $(__MAKEFILES__) .autodepend
-    @if not exist $(x_subdir) mkdir $(x_subdir)
     @%make echo_xcxx
     $(cxx) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pchflags_x) $(c_dbg_flags)
 

@@ -17,9 +17,6 @@ dllname     +=$(target_cpu)
 
 !ifdef bin_prefix
 additional_cleanup_subdir = $(bin_subdir)
-
-.BEFORE
-    @if not exist $(bin_subdir) mkdir $(bin_subdir)
 !endif
 
 cc_autodepends = .autodepend
@@ -117,9 +114,15 @@ libs = $(asminline_lib) $(cg_libs)
 # Common dependencies
 #
 
+!ifdef bin_prefix
+depends_exe = $(bin_subdir) $(pre_obj_deps)
+depends_dll = $(bin_subdir) $(pre_obj_deps)
+depends_drv = $(bin_subdir)
+!else
 depends_exe = $(pre_obj_deps)
 depends_dll = $(pre_obj_deps)
 depends_drv =
+!endif
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res

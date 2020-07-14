@@ -163,8 +163,8 @@ options_h_wctype   = -kCONLY
 options_h_wchar    = -kCONLY
 
 !ifneq $(system)_dirs
-$($(system)_dirs):
-    @if not exist $@ mkdir -p $@
+$($(system)_dirs): .EXPLICIT
+    mkdir -p $@
 !endif
 
 !include ../deps.mif

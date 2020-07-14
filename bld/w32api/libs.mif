@@ -233,8 +233,8 @@ directx/dxguid.obj: directx/dxguid.c
     @%make echo_cc
     $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
-$(dirs):
-    @if not exist $@ @mkdir $@
+$(dirs): .EXPLICIT
+    mkdir $@
 
 clean: .SYMBOLIC
     rm -f *.obj *.lbc *.lib *.tmp *.err *.pch

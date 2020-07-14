@@ -60,7 +60,7 @@ wcpatch_objs = &
 wcpatch_objs += $(subdir_wcpatch)/symtab.obj
 !endif
 
-wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+wcpatch.exe : $(subdir_wcpatch) $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
@@ -92,7 +92,7 @@ wpatch_objs = &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
 
-wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+wpatch.exe : $(subdir_wpatch) $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
@@ -124,7 +124,7 @@ bpatch_objs = &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
 
-bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+bpatch.exe : $(subdir_bpatch) $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
@@ -155,7 +155,7 @@ bdump_objs = &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
 
-bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
+bdump.exe : $(subdir_bdump) $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
@@ -190,7 +190,7 @@ bdiff_objs = &
 bdiff_objs += $(subdir_bdiff)/symtab.obj
 !endif
 
-bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
+bdiff.exe : $(subdir_bdiff) $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
@@ -215,7 +215,7 @@ extra_cpp_bpcmt_flags = -DBPCMT
 bpcmt_objs = &
     $(subdir_bpcmt)/bpcmt.obj
 
-bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
+bpcmt.exe : $(subdir_bpcmt) $(bpcmt_objs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
@@ -234,7 +234,7 @@ extra_cpp_bplevel_flags = -DBPLEVEL
 bplevel_objs = &
     $(subdir_bplevel)/bplevel.obj
 
-bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
+bplevel.exe : $(subdir_bplevel) $(bplevel_objs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bplevel_objs) $(ldflags)
