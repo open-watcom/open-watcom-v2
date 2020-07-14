@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include "lsspec.h"
 #include "encodlng.h"
 #include "pathgrp2.h"
@@ -78,7 +79,7 @@ static void processLang( char *prefix, unsigned lang ) {
     fpos_t      header_posn;
     LocaleData  header;
     PGROUP2     pg;
-    char        fname[_MAX_PATH];
+    char        fname[PATH_MAX];
     char        name[9];
 
     _splitpath2( prefix, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
