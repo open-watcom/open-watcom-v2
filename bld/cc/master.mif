@@ -4,8 +4,6 @@ proj_name = cc
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
 boot_prefix = b
-!else
-bin_prefix  = $(bin_subdir)/
 !endif
 
 exename     = $(boot_prefix)wcc
@@ -13,10 +11,6 @@ dllname     = $(boot_prefix)wccd
 !ifneq target_cpu i86
 exename     +=$(target_cpu)
 dllname     +=$(target_cpu)
-!endif
-
-!ifdef bin_prefix
-additional_cleanup_subdir = $(bin_subdir)
 !endif
 
 cc_autodepends = .autodepend
@@ -48,7 +42,6 @@ pre_obj_deps += msgdefs.gh
 pre_obj_deps += msgattr.gh
 pre_obj_deps += weights.gh
 pre_obj_deps += keywords.gh
-pre_obj_deps += $(intname)01.int
 pre_obj_deps += $(asminline_deps)
 pre_obj_deps += code$(target_cpu).gh
 
@@ -114,15 +107,9 @@ libs = $(asminline_lib) $(cg_libs)
 # Common dependencies
 #
 
-!ifdef bin_prefix
-depends_exe = $(bin_subdir) $(pre_obj_deps)
-depends_dll = $(bin_subdir) $(pre_obj_deps)
-depends_drv = $(bin_subdir)
-!else
 depends_exe = $(pre_obj_deps)
 depends_dll = $(pre_obj_deps)
 depends_drv =
-!endif
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -141,16 +128,33 @@ inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_i
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 .h: ../../h;$(watcom_dir)/h
 
+!ifdef bootstrap
+bin_exename = $(exename)
+bin_dllname = $(dllname)
+bin_intname = $(intname)
+!else
+additional_cleanup_subdir = $(bin_subdir)
+
+bin_exename = $(bin_subdir)/$(exename)
+bin_dllname = $(bin_subdir)/$(dllname)
+bin_intname = $(bin_subdir)/$(intname)
+
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
+
+all: $(bin_subdir) $(bin_exename).exe .symbolic
+!endif
+
 !ifdef cc_dll
 
-$(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(bin_exename).exe : $(depends_drv) $(bin_dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
-    $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_prefix)$(dllname).lib $(ldflags_gen)
+    $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_dllname).lib $(ldflags_gen)
 !else
     @%write drv.lnk $(lflags)
     @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-    @%append drv.lnk lib $(bin_prefix)$(dllname).lib
+    @%append drv.lnk lib $(bin_dllname).lib
 !ifeq host_os dos
     @%append drv.lnk lib cwdll.lib
 !endif
@@ -161,7 +165,7 @@ $(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_
 
 !else
 
-$(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(bin_exename).exe: $(depends_exe) $(bin_intname)01.int $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
 ! ifdef bootstrap
@@ -180,7 +184,7 @@ $(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(version_r
 
 !endif
 
-$(bin_prefix)$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(bin_dllname).dll : $(dll_subdir) $(depends_dll) $(bin_intname)01.int $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
@@ -242,8 +246,8 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_bldcl
     $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
-$(intname)01.int : ./intlbin.exe errors01.int usage01.int
-    $[@ $(intname)
+$(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
+    $[@ $(bin_intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     @%make echo_bldcl
