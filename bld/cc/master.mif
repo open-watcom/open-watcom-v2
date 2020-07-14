@@ -247,7 +247,7 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 $(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
-    $[@ $(bin_intname)
+    $[@ $@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     @%make echo_bldcl

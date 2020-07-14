@@ -35,9 +35,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 #include "lsspec.h"
 #include "encodlng.h"
+#include "pathgrp2.h"
+
+#include "clibext.h"
+
 
 char const * const componentName[] = {
     #define LS_DEF( name, sig ) #name ,
@@ -68,15 +71,19 @@ static void copyAligned( FILE *ofp, FILE *ifp ) {
 }
 
 static void processLang( char *prefix, unsigned lang ) {
-    unsigned curr_offset;
-    FILE *fp;
-    FILE *ifp;
-    unsigned component;
-    fpos_t header_posn;
-    LocaleData header;
-    char fname[16];
+    unsigned    curr_offset;
+    FILE        *fp;
+    FILE        *ifp;
+    unsigned    component;
+    fpos_t      header_posn;
+    LocaleData  header;
+    PGROUP2     pg;
+    char        fname[_MAX_PATH];
+    char        name[9];
 
-    sprintf( fname, "%.6s%02u." LOCALE_DATA_EXT, prefix, lang );
+    _splitpath2( prefix, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+    sprintf( name, "%.6s%02u", pg.fname, lang );
+    _makepath( fname, pg.drive, pg.dir, name, LOCALE_DATA_EXT );
     fp = fopen( fname, "wb" );
     if( !fp ) {
         fatal( "cannot open output file" );
@@ -92,8 +99,9 @@ static void processLang( char *prefix, unsigned lang ) {
     curr_offset = 0;
     for( component = LS_MIN; component < LS_MAX; ++component ) {
         header.offset[ curr_offset++ ] = ftell( fp );
-        sprintf( fname, "%.6s%02u." LOCALE_DATA_EXT, componentName[ component ], lang );
-        fname[0] = (char)tolower(fname[0]);
+        sprintf( name, "%.6s%02u", componentName[component], lang );
+        name[0] = (char)tolower(name[0]);
+        _makepath( fname, NULL, NULL, name, LOCALE_DATA_EXT );
         ifp = fopen( fname, "rb" );
         if( !ifp ) {
             fatal( "cannot open output file" );
