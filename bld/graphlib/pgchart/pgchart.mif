@@ -3,12 +3,9 @@
 #
 proj_name = pgchart
 
-v2subdir = v2objs
+subdir_v2 = v2objs
 
-additional_cleanup_subdir = $(v2subdir)
-
-$(v2subdir) : .EXPLICIT
-    mkdir $@
+additional_cleanup_subdir = $(subdir_v2)
 
 crwatpro_sp = crwatpro.sp
 
@@ -64,7 +61,7 @@ template = &
 !include defrule.mif
 !include deftarg.mif
 
-_subdir_ = $(v2subdir)/
+_subdir_ = $(subdir_v2)/
 v2_objs = $+$(template)$-
 _subdir_ =
 objs = $+$(template)$-
@@ -96,7 +93,7 @@ chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @pgchart.lbc
 
-chart2.lib : $(v2subdir) graph2.gh pgchart2.lbc $(__MAKEFILES__)
+chart2.lib : $(subdir_v2) graph2.gh pgchart2.lbc $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @pgchart2.lbc
 
@@ -115,6 +112,8 @@ wsplice_opts_win = -kDOS
 
 !include $(graphlib_dir)/headers.mif
 
-.c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
-    @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
+
+subdir_key = v2
+!include defrule.mif

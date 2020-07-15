@@ -112,6 +112,6 @@ $(lnk) : makefile
 extra_cpp_editor_flags = -D__EDITOR__
 
 subdir_key = editor
-!include subdrule.mif
+!include defrule.mif
 
 !endif

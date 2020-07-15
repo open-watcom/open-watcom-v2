@@ -1,11 +1,21 @@
-.c.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
+!ifdef subdir_key
+defrule_obj_target ={$(subdir_$+$(subdir_key)$-)}.obj
+$(subdir_$+$(subdir_key)$-) : .EXPLICIT
+    mkdir $@
+!else
+subdir_key =
+defrule_obj_target = .obj
+!endif
+.c$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(subdir_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
-.cpp.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
+.cpp$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cxx
-    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(subdir_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
-.asm.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
+.asm$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_as
-    $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+    $(as) $(aflags) $(extra_a_$+$(subdir_key)$-_flags) $(extra_a_flags_$[&) $(inc_path) $[@
+!undef defrule_obj_target
+!undef subdir_key

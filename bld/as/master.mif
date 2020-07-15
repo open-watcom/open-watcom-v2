@@ -12,8 +12,8 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-subdir_stand = standdir
-subdir_lib = libdir
+subdir_stand = stand
+subdir_lib = lib
 
 .extensions: .rc .y .re .gh .msg
 
@@ -262,9 +262,9 @@ extra_cpp_lib_flags += -fh=lib.pch
 !endif
 
 subdir_key = stand
-!include subdrule.mif
+!include defrule.mif
 subdir_key = lib
-!include subdrule.mif
+!include defrule.mif
 
 echo_re2c : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
