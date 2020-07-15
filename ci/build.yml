@@ -23,7 +23,7 @@ jobs:
         vmImage: $(owimage_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
-    timeoutInMinutes: 90
+    timeoutInMinutes: 120
     steps:
     - template: dosbox.yml
       parameters:
