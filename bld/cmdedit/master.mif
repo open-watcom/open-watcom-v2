@@ -5,8 +5,6 @@ cmdedit_autodepends = .AUTODEPEND
 # don't use stack checking for TSR program
 cmdedit_nocheckstack = 1
 
-additional_cleanup_subdir =
-
 # overwrite default compilers optimization options
 dft_oflags =
 

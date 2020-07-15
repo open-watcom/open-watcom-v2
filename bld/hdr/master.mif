@@ -175,4 +175,4 @@ clean: .SYMBOLIC
     rm -f $(noext)
     rm -rf $($(system)_dirs)
     rm -f $(additional_cleanup)
-    rm -rf $(dll_subdir) $(additional_cleanup_subdir)
+    rm -rf $(additional_cleanup_subdir)

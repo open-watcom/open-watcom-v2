@@ -10,7 +10,7 @@ name = wasm
 wasm_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup = *.u
+additional_cleanup_qnx = usage.u
 
 wasm_trmem = 1
 

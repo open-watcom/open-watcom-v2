@@ -3,7 +3,7 @@ proj_name = emu386
 emu386_autodepends = .AUTODEPEND
 emu386_distrib_lib = 1
 
-additional_cleanup = usage.u
+additional_cleanup_qnx = usage.u
 
 !include cproj.mif
 !include defrule.mif

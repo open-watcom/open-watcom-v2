@@ -7,7 +7,7 @@ proj_name = emui86
 emui86_autodepends = .AUTODEPEND
 emui86_distrib_lib = 1
 
-additional_cleanup = usage.u
+additional_cleanup_qnx = usage.u
 
 memory_model_i86 = s
 memory_model_386 = s

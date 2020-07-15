@@ -17,7 +17,8 @@ cc_autodepends = .autodepend
 
 .extensions: .gh
 
-additional_cleanup = *.int *.u
+additional_cleanup = *.int
+additional_cleanup_qnx = usage.u
 
 !include cproj.mif
 !include defrule.mif

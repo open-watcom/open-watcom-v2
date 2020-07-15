@@ -68,7 +68,9 @@ fpu_flags_qnx_386   = -fpc
 fpu_flags_rdos_386  = -fpc
 fpu_flags_win_i86   = -fpc
 
-additional_cleanup = *.d32 *.trp
+additional_cleanup_dos = *.trp
+additional_cleanup_os2 = *.d32
+additional_cleanup_qnx = usage.u
 
 !ifeq srv lcl
 name = std

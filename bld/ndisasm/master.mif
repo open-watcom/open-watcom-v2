@@ -10,7 +10,7 @@ wdis_trmem = 1
 
 exe_name = $(proj_name).exe
 
-additional_cleanup = *.u
+additional_cleanup_qnx = usage.u
 
 !include cproj.mif
 !include defrule.mif

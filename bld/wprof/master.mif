@@ -2,7 +2,7 @@ proj_name = wprof
 
 wprof_autodepends = .AUTODEPEND
 
-additional_cleanup = usage.u
+additional_cleanup_qnx = usage.u
 
 wprof_trmem = 1
 
@@ -47,7 +47,7 @@ extra_cpp_flags_memutil = $(trmem_cpp_flags)
 extra_cpp_flags_wpdriver = $(trmem_cpp_flags)
 
 !ifdef check
-extra_c_flags  	= -zs
+extra_c_flags   = -zs
 !endif
 
 extra_c_flags_qnx_i86 = -zt32

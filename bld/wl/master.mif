@@ -21,7 +21,7 @@ exename     = wlink
 dllname     = wlinkd
 !endif
 
-additional_cleanup = usage.u
+additional_cleanup_qnx = usage.u
 
 # get rid of the -zc
 suppress_zc = 1

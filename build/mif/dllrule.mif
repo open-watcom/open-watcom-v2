@@ -8,3 +8,5 @@
 
 $(dll_subdir) : .EXPLICIT
     mkdir $@
+
+clean_dll_subdir = $(dll_subdir)

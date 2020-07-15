@@ -19,7 +19,8 @@ exename     +=$(target_cpu)
 #suppress_zc = 1
 
 # Extra files to delete on clean
-additional_cleanup = *.u *.int *.gc y.out ytab.* *.mbr $(dll_subdir)/*.mbr
+additional_cleanup = *.int y.out ytab.* *.mbr
+additional_cleanup_qnx = usage.u
 
 !include cproj.mif
 !include defrule.mif
