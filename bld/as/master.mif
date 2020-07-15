@@ -12,17 +12,14 @@ was_autodepends = .AUTODEPEND
 
 was_trmem = 1
 
-stand_subdir = stand
-lib_subdir = lib
+subdir_stand = standdir
+subdir_lib = libdir
 
 .extensions: .rc .y .re .gh .msg
 
 additional_cleanup = *.c *.h *.re *.y
 
-additional_cleanup_subdir = $(stand_subdir) $(lib_subdir)
-
-$(stand_subdir) $(lib_subdir) : .EXPLICIT
-    mkdir $@
+additional_cleanup_subdir = $(subdir_stand) $(subdir_lib)
 
 !include cproj.mif
 !include defrule.mif
@@ -98,9 +95,9 @@ as_inline_objs = &
     $(_subdir_)asinline.obj &
     $(_subdir_)asiobj.obj
 
-_subdir_ = $(stand_subdir)/
+_subdir_ = $(subdir_stand)/
 as_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_stand_objs)$-
-_subdir_ = $(lib_subdir)/
+_subdir_ = $(subdir_lib)/
 asi_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_inline_objs)$-
 
 asi_test_objs = asitest.obj trmemcvr.obj $+$(trmem_objs)$-
@@ -134,11 +131,6 @@ extra_c_flags_ppmem = -fh=$^:pch04.pch
 extra_c_flags_ppenv = -fh=$^:pch04.pch
 extra_c_flags_trmemcvr += -fh=$^:pch05.pch
 extra_c_flags_pathlist = -fh=$^:pch06.pch
-!endif
-
-!ifdef __WATCOM_TOOLS__
-stand_pch_c_flags = -fh=stand.pch
-lib_pch_c_flags = -fh=lib.pch
 !endif
 
 # lflags
@@ -188,7 +180,7 @@ all_as += $(name).exe
 
 all : $(all_as) .symbolic
 
-$(name).exe : $(stand_subdir) msg.gh $(as_objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name).exe : $(subdir_stand) msg.gh $(as_objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
 ! ifdef bootstrap
@@ -206,7 +198,7 @@ wresui.res : $(as_dir)/h/as.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$@
 
-asinline.lib : $(lib_subdir) asi_msg.gh $(asi_objs) $(__MAKEFILES__)
+asinline.lib : $(subdir_lib) asi_msg.gh $(asi_objs) $(__MAKEFILES__)
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(asi_objs)
@@ -262,13 +254,17 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
     @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
-.c{$(stand_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
-    @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) -D_STANDALONE_ $(extra_cpp_flags_$[&) $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+extra_cpp_stand_flags = -D_STANDALONE_
+extra_cpp_lib_flags =
+!ifdef __WATCOM_TOOLS__
+extra_cpp_stand_flags += -fh=stand.pch
+extra_cpp_lib_flags += -fh=lib.pch
+!endif
 
-.c{$(lib_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
-    @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_flags_$[&) $(lib_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+subdir_key = stand
+!include subdrule.mif
+subdir_key = lib
+!include subdrule.mif
 
 echo_re2c : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
