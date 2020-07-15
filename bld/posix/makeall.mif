@@ -41,15 +41,6 @@ subdir_altlib = $(altlibdir)
 stdlib = $(stdlibdir)/posix.lib
 altlib = $(altlibdir)/posix.lib
 
-extra_cpp_stdlib_i86_flags = -m$(model)
-extra_cpp_stdlib_386_flags = -m$(model)
-extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
-!ifdef alt_posixlib
-extra_cpp_altlib_i86s_flags = -mc
-extra_cpp_altlib_i86c_flags = -ms
-extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
-!endif
-
 libs = $(stdlib)
 !ifdef alt_posixlib
 libs += $(altlib)
@@ -60,7 +51,32 @@ libdirs = $(stdlibdir)
 libdirs += $(altlibdir)
 !endif
 
-curr_dir=$+$(%__CWD__)$-
+all : $(libdirs) $(libs) $(commands) .symbolic
+    @%null
+
+!ifdef alt_posixlib
+extra_cpp_altlib_i86s_flags = -mc
+extra_cpp_altlib_i86c_flags = -ms
+extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
+
+subdir_key = altlib
+!include subdrule.mif
+
+_subdir_ = $(altlibdir)/
+$(altlib) : $+$(posixlib_objs)$-
+    @%make make_posix_lib
+!endif
+
+extra_cpp_stdlib_i86_flags = -m$(model)
+extra_cpp_stdlib_386_flags = -m$(model)
+extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
+
+subdir_key = stdlib
+!include subdrule.mif
+
+_subdir_ = $(stdlibdir)/
+$(stdlib) : $+$(posixlib_objs)$-
+    @%make make_posix_lib
 
 wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
 !ifdef bootstrap
@@ -70,25 +86,10 @@ wmake_opts += bootstrap=$(bootstrap)
 wmake_opts += release=$(release)
 !endif
 
-all : $(libdirs) $(libs) $(commands) .symbolic
-    @%null
-
-!ifdef alt_posixlib
-subdir_key = altlib
-!include subdrule.mif
-_subdir_ = $(altlibdir)/
-$(altlib) : $+$(posixlib_objs)$-
-    @%make make_posix_lib
-!endif
-
-subdir_key = stdlib
-!include subdrule.mif
-_subdir_ = $(stdlibdir)/
-$(stdlib) : $+$(posixlib_objs)$-
-    @%make make_posix_lib
-
 $(commands) : .symbolic $(__MAKEFILES__)
     !$(noecho)wmake -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
+
+curr_dir=$+$(%__CWD__)$-
 
 clean : .symbolic
     cd $(subdir_stdlib)
