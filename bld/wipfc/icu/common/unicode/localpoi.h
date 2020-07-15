@@ -1,10 +1,10 @@
-/* =========================================================================
- *
- *                          Open Watcom Project
- *
- * Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
- *
- * ========================================================================= */
+/*****************************************************************************
+*
+*                          Open Watcom Project
+*
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+*
+*****************************************************************************/
 // (c) 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
 /*
@@ -14,7 +14,7 @@
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
-*   file name:  localpointer.h
+*   file name:  localpoi.h
 *   encoding:   UTF-8
 *   tab size:   8 (not used)
 *   indentation:4

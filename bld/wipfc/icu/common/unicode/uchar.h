@@ -1,3 +1,10 @@
+/*****************************************************************************
+*
+*                          Open Watcom Project
+*
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+*
+*****************************************************************************/
 // © 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
 /*
@@ -26,7 +33,7 @@
 #define UCHAR_H
 
 #include "unicode/utypes.h"
-#include "unicode/stringoptions.h"
+#include "unicode/stringop.h"
 
 U_CDECL_BEGIN
 

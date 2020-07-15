@@ -1,7 +1,14 @@
+/*****************************************************************************
+*
+*                          Open Watcom Project
+*
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+*
+*****************************************************************************/
 // © 2017 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
 
-// stringoptions.h
+// stringop.h
 // created: 2017jun08 Markus W. Scherer
 
 #ifndef __STRINGOPTIONS_H__

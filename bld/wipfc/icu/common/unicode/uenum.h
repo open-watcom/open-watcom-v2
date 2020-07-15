@@ -1,10 +1,10 @@
-/* =========================================================================
- *
- *                          Open Watcom Project
- *
- * Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
- *
- * ========================================================================= */
+/*****************************************************************************
+*
+*                          Open Watcom Project
+*
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+*
+*****************************************************************************/
 // (c) 2016 and later: Unicode, Inc. and others.
 // License & terms of use: http://www.unicode.org/copyright.html
 /*
@@ -27,7 +27,7 @@
 #define __UENUM_H
 
 #include "unicode/utypes.h"
-#include "unicode/localpointer.h"
+#include "unicode/localpoi.h"
 
 #if U_SHOW_CPLUSPLUS_API
 U_NAMESPACE_BEGIN
