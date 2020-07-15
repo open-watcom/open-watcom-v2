@@ -6,5 +6,9 @@
     @%make echo_cxx
     $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(subdir_key)$-_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
 
+.asm{$(subdir_$+$(subdir_key)$-)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
+    @%make echo_as
+    $(as) $(aflags) $(extra_a_$+$(subdir_key)$-_flags) $(extra_a_flags_$[&) $(inc_path) $[@
+
 $(subdir_$+$(subdir_key)$-) : .EXPLICIT
     mkdir $@
