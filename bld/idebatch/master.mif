@@ -71,9 +71,6 @@ subdir_editor = eobjs
 
 additional_cleanup_subdir = $(subdir_editor)
 
-subdir_key = editor
-!include subdrule.mif
-
 .c: ../win;../dos
 
 objs = $(name).obj link.obj
@@ -81,7 +78,6 @@ eobjs = $(subdir_editor)/$(name).obj link.obj
 lnk = $(name).lnk
 
 extra_cpp_flags = -DSERVER
-extra_cpp_editor_flags = -D__EDITOR__
 
 extra_c_flags = -zW -zu
 
@@ -112,5 +108,10 @@ $(lnk) : makefile
     @%append $(lnk) segment CLASS 'BEGDATA' PRELOAD FIXED
     @%append $(lnk) segment CLASS 'DATA' PRELOAD FIXED
     @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
+
+extra_cpp_editor_flags = -D__EDITOR__
+
+subdir_key = editor
+!include subdrule.mif
 
 !endif
