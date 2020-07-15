@@ -261,9 +261,9 @@ extra_cpp_stand_flags += -fh=stand.pch
 extra_cpp_lib_flags += -fh=lib.pch
 !endif
 
-subdir_key = stand
+defrule_key = stand
 !include defrule.mif
-subdir_key = lib
+defrule_key = lib
 !include defrule.mif
 
 echo_re2c : .PROCEDURE .EXPLICIT

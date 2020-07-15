@@ -45,7 +45,7 @@ extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
 extra_cpp_wcpatch_flags += -DUSE_DBGINFO
 !endif
 
-subdir_key = wcpatch
+defrule_key = wcpatch
 !include defrule.mif
 
 wcpatch_objs = &
@@ -80,7 +80,7 @@ wcpatch.exe : $(subdir_wcpatch) $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest
 #
 extra_cpp_wpatch_flags = -D_WPATCH
 
-subdir_key = wpatch
+defrule_key = wpatch
 !include defrule.mif
 
 wpatch_objs = &
@@ -112,7 +112,7 @@ wpatch.exe : $(subdir_wpatch) $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$
 #
 extra_cpp_bpatch_flags = -D_WPATCH
 
-subdir_key = bpatch
+defrule_key = bpatch
 !include defrule.mif
 
 bpatch_objs = &
@@ -144,7 +144,7 @@ bpatch.exe : $(subdir_bpatch) $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$
 #
 extra_cpp_bdump_flags = -DBDUMP
 
-subdir_key = bdump
+defrule_key = bdump
 !include defrule.mif
 
 bdump_objs = &
@@ -177,7 +177,7 @@ extra_cpp_bdiff_flags = -DBDIFF
 extra_cpp_bdiff_flags += -DUSE_DBGINFO
 !endif
 
-subdir_key = bdiff
+defrule_key = bdiff
 !include defrule.mif
 
 bdiff_objs = &
@@ -209,7 +209,7 @@ bdiff.exe : $(subdir_bdiff) $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 #
 extra_cpp_bpcmt_flags = -DBPCMT
 
-subdir_key = bpcmt
+defrule_key = bpcmt
 !include defrule.mif
 
 bpcmt_objs = &
@@ -228,7 +228,7 @@ bpcmt.exe : $(subdir_bpcmt) $(bpcmt_objs) $(__MAKEFILES__)
 #
 extra_cpp_bplevel_flags = -DBPLEVEL
 
-subdir_key = bplevel
+defrule_key = bplevel
 !include defrule.mif
 
 bplevel_objs = &

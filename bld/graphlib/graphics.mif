@@ -244,5 +244,5 @@ wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
 extra_cpp_v2_flags = -DVERSION2
 extra_a_v2_flags = -DVERSION2
 
-subdir_key = v2
+defrule_key = v2
 !include defrule.mif

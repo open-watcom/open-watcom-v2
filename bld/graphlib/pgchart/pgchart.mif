@@ -115,5 +115,5 @@ wsplice_opts_win = -kDOS
 extra_cpp_v2_flags = -DVERSION2
 extra_a_v2_flags = -DVERSION2
 
-subdir_key = v2
+defrule_key = v2
 !include defrule.mif

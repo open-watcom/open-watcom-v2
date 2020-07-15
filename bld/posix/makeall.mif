@@ -59,7 +59,7 @@ extra_cpp_altlib_i86s_flags = -mc
 extra_cpp_altlib_i86c_flags = -ms
 extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
 
-subdir_key = altlib
+defrule_key = altlib
 !include defrule.mif
 
 _subdir_ = $(altlibdir)/
@@ -71,7 +71,7 @@ extra_cpp_stdlib_i86_flags = -m$(model)
 extra_cpp_stdlib_386_flags = -m$(model)
 extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
 
-subdir_key = stdlib
+defrule_key = stdlib
 !include defrule.mif
 
 _subdir_ = $(stdlibdir)/
