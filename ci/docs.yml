@@ -6,6 +6,7 @@ parameters:
 jobs:
   - job: docs${{ parameters.doctype }}
     displayName: "${{ parameters.title }}"
+    timeoutInMinutes: 90
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
