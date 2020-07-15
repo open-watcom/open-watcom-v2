@@ -223,7 +223,6 @@ axp_option_xd =-xd
 atexit_opts   =$($(processor)_option_of)
 cmain086_opts =$($(processor)_option_of)
 cmain386_opts =$($(processor)_option_of)
-cmainosi_opts =$($(processor)_option_of)
 cmainqnx_opts =$($(processor)_option_of)
 fltused_opts  =-I"$(clib_dir)/streamio/h"
 fltuse80_opts =-I"$(clib_dir)/streamio/h"
