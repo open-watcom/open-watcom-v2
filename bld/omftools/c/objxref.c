@@ -56,7 +56,6 @@ static int          isMS386;
 static void usage( void )
 /***********************/
 {
-    SymbolFini( pubdef_tab );
     printf( "Usage: objxref <options> <list of object or library files>\n" );
     printf( "  <options> -e=<file>   file with excluded symbols\n" );
 }
@@ -329,46 +328,47 @@ int main( int argc, char *argv[] )
     int     i;
     int     x;
     int     ok;
+    char    c;
 
+    ok = 1;
     pubdef_tab = SymbolInit();
+    extdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            switch( tolower( argv[i][1] ) ) {
-            case 'e':
-                if( argv[i][2] == '=' ) {
-                    process_except_file( argv[i] + 3 );
-                    break;
-                }
-            default:
-                usage();
-                return( 1 );
+            c = tolower( argv[i][1] );
+            if( c == 'e' && argv[i][2] == '=' ) {
+                process_except_file( argv[i] + 3 );
+            } else {
+                ok = 0;
+                break;
             }
         } else {
             break;
         }
     }
     if( i == argc ) {
+        ok = 0;
+    }
+    if( ok == 0 ) {
         usage();
-        return( 1 );
-    }
-    x = i;
-    ok = 1;
-    for( i = x; i < argc; ++i ) {
-        fn = DoWildCard( argv[i] );
-        while( fn != NULL ) {
-            ok &= process_file_pubdef( fn );
-            fn = DoWildCard( NULL );
+    } else {
+        x = i;
+        for( i = x; i < argc; ++i ) {
+            fn = DoWildCard( argv[i] );
+            while( fn != NULL ) {
+                ok &= process_file_pubdef( fn );
+                fn = DoWildCard( NULL );
+            }
+            DoWildCardClose();
         }
-        DoWildCardClose();
-    }
-    extdef_tab = SymbolInit();
-    for( i = x; i < argc; ++i ) {
-        fn = DoWildCard( argv[i] );
-        while( fn != NULL ) {
-            ok &= process_file_extdef( fn );
-            fn = DoWildCard( NULL );
+        for( i = x; i < argc; ++i ) {
+            fn = DoWildCard( argv[i] );
+            while( fn != NULL ) {
+                ok &= process_file_extdef( fn );
+                fn = DoWildCard( NULL );
+            }
+            DoWildCardClose();
         }
-        DoWildCardClose();
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );

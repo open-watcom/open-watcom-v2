@@ -44,6 +44,11 @@
 
 typedef unsigned char byte;
 
+typedef struct sym_file {
+    struct sym_file *next;
+    char            *fname;
+} sym_file;
+
 static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
 static char         *NamePtr;
@@ -54,6 +59,7 @@ static char         *RecPtr;
 static unsigned_16  RecMaxLen;
 static int          isMS386;
 static char         *symbol_name_change = NULL;
+static sym_file     *sym_files = NULL;
 
 static void usage( void )
 /***********************/
@@ -556,42 +562,37 @@ static int process_module( const char *filename )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    int     i;
-    char    *fn;
-    int     ok;
+    int         i;
+    char        *fn;
+    int         ok;
+    char        c;
+    sym_file    *sf;
 
     ok = 1;
     extdef_tab = SymbolInit();
     pubdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            switch( tolower( argv[i][1] ) ) {
-            case 'l':
-                if( argv[i][2] == '=' ) {
-                    process_lnames( argv[i] + 3 );
+            c = tolower( argv[i][1] );
+            if( c == 'l' && argv[i][2] == '=' ) {
+                process_lnames( argv[i] + 3 );
+            } else if( c == 's' && argv[i][2] == '=' ) {
+                if( sym_files == NULL ) {
+                    sf = sym_files = malloc( sizeof( sym_file ) );
                 } else {
-                    ok = 0;
+                    sf = sym_files;
+                    while( sf->next != NULL ) {
+                        sf = sf->next;
+                    }
+                    sf->next = malloc( sizeof( sym_file ) );
+                    sf = sf->next;
                 }
-                break;
-            case 's':
-                if( argv[i][2] == '=' ) {
-                    process_symbol_file( argv[i] + 3 );
-                } else {
-                    ok = 0;
-                }
-                break;
-            case 'm':
-                if( argv[i][2] == '=' ) {
-                    symbol_name_change = argv[i] + 3;
-                } else {
-                    ok = 0;
-                }
-                break;
-            default:
+                sf->next = NULL;
+                sf->fname = argv[i] + 3;
+            } else if( c == 'm' && argv[i][2] == '=' ) {
+                symbol_name_change = argv[i] + 3;
+            } else {
                 ok = 0;
-                break;
-            }
-            if( ok == 0 ) {
                 break;
             }
         } else {
@@ -604,6 +605,13 @@ int main( int argc, char *argv[] )
     if( ok == 0 ) {
         usage();
     } else {
+        while( (sf = sym_files) != NULL ) {
+            sym_files = sf->next;
+            if( symbol_name_change != NULL ) {
+                process_symbol_file( sf->fname );
+            }
+            free( sf );
+        }
         for( ; i < argc; ++i ) {
             fn = DoWildCard( argv[i] );
             while( fn != NULL ) {

@@ -57,7 +57,6 @@ static int          isMS386;
 static void usage( void )
 /***********************/
 {
-    SymbolFini( pubdef_tab );
     printf( "Usage: objfind <options> <list of object or library files>\n" );
     printf( "  <options>   -i=<file with symbols>\n" );
 }
@@ -264,38 +263,39 @@ int main( int argc, char *argv[] )
 {
     int     i;
     char    *fn;
+    char    c;
     int     ok;
 
+    ok = 1;
     pubdef_tab = SymbolInit();
+    extdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            switch( tolower( argv[i][1] ) ) {
-            case 'i':
-                if( argv[i][2] == '=' ) {
-                    process_except_file( argv[i] + 3 );
-                    break;
-                }
-            default:
-                usage();
-                return( 1 );
+            c = tolower( argv[i][1] );
+            if( c == 'i' && argv[i][2] == '=' ) {
+                process_except_file( argv[i] + 3 );
+            } else {
+                ok = 0;
+                break;
             }
         } else {
             break;
         }
     }
     if( i == argc ) {
-        usage();
-        return( 1 );
+        ok = 0;
     }
-    extdef_tab = SymbolInit();
-    ok = 1;
-    for( ; i < argc; ++i ) {
-        fn = DoWildCard( argv[i] );
-        while( fn != NULL ) {
-            ok &= process_file_modref( fn );
-            fn = DoWildCard( NULL );
+    if( ok == 0 ) {
+        usage();
+    } else {
+        for( ; i < argc; ++i ) {
+            fn = DoWildCard( argv[i] );
+            while( fn != NULL ) {
+                ok &= process_file_modref( fn );
+                fn = DoWildCard( NULL );
+            }
+            DoWildCardClose();
         }
-        DoWildCardClose();
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
