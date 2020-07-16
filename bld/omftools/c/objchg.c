@@ -58,8 +58,6 @@ static char         *symbol_name_change = NULL;
 static void usage( void )
 /***********************/
 {
-    SymbolFini( extdef_tab );
-    SymbolFini( pubdef_tab );
     printf( "Usage: objchg <options> <list of object or library files>\n" );
     printf( "  <options> -l=<old>=<new>  rename LNAMES item\n" );
     printf( "            -m=....         symbol name pattern\n" );
@@ -562,6 +560,7 @@ int main( int argc, char *argv[] )
     char    *fn;
     int     ok;
 
+    ok = 1;
     extdef_tab = SymbolInit();
     pubdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
@@ -571,46 +570,48 @@ int main( int argc, char *argv[] )
                 if( argv[i][2] == '=' ) {
                     process_lnames( argv[i] + 3 );
                 } else {
-                    usage();
-                    return( 1 );
+                    ok = 0;
                 }
                 break;
             case 's':
                 if( argv[i][2] == '=' ) {
                     process_symbol_file( argv[i] + 3 );
                 } else {
-                    usage();
-                    return( 1 );
+                    ok = 0;
                 }
                 break;
             case 'm':
                 if( argv[i][2] == '=' ) {
                     symbol_name_change = argv[i] + 3;
                 } else {
-                    usage();
-                    return( 1 );
+                    ok = 0;
                 }
                 break;
             default:
-                usage();
-                return( 1 );
+                ok = 0;
+                break;
+            }
+            if( ok == 0 ) {
+                break;
             }
         } else {
             break;
         }
     }
     if( i == argc ) {
-        usage();
-        return( 1 );
+        ok = 0;
     }
-    ok = 1;
-    for( ; i < argc; ++i ) {
-        fn = DoWildCard( argv[i] );
-        while( fn != NULL ) {
-            ok &= process_module( fn );
-            fn = DoWildCard( NULL );
+    if( ok == 0 ) {
+        usage();
+    } else {
+        for( ; i < argc; ++i ) {
+            fn = DoWildCard( argv[i] );
+            while( fn != NULL ) {
+                ok &= process_module( fn );
+                fn = DoWildCard( NULL );
+            }
+            DoWildCardClose();
         }
-        DoWildCardClose();
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
