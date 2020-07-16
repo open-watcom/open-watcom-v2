@@ -205,6 +205,7 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
     char        *data;
     char        *p;
     byte        cksum;
+    int         ok;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -225,8 +226,8 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
         *RecPtr = 0;
         n = SymbolExists( extdef_tab, NamePtr );
         if( n != NULL ) {
-            NameLen = strlen( n );
-            NamePtr = n;
+            NameLen = n[0];
+            NamePtr = n + 1;
         }
         *(p++) = NameLen;
         memcpy( p, NamePtr, NameLen );
@@ -248,6 +249,7 @@ static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
     char        *tmp;
     unsigned_16 indx;
     byte        cksum;
+    int         ok;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -290,6 +292,7 @@ static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
     unsigned_16 idx2;
     unsigned_32 offs;
     byte        cksum;
+    int         ok;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -390,7 +393,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 *RecPtr = 0;
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
-                    newlen += strlen( n ) - NameLen;
+                    newlen += n[0] - NameLen;
                     isChanged = 1;
                 }
                 *RecPtr = b;
@@ -506,10 +509,21 @@ static int process_lnames( char *cmd )
 {
     char    *p1;
     char    *p2;
+    char    *newname;
+    size_t  len;
 
-    p1 = strtok( cmd, "=" );
-    p2 = strtok( NULL, "" );
-    AddSymbol( extdef_tab, p1, p2, strlen( p2 ) + 1 );
+    len = strlen( cmd ) + 2;
+    newname = malloc( len );
+    if( newname != NULL ) {
+        p1 = strtok( cmd, "=" );
+        p2 = strtok( NULL, "" );
+        len = strlen( p2 );
+        newname[0] = len;
+        memcpy( newname + 1, p2, len );
+        newname[len + 1] = '\0';
+        AddSymbol( extdef_tab, p1, newname, len + 2 );
+        free( newname );
+    }
     return( 0 );
 }
 
