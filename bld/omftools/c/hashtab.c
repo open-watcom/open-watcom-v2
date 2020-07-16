@@ -80,7 +80,6 @@ void AddSymbol( sym_table sym_tbl, const char *name, const void *value, size_t l
         sym->next = *sym_ptr;
         *sym_ptr = sym;
     }
-    return;
 }
 
 void *SymbolExists( sym_table sym_tbl, const char *name )

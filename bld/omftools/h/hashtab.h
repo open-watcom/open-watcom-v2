@@ -29,13 +29,14 @@
 *
 ****************************************************************************/
 
+
 #ifndef __HASHTAB_H
 #define __HASHTAB_H
 
 typedef struct symbol {
-        struct symbol   *next;
-        char            *name;
-        void            *value;
+    struct symbol   *next;
+    char            *name;
+    void            *value;
 } symbol, **sym_table;
 
 extern  void        AddSymbol( sym_table tab, const char *name, const void *value, size_t len );
