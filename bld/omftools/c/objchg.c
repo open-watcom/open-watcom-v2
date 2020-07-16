@@ -58,7 +58,8 @@ static char         *RecBuff;
 static char         *RecPtr;
 static unsigned_16  RecMaxLen;
 static int          isMS386;
-static char         *symbol_name_change = NULL;
+static char         *symbol_name_pattern = NULL;
+static size_t       symbol_name_pattern_len = 0;
 static sym_file     *sym_files = NULL;
 
 static void usage( void )
@@ -162,8 +163,8 @@ static char *PutIndex( char *p, unsigned_16 index )
 /*************************************************/
 {
     if( index > 0x7f )
-        *(p++) = ( index >> 8 ) | 0x80;
-    *(p++) = index;
+        *p++ = ( index >> 8 ) | 0x80;
+    *p++ = index;
     return( p );
 }
 
@@ -178,30 +179,6 @@ static byte create_chksum( const char *data, size_t newlen, byte cksum )
     return( cksum );
 }
 
-static char *change_name( char *dst, const char *src )
-/****************************************************/
-{
-    int     i;
-    char    *p;
-
-    p = dst++;
-    if( symbol_name_change != NULL ) {
-        for( i = 0; i < strlen( symbol_name_change ); i++ ) {
-            if( symbol_name_change[i] == '*' ) {
-                size_t  len;
-
-                len = strlen( src );
-                memcpy( dst, src, len );
-                dst += len;
-            } else {
-                *(dst++) = symbol_name_change[i];
-            }
-        }
-    }
-    *p = dst - p - 1;
-    return( dst );
-}
-
 static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
 /********************************************************************/
 {
@@ -210,6 +187,8 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
     char        *p;
     byte        cksum;
     int         ok;
+    char        *n;
+    char        b;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -222,9 +201,6 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
     data = malloc( newlen );
     p = data;
     while( ! EndRec() ) {
-        char     *n;
-        char     b;
-
         GetName();
         b = *RecPtr;
         *RecPtr = 0;
@@ -233,12 +209,12 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
             NameLen = n[0];
             NamePtr = n + 1;
         }
-        *(p++) = NameLen;
+        *p++ = NameLen;
         memcpy( p, NamePtr, NameLen );
         p += NameLen;
         *RecPtr = b;
     }
-    *(p++) = 0 - create_chksum( data, newlen, cksum );
+    *p++ = 0 - create_chksum( data, newlen, cksum );
     ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
     return( ok );
@@ -254,6 +230,7 @@ static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
     unsigned_16 indx;
     byte        cksum;
     int         ok;
+    char        *n;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -270,16 +247,17 @@ static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
         tmp = RecPtr;
         indx = GetIndex();
         *tmp = 0;
-        if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
-            p = change_name( p, NamePtr );
-        } else {
-            *(p++) = NameLen;
-            memcpy( p, NamePtr, NameLen );
-            p += NameLen;
+        n = SymbolExists( pubdef_tab, NamePtr );
+        if( n != NULL ) {
+            NameLen = n[0];
+            NamePtr = n + 1;
         }
+        *p++ = NameLen;
+        memcpy( p, NamePtr, NameLen );
+        p += NameLen;
         p = PutIndex( p, indx );
     }
-    *(p++) = 0 - create_chksum( data, newlen, cksum );
+    *p++ = 0 - create_chksum( data, newlen, cksum );
     ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
     return( ok );
@@ -297,6 +275,7 @@ static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
     unsigned_32 offs;
     byte        cksum;
     int         ok;
+    char        *n;
 
     hdr[0] = rec_type;
     hdr[1] = newlen;
@@ -319,17 +298,18 @@ static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
         tmp = RecPtr;
         offs = GetOffset();
         *tmp = 0;
-        if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
-            p = change_name( p, NamePtr );
-        } else {
-            *(p++) = NameLen;
-            memcpy( p, NamePtr, NameLen );
-            p += NameLen;
+        n = SymbolExists( pubdef_tab, NamePtr );
+        if( n != NULL ) {
+            NameLen = n[0];
+            NamePtr = n + 1;
         }
+        *p++ = NameLen;
+        memcpy( p, NamePtr, NameLen );
+        p += NameLen;
         p = PutOffset( p, offs );
         p = PutIndex( p, GetIndex() );
     }
-    *(p++) = 0 - create_chksum( data, newlen, cksum );
+    *p++ = 0 - create_chksum( data, newlen, cksum );
     ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
     return( ok );
@@ -338,20 +318,16 @@ static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
 static int ProcFile( FILE *fp, FILE *fo )
 /**************************************/
 {
-    byte        hdr[3];
-//    unsigned_16 page_len;
-//    unsigned_32 offset;
-    fpos_t      pos;
-    int         isChanged;
-    int         renameIt;
-    unsigned_16 newlen;
-    int         symbol_name_change_len;
+    byte            hdr[3];
+//    unsigned_16   page_len;
+//    unsigned_32   offset;
+    fpos_t          pos;
+    int             isChanged;
+    int             renameIt;
+    unsigned_16     newlen;
+    char            *n;
+    char            b;
 
-    if( symbol_name_change == NULL ) {
-        symbol_name_change_len = 0;
-    } else {
-        symbol_name_change_len = strlen( symbol_name_change ) - 1;
-    }
     renameIt = 1;
 //    page_len = 0;
     RecBuff = NULL;
@@ -389,15 +365,13 @@ static int ProcFile( FILE *fp, FILE *fo )
         switch( hdr[0] & ~1 ) {
         case CMD_LNAMES:
             while( ! EndRec() ) {
-                char     *n;
-                char     b;
-
                 GetName();
                 b = *RecPtr;
                 *RecPtr = 0;
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
-                    newlen += n[0] - NameLen;
+                    NameLen -= n[0];
+                    newlen -= NameLen;
                     isChanged = 1;
                 }
                 *RecPtr = b;
@@ -411,8 +385,10 @@ static int ProcFile( FILE *fp, FILE *fo )
             while( ! EndRec() ) {
                 GetName();
                 *RecPtr = 0;
-                if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
-                    newlen += symbol_name_change_len;
+                n = SymbolExists( pubdef_tab, NamePtr );
+                if( n != NULL ) {
+                    NameLen -= n[0];
+                    newlen -= NameLen;
                     isChanged = 1;
                 }
                 GetIndex();
@@ -428,8 +404,10 @@ static int ProcFile( FILE *fp, FILE *fo )
             while( ! EndRec() ) {
                 GetName();
                 *RecPtr = 0;
-                if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
-                    newlen += symbol_name_change_len;
+                n = SymbolExists( pubdef_tab, NamePtr );
+                if( n != NULL ) {
+                    NameLen -= n[0];
+                    newlen -= NameLen;
                     isChanged = 1;
                 }
                 GetOffset();
@@ -485,23 +463,34 @@ static int process_symbol_file( const char *filename )
 {
     FILE    *fp;
     char    line[MAX_LINE_LEN];
+    char    newname[MAX_LINE_LEN];
+    char    *old;
     char    *p;
+    size_t  i;
+    size_t  len;
 
     if( filename != NULL ) {
         fp = fopen( filename, "rt" );
         while( fgets( line, sizeof( line ), fp ) != NULL ) {
-            p = line + strlen( line );
-            while( p >= line ) {
-                if( ( *p == '\0' )
-                  || ( *p == ' ' )
-                  || ( *p == '\n' ) ) {
-                    *p = '\0';
-                     p--;
+            old = strtok( line, " \t=\r\n" );
+            if( old == NULL )
+                continue;
+            if( SymbolExists( pubdef_tab, old ) != NULL )
+                continue;
+            p = newname + 1;
+            for( i = 0; i < symbol_name_pattern_len; i++ ) {
+                if( symbol_name_pattern[i] == '*' ) {
+                    len = strlen( old );
+                    memcpy( p, old, len );
+                    p += len;
                 } else {
-                    break;
+                    *p++ = symbol_name_pattern[i];
                 }
             }
-            AddSymbol( pubdef_tab, line, NULL, 0 );
+            *p = '\0';
+            len = p - newname - 1;
+            newname[0] = len;
+            AddSymbol( pubdef_tab, old, newname, len + 2 );
         }
         fclose( fp );
     }
@@ -590,7 +579,8 @@ int main( int argc, char *argv[] )
                 sf->next = NULL;
                 sf->fname = argv[i] + 3;
             } else if( c == 'm' && argv[i][2] == '=' ) {
-                symbol_name_change = argv[i] + 3;
+                symbol_name_pattern = argv[i] + 3;
+                symbol_name_pattern_len = strlen( symbol_name_pattern );
             } else {
                 ok = 0;
                 break;
@@ -607,7 +597,7 @@ int main( int argc, char *argv[] )
     } else {
         while( (sf = sym_files) != NULL ) {
             sym_files = sf->next;
-            if( symbol_name_change != NULL ) {
+            if( symbol_name_pattern != NULL ) {
                 process_symbol_file( sf->fname );
             }
             free( sf );
