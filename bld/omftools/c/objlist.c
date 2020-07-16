@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +39,13 @@
 #include "misc.h"
 
 typedef unsigned char byte;
-typedef byte *data_ptr;
 
-static data_ptr    NamePtr;
-static byte        NameLen;
-static unsigned_16 RecLen;
-static data_ptr    RecBuff;
-static data_ptr    RecPtr;
-static unsigned_16 RecMaxLen;
+static char         *NamePtr;
+static byte         NameLen;
+static unsigned_16  RecLen;
+static char         *RecBuff;
+static char         *RecPtr;
+static unsigned_16  RecMaxLen;
 
 static void usage( void )
 /***********************/
@@ -56,14 +56,10 @@ static void usage( void )
 static byte GetByte( void )
 /*************************/
 {
-    byte        ret;
-
-    ret = *RecPtr;
-    RecPtr++;
-    return( ret );
+    return( *RecPtr++ );
 }
 
-static byte *GetName( void )
+static char *GetName( void )
 /**************************/
 {
     NameLen = GetByte();
@@ -72,24 +68,8 @@ static byte *GetName( void )
     return( NamePtr );
 }
 
-static void ResizeBuff( unsigned_16 reqd_len )
-/********************************************/
-{
-    if( reqd_len > RecMaxLen ) {
-        RecMaxLen = reqd_len;
-        if( RecBuff != NULL ) {
-            free( RecBuff );
-        }
-        RecBuff = malloc( RecMaxLen );
-        if( RecBuff == NULL ) {
-            printf( "**FATAL** Out of memory!\n" );
-            exit( -1 );
-        }
-    }
-}
-
-static void ProcFile( FILE *fp )
-/******************************/
+static int ProcFile( FILE *fp )
+/*****************************/
 {
     byte        hdr[ 3 ];
     unsigned_16 page_len;
@@ -103,10 +83,20 @@ static void ProcFile( FILE *fp )
         if( fread( hdr, 1, 3, fp ) != 3 )
             break;
         RecLen = hdr[ 1 ] | ( hdr[ 2 ] << 8 );
-        ResizeBuff( RecLen );
-        RecPtr = RecBuff;
+        if( RecMaxLen < RecLen ) {
+            RecMaxLen = RecLen;
+            if( RecBuff != NULL ) {
+                free( RecBuff );
+            }
+            RecBuff = malloc( RecMaxLen );
+            if( RecBuff == NULL ) {
+                printf( "**FATAL** Out of memory!\n" );
+                return( 0 );
+            }
+        }
         if( fread( RecBuff, RecLen, 1, fp ) == 0 )
             break;
+        RecPtr = RecBuff;
         switch( hdr[ 0 ] & ~1 ) {
         case CMD_THEADR:
             GetName();
@@ -135,21 +125,23 @@ static void ProcFile( FILE *fp )
         }
     }
     free( RecBuff );
+    return( 1 );
 }
 
-static int process_file_mod( char *filename )
-/*******************************************/
+static int process_file_mod( const char *filename )
+/*************************************************/
 {
     FILE    *fp;
+    int     ok;
 
     fp = fopen( filename, "rb" );
     if( fp == NULL ) {
         printf( "Cannot open input file: %s.\n", filename );
         return( 0 );
     }
-    ProcFile( fp );
+    ok = ProcFile( fp );
     fclose( fp );
-    return( 1 );
+    return( ok );
 }
 
 int main( int argc, char *argv[] )
@@ -157,18 +149,20 @@ int main( int argc, char *argv[] )
 {
     int     i;
     char    *fn;
+    int     ok;
 
     if( argc == 1 ) {
         usage();
         return( 1 );
     }
+    ok = 1;
     for( i = 1; i < argc; ++i ) {
         fn = DoWildCard( argv[i] );
         while( fn != NULL ) {
-            process_file_mod( fn );
+            ok &= process_file_mod( fn );
             fn = DoWildCard( NULL );
         }
         DoWildCardClose();
     }
-    return( 0 );
+    return( ok == 0 );
 }

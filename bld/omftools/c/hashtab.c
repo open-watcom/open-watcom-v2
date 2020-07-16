@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 
 #define HASH_TABLE_SIZE 211
 
-static unsigned int hashpjw( char *s )
-/************************************/
+static unsigned int hashpjw( const char *s )
+/******************************************/
 {
     unsigned h;
     unsigned g;
@@ -54,8 +55,8 @@ static unsigned int hashpjw( char *s )
     return( h % HASH_TABLE_SIZE );
 }
 
-void AddSymbol( sym_table sym_tbl, char *name, char *value )
-/**********************************************************/
+void AddSymbol( sym_table sym_tbl, const char *name, const void *value, size_t len )
+/**********************************************************************************/
 {
     symbol      **sym_ptr;
     symbol      *sym;
@@ -71,8 +72,8 @@ void AddSymbol( sym_table sym_tbl, char *name, char *value )
         sym->name = malloc( strlen( name ) + 1 );
         strcpy( sym->name, name );
         if( value != NULL ) {
-            sym->value = malloc( strlen( value ) + 1 );
-            strcpy( sym->value, value );
+            sym->value = malloc( len );
+            memcpy( sym->value, value, len );
         } else {
             sym->value = NULL;
         }
@@ -82,8 +83,8 @@ void AddSymbol( sym_table sym_tbl, char *name, char *value )
     return;
 }
 
-char *SymbolExists( sym_table sym_tbl, char *name )
-/*************************************************/
+void *SymbolExists( sym_table sym_tbl, const char *name )
+/*******************************************************/
 {
     symbol      *sym;
 
