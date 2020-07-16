@@ -129,7 +129,7 @@ static char *GetName( void )
 static int ProcFileModRef( FILE *fp )
 /***********************************/
 {
-    byte        hdr[ 3 ];
+    byte        hdr[3];
     unsigned_16 page_len;
     unsigned_32 offset;
     char        *module_name;
@@ -142,7 +142,7 @@ static int ProcFileModRef( FILE *fp )
         offset = ftell( fp );
         if( fread( hdr, 1, 3, fp ) != 3 )
             break;
-        RecLen = hdr[ 1 ] | ( hdr[ 2 ] << 8 );
+        RecLen = hdr[1] | ( hdr[2] << 8 );
         if( RecMaxLen < RecLen ) {
             RecMaxLen = RecLen;
             if( RecBuff != NULL ) {
@@ -158,8 +158,8 @@ static int ProcFileModRef( FILE *fp )
             break;
         RecPtr = RecBuff;
         RecLen--;
-        isMS386 = hdr[ 0 ] & 1;
-        switch( hdr[ 0 ] & ~1 ) {
+        isMS386 = hdr[0] & 1;
+        switch( hdr[0] & ~1 ) {
         case CMD_THEADR:
             if( module_name != NULL )
                 free( module_name );
@@ -216,7 +216,7 @@ static void process_except_file( const char *filename )
 /*****************************************************/
 {
     FILE    *fp;
-    char    line[ MAX_LINE_LEN ];
+    char    line[MAX_LINE_LEN];
     char    *p;
 
     if( filename != NULL ) {

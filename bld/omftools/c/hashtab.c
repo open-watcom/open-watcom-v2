@@ -61,7 +61,7 @@ void AddSymbol( sym_table sym_tbl, const char *name, const void *value, size_t l
     symbol      **sym_ptr;
     symbol      *sym;
 
-    sym_ptr = &sym_tbl[ hashpjw( name ) ];
+    sym_ptr = &sym_tbl[hashpjw( name )];
     for( sym = *sym_ptr; sym; sym = sym->next ) {
         if( stricmp( name, sym->name ) == 0 ) {
             return;
@@ -88,7 +88,7 @@ void *SymbolExists( sym_table sym_tbl, const char *name )
 {
     symbol      *sym;
 
-    for( sym = sym_tbl[ hashpjw( name ) ]; sym; sym = sym->next ) {
+    for( sym = sym_tbl[hashpjw( name )]; sym; sym = sym->next ) {
         if( stricmp( name, sym->name ) == 0 ) {
             if( sym->value != NULL ) {
                 return( sym->value );

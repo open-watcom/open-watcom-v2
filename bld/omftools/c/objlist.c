@@ -71,7 +71,7 @@ static char *GetName( void )
 static int ProcFile( FILE *fp )
 /*****************************/
 {
-    byte        hdr[ 3 ];
+    byte        hdr[3];
     unsigned_16 page_len;
     unsigned_32 offset;
 
@@ -82,7 +82,7 @@ static int ProcFile( FILE *fp )
         offset = ftell( fp );
         if( fread( hdr, 1, 3, fp ) != 3 )
             break;
-        RecLen = hdr[ 1 ] | ( hdr[ 2 ] << 8 );
+        RecLen = hdr[1] | ( hdr[2] << 8 );
         if( RecMaxLen < RecLen ) {
             RecMaxLen = RecLen;
             if( RecBuff != NULL ) {
@@ -97,7 +97,7 @@ static int ProcFile( FILE *fp )
         if( fread( RecBuff, RecLen, 1, fp ) == 0 )
             break;
         RecPtr = RecBuff;
-        switch( hdr[ 0 ] & ~1 ) {
+        switch( hdr[0] & ~1 ) {
         case CMD_THEADR:
             GetName();
             *RecPtr = 0;
@@ -113,7 +113,7 @@ static int ProcFile( FILE *fp )
             }
             break;
         case LIB_HEADER_REC:
-            if( hdr[ 0 ] & 1 ) {
+            if( hdr[0] & 1 ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {

@@ -234,12 +234,9 @@ static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
         *RecPtr = b;
     }
     *(p++) = 0 - create_chksum( data, newlen, cksum );
-    if( fwrite( data, 1, newlen, fo ) != newlen ) {
-        free( data );
-        return( 0 );
-    }
+    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
-    return( 1 );
+    return( ok );
 }
 
 static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
@@ -277,12 +274,9 @@ static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
         p = PutIndex( p, indx );
     }
     *(p++) = 0 - create_chksum( data, newlen, cksum );
-    if( fwrite( data, 1, newlen, fo ) != newlen ) {
-        free( data );
-        return( 0 );
-    }
+    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
-    return( 1 );
+    return( ok );
 }
 
 static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
@@ -329,12 +323,9 @@ static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
         p = PutIndex( p, GetIndex() );
     }
     *(p++) = 0 - create_chksum( data, newlen, cksum );
-    if( fwrite( data, 1, newlen, fo ) != newlen ) {
-        free( data );
-        return( 0 );
-    }
+    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
     free( data );
-    return( 1 );
+    return( ok );
 }
 
 static int ProcFile( FILE *fp, FILE *fo )
@@ -364,7 +355,7 @@ static int ProcFile( FILE *fp, FILE *fo )
 //        offset = ftell( fp );
         if( fread( hdr, 1, 3, fp ) != 3 ) {
             if( ferror( fp ) )
-                renameIt = 0;
+                renameIt = -1;
             break;
         }
         RecLen = hdr[1] | ( hdr[2] << 8 );
@@ -469,10 +460,10 @@ static int ProcFile( FILE *fp, FILE *fo )
             }
         } else {
             if( fwrite( hdr, 1, 3, fo ) != 3 ) {
-                renameIt = 0;
+                renameIt = -1;
             }
             if( fwrite( RecBuff, 1, RecLen + 1, fo ) != RecLen + 1 ) {
-                renameIt = 0;
+                renameIt = -1;
             }
         }
     }
