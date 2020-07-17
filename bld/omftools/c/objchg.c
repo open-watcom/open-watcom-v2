@@ -40,6 +40,7 @@
 #include "hashtab.h"
 #include "misc.h"
 
+
 #define MAX_LINE_LEN 512
 
 typedef unsigned char byte;
@@ -355,7 +356,7 @@ static int ProcFile( FILE *fp, FILE *fo )
             }
         }
         if( fread( RecBuff, RecLen, 1, fp ) == 0 ) {
-            renameIt = 0;
+            renameIt = -1;
             break;
         }
         RecPtr = RecBuff;

@@ -40,19 +40,19 @@
 #include "hashtab.h"
 #include "misc.h"
 
-#define MAX_LINE_LEN 512
+#define MAX_LINE_LEN    512
 
-typedef unsigned char byte;
+typedef unsigned char   byte;
 
-static symbol       **pubdef_tab;
-static symbol       **extdef_tab;
-static char         *NamePtr;
-static byte         NameLen;
-static unsigned_16  RecLen;
-static char         *RecBuff;
-static char         *RecPtr;
-static unsigned_16  RecMaxLen;
-static int          isMS386;
+static symbol           **pubdef_tab;
+static symbol           **extdef_tab;
+static char             *NamePtr;
+static byte             NameLen;
+static unsigned_16      RecLen;
+static char             *RecBuff;
+static char             *RecPtr;
+static unsigned_16      RecMaxLen;
+static int              isMS386;
 
 static void usage( void )
 /***********************/
@@ -185,8 +185,8 @@ static int ProcFileModRef( FILE *fp )
             while( ! EndRec() ) {
                 GetName();
                 *RecPtr = 0;
-                if( SymbolExists( pubdef_tab, NamePtr ) != 0 ) {
-                    if( SymbolExists( extdef_tab, module_name ) == 0 ) {
+                if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
+                    if( SymbolExists( extdef_tab, module_name ) == NULL ) {
                         AddSymbol( extdef_tab, module_name, NULL, 0 );
                         printf( "%s\n", module_name );
                     }

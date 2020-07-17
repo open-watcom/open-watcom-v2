@@ -43,8 +43,8 @@
 
 typedef unsigned char byte;
 
-static symbol      **pubdef_tab;
-static symbol      **extdef_tab;
+static symbol       **pubdef_tab;
+static symbol       **extdef_tab;
 static char         *NamePtr;
 static byte         NameLen;
 static unsigned_16  RecLen;
@@ -238,8 +238,8 @@ static int ProcFileExtDef( FILE *fp )
                 GetName();
                 *RecPtr = 0;
                 GetIndex();
-                if( SymbolExists( pubdef_tab, NamePtr ) == 0 ) {
-                    if( SymbolExists( extdef_tab, NamePtr ) == 0 ) {
+                if( SymbolExists( pubdef_tab, NamePtr ) == NULL ) {
+                    if( SymbolExists( extdef_tab, NamePtr ) == NULL ) {
                         AddSymbol( extdef_tab, NamePtr, NULL, 0 );
                         printf( "%s\n", NamePtr );
                     }

@@ -38,14 +38,14 @@
 #include "pcobj.h"
 #include "misc.h"
 
-typedef unsigned char byte;
+typedef unsigned char   byte;
 
-static char         *NamePtr;
-static byte         NameLen;
-static unsigned_16  RecLen;
-static char         *RecBuff;
-static char         *RecPtr;
-static unsigned_16  RecMaxLen;
+static char             *NamePtr;
+static byte             NameLen;
+static unsigned_16      RecLen;
+static char             *RecBuff;
+static char             *RecPtr;
+static unsigned_16      RecMaxLen;
 
 static void usage( void )
 /***********************/
