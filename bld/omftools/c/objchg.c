@@ -370,8 +370,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 *RecPtr = 0;
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
-                    NameLen -= n[0];
-                    newlen -= NameLen;
+                    newlen += n[0] - NameLen;
                     isChanged = 1;
                 }
                 *RecPtr = b;
@@ -387,8 +386,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 *RecPtr = 0;
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
-                    NameLen -= n[0];
-                    newlen -= NameLen;
+                    newlen += n[0] - NameLen;
                     isChanged = 1;
                 }
                 GetIndex();
@@ -406,8 +404,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 *RecPtr = 0;
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
-                    NameLen -= n[0];
-                    newlen -= NameLen;
+                    newlen += n[0] - NameLen;
                     isChanged = 1;
                 }
                 GetOffset();
