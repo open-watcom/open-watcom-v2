@@ -70,8 +70,8 @@ static char *GetName( void )
     return( NamePtr );
 }
 
-static bool ExtendRecBuff( size_t size )
-/**************************************/
+static bool ExtendRecBuff( unsigned_16 size )
+/*******************************************/
 {
     if( RecMaxLen < size ) {
         RecMaxLen = size;
@@ -188,5 +188,5 @@ int main( int argc, char *argv[] )
         }
         DoWildCardClose();
     }
-    return( !ok );
+    return( ok ? EXIT_SUCCESS : EXIT_FAILURE );
 }

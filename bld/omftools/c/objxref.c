@@ -126,8 +126,8 @@ static char *GetName( void )
     return( NamePtr );
 }
 
-static bool ExtendRecBuff( size_t size )
-/**************************************/
+static bool ExtendRecBuff( unsigned_16 size )
+/*******************************************/
 {
     if( RecMaxLen < size ) {
         RecMaxLen = size;
@@ -382,5 +382,5 @@ int main( int argc, char *argv[] )
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
-    return( !ok );
+    return( ok ? EXIT_SUCCESS : EXIT_FAILURE );
 }

@@ -170,7 +170,7 @@ static char *PutIndex( char *p, unsigned_16 index )
 {
     if( index > 0x7f )
         *p++ = ( index >> 8 ) | 0x80;
-    *p++ = index;
+    *p++ = (char)index;
     return( p );
 }
 
@@ -189,8 +189,8 @@ static byte create_chksum( void )
     return( chksum );
 }
 
-static bool ExtendReadRecBuff( size_t size )
-/******************************************/
+static bool ExtendReadRecBuff( unsigned_16 size )
+/***********************************************/
 {
     if( ReadRecMaxLen < size ) {
         ReadRecMaxLen = size;
@@ -206,8 +206,8 @@ static bool ExtendReadRecBuff( size_t size )
     return( true );
 }
 
-static bool ExtendWriteRecBuff( size_t size )
-/*******************************************/
+static bool ExtendWriteRecBuff( unsigned_16 size )
+/************************************************/
 {
     if( WriteRecMaxLen < size ) {
         WriteRecMaxLen = size;
@@ -223,15 +223,15 @@ static bool ExtendWriteRecBuff( size_t size )
     return( true );
 }
 
-static bool WriteLNAMES( FILE *fp, FILE *fo, bool changed )
-/*********************************************************/
+static bool WriteLNAMES( FILE *fo, bool changed )
+/***********************************************/
 {
     bool        ok;
     char        *n;
     char        b;
 
     if( changed ) {
-        RecHdr[1] = WriteRecLen;
+        RecHdr[1] = (byte)WriteRecLen;
         RecHdr[2] = WriteRecLen >> 8;
     }
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -265,8 +265,8 @@ static bool WriteLNAMES( FILE *fp, FILE *fo, bool changed )
     return( ok );
 }
 
-static bool WriteEXTDEF( FILE *fp, FILE *fo, bool changed )
-/*********************************************************/
+static bool WriteEXTDEF( FILE *fo, bool changed )
+/***********************************************/
 {
     char        *tmp;
     unsigned_16 indx;
@@ -275,7 +275,7 @@ static bool WriteEXTDEF( FILE *fp, FILE *fo, bool changed )
     char        b;
 
     if( changed ) {
-        RecHdr[1] = WriteRecLen;
+        RecHdr[1] = (byte)WriteRecLen;
         RecHdr[2] = WriteRecLen >> 8;
     }
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -312,8 +312,8 @@ static bool WriteEXTDEF( FILE *fp, FILE *fo, bool changed )
     return( ok );
 }
 
-static bool WritePUBDEF( FILE *fp, FILE *fo, bool changed )
-/*********************************************************/
+static bool WritePUBDEF( FILE *fo, bool changed )
+/***********************************************/
 {
     char        *tmp;
     unsigned_16 idx1;
@@ -324,7 +324,7 @@ static bool WritePUBDEF( FILE *fp, FILE *fo, bool changed )
     char        b;
 
     if( changed ) {
-        RecHdr[1] = WriteRecLen;
+        RecHdr[1] = (byte)WriteRecLen;
         RecHdr[2] = WriteRecLen >> 8;
     }
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -426,7 +426,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 }
                 *ReadRecPtr = b;
             }
-            ok = WriteLNAMES( fp, fo, isChanged );
+            ok = WriteLNAMES( fo, isChanged );
             break;
         case CMD_EXTDEF:
             WriteRecLen = ReadRecLen;
@@ -444,7 +444,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 *ReadRecPtr = b;
                 GetIndex();
             }
-            ok = WriteEXTDEF( fp, fo, isChanged );
+            ok = WriteEXTDEF( fo, isChanged );
             break;
         case CMD_PUBDEF:
             WriteRecLen = ReadRecLen;
@@ -465,7 +465,7 @@ static int ProcFile( FILE *fp, FILE *fo )
                 GetOffset();
                 GetIndex();
             }
-            ok = WritePUBDEF( fp, fo, isChanged );
+            ok = WritePUBDEF( fo, isChanged );
             break;
         case LIB_HEADER_REC:
             ok = false;
@@ -520,7 +520,11 @@ static bool process_symbol_file( const char *filename )
             }
             *p = '\0';
             len = p - newname - 1;
-            newname[0] = len;
+            if( len > 255 ) {
+                len = 255;
+                newname[len + 1] = '\0';
+            }
+            newname[0] = (byte)len;
             AddSymbol( pubdef_tab, old, newname, len + 2 );
         }
         fclose( fp );
@@ -542,7 +546,11 @@ static bool process_lnames( char *cmd )
         p1 = strtok( cmd, "=" );
         p2 = strtok( NULL, "" );
         len = strlen( p2 );
-        newname[0] = len;
+        if( len > 255 ) {
+            len = 255;
+            newname[len + 1] = '\0';
+        }
+        newname[0] = (byte)len;
         memcpy( newname + 1, p2, len );
         newname[len + 1] = '\0';
         AddSymbol( extdef_tab, p1, newname, len + 2 );
@@ -644,5 +652,5 @@ int main( int argc, char *argv[] )
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
-    return( !ok );
+    return( ok ? EXIT_SUCCESS : EXIT_FAILURE );
 }
