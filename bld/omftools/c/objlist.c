@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 #include "watcom.h"
 #include "pcobj.h"
 #include "misc.h"
@@ -46,6 +47,7 @@ static unsigned_16      RecLen;
 static char             *RecBuff;
 static char             *RecPtr;
 static unsigned_16      RecMaxLen;
+static byte             RecHdr[3];
 
 static void usage( void )
 /***********************/
@@ -68,39 +70,61 @@ static char *GetName( void )
     return( NamePtr );
 }
 
-static int ProcFile( FILE *fp )
+static bool ExtendRecBuff( size_t size )
+/**************************************/
+{
+    if( RecMaxLen < size ) {
+        RecMaxLen = size;
+        if( RecBuff != NULL ) {
+            free( RecBuff );
+        }
+        RecBuff = malloc( RecMaxLen );
+        if( RecBuff == NULL ) {
+            printf( "**FATAL** Out of memory!\n" );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static bool ReadRec( FILE *fp )
 /*****************************/
 {
-    byte        hdr[3];
+    bool    ok;
+
+    RecLen = RecHdr[1] | ( RecHdr[2] << 8 );
+    ok = ExtendRecBuff( RecLen );
+    if( ok ) {
+        ok = ( fread( RecBuff, RecLen, 1, fp ) != 0 );
+    }
+    RecPtr = RecBuff;
+    return( ok );
+}
+
+
+static bool ProcFile( FILE *fp )
+/******************************/
+{
     unsigned_16 page_len;
     unsigned_32 offset;
+    bool        ok;
 
     page_len = 0;
     RecBuff = NULL;
     RecMaxLen = 0;
     for(;;) {
         offset = ftell( fp );
-        if( fread( hdr, 1, 3, fp ) != 3 )
+        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
+            ok = ( ferror( fp ) == 0 );
             break;
-        RecLen = hdr[1] | ( hdr[2] << 8 );
-        if( RecMaxLen < RecLen ) {
-            RecMaxLen = RecLen;
-            if( RecBuff != NULL ) {
-                free( RecBuff );
-            }
-            RecBuff = malloc( RecMaxLen );
-            if( RecBuff == NULL ) {
-                printf( "**FATAL** Out of memory!\n" );
-                return( 0 );
-            }
         }
-        if( fread( RecBuff, RecLen, 1, fp ) == 0 )
+        ok = ReadRec( fp );
+        if( !ok )
             break;
-        RecPtr = RecBuff;
-        switch( hdr[0] & ~1 ) {
+        switch( RecHdr[0] & ~1 ) {
         case CMD_THEADR:
             GetName();
-            *RecPtr = 0;
+            *RecPtr = '\0';
             printf( "%s\n", NamePtr );
             break;
         case CMD_MODEND:
@@ -113,11 +137,11 @@ static int ProcFile( FILE *fp )
             }
             break;
         case LIB_HEADER_REC:
-            if( hdr[0] & 1 ) {
+            if( RecHdr[0] & 1 ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = RecLen + 3;
+                page_len = RecLen - 1 + 4;
             }
             break;
         default:
@@ -125,19 +149,19 @@ static int ProcFile( FILE *fp )
         }
     }
     free( RecBuff );
-    return( 1 );
+    return( ok );
 }
 
-static int process_file_mod( const char *filename )
-/*************************************************/
+static bool process_file_mod( const char *filename )
+/**************************************************/
 {
     FILE    *fp;
-    int     ok;
+    bool    ok;
 
     fp = fopen( filename, "rb" );
     if( fp == NULL ) {
         printf( "Cannot open input file: %s.\n", filename );
-        return( 0 );
+        return( false );
     }
     ok = ProcFile( fp );
     fclose( fp );
@@ -149,13 +173,13 @@ int main( int argc, char *argv[] )
 {
     int     i;
     char    *fn;
-    int     ok;
+    bool    ok;
 
     if( argc == 1 ) {
         usage();
         return( 1 );
     }
-    ok = 1;
+    ok = true;
     for( i = 1; i < argc; ++i ) {
         fn = DoWildCard( argv[i] );
         while( fn != NULL ) {
@@ -164,5 +188,5 @@ int main( int argc, char *argv[] )
         }
         DoWildCardClose();
     }
-    return( ok == 0 );
+    return( !ok );
 }

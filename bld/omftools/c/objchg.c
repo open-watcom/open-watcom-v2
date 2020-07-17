@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 #include "watcom.h"
 #include "pcobj.h"
 #include "hashtab.h"
@@ -54,14 +55,18 @@ static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
 static char         *NamePtr;
 static byte         NameLen;
-static unsigned_16  RecLen;
-static char         *RecBuff;
-static char         *RecPtr;
-static unsigned_16  RecMaxLen;
-static int          isMS386;
+static unsigned_16  ReadRecLen;
+static unsigned_16  WriteRecLen;
+static char         *ReadRecBuff;
+static char         *WriteRecBuff;
+static char         *ReadRecPtr;
+static char         *WriteRecPtr;
+static unsigned_16  ReadRecMaxLen;
+static unsigned_16  WriteRecMaxLen;
 static char         *symbol_name_pattern = NULL;
 static size_t       symbol_name_pattern_len = 0;
 static sym_file     *sym_files = NULL;
+static byte         RecHdr[3];
 
 static void usage( void )
 /***********************/
@@ -72,16 +77,16 @@ static void usage( void )
     printf( "            -s=<file>       file with symbols\n" );
 }
 
-static int EndRec( void )
-/***********************/
+static bool IsDataReadRec( void )
+/*******************************/
 {
-    return( RecPtr >= (RecBuff + RecLen) );
+    return( ReadRecPtr - ReadRecBuff < ReadRecLen - 1 );
 }
 
 static byte GetByte( void )
 /*************************/
 {
-    return( *RecPtr++ );
+    return( *ReadRecPtr++ );
 }
 
 static unsigned_16 GetUInt( void )
@@ -89,28 +94,28 @@ static unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = *(unsigned_16 *)RecPtr;
+    word = *(unsigned_16 *)ReadRecPtr;
     CONV_LE_16( word );
-    RecPtr += 2;
+    ReadRecPtr += sizeof( unsigned_16 );
     return( word );
 }
 
 static unsigned_32 GetOffset( void )
 /**********************************/
 {
-    if( isMS386 ) {
+    if( RecHdr[0] & 1 ) {
         unsigned_32 dword;
 
-        dword = *(unsigned_32 *)RecPtr;
+        dword = *(unsigned_32 *)ReadRecPtr;
         CONV_LE_32( dword );
-        RecPtr += 4;
+        ReadRecPtr += sizeof( unsigned_32 );
         return( dword );
     } else {
         unsigned_16 word;
 
-        word = *(unsigned_16 *)RecPtr;
+        word = *(unsigned_16 *)ReadRecPtr;
         CONV_LE_16( word );
-        RecPtr += 2;
+        ReadRecPtr += sizeof( unsigned_16 );
         return( word );
     }
 }
@@ -131,8 +136,8 @@ static char *GetName( void )
 /**************************/
 {
     NameLen = GetByte();
-    NamePtr = RecPtr;
-    RecPtr += NameLen;
+    NamePtr = ReadRecPtr;
+    ReadRecPtr += NameLen;
     return( NamePtr );
 }
 
@@ -141,21 +146,21 @@ static char *PutUInt( char *p, unsigned_16 data )
 {
     CONV_LE_16( data );
     *((unsigned_16 *)p) = data;
-    p += 2;
+    p += sizeof( unsigned_16 );
     return( p );
 }
 
 static char *PutOffset( char *p, unsigned_32 data )
 /*************************************************/
 {
-    if( isMS386 ) {
+    if( RecHdr[0] & 1 ) {
         CONV_LE_32( data );
         *((unsigned_32 *)p) = data;
-        p += 4;
+        p += sizeof( unsigned_32 );
     } else {
         CONV_LE_16( data );
         *((unsigned_16 *)p) = (unsigned_16)data;
-        p += 2;
+        p += sizeof( unsigned_16 );
     }
     return( p );
 }
@@ -169,295 +174,321 @@ static char *PutIndex( char *p, unsigned_16 index )
     return( p );
 }
 
-static byte create_chksum( const char *data, size_t newlen, byte cksum )
-/**********************************************************************/
+static byte create_chksum( void )
+/*******************************/
 {
     size_t  i;
+    byte    chksum;
 
-    for( i = 0; i < newlen - 1; i++ ) {
-        cksum += data[i];
+    chksum  = RecHdr[0];
+    chksum += RecHdr[1];
+    chksum += RecHdr[2];
+    for( i = 0; i < WriteRecLen - 1; i++ ) {
+        chksum += WriteRecBuff[i];
     }
-    return( cksum );
+    return( chksum );
 }
 
-static int ChangeLNAMES( byte rec_type, FILE *fo, unsigned_16 newlen )
-/********************************************************************/
+static bool ExtendReadRecBuff( size_t size )
+/******************************************/
 {
-    byte        hdr[3];
-    char        *data;
-    char        *p;
-    byte        cksum;
-    int         ok;
+    if( ReadRecMaxLen < size ) {
+        ReadRecMaxLen = size;
+        if( ReadRecBuff != NULL ) {
+            free( ReadRecBuff );
+        }
+        ReadRecBuff = malloc( ReadRecMaxLen );
+        if( ReadRecBuff == NULL ) {
+            printf( "**FATAL** Out of memory!\n" );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static bool ExtendWriteRecBuff( size_t size )
+/*******************************************/
+{
+    if( WriteRecMaxLen < size ) {
+        WriteRecMaxLen = size;
+        if( WriteRecBuff != NULL ) {
+            free( WriteRecBuff );
+        }
+        WriteRecBuff = malloc( WriteRecMaxLen );
+        if( WriteRecBuff == NULL ) {
+            printf( "**FATAL** Out of memory!\n" );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static bool WriteLNAMES( FILE *fp, FILE *fo, bool changed )
+/*********************************************************/
+{
+    bool        ok;
     char        *n;
     char        b;
 
-    hdr[0] = rec_type;
-    hdr[1] = newlen;
-    hdr[2] = newlen >> 8;
-    if( fwrite( hdr, 1, 3, fo ) != 3 )
-        return( 0 );
-    cksum  = hdr[0];
-    cksum += hdr[1];
-    cksum += hdr[2];
-    data = malloc( newlen );
-    p = data;
-    while( ! EndRec() ) {
-        GetName();
-        b = *RecPtr;
-        *RecPtr = 0;
-        n = SymbolExists( extdef_tab, NamePtr );
-        if( n != NULL ) {
-            NameLen = n[0];
-            NamePtr = n + 1;
-        }
-        *p++ = NameLen;
-        memcpy( p, NamePtr, NameLen );
-        p += NameLen;
-        *RecPtr = b;
+    if( changed ) {
+        RecHdr[1] = WriteRecLen;
+        RecHdr[2] = WriteRecLen >> 8;
     }
-    *p++ = 0 - create_chksum( data, newlen, cksum );
-    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
-    free( data );
+    ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
+    if( ok ) {
+        if( !changed ) {
+            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
+        } else {
+            ok = ExtendWriteRecBuff( WriteRecLen );
+            if( ok ) {
+                ReadRecPtr = ReadRecBuff;
+                WriteRecPtr = WriteRecBuff;
+                while( IsDataReadRec() ) {
+                    GetName();
+                    b = *ReadRecPtr;
+                    *ReadRecPtr = '\0';
+                    n = SymbolExists( extdef_tab, NamePtr );
+                    if( n != NULL ) {
+                        NameLen = n[0];
+                        NamePtr = n + 1;
+                    }
+                    *WriteRecPtr++ = NameLen;
+                    memcpy( WriteRecPtr, NamePtr, NameLen );
+                    WriteRecPtr += NameLen;
+                    *ReadRecPtr = b;
+                }
+                *WriteRecPtr = 0 - create_chksum();
+                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+            }
+        }
+    }
     return( ok );
 }
 
-static int ChangeEXTDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
-/********************************************************************/
+static bool WriteEXTDEF( FILE *fp, FILE *fo, bool changed )
+/*********************************************************/
 {
-    byte        hdr[3];
-    char        *data;
-    char        *p;
     char        *tmp;
     unsigned_16 indx;
-    byte        cksum;
-    int         ok;
+    bool        ok;
     char        *n;
+    char        b;
 
-    hdr[0] = rec_type;
-    hdr[1] = newlen;
-    hdr[2] = newlen >> 8;
-    if( fwrite( hdr, 1, 3, fo ) != 3 )
-        return( 0 );
-    cksum  = hdr[0];
-    cksum += hdr[1];
-    cksum += hdr[2];
-    data = malloc( newlen );
-    p = data;
-    while( ! EndRec() ) {
-        GetName();
-        tmp = RecPtr;
-        indx = GetIndex();
-        *tmp = 0;
-        n = SymbolExists( pubdef_tab, NamePtr );
-        if( n != NULL ) {
-            NameLen = n[0];
-            NamePtr = n + 1;
-        }
-        *p++ = NameLen;
-        memcpy( p, NamePtr, NameLen );
-        p += NameLen;
-        p = PutIndex( p, indx );
+    if( changed ) {
+        RecHdr[1] = WriteRecLen;
+        RecHdr[2] = WriteRecLen >> 8;
     }
-    *p++ = 0 - create_chksum( data, newlen, cksum );
-    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
-    free( data );
+    ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
+    if( ok ) {
+        if( !changed ) {
+            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
+        } else {
+            ok = ExtendWriteRecBuff( WriteRecLen );
+            if( ok ) {
+                ReadRecPtr = ReadRecBuff;
+                WriteRecPtr = WriteRecBuff;
+                while( IsDataReadRec() ) {
+                    GetName();
+                    tmp = ReadRecPtr;
+                    indx = GetIndex();
+                    b = *tmp;
+                    *tmp = '\0';
+                    n = SymbolExists( pubdef_tab, NamePtr );
+                    if( n != NULL ) {
+                        NameLen = n[0];
+                        NamePtr = n + 1;
+                    }
+                    *WriteRecPtr++ = NameLen;
+                    memcpy( WriteRecPtr, NamePtr, NameLen );
+                    WriteRecPtr += NameLen;
+                    *tmp = b;
+                    WriteRecPtr = PutIndex( WriteRecPtr, indx );
+                }
+                *WriteRecPtr = 0 - create_chksum();
+                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+            }
+        }
+    }
     return( ok );
 }
 
-static int ChangePUBDEF( byte rec_type, FILE *fo, unsigned_16 newlen )
-/********************************************************************/
+static bool WritePUBDEF( FILE *fp, FILE *fo, bool changed )
+/*********************************************************/
 {
-    byte        hdr[3];
-    char        *data;
-    char        *p;
     char        *tmp;
     unsigned_16 idx1;
     unsigned_16 idx2;
     unsigned_32 offs;
-    byte        cksum;
-    int         ok;
+    bool        ok;
     char        *n;
+    char        b;
 
-    hdr[0] = rec_type;
-    hdr[1] = newlen;
-    hdr[2] = newlen >> 8;
-    if( fwrite( hdr, 1, 3, fo ) != 3 )
-        return( 0 );
-    cksum  = hdr[0];
-    cksum += hdr[1];
-    cksum += hdr[2];
-    data = malloc( newlen );
-    p = data;
-    idx1 = GetIndex();
-    p = PutIndex( p, idx1 );
-    idx2 = GetIndex();
-    p = PutIndex( p, idx2 );
-    if( ( idx1 | idx2 ) == 0 )
-        p = PutUInt( p, GetUInt() );
-    while( ! EndRec() ) {
-        GetName();
-        tmp = RecPtr;
-        offs = GetOffset();
-        *tmp = 0;
-        n = SymbolExists( pubdef_tab, NamePtr );
-        if( n != NULL ) {
-            NameLen = n[0];
-            NamePtr = n + 1;
-        }
-        *p++ = NameLen;
-        memcpy( p, NamePtr, NameLen );
-        p += NameLen;
-        p = PutOffset( p, offs );
-        p = PutIndex( p, GetIndex() );
+    if( changed ) {
+        RecHdr[1] = WriteRecLen;
+        RecHdr[2] = WriteRecLen >> 8;
     }
-    *p++ = 0 - create_chksum( data, newlen, cksum );
-    ok = ( fwrite( data, 1, newlen, fo ) == newlen );
-    free( data );
+    ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
+    if( ok ) {
+        if( !changed ) {
+            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
+        } else {
+            ok = ExtendWriteRecBuff( WriteRecLen );
+            if( ok ) {
+                ReadRecPtr = ReadRecBuff;
+                WriteRecPtr = WriteRecBuff;
+                idx1 = GetIndex();
+                WriteRecPtr = PutIndex( WriteRecPtr, idx1 );
+                idx2 = GetIndex();
+                WriteRecPtr = PutIndex( WriteRecPtr, idx2 );
+                if( ( idx1 | idx2 ) == 0 )
+                    WriteRecPtr = PutUInt( WriteRecPtr, GetUInt() );
+                while( IsDataReadRec() ) {
+                    GetName();
+                    tmp = ReadRecPtr;
+                    offs = GetOffset();
+                    b = *tmp;
+                    *tmp = '\0';
+                    n = SymbolExists( pubdef_tab, NamePtr );
+                    if( n != NULL ) {
+                        NameLen = n[0];
+                        NamePtr = n + 1;
+                    }
+                    *WriteRecPtr++ = NameLen;
+                    memcpy( WriteRecPtr, NamePtr, NameLen );
+                    WriteRecPtr += NameLen;
+                    *tmp = b;
+                    WriteRecPtr = PutOffset( WriteRecPtr, offs );
+                    WriteRecPtr = PutIndex( WriteRecPtr, GetIndex() );
+                }
+                *WriteRecPtr = 0 - create_chksum();
+                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+            }
+        }
+    }
+    return( ok );
+}
+
+static bool ReadRec( FILE *fp )
+/*****************************/
+{
+    bool    ok;
+
+    ReadRecLen = RecHdr[1] | ( RecHdr[2] << 8 );
+    ok = ExtendReadRecBuff( ReadRecLen );
+    if( ok ) {
+        ok = ( fread( ReadRecBuff, ReadRecLen, 1, fp ) != 0 );
+    }
+    ReadRecPtr = ReadRecBuff;
     return( ok );
 }
 
 static int ProcFile( FILE *fp, FILE *fo )
 /**************************************/
 {
-    byte            hdr[3];
 //    unsigned_16   page_len;
 //    unsigned_32   offset;
-    fpos_t          pos;
-    int             isChanged;
-    int             renameIt;
-    unsigned_16     newlen;
+    bool            isChanged;
+    bool            renameIt;
     char            *n;
     char            b;
+    bool            ok;
 
-    renameIt = 1;
 //    page_len = 0;
-    RecBuff = NULL;
-    RecMaxLen = 0;
-    for( ; renameIt == 1; ) {
-        isChanged = 0;
-        fgetpos( fp, &pos );
+    ReadRecBuff = NULL;
+    WriteRecBuff = NULL;
+    ReadRecMaxLen = 0;
+    WriteRecMaxLen = 0;
+    renameIt = false;
+    ok = true;
+    while( ok ) {
 //        offset = ftell( fp );
-        if( fread( hdr, 1, 3, fp ) != 3 ) {
-            if( ferror( fp ) )
-                renameIt = -1;
+        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
+            ok = ( ferror( fp ) == 0 );
             break;
         }
-        RecLen = hdr[1] | ( hdr[2] << 8 );
-        if( RecMaxLen < RecLen ) {
-            RecMaxLen = RecLen;
-            if( RecBuff != NULL ) {
-                free( RecBuff );
-            }
-            RecBuff = malloc( RecMaxLen );
-            if( RecBuff == NULL ) {
-                printf( "**FATAL** Out of memory!\n" );
-                renameIt = -1;
-                break;
-            }
-        }
-        if( fread( RecBuff, RecLen, 1, fp ) == 0 ) {
-            renameIt = -1;
+        ok = ReadRec( fp );
+        if( !ok ) {
             break;
         }
-        RecPtr = RecBuff;
-        newlen = RecLen;
-        RecLen--;
-        isMS386 = hdr[0] & 1;
-        switch( hdr[0] & ~1 ) {
+        switch( RecHdr[0] & ~1 ) {
         case CMD_LNAMES:
-            while( ! EndRec() ) {
+            WriteRecLen = ReadRecLen;
+            isChanged = false;
+            while( IsDataReadRec() ) {
                 GetName();
-                b = *RecPtr;
-                *RecPtr = 0;
+                b = *ReadRecPtr;
+                *ReadRecPtr = '\0';
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
-                    newlen += n[0] - NameLen;
-                    isChanged = 1;
+                    WriteRecLen += n[0] - NameLen;
+                    isChanged = true;
+                    renameIt = true;
                 }
-                *RecPtr = b;
+                *ReadRecPtr = b;
             }
-            fsetpos( fp, &pos );
-            fread( hdr, 1, 3, fp );
-            fread( RecBuff, RecLen + 1, 1, fp );
-            RecPtr = RecBuff;
+            ok = WriteLNAMES( fp, fo, isChanged );
             break;
         case CMD_EXTDEF:
-            while( ! EndRec() ) {
+            WriteRecLen = ReadRecLen;
+            isChanged = false;
+            while( IsDataReadRec() ) {
                 GetName();
-                *RecPtr = 0;
+                b = *ReadRecPtr;
+                *ReadRecPtr = '\0';
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
-                    newlen += n[0] - NameLen;
-                    isChanged = 1;
+                    WriteRecLen += n[0] - NameLen;
+                    isChanged = true;
+                    renameIt = true;
                 }
+                *ReadRecPtr = b;
                 GetIndex();
             }
-            fsetpos( fp, &pos );
-            fread( hdr, 1, 3, fp );
-            fread( RecBuff, RecLen + 1, 1, fp );
-            RecPtr = RecBuff;
+            ok = WriteEXTDEF( fp, fo, isChanged );
             break;
         case CMD_PUBDEF:
+            WriteRecLen = ReadRecLen;
+            isChanged = false;
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
-            while( ! EndRec() ) {
+            while( IsDataReadRec() ) {
                 GetName();
-                *RecPtr = 0;
+                b = *ReadRecPtr;
+                *ReadRecPtr = '\0';
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
-                    newlen += n[0] - NameLen;
-                    isChanged = 1;
+                    WriteRecLen += n[0] - NameLen;
+                    isChanged = true;
+                    renameIt = true;
                 }
+                *ReadRecPtr = b;
                 GetOffset();
                 GetIndex();
             }
-            fsetpos( fp, &pos );
-            fread( hdr, 1, 3, fp );
-            fread( RecBuff, RecLen + 1, 1, fp );
-            RecPtr = RecBuff;
+            ok = WritePUBDEF( fp, fo, isChanged );
             break;
         case LIB_HEADER_REC:
-            free( RecBuff );
-            fclose( fo );
-            fclose( fp );
-            return( 0 );
+            ok = false;
+            break;
         default:
+            ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
+            if( ok ) {
+                ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
+            }
             break;
         }
-        if( isChanged ) {
-            switch( hdr[0] & ~1 ) {
-            case CMD_LNAMES:
-                if( ! ChangeLNAMES( hdr[0], fo, newlen ) )
-                    renameIt = 0;
-                break;
-            case CMD_EXTDEF:
-                if( ! ChangeEXTDEF( hdr[0], fo, newlen ) )
-                    renameIt = 0;
-                break;
-            case CMD_PUBDEF:
-                if( ! ChangePUBDEF( hdr[0], fo, newlen ) )
-                    renameIt = 0;
-                break;
-            default:
-                break;
-            }
-        } else {
-            if( fwrite( hdr, 1, 3, fo ) != 3 ) {
-                renameIt = -1;
-            }
-            if( fwrite( RecBuff, 1, RecLen + 1, fo ) != RecLen + 1 ) {
-                renameIt = -1;
-            }
-        }
     }
-    free( RecBuff );
+    free( ReadRecBuff );
+    free( WriteRecBuff );
     fclose( fo );
     fclose( fp );
+    if( !ok )
+        return( -1 );
     return( renameIt );
 }
 
-static int process_symbol_file( const char *filename )
-/****************************************************/
+static bool process_symbol_file( const char *filename )
+/*****************************************************/
 {
     FILE    *fp;
     char    line[MAX_LINE_LEN];
@@ -469,6 +500,8 @@ static int process_symbol_file( const char *filename )
 
     if( filename != NULL ) {
         fp = fopen( filename, "rt" );
+        if( fp == NULL )
+            return( false );
         while( fgets( line, sizeof( line ), fp ) != NULL ) {
             old = strtok( line, " \t=\r\n" );
             if( old == NULL )
@@ -492,11 +525,11 @@ static int process_symbol_file( const char *filename )
         }
         fclose( fp );
     }
-    return( 0 );
+    return( true );
 }
 
-static int process_lnames( char *cmd )
-/************************************/
+static bool process_lnames( char *cmd )
+/*************************************/
 {
     char    *p1;
     char    *p2;
@@ -515,35 +548,35 @@ static int process_lnames( char *cmd )
         AddSymbol( extdef_tab, p1, newname, len + 2 );
         free( newname );
     }
-    return( 0 );
+    return( true );
 }
 
-static int process_module( const char *filename )
-/***********************************************/
+static bool process_module( const char *filename )
+/************************************************/
 {
     FILE    *fp;
     FILE    *fo;
-    int     isChanged;
+    int     rc;
 
     fp = fopen( filename, "rb" );
     if( fp == NULL ) {
         printf( "Cannot open input file: %s.\n", filename );
-        return( 0 );
+        return( false );
     }
     fo = fopen( "tmp.tmp", "wb" );
     if( fo == NULL ) {
         printf( "Cannot open input file: tmp.tmp.\n" );
         fclose( fp );
-        return( 0 );
+        return( false );
     }
-    isChanged = ProcFile( fp, fo );
-    if( isChanged == 1 ) {
+    rc = ProcFile( fp, fo );
+    if( rc == true ) {
         remove( filename );
         rename( "tmp.tmp", filename );
     } else {
         remove( "tmp.tmp" );
     }
-    return( isChanged != -1 );
+    return( rc != -1 );
 }
 
 int main( int argc, char *argv[] )
@@ -551,11 +584,11 @@ int main( int argc, char *argv[] )
 {
     int         i;
     char        *fn;
-    int         ok;
+    bool        ok;
     char        c;
     sym_file    *sf;
 
-    ok = 1;
+    ok = true;
     extdef_tab = SymbolInit();
     pubdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
@@ -580,7 +613,7 @@ int main( int argc, char *argv[] )
                 symbol_name_pattern = argv[i] + 3;
                 symbol_name_pattern_len = strlen( symbol_name_pattern );
             } else {
-                ok = 0;
+                ok = false;
                 break;
             }
         } else {
@@ -588,9 +621,9 @@ int main( int argc, char *argv[] )
         }
     }
     if( i == argc ) {
-        ok = 0;
+        ok = false;
     }
-    if( ok == 0 ) {
+    if( !ok ) {
         usage();
     } else {
         while( (sf = sym_files) != NULL ) {
@@ -611,5 +644,5 @@ int main( int argc, char *argv[] )
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
-    return( ok == 0 );
+    return( !ok );
 }
