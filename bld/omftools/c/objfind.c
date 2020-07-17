@@ -271,7 +271,7 @@ int main( int argc, char *argv[] )
     extdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            c = tolower( argv[i][1] );
+            c = tolower( (unsigned char)argv[i][1] );
             if( c == 'i' && argv[i][2] == '=' ) {
                 process_except_file( argv[i] + 3 );
             } else {

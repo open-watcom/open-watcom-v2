@@ -560,7 +560,7 @@ int main( int argc, char *argv[] )
     pubdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            c = tolower( argv[i][1] );
+            c = tolower( (unsigned char)argv[i][1] );
             if( c == 'l' && argv[i][2] == '=' ) {
                 process_lnames( argv[i] + 3 );
             } else if( c == 's' && argv[i][2] == '=' ) {
