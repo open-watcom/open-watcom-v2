@@ -14,7 +14,7 @@ additional_cleanup_qnx = usage.u
 
 wasm_trmem = 1
 
-wasm_dos_extender = causeway
+#wasm_dos_extender = causeway
 
 fpu_flags_dos_i86 = -fpc
 fpu_flags_dos_386 = -fpc
