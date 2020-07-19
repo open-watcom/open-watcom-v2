@@ -180,7 +180,6 @@ extern const char _NEAR   StrTokens[];
 extern const char _NEAR   SourceTokens[];
 extern char         *ErrorTokens;
 extern int          *ErrorValues;
-extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
 extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
@@ -214,10 +213,10 @@ extern char     *Expand( char *, const char *, vlist * );
 extern vi_rc    SrcExpr( sfile *, vlist * );
 
 /* srcfile.c */
-extern vi_rc    SrcOpen( sfile *, vlist *, files *, const char * );
+extern vi_rc    SrcOpen( sfile *, files *, const char *, vlist * );
 extern vi_rc    SrcRead( sfile *, files *, const char *, vlist * );
 extern vi_rc    SrcWrite( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcClose( sfile *, vlist *, files *, const char * );
+extern vi_rc    SrcClose( sfile *, files *, const char *, vlist * );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );
@@ -257,10 +256,12 @@ extern void     SrcGet( const char *, vlist * );
 extern vi_rc    SrcNextWord( const char *, vlist * );
 
 /* srcvar.c */
-extern void     VarAddGlobalStr( const char *, const char * );
-extern void     VarAddRandC( void );
-extern void     VarAddGlobalLong( const char *, long );
-extern void     VarAddStr( const char *, const char *, vlist * );
+extern void     GlobVarAddStr( const char *name, const char *value );
+extern void     GlobVarAddLong( const char *name, long value );
+extern void     GlobVarAddRowAndCol( void );
+extern void     GlobVarFini( void );
+extern void     VarAddStr( const char *name, const char *value, vlist * );
+extern void     VarAddLong( const char *name, long value, vlist * );
 extern void     VarListDelete( vlist * );
 extern bool     VarName( char *, const char *, vlist * );
 extern vars     *VarFind( const char *, vlist * );

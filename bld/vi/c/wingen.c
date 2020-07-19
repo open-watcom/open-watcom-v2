@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,8 +236,8 @@ bool ColumnInWindow( int col, int *diff )
  */
 void SetWindowSizes( void )
 {
-    VarAddGlobalLong( "SW", EditVars.WindMaxWidth );
-    VarAddGlobalLong( "SH", EditVars.WindMaxHeight );
+    GlobVarAddLong( "SW", EditVars.WindMaxWidth );
+    GlobVarAddLong( "SH", EditVars.WindMaxHeight );
     EditVars.SpinX = EditVars.WindMaxWidth - 15;
     EditVars.ClockX = EditVars.WindMaxWidth - 9;
     filecw_info.area.x2 = EditVars.WindMaxWidth - 5;

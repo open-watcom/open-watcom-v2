@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,7 +185,7 @@ void SetCurrentLineNumber( linenum l )
 
     CurrentPos.line = l;
     UpdateCursorDrag();
-    VarAddRandC();
+    GlobVarAddRowAndCol();
 
     if( CurrentFile != NULL ) {
         height = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
@@ -260,7 +261,7 @@ vi_rc GoToColumn( int colno, int maxcol )
     SetWindowCursor();
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     UpdateStatusWindow();
-    VarAddGlobalLong( "C", (long) vc );
+    GlobVarAddLong( "C", vc );
     UpdateCursorDrag();
     return( ERR_NO_ERR );
 
@@ -395,7 +396,7 @@ bool CheckCurrentColumn( void )
         */
         PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     }
-    VarAddGlobalLong( "C", (long) CurrentPos.column );
+    GlobVarAddLong( "C", CurrentPos.column );
     return( dispall );
 
 } /* CheckCurrentColumn */
@@ -444,7 +445,7 @@ vi_rc SetCurrentColumn( int newcol )
 
     CheckCurrentColumn();
     UpdateCursorDrag();
-    VarAddRandC();
+    GlobVarAddRowAndCol();
 
     PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     UpdateStatusWindow();

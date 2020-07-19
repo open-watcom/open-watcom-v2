@@ -106,6 +106,10 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
      * initialize variables
      */
     memset( &fi, 0, sizeof( fi ) );
+
+    /*
+     * initialize command parms variables (local)
+     */
     rc = initSource( &vl, data );
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -240,7 +244,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
                 rc = SrcExpr( curr, &vl );
                 break;
             case SRC_T_OPEN:
-                LastRC = SrcOpen( curr, &vl, &fi, tmp );
+                LastRC = SrcOpen( curr, &fi, tmp, &vl );
                 if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
                     rc = LastRC;
                 }
@@ -255,7 +259,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
                 rc = SrcWrite( curr, &fi, tmp, &vl );
                 break;
             case SRC_T_CLOSE:
-                rc = SrcClose( curr, &vl, &fi, tmp );
+                rc = SrcClose( curr, &fi, tmp, &vl );
                 break;
             default:
     #ifdef __WIN__
@@ -300,7 +304,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
 } /* Source */
 
 /*
- * initSource - initialize language variables
+ * initSource - initialize command parms variables
  */
 static vi_rc initSource( vlist *vl, const char *data )
 {
@@ -316,7 +320,11 @@ static vi_rc initSource( vlist *vl, const char *data )
     for( j = 1; GetStringWithPossibleQuote( &data, tmp ) == ERR_NO_ERR; ++j ) {
         sprintf( name, "%d", j );
         VarAddStr( name, tmp, vl );
-        StrMerge( 2, all, tmp, SingleBlank );
+        if( j == 1 ) {
+            strcpy( all, tmp );
+        } else {
+            StrMerge( 2, all, SingleBlank, tmp );
+        }
     }
     VarAddStr( "*", all, vl );
 
@@ -369,17 +377,17 @@ void FileSPVAR( void )
      * build path
      */
     if( CurrentFile == NULL ) {
-        VarAddGlobalStr( "F", "" );
-        VarAddGlobalStr( "H", "" );
+        GlobVarAddStr( "F", "" );
+        GlobVarAddStr( "H", "" );
         pg.drive = pg.dir = pg.fname = pg.ext = "";
     } else {
-        VarAddGlobalStr( "F", CurrentFile->name );
-        VarAddGlobalStr( "H", CurrentFile->home );
+        GlobVarAddStr( "F", CurrentFile->name );
+        GlobVarAddStr( "H", CurrentFile->home );
         ConditionalChangeDirectory( CurrentFile->home );
         _splitpath2( CurrentFile->name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     }
-    VarAddGlobalStr( "P1", pg.dir );
-    VarAddGlobalStr( "D1", pg.drive );
+    GlobVarAddStr( "P1", pg.dir );
+    GlobVarAddStr( "D1", pg.drive );
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
     i = strlen( path );
     if( i-- > 1 ) {
@@ -404,10 +412,10 @@ void FileSPVAR( void )
         StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );
     }
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    VarAddGlobalStr( "D", pg.drive );
-    VarAddGlobalStr( "P", pg.dir );
-    VarAddGlobalStr( "N", pg.fname );
-    VarAddGlobalStr( "E", pg.ext );
+    GlobVarAddStr( "D", pg.drive );
+    GlobVarAddStr( "P", pg.dir );
+    GlobVarAddStr( "N", pg.fname );
+    GlobVarAddStr( "E", pg.ext );
 
 } /* FileSPVAR */
 

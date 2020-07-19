@@ -62,9 +62,9 @@ void main( int argc, char *argv[] )
     argc = argc;
     getEXEName( argv[0] );
 #ifdef __OS2V2__
-    VarAddGlobalStr( "OS", "os2v2" );
+    GlobVarAddStr( "OS", "os2v2" );
 #else
-    VarAddGlobalStr( "OS", "os2" );
+    GlobVarAddStr( "OS", "os2" );
 #endif
     InitialStack();
     Comspec = getenv( "COMSPEC" );

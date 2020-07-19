@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,86 +37,22 @@
 #include "clibext.h"
 
 
-#ifndef VICOMP
+static vlist    GlobVars = { NULL, NULL };
+
 /*
- * VarAddGlobalStr
+ * var_add - add a new variable
  */
-void VarAddGlobalStr( const char *name, const char *val )
+static void var_add( const char *name, const char *val, vlist *vl, bool glob )
 {
-    VarAddStr( name, val, NULL );
-
-} /* VarAddGlobalStr */
-
-
-/*
- * VarAddRandC - add row and column vars
-*/
-void VarAddRandC( void )
-{
-    int vc;
-    int len;
-
-    if( CurrentLine == NULL ) {
-        len = 0;
-    } else {
-        len = CurrentLine->len;
-    }
-
-    VarAddGlobalLong( "R", CurrentPos.line );
-    VarAddGlobalLong( "Linelen", len );
-    vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    VarAddGlobalLong( "C", (long) vc );
-    // VarDump( );
-
-} /* VarAddRandC */
-
-/*
- * SetModifiedVar - set the modified variable
- */
-void SetModifiedVar( bool val )
-{
-    VarAddGlobalLong( "M", (long) val );
-
-} /* SetModifiedVar */
-
-/*
- * VarAddGlobalLong
- */
-void VarAddGlobalLong( const char *name, long val )
-{
-    char ibuff[MAX_NUM_STR];
-
-    VarAddStr( name, ltoa( val, ibuff, 10 ), NULL );
-
-} /* VarAddGlobalLong */
-#endif /* VICOMP */
-
-/*
- * VarAddStr - add a new variable
- */
-void VarAddStr( const char *name, const char *val, vlist *vl )
-{
-    vars        *new, *curr, *head;
-    bool        glob;
+    vars        *new, *curr;
     var_len     len;
     size_t      name_len;
-
-    /*
-     * get local/global setting
-     */
-    if( isupper( name[0] ) || vl == NULL ) {
-        head = VarHead;
-        glob = true;
-    } else {
-        head = vl->head;
-        glob = false;
-    }
 
     /*
      * see if we can just update an existing copy
      */
     len = strlen( val );
-    for( curr = head; curr != NULL; curr = curr->next ) {
+    for( curr = vl->head; curr != NULL; curr = curr->next ) {
         if( strcmp( curr->name, name ) == 0 ) {
             ReplaceString( &curr->value, val );
             curr->len = len;
@@ -139,13 +75,96 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
     new->len = len;
 
     if( glob ) {
-        AddLLItemAtEnd( (ss **)&VarHead, (ss **)&VarTail, (ss *)new );
 #ifndef VICOMP
         EditFlags.CompileAssignments = false;
 #endif
-    } else {
-        AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
     }
+    AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
+
+} /* var_add */
+
+#ifndef VICOMP
+/*
+ * GlobVarAddStr
+ */
+void GlobVarAddStr( const char *name, const char *val )
+{
+    var_add( name, val, &GlobVars, true );
+
+} /* GlobVarAddStr */
+
+
+/*
+ * GlobVarAddRowAndCol - add row and column vars
+*/
+void GlobVarAddRowAndCol( void )
+{
+    int vc;
+    int len;
+
+    if( CurrentLine == NULL ) {
+        len = 0;
+    } else {
+        len = CurrentLine->len;
+    }
+
+    GlobVarAddLong( "R", CurrentPos.line );
+    GlobVarAddLong( "Linelen", len );
+    vc = VirtualColumnOnCurrentLine( CurrentPos.column );
+    GlobVarAddLong( "C", vc );
+    // VarDump( );
+
+} /* GlobVarAddRowAndCol */
+
+/*
+ * SetModifiedVar - set the modified variable
+ */
+void SetModifiedVar( bool val )
+{
+    GlobVarAddLong( "M", val );
+
+} /* SetModifiedVar */
+
+/*
+ * GlobVarAddLong
+ */
+void GlobVarAddLong( const char *name, long val )
+{
+    char ibuff[MAX_NUM_STR];
+
+    var_add( name, ltoa( val, ibuff, 10 ), &GlobVars, true );
+
+} /* GlobVarAddLong */
+
+/*
+ * VarAddLong
+ */
+void VarAddLong( const char *name, long val, vlist *vl )
+{
+    char ibuff[MAX_NUM_STR];
+
+    VarAddStr( name, ltoa( val, ibuff, 10 ), vl );
+
+} /* VarAddLong */
+#endif /* VICOMP */
+
+/*
+ * VarAddStr - add a new variable
+ */
+void VarAddStr( const char *name, const char *val, vlist *vl )
+{
+    bool        glob;
+
+    /*
+     * get local/global setting
+     */
+    if( isupper( name[0] ) || vl == NULL ) {
+        vl = &GlobVars;
+        glob = true;
+    } else {
+        glob = false;
+    }
+    var_add( name, val, vl, glob );
 
 } /* VarAddStr */
 
@@ -204,20 +223,17 @@ vars * VarFind( const char *name, vlist *vl )
      * search locals
      */
     if( name[0] < 'A' || name[0] > 'Z' ) {
-        if( vl != NULL ) {
-            for( curr = vl->head; curr != NULL; curr = curr->next ) {
-                if( strcmp( name, curr->name ) == 0 ) {
-                    return( curr );
-                }
-            }
+        if( vl == NULL ) {
+            return( NULL );
         }
-        return( NULL );
+    } else {
+        vl = &GlobVars;
     }
 
     /*
      * search globals
      */
-    for( curr = VarHead; curr != NULL; curr = curr->next ) {
+    for( curr = vl->head; curr != NULL; curr = curr->next ) {
         if( strcmp( name, curr->name ) == 0 ) {
             return( curr );
         }
@@ -228,15 +244,9 @@ vars * VarFind( const char *name, vlist *vl )
 
 
 /* Free the globals */
-void VarFini( void )
+void GlobVarFini( void )
 {
-    vars *curr, *next;
-
-    for( curr = VarHead; curr != NULL; curr = next ) {
-        next = curr->next;
-        MemFree( curr->value );
-        MemFree( curr );
-    }
+    VarListDelete( &GlobVars );
 }
 
 #if 0
@@ -245,7 +255,7 @@ void VarDump( void ) {
     int         count = 0;
     FILE        *f = fopen( "C:\\vi.out", "a+t" );
 
-    for( curr = VarHead; curr != NULL; curr = curr->next ) {
+    for( curr = GlobVars.head; curr != NULL; curr = curr->next ) {
         // fprintf( f,"N:%s V:%s %x\n", curr->name, curr->value, curr->next );
         count++;
     }
@@ -260,13 +270,13 @@ void VarSC( char *str )
 {
     /// DEBUG BEGIN
     {
-        vars    *currn = VarHead;
+        vars    *currn = GlobVars.head;
         if( currn != NULL ) {
             while( currn->next != NULL ) {
                 currn = currn->next;
             }
-            if( VarTail != currn ) {
-               printf( "%s\n", str );
+            if( GlobVars.tail != currn ) {
+                printf( "%s\n", str );
             }
         }
     }

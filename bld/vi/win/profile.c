@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,8 +213,8 @@ static void getConfigFilePaths( void )
 #else
     GetWindowsDirectory( path, FILENAME_MAX );
 #endif
-    ReplaceString( &iniPath, path );           /* these freed in WriteProfile */
-    VarAddGlobalStr( "IniPath", iniPath );  /* make accessable to scripts */
+    ReplaceString( &iniPath, path );            /* these freed in WriteProfile */
+    GlobVarAddStr( "IniPath", iniPath );        /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
     ReplaceString( &iniFile, path);
     strcpy( path, iniPath );

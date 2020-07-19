@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 /*
  * SrcOpen - open a file
  */
-vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
+vi_rc SrcOpen( sfile *curr, files *fi, const char *data, vlist *vl )
 {
     int         i;
     char        name[MAX_SRC_LINE], id[MAX_SRC_LINE], type[MAX_SRC_LINE], t;
@@ -228,7 +228,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcClose - close a work file
  */
-vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, const char *data )
+vi_rc SrcClose( sfile *curr, files *fi, const char *data, vlist *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE];

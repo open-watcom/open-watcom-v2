@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,19 +43,19 @@
  */
 vi_rc SrcExpr( sfile *sf, vlist *vl )
 {
-    char        tmp[MAX_SRC_LINE], tmp1[MAX_SRC_LINE];
+    char        name[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
     const char  *v1;
     long        val, oval;
     int         i;
     jmp_buf     jmpaddr;
     vars        *v;
 
-    if( !VarName( tmp, sf->arg1, vl ) ) {
+    if( !VarName( name, sf->arg1, vl ) ) {
         return( ERR_SRC_INVALID_EXPR );
     }
     v1 = sf->arg2;
     if( sf->hasvar ) {
-        v1 = Expand( tmp1, v1, vl  );
+        v1 = Expand( tmp, v1, vl );
     }
     i = setjmp( jmpaddr );
     if( i != 0 ) {
@@ -64,7 +65,7 @@ vi_rc SrcExpr( sfile *sf, vlist *vl )
     val = GetConstExpr();
 
     if( sf->u.oper != EXPR_EQ ) {
-        v = VarFind( tmp, vl );
+        v = VarFind( name, vl );
         if( v != NULL ) {
             oval = strtol( v->value, NULL, 0 );
             switch( sf->u.oper ) {
@@ -85,7 +86,7 @@ vi_rc SrcExpr( sfile *sf, vlist *vl )
         }
     }
 
-    VarAddStr( tmp, ltoa( val, tmp1, 10 ), vl );
+    VarAddLong( name, val, vl );
     return( ERR_NO_ERR );
 
 } /* SrcExpr */

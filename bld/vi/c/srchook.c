@@ -109,7 +109,7 @@ static vi_rc srcHook( hooktype num, vi_rc lastrc )
      */
     if( v != NULL ) {
         if( num == SRC_HOOK_COMMAND ) {
-            VarAddGlobalStr( "Com", CommandBuffer );
+            GlobVarAddStr( "Com", CommandBuffer );
         }
 //        if( num == SRC_HOOK_MODIFIED ) {
 //            lastrc = LastEvent;
