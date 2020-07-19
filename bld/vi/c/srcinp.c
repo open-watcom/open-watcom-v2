@@ -46,11 +46,7 @@ static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
      * get input syntax :
      * INPUT name
      */
-    GetNextWord1( data, tmp );
-    if( *tmp == '\0' ) {
-        return( ERR_SRC_INVALID_INPUT );
-    }
-    if( !VarName( name, tmp, vl ) ) {
+    if( !ReadVarName( &data, name, vl ) ) {
         return( ERR_SRC_INVALID_INPUT );
     }
     if( input ) {

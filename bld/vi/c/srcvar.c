@@ -49,7 +49,7 @@ static void var_add( const char *name, const char *val, vlist *vl )
 #endif
 {
     vars        *new, *curr;
-    var_len     len;
+    size_t      len;
     size_t      name_len;
 
     /*
@@ -202,30 +202,48 @@ void VarAddLong( const char *name, long val, vlist *vl )
 /*
  * VarName - parse a variable name of the form %(foo)
  */
-bool VarName( char *new, const char *name, vlist *vl )
+bool VarName( char *name, const char *data, vlist *vl )
 {
     char    tmp[MAX_SRC_LINE];
     size_t  len;
 
-    if( name[0] != '%' || name[1] == '\0' ) {
+    if( data[0] != '%' || data[1] == '\0' ) {
         return( false );
     }
-    ++name;
-    len = strlen( name );
-    if( name[0] == '(' ) {
-        ++name;
+    ++data;
+    len = strlen( data );
+    if( data[0] == '(' ) {
+        ++data;
         len -= 2;
     }
-    memcpy( tmp, name, len );
+    memcpy( tmp, data, len );
     tmp[len] = '\0';
     if( strchr( tmp, '%' ) != NULL ) {
-        Expand( new, tmp, vl );
+        Expand( name, tmp, vl );
     } else {
-        strcpy( new, tmp );
+        strcpy( name, tmp );
     }
     return( true );
 
 } /* VarName */
+
+/*
+ * ReadVarName - extract a variable name from a command
+ */
+bool ReadVarName( const char **data, char *name, vlist *vl )
+{
+    char    str[MAX_INPUT_LINE];
+
+    *data = GetNextWord1( *data, str );
+    if( *str != '\0' ) {
+        if( VarName( name, str, vl ) ) {
+            return( true );
+        }
+    }
+    return( false );
+
+} /* ReadVarName */
+
 
 /*
  * var_find - locate data for a specific variable name

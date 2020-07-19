@@ -846,35 +846,35 @@ vi_rc FancySetGen( void )
 vi_rc ToggleToolbar( void )
 {
     char    cmd[14];
-    sprintf( cmd, "set%stoolbar", EditFlags.Toolbar ? " no" : " " );
+    sprintf( cmd, "set %stoolbar", EditFlags.Toolbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleStatusbar( void )
 {
     char    cmd[17];
-    sprintf( cmd, "set%sstatusinfo", EditFlags.StatusInfo ? " no" : " " );
+    sprintf( cmd, "set %sstatusinfo", EditFlags.StatusInfo ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleColorbar( void )
 {
     char    cmd[15];
-    sprintf( cmd, "set%scolorbar", EditFlags.Colorbar ? " no" : " " );
+    sprintf( cmd, "set %scolorbar", EditFlags.Colorbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleSSbar( void )
 {
     char    cmd[15];
-    sprintf( cmd, "set%sssbar", EditFlags.SSbar ? " no" : " " );
+    sprintf( cmd, "set %sssbar", EditFlags.SSbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleFontbar( void )
 {
     char    cmd[14];
-    sprintf( cmd, "set%sfontbar", EditFlags.Fontbar ? " no" : " " );
+    sprintf( cmd, "set %sfontbar", EditFlags.Fontbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 

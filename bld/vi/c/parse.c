@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,14 +338,14 @@ int GetNumberOfTokens( const char *list )
 /*
  * GetLongestTokenLength - return length of longest token in token string
  */
-int GetLongestTokenLength( const char *list )
+size_t GetLongestTokenLength( const char *list )
 {
-    int         max_len = 0, len;
+    size_t      max_len = 0, len;
     const char  *t;
 
     for( t = list; *t != '\0'; t += len + 1 ) {
         len = strlen( t );
-        if( len > max_len ) {
+        if( max_len < len ) {
             max_len = len;
         }
     }
@@ -428,7 +429,7 @@ char *GetTokenStringCVT( const char *list, int num, char *dst, bool lowercase )
         src++;
     }
     if( lowercase ) {
-        while( (*dst = tolower( *src )) != '\0' ) {
+        while( (*dst = (char)tolower( *(unsigned char *)src )) != '\0' ) {
             ++src;
             ++dst;
         }

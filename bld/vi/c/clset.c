@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1110,11 +1110,11 @@ static int compareString( void const *p1, void const *p2 )
 /*
  * getSetInfo - build string of values
  */
-static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
+static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
 {
     list_linenum    i;
-    int             i1;
-    int             i2;
+    size_t          i1;
+    size_t          i2;
     char            settokstr[TOK_MAX_LEN + 1];
     char            tmpstr[MAX_STR];
     set_data        **sdata;
@@ -1177,7 +1177,7 @@ vi_rc Set( const char *name )
     list_linenum    i;
     char            **vals = NULL;
     char            **list;
-    int             longest;
+    size_t          longest;
 #endif
 #endif
 

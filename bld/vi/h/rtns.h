@@ -655,7 +655,7 @@ char    *GetNextWord( const char *, char *, const char *);
 char    *GetNextWord1( const char *, char * );
 char    *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );
-int     GetLongestTokenLength( const char * );
+size_t  GetLongestTokenLength( const char * );
 int     GetNumberOfTokens( const char * );
 char    **BuildTokenList( int, char * );
 char    *GetTokenString( const char *, int );

@@ -137,12 +137,10 @@ typedef struct labels {
     unsigned short  cnt;
 } labels;
 
-typedef unsigned short  var_len;
-
 typedef struct vars {
     struct vars *next, *prev;
     char        *value;
-    var_len     len;
+    size_t      len;
     char        name[1];
 } vars;
 
@@ -213,7 +211,7 @@ extern int          CurrentSrcToken;
  */
 
 /* srcassgn.c */
-extern vi_rc    SrcAssign( const char *, vlist * );
+extern vi_rc    SrcAssign( const char *data, vlist *vl );
 
 /* srccs.c */
 extern void     CSInit( void );
@@ -231,16 +229,16 @@ extern void     CSContinue( void );
 extern void     CSQuif( const char *data );
 
 /* srcexpnd.c */
-extern char     *Expand( char *, const char *, vlist * );
+extern char     *Expand( char *, const char *data, vlist *vl );
 
 /* srcexpr.c */
-extern vi_rc    SrcExpr( sfile *, vlist * );
+extern vi_rc    SrcExpr( sfile *, vlist *vl );
 
 /* srcfile.c */
-extern vi_rc    SrcOpen( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcRead( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcWrite( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcClose( sfile *, files *, const char *, vlist * );
+extern vi_rc    SrcOpen( sfile *, files *, const char *data, vlist *vl );
+extern vi_rc    SrcRead( sfile *, files *, const char *data, vlist *vl );
+extern vi_rc    SrcWrite( sfile *, files *, const char *data, vlist *vl );
+extern vi_rc    SrcClose( sfile *, files *, const char *data, vlist *vl );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );
@@ -268,29 +266,30 @@ extern vi_rc    InvokeLineSelHook( linenum s, linenum e );
 extern vi_rc    InvokeMenuHook( int menunum, int line );
 
 /* srcif.c */
-extern vi_rc    SrcIf( sfile **, vlist * );
+extern vi_rc    SrcIf( sfile **, vlist *vl );
 extern vi_rc    GetErrorTokenValue( int *, const char * );
 extern vi_rc    ReadErrorTokens( void );
 
 /* srcinp.c */
-extern vi_rc    SrcInput( const char *, vlist * );
-extern void     SrcGet( const char *, vlist * );
+extern vi_rc    SrcInput( const char *data, vlist *vl );
+extern void     SrcGet( const char *data, vlist *vl );
 
 /* srcnextw.c */
-extern vi_rc    SrcNextWord( const char *, vlist * );
+extern vi_rc    SrcNextWord( const char *data, vlist * );
 
 /* srcvar.c */
 extern void     GlobVarAddStr( const char *name, const char *value );
 extern void     GlobVarAddLong( const char *name, long value );
 extern void     GlobVarAddRowAndCol( void );
 extern void     GlobVarFini( void );
-extern vars     *GlobVarFind( const char * );
-extern vars     *VarFind( const char *, vlist * );
-extern void     VarAddStr( const char *name, const char *value, vlist * );
-extern void     VarAddLong( const char *name, long value, vlist * );
-extern void     VarListDelete( vlist * );
-extern bool     VarName( char *, const char *, vlist * );
+extern vars     *GlobVarFind( const char *name );
+extern vars     *VarFind( const char *name, vlist *vl );
+extern void     VarAddStr( const char *name, const char *value, vlist *vl );
+extern void     VarAddLong( const char *name, long value, vlist *vl );
+extern void     VarListDelete( vlist *vl );
+extern bool     VarName( char *name, const char *data, vlist *vl );
+extern bool     ReadVarName( const char **data, char *name, vlist *vl );
 
-extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );
+extern bool     RunWindowsCommand( const char *data, vi_rc *rc, vlist *vl );
 
 #endif

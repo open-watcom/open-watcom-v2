@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,10 +178,10 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
  */
 static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                                 list_linenum hi_line, type_style *hilight_style, hichar *hi_list,
-                                char **vals, int valoff )
+                                char **vals, size_t valoff )
 {
     int             j;
-    int             k;
+    size_t          k;
     list_linenum    text_lines;
     list_linenum    cl;
     fcb             *cfcb;

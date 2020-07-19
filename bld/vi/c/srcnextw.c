@@ -47,18 +47,10 @@ vi_rc SrcNextWord( const char *data, vlist *vl )
      * get syntax :
      * NEXTWORD src res
      */
-    data = GetNextWord1( data, str );
-    if( *str == '\0' ) {
+    if( !ReadVarName( &data, name1, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( name1, str, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    data = GetNextWord1( data, str );
-    if( *str == '\0' ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    if( !VarName( name2, str, vl ) ) {
+    if( !ReadVarName( &data, name2, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
     v = VarFind( name1, vl );

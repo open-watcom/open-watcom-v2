@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,11 +70,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
      *  strchr %a ch
      *  substr %a n1 n2
      */
-    data = GetNextWord1( data, tmp );
-    if( *tmp == '\0' ) {
-        return( ERR_SRC_INVALID_ASSIGN );
-    }
-    if( !VarName( name, tmp, vl ) ) {
+    if( !ReadVarName( &data, name, vl ) ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
     data = GetNextWord1( data, tmp );
@@ -130,11 +127,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
         }
         j = Tokenize( StrTokens, tmp, false );
         if( j != TOK_INVALID ) {
-            data = GetNextWord1( data, tmp );
-            if( *tmp == '\0' ) {
-                return( ERR_SRC_INVALID_ASSIGN );
-            }
-            if( !VarName( tmp1, tmp, vl ) ) {
+            if( !ReadVarName( &data, tmp1, vl ) ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
             v = VarFind( tmp1, vl );
