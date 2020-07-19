@@ -57,6 +57,8 @@ enum {
     SRC_T_NULL
 };
 
+#define IS_LOCALVAR(n)      (n[0] < 'A' || n[0] > 'Z')
+
 #define SRCHOOK_DEFS \
     pick( SRC_HOOK_WRITE,           0x0001, "Wr"      ) \
     pick( SRC_HOOK_READ,            0x0002, "Rd"      ) \

@@ -156,13 +156,16 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
     bool        glob;
 
     /*
-     * get local/global setting
+     * check local/global setting
      */
-    if( isupper( name[0] ) || vl == NULL ) {
+    if( IS_LOCALVAR( name ) ) {
+        if( vl == NULL )
+            /* error variable list must be defined */
+            return;
+        glob = false;
+    } else {
         vl = &GlobVars;
         glob = true;
-    } else {
-        glob = false;
     }
     var_add( name, val, vl, glob );
 
@@ -222,7 +225,7 @@ vars * VarFind( const char *name, vlist *vl )
     /*
      * search locals
      */
-    if( name[0] < 'A' || name[0] > 'Z' ) {
+    if( IS_LOCALVAR( name ) ) {
         if( vl == NULL ) {
             return( NULL );
         }
