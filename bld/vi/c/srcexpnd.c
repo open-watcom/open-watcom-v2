@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ char *Expand( char *odata, const char *data, vlist *vl )
 
                 v = VarFind( varname, vl );
                 done = false;
-                if( v != NULL && ( !EditFlags.CompileScript || EditFlags.CompileAssignmentsDammit || varname[0] < 'A' || varname[0] > 'Z') ) {
+                if( v != NULL && ( !EditFlags.CompileScript || EditFlags.CompileAssignmentsDammit || IS_LOCALVAR( varname ) ) ) {
                     // output variable value
                     ptr = v->value;
                     while( (ch = *ptr++) != '\0' ) {
