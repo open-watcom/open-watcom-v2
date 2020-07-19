@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,7 +332,7 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
             }
             tpCur = tpCur->next;
             tpNew = tpNew->next;
-        } while( tpCur && tpNew );
+        } while( tpCur != NULL && tpNew != NULL );
         if( tpCur == NULL && tpNew == NULL ) {
             return( fts );
         }

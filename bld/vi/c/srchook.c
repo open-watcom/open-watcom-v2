@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,19 +42,27 @@ extern int MouseX;
 extern int MouseY;
 #endif
 
-static hooktype hookRun;
+static hooktype hookRun = SRC_HOOK_NONE;
 static char     *srcHookData;
 
 /*
  * findHook - look for a hook routine
  */
-static vars *findHook( char *which )
+static vars *findHook( hooktype num )
 {
-    char        foo[64];
+    char        hook_name[20];
     vars        *v;
+    const char  *which;
 
-    MySprintf( foo, "%shook", which );
-    v = VarFind( foo, NULL );
+    switch( num ) {
+    #define pick(e,m,t) case e: which = t; break;
+    SRCHOOK_DEFS
+    #undef pick
+    default:
+        return( NULL );
+    }
+    MySprintf( hook_name, "%shook", which );
+    v = VarFind( hook_name, NULL );
     return( v );
 
 } /* findHook */
@@ -66,28 +74,14 @@ vars *GetHookVar( hooktype num )
 {
     vars        *v;
 
-    if( num == SRC_HOOK_WRITE ) {
-        v = findHook( "Wr" );
-    } else if( num & SRC_HOOK_READ ) {
-        v = findHook( "Rd" );
+    if( num & SRC_HOOK_READ ) {
+        v = findHook( num & SRC_HOOK_READ );
     } else if( num & SRC_HOOK_BUFFIN ) {
-        v = findHook( "Buffin" );
+        v = findHook( num & SRC_HOOK_BUFFIN );
     } else if( num & SRC_HOOK_BUFFOUT ) {
-        v = findHook( "Buffout" );
-    } else if( num == SRC_HOOK_COMMAND ) {
-        v = findHook( "Cmd" );
-    } else if( num == SRC_HOOK_MODIFIED ) {
-        v = findHook( "Mod" );
-    } else if( num == SRC_HOOK_MENU ) {
-        v = findHook( "Menu" );
-    } else if( num == SRC_HOOK_MOUSE_LINESEL ) {
-        v = findHook( "MLsel" );
-    } else if( num == SRC_HOOK_MOUSE_CHARSEL ) {
-        v = findHook( "MCsel" );
-    } else if( num == SRC_HOOK_DDE ) {
-        v = findHook( "DDE" );
+        v = findHook( num & SRC_HOOK_BUFFOUT );
     } else {
-        v = NULL;
+        v = findHook( num );
     }
     return( v );
 
@@ -165,9 +159,9 @@ vi_rc SourceHook( hooktype num, vi_rc lastrc )
 } /* SourceHook */
 
 /*
- * SourceHookData - activate source hook with data
+ * SourceHookWithData - activate source hook with data
  */
-vi_rc SourceHookData( hooktype num, char *data )
+vi_rc SourceHookWithData( hooktype num, char *data )
 {
     vi_rc       rc;
 
@@ -175,14 +169,14 @@ vi_rc SourceHookData( hooktype num, char *data )
     rc = srcHook( num, ERR_NO_ERR );
     return( rc );
 
-} /* SourceHookData */
+} /* SourceHookWithData */
 
 /*
  * HookScriptCheck - check for hook scripts
  */
 void HookScriptCheck( void )
 {
-    if( findHook( "Rd" ) != NULL ) {
+    if( findHook( SRC_HOOK_READ ) != NULL ) {
         ReadErrorTokens();
     }
 
@@ -244,7 +238,7 @@ vi_rc InvokeColSelHook( int sc, int ec )
     }
 #endif
     MySprintf( data, "\"%s\" %d %d %d %d", wordbuff, lne, sc, ec, ec - sc + 1 );
-    return( SourceHookData( SRC_HOOK_MOUSE_CHARSEL, data ) );
+    return( SourceHookWithData( SRC_HOOK_MOUSE_CHARSEL, data ) );
 
 } /* InvokeColSelHook */
 
@@ -287,7 +281,7 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     }
 #endif
     MySprintf( tmp, "%d %d %l %l", lne, col, s, e );
-    return( SourceHookData( SRC_HOOK_MOUSE_LINESEL, tmp ) );
+    return( SourceHookWithData( SRC_HOOK_MOUSE_LINESEL, tmp ) );
 
 } /* InvokeLineSelHook */
 
@@ -300,7 +294,7 @@ vi_rc InvokeMenuHook( int menunum, int line )
     vi_rc       rc;
 
     MySprintf( tmp, "%d %d", menunum, line );
-    rc = SourceHookData( SRC_HOOK_MENU, tmp );
+    rc = SourceHookWithData( SRC_HOOK_MENU, tmp );
     return( rc );
 
 } /* InvokeMenuHook */

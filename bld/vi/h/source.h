@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,18 +57,25 @@ enum {
     SRC_T_NULL
 };
 
-#define SRC_HOOK_WRITE          0x0001
-#define SRC_HOOK_READ           0x0002
-#define SRC_HOOK_BUFFIN         0x0004
-#define SRC_HOOK_BUFFOUT        0x0008
-#define SRC_HOOK_COMMAND        0x0010
-#define SRC_HOOK_MODIFIED       0x0020
-#define SRC_HOOK_MENU           0x0040
-#define SRC_HOOK_MOUSE_LINESEL  0x0080
-#define SRC_HOOK_MOUSE_CHARSEL  0x0100
-#define SRC_HOOK_DDE            0x0200
+#define SRCHOOK_DEFS \
+    pick( SRC_HOOK_WRITE,           0x0001, "Wr"      ) \
+    pick( SRC_HOOK_READ,            0x0002, "Rd"      ) \
+    pick( SRC_HOOK_BUFFIN,          0x0004, "Buffin"  ) \
+    pick( SRC_HOOK_BUFFOUT,         0x0008, "Buffout" ) \
+    pick( SRC_HOOK_COMMAND,         0x0010, "Cmd"     ) \
+    pick( SRC_HOOK_MODIFIED,        0x0020, "Mod"     ) \
+    pick( SRC_HOOK_MENU,            0x0040, "Menu"    ) \
+    pick( SRC_HOOK_MOUSE_LINESEL,   0x0080, "MLsel"   ) \
+    pick( SRC_HOOK_MOUSE_CHARSEL,   0x0100, "MCsel"   ) \
+    pick( SRC_HOOK_DDE,             0x0200, "DDE"     )
 
-typedef int         hooktype;
+typedef enum hooktype {
+    SRC_HOOK_NONE           = 0,
+    #define pick(e,m,t)     e = m,
+    SRCHOOK_DEFS
+    #undef pick
+} hooktype;
+
 typedef char        *label;
 typedef unsigned    srcline;
 
@@ -230,7 +238,7 @@ extern int      FindLabel( labels *labs, const char *lbl );
 /* srchook.c */
 extern vi_rc    SourceHook( hooktype, vi_rc );
 extern vars     *GetHookVar( hooktype num );
-extern vi_rc    SourceHookData( hooktype num, char *data );
+extern vi_rc    SourceHookWithData( hooktype num, char *data );
 extern void     HookScriptCheck( void );
 extern vi_rc    InvokeColSelHook( int sc, int ec );
 extern vi_rc    InvokeLineSelHook( linenum s, linenum e );
