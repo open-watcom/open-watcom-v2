@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
  */
 vi_rc SrcNextWord( const char *data, vlist *vl )
 {
-    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], str[MAX_STR];
+    char        name1[MAX_SRC_LINE], name2[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
     char        *ptr;
 
@@ -50,17 +51,17 @@ vi_rc SrcNextWord( const char *data, vlist *vl )
     if( *str == '\0' ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( v1, str, vl ) ) {
+    if( !VarName( name1, str, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
     data = GetNextWord1( data, str );
     if( *str == '\0' ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( v2, str, vl ) ) {
+    if( !VarName( name2, str, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    v = VarFind( v1, vl );
+    v = VarFind( name1, vl );
     data = SkipLeadingSpaces( v->value );
     if( *data == '"' ) {
         data = GetNextWord( data, str, SingleQuote );
@@ -74,7 +75,7 @@ vi_rc SrcNextWord( const char *data, vlist *vl )
     for( ptr = v->value; (*ptr = *data) != '\0'; ++ptr ) {
         ++data;
     }
-    VarAddStr( v2, str, vl );
+    VarAddStr( name2, str, vl );
     return( ERR_NO_ERR );
 
 } /* SrcNextWord */

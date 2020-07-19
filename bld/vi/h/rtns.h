@@ -755,10 +755,6 @@ void    DeleteResidentScripts( void );
 long    MySpawn( const char * );
 void    ResetSpawnScreen( void );
 
-/* srcvar.c */
-//void    GlobVarAddStr( const char *, const char * );
-//void    GlobVarFini( void );
-
 /* status.c */
 void    UpdateStatusWindow( void );
 vi_rc   NewStatusWindow( void );

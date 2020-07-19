@@ -213,8 +213,8 @@ static void getConfigFilePaths( void )
 #else
     GetWindowsDirectory( path, FILENAME_MAX );
 #endif
-    ReplaceString( &iniPath, path );            /* these freed in WriteProfile */
-    GlobVarAddStr( "IniPath", iniPath );        /* make accessable to scripts */
+    ReplaceString( &iniPath, path );                /* these freed in WriteProfile */
+    GlobVarAddStr( GLOBVAR_INIPATH, iniPath );      /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
     ReplaceString( &iniFile, path);
     strcpy( path, iniPath );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,22 +39,22 @@
 static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
 {
     vi_rc       resp;
-    char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE], str[MAX_STR];
+    char        tmp[MAX_SRC_LINE], name[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
 
     /*
      * get input syntax :
-     * INPUT v1
+     * INPUT name
      */
     GetNextWord1( data, tmp );
     if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_INPUT );
     }
-    if( !VarName( v1, tmp, vl ) ) {
+    if( !VarName( name, tmp, vl ) ) {
         return( ERR_SRC_INVALID_INPUT );
     }
     if( input ) {
-        v = VarFind( v1, vl );
+        v = VarFind( name, vl );
         if( v != NULL ) {
             strcpy( str, v->value );
         } else {
@@ -66,7 +67,7 @@ static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
         tmp[1] = '\0';
     }
     if( resp == GOT_RESPONSE ) {
-        VarAddStr( v1, tmp, vl );
+        VarAddStr( name, tmp, vl );
         return( ERR_NO_ERR );
     }
     return( NO_VALUE_ENTERED );

@@ -591,9 +591,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     AutoSaveInit();
     HalfPageLines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) / 2 - 1;
 #if defined( _M_X64 )
-    GlobVarAddStr( "OSX64", "1" );
+    GlobVarAddStr( GLOBVAR_OSX64, "1" );
 #elif defined( _M_IX86 ) && !defined( _M_I86 )
-    GlobVarAddStr( "OS386", "1" );
+    GlobVarAddStr( GLOBVAR_OS386, "1" );
 #endif
     if( EditVars.StatusString == NULL ) {
         EditVars.StatusString = DupString( "L:$6L$nC:$6C" );

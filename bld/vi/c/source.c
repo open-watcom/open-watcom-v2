@@ -377,17 +377,17 @@ void FileSPVAR( void )
      * build path
      */
     if( CurrentFile == NULL ) {
-        GlobVarAddStr( "F", "" );
-        GlobVarAddStr( "H", "" );
+        GlobVarAddStr( GLOBVAR_FILEFULLNAME, "" );
+        GlobVarAddStr( GLOBVAR_FILEHOME, "" );
         pg.drive = pg.dir = pg.fname = pg.ext = "";
     } else {
-        GlobVarAddStr( "F", CurrentFile->name );
-        GlobVarAddStr( "H", CurrentFile->home );
+        GlobVarAddStr( GLOBVAR_FILEFULLNAME, CurrentFile->name );
+        GlobVarAddStr( GLOBVAR_FILEHOME, CurrentFile->home );
         ConditionalChangeDirectory( CurrentFile->home );
         _splitpath2( CurrentFile->name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     }
-    GlobVarAddStr( "P1", pg.dir );
-    GlobVarAddStr( "D1", pg.drive );
+    GlobVarAddStr( GLOBVAR_USER_FILEPATH, pg.dir );
+    GlobVarAddStr( GLOBVAR_USER_FILEDRIVE, pg.drive );
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
     i = strlen( path );
     if( i-- > 1 ) {
@@ -412,10 +412,10 @@ void FileSPVAR( void )
         StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );
     }
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    GlobVarAddStr( "D", pg.drive );
-    GlobVarAddStr( "P", pg.dir );
-    GlobVarAddStr( "N", pg.fname );
-    GlobVarAddStr( "E", pg.ext );
+    GlobVarAddStr( GLOBVAR_FILEDRIVE, pg.drive );
+    GlobVarAddStr( GLOBVAR_FILEPATH, pg.dir );
+    GlobVarAddStr( GLOBVAR_FILENAME, pg.fname );
+    GlobVarAddStr( GLOBVAR_FILEEXT, pg.ext );
 
 } /* FileSPVAR */
 

@@ -59,17 +59,39 @@ enum {
 
 #define IS_LOCALVAR(n)      (n[0] < 'A' || n[0] > 'Z')
 
+#define GLOBVAR_COLUMN          "C"
+#define GLOBVAR_ROW             "R"
+#define GLOBVAR_FILEHOME        "H"
+#define GLOBVAR_FILEFULLNAME    "F"
+#define GLOBVAR_FILEDRIVE       "D"
+#define GLOBVAR_FILEPATH        "P"
+#define GLOBVAR_FILENAME        "N"
+#define GLOBVAR_FILEEXT         "E"
+#define GLOBVAR_FILEMODIFIED    "M"
+#define GLOBVAR_USER_FILEDRIVE  "D1"
+#define GLOBVAR_USER_FILEPATH   "P1"
+
+#define GLOBVAR_COMMAND_BUFFER  "Com"
+#define GLOBVAR_INIPATH         "IniPath"
+#define GLOBVAR_LINELEN         "LineLen"
+#define GLOBVAR_OS              "OS"
+#define GLOBVAR_OS386           "OS386"
+#define GLOBVAR_OSX64           "OSX64"
+#define GLOBVAR_WINDOW_HEIGHT   "SH"
+#define GLOBVAR_SYSTEM_RETCODE  "Sysrc"
+#define GLOBVAR_WINDOW_WIDTH    "SW"
+
 #define SRCHOOK_DEFS \
-    pick( SRC_HOOK_WRITE,           0x0001, "Wr"      ) \
-    pick( SRC_HOOK_READ,            0x0002, "Rd"      ) \
-    pick( SRC_HOOK_BUFFIN,          0x0004, "Buffin"  ) \
-    pick( SRC_HOOK_BUFFOUT,         0x0008, "Buffout" ) \
-    pick( SRC_HOOK_COMMAND,         0x0010, "Cmd"     ) \
-    pick( SRC_HOOK_MODIFIED,        0x0020, "Mod"     ) \
-    pick( SRC_HOOK_MENU,            0x0040, "Menu"    ) \
-    pick( SRC_HOOK_MOUSE_LINESEL,   0x0080, "MLsel"   ) \
-    pick( SRC_HOOK_MOUSE_CHARSEL,   0x0100, "MCsel"   ) \
-    pick( SRC_HOOK_DDE,             0x0200, "DDE"     )
+    pick( SRC_HOOK_WRITE,           0x0001, "Wrhook"      ) \
+    pick( SRC_HOOK_READ,            0x0002, "Rdhook"      ) \
+    pick( SRC_HOOK_BUFFIN,          0x0004, "Buffinhook"  ) \
+    pick( SRC_HOOK_BUFFOUT,         0x0008, "Buffouthook" ) \
+    pick( SRC_HOOK_COMMAND,         0x0010, "Cmdhook"     ) \
+    pick( SRC_HOOK_MODIFIED,        0x0020, "Modhook"     ) \
+    pick( SRC_HOOK_MENU,            0x0040, "Menuhook"    ) \
+    pick( SRC_HOOK_MOUSE_LINESEL,   0x0080, "MLselhook"   ) \
+    pick( SRC_HOOK_MOUSE_CHARSEL,   0x0100, "MCselhook"   ) \
+    pick( SRC_HOOK_DDE,             0x0200, "DDEhook"     )
 
 typedef enum hooktype {
     SRC_HOOK_NONE           = 0,
@@ -262,11 +284,12 @@ extern void     GlobVarAddStr( const char *name, const char *value );
 extern void     GlobVarAddLong( const char *name, long value );
 extern void     GlobVarAddRowAndCol( void );
 extern void     GlobVarFini( void );
+extern vars     *GlobVarFind( const char * );
+extern vars     *VarFind( const char *, vlist * );
 extern void     VarAddStr( const char *name, const char *value, vlist * );
 extern void     VarAddLong( const char *name, long value, vlist * );
 extern void     VarListDelete( vlist * );
 extern bool     VarName( char *, const char *, vlist * );
-extern vars     *VarFind( const char *, vlist * );
 
 extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );
 

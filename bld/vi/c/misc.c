@@ -106,7 +106,7 @@ static void preSpawn( void )
 static void postSpawn( long rc )
 {
     restorePrompt();
-    GlobVarAddLong( "Sysrc", rc );
+    GlobVarAddLong( GLOBVAR_SYSTEM_RETCODE, rc );
     UpdateCurrentDirectory();
 
 #ifndef __WIN__

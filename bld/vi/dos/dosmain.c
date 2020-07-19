@@ -41,7 +41,7 @@ void main( int argc, char *argv[] )
     argc = argc;
     EXEName = argv[0];
     InitialStack();
-    GlobVarAddStr( "OS", "dos" );
+    GlobVarAddStr( GLOBVAR_OS, "dos" );
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
     FinalStack();

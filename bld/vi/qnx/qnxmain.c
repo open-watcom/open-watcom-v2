@@ -42,7 +42,7 @@ void main( int argc, char *argv[] )
     argc = argc;
     EXEName = argv[-1];
     InitialStack();
-    GlobVarAddStr( "OS", "unix" );
+    GlobVarAddStr( GLOBVAR_OS, "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
     FinalStack();

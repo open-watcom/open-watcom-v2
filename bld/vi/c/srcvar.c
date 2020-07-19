@@ -42,7 +42,11 @@ static vlist    GlobVars = { NULL, NULL };
 /*
  * var_add - add a new variable
  */
+#ifndef VICOMP
 static void var_add( const char *name, const char *val, vlist *vl, bool glob )
+#else
+static void var_add( const char *name, const char *val, vlist *vl )
+#endif
 {
     vars        *new, *curr;
     var_len     len;
@@ -74,14 +78,62 @@ static void var_add( const char *name, const char *val, vlist *vl, bool glob )
     new->value = DupString( val );
     new->len = len;
 
-    if( glob ) {
 #ifndef VICOMP
+    if( glob ) {
         EditFlags.CompileAssignments = false;
-#endif
     }
+#endif
     AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
 
 } /* var_add */
+
+/*
+ * VarAddStr - add a new variable
+ */
+void VarAddStr( const char *name, const char *val, vlist *vl )
+{
+#ifndef VICOMP
+    bool        glob;
+#endif
+
+    /*
+     * check locals/globals
+     */
+    if( IS_LOCALVAR( name ) ) {
+        if( vl == NULL )
+            /* error variable list must be defined */
+            return;
+#ifndef VICOMP
+        glob = false;
+#endif
+    } else {
+        vl = &GlobVars;
+#ifndef VICOMP
+        glob = true;
+#endif
+    }
+#ifndef VICOMP
+    var_add( name, val, vl, glob );
+#else
+    var_add( name, val, vl );
+#endif
+
+} /* VarAddStr */
+
+/*
+ * VarListDelete - delete a local variable list
+ */
+void VarListDelete( vlist *vl )
+{
+    vars *curr, *next;
+
+    for( curr = vl->head; curr != NULL; curr = next ) {
+        next = curr->next;
+        MemFree( curr->value );
+        MemFree( curr );
+    }
+
+} /* VarListDelete */
 
 #ifndef VICOMP
 /*
@@ -108,10 +160,10 @@ void GlobVarAddRowAndCol( void )
         len = CurrentLine->len;
     }
 
-    GlobVarAddLong( "R", CurrentPos.line );
-    GlobVarAddLong( "Linelen", len );
+    GlobVarAddLong( GLOBVAR_ROW, CurrentPos.line );
+    GlobVarAddLong( GLOBVAR_LINELEN, len );
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    GlobVarAddLong( "C", vc );
+    GlobVarAddLong( GLOBVAR_COLUMN, vc );
     // VarDump( );
 
 } /* GlobVarAddRowAndCol */
@@ -121,7 +173,7 @@ void GlobVarAddRowAndCol( void )
  */
 void SetModifiedVar( bool val )
 {
-    GlobVarAddLong( "M", val );
+    GlobVarAddLong( GLOBVAR_FILEMODIFIED, val );
 
 } /* SetModifiedVar */
 
@@ -146,47 +198,7 @@ void VarAddLong( const char *name, long val, vlist *vl )
     VarAddStr( name, ltoa( val, ibuff, 10 ), vl );
 
 } /* VarAddLong */
-#endif /* VICOMP */
 
-/*
- * VarAddStr - add a new variable
- */
-void VarAddStr( const char *name, const char *val, vlist *vl )
-{
-    bool        glob;
-
-    /*
-     * check local/global setting
-     */
-    if( IS_LOCALVAR( name ) ) {
-        if( vl == NULL )
-            /* error variable list must be defined */
-            return;
-        glob = false;
-    } else {
-        vl = &GlobVars;
-        glob = true;
-    }
-    var_add( name, val, vl, glob );
-
-} /* VarAddStr */
-
-/*
- * VarListDelete - delete a local variable list
- */
-void VarListDelete( vlist *vl )
-{
-    vars *curr, *next;
-
-    for( curr = vl->head; curr != NULL; curr = next ) {
-        next = curr->next;
-        MemFree( curr->value );
-        MemFree( curr );
-    }
-
-} /* VarListDelete */
-
-#ifndef VICOMP
 /*
  * VarName - parse a variable name of the form %(foo)
  */
@@ -216,34 +228,51 @@ bool VarName( char *new, const char *name, vlist *vl )
 } /* VarName */
 
 /*
- * VarFind - locate data for a specific variable name
+ * var_find - locate data for a specific variable name
  */
-vars * VarFind( const char *name, vlist *vl )
+static vars *var_find( const char *name, vars *curr )
 {
-    vars        *curr;
-
-    /*
-     * search locals
-     */
-    if( IS_LOCALVAR( name ) ) {
-        if( vl == NULL ) {
-            return( NULL );
-        }
-    } else {
-        vl = &GlobVars;
-    }
-
-    /*
-     * search globals
-     */
-    for( curr = vl->head; curr != NULL; curr = curr->next ) {
+    for( ; curr != NULL; curr = curr->next ) {
         if( strcmp( name, curr->name ) == 0 ) {
             return( curr );
         }
     }
     return( NULL );
 
+} /* var_find */
+
+/*
+ * VarFind - locate data for a specific variable name
+ */
+vars *VarFind( const char *name, vlist *vl )
+{
+    vars        *curr;
+
+    /*
+     * check locals/globals
+     */
+    if( IS_LOCALVAR( name ) ) {
+        if( vl == NULL ) {
+            /* error variable list must be defined */
+            return( NULL );
+        }
+        curr = vl->head;
+    } else {
+        curr = GlobVars.head;
+    }
+    return( var_find( name, curr ) );
+
 } /* VarFind */
+
+
+/*
+ * GlobVarFind - locate data for a specific variable name
+ */
+vars *GlobVarFind( const char *name )
+{
+    return( var_find( name, GlobVars.head ) );
+
+} /* GlobVarFind */
 
 
 /* Free the globals */
@@ -251,6 +280,8 @@ void GlobVarFini( void )
 {
     VarListDelete( &GlobVars );
 }
+
+#endif /* VICOMP */
 
 #if 0
 void VarDump( void ) {
@@ -286,5 +317,3 @@ void VarSC( char *str )
     /// DEBUG END
 }
 #endif
-
-#endif /* VICOMP */

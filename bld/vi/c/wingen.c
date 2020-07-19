@@ -236,8 +236,8 @@ bool ColumnInWindow( int col, int *diff )
  */
 void SetWindowSizes( void )
 {
-    GlobVarAddLong( "SW", EditVars.WindMaxWidth );
-    GlobVarAddLong( "SH", EditVars.WindMaxHeight );
+    GlobVarAddLong( GLOBVAR_WINDOW_WIDTH, EditVars.WindMaxWidth );
+    GlobVarAddLong( GLOBVAR_WINDOW_HEIGHT, EditVars.WindMaxHeight );
     EditVars.SpinX = EditVars.WindMaxWidth - 15;
     EditVars.ClockX = EditVars.WindMaxWidth - 9;
     filecw_info.area.x2 = EditVars.WindMaxWidth - 5;

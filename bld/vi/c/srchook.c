@@ -50,20 +50,16 @@ static char     *srcHookData;
  */
 static vars *findHook( hooktype num )
 {
-    char        hook_name[20];
-    vars        *v;
-    const char  *which;
+    const char  *name;
 
     switch( num ) {
-    #define pick(e,m,t) case e: which = t; break;
+    #define pick(e,m,t) case e: name = t; break;
     SRCHOOK_DEFS
     #undef pick
     default:
         return( NULL );
     }
-    MySprintf( hook_name, "%shook", which );
-    v = VarFind( hook_name, NULL );
-    return( v );
+    return( GlobVarFind( name ) );
 
 } /* findHook */
 
@@ -109,7 +105,7 @@ static vi_rc srcHook( hooktype num, vi_rc lastrc )
      */
     if( v != NULL ) {
         if( num == SRC_HOOK_COMMAND ) {
-            GlobVarAddStr( "Com", CommandBuffer );
+            GlobVarAddStr( GLOBVAR_COMMAND_BUFFER, CommandBuffer );
         }
 //        if( num == SRC_HOOK_MODIFIED ) {
 //            lastrc = LastEvent;
@@ -126,7 +122,7 @@ static vi_rc srcHook( hooktype num, vi_rc lastrc )
          * if we had a command hook, look for replacement variable
          */
         if( num == SRC_HOOK_COMMAND ) {
-            v = VarFind( "Com", NULL );
+            v = GlobVarFind( GLOBVAR_COMMAND_BUFFER );
             if( v != NULL ) {
                 strcpy( CommandBuffer, v->value );
             }

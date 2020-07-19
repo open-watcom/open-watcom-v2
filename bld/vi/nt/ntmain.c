@@ -53,7 +53,7 @@ void main( int argc, char *argv[] )
     InitMem();
     EXEName = _cmdname( buffer );
     EditFlags.HasSystemMouse = true;
-    GlobVarAddStr( "OS", "nt" );
+    GlobVarAddStr( GLOBVAR_OS, "nt" );
     Comspec = getenv( "ComSpec" );
     InitializeEditor();
     EditMain();

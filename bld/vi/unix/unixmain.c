@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
 
     InitMem();
     EXEName = _cmdname( buffer );
-    GlobVarAddStr( "OS", "unix" );
+    GlobVarAddStr( GLOBVAR_OS, "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
     EditMain();

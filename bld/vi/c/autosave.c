@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,17 +87,17 @@ void GetCurrentFilePath( char *path )
 {
     vars        *v;
 
-    v = VarFind( "D", NULL );
-    if( v ) {
+    v = GlobVarFind( GLOBVAR_FILEDRIVE );
+    if( v != NULL ) {
         strcpy( path, v->value );
-        v = VarFind( "P", NULL );
-        if( v ) {
+        v = GlobVarFind( GLOBVAR_FILEPATH );
+        if( v != NULL ) {
             strcat( path, v->value );
-            v = VarFind( "N", NULL );
-            if( v ) {
+            v = GlobVarFind( GLOBVAR_FILENAME );
+            if( v != NULL ) {
                 strcat( path, v->value );
-                v = VarFind( "E", NULL );
-                if( v ) {
+                v = GlobVarFind( GLOBVAR_FILEEXT );
+                if( v != NULL ) {
                     strcat( path, v->value );
                 }
             }

@@ -261,7 +261,7 @@ vi_rc GoToColumn( int colno, int maxcol )
     SetWindowCursor();
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     UpdateStatusWindow();
-    GlobVarAddLong( "C", vc );
+    GlobVarAddLong( GLOBVAR_COLUMN, vc );
     UpdateCursorDrag();
     return( ERR_NO_ERR );
 
@@ -396,7 +396,7 @@ bool CheckCurrentColumn( void )
         */
         PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     }
-    GlobVarAddLong( "C", CurrentPos.column );
+    GlobVarAddLong( GLOBVAR_COLUMN, CurrentPos.column );
     return( dispall );
 
 } /* CheckCurrentColumn */

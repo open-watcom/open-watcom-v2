@@ -141,9 +141,9 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 
     Comspec = getenv( "COMSPEC" );
 #ifdef __WINDOWS__
-    GlobVarAddStr( "OS", "win" );
+    GlobVarAddStr( GLOBVAR_OS, "win" );
 #else
-    GlobVarAddStr( "OS", "winnt" );
+    GlobVarAddStr( GLOBVAR_OS, "winnt" );
 #endif
     SetConfigFileName( CFG_NAME );
     ReadProfile();
