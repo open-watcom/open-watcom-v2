@@ -180,7 +180,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
         }
 
         if( EditFlags.Appending ) {
-            if( curr->hasvar) {
+            if( curr->hasvar ) {
                 tmp = Expand( buff, tmp, &vl );
             }
             rc = AppendAnother( tmp );
@@ -198,7 +198,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
             }
             break;
         } else if( curr->token > SRC_T_NULL ) {
-            if( curr->hasvar) {
+            if( curr->hasvar ) {
                 tmp = Expand( buff, tmp, &vl );
             }
             rc = TryCompileableToken( cTokenID, tmp, false );
