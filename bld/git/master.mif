@@ -3,7 +3,10 @@ proj_name = cpyright
 cpyright_autodepends = .autodepend
 
 !include cproj.mif
+!include defrule.mif
 !include deftarg.mif
+
+.c : ../c
 
 objs = cpyright.obj
 
