@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +79,7 @@ bool GetDWORD( const char **str, DWORD *res )
 /*
  * RunWindowsCommand - try to run a Windows specific command
  */
-bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
+bool RunWindowsCommand( const char *cmd, vi_rc *result, vars_list *vl )
 {
     char        str[MAX_INPUT_LINE];
     char        tmp[MAX_INPUT_LINE];

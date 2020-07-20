@@ -149,7 +149,7 @@ FILE *GetFromEnvAndOpen( const char *path )
 /*
  * initSource - initialize language variables
  */
-static vi_rc initSource( vlist *vl )
+static vi_rc initSource( vars_list *vl )
 {
     VarAddStr( "*", "", vl );
     return( ERR_NO_ERR );
@@ -159,7 +159,7 @@ static vi_rc initSource( vlist *vl )
 /*
  * finiSource - release language variables
  */
-static void finiSource( labels *lab, vlist *vl, sfile *sf )
+static void finiSource( labels *lab, vars_list *vl, sfile *sf )
 {
     sfile       *curr, *tmp;
 
@@ -184,7 +184,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vars_list *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -287,7 +287,7 @@ bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 static vi_rc Compile( const char *fn, const char *data )
 {
     labels      *lab, lb;
-    vlist       vl;
+    vars_list   vl;
     sfile       *sf;
     char        sname[FILENAME_MAX];
     vi_rc       rc;

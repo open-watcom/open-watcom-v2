@@ -37,15 +37,15 @@
 #include "clibext.h"
 
 
-static vlist    GlobVars = { NULL, NULL };
+static vars_list    GlobVars = { NULL, NULL };
 
 /*
  * var_add - add a new variable
  */
 #ifndef VICOMP
-static void var_add( const char *name, const char *val, vlist *vl, bool glob )
+static void var_add( const char *name, const char *val, vars_list *vl, bool glob )
 #else
-static void var_add( const char *name, const char *val, vlist *vl )
+static void var_add( const char *name, const char *val, vars_list *vl )
 #endif
 {
     vars        *new, *curr;
@@ -90,7 +90,7 @@ static void var_add( const char *name, const char *val, vlist *vl )
 /*
  * VarAddStr - add a new variable
  */
-void VarAddStr( const char *name, const char *val, vlist *vl )
+void VarAddStr( const char *name, const char *val, vars_list *vl )
 {
 #ifndef VICOMP
     bool        glob;
@@ -123,7 +123,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
 /*
  * VarListDelete - delete a local variable list
  */
-void VarListDelete( vlist *vl )
+void VarListDelete( vars_list *vl )
 {
     vars *curr, *next;
 
@@ -191,7 +191,7 @@ void GlobVarAddLong( const char *name, long val )
 /*
  * VarAddLong
  */
-void VarAddLong( const char *name, long val, vlist *vl )
+void VarAddLong( const char *name, long val, vars_list *vl )
 {
     char ibuff[MAX_NUM_STR];
 
@@ -202,7 +202,7 @@ void VarAddLong( const char *name, long val, vlist *vl )
 /*
  * VarName - parse a variable name of the form %(foo)
  */
-bool VarName( char *name, const char *data, vlist *vl )
+bool VarName( char *name, const char *data, vars_list *vl )
 {
     char    tmp[MAX_SRC_LINE];
     size_t  len;
@@ -230,7 +230,7 @@ bool VarName( char *name, const char *data, vlist *vl )
 /*
  * ReadVarName - extract a variable name from a command
  */
-bool ReadVarName( const char **data, char *name, vlist *vl )
+bool ReadVarName( const char **data, char *name, vars_list *vl )
 {
     char    str[MAX_INPUT_LINE];
 
@@ -262,7 +262,7 @@ static vars *var_find( const char *name, vars *curr )
 /*
  * VarFind - locate data for a specific variable name
  */
-vars *VarFind( const char *name, vlist *vl )
+vars *VarFind( const char *name, vars_list *vl )
 {
     vars        *curr;
 

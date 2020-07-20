@@ -91,7 +91,7 @@ static bool GetHDDEDATA( const char **str, HDDEDATA *res )
 /*
  * RunDDECommand - try to run a Windows specific command
  */
-bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vlist *vl )
+bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars_list *vl )
 {
     vi_rc       rc;
     char        tmp2[MAX_INPUT_LINE];

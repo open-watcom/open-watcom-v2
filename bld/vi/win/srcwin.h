@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,4 +64,4 @@ enum {
     #undef pick
 };
 
-bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist *vl );
+bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vars_list *vl );

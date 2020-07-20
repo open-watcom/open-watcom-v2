@@ -41,7 +41,7 @@
 /*
  * SrcOpen - open a file
  */
-vi_rc SrcOpen( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcOpen( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        name[MAX_SRC_LINE], id[MAX_SRC_LINE], type[MAX_SRC_LINE], t;
@@ -123,7 +123,7 @@ vi_rc SrcOpen( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcRead - read file
  */
-vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcRead( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     size_t      j;
@@ -189,7 +189,7 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcWrite - write file
  */
-vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
@@ -228,7 +228,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcClose - close a work file
  */
-vi_rc SrcClose( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcClose( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE];

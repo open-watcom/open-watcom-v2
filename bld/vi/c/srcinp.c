@@ -36,7 +36,7 @@
 /*
  * srcGenericInput - input a value to a variable
  */
-static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
+static vi_rc srcGenericInput( const char *data, vars_list *vl, bool input )
 {
     vi_rc       resp;
     char        tmp[MAX_SRC_LINE], name[MAX_SRC_LINE], str[MAX_STR];
@@ -70,13 +70,13 @@ static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
 
 } /* srcGenericInput */
 
-vi_rc SrcInput( const char *tmp, vlist *vl )
+vi_rc SrcInput( const char *tmp, vars_list *vl )
 {
     return( srcGenericInput( tmp, vl, true ) );
 
 } /* SrcInput */
 
-void SrcGet( const char *tmp, vlist *vl )
+void SrcGet( const char *tmp, vars_list *vl )
 {
     srcGenericInput( tmp, vl, false );
 

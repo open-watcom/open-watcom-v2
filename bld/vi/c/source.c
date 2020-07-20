@@ -42,9 +42,9 @@
 #include "clibext.h"
 
 
-static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
-static vi_rc    initSource( vlist *, const char * );
-static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, const char *);
+static void     finiSource( labels *, vars_list *, sfile *, undo_stack * );
+static vi_rc    initSource( vars_list *, const char * );
+static vi_rc    barfScript( const char *, sfile *, vars_list *, srcline *, const char *);
 static void     addResidentScript( const char *, sfile *, labels * );
 static resident *residentScript( const char * );
 static void     finiSourceErrFile( const char * );
@@ -69,7 +69,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
-    vlist       vl;
+    vars_list   vl;
     files       fi;
     sfile       *sf, *curr;
     char        buff[MAX_SRC_LINE];
@@ -306,7 +306,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
 /*
  * initSource - initialize command parms variables
  */
-static vi_rc initSource( vlist *vl, const char *data )
+static vi_rc initSource( vars_list *vl, const char *data )
 {
     int         j;
     char        tmp[MAX_SRC_LINE];
@@ -335,7 +335,7 @@ static vi_rc initSource( vlist *vl, const char *data )
 /*
  * finiSource - release language variables
  */
-static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
+static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomic )
 {
     info        *cinfo;
 
@@ -470,7 +470,7 @@ static void finiSourceErrFile( const char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vars_list *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;

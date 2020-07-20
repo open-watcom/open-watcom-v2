@@ -55,7 +55,7 @@ static bool addChar( char ch )
 /*
  * Expand - expand local variables
  */
-char *Expand( char *odata, const char *data, vlist *vl )
+char *Expand( char *odata, const char *data, vars_list *vl )
 {
     char        result[MAX_SRC_LINE];
     char        varname[MAX_SRC_LINE];

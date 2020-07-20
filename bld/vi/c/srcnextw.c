@@ -37,7 +37,7 @@
  * SrcNextWord - get next word in a variable, putting result into another
  *               variable
  */
-vi_rc SrcNextWord( const char *data, vlist *vl )
+vi_rc SrcNextWord( const char *data, vars_list *vl )
 {
     char        name1[MAX_SRC_LINE], name2[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 /*
  * SrcIf - process if statement
  */
-vi_rc SrcIf( sfile **sf, vlist *vl )
+vi_rc SrcIf( sfile **sf, vars_list *vl )
 {
     char        tmp1[MAX_SRC_LINE];
     const char  *v1;

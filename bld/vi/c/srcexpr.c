@@ -41,7 +41,7 @@
 /*
  * SrcExpr - add a value to a variable
  */
-vi_rc SrcExpr( sfile *sf, vlist *vl )
+vi_rc SrcExpr( sfile *sf, vars_list *vl )
 {
     char        name[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
     const char  *v1;

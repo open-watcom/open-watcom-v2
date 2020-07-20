@@ -43,7 +43,7 @@
 /*
  * SrcAssign - assign a value to a variable
  */
-vi_rc SrcAssign( const char *data, vlist *vl )
+vi_rc SrcAssign( const char *data, vars_list *vl )
 {
     int         i, j, k, l;
     long        val;
