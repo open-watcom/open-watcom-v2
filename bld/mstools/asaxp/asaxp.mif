@@ -1,14 +1,9 @@
-target_cpu = axp
+name = as
 
-!include ../../../master.mif
+target_cpu = axp
 
 common_objs = parse.obj $(mstools_objs)
 objs  = asaxp.obj message.obj translat.obj $(common_objs)
+prebuild_objs = cmdlnprs.gc
 
-asaxp.exe : cmdlnprs.gc $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+!include ../../../master.mif

@@ -1,2 +1,9 @@
 target_cpu = axp
+
+proj_name = linkaxp
+
+!ifndef linkaxp_autodepends
+linkaxp_autodepends = .AUTODEPEND
+!endif
+
 !include ../../link.mif

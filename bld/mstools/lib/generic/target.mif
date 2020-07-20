@@ -1,1 +1,7 @@
+proj_name = lib
+
+!ifndef lib_autodepends
+lib_autodepends = .AUTODEPEND
+!endif
+
 !include ../../lib.mif

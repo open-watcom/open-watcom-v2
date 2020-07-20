@@ -1,2 +1,9 @@
 target_cpu = 386
+
+proj_name = link386
+
+!ifndef link386_autodepends
+link386_autodepends = .AUTODEPEND
+!endif
+
 !include ../../link.mif

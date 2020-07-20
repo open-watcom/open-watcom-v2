@@ -1,2 +1,9 @@
 target_cpu = ppc
+
+proj_name = libppc
+
+!ifndef libppc_autodepends
+libppc_autodepends = .AUTODEPEND
+!endif
+
 !include ../../lib.mif

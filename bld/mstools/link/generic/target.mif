@@ -1,1 +1,7 @@
+proj_name = link
+
+!ifndef link_autodepends
+link_autodepends = .AUTODEPEND
+!endif
+
 !include ../../link.mif

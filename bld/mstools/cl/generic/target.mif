@@ -1,1 +1,7 @@
+proj_name = cl
+
+!ifndef cl_autodepends
+cl_autodepends = .AUTODEPEND
+!endif
+
 !include ../../cl.mif

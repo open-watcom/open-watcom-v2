@@ -1,2 +1,9 @@
 target_cpu = 386
+
+proj_name = lib386
+
+!ifndef lib386_autodepends
+lib386_autodepends = .AUTODEPEND
+!endif
+
 !include ../../lib.mif

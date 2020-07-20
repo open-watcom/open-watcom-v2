@@ -1,2 +1,9 @@
 target_cpu = axp
+
+proj_name = claxp
+
+!ifndef claxp_autodepends
+claxp_autodepends = .AUTODEPEND
+!endif
+
 !include ../../cl.mif
