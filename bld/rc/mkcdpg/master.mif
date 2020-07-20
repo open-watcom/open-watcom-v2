@@ -1,4 +1,4 @@
-proj_name       = mkcdpg
+proj_name   = mkcdpg
 
 mkcdpg_autodepends = .AUTODEPEND
 
@@ -12,10 +12,4 @@ inc_dirs        = -I"$(wrc_dir)/h"
 
 objs = mkcdpg.obj
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+!include exetarg.mif

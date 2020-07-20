@@ -1,10 +1,10 @@
 proj_name = yacc
+
 yacc_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include exerule.mif
 
 inc_dirs = -I"$(yacc_dir)/h"
 
@@ -30,4 +30,4 @@ objs =                  &
         yacc.obj
 # genc.obj, genobj.obj, and recover.obj are unused
 
-$(proj_name).exe : $(objs)
+!include exetarg.mif

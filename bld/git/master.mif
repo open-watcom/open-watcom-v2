@@ -1,11 +1,10 @@
 proj_name = cpyright
 
-watcom_autodepends = .autodepend
-
-name = $(proj_name)
+cpyright_autodepends = .autodepend
 
 !include cproj.mif
 !include deftarg.mif
 
-$(name).exe : ../c/$(name).c $(__MAKEFILES__)
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+objs = cpyright.obj
+
+!include exetarg.mif
