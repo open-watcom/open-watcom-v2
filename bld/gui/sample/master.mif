@@ -12,6 +12,13 @@ rcname=$(name)pm
 !endif
 !endif
 
+!ifeq host_os nov
+exe_ext = nlm
+additional_cleanup_sys = *.nlm
+!else
+exe_ext = exe
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
