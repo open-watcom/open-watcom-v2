@@ -57,7 +57,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "test.h"
+#include "rcstest.h"
 #include "rcsapi.h"
 #include "wclbproc.h"
 
