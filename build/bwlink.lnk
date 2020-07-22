@@ -173,21 +173,6 @@ system begin pharlap
     format pharlap ^
 end
 
-system begin pharlap_linux
-    option osname='Linux x86 PharLap'
-    libpath %OWSRCDIR%/clib/library/linux.386/mf_r
-    libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
-    format pharlap ^
-end
-
-system begin pharlap_qnx
-    option osname='QNX 32-bit PharLap'
-    libpath %OWSRCDIR%/fpuemu/386/stub386
-    libpath %OWSRCDIR%/clib/library/qnx.386/ms_r
-    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
-    format pharlap rex ^
-end
-
 system begin os2
     option osname='OS/2 16-bit'
     library os2.lib
@@ -674,6 +659,31 @@ system begin novell
     libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_s
     module clib
     import @%OWSRCDIR%/os_supp/novell/common/imp/owclib.imp
+end
+
+system begin rex_dos
+    option osname='DOS 32-bit Pharlap REX'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    disable 1014,1023
+    format pharlap rex ^
+end
+
+system begin rex_linux
+    option osname='Linux 32-bit Pharlap REX'
+    libpath %OWSRCDIR%/clib/library/linux.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/mf_r
+    disable 1014,1023
+    format pharlap rex ^
+end
+
+system begin rex_qnx
+    option osname='QNX 32-bit Pharlap REX'
+    libpath %OWSRCDIR%/clib/library/qnx.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    disable 1014,1023
+    format pharlap rex ^
 end
 
 system begin bin
