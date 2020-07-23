@@ -4,7 +4,7 @@ dlltarg_name = $(proj_name)
 !ifndef dlltarg_ext
 dlltarg_ext = .dll
 !endif
-$(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $(dlltarg_res) $(__MAKEFILES__)
+$(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $(dlltarg_objs) $(dlltarg_libs) $(ldflags_dll)
@@ -33,7 +33,7 @@ $(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dllta
 !ifeq verbose 0
     @echo bind res (ver+appl) $@
 !endif
-    $(rc_bnd) $(dlltarg_res) $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
+    $(rc_bnd) $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
@@ -46,7 +46,7 @@ $(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dllta
 !ifeq verbose 0
     @echo bind res (appl) $@
 !endif
-    $(rc_bnd) $(dlltarg_res) $@
+    $(rc_bnd) $+$(dlltarg_res)$- $@
 !endif
 #########################
 # Windows 3.x resources
