@@ -164,8 +164,11 @@ dlltarg_libs          = $(asminline_lib) $(cg_libs)
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-dlltarg_modname_nt    = op modname='$(dllname).dll'
-dlltarg_modname_os2   = op modname='$(dllname)'
+modname_nt  = op modname='$(dllname).dll'
+modname_os2 = op modname='$(dllname)'
+!ifdef modname_$(host_os)
+dlltarg_indirect      = $(modname_$(host_os))
+!endif
 
 !include dlltarg.mif
 

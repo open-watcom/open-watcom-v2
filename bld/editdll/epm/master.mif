@@ -19,7 +19,7 @@ inc_dirs = -I.. -I"../.."
 
 extra_cpp_flags = -DWEDITDLL
 
-extra_l_flags_dll = op elim @dll.lnk
+extra_l_flags_dll = op elim
 
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
@@ -27,8 +27,8 @@ extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
 all: epmlink.dll wedit.dll .SYMBOLIC
 
-dlltarg_prebuild_objs = dll.lnk
 dlltarg_objs = epmlink.obj
+dlltarg_indirect = option description 'Open Watcom Editor DLL for EPM'
 
 dlltarg_name = epmlink
 !include dlltarg.mif
@@ -43,6 +43,3 @@ epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
 epmspy.exe : epmspy.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ sys os2v2_pm file {epmspy.obj}
-
-dll.lnk : $(__MAKEFILES__)
-    @%write $@ option description 'Open Watcom Editor DLL for EPM'

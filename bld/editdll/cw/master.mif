@@ -20,7 +20,7 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zw -zu
 
-extra_l_flags_dll = op elim @dll.lnk
+extra_l_flags_dll = op elim
 extra_l_flags_dll_win = export WEP RESIDENT library ddeml
 extra_l_flags_dll_win += op stack=8k, rwr
 extra_l_flags_dll_win += segment _TEXT PRELOAD FIXED
@@ -31,17 +31,14 @@ verrc_dll = weditcw
 
 all: weditcw.dll wedit.dll .SYMBOLIC
 
-dlltarg_prebuild_objs = dll.lnk
 dlltarg_objs = weditcw.obj
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
+dlltarg_indirect = option description 'Open Watcom Editor DLL for Codewright'
 
 dlltarg_name = weditcw
 !include dlltarg.mif
 
 dlltarg_name = wedit
 !include dlltarg.mif
-
-dll.lnk : $(__MAKEFILES__)
-    @%write $@ option description 'Open Watcom Editor DLL for Codewright'

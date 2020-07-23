@@ -13,9 +13,19 @@ $(exetarg_name)$(exetarg_ext) : $(exetarg_prebuild_objs) $(exetarg_objs) $(exeta
     $(cl) $(clflags) $(exetarg_objs) $(exetarg_libs) $(ldflags)
 !endif
 !else ifdef exetarg_libs
-    $(linker) name $@ $(lflags) file { $(exetarg_objs) } library { $(exetarg_libs) }
+    $(linker) name $@ $(lflags) file { $(exetarg_objs) } library { $(exetarg_libs) } &
+!ifdef exetarg_indirect
+    @<<
+    $(exetarg_indirect)
+<<
+!endif
 !else
-    $(linker) name $@ $(lflags) file { $(exetarg_objs) }
+    $(linker) name $@ $(lflags) file { $(exetarg_objs) } &
+!ifdef exetarg_indirect
+    @<<
+    $(exetarg_indirect)
+<<
+!endif
 !endif
 #########################
 # add resources to EXE
