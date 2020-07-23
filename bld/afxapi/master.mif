@@ -336,26 +336,19 @@ $(intname).lib: $(objs) $(__MAKEFILES__)
     @rm tmp2.gdf
     @rm tmp3.gdf
 
-# systems where version resource must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
 verrc_dll = $(dllname)
 !include verrc.mif
 
-$(dllname).dll: $(intname).lib $(dllname).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(intname).lib $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk $(lflags_dll)
-    @%append $^&.lnk file $(intname).lib
-    @%append $^&.lnk export @export.gdf
-    @%make echo_link
-    $(linker) name $(dllname).dll @$^&.lnk
-!endif
-    @%make bind_res_add_version_dll
+extra_l_flags_dll = export @export.gdf
+
+dlltarg_libs = $(intname).lib
+dlltarg_res = $(dllname).res
+# systems where version resource must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+dlltarg_name = $(dllname)
+!include dlltarg.mif
 
 $(dllname).lib: $(dllname).dll $(__MAKEFILES__)
     @%make echo_lib

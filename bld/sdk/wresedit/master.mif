@@ -57,27 +57,18 @@ extra_l_flags_dll = op implib
 extra_l_flags_dll_nt = op heap=16k commit heap=8k
 extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
 !include verrc.mif
 
-libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
+dlltarg_prebuild_objs = rcstr.gh
+dlltarg_objs = $(objs)
+dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
+dlltarg_res = $(name).res
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
 
-$(name).dll: rcstr.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk $(lflags)
-    @for %i in ($(objs)) do @%append $^&.lnk file %i
-    @for %i in ($(libs)) do @%append $^&.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @$^&.lnk
-!endif
-    @%make bind_res_add_version_dll
+dlltarg_name = $(name)
+!include dlltarg.mif
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc

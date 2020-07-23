@@ -75,20 +75,18 @@ extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT
 #extra_l_flags_dll_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
 #extra_l_flags_dll_win += segment  CLASS 'CODE' PRELOAD
 
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
 !include verrc.mif
 
-$(name).dll: $(win_yacc_file).h rcmsg.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs)}
-!endif
-    @%make bind_res_add_version_dll
+dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.gh
+dlltarg_objs = $(objs)
+dlltarg_libs = $(libs)
+dlltarg_res = $(name).res
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+dlltarg_name = $(name)
+!include dlltarg.mif
 
 #---------- TEST
 test_system_win_i86= windows

@@ -105,12 +105,24 @@ extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_c
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(dllname)'
 
+inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
+.c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
+.h: ../h;$(watcom_dir)/h
+
+!ifdef bootstrap
+inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
+.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
+.h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
+!endif
+
+!ifdef bootstrap
+prebuild_objs = msg.gh incltext.gh
+!else
+prebuild_objs = msg.gh
+!endif
+
 ###################
 # rc flags
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
 
 # systems where version resources must be added to .EXE
 !ifndef bootstrap
@@ -122,32 +134,9 @@ verrc_exe = $(exename)
 verrc_dll = $(dllname)
 !include verrc.mif
 
-inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
-.c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
-.h: ../h;$(watcom_dir)/h
-
-!ifdef bootstrap
-inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
-.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
-.h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
-!endif
-
-!ifndef bootstrap
-xlibs = $(wres_lib) $(orl_lib)
-!endif
-
-!ifdef bootstrap
-depends_msg = msg.gh incltext.gh
-!else
-depends_msg = msg.gh wresui.res
-!endif
-depends_drv =
-depends_exe = $(depends_msg)
-depends_dll = $(dll_subdir) $(depends_msg)
-
 !ifdef wlib_dll
 
-$(exename).exe: $(depends_drv) $(dllname).dll $(drv_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(dllname).dll $(drv_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags_gen) $(drv_objs) $(dllname).lib $(ldflags_gen)
@@ -162,7 +151,11 @@ $(exename).exe: $(depends_drv) $(dllname).dll $(drv_objs) $(version_res_exe_$(ho
 
 !else
 
-$(exename).exe: $(depends_exe) $(xlibs) $(exe_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef bootstrap
+xlibs = $(wres_lib) $(orl_lib)
+!endif
+
+$(exename).exe: $(prebuild_objs) $(xlibs) $(exe_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
 ! ifdef bootstrap
@@ -184,21 +177,18 @@ $(exename).exe: $(depends_exe) $(xlibs) $(exe_objs) $(version_res_exe_$(host_os)
 
 !endif
 
-$(dllname).dll: $(depends_dll) $(xlibs) $(dll_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_dll) $(dll_objs) $(xlibs) $(ldflags_dll)
-!else 
-    @%write dll.lnk $(lflags_dll)
-    @for %i in ($(dll_objs)) do @%append dll.lnk file %i
-    @for %i in ($(xlibs)) do @%append dll.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @dll.lnk
-!endif
-    @%make bind_res_version_dll
+dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
+dlltarg_objs = $(dll_objs)
 !ifndef bootstrap
-    @%make bind_res_wresui
+dlltarg_libs = $(wres_lib) $(orl_lib)
+dlltarg_res_wresui = wresui.res
 !endif
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+dlltarg_name = $(dllname)
+!include dlltarg.mif
 
 msg.gh : wlibmsg.gh
     @%make echo_awk

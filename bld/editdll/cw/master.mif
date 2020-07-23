@@ -1,7 +1,9 @@
 proj_name = editdll
 
 editdll_autodepends = .AUTODEPEND
+
 editdll_distrib_lib = 1
+
 memory_model_i86 = c
 
 sys_dll = 1
@@ -18,31 +20,28 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zw -zu
 
-extra_l_flags_dll = op elim
+extra_l_flags_dll = op elim @dll.lnk
 extra_l_flags_dll_win = export WEP RESIDENT library ddeml
 extra_l_flags_dll_win += op stack=8k, rwr
 extra_l_flags_dll_win += segment _TEXT PRELOAD FIXED
 extra_l_flags_dll_win += segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
 
 verrc_dll = weditcw
 !include verrc.mif
 
 all: weditcw.dll wedit.dll .SYMBOLIC
 
-weditcw.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ @dll.lnk file $[@
-    @%make bind_res_version_dll
+dlltarg_prebuild_objs = dll.lnk
+dlltarg_objs = weditcw.obj
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
 
-wedit.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ op implib @dll.lnk file $[@
-    @%make bind_res_version_dll
+dlltarg_name = weditcw
+!include dlltarg.mif
+
+dlltarg_name = wedit
+!include dlltarg.mif
 
 dll.lnk : $(__MAKEFILES__)
-    @%write  $@ $(lflags)
-    @%append $@ option description 'Open Watcom Editor DLL for Codewright'
+    @%write $@ option description 'Open Watcom Editor DLL for Codewright'

@@ -88,19 +88,8 @@ extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_c
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 
-!ifdef no_orl
-# do not link against ORL
-orl_lib = 
-!endif
-
-libs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
-
 ###########
 # rc stuff
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -130,6 +119,13 @@ $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(
 
 !else
 
+!ifdef no_orl
+# do not link against ORL
+libs = $(wres_lib) $(dwarfw_lib)
+!else
+libs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
+!endif
+
 $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wresui.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
@@ -150,19 +146,20 @@ $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wresui.res $(comp_objs_ex
 
 !endif
 
-$(dllname).dll : $(dll_subdir) rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
+dlltarg_prebuild_objs = $(dll_subdir) rcmsg.gh
+dlltarg_objs = $(comp_objs_dll)
+!ifdef no_orl
+dlltarg_libs = $(wres_lib) $(dwarfw_lib)
 !else
-    @%write dll.lnk $(lflags_dll)
-    @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
-    @for %i in ($(libs)) do @%append dll.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @dll.lnk
+dlltarg_libs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
 !endif
-    @%make bind_res_version_dll
-    @%make bind_res_wresui
+dlltarg_res_wresui = wresui.res
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+dlltarg_name = $(dllname)
+!include dlltarg.mif
 
 #################
 # auxiliary rules

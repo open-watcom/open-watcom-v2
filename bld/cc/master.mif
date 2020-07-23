@@ -19,6 +19,25 @@ cc_autodepends = .autodepend
 
 additional_cleanup = *.int
 additional_cleanup_qnx = usage.u
+!ifndef bootstrap
+additional_cleanup_subdir = $(bin_subdir)
+!endif
+
+# international data file name
+intname = wcc$(target_cpu)
+
+!ifdef bootstrap
+bin_exename = $(exename)
+bin_dllname = $(dllname)
+bin_intname = $(intname)
+!else
+bin_exename = $(bin_subdir)/$(exename)
+bin_dllname = $(bin_subdir)/$(dllname)
+bin_intname = $(bin_subdir)/$(intname)
+!endif
+
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
 
 !include cproj.mif
 !include defrule.mif
@@ -33,18 +52,17 @@ additional_cleanup_qnx = usage.u
 
 !include ../../ccobjs.mif
 
-# international data file name
-intname = wcc$(target_cpu)
-
 # other goofy stuff
-pre_obj_deps = usage.gh
-pre_obj_deps += msgtxt.gh
-pre_obj_deps += msgdefs.gh
-pre_obj_deps += msgattr.gh
-pre_obj_deps += weights.gh
-pre_obj_deps += keywords.gh
-pre_obj_deps += $(asminline_deps)
-pre_obj_deps += code$(target_cpu).gh
+prebuild_objs = &
+    usage.gh &
+    msgtxt.gh &
+    msgdefs.gh &
+    msgattr.gh &
+    weights.gh &
+    keywords.gh &
+    $(asminline_deps) &
+    code$(target_cpu).gh &
+    $(bin_intname)01.int
 
 #
 # C compiler options
@@ -99,22 +117,14 @@ extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_c
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata, modname='$(dllname)'
 
-#
-# external libraries
-#
-libs = $(asminline_lib) $(cg_libs)
+inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+
+.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
+.h: ../../h;$(watcom_dir)/h
 
 #
 # Common dependencies
 #
-
-depends_exe = $(pre_obj_deps)
-depends_dll = $(pre_obj_deps)
-depends_drv =
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -124,31 +134,13 @@ verrc_dll = $(dllname)
 verrc_exe = $(exename)
 !include verrc.mif
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
-
-.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
-.h: ../../h;$(watcom_dir)/h
-
-!ifdef bootstrap
-bin_exename = $(exename)
-bin_dllname = $(dllname)
-bin_intname = $(intname)
-!else
-additional_cleanup_subdir = $(bin_subdir)
-
-bin_exename = $(bin_subdir)/$(exename)
-bin_dllname = $(bin_subdir)/$(dllname)
-bin_intname = $(bin_subdir)/$(intname)
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
-
+!ifndef bootstrap
 all: $(bin_subdir) $(bin_exename).exe .symbolic
 !endif
 
 !ifdef cc_dll
 
-$(bin_exename).exe : $(depends_drv) $(bin_dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(bin_exename).exe : $(bin_dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_dllname).lib $(ldflags_gen)
@@ -166,7 +158,9 @@ $(bin_exename).exe : $(depends_drv) $(bin_dllname).dll $(comp_objs_drv) $(versio
 
 !else
 
-$(bin_exename).exe: $(depends_exe) $(bin_intname)01.int $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+libs = $(asminline_lib) $(cg_libs)
+
+$(bin_exename).exe: $(prebuild_objs) $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
 ! ifdef bootstrap
@@ -185,18 +179,15 @@ $(bin_exename).exe: $(depends_exe) $(bin_intname)01.int $(comp_objs_exe) $(libs)
 
 !endif
 
-$(bin_dllname).dll : $(dll_subdir) $(depends_dll) $(bin_intname)01.int $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
-!else
-    @%write dll.lnk $(lflags_dll)
-    @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
-    @for %i in ($(libs)) do @%append dll.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @dll.lnk
-!endif
-    @%make bind_res_version_dll
+dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
+dlltarg_objs = $(comp_objs_dll)
+dlltarg_libs = $(asminline_lib) $(cg_libs)
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+dlltarg_name = $(bin_dllname)
+!include dlltarg.mif
 
 #
 # done
