@@ -12,7 +12,7 @@ exename_i86 = wfc
 exename_386 = wfc386
 exename_axp = wfcaxp
 exename_ppc = wfcppc
-target_exe  = $(exename_$(target_cpu))
+exetarg_name = $(exename_$(target_cpu))
 
 !include cproj.mif
 !include defrule.mif
@@ -52,26 +52,18 @@ extra_a_flags = -oc
 
 libs = $(asminline_lib) $(cg_libs) $(wres_lib)
 
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
-verrc_exe = $(target_exe)
+verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-$(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) wresui.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @for %i in ($(fobjs)) do @%append $^&.lnk file %i
-    @for %i in ($(libs)) do @%append $^&.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ $(lflags) @$^&.lnk
-!endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
+exetarg_prebuild_objs = $(asminline_deps) errgrp.gc errcod.gh
+exetarg_objs = $(fobjs)
+exetarg_libs = $(libs)
+# systems where version resources must be added to .EXE
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res_wresui = wresui.res
+
+!include exetarg.mif
 
 option.obj : option.c optinfo.h
 

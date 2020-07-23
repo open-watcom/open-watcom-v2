@@ -8,14 +8,7 @@ errsrc_autodepends = .autodepend
 
 .c: ../c
 
-errsrc.exe : errsrc.obj $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) errsrc.obj $(bld_ldflags)
-! else
-    $(cl) $(clflags) errsrc.obj $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {errsrc.obj}
-!endif
+exetarg_objs = errsrc.obj
+
+!include exetarg.mif
+

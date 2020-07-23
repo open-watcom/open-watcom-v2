@@ -83,30 +83,20 @@ rc_inc_dirs = $(rc_ide_inc_dirs_$(host_os)) -I"../res" $(gui_inc_dirs)
 
 libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 
-# systems where version resource must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
 !include verrc.mif
 
-all: $(ide_h_$(host_os)) $(proj_name).exe
+exetarg_prebuild_objs = $(ide_h_$(host_os))
+exetarg_objs = $(objs)
+exetarg_libs = $(libs)
+# systems where version resource must be added to .EXE
+exetarg_res_version_res_exe_nt_386 = exever.res
+exetarg_res_version_res_exe_nt_x64 = exever.res
+exetarg_res = ide.res
+exetarg_indirect = op description $(description)
 
-$(proj_name).exe : $(objs) $(libs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk $(lflags)
-    @%append $^&.lnk op de $(description)
-    @%append $^&.lnk f {$(objs)}
-    @%append $^&.lnk lib {$(libs)}   
-    @%make echo_link
-    $(linker) name $^& @$^&.lnk
-!endif
-    @%make bind_res_add_version_exe
+!include exetarg.mif
 
-$(proj_name).res : ide.rc $(gui_dir)/h/gui.rc
+ide.res : ide.rc $(gui_dir)/h/gui.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
