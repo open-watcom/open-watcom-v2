@@ -9,11 +9,11 @@ wrc_trmem = 1
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
-exename     = bwrc
-dllname     = bwrcd
+exetarg_name = bwrc
+dlltarg_name = bwrcd
 !else
-exename     = wrc
-dllname     = wrcd
+exetarg_name = wrc
+dlltarg_name = wrcd
 !endif
 
 win_yacc_prefix = winy
@@ -141,7 +141,7 @@ extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
 extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
 !endif
 extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
 extra_c_flags_rcmem    = $(trmem_cover_cflags)
 
@@ -152,8 +152,8 @@ extra_c_flags_rcmem    = $(trmem_cover_cflags)
 ##################
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-extra_l_flags_dll_nt  += option modname='$(dllname).dll'
-extra_l_flags_dll_os2 += option modname='$(dllname)'
+extra_l_flags_dll_nt  += option modname='$(dlltarg_name).dll'
+extra_l_flags_dll_os2 += option modname='$(dlltarg_name)'
 
 .c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
@@ -165,70 +165,46 @@ prebuild_objs = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keywo
 prebuild_objs = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
 
+verrc_exe = $(exetarg_name)
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
+
+#
+# Create compiler
+#
+!ifdef wrc_dll
+exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
+exetarg_objs          = $(objs_drv)
+exetarg_libs          = $(dlltarg_name).lib
+!else
+exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
+exetarg_objs          = $(objs_exe)
+exetarg_libs          = $(wres_lib)
+!ifndef bootstrap
+exetarg_res_wresui    = wresui.res
+!endif
+!endif
 # systems where version resources must be added to .EXE
 !ifndef bootstrap
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 !endif
 
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif
+!include exetarg.mif
 
-# explicit rules
-
-!ifdef wrc_dll
-
-$(exename).exe : $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(misc_objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_gen) $(objs_drv) $(dllname).lib $(ldflags_gen)
-!else
-    @%write drv.lnk $(lflags)
-    @for %i in ($(objs_drv)) do @%append drv.lnk file %i
-    @%append drv.lnk lib $(dllname).lib
-    @%make echo_link
-    $(linker) name $@ @drv.lnk
-!endif
-    @%make bind_res_version_exe
-
-!else
-
-xlibs = $(wres_lib)
-
-$(exename).exe : $(prebuild_objs) $(objs_exe) $(xlibs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(misc_objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs_exe) $(xlibs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
-! endif
-!else
-    @%write exe.lnk $(lflags)
-    @for %i in ($(objs_exe)) do @%append exe.lnk file %i
-    @for %i in ($(xlibs)) do @%append exe.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @exe.lnk
-!endif
-    @%make bind_res_version_exe
-!ifndef bootstrap
-    @%make bind_res_wresui
-!endif
-
-!endif
-
+#
+# DLL
+#
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
-dlltarg_objs = $(objs_dll)
-dlltarg_libs = $(wres_lib)
+dlltarg_objs          = $(objs_dll)
+dlltarg_libs          = $(wres_lib)
 !ifndef bootstrap
-dlltarg_res_wresui = wresui.res
+dlltarg_res_wresui    = wresui.res
 !endif
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 
-dlltarg_name = $(dllname)
 !include dlltarg.mif
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
