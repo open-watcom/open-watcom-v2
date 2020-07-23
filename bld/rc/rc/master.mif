@@ -152,9 +152,6 @@ extra_c_flags_rcmem    = $(trmem_cover_cflags)
 ##################
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-extra_l_flags_dll_nt  += option modname='$(dlltarg_name).dll'
-extra_l_flags_dll_os2 += option modname='$(dlltarg_name)'
-
 .c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
@@ -204,6 +201,8 @@ dlltarg_res_wresui    = wresui.res
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
+dlltarg_modname_nt    = op modname='$(dlltarg_name).dll'
+dlltarg_modname_os2   = op modname='$(dlltarg_name)'
 
 !include dlltarg.mif
 

@@ -125,8 +125,8 @@ extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=$(extra_link_
 #
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
-extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)', manyautodata
+extra_l_flags_dll_nt  = initinstance terminstance
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
 # source search path
 
@@ -170,6 +170,8 @@ dlltarg_libs          = $(asminline_lib) $(cg_libs)
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
+dlltarg_modname_nt    = op modname='$(dlltarg_name).dll'
+dlltarg_modname_os2   = op modname='$(dlltarg_name)'
 
 !include dlltarg.mif
 

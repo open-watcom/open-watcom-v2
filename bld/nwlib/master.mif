@@ -102,8 +102,8 @@ extra_l_flags_qnx = op offset=64k, stack=60k
 # linker flags .DLL
 
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
-extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(dlltarg_name)'
+extra_l_flags_dll_nt  = initinstance terminstance
+extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op manyautodata
 
 inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 .c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
@@ -177,6 +177,8 @@ dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_wresui    = wresui.res
 !endif
+dlltarg_modname_nt    = op modname='$(dlltarg_name).dll'
+dlltarg_modname_os2   = op modname='$(dlltarg_name)'
 
 !include dlltarg.mif
 

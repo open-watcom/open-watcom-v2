@@ -85,8 +85,8 @@ extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 # linker .DLL options
 
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
-extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
+extra_l_flags_dll_nt  = initinstance terminstance
+extra_l_flags_dll_os2 = initinstance terminstance
 
 ###########
 # rc stuff
@@ -137,6 +137,8 @@ dlltarg_res_wresui    = wresui.res
 # systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
+dlltarg_modname_nt    = op modname='$(dlltarg_name).dll'
+dlltarg_modname_os2   = op modname='$(dlltarg_name)'
 
 !include dlltarg.mif
 

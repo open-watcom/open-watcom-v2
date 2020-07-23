@@ -9,9 +9,13 @@ $(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dllta
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $(dlltarg_objs) $(dlltarg_libs) $(ldflags_dll)
 !else ifdef dlltarg_libs
-    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) } library { $(dlltarg_libs) }
+    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) } library { $(dlltarg_libs) } @<<
+$(dlltarg_modname_$(host_os))
+<<
 !else
-    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) }
+    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) } @<<
+$(dlltarg_modname_$(host_os))
+<<
 !endif
 #########################
 # add resources to DLL
