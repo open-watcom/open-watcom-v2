@@ -1,10 +1,8 @@
-name = cl
-
 !ifdef target_cpu
-objs = cl.obj message.obj parse.obj translat.obj macro.obj $(mstools_objs)
-prebuild_objs = cmdlnprs.gc
+exetarg_prebuild_objs = cmdlnprs.gc
+exetarg_objs = cl.obj message.obj parse.obj translat.obj macro.obj $(mstools_objs)
 !else
-objs = clstub.obj $(mstools_stub_obj) $(mstools_objs)
+exetarg_objs = clstub.obj $(mstools_stub_obj) $(mstools_objs)
 !endif
 
 !include ../../../master.mif

@@ -1,6 +1,6 @@
-target_cpu = ppc
-
 proj_name = libppc
+
+target_cpu = ppc
 
 !ifndef libppc_autodepends
 libppc_autodepends = .AUTODEPEND

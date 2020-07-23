@@ -1,6 +1,6 @@
-target_cpu = ppc
-
 proj_name = linkppc
+
+target_cpu = ppc
 
 !ifndef linkppc_autodepends
 linkppc_autodepends = .AUTODEPEND

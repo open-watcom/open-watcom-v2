@@ -1,9 +1,6 @@
-name = as
-
 target_cpu = axp
 
-common_objs = parse.obj $(mstools_objs)
-objs  = asaxp.obj message.obj translat.obj $(common_objs)
-prebuild_objs = cmdlnprs.gc
+exetarg_prebuild_objs = cmdlnprs.gc
+exetarg_objs  = asaxp.obj message.obj translat.obj parse.obj $(mstools_objs)
 
 !include ../../../master.mif

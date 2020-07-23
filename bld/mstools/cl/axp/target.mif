@@ -1,6 +1,6 @@
-target_cpu = axp
-
 proj_name = claxp
+
+target_cpu = axp
 
 !ifndef claxp_autodepends
 claxp_autodepends = .AUTODEPEND

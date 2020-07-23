@@ -1,6 +1,6 @@
-target_cpu = 386
-
 proj_name = lib386
+
+target_cpu = 386
 
 !ifndef lib386_autodepends
 lib386_autodepends = .AUTODEPEND

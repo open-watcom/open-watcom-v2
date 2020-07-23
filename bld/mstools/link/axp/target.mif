@@ -1,6 +1,6 @@
-target_cpu = axp
-
 proj_name = linkaxp
+
+target_cpu = axp
 
 !ifndef linkaxp_autodepends
 linkaxp_autodepends = .AUTODEPEND

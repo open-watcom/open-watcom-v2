@@ -1,6 +1,6 @@
-target_cpu = axp
-
 proj_name = libaxp
+
+target_cpu = axp
 
 !ifndef libaxp_autodepends
 libaxp_autodepends = .AUTODEPEND

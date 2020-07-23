@@ -1,7 +1,4 @@
-name = nmake
-
-objs = nmake.obj message.obj translat.obj parse.obj $(mstools_objs)
-
-prebuild_objs = cmdlnprs.gc
+exetarg_prebuild_objs = cmdlnprs.gc
+exetarg_objs = nmake.obj message.obj translat.obj parse.obj $(mstools_objs)
 
 !include ../../../master.mif
