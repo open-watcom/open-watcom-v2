@@ -18,7 +18,7 @@ inc_dirs = -I"../h" -I"$(dig_dir)/h"
 
 .c: ../c;$(dig_srcs);$(mad_srcs)
 
-objs = &
+exetarg_objs = &
     dipdump.obj &
     digcli.obj  &
     dipcli.obj  &

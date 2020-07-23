@@ -10,7 +10,7 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-objs = &
+exetarg_objs = &
     bmeps.obj &
     bmepsm.obj &
     bmepsoe.obj &

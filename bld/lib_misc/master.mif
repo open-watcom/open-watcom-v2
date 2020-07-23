@@ -8,6 +8,6 @@ aliasgen_autodepends = .autodepend
 
 .c: ../c
 
-objs = aliasgen.obj
+exetarg_objs = aliasgen.obj
 
 !include exetarg.mif

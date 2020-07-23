@@ -6,10 +6,10 @@ parsedlg_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-objs = parsedlg.obj
-
 inc_dirs = -I"../h" -I"$(watcom_dir)/h"
 
 .c: ../c
+
+exetarg_objs = parsedlg.obj
 
 !include exetarg.mif

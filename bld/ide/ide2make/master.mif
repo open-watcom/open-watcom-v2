@@ -12,12 +12,11 @@ ide2make_autodepends = .AUTODEPEND
 !include $(idelib_dir)/client.mif
 !include $(wclass_dir)/client.mif
 
-objs = bviper.obj
-
 inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 
 .cpp: ../cpp
 
-libs = $(idelib_lib) $(wclass_lib)
+exetarg_objs = bviper.obj
+exetarg_libs = $(idelib_lib) $(wclass_lib)
 
 !include exetarg.mif

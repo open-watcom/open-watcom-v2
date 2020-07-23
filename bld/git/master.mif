@@ -8,6 +8,6 @@ cpyright_autodepends = .autodepend
 
 .c : ../c
 
-objs = cpyright.obj
+exetarg_objs = cpyright.obj
 
 !include exetarg.mif

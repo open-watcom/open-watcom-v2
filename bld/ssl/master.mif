@@ -12,7 +12,7 @@ inc_dirs = -I"../h" $(cpp_inc_dirs)
 
 .c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
 
-objs =              &
+exetarg_objs = &
     ssl.obj         &
     ssldecl.obj     &
     sslrule.obj     &

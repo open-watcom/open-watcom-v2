@@ -14,7 +14,15 @@ inc_dirs = -I"../h" $(wres_inc_dirs)
 
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
-objs = &
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+
+extra_c_flags_layer0   = $(trmem_cflags)
+extra_c_flags_res2res  = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_w2mres   = $(trmem_cflags)
+
+exetarg_objs = &
     bincpy.obj &
     convert.obj &
     layer0.obj &
@@ -24,14 +32,6 @@ objs = &
     w2mres.obj &
     trmemcvr.obj $(trmem_objs)
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_layer0   = $(trmem_cflags)
-extra_c_flags_res2res  = $(trmem_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
-extra_c_flags_w2mres   = $(trmem_cflags)
-
-libs = $(wres_lib)
+exetarg_libs = $(wres_lib)
 
 !include exetarg.mif

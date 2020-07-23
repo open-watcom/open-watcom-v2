@@ -16,7 +16,7 @@ inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
 
 extra_cpp_flags = -DVICOMP
 
-objs = &
+exetarg_objs = &
     vicomp.obj &
     addstr.obj &
     srcgen.obj &

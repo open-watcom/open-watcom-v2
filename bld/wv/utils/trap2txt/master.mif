@@ -12,7 +12,7 @@ extra_cpp_flags = -DMD_x86
 
 .cpp: ../c
 
-objs = &
+exetarg_objs = &
     trap2txt.obj &
     trsp_cap.obj &
     trsp_env.obj &

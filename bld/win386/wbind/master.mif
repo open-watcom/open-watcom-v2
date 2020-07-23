@@ -17,6 +17,6 @@ extra_l_flags_os2 = op stack=12k,heap=8k,newfile
 
 inc_dirs = -I"../../h"
 
-objs = wbind.obj
+exetarg_objs = wbind.obj
 
 !include exetarg.mif

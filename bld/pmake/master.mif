@@ -19,6 +19,6 @@ extra_cpp_flags_pmkcmd = $(trmem_cpp_flags)
 extra_c_flags_pmkcmd = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 
-objs = pmake.obj pmkcmd.obj $(trmem_objs)
+exetarg_objs = pmake.obj pmkcmd.obj $(trmem_objs)
 
 !include exetarg.mif

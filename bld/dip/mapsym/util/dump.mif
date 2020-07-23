@@ -9,6 +9,6 @@ symdump_autodepends = .autodepend
 .c: ..
 .h: ..
 
-objs = symdump.obj
+exetarg_objs = symdump.obj
 
 !include exetarg.mif

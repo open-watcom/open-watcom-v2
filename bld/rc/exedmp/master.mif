@@ -10,7 +10,7 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-objs = &
+exetarg_objs = &
     main.obj &
     read.obj &
     format.obj &

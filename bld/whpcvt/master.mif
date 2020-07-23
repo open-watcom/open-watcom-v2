@@ -15,11 +15,12 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-objs =  whpcvt.obj  &
-        rtf.obj     &
-        ipf.obj     &
-        ib.obj      &
-        wiki.obj    &
-        html.obj
+exetarg_objs = &
+    whpcvt.obj  &
+    rtf.obj     &
+    ipf.obj     &
+    ib.obj      &
+    wiki.obj    &
+    html.obj
 
 !include exetarg.mif

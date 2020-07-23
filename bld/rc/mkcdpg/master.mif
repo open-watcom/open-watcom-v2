@@ -10,6 +10,6 @@ inc_dirs        = -I"$(wrc_dir)/h"
 
 .c: ..
 
-objs = mkcdpg.obj
+exetarg_objs = mkcdpg.obj
 
 !include exetarg.mif
