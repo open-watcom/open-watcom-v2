@@ -1,5 +1,4 @@
 proj_name = wheapwlk
-name = wheapwlk
 
 !ifndef wheapwlk_autodepends
 wheapwlk_autodepends = .AUTODEPEND
@@ -26,8 +25,6 @@ extra_c_flags_segmem2  = -3
 
 extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib, commdlg.lib
 
-xlibs = $(commonui_lib)
-
 inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(dis_includes)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
@@ -39,12 +36,12 @@ objs_win = heapwalk.obj hwlist.obj hwproc.obj hwglob.obj hwsort.obj &
         hwlsort.obj hwconfig.obj  hwinfo.obj hwalloc.obj hwutil.obj &
         hwbiglb.obj hwmonit.obj hwtable.obj hwldstr.obj hwmem.obj
 
-objs = $(objs_$(host_os))
+exetarg_prebuild_objs = rcstr.gh $(dis_prereq)
+exetarg_objs = $(objs_$(host_os)) $(dis_objs)
+exetarg_libs = $(commonui_lib)
+exetarg_res = $(proj_name).res
 
-$(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$(objs) $(dis_objs)} lib {$(xlibs)}
-    @%make bind_res
+!include exetarg.mif
 
 rcstrmsg.gh : ../res/heapwalk.msg
     @%make echo_cpp
@@ -54,6 +51,6 @@ rcstr.gh : rcstrmsg.gh
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-$(name).res: ../res/$(name).rc .AUTODEPEND
+$(exetarg_res): ../res/wheapwlk.rc .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@

@@ -25,21 +25,12 @@ extra_cpp_flags = -D__WFL__
 
 .c: ../../c;../../../wfc/c;../../../c;$(trmem_dir)
 
-files = &
-    blderr.obj &
-    errgrp.obj &
-    errutil.obj &
-    errrsrc.obj &
-    errrtns.obj &
-    showopts.obj &
-    wfl.obj &
-    $(trmem_objs)
-
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
 exetarg_prebuild_objs = errgrp.gc
-exetarg_objs = $(files)
+exetarg_objs = blderr.obj errgrp.obj errutil.obj errrsrc.obj &
+    errrtns.obj showopts.obj wfl.obj $(trmem_objs)
 exetarg_libs = $(wres_lib)
 # systems where version resources must be added to .EXE
 exetarg_res_version_nt_386 = exever.res

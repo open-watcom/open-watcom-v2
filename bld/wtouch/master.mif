@@ -14,27 +14,17 @@ inc_dirs = -I. -I.. -I"$(clib_dir)/h"
 
 .c .msg .vi .rc .sp: ..
 
-objs =  touch.obj    &
-        dtparse.obj  &
-        wtmsg.obj
-
-libs = $(wres_lib)
-
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
 !include verrc.mif
 
-$(proj_name).exe : msg.gh $(objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(objs) } lib {$(libs)}
-!endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
+exetarg_prebuild_objs = msg.gh
+exetarg_objs = touch.obj dtparse.obj wtmsg.obj
+exetarg_libs = $(wres_lib)
+# systems where version resources must be added to .EXE
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res_wresui = wresui.res
+
+!include exetarg.mif
 
 wresui.res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
