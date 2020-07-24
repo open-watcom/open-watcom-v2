@@ -277,7 +277,7 @@ typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,fun
     char               segname[1];
 } textsegment;
 
-typedef enum {
+typedef enum src_file_type {
     FT_SRC,
     FT_HEADER,
     FT_HEADER_FORCED,

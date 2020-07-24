@@ -65,7 +65,8 @@ unsigned char   __ReportInvoked;
 __EXCEPTION_RECORD  *__XCPTHANDLER;
 #endif
 
-static int _my_GetActiveWindow( void ) {
+static int _my_GetActiveWindow( void )
+{
     HANDLE hdl;
     typedef HWND (__stdcall *gaw_type)( void );
     gaw_type gaw;
