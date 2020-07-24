@@ -4,19 +4,19 @@ dlltarg_name = $(proj_name)
 !ifndef dlltarg_ext
 dlltarg_ext = .dll
 !endif
-$(dlltarg_name)$(dlltarg_ext) : $(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res)$- $(__MAKEFILES__)
+$(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs)$- $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags_dll) $(dlltarg_objs) $(dlltarg_libs) $(ldflags_dll)
+    $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs)$- $(ldflags_dll)
 !else ifdef dlltarg_libs
-    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) } library { $(dlltarg_libs) } &
+    $(linker) name $@ $(lflags_dll) file { $+$(dlltarg_objs)$- } library { $+$(dlltarg_libs)$- } &
 !ifdef dlltarg_indirect
     @<<
     $(dlltarg_indirect)
 <<
 !endif
 !else
-    $(linker) name $@ $(lflags_dll) file { $(dlltarg_objs) } &
+    $(linker) name $@ $(lflags_dll) file { $+$(dlltarg_objs)$- } &
 !ifdef dlltarg_indirect
     @<<
     $(dlltarg_indirect)

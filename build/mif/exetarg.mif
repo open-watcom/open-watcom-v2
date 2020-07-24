@@ -4,23 +4,23 @@ exetarg_name = $(proj_name)
 !ifndef exetarg_ext
 exetarg_ext = .exe
 !endif
-$(exetarg_name)$(exetarg_ext) : $(exetarg_prebuild_objs) $(exetarg_objs) $(exetarg_libs) $(exetarg_res_version_$(host_os)_$(host_cpu)) $(exetarg_res_wresui) $+$(exetarg_res)$- $(__MAKEFILES__)
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) $(exetarg_res_wresui) $+$(exetarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 !ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(exetarg_objs) $(exetarg_libs) $(bld_ldflags)
+    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(bld_ldflags)
 !else
-    $(cl) $(clflags) $(exetarg_objs) $(exetarg_libs) $(ldflags)
+    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
 !else ifdef exetarg_libs
-    $(linker) name $@ $(lflags) file { $(exetarg_objs) } library { $(exetarg_libs) } &
+    $(linker) name $@ $(lflags) file { $+$(exetarg_objs)$- } library { $+$(exetarg_libs)$- } &
 !ifdef exetarg_indirect
     @<<
     $(exetarg_indirect)
 <<
 !endif
 !else
-    $(linker) name $@ $(lflags) file { $(exetarg_objs) } &
+    $(linker) name $@ $(lflags) file { $+$(exetarg_objs)$- } &
 !ifdef exetarg_indirect
     @<<
     $(exetarg_indirect)
