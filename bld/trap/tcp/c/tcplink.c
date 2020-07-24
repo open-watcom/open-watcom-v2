@@ -114,14 +114,6 @@
     #include "options.h"
 #endif
 
-#if defined( __WATCOMC__ )
-#if defined( __NT__ )
-#pragma library("wsock32.lib")
-#elif defined( __WINDOWS__ )
-#pragma library("winsock.lib")
-#endif
-#endif
-
 #if !defined ( __NETWARE__ )
     #define _DBG_THREAD( x )
     #define _DBG_DR( x )

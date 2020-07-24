@@ -254,7 +254,6 @@ static DWORD WINAPI ControlFunc( LPVOID parm )
     return( 0 ); // thread over!
 }
 
-#pragma library(advapi32)
 static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
 {
     HANDLE              Token;

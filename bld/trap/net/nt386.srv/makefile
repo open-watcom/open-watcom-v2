@@ -10,4 +10,6 @@ srv = net
 which = SERVER
 remote_link = 1
 
+extra_linker = lib netapi32.lib
+
 !include $(trap_dir)/master.mif

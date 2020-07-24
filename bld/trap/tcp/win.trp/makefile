@@ -9,4 +9,6 @@ srv = tcp
 which = TRAP
 remote_link = 1
 
+extra_linker = lib winsock.lib
+
 !include $(trap_dir)/master.mif

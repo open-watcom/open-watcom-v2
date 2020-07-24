@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#ifdef __WINDOWS__
-#pragma library("toolhelp.lib");
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

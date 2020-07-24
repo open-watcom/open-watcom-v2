@@ -12,4 +12,6 @@ remote_link = 1
 
 extra_objs = novnt.obj
 
+extra_linker = lib wsock32.lib
+
 !include $(trap_dir)/master.mif
