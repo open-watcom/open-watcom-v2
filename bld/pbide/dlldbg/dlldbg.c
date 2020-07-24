@@ -46,7 +46,7 @@
     #define hinstance_error(x) ( (x) <= HINSTANCE_ERROR )
 #endif
 
-WINEXPORT BOOL FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );
+WINEXPORT LRESULT FAR WINAPI MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 int     PB_DEBUGGER_STUB_OK_TO_END;
 int     PB_DEBUGGER_GOT_DLL_LOADED;
@@ -71,7 +71,7 @@ static void PB_DLL_DEBUGGING_MAIN_LINE( HWND hwnd ) {
     KillTimer( hwnd, TIMER_ID );
 }
 
-WINEXPORT BOOL FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT FAR WINAPI MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         rc;
 
