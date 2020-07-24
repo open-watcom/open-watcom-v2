@@ -6,8 +6,6 @@ proj_name = dip
 
 dip_autodepends = .autodepend
 
-additional_cleanup = *.d32 *.dip
-
 !ifeq host_cpu x64
 sys_dll = 1
 !endif
@@ -23,20 +21,6 @@ fpu_flags_linux_386 = -fpc
 fpu_flags_win_i86   = -fpc
 fpu_flags_rdos_386  = -fpc
 
-ext_os2_i86     = .dll
-ext_os2_386     = .d32
-ext_qnx_i86     = .dip
-ext_qnx_386     = .dip
-ext_linux_386   = .dip
-ext_win_i86     = .dll
-ext_dos_386     = .dip
-ext_nt_386      = .dll
-ext_nt_axp      = .dll
-ext_nt_x64      = .dll
-ext_rdos_386    = .dll
-
-objs = dipimp.obj $(imp_objs)
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -46,7 +30,12 @@ objs = dipimp.obj $(imp_objs)
 !include $(dwarfr_dir)/client.mif
 !endif
 
+# cflags
+##################
+
 .c: ../c;../../c;$(extra_srcs)
+
+inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = -D__DIP__ $(extra_cppflags)
 !ifdef %OWUSE_FILENAME_VERSION
@@ -59,7 +48,8 @@ extra_c_flags_i86 = -zc -zu
 extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
 !endif
 
-inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
+# lflags
+##################
 
 lflags_dll_dos_386     = sys rex_dos
 lflags_dll_linux_386   = sys rex_linux
@@ -69,37 +59,47 @@ lflags_dll_win_i86     = sys windows
 
 extra_l_flags_dll      = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
 
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
+# names
+##################
 
-verrc_dll = $(name)
+dlltarg_name = $(name)
+
+verrc_dll = $(dlltarg_name)
 !include verrc.mif
 
-xname = $(name)$(ext_$(host_os)_$(host_cpu))
+dlltarg_ext_os2_386     = .d32
+dlltarg_ext_qnx_i86     = .dip
+dlltarg_ext_qnx_386     = .dip
+dlltarg_ext_linux_386   = .dip
+dlltarg_ext_dos_386     = .dip
+
+!ifdef dlltarg_ext_$(host_os)_$(host_cpu)
+dlltarg_ext = $(dlltarg_ext_$(host_os)_$(host_cpu))
+!endif
 !ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
-xname = $(name)$(ext_lib_shared)
+dlltarg_ext = $(ext_lib_shared)
 !endif
+!endif
+!ifdef dlltarg_ext
+additional_cleanup_sys = *$(dlltarg_ext)
 !endif
 
+# explicit rules
+##################
+
+dlltarg_objs = dipimp.obj $(imp_objs)
 !ifdef __WATCOM_TOOLS__
-objs += $(imp_objs_watcom)
+dlltarg_objs += $(imp_objs_watcom)
 !endif
-
-!ifdef dwarf
-imp_libs += $(dwarfr_lib)
-!endif
-
-$(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags_dll) $(objs) $(imp_libs) $(ldflags_dll)
-!else
 !ifdef imp_libs
-    $(linker) name $@ $(lflags_dll) file {$(objs)} library {$(imp_libs)}
-!else
-    $(linker) name $@ $(lflags_dll) file {$(objs)}
+dlltarg_libs += $(imp_libs)
 !endif
+!ifdef dwarf
+dlltarg_libs += $(dwarfr_lib)
 !endif
-    @%make bind_res_version_dll
+# systems where version resources must be added to .DLL
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+
+!include dlltarg.mif
