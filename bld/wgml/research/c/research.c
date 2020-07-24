@@ -55,6 +55,16 @@ static char     hexchar[] = "0123456789ABCDEF";
 
 /*  Function definitions. */
 
+static bool is_ws( char ch )
+{
+    return( isspace( ch ) != 0 );
+}
+
+static bool is_quote( char ch )
+{
+    return( ch == '\"' );
+}
+
 /*  Function display_char().
  *  If isgraph() indicates that in_char is displayable, returns a space in
  *  out_chars[0] and in_char in out_chars[1]. Otherwise returns values in
@@ -241,7 +251,7 @@ int parse_cmdline( char * cmdline )
     /* Find the length of the parameter. */
 
     end = cmdline;
-    end = FindNextWS( end );
+    end = FindNextSep( end, is_ws );
     len = end - cmdline;
 
     /* In case someone managed to enter a zero-length path. */
@@ -268,7 +278,7 @@ int parse_cmdline( char * cmdline )
 
     /* Remove doublequotes, if present. */
 
-    if(opt == '\"') UnquoteFName( tgt_path, len, tgt_path );
+    if(opt == '\"') UnquoteItem( tgt_path, len, tgt_path, is_quote );
 
     /* We are done. */
 

@@ -59,6 +59,7 @@
 #include "common.h"
 #include "dfinterp.h"
 #include "research.h"
+#include "pathgrp2.h"
 
 /*  Return values for the verify_ local functions. */
 
@@ -445,17 +446,17 @@ void display_device( cop_device * in_device )
         printf_s( "Box Font Number:           %i\n", in_device->box.font );
     else
         printf_s( "Box Font Name:             %s\n", in_device->box.font_name );
-    printf_s( "Horizontal line character: %c\n", in_device->box.horizontal_line );
-    printf_s( "Vertical line character:   %c\n", in_device->box.vertical_line );
-    printf_s( "Top left character:        %c\n", in_device->box.top_left );
-    printf_s( "Top right character:       %c\n", in_device->box.top_right );
-    printf_s( "Bottom left character:     %c\n", in_device->box.bottom_left );
-    printf_s( "Bottom right character:    %c\n", in_device->box.bottom_right );
-    printf_s( "Top join character:        %c\n", in_device->box.top_join );
-    printf_s( "Bottom join character:     %c\n", in_device->box.bottom_join );
-    printf_s( "Left join character:       %c\n", in_device->box.left_join );
-    printf_s( "Right join character:      %c\n", in_device->box.right_join );
-    printf_s( "Inside join character:     %c\n", in_device->box.inside_join );
+    printf_s( "Horizontal line character: %c\n", in_device->box.chars.horizontal_line );
+    printf_s( "Vertical line character:   %c\n", in_device->box.chars.vertical_line );
+    printf_s( "Top left character:        %c\n", in_device->box.chars.top_left );
+    printf_s( "Top right character:       %c\n", in_device->box.chars.top_right );
+    printf_s( "Bottom left character:     %c\n", in_device->box.chars.bottom_left );
+    printf_s( "Bottom right character:    %c\n", in_device->box.chars.bottom_right );
+    printf_s( "Top join character:        %c\n", in_device->box.chars.top_join );
+    printf_s( "Bottom join character:     %c\n", in_device->box.chars.bottom_join );
+    printf_s( "Left join character:       %c\n", in_device->box.chars.left_join );
+    printf_s( "Right join character:      %c\n", in_device->box.chars.right_join );
+    printf_s( "Inside join character:     %c\n", in_device->box.chars.inside_join );
     if( in_device->underscore.specified_font == false )
         puts( "Underscore Font Not Specified");
     else if( in_device->underscore.font_name == NULL )

@@ -417,7 +417,7 @@ static  oc_text_phrase         fig_box[] = {
  *          either good or necessary.
  */
 
-void oc_add_text_chars_to_pool( text_line * in_line )
+static void oc_add_text_chars_to_pool( text_line * in_line )
 {
     /* Ensure in_line->last is not NULL when it is used below. */
 
@@ -446,7 +446,7 @@ void oc_add_text_chars_to_pool( text_line * in_line )
  *          not clear that this is necessary.
  */
 
-void oc_add_text_line_to_pool( text_line * in_line )
+static void oc_add_text_line_to_pool( text_line * in_line )
 {
     text_line      *   cur_line;
 
@@ -2875,7 +2875,7 @@ static void emulate_wgml( void )
 
     /* This is used in hyphenating extremely long words. */
 
-    oc_hyphen_width = wgml_fonts[0].width_table['-'];
+    oc_hyphen_width = wgml_fonts[0].width.table['-'];
 
     /* Set the variables. */
 

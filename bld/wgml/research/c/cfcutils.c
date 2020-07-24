@@ -49,6 +49,7 @@
 #include "cfheader.h"
 #include "common.h"
 #include "research.h"
+#include "cfcheck.h"
 
 #include "clibext.h"
 

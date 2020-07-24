@@ -550,7 +550,7 @@ static void get_parameters ( parameters * in_parameters )
  *      function sequence.
 */
 
-void process_parameter( void )
+static void process_parameter( void )
 {
     /* Reset current_df_data for the parameter. */
 

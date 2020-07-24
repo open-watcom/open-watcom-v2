@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "cfheader.h"
 
 /*  Function parse_header().
  *  Determine if the current position of the input stream points to the
