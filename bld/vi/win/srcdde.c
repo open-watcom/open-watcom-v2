@@ -91,11 +91,11 @@ static bool GetHDDEDATA( const char **str, HDDEDATA *res )
 /*
  * RunDDECommand - try to run a Windows specific command
  */
-bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars_list *vl )
+bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, vars_list *vl )
 {
     vi_rc       rc;
+    char        tmp1[MAX_INPUT_LINE];
     char        tmp2[MAX_INPUT_LINE];
-    char        tmp3[MAX_INPUT_LINE];
     HSZ         hdl;
     HSZ         serverhdl, topichdl;
     DWORD       dword;
@@ -126,11 +126,11 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddequerystring <resvar> handle
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, data, vl );
+        data = Expand( tmp1, data, vl );
         if( !GetHSZ( &data, &hdl  ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -138,7 +138,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         len = DdeQueryString( DDEInstId, hdl, NULL, 0, CP_WINANSI ) + 1;
         ptr = MemAlloc( len  );
         DdeQueryString( DDEInstId, hdl, ptr, len, CP_WINANSI );
-        VarAddStr( tmp1, ptr, vl );
+        VarAddStr( buffer, ptr, vl );
         MemFree( ptr );
         break;
 
@@ -146,7 +146,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: dderet retval
          */
-        data = Expand( tmp3, data, vl );
+        data = Expand( buffer, data, vl );
         jmprc = setjmp( jmpaddr );
         if( jmprc == 0 ) {
             StartExprParse( data, jmpaddr );
@@ -160,7 +160,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddeserver <serverhandle>
          */
-        data = Expand( tmp3, data, vl );
+        data = Expand( buffer, data, vl );
         if( !GetHSZ( &data, &hdl  ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -176,20 +176,20 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: createddestring <handlevar> "<string>"
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( &data, tmp2 ) != ERR_NO_ERR ) {
+        if( GetStringWithPossibleQuote( &data, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, tmp2, vl );
+        data = Expand( tmp2, tmp1, vl );
         if( !CreateStringHandle( data, &hdl ) ) {
             rc = ERR_DDE_FAIL;
         } else {
-            sprintf( tmp2, "%ld", (long)hdl );
-            VarAddStr( tmp1, tmp2, vl );
+            sprintf( tmp1, "%ld", (long)hdl );
+            VarAddStr( buffer, tmp1, vl );
         }
         break;
 
@@ -197,7 +197,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: deleteddestring <handle>
          */
-        data = Expand( tmp3, data, vl );
+        data = Expand( buffer, data, vl );
         if( !GetHSZ( &data, &hdl ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -209,11 +209,11 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddegetdata <strvar> <datahandle>
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, data, vl );
+        data = Expand( tmp1, data, vl );
         if( !GetHDDEDATA( &data, &dde_data ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -221,7 +221,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         len = DdeGetData( dde_data, NULL, 0, 0 );
         ptr = MemAlloc( len );
         DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
-        VarAddStr( tmp1, ptr,  vl );
+        VarAddStr( buffer, ptr,  vl );
         MemFree( ptr );
 //      DdeFreeDataHandle( dde_data );
         break;
@@ -231,26 +231,26 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddecreatedatahandle <handlevar> <itemhandle> "<string>"
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, data, vl );
+        data = Expand( tmp2, data, vl );
         if( !GetHSZ( &data, &hdl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( &data, tmp2 ) != ERR_NO_ERR ) {
+        if( GetStringWithPossibleQuote( &data, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        dde_data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp2, strlen( tmp2 ) + 1,
+        dde_data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp1, strlen( tmp1 ) + 1,
                                     0, hdl, ClipboardFormat, 0 );
         if( dde_data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            sprintf( tmp2, "%ld", (long)dde_data );
-            VarAddStr( tmp1, tmp2, vl );
+            sprintf( tmp1, "%ld", (long)dde_data );
+            VarAddStr( buffer, tmp1, vl );
         }
         break;
 
@@ -258,11 +258,11 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddeconnect <convvar> <serverhandle> <topichandle>
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, data, vl );
+        data = Expand( tmp1, data, vl );
         if( !GetHSZ( &data, &serverhdl ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -275,15 +275,15 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         if( hconv == (HCONV)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            sprintf( tmp2, "%ld", (long)hconv );
-            VarAddStr( tmp1, tmp2, vl );
+            sprintf( tmp1, "%ld", (long)hconv );
+            VarAddStr( buffer, tmp1, vl );
         }
         break;
     case T_DDEDISCONNECT:
         /*
          * syntax: ddedisconnect <hconv>
          */
-        data = Expand( tmp3, data, vl );
+        data = Expand( buffer, data, vl );
         if( !GetHCONV( &data, &hconv ) ) {
             rc = ERR_INVALID_DDE;
         } else {
@@ -295,11 +295,11 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: dderequest <datavar> <conv> <strhandle>
          */
-        if( !ReadVarName( &data, tmp1, vl ) ) {
+        if( !ReadVarName( &data, buffer, vl ) ) {
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = Expand( tmp3, data, vl );
+        data = Expand( tmp1, data, vl );
         if( !GetHCONV( &data, &hconv ) ) {
             rc = ERR_INVALID_DDE;
             break;
@@ -316,7 +316,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
             len = DdeGetData( dde_data, NULL, 0, 0 ) + 1;
             ptr = MemAlloc( len );
             DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
-            VarAddStr( tmp1, ptr,  vl );
+            VarAddStr( buffer, ptr,  vl );
             MemFree( ptr );
             DdeFreeDataHandle( dde_data );
         }
@@ -326,8 +326,8 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
         /*
          * syntax: ddepoke "<data>" <conv> <strhandle>
          */
-        data = Expand( tmp3, data, vl );
-        if( GetStringWithPossibleQuote( &data, tmp1 ) != ERR_NO_ERR ) {
+        data = Expand( tmp1, data, vl );
+        if( GetStringWithPossibleQuote( &data, buffer ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -339,7 +339,7 @@ bool RunDDECommand( int token, const char *data, char *tmp1, vi_rc *result, vars
             rc = ERR_INVALID_DDE;
             break;
         }
-        dde_data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp1, strlen( tmp1 ) + 1,
+        dde_data = DdeCreateDataHandle( DDEInstId, (LPBYTE)buffer, strlen( buffer ) + 1,
                                     0L, hdl, ClipboardFormat, 0 );
         if( dde_data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;

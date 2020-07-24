@@ -35,10 +35,6 @@
 #include "win.h"
 #include "wclbproc.h"
 
-#if defined( __WATCOMC__ ) && defined( __NT__ )
-    #pragma library( "shell32" )
-#endif
-
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );

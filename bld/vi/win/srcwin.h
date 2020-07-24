@@ -64,4 +64,4 @@ enum {
     #undef pick
 };
 
-bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vars_list *vl );
+bool RunDDECommand( int token, const char *str, char *buffer, vi_rc *result, vars_list *vl );
