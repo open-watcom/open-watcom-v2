@@ -260,7 +260,6 @@ default_memory_model_386_dos     = s
 default_memory_model_386_zdos    = s
 default_memory_model_386_qnx     = s
 default_memory_model_386_nov     = s
-default_memory_model_386_osi     = s
 default_memory_model_386_rdosdev = c
 default_memory_model_386_win     = f
 default_memory_model_386_os2     = f
@@ -317,11 +316,6 @@ def_fpu_flags_linux_386 = -fpi
   # NOVELL ?????
 def_fpu_flags_nov_386   = -fpc
   ######
-  # should be compatible with all 386 platforms
-  # I ignore Novell seting
-  # I think Novell doesn't use any OSI objects
-def_fpu_flags_osi_386   = -fpi
-  ######
   # ZDOS doesn't have emulator support
 def_fpu_flags_zdos_386  = -fpc
   ######
@@ -371,7 +365,6 @@ cflags_nt       = -bt=nt $(win32ver)
 cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
-cflags_osi      = -bt=osi
 cflags_dos      = -bt=dos
 cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
@@ -437,7 +430,6 @@ clflags_os2_i86     = -l=os2
 clflags_os2_386     = -l=os2v2
 clflags_qnx_i86     = -l=qnx
 clflags_qnx_386     = -l=qnx
-clflags_osi_386     = -l=osi
 !ifdef __UNIX__
 clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
 clflags_dos_386     = -l=$(dos_extender) -\"lib doslfn3r.lib\"
@@ -472,12 +464,7 @@ clflags_dll_os2_i86  = -l=os2_dll
 clflags_dll_rdos_386 = -l=rdos_dll
 clflags_dll_win_i86  = -l=windows_dll
 
-clflags_exe_osi_386 = -fe=$^&.rex
-!ifdef clflags_exe_$(host_os)_$(host_cpu)
-clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
-!else
-clflags_exe = -fe=$@
-!endif
+clflags_exe      = -fe=$@
 
 proj_cl_flags    = $(extra_cl_flags)
 clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe)
@@ -511,7 +498,6 @@ aflags_nt       = -bt=nt
 aflags_win      = -bt=windows
 aflags_os2      = -bt=os2
 aflags_qnx      = -bt=qnx
-aflags_osi      = -bt=osi
 aflags_dos      = -bt=dos
 aflags_zdos     = -bt=zdos
 aflags_rdos     = -bt=rdos
@@ -536,7 +522,6 @@ lflags_nt_386       = sys nt
 lflags_nt_axp       = sys ntaxp
 lflags_os2_386      = sys os2v2
 lflags_os2_i86      = sys os2 pmc
-lflags_osi_386      = sys osi
 lflags_qnx_386      = sys qnx386 flat
 lflags_qnx_i86      = sys qnx
 lflags_rdos_386     = sys rdos
@@ -562,7 +547,6 @@ lflags_dll_nt_386      = sys nt_dll
 lflags_dll_nt_axp      = sys ntaxp_dll
 lflags_dll_os2_386     = sys os2v2_dll
 lflags_dll_os2_i86     = sys os2_dll
-lflags_dll_osi_386     = $(lflags_osi_386)
 lflags_dll_qnx_386     = $(lflags_qnx_386)
 lflags_dll_qnx_i86     = $(lflags_qnx_i86)
 lflags_dll_rdos_386    = sys rdos_dll
@@ -664,7 +648,6 @@ inc_dirs_sys_rdos  =
 inc_dirs_sys_rdosdev =
 inc_dirs_sys_zdos  =
 
-inc_dirs_lang_osi  =
 inc_dirs_lang_dos  =
 
 !else
@@ -683,7 +666,6 @@ inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
 
-inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
 inc_dirs_lang_dos     = -I"$(hdr_dir)/dos"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
 inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
@@ -709,7 +691,7 @@ inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos"
 !ifdef inc_dirs_lang_$(host_os)
 inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
 !else
-inc_dirs_lang   = $(inc_dirs_lang_osi)
+inc_dirs_lang   = $(inc_dirs_lang_dos)
 !endif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
