@@ -54,12 +54,8 @@
 #include "clibext.h"
 
 
-#ifdef __WATCOMC__
-#ifdef __NT__
-    #pragma library( "shell32.lib" )
-#else
+#if defined( __WINDOWS__ )
     #pragma library( "commdlg.lib" )
-#endif
 #endif
 
 

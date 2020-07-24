@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     #pragma library( "commdlg.lib" );
 #endif
 
