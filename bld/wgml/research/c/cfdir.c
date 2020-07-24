@@ -72,7 +72,7 @@ int get_compact_entry( FILE * in_file, directory_entry * entry )
     int count;
 
     /* Get the length of the defined_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -92,7 +92,7 @@ int get_compact_entry( FILE * in_file, directory_entry * entry )
     entry->defined_name[count] = '\0';
 
     /* Get the length of the member_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -141,7 +141,7 @@ int get_extended_entry( FILE * in_file, directory_entry * entry )
     uint8_t count;
 
     /* Get the length of the defined_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -166,7 +166,7 @@ int get_extended_entry( FILE * in_file, directory_entry * entry )
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* Get the length of the member_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -210,7 +210,7 @@ int skip_compact_entry( FILE * in_file )
     uint8_t count;
 
     /* Get the length of the defined_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -220,7 +220,7 @@ int skip_compact_entry( FILE * in_file )
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* Get the length of the member_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -249,7 +249,7 @@ int skip_extended_entry( FILE * in_file )
     uint8_t count;
 
     /* Get the length of the defined_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -264,7 +264,7 @@ int skip_extended_entry( FILE * in_file )
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* Get the length of the member_name. */
-    
+
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
