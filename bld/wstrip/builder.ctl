@@ -18,7 +18,7 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/wstripx.exe <OWBINDIR>/bwstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwstripx.exe <OWBINDIR>/bwstrip<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
