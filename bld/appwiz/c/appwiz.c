@@ -39,6 +39,7 @@
 #include "projtype.h"
 #include "errmsg.h"
 #include "rcstr.gh"
+#include "wresdefn.h"
 
 #define NEWPROJ_INF_FILE    "newproj.inf"
 
@@ -64,7 +65,7 @@ static bool createProjectDir( char *dir )
             if( MKDIR( dircopy ) ) {
                 free( dircopy );
                 ShowError( APPWIZ_MKDIR_FAILED );
-                return( FALSE );
+                return( false );
             }
             *ptr = ch;
         }
@@ -73,10 +74,10 @@ static bool createProjectDir( char *dir )
     if( MKDIR( dircopy ) ) {
         free( dircopy );
         ShowError( APPWIZ_MKDIR_FAILED );
-        return( FALSE );
+        return( false );
     }
     free( dircopy );
-    return( TRUE );
+    return( true );
 }
 
 bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
@@ -112,7 +113,7 @@ bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
                 return( true );
             }
             strcpy( projectName, ctltext );
-            projectTypeIndex = GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE );
+            GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE, &projectTypeIndex );
             if( !createProjectDir( projectDir ) ) {
                 return( true );
             }
@@ -163,7 +164,7 @@ extern void GUImain( void )
         FreeProjectTypes();
         return;
     }
-    GUICreateResDialog( &newProjInfo, DIALOG_NEWPROJ );
+    GUICreateResDialog( &newProjInfo, MAKEINTRESOURCE( DIALOG_NEWPROJ ) );
     if( projectTypeIndex >= 0 ) {
         iter = GetFirstProjectType();
         while( projectTypeIndex >= 0 ) {
