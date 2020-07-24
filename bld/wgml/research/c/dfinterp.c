@@ -155,13 +155,13 @@ static void df_bad_code( void )
 /* These functions are for device functions which take no parameters. */
 
 /* Type I device functions have an associated parameter type byte, which should
- * always be "0x00" for the functions in this section. 
+ * always be "0x00" for the functions in this section.
  */
 
 /* Function df_clear3270().
  * Implements device function %clear3270().
  */
- 
+
 static void df_clear3270( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -173,7 +173,7 @@ static void df_clear3270( void )
 /* Function df_clearPC().
  * Implements device function %clearPC().
  */
- 
+
 static void df_clearPC( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -185,7 +185,7 @@ static void df_clearPC( void )
 /* Function df_dotab().
  * Implements device function %dotab().
  */
- 
+
 static void df_dotab( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -197,7 +197,7 @@ static void df_dotab( void )
 /* Function df_endif().
  * Implements device function %endif().
  */
- 
+
 static void df_endif( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -209,7 +209,7 @@ static void df_endif( void )
 /* Function df_flushpage().
  * Implements device function %flushpage().
  */
- 
+
 static void df_flushpage( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -221,7 +221,7 @@ static void df_flushpage( void )
 /* Function df_recordbreak().
  * Implements device function %recordbreak().
  */
- 
+
 static void df_recordbreak( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -233,7 +233,7 @@ static void df_recordbreak( void )
 /* Function df_textpass().
  * Implements device function %textpass().
  */
- 
+
 static void df_textpass( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -245,7 +245,7 @@ static void df_textpass( void )
 /* Function df_ulineoff().
  * Implements device function %ulineoff().
  */
- 
+
 static void df_ulineoff( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -257,7 +257,7 @@ static void df_ulineoff( void )
 /* Function df_ulineon().
  * Implements device function %ulineon().
  */
- 
+
 static void df_ulineon( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -269,7 +269,7 @@ static void df_ulineon( void )
 /* Function df_wait().
  * Implements device function %wait().
  */
- 
+
 static void df_wait( void )
 {
     if( current_df_data.parameter_type != 0x00 )
@@ -283,7 +283,7 @@ static void df_wait( void )
 /* Function df_date().
  * Implements device function %date().
  */
- 
+
 static void df_date( void )
 {
     printf_s( "%%date()" );
@@ -293,7 +293,7 @@ static void df_date( void )
 /* Function df_default_width().
  * Implements device function %default_width().
  */
- 
+
 static void df_default_width( void )
 {
     printf_s( "%%default_width()" );
@@ -303,7 +303,7 @@ static void df_default_width( void )
 /* Function df_font_height().
  * Implements device function %font_height().
  */
- 
+
 static void df_font_height( void )
 {
     printf_s( "%%font_height()" );
@@ -313,7 +313,7 @@ static void df_font_height( void )
 /* Function df_font_number().
  * Implements device function %font_number().
  */
- 
+
 static void df_font_number( void )
 {
     printf_s( "%%font_number()" );
@@ -323,7 +323,7 @@ static void df_font_number( void )
 /* Function df_font_outname1().
  * Implements device function %font_outname1().
  */
- 
+
 static void df_font_outname1( void )
 {
     printf_s( "%%font_outname1()" );
@@ -333,7 +333,7 @@ static void df_font_outname1( void )
 /* Function df_font_outname2().
  * Implements device function %font_outname2().
  */
- 
+
 static void df_font_outname2( void )
 {
     printf_s( "%%font_outname2()" );
@@ -343,7 +343,7 @@ static void df_font_outname2( void )
 /* Function df_font_resident().
  * Implements device function %font_resident().
  */
- 
+
 static void df_font_resident( void )
 {
     printf_s( "%%font_resident()" );
@@ -353,7 +353,7 @@ static void df_font_resident( void )
 /* Function df_font_space().
  * Implements device function %font_space().
  */
- 
+
 static void df_font_space( void )
 {
     printf_s( "%%font_space()" );
@@ -363,7 +363,7 @@ static void df_font_space( void )
 /* Function df_line_height().
  * Implements device function %line_height().
  */
- 
+
 static void df_line_height( void )
 {
     printf_s( "%%line_height()" );
@@ -373,7 +373,7 @@ static void df_line_height( void )
 /* Function df_line_space().
  * Implements device function %line_space().
  */
- 
+
 static void df_line_space( void )
 {
     printf_s( "%%line_space()" );
@@ -383,7 +383,7 @@ static void df_line_space( void )
 /* Function df_page_depth().
  * Implements device function %page_depth().
  */
- 
+
 static void df_page_depth( void )
 {
     printf_s( "%%page_depth()" );
@@ -393,7 +393,7 @@ static void df_page_depth( void )
 /* Function df_page_width().
  * Implements device function %page_width().
  */
- 
+
 static void df_page_width( void )
 {
     printf_s( "%%page_width()" );
@@ -403,7 +403,7 @@ static void df_page_width( void )
 /* Function df_pages().
  * Implements device function %pages().
  */
- 
+
 static void df_pages( void )
 {
     printf_s( "%%pages()" );
@@ -413,7 +413,7 @@ static void df_pages( void )
 /* Function df_tab_width().
  * Implements device function %tab_width().
  */
- 
+
 static void df_tab_width( void )
 {
     printf_s( "%%tab_width()" );
@@ -423,7 +423,7 @@ static void df_tab_width( void )
 /* Function df_thickness().
  * Implements device function %thickness().
  */
- 
+
 static void df_thickness( void )
 {
     printf_s( "%%thickness()" );
@@ -433,7 +433,7 @@ static void df_thickness( void )
 /* Function df_time().
  * Implements device function %time().
  */
- 
+
 static void df_time( void )
 {
     printf_s( "%%time()" );
@@ -443,7 +443,7 @@ static void df_time( void )
 /* Function df_wgml_header().
  * Implements device function %wgml_header().
  */
- 
+
 static void df_wgml_header( void )
 {
     printf_s( "%%wgml_header()" );
@@ -453,7 +453,7 @@ static void df_wgml_header( void )
 /* Function df_x_address().
  * Implements device function %x_address().
  */
- 
+
 static void df_x_address( void )
 {
     printf_s( "%%x_address()" );
@@ -463,7 +463,7 @@ static void df_x_address( void )
 /* Function df_x_size().
  * Implements device function %x_size().
  */
- 
+
 static void df_x_size( void )
 {
     printf_s( "%%x_size()" );
@@ -473,7 +473,7 @@ static void df_x_size( void )
 /* Function df_y_address().
  * Implements device function %y_address().
  */
- 
+
 static void df_y_address( void )
 {
     printf_s( "%%y_address()" );
@@ -483,7 +483,7 @@ static void df_y_address( void )
 /* Function df_y_size().
  * Implements device function %y_size().
  */
- 
+
 static void df_y_size( void )
 {
     printf_s( "%%y_size()" );
@@ -500,7 +500,7 @@ static void df_y_size( void )
  *      in_parameters points to the parameters instance to be initialized.
  *
  * Global Variable Used:
- *      current_df_data.current must point to the first byte of 
+ *      current_df_data.current must point to the first byte of
  *      offset1 on entry.
  *
  * Global Variable Modified:
@@ -533,7 +533,7 @@ static void get_parameters ( parameters * in_parameters )
     memcpy_s( &offset, sizeof( offset ), current_df_data.current, sizeof( offset ) );
     current_df_data.current += sizeof( offset );
 
-    return;    
+    return;
 }
 
 /* Function process_parameter().
@@ -543,7 +543,7 @@ static void get_parameters ( parameters * in_parameters )
  *
  * Global Variable Used:
  *      current_df_data.current must point to the first byte in the
- *      Directive instance. 
+ *      Directive instance.
  *
  * Global Variable Altered:
  *      current_df_data will be altered as needed to parse the rest of the
@@ -566,7 +566,7 @@ void process_parameter( void )
 
 /* Functions which use parameters.
  * These functions all take parameters and so have common effects on the global
- * current_df_data. 
+ * current_df_data.
  *
  * Global Variables Used:
  *      current_df_data is updated to reflect the current function.
@@ -591,7 +591,7 @@ void process_parameter( void )
 /* Function df_image().
  * Implements device function %image().
  */
- 
+
 static void df_image( void )
 {
     int         i;
@@ -602,7 +602,7 @@ static void df_image( void )
     case 0x00:
 
         /* Character literal parameter. */
-        
+
         memcpy_s( &count, sizeof( count ), current_df_data.current, sizeof( count ) );
         current_df_data.current += sizeof( count );
 
@@ -621,7 +621,7 @@ static void df_image( void )
             } else {
 
             /* The current character cannot have been an %image() parameter. */
-            
+
                 printf_s( "%%binary($%02x)\n", current_df_data.current[i] );
 
             }
@@ -659,14 +659,14 @@ static void df_image( void )
 /* Function df_text().
  * Implements device function %text().
  */
- 
+
 static void df_text( void )
 
 {
     int         i;
     parameters  my_parameters;
     uint16_t    count;
-    
+
     switch( current_df_data.parameter_type) {
     case 0x00:
 
@@ -723,7 +723,7 @@ static void df_text( void )
 /* Function char_literal().
  * Displays the value of a character literal.
  */
- 
+
 static void char_literal( void )
 {
     int         i;
@@ -754,7 +754,7 @@ static void char_literal( void )
 /* Function numeric_literal().
  * Displays the value of a numeric literal.
  */
- 
+
 static void numeric_literal( void )
 {
     uint16_t    value;
@@ -780,11 +780,11 @@ static void numeric_literal( void )
 /* Function df_cancel().
  * Implements device function %cancel().
  */
- 
+
 static void df_cancel( void )
 {
     parameters   my_parameters;
-    
+
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
@@ -814,7 +814,7 @@ static void df_cancel( void )
 /* Function df_enterfont().
  * Implements device function %enterfont().
  */
- 
+
 static void df_enterfont( void )
 {
     parameters   my_parameters;
@@ -852,7 +852,7 @@ static void df_enterfont( void )
  *      Added for completeness. This device function causes gendev to hang
  *      if used with a literal, and wgml to hang if used with a non-literal.
  */
- 
+
 static void df_sleep( void )
 {
     parameters   my_parameters;
@@ -938,7 +938,7 @@ static void df_setsymbol( void )
  *      Device function %binary() has the same byte code, and hence uses
  *      the same implementation, as device function %binary1().
  */
- 
+
 static void df_binary1( void )
 {
     parameters   my_parameters;
@@ -972,7 +972,7 @@ static void df_binary1( void )
 /* Function df_binary2().
  * Implements device function %binary2().
  */
- 
+
 static void df_binary2( void )
 {
     parameters   my_parameters;
@@ -1006,7 +1006,7 @@ static void df_binary2( void )
 /* Function df_binary4().
  * Implements device function %binary4().
  */
- 
+
 static void df_binary4( void )
 {
     parameters   my_parameters;
@@ -1040,7 +1040,7 @@ static void df_binary4( void )
 /* Function df_ifeqn().
  * Implements device function %ifeqn().
  */
- 
+
 static void df_ifeqn( void )
 {
     parameters   my_parameters;
@@ -1081,7 +1081,7 @@ static void df_ifeqn( void )
 /* Function df_ifnen().
  * Implements device function %ifnen().
  */
- 
+
 static void df_ifnen( void )
 {
     parameters   my_parameters;
@@ -1122,7 +1122,7 @@ static void df_ifnen( void )
 /* Function df_ifeqs().
  * Implements device function %ifeqs().
  */
- 
+
 static void df_ifeqs( void )
 {
     parameters   my_parameters;
@@ -1163,7 +1163,7 @@ static void df_ifeqs( void )
 /* Function df_ifnes().
  * Implements device function %ifnes().
  */
- 
+
 static void df_ifnes( void )
 {
     parameters   my_parameters;
@@ -1208,7 +1208,7 @@ static void df_ifnes( void )
 /* Function df_add().
  * Implements device function %add().
  */
- 
+
 static void df_add( void )
 {
     parameters   my_parameters;
@@ -1240,7 +1240,7 @@ static void df_add( void )
 /* Function df_decimal().
  * Implements device function %decimal().
  */
- 
+
 static void df_decimal( void )
 {
     parameters   my_parameters;
@@ -1265,7 +1265,7 @@ static void df_decimal( void )
 /* Function df_divide().
  * Implements device function %divide().
  */
- 
+
 static void df_divide( void )
 {
     parameters   my_parameters;
@@ -1297,7 +1297,7 @@ static void df_divide( void )
 /* Function df_getstrsymbol().
  * Implements device function %getstrsymbol().
  */
- 
+
 static void df_getstrsymbol( void )
 {
     parameters   my_parameters;
@@ -1322,7 +1322,7 @@ static void df_getstrsymbol( void )
 /* Function df_getnumsymbol().
  * Implements device function %getnumsymbol().
  */
- 
+
 static void df_getnumsymbol( void )
 {
     parameters   my_parameters;
@@ -1347,7 +1347,7 @@ static void df_getnumsymbol( void )
 /* Function df_hex().
  * Implements device function %hex().
  */
- 
+
 static void df_hex( void )
 {
     parameters   my_parameters;
@@ -1373,7 +1373,7 @@ static void df_hex( void )
 /* Function df_lower().
  * Implements device function %lower().
  */
- 
+
 static void df_lower( void )
 {
     parameters   my_parameters;
@@ -1399,7 +1399,7 @@ static void df_lower( void )
 /* Function df_remainder().
  * Implements device function %remainder().
  */
- 
+
 static void df_remainder( void )
 {
     parameters   my_parameters;
@@ -1431,7 +1431,7 @@ static void df_remainder( void )
 /* Function df_subtract().
  * Implements device function %subtract().
  */
- 
+
 static void df_subtract( void )
 {
     parameters   my_parameters;

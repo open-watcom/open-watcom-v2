@@ -39,7 +39,7 @@
 *                   is_dev_file()
 *                   parse_device()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *
@@ -110,7 +110,7 @@ typedef struct {
     char *          font_name;
     char *          font_style;
     uint16_t        font_height;
-    uint16_t        font_space;    
+    uint16_t        font_space;
 } default_font;
 
 /* To hold the data from the DefaultfontBlock struct. */
@@ -145,7 +145,7 @@ typedef struct {
     device_font *   fonts;
 } devicefont_block;
 
-/* This struct embodies the binary form of the :DEVICE block. 
+/* This struct embodies the binary form of the :DEVICE block.
  *
  * Note that the FunctionsBlock is not mentioned. The various CodeBlocks
  * are instead provided as part of PauseBlock and DevicefontBlock.

@@ -55,7 +55,7 @@
 
 /* Either '\', '/', or whatever DOS is using. */
 
-global char         dos_switch_char;    
+global char         dos_switch_char;
 
 /* Reset so can be reused with other headers. */
 

@@ -129,13 +129,13 @@ bool is_fon_file( FILE * in_file)
     /* Verify that the discriminator is for a .COP font file. */
 
     if( memcmp( discriminator, "FON", 3 ) ) return( false );
-    
+
     return( true );
 }
 
 /* Function parse_font().
  * Constructs a cop_font instance from the given input stream.
- *  
+ *
  * Parameters:
  *      in_file points to the first byte of a .COP file encoding a :FONT
  *          block after the "FON" descriminator.
@@ -150,7 +150,7 @@ cop_font * parse_font( FILE * in_file )
 {
 
     /* The cop_font instance. */
-  
+
     cop_font *          out_font          = NULL;
 
     /* Used to acquire string attributes. */
@@ -176,7 +176,7 @@ cop_font * parse_font( FILE * in_file )
     translation *       translation_ptr     = NULL;
     uint8_t *           translation_start   = NULL;
     uint8_t             uint8_array[0x100];
-    uint16_t            uint16_array[0x100];    
+    uint16_t            uint16_array[0x100];
     uint8_t             width_data_size;
     uint8_t             width_flag;
     uint32_t *          width_ptr;
@@ -188,7 +188,7 @@ cop_font * parse_font( FILE * in_file )
     size_t              size;
 
     /* Initialize the out_font. */
-        
+
     out_font = malloc( START_SIZE );
     if( out_font == NULL )
         return( out_font );
@@ -259,7 +259,7 @@ cop_font * parse_font( FILE * in_file )
             out_font = NULL;
             return( out_font );
         }
-    
+
         out_font->font_out_name2 = OUT_FONT_GET_OFF();
         string_ptr[length] = '\0';
         OUT_FONT_ADD_OFF( length + 1 );
@@ -277,7 +277,7 @@ cop_font * parse_font( FILE * in_file )
         out_font = NULL;
         return( out_font );
     }
-    
+
     switch( designator ) {
     case 0x1700:
 
@@ -416,7 +416,7 @@ cop_font * parse_font( FILE * in_file )
         out_font = NULL;
         return( out_font );
     }
-  
+
     /* Get the data_count and the flags. */
 
     fread( &width_flag, sizeof( width_flag ), 1, in_file );
@@ -425,7 +425,7 @@ cop_font * parse_font( FILE * in_file )
         out_font = NULL;
         return( out_font );
     }
-  
+
     fread( &data_count, sizeof( data_count ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         free( out_font );
@@ -470,7 +470,7 @@ cop_font * parse_font( FILE * in_file )
         }
 
         /* Get the count and verify that it contains 0x00. */
-      
+
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
            free( out_font );
@@ -484,7 +484,7 @@ cop_font * parse_font( FILE * in_file )
             out_font = NULL;
             return( out_font );
         }
-  
+
         /* Get the data into the array. */
 
         if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->intrans->table )) ) {
@@ -495,7 +495,7 @@ cop_font * parse_font( FILE * in_file )
         }
 
         byte_ptr = OUT_FONT_MAP_OFF();
-        
+
         fread( byte_ptr, sizeof( out_font->intrans->table ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
            free( out_font );
@@ -505,7 +505,7 @@ cop_font * parse_font( FILE * in_file )
 
         out_font->intrans = OUT_FONT_GET_OFF();
         OUT_FONT_ADD_OFF( sizeof( out_font->intrans->table ) );
-    }  
+    }
 
     /* Get the OuttransBlock, if present. */
 
@@ -534,7 +534,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* The file is positioned at the start of the data. */
 
-        /* Note: each translation is added individually; however, taken 
+        /* Note: each translation is added individually; however, taken
          * together, they constitute the field "translations" in the Wiki.
          */
 
@@ -558,7 +558,7 @@ cop_font * parse_font( FILE * in_file )
                 out_font = NULL;
                 return( out_font );
             }
-            
+
             /* Reserve space for the outtrans_block struct instance. */
 
             if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->outtrans->table )) ) {
@@ -607,7 +607,7 @@ cop_font * parse_font( FILE * in_file )
                     translation_ptr = OUT_FONT_MAP( outtrans_ptr->table[i] );
 
                     /* The translation always contains exactly one character. */
-                    
+
                     size = translation_ptr->count = 1;
 
                     if( out_font->allocated_size < (out_font->next_offset + size ) ) {
@@ -624,7 +624,7 @@ cop_font * parse_font( FILE * in_file )
                     byte_ptr = OUT_FONT_MAP( translation_ptr->data );
 
                     /* The translation character is the value in the input array. */
-                    
+
                     *byte_ptr = uint8_array[i];
                 }
             }
@@ -633,7 +633,7 @@ cop_font * parse_font( FILE * in_file )
         case 0x82:
 
             /* The count should be equal to the data_count. */
-        
+
             if( count8 != data_count ) {
                 printf_s( "Incorrect OuttransBlock data_count: %i instead of %i\n", data_count, count8 );
                 free( out_font );
@@ -769,7 +769,7 @@ cop_font * parse_font( FILE * in_file )
            out_font = NULL;
            return( out_font );
         }
-    }  
+    }
 
     /* Get the WidthBlock, if present. */
 
@@ -787,7 +787,7 @@ cop_font * parse_font( FILE * in_file )
         }
 
         width_ptr = OUT_FONT_MAP_OFF();
-        
+
         out_font->width = OUT_FONT_GET_OFF();
         OUT_FONT_ADD_OFF( sizeof( out_font->width->table ) );
 
@@ -818,7 +818,7 @@ cop_font * parse_font( FILE * in_file )
             /* The WidthBlock has one-byte elements. */
 
             /* The count should be 0x00. */
-            
+
             if( count8 != 0x00 ) {
                 printf_s( "Incorrect WidthBlock count: %i\n", count8 );
                 free( out_font );
@@ -848,7 +848,7 @@ cop_font * parse_font( FILE * in_file )
             /* The WidthBlock has two-byte elements. */
 
             /* The count should be 0x00. */
-            
+
             if( count8 != 0x00 ) {
                 printf_s( "Incorrect WidthBlock count: %i\n", count8 );
                 free( out_font );
@@ -878,7 +878,7 @@ cop_font * parse_font( FILE * in_file )
             /* The WidthBlock has four-byte elements. */
 
             /* The count should be 0x01. */
-            
+
             if( count8 != 0x01 ) {
                 printf_s( "Incorrect WidthBlock count: %i\n", count8 );
                 free( out_font );
@@ -917,7 +917,7 @@ cop_font * parse_font( FILE * in_file )
     if( out_font->intrans != NULL ) {
         OUT_FONT_REMAP( intrans );
     }
-    
+
     if( out_font->outtrans != NULL ) {
         OUT_FONT_REMAP( outtrans );
         for( i = 0; i < sizeof( outtrans_block ) / sizeof( translation * ); i++ ) {
@@ -933,7 +933,7 @@ cop_font * parse_font( FILE * in_file )
     if( out_font->width != NULL ) {
         OUT_FONT_REMAP( width );
     }
-    
+
     return( out_font );
 }
 

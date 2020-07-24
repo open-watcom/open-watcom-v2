@@ -96,7 +96,7 @@
 *               a text file. As such, all structs and field names refer to
 *               those in "copfiles.h", not the research code.
 ****************************************************************************/
- 
+
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <process.h>
 #include <stdio.h>
@@ -185,7 +185,7 @@ typedef struct {
 } oc_page;
 
 typedef uint32_t    oc_hpos_t;
-  
+
 typedef struct {
     uint16_t            current;
     uint16_t            length;
@@ -197,9 +197,9 @@ typedef struct {
     bool                new_record;
     char            *   text;
 } oc_text_phrase;
- 
+
 /* Local variables. */
- 
+
 /* These are used by more than one function. */
 
 static  bool                oc_break                = false;
@@ -227,18 +227,18 @@ static  uint32_t            oc_page_right           = 0;
 static  uint32_t            oc_page_top             = 0;
 static  uint32_t            oc_pre_skip             = 0;
 static  uint32_t            oc_pre_top_skip         = 0;
- 
+
 /* Load the usage text array. */
- 
+
 static  char    const   *   usage_text[] = {
 "Usage:  outcheck defined-name",
 "'defined-name' is the defined name for the device to use",
 "'defined-name' must be enclosed in quotes if it contains spaces",
 NULL
 };
- 
+
 /* Load the document text arrays. */
- 
+
 static  oc_text_phrase         title[] = {
     { 3, true, "OUTCHECK~ Document " },
     { 0, true, NULL}
@@ -286,7 +286,7 @@ static  oc_text_phrase         para_font[] = {
     {0, false, " of a word. " },
     {0, true, NULL }
 };
- 
+
 static  oc_text_phrase         para_long[] = {
     {0, true, "These are tests of extremely long words. First, a solid multiline word: aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeee " },
     {0, true, "And now an early multi-part multiline word: aaaaaaaaaa" },
@@ -305,7 +305,7 @@ static  oc_text_phrase         para_long[] = {
     {0, false, "bbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeee>aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeee " },
     {0, true, NULL }
 };
- 
+
 static  oc_text_phrase         para_stop[] = {
     {0, true, "Now we get to the test of the stops. Research suggests that " },
     {0, true, "there are four: '.', '!', '?' and '.', at least when the " },
@@ -372,13 +372,13 @@ static  oc_text_phrase         para_tab[] = {
 };
 
 #if 0 // Needed until the boxes are ready for testing
- 
+
 static  oc_text_phrase         para2[] = {
     {0, true, "This box was created using .bx (and several other control " },
     {0, false, "words) and illustrates one of the many possibilites available: " },
     {0, false, NULL }
 };
- 
+
 static  oc_text_phrase         bx_box[] = {
     {0, true, "%binary(3)>the appropriate graphic appears" },
     {0, true, "%binary1(4)>the appropriate graphic appears" },
@@ -386,7 +386,7 @@ static  oc_text_phrase         bx_box[] = {
     {0, true, "%binary4(6)>the appropriate graphic appears" },
     {0, false, NULL }
 };
- 
+
 static  oc_text_phrase         para3[] = {
     {0, true, "This box was created using :FIG., which is in some ways less " },
     {0, false, "flexible than .bx but which has its advantages: " },
@@ -398,9 +398,9 @@ static  oc_text_phrase         fig_box[] = {
     {0, true, "%y_address() returns the current vertical print position" },
     {0, false, NULL }
 };
- 
+
 #endif // #if 0
- 
+
 /* Local function definitions. */
 
 /* Function oc_add_text_chars_to_pool().
@@ -669,10 +669,10 @@ static void oc_intrans( char * data, uint16_t *len, font_number font )
  *          makes sense since it is only when a page is finished that this
  *          can be done without having to redo it if one or more lines must be
  *          moved to the next page. However, that also results in a lot of
- *          other processing being done here that could be done earlier if 
+ *          other processing being done here that could be done earlier if
  *          each text_line is output as soon as it is finalized.
  */
- 
+
 static void oc_output_page( void )
 {
     oc_element      *   cur_elem    = NULL;
@@ -935,7 +935,7 @@ static void oc_process_line_full( text_line * in_line, bool justify )
         case oc_text:
 
             /* The computation shown produces the same result as wgml 4.0, but
-             * not the result described in the Reference Manual. 
+             * not the result described in the Reference Manual.
              */
 
             /* Compute the total width of the line, that is, the width of
@@ -990,7 +990,7 @@ static void oc_process_line_full( text_line * in_line, bool justify )
     /* Note: it is not known how the various tags which have a page_position
      * :LAYOUT attribute interact with justification. It might be as easy as
      * setting justify to "false", or it might require adjustment of the
-     * variables controlling how justification is done. 
+     * variables controlling how justification is done.
      */
 
     /* outcheck.c does not attempt justification; however, it would occur
@@ -1029,7 +1029,7 @@ static void oc_process_line_full( text_line * in_line, bool justify )
     /* Break processing. */
 
     cur_depth = oc_cur_page.column.cur_depth;
-    if( oc_break ) {    
+    if( oc_break ) {
 
         /* Full page processing. */
 
@@ -1066,7 +1066,7 @@ static void oc_process_line_full( text_line * in_line, bool justify )
              */
 
             if( cur_line == NULL ) {
-                    
+
                 /* If cur_line is NULL, then all lines will fit. While
                  * not an error as such, it should still never happen.
                  */
@@ -1261,7 +1261,7 @@ static uint32_t oc_text_chars_width( char *text, uint32_t count, font_number fon
         if( (text[i] == '\t') || (text[i] == tab_char) ) {
             break;
         }
-        cur_count++;   
+        cur_count++;
     }
 
     if( cur_count != 0 ) {
@@ -1345,7 +1345,7 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
 
 /* Function oc_wgml_tabs().
  * This function converts a text_chars instance into a doubly-linked list
- * of text_chars instances reflecting the presence of wgml tabs. 
+ * of text_chars instances reflecting the presence of wgml tabs.
  *
  * Parameter:
  *      in_chars contains a pointer to the text_chars instance.
@@ -1423,7 +1423,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
             start = i;
             for( ; i < count; i++ ) {
                 if( (cur_text[i] == '\t') || (cur_text[i] == tab_char) ) {
-                    break;                
+                    break;
                 }
             }
 
@@ -1472,7 +1472,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
                 if( (cur_text[i] == '\t') || (cur_text[i] == tab_char) ) {
                     break;
                 }
-            }                
+            }
 
             /* i is sitting on either the tab after the current word or one
              * position past the end of the original text, start contains the
@@ -1560,7 +1560,7 @@ static uint32_t oc_split_text( text_chars * in_chars, uint32_t limit )
 
         /* It is possible that some characters might fit. */
 
-        test_limit = limit - in_chars->x_address;   
+        test_limit = limit - in_chars->x_address;
         if( in_chars->width > test_limit ) {
 
             /* A more exact computation is needed. */
@@ -1571,7 +1571,7 @@ static uint32_t oc_split_text( text_chars * in_chars, uint32_t limit )
             if( test_width != test_limit ) {
 
                 /* Not all characters will fit. */
-                
+
                 if( test_width < test_limit ) {
                     while( test_width < test_limit ) {
                         test_count++;
@@ -1595,7 +1595,7 @@ static uint32_t oc_split_text( text_chars * in_chars, uint32_t limit )
 
                     retval = in_chars->count;
 
-                } else if( test_count == in_chars->count ) { 
+                } else if( test_count == in_chars->count ) {
 
                     /* All characters will fit. */
 
@@ -1707,10 +1707,10 @@ static bool oc_validate_text_line( text_line * in_line )
  *      oc_break will be "false" on exit.
  *
  * Notes:
- *      This function is intended to explore methods for converting input text 
+ *      This function is intended to explore methods for converting input text
  *          which has been finalized except for input translation and tabbing
  *          to a text_line instance. It is intended to mimic features of
- *          parse_text() in gproctxt.c. 
+ *          parse_text() in gproctxt.c.
  *      The first text_chars of the first text_line in each oc_element will be
  *          positioned at the location given by oc_page_left plus oc_indent.
  *          The first text_chars of subsequent text_lines in the same
@@ -1895,7 +1895,7 @@ static void oc_process_text( char * input_text, font_number font )
                 oc_new_element->net_skip += oc_pre_top_skip;
             } else {
                 oc_new_element->net_skip = 0;
-            }    
+            }
             oc_old_post_skip = oc_cur_post_skip;
             break;
         case oc_bx:
@@ -2051,7 +2051,7 @@ static void oc_process_text( char * input_text, font_number font )
 
         if( !ws_spc_done ) {
 
-            /* If ws_spc_done is true, there is nothing to do: space_width, 
+            /* If ws_spc_done is true, there is nothing to do: space_width,
              * spaces, and tabbing have been set properly.
              */
 
@@ -2063,7 +2063,7 @@ static void oc_process_text( char * input_text, font_number font )
 
                 tabbing = false;
 
-                if( !oc_script ) { 
+                if( !oc_script ) {
 
                     if( the_line->last == NULL ) {
 
@@ -2077,7 +2077,7 @@ static void oc_process_text( char * input_text, font_number font )
                     } else {
 
                         /* "wscript" (or "noscript") is in effect: set up
-                         * space_width and ws_spc_done and reset spaces. 
+                         * space_width and ws_spc_done and reset spaces.
                          * NOTE: this uses font_number, not old_font.
                          */
 
@@ -2193,8 +2193,8 @@ static void oc_process_text( char * input_text, font_number font )
         /* Set old_count to the current number of characters controlled by
          * next_chars. This will be used, if needed, to catch the case where
          * none of the characters in next_chars can, in fact, fit on the current
-         * line. 
-         */ 
+         * line.
+         */
 
         old_count = next_chars->count;
 
@@ -2227,7 +2227,7 @@ static void oc_process_text( char * input_text, font_number font )
                         save_chars = save_chars->prev;
                         if( save_chars == NULL ) break;
                     }
-                }            
+                }
 
                 /* Identify when save_chars must be moved to a new line. */
 
@@ -2279,7 +2279,7 @@ static void oc_process_text( char * input_text, font_number font )
                  *      appended to the_line and split.
                  *  if save_chars is not NULL, the the_line is ready to be
                  *      output and the fate of next_chars will be decided
-                 *      on the next pass through the loop.   
+                 *      on the next pass through the loop.
                  */
 
                 if( save_chars == NULL ) {
@@ -2313,7 +2313,7 @@ static void oc_process_text( char * input_text, font_number font )
 
                         /* count can equal old_count, but, in that case, there
                          * is nothing to do.
-                         */ 
+                         */
 
                         if( count != old_count ) {
 
@@ -2408,7 +2408,7 @@ static void oc_process_text( char * input_text, font_number font )
                     next_chars->x_address = cur_h_address;
 
                 } else {
-                                
+
                     /* Attach save_chars to the_line. */
 
                     the_line->first = save_chars;
@@ -2454,7 +2454,7 @@ static void oc_process_text( char * input_text, font_number font )
 
                     /* At this point, next_chars->x_address is set to the proper
                      * value for the end of the prior text_line. Reset it using
-                     * offset and update cur_h_address. 
+                     * offset and update cur_h_address.
                      */
 
                     next_chars->x_address -= offset;
@@ -2470,7 +2470,7 @@ static void oc_process_text( char * input_text, font_number font )
             }
 
         } else {
-                
+
             /* When ".co off" is in effect, the_line can be empty at this
              * point. If it is empty, then there is nothing to do unless
              * "wcript/noscript" is in effect.
@@ -2481,7 +2481,7 @@ static void oc_process_text( char * input_text, font_number font )
             if( !oc_script ) {
 
                 /* "wscript/noscript" in effect: split next_chars.
-                 * NOTE: if/when columns are supported, the second 
+                 * NOTE: if/when columns are supported, the second
                  * parameter may depend on the current column.
                  */
 
@@ -2495,7 +2495,7 @@ static void oc_process_text( char * input_text, font_number font )
 
                     /* count can equal old_count, but, in that case, there
                      * is nothing to do.
-                     */ 
+                     */
 
 
                     if( count != old_count ) {
@@ -2535,7 +2535,7 @@ static void oc_process_text( char * input_text, font_number font )
                     if( !oc_validate_text_line( the_line ) ) out_msg( "Gotcha!\n");
                     oc_process_line_full( the_line, false );
                     the_line = oc_alloc_text_line();
-    
+
                     /* Reset cur_h_address. */
 
                     cur_h_address = oc_page_left;
@@ -2566,7 +2566,7 @@ static void oc_process_text( char * input_text, font_number font )
         the_line->last = oc_wgml_tabs( next_chars );
 
         /* Set tabbing to true if next_chars contained at least one wgml tab
-         * character. 
+         * character.
          * Note: if wgml tab alignment or fill characters affects how tabbing
          *           is done, something more elaborate may be needed here.
          */
@@ -2598,7 +2598,7 @@ static void oc_process_text( char * input_text, font_number font )
 
 /* Function emulate_input_source()
  * This function passes known text buffers to oc_process_text() after setting
- * the font number and break flag. 
+ * the font number and break flag.
  *
  * Parameters:
  *      in_text points to the oc_text_phrase array to be processed.
@@ -2610,9 +2610,9 @@ static void oc_process_text( char * input_text, font_number font )
  *
  * Notes:
  *      This function is intended to emulate the last stage of text
- *          processing in our wgml. 
+ *          processing in our wgml.
  */
- 
+
 static void emulate_input_source( oc_text_phrase * in_text )
 {
     oc_text_phrase *   cur_phrase  = NULL;
@@ -2674,13 +2674,13 @@ static void emulate_input_source( oc_text_phrase * in_text )
  * This function emulates "the rest of wgml", setting various flags and
  * globals depending on the current element type and sending any text buffers
  * to emulate_input_source() to handle the break flag and the font number and
- * get each text buffer processed. 
+ * get each text buffer processed.
  *
  * Parameters:
  *      construct encodes the type of construct to be emulated.
  *      input_text points to the oc_text_phrase array to be processed.
  */
- 
+
 static void emulate_layout_page( oc_text_phrase * input_text, oc_construct_type construct )
 {
     switch( construct ) {
@@ -2713,7 +2713,7 @@ static void emulate_layout_page( oc_text_phrase * input_text, oc_construct_type 
 
     case oc_paragraph:
 
-        /* Set the globals. This emulates a pre_skip of 1 and an indent of 
+        /* Set the globals. This emulates a pre_skip of 1 and an indent of
          * '0.5i'.
          */
 
@@ -2755,14 +2755,14 @@ static void emulate_layout_page( oc_text_phrase * input_text, oc_construct_type 
  * and then produces an text image output file using the device specified on
  * the command line. No parsing is done: the text is entirely static and the
  * assignment of words to lines etc is done manually; only the actual output
- * is being tested. 
+ * is being tested.
  *
  * Notes:
  *      This code only allows for the :PAGEADDRESS block y_positive to have
  *          different values in different drivers. No known drivers have any
- *          value for x_positive other than "1" ("yes"). 
+ *          value for x_positive other than "1" ("yes").
  */
- 
+
 static void emulate_wgml( void )
 {
     int                 i;
@@ -2838,7 +2838,7 @@ static void emulate_wgml( void )
      * The constants used with oc_max_depth match the values used by
      * wgml 4.0 for a page depth of 9.66i converted to vertical base
      * units and rounded up if the result is not an integer. The use of
-     * y_offset shown comes from our wgml code. 
+     * y_offset shown comes from our wgml code.
      */
 
     if( bin_driver->y_positive == 0 ) {
@@ -2859,7 +2859,7 @@ static void emulate_wgml( void )
 
     /* The values used set up a left margin of '1i' and a right margin of
      * '7i', expressed in horizontal base units, both from the position
-     * specificed in the :PAGESTART block. 
+     * specificed in the :PAGESTART block.
      */
 
     oc_page_left = bin_device->horizontal_base_units + bin_device->x_start - bin_device->x_offset;
@@ -2912,7 +2912,7 @@ static void emulate_wgml( void )
     oc_document_start = true;
     oc_new_section = true;
 
-    /* Title page. */ 
+    /* Title page. */
 
     emulate_layout_page( title, oc_title_text );
 
@@ -3180,7 +3180,7 @@ extern void print_usage( void )
 }
 
 /* Function main().
- * Given a valid defined name, verify that it is a valid .COP file and parse 
+ * Given a valid defined name, verify that it is a valid .COP file and parse
  * it if it is.
  *
  * The actual parsing is performed in the function parse_defined_name(); main()

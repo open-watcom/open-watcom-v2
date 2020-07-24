@@ -46,7 +46,7 @@
 *                   is_drv_file()
 *                   parse_driver()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *
@@ -107,7 +107,7 @@ typedef struct {
  * of the fact that there can be at most two :FINISH blocks, that wgml will
  * only use the first :VALUE block in a :FINISH block, so that only that one
  * needs to be presented here, and that they must be distinguished because
- * wgml processes at most one of them. 
+ * wgml processes at most one of them.
  */
 
 typedef struct {
@@ -167,7 +167,7 @@ typedef struct {
     code_text *         endvalue;
 } line_proc;
 
-/* To hold the data extracted from a ShortFontstyleBlock struct. 
+/* To hold the data extracted from a ShortFontstyleBlock struct.
  * Only the first two fields are found in the Wiki struct. The next three take
  * advantage of the fact that a :FONTSTYLE block directly defines at most one of
  * each of two sub-blocks, plus any number of :LINEPROC blocks. The number of
@@ -182,7 +182,7 @@ typedef struct {
     line_proc *         lineprocs;
 } fontstyle_block;
 
-/* To hold the data extracted from a FontstyleGroup struct. 
+/* To hold the data extracted from a FontstyleGroup struct.
  * This struct bears only a functional relationship to the struct in the Wiki,
  * which must be seen to be believed.
  */
@@ -193,7 +193,7 @@ typedef struct {
 } fontstyle_group;
 
 /* To hold the data extracted from an HlineBlock, a VlineBlock, or a DboxBlock
- * struct. 
+ * struct.
  * This differs from the structs in the Wiki because each of them can contain at
  * most one CodeBlock, as well as the thickness.
  */
@@ -208,7 +208,7 @@ typedef struct {
  *
  * The "unknown" block is not mentioned because it never has any data in it.
  *
- * The comments within the structs refer to the "blocks" discussed in the Wiki. 
+ * The comments within the structs refer to the "blocks" discussed in the Wiki.
  *
  * The first two fields are used internally and were used for sizing during
  * development
