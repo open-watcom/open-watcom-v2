@@ -14,6 +14,6 @@ exetarg_libs = $(orl_lib)
 exetarg_objs = linkstub.obj $(mstools_stub_obj) $(mstools_objs)
 !endif
 
-!include ../../../master.mif
-
 !include $(orl_dir)/client.mif
+
+!include ../../../master.mif
