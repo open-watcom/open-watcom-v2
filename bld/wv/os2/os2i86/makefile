@@ -6,8 +6,6 @@
 host_os  = os2
 host_cpu = i86
 
-syshdir  =
-
 #add '16' suffix to avoid conflicts
 tail_char_os2 = 16
 

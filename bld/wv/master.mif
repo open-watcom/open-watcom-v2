@@ -39,23 +39,11 @@ os2pm = 1
 
 !include $(wv_dir)/wvobjs.mif
 
+target_os2 = os2
+target_win = win
+target_nt  = win
+
 objs = $(engine_objs) $(ui_objs)
-
-cdir   = $(wv_dir)/c
-hdir   = $(wv_dir)/h
-rdir   = ../../res
-
-sysdir = $(host_os)
-
-!ifndef syscdir
-syscdir = ../c
-!endif
-!ifndef syshdir
-syshdir = ../h
-!endif
-!ifndef sysadir
-sysadir = ../asm
-!endif
 
 # cflags
 #########
@@ -93,9 +81,9 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 
 # inc_dirs
 ###########
-inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
-inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs)
-inc_dirs += $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
+inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"$(dig_dir)/h" -I"../../res/strings" &
+    $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) &
+    $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_rtdll 1
 !else
 !ifeq sys_windowed 1
@@ -169,7 +157,6 @@ wv_dialogs = &
     japstk.gdl &
     japhis.gdl
 
-# systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
@@ -218,104 +205,98 @@ wd.lib : litdef.gh $(engine_objs) $(__MAKEFILES__)
 
 $(lnk) : $(__MAKEFILES__)
 
-rc_inc_dir_nt  = -I"$(rdir)/win"
-rc_inc_dir_os2 = -I"$(rdir)/os2"
-rc_inc_dir_win = -I"$(rdir)/win"
-
-rc_inc_dirs = -I. -Ih $(rc_inc_dir_$(host_os)) -I"$(rdir)" -I"$(rdir)/strings"
-rc_inc_dirs += -I"$(hdir)" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
+rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/strings" &
+    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 !ifeq sys_windowed 1
 
 bitmaps_os2 = &
-    $(rdir)/os2/zapant.ico &
-    $(rdir)/os2/8087.ico &
-    $(rdir)/os2/asm.ico &
-    $(rdir)/os2/brk.ico &
-    $(rdir)/os2/call.ico &
-    $(rdir)/os2/exe.ico &
-    $(rdir)/os2/func.ico &
-    $(rdir)/os2/glob.ico &
-    $(rdir)/os2/hot.ico &
-    $(rdir)/os2/io.ico &
-    $(rdir)/os2/log.ico &
-    $(rdir)/os2/mem.ico &
-    $(rdir)/os2/mod.ico &
-    $(rdir)/os2/reg.ico &
-    $(rdir)/os2/repl.ico &
-    $(rdir)/os2/src.ico &
-    $(rdir)/os2/srch.ico &
-    $(rdir)/os2/thrd.ico &
-    $(rdir)/os2/var.ico
+    ../../res/os2/zapant.ico &
+    ../../res/os2/8087.ico &
+    ../../res/os2/asm.ico &
+    ../../res/os2/brk.ico &
+    ../../res/os2/call.ico &
+    ../../res/os2/exe.ico &
+    ../../res/os2/func.ico &
+    ../../res/os2/glob.ico &
+    ../../res/os2/hot.ico &
+    ../../res/os2/io.ico &
+    ../../res/os2/log.ico &
+    ../../res/os2/mem.ico &
+    ../../res/os2/mod.ico &
+    ../../res/os2/reg.ico &
+    ../../res/os2/repl.ico &
+    ../../res/os2/src.ico &
+    ../../res/os2/srch.ico &
+    ../../res/os2/thrd.ico &
+    ../../res/os2/var.ico
 
 bitmaps_win = &
-    $(rdir)/win/zapant.ico &
-    $(rdir)/win/8087.ico &
-    $(rdir)/win/asm.ico &
-    $(rdir)/win/brk.ico &
-    $(rdir)/win/call.ico &
-    $(rdir)/win/exe.ico &
-    $(rdir)/win/func.ico &
-    $(rdir)/win/glob.ico &
-    $(rdir)/win/hot.ico &
-    $(rdir)/win/io.ico &
-    $(rdir)/win/log.ico &
-    $(rdir)/win/mem.ico &
-    $(rdir)/win/mod.ico &
-    $(rdir)/win/reg.ico &
-    $(rdir)/win/repl.ico &
-    $(rdir)/win/src.ico &
-    $(rdir)/win/srch.ico &
-    $(rdir)/win/thrd.ico &
-    $(rdir)/win/var.ico
-
-bitmaps_nt = $(bitmaps_win)
+    ../../res/win/zapant.ico &
+    ../../res/win/8087.ico &
+    ../../res/win/asm.ico &
+    ../../res/win/brk.ico &
+    ../../res/win/call.ico &
+    ../../res/win/exe.ico &
+    ../../res/win/func.ico &
+    ../../res/win/glob.ico &
+    ../../res/win/hot.ico &
+    ../../res/win/io.ico &
+    ../../res/win/log.ico &
+    ../../res/win/mem.ico &
+    ../../res/win/mod.ico &
+    ../../res/win/reg.ico &
+    ../../res/win/repl.ico &
+    ../../res/win/src.ico &
+    ../../res/win/srch.ico &
+    ../../res/win/thrd.ico &
+    ../../res/win/var.ico
 
 bitmaps = &
-    $(bitmaps_$(host_os)) &
-    $(rdir)/splash.bmp &
-    $(rdir)/closebmp.bmp &
-    $(rdir)/read1.bmp &
-    $(rdir)/read2.bmp &
-    $(rdir)/write1.bmp &
-    $(rdir)/write2.bmp &
-    $(rdir)/open1.bmp &
-    $(rdir)/open2.bmp &
-    $(rdir)/close1.bmp &
-    $(rdir)/close2.bmp &
-    $(rdir)/points1.bmp &
-    $(rdir)/points2.bmp &
-    $(rdir)/codeher1.bmp &
-    $(rdir)/codeher2.bmp &
-    $(rdir)/brkhere1.bmp &
-    $(rdir)/brkhere2.bmp &
-    $(rdir)/dimbrk1.bmp &
-    $(rdir)/dimbrk2.bmp &
-    $(rdir)/source1.bmp &
-    $(rdir)/source2.bmp &
-    $(rdir)/source2.bmp &
-    $(rdir)/source1.bmp &
-    $(rdir)/assembl1.bmp &
-    $(rdir)/assembl2.bmp &
-    $(rdir)/assembl2.bmp &
-    $(rdir)/assembl1.bmp &
-    $(rdir)/currlin1.bmp &
-    $(rdir)/currlin2.bmp &
-    $(rdir)/unpoint1.bmp &
-    $(rdir)/unpoint2.bmp &
-    $(rdir)/currbrk1.bmp &
-    $(rdir)/currbrk2.bmp &
-    $(rdir)/currdim1.bmp &
-    $(rdir)/currdim2.bmp &
-    $(rdir)/go.bmp &
-    $(rdir)/over.bmp &
-    $(rdir)/into.bmp &
-    $(rdir)/return.bmp &
-    $(rdir)/back.bmp &
-    $(rdir)/for.bmp &
-    $(rdir)/up.bmp &
-    $(rdir)/down.bmp &
-    $(rdir)/home.bmp
+    $(bitmaps_$(target_$(host_os))) &
+    ../../res/splash.bmp &
+    ../../res/closebmp.bmp &
+    ../../res/read1.bmp &
+    ../../res/read2.bmp &
+    ../../res/write1.bmp &
+    ../../res/write2.bmp &
+    ../../res/open1.bmp &
+    ../../res/open2.bmp &
+    ../../res/close1.bmp &
+    ../../res/close2.bmp &
+    ../../res/points1.bmp &
+    ../../res/points2.bmp &
+    ../../res/codeher1.bmp &
+    ../../res/codeher2.bmp &
+    ../../res/brkhere1.bmp &
+    ../../res/brkhere2.bmp &
+    ../../res/dimbrk1.bmp &
+    ../../res/dimbrk2.bmp &
+    ../../res/source1.bmp &
+    ../../res/source2.bmp &
+    ../../res/source2.bmp &
+    ../../res/source1.bmp &
+    ../../res/assembl1.bmp &
+    ../../res/assembl2.bmp &
+    ../../res/assembl2.bmp &
+    ../../res/assembl1.bmp &
+    ../../res/currlin1.bmp &
+    ../../res/currlin2.bmp &
+    ../../res/unpoint1.bmp &
+    ../../res/unpoint2.bmp &
+    ../../res/currbrk1.bmp &
+    ../../res/currbrk2.bmp &
+    ../../res/currdim1.bmp &
+    ../../res/currdim2.bmp &
+    ../../res/go.bmp &
+    ../../res/over.bmp &
+    ../../res/into.bmp &
+    ../../res/return.bmp &
+    ../../res/back.bmp &
+    ../../res/for.bmp &
+    ../../res/up.bmp &
+    ../../res/down.bmp &
+    ../../res/home.bmp
 
 !endif
 
@@ -327,52 +308,52 @@ dlg_command  = cp $[@ $@
 dlgj_command = cp $[@ $@
 !endif
 
-dlgayn.gdl : $(rdir)/dlgs/dlgayn.dlg $(__MAKEFILES__)
+dlgayn.gdl : ../../res/dlgs/dlgayn.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgbrk.gdl : $(rdir)/dlgs/dlgbrk.dlg $(__MAKEFILES__)
+dlgbrk.gdl : ../../res/dlgs/dlgbrk.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgcmd.gdl : $(rdir)/dlgs/dlgcmd.dlg $(__MAKEFILES__)
+dlgcmd.gdl : ../../res/dlgs/dlgcmd.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlglist.gdl : $(rdir)/dlgs/dlglist.dlg $(__MAKEFILES__)
+dlglist.gdl : ../../res/dlgs/dlglist.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgnewp.gdl : $(rdir)/dlgs/dlgnewp.dlg $(__MAKEFILES__)
+dlgnewp.gdl : ../../res/dlgs/dlgnewp.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgoptn.gdl : $(rdir)/dlgs/dlgoptn.dlg $(__MAKEFILES__)
+dlgoptn.gdl : ../../res/dlgs/dlgoptn.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgvarx.gdl : $(rdir)/dlgs/dlgvarx.dlg $(__MAKEFILES__)
+dlgvarx.gdl : ../../res/dlgs/dlgvarx.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgamb.gdl : $(rdir)/dlgs/dlgamb.dlg $(__MAKEFILES__)
+dlgamb.gdl : ../../res/dlgs/dlgamb.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgwind.gdl : $(rdir)/dlgs/dlgwind.dlg $(__MAKEFILES__)
+dlgwind.gdl : ../../res/dlgs/dlgwind.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgstk.gdl : $(rdir)/dlgs/dlgstk.dlg $(__MAKEFILES__)
+dlgstk.gdl : ../../res/dlgs/dlgstk.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlghis.gdl : $(rdir)/dlgs/dlghis.dlg $(__MAKEFILES__)
+dlghis.gdl : ../../res/dlgs/dlghis.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgasync.gdl : $(rdir)/dlgs/dlgasync.dlg $(__MAKEFILES__)
+dlgasync.gdl : ../../res/dlgs/dlgasync.dlg $(__MAKEFILES__)
     $(dlg_command)
 
-japayn.gdl : $(rdir)/dlgs/japayn.dlg $(__MAKEFILES__)
+japayn.gdl : ../../res/dlgs/japayn.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japbrk.gdl : $(rdir)/dlgs/japbrk.dlg $(__MAKEFILES__)
+japbrk.gdl : ../../res/dlgs/japbrk.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japcmd.gdl : $(rdir)/dlgs/japcmd.dlg $(__MAKEFILES__)
+japcmd.gdl : ../../res/dlgs/japcmd.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japlist.gdl : $(rdir)/dlgs/japlist.dlg $(__MAKEFILES__)
+japlist.gdl : ../../res/dlgs/japlist.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japnewp.gdl : $(rdir)/dlgs/japnewp.dlg $(__MAKEFILES__)
+japnewp.gdl : ../../res/dlgs/japnewp.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japoptn.gdl : $(rdir)/dlgs/japoptn.dlg $(__MAKEFILES__)
+japoptn.gdl : ../../res/dlgs/japoptn.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japvarx.gdl : $(rdir)/dlgs/japvarx.dlg $(__MAKEFILES__)
+japvarx.gdl : ../../res/dlgs/japvarx.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japamb.gdl : $(rdir)/dlgs/japamb.dlg $(__MAKEFILES__)
+japamb.gdl : ../../res/dlgs/japamb.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japwind.gdl : $(rdir)/dlgs/japwind.dlg $(__MAKEFILES__)
+japwind.gdl : ../../res/dlgs/japwind.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japstk.gdl : $(rdir)/dlgs/japstk.dlg $(__MAKEFILES__)
+japstk.gdl : ../../res/dlgs/japstk.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japhis.gdl : $(rdir)/dlgs/japhis.dlg $(__MAKEFILES__)
+japhis.gdl : ../../res/dlgs/japhis.dlg $(__MAKEFILES__)
     $(dlgj_command)
 
 rcfiles = &
@@ -380,70 +361,64 @@ rcfiles = &
     $(gui_dir)/h/gui.msg &
     $(aui_dir)/res/aui.rc &
     $(aui_dialogs) &
-    $(rdir)/dialogs.rc &
-    $(rdir)/strings.rc &
+    ../../res/dialogs.rc &
+    ../../res/strings.rc &
     litdef.gh &
-    $(hdir)/dlgamb.rh &
-    $(hdir)/dlgayn.rh &
-    $(hdir)/dlgstk.rh &
-    $(hdir)/dlgbrk.rh &
-    $(hdir)/dlgcmd.rh &
-    $(hdir)/dlglist.rh &
-    $(hdir)/dlgnewp.rh &
-    $(hdir)/dlgoptn.rh &
-    $(hdir)/dlgvarx.rh &
-    $(hdir)/dlgwind.rh &
-    $(hdir)/dlgstk.rh &
-    $(hdir)/dlgasync.rh &
+    ../../h/dlgamb.rh &
+    ../../h/dlgayn.rh &
+    ../../h/dlgstk.rh &
+    ../../h/dlgbrk.rh &
+    ../../h/dlgcmd.rh &
+    ../../h/dlglist.rh &
+    ../../h/dlgnewp.rh &
+    ../../h/dlgoptn.rh &
+    ../../h/dlgvarx.rh &
+    ../../h/dlgwind.rh &
+    ../../h/dlgstk.rh &
+    ../../h/dlgasync.rh &
     $(wv_dialogs)
 
 
 !ifeq host_os os2
 
-$(name).res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(name).res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
-$(name)j.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(name)j.res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$@
 
 !else
 
-$(name).res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(name).res : ../../res/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
 !endif
 
-$(resfile_dll) : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+$(resfile_dll) : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$@
 
 ####################
-.EXTENSIONS: .str
+.c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(trmem_dir)
 
-.h: $(syshdir);$(hdir);$(aui_dir)/h
+.asm: ../asm
 
-.c: $(syscdir);$(cdir);$(aui_dir)/c;$(dig_srcs);$(trmem_dir)
-
-.asm: $(sysadir)
-
-.str: h;$(rdir)/strings
-
-litdefm.tmp : menu.str $(__MAKEFILES__)
+litdefm.tmp : ../../res/strings/menu.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
-litdefs1.tmp : wdeng.str $(__MAKEFILES__)
+litdefs1.tmp : ../../res/strings/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
-litdefs2.tmp : wddui.str $(__MAKEFILES__)
+litdefs2.tmp : ../../res/strings/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
@@ -460,15 +435,15 @@ wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN
 wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
-usage.gh : $(hdir)/usage.sp $(__MAKEFILES__)
+usage.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
-usagej.gh : $(hdir)/usage.sp $(__MAKEFILES__)
+usagej.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-usage.u : $(hdir)/usage.sp $(__MAKEFILES__)
+usage.u : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u -kENGLISH -k$(host_os) -klinkres $[@ $@
 

@@ -66,7 +66,9 @@
 #include "dbgevent.h"
 #include "dbgupdt.h"
 #include "dbglkup.h"
-#include "ntdbgpb.h"
+#if defined( __NT__ )
+    #include "ntdbgpb.h"
+#endif
 #include "dbgstdio.h"
 #include "dlgfile.h"
 #include "posixfp.h"
@@ -94,7 +96,6 @@ extern void             SetNoSectSeg( void );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
-//extern const char       *CheckForPowerBuilder( const char * );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 
 extern bool             DownLoadTask;
