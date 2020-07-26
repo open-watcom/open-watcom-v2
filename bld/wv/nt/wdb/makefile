@@ -5,7 +5,7 @@ host_cpu = 386
 
 wv_engine_noui = 1
 
-.c : ../../nt/c
+.c : c
 
 all : wdb.exe .SYMBOLIC
 
