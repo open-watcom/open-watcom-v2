@@ -10,8 +10,6 @@ wic_autodepends = .AUTODEPEND
 
 wic_trmem = 1
 
-.extensions: .rc
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

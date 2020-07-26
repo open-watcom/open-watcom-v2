@@ -33,8 +33,6 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include $(cpp_dir)/client.mif
 
-.EXTENSIONS : .y .key .gh .res .rc
-
 common_objs = &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &

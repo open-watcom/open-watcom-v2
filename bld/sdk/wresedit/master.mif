@@ -9,8 +9,6 @@ sys_dll = 1
 
 #suppress_bd = 1
 
-.EXTENSIONS: .res .rc
-
 memory_model_i86 = l
 
 !include cproj.mif

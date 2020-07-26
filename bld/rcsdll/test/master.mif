@@ -8,8 +8,6 @@ rcstest_autodepends = .AUTODEPEND
 
 !include $(rcsdll_dir)/client.mif
 
-.EXTENSIONS: .res .rc
-
 .c : ..
 
 inc_dirs = -I.. $(rcsdll_inc_dirs)

@@ -22,8 +22,6 @@ win_yacc_file   = $(win_yacc_prefix)tab
 !include wres.mif
 !include trmem.mif
 
-.EXTENSIONS: .msg .res .rc
-
 !include $(commonui_dir)/client.mif
 !include $(cpp_dir)/client.mif
 

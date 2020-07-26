@@ -7,8 +7,6 @@ wde_autodepends = .AUTODEPEND
 
 wde_trmem = 1
 
-.EXTENSIONS: .res .rc
-
 wde_winver =
 
 sys_windowed = 1

@@ -16,8 +16,6 @@ sys_windowed = 1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-.EXTENSIONS: .res .rc
-
 !ifeq host_os nt
 dllname = ntspyhk
 !else

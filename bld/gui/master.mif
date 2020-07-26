@@ -9,8 +9,6 @@ gui_trmem = 1
 gui_autodepends = .AUTODEPEND
 !endif
 
-.EXTENSIONS: .msg
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -100,7 +98,6 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(
 
 .c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 .h:     ../h;../../h
-.msg:   ../../h
 
 $(name).lib : guimsgs.gh $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_lib

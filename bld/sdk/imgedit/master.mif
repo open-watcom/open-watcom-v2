@@ -21,8 +21,6 @@ memory_model_i86 = l
 
 .JUST_ENOUGH
 
-.EXTENSIONS: .dlg .res .rc
-
 .c : c;../c
 
 objs_common = &

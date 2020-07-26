@@ -16,8 +16,6 @@ suppress_bd = 1
 !include defrule.mif
 !include deftarg.mif
 
-.extensions: .res .dlg .rc .cur .ico
-
 objs = &
     align.obj       &
     space.obj       &

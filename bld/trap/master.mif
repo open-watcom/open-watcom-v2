@@ -6,8 +6,6 @@ trap_autodepends = .AUTODEPEND
 
 suppress_zc = 1
 
-.EXTENSIONS : .res .rc
-
 #
 # Common stuff between trap file and server implementations
 #
@@ -276,7 +274,7 @@ dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
     $(librarian) $(libflags) +$[@
 
 !ifdef resource_file
-$(resource_file) : wserver.rc
+$(resource_file) : $(trap_dir)/common/wserver.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
@@ -291,15 +289,8 @@ inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 .c: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
 .cpp: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
 .asm: ../asm;../../asm;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
-.rc: ../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
 
 rc_inc_dirs = -I"$(trap_dir)/common"
-
-# implicit rules
-#################
-.rc.res: $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice

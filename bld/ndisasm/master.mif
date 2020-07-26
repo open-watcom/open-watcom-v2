@@ -6,8 +6,6 @@ wdis_autodepends = .AUTODEPEND
 
 wdis_trmem = 1
 
-.EXTENSIONS: .rc .msg
-
 additional_cleanup_qnx = usage.u
 
 !include cproj.mif
@@ -36,8 +34,6 @@ inc_dirs += -I"$(comp_cfg_dir)/h"
 
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
 .h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
-.rc : $(disasm_dir)/stand/h
-.msg : $(disasm_dir)/stand
 
 stand_objs = &
     args.obj &
@@ -83,7 +79,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
-wresui.res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
+wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 

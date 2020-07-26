@@ -16,8 +16,6 @@ memory_model_i86 = l
 !include wres.mif
 !include trmem.mif
 
-.EXTENSIONS: .res .rc
-
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif

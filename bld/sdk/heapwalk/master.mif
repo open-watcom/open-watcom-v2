@@ -6,8 +6,6 @@ wheapwlk_autodepends = .AUTODEPEND
 
 sys_windowed=1
 
-.EXTENSIONS: .res .rc
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
