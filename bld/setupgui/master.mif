@@ -23,12 +23,6 @@ additional_cleanup = *.i *.rex setup.inf
 !include $(wpi_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
-# systems where manifest file resource must be added to .EXE
-manifest_nt_386 = ntmanif.res
-#manifest_nt_x64 = ntmanif.res
-
-!include ntmanif.mif
-
 # objects
 ##########
 objs = &
@@ -132,11 +126,11 @@ extra_rc_flags_win = -30 -D_WIN
 extra_rc_flags_nt  = -D_WINNT
 
 !ifeq sys_windowed 1
-dep_res1_os2 = ../res/os2/setup.ico
+depend_res_os2 = ../res/os2/setup.ico
 !endif
-dep_res1_nt  = ../res/nt/setup.ico ../res/nt/disk.ico
-dep_res1_win = ../res/win/setup.ico ../res/win/disk.ico
-dep_res1 = ../h/setup.h $(gui_dir)/h/gui.rc $(dep_res1_$(host_os))
+depend_res_nt  = ../res/nt/setup.ico ../res/nt/disk.ico
+depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
+depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
 res_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
@@ -151,11 +145,14 @@ inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_i
 # explicit rules
 ##################
 
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
 !include verrc.mif
+
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+!ifneq sys_windowed 1
+exetarg_res_manifest_nt_386 = ntmanif.res
+exetarg_res_wresui = wresui.res
+!endif
 
 !ifeq sys_windowed 1
 all : csetup.exe f77setup.exe .SYMBOLIC
@@ -163,7 +160,7 @@ all : csetup.exe f77setup.exe .SYMBOLIC
 all : setup.exe .SYMBOLIC
 !endif
 
-setup.exe : $(extra_deps) $(__MAKEFILES__)
+setup.exe : $(extra_deps) $(exetarg_res_wresui) $(exetarg_res_manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
@@ -172,9 +169,17 @@ setup.exe : $(extra_deps) $(__MAKEFILES__)
 !else
     $(linker) name $@ @setup.lnk
 !endif
-!ifneq sys_windowed 1
-    @%make bind_res_manifest
-    @%make bind_res_wresui
+!ifdef exetarg_res_manifest_$(host_os)_$(host_cpu)
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rc_bnd) $(exetarg_res_manifest_$(host_os)_$(host_cpu)) $@
+!endif
+!ifdef exetarg_res_wresui
+!ifeq verbose 0
+    @echo bind wresui $@
+!endif
+    $(wstrip) -q -a -r $@ . $(exetarg_res_wresui)
 !endif
 
 setup.lnk : $(__MAKEFILES__)
@@ -212,40 +217,49 @@ setup.lnk : $(__MAKEFILES__)
 
 nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)
 
-wresui.res : ../res/setupui.rc $(dep_res1) $(__MAKEFILES__)
+# UI resources
+wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $(gui_inc_dirs) $[@ -fo=$@
 
-csetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+# manifest resource for UI
+!ifdef exetarg_res_manifest_$(host_os)_$(host_cpu)
+$(exetarg_res_manifest_$(host_os)_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
+    @%make echo_rc
+    $(rc) $(rc_flags) -I.. $(res_inc_dirs) -I"$(watcom_dir)/h" $< -fo=$@
+!endif
+
+# GUI resources
+csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$@
 
-jcsetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
 
-f77setup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$@
 
-jfsetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
 
-setup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
+setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/generic.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$@
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
 
-csetup.exe : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+csetup.exe : csetup.res $(exetarg_res_version_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
     @%make exe_with_res
-f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+f77setup.exe : f77setup.res $(exetarg_res_version_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
     @%make exe_with_res
-jcsetup.exe : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+jcsetup.exe : jcsetup.res $(exetarg_res_version_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
     @%make exe_with_res
-jfsetup.exe : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+jfsetup.exe : jfsetup.res $(exetarg_res_version_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
     @%make exe_with_res
 
 exe_with_res : .PROCEDURE
@@ -254,4 +268,19 @@ exe_with_res : .PROCEDURE
 !endif
     cp setup.exe $(lname)
     @%make bind_win386_add_res
-    @%make bind_res_add_version_exe
+!ifdef win386
+!ifeq verbose 0
+    @echo wbind $(win386ldr) $@
+!endif
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $^&.res $@
+!else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
+!ifeq verbose 0
+    @echo bind res add $@
+!endif
+    $(rc_bnd) $^&.res $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
+!else
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rc_bnd) $^&.res $@
+!endif
