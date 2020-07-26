@@ -86,7 +86,7 @@ sys_x86_rdos = sys rdos_dll &
     export TrapInit_, TrapFini_, TrapRequest_ &
     $(dllbase)
 
-sys_x86_qnx  = sys pharlap_qnx disable 1014, 1023
+sys_x86_qnx  = sys dig_qnx
 
 # For now Linux is linked as a PE DLL file since we have code to load
 # this under Linux already. Eventually it should be an ELF shared library.
