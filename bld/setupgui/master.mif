@@ -6,8 +6,6 @@ setupgui_trmem = 1
 
 setupgui_dos_extender = causeway
 
-.EXTENSIONS: .rc .ico .res
-
 .ERROR:
 
 additional_cleanup = *.i *.rex setup.inf
@@ -133,35 +131,22 @@ extra_rc_flags     = -r
 extra_rc_flags_win = -30 -D_WIN
 extra_rc_flags_nt  = -D_WINNT
 
-res_dir = ../res/$(host_os)
-
-!ifeq host_os os2
 !ifeq sys_windowed 1
-dep_res1 = ../h/setup.h setup.ico gui.rc
-!else
-dep_res1 = ../h/setup.h gui.rc
+dep_res1_os2 = ../res/os2/setup.ico
 !endif
-!else ifeq host_os dos
-dep_res1 = ../h/setup.h gui.rc
-!else ifeq host_os linux
-dep_res1 = ../h/setup.h gui.rc
-!else ifeq host_os osx
-dep_res1 = ../h/setup.h gui.rc
-!else
-dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
-!endif
+dep_res1_nt  = ../res/nt/setup.ico ../res/nt/disk.ico
+dep_res1_win = ../res/win/setup.ico ../res/win/disk.ico
+dep_res1 = ../h/setup.h $(gui_dir)/h/gui.rc $(dep_res1_$(host_os))
+
+res_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
 # where to find objects
 ########################
 
 .c : ../c;$(trmem_dir)
-.rc : ../res;$(res_dir);$(gui_dir)/h
-.ico : $(res_dir)
 
-res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
-
-inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs)
-inc_dirs += -I"$(libzip_dir)/lib"
+inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) &
+    $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib"
 
 # explicit rules
 ##################
@@ -174,6 +159,8 @@ version_res_exe_nt_x64 = exever.res
 
 !ifeq sys_windowed 1
 all : csetup.exe f77setup.exe .SYMBOLIC
+!else
+all : setup.exe .SYMBOLIC
 !endif
 
 setup.exe : $(extra_deps) $(__MAKEFILES__)
@@ -225,27 +212,27 @@ setup.lnk : $(__MAKEFILES__)
 
 nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)
 
-wresui.res : setupui.rc $(dep_res1) $(__MAKEFILES__)
+wresui.res : ../res/setupui.rc $(dep_res1) $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $(gui_inc_dirs) $[@ -fo=$@
 
-csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+csetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$@
 
-jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+jcsetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
 
-f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+f77setup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$@
 
-jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+jfsetup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
 
-setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
+setup.res : ../res/$(host_os)/setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$@
 
@@ -253,11 +240,15 @@ dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
 
 csetup.exe : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+    @%make exe_with_res
 f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+    @%make exe_with_res
 jcsetup.exe : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+    @%make exe_with_res
 jfsetup.exe : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+    @%make exe_with_res
 
-.res.exe :
+exe_with_res : .PROCEDURE
 !ifdef __WATCOM_TOOLS__
     cp setup.sym $^&.sym
 !endif
