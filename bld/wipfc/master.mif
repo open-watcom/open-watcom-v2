@@ -37,7 +37,6 @@ tagobjs=element.obj text.obj entity.obj punct.obj whtspc.obj word.obj tag.obj ac
         lp.obj note.obj nt.obj ol.obj p.obj parml.obj pbutton.obj rm.obj sl.obj table.obj&
         title.obj ul.obj warning.obj xmp.obj
 
-# systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 

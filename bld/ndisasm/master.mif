@@ -64,7 +64,6 @@ stand_objs = &
 exetarg_prebuild_objs = msg.gh $(dis_prereq)
 exetarg_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
 exetarg_libs = $(orl_lib) $(wres_lib)
-# systems where version resources must be added to .EXE
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui = wresui.res

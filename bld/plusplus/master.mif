@@ -155,10 +155,8 @@ exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
 exetarg_libs          = $(asminline_lib) $(cg_libs)
 !endif
-# systems where version resources must be added to .EXE
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
-
 !include exetarg.mif
 
 #
@@ -167,7 +165,6 @@ exetarg_res_version_nt_x64 = exever.res
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
-# systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 modname_nt  = op modname='$(dlltarg_name).dll'
@@ -175,7 +172,6 @@ modname_os2 = op modname='$(dlltarg_name)'
 !ifdef modname_$(host_os)
 dlltarg_indirect      = $(modname_$(host_os))
 !endif
-
 !include dlltarg.mif
 
 #

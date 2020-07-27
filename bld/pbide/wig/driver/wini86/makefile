@@ -35,11 +35,6 @@ driver.res : driver.rc driver.dlg
 driver.obj : driver.c
         wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj
 
-.EXTENSIONS:
-.EXTENSIONS: .exe
-.EXTENSIONS: .obj
-.EXTENSIONS: .asm .c .h
-
 .obj : obj
 .c : .
 

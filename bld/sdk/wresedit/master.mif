@@ -59,7 +59,6 @@ dlltarg_objs = &
     preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 dlltarg_res = $(name).res
-# systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 

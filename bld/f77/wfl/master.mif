@@ -32,7 +32,6 @@ exetarg_prebuild_objs = errgrp.gc
 exetarg_objs = blderr.obj errgrp.obj errutil.obj errrsrc.obj &
     errrtns.obj showopts.obj wfl.obj $(trmem_objs)
 exetarg_libs = $(wres_lib)
-# systems where version resources must be added to .EXE
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui = wresui.res

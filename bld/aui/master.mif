@@ -20,8 +20,6 @@ os2pm = 1
 !include defrule.mif
 !include deftarg.mif
 
-.EXTENSIONS: .rc
-
 inc_dirs = -I. -I"../h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
 
 .c: .;../c;$(posix_dir)/misc

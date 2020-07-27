@@ -68,7 +68,6 @@ inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 
-# systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 

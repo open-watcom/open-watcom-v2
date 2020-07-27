@@ -7,19 +7,14 @@ browse_autodepends = .AUTODEPEND
 
 browse_trmem = 1
 
-doc_path_dos = $(docs_dir)/dos
-doc_path_nt  = $(docs_dir)/nt
-doc_path_os2 = $(docs_dir)/os2
-doc_path_win = $(docs_dir)/win
-
-wbrw_h_dos = $(doc_path_dos)/wbrw.h
-wbrw_h_os2 = $(doc_path_os2)/wbrw.h
-wbrw_h_win = $(doc_path_win)/wbrw.h
-wbrw_h_nt  = $(doc_path_nt)/wbrw.h
+wbrw_h_dos = $(docs_dir)/dos/wbrw.h
+wbrw_h_os2 = $(docs_dir)/os2/wbrw.h
+wbrw_h_win = $(docs_dir)/win/wbrw.h
+wbrw_h_nt  = $(docs_dir)/nt/wbrw.h
 
 additional_cleanup = $(wbrw_h_dos) $(wbrw_h_os2) $(wbrw_h_win) $(wbrw_h_nt)
 
-.extensions: .gpp .res .rc
+.extensions: .gpp
 
 sys_windowed = 1
 
@@ -39,7 +34,6 @@ sys_windowed = 1
 .c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c;$(trmem_dir)
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
-.rc: ../res
 
 ext = obj
 objs = $+$(template)$- rxwrap.obj
@@ -54,12 +48,7 @@ ext = mbr
 mbr_files = $+$(template)$-
 !endif
 
-doc_inc_dirs_dos    = -I"$(doc_path_os2)"
-doc_inc_dirs_nt     = -I"$(doc_path_nt)"
-doc_inc_dirs_os2    = -I"$(doc_path_os2)"
-doc_inc_dirs_win    = -I"$(doc_path_win)"
-
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os)) $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_dir)/$(host_os)" $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST=1
 !ifeq release 0
@@ -108,7 +97,6 @@ extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 extra_l_flags_os2 =
 
-# systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
@@ -133,20 +121,20 @@ $(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cp
 !ifdef wbrw_h_$(host_os)
 curr_dir=$+$(%__CWD__)$-
 
-$(doc_path_$(host_os)) : .SYMBOLIC
+$(docs_dir)/$(host_os) : .SYMBOLIC
     $(noecho)cd $@
 
-$(wbrw_h_$(host_os)): $(doc_path_$(host_os)) .ALWAYS
+$(wbrw_h_$(host_os)): $(docs_dir)/$(host_os) .ALWAYS
     $(noecho)!wmake -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
     $(noecho)cd $(curr_dir)
 !endif
 
 !ifeq host_os os2
-$(name).res : wbrwpm.rc
+$(name).res : ../res/wbrwpm.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
 !else
-$(name).res : wbrw.rc
+$(name).res : ../res/wbrw.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
 !endif

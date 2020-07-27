@@ -35,7 +35,6 @@ exetarg_prebuild_objs = rcstr.gh
 exetarg_objs = dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj &
     ddetrack.obj ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj ddemem.obj
 exetarg_libs = $(wpi_lib) $(commonui_lib)
-# systems where version resource must be added to .EXE
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res = wddespy.res

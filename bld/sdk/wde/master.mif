@@ -82,7 +82,6 @@ extra_l_flags_win += library commdlg, ddeml
 libs = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib &
         $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
 
-# systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 

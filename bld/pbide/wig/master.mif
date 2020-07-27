@@ -12,8 +12,6 @@ xname = wig.exe
 
 suppress_zc = 1
 
-.EXTENSIONS: .gh .y
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

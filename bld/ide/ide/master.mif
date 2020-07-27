@@ -86,7 +86,6 @@ rc_inc_dirs = $(rc_ide_inc_dirs_$(host_os)) -I"../res" $(gui_inc_dirs)
 exetarg_prebuild_objs = $(ide_h_$(host_os))
 exetarg_objs = $(objs)
 exetarg_libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
-# systems where version resource must be added to .EXE
 exetarg_res_version_res_exe_nt_386 = exever.res
 exetarg_res_version_res_exe_nt_x64 = exever.res
 exetarg_res = $(proj_name).res

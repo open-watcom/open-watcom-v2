@@ -24,7 +24,7 @@ skip_build: .symbolic
 
 ext_objs = $(ext_objs_$(host_os))
 
-template_objs = &
+objs = &
     gen_co.$(ext_objs) &
     gen_ci.$(ext_objs) &
     mks_co.$(ext_objs) &
@@ -36,15 +36,9 @@ template_objs = &
     pvcs_co.$(ext_objs) &
     pvcs_ci.$(ext_objs)
 
-objs = $+$(template_objs)$-
-
 all: $(objs) .symbolic
 
-.sp.bat :
-    @%make echo_wsplice
-    $(wsplice) -k $(host_os) -k $(host_cpu) $[@ $@
-
-.sp.cmd :
+.sp.bat .sp.cmd :
     @%make echo_wsplice
     $(wsplice) -k $(host_os) -k $(host_cpu) $[@ $@
 

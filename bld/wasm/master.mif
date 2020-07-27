@@ -105,7 +105,6 @@ objs = $(extra_objs_$(host_os)_$(host_cpu)) &
 
 depend_objs = $(extra_link_res_$(host_os)) asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
 
-# systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 

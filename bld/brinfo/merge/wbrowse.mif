@@ -3,12 +3,6 @@
 # MAKEFILE for WBROWSE.DLL
 #
 
-#
-#  Define file extensions
-#
-.extensions:
-.extensions: .exe .obj .brm .cpp .res
-
 .cpp: ../cpp
 
 incpath = ../hpp;../res;$(brinfo_dir)/h;$(lexlib_dir)/wclass/hpp;$(plusplus_dir)/h;$(%watcom_dir)/h;$(%watcom)/h/nt;$(%watcom)/h

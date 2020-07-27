@@ -74,7 +74,6 @@ exetarg_libs = &
     $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
     $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
     $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib
-# systems where version resource must be added to .EXE
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res = $(proj_name).res

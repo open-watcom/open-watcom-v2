@@ -10,8 +10,6 @@ vi_trmem = 1
 
 #vi_dos_extender = causeway
 
-.EXTENSIONS: .gch .gdh
-.EXTENSIONS: .ch .dh
 .EXTENSIONS: .vi .dat
 
 additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
@@ -37,7 +35,6 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 .h : $(vi_dir)/h
 .dat : $(vi_dir)/dat
 
-# systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 

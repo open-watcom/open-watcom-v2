@@ -98,7 +98,6 @@ dlltarg_libs += $(imp_libs)
 !ifdef dwarf
 dlltarg_libs += $(dwarfr_lib)
 !endif
-# systems where version resources must be added to .DLL
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 

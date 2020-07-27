@@ -9,29 +9,26 @@ additional_cleanup = *.asm *.c *.inc
 !include defrule.mif
 !include deftarg.mif
 
-.EXTENSIONS: .def
-
-.def : ../def
 .asm : ../asm
 .c : ../c
 .h : ../h
 
 def_files = &
-clib.def &
-commdlg.def &
-ddeml.def &
-dpmi.def &
-lzexpand.def &
-mmsystem.def &
-odbc.def &
-ole.def &
-penwin.def &
-shell.def &
-stress.def &
-toolhelp.def &
-ver.def &
-win31.def &
-win31_16.def &
+    ../def/clib.def &
+    ../def/commdlg.def &
+    ../def/ddeml.def &
+    ../def/dpmi.def &
+    ../def/lzexpand.def &
+    ../def/mmsystem.def &
+    ../def/odbc.def &
+    ../def/ole.def &
+    ../def/penwin.def &
+    ../def/shell.def &
+    ../def/stress.def &
+    ../def/toolhelp.def &
+    ../def/ver.def &
+    ../def/win31.def &
+    ../def/win31_16.def
 
 all : ./conv.exe win386.lib
 
