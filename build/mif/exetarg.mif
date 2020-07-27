@@ -35,20 +35,20 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_objs) $(exe
 !ifdef exetarg_res
 # version + application
 !ifeq verbose 0
-    @echo bind res (ver+appl) $@
+    @echo bind res $@ ver+appl
 !endif
     $(rc_bnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
-    @echo bind res (ver) $@
+    @echo bind res $@ ver
 !endif
     $(rc_bnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
 !endif
 !else ifdef exetarg_res
 # application only
 !ifeq verbose 0
-    @echo bind res (appl) $@
+    @echo bind res $@ appl
 !endif
     $(rc_bnd) $+$(exetarg_res)$- $@
 !endif

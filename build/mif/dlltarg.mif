@@ -31,20 +31,20 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 !ifdef dlltarg_res
 # version + application
 !ifeq verbose 0
-    @echo bind res (ver+appl) $@
+    @echo bind res $@ ver+appl
 !endif
     $(rc_bnd) $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
-    @echo bind res (ver) $@
+    @echo bind res $@ ver
 !endif
     $(rc_bnd) $(dlltarg_res_version_$(host_os)_$(host_cpu)) $@
 !endif
 !else ifdef dlltarg_res
 # application only
 !ifeq verbose 0
-    @echo bind res (appl) $@
+    @echo bind res $@ appl
 !endif
     $(rc_bnd) $+$(dlltarg_res)$- $@
 !endif
