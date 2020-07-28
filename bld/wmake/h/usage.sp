@@ -50,6 +50,3 @@ target          specifies a target to make (default is first target)
 macro=text    'macro' ‚Ì’l‚ğ 'text' ‚ÅÄ’è‹`‚µ‚Ü‚·
 target        ì¬‚µ‚½‚¢À°¹Ş¯Ä‚ğw’è‚µ‚Ü‚·(ÃŞÌ«ÙÄ‚Íˆê”Ô–Ú‚ÌÀ°¹Ş¯Ä‚Å‚·)
 :endsegment
-:segment IS_RC
-.
-:endsegment
