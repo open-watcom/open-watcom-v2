@@ -509,17 +509,21 @@ void massert( const char *expr, const char *file, int line )
 }
 #endif
 
+enum {
+    #define pick(c,e,j)     MSG_USAGE_ ## c = c,
+    #include "usage.gh"
+    #undef pick
+    MSG_USAGE_COUNT
+};
+
 void Usage( void )
 /****************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;
 
-    for( i = MSG_USAGE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == NULLCHAR ) ) {
-            break;
-        }
         PrtMsg( INF | PRNTSTR, msgbuff );
     }
     ExitOK();

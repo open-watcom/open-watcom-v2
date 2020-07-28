@@ -115,11 +115,11 @@ wresui.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    $(wsplice) -kENGLISH -f "pick(%$#%+, \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    $(wsplice) -kJAPANESE -f "pick(%$#%+, \"\", \"%s\")" $[@ $@
 
 ##############################################################################
 # special case targets

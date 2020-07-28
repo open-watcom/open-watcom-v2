@@ -78,7 +78,7 @@ wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice.exe
-	./wsplice.exe -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
+	./wsplice.exe -kENGLISH -f 'pick(%#%+, "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -o $@ $<

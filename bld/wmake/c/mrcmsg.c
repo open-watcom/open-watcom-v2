@@ -48,8 +48,10 @@
 #ifdef BOOTSTRAP
 
     static struct idstr { int id; char *s; } StringTable[] = {
-        #define pick( id, en, jp )  {id, en},
+        #define pick(id,e,j)    {id, e},
         #include "wmake.msg"
+        #undef pick
+        #define pick(c,e,j)     {MSG_USAGE_BASE+c, e},
         #include "usage.gh"
         #undef pick
     };
