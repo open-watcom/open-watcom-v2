@@ -30,9 +30,9 @@ fpu_flags_win_i86   = -fpc
 
 !include $(disasm_dir)/dis.mif
 
+#
 # cflags
-###############
-
+#
 .c: ../c;../../c;$(dis_srcs);$(extra_srcs)
 
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(dig_dir)/h" $(dis_includes) $(extra_incs)
@@ -49,9 +49,9 @@ extra_c_flags_win = -zc
 extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
 !endif
 
+#
 # lflags
-###############
-
+#
 lflags_dll_dos_386   = sys rex_dos
 lflags_dll_linux_386 = sys rex_linux
 lflags_dll_qnx_386   = sys rex_qnx
@@ -61,9 +61,9 @@ extra_l_flags_dll         = $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt_axp  = op dosseg
 extra_l_flags_dll_nt = $(extra_l_flags_dll_nt_$(host_cpu))
 
+#
 # names
-##################
-
+#
 !ifdef %OWUSE_FILENAME_VERSION
 dlltarg_name = mad$(target_cpu)$(bld_ver)
 !else
@@ -93,13 +93,18 @@ additional_cleanup = *$(dlltarg_ext)
 # explicit rules
 ##################
 
+#
+# DLL
+#
 dlltarg_prebuild_objs = $(dis_prereq)
 dlltarg_objs          = madimp.obj $(dis_objs) $(imp_objs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-
 !include dlltarg.mif
 
+#
+# rc and others
+#
 distbls.gh : ./disbuild.exe
     @%make echo_execute
     $(noecho)$[@

@@ -14,7 +14,16 @@ fscopy_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-exetarg_objs = fscopy.obj
+#
+# cflags
+#
 
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = fscopy.obj
 exetarg_name = wfscopy
 !include exetarg.mif

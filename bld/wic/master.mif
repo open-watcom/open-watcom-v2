@@ -18,7 +18,13 @@ wic_trmem = 1
 
 !include ../objsdef.mif                #   get objs macro
 
-##############################################################################
+#
+# cflags
+#
+.c : ../c;$(trmem_dir)
+.h : ../h
+
+inc_dirs = -I"../h"
 
 extra_cpp_flags_wicgener = $(trmem_cpp_flags)
 
@@ -27,28 +33,22 @@ extra_c_flags = -zp1
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_wicgener = $(trmem_cover_cflags)
 
-##############################################################################
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_prebuild_objs = 
+exetarg_objs = $(objs) $(sys_objs) 
+exetarg_libs = $(wres_lib) $(sys_libs)
+exetarg_res_wresui = wresui.res
+exetarg_name = $(name)
+!include exetarg.mif
 
-.h : ../h
-.c : ../c;$(trmem_dir)
-
-inc_dirs = -I"../h"
-
-libs = $(wres_lib)
-
-##############################################################################
-
-$(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(sys_objs) $(libs) $(sys_libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
-!endif
-    @%make bind_res_wresui
-
-##############################################################################
-
+#
+# rc and others
+#
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
     $(rc_aui) $[@ -fo=$@

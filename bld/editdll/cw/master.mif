@@ -12,6 +12,9 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
 
 inc_dirs = -I"../.."
@@ -20,17 +23,23 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zw -zu
 
+#
+# lflags
+#
 extra_l_flags_dll = op elim
 extra_l_flags_dll_win = export WEP RESIDENT library ddeml
 extra_l_flags_dll_win += op stack=8k, rwr
 extra_l_flags_dll_win += segment _TEXT PRELOAD FIXED
 extra_l_flags_dll_win += segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
 
-verrc_dll = weditcw
-!include verrc.mif
+# explicit rules
+#################
 
 all: weditcw.dll wedit.dll .SYMBOLIC
 
+#
+# DLL's
+#
 dlltarg_objs = weditcw.obj
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
@@ -41,3 +50,10 @@ dlltarg_name = weditcw
 
 dlltarg_name = wedit
 !include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_dll = weditcw
+!include verrc.mif
+

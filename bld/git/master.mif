@@ -6,8 +6,20 @@ cpyright_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c : ../c
 
-exetarg_objs = cpyright.obj
+#
+# lflags
+#
 
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = cpyright.obj
 !include exetarg.mif

@@ -2,20 +2,6 @@ proj_name = plusplus
 
 plusplus_autodepends = .autodepend
 
-# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
-# internal module name may be required to match file name on some platforms.
-!ifdef bootstrap
-exetarg_name = bwpp
-dlltarg_name = bwppd$(target_cpu)
-!else
-exetarg_name = wpp
-dlltarg_name = wppd$(target_cpu)
-!endif
-!ifneq target_cpu i86
-exetarg_name +=$(target_cpu)
-!endif
-intname     = wpp$(target_cpu)
-
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1
 
@@ -34,16 +20,27 @@ additional_cleanup_qnx = usage.u
 
 !include ../../ppobjs.mif
 
-prebuild_objs = &
-    errmsgs1.gh &
-    ic_mask.gh &
-    weights.gh &
-    keywords.gh &
-    yylex.gh &
-    cmdlnprs.gh &
-    $(asminline_deps) &
-    code$(target_cpu).gh &
-    $(intname)01.int        # international data files
+#
+# names
+#
+# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
+# internal module name may be required to match file name on some platforms.
+!ifdef bootstrap
+exetarg_name = bwpp
+dlltarg_name = bwppd$(target_cpu)
+!else
+exetarg_name = wpp
+dlltarg_name = wppd$(target_cpu)
+!endif
+!ifneq target_cpu i86
+exetarg_name +=$(target_cpu)
+!endif
+intname     = wpp$(target_cpu)
+
+#
+# cflags
+#
+.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c;$(brinfo_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) &
     -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
@@ -111,38 +108,35 @@ extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
 extra_c_flags_memmgr   = $(trmem_cover_cflags)
 
 #
-# wlink .EXE options
+# lflags
 #
-
 extra_link_res_qnx = usage.u
 
 extra_l_flags_dos = OPTION stack=64k
 extra_l_flags_os2 = OPTION stack=128k
 extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=$(extra_link_res_qnx)
 
-#
-# wlink .DLL options
-#
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
 extra_l_flags_dll_nt  = initinstance terminstance
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
-# source search path
-
-.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c;$(brinfo_dir)/c;$(trmem_dir)
-
-#
-# Common dependencies
-#
-
-verrc_dll = $(dlltarg_name)
-verrc_exe = $(exetarg_name)
-!include verrc.mif
+# explicit rules
+#################
 
 #
-# create compiler
+# EXE
 #
+prebuild_objs = &
+    errmsgs1.gh &
+    ic_mask.gh &
+    weights.gh &
+    keywords.gh &
+    yylex.gh &
+    cmdlnprs.gh &
+    $(asminline_deps) &
+    code$(target_cpu).gh &
+    $(intname)01.int        # international data files
 !ifdef plusplus_dll
 exetarg_prebuild_objs = $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
@@ -175,8 +169,12 @@ dlltarg_indirect      = $(modname_$(host_os))
 !include dlltarg.mif
 
 #
-# miscellaneous build rules
+# rc and others
 #
+verrc_dll = $(dlltarg_name)
+verrc_exe = $(exetarg_name)
+!include verrc.mif
+
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)

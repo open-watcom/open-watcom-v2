@@ -31,9 +31,51 @@ dlltarg_name = wlibd
 !include $(orl_dir)/client.mif
 !endif
 
-##########
-# objects
+#
+# cflags
+#
+.c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
+.h: ../h;$(watcom_dir)/h
+!ifdef bootstrap
+.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
+.h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
+!endif
 
+inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
+!ifdef bootstrap
+inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
+!endif
+
+extra_cpp_flags = -D__WLIB__
+!ifdef bootstrap
+extra_cpp_flags += -DINCL_MSGTEXT
+!endif
+!ifndef wlib_dll
+extra_cpp_flags += -DIDE_PGM
+!endif
+
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
+
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_memfuncs = $(trmem_cover_cflags)
+
+#
+# lflags
+#
+extra_l_flags_qnx = op offset=64k, stack=60k
+
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll_nt  = initinstance terminstance
+extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op manyautodata
+
+# explicit rules
+#################
+
+#
+# objects
+#
 common_objs = &
     $(_subdir_)wlib.obj &
     $(_subdir_)libio.obj &
@@ -75,61 +117,14 @@ dll_objs = $+$(wlib_template)$- $(dll_objs_$(host_os))
 _subdir_ =
 exe_objs = $+$(wlib_template)$- $(drv_objs)
 
-#########
-# cflags
-
-extra_cpp_flags = -D__WLIB__
-!ifdef bootstrap
-extra_cpp_flags += -DINCL_MSGTEXT
-!endif
-!ifndef wlib_dll
-extra_cpp_flags += -DIDE_PGM
-!endif
-
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
-
-extra_c_flags_trmem    = $(trmem_cflags)
-extra_c_flags_memfuncs = $(trmem_cover_cflags)
-
-###################
-# linker flags .EXE
-
-extra_l_flags_qnx = op offset=64k, stack=60k
-
-###################
-# linker flags .DLL
-
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt  = initinstance terminstance
-extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op manyautodata
-
-inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
-.c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
-.h: ../h;$(watcom_dir)/h
-
-!ifdef bootstrap
-inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
-.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
-.h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
-!endif
-
 !ifdef bootstrap
 prebuild_objs = msg.gh incltext.gh
 !else
 prebuild_objs = msg.gh
 !endif
 
-###################
-# rc flags
-
-verrc_exe = $(exetarg_name)
-verrc_dll = $(dlltarg_name)
-!include verrc.mif
-
 #
-# Create librarian
+# EXE
 #
 !ifdef wlib_dll
 exetarg_prebuild_objs = $(dlltarg_name).dll
@@ -154,7 +149,6 @@ exetarg_libs         += $(wres_lib)
 exetarg_res_wresui    = wresui.res
 !endif
 !endif
-
 !include exetarg.mif
 
 #
@@ -180,8 +174,18 @@ modname_os2 = op modname='$(dlltarg_name)'
 !ifdef modname_$(host_os)
 dlltarg_indirect      = $(modname_$(host_os))
 !endif
-
 !include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_exe = $(exetarg_name)
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
+
+wresui.res : ../wlib.rc ../wlib.msg msg.gh
+    @%make echo_rc
+    $(rc_aui) $[@ -fo=$@
 
 msg.gh : wlibmsg.gh
     @%make echo_awk
@@ -195,6 +199,3 @@ wlibmsg.gh : ../wlib.msg
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
-wresui.res : ../wlib.rc ../wlib.msg msg.gh
-    @%make echo_rc
-    $(rc_aui) $[@ -fo=$@

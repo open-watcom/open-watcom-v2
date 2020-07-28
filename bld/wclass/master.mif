@@ -3,97 +3,102 @@ name = wclass
 
 wclass_autodepends = .autodepend
 
+target_dos = dos
+target_nt  = win
+target_os2 = pm
+target_win = win
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-inc_dir_dos  = -I"$(wclass_dir)/dos/hpp" 
-inc_dir_nt   = -I"$(wclass_dir)/win/hpp" 
-inc_dir_os2  = -I"$(wclass_dir)/pm/hpp" 
-inc_dir_win  = -I"$(wclass_dir)/win/hpp" 
+#
+# cflags
+#
+.cpp : $(wclass_dir)/$(target_$(host_os))/cpp;$(wclass_dir)/cpp
 
-cpp_dir_nt   = $(wclass_dir)/win/cpp
-cpp_dir_os2  = $(wclass_dir)/pm/cpp
-cpp_dir_win  = $(wclass_dir)/win/cpp
-
-.cpp : $(cpp_dir_$(host_os));$(wclass_dir)/cpp
-
-inc_dirs = $(inc_dir_$(host_os)) -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
+inc_dirs = -I"$(wclass_dir)/$(target_$(host_os))/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 
 extra_c_flags_i86 = -zc -zm
 
+# explicit rules
+#################
+
+#
+# LIB
+#
 objs = &
-        wabout.obj &
-        wautodlg.obj &
-        wbaritem.obj &
-        wboolsw.obj &
-        wbutton.obj &
-        wcheckbx.obj &
-        wclass.obj &
-        wcmdargs.obj &
-        wcmdlist.obj &
-        wcolrdlg.obj &
-        wcombox.obj &
-        wcontrol.obj &
-        wdialog.obj &
-        weditbox.obj &
-        weditdlg.obj &
-        wfile.obj &
-        wfiledlg.obj &
-        wfilelst.obj &
-        wfilenam.obj &
-        wgroupbx.obj &
-        whotspot.obj &
-        winflist.obj &
-        winpdlg.obj &
-        wlistbox.obj &
-        wmdichld.obj &
-        wmdiwndw.obj &
-        wmenu.obj &
-        wmenuitm.obj &
-        wmenuobj.obj &
-        wmenusep.obj &
-        wmetrics.obj &
-        wmodel.obj &
-        wmsgdlg.obj &
-        wname.obj &
-        wobjfile.obj &
-        wobjmap.obj &
-        wstrmap.obj &
-        wpaint.obj &
-        wpickbox.obj &
-        wpickcbx.obj &
-        wpickdlg.obj &
-        wpicklst.obj &
-        wpopmenu.obj &
-        wpshbttn.obj &
-        wradbttn.obj &
-        wrect.obj &
-        wstatwin.obj &
-        wstring.obj &
-        wstrlist.obj &
-        wsyshelp.obj &
-        wtext.obj &
-        wtokfile.obj &
-        wtoolbar.obj &
-        wvcllctn.obj &
-        wview.obj &
-        wvlist.obj &
-        wwindow.obj &
-        wwinmain.obj
+    wabout.obj &
+    wautodlg.obj &
+    wbaritem.obj &
+    wboolsw.obj &
+    wbutton.obj &
+    wcheckbx.obj &
+    wclass.obj &
+    wcmdargs.obj &
+    wcmdlist.obj &
+    wcolrdlg.obj &
+    wcombox.obj &
+    wcontrol.obj &
+    wdialog.obj &
+    weditbox.obj &
+    weditdlg.obj &
+    wfile.obj &
+    wfiledlg.obj &
+    wfilelst.obj &
+    wfilenam.obj &
+    wgroupbx.obj &
+    whotspot.obj &
+    winflist.obj &
+    winpdlg.obj &
+    wlistbox.obj &
+    wmdichld.obj &
+    wmdiwndw.obj &
+    wmenu.obj &
+    wmenuitm.obj &
+    wmenuobj.obj &
+    wmenusep.obj &
+    wmetrics.obj &
+    wmodel.obj &
+    wmsgdlg.obj &
+    wname.obj &
+    wobjfile.obj &
+    wobjmap.obj &
+    wstrmap.obj &
+    wpaint.obj &
+    wpickbox.obj &
+    wpickcbx.obj &
+    wpickdlg.obj &
+    wpicklst.obj &
+    wpopmenu.obj &
+    wpshbttn.obj &
+    wradbttn.obj &
+    wrect.obj &
+    wstatwin.obj &
+    wstring.obj &
+    wstrlist.obj &
+    wsyshelp.obj &
+    wtext.obj &
+    wtokfile.obj &
+    wtoolbar.obj &
+    wvcllctn.obj &
+    wview.obj &
+    wvlist.obj &
+    wwindow.obj &
+    wwinmain.obj
 
 #objs not used by 16-bit dos
 ndos_objs = &
-        wresstr.obj &
-        wstatdlg.obj
+    wresstr.obj &
+    wstatdlg.obj
 
 win_objs = &
-        wclient.obj &
-        wprocess.obj &
-        wserver.obj &
-        wsystem.obj &
-        wflashp.obj &
-        wtimer.obj
+    wclient.obj &
+    wprocess.obj &
+    wserver.obj &
+    wsystem.obj &
+    wflashp.obj &
+    wtimer.obj
 
 extra_objlib_nt_386     = $(win_objs) $(ndos_objs)
 extra_objlib_nt_axp     = $(win_objs) $(ndos_objs)
@@ -102,12 +107,7 @@ extra_objlib_win_i86    = $(win_objs) $(ndos_objs)
 extra_objlib_dos_386    = $(ndos_objs)
 extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
 
-objs += $(extra_objlib_$(host_os)_$(host_cpu))
+libtarg_objs = $(objs) $(extra_objlib_$(host_os)_$(host_cpu))
+libtarg_name = $(name)
+!include libtarg.mif
 
-$(name).lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif

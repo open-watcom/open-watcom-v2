@@ -6,17 +6,23 @@ restest_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.suffixes : .rc .res
+#
+# cflags
+#
+.c: ..
 
 inc_dirs = -I..
-
-.c: ..
-.rc: ..
 
 extra_l_flags = opt map
 extra_l_flags_nt = lib version.lib
 extra_l_flags_win = lib ver.lib
 
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs_nt = msgtbl.obj
 exetarg_objs = &
     restest.obj &
@@ -31,9 +37,11 @@ exetarg_objs = &
     accel.obj   &
     bitmap.obj $(exetarg_objs_$(host_os))
 exetarg_res = $(proj_name).res
-
 !include exetarg.mif
 
-$(exetarg_res) : restest.rc $(__MAKEFILES__)
+#
+# rc and others
+#
+$(proj_name).res : ../restest.rc $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

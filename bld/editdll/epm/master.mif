@@ -15,18 +15,30 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
+.c : ..
+
 inc_dirs = -I.. -I"../.."
 
 extra_cpp_flags = -DWEDITDLL
 
+#
+# lflags
+#
 extra_l_flags_dll = op elim
 
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
-.c : ..
+# explicit rules
+#################
 
 all: epmlink.dll wedit.dll .SYMBOLIC
 
+#
+# DLL's
+#
 dlltarg_objs = epmlink.obj
 dlltarg_indirect = option description 'Open Watcom Editor DLL for EPM'
 
@@ -36,6 +48,9 @@ dlltarg_name = epmlink
 dlltarg_name = wedit
 !include dlltarg.mif
 
+#
+# EXE's
+#
 epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}

@@ -19,33 +19,13 @@ fpu_flags_linux_386 = -fpc
 fpu_flags_win_i86   = -fpc
 fpu_flags_rdos_386  = -fpc
 
-objs = &
-drarange.obj &
-drdecnam.obj &
-drenum.obj   &
-drfdkids.obj &
-drgetref.obj &
-drgettab.obj &
-drinfo.obj   &
-drinit.obj   &
-drline.obj   &
-drloc.obj    &
-drpubnam.obj &
-drscope.obj  &
-drsearch.obj &
-drstack.obj  &
-drtype.obj   &
-drutils.obj  &
-!ifeq use_virtmem 1
-virtmem.obj
-!else
-virtstub.obj
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ../c
 
 inc_dirs = -I"../h"
@@ -61,10 +41,34 @@ extra_c_flags_win = -zW
 extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
 extra_c_flags_drsearch = -I"$(posix_dir)/h"
 
-dwarfr.lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
+# explicit rules
+#################
+
+#
+# LIB
+#
+!ifeq use_virtmem 1
+libtarg_objs_virt = virtmem.obj
 !else
-    $(librarian) $(libflags) $(objs)
+libtarg_objs_virt = virtstub.obj
 !endif
+libtarg_objs = &
+    drarange.obj &
+    drdecnam.obj &
+    drenum.obj   &
+    drfdkids.obj &
+    drgetref.obj &
+    drgettab.obj &
+    drinfo.obj   &
+    drinit.obj   &
+    drline.obj   &
+    drloc.obj    &
+    drpubnam.obj &
+    drscope.obj  &
+    drsearch.obj &
+    drstack.obj  &
+    drtype.obj   &
+    drutils.obj  &
+    $(libtarg_objs_virt)
+!include libtarg.mif
+

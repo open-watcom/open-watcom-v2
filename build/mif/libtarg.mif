@@ -1,0 +1,14 @@
+!ifndef libtarg_name
+libtarg_name = $(proj_name)
+!endif
+!ifndef libtarg_ext
+libtarg_ext = .lib
+!endif
+$(libtarg_name)$(libtarg_ext) : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)$- $(__MAKEFILES__)
+    @%make echo_lib
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $+$(libtarg_objs) $(libtarg_libs)$-
+!else
+    $(librarian) $(libflags) $+$(libtarg_objs) $(libtarg_libs)$-
+!endif
+

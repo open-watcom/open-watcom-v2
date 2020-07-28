@@ -6,8 +6,16 @@ run_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
 
-exetarg_objs = run.obj
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_objs = run.obj
 !include exetarg.mif

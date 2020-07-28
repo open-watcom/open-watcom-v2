@@ -30,9 +30,9 @@ fpu_flags_rdos_386  = -fpc
 !include $(dwarfr_dir)/client.mif
 !endif
 
+#
 # cflags
-##################
-
+#
 .c: ../c;../../c;$(extra_srcs)
 
 inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
@@ -48,9 +48,9 @@ extra_c_flags_i86 = -zc -zu
 extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
 !endif
 
+#
 # lflags
-##################
-
+#
 lflags_dll_dos_386     = sys rex_dos
 lflags_dll_linux_386   = sys rex_linux
 lflags_dll_qnx_i86     = sys qnx disable 1023
@@ -59,13 +59,9 @@ lflags_dll_win_i86     = sys windows
 
 extra_l_flags_dll      = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
 
+#
 # names
-##################
-
-dlltarg_name = $(name)
-
-verrc_dll = $(dlltarg_name)
-!include verrc.mif
+#
 
 dlltarg_ext_os2_386     = .d32
 dlltarg_ext_qnx_i86     = .dip
@@ -88,6 +84,9 @@ additional_cleanup_sys = *$(dlltarg_ext)
 # explicit rules
 ##################
 
+#
+# DLL
+#
 dlltarg_objs = dipimp.obj $(imp_objs)
 !ifdef __WATCOM_TOOLS__
 dlltarg_objs += $(imp_objs_watcom)
@@ -100,5 +99,12 @@ dlltarg_libs += $(dwarfr_lib)
 !endif
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-
+dlltarg_name = $(name)
 !include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
+

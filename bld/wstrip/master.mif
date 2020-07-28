@@ -2,29 +2,35 @@ proj_name = wstrip
 
 wstrip_autodepends = .AUTODEPEND
 
-!ifdef bootstrap
-exename = bwstrip
-!else
-exename = wstrip
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
 !include wres.mif
 
-inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
-
+#
+# cflags
+#
 .c : ..;$(watcom_dir)/c
+
+inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
 
 !ifdef bootstrap
 extra_cpp_flags = -DINCL_MSGTEXT
 !endif
 
-verrc_exe = $(exename)
-!include verrc.mif
+# explicit rules
+#################
 
+!ifdef bootstrap
+exename = bwstrip
+!else
+exename = wstrip
+!endif
+
+#
+# EXE
+#
 !ifdef bootstrap
 exetarg_prebuild_objs = msg.gh incltext.gh
 !else
@@ -42,6 +48,16 @@ exetarg_res_wresui = wresui.res
 exetarg_name = $(exename)x
 !include exetarg.mif
 
+#
+# rc and others
+#
+verrc_exe = $(exename)
+!include verrc.mif
+
+wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
+    @%make echo_rc
+    $(rc_aui) -ad $(inc_dirs) $[@ -fo=$@
+
 msg.gh : wstrip.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
@@ -54,6 +70,3 @@ wstrip.gh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
-wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
-    @%make echo_rc
-    $(rc_aui) -ad $(inc_dirs) $[@ -fo=$@

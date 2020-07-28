@@ -6,14 +6,22 @@ exedmp_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h"
-
+#
+# cflags
+#
 .c: ../c
 
+inc_dirs = -I"../h"
+
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs = &
     main.obj &
     read.obj &
     format.obj &
     param.obj
-
 !include exetarg.mif

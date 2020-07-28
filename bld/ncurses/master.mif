@@ -6,6 +6,13 @@ ncurses_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I"../h"
+
 !ifeq host_os osx
 # To work around duplicate inlined symbols, e.g. __sputc
 c_flags += -std=gnu89
@@ -14,9 +21,13 @@ c_flags += -std=gnu89
 c_flags += -DTRACE
 !endif
 
-.c: ../c
+# explicit rules
+#################
 
-ncurses_objs = &
+#
+# LIB
+#
+libtarg_ncurses_objs = &
     access.obj &
     comp_err.obj &
     doalloc.obj &
@@ -33,9 +44,8 @@ ncurses_objs = &
     lib_tput.obj &
     lib_ttyf.obj &
     read_ent.obj
-
 !ifeq release 0
-ncurses_trace_objs = &
+libtarg_ncurses_trace_objs = &
     lib_data.obj &
     lib_trce.obj &
     lib_trcb.obj &
@@ -43,18 +53,9 @@ ncurses_trace_objs = &
     version.obj &
     visbuf.obj
 !else
-ncurses_trace_objs = &
+libtarg_ncurses_trace_objs = &
     notrace.obj
 !endif
+libtarg_objs = $(libtarg_ncurses_objs) $(libtarg_ncurses_trace_objs)
+!include libtarg.mif
 
-objs = $(ncurses_objs) $(ncurses_trace_objs)
-
-inc_dirs = -I"../h"
-
-ncurses.lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif

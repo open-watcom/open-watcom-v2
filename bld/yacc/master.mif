@@ -6,10 +6,19 @@ yacc_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"$(yacc_dir)/h"
-
+#
+# cflags
+#
 .c: ../c
 
+inc_dirs = -I"$(yacc_dir)/h"
+
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs = &
     bitsets.obj     &
     buildpro.obj    &
@@ -29,5 +38,4 @@ exetarg_objs = &
     used.obj        &
     yacc.obj
 # genc.obj, genobj.obj, and recover.obj are unused
-
 !include exetarg.mif

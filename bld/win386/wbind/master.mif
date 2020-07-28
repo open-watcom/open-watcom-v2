@@ -10,13 +10,21 @@ memory_model_i86 = c
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c : ..
+
+inc_dirs = -I"../../h"
 
 extra_l_flags_dos = op stack=8k
 extra_l_flags_os2 = op stack=12k,heap=8k,newfile
 
-inc_dirs = -I"../../h"
+# explicit rules
+#################
 
+#
+# EXE
+#
 exetarg_objs = wbind.obj
-
 !include exetarg.mif

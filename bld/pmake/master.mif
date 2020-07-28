@@ -10,6 +10,9 @@ pmake_trmem = 1
 
 !include trmem.mif
 
+#
+# cflags
+#
 .c : ..;$(trmem_dir)
 
 inc_dirs = -I.. -I"$(builder_dir)/h"
@@ -19,6 +22,11 @@ extra_cpp_flags_pmkcmd = $(trmem_cpp_flags)
 extra_c_flags_pmkcmd = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 
-exetarg_objs = pmake.obj pmkcmd.obj $(trmem_objs)
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_objs = pmake.obj pmkcmd.obj $(trmem_objs)
 !include exetarg.mif

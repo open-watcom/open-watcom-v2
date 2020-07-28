@@ -1,4 +1,5 @@
 proj_name = pbide
+name = dlldbg
 
 pbide_autodepends = .AUTODEPEND
 
@@ -6,16 +7,29 @@ pbide_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
 
 extra_c_flags_win =-zW
 
-exetarg_name = dlldbg
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_name = $(name)
 exetarg_objs = dlldbg.obj
-exetarg_res  = $(exetarg_name).res
+exetarg_res  = $(name).res
 !include exetarg.mif
+
+#
+# rc and others
+#
 !include verrc.mif
 
-$(exetarg_res) : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
+$(name).res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(rc_flags) $[@ -fo=$@

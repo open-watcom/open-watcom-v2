@@ -114,15 +114,15 @@ objs_dll = $+$(rc_template)$-
 _subdir_ =
 objs_exe = $+$(rc_template)$- $(objs_drv)
 
+#
+# cflags
+#
+.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
+
 parser_defines = -DYYDEBUG -DSCANDEBUG
 
-# global defines
-################
-
-rc_defines    = -D_STANDALONE_ $(parser_defines)
-
-# cflags stuff
-###############
 extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
 !ifdef bootstrap
 extra_cpp_flags   += -DINCL_MSGTEXT
@@ -143,30 +143,22 @@ extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
 extra_c_flags_rcmem    = $(trmem_cover_cflags)
 
-# lflags stuff
-###############
-
-# DLL lflags stuff
-##################
+#
+# lflags
+#
 extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+# explicit rules
+#################
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
-
+#
+# EXE
+#
 !ifdef bootstrap
 prebuild_objs = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !else
 prebuild_objs = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
-
-verrc_exe = $(exetarg_name)
-verrc_dll = $(dlltarg_name)
-!include verrc.mif
-
-#
-# Create compiler
-#
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
 exetarg_objs          = $(objs_drv)
@@ -183,7 +175,6 @@ exetarg_res_wresui    = wresui.res
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 !endif
-
 !include exetarg.mif
 
 #
@@ -202,8 +193,20 @@ modname_os2 = op modname='$(dlltarg_name)'
 !ifdef modname_$(host_os)
 dlltarg_indirect      = $(modname_$(host_os))
 !endif
-
 !include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_exe = $(exetarg_name)
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
+
+rc_defines    = -D_STANDALONE_ $(parser_defines)
+
+wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
+    @%make echo_rc
+    $(rc_aui) -ad $(rc_defines) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
@@ -235,10 +238,6 @@ msg.gh : ../h/rc.msg
 rcmsg.gh : msg.gh
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
-    @%make echo_rc
-    $(rc_aui) -ad $(rc_defines) $[@ -fo=$@
 
 $(misc_objs):
     cat ../$@ >$@

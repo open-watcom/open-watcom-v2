@@ -6,19 +6,34 @@ techinfo_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
+.c: ..
+
 extra_c_flags_dos = -os
 extra_c_flags_os2 = -os
+
+#
+# aflags
+#
+.asm: ..
 
 extra_a_flags = -fpc
 
 extra_a_flags_ndptype = -fpi87
 
+#
+# lflags
+#
 extra_l_flags_os2 = op newfile
 
-.c: ..
-.asm: ..
+# explicit rules
+#################
 
+#
+# EXE
+#
 exetarg_objs_dos = monint.obj
 exetarg_objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj $(exetarg_objs_$(host_os))
-
 !include exetarg.mif

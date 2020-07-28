@@ -10,15 +10,9 @@ suppress_zc = 1
 !include defrule.mif
 !include deftarg.mif
 
-objs_wini86 = mkssi.obj objcycle.obj
-objs_win386 = mkssi.obj objcycle.obj
-objs_ntaxp  = mkssi.obj objcycle.obj
-objs_ntppc  = mkssi.obj
-objs_nt386  = mkssi.obj objcycle.obj
-objs_ntx64  = mkssi.obj objcycle.obj
-
-objs = rcsdll.obj inifile.obj $(objs_$(host_os)$(host_cpu)) $(extra_objs)
-
+#
+# cflags
+#
 .cpp : ..;../mkssi;../ocycle
 
 inc_dirs = -I..
@@ -29,29 +23,46 @@ extra_cpp_flags = -D_RCSDLL_
 
 extra_c_flags_win = -zw-zu
 
+#
+# lflags
+#
 extra_l_flags_dll = op implib
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
-!include verrc.mif
+# explicit rules
+#################
+
+#
+# objects
+#
+objs_wini86 = mkssi.obj objcycle.obj
+objs_win386 = mkssi.obj objcycle.obj
+objs_ntaxp  = mkssi.obj objcycle.obj
+objs_ntppc  = mkssi.obj
+objs_nt386  = mkssi.obj objcycle.obj
+objs_ntx64  = mkssi.obj objcycle.obj
 
 !ifdef sys_dll
-
-dlltarg_objs = $(objs)
+#
+# DLL
+#
+dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(host_os)$(host_cpu)) $(extra_objs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-
 dlltarg_name = rcsdll
 !include dlltarg.mif
-
 !else
-
-rcsdll.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
+#
+# LIB
+#
+libtarg_objs = rcsdll.obj inifile.obj $(objs_$(host_os)$(host_cpu)) $(extra_objs)
+libtarg_name = rcsdll
+!include libtarg.mif
 !endif
 
-!endif
+#
+# rc and others
+#
+!include verrc.mif
+

@@ -8,14 +8,23 @@ awk_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h"
-
+#
+# cflags
+#
 .c: ../c
+
+inc_dirs = -I"../h"
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_ytab = -wcd=118 -wcd=202
 !endif
 
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs = &
     b.obj &
     main.obj &
@@ -27,9 +36,11 @@ exetarg_objs = &
     lex.obj &
     ytab.obj &
     missin95.obj
-
 !include exetarg.mif
 
+#
+# rc and others
+#
 proctab.c : ./maketab.exe ../h/ytab.h
     $(noecho)copy $]@ ytab.h
     @%make echo_execute

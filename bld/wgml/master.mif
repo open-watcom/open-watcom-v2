@@ -41,7 +41,6 @@ extra_c_flags_trmem   = $(trmem_cflags)
 
 libs += $(wres_lib)
 
-
 wgml.exe: wresui.res $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__

@@ -8,10 +8,19 @@ ssl_autodepends = .autodepend
 
 !include $(cpp_dir)/client.mif
 
-inc_dirs = -I"../h" $(cpp_inc_dirs)
-
+#
+# cflags
+#
 .c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
 
+inc_dirs = -I"../h" $(cpp_inc_dirs)
+
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs = &
     ssl.obj         &
     ssldecl.obj     &
@@ -24,5 +33,4 @@ exetarg_objs = &
     ppmem.obj       &
     ppenv.obj       &
     pathlist.obj
-
 !include exetarg.mif

@@ -6,16 +6,27 @@ cwc_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c : ../../c
 .asm : ../../asm
 
 inc_dirs = -I.
 
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_prebuild_objs = copystub.gh decstub.gh
 exetarg_objs          = cwc.obj
-
 !include exetarg.mif
 
+#
+# rc and others
+#
 copystub.tmp : copystub.asm
     @%make echo_aslink
     $(noecho)*bwasm -zq -fo=$^&.obj $[@

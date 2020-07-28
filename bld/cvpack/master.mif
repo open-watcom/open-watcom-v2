@@ -6,13 +6,23 @@ cvpack_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .cpp : ../cpp
 .hpp : ../hpp
 
 inc_dirs = -I"../hpp"
 
 extra_cxx_flags = -xs
+
+#
+# lflags
+#
 extra_l_flags   = #op eliminate
+
+# explicit rules
+#################
 
 exetarg_objs = &
     cvpack.obj &
@@ -27,6 +37,5 @@ exetarg_objs = &
     typearay.obj &
     typercrd.obj &
     common.obj
-
 !include exetarg.mif
 

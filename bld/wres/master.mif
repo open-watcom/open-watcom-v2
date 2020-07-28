@@ -18,7 +18,13 @@ memory_model_386 = $(model)
 !include deftarg.mif
 
 !include $(wres_dir)/wrobjs.mif
-objs = $(wres_core_objs) $(wres_more_objs)
+
+#
+# cflags
+#
+.c : $(wres_dir)/c
+
+inc_dirs = -I"$(wres_dir)/h"
 
 !ifeq convention stack
 extra_c_flags_386 = -3s
@@ -31,16 +37,12 @@ extra_c_flags_win_i86 = -zw-zu
 
 # where to look for various files
 
-.c : $(wres_dir)/c
-
-inc_dirs = -I"$(wres_dir)/h"
-
 # explicit rules
+#################
 
-wres.lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
+#
+# LIB
+#
+libtarg_objs = $(wres_core_objs) $(wres_more_objs)
+!include libtarg.mif
+

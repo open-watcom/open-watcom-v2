@@ -6,8 +6,6 @@ wdis_autodepends = .AUTODEPEND
 
 wdis_trmem = 1
 
-additional_cleanup_qnx = usage.u
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -17,6 +15,15 @@ additional_cleanup_qnx = usage.u
 !include $(orl_dir)/client.mif
 !include ../dis.mif
 
+#
+# cflags
+#
+.c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
+.h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
+
+inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
+    -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+
 extra_cpp_flags = -D__DISASM__
 
 extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
@@ -24,18 +31,24 @@ extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 
+#
+# lflags
+#
 extra_link_res_qnx = usage.u
 
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
 
-inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h"
-inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
-inc_dirs += -I"$(comp_cfg_dir)/h"
+additional_cleanup_qnx = $(extra_link_res_qnx)
 
-.c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
-.h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
 
-stand_objs = &
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_prebuild_objs = msg.gh $(dis_prereq)
+exetarg_objs = &
     args.obj &
     buffer.obj &
     disdwarf.obj &
@@ -57,18 +70,20 @@ stand_objs = &
     publics.obj &
     srcmix.obj &
     refproc.obj &
-    cmdlhelp.obj
-
-!include verrc.mif
-
-exetarg_prebuild_objs = msg.gh $(dis_prereq)
-exetarg_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
+    cmdlhelp.obj &
+    $(dis_objs) &
+    demangle.obj &
+    $(trmem_objs)
 exetarg_libs = $(orl_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui = wresui.res
-
 !include exetarg.mif
+
+#
+# rc and others
+#
+!include verrc.mif
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_execute

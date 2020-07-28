@@ -6,18 +6,29 @@ dmpobj_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h"
-
+#
+# cflags
+#
 .c: ../c
 
+inc_dirs = -I"../h"
+
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs = &
     dmpobj.obj &
     objread.obj &
     output.obj &
     process.obj
-
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
-
 !include exetarg.mif
+
+#
+# rc and others
+#
 !include verrc.mif
