@@ -64,7 +64,7 @@ br_suffix=0
 patch_level=0
 !endif
 
-extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $($(proj_name)_dllbase_$(system)_$(host_cpu)_$(component))
+extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $(rtdll_dllbase_$(system)_$(host_cpu)_$(component))
 !ifeq release 0
 extra_l_flags_dll += option mangle,artificial,verbose
 !endif

@@ -27,6 +27,7 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
+!include dllbase.mif
 !include deftarg.mif
 !include trmem.mif
 !include wres.mif
@@ -146,7 +147,7 @@ extra_c_flags_rcmem    = $(trmem_cover_cflags)
 #
 # lflags
 #
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wrc_dllbase_$(host_os)_$(host_cpu))
 
 # explicit rules
 #################

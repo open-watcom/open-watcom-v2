@@ -57,7 +57,7 @@ lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys rex_qnx
 lflags_dll_win_i86     = sys windows
 
-extra_l_flags_dll      = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
+extra_l_flags_dll      = $(extra_dllbase)
 
 #
 # names
@@ -99,12 +99,12 @@ dlltarg_libs += $(dwarfr_lib)
 !endif
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-dlltarg_name = $(name)
+dlltarg_name = $(dllname)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-verrc_dll = $(dlltarg_name)
+verrc_dll = $(dllname)
 !include verrc.mif
 

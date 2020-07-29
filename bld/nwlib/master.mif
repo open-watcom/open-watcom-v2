@@ -66,7 +66,7 @@ extra_c_flags_memfuncs = $(trmem_cover_cflags)
 #
 extra_l_flags_qnx = op offset=64k, stack=60k
 
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wlib_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt  = initinstance terminstance
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op manyautodata
 

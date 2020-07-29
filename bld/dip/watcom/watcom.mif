@@ -1,7 +1,7 @@
 !ifdef %OWUSE_FILENAME_VERSION
-name = watcom$(bld_ver)
+dllname = watcom$(bld_ver)
 !else
-name = watcom
+dllname = watcom
 !endif
 
 imp_objs = &
@@ -19,5 +19,7 @@ imp_objs = &
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
+
+extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_watcom)
 
 !include ../../master.mif

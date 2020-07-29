@@ -111,7 +111,7 @@ extra_l_flags_dos = option stack=32k
 #
 # WLINK .DLL options
 #
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wcc_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt  = initinstance terminstance
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 

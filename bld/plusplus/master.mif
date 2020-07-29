@@ -12,6 +12,7 @@ additional_cleanup_qnx = usage.u
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
+!include dllbase.mif
 !include deftarg.mif
 !include trmem.mif
 
@@ -116,7 +117,7 @@ extra_l_flags_dos = OPTION stack=64k
 extra_l_flags_os2 = OPTION stack=128k
 extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=$(extra_link_res_qnx)
 
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wpp_dllbase_$(host_os)_$(host_cpu))
 
 extra_l_flags_dll_nt  = initinstance terminstance
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata

@@ -38,6 +38,8 @@ TRAP_remote_objs =
 
 !else
 
+!include dllbase.mif
+
 !ifndef remote_link
 !ifndef core_only
 full_export = 1
@@ -50,7 +52,7 @@ alias_symbols_nt = alias __DLLstart_='_LibMain@12'
 !endif
 
 !ifneq release 0
-dllbase = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
+dllbase = $(trap_dllbase_$(host_os)_$(host_cpu))
 !endif
 
 export_common_intel = export TrapInit_.1, TrapFini_.2, TrapRequest_.3

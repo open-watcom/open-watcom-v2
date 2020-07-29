@@ -1,7 +1,7 @@
 !ifdef %OWUSE_FILENAME_VERSION
-name = export$(bld_ver)
+dllname = export$(bld_ver)
 !else
-name = export
+dllname = export
 !endif
 
 #
@@ -22,5 +22,7 @@ imp_objs = &
 #extra_incs = $(lib_misc_dir)/h
 #extra_srcs = $(lib_misc_dir)/c
 extra_cppflags = -DDIP_PRIORITY=DIP_PRIOR_EXPORTS
+
+extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_export)
 
 !include ../../master.mif
