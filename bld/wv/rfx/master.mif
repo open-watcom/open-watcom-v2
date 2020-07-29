@@ -1,7 +1,6 @@
 #
 # Open Watcom Debugger makefile (RFX)
 #
-
 proj_name = rfx
 
 rfx_autodepends = .AUTODEPEND
@@ -13,17 +12,29 @@ rfx_autodepends = .AUTODEPEND
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 
+#
+# cflags
+#
 .c: ..;../../$(host_os)/c;../../c;$(dig_srcs)
-.asm: ..
 
-inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c"
-inc_dirs_nt = -I"$(clib_dir)/h"
+inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
+#
+# aflags
+#
+.asm: ..
+
+# explicit rules
+#################
+
+#
+# EXE
+#
 exetarg_objs_dos = inthdlrs.obj
 exetarg_objs = &
     rfx.obj        &
@@ -34,8 +45,7 @@ exetarg_objs = &
     dbgfile.obj    &
     dbgtoggl.obj   &
     local$(host_os).obj &
-    $(trp_objs) &
+    $(trp_objs)    &
     $(host_os)filio.obj &
     $(exetarg_objs_$(host_os))
 !include exetarg.mif
-
