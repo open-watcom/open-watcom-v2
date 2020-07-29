@@ -193,14 +193,13 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 {
     LONG        events;
 
+    /* unused parameters */ (void)prog; (void)full_args; (void)dos_args;
+
     AESTag = AllocateResourceTag(
         (void *)GetNLMHandle(),
         (BYTE *)"Open Watcom Execution Sampler Flush Process",
         AESProcessSignature );
 
-    prog = prog;
-    full_args = full_args;
-    dos_args = dos_args;
     SampleIndex = 0;
     Suspended = false;
     Resumed = false;
@@ -261,8 +260,8 @@ static void SaveOutSamples( void *dummy )
 }
 
 
-void RecordSample( union INTPACK __far *r ) {
-
+void RecordSample( union INTPACK __far *r )
+{
     Samples->d.sample.sample[SampleIndex].offset = r->x.eip;
     Samples->d.sample.sample[SampleIndex].segment = r->x.cs;
     ++SampleIndex;

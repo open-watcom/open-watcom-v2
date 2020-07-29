@@ -221,7 +221,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     int         len;
     seg_offset  where;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)full_args;
 
     SampleIndex = 0;
     CurrTick  = 0L;
@@ -233,7 +233,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     check( dbg_edebug() );
     GrabVects();
     FixTime();
-    if( dbg_load( prog, NULL, dos_args ) != 0 ) {
+    if( dbg_load( (UCHAR *)prog, NULL, (UCHAR *)dos_args ) != 0 ) {
         OutputMsgParmNL( MSG_SAMPLE_2, prog );
         ReleVects();
         MsgFini();
@@ -321,4 +321,9 @@ void SysParseOptions( char c, char **cmd )
         fatal();
         break;
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

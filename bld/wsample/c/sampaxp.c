@@ -594,7 +594,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     HANDLE      tth;
     uint_32     Fir;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)dos_args;
 
     strcpy( utilBuff, prog );
     strcat( utilBuff, " " );
