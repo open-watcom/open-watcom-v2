@@ -22,8 +22,8 @@ wlib_dllbase_nt_386             = op offset=0x6a000000          # wlibd.dll     
 wlink_dllbase_nt_386            = op offset=0x69c00000          # wlinkd.dll    (Linker)
 wr_dllbase_nt_386               = op offset=0x69900000          # wr.dll        (Resource library)
 wrc_dllbase_nt_386              = op offset=0x69800000          # wrc.dll       (Resource compiler)
-cc_dllbase_nt_386               = op offset=0x69400000          # wccdxxxx.dll  (C compiler)
-plusplus_dllbase_nt_386         = op offset=0x69000000          # wppdxxxx.dll  (C++ compiler)
+wcc_dllbase_nt_386              = op offset=0x69400000          # wccdxxxx.dll  (C compiler)
+wpp_dllbase_nt_386              = op offset=0x69000000          # wppdxxxx.dll  (C++ compiler)
 # RDOS
 trap_dllbase_rdos_386           = op offset=0xdb0$(dll_start)   # all trap dlls (Debugger TRAP)
 dip_dllbase_rdos_386_mapsym     = op offset=0xda2$(dll_start)   # mapsym.dll    (Debugger DIP)
