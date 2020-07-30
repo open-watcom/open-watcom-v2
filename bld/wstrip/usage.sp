@@ -31,6 +31,3 @@ options:
         info_file:   オプションでデバッグまたはリソース情報ファイルの出力又は
                      入力を指定可能
 :endsegment
-:segment IS_RC
-.
-:endsegment
