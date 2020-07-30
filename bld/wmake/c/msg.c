@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -510,10 +510,10 @@ void massert( const char *expr, const char *file, int line )
 #endif
 
 enum {
-    #define pick(c,e,j)     MSG_USAGE_ ## c = c,
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
     #include "usage.gh"
     #undef pick
-    MSG_USAGE_COUNT
 };
 
 void Usage( void )

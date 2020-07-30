@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,6 @@
     static struct idstr { int id; char *s; } StringTable[] = {
         #define pick(id,e,j)    {id, e},
         #include "wmake.msg"
-        #undef pick
-        #define pick(c,e,j)     {MSG_USAGE_BASE+c, e},
         #include "usage.gh"
         #undef pick
     };
@@ -60,10 +59,6 @@
     {
         return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
     }
-
-    #ifndef _arraysize
-        #define _arraysize( a ) (sizeof(a)/sizeof(a[0]))
-    #endif
 
 #endif
 
@@ -119,7 +114,7 @@ bool MsgGet( int resourceid, char *buffer )
     struct idstr msgid;
 
     msgid.id = resourceid;
-    s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
+    s = bsearch( &msgid, StringTable, ARRAY_SIZE( StringTable ), sizeof( *s ), compar );
     if( s == NULL ) {
         buffer[0] = NULLCHAR;
         return( false );

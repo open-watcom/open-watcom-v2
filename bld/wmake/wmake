@@ -34,9 +34,8 @@ $(%OWBINDIR)\wmake.exe : wmk.exe
     *wlink name $@ op q, map sys $(link_sys) file {$<}
 
 # Use inline files for wsplice as a way to sidestep the metacharacter hell.
-usage.gh : ../h/usage.sp ./wsplice.exe
-    %write usage.tmp -kENGLISH -f "pick(%$#%+, \"%s\", \"\")" $[@ $@
-    $]@ @usage.tmp
+usage.gh : ./wsplice.exe ../h/usage.sp
+    $[@ -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $]@ $@
 
 isarray.gh : ./cretype.exe
     $]@ $@
