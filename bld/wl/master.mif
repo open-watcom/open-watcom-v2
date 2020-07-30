@@ -21,8 +21,6 @@ exetarg_name = wlink
 dlltarg_name = wlinkd
 !endif
 
-additional_cleanup_qnx = usage.u
-
 # get rid of the -zc
 suppress_zc = 1
 
@@ -79,10 +77,11 @@ extra_c_flags_wlmem         = $(trmem_cover_cflags)
 # lflags
 #
 extra_link_res_qnx = usage.u
+additional_cleanup_qnx = $(extra_link_res_qnx)
 
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wlink_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt  = initinstance terminstance
 extra_l_flags_dll_os2 = initinstance terminstance
 
@@ -100,7 +99,6 @@ exetarg_libs          = $(dlltarg_name).lib
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) rcmsg.gh
 exetarg_objs          = $(comp_objs_exe)
 !ifdef no_orl
-# do not link against ORL
 exetarg_libs          = $(wres_lib) $(dwarfw_lib)
 !else
 exetarg_libs          = $(wres_lib) $(dwarfw_lib) $(orl_lib)
@@ -150,6 +148,6 @@ wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
-usage.u : ../h/usage.sp $(__MAKEFILES__)
+$(extra_link_res_qnx) : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u $[@ $@
