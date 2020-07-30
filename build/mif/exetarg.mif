@@ -4,7 +4,19 @@ exetarg_name = $(proj_name)
 !ifndef exetarg_ext
 exetarg_ext = .exe
 !endif
-$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) $(exetarg_res_wresui) $+$(exetarg_res)$- $(__MAKEFILES__)
+!ifdef exetarg_qnx_res
+additional_cleanup_qnx = $(exetarg_qnx_res)
+!ifdef __WATCOM_TOOLS__
+!ifeq host_os qnx
+exetarg_qnx_res_obj = $(exetarg_qnx_res)
+exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
+!endif
+!endif
+!else
+!undef exetarg_qnx_res_obj
+!undef exetarg_qnx_res_opt
+!endif
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) $(exetarg_res_wresui) $+$(exetarg_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 !ifdef bootstrap
@@ -13,14 +25,14 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_objs) $(exe
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
 !else ifdef exetarg_libs
-    $(linker) name $@ $(lflags) file { $+$(exetarg_objs)$- } library { $+$(exetarg_libs)$- } &
+    $(linker) name $@ $(lflags) $+$(exetarg_qnx_res_opt)$- file { $+$(exetarg_objs)$- } library { $+$(exetarg_libs)$- } &
 !ifdef exetarg_indirect
     @<<
     $(exetarg_indirect)
 <<
 !endif
 !else
-    $(linker) name $@ $(lflags) file { $+$(exetarg_objs)$- } &
+    $(linker) name $@ $(lflags) $+$(exetarg_qnx_res_opt)$- file { $+$(exetarg_objs)$- } &
 !ifdef exetarg_indirect
     @<<
     $(exetarg_indirect)
