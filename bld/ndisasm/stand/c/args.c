@@ -60,6 +60,13 @@ static const char * const banner[]={
     NULL
 };
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(n,e,j)     + 1
+        #include "usage.gh"
+    #undef pick
+};
+
 static void printUsage( int msg )
 {
     int                 id;
@@ -78,11 +85,10 @@ static void printUsage( int msg )
         Print( "\n" );
     }
     id = MSG_USAGE_BASE;
-    if( MsgGet( id, buff ) ) {
-        for( ++id; MsgGet( id, buff ); ++id ) {
-            if( buff[0] == '.' && buff[1] == '\0' ) {
+    if( MsgGet( id++, buff ) ) {
+        while( id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
+            if( !MsgGet( id++, buff ) )
                 break;
-            }
             BufferConcat( buff );
             BufferConcatNL();
             BufferPrint();

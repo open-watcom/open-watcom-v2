@@ -76,31 +76,3 @@ pick( WHERE_GEN_EXTERNS,        "generating externs",
                                 "externを生成します" )
 pick( WHERE_PASS_ONE,           "pass 1",
                                 "パス1" )
-pick( USAGE_1,                  "Usage:  wdis [options] obj_file [options]",
-                                "使用方法:  wdis [options] obj_file [options]" )
-pick( USAGE_2,                  "Options:                ( /option is also supported )",
-                                "Options:                ( /optionも使えます)" )
-pick( USAGE_3,                  "        -l[=list_file]  generate listing file",
-                                "        -l[=list_file]  リスト･ファイルを生成します" )
-pick( USAGE_4,                  "        -i=char         initial character of internal labels",
-                                "        -i=char         内部ラベルの先頭文字" )
-pick( USAGE_5,                  "        -a              generate assembleable output",
-                                "        -a              アセンブルできる出力を生成します" )
-pick( USAGE_6,                  "        -e              generate lists of externs",
-                                "        -e              externのリストを生成します" )
-pick( USAGE_7,                  "        -m              leave C++ names mangled",
-                                "        -m              C++のマングルド名を残す" )
-pick( USAGE_8,                  "        -p              generate list of publics",
-                                "        -p              パブリックのリストを生成する" )
-pick( USAGE_9,                  "        -s[=src_file]   include source lines",
-                                "        -s[=src_file]   ソース行を含めて表示する" )
-pick( USAGE_10,                 "        -ff             FPU emulator fixups as comment [80(x)86 only]",
-                                "        -ff             FPU emulator fixups as comment [80(x)86 only]" )
-pick( USAGE_11,                 "        -fi             use alternate indexing format [80(x)86 only]",
-                                "        -fi             別のインデクシング形式を使用する[80(x)86のみ]" )
-pick( USAGE_12,                 "        -fp             do not use instruction name pseudonyms",
-                                "        -fp             命令名として擬似ニーモニックを使用しない" )
-pick( USAGE_13,                 "        -fr             do not use register name pseudonyms [RISC only]",
-                                "        -fr             レジスタ名として擬似ニーモニックを使用しない[RISCのみ]" )
-pick( USAGE_LAST,               "        -fu             instructions/registers in upper case",
-                                "        -fu             命令/レジスタを大文字にする" )
