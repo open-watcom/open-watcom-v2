@@ -50,7 +50,7 @@ objs =              &
     segment.obj     &
     wat2can0.obj    &
     wat2can1.obj    &
-    wpmsg.obj	    &
+    wpmsg.obj       &
     $(trmem_objs)
 
 extra_cpp_flags_memory = $(trmem_cpp_flags)
