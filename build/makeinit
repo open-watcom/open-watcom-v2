@@ -21,10 +21,12 @@ dll_subdir    = $+$(%OWDLLOBJDIR)$-
 dll_subdir    = dllobjs
 !endif
 
+!ifndef verbose
 !ifdef %OWVERBOSE
 verbose       = $+$(%OWVERBOSE)$-
 !else
 verbose       = 0
+!endif
 !endif
 
 noecho = @
