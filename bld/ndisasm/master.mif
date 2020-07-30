@@ -46,7 +46,7 @@ additional_cleanup_qnx = $(extra_link_res_qnx)
 #
 # EXE
 #
-exetarg_prebuild_objs = msg.gh $(dis_prereq)
+exetarg_prebuild_objs = usage.gh msg.gh $(dis_prereq)
 exetarg_objs = &
     args.obj &
     buffer.obj &
