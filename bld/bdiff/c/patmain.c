@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,17 @@
 #include "msg.h"
 
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+#if defined( BPATCH )
+        #include "pusage.gh"
+#else
+        #include "dusage.gh"
+#endif
+    #undef pick
+};
+
 static void PrintBanner( void )
 {
     static bool banner_printed = false;
@@ -58,7 +70,7 @@ static void Usage( const char *name )
     GetMsg( msgbuf, i );
     printf( msgbuf, name );
     printf( "\n" );
-    for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
+    for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[0] == 0 )
             break;

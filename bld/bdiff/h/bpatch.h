@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,24 +33,9 @@
 #ifndef __BPATCH_H_
 #define __BPATCH_H_
 
-/* Usage message codes for whomever wishes to use them. */
+/* Usage message codes start value. */
 
 #define MSG_USAGE_FIRST                 16
-
-#define MSG_USAGE_LN_1                  16
-#define MSG_USAGE_LN_2                  17
-#define MSG_USAGE_LN_3                  18
-#define MSG_USAGE_LN_4                  19
-#define MSG_USAGE_LN_5                  20
-#define MSG_USAGE_LN_6                  21
-#define MSG_USAGE_LN_7                  22
-#define MSG_USAGE_LN_8                  23
-#define MSG_USAGE_LN_9                  24
-#define MSG_USAGE_LN_10                 25
-#define MSG_USAGE_LN_11                 26
-#define MSG_USAGE_LN_12                 27
-
-#define MSG_USAGE_LAST                  27
 
 /* messages issued by BDIFF only */
 

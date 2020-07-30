@@ -25,7 +25,7 @@ manifest_nt_386 = ntmanif.res
 
 .c : ../c;$(watcom_dir)/c
 
-inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h"
+inc_dirs = -I. -I"../h" -I"$(dip_dir)/watcom/h"
 
 all : $(all_execs)
 
@@ -60,7 +60,7 @@ wcpatch_objs = &
 wcpatch_objs += $(subdir_wcpatch)/symtab.obj
 !endif
 
-wcpatch.exe : $(subdir_wcpatch) $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+wcpatch.exe : $(subdir_wcpatch) bdiff.res $(wcpatch_objs) $(wres_lib) $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
@@ -78,7 +78,7 @@ wcpatch.exe : $(subdir_wcpatch) $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest
 #
 # WPATCH. Apply patch.
 #
-extra_cpp_wpatch_flags = -D_WPATCH
+extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
 
 defrule_key = wpatch
 !include defrule.mif
@@ -92,7 +92,7 @@ wpatch_objs = &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
 
-wpatch.exe : $(subdir_wpatch) $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+wpatch.exe : $(subdir_wpatch) bpatch.res $(wpatch_objs) $(wres_lib) $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
@@ -110,7 +110,7 @@ wpatch.exe : $(subdir_wpatch) $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$
 #
 # BPATCH.
 #
-extra_cpp_bpatch_flags = -D_WPATCH
+extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
 
 defrule_key = bpatch
 !include defrule.mif
@@ -124,7 +124,7 @@ bpatch_objs = &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
 
-bpatch.exe : $(subdir_bpatch) $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+bpatch.exe : $(subdir_bpatch) bpatch.res $(bpatch_objs) $(wres_lib) $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
@@ -155,7 +155,7 @@ bdump_objs = &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
 
-bdump.exe : $(subdir_bdump) $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
+bdump.exe : $(subdir_bdump) bdump.res $(bdump_objs) $(wres_lib) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
@@ -190,7 +190,7 @@ bdiff_objs = &
 bdiff_objs += $(subdir_bdiff)/symtab.obj
 !endif
 
-bdiff.exe : $(subdir_bdiff) $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
+bdiff.exe : $(subdir_bdiff) bdiff.res $(bdiff_objs) $(wres_lib) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
