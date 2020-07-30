@@ -21,14 +21,11 @@ BEGIN
   #else
     #define pick(c,e,j) c, [ e ]
   #endif
-
     #include "womp.msg"
-
-    #undef pick
-
   #if defined( JAPANESE )
-    #include "usagej.grc"
+    #include "usagej.gh"
   #else
-    #include "usage.grc"
+    #include "usage.gh"
   #endif
+    #undef pick
 END

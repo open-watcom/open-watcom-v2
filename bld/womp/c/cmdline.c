@@ -138,6 +138,13 @@ enum omf_generators {
     OGEN_PHARLAP
 };
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 STATIC cmdline_t    cmdLine;
 STATIC act_grp_t    *curAct;    /* stack of actions */
 STATIC int          headerDone;
@@ -179,9 +186,8 @@ STATIC void usage( void ) {
     int         i;
 
     header();
-    for( i = MSG_USE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[ 0 ] == '.' ) && ( msgbuff[ 1 ] == 0 ) ) break;
         if( previous_null ) {
             if( msgbuff[0] != '\0' ) {
                 waitForKey();

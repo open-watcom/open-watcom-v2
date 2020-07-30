@@ -32,6 +32,6 @@
 
 
 #define MSG_RC_BASE 16
-#define MSG_USE_BASE 200
+#define MSG_USAGE_BASE 200
 
 #include "wmpmsg.gh"
