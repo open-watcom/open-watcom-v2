@@ -24,6 +24,3 @@ Options: ('/' may be used instead of '-' to specify options)
          -q         情報メッセージを抑制します
          -?         このヘルプ画面を表示します
 :endsegment
-:segment IS_RC
-.
-:endsegment

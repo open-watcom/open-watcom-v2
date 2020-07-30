@@ -62,6 +62,13 @@
 #include "clibext.h"
 
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+        #include "usage.gh"
+    #undef pick
+};
+
 extern touchflags   TouchFlags;
 extern timestruct   TimeAdjust;
 extern datestruct   DateAdjust;
@@ -144,10 +151,8 @@ static void usage( void )
     for( text = useText; *text != NULL; text++ ) {
         printf( "%s\n", *text );
     }
-    for( i = MSG_USAGE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) )
-            break;
         printf( "%s\n", msgbuff );
     }
     showDateTimeFormat();

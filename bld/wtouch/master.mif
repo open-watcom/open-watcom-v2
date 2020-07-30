@@ -21,7 +21,7 @@ inc_dirs = -I. -I.. -I"$(clib_dir)/h"
 #
 # EXE
 #
-exetarg_prebuild_objs = msg.gh
+exetarg_prebuild_objs = usage.gh msg.gh
 exetarg_objs = touch.obj dtparse.obj wtmsg.obj
 exetarg_libs = $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
