@@ -10,8 +10,6 @@ name = wasm
 wasm_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup_qnx = usage.u
-
 wasm_trmem = 1
 
 #wasm_dos_extender = causeway
@@ -52,10 +50,8 @@ extra_c_flags_trmem    = $(trmem_cflags)
 #
 # lflags
 #
-extra_link_res_qnx = usage.u
-
 extra_l_flags = lib $(wres_lib)
-extra_l_flags_qnx = option offset=16k, res=$(extra_link_res_qnx), stack=12k
+extra_l_flags_qnx = option offset=16k, stack=12k
 extra_l_flags_dos_i86 = option stack=6k
 extra_l_flags_dos_386 = option stack=12k
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
@@ -67,7 +63,7 @@ extra_l_flags_linux = option stack=12k
 #
 # EXE
 #
-exetarg_prebuild_objs = $(extra_link_res_$(host_os)) asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
+exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
 exetarg_objs = &
     $(extra_objs_$(host_os)_$(host_cpu)) &
     main.obj &
@@ -113,7 +109,8 @@ exetarg_libs = $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui = wresui.res
-exetarg_name = $(name)
+exetarg_qnx_res    = usage.u
+exetarg_name       = $(name)
 !include exetarg.mif
 
 #
@@ -137,22 +134,23 @@ wmpmsg.gh : ../h/womp.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-end.tmp :
-    $(noecho)%write $@ "."
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
 
-usage.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
+usage.gh usage.u : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp end.tmp $@
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
 
-usagej.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
+usagej.gh : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -l 1 -q $[@ . . $^&.tmp any
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp end.tmp $@
-
-usage.u : ../h/options.gml $(__MAKEFILES__)
-    @%make echo_optencod
-    $(noecho)optencod -q -u $@ $[@ . . . any
+    $(noecho)optencod -l 1 -q $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
 
 ###################################################################
 

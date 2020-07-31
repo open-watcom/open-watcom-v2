@@ -56,13 +56,14 @@ exetarg_res_version_nt_x64 = exever.res
 !include exetarg.mif
 !include verrc.mif
 
-optencod_opts_    = i86
-optencod_opts_386 = i86
-optencod_opts_axp = axp
-optencod_opts_ppc = ppc
+!ifdef target_cpu
+optencod_target_cpu = $(target_cpu)
+!else
+optencod_target_cpu = any
+!endif
 
 cmdlnprs.gc cmdlnprs.gh : ../../gml/ms.gml .EXPLICIT
 !ifeq verbose 0
     @echo optencod $@
 !endif
-    $(noecho)optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_opts_$(target_cpu))
+    $(noecho)optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_target_cpu) $(host_os)

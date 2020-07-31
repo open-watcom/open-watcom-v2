@@ -55,15 +55,16 @@
 :title. Usage: wppppc [options] file [options]
 :jtitle. 使用方法: wppppc [options] file [options]
 :target. ppc
+
 :title. Options:
 :jtitle. オプション:
 :target. any
-:title. \t    ( /option is also accepted )
-:jtitle. \t    ( /optionも使用できます )
-:target. i86 386 axp ppc
-:ntarget. qnx linux bsd haiku
-:title. \t    ( '=' is always optional, i.e., -w4 -zp4 )
-:jtitle. \t    ( '='は常に省略可能です。つまり -w4 -zp4 )
+:title. :          ( /option is also accepted )
+:jtitle. :          ( /optionも使用できます )
+:target. any
+:ntarget. qnx linux osx bsd haiku
+:title. :          ( '=' is always optional, i.e., -w4 -zp4 )
+:jtitle. :          ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any
 
 :page. (Press return to continue)

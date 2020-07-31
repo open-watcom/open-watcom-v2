@@ -36,9 +36,9 @@
 :target. any
 :title. Options:
 :target. any
-:title. \t    ( /option is also accepted )
-:target. i86 386 axp ppc
+:title.  :          ( /option is also accepted )
 :target. any
+:ntarget. qnx linux osx bsd haiku
 
 :noequal.
 
@@ -185,25 +185,25 @@
 :usage. generate SBR file without local variables
 
 :option. \G3
-:target. i86
+:target. 386
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions
 
 :option. \G4
-:target. i86
+:target. 386
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
 
 :option. \G5
-:target. i86
+:target. 386
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for Pentium
 
 :option. \G\B
-:target. i86
+:target. 386
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
@@ -408,7 +408,7 @@
 :usage. preprocess to a file
 
 :option. \Q\I\f\d\i\v
-:target. i86
+:target. 386
 :immediate. handle_QIfdiv
 :usage. enable Pentium FDIV fix
 

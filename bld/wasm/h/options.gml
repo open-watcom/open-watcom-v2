@@ -47,11 +47,11 @@
 
 :title. Options:
 :jtitle. オプション:
-:target. qnx linux
-:title. Options:                    ( /option is also supported )
-:jtitle. オプション:                 ( /ｵﾌﾟｼｮﾝ でも指定できます )
 :target. any
-:ntarget. qnx linux
+:title.  :          ( /option is also accepted )
+:jtitle. :          ( /optionも使用できます )
+:target. any
+:ntarget. bsd linux osx qnx haiku
 
 :page. (Press return to continue)
 :jusage. (Press return to continue)

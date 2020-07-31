@@ -47,12 +47,12 @@
 :page. \t(Press return to continue)
 
 :title. Usage: cvtres [options] file
-:target. any
+:target. qnx linux osx bsd haiku
 :title. Options:
 :target. any
-:title. \t    ( /option is also accepted )
-:target. i86 386 axp ppc
+:title.  :          ( /option is also accepted )
 :target. any
+:ntarget. qnx linux osx bsd haiku
 
 :noequal.
 

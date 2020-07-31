@@ -16,7 +16,6 @@ dllname     +=$(target_cpu)
 cc_autodepends = .autodepend
 
 additional_cleanup = *.int
-additional_cleanup_qnx = usage.u
 !ifndef bootstrap
 additional_cleanup_subdir = $(bin_subdir)
 !endif
@@ -100,12 +99,10 @@ extra_c_flags_intlload = $(incl_file_opts)fesupp.h
 # WLINK .EXE options
 #
 
-extra_link_res_qnx = usage.u
-
 extra_l_flags     =
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
-extra_l_flags_qnx = option stack=16k,offset=24k, res=$(extra_link_res_qnx), priv=3
+extra_l_flags_qnx = option stack=16k,offset=24k, priv=3
 extra_l_flags_dos = option stack=32k
 
 #
@@ -149,7 +146,7 @@ exetarg_libs          = $(asminline_lib) $(cg_libs)
 !endif
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
-
+exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -243,22 +240,18 @@ weights.gh keywords.gh : $(key_objs)
     $(noecho)findhash -q -e ",OPR_NOP" $(key_objs)
 
 # optencod options and targets for various hosts
-optencod_opt_qnx = -u $(extra_link_res_$(host_os))
-optencod_targ_bsd   = bsd
-optencod_targ_haiku = haiku
-optencod_targ_qnx   = qnx
-optencod_targ_linux = linux
-optencod_targ_osx   = linux
-optencod_targ_rdos  = rdos
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
 !ifeq release 0
-optencod_targ_dbg = dbg
+optencod_targ_dbg   = dbg
 !endif
 
-usage.gh usage01.int : ../../gml/options.gml
+usage.gh usage01.int $(exetarg_qnx_res): ../../gml/options.gml
 !ifeq verbose 0
     @echo optencod $@
 !endif
-    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
 echo_msgencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

@@ -7,7 +7,6 @@ plusplus_autodepends = .autodepend
 
 # Extra files to delete on clean
 additional_cleanup = *.int y.out ytab.* *.mbr
-additional_cleanup_qnx = usage.u
 
 !include cproj.mif
 !include defrule.mif
@@ -111,11 +110,9 @@ extra_c_flags_memmgr   = $(trmem_cover_cflags)
 #
 # lflags
 #
-extra_link_res_qnx = usage.u
-
 extra_l_flags_dos = OPTION stack=64k
 extra_l_flags_os2 = OPTION stack=128k
-extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=$(extra_link_res_qnx)
+extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3
 
 extra_l_flags_dll     = option implib $(wpp_dllbase_$(host_os)_$(host_cpu))
 
@@ -152,6 +149,7 @@ exetarg_libs          = $(asminline_lib) $(cg_libs)
 !endif
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
+exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -218,21 +216,18 @@ ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
     diff y.out ../../y/plusplus.chk
 
 # optencod options and targets for various hosts
-optencod_opt_qnx = -u $(extra_link_res_qnx)
-optencod_targ_bsd   = bsd
-optencod_targ_osx   = osx
-optencod_targ_qnx   = qnx
-optencod_targ_linux = linux
-optencod_targ_haiku = haiku
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
 !ifeq release 0
-optencod_targ_dbg = dbg
+optencod_targ_dbg   = dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int : ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
-./icmask.exe: ../../c/icmask.c
+./icmask.exe : ../../c/icmask.c
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) -I"../../h" $(bld_ldflags)
 
@@ -240,19 +235,19 @@ ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../
     @%make echo_execute
     $(noecho)*$[@ ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
 
-./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
+./mkopcod1.exe : $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) -I. -I"$(wasm_dir)/h" $(bld_ldflags)
 
-asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
+asmops.gh : ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     @%make echo_execute
     $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
-./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
+./mkopcode.exe : $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) -I. -I"$(wasm_dir)/h" $(bld_ldflags)
 
-asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok asmops.gh
+asmopsd.gh : ./mkopcode.exe $(wasm_dir)/inlnops.tok asmops.gh
     @%make echo_execute
     $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
