@@ -34,6 +34,46 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include $(cpp_dir)/client.mif
 
+#
+# cflags
+#
+.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
+
+parser_defines = -DYYDEBUG -DSCANDEBUG
+
+extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
+!ifdef bootstrap
+extra_cpp_flags   += -DINCL_MSGTEXT
+!endif
+!ifndef wrc_dll
+extra_cpp_flags   += -DIDE_PGM
+!endif
+
+extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
+!ifdef trmem_objs
+extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
+!else ifeq release 0
+extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
+extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
+!endif
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
+
+extra_c_flags_rcmem    = $(trmem_cover_cflags)
+
+#
+# lflags
+#
+extra_l_flags_dll     = option implib $(wrc_dllbase_$(host_os)_$(host_cpu))
+
+extra_l_flags_dll_nt  = initinstance terminstance
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
+
+# explicit rules
+#################
+
 common_objs = &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &
@@ -114,43 +154,6 @@ _subdir_ = $(dll_subdir)/
 objs_dll = $+$(rc_template)$-
 _subdir_ =
 objs_exe = $+$(rc_template)$- $(objs_drv)
-
-#
-# cflags
-#
-.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
-
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
-
-parser_defines = -DYYDEBUG -DSCANDEBUG
-
-extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
-!ifdef bootstrap
-extra_cpp_flags   += -DINCL_MSGTEXT
-!endif
-!ifndef wrc_dll
-extra_cpp_flags   += -DIDE_PGM
-!endif
-
-extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
-!ifdef trmem_objs
-extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
-!else ifeq release 0
-extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
-extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
-!endif
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
-
-extra_c_flags_rcmem    = $(trmem_cover_cflags)
-
-#
-# lflags
-#
-extra_l_flags_dll     = option implib $(wrc_dllbase_$(host_os)_$(host_cpu))
-
-# explicit rules
-#################
 
 #
 # EXE

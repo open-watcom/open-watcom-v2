@@ -64,6 +64,9 @@ exes_32 = emu87_32.exe
 
 all: $(exes_$(cpu_size)) .SYMBOLIC
 
+#
+# EXE's
+#
 exetarg_objs = qemu87.obj
 exetarg_qnx_res = usage.u
 exetarg_name = emu87
@@ -71,8 +74,8 @@ exetarg_name = emu87
 
 exetarg_objs = qnxemu87.obj emu8087.obj fpeqnx.obj
 exetarg_qnx_res = usage.u
-exetarg_name = emu87_$(cpu_size)
 exetarg_link_opt = opt priv=0, long
+exetarg_name = emu87_$(cpu_size)
 !include exetarg.mif
 
 usage.u : ../../usage.sp
@@ -81,6 +84,9 @@ usage.u : ../../usage.sp
 
 !else ifeq host_os stub
 
+#
+# LIB's
+#
 libtarg_objs = emustub.obj
 libtarg_name = emu87
 !include libtarg.mif
@@ -90,6 +96,9 @@ libtarg_name = noemu87
 
 !else
 
+#
+# LIB
+#
 libtarg_objs_dos = initemu.obj emu8087.obj dosinit.obj
 libtarg_objs_os2 = initemu2.obj emu8087.obj hook8087.obj
 libtarg_objs_win = initemuw.obj

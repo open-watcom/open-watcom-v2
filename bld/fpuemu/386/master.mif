@@ -37,6 +37,7 @@ extra_a_flags_emu387 = -I"../inc" -I"../../inc" -I"$(mathlib_dir)/h"
 #################
 
 !ifeq host_os dos
+
 #
 # LIB
 #
@@ -45,6 +46,7 @@ libtarg_name = emu387
 !include libtarg.mif
 
 !else ifeq host_os qnx
+
 #
 # EXE
 #
@@ -61,8 +63,9 @@ usage.u : ../../usage.sp
 !else ifeq host_os win
 
 !else
+
 #
-# LIB
+# LIB's
 #
 libtarg_objs = 386stub.obj
 libtarg_name = emu387

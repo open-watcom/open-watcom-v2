@@ -3,11 +3,11 @@
 host_os  = os2
 host_cpu = 386
 
-proj_name = editdll
+proj_name = epmlink
 
-editdll_autodepends = .AUTODEPEND
+epmlink_autodepends = .AUTODEPEND
 
-editdll_distrib_lib = 1
+epmlink_distrib_lib = 1
 
 sys_dll = 1
 
@@ -41,8 +41,6 @@ all: epmlink.dll wedit.dll .SYMBOLIC
 #
 dlltarg_objs = epmlink.obj
 dlltarg_indirect = option description 'Open Watcom Editor DLL for EPM'
-
-dlltarg_name = epmlink
 !include dlltarg.mif
 
 dlltarg_name = wedit

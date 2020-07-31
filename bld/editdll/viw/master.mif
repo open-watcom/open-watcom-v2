@@ -1,9 +1,8 @@
-proj_name = editdll
-name = wedit
+proj_name = weditviw
 
-editdll_autodepends = .AUTODEPEND
+weditviw_autodepends = .AUTODEPEND
 
-editdll_distrib_lib = 1
+weditviw_distrib_lib = 1
 
 sys_dll = 1
 
@@ -41,8 +40,6 @@ dlltarg_objs = weditviw.obj
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_indirect = option description 'Open Watcom Editor DLL for VIW'
-
-dlltarg_name = weditviw
 !include dlltarg.mif
 
 dlltarg_name = wedit
@@ -53,4 +50,3 @@ dlltarg_name = wedit
 #
 verrc_dll = weditviw
 !include verrc.mif
-

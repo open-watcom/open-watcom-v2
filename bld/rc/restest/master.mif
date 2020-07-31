@@ -35,7 +35,8 @@ exetarg_objs = &
     cursor.obj  &
     icon.obj    &
     accel.obj   &
-    bitmap.obj $(exetarg_objs_$(host_os))
+    bitmap.obj  &
+    $(exetarg_objs_$(host_os))
 exetarg_res = $(proj_name).res
 !include exetarg.mif
 
