@@ -1,9 +1,14 @@
-name = wacc
+proj_name = wacc
 
-sys_object =    wmain.obj winfo.obj wacc.obj whndl.obj &
-                whints.obj wstat.obj &
-                wtoolbar.obj wribbon.obj wedit.obj &
-                wvk2str.obj wdel.obj wnewitem.obj &
-                wkey.obj wsvobj.obj wacc2rc.obj
+!ifndef wacc_autodepends
+wacc_autodepends = .AUTODEPEND
+!endif
+
+sys_object = &
+    wmain.obj winfo.obj wacc.obj whndl.obj &
+    whints.obj wstat.obj &
+    wtoolbar.obj wribbon.obj wedit.obj &
+    wvk2str.obj wdel.obj wnewitem.obj &
+    wkey.obj wsvobj.obj wacc2rc.obj
 
 !include ../../master.mif
