@@ -40,6 +40,13 @@
 #include "clibext.h"
 
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,etext,jtext) + 1
+        #include "usage.gh"
+    #undef pick
+};
+
 #if defined( USE_TEXT_MSGS )
 
 static const char *txtmsgs[] = {
@@ -107,21 +114,19 @@ void PrintfUsage( void )
     char        msg_buff[MAX_MESSAGE_SIZE];
     unsigned    count;
     char        page_text[MAX_MESSAGE_SIZE];
-    unsigned    first_ln;
+    unsigned    line_id;
 
     count = PrintBanner();
-    first_ln = MSG_USAGE_BASE;
-    MsgGet( first_ln++, page_text );
-    for( ; ; first_ln++ ) {
+    line_id = MSG_USAGE_BASE;
+    MsgGet( line_id++, page_text );
+    while( line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
         if( ++count >= 23 ) {
             if( Wait_for_return( page_text ) ) {
                 break;
             }
             count = 0;
         }
-        MsgGet( first_ln, msg_buff );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
-            break;
+        MsgGet( line_id++, msg_buff );
         puts( msg_buff );
     }
 }
