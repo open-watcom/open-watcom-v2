@@ -20,7 +20,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> dos386/emu387.lib    <OWRELROOT>/lib386/dos/
 
-# QNX emulator setup programs
+# QNX 387 emulator
     <CCCMD> qnx386/emu387.exe    <OWRELROOT>/qnx/binq/emu387
 
 [ BLOCK . . ]
