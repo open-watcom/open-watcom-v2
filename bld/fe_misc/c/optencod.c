@@ -83,6 +83,8 @@
 
 #define mytolower(c)            (char)tolower( (unsigned char)c )
 
+#define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
+
 typedef enum tag_id {
 #define TAG( s )        TAG_##s ,
 #include "opttags.h"
@@ -1321,12 +1323,12 @@ static void stripUselessOptions( void )
     h = &optionList;
     for( o = *h; o != NULL; o = o_next ) {
         o_next = o->next;
-        if( (o->ntarget & targetMask) || (o->target & targetMask) == 0 ) {
+        if( IS_SELECTED( o ) ) {
+            h = &(o->next);
+        } else {
             o->next = uselessOptionList;
             uselessOptionList = o;
             *h = o_next;
-        } else {
-            h = &(o->next);
         }
     }
 }
@@ -2139,7 +2141,7 @@ static void createUsageHeader( unsigned language, process_line_fn *process_line 
     TITLE *t;
 
     for( t = titleList; t != NULL; t = t->next ) {
-        if( (t->target & targetMask) && (t->ntarget & targetMask) == 0 ) {
+        if( IS_SELECTED( t ) ) {
             title = t->lang_title[language];
             if( title == NULL || *title == '\0' ) {
                 title = t->lang_title[LANG_English];
