@@ -17,44 +17,43 @@ dlg_yacc_file = $(dlg_yacc_prefix)tab
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .cpp: .;../cpp;$(browse_dir)/cpp
 
-scan_files = &
-bind.obj &
-dialog.obj &
-main.obj &
-scanner.obj &
-styles.obj &
-$(bnd_yacc_file).obj &
-$(dlg_yacc_file).obj
-
-browse_files = &
-chfile.obj  &
-chbffile.obj &
-mempool.obj
-
-c_objs = $+$(scan_files) $(browse_files)$-
-
-lnk = dlgprs.lnk
+inc_dirs = -I. -I"../h"
 
 extra_c_flags=-xs
 
 extra_c_flags_mempool = -I"$(browse_dir)/h"
 
-inc_dirs = -I. -I"../h"
+# explicit rules
+#################
 
-dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(c_objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(c_objs) $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {$(c_objs)}
-!endif
+#
+# EXE
+#
+exetarg_prebuild_objs = $(dlg_yacc_file).h $(bnd_yacc_file).h
+exetarg_objs_scan_files = &
+    bind.obj &
+    dialog.obj &
+    main.obj &
+    scanner.obj &
+    styles.obj &
+    $(bnd_yacc_file).obj &
+    $(dlg_yacc_file).obj
+exetarg_objs_browse_files = &
+    chfile.obj  &
+    chbffile.obj &
+    mempool.obj
+exetarg_objs = $+$(exetarg_objs_scan_files) $(exetarg_objs_browse_files)$-
+exetarg_name = dlgprs
+!include exetarg.mif
 
+#
+# rc and others
+#
 bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db
 dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db
 

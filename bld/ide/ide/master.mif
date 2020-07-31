@@ -10,7 +10,9 @@ target_os2 = os2
 target_nt  = win
 target_win = win
 
-additional_cleanup = $(docs_dir)/$(host_os)/ide.h
+docs_host_dir = $(docs_dir)/$(host_os)
+
+additional_cleanup = $(docs_host_dir)/ide.h
 
 !include cproj.mif
 !include defrule.mif
@@ -38,7 +40,7 @@ c_path_win  = $(batch_dir)/dos;$(batch_dir)/os2
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) &
-    $(wpi_inc_dirs) -I"$(docs_dir)/$(host_os)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
+    $(wpi_inc_dirs) -I"$(docs_host_dir)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
 
 extra_cpp_flags = -DGUI_IS_GUI
 
@@ -71,7 +73,7 @@ extra_l_flags   = op eliminate
 #
 # EXE
 #
-exetarg_prebuild_objs = $(docs_dir)/$(host_os)/ide.h
+exetarg_prebuild_objs = $(docs_host_dir)/ide.h
 exetarg_objs = $(objs)
 exetarg_libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 exetarg_res_version_res_exe_nt_386 = exever.res
@@ -92,10 +94,10 @@ $(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
-$(docs_dir)/$(host_os) : .SYMBOLIC
+
+$(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
-$(docs_dir)/$(host_os)/ide.h: $(docs_dir)/$(host_os) .ALWAYS
+$(docs_host_dir)/ide.h: $(docs_host_dir) .ALWAYS
     $(noecho)wmake -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
     $(noecho)cd $(curr_dir)
-

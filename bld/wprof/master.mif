@@ -59,12 +59,8 @@ extra_c_flags_trmem = $(trmem_cflags)
 #
 # lflags
 #
-extra_link_res_qnx = usage.u
-
-additional_cleanup_qnx = $(extra_link_res_qnx)
-
 extra_l_flags_os2       = op stack=32k
-extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=$(extra_link_res_qnx)
+extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos       = op stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
 
@@ -105,6 +101,7 @@ exetarg_res           = $(proj_name).res
 !else
 exetarg_res_wresui    = wresui.res
 !endif
+exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -120,6 +117,6 @@ wresui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$@
 
-$(extra_link_res_qnx) : ../h/usage.sp $(__MAKEFILES__)
+usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(wsplice) -u $[@ $@
