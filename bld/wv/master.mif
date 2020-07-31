@@ -99,9 +99,9 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 #
 .asm: ../asm
 
+#
 # lflags
-#########
-
+#
 lflags_win_i86 += memory font
 
 !ifeq sys_windowed 1

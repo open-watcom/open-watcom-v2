@@ -6,21 +6,32 @@ proj_name = appwiz
 
 !include $(gui_dir)/client.mif
 
+#
+# cflags
+#
 .c : ../c
 
 inc_dirs = -I. -I"../h" $(gui_inc_dirs)
 
-exetarg_prebuild_objs = rcstr.gh
-exetarg_objs = appwiz.obj errmsg.obj projtype.obj
-exetarg_libs = $(gui_lib)
-exetarg_res = $(proj_name).res
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_prebuild_objs = rcstr.gh
+exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
+exetarg_libs          = $(gui_lib)
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
+
+#
+# rc and others
+#
+$(proj_name).res : ../h/appwiz.rc .AUTODEPEND
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$@
 
 rcstr.gh : ../h/appwiz.msg
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-$(exetarg_res) : ../h/appwiz.rc .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$@
