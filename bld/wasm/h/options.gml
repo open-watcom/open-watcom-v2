@@ -50,6 +50,7 @@
 :target. qnx linux
 :title. Options:                    ( /option is also supported )
 :jtitle. オプション:                 ( /ｵﾌﾟｼｮﾝ でも指定できます )
+:target. any
 :ntarget. qnx linux
 
 :page. (Press return to continue)
