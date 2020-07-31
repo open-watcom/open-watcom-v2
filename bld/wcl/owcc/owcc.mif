@@ -1,3 +1,9 @@
-name = owcc
+proj_name = owcc
+
+!ifndef owcc_autodepends
+owcc_autodepends = .AUTODEPEND
+!endif
+
+owcc_trmem = 1
 
 !include ../../master.mif

@@ -138,10 +138,8 @@ prebuild_objs = &
 !ifdef plusplus_dll
 exetarg_prebuild_objs = $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
-exetarg_libs          = $(dlltarg_name).lib
-!ifeq host_os dos
-exetarg_libs         += cwdll.lib
-!endif
+exetarg_libs_dos      = cwdll.lib
+exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)

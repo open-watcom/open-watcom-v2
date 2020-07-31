@@ -52,7 +52,7 @@ extra_l_flags_dll_nt  = initglobal
 #
 # DLL
 #
-dlltarg_prebuild_objs = $(dll_subdir)
+dlltarg_prebuild_objs = $(dll_subdir) rcstr.gh
 dlltarg_objs          = $(dll_subdir)/spydll.obj
 !ifeq host_os nt
 dlltarg_name          = ntspyhk

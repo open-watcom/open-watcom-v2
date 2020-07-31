@@ -1,6 +1,12 @@
-name = wcl
+proj_name = wcl
 
 target_cpu = i86
+
+!ifndef wcl_autodepends
+wcl_autodepends = .AUTODEPEND
+!endif
+
+wcl_trmem = 1
 
 extra_cpp_flags = -DWCLI86
 
