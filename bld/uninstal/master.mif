@@ -26,17 +26,21 @@ inc_dirs = -I. -I".." $(commonui_inc_dirs)
 # EXE
 #
 exetarg_prebuild_objs = rcstr.gh
-exetarg_objs = uninstal.obj
-exetarg_libs = $(commonui_lib)
+exetarg_objs          = uninstal.obj
+exetarg_libs          = $(commonui_lib)
 exetarg_res_version_nt_386  = exever.res
 exetarg_res_version_nt_x64  = exever.res
-exetarg_res = $(proj_name).res
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
 !include verrc.mif
+
+$(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$@
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -45,7 +49,3 @@ rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) $(inc_path) -o$@ $[@
-
-$(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$@

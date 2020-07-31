@@ -22,11 +22,14 @@ drwatcom_autodepends = .AUTODEPEND
 drwatcom_95 = 0
 !endif
 
-link_name = $(proj_name).lnk
-common_dir=../../common
+common_dir = ../../common
 
-# cflags stuff
-###############
+#
+# cflags
+#
+.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c
+
+inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 
 extra_cpp_flags =
 !ifeq drwatcom_95 1
@@ -43,67 +46,60 @@ extra_cpp_flags_mem = -DWANT_MSGS
 extra_c_flags_i86 = -zW -zu -3
 extra_c_flags_axp =
 
+#
+# aflags
+#
+.asm : .
 
-# lflags stuff
-###############
-
+#
+# lflags
+#
 extra_l_flags = option quiet name $(proj_name).exe
 
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
-
-extra_proj_obj_nt = global.obj param.obj procctl.obj memory.obj &
-        drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
-        pefile.obj autoget.obj lddips.obj memwndcd.obj &
-        madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
-        strcnv.obj regcrt.obj &
-        $(mad_objs)
 !ifeq drwatcom_95 1
-extra_proj_obj_nt += reg95.obj
-extra_l_flags += lib th32.lib
-#$(watcom_dir)/lib/win95/th32.lib why do we need this one?
-!else
-extra_proj_obj_nt += reg.obj
+extra_l_flags_nt += lib th32.lib
 !endif
 
 extra_l_flags_win = lib commdlg.lib
 
-extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
-        win32app.obj lddips.obj stack.obj &
-        $(dis_objs)
+# explicit rules
+#################
 
-proj_obj =  listbox.obj drwatlog.obj stat.obj lognote.obj &
-        drwatcom.obj sym.obj profile.obj fault.obj &
-        disasm.obj drwatmem.obj &
-        $(extra_proj_obj_$(host_os)) &
-        dipcli.obj digcli.obj $(dip_objs)
+#
+# EXE
+#
+exetarg_prebuild_objs = rcstr.gh $(dis_prereq)
+exetarg_objs_nt       = global.obj param.obj procctl.obj memory.obj &
+    drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
+    pefile.obj autoget.obj lddips.obj memwndcd.obj &
+    madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
+    strcnv.obj regcrt.obj $(mad_objs)
+!ifeq drwatcom_95 1
+exetarg_objs_nt      += reg95.obj
+!else
+exetarg_objs_nt      += reg.obj
+!endif
+exetarg_objs_win      = globals.obj notify.obj winproc.obj debug.obj dump.obj &
+    win32app.obj lddips.obj stack.obj $(dis_objs)
+exetarg_objs = &
+	listbox.obj drwatlog.obj stat.obj lognote.obj &
+    drwatcom.obj sym.obj profile.obj fault.obj &
+    disasm.obj drwatmem.obj $(exetarg_objs_$(host_os)) &
+    dipcli.obj digcli.obj $(dip_objs)
+exetarg_libs          = $(commonui_lib)
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res           = $(proj_name).res
+!include exetarg.mif
 
-.asm : .
-.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c
-
-inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
-
-rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h" $(commonui_inc_dirs)
-
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
+#
+# rc and others
+#
 !include verrc.mif
 
-xlibs = $(commonui_lib)
-
-#explicit rules
-################
-
-$(proj_name).exe : rcstr.gh $(dis_prereq) $(link_name) $(proj_name).res $(proj_obj) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) @$(link_name)
-    @%make bind_res_add_version_exe
-
-$(link_name) : $(__MAKEFILES__)
-    @%write $@ $(lflags)
-    @%append $@ file { $(proj_obj) }
-    @%append $@ lib { $(xlibs) }
+rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h" $(commonui_inc_dirs)
 
 !ifeq host_os win
 $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND

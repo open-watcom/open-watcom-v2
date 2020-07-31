@@ -13,18 +13,26 @@ sys_windowed = 1
 
 !include $(commonui_dir)/client.mif
 
-extra_cpp_flags_nt = -DNOUSE3D
-
-extra_l_flags_win = op stack=7k, heapsize=2k
+#
+# cflags
+#
+.c: ../c;$(commonui_dir)/c
 
 inc_dirs = -I. -I"../h" $(commonui_inc_dirs)
 
-rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
+extra_cpp_flags_nt = -DNOUSE3D
 
-.c: ../c;$(commonui_dir)/c
+#
+# lflags
+#
+extra_l_flags_win = op stack=7k, heapsize=2k
 
-!include verrc.mif
+# explicit rules
+#################
 
+#
+# EXE's
+#
 exetarg_prebuild_objs = rcstr.gh
 exetarg_objs = &
     zoom.obj &
@@ -33,25 +41,26 @@ exetarg_objs = &
     zmscreen.obj &
     zmconfig.obj &
     zmmem.obj
-exetarg_libs = $(commonui_lib)
+exetarg_libs          = $(commonui_lib)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 
-exetarg_name = $(proj_name)
-exetarg_res = $(proj_name).res
+# EXE English
+exetarg_name          = $(proj_name)
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
-exetarg_name = $(proj_name)j
-exetarg_res = $(proj_name)j.res
+# EXE Japanese
+exetarg_name          = $(proj_name)j
+exetarg_res           = $(proj_name)j.res
 !include exetarg.mif
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
-    @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+#
+# rc and others
+#
+!include verrc.mif
 
-rcstrmsg.gh : ../res/wzoom.msg $(__MAKEFILES__)
-    @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$@ $[@
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
 $(proj_name).res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
@@ -60,3 +69,11 @@ $(proj_name).res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
 $(proj_name)j.res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -DJAPANESE -ad -zk0 -I"../res/kanji" $(rc_inc_path) $[@ -fo=$@
+
+rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+
+rcstrmsg.gh : ../res/wzoom.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) $(rc_aui_flags) -o$@ $[@
