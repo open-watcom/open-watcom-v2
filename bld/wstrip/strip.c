@@ -407,11 +407,9 @@ int main( int argc, char *argv[] )
     _argc = argc;
 #endif
 
-#if !defined( INCL_MSGTEXT )
     if( !Msg_Init() ) {
         return( EXIT_FAILURE );
     }
-#endif
     add_file = 0;
     j = argc - 1;
     while( j > 0 ) {
@@ -526,8 +524,6 @@ int main( int argc, char *argv[] )
     uptime.modtime = mtime;
     utime( fout.name, &uptime );
 
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     return( EXIT_SUCCESS );
 }

@@ -52,33 +52,35 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-static bool Msg_Get( int resourceid, char *buffer )
-{
-    strcpy( buffer, StringTable[resourceid] );
-    return( true );
-}
-
 #else
 
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
 
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
+#endif
+
 static bool Msg_Get( int resourceid, char *buffer )
 {
+#if defined( INCL_MSGTEXT )
+    strcpy( buffer, StringTable[resourceid] );
+#else
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#endif
     return( true );
 }
 
 bool Msg_Init( void )
 {
+#if defined( INCL_MSGTEXT )
+    return( true );
+#else
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -91,15 +93,18 @@ bool Msg_Init( void )
     CloseResFile( &hInstance );
     printf( NO_RES_MESSAGE );
     return( false );
+#endif
 }
 
 
 bool Msg_Fini( void )
 {
+#if defined( INCL_MSGTEXT )
+    return( true );
+#else
     return( CloseResFile( &hInstance ) );
-}
-
 #endif
+}
 
 void Banner( void )
 {
@@ -119,9 +124,7 @@ void Usage( void )
         Msg_Get( i, msg_buffer );
         printf( "%s\n", msg_buffer );
     }
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     exit( -1 );
 }
 
@@ -134,8 +137,6 @@ void Fatal( int reason, const char *insert )
     printf( msg_buffer, insert );
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
     printf( "%s", msg_buffer );
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     exit( -1 );
 }
