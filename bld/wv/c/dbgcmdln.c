@@ -56,6 +56,15 @@ enum {
     #undef pick
 };
 
+#ifndef GUI_IS_GUI
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+    #include "usage.gh"
+    #undef pick
+};
+#endif
+
 bool                    DownLoadTask = false;
 
 static char             *(*GetArg)( int );
@@ -284,16 +293,13 @@ static void GetInitCmd( int pass )
 }
 
 #ifndef GUI_IS_GUI
-static void PrintUsage( dui_res_id first_ln )
+static void PrintUsage( void )
 {
     char        *msg_buff;
+    dui_res_id  line_id;
 
-    for( ;; ) {
-        msg_buff = DUILoadString( first_ln++ );
-        if( ( msg_buff[0] == '.' ) && ( msg_buff[1] == 0 ) ) {
-            DUIFreeString( msg_buff );
-            break;
-        }
+    for( line_id = MSG_USAGE_BASE; line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT; line_id++ ) {
+        msg_buff = DUILoadString( line_id );
         puts( msg_buff );
         DUIFreeString( msg_buff );
     }
@@ -320,7 +326,7 @@ static void ProcOptList( int pass )
         curr = buff;
 #ifndef GUI_IS_GUI
         if( CurrChar == '?' ) {
-            PrintUsage( MSG_USAGE_BASE );
+            PrintUsage();
             StartupErr( "" );
         }
 #endif
@@ -443,7 +449,7 @@ static void ProcOptList( int pass )
             break;
         case OPT_HELP:
 #ifndef GUI_IS_GUI
-            PrintUsage( MSG_USAGE_BASE );
+            PrintUsage();
             StartupErr( "" );
 #endif
             break;

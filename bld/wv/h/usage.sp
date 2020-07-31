@@ -1,4 +1,4 @@
-:segment linkres
+:segment LINKRES
 :segment qnx
 %C  {-options} [:symbol_file] [cmd_line]
 
@@ -87,8 +87,5 @@ Options:            ( /option is also supported )
 :endsegment
 :elsesegment JAPANESE
 Someone please translate the Japanese usage help
-:endsegment
-:segment IS_RC
-.
 :endsegment
 :endsegment

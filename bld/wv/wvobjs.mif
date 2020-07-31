@@ -209,15 +209,5 @@ dui_objs_nt       = ntscrn.obj helpio.obj ntdbgpb.obj
 dui_objs_win      = winscrn.obj helpio.obj
 !endif
 
-sys_objs_dos386   = 
-sys_objs_linux    = 
-sys_objs_qnx386   = 
-sys_objs_rdos386  = 
-sys_objs_os2i86   = 
-sys_objs_os2386   = 
-sys_objs_nt       = 
-sys_objs_win      = 
-
 engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(host_os)$(host_cpu))
 ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(host_os)$(host_cpu)) #$(objs_$(host_os)_$(host_cpu))
-#sys_objs = $(sys_objs_$(host_os)) $(sys_objs_$(host_os)$(host_cpu))
