@@ -138,7 +138,7 @@ chkmsg :
 
 strip : .symbolic
     @%make echo_bindres
-    $(wstrip) /q wmk.exe wmks.exe >nul
+    $(wstrip) /q $(exetarg_name).exe $(exetarg_name)s.exe >nul
     ls -l *.exe
 
 deps : .symbolic
@@ -148,12 +148,12 @@ deps : .symbolic
 do : .symbolic
     wmake -h -n | sed -f ../mkdo.sed >do.bat
 
-test : wmk.exe .always .symbolic
+test : $(exetarg_name).exe .always .symbolic
 curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__
-    -./test.sh $(curr_dir)/wmk.exe
+    -./test.sh $(curr_dir)/$(exetarg_name).exe
 !else
-    -test $(curr_dir)\wmk.exe
+    -test $(curr_dir)\$(exetarg_name).exe
 !endif
     cd $(curr_dir)
