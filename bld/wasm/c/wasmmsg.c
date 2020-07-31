@@ -43,7 +43,7 @@
 enum {
     MSG_USAGE_COUNT = 0
     #define pick(num,etext,jtext) + 1
-        #include "usage.gh"
+    #include "usage.gh"
     #undef pick
 };
 
