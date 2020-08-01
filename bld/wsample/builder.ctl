@@ -33,8 +33,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wsample.sym    <OWRELROOT>/binl/
     <CCCMD> ntaxp/wsample.exe       <OWRELROOT>/axpnt/
     <CCCMD> ntaxp/wsample.sym       <OWRELROOT>/axpnt/
-    <CCCMD> nlm/wsample.nlm         <OWRELROOT>/nlm/
-    <CCCMD> nlm/wsample.sym         <OWRELROOT>/nlm/
+    <CCCMD> nov386/wsample.nlm      <OWRELROOT>/nlm/
+    <CCCMD> nov386/wsample.sym      <OWRELROOT>/nlm/
 
     <CCCMD> ntx64/wsample.exe       <OWRELROOT>/binnt64/
     <CCCMD> ntx64/wsample.sym       <OWRELROOT>/binnt64/
