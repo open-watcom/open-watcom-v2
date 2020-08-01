@@ -1846,11 +1846,11 @@ void SearchConf( void )
 {
     // stub for old UI
 }
-void DUIFingClose( void )
+void DUIFingOpen( void )
 {
     // open a splash page
 }
-void DUIFingOpen( void )
+void DUIFingClose( void )
 {
     // close the splash page
 }
