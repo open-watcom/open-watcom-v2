@@ -93,10 +93,12 @@ extra_a_flags = $(model_switch_$(host_cpu))
 extra_l_flags_os2_i86 = op stack=4k, newfiles
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_win = option heap=10k, stack=10k &
+    opt description 'Open Watcom Sampler' &
     segment class 'CODE' preload fixed &
     segment class 'DATA' preload fixed &
     lib commdlg, toolhelp
 extra_l_flags_nov = debug novell option stack=10k @nversion.tmp &
+    opt description 'Open Watcom Sampler' &
     module clib import @$(nwoss_dir)/common/imp/ownwos.imp
 !ifeq target rsi
 lflags_dos_i86 = sys dos16m opt stub=$(wstub_dir)/dos386/wstubq.exe runtime auto lib doslfn$(memory_model_i86).lib
@@ -159,11 +161,6 @@ exetarg_res_version_nt_x64 = exever.res
 exetarg_res           = $(proj_name).res
 !else
 exetarg_res_wresui    = wresui.res
-!endif
-exetarg_indirect_win  = opt description 'Open Watcom Sampler'
-exetarg_indirect_nov  = opt description 'Open Watcom Sampler'
-!ifdef exetarg_indirect_$(target)
-exetarg_indirect      = $(exetarg_indirect_$(target))
 !endif
 !include exetarg.mif
 

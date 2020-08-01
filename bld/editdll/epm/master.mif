@@ -27,7 +27,7 @@ extra_cpp_flags = -DWEDITDLL
 #
 # lflags
 #
-extra_l_flags_dll = op elim
+extra_l_flags_dll = op elim op description 'Open Watcom Editor DLL for EPM'
 
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
@@ -40,7 +40,6 @@ all: epmlink.dll wedit.dll .SYMBOLIC
 # DLL's
 #
 dlltarg_objs = epmlink.obj
-dlltarg_indirect = option description 'Open Watcom Editor DLL for EPM'
 !include dlltarg.mif
 
 dlltarg_name = wedit

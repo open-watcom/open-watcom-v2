@@ -79,8 +79,8 @@ extra_c_flags_wlmem         = $(trmem_cover_cflags)
 extra_l_flags_qnx     = op st=24k, off=32k
 
 extra_l_flags_dll     = option implib $(wlink_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt  = initinstance terminstance
-extra_l_flags_dll_os2 = initinstance terminstance
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
+extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 
 # explicit rules
 #################
@@ -120,11 +120,6 @@ dlltarg_libs          = $(wres_lib) $(dwarfw_lib) $(orl_lib)
 dlltarg_res_wresui    = wresui.res
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-modname_nt  = op modname='$(dlltarg_name).dll'
-modname_os2 = op modname='$(dlltarg_name)'
-!ifdef modname_$(host_os)
-dlltarg_indirect      = $(modname_$(host_os))
-!endif
 !include dlltarg.mif
 
 #

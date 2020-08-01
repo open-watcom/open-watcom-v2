@@ -24,20 +24,11 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !else
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
-!else ifdef exetarg_libs
-    $(linker) name $@ $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$- file { $+$(exetarg_objs)$- } library { $+$(exetarg_libs)$- } &
-!ifdef exetarg_indirect
-    @<<
-    $(exetarg_indirect)
-<<
-!endif
 !else
-    $(linker) name $@ $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$- file { $+$(exetarg_objs)$- } &
-!ifdef exetarg_indirect
-    @<<
-    $(exetarg_indirect)
-<<
-!endif
+    $(noecho)%write $^&.lne $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$-
+    @for %f in ($+$(exetarg_objs)$-) do $(noecho)%append $^&.lne file %f
+    @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lne library %l
+    $(linker) name $@ @$^&.lne
 !endif
 #########################
 # add resources to EXE

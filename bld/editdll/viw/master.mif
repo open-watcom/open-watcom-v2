@@ -24,7 +24,8 @@ extra_c_flags_win = -zc -zw -zu
 #
 # lflags
 #
-extra_l_flags_dll = op elim, heapsize=8k
+extra_l_flags_dll = op elim, heapsize=8k &
+    option description 'Open Watcom Editor DLL for VIW'
 extra_l_flags_dll_win = initinstance memory op stack=20k, rwr export WEP RESIDENT lib ddeml
 extra_l_flags_dll_nt = initinstance terminstance
 
@@ -39,7 +40,6 @@ all: weditviw.dll wedit.dll .SYMBOLIC
 dlltarg_objs = weditviw.obj
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-dlltarg_indirect = option description 'Open Watcom Editor DLL for VIW'
 !include dlltarg.mif
 
 dlltarg_name = wedit

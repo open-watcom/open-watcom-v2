@@ -109,8 +109,8 @@ extra_l_flags_dos = option stack=32k
 # WLINK .DLL options
 #
 extra_l_flags_dll     = option implib $(wcc_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt  = initinstance terminstance
-extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dllname)'
 
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
@@ -157,12 +157,6 @@ dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-modname_nt  = op modname='$(dllname).dll'
-modname_os2 = op modname='$(dllname)'
-!ifdef modname_$(host_os)
-dlltarg_indirect      = $(modname_$(host_os))
-!endif
-
 !include dlltarg.mif
 
 #

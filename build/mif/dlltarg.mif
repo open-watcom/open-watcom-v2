@@ -8,20 +8,11 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs)$- $(ldflags_dll)
-!else ifdef dlltarg_libs
-    $(linker) name $@ $(lflags_dll) file { $+$(dlltarg_objs)$- } library { $+$(dlltarg_libs)$- } &
-!ifdef dlltarg_indirect
-    @<<
-    $(dlltarg_indirect)
-<<
-!endif
 !else
-    $(linker) name $@ $(lflags_dll) file { $+$(dlltarg_objs)$- } &
-!ifdef dlltarg_indirect
-    @<<
-    $(dlltarg_indirect)
-<<
-!endif
+    $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_link_opt)$-
+    @for %f in ($+$(dlltarg_objs)$-) do $(noecho)%append $^&.lnd file %f
+    @for %l in ($+$(dlltarg_libs)$-) do $(noecho)%append $^&.lnd library %l
+    $(linker) name $@ @$^&.lnd
 !endif
 #########################
 # add resources to DLL
