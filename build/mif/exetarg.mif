@@ -2,7 +2,12 @@
 exetarg_name = $(proj_name)
 !endif
 !ifndef exetarg_ext
+!ifeq host_os nov
+exetarg_ext = .nlm
+additional_cleanup_sys = *.nlm
+!else
 exetarg_ext = .exe
+!endif
 !endif
 !ifdef exetarg_qnx_res
 additional_cleanup_qnx = $(exetarg_qnx_res)
@@ -28,13 +33,32 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
     $(noecho)%write $^&.lne $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$-
     @for %f in ($+$(exetarg_objs)$-) do $(noecho)%append $^&.lne file %f
     @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lne library %l
+!ifdef win386
+    $(linker) name $(lname) @$^&.lne
+!else
     $(linker) name $@ @$^&.lne
 !endif
-#########################
-# add resources to EXE
-#########################
-# native .res
-!ifdef exetarg_res_version_$(host_os)_$(host_cpu)
+!endif
+###############################
+# bind to EXE
+###############################
+# add WIN386 extender and .res
+###############################
+!ifdef win386
+!ifdef exetarg_res
+# extender + application .res
+!ifeq verbose 0
+    @echo wbind $(win386ldr) $@
+!endif
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $(exetarg_res) $@
+!else
+# extender, no .res
+    $(wbind) $(lname) -n $(wbind_quiet) -s $(win386ldr)
+!endif
+###############################
+# add native resources
+###############################
+!else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
 !ifdef exetarg_res
 # version + application
 !ifeq verbose 0
@@ -55,8 +79,9 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !endif
     $(rc_bnd) $+$(exetarg_res)$- $@
 !endif
-#########################
-# Windows 3.x resources
+###############################
+# add Windows 3.x resources
+###############################
 !ifdef exetarg_res_wresui
 # string resource only
 !ifeq verbose 0
