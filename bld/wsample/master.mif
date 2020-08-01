@@ -123,13 +123,9 @@ exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
 exetarg_name = wsample
 !endif
 
-!ifeq host_os nov
-exetarg_ext = .nlm
-!else ifeq target pls
+!ifeq target pls
 exetarg_ext = .exp
-!endif
-!ifdef exetarg_ext
-additional_cleanup_sys = *$(exetarg_ext)
+additional_cleanup_sys = *.exp
 !endif
 
 #
