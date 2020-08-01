@@ -7,6 +7,4 @@ wv_engine_noui = wdb
 
 wv_drv_objs = wdbstub.obj
 
-.c : c
-
 !include ../../master.mif

@@ -42,7 +42,9 @@
 #include "fingmsg.h"
 
 
-#define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - FingMessageSize ) / 2 ) )
+#define AboutSize	GetAboutSizeFull()
+
+#define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - AboutSize ) / 2 ) )
 
 extern int          WndNumColours;
 
@@ -67,7 +69,7 @@ static wnd_row FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
-    return( TOP_BLANK( wnd ) + FingMessageSize + GUIIsGUI() );
+    return( TOP_BLANK( wnd ) + AboutSize + GUIIsGUI() );
 }
 
 
@@ -80,10 +82,10 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         line->text = " ";
         return( true );
     }
-    if( row >= FingMessageSize ) {
+    if( row >= AboutSize ) {
         if( !GUIIsGUI() || piece != 0 )
             return( false );
-        row -= FingMessageSize;
+        row -= AboutSize;
         if( row == 0 ) {
             line->text = " ";
             return( true );
@@ -95,7 +97,7 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
             return( false );
         }
     }
-    line->text = AboutMessage[row];
+    line->text = GetAboutMessage( row );
     line->indent = ( Width - WndExtentX( wnd, line->text ) ) / 2;
     return( true );
 }
@@ -151,8 +153,8 @@ void FingOpen( void )
     if( GUIIsGUI() ) {
         WndGetGadgetSize( GADGET_SPLASH, &BitmapSize );
         Width = Height = 0;
-        for( i = 0; i < FingMessageSize; ++i ) {
-            extent = WndExtentX( WndMain, AboutMessage[i] );
+        for( i = 0; i < AboutSize; ++i ) {
+            extent = WndExtentX( WndMain, GetAboutMessage( i ) );
             if( extent > Width ) {
                 Width = extent;
             }
@@ -160,7 +162,7 @@ void FingOpen( void )
         if( BitmapSize.x >= Width )
             Width = BitmapSize.x;
         Width += 4*WndMaxCharX( WndMain );
-        Height = ( FingMessageSize + 5 ) * WndMaxCharY( WndMain );
+        Height = ( AboutSize + 5 ) * WndMaxCharY( WndMain );
         Height += BitmapSize.y;
     } else {
         Width = Height = WND_APPROX_SIZE;

@@ -36,7 +36,10 @@
 #include "strutil.h"
 #include "fingmsg.h"
 
-const char * const AboutMessage[] = {
+
+#define WHOLE_SIZE      ArraySize( AboutMessage )
+
+static const char * const AboutMessage[] = {
     "Open Watcom Debugger" STR_BITNESS,
     banner1v( _WD_VERSION_ ) ".",
     banner2,
@@ -74,10 +77,6 @@ const char * const AboutMessage[] = {
 #endif
 };
 
-#define WHOLE_SIZE  ArraySize( AboutMessage )
-int FingMessageSize = WHOLE_SIZE;
-int AboutSize = WHOLE_SIZE - BOLT_SIZE;
-
 /* NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x */
 #if 0
 #ifdef __DOS__
@@ -96,4 +95,21 @@ void InitAboutMessage( void )
 
 void FiniAboutMessage( void )
 {
+}
+
+const char *GetAboutMessage( int line )
+{
+    if( line < WHOLE_SIZE )
+        return( AboutMessage[line] );
+    return( NULL );
+}
+
+int GetAboutSizeFull( void )
+{
+    return( WHOLE_SIZE );
+}
+
+int GetAboutSizeText( void )
+{
+    return( WHOLE_SIZE - BOLT_SIZE );
 }
