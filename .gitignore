@@ -46,6 +46,10 @@
 *.lib
 !*.lib/
 *.lk1
+# generated linker file (DLL)
+*.lnd
+# generated linker file (EXE)
+*.lne
 *.lnk
 *.lo[1-9]
 *.log
