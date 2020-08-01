@@ -19,6 +19,9 @@ exe_ext = exe
 
 !include ../../client.mif       # define ui_os macro
 
+#
+# cflags
+#
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
 
 inc_dirs = -I"../h" $(ui_inc_dirs)
@@ -43,6 +46,17 @@ extra_c_flags_qnx_386 = -4r
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
+# explicit rules
+#################
+
+!ifdef sample
+all: $(name).lib sample.$(exe_ext) .SYMBOLIC
+    @%null
+!endif
+
+#
+# objects
+#
 common_objs = &
     uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
     uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
@@ -99,21 +113,15 @@ common_objs = &
 !error Host OS $$($(ui_os)) is unset. Review and correct ui/client.mif make file!
 !endif
 
-objs = $(common_objs) $(trmem_objs) $($(ui_os))
+#
+# LIB
+#
+libtarg_objs = $(common_objs) $(trmem_objs) $($(ui_os))
+!include  libtarg.mif
 
-!ifdef sample
-all: $(name).lib sample.$(exe_ext) .SYMBOLIC
-    @%null
-!endif
-
-$(name).lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
-
+#
+# EXE's TEST
+#
 !ifeq SAMPLE_MODE WIN_C_M_J
 sample.$(exe_ext) : samplew.obj sampdial.obj $(ui_lib) $(__MAKEFILES__)
     $(noecho)%create sample.lnk
@@ -160,6 +168,9 @@ sample.$(exe_ext) : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
 !endif
 !endif
 
+#
+# rc and others
+#
 !ifeq host_os qnx
 ctkeyb.obj : ctkeyb.c conesc.gh
 !endif

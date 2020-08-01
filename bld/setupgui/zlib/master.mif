@@ -1,12 +1,15 @@
 proj_name       = zlib
+
 zlib_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: $(zlib_dir)
-.h: $(zlib_dir)
 
 inc_dirs = -I"$(zlib_dir)"
 
@@ -15,7 +18,13 @@ inc_dirs = -I"$(zlib_dir)"
 # if it can be avoided.
 extra_c_flags = -wcd=201
 
-objs = &
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_objs = &
     adler32.obj  &
     compress.obj &
     crc32.obj    &
@@ -28,12 +37,4 @@ objs = &
     trees.obj    &
     uncompr.obj  &
     zutil.obj 
-
-$(proj_name).lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
-
+!include libtarg.mif

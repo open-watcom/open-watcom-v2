@@ -1,16 +1,25 @@
 proj_name       = ziplib
+
 ziplib_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: $(libzip_dir)/lib
-.h: $(libzip_dir)/lib
 
 inc_dirs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
-objs = &
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_objs = &
     zadd.obj &
     zclose.obj &
     zdelete.obj &
@@ -50,11 +59,4 @@ objs = &
     zuchg.obj &
     zuchgall.obj &
     zuchgdat.obj
-
-$(proj_name).lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
+!include libtarg.mif
