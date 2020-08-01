@@ -745,14 +745,14 @@ void SearchConf( void )
     // stub for old UI
 }
 
-void DUIFingClose( void )
-{
-    // close the splash page
-}
-
 void DUIFingOpen( void )
 {
     // open a splash page
+}
+
+void DUIFingClose( void )
+{
+    // close the splash page
 }
 
 void AsmChangeOptions( void )
