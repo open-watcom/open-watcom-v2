@@ -1,40 +1,25 @@
 proj_name = cc
 
+cc_autodepends = .autodepend
+
+#
+# names
+#
+
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
 boot_prefix = b
 !endif
-
-exename     = $(boot_prefix)wcc
-dllname     = $(boot_prefix)wccd
 !ifneq target_cpu i86
-exename     +=$(target_cpu)
-dllname     +=$(target_cpu)
+suffix      = $(target_cpu)
 !endif
-
-cc_autodepends = .autodepend
-
-additional_cleanup = *.int
-!ifndef bootstrap
-additional_cleanup_subdir = $(bin_subdir)
-!endif
-
+exename     = $(boot_prefix)wcc$(suffix)
+dllname     = $(boot_prefix)wccd$(suffix)
 # international data file name
 intname = wcc$(target_cpu)
 
-!ifdef bootstrap
-exetarg_name = $(exename)
-dlltarg_name = $(dllname)
-bin_intname  = $(intname)
-!else
-exetarg_name = $(bin_subdir)/$(exename)
-dlltarg_name = $(bin_subdir)/$(dllname)
-bin_intname  = $(bin_subdir)/$(intname)
-!endif
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
+additional_cleanup = *.int
 
 !include cproj.mif
 !include defrule.mif
@@ -49,21 +34,13 @@ $(bin_subdir) : .EXPLICIT
 
 !include ../../ccobjs.mif
 
-# other goofy stuff
-prebuild_objs = &
-    usage.gh &
-    msgtxt.gh &
-    msgdefs.gh &
-    msgattr.gh &
-    weights.gh &
-    keywords.gh &
-    $(asminline_deps) &
-    code$(target_cpu).gh &
-    $(bin_intname)01.int
+#
+# cflags
+#
+.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 
-#
-# C compiler options
-#
+inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+
 extra_cpp_flags =
 !ifneq cc_dll 1
 extra_cpp_flags += -DIDE_PGM
@@ -82,7 +59,6 @@ extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
 !endif
 extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
 
-
 extra_c_flags_386 = -3r
 
 !ifdef __WATCOM_TOOLS__
@@ -96,49 +72,38 @@ extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
 
 #
-# WLINK .EXE options
+# lflags
 #
-
-extra_l_flags     =
-
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
 extra_l_flags_qnx = option stack=16k,offset=24k, priv=3
 extra_l_flags_dos = option stack=32k
 
-#
-# WLINK .DLL options
-#
 extra_l_flags_dll     = option implib $(wcc_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dllname)'
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+# explicit rules
+#################
 
-.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
-.h: ../../h;$(watcom_dir)/h
-
-#
-# Common dependencies
-#
-
-verrc_dll = $(dllname)
-verrc_exe = $(exename)
-!include verrc.mif
-
-!ifndef bootstrap
-all: $(bin_subdir) $(exetarg_name).exe .symbolic
-!endif
+prebuild_objs = &
+    usage.gh &
+    msgtxt.gh &
+    msgdefs.gh &
+    msgattr.gh &
+    weights.gh &
+    keywords.gh &
+    $(asminline_deps) &
+    code$(target_cpu).gh &
+    $(intname)01.int
 
 #
-# Create compiler
+# EXE
 #
 !ifdef cc_dll
 exetarg_prebuild_objs = $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
-exetarg_libs          = $(dlltarg_name).lib
-!ifeq host_os dos
-exetarg_libs         += cwdll.lib
-!endif
+exetarg_libs_dos      = cwdll.lib
+exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
@@ -147,6 +112,7 @@ exetarg_libs          = $(asminline_lib) $(cg_libs)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_qnx_res       = usage.u
+exetarg_name          = $(exename)
 !include exetarg.mif
 
 #
@@ -157,11 +123,15 @@ dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
+dlltarg_name          = $(dllname)
 !include dlltarg.mif
 
 #
-# done
+# rc and others
 #
+verrc_dll = $(dllname)
+verrc_exe = $(exename)
+!include verrc.mif
 
 !ifeq target_cpu axp
 
@@ -208,7 +178,7 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_bldcl
     $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
-$(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
+$(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
