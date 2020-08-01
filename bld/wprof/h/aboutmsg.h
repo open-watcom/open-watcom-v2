@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-extern char *AboutMessage[];
-extern int  AboutSize;
-
 extern void AboutOpen( void );
 extern void AboutClose( void );
 extern void AboutSetOff( void );

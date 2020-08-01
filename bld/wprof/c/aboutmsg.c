@@ -41,6 +41,37 @@
 #include "aboutmsg.h"
 
 
+static char *AboutMessage[] = {
+    "",
+    banner1w1( "Execution Profiler" STR_BITNESS ),
+    banner1w2( _WPROF_VERSION_ ),
+    banner2,
+    banner2a( 1987 ),
+    "",
+    banner3,
+    banner3a,
+/* NB: it is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
+#ifdef D32_NAME
+    "",
+    D32_NAME " " D32_VERSION,
+    D32_COPYRIGHT,
+#endif
+#endif
+};
+
+/* NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x */
+#if 0
+#ifdef __DOS__
+char DOS4GOPTIONS[] =
+        "[dos4g-global]\n"
+        "Include=WPROFOPT.INI\n"
+        "[dos4g-kernel]\n"
+        "StartupBanner=FALSE\n"
+;
+#endif
+#endif
+
 static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
 
@@ -53,7 +84,7 @@ STATIC wnd_row AboutNumRows( a_window wnd )
     /* unused parameters */ (void)wnd;
 
     if( aboutOn ) {
-        rows = AboutSize;
+        rows = ArraySize( AboutMessage );
 //        if( GUIIsGUI() ) {
 //            rows++;
 //        }
@@ -72,10 +103,10 @@ STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 
     if( piece != 0 || !aboutOn )
         return( false );
-    if( row >= AboutSize ) {
+    if( row >= ArraySize( AboutMessage ) ) {
 /* the following code fragment was ripped from the debugger */
 /* Something like this can be done for the splash page?? */
-//        if( row > AboutSize || !GUIIsGUI() )
+//        if( row > ArraySize( AboutMessage ) || !GUIIsGUI() )
 //            return( false );
 //    WndSetGadgetLine( wnd, line, GADGET_SPLASH, MaxGadgetLength );
 //        WndGetGadgetSize( GADGET_SPLASH, &size );
@@ -168,12 +199,12 @@ void DlgAbout( void )
     int         index;
 
     about_len = 0;
-    for( index = 0; index < AboutSize; ++index ) {
+    for( index = 0; index < ArraySize( AboutMessage ); ++index ) {
         about_len += strlen( AboutMessage[index] ) + 1;
     }
     about_data = ProfAlloc( about_len+1 );
     about_rover = about_data;
-    for( index = 0; index < AboutSize; ++index ) {
+    for( index = 0; index < ArraySize( AboutMessage ); ++index ) {
         about_len = strlen( AboutMessage[index] );
         memcpy( about_rover, AboutMessage[index], about_len );
         about_rover += about_len;
