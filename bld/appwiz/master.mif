@@ -23,6 +23,8 @@ exetarg_prebuild_objs = rcstr.gh
 exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
 exetarg_libs          = $(gui_lib)
 exetarg_res           = $(proj_name).res
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
 !include exetarg.mif
 
 #
@@ -31,6 +33,10 @@ exetarg_res           = $(proj_name).res
 $(proj_name).res : ../h/appwiz.rc .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$@
+
+ntmanif.res : ../h/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I../h $(inc_dirs_sys_$(host_os)) -I"$(watcom_dir)/h" $< -fo=$@
 
 rcstr.gh : ../h/appwiz.msg
     @%make echo_awk
