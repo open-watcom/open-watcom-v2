@@ -50,6 +50,8 @@ exetarg_res_version_nt_x64 = exever.res
 !ifeq sys_windowed 1
 exetarg_res           = $(name).res
 !endif
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
 exetarg_name          = $(name)
 !include exetarg.mif
 
@@ -78,6 +80,10 @@ setfs.gdh setgen.gdh: $(__MAKEFILES__)
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+
+ntmanif.res : ../res/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I../res $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk

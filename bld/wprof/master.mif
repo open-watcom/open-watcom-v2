@@ -101,6 +101,8 @@ exetarg_res           = $(proj_name).res
 !else
 exetarg_res_wresui    = wresui.res
 !endif
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
 exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
@@ -112,6 +114,10 @@ exetarg_qnx_res       = usage.u
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+
+ntmanif.res : ../res/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I../res $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 wresui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
