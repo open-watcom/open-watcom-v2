@@ -16,42 +16,52 @@ wdpmhelp_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-description = 'Open Watcom Debugger PM Helper'
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
 extra_c_flags = -fpc
 
-inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
+#
+# lflags
+#
+extra_l_flags_os2 = &
+    import WinLockInput PMMERGE.5225 &
+    import WinThreadAssocQueue PMMERGE.5398 &
+    option modname=wdpmhelp &
+    option description 'Open Watcom Debugger PM Helper'
+
+extra_l_flags_dll_os2 = library os2386.lib &
+    export SendMsgHookProc.1,SetHmqDebugee.2
+
+# explicit rules
+#################
 
 w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null
 
-tmplnk = tmp.lnk
+#
+# DLL
+#
+dlltarg_objs = pmhook.obj
+dlltarg_name = wdpmhook
+!include dlltarg.mif
 
-wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
-    @%write  $^&.lnk name $@ sys os2v2 dll
-    @%append $^&.lnk debug all op symf
-    @%append $^&.lnk option map
-    @%append $^&.lnk file pmhook.obj
-    @%append $^&.lnk library os2386.lib
-    @%append $^&.lnk export SendMsgHookProc.1,SetHmqDebugee.2
-    @%make echo_link
-    $(linker) @$^&.lnk
+#
+# EXE
+#
+exetarg_prebuild_objs = _err.gh _jerr.gh
+exetarg_objs = pmhelp.obj
+exetarg_res = wdpmhelp.res
+exetarg_name = wdpmhelp
+!include exetarg.mif
 
-wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
-    @%write  $^&.lnk name $@ system os2v2 pm
-    @%append $^&.lnk debug all op symf
-    @%append $^&.lnk option map
-    @%append $^&.lnk import WinLockInput PMMERGE.5225
-    @%append $^&.lnk import WinThreadAssocQueue PMMERGE.5398
-    @%append $^&.lnk file pmhelp.obj
-    @%append $^&.lnk option modname=wdpmhelp
-    @%append $^&.lnk option description $(description)
-    @%make echo_link
-    $(linker) @$^&.lnk
-    @%make bind_res
-
-.c: ../c
-
+#
+# rc and others
+#
 wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=$@ $[@

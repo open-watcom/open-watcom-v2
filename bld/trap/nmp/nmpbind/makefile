@@ -15,10 +15,22 @@ nmpbind_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-objs = nmpbind.obj nmpos2.obj
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
 extra_c_flags = -bm -zu
+
+#
+# lflags
+#
 extra_l_flags = op stack=8k
+
+# explicit rules
+#################
 
 !ifeq release 0
 default_targ    = d
@@ -32,18 +44,22 @@ w : nmpbind.exe .symbolic
 
 d : dnmpbind.exe .symbolic
 
-nmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file { $objs }
+#
+# EXE's
+#
+exetarg_prebuild_objs = _err.gh _jerr.gh
+exetarg_objs = nmpbind.obj nmpos2.obj
+exetarg_name = nmpbind
+!include exetarg.mif
 
-dnmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file { $objs }
+exetarg_prebuild_objs = _err.gh _jerr.gh
+exetarg_objs = nmpbind.obj nmpos2.obj
+exetarg_name = dnmpbind
+!include exetarg.mif
 
-.c: ../c
-
-inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
-
+#
+# rc and others
+#
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
