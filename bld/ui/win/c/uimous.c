@@ -47,7 +47,7 @@ static int          ScreenYFudge;
 void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
 /****************************************************************************************/
 {
-    _BIOSMouseGetPositionAndButtonStatusNoData();
+    _BIOSMouseGetPositionAndButtonStatusReset();
     *status = MouseStatusBits;
     *col = MouseX;
     *row = MouseY;

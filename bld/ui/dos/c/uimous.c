@@ -87,7 +87,7 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
         *col = MickeyCol;
         if( change ) {
             _BIOSMouseSetPointerPosition( *col, *row );
-            _BIOSMouseGetMotionCountersNoData();
+            _BIOSMouseGetMotionCountersReset();
         }
     }
 
@@ -175,7 +175,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
         _BIOSMouseSetPointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
         _BIOSMouseSetPointerPosition( MouseCol, MouseRow );
-        _BIOSMouseGetMotionCountersNoData();
+        _BIOSMouseGetMotionCountersReset();
         MickeyRow = MouseRow; /* initialize these and syncronize the INT B */
         MickeyCol = MouseCol; /* because we keep a running total */
     }

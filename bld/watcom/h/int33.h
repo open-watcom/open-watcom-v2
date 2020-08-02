@@ -139,15 +139,15 @@ extern void _BIOSMouseGetPositionAndButtonStatus( mouse_status * );
     __modify __exact    [__ax __bx __cx __dx]
 #endif
 
-extern void _BIOSMouseGetPositionAndButtonStatusNoData( void );
+extern void _BIOSMouseGetPositionAndButtonStatusReset( void );
 #ifdef _M_I86
-#pragma aux _BIOSMouseGetPositionAndButtonStatusNoData = \
+#pragma aux _BIOSMouseGetPositionAndButtonStatusReset = \
         _INT_33_FN( 3 ) \
     __parm              [] \
     __value             \
     __modify __exact    [__ax __bx __cx __dx]
 #else
-#pragma aux _BIOSMouseGetPositionAndButtonStatusNoData = \
+#pragma aux _BIOSMouseGetPositionAndButtonStatusReset = \
         _INT_33_FN( 3 ) \
     __parm              [] \
     __value             \
@@ -205,15 +205,15 @@ extern void _BIOSMouseGetMotionCounters( mouse_status * );
     __modify __exact    [__ax __cx __dx]
 #endif
 
-extern void _BIOSMouseGetMotionCountersNoData( void );
+extern void _BIOSMouseGetMotionCountersReset( void );
 #ifdef _M_I86
-#pragma aux _BIOSMouseGetMotionCountersersNoData = \
+#pragma aux _BIOSMouseGetMotionCountersReset = \
         _INT_33_FN( 0x0b ) \
     __parm              [] \
     __value             \
     __modify __exact    [__ax __cx __dx]
 #else
-#pragma aux _BIOSMouseGetMotionCountersNoData = \
+#pragma aux _BIOSMouseGetMotionCountersReset = \
         _INT_33_FN( 0x0b ) \
     __parm              [] \
     __value             \
