@@ -5,13 +5,6 @@ name = sample
 guisample_autodepends = .AUTODEPEND
 !endif
 
-rcname=$(name)
-!ifeq sys_windowed 1
-!ifeq host_os os2
-rcname=$(name)pm
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -49,7 +42,11 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
 exetarg_libs       = $(gui_lib) $(ui_lib) $(wres_lib)
 !ifeq sys_windowed 1
+!ifeq host_os os2
+exetarg_res        = samplepm.res
+!else
 exetarg_res        = sample.res
+!endif
 !else
 exetarg_res_wresui = wresui.res
 !endif
@@ -72,10 +69,13 @@ exetarg_name       = samp2
 #
 # rc and others
 #
-rcopt = $(inc_dirs) $(commonui_inc_dirs) $(inc_dirs_sys) -I"../res/$(type)" -I"../res" -I"$(watcom_dir)/h"
+rc_inc_dirs = -I"../res" -I"../res/$(type)" $(inc_dirs) $(commonui_inc_dirs)
 
-sample.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc) $(rc_flags) -DWINRC $(rcopt) $[@ -fo=$@
+samplepm.res : ../samplepm.rc ../samplepm.dlg
+        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc_aui) $(rcopt) $[@ -fo=$@
+sample.res : ../sample.rc ../sample.dlg
+        $(rc) $(rc_flags) -DWINRC $(rc_inc_path) $[@ -fo=$@
+
+wresui.res : ../sample.rc ../sample.dlg
+        $(rc_aui) $(rc_inc_path) $[@ -fo=$@

@@ -162,6 +162,8 @@ void uimousespeed( unsigned speed )
 }
 
 #ifdef _M_I86
+#define IRET        0xCF
+
 static bool mouse_installed( void )
 /*********************************/
 {
