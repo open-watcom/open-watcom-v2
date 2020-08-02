@@ -115,7 +115,7 @@ $(proj_name).res : ../res/$(host_os)/drnt.rc .AUTODEPEND
 
 ntmanif.res : ../res/nt/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I../res/nt $(inc_dirs_sys_$(host_os)) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res/nt" $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 rcstr.gh : rcstrmsg.gh
     @%make echo_awk

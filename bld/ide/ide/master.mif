@@ -94,7 +94,7 @@ $(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
 
 ntmanif.res : ../res/win/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I../res/win $(inc_dirs_sys_$(host_os)) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res/win" $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 

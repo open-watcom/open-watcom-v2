@@ -133,7 +133,7 @@ $(exetarg_name).res : ../res/wbrw.rc
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I../res $(inc_dirs_sys_$(host_os)) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 

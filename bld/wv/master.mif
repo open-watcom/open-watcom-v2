@@ -393,7 +393,7 @@ wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .a
 
 ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I../res $(inc_dirs_sys_$(host_os)) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_$(host_os)) $< -fo=$@
 
 litdefm.tmp : ../../res/strings/menu.str $(__MAKEFILES__)
     @%make echo_cpp

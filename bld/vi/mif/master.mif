@@ -34,6 +34,9 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 
 .dat : $(vi_dir)/dat
 
+#
+# bind vi scripts to final vi executable
+#
 vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
@@ -42,6 +45,15 @@ vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     cp $(name).sym vi.sym
 !endif
 
+#
+# compile vi scripts to bind to final vi executable
+#
+$(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
+    vicomp ../dat/$^. $^.
+
+#
+# EXE
+#
 exetarg_prebuild_objs = $(special) $(other) $(videps)
 exetarg_objs          = $(objsroot) $(objinit) $(objs)
 exetarg_libs          = $(libs)
@@ -55,10 +67,26 @@ exetarg_nt_manif_x64  = ntmanif.res
 exetarg_name          = $(name)
 !include exetarg.mif
 
-$(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
-    vicomp ../dat/$^. $^.
-
+#
+# rc and others
+#
 !include verrc.mif
+
+$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
+
+ntmanif.res : ../res/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_$(host_os)) $< -fo=$@
+
+rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+
+rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 setfs.obj : setfs.c setfs.gch setfs.gdh
 setgen.obj : setgen.c setgen.gch setgen.gdh
@@ -76,22 +104,6 @@ setgen.gdh : ../win/ctl/setgen.dh
 
 setfs.gdh setgen.gdh: $(__MAKEFILES__)
     parsedyn $[@ $@ Dyn_$^&
-
-$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
-
-ntmanif.res : ../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) -I../res $(inc_dirs_sys_$(host_os)) $< -fo=$@
-
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
-    @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
-    @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$@ $[@
 
 edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp
