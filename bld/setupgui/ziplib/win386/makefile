@@ -1,4 +1,4 @@
-#pmake/50: nobuild os_win cpu_386
+#pmake/50: build os_win cpu_386
 
 host_os  = win
 host_cpu = 386
