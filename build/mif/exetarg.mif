@@ -92,7 +92,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ manif+ver
 !endif
-    $(rc_bnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rc_bnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !endif
 !else ifdef exetarg_res
 # manifest + application
