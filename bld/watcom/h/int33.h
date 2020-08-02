@@ -34,7 +34,7 @@
 #ifndef _INT33_H_INCLUDED
 #define _INT33_H_INCLUDED
 
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( _M_I86 ) && defined( __OS2__ )
 
 #define STR(...)                    #__VA_ARGS__
 #define INSTR(...)                  STR(__VA_ARGS__)
