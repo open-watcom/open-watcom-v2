@@ -17,7 +17,7 @@ suffix      = $(target_cpu)
 exename     = $(boot_prefix)wcc$(suffix)
 dllname     = $(boot_prefix)wccd$(suffix)
 # international data file name
-intname = wcc$(target_cpu)
+intname     = wcc$(target_cpu)
 
 additional_cleanup = *.int
 
@@ -100,10 +100,10 @@ prebuild_objs = &
 # EXE
 #
 !ifdef cc_dll
-exetarg_prebuild_objs = $(dlltarg_name).dll
+exetarg_prebuild_objs = $(dllname).dll
 exetarg_objs          = $(comp_objs_drv)
 exetarg_libs_dos      = cwdll.lib
-exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
+exetarg_libs          = $(dllname).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
