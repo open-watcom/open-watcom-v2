@@ -2,15 +2,15 @@
 #
 # input macros:
 #
-# dlltarg_name          name of executable, default is $(proj_name)
-# dlltarg_ext           extension of executable, default is .dll
-# dlltarg_prebuild_objs files which must be available, but not directly added to DLL
-# dlltarg_objs          object files which are linked to DLL
-# dlltarg_libs          libraries which are linked to DLL
-# dlltarg_link_opt      extra wlink directive or options used to link DLL
-# dlltarg_res           native resource file added to DLL
-# dlltarg_res_version   native version info resource file added to DLL
-# dlltarg_res_wresui    string resource file (Windows 3.x format) added to DLL
+# dlltarg_name                  name of executable, default is $(proj_name)
+# dlltarg_ext                   extension of executable, default is .dll
+# dlltarg_prebuild_objs         files which must be available, but not directly added to DLL
+# dlltarg_objs                  object files which are linked to DLL
+# dlltarg_libs                  libraries which are linked to DLL
+# dlltarg_link_opt              extra wlink directive or options used to link DLL
+# dlltarg_res                   native resource file added to DLL
+# dlltarg_res_version_nt_<cpu>  native version info resource file added to DLL
+# dlltarg_res_wresui            string resource file (Windows 3.x format) added to DLL
 #
 # All resource macros are include in dependant list
 #
