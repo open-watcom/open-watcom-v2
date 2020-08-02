@@ -79,7 +79,6 @@ bld_os = nt
 bld_cpu = x64
 bld_os = nt
 bld64host_nt = 1
-bld64host_osi = 1
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -90,7 +89,6 @@ bld_os = linux
 bld_cpu = x64
 bld_os = linux
 bld64host_linux = 1
-bld64host_osi = 1
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -107,7 +105,6 @@ bld_os = bsd
 bld_cpu = x64
 bld_os = bsd
 bld64host_bsd = 1
-bld64host_osi = 1
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -118,7 +115,6 @@ bld_os = haiku
 bld_cpu = x64
 bld_os = haiku
 bld64host_haiku = 1
-bld64host_osi = 1
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -129,7 +125,6 @@ bld_os = osx
 bld_cpu = x64
 bld_os = osx
 bld64host_osx = 1
-bld64host_osi = 1
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
