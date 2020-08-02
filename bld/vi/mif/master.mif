@@ -32,13 +32,7 @@ additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 !include ../mif/link.mif
 !include ../mif/bind.mif
 
-.h : $(vi_dir)/h
 .dat : $(vi_dir)/dat
-
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
-!include verrc.mif
 
 vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
@@ -48,31 +42,21 @@ vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     cp $(name).sym vi.sym
 !endif
 
-$(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @for %o in ($(objsroot)) do @%append $^&.lnk file %o
-    @%append $^&.lnk $(start_flags)
-    @for %o in ($(objinit)) do @%append $^&.lnk file %o
-    @%append $^&.lnk $(more_flags)
-    @for %o in ($(objs)) do @%append $^&.lnk file %o
-    @%append $^&.lnk $(final_flags)
-    @for %l in ($(libs)) do @%append $^&.lnk lib %l
-    @%make echo_link
-    $(linker) name $(lname) $(lflags) @$^&.lnk
-!endif
+exetarg_prebuild_objs = $(special) $(other) $(videps)
+exetarg_objs          = $(objsroot) $(objinit) $(objs)
+exetarg_libs          = $(libs)
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
 !ifeq sys_windowed 1
-    @%make bind_win386_add_res
-    @%make bind_res_add_version_exe
-!else
-    @%make bind_res_version_exe
+exetarg_res           = $(name).res
 !endif
+exetarg_name          = $(name)
+!include exetarg.mif
 
 $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
     vicomp ../dat/$^. $^.
+
+!include verrc.mif
 
 setfs.obj : setfs.c setfs.gch setfs.gdh
 setgen.obj : setgen.c setgen.gch setgen.gdh
