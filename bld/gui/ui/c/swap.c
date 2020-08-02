@@ -231,7 +231,10 @@ enum vid_state_info {
     VID_STATE_ALL           = 0x7
 };
 
-
+/*
+ * Internal Windows 3.x symbols
+ * not part of standard API
+ */
 extern char _A000h[];
 extern void FAR PASCAL Death( HDC );
 extern void FAR PASCAL Resurrection( HDC, WORD w1, WORD w2, WORD w3, WORD w4, WORD w5, WORD w6 );
