@@ -446,10 +446,10 @@ void FlushMemoryBlocks()
         hunds = timetaken - secs * CLOCKS_PER_SEC;
 
         if( rflag ) {
-            PrintALineThenDrop( "%ld bytes, %u files written, %u dirs created in %lu.%lu seconds (dump %u)",
+            PrintALineThenDrop( " (%ld bytes), %u files written, %u dirs created in %lu.%lu seconds (dump %u)",
                             total, FileCnt, DirCnt, secs, hunds, DumpCnt );
         } else {
-            PrintALineThenDrop( "%ld bytes, %u files written in %lu.%02lu seconds (dump %u)",
+            PrintALineThenDrop( " (%ld bytes), %u files written in %lu.%02lu seconds (dump %u)",
                             total, FileCnt, secs, hunds, DumpCnt );
         }
         TotalBytes += total;

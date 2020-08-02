@@ -207,6 +207,7 @@ int main( int argc, char *argv[] )
         Quit( usageMsg, "Only one destination file allowed\n" );
     }
     CopyOneFile( argv[2], argv[1] );
+    DropALine();
     doneCP();
     return( 0 );
 } /* main */
