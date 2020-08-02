@@ -23,11 +23,12 @@ wgml_trmem = 1
 
 !include ../wgmlobjs.mif
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs)
-
-res_depends = wgmlmsgs.gh wgmlmsge.gh
-
+#
+# cflags
+#
 .c: ../c;../../watcom/c;$(trmem_dir)
+
+inc_dirs = -I. -I"../h" $(wres_inc_dirs)
 
 extra_cpp_flags_gmemory = $(trmem_cpp_flags)
 
@@ -39,17 +40,21 @@ extra_cpp_flags_gmemory = $(trmem_cpp_flags)
 extra_c_flags_gmemory = $(trmem_cover_cflags)
 extra_c_flags_trmem   = $(trmem_cflags)
 
-libs += $(wres_lib)
+# explicit rules
+#################
 
-wgml.exe: wresui.res $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(objs) } lib { $(libs) }
-!endif
-    @%make bind_res_wresui
+#
+# EXE
+#
+exetarg_prebuild_objs = wgmlmsgs.gh wgmlmsge.gh
+exetarg_objs          = $(objs)
+exetarg_libs          = $(wres_lib)
+exetarg_res_wresui    = wresui.res
+!include exetarg.mif
 
+#
+# rc and others
+#
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
 wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)

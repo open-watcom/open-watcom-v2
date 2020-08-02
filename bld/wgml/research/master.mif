@@ -14,11 +14,12 @@ wgml_research_autodepends = .AUTODEPEND
 
 !include ../../wgmlobjs.mif
 
-inc_dirs = -I. -I"../h" -I"../../h" $(wres_inc_dirs)
-
+#
+# cflags
+#
 .c: ../c;../../c;$(watcom_dir)/c
 
-wgml_libs = $(wres_lib)
+inc_dirs = -I. -I"../h" -I"../../h" $(wres_inc_dirs)
 
 research_common_objs = &
             cmdlhelp.obj  &
@@ -70,59 +71,46 @@ outc_objs = &
             $(cop_common_objs) &
             outcheck.obj
 
-nwgml : wgmlmsge.gh wgmlmsgs.gh cfcheck.exe cfparse.exe copparse.exe &
+nwgml : cfcheck.exe cfparse.exe copparse.exe &
         devldchk.exe findfunc.exe outcheck.exe .SYMBOLIC
 
-cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(cfc_objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(cfc_objs) }
-!endif
+#
+# EXE's
+#
+exetarg_prebuild_objs = wgmlmsge.gh wgmlmsgs.gh
+exetarg_libs = $(wres_lib)
+exetarg_res_wresui = wresui.res
 
-cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(cfp_objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(cfp_objs) }
-!endif
+exetarg_objs = $(cfc_objs)
+exetarg_name = cfcheck
+!include exetarg.mif
 
-copparse.exe : wresui.res $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(copp_objs) $(wgml_libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(copp_objs) }
-!endif
-    @%make bind_res_wresui
+exetarg_objs = $(cfp_objs)
+exetarg_name = cfparse
+!include exetarg.mif
 
-devldchk.exe : wresui.res $(devld_objs) $(wgml_libs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(devld_objs) $(wgml_libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(devld_objs) }
-!endif
-    @%make bind_res_wresui
+exetarg_objs = $(copp_objs)
+exetarg_name = copparse
+!include exetarg.mif
 
-findfunc.exe : $(ff_objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(ff_objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(ff_objs) }
-!endif
+exetarg_objs = $(devld_objs)
+exetarg_name = devldchk
+!include exetarg.mif
 
-outcheck.exe : wresui.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(outc_objs) $(wgml_libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) lib { $(wgml_libs) } file { $(outc_objs) }
-!endif
-    @%make bind_res_wresui
+exetarg_objs = $(ff_objs)
+exetarg_name = findfunc
+!include exetarg.mif
+
+exetarg_objs = $(outc_objs)
+exetarg_name = outcheck
+!include exetarg.mif
+
+#
+# rc and others
+#
+wresui.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+    @%make echo_rc
+    $(rc_aui) $[@ -fo=$@
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk
@@ -131,7 +119,3 @@ wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
 wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<
-
-wresui.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
-    @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
