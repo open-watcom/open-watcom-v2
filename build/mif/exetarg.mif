@@ -1,3 +1,20 @@
+# Makefile to link EXE
+#
+# input macros:
+#
+# exetarg_name          name of executable, default is $(proj_name)
+# exetarg_ext           extension of executable, default is .exe (for Novell it is .nlm)
+# exetarg_prebuild_objs files which must be available, but not directly added to EXE
+# exetarg_objs          object files which are linked to EXE
+# exetarg_libs          libraries which are linked to EXE
+# exetarg_link_opt      extra wlink directive or options used to link EXE
+# exetarg_res           native resource file added to EXE
+# exetarg_res_version   native version info resource file added to EXE
+# exetarg_res_wresui    string resource file (Windows 3.x format) added to EXE
+# exetarg_qnx_res       special QNX resource file for usage text
+#
+# All resource macros are include in dependant list
+#
 !ifndef exetarg_name
 exetarg_name = $(proj_name)
 !endif

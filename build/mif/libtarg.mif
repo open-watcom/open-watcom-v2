@@ -1,3 +1,15 @@
+# Makefile to create static LIB
+#
+# input macros:
+#
+# libtarg_name          name of library, default is $(proj_name)
+# libtarg_ext           extension of library, default is .lib
+# libtarg_prebuild_objs files which must be available, but not directly added to library
+# libtarg_objs          object files which are added to library
+# libtarg_libs          libraries which are added to library
+#
+# All objects are include in dependant list
+#
 !ifndef libtarg_name
 libtarg_name = $(proj_name)
 !endif
