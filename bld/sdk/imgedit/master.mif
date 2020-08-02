@@ -20,8 +20,6 @@ memory_model_i86 = l
 
 .JUST_ENOUGH
 
-.EXTENSIONS: .dlg .res .rc
-
 # remap host_os
 target_os2 = os2
 target_win = win
@@ -57,7 +55,10 @@ extra_l_flags_os2 = option stack=12k, heapsize=2k
 # EXE
 #
 exetarg_prebuild_objs = rcstr.gh
-exetarg_objs_common = &
+exetarg_objs_extras_win = wincreat.obj title.obj winutils.obj
+exetarg_objs_os2      = pmcreate.obj pmutils.obj pmicon.obj wbitmap.obj
+exetarg_objs_win      = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iectl3d.obj $(exetarg_objs_extras_win)
+exetarg_objs = &
     imgedit.obj ieproc.obj ieglob.obj ieclrpal.obj ienew.obj &
     iedraw.obj ieviewin.obj ieutil.obj iesave.obj iestatus.obj &
     iefonts.obj ieopen.obj ieprofil.obj ietoolbr.obj xorand.obj &
@@ -65,11 +66,8 @@ exetarg_objs_common = &
     iconinfo.obj fill.obj clrcntls.obj curclr.obj funcbar.obj &
     bkcolor.obj imgdata.obj getdata.obj chgsize.obj settings.obj &
     trnsform.obj hinttext.obj iemem.obj closeall.obj bits.obj &
-    errors.obj imgutil.obj
-exetarg_objs_extras_win = wincreat.obj title.obj winutils.obj
-exetarg_objs_os2      = pmcreate.obj pmutils.obj pmicon.obj wbitmap.obj
-exetarg_objs_win      = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iectl3d.obj $(exetarg_objs_extras_win)
-exetarg_objs          = $(exetarg_objs_common) $(exetarg_objs_$(target_$(host_os)))
+    errors.obj imgutil.obj &
+    $(exetarg_objs_$(target_$(host_os)))
 exetarg_libs_win      = $(wr_lib)
 exetarg_libs          = $(wres_lib) $(wpi_lib) $(commonui_lib) $(exetarg_libs_$(target_$(host_os)))
 exetarg_res_version_nt_386 = exever.res
