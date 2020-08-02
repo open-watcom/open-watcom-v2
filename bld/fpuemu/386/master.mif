@@ -64,6 +64,8 @@ usage.u : ../../usage.sp
 
 !else
 
+all : emu387.lib noemu387.lib .SYMBOLIC
+
 #
 # LIB's
 #

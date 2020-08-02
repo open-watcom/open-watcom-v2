@@ -84,6 +84,8 @@ usage.u : ../../usage.sp
 
 !else ifeq host_os stub
 
+all : emu87.lib noemu87.lib .SYMBOLIC
+
 #
 # LIB's
 #
