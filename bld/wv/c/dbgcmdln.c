@@ -38,7 +38,7 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include "wdmsg.h"
+#include "wdmsgdef.h"
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
