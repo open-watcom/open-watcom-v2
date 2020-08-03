@@ -48,13 +48,13 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
 !else
-    $(noecho)%write $^&.lne $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$-
-    @for %f in ($+$(exetarg_objs)$-) do $(noecho)%append $^&.lne file %f
-    @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lne library %l
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$-
+    @for %f in ($+$(exetarg_objs)$-) do $(noecho)%append $^&.lnk file %f
+    @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lnk library %l
 !ifdef win386
-    $(linker) name $(lname) @$^&.lne
+    $(linker) name $(lname) @$^&.lnk
 !else
-    $(linker) name $@ @$^&.lne
+    $(linker) name $@ @$^&.lnk
 !endif
 !endif
 ###############################

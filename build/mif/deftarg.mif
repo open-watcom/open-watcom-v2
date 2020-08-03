@@ -4,5 +4,5 @@ clean: .SYMBOLIC .EXPLICIT
     @%make killnonobj
 
 killnonobj: .SYMBOLIC .EXPLICIT
-    rm -f *.lnd *.lne *.exe *.exp *.nlm *.dll *.lib *.lbc *.gc *.gh *.grc
+    rm -f *.lnd *.lnk *.exe *.exp *.nlm *.dll *.lib *.lbc *.gc *.gh *.grc
     rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.trk $(additional_cleanup_sys)
