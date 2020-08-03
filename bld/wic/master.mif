@@ -49,7 +49,7 @@ exetarg_res_wresui = wresui.res
 #
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
+    $(rcui)
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice

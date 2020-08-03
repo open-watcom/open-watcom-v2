@@ -715,19 +715,19 @@ librarian       = $(noecho)$(librarian_$(host_cpu)) -q
 as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags)
 
 rc              = $(noecho)*bwrc -q $(bldver_cppflags)
-rcaui           = $(noecho)*bwrc -q $(bldver_cppflags)
-rcbnd           = $(noecho)*bwrc -q
+rc_ui           = $(noecho)*bwrc -q $(bldver_cppflags)
+rc_bnd          = $(noecho)*bwrc -q
 
-rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
+rc_ui_flags     = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
 !ifdef bootstrap
-rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@
 !else ifndef __WATCOM_TOOLS__
-rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@
 !else
-rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
+rcui            = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@
 !endif
 
-rc_bnd          = $(rcbnd) -k
+rcbnd           = $(rc_bnd) -k
 
 # current project setup
 !ifeq sys_dll 1

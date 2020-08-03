@@ -206,11 +206,11 @@ all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) -I"$(trap_dir)/h" $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl

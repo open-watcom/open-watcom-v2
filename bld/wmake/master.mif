@@ -107,7 +107,7 @@ exetarg_name          = wmk
 
 wresui.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
+    $(rcui)
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

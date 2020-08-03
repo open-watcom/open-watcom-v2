@@ -78,4 +78,4 @@ sample.res : ../sample.rc ../sample.dlg
         $(rc) $(rc_flags) -DWINRC $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../sample.rc ../sample.dlg
-        $(rc_aui) $(rc_inc_path) $[@ -fo=$@
+        $(rcui) $(rc_inc_path)

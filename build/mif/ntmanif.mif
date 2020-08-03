@@ -9,6 +9,6 @@ bind_res_manifest: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(manifest_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(manifest_$(host_os)_$(host_cpu)) $@
 !endif
 

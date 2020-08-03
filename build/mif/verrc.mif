@@ -142,7 +142,7 @@ bind_res_version_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(version_res_exe_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(version_res_exe_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_add_version_exe: .PROCEDURE .EXPLICIT
@@ -150,7 +150,7 @@ bind_res_add_version_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res add $@
 !endif
-    $(rc_bnd) $^&.res $@ -fr=$(version_res_exe_$(host_os)_$(host_cpu))
+    $(rcbnd) $^&.res $@ -fr=$(version_res_exe_$(host_os)_$(host_cpu))
 !else
     @%make bind_res
 !endif
@@ -160,7 +160,7 @@ bind_res_version_dll: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(version_res_dll_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(version_res_dll_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_add_version_dll: .PROCEDURE .EXPLICIT
@@ -168,7 +168,7 @@ bind_res_add_version_dll: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res add $@
 !endif
-    $(rc_bnd) $^&.res $@ -fr=$(version_res_dll_$(host_os)_$(host_cpu))
+    $(rcbnd) $^&.res $@ -fr=$(version_res_dll_$(host_os)_$(host_cpu))
 !else
     @%make bind_res
 !endif
@@ -178,7 +178,7 @@ bind_res_version386_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(version386_res_exe_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(version386_res_exe_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_versionx64_exe: .PROCEDURE .EXPLICIT
@@ -186,7 +186,7 @@ bind_res_versionx64_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(versionx64_res_exe_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(versionx64_res_exe_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_versionaxp_exe: .PROCEDURE .EXPLICIT
@@ -194,7 +194,7 @@ bind_res_versionaxp_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(versionaxp_res_exe_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(versionaxp_res_exe_$(host_os)_$(host_cpu)) $@
 !endif
 
 bind_res_versionppc_exe: .PROCEDURE .EXPLICIT
@@ -202,5 +202,5 @@ bind_res_versionppc_exe: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(versionppc_res_exe_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(versionppc_res_exe_$(host_os)_$(host_cpu)) $@
 !endif

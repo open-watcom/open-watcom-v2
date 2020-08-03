@@ -54,4 +54,4 @@ rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) $(inc_path) -o$@ $[@
+    $(cpp) $(rc_ui_flags) $(inc_path) -o$@ $[@

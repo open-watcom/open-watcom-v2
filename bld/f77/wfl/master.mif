@@ -55,7 +55,7 @@ verrc_exe = $(exetarg_name)
 
 wresui.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $[@ -fo=$@ -I"$(comp_cfg_dir)/h"
+    $(rcui) -I. -I.. -I"../../h" -I"../../../h" -I"$(comp_cfg_dir)/h"
 
 errsrc_opt_i86 = elic
 errsrc_opt_386 = el3c

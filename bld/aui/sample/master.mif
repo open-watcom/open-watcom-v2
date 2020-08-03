@@ -72,8 +72,8 @@ appj.res : ../res/app.rc $(rcfiles)
 
 wresui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    $(rcui) $(rc_inc_path) $(inc_dirs_sys_win)
 
 wresuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
-    $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    $(rcui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win)

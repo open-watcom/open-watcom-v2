@@ -112,4 +112,4 @@ rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_ui_flags) -o$@ $[@

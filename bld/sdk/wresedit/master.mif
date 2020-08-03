@@ -81,4 +81,4 @@ rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../../res" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I"../../res" -o$@ $[@

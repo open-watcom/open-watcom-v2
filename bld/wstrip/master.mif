@@ -56,7 +56,7 @@ verrc_exe = $(exename)
 
 wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) -ad $(inc_dirs) $[@ -fo=$@
+    $(rcui) -ad $(inc_dirs)
 
 msg.gh : wstrip.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -64,9 +64,9 @@ msg.gh : wstrip.gh $(__MAKEFILES__)
 
 incltext.gh : ../incltext.h ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I.. -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I.. -o$@ $[@
 
 wstrip.gh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_ui_flags) -o$@ $[@
 

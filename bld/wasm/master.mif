@@ -118,7 +118,7 @@ exetarg_name       = wasm
 
 wresui.res : ../h/wasm.rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) -D_STANDALONE_ $[@ -fo=$@
+    $(rcui) -D_STANDALONE_
 
 msg.gh : ../h/asmshare.msg $(__MAKEFILES__)
     @%make echo_awk

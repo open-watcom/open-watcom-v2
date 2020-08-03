@@ -174,11 +174,11 @@ verrc_exe = $(exetarg_name)
 
 $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$@
+    $(rcui) -30 $(inc_dirs_sys_win) -I"../h"
 
 wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
+    $(rcui)
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl

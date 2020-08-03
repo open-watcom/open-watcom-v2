@@ -86,26 +86,26 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ manif+ver+appl
 !endif
-    $(rc_bnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !else
 # manifest + version only
 !ifeq verbose 0
     @echo bind res $@ manif+ver
 !endif
-    $(rc_bnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !endif
 !else ifdef exetarg_res
 # manifest + application
 !ifeq verbose 0
     @echo bind res $@ manif+appl
 !endif
-    $(rc_bnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !else
 # manifest only
 !ifeq verbose 0
     @echo bind res $@ manif
 !endif
-    $(rc_bnd) $(exetarg_$(host_os)_manif_$(host_cpu)) $@
+    $(rcbnd) $(exetarg_$(host_os)_manif_$(host_cpu)) $@
 !endif
 !else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
 #
@@ -116,20 +116,20 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ ver+appl
 !endif
-    $(rc_bnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
 !else
 # version only
 !ifeq verbose 0
     @echo bind res $@ ver
 !endif
-    $(rc_bnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
+    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
 !endif
 !else ifdef exetarg_res
 # application only
 !ifeq verbose 0
     @echo bind res $@ appl
 !endif
-    $(rc_bnd) $+$(exetarg_res)$- $@
+    $(rcbnd) $+$(exetarg_res)$- $@
 !endif
 ###############################
 # add Windows 3.x resources

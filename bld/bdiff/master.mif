@@ -258,15 +258,15 @@ dusage.gh : ../usage.sp
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
-    $(rc_aui) -I.. -DBPATCH $[@ -fo=$@
+    $(rcui) -I.. -DBPATCH
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rc_aui) -I.. -DBDIFF $[@ -fo=$@
+    $(rcui) -I.. -DBDIFF
 
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rc_aui) -I.. -DBDUMP $[@ -fo=$@
+    $(rcui) -I.. -DBDUMP
 
 bind_res_bdiff: .PROCEDURE .EXPLICIT
 !ifeq verbose 0

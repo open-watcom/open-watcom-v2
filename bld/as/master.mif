@@ -194,17 +194,17 @@ verrc_exe = $(exetarg_name)
 
 wresui.res : $(as_dir)/h/as.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$@
+    $(rcui) $(cppflags) -D_STANDALONE_
 
 msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
+    $(cpp) $(rc_ui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
     $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) $(cppflags) -oasi_msg.tmp $[@
+    $(cpp) $(rc_ui_flags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
     $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 

@@ -197,7 +197,7 @@ res_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 # UI resources
 wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $(gui_inc_dirs) $[@ -fo=$@
+    $(rcui) $(gui_inc_dirs)
 
 # manifest resource for UI
 ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT

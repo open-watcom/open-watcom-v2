@@ -152,4 +152,4 @@ bind_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $^&.res $@
+    $(rcbnd) $^&.res $@

@@ -180,7 +180,7 @@ verrc_dll = $(dlltarg_name)
 
 wresui.res : ../wlib.rc ../wlib.msg msg.gh
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
+    $(rcui)
 
 msg.gh : wlibmsg.gh
     @%make echo_awk
@@ -188,9 +188,9 @@ msg.gh : wlibmsg.gh
 
 incltext.gh : ../h/incltext.h ../wlib.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I.. -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I.. -o$@ $[@
 
 wlibmsg.gh : ../wlib.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$@ $[@
+    $(cpp) $(rc_ui_flags) -o$@ $[@
 

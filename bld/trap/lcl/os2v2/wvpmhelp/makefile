@@ -68,8 +68,8 @@ wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I"$(trap_dir)/h" -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@
