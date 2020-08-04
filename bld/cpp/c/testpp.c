@@ -81,6 +81,7 @@ int main( int argc, char *argv[] )
 /********************************/
 {
     int         c;
+    int         rc;
 
     dumpheap();
     if( argc < 2 ) {
@@ -101,8 +102,8 @@ int main( int argc, char *argv[] )
     }
     dumpheap();
     PP_FileFini();
-    PP_Fini();
+    rc = PP_Fini();
     dumpheap();
-    return( 0 );
+    return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }
 

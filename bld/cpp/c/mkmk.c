@@ -73,6 +73,5 @@ int main( int argc, char *argv[] )
     // call PP_Define here to predefine any desired macros
     PP_Dependency_List( MkMkDependency );
     PP_FileFini();
-    PP_Fini();
-    return( 0 );
+    return( ( PP_Fini() ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

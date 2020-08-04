@@ -89,15 +89,14 @@ static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
         vfprintf( stderr, str, al );
         va_end( al );
     }
-    if( usage_msg == NULL ) {
-        exit( EXIT_FAILURE );
-    }
-    if( str != NULL ) {
-        fprintf( stderr, "%s\n", *usage_msg );
-        exit( EXIT_FAILURE );
-    }
-    for( ; *usage_msg != NULL; ++usage_msg ) {
-        fprintf( stderr, "%s\n", *usage_msg );
+    if( usage_msg != NULL ) {
+        if( str != NULL ) {
+            fprintf( stderr, "%s\n", *usage_msg );
+        } else {
+            for( ; *usage_msg != NULL; ++usage_msg ) {
+                fprintf( stderr, "%s\n", *usage_msg );
+            }
+        }
     }
     exit( EXIT_FAILURE );
 }
@@ -399,7 +398,7 @@ int main( int argc, char *argv[] )
 
     PP_IncludePathInit();
 
-    rc = EXIT_FAILURE;
+    rc = 0;
     memset( MBCharLen, 0, 256 );
     ppflags = PPFLAG_NONE;
     if( doScanParams( argc - 1, argv + 1, &ppflags ) && nofilenames != 0 ) {
@@ -427,11 +426,10 @@ int main( int argc, char *argv[] )
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wb" );
         }
-        rc = EXIT_SUCCESS;
         for( i = 0; i < nofilenames; ++i ) {
             if( PP_FileInit( filenames[i], ppflags, NULL ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
-                rc = EXIT_FAILURE;
+                rc = 1;
                 break;
             }
             for( j = 0; j < numdefs; j++ ) {
@@ -454,7 +452,7 @@ int main( int argc, char *argv[] )
         } else if( fo != NULL ) {
             fclose( fo );
         }
-        PP_Fini();
+        rc = PP_Fini() | rc;
     }
 
     if( out_filename != NULL ) {
@@ -471,9 +469,9 @@ int main( int argc, char *argv[] )
 
     PP_IncludePathFini();
 
-    if( rc == EXIT_FAILURE && nofilenames == 0 ) {
+    if( rc == 0 && nofilenames == 0 ) {
         wcpp_quit( usageMsg, "No filename specified\n" );
     }
 
-    return( rc );
+    return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

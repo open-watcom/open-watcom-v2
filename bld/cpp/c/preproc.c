@@ -86,6 +86,7 @@ static char         PPPreProcChar;                  // preprocessor line intro
 static const char   *PPBufPtr;                      // block buffer pointer
 static char         *PPLineBuf;                     // line buffer
 static size_t       PPLineBufSize;                  // line buffer size
+static unsigned     PPErrorCount = 0;
 
 static char         *IncludePath1 = NULL;           // include path from cmdl
 static char         *IncludePath2 = NULL;           // include path from env
@@ -573,6 +574,7 @@ static void open_include_file( const char *filename, const char *end, int incl_t
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PPPreProcChar, (int)len, buffer );
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
+        PPErrorCount++;
     } else {
         PP_GenLine();
     }
@@ -595,6 +597,7 @@ static void PP_Include( const char *ptr )
         incl_type = PPINCLUDE_USR;
     } else {
         PP_GenError( "Unrecognized INCLUDE directive" );
+        PPErrorCount++;
         return;
     }
     ++ptr;
@@ -1369,6 +1372,7 @@ void PPENTRY PP_Init( char c )
 {
     PP_File = NULL;
     PPStack = NULL;
+    PPErrorCount = 0;
     PPLineNumber = 0;
     strcpy( PP__DATE__, "\"Dec 31 2005\"" );
     strcpy( PP__TIME__, "\"12:00:00\"" );
@@ -1384,10 +1388,11 @@ void PPENTRY PP_Init( char c )
     PPMacroVarInit();
 }
 
-void PPENTRY PP_Fini( void )
-/**************************/
+int PPENTRY PP_Fini( void )
+/*************************/
 {
     PPMacroVarFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;
+    return( PPErrorCount > 0 );
 }
