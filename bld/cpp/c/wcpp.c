@@ -378,6 +378,14 @@ int PP_MBCharLen( const char *p )
     return( MBCharLen[*(unsigned char *)p] + 1 );
 }
 
+extern void (* PPErrorCallback)( const char * );
+
+static void myErrorMsg( const char *str )
+/***************************************/
+{
+    fprintf( stderr, "%s\n", str );
+}
+
 int main( int argc, char *argv[] )
 /********************************/
 {
@@ -395,6 +403,7 @@ int main( int argc, char *argv[] )
             wcpp_quit( usageMsg, NULL );
         }
     }
+    PPErrorCallback = myErrorMsg;
 
     PP_IncludePathInit();
 

@@ -73,6 +73,8 @@ MACRO_TOKEN         *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN         *PPCurToken;                    // pointer to current token
 char                PPSavedChar;                    // saved char at end of token
 
+void                (* PPErrorCallback)( const char * ) = NULL;
+
 static pp_callback  *PP_CallBack;                   // mkmk dependency callback function
 
 static CPP_INFO     *PPStack;
@@ -559,7 +561,7 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
-static void open_include_file( const char *filename, const char *end, int incl_type )
+static bool open_include_file( const char *filename, const char *end, int incl_type )
 {
     size_t      len;
     char        *buffer;
@@ -571,7 +573,9 @@ static void open_include_file( const char *filename, const char *end, int incl_t
          * overwriten by sprintf function
          */
         buffer = str_dup( filename );
-        fprinf( stderr, "Error Unable to open '%s'\n", buffer );
+        if( PPErrorCallback != NULL ) {
+            PPErrorCallback( buffer );
+        }
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PPPreProcChar, (int)len, buffer );
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
@@ -597,6 +601,9 @@ static void PP_Include( const char *ptr )
         delim = '"';
         incl_type = PPINCLUDE_USR;
     } else {
+        if( PPErrorCallback != NULL ) {
+            PPErrorCallback( "Unrecognized INCLUDE directive" );
+        }
         PP_GenError( "Unrecognized INCLUDE directive" );
         PPErrorCount++;
         return;
