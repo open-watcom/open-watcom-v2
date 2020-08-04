@@ -36,7 +36,7 @@ $(proj_name).res : ../h/appwiz.rc .AUTODEPEND
 
 ntmanif.res : ../h/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../h" $(inc_dirs_sys_$(host_os)) -I"$(watcom_dir)/h" $< -fo=$@
+    $(rc) $(rc_flags) -I"../h" $(inc_dirs_sys_nt) $< -fo=$@
 
 rcstr.gh : ../h/appwiz.msg
     @%make echo_awk
