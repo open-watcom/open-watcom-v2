@@ -8,23 +8,28 @@ rcstest_autodepends = .AUTODEPEND
 
 !include $(rcsdll_dir)/client.mif
 
+#
+# cflags
+#
 .c : ..
 
 inc_dirs = -I.. $(rcsdll_inc_dirs)
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = rcstest.obj
+exetarg_libs = $(rcsdll_lib)
+exetarg_res = rcstest.res
+!include exetarg.mif
+
+#
+# rc and others
+#
 rc_inc_dirs = -I..
-
-objs = rcstest.obj
-
-libs = $(rcsdll_lib)
-
-rcstest.exe : $(objs) rcstest.res $(libs)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file { $(objs) } lib { $(libs) }
-!endif
-    @%make bind_res
 
 rcstest.res: ../rcstest.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
