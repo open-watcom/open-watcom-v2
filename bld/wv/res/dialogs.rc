@@ -10,34 +10,6 @@
 #include "dlgwind.rh"
 #include "dlgstk.rh"
 #include "dlgasync.rh"
-#ifdef __OS2__
-#ifdef JAPANESE
-    #include "japayn.gdl"
-    #include "japbrk.gdl"
-    #include "japcmd.gdl"
-    #include "japlist.gdl"
-    #include "japnewp.gdl"
-    #include "japoptn.gdl"
-    #include "japvarx.gdl"
-    #include "japamb.gdl"
-    #include "japwind.gdl"
-    #include "japstk.gdl"
-    #include "japhis.gdl"
-#else
-    #include "dlgayn.gdl"
-    #include "dlgbrk.gdl"
-    #include "dlgcmd.gdl"
-    #include "dlglist.gdl"
-    #include "dlgnewp.gdl"
-    #include "dlgoptn.gdl"
-    #include "dlgvarx.gdl"
-    #include "dlgamb.gdl"
-    #include "dlgwind.gdl"
-    #include "dlgstk.gdl"
-    #include "dlghis.gdl"
-    #include "dlgasync.gdl"
-#endif
-#else
 #ifdef JAPANESE
     #include "japayn.dlg"
     #include "japbrk.dlg"
@@ -63,6 +35,5 @@
     #include "dlgstk.dlg"
     #include "dlghis.dlg"
     #include "dlgasync.dlg"
-#endif
 #endif
 

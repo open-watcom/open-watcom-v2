@@ -45,7 +45,18 @@ target_nt  = win
 #
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(trmem_dir)
 
-inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"$(dig_dir)/h" -I"../../res/strings" &
+!ifdef wv_engine_noui
+res_strings_dir = h
+!else
+res_strings_dir = ../../res/strings
+!endif
+!ifdef os2pm
+wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
+!else
+wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
+!endif
+
+inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
     $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) &
     $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
 !ifeq sys_rtdll 1
@@ -88,7 +99,6 @@ extra_c_flags_os2_i86 = -zc -zu
 extra_c_flags_os2_i86 = -zc
 !endif
 
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
 extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 
@@ -162,11 +172,11 @@ libtarg_name          = wd
 #
 # rc and others
 #
-rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/dlgs" -I"../../res/strings" &
-    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
+rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
+    -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
-rcui_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/dlgs" -I"../../res/strings" &
-    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
+rcui_inc_dirs = -I. $(wv_res_inc_dirs) &
+    -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 !include verrc.mif
 
@@ -264,82 +274,82 @@ bitmaps = &
 
 !ifeq os2pm 1
 
-additional_cleanup = *.gdl
+additional_cleanup = *.dlg
 
 wv_dialogs = &
-    dlgayn.gdl &
-    dlgbrk.gdl &
-    dlgcmd.gdl &
-    dlglist.gdl &
-    dlgnewp.gdl &
-    dlgoptn.gdl &
-    dlgvarx.gdl &
-    dlgamb.gdl &
-    dlgwind.gdl &
-    dlgstk.gdl &
-    dlghis.gdl &
-    dlgasync.gdl &
-    japayn.gdl &
-    japbrk.gdl &
-    japcmd.gdl &
-    japlist.gdl &
-    japnewp.gdl &
-    japoptn.gdl &
-    japvarx.gdl &
-    japamb.gdl &
-    japwind.gdl &
-    japstk.gdl &
-    japhis.gdl
+    dlgayn.dlg &
+    dlgbrk.dlg &
+    dlgcmd.dlg &
+    dlglist.dlg &
+    dlgnewp.dlg &
+    dlgoptn.dlg &
+    dlgvarx.dlg &
+    dlgamb.dlg &
+    dlgwind.dlg &
+    dlgstk.dlg &
+    dlghis.dlg &
+    dlgasync.dlg &
+    japayn.dlg &
+    japbrk.dlg &
+    japcmd.dlg &
+    japlist.dlg &
+    japnewp.dlg &
+    japoptn.dlg &
+    japvarx.dlg &
+    japamb.dlg &
+    japwind.dlg &
+    japstk.dlg &
+    japhis.dlg
 
 dlg_opts  = -font=10.Helv
 dlgj_opts = -font=
 
-dlgayn.gdl : ../../res/dlgs/dlgayn.dlg $(__MAKEFILES__)
+dlgayn.dlg : ../../res/dlgs/dlgayn.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgbrk.gdl : ../../res/dlgs/dlgbrk.dlg $(__MAKEFILES__)
+dlgbrk.dlg : ../../res/dlgs/dlgbrk.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgcmd.gdl : ../../res/dlgs/dlgcmd.dlg $(__MAKEFILES__)
+dlgcmd.dlg : ../../res/dlgs/dlgcmd.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlglist.gdl : ../../res/dlgs/dlglist.dlg $(__MAKEFILES__)
+dlglist.dlg : ../../res/dlgs/dlglist.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgnewp.gdl : ../../res/dlgs/dlgnewp.dlg $(__MAKEFILES__)
+dlgnewp.dlg : ../../res/dlgs/dlgnewp.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgoptn.gdl : ../../res/dlgs/dlgoptn.dlg $(__MAKEFILES__)
+dlgoptn.dlg : ../../res/dlgs/dlgoptn.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgvarx.gdl : ../../res/dlgs/dlgvarx.dlg $(__MAKEFILES__)
+dlgvarx.dlg : ../../res/dlgs/dlgvarx.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgamb.gdl : ../../res/dlgs/dlgamb.dlg $(__MAKEFILES__)
+dlgamb.dlg : ../../res/dlgs/dlgamb.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgwind.gdl : ../../res/dlgs/dlgwind.dlg $(__MAKEFILES__)
+dlgwind.dlg : ../../res/dlgs/dlgwind.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgstk.gdl : ../../res/dlgs/dlgstk.dlg $(__MAKEFILES__)
+dlgstk.dlg : ../../res/dlgs/dlgstk.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlghis.gdl : ../../res/dlgs/dlghis.dlg $(__MAKEFILES__)
+dlghis.dlg : ../../res/dlgs/dlghis.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
-dlgasync.gdl : ../../res/dlgs/dlgasync.dlg $(__MAKEFILES__)
+dlgasync.dlg : ../../res/dlgs/dlgasync.dlg $(__MAKEFILES__)
     parsedlg $(dlg_opts) $[@ $@
 
-japayn.gdl : ../../res/dlgs/japayn.dlg $(__MAKEFILES__)
+japayn.dlg : ../../res/dlgs/japayn.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japbrk.gdl : ../../res/dlgs/japbrk.dlg $(__MAKEFILES__)
+japbrk.dlg : ../../res/dlgs/japbrk.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japcmd.gdl : ../../res/dlgs/japcmd.dlg $(__MAKEFILES__)
+japcmd.dlg : ../../res/dlgs/japcmd.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japlist.gdl : ../../res/dlgs/japlist.dlg $(__MAKEFILES__)
+japlist.dlg : ../../res/dlgs/japlist.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japnewp.gdl : ../../res/dlgs/japnewp.dlg $(__MAKEFILES__)
+japnewp.dlg : ../../res/dlgs/japnewp.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japoptn.gdl : ../../res/dlgs/japoptn.dlg $(__MAKEFILES__)
+japoptn.dlg : ../../res/dlgs/japoptn.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japvarx.gdl : ../../res/dlgs/japvarx.dlg $(__MAKEFILES__)
+japvarx.dlg : ../../res/dlgs/japvarx.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japamb.gdl : ../../res/dlgs/japamb.dlg $(__MAKEFILES__)
+japamb.dlg : ../../res/dlgs/japamb.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japwind.gdl : ../../res/dlgs/japwind.dlg $(__MAKEFILES__)
+japwind.dlg : ../../res/dlgs/japwind.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japstk.gdl : ../../res/dlgs/japstk.dlg $(__MAKEFILES__)
+japstk.dlg : ../../res/dlgs/japstk.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
-japhis.gdl : ../../res/dlgs/japhis.dlg $(__MAKEFILES__)
+japhis.dlg : ../../res/dlgs/japhis.dlg $(__MAKEFILES__)
     parsedlg $(dlgj_opts) $[@ $@
 
 !else
@@ -393,12 +403,6 @@ rcfiles = &
     ../../h/dlgasync.rh &
     $(wv_dialogs)
 
-rcuifiles = &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/res/aui.rc &
-    ../../res/strings.rc &
-    litdef.gh
-
 !ifeq host_os os2
 
 $(proj_name).res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
@@ -421,7 +425,7 @@ wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../../res/wvui.rc $(rcuifiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rcui) -ad
 
@@ -429,15 +433,15 @@ ntmanif.res : ../../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-litdefm.tmp : ../../res/strings/menu.str $(__MAKEFILES__)
+litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -o$@ $[@
 
-litdefs1.tmp : ../../res/strings/wdeng.str $(__MAKEFILES__)
+litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdefs2.tmp : ../../res/strings/wddui.str $(__MAKEFILES__)
+litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
