@@ -53,7 +53,7 @@ char GlueInc[] = "winglue.inc";
 
 int genstubs = 0;
 int quiet = 0;
-int listfile = 0;
+char *listfile = NULL;
 
 typedef enum {
     PARM_PTR,
@@ -1127,8 +1127,8 @@ static void GenerateCStubs( void )
         tmpf = tmpf->next;
         ii++;
     }
-    if( listfile ) {
-        fp = fopen( "winobjs.lbc", "w" );
+    if( listfile != NULL ) {
+        fp = fopen( listfile, "w" );
         for( i = 0; i < ii; ++i ) {
             fprintf( fp, "win%d.obj\n", i );
         }
@@ -1720,6 +1720,22 @@ static void AddCommentTrailer( char *tmp )
 } /* AddCommentTrailer */
 #endif
 
+static void normalize( char *dir )
+{
+    while( *dir != '\0' ) {
+#ifdef __UNIX__
+        if( *dir == '\\' ) {
+            *dir = '/';
+        }
+#else
+        if( *dir == '/' ) {
+            *dir = '\\';
+        }
+#endif
+        dir++;
+    }
+}
+
 int main( int argc, char *argv[] )
 {
     char        *name,*dir;
@@ -1734,7 +1750,13 @@ int main( int argc, char *argv[] )
         if( argv[j][0] == '-' ) {
             for( i = 1; i < strlen( argv[j] ); i++ ) {
                 switch( argv[j][i] ) {
-                case 'l': listfile = 1; break;
+                case 'l':
+                    if( argv[j][i + 1] == '=' ) {
+                        listfile = argv[j] + i + 2;
+                        normalize( listfile );
+                        i += strlen( argv[j] + i );
+                    }
+                    break;
                 case 'q': quiet = 1;    break;
                 case 's': genstubs=1;   break;
                 case '?':
@@ -1762,6 +1784,7 @@ int main( int argc, char *argv[] )
         dir = "def";
     } else {
         dir = argv[2];
+        normalize( dir );
     }
 
     pf = fopen( name, "r" );
