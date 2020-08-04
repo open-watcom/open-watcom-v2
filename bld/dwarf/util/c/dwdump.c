@@ -84,6 +84,8 @@ static int          sectionFound = 0;
 static orl_return DoSection( orl_sec_handle o_shnd )
 /**************************************************/
 {
+    /* unused parameters */ (void)o_shnd;
+
     return( ORL_OKAY );
 }
 
