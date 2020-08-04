@@ -29,7 +29,6 @@ inc_dirs_os2 = -I"$(clib_dir)/process/h"
 extra_cpp_flags_mem	= $(trmem_cpp_flags)
 
 extra_c_flags_mem   = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
 fcenable.exe : $(objs) $(__MAKEFILES__)
     @%make echo_link

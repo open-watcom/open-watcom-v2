@@ -39,7 +39,6 @@ extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 !ifdef __WATCOM_TOOLS__

@@ -24,7 +24,6 @@ extra_cpp_flags_mem = $(trmem_cpp_flags)
 extra_cxx_flags = -xs
 
 extra_c_flags_mem   = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
 # explicit rules
 #################

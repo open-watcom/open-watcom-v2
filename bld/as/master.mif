@@ -67,9 +67,6 @@ extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags = -fh
 
-extra_c_flags_asitest = $(trmem_cflags)
-extra_c_flags_asmem = $(trmem_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_aslexyy = -fh=pch02.pch

@@ -70,7 +70,6 @@ extra_cpp_flags_sharedio    = -DINSIDE_WLINK
 extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
 extra_cpp_flags_wlmem       = $(trmem_cpp_flags)
 
-extra_c_flags_trmem         = $(trmem_cflags)
 extra_c_flags_wlmem         = $(trmem_cover_cflags)
 
 #

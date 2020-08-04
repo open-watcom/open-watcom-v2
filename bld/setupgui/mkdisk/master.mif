@@ -17,7 +17,6 @@ bld_extra_incs = -I"../../h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_
 extra_cpp_flags_utils = $(trmem_cpp_flags)
 
 extra_c_flags_utils = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
 .c : ..;$(trmem_dir)
 

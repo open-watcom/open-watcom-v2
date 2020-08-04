@@ -40,7 +40,6 @@ extra_c_flags_win = -zu-zw-zc
 
 # wr objects
 extra_c_flags_wrmem = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
 #
 # lflags

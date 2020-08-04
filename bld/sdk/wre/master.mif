@@ -46,7 +46,6 @@ extra_c_flags_ppmacro = -zm -fh=preproc.pch
 extra_c_flags_ppenv   = -zm -fh=preproc.pch
 !endif
 
-extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 #

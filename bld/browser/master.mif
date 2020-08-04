@@ -62,7 +62,6 @@ extra_c_flags_i86 += -zW
 extra_c_flags_rxwrap = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
 extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
 extra_c_flags_brmem = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
 #
 # lflags

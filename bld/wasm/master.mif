@@ -39,7 +39,6 @@ extra_cpp_flags_fixup    = -DMSG_WOMP_BASE=200
 extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
 
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 
 #
 # lflags

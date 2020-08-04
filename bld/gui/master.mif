@@ -45,9 +45,6 @@ extra_c_flags_win = -zw
 extra_c_flags_win_i86 = -zW
 
 !ifndef bootstrap
-# memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags)
-
 # memory tracker cover routines
 extra_c_flags_guimem = $(trmem_cover_cflags)
 !endif

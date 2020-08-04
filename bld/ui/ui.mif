@@ -35,7 +35,6 @@ extra_c_flags_win     = -zu
 extra_c_flags_qnx_386 = -4r
 
 # memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
 #

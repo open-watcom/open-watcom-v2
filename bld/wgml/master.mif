@@ -38,7 +38,6 @@ extra_cpp_flags_gmemory = $(trmem_cpp_flags)
 #extra_c_flags_gsyssym = -P
 
 extra_c_flags_gmemory = $(trmem_cover_cflags)
-extra_c_flags_trmem   = $(trmem_cflags)
 
 # explicit rules
 #################

@@ -23,7 +23,6 @@ extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 extra_cpp_flags_dwdump   = $(trmem_cpp_flags)
 
 extra_c_flags_trmemcvr  = $(trmem_cover_cflags)
-extra_c_flags_trmem     = $(trmem_cflags)
 
 dwdump_objs = dwdump.obj testdump.obj trmemcvr.obj $(trmem_objs)
 testcli_objs = testcli.obj testtest.obj testdump.obj

@@ -28,7 +28,6 @@ extra_cpp_flags_brmem = $(trmem_cpp_flags)
 
 extra_cxx_flags     = -xs-ew
 
-extra_c_flags_trmem  = $(trmem_cflags)
 extra_c_flags_brmem  = $(trmem_cover_cflags)
 
 #

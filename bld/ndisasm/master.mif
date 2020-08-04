@@ -28,7 +28,6 @@ extra_cpp_flags = -D__DISASM__
 extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 
 #
 # lflags

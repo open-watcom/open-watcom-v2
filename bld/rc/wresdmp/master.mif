@@ -19,13 +19,7 @@ inc_dirs = -I"../h" $(wres_inc_dirs)
 
 extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
 
-extra_c_flags_dmpdiag  = $(trmem_cflags)
-extra_c_flags_dmpstr   = $(trmem_cflags)
-extra_c_flags_layer0   = $(trmem_cflags)
-extra_c_flags_param    = $(trmem_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
-extra_c_flags_wresdmp  = $(trmem_cflags)
 
 # explicit rules
 #################

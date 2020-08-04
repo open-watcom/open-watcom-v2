@@ -54,7 +54,6 @@ extra_cpp_flags_setupmem = $(trmem_cpp_flags)
 extra_c_flags_i86 = -zc
 
 # memory tracker routines
-extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_setupmem = $(trmem_cover_cflags)
 
 # custom version of resource finder

@@ -34,8 +34,6 @@ extra_c_flags_win = -zw -zu
 extra_c_flags_win = -zW
 !endif
 
-extra_c_flags_pbmem    = $(trmem_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 #

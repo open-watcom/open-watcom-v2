@@ -20,7 +20,6 @@ extra_c_flags_owcc     = -I"$(posix_dir)/h"
 extra_c_flags_getopt   = -I"$(posix_dir)/h"
 extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 
 # explicit rules
 #################
