@@ -571,6 +571,7 @@ static void open_include_file( const char *filename, const char *end, int incl_t
          * overwriten by sprintf function
          */
         buffer = str_dup( filename );
+        fprinf( stderr, "Error Unable to open '%s'\n", buffer );
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PPPreProcChar, (int)len, buffer );
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
