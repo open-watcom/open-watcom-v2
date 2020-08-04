@@ -201,6 +201,8 @@
 /bld/wmake/regress/cmds/*
 #
 /bld/wv/dbg/*/*.dbg
+/bld/wv/os2/os2386.gui/*.dlg
+/bld/wv/os2/os2i86.gui/*.dlg
 ###
 
 stderr.txt
