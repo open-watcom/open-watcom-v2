@@ -70,21 +70,6 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-#
-# rcflags
-#
-rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/res/aui.rc &
-    $(aui_dialogs)
-
-rc_inc_dirs_nt  = -I"../res/win"
-rc_inc_dirs_os2 = -I"../res/os2"
-rc_inc_dirs_win = -I"../res/win"
-
-rc_inc_dirs = -I. $(rc_inc_dirs_$(host_os)) -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
-
 # explicit rules
 #################
 
@@ -111,6 +96,22 @@ exetarg_qnx_res       = usage.u
 #
 !include verrc.mif
 
+#
+# rcflags
+#
+rcfiles = &
+    $(gui_dir)/h/gui.rc &
+    $(gui_dir)/h/gui.msg &
+    $(aui_dir)/res/aui.rc &
+    $(aui_dialogs)
+
+rc_inc_dirs_nt  = -I"../res/win"
+rc_inc_dirs_os2 = -I"../res/os2"
+rc_inc_dirs_win = -I"../res/win"
+
+rc_inc_dirs = -I. -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
+rcui_inc_dirs = $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
+
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
@@ -121,7 +122,7 @@ ntmanif.res : ../res/ntmanif.rc
 
 wresui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rcui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os))
+    $(rcui) -ad
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

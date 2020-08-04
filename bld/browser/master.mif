@@ -121,14 +121,16 @@ exetarg_name          = wbrw
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
+rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
+
 !ifeq host_os os2
 $(exetarg_name).res : ../res/wbrwpm.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
 !else
 $(exetarg_name).res : ../res/wbrw.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
+    $(rc) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
 !endif
 
 ntmanif.res : ../res/ntmanif.rc

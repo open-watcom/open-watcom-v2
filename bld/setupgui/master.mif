@@ -190,14 +190,15 @@ depend_res_nt  = ../res/nt/setup.ico ../res/nt/disk.ico
 depend_res_win = ../res/win/setup.ico ../res/win/disk.ico
 depend_res = ../h/setup.h $(gui_dir)/h/gui.rc $(depend_res_$(host_os))
 
-res_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
+rc_inc_dirs = -I"../res/$(host_os)" -I"../res" $(gui_rc_inc_dirs)
+rcui_inc_dirs = $(gui_rc_inc_dirs)
 
 !include verrc.mif
 
 # UI resources
 wresui.res : ../res/setupui.rc $(depend_res) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) $(gui_inc_dirs)
+    $(rcui)
 
 # manifest resource for UI
 ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT
@@ -207,23 +208,23 @@ ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT
 # GUI resources
 csetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$@
+    $(rc) $(rc_flags) -DCSETUP $(rc_inc_path) $[@ -fo=$@
 
 jcsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/wcc.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
+    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
 
 f77setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$@
+    $(rc) $(rc_flags) -DF77SETUP $(rc_inc_path) $[@ -fo=$@
 
 jfsetup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/f77.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$@
+    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(rc_inc_path) $[@ -fo=$@
 
 setup.res : ../res/$(host_os)/setup.rc $(depend_res) ../res/generic.bmp $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$@
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@

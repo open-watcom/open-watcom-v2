@@ -204,13 +204,15 @@ jtrperr_h = _jerr.gh
 all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
     @%make $(target)
 
+rcui_inc_dirs = -I"$(trap_dir)/h"
+
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl

@@ -110,6 +110,8 @@ lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=10
 # explicit rules
 #################
 
+rcui_inc_dirs = -I"../h"
+
 #
 # names
 #
@@ -172,9 +174,11 @@ rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
+rcui_inc_dirs = -I"../h"
+
 $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -30 $(inc_dirs_sys_win) -I"../h"
+    $(rcui) -30
 
 wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc

@@ -244,6 +244,8 @@ bplevel.exe : $(subdir_bplevel) $(bplevel_objs) $(__MAKEFILES__)
 
 # resources
 ############
+rcui_inc_dirs = -I..
+
 pusage.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
@@ -258,15 +260,15 @@ dusage.gh : ../usage.sp
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
-    $(rcui) -I.. -DBPATCH
+    $(rcui) -DBPATCH
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rcui) -I.. -DBDIFF
+    $(rcui) -DBDIFF
 
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
-    $(rcui) -I.. -DBDUMP
+    $(rcui) -DBDUMP
 
 bind_res_bdiff: .PROCEDURE .EXPLICIT
 !ifeq verbose 0

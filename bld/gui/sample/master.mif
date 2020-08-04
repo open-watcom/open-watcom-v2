@@ -69,7 +69,8 @@ exetarg_name       = samp2
 #
 # rc and others
 #
-rc_inc_dirs = -I"../res" -I"../res/$(type)" $(inc_dirs) $(commonui_inc_dirs)
+rc_inc_dirs = -I"../res" -I"../res/$(type)" -I. -I"../h" $(gui_rc_inc_dirs) $(gui_type_inc_dirs) $(commonui_inc_dirs)
+rcui_inc_dirs = -I"../res" -I"../res/$(type)" -I. -I"../h" $(gui_rc_inc_dirs) $(gui_type_inc_dirs) $(commonui_inc_dirs)
 
 samplepm.res : ../samplepm.rc ../samplepm.dlg
         $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
@@ -78,4 +79,4 @@ sample.res : ../sample.rc ../sample.dlg
         $(rc) $(rc_flags) -DWINRC $(rc_inc_path) $[@ -fo=$@
 
 wresui.res : ../sample.rc ../sample.dlg
-        $(rcui) $(rc_inc_path)
+        $(rcui)

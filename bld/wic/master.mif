@@ -21,7 +21,6 @@ wic_trmem = 1
 # cflags
 #
 .c : ../c;$(trmem_dir)
-.h : ../h
 
 inc_dirs = -I"../h"
 
@@ -47,6 +46,8 @@ exetarg_res_wresui = wresui.res
 #
 # rc and others
 #
+rcui_inc_dirs = -I"../res" -I"../h"
+
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
     $(rcui)

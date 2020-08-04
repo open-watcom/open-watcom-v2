@@ -86,7 +86,7 @@ exetarg_res = $(proj_name).res
 #
 !include verrc.mif
 
-rc_inc_dirs = -I"../res/$(target_$(host_os))" -I"../res" $(gui_inc_dirs)
+rc_inc_dirs = -I"../res/$(target_$(host_os))" -I"../res" $(gui_rc_inc_dirs)
 
 $(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
     @%make echo_rc

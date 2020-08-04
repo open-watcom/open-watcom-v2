@@ -80,9 +80,11 @@ exetarg_qnx_res       = usage.u
 #
 !include verrc.mif
 
+rcui_inc_dirs = -I"../stand/h" -I"../stand"
+
 wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -I"../stand/h" -I"../stand"
+    $(rcui)
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_execute

@@ -51,12 +51,14 @@ exetarg_name = $(exename)x
 #
 # rc and others
 #
+rcui_inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
+
 verrc_exe = $(exename)
 !include verrc.mif
 
 wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -ad $(inc_dirs)
+    $(rcui) -ad
 
 msg.gh : wstrip.gh $(__MAKEFILES__)
     @%make echo_awk

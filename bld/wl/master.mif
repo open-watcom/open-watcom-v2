@@ -129,9 +129,11 @@ verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
 !include verrc.mif
 
+rcui_inc_dirs = -I. -I"$(wrc_dir)/h" -I"../h"
+
 wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -I"$(wrc_dir)/h"
+    $(rcui)
 
 rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -139,7 +141,7 @@ rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice

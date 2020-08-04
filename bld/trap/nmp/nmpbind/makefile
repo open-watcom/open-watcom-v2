@@ -60,10 +60,12 @@ exetarg_name = dnmpbind
 #
 # rc and others
 #
+rcui_inc_dirs = -I"$(trap_dir)/h"
+
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@

@@ -30,13 +30,15 @@ exetarg_nt_manif_x64  = ntmanif.res
 #
 # rc and others
 #
+rc_inc_dirs = -I"../h"
+
 $(proj_name).res : ../h/appwiz.rc .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$@
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $]@ -fo=$@
 
 ntmanif.res : ../h/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../h" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_flags) $(rc_inc_path) $< -fo=$@
 
 rcstr.gh : ../h/appwiz.msg
     @%make echo_awk

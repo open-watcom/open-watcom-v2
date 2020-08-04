@@ -162,8 +162,11 @@ libtarg_name          = wd
 #
 # rc and others
 #
-rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/strings" &
-    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
+rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/dlgs" -I"../../res/strings" &
+    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
+
+rcui_inc_dirs = -I. -I"../../res/$(target_$(host_os))" -I"../../res" -I"../../res/dlgs" -I"../../res/strings" &
+    -Ih -I"../h" -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 !include verrc.mif
 
@@ -420,7 +423,7 @@ wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
 
 wresui.res : ../../res/wvui.rc $(rcuifiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
-    $(rcui) -ad $(rc_inc_path)
+    $(rcui) -ad
 
 ntmanif.res : ../../res/ntmanif.rc
     @%make echo_rc
@@ -432,7 +435,7 @@ litdefm.tmp : ../../res/strings/menu.str $(__MAKEFILES__)
 
 litdefs1.tmp : ../../res/strings/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdefs2.tmp : ../../res/strings/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
