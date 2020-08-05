@@ -9,7 +9,7 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-util_lib = ../lib/$(host_os)$(host_cpu)/util.lib
+util_lib = ../lib/$(objs_subdir)/util.lib
 
 all : cat.exe      &
       cmp.exe      &

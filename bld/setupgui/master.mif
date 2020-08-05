@@ -121,7 +121,7 @@ mem_objs = &
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
 
-objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu)) $(mem_objs)
+objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
 
 # custom version of resource finder
 !ifneq sys_windowed 1
@@ -139,9 +139,9 @@ libs_osx   = $(ui_lib) $(wres_lib)
 !endif
 
 !ifeq host_cpu i86
-libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
+libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir))
 !else
-libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu)) ../ziplib/$(host_os)$(host_cpu)/ziplib.lib ../zlib/$(host_os)$(host_cpu)/zlib.lib
+libs = $(gui_lib) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
 !endif
 
 exetarg_prebuild_objs = $(dosstub)
