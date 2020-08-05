@@ -1,7 +1,7 @@
 #include "resource.rh"
 #define ICON_SETUP  1
 
-ICON ICON_SETUP "../res/os2/setup.ico"
+ICON ICON_SETUP "setup.ico"
 
 #include "splash.rc"
 

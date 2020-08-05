@@ -51,7 +51,7 @@ exetarg_name = $(exename)x
 #
 # rc and others
 #
-rcui_inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
+rcui_inc_dirs = -I. -I..
 
 verrc_exe = $(exename)
 !include verrc.mif
@@ -71,4 +71,3 @@ incltext.gh : ../incltext.h ../wstrip.msg $(__MAKEFILES__)
 wstrip.gh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -o$@ $[@
-

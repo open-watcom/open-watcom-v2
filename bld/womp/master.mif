@@ -29,7 +29,7 @@ extra_c_flags_memory = $(trmem_cover_cflags)
 #
 # EXE
 #
-exetarg_prebuild_objs = wmpmsg.gh
+exetarg_prebuild_objs =  usage.gh wmpmsg.gh
 exetarg_objs = &
     array.obj       &
     can2ms0.obj     &
@@ -66,19 +66,20 @@ exetarg_objs = &
     wat2can1.obj    &
     wpmsg.obj       &
     $(trmem_objs)
+exetarg_libs       = $(wres_lib)
 exetarg_res_wresui = wresui.res
 !include exetarg.mif
 
 #
 # rc and others
 #
-rcui_inc_dirs = -I. -I"../h" -I"$(womp_dir)" -I"$(wrc_dir)/h"
+rcui_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
-wresui.res : ../h/$(proj_name).rc usage.gh
+wresui.res : ../h/$(proj_name).rc
     @%make echo_rc
     $(rcui)
 
-wmpmsg.gh : $(womp_dir)/womp.msg
+wmpmsg.gh : ../womp.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

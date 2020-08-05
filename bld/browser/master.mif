@@ -34,7 +34,8 @@ sys_windowed = 1
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
 
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_dir)" $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_dir)" &
+    $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST=1
 !ifeq release 0

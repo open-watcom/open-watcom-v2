@@ -19,14 +19,9 @@ guisample_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c:     ../c;$(os_source_dir);$(os_extra_dir)
+.c: ../c;$(os_source_dir);$(os_extra_dir)
 
-!ifeq sys_windowed 1
-gui_type_inc_dirs = -I"$(gui_dir)/win/h"
-!else
-gui_type_inc_dirs = -I"$(gui_dir)/ui/h"
-!endif
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) $(gui_type_inc_dirs)
+inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(gui_dir)/$(gui_type)/h"
 
 #
 # lflags

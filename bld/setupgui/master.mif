@@ -39,12 +39,8 @@ dosstub = dosstub.exe
 inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) &
     $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib"
 
-extra_cpp_flags =
 !ifeq sys_windowed 1
-extra_cpp_flags += -DGUI_IS_GUI
-!endif
-
-!ifeq sys_windowed 1
+extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 

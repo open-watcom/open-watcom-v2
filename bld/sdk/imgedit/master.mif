@@ -32,10 +32,10 @@ target_nt  = win
 
 inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs)
 
+extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest
-extra_cpp_flags = -D_WPI_TEST_
+extra_cpp_flags    += -D_WPI_TEST_
 !endif
-
 extra_cpp_flags_os2 = -D__OS2_PM__
 
 extra_c_flags = -fh

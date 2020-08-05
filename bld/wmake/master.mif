@@ -34,7 +34,6 @@ wmake_trmem = 1
 #
 # cflags
 #
-.h : ../h;$(watcom_dir)/h
 .c : ../c;$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h"
@@ -104,7 +103,7 @@ exetarg_name          = wmk
 #
 !include verrc.mif
 
-wresui.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui)
 

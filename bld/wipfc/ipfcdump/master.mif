@@ -6,17 +6,22 @@ ipfcdump_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-extra_l_flags = op eliminate
+#
+# cflags
+#
+.c : ..
 
 inc_dirs = -I..
 
-.c : ..
+#
+# lflags
+#
+extra_l_flags = op eliminate
 
-objs =  ipfcdump.obj bitmap.obj cells.obj child.obj controls.obj dict.obj&
-        extfiles.obj fonts.obj fts.obj gnames.obj header.obj&
-        index.obj nls.obj panel.obj strings.obj toc.obj
-
-ipfcdump.exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$(objs)}
-
+#
+# EXE
+#
+exetarg_objs = ipfcdump.obj bitmap.obj cells.obj child.obj controls.obj &
+    dict.obj extfiles.obj fonts.obj fts.obj gnames.obj header.obj &
+    index.obj nls.obj panel.obj strings.obj toc.obj
+!include exetarg.mif

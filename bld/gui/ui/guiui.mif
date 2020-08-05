@@ -79,7 +79,7 @@ ui_sysobjs = &
     guiclen.obj  &
     guidrain.obj &
     guitimer.obj &
-    guif1hk.obj	 &
+    guif1hk.obj  &
     guigetrc.obj
 
 !ifeq release 0

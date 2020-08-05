@@ -11,15 +11,9 @@ memory_model_i86 = c
 !include deftarg.mif
 !include trmem.mif
 
-objs = &
-    fileio.obj &
-    keyword.obj &
-    mem.obj &
-    ms2wlink.obj &
-    parsems.obj &
-    utils.obj &
-    $(trmem_objs)
-
+#
+# cflags
+#
 .c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h"
@@ -28,12 +22,13 @@ extra_cpp_flags_mem = $(trmem_cpp_flags)
 
 extra_c_flags_mem   = $(trmem_cover_cflags)
 
+#
+# lflags
+#
 extra_l_flags_os2 = op stack=8k
 
-ms2wlink.exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+#
+# EXE
+#
+exetarg_objs = fileio.obj keyword.obj mem.obj ms2wlink.obj parsems.obj utils.obj $(trmem_objs)
+!include exetarg.mif

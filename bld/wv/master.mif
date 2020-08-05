@@ -10,12 +10,6 @@ wv_autodepends = .AUTODEPEND
 
 wv_trmem = 1
 
-!ifeq sys_windowed 1
-!ifeq host_os os2
-os2pm = 1
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -50,7 +44,7 @@ res_strings_dir = h
 !else
 res_strings_dir = ../../res/strings
 !endif
-!ifdef os2pm
+!ifdef gui_os2pm
 wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
 !else
 wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
@@ -269,7 +263,7 @@ bitmaps = &
 
 !endif
 
-!ifeq os2pm 1
+!ifdef gui_os2pm
 
 additional_cleanup = *.dlg
 

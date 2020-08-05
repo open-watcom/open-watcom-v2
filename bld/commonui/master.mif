@@ -26,6 +26,7 @@ sys_windowed = 1
 
 inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 
+extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_nt  = -DNOUSE3D
 extra_cpp_flags_os2 = -D__OS2_PM__
 

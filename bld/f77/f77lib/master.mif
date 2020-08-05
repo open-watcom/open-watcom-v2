@@ -8,7 +8,7 @@ additional_cleanup = *.gc
 
 # remap fpu to processor
 flib_086 = 086
-flib_087 = 086 
+flib_087 = 086
 flib_286 = 286
 flib_287 = 286
 flib_386 = 386

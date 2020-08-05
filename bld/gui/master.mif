@@ -22,15 +22,13 @@ gui_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
+.c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
-
-!ifeq sys_windowed 1
-extra_cpp_flags = -DGUI_IS_GUI
-!endif
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) &
+    $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
 
 !ifeq sys_windowed 1
+extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
