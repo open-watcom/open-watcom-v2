@@ -8,14 +8,20 @@ memory_model_i86 = s
 !include defrule.mif
 !include deftarg.mif
 
-all : wstub.exe wstubq.exe
-
+#
+# aflags
+#
 .asm : ..
 
-wstub.exe : wstub.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file $[@
+all : wstub.exe wstubq.exe
 
-wstubq.exe : wstubq.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file $[@
+#
+# EXE's
+#
+exetarg_objs = wstub.obj
+exetarg_name = wstub
+!include exetarg.mif
+
+exetarg_objs = wstubq.obj
+exetarg_name = wstubq
+!include exetarg.mif
