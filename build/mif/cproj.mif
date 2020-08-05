@@ -704,6 +704,12 @@ proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
 
+rc_ui_flags     = -zk0 $(rc_cppflags)
+
+#
+# Include path macros:
+#
+
 rc_inc_dirs_all = -I"$(watcom_dir)/h"
 
 !ifdef __WATCOM_TOOLS__
@@ -714,7 +720,10 @@ rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(rc_inc_dirs_all)
 
 rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_win) $(rc_inc_dirs_all)
 
-rc_ui_flags     = -zk0 $(rc_cppflags)
+#
+# special RC invoke macros:
+#
+
 !ifdef bootstrap
 rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else ifndef __WATCOM_TOOLS__
