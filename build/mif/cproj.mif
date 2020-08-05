@@ -598,38 +598,6 @@ proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 libflags_all    = -b-n-pa $(mode_libflags)
 libflags        =  $(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(proj_lib_flags) $@
 
-############################
-# RESOURCE COMPILER SETINGS
-######
-rc_cpp_bsd      = -D__UNIX__ -D__BSD__
-rc_cpp_dos      = -D__DOS__
-rc_cpp_linux    = -D__UNIX__ -D__LINUX__
-rc_cpp_nov      = -D__NETWARE__
-rc_cpp_nt       = -D__NT__ -D_WIN32
-rc_cpp_os2      = -D__OS2__
-rc_cpp_osx      = -D__UNIX__ -D__OSX__
-rc_cpp_qnx      = -D__UNIX__ -D__QNX__
-rc_cpp_win      = -D__WINDOWS__
-
-rc_cpp_386      = -D_M_IX86
-rc_cpp_axp      = -D__AXP__
-rc_cpp_i86      = -D_M_I86
-rc_cpp_mps      = -D__MIPS__
-rc_cpp_ppc      = -D__PPC__
-rc_cpp_x64      = -D_M_X64
-
-rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
-
-rc_flags_all    = -xb -r
-
-rc_flags_nt     = -bt=nt $(win32ver)
-rc_flags_win    = -bt=windows
-rc_flags_os2    = -bt=os2
-
-proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
-
-rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
-
 ##############################
 # INCLUDE DIRECTORIES SETINGS
 ######
@@ -704,6 +672,38 @@ inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) $(inc_dirs_
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_all)
 !endif
 
+############################
+# RESOURCE COMPILER SETINGS
+######
+rc_cpp_bsd      = -D__UNIX__ -D__BSD__
+rc_cpp_dos      = -D__DOS__
+rc_cpp_linux    = -D__UNIX__ -D__LINUX__
+rc_cpp_nov      = -D__NETWARE__
+rc_cpp_nt       = -D__NT__ -D_WIN32
+rc_cpp_os2      = -D__OS2__
+rc_cpp_osx      = -D__UNIX__ -D__OSX__
+rc_cpp_qnx      = -D__UNIX__ -D__QNX__
+rc_cpp_win      = -D__WINDOWS__
+
+rc_cpp_386      = -D_M_IX86
+rc_cpp_axp      = -D__AXP__
+rc_cpp_i86      = -D_M_I86
+rc_cpp_mps      = -D__MIPS__
+rc_cpp_ppc      = -D__PPC__
+rc_cpp_x64      = -D_M_X64
+
+rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
+
+rc_flags_all    = -xb -r
+
+rc_flags_nt     = -bt=nt $(win32ver)
+rc_flags_win    = -bt=windows
+rc_flags_os2    = -bt=os2
+
+proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
+
+rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
+
 rc_inc_dirs_all = -I"$(watcom_dir)/h"
 
 !ifdef __WATCOM_TOOLS__
@@ -713,6 +713,17 @@ rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(rc_inc_dirs_all)
 !endif
 
 rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_win) $(rc_inc_dirs_all)
+
+rc_ui_flags     = -zk0 $(rc_cppflags)
+!ifdef bootstrap
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui            = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
+
+rcbnd           = $(rc_bnd) -k
 
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
@@ -727,17 +738,6 @@ as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags)
 rc              = $(noecho)*bwrc -q $(bldver_cppflags)
 rc_ui           = $(noecho)*bwrc -q $(bldver_cppflags)
 rc_bnd          = $(noecho)*bwrc -q
-
-rc_ui_flags     = -zk0 $(rc_cppflags)
-!ifdef bootstrap
-rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else ifndef __WATCOM_TOOLS__
-rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!else
-rcui            = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
-!endif
-
-rcbnd           = $(rc_bnd) -k
 
 # current project setup
 !ifeq sys_dll 1
