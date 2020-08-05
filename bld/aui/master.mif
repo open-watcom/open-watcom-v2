@@ -20,7 +20,6 @@ os2pm = 1
 # cflags
 #
 .c: .;../c;$(posix_dir)/misc
-.h: .;../h
 
 inc_dirs = -I. -I"../h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
 
@@ -36,19 +35,35 @@ extra_c_flags_win_386 = -zw
 # explicit rules
 #################
 
-additional_cleanup = *.gdl
-
 #
 # objects
 #
-dlgfiles = dlgrx.gdl dlgsrch.gdl dlgsrcha.gdl japrx.gdl japsrch.gdl japsrcha.gdl
+!ifeq os2pm 1
 
-all : $(dlgfiles) aui.lib .SYMBOLIC
+aui_dialogs = &
+    dlgrx.dlg &
+    dlgsrch.dlg &
+    dlgsrcha.dlg &
+    japrx.dlg &
+    japsrch.dlg &
+    japsrcha.dlg
+
+!else
+
+aui_dialogs = &
+    ../res/dlgs/dlgrx.dlg &
+    ../res/dlgs/dlgsrch.dlg &
+    ../res/dlgs/dlgsrcha.dlg &
+    ../res/dlgs/japrx.dlg &
+    ../res/dlgs/japsrch.dlg &
+    ../res/dlgs/japsrcha.dlg
+
+!endif
 
 #
 # LIB
 #
-libtarg_prebuild_objs = auistr.gh
+libtarg_prebuild_objs = auistr.gh $(aui_dialogs)
 libtarg_objs = &
     guimain.obj &
     wndgadgt.obj &
@@ -114,26 +129,27 @@ libtarg_objs = &
 # rc and others
 #
 !ifeq os2pm 1
-dlg_command  = parsedlg -font=10.Helv $[@ $@
-dlgj_command = parsedlg $[@ $@
-!else
-dlg_command  = cp $[@ $@
-dlgj_command = cp $[@ $@
+
+additional_cleanup = *.dlg
+
+dlg_opts  = -font=10.Helv
+dlgj_opts =
+
+dlgrx.dlg : ../res/dlgs/dlgrx.dlg
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrch.dlg : ../res/dlgs/dlgsrch.dlg
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrcha.dlg : ../res/dlgs/dlgsrcha.dlg
+    parsedlg $(dlg_opts) $[@ $@
+
+japrx.dlg : ../res/dlgs/japrx.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+japsrch.dlg : ../res/dlgs/japsrch.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+japsrcha.dlg : ../res/dlgs/japsrcha.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+
 !endif
-
-dlgrx.gdl : ../res/dlgs/dlgrx.dlg
-    $(dlg_command)
-dlgsrch.gdl : ../res/dlgs/dlgsrch.dlg
-    $(dlg_command)
-dlgsrcha.gdl : ../res/dlgs/dlgsrcha.dlg
-    $(dlg_command)
-
-japrx.gdl : ../res/dlgs/japrx.dlg
-    $(dlgj_command)
-japsrch.gdl : ../res/dlgs/japsrch.dlg
-    $(dlgj_command)
-japsrcha.gdl : ../res/dlgs/japsrcha.dlg
-    $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
     @%make echo_awk

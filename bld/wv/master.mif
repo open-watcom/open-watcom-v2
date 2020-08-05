@@ -81,10 +81,7 @@ extra_cpp_flags += -DAUI_DBG
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 !ifeq sys_windowed 1
-extra_cpp_flags += -DGUI_IS_GUI -DUI_GUI
-!endif
-
-!ifeq sys_windowed 1
+extra_cpp_flags    += -DGUI_IS_GUI -DUI_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING

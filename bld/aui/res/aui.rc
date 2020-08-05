@@ -3,11 +3,11 @@
 #include "dlgsrch.rh"
 #include "auistr.rc"
 #ifdef JAPANESE
-#include "japrx.gdl"
-#include "japsrch.gdl"
-#include "japsrcha.gdl"
+#include "japrx.dlg"
+#include "japsrch.dlg"
+#include "japsrcha.dlg"
 #else
-#include "dlgrx.gdl"
-#include "dlgsrch.gdl"
-#include "dlgsrcha.gdl"
+#include "dlgrx.dlg"
+#include "dlgsrch.dlg"
+#include "dlgsrcha.dlg"
 #endif
