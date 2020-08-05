@@ -12,7 +12,6 @@ host_os  = $(bld_os)
 extra_cpp_flags = -DNDIS_$(target_cpu)
 
 .c: $(dis_srcs);../c
-.h: $(dis_hdirs)
 
 inc_dirs = $(dis_includes)
 
