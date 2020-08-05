@@ -10,62 +10,48 @@ idebatch_autodepend = .AUTODEPEND
 
 .c: ../os2;../c
 
-all: batserv.exe .symbolic
-
-batserv.exe : batserv.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
+exetarg_objs = batserv.obj
+exetarg_link_opt = op stack=16k
+exetarg_name = batserv
+!include exetarg.mif
 
 !else ifeq host_os nt
 
 .c: ../nt;../c
 
-all: batserv.exe tstnt.exe .symbolic
-
 inc_dirs = -I"../nt" -I"../h"
 
-batserv.exe : batserv.obj batpipe.obj $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
-!else
-    $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
-!endif
+all: batserv.exe tstnt.exe .symbolic
 
-tstnt.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {tst.obj batcli.obj batpipe.obj}
-!endif
+exetarg_objs = batserv.obj batpipe.obj
+exetarg_link_opt = op stack=32k
+exetarg_name = batserv
+!include exetarg.mif
+
+exetarg_objs = tst.obj batcli.obj batpipe.obj
+exetarg_link_opt = op stack=32k
+exetarg_name = tstnt
+!include exetarg.mif
 
 !else ifeq host_os dos
-
-name = dosserv
-
-all: $(name).exe tstos2.exe .symbolic
 
 .c: ../dos;../c;../os2
 .asm: ../dos
 
-objs = int.obj link.obj int21.obj
-
-tst_objs = tst.obj batcli.obj
-
 inc_dirs = -I"../dos" -I"../h" -I"../os2"
 
-$(name).exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
+all: dosserv.exe tstos2.exe .symbolic
 
-tstos2.exe : $(tst_objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$(tst_objs)}
+exetarg_objs = int.obj link.obj int21.obj
+exetarg_link_opt = op stack=1500
+exetarg_name = dosserv
+!include exetarg.mif
+
+exetarg_objs = tst.obj batcli.obj
+exetarg_name = tstos2
+!include exetarg.mif
 
 !else ifeq host_os win
-
-name = winint
 
 subdir_editor = eobjs
 
@@ -73,43 +59,38 @@ additional_cleanup_subdir = $(subdir_editor)
 
 .c: ../win;../dos
 
-objs = $(name).obj link.obj
-eobjs = $(subdir_editor)/$(name).obj link.obj
-lnk = $(name).lnk
+inc_dirs = -I"../win" -I"../dos"
 
 extra_cpp_flags = -DSERVER
 
+extra_cpp_editor_flags = -D__EDITOR__
+
 extra_c_flags = -zW -zu
 
-inc_dirs = -I"../win" -I"../dos"
+extra_l_flags_win = font mem &
+    option stack=10k &
+    segment CLASS 'CODE' PRELOAD FIXED &
+    segment CLASS 'FAR_DATA' PRELOAD FIXED &
+    segment CLASS 'BEGDATA' PRELOAD FIXED &
+    segment CLASS 'DATA' PRELOAD FIXED &
+    segment CLASS 'BSS' PRELOAD FIXED
 
-all : $(name).exe $(name)e.exe .SYMBOLIC
+all : winint.exe wininte.exe .SYMBOLIC
 
-$(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
-    @%make bind_res
+exetarg_objs = winint.obj link.obj
+exetarg_res = winint.res
+exetarg_name = winint
+!include exetarg.mif
 
-$(name)e.exe : $(subdir_editor) $(eobjs) $(lnk) $(name)e.res $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) @$(lnk) file { $(eobjs) }
-    @%make bind_res
+exetarg_prebuild_objs = $(subdir_editor)
+exetarg_objs = $(subdir_editor)/winint.obj link.obj
+exetarg_res = wininte.res
+exetarg_name = wininte
+!include exetarg.mif
 
-$(name).res $(name)e.res : ../$(name).rc
+winint.res wininte.res : ../winint.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$@
-
-$(lnk) : makefile
-    $(noecho)%create $(lnk)
-    @%append $(lnk) font mem
-    @%append $(lnk) option stack=10k
-    @%append $(lnk) segment CLASS 'CODE' PRELOAD FIXED
-    @%append $(lnk) segment CLASS 'FAR_DATA' PRELOAD FIXED
-    @%append $(lnk) segment CLASS 'BEGDATA' PRELOAD FIXED
-    @%append $(lnk) segment CLASS 'DATA' PRELOAD FIXED
-    @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
-
-extra_cpp_editor_flags = -D__EDITOR__
 
 defrule_key = editor
 !include defrule.mif

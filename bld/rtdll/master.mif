@@ -33,14 +33,6 @@ host_os=$(rtdll_host_os_$(system))
 
 !include ../objs.mif
 
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-version_res_dll_nt_axp = version.res
-
-verrc_dll_skel = ../verinfo.rc
-verrc_dll      = $(dllname)
-!include verrc.mif
-
 target_lib = $(libdllname).lib
 !ifeq component plib
 target_lib += $(libdllname)x.lib
@@ -78,9 +70,13 @@ extra_lib_flags = -irn
 extra_lib_flags = -irn -s-t-zld
 !endif
 
-$(target_lib) : $(dllname).lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$(dllname).lbc
+libtarg_prebuild_objs = $(dllname).lbc
+libtarg_lib_opt = @$(dllname).lbc
+libtarg_name = $(libdllname)
+!include libtarg.mif
+
+libtarg_name = $(libdllname)x
+!include libtarg.mif
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
     @%make echo_awk
@@ -98,13 +94,15 @@ lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !endif
 !endif
 
-$(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dll_def) $(__MAKEFILE__)
-    $(noecho)%create $(dllname).lnk
-    @%append $(dllname).lnk $(lflags_dll)
-    @for %i in ($(dll_objs)) do @%append $(dllname).lnk file %i
-    @for %i in ($(dll_def)) do @%append $(dllname).lnk export { @%i }
-    @for %i in ($(dll_libs) $(extra_libs)) do @%append $(dllname).lnk lib %i
-    @%append $(dllname).lnk $(lnk_alias)
-    @%make echo_link
-    $(linker) name $(dllname).dll @$(dllname).lnk
-    @%make bind_res_version_dll
+dlltarg_objs = $(dll_objs)
+dlltarg_libs = $(dll_libs)
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+dlltarg_res_version_nt_axp = version.res
+dlltarg_export = $(dll_def)
+dlltarg_name = $(dllname)
+!include dlltarg.mif
+
+verrc_dll_skel = ../verinfo.rc
+verrc_dll      = $(dllname)
+!include verrc.mif

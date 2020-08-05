@@ -1,8 +1,12 @@
 !ifeq sys_windowed 1
-gui_path = $(gui_dir)/win/$(objs_subdir)
-!else
-gui_path = $(gui_dir)/ui/$(objs_subdir)
+gui_type = win
+!ifeq host_os os2
+gui_os2pm = pm
 !endif
+!else
+gui_type = ui
+!endif
+gui_path = $(gui_dir)/$(gui_type)/$(objs_subdir)
 gui_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h"
 gui_rc_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h"
 gui_lib = $(gui_path)/gui.lib

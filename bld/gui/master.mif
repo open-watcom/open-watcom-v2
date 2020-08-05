@@ -23,7 +23,6 @@ gui_autodepends = .AUTODEPEND
 # cflags
 #
 .c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
-.h:     ../h;../../h
 
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
 
