@@ -82,10 +82,14 @@ static  char    Buffer[512];
 
 #define _Editor         "EPM.EXE"
 
+/* local Callback function prototypes */
+extern MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 );
+extern MRESULT EXPENTRY MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 );
+extern BOOL __syscall InitDDE( HWND hwndCaller );
 
-MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
-/****************************************************************************/
-
+MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
+/**************************************************************************/
+{
     switch( msg ) {
     case WM_DDE_INITIATE: {
         DDEINIT *ddei = (PDDEINIT)mp2;
@@ -227,7 +231,7 @@ MRESULT EXPENTRY MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         break;
     case WM_PAINT:
         Connect();
-        ps = WinBeginPaint( hwnd, NULL, NULL );
+        ps = WinBeginPaint( hwnd, NULLHANDLE, NULLHANDLE );
         WinQueryWindowRect( hwnd, &rcl );
         WinFillRect( ps, &rcl, CLR_WHITE );
         WinEndPaint( ps );
@@ -259,7 +263,7 @@ int     main( int argc, char *argv[] ) {
     style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
             FCF_SHELLPOSITION | FCF_TASKLIST;
     FrameHandle = WinCreateStdWindow( HWND_DESKTOP, WS_VISIBLE, &style,
-                                      "WATCOM", "", 0, NULL, 0,
+                                      "WATCOM", "", 0, NULLHANDLE, 0,
                                       &WinHandle );
     if( FrameHandle == 0 ) return( 0 );
     ddeFile = open( "d:\\editdll\\epm\\dde.out", O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE );
@@ -269,7 +273,7 @@ int     main( int argc, char *argv[] ) {
         write( ddeFile, "\n", 1 );
     }
 
-    while( WinGetMsg( AnchorBlock, &qmsg, NULL, 0, 0 ) ) {
+    while( WinGetMsg( AnchorBlock, &qmsg, NULLHANDLE, 0, 0 ) ) {
         WinDispatchMsg( AnchorBlock, &qmsg );
     }
     close( ddeFile );

@@ -9,8 +9,6 @@ epmlink_autodepends = .AUTODEPEND
 
 epmlink_distrib_lib = 1
 
-sys_dll = 1
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -37,21 +35,32 @@ extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 all: epmlink.dll wedit.dll .SYMBOLIC
 
 #
-# DLL's
+# DLL epmlink.dll
 #
 dlltarg_objs = epmlink.obj
 !include dlltarg.mif
 
-dlltarg_name = wedit
+#
+# DLL wedit.dll
+#
+dlltarg_link_opt = opt implib
+dlltarg_name     = wedit
 !include dlltarg.mif
 
 #
-# EXE's
+# EXE epmtest.exe
 #
-epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
+exetarg_objs     = epmtest.obj
+exetarg_libs     = wedit.lib
+exetarg_link_opt = debug all op st=32k
+exetarg_name     = epmtest
+!include exetarg.mif
+#undef exetarg_libs
+#undef exetarg_link_opt
 
-epmspy.exe : epmspy.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ sys os2v2_pm file {epmspy.obj}
+#
+# EXE epmspy.exe
+#
+exetarg_objs     = epmspy.obj
+exetarg_name     = epmspy
+!include exetarg.mif
