@@ -100,6 +100,7 @@ dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
 dlltarg_export = $(dll_def)
+dlltarg_link_opt = $(lnk_alias)
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 
