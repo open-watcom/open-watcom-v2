@@ -4,6 +4,7 @@ proj_name = auisample
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include win386.mif
 
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
