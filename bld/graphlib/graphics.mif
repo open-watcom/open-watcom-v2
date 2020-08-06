@@ -230,7 +230,7 @@ libtarg_name          = graphi
 !include libtarg.mif
 
 #
-# LIB v2
+# LIB version 2
 #
 _subdir_ = $(subdir_v2)/
 libtarg_prebuild_objs = $(subdir_v2) graph2.gh $(special_objs)
