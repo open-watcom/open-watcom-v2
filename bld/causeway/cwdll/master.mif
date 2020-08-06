@@ -20,7 +20,7 @@ extra_a_flags = -DENGLISH=1 -I"../../inc"
 #
 libtarg_prebuild_objs = cwapi.lbc
 libtarg_objs = cwkrnl1.obj cwkrnl2.obj cwkrnl3.obj cwkrnl4.obj
-libtarg_lib_opt = @cwapi.lbc
+libtarg_opts = @cwapi.lbc
 libtarg_name = cwdll
 !include libtarg.mif
 

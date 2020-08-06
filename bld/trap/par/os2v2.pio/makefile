@@ -27,7 +27,7 @@ inc_dirs = -I"../h"
 
 extra_l_flags = op protmode
 
-dlltarg_objs = wdio.obj
-dlltarg_name = wdio
-dlltarg_link_opt = $(extra_linker)
+dlltarg_objs    = wdio.obj
+dlltarg_name    = wdio
+dlltarg_opts    = $(extra_linker)
 !include dlltarg.mif

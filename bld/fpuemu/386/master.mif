@@ -52,7 +52,7 @@ libtarg_name = emu387
 #
 exetarg_objs     = qnxemu87.obj emu387.obj fpeqnx.obj
 exetarg_qnx_res  = usage.u
-exetarg_link_opt = opt priv=0, long
+exetarg_opts     = opt priv=0, long
 exetarg_name     = emu387
 !include exetarg.mif
 

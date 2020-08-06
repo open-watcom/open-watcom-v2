@@ -27,7 +27,7 @@ additional_cleanup = *.asm *.c *.inc
 #
 libtarg_prebuild_objs = winobjs.lbc ../def/win386
 libtarg_objs          = fldenv.obj _call16.obj
-libtarg_lib_opt       = @winobjs.lbc
+libtarg_opts          = @winobjs.lbc
 libtarg_name          = win386
 !include libtarg.mif
 

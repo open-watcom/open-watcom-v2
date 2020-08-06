@@ -11,7 +11,7 @@ idebatch_autodepend = .AUTODEPEND
 .c: ../os2;../c
 
 exetarg_objs = batserv.obj
-exetarg_link_opt = op stack=16k
+exetarg_opts = op stack=16k
 exetarg_name = batserv
 !include exetarg.mif
 
@@ -24,12 +24,12 @@ inc_dirs = -I"../nt" -I"../h"
 all: batserv.exe tstnt.exe .symbolic
 
 exetarg_objs = batserv.obj batpipe.obj
-exetarg_link_opt = op stack=32k
+exetarg_opts = op stack=32k
 exetarg_name = batserv
 !include exetarg.mif
 
 exetarg_objs = tst.obj batcli.obj batpipe.obj
-exetarg_link_opt = op stack=32k
+exetarg_opts = op stack=32k
 exetarg_name = tstnt
 !include exetarg.mif
 
@@ -43,7 +43,7 @@ inc_dirs = -I"../dos" -I"../h" -I"../os2"
 all: dosserv.exe tstos2.exe .symbolic
 
 exetarg_objs = int.obj link.obj int21.obj
-exetarg_link_opt = op stack=1500
+exetarg_opts = op stack=1500
 exetarg_name = dosserv
 !include exetarg.mif
 

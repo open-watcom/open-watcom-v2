@@ -85,30 +85,30 @@ all: $(target_lib) .SYMBOLIC
 # LIB's
 #
 libtarg_prebuild_objs = $(dllname).lbc
-libtarg_lib_opt = @$(dllname).lbc
-libtarg_name = $(libdllname)
+libtarg_opts          = @$(dllname).lbc
+libtarg_name          = $(libdllname)
 !include libtarg.mif
 
-libtarg_name = $(libdllname)x
+libtarg_name          = $(libdllname)x
 !include libtarg.mif
 
 #
 # DLL
 #
-dlltarg_objs = $(dll_objs)
-dlltarg_libs = $(dll_libs)
+dlltarg_objs          = $(dll_objs)
+dlltarg_libs          = $(dll_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
-dlltarg_export = $(dll_def)
+dlltarg_export        = $(dll_def)
 !ifeq component wlib
 !ifeq convention register
-dlltarg_link_opt = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
+dlltarg_opts          = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 !else
-dlltarg_link_opt = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
+dlltarg_opts          = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !endif
 !endif
-dlltarg_name = $(dllname)
+dlltarg_name          = $(dllname)
 !include dlltarg.mif
 
 #

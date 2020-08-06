@@ -7,7 +7,7 @@
 # dlltarg_prebuild_objs         files which must be available, but not directly added to DLL
 # dlltarg_objs                  object files which are linked to DLL
 # dlltarg_libs                  libraries which are linked to DLL
-# dlltarg_link_opt              extra wlink directive or options used to link DLL
+# dlltarg_opts                  extra OW wlink directive or options used to link DLL
 # dlltarg_export                list of files containing symbols to export from DLL
 # dlltarg_res                   native resource file added to DLL
 # dlltarg_res_version_nt_<cpu>  native version info resource file added to DLL
@@ -26,7 +26,7 @@ $(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dll
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs)$- $(ldflags_dll)
 !else
-    $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_link_opt)$-
+    $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_opts)$-
     @for %f in ($+$(dlltarg_objs)$-) do $(noecho)%append $^&.lnd file %f
     @for %l in ($+$(dlltarg_libs)$-) do $(noecho)%append $^&.lnd library %l
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }

@@ -43,7 +43,7 @@ dlltarg_objs = epmlink.obj
 #
 # DLL wedit.dll
 #
-dlltarg_link_opt = opt implib
+dlltarg_opts     = opt implib
 dlltarg_name     = wedit
 !include dlltarg.mif
 
@@ -52,11 +52,11 @@ dlltarg_name     = wedit
 #
 exetarg_objs     = epmtest.obj
 exetarg_libs     = wedit.lib
-exetarg_link_opt = debug all op st=32k
+exetarg_opts     = debug all op st=32k
 exetarg_name     = epmtest
 !include exetarg.mif
 #undef exetarg_libs
-#undef exetarg_link_opt
+#undef exetarg_opts
 
 #
 # EXE epmspy.exe

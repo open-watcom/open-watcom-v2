@@ -7,7 +7,7 @@
 # exetarg_prebuild_objs         files which must be available, but not directly added to EXE
 # exetarg_objs                  object files which are linked to EXE
 # exetarg_libs                  libraries which are linked to EXE
-# exetarg_link_opt              extra wlink directive or options used to link EXE
+# exetarg_opts                  extra OW wlink directive or options used to link EXE
 # exetarg_res                   native resource file added to EXE
 # exetarg_res_version_nt_<cpu>  native version info resource file added to EXE
 # exetarg_res_wresui            string resource file (Windows 3.x format) added to EXE
@@ -48,7 +48,7 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
     $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
 !endif
 !else
-    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_link_opt) $(exetarg_qnx_res_opt)$-
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
     @for %f in ($+$(exetarg_objs)$-) do $(noecho)%append $^&.lnk file %f
     @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lnk library %l
 !ifdef win386
