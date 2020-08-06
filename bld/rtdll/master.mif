@@ -37,6 +37,7 @@ target_lib = $(libdllname).lib
 !ifeq component plib
 target_lib += $(libdllname)x.lib
 !endif
+all: $(target_lib) .SYMBOLIC
 
 !ifdef profile
 rtdll_nosymfile = 1
