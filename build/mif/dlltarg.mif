@@ -21,7 +21,9 @@ dlltarg_name = $(proj_name)
 !ifndef dlltarg_ext
 dlltarg_ext = .dll
 !endif
-$(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs)$- $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res) $(dlltarg_export)$- $(__MAKEFILES__)
+$(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs)$- &
+        $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res) &
+        $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs)$- $(ldflags_dll)

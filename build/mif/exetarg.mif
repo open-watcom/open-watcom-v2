@@ -39,7 +39,10 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 !undef exetarg_qnx_res_obj
 !undef exetarg_qnx_res_opt
 !endif
-$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- $(__MAKEFILES__)
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
+        $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) &
+        $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- &
+        $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 !ifdef bootstrap
@@ -86,13 +89,15 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !ifeq verbose 0
     @echo bind res $@ manif+ver+appl
 !endif
-    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) &
+        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !else
 # manifest + version only
 !ifeq verbose 0
     @echo bind res $@ manif+ver
 !endif
-    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ &
+        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
 !endif
 !else ifdef exetarg_res
 # manifest + application
