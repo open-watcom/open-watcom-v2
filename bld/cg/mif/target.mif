@@ -11,9 +11,10 @@ libs = cg$(target_name).lib $(hostcglibname).lib $(dwarfw_lib) $(owl_lib) $(cflo
 target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
     @%null
 
-cg$(target_name).dll : cgdmain.obj $(libs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
+dlltarg_objs = cgdmain.obj
+dlltarg_libs = $(libs)
+dlltarg_name = cg$(target_name)
+!include dlltarg.mif
 
 libtarg_objs = $(cg_client_objs)
 libtarg_name = cgdllcli
