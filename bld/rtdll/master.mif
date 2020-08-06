@@ -1,4 +1,4 @@
-proj_name=rtdll
+proj_name = rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
@@ -23,22 +23,6 @@ rtdll_host_os_winnt   =nt
 rtdll_host_os_linux   =linux
 host_os=$(rtdll_host_os_$(system))
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-!include dllbase.mif
-!include libsubdi.mif
-
-!include $(rtdll_dir)/dllname.mif
-
-!include ../objs.mif
-
-target_lib = $(libdllname).lib
-!ifeq component plib
-target_lib += $(libdllname)x.lib
-!endif
-all: $(target_lib) .SYMBOLIC
-
 !ifdef profile
 rtdll_nosymfile = 1
 !else ifeq release 0
@@ -57,6 +41,19 @@ br_suffix=0
 patch_level=0
 !endif
 
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+!include dllbase.mif
+!include libsubdi.mif
+
+!include $(rtdll_dir)/dllname.mif
+
+!include ../objs.mif
+
+#
+# lflags
+#
 extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $(rtdll_dllbase_$(system)_$(host_cpu)_$(component))
 !ifeq release 0
 extra_l_flags_dll += option mangle,artificial,verbose
@@ -65,12 +62,28 @@ extra_l_flags_dll += option mangle,artificial,verbose
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 extra_l_flags_dll_nt = initinstance terminstance
 
+#
+# libflags
+#
 !ifeq release 0
 extra_lib_flags = -irn
 !else
 extra_lib_flags = -irn -s-t-zld
 !endif
 
+# explicit rules
+#################
+
+target_lib = $(libdllname).lib
+!ifeq component plib
+target_lib += $(libdllname)x.lib
+!endif
+
+all: $(target_lib) .SYMBOLIC
+
+#
+# LIB's
+#
 libtarg_prebuild_objs = $(dllname).lbc
 libtarg_lib_opt = @$(dllname).lbc
 libtarg_name = $(libdllname)
@@ -79,32 +92,33 @@ libtarg_name = $(libdllname)
 libtarg_name = $(libdllname)x
 !include libtarg.mif
 
-$(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
-    @%make echo_awk
-    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
-    @for %i in ($(static_objs)) do @%append $@ +%i
-
-!ifeq system winnt
-extra_libs = kernel32.lib user32.lib advapi32.lib
-!endif
-!ifeq component wlib
-!ifeq convention register
-lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
-!else
-lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
-!endif
-!endif
-
+#
+# DLL
+#
 dlltarg_objs = $(dll_objs)
 dlltarg_libs = $(dll_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
 dlltarg_res_version_nt_axp = version.res
 dlltarg_export = $(dll_def)
-dlltarg_link_opt = $(lnk_alias)
+!ifeq component wlib
+!ifeq convention register
+dlltarg_link_opt = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
+!else
+dlltarg_link_opt = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
+!endif
+!endif
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 
+#
+# rc and others
+#
 verrc_dll_skel = ../verinfo.rc
 verrc_dll      = $(dllname)
 !include verrc.mif
+
+$(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
+    @%make echo_awk
+    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
+    @for %i in ($(static_objs)) do @%append $@ +%i
