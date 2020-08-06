@@ -34,6 +34,58 @@ fpu_flags_os2_i86 = -fpc
 fpu_flags_os2_386 = -fpc
 fpu_flags_win_i86 = -fpc
 
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
+inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
+inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
+
+extra_cpp_flags = -D_ENABLE_AUTODEPEND $(supervga_support) -D_FARD=
+
+extra_cpp_flags_i86 = -D_CGRAPH=__loadds
+extra_cpp_flags_386 = -D_CGRAPH=
+!ifeq convention stack
+extra_cpp_flags_386 += -D__STACK
+!endif
+
+extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
+
+extra_c_flags_i86 = -nt=GRAPH_TEXT
+extra_c_flags_386_ms_dos = -r
+extra_c_flags_386_ms_qnx = -r
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s
+extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
+
+#
+# aflags
+#
+!ifeq host_cpu 386
+.asm: $(graphlib_dir)/386asm
+!endif
+.asm: $(graphlib_dir)/asm
+
+extra_a_flags = $(supervga_support) -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
+
+extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
+extra_a_flags_386_register = -3r
+extra_a_flags_386_stack = -3s
+extra_a_flags_386 = $(extra_a_flags_386_$(convention))
+
+extra_a_flags_qnx = -D_QNX
+
+# explicit rules
+#################
+
+all: graphi.lib graphi2.lib .symbolic
+
 common_objs = &
     $(_subdir_)sqrtf.obj &
     $(_subdir_)std.obj &
@@ -168,49 +220,6 @@ grlib_template = $(common_objs) $(win_objs)
 grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
 !endif
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
-inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
-inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
-
-!ifeq host_cpu 386
-.asm: $(graphlib_dir)/386asm
-!endif
-.asm: $(graphlib_dir)/asm
-
-.c: ../c
-
-extra_cpp_flags = -D_ENABLE_AUTODEPEND $(supervga_support) -D_FARD=
-
-extra_cpp_flags_i86 = -D_CGRAPH=__loadds
-extra_cpp_flags_386 = -D_CGRAPH=
-!ifeq convention stack
-extra_cpp_flags_386 += -D__STACK
-!endif
-
-extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
-
-extra_c_flags_i86 = -nt=GRAPH_TEXT
-extra_c_flags_386_ms_dos = -r
-extra_c_flags_386_ms_qnx = -r
-extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s
-extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
-
-extra_a_flags = $(supervga_support) -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
-
-extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
-extra_a_flags_386_register = -3r
-extra_a_flags_386_stack = -3s
-extra_a_flags_386 = $(extra_a_flags_386_$(convention))
-
-extra_a_flags_qnx = -D_QNX
-
-all: graphi.lib graphi2.lib .symbolic
-
 #
 # LIB
 #
@@ -229,6 +238,9 @@ libtarg_objs          = $(grlib_template)
 libtarg_name          = graphi2
 !include libtarg.mif
 
+#
+# rc and others
+#
 !ifeq release 1
 wsplice_extra_opts =
 !else
