@@ -21,7 +21,11 @@ $(libtarg_name)$(libtarg_ext) : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(lib
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $+$(libtarg_lib_opt) $(libtarg_objs) $(libtarg_libs)$-
-!else
+!else if $(__WATCOM_TOOLS__) >= 1300
     $(librarian) $(libflags) $+$(libtarg_lib_opt) $(libtarg_objs) $(libtarg_libs)$-
+!else
+    $(noecho)%create $(libtarg_name).lbc
+    @for %o in ($+$(libtarg_lib_opt) $(libtarg_objs) $(libtarg_libs)$-) do @%append $(libtarg_name).lbc %o
+    @%make echo_lib
+    $(bld_lib) @$(libtarg_name).lbc
 !endif
-

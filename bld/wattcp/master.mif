@@ -8,10 +8,29 @@ proj_name = wattcp
 wattcp_autodepends = .AUTODEPEND
 !endif
 
+def_fpu_flags_dos_i86 = -fpc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
+.c : ../src
+
+inc_dirs = -I"../inc"
+
+extra_c_flags = -zm
+
+#
+# aflags
+#
+.asm : ../src
+
+#
+# LIB
+#
 objs = asmpkt.obj   asmpkt4.obj   &
        chksum0.obj  cpumodel.obj  &
        wdpmi.obj    language.obj  &
@@ -69,26 +88,18 @@ objs = asmpkt.obj   asmpkt4.obj   &
        pppoe.obj    hostname.obj  &
        pcbufsiz.obj
 
-def_fpu_flags_dos_i86 = -fpc
-
-extra_c_flags = -zm
-
-inc_dirs = -I"../inc"
-
-.c : ../src
-.asm : ../src
-
 !ifndef lib_suffix
 !ifdef memory_model_$(host_cpu)
 lib_suffix = $(memory_model_$(host_cpu))
 !endif
 !endif
 
-wattcp$(lib_suffix).lib: $(objs) $(__MAKEFILES__)
-    $(noecho)%create $^&.lbc
-    @for %f in ($(objs)) do @%append $^&.lbc +- %f
-    @%make echo_lib
-    $(librarian) $(libflags) @$^&.lbc
+libtarg_objs = $(objs)
+libtarg_name = wattcp$(lib_suffix)
+!include libtarg.mif
 
+#
+# rc and others
+#
 language.obj : language.c lang.c
 neterr.obj : neterr.c ../src/watcom/syserr.c

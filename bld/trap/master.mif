@@ -271,9 +271,9 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     $(extra_cmds)
 !endif
 
-dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) +$[@
+libtarg_objs = dbgstr.obj
+libtarg_name = dbgstr
+!include libtarg.mif
 
 !ifdef resource_file
 $(resource_file) : $(trap_dir)/common/wserver.rc

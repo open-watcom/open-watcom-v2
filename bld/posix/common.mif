@@ -56,20 +56,6 @@ posixlib_objs = &
     $(_subdir_)quit.obj &
     $(_subdir_)regexp.obj
 
-make_posix_lib : .procedure .explicit
-!ifndef __WATCOM_TOOLS__
-    @%make echo_lib
-    $(blib) $(bld_libflags) $<
-!else if $(__WATCOM_TOOLS__) >= 1300
-    @%make echo_lib
-    $(librarian) $(libflags) $<
-!else
-    $(noecho)%create $^&.lbc
-    @for %o in ($<) do @%append $^&.lbc %o
-    @%make echo_lib
-    $(bld_lib) @$^&.lbc
-!endif
-
 !ifdef bootstrap
 stdlibdir=$(std_subdir_$(host_cpu))
 !ifdef alt_posixlib

@@ -216,17 +216,15 @@ extra_a_flags_qnx = -D_QNX
 
 all: graphi.lib graphi2.lib .symbolic
 
-graphi.lib : graph.gh $(special_objs) $(objs) $(__MAKEFILES__)
-    $(noecho)%create $^&.lbc
-    @for %i in ($(objs)) do @%append $^&.lbc +%i
-    @%make echo_lib
-    $(librarian) $(libflags) @$^&.lbc
+libtarg_prebuild_objs = graph.gh $(special_objs)
+libtarg_objs          = $(objs)
+libtarg_name          = graphi
+!include libtarg.mif
 
-graphi2.lib : $(subdir_v2) graph2.gh $(special_objs) $(v2_objs) $(__MAKEFILES__)
-    $(noecho)%create $^&.lbc
-    @for %i in ($(v2_objs)) do @%append $^&.lbc +%i
-    @%make echo_lib
-    $(librarian) $(libflags) @$^&.lbc
+libtarg_prebuild_objs = $(subdir_v2) graph2.gh $(special_objs)
+libtarg_objs          = $(v2_objs)
+libtarg_name          = graphi2
+!include libtarg.mif
 
 !ifeq release 1
 wsplice_extra_opts =

@@ -1,12 +1,12 @@
 !ifeq host_os linux
-hostcglibname=cg$(target_name)lnx.lib
+hostcglibname=cg$(target_name)lnx
 !else
-hostcglibname=cg$(target_name)$(host_os).lib
+hostcglibname=cg$(target_name)$(host_os)
 !endif
 
 !ifeq dll_cg 1
 
-libs = cg$(target_name).lib $(hostcglibname) $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
+libs = cg$(target_name).lib $(hostcglibname).lib $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
 
 target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
     @%null
@@ -15,17 +15,13 @@ cg$(target_name).dll : cgdmain.obj $(libs) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
-cgdllcli.lib : $(cg_client_objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(cg_client_objs)
-!else
-    $(librarian) $(libflags) $(cg_client_objs)
-!endif
+libtarg_objs = $(cg_client_objs)
+libtarg_name = cgdllcli
+!include libtarg.mif
 
 !else
 
-target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
+target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname).lib .SYMBOLIC
     @%null
 
 !endif
@@ -36,18 +32,10 @@ target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
 debug_objs = $(cg_dump_objs)
 !endif
 
-cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
-!else
-    $(librarian) $(libflags) $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
-!endif
+libtarg_objs = $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
+libtarg_name = cg$(target_name)
+!include libtarg.mif
 
-$(hostcglibname) : $($(host_os)_objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $($(host_os)_objs)
-!else
-    $(librarian) $(libflags) $($(host_os)_objs)
-!endif
+libtarg_objs = $($(host_os)_objs)
+libtarg_name = $(hostcglibname)
+!include libtarg.mif

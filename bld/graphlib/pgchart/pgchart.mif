@@ -35,6 +35,39 @@ fpu_flags_qnx_i86 = -fpc
 fpu_flags_qnx_386 = -fpc
 fpu_flags_win_i86 = -fpc
 
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+
+extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
+
+extra_cpp_flags_i86 = -D_CGRAPH=__loadds
+extra_cpp_flags_386 = -D_CGRAPH=
+!ifeq convention stack
+extra_cpp_flags_386 += -D__STACK
+!endif
+
+extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) -fo=$@
+
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s
+extra_c_flags_386 = $(extra_c_flags_386_$(convention))
+extra_c_flags_i86 = -nt=GRAPH_TEXT
+
+extra_c_flags_win = -zW
+
+# explicit rules
+#################
+
+all : pgchart.gh chart.lib chart2.lib .symbolic
+
 template = &
     $(_subdir_)pgancom.obj &
     $(_subdir_)pganms.obj &
@@ -57,46 +90,30 @@ template = &
     $(_subdir_)pgvars.obj &
     $(_subdir_)pgvlabel.obj
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
 _subdir_ = $(subdir_v2)/
 v2_objs = $+$(template)$-
 _subdir_ =
 objs = $+$(template)$-
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+#
+# LIB
+#
+libtarg_prebuild_objs = graph.gh pgchart.lbc
+libtarg_lib_opt       = @pgchart.lbc
+libtarg_name          = chart
+!include libtarg.mif
 
-.c: ../c
+#
+# LIB version 2
+#
+libtarg_prebuild_objs = graph2.gh pgchart2.lbc
+libtarg_lib_opt       = @pgchart2.lbc
+libtarg_name          = chart2
+!include libtarg.mif
 
-extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
-
-extra_cpp_flags_i86 = -D_CGRAPH=__loadds
-extra_cpp_flags_386 = -D_CGRAPH=
-!ifeq convention stack
-extra_cpp_flags_386 += -D__STACK
-!endif
-
-extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) -fo=$@
-
-extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s
-extra_c_flags_386 = $(extra_c_flags_386_$(convention))
-extra_c_flags_i86 = -nt=GRAPH_TEXT
-
-extra_c_flags_win = -zW
-
-all : pgchart.gh chart.lib chart2.lib .symbolic
-
-chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @pgchart.lbc
-
-chart2.lib : $(subdir_v2) graph2.gh pgchart2.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @pgchart2.lbc
-
+#
+# rc and others
+#
 pgchart.lbc : $(objs) $(__MAKEFILES__)
     $(noecho)%create $@
     @for %i in ($(objs)) do @%append $@ +%i

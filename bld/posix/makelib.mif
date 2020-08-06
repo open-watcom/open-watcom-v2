@@ -27,20 +27,17 @@ memory_model_386=$(model)
 
 !include $(posix_dir)/common.mif
 
-inc_dirs += -I"$(posix_dir)/h"
+#
+# cflags
+#
 .c: $(posix_dir)/misc
 
+inc_dirs += -I"$(posix_dir)/h"
+
+#
+# LIB
+#
 _subdir_ =
-posix.lib : $+$(posixlib_objs)$-
-!ifndef __WATCOM_TOOLS__
-    @%make echo_lib
-    $(blib) $(bld_libflags) $<
-!else if $(__WATCOM_TOOLS__) >= 1300
-    @%make echo_lib
-    $(librarian) $(libflags) $<
-!else
-    $(noecho)%create $^&.lbc
-    @for %o in ($<) do @%append $^&.lbc %o
-    @%make echo_lib
-    $(bld_lib) @$^&.lbc
-!endif
+libtarg_objs = $(posixlib_objs)
+libtarg_name = $(_subdir_)posix
+!include libtarg.mif
