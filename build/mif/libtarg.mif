@@ -3,7 +3,7 @@
 # input macros:
 #
 # libtarg_name          name of library, default is $(proj_name)
-# libtarg_ext           extension of library, default is .lib
+#                       extension of library name is always .lib
 # libtarg_prebuild_objs files which must be available, but not directly added to library
 # libtarg_objs          object files which are added to library
 # libtarg_libs          libraries which are added to library
@@ -14,10 +14,7 @@
 !ifndef libtarg_name
 libtarg_name = $(proj_name)
 !endif
-!ifndef libtarg_ext
-libtarg_ext = .lib
-!endif
-$(libtarg_name)$(libtarg_ext) : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)$- &
+$(libtarg_name).lib : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)$- &
         $(__MAKEFILES__)
     @%make echo_lib
 !ifndef __WATCOM_TOOLS__
