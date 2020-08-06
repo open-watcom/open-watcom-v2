@@ -168,11 +168,6 @@ grlib_template = $(common_objs) $(win_objs)
 grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
 !endif
 
-_subdir_ = $(subdir_v2)/
-v2_objs = $+$(grlib_template)$-
-_subdir_ =
-objs = $+$(grlib_template)$-
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -216,13 +211,21 @@ extra_a_flags_qnx = -D_QNX
 
 all: graphi.lib graphi2.lib .symbolic
 
+#
+# LIB
+#
+_subdir_ =
 libtarg_prebuild_objs = graph.gh $(special_objs)
-libtarg_objs          = $(objs)
+libtarg_objs          = $(grlib_template)
 libtarg_name          = graphi
 !include libtarg.mif
 
+#
+# LIB v2
+#
+_subdir_ = $(subdir_v2)/
 libtarg_prebuild_objs = $(subdir_v2) graph2.gh $(special_objs)
-libtarg_objs          = $(v2_objs)
+libtarg_objs          = $(grlib_template)
 libtarg_name          = graphi2
 !include libtarg.mif
 

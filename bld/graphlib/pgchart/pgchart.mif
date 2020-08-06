@@ -66,7 +66,7 @@ extra_c_flags_win = -zW
 # explicit rules
 #################
 
-all : pgchart.gh chart.lib chart2.lib .symbolic
+all : chart.lib chart2.lib .symbolic
 
 template = &
     $(_subdir_)pgancom.obj &
@@ -90,38 +90,27 @@ template = &
     $(_subdir_)pgvars.obj &
     $(_subdir_)pgvlabel.obj
 
-_subdir_ = $(subdir_v2)/
-v2_objs = $+$(template)$-
-_subdir_ =
-objs = $+$(template)$-
-
 #
 # LIB
 #
-libtarg_prebuild_objs = graph.gh pgchart.lbc
-libtarg_lib_opt       = @pgchart.lbc
+_subdir_ =
+libtarg_prebuild_objs = pgchart.gh graph.gh
+libtarg_objs          = $(template)
 libtarg_name          = chart
 !include libtarg.mif
 
 #
 # LIB version 2
 #
-libtarg_prebuild_objs = graph2.gh pgchart2.lbc
-libtarg_lib_opt       = @pgchart2.lbc
+_subdir_ = $(subdir_v2)/
+libtarg_prebuild_objs = $(subdir_v2) pgchart.gh graph2.gh
+libtarg_objs          = $(template)
 libtarg_name          = chart2
 !include libtarg.mif
 
 #
 # rc and others
 #
-pgchart.lbc : $(objs) $(__MAKEFILES__)
-    $(noecho)%create $@
-    @for %i in ($(objs)) do @%append $@ +%i
-
-pgchart2.lbc : $(v2_objs) $(__MAKEFILES__)
-    $(noecho)%create $@
-    @for %i in ($(v2_objs)) do @%append $@ +%i
-
 wsplice_opts_dos = -kDOS
 wsplice_opts_os2 = -kDOS
 wsplice_opts_qnx = -kQNX -u
