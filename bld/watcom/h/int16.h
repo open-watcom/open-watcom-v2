@@ -34,7 +34,7 @@
 #ifndef _INT16_H_INCLUDED
 #define _INT16_H_INCLUDED
 
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( _M_I86 ) && defined( __OS2__ )
 
 
 #define VECTOR_KEYB         0x16
@@ -74,6 +74,6 @@ extern unsigned char _BIOSKeyboardTest( unsigned char );
     __modify __exact    [__ax]
 
 
-#endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) */
+#endif  /* defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( _M_I86 ) && defined( __OS2__ ) */
 
 #endif  /* _INT16_H_INCLUDED */

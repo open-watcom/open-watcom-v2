@@ -271,6 +271,6 @@ extern unsigned short _BIOSMouseDriverResetSoft( void );
     __modify __exact    [__ax __bx]
 
 
-#endif /* defined( __DOS__ ) || defined( __WINDOWS__ ) */
+#endif /* defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( _M_I86 ) && defined( __OS2__ ) */
 
 #endif /* _INT33_H_INCLUDED */
