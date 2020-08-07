@@ -856,10 +856,10 @@ static void command( sedcmd *ipc )
 /* get next line of text to be filtered */
 static char *getinpline( char *buf )  /* where to send the input */
 {
-    int const                   room = (int)( linebuf + sizeof( linebuf ) - 1 - buf );
+    int const                   room = (int)( linebuf + MAXBUF + 3 - 1 - buf );
     int                         temp;
 
-    assert( buf >= linebuf && buf < linebuf + sizeof( linebuf ) );
+    assert( buf >= linebuf && buf < linebuf + MAXBUF + 3 );
 
     /*
      * The OW fgets note:
