@@ -32,7 +32,7 @@ readout() and memeql() are output and string-comparison utilities.
 #if 0
 /* LTLMSG was used when buffer overflow stopped sed */
 static char const       LTLMSG[] = "sed: line too long \"%.*s\"\n";
-#define ABORTEX(msg) fprintf( stderr, msg, sizeof genbuf, genbuf ), exit( 2 )
+#define ABORTEX(msg) fprintf( stderr, msg, GENSIZ, genbuf ), exit( 2 )
 #endif
 
 static char const       FRENUL[] = "sed: first RE must be non-null\n";
@@ -550,8 +550,8 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
     lp = linebuf;
     sp = genbuf;
     while( lp < loc1 ) {
-        if( sp >= genbuf + sizeof genbuf ) { /* Not exercised by sedtest.mak */
-            fprintf( stderr, NOROOM, sizeof genbuf, lnum );
+        if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
+            fprintf( stderr, NOROOM, GENSIZ, lnum );
             break;
         }
         *sp++ = *lp++;
@@ -563,8 +563,8 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         } else if( (c & 0x80) && ( c &= 0x7F ) >= '1' && c < MAXTAGS + '1' ) {
             sp = place( sp, brastart[c - '0'], bracend[c - '0'] );
         } else {
-            if( sp >= genbuf + sizeof genbuf ) { /* Not exercised by sedtest.mak */
-                fprintf( stderr, NOROOM, sizeof genbuf, lnum );
+            if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
+                fprintf( stderr, NOROOM, GENSIZ, lnum );
                 break;
             }
             *sp++ = c & 0x7F;
@@ -573,8 +573,8 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
     lp = loc2;
     loc2 = sp - ( genbuf - linebuf );   /* Last character to remove */
     do{
-        if( sp >= genbuf + sizeof genbuf ) { /* Not exercised by sedtest.mak */
-            fprintf( stderr, NOROOM, sizeof genbuf, lnum );
+        if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
+            fprintf( stderr, NOROOM, GENSIZ, lnum );
             break;
         }
     } while( ( *sp++ = *lp++ ) != 0 );
@@ -591,8 +591,8 @@ static char *place(
     char const *al2 )
 {
     while( al1 < al2 ) {
-        if( asp >= genbuf + sizeof genbuf ) { /* Not exercised by sedtest.mak */
-            fprintf( stderr, NOROOM, sizeof genbuf, lnum );
+        if( asp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
+            fprintf( stderr, NOROOM, GENSIZ, lnum );
             break;
         }
         *asp++ = *al1++;
