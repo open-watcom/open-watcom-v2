@@ -190,14 +190,16 @@ ldebug_fmt  = debug dwarf
 cldebug_fmt = -hd
 !endif
 
+!ifndef $(proj_name)_nooptimization
+mode_optimization = $(dft_oflags)
+!endif
+!ifndef $(proj_name)_checkstack
+mode_nocheckstack = -s
+!endif
 mode_libflags =
 !ifeq release 1
 mode_cppflags = -DNDEBUG
-!ifdef $(proj_name)_checkstack
-mode_cflags   = $(dft_oflags) -d1 $(cdebug_fmt)
-!else
-mode_cflags   = -s$(dft_oflags) -d1 $(cdebug_fmt)
-!endif
+mode_cflags   = $(mode_nocheckstack)$(mode_optimization) -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
 mode_clflags  = $(cldebug_fmt) -d1
@@ -206,11 +208,7 @@ mode_libflags = -s-t-zld
 !endif
 !else
 mode_cppflags =
-!ifdef $(proj_name)_nocheckstack
-mode_cflags   = -s-od -d2 $(cdebug_fmt)
-!else
 mode_cflags   = -od -d2 $(cdebug_fmt)
-!endif
 mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
 mode_clflags  = $(cldebug_fmt) -d2
