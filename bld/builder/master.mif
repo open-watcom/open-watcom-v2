@@ -66,17 +66,9 @@ diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
 wgrep.exe :   $(wgrep_objs)
 
-builder.exe : $(builder_objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(builder_objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(builder_objs) $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {$(builder_objs)}
-!endif
+exetarg_objs = $(builder_objs)
+exetarg_name = builder
+!include exetarg.mif
 !if "$(host_os)" == "$(bld_os)"     # Don't copy unless host_os=build_os
 !ifndef %LOGFNAME                   # Don't copy unless build outside builder
 !ifdef __UNIX__
