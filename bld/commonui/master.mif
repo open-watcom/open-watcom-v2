@@ -22,7 +22,6 @@ sys_windowed = 1
 # cflags
 #
 .c: ../c;$(watcom_dir)/c
-.asm: ../asm
 
 inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 
@@ -34,6 +33,11 @@ extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc
 extra_c_flags_win_i86 = -zW
 extra_c_flags_win_386 = -zw
+
+#
+# aflags
+#
+.asm: ../asm
 
 # explicit rules
 #################
