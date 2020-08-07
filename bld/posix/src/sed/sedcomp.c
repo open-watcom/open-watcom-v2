@@ -41,7 +41,7 @@ typedef struct                          /* represent a command label */
 }               label;
 
                                         /* main data areas */
-char            linebuf[MAXBUF + 3];    /* current-line buffer */
+char            *linebuf = NULL;        /* current-line buffer */
 sedcmd          cmds[MAXCMDS + 1];      /* hold compiled commands */
 long            linenum[MAXLINES];      /* numeric-addresses table */
 
@@ -76,6 +76,7 @@ static char const       NEEDB[] = "sed: error processing: %s\n";
 static char const       INERR[] = "sed: internal error: %s\n";
 static char const       SMCNT[] = "sed: bad value for match count on s command %s\n";
 static char const       UNCLS[] = "sed: invalid character class name %s\n";
+static char const       NOMEM[] = "sed: no memory for input buffer\n";
 static char const       *USAGE[] = {
     "Usage: sed [-g] [-n] script file ...",
     "       sed [-g] [-n] -e script ... -f script_file ... file ...",
@@ -167,6 +168,11 @@ int main( int argc, char *argv[] )
         usage();                /* exit immediately if no arguments */
     eargc   = argc;             /* set local copy of argument count */
     eargv   = argv;             /* set local copy of argument list */
+    linebuf = malloc( MAXBUF + 3 );
+    if( linebuf == NULL ) {
+        fprintf( stderr, NOMEM );
+        myexit( 2 );
+    }
     /* scan through the arguments, interpreting each one */
     /* We dont use the OW GetOpt() or the POSIX getopt() as we want to do
     * -e i\ hello -e "s/$/ world" */
@@ -256,6 +262,7 @@ int main( int argc, char *argv[] )
         execute( NULL );        /*   execute commands on stdin only */
     } else while( --eargc >= 0 )  /* else do commands on each file specified */
         execute( *eargv++ );
+    free( linebuf );
     return( 0 );                /* everything was O.K. if we got here */
 }
 

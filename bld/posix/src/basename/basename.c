@@ -34,6 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#ifdef __QNX__
+    #include <limits.h>
+#endif
 #include "bool.h"
 #include "misc.h"
 #include "getopt.h"

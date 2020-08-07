@@ -81,7 +81,7 @@ extern void     execute( const char *file ); /* In sed.c */
 
 /* The following are in sedcomp.c */
                                                 /* main data areas */
-extern char             linebuf[MAXBUF + 3];    /* current-line buffer */
+extern char             *linebuf;               /* current-line buffer */
 extern sedcmd           cmds[MAXCMDS + 1];      /* hold compiled commands */
 extern long             linenum[MAXLINES];      /* numeric-addresses table */
 

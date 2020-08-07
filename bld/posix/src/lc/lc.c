@@ -53,13 +53,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef __QNX__
-#include <dos.h>
-#include <direct.h>
-#include "pathgrp.h"
-#else
+#ifdef __QNX__
 #include <unistd.h>
 #include <dirent.h>
+#include <limits.h>
+#include "pathgrp2.h"
+#else
+#include <dos.h>
+#include <direct.h>
 #endif
 #include "bool.h"
 #include "getopt.h"
@@ -168,7 +169,7 @@ void DoLC( char *dir )
     struct dirent       *dire;
 #ifdef __QNX__
     char                tmpname[ _MAX_PATH ];
-    PGROUP              pg;
+    PGROUP2             pg;
 #endif
 
     /*
