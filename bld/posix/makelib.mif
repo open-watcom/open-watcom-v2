@@ -6,20 +6,7 @@ proj_name = posix_lib
 
 posix_lib_autodepends = .AUTODEPEND
 
-!ifndef model
-!ifeq host_cpu i86
-model = c
-!else ifeq host_cpu 386
-!ifeq host_os qnx
-model=s
-!else
-model=f
-!endif
-!endif
-!endif
-
-memory_model_i86=$(model)
-memory_model_386=$(model)
+!include $(posix_dir)/model.mif
 
 !include cproj.mif
 !include defrule.mif

@@ -1,0 +1,16 @@
+!ifndef model
+!ifeq host_cpu i86
+model=c
+!else ifeq host_cpu 386
+!ifeq host_os qnx
+model=s
+!else ifeq host_os dos
+model=s
+!else
+model=f
+!endif
+!endif
+!endif
+
+memory_model_i86=$(model)
+memory_model_386=$(model)

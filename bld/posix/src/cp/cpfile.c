@@ -62,7 +62,9 @@
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
 #if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
+
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
+#if defined( _M_I86 )
 #pragma aux DosGetFullPath = \
         "push ds"       \
         "mov  si,ax"    \
@@ -74,6 +76,20 @@ extern long DosGetFullPath( char __FAR *org, char __FAR *real );
     __parm      [__dx __ax] [__es __di] \
     __value     [__dx __ax] \
     __modify    [__si]
+#else
+#pragma aux DosGetFullPath = \
+        "push ds"       \
+        "mov  esi,eax"  \
+        "mov  ds,dx"    \
+        "mov  ah,60H"   \
+        "int 21h"       \
+        "sbb  edx,edx"  \
+        "mov  dx,ax"    \
+        "pop  ds"       \
+    __parm      [__dx __eax] [__es __edi] \
+    __value     [__edx] \
+    __modify    [__esi]
+#endif
 
 /*
  * dosSameFile - DOS specific same file test
@@ -94,6 +110,7 @@ extern int _inline_strcmp( char *, char * );
 
 } /* dosSameFile */
 
+#ifdef __OS2__
 /*
  * osSameFile - OS/2 specific same file test
  */
@@ -107,6 +124,11 @@ static int osSameFile( char *dest, char *src )
     return( true );
 
 } /* osSameFile */
+#else
+
+#define osSameFile      dosSameFile
+
+#endif
 
 #elif defined( __NT__ )
 /*

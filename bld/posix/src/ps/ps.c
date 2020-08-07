@@ -94,9 +94,9 @@ void __far *__first_pid( void );
         "xor  ebx,ebx"  \
         "mov  ah,52h"   \
         "int 21h"       \
-        "mov  ax,es"    \
+        "mov  cx,es"    \
     __parm      [] \
-    __value     [__ax __ebx] \
+    __value     [__cx __ebx] \
     __modify    [__es]
 #endif
 
