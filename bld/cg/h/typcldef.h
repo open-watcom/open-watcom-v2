@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,4 +42,4 @@ pick( CP, TY_LONG_POINTER )
 pick( PT, TY_HUGE_POINTER )
 pick( FS, TY_SINGLE )
 pick( FD, TY_DOUBLE )
-pick( FL, TY_DOUBLE )
+pick( FL, __FP80BIT(TY_LONG_DOUBLE,TY_DOUBLE) )

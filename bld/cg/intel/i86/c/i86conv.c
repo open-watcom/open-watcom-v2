@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,24 +164,38 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MAKECALL,     FU_NO
     RT_MAP( C_I4_S, RT_I4FS ) \
     RT_MAP( C_U4_D, RT_U4FD ) \
     RT_MAP( C_I4_D, RT_I4FD ) \
+    RT_MAP1( C_U4_L, RT_U4FL ) \
+    RT_MAP1( C_I4_L, RT_I4FL ) \
     RT_MAP( C_S_D,  RT_FSFD ) \
+    RT_MAP1( C_S_L,  RT_FSFL ) \
     RT_MAP( C_S_I4, RT_FSI4 ) \
     RT_MAP( C_S_U4, RT_FSU4 ) \
     RT_MAP( C_D_I4, RT_FDI4 ) \
     RT_MAP( C_D_U4, RT_FDU4 ) \
     RT_MAP( C_D_S,  RT_FDFS ) \
+    RT_MAP1( C_D_L,  RT_FDFL ) \
+    RT_MAP1( C_L_I4, RT_FLI4 ) \
+    RT_MAP1( C_L_U4, RT_FLU4 ) \
+    RT_MAP1( C_L_S,  RT_FLFS ) \
+    RT_MAP1( C_L_D,  RT_FLFD ) \
     RT_MAP( C_U8_S, RT_U8FS ) \
     RT_MAP( C_I8_S, RT_I8FS ) \
     RT_MAP( C_U8_D, RT_U8FD ) \
     RT_MAP( C_I8_D, RT_I8FD ) \
+    RT_MAP1( C_U8_L, RT_U8FL ) \
+    RT_MAP1( C_I8_L, RT_I8FL ) \
     RT_MAP( C_S_I8, RT_FSI8 ) \
     RT_MAP( C_S_U8, RT_FSU8 ) \
     RT_MAP( C_D_I8, RT_FDI8 ) \
     RT_MAP( C_D_U8, RT_FDU8 ) \
+    RT_MAP1( C_L_I8, RT_FLI8 ) \
+    RT_MAP1( C_L_U8, RT_FLU8 ) \
     RT_MAP( C7U8_S, RT_U8FS7 ) \
     RT_MAP( C7U8_D, RT_U8FD7 ) \
+    RT_MAP1( C7U8_L, RT_U8FL7 ) \
     RT_MAP( C7S_U8, RT_FSU87 ) \
-    RT_MAP( C7D_U8, RT_FDU87 )
+    RT_MAP( C7D_U8, RT_FDU87 ) \
+    RT_MAP1( C7L_U8, RT_FLU87 )
 
 typedef enum {
     #define pick(e,t) C##e,
@@ -194,7 +208,9 @@ typedef enum {
     FPOK,
     BAD,
     #define RT_MAP(a,b) a,
+    #define RT_MAP1(a,b) __FP80BIT(RT_MAP(a,b),)
     RTFUNC_MAPS
+    #undef RT_MAP1
     #undef RT_MAP
 } conv_method;
 
@@ -206,15 +222,17 @@ static const opcode_entry     *CvtAddr[] = {
 
 static  rt_class        RTRoutineTable[] = {
     #define RT_MAP(a,b) b,
+    #define RT_MAP1(a,b) __FP80BIT(RT_MAP(a,b),)
     RTFUNC_MAPS
+    #undef RT_MAP1
     #undef RT_MAP
 };
 
 #define __x__   BAD
 
-/*
+/* TODO! 80-bit FP
  * must be implemented for long double
- * now mapped to double symbols
+ * now mapped to double type
  */
 #define C_U4_L  C_U4_D
 #define C_I4_L  C_I4_D
@@ -247,9 +265,9 @@ CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D
 CU4,   CI4,   CU4,    CI4,   C_U4_L, C_I4_L, C_U8_L, C_I8_L, __x__, __x__, C_S_L,  C_D_L,  OK,     /* FL */
 };
 
-/*
+/* TODO! 80-bit FP
  * must be implemented for long double
- * now mapped to double symbols
+ * now mapped to double type
  */
 #define C7U8_L  C7U8_D
 #define C7L_U8  C7D_U8

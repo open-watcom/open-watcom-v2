@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -368,7 +368,7 @@ static  hw_reg_set        *ParmSets[] = {
     DblPtrRegs,             /* PT*/
     DoubleRegs,             /* FS*/
     QuadReg,                /* FD*/
-    QuadReg,                /* FL*/
+    __FP80BIT(Empty,QuadReg),/* FL*/
     Empty                   /* XX*/
 };
 static  hw_reg_set        *ParmSets8087[] = {
@@ -400,7 +400,7 @@ static  reg_set_index   IsSets[] = {
     RL_DBL_OR_PTR,          /* PT*/
     RL_DOUBLE,              /* FS*/
     RL_8,                   /* FD*/
-    RL_8,                   /* FL*/
+    __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
 static  reg_set_index   ReturnSets[] = {
@@ -416,7 +416,7 @@ static  reg_set_index   ReturnSets[] = {
     RL_DX_AX,               /* PT*/
     RL_DX_AX,               /* FS*/
     RL_8,                   /* FD*/
-    RL_8,                   /* FL*/
+    __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
 static  reg_set_index   Return8087[] = {
@@ -699,10 +699,10 @@ type_class_def  RegClass( hw_reg_set regs )
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
-            return( FD );
+            return( __FP80BIT(FL,FD) );
         for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( regs, *possible ) ) {
-                return( FD );
+                return( __FP80BIT(FL,FD) );
             }
         }
     } else {

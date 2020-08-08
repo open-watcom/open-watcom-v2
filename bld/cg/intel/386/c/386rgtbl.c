@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -395,7 +395,7 @@ static  reg_set_index   ClassSets[] = {
     RL_,                    /* PT */
     RL_,                    /* FS */
     RL_8,                   /* FD */
-    RL_8,                   /* FL */ // FIXME - long double
+    __FP80BIT(RL_,RL_8),    /* FL */
     RL_                     /* XX */
 };
 
@@ -812,10 +812,10 @@ type_class_def  RegClass( hw_reg_set regs )
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
-            return( FD );
+            return( __FP80BIT(FL,FD) );
         for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( regs, *possible ) ) {
-                return( FD );
+                return( __FP80BIT(FL,FD) );
             }
         }
         return( XX );
