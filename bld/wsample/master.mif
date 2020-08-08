@@ -127,7 +127,7 @@ exetarg_name = wsample
 
 !ifeq target pls
 exetarg_ext = .exp
-additional_cleanup_sys = *.exp
+additional_clean_sys = *.exp
 !endif
 
 #

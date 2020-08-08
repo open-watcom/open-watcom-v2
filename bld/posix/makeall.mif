@@ -89,7 +89,7 @@ clean : .symbolic
 
 killobjs : .PROCEDURE .EXPLICIT
     rm -f *.obj *.lnk *.exe *.exp *.lib *.lbc *.lst *.err *.pch *.map *.sym
-    rm -f *.tmp *.trk $(additional_cleanup_sys)
+    rm -f *.tmp *.trk $(additional_clean_sys)
 
 !else
 

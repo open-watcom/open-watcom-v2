@@ -265,7 +265,7 @@ bitmaps = &
 
 !ifdef gui_os2pm
 
-additional_cleanup = *.dlg
+additional_clean = *.dlg
 
 wv_dialogs = &
     dlgayn.dlg &
@@ -426,7 +426,7 @@ ntmanif.res : ../../res/ntmanif.rc
 
 litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
 
 litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
@@ -434,7 +434,7 @@ litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
 
 litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -o$@ $[@
+    $(cpp) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $@

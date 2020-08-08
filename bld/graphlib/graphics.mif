@@ -4,9 +4,7 @@ subdir_v2 = v2objs
 
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup_subdir = $(subdir_v2)
-
-additional_cleanup = $(crwatpro_sp)
+additional_clean = $(crwatpro_sp)
 
 graph_autodepends = .AUTODEPEND
 

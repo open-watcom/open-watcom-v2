@@ -55,8 +55,6 @@ exetarg_name = tstos2
 
 subdir_editor = eobjs
 
-additional_cleanup_subdir = $(subdir_editor)
-
 .c: ../win;../dos
 
 inc_dirs = -I"../win" -I"../dos"

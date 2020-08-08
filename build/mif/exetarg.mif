@@ -22,13 +22,13 @@ exetarg_name = $(proj_name)
 !ifndef exetarg_ext
 !ifeq host_os nov
 exetarg_ext = .nlm
-additional_cleanup_sys = *.nlm
+additional_clean_sys = *.nlm
 !else
 exetarg_ext = .exe
 !endif
 !endif
 !ifdef exetarg_qnx_res
-additional_cleanup_qnx = $(exetarg_qnx_res)
+additional_clean_qnx = $(exetarg_qnx_res)
 !ifdef __WATCOM_TOOLS__
 !ifeq host_os qnx
 exetarg_qnx_res_obj = $(exetarg_qnx_res)

@@ -5,7 +5,7 @@ proj_name = defgen
 host_os  = dos
 host_cpu = 386
 
-additional_cleanup = ytab.*
+additional_clean = ytab.*
 
 !include cproj.mif
 !include defrule.mif

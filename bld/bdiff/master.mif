@@ -1,13 +1,6 @@
-# Known bugs: if you build a dos386 version, it will build fine but complain
-#             about not being able to find the message file.
-
 proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
-
-all_execs = bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe
-
-additional_cleanup_subdir = $(all_execs:.exe=)
 
 #debug_bdiff = 1
 
@@ -27,39 +20,42 @@ inc_dirs = -I. -I"../h" -I"$(dip_dir)/watcom/h"
 # explicit rules
 #################
 
-all : $(all_execs) .SYMBOLIC
-
 subdir_wcpatch  = wcpatch
 subdir_wpatch   = wpatch
 subdir_bpatch   = bpatch
 subdir_bdump    = bdump
 subdir_bdiff    = bdiff
-subdir_bpcmt    = bpcmt
-subdir_bplevel  = bplevel
 
-# systems where manifest file resource must be added to .EXE
+all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe .SYMBOLIC
+
+#
+# EXE's
+#
 exetarg_nt_manif_386 = ntmanif.res
 exetarg_nt_manif_x64 = ntmanif.res
 
-!ifdef exetarg_$(host_os)_manif_$(host_cpu)
-$(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
-    @%make echo_rc
-    $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
-!endif
+#
+# BCMT
+#
+exetarg_objs	    = bpcmt.obj
+exetarg_name	    = bpcmt
+!include exetarg.mif
 
+#
+# BLEVEL
+#
+exetarg_objs	    = bplevel.obj
+exetarg_name	    = bplevel
+!include exetarg.mif
+
+exetarg_libs	    = $(wres_lib)
 #
 # WCPATCH. Create patch.
 #
-extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+exetarg_prebuild_objs = $(subdir_wcpatch)
 !ifdef debug_bdiff
-extra_cpp_wcpatch_flags += -DUSE_DBGINFO
 exetarg_objs_debug    = $(subdir_wcpatch)/symtab.obj
 !endif
-
-defrule_key = wcpatch
-!include defrule.mif
-
-exetarg_prebuild_objs = $(subdir_wcpatch)
 exetarg_objs = &
     $(subdir_wcpatch)/dopatch.obj &
     $(subdir_wcpatch)/msg.obj &
@@ -67,19 +63,13 @@ exetarg_objs = &
     $(subdir_wcpatch)/wcpatch.obj &
     $(subdir_wcpatch)/wbdiff.obj &
     $(subdir_wcpatch)/diff.obj $(exetarg_objs_debug)
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = bdiff.res
-exetarg_name          = wcpatch
+exetarg_res_wresui  = wcpatch.res
+exetarg_name	    = wcpatch
 !include exetarg.mif
 
 #
 # WPATCH. Apply patch.
 #
-extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
-
-defrule_key = wpatch
-!include defrule.mif
-
 exetarg_prebuild_objs = $(subdir_wpatch)
 exetarg_objs = &
     $(subdir_wpatch)/dopatch.obj &
@@ -89,19 +79,13 @@ exetarg_objs = &
     $(subdir_wpatch)/wpatchio.obj &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = bpatch.res
-exetarg_name          = wpatch
+exetarg_res_wresui  = wpatch.res
+exetarg_name	    = wpatch
 !include exetarg.mif
 
 #
 # BPATCH.
 #
-extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
-
-defrule_key = bpatch
-!include defrule.mif
-
 exetarg_prebuild_objs = $(subdir_bpatch) pusage.gh
 exetarg_objs = &
     $(subdir_bpatch)/bpatch.obj &
@@ -111,19 +95,13 @@ exetarg_objs = &
     $(subdir_bpatch)/oldfile.obj &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = bpatch.res
-exetarg_name          = bpatch
+exetarg_res_wresui  = bpatch.res
+exetarg_name	    = bpatch
 !include exetarg.mif
 
 #
 # BDUMP.
 #
-extra_cpp_bdump_flags = -DBDUMP
-
-defrule_key = bdump
-!include defrule.mif
-
 exetarg_prebuild_objs = $(subdir_bdump) pusage.gh
 exetarg_objs = &
     $(subdir_bdump)/dopatch.obj &
@@ -132,60 +110,24 @@ exetarg_objs = &
     $(subdir_bdump)/oldfile.obj &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = bdump.res
-exetarg_name          = bdump
+exetarg_res_wresui  = bdump.res
+exetarg_name	    = bdump
 !include exetarg.mif
 
 #
 # BDIFF.
 #
-extra_cpp_bdiff_flags = -DBDIFF
+exetarg_prebuild_objs = $(subdir_bdiff) dusage.gh
 !ifdef debug_bdiff
-extra_cpp_bdiff_flags += -DUSE_DBGINFO
 exetarg_objs_debug    = $(subdir_bdiff)/symtab.obj
 !endif
-
-defrule_key = bdiff
-!include defrule.mif
-
-exetarg_prebuild_objs = $(subdir_bdiff) dusage.gh
 exetarg_objs = &
     $(subdir_bdiff)/bdiff.obj &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
     $(subdir_bdiff)/msg.obj $(exetarg_objs_debug)
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = bdiff.res
-exetarg_name          = bdiff
-!include exetarg.mif
-!undef exetarg_res_wresui
-!undef exetarg_libs
-
-#
-# BCMT
-#
-extra_cpp_bpcmt_flags = -DBPCMT
-
-defrule_key = bpcmt
-!include defrule.mif
-
-exetarg_prebuild_objs = $(subdir_bpcmt)
-exetarg_objs          = $(subdir_bpcmt)/bpcmt.obj
-exetarg_name          = bpcmt
-!include exetarg.mif
-
-#
-# BLEVEL
-#
-extra_cpp_bplevel_flags = -DBPLEVEL
-
-defrule_key = bplevel
-!include defrule.mif
-
-exetarg_prebuild_objs = $(subdir_bplevel)
-exetarg_objs          = $(subdir_bplevel)/bplevel.obj
-exetarg_name          = bplevel
+exetarg_res_wresui  = bdiff.res
+exetarg_name	    = bdiff
 !include exetarg.mif
 
 # resources
@@ -204,32 +146,47 @@ dusage.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
-bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
+bpatch.res wpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
     $(rcui) -DBPATCH
 
-bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
+bdiff.res wcpatch.res : ../bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
     $(rcui) -DBDIFF
 
-bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
+bdump.res : ../bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
     $(rcui) -DBDUMP
 
-bind_res_bdiff: .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
+!ifdef exetarg_$(host_os)_manif_$(host_cpu)
+$(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
+    @%make echo_rc
+    $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
 !endif
-    $(wstrip) -q -a -r $@ . bdiff.res
 
-bind_res_bpatch: .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-    $(wstrip) -q -a -r $@ . bpatch.res
+# implicit rules
+#################
 
-bind_res_bdump: .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
+!ifdef debug_bdiff
+extra_cpp_debug_flags = -DUSE_DBGINFO
 !endif
-    $(wstrip) -q -a -r $@ . bdump.res
+
+extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH $(extra_cpp_debug_flags)
+defrule_key = wcpatch
+!include defrule.mif
+
+extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
+defrule_key = wpatch
+!include defrule.mif
+
+extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
+defrule_key = bpatch
+!include defrule.mif
+
+extra_cpp_bdump_flags = -DBDUMP
+defrule_key = bdump
+!include defrule.mif
+
+extra_cpp_bdiff_flags = -DBDIFF $(extra_cpp_debug_flags)
+defrule_key = bdiff
+!include defrule.mif

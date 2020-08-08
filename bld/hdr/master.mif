@@ -37,8 +37,8 @@ rdos_path  = ../watcom
 
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwatpro_sp) $(noext) *.h *.hpp common.cnv
-additional_cleanup_subdir = $($(system)_dirs)
+additional_clean = $(crwatpro_sp) $(noext) *.h *.hpp common.cnv
+additional_clean_subdir = $($(system)_dirs)
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .sp .mh .mhp .sp1
@@ -174,5 +174,5 @@ clean: .SYMBOLIC
     rm -f *.sp
     rm -f $(noext)
     rm -rf $($(system)_dirs)
-    rm -f $(additional_cleanup)
-    rm -rf $(additional_cleanup_subdir)
+    rm -f $(additional_clean)
+    rm -rf $(additional_clean_subdir)

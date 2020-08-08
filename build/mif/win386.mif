@@ -7,7 +7,7 @@
 !ifdef win386
 lname = $^&.rex
 win386ldr = $(win386_dir)/ext/win386.ext
-additional_cleanup_sys = *.rex
+additional_clean_sys = *.rex
 !else
 lname = $@
 !endif

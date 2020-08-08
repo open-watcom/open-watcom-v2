@@ -526,5 +526,5 @@ runlnx : $(lnxexes) .symbolic
     @lnx_3r
     @lnx_3s
 
-additional_cleanup = lnx_3r lnx_3s
+additional_clean = lnx_3r lnx_3s
 !include ../mif/clean.mif

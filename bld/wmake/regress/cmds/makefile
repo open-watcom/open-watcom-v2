@@ -6,7 +6,7 @@ proj_name = wmake_regress_cmds
 !ifdef __UNIX__
 exe=
 c_dir=../c/
-additional_cleanup = $(commands)
+additional_clean = $(commands)
 !else
 exe=.exe
 c_dir=..\c\

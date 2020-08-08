@@ -654,7 +654,7 @@ inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos"
 # src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
 # which individual projects are free to define as needed.
 
-inc_dirs_all = $(inc_dirs_trmem) -I"$(watcom_dir)/h"
+inc_dirs_all    = $(inc_dirs_trmem) -I"$(watcom_dir)/h"
 
 !ifdef inc_dirs_lang_$(host_os)
 inc_dirs_lang   = $(inc_dirs_lang_$(host_os))

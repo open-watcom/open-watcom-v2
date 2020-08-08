@@ -8,7 +8,7 @@ w16api_distrib_lib = 1
 
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwatpro_sp) depends.dep
+additional_clean = $(crwatpro_sp) depends.dep
 
 incl_dir = ../include
 
@@ -123,4 +123,4 @@ clean : .SYMBOLIC
     rm -f *.lbc
     rm -f *.lib
     rm -f *.obj
-    rm -f $(additional_cleanup)
+    rm -f $(additional_clean)

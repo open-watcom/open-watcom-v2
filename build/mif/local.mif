@@ -35,7 +35,7 @@ lflags_dos_386  = sys causeway
 
 !if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64"
 
-additional_cleanup_sys = *.pdb
+additional_clean_sys = *.pdb
 
 # common settings
 ############################

@@ -5,11 +5,9 @@ proj_name = pgchart
 
 subdir_v2 = v2objs
 
-additional_cleanup_subdir = $(subdir_v2)
-
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwatpro_sp)
+additional_clean = $(crwatpro_sp)
 
 pgchart_autodepends = .AUTODEPEND
 pgchart_distrib_lib = 1

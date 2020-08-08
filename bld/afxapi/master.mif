@@ -292,7 +292,7 @@ extra_cpp_flags += -D_AFXDLL
 
 extra_c_flags += -fhwe -xs
 
-additional_cleanup = *.h *.inl *.gdf
+additional_clean = *.h *.inl *.gdf
 
 all : $($(what_to_build)) .SYMBOLIC
     @%null

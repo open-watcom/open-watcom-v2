@@ -9,9 +9,7 @@ was_trmem = 1
 subdir_stand = stand
 subdir_lib = lib
 
-additional_cleanup = *.c *.h *.re *.y
-
-additional_cleanup_subdir = $(subdir_stand) $(subdir_lib)
+additional_clean = *.c *.h *.re *.y
 
 !include cproj.mif
 !include defrule.mif

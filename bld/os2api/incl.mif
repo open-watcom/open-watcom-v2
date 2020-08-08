@@ -15,7 +15,7 @@ hdr_cpu = $(host_cpu)
 
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwatpro_sp) depends.dep
+additional_clean = $(crwatpro_sp) depends.dep
 
 incl_dir_286 = ../../incl16
 incl_dir_386 = ../../incl32
@@ -207,5 +207,5 @@ $(dirs$(hdr_cpu)): .EXPLICIT
 
 clean : .SYMBOLIC
     rm -f *.h
-    rm -f $(additional_cleanup)
+    rm -f $(additional_clean)
     rm -rf $(dirs$(hdr_cpu))

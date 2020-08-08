@@ -10,7 +10,7 @@ w32api_distrib_lib  = 1
 
 crwatpro_sp = crwatpro.sp
 
-additional_cleanup = $(crwatpro_sp) depends.dep
+additional_clean = $(crwatpro_sp) depends.dep
 
 incl_dir = $(w32api_dir)/include
 
@@ -488,5 +488,5 @@ $(dirs): .EXPLICIT
 
 clean: .SYMBOLIC
     rm -f *.h *.rh *.tmp *.lst *.err
-    rm -f $(additional_cleanup)
+    rm -f $(additional_clean)
     rm -rf $(dirs)

@@ -12,7 +12,7 @@ target_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-additional_cleanup = $(docs_host_dir)/ide.h
+additional_clean = $(docs_host_dir)/ide.h
 
 !include cproj.mif
 !include defrule.mif

@@ -87,7 +87,7 @@ dlltarg_ext = $(ext_lib_shared)
 !endif
 !endif
 !ifdef dlltarg_ext
-additional_cleanup = *$(dlltarg_ext)
+additional_clean = *$(dlltarg_ext)
 !endif
 
 # explicit rules

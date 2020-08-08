@@ -3,7 +3,7 @@ proj_name = conv
 conv_autodepends = .AUTODEPEND
 conv_distrib_lib = 1
 
-additional_cleanup = *.asm *.c *.inc
+additional_clean = *.asm *.c *.inc
 
 !include cproj.mif
 !include defrule.mif

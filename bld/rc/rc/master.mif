@@ -22,7 +22,7 @@ os2_yacc_prefix = os2y
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
+additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include cproj.mif
 !include defrule.mif

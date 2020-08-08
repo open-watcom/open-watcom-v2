@@ -19,7 +19,7 @@ dllname     = $(boot_prefix)wccd$(suffix)
 # international data file name
 intname     = wcc$(target_cpu)
 
-additional_cleanup = *.int
+additional_clean = *.int
 
 !include cproj.mif
 !include defrule.mif

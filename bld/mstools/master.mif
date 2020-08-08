@@ -3,9 +3,9 @@
 #
 
 # Extra files to delete on clean
-additional_cleanup = *.gc
+additional_clean = *.gc
 
-additional_cleanup_subdir = $(bin_subdir)
+additional_clean_subdir = $(bin_subdir)
 
 $(bin_subdir) : .EXPLICIT
     mkdir $@

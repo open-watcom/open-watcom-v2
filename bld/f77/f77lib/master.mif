@@ -4,7 +4,7 @@ proj_name = flib
 flib_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup = *.gc
+additional_clean = *.gc
 
 # remap fpu to processor
 flib_086 = 086

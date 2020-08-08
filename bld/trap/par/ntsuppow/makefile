@@ -6,7 +6,7 @@ proj_name = dbgport
 
 dbgport_autodepends = .autodepend
 
-additional_cleanup = dbgport.sys
+additional_clean = dbgport.sys
 
 suppress_zc = 1
 

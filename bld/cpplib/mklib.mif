@@ -2,7 +2,7 @@ proj_name = cpplib
 
 x_subdir = xobjs
 
-additional_cleanup_subdir = $(x_subdir)
+additional_clean_subdir = $(x_subdir)
 
 $(x_subdir) : .EXPLICIT
     mkdir $@

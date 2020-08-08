@@ -1,6 +1,6 @@
 proj_name = cpplib
 
-additional_cleanup = *.gdf
+additional_clean = *.gdf
 
 !include $(cpplib_dir)/master.mif
 

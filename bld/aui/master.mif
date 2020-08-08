@@ -126,7 +126,7 @@ libtarg_objs = &
 #
 !ifdef gui_os2pm
 
-additional_cleanup = *.dlg
+additional_clean = *.dlg
 
 dlg_opts  = -font=10.Helv
 dlgj_opts =

@@ -8,7 +8,7 @@ browse_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-additional_cleanup = $(docs_host_dir)/wbrw.h
+additional_clean = $(docs_host_dir)/wbrw.h
 
 .extensions: .gpp
 
