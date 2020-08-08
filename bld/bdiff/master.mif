@@ -37,18 +37,18 @@ exetarg_nt_manif_x64 = ntmanif.res
 #
 # BCMT
 #
-exetarg_objs	    = bpcmt.obj
-exetarg_name	    = bpcmt
+exetarg_objs        = bpcmt.obj
+exetarg_name        = bpcmt
 !include exetarg.mif
 
 #
 # BLEVEL
 #
-exetarg_objs	    = bplevel.obj
-exetarg_name	    = bplevel
+exetarg_objs        = bplevel.obj
+exetarg_name        = bplevel
 !include exetarg.mif
 
-exetarg_libs	    = $(wres_lib)
+exetarg_libs        = $(wres_lib)
 #
 # WCPATCH. Create patch.
 #
@@ -64,7 +64,7 @@ exetarg_objs = &
     $(subdir_wcpatch)/wbdiff.obj &
     $(subdir_wcpatch)/diff.obj $(exetarg_objs_debug)
 exetarg_res_wresui  = wcpatch.res
-exetarg_name	    = wcpatch
+exetarg_name        = wcpatch
 !include exetarg.mif
 
 #
@@ -80,7 +80,7 @@ exetarg_objs = &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
 exetarg_res_wresui  = wpatch.res
-exetarg_name	    = wpatch
+exetarg_name        = wpatch
 !include exetarg.mif
 
 #
@@ -96,7 +96,7 @@ exetarg_objs = &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
 exetarg_res_wresui  = bpatch.res
-exetarg_name	    = bpatch
+exetarg_name        = bpatch
 !include exetarg.mif
 
 #
@@ -111,7 +111,7 @@ exetarg_objs = &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
 exetarg_res_wresui  = bdump.res
-exetarg_name	    = bdump
+exetarg_name        = bdump
 !include exetarg.mif
 
 #
@@ -127,7 +127,7 @@ exetarg_objs = &
     $(subdir_bdiff)/dopatch.obj &
     $(subdir_bdiff)/msg.obj $(exetarg_objs_debug)
 exetarg_res_wresui  = bdiff.res
-exetarg_name	    = bdiff
+exetarg_name        = bdiff
 !include exetarg.mif
 
 # resources
@@ -146,17 +146,17 @@ dusage.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
-bpatch.res wpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
+bpatch.res bdump.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
     $(rcui) -DBPATCH
 
-bdiff.res wcpatch.res : ../bpatch.rc ../h/bpatch.h dusage.gh
+bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
     $(rcui) -DBDIFF
 
-bdump.res : ../bpatch.rc ../h/bpatch.h dusage.gh
+wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
     @%make echo_rc
-    $(rcui) -DBDUMP
+    $(rcui)
 
 !ifdef exetarg_$(host_os)_manif_$(host_cpu)
 $(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
