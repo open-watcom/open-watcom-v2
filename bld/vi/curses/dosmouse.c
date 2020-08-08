@@ -40,6 +40,8 @@
  */
 void SetMouseSpeed( int speed )
 {
+    /* unused parameters */ (void)speed;
+
 } /* SetMouseSpeed */
 
 /*
@@ -47,6 +49,8 @@ void SetMouseSpeed( int speed )
  */
 void SetMousePosition( windim row, windim col )
 {
+    /* unused parameters */ (void)row; (void)col;
+
 } /* SetMousePosition */
 
 /*
@@ -54,6 +58,8 @@ void SetMousePosition( windim row, windim col )
  */
 void PollMouse( int *status, windim *row, windim *col )
 {
+    /* unused parameters */ (void)row; (void)col;
+
     *status = 0;
 
 } /* PollMouse */
