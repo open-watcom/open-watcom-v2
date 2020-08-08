@@ -37,11 +37,7 @@
 enum {
     MSG_USAGE_COUNT = 0
     #define pick(c,e,j) + 1
-#if defined( BPATCH )
-        #include "pusage.gh"
-#else
-        #include "dusage.gh"
-#endif
+    #include "dusage.gh"
     #undef pick
 };
 
@@ -64,14 +60,14 @@ static const char   *SyncString = NULL;
 
 static char         *newName;
 
-static void Usage( const char *name )
+static void Usage( void )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
     i = MSG_USAGE_FIRST;
     GetMsg( msgbuf, i );
-    printf( msgbuf, name );
+    printf( msgbuf, "bdiff" );
     for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[0] == '\0' )
@@ -90,7 +86,7 @@ static algorithm ParseArgs( int argc, char **argv )
 
     newName = NULL;
     if( argc < 4 ) {
-        Usage( argv[0] );
+        Usage();
     }
     OldSymName = NULL;
     NewSymName = NULL;
@@ -100,7 +96,7 @@ static algorithm ParseArgs( int argc, char **argv )
     AppendPatchLevel = true;
     for( arg = argv + 4; (curr = *arg) != NULL; ++arg ) {
         if( *curr != '-' && *curr != '/' )
-            Usage( argv[0] );
+            Usage();
         ++curr;
         switch( tolower( curr[0] ) ) {
         case 's':
@@ -128,7 +124,7 @@ static algorithm ParseArgs( int argc, char **argv )
             }
             /* fall through */
         default:
-            Usage( argv[0] );
+            Usage();
             break;
         }
     }

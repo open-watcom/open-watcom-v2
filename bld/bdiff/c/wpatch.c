@@ -61,9 +61,9 @@ void main( int argc, char *argv[] )
     MsgInit();
     if( argc != 3 ) {
         printf( "Usage: WPATCH patchfile target-dir\n" );
-        printf( "where target-dir is the directory containing files to be modified,\n" );
-        printf( "and patchfile contains patch information for modifying target-dir.\n" );
-        printf( "(as created by WCPATCH)\n\n" );
+        printf( "    where target-dir is the directory containing files to be modified,\n" );
+        printf( "    and patchfile contains patch information for modifying target-dir.\n" );
+        printf( "    (as created by WCPATCH)\n\n" );
         exit( -2 );
     } else {
         printf( "Watcom Patch version 11.0\n" );

@@ -130,8 +130,9 @@ exetarg_res_wresui  = bdiff.res
 exetarg_name        = bdiff
 !include exetarg.mif
 
-# resources
-############
+#
+# rc and others
+#
 rcui_inc_dirs = -I..
 
 pusage.gh : ../usage.sp

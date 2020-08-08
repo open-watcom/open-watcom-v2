@@ -44,7 +44,7 @@
 #include "clibext.h"
 
 
-#define SKIP_ENTRY(e)	((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
+#define SKIP_ENTRY(e)   ((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
 
 struct {
     size_t  origSrcDirLen;
@@ -62,10 +62,10 @@ void main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 4 ) {
-        printf( "Usage: WCPATCH source-dir target-dir patchfile\n" );
-        printf( "where source-dir is the directory containing the original files,\n" );
-        printf( "target-dir is the directory containing the modified files,\n" );
-        printf( "and patchfile is the path to store the resulting patchfile in.\n\n" );
+        printf( "Usage: wcpatch source-dir target-dir patchfile\n" );
+        printf( "    where source-dir is the directory containing the original files,\n" );
+        printf( "    target-dir is the directory containing the modified files,\n" );
+        printf( "    and patchfile is the path to store the resulting patchfile in.\n\n" );
         exit( -2 );
     } else {
         printf( "Watcom Create Patch (WCPATCH) version 11.0\n" );
@@ -119,7 +119,7 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 
     for( ; (dire = readdir( dirp )) != NULL; ) {
         if( SKIP_ENTRY( dire ) )
-        	continue;
+            continue;
         diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
         strcpy( diritem, dire->d_name );
         strlwr( diritem );
