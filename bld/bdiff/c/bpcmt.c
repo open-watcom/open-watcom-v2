@@ -45,7 +45,7 @@ static void Usage( void );
 
 static char *Buffer;
 static char *Usetext[] = {
-    "Usage: BPCMT comment_file patch_file",
+    "Usage: bpcmt comment_file patch_file",
     NULL
 };
 
