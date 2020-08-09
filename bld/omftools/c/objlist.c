@@ -39,14 +39,7 @@
 #include "pcobj.h"
 #include "misc.h"
 
-typedef unsigned char   byte;
 
-static char             *NamePtr;
-static byte             NameLen;
-static unsigned_16      RecLen;
-static char             *RecBuff;
-static char             *RecPtr;
-static unsigned_16      RecMaxLen;
 static byte             RecHdr[3];
 
 static void usage( void )
@@ -55,76 +48,29 @@ static void usage( void )
     printf( "Usage: objlist <list of object or library files>\n" );
 }
 
-static byte GetByte( void )
-/*************************/
-{
-    return( *RecPtr++ );
-}
-
-static char *GetName( void )
-/**************************/
-{
-    NameLen = GetByte();
-    NamePtr = RecPtr;
-    RecPtr += NameLen;
-    return( NamePtr );
-}
-
-static bool ExtendRecBuff( unsigned_16 size )
-/*******************************************/
-{
-    if( RecMaxLen < size ) {
-        RecMaxLen = size;
-        if( RecBuff != NULL ) {
-            free( RecBuff );
-        }
-        RecBuff = malloc( RecMaxLen );
-        if( RecBuff == NULL ) {
-            printf( "**FATAL** Out of memory!\n" );
-            return( false );
-        }
-    }
-    return( true );
-}
-
-static bool ReadRec( FILE *fp )
-/*****************************/
-{
-    bool    ok;
-
-    RecLen = RecHdr[1] | ( RecHdr[2] << 8 );
-    ok = ExtendRecBuff( RecLen );
-    if( ok ) {
-        ok = ( fread( RecBuff, RecLen, 1, fp ) != 0 );
-    }
-    RecPtr = RecBuff;
-    return( ok );
-}
-
-
 static bool ProcFile( FILE *fp )
 /******************************/
 {
     unsigned_16 page_len;
     unsigned_32 offset;
     bool        ok;
+    int         rc;
 
     page_len = 0;
-    RecBuff = NULL;
-    RecMaxLen = 0;
-    for(;;) {
+    ReadRecInit();
+    ok = true;
+    while( ok ) {
         offset = ftell( fp );
-        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
-            ok = ( ferror( fp ) == 0 );
+        rc = ReadRec( fp, RecHdr );
+        if( rc <= 0 ) {
+            if( rc == 0 )
+                ok = false;
             break;
         }
-        ok = ReadRec( fp );
-        if( !ok )
-            break;
         switch( RecHdr[0] & ~1 ) {
         case CMD_THEADR:
             GetName();
-            *RecPtr = '\0';
+            NameTerm();
             printf( "%s\n", NamePtr );
             break;
         case CMD_MODEND:
@@ -141,14 +87,14 @@ static bool ProcFile( FILE *fp )
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = RecLen - 1 + 4;
+                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
             }
             break;
         default:
             break;
         }
     }
-    free( RecBuff );
+    ReadRecFini();
     return( ok );
 }
 

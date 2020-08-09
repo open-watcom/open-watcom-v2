@@ -44,7 +44,7 @@
 
 #define MAX_LINE_LEN 512
 
-typedef unsigned char byte;
+#define SET_RECLEN(h,s) h[1] = (byte)s; h[2] = (s >> 8)
 
 typedef struct sym_file {
     struct sym_file *next;
@@ -53,20 +53,44 @@ typedef struct sym_file {
 
 static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
-static char         *NamePtr;
-static byte         NameLen;
-static unsigned_16  ReadRecLen;
 static unsigned_16  WriteRecLen;
-static char         *ReadRecBuff;
 static char         *WriteRecBuff;
-static char         *ReadRecPtr;
 static char         *WriteRecPtr;
-static unsigned_16  ReadRecMaxLen;
 static unsigned_16  WriteRecMaxLen;
 static char         *symbol_name_pattern = NULL;
 static size_t       symbol_name_pattern_len = 0;
 static sym_file     *sym_files = NULL;
 static byte         RecHdr[3];
+
+static byte tbyte = 0;
+static byte *tptr = NULL;
+
+static void NameTermSave( void )
+/******************************/
+{
+    tptr = GetReadPtr();
+    tbyte = *tptr;
+    *tptr = '\0';
+}
+
+static void NameTermPtr( void )
+/*****************************/
+{
+    tptr = GetReadPtr();
+}
+
+static void NameTermData( void )
+/******************************/
+{
+    tbyte = *tptr;
+    *tptr = '\0';
+}
+
+static void NameTermRest( void )
+/******************************/
+{
+    *tptr = tbyte;
+}
 
 static void usage( void )
 /***********************/
@@ -75,70 +99,6 @@ static void usage( void )
     printf( "  <options> -l=<old>=<new>  rename LNAMES item\n" );
     printf( "            -m=....         symbol name pattern\n" );
     printf( "            -s=<file>       file with symbols\n" );
-}
-
-static bool IsDataReadRec( void )
-/*******************************/
-{
-    return( ReadRecPtr - ReadRecBuff < ReadRecLen - 1 );
-}
-
-static byte GetByte( void )
-/*************************/
-{
-    return( *ReadRecPtr++ );
-}
-
-static unsigned_16 GetUInt( void )
-/********************************/
-{
-    unsigned_16 word;
-
-    word = *(unsigned_16 *)ReadRecPtr;
-    CONV_LE_16( word );
-    ReadRecPtr += sizeof( unsigned_16 );
-    return( word );
-}
-
-static unsigned_32 GetOffset( void )
-/**********************************/
-{
-    if( RecHdr[0] & 1 ) {
-        unsigned_32 dword;
-
-        dword = *(unsigned_32 *)ReadRecPtr;
-        CONV_LE_32( dword );
-        ReadRecPtr += sizeof( unsigned_32 );
-        return( dword );
-    } else {
-        unsigned_16 word;
-
-        word = *(unsigned_16 *)ReadRecPtr;
-        CONV_LE_16( word );
-        ReadRecPtr += sizeof( unsigned_16 );
-        return( word );
-    }
-}
-
-static unsigned_16 GetIndex( void )
-/*********************************/
-{
-    unsigned_16 index;
-
-    index = GetByte();
-    if( index & 0x80 ) {
-        index = ( (index & 0x7f) << 8 ) + GetByte();
-    }
-    return( index );
-}
-
-static char *GetName( void )
-/**************************/
-{
-    NameLen = GetByte();
-    NamePtr = ReadRecPtr;
-    ReadRecPtr += NameLen;
-    return( NamePtr );
 }
 
 static char *PutUInt( char *p, unsigned_16 data )
@@ -189,23 +149,6 @@ static byte create_chksum( void )
     return( chksum );
 }
 
-static bool ExtendReadRecBuff( unsigned_16 size )
-/***********************************************/
-{
-    if( ReadRecMaxLen < size ) {
-        ReadRecMaxLen = size;
-        if( ReadRecBuff != NULL ) {
-            free( ReadRecBuff );
-        }
-        ReadRecBuff = malloc( ReadRecMaxLen );
-        if( ReadRecBuff == NULL ) {
-            printf( "**FATAL** Out of memory!\n" );
-            return( false );
-        }
-    }
-    return( true );
-}
-
 static bool ExtendWriteRecBuff( unsigned_16 size )
 /************************************************/
 {
@@ -223,162 +166,119 @@ static bool ExtendWriteRecBuff( unsigned_16 size )
     return( true );
 }
 
-static bool WriteLNAMES( FILE *fo, bool changed )
-/***********************************************/
+static bool WriteLNAMES( FILE *fo )
+/*********************************/
 {
     bool        ok;
     char        *n;
-    char        b;
 
-    if( changed ) {
-        RecHdr[1] = (byte)WriteRecLen;
-        RecHdr[2] = WriteRecLen >> 8;
-    }
+    SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
     if( ok ) {
-        if( !changed ) {
-            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
-        } else {
-            ok = ExtendWriteRecBuff( WriteRecLen );
-            if( ok ) {
-                ReadRecPtr = ReadRecBuff;
-                WriteRecPtr = WriteRecBuff;
-                while( IsDataReadRec() ) {
-                    GetName();
-                    b = *ReadRecPtr;
-                    *ReadRecPtr = '\0';
-                    n = SymbolExists( extdef_tab, NamePtr );
-                    if( n != NULL ) {
-                        NameLen = n[0];
-                        NamePtr = n + 1;
-                    }
-                    *WriteRecPtr++ = NameLen;
-                    memcpy( WriteRecPtr, NamePtr, NameLen );
-                    WriteRecPtr += NameLen;
-                    *ReadRecPtr = b;
+        ok = ExtendWriteRecBuff( WriteRecLen );
+        if( ok ) {
+            WriteRecPtr = WriteRecBuff;
+            RewindReadRec();
+            while( IsDataToRead() ) {
+                GetName();
+                NameTermSave();
+                n = SymbolExists( extdef_tab, NamePtr );
+                if( n != NULL ) {
+                    NameLen = n[0];
+                    NamePtr = n + 1;
                 }
-                *WriteRecPtr = 0 - create_chksum();
-                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+                *WriteRecPtr++ = NameLen;
+                memcpy( WriteRecPtr, NamePtr, NameLen );
+                WriteRecPtr += NameLen;
+                NameTermRest();
             }
+            *WriteRecPtr = 0 - create_chksum();
+            ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
         }
     }
     return( ok );
 }
 
-static bool WriteEXTDEF( FILE *fo, bool changed )
-/***********************************************/
+static bool WriteEXTDEF( FILE *fo )
+/*********************************/
 {
-    char        *tmp;
     unsigned_16 indx;
     bool        ok;
     char        *n;
-    char        b;
 
-    if( changed ) {
-        RecHdr[1] = (byte)WriteRecLen;
-        RecHdr[2] = WriteRecLen >> 8;
-    }
+    SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
     if( ok ) {
-        if( !changed ) {
-            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
-        } else {
-            ok = ExtendWriteRecBuff( WriteRecLen );
-            if( ok ) {
-                ReadRecPtr = ReadRecBuff;
-                WriteRecPtr = WriteRecBuff;
-                while( IsDataReadRec() ) {
-                    GetName();
-                    tmp = ReadRecPtr;
-                    indx = GetIndex();
-                    b = *tmp;
-                    *tmp = '\0';
-                    n = SymbolExists( pubdef_tab, NamePtr );
-                    if( n != NULL ) {
-                        NameLen = n[0];
-                        NamePtr = n + 1;
-                    }
-                    *WriteRecPtr++ = NameLen;
-                    memcpy( WriteRecPtr, NamePtr, NameLen );
-                    WriteRecPtr += NameLen;
-                    *tmp = b;
-                    WriteRecPtr = PutIndex( WriteRecPtr, indx );
+        ok = ExtendWriteRecBuff( WriteRecLen );
+        if( ok ) {
+            WriteRecPtr = WriteRecBuff;
+            RewindReadRec();
+            while( IsDataToRead() ) {
+                GetName();
+                NameTermPtr();
+                indx = GetIndex();
+                NameTermData();
+                n = SymbolExists( pubdef_tab, NamePtr );
+                if( n != NULL ) {
+                    NameLen = n[0];
+                    NamePtr = n + 1;
                 }
-                *WriteRecPtr = 0 - create_chksum();
-                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+                *WriteRecPtr++ = NameLen;
+                memcpy( WriteRecPtr, NamePtr, NameLen );
+                WriteRecPtr += NameLen;
+                NameTermRest();
+                WriteRecPtr = PutIndex( WriteRecPtr, indx );
             }
+            *WriteRecPtr = 0 - create_chksum();
+            ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
         }
     }
     return( ok );
 }
 
-static bool WritePUBDEF( FILE *fo, bool changed )
-/***********************************************/
+static bool WritePUBDEF( FILE *fo )
+/*********************************/
 {
-    char        *tmp;
     unsigned_16 idx1;
     unsigned_16 idx2;
     unsigned_32 offs;
     bool        ok;
     char        *n;
-    char        b;
 
-    if( changed ) {
-        RecHdr[1] = (byte)WriteRecLen;
-        RecHdr[2] = WriteRecLen >> 8;
-    }
+    SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
     if( ok ) {
-        if( !changed ) {
-            ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
-        } else {
-            ok = ExtendWriteRecBuff( WriteRecLen );
-            if( ok ) {
-                ReadRecPtr = ReadRecBuff;
-                WriteRecPtr = WriteRecBuff;
-                idx1 = GetIndex();
-                WriteRecPtr = PutIndex( WriteRecPtr, idx1 );
-                idx2 = GetIndex();
-                WriteRecPtr = PutIndex( WriteRecPtr, idx2 );
-                if( ( idx1 | idx2 ) == 0 )
-                    WriteRecPtr = PutUInt( WriteRecPtr, GetUInt() );
-                while( IsDataReadRec() ) {
-                    GetName();
-                    tmp = ReadRecPtr;
-                    offs = GetOffset();
-                    b = *tmp;
-                    *tmp = '\0';
-                    n = SymbolExists( pubdef_tab, NamePtr );
-                    if( n != NULL ) {
-                        NameLen = n[0];
-                        NamePtr = n + 1;
-                    }
-                    *WriteRecPtr++ = NameLen;
-                    memcpy( WriteRecPtr, NamePtr, NameLen );
-                    WriteRecPtr += NameLen;
-                    *tmp = b;
-                    WriteRecPtr = PutOffset( WriteRecPtr, offs );
-                    WriteRecPtr = PutIndex( WriteRecPtr, GetIndex() );
+        ok = ExtendWriteRecBuff( WriteRecLen );
+        if( ok ) {
+            RewindReadRec();
+            WriteRecPtr = WriteRecBuff;
+            idx1 = GetIndex();
+            WriteRecPtr = PutIndex( WriteRecPtr, idx1 );
+            idx2 = GetIndex();
+            WriteRecPtr = PutIndex( WriteRecPtr, idx2 );
+            if( ( idx1 | idx2 ) == 0 )
+                WriteRecPtr = PutUInt( WriteRecPtr, GetUInt() );
+            while( IsDataToRead() ) {
+                GetName();
+                NameTermPtr();
+                offs = GetOffset( RecHdr[0] & 1 );
+                NameTermData();
+                n = SymbolExists( pubdef_tab, NamePtr );
+                if( n != NULL ) {
+                    NameLen = n[0];
+                    NamePtr = n + 1;
                 }
-                *WriteRecPtr = 0 - create_chksum();
-                ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
+                *WriteRecPtr++ = NameLen;
+                memcpy( WriteRecPtr, NamePtr, NameLen );
+                WriteRecPtr += NameLen;
+                NameTermRest();
+                WriteRecPtr = PutOffset( WriteRecPtr, offs );
+                WriteRecPtr = PutIndex( WriteRecPtr, GetIndex() );
             }
+            *WriteRecPtr = 0 - create_chksum();
+            ok = ( fwrite( WriteRecBuff, 1, WriteRecLen, fo ) == WriteRecLen );
         }
     }
-    return( ok );
-}
-
-static bool ReadRec( FILE *fp )
-/*****************************/
-{
-    bool    ok;
-
-    ReadRecLen = RecHdr[1] | ( RecHdr[2] << 8 );
-    ok = ExtendReadRecBuff( ReadRecLen );
-    if( ok ) {
-        ok = ( fread( ReadRecBuff, ReadRecLen, 1, fp ) != 0 );
-    }
-    ReadRecPtr = ReadRecBuff;
     return( ok );
 }
 
@@ -390,96 +290,97 @@ static int ProcFile( FILE *fp, FILE *fo )
     bool            isChanged;
     bool            renameIt;
     char            *n;
-    char            b;
     bool            ok;
+    int             rc;
 
 //    page_len = 0;
-    ReadRecBuff = NULL;
+    ReadRecInit();
     WriteRecBuff = NULL;
-    ReadRecMaxLen = 0;
     WriteRecMaxLen = 0;
     renameIt = false;
     ok = true;
     while( ok ) {
 //        offset = ftell( fp );
-        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
-            ok = ( ferror( fp ) == 0 );
+        rc = ReadRec( fp, RecHdr );
+        if( rc <= 0 ) {
+            if( rc == 0 )
+                ok = false;
             break;
         }
-        ok = ReadRec( fp );
-        if( !ok ) {
-            break;
-        }
+        WriteRecLen = GET_RECLEN( RecHdr );
         switch( RecHdr[0] & ~1 ) {
         case CMD_LNAMES:
-            WriteRecLen = ReadRecLen;
             isChanged = false;
-            while( IsDataReadRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                b = *ReadRecPtr;
-                *ReadRecPtr = '\0';
+                NameTermSave();
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
                     WriteRecLen += n[0] - NameLen;
                     isChanged = true;
                     renameIt = true;
                 }
-                *ReadRecPtr = b;
+                NameTermRest();
             }
-            ok = WriteLNAMES( fo, isChanged );
+            if( isChanged ) {
+                ok = WriteLNAMES( fo );
+            } else {
+                ok = WriteReadRec( fo, RecHdr );
+            }
             break;
         case CMD_EXTDEF:
-            WriteRecLen = ReadRecLen;
             isChanged = false;
-            while( IsDataReadRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                b = *ReadRecPtr;
-                *ReadRecPtr = '\0';
+                NameTermSave();
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
                     WriteRecLen += n[0] - NameLen;
                     isChanged = true;
                     renameIt = true;
                 }
-                *ReadRecPtr = b;
+                NameTermRest();
                 GetIndex();
             }
-            ok = WriteEXTDEF( fo, isChanged );
+            if( isChanged ) {
+                ok = WriteEXTDEF( fo );
+            } else {
+                ok = WriteReadRec( fo, RecHdr );
+            }
             break;
         case CMD_PUBDEF:
-            WriteRecLen = ReadRecLen;
             isChanged = false;
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
-            while( IsDataReadRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                b = *ReadRecPtr;
-                *ReadRecPtr = '\0';
+                NameTermSave();
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
                     WriteRecLen += n[0] - NameLen;
                     isChanged = true;
                     renameIt = true;
                 }
-                *ReadRecPtr = b;
-                GetOffset();
+                NameTermRest();
+                GetOffset( RecHdr[0] & 1 );
                 GetIndex();
             }
-            ok = WritePUBDEF( fo, isChanged );
+            if( isChanged ) {
+                ok = WritePUBDEF( fo );
+            } else {
+                ok = WriteReadRec( fo, RecHdr );
+            }
             break;
         case LIB_HEADER_REC:
             ok = false;
             break;
         default:
-            ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
-            if( ok ) {
-                ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
-            }
+            ok = WriteReadRec( fo, RecHdr );
             break;
         }
     }
-    free( ReadRecBuff );
     free( WriteRecBuff );
+    ReadRecFini();
     fclose( fo );
     fclose( fp );
     if( !ok )

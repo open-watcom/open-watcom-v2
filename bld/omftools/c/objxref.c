@@ -43,17 +43,22 @@
 
 #define MAX_LINE_LEN 512
 
-typedef unsigned char byte;
-
 static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
-static char         *NamePtr;
-static byte         NameLen;
-static unsigned_16  RecLen;
-static char         *RecBuff;
-static char         *RecPtr;
-static unsigned_16  RecMaxLen;
 static byte         RecHdr[3];
+static byte         *tptr = NULL;
+
+static void NameTermPtr( void )
+/*****************************/
+{
+    tptr = GetReadPtr();
+}
+
+static void NameTermData( void )
+/******************************/
+{
+    *tptr = '\0';
+}
 
 static void usage( void )
 /***********************/
@@ -62,121 +67,25 @@ static void usage( void )
     printf( "  <options> -e=<file>   file with excluded symbols\n" );
 }
 
-static bool IsDataRec( void )
-/***************************/
-{
-    return( RecPtr - RecBuff < RecLen - 1 );
-}
-
-static byte GetByte( void )
-/*************************/
-{
-    return( *RecPtr++ );
-}
-
-static unsigned_16 GetUInt( void )
-/********************************/
-{
-    unsigned_16 word;
-
-    word = *(unsigned_16 *)RecPtr;
-    CONV_LE_16( word );
-    RecPtr += sizeof( unsigned_16 );
-    return( word );
-}
-
-static unsigned_32 GetOffset( void )
-/**********************************/
-{
-    if( RecHdr[0] & 1 ) {
-        unsigned_32 dword;
-
-        dword = *(unsigned_32 *)RecPtr;
-        CONV_LE_32( dword );
-        RecPtr += sizeof( unsigned_32 );
-        return( dword );
-    } else {
-        unsigned_16 word;
-
-        word = *(unsigned_16 *)RecPtr;
-        CONV_LE_16( word );
-        RecPtr += sizeof( unsigned_16 );
-        return( word );
-    }
-}
-
-static unsigned_16 GetIndex( void )
-/*********************************/
-{
-    unsigned_16 index;
-
-    index = GetByte();
-    if( index & 0x80 ) {
-        index = ( (index & 0x7f) << 8 ) + GetByte();
-    }
-    return( index );
-}
-
-static char *GetName( void )
-/**************************/
-{
-    NameLen = GetByte();
-    NamePtr = RecPtr;
-    RecPtr += NameLen;
-    return( NamePtr );
-}
-
-static bool ExtendRecBuff( unsigned_16 size )
-/*******************************************/
-{
-    if( RecMaxLen < size ) {
-        RecMaxLen = size;
-        if( RecBuff != NULL ) {
-            free( RecBuff );
-        }
-        RecBuff = malloc( RecMaxLen );
-        if( RecBuff == NULL ) {
-            printf( "**FATAL** Out of memory!\n" );
-            return( false );
-        }
-    }
-    return( true );
-}
-
-static bool ReadRec( FILE *fp )
-/*****************************/
-{
-    bool    ok;
-
-    RecLen = RecHdr[1] | ( RecHdr[2] << 8 );
-    ok = ExtendRecBuff( RecLen );
-    if( ok ) {
-        ok = ( fread( RecBuff, RecLen, 1, fp ) != 0 );
-    }
-    RecPtr = RecBuff;
-    return( ok );
-}
-
-
 static bool ProcFilePubDef( FILE *fp )
 /************************************/
 {
     unsigned_16 page_len;
     unsigned_32 offset;
     bool        ok;
+    int         rc;
 
     page_len = 0;
-    RecBuff = NULL;
-    RecMaxLen = 0;
-    for(;;) {
+    ReadRecInit();
+    ok = true;
+    while( ok ) {
         offset = ftell( fp );
-        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
-            ok = ( ferror( fp ) == 0 );
+        rc = ReadRec( fp, RecHdr );
+        if( rc <= 0 ) {
+            if( rc == 0 )
+                ok = false;
             break;
         }
-        ok = ReadRec( fp );
-        if( !ok )
-            break;
         switch( RecHdr[0] & ~1 ) {
         case CMD_MODEND:
             if( page_len != 0 ) {
@@ -190,11 +99,11 @@ static bool ProcFilePubDef( FILE *fp )
         case CMD_PUBDEF:
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
-            while( IsDataRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                *RecPtr = '\0';
+                NameTerm();
                 AddSymbol( pubdef_tab, NamePtr, NULL, 0 );
-                GetOffset();
+                GetOffset( RecHdr[0] & 1 );
                 GetIndex();
             }
             break;
@@ -203,14 +112,14 @@ static bool ProcFilePubDef( FILE *fp )
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = RecLen - 1 + 4;
+                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
             }
             break;
         default:
             break;
         }
     }
-    free( RecBuff );
+    ReadRecFini();
     return( ok );
 }
 
@@ -220,19 +129,19 @@ static bool ProcFileExtDef( FILE *fp )
     unsigned_16 page_len;
     unsigned_32 offset;
     bool        ok;
+    int         rc;
 
     page_len = 0;
-    RecBuff = NULL;
-    RecMaxLen = 0;
-    for(;;) {
+    ReadRecInit();
+    ok = true;
+    while( ok ) {
         offset = ftell( fp );
-        if( fread( RecHdr, 1, 3, fp ) != 3 ) {
-            ok = ( ferror( fp ) == 0 );
+        rc = ReadRec( fp, RecHdr );
+        if( rc <= 0 ) {
+            if( rc == 0 )
+                ok = false;
             break;
         }
-        ok = ReadRec( fp );
-        if( !ok )
-            break;
         switch( RecHdr[0] & ~1 ) {
         case CMD_MODEND:
             if( page_len != 0 ) {
@@ -244,10 +153,11 @@ static bool ProcFileExtDef( FILE *fp )
             }
             break;
         case CMD_EXTDEF:
-            while( IsDataRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                *RecPtr = '\0';
+                NameTermPtr();
                 GetIndex();
+                NameTermData();
                 if( SymbolExists( pubdef_tab, NamePtr ) == NULL ) {
                     if( SymbolExists( extdef_tab, NamePtr ) == NULL ) {
                         AddSymbol( extdef_tab, NamePtr, NULL, 0 );
@@ -261,14 +171,14 @@ static bool ProcFileExtDef( FILE *fp )
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = RecLen - 1 + 4;
+                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
             }
             break;
         default:
             break;
         }
     }
-    free( RecBuff );
+    ReadRecFini();
     return( ok );
 }
 

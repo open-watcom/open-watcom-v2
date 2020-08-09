@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include "bool.h"
 #include "watcom.h"
 #include "misc.h"
 #include "pathgrp2.h"
@@ -57,7 +58,16 @@
     #define FNMATCH_FLAGS   (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
 #endif
 
-extern char *FixName( char *name )
+char         *NamePtr;
+byte         NameLen;
+
+static unsigned_16  ReadRecLen;
+static unsigned_16  ReadRecMaxLen;
+static byte         *ReadRecBuff;
+static byte         *ReadRecPtr;
+
+static char *FixName( char *name )
+/********************************/
 {
 #if defined( __DOS__ )
 /*********************************
@@ -122,8 +132,8 @@ static DIR  *dirp = NULL;  /* we need this across invocations */
 static char *path = NULL;
 static char *pattern = NULL;
 
-extern char *DoWildCard( char *base )
-/***********************************************/
+char *DoWildCard( char *base )
+/****************************/
 {
     PGROUP2         pg;
     struct dirent   *dire;
@@ -189,8 +199,8 @@ extern char *DoWildCard( char *base )
     return( path );
 }
 
-extern void DoWildCardClose( void )
-/*********************************/
+void DoWildCardClose( void )
+/**************************/
 {
     if( path != NULL ) {
         free( path );
@@ -204,4 +214,137 @@ extern void DoWildCardClose( void )
         closedir( dirp );
         dirp = NULL;
     }
+}
+
+void ReadRecInit( void )
+/**********************/
+{
+    ReadRecBuff = NULL;
+    ReadRecMaxLen = 0;
+}
+
+void ReadRecFini( void )
+/**********************/
+{
+    free( ReadRecBuff );
+}
+
+static bool ExtendReadRecBuff( unsigned_16 size )
+/***********************************************/
+{
+    if( ReadRecMaxLen < size ) {
+        ReadRecMaxLen = size;
+        if( ReadRecBuff != NULL ) {
+            free( ReadRecBuff );
+        }
+        ReadRecBuff = malloc( ReadRecMaxLen );
+        if( ReadRecBuff == NULL ) {
+            printf( "**FATAL** Out of memory!\n" );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+int ReadRec( FILE *fp, byte *hdr )
+/********************************/
+{
+    bool    ok;
+
+    if( fread( hdr, 1, 3, fp ) != 3 )
+        return( ( ferror( fp ) == 0 ) ? -1 : 0 );
+    ReadRecLen = GET_RECLEN( hdr );
+    ok = ExtendReadRecBuff( ReadRecLen );
+    if( ok ) {
+        ok = ( fread( ReadRecBuff, ReadRecLen, 1, fp ) != 0 );
+    }
+    ReadRecPtr = ReadRecBuff;
+    return( ok );
+}
+
+void RewindReadRec( void )
+/************************/
+{
+    ReadRecPtr = ReadRecBuff;
+}
+
+bool WriteReadRec( FILE *fo, byte *hdr )
+/**************************************/
+{
+    bool    ok;
+
+    ok = ( fwrite( hdr, 1, 3, fo ) == 3 );
+    if( ok )
+        ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
+    return( ok );
+}
+
+bool IsDataToRead( void )
+/***********************/
+{
+    return( ReadRecPtr - ReadRecBuff < ReadRecLen - 1 );
+}
+
+unsigned_16 GetUInt( void )
+/*************************/
+{
+    unsigned_16 word;
+
+    word = *(unsigned_16 *)ReadRecPtr;
+    CONV_LE_16( word );
+    ReadRecPtr += sizeof( unsigned_16 );
+    return( word );
+}
+
+unsigned_32 GetOffset( bool wide )
+/********************************/
+{
+    if( wide ) {
+        unsigned_32 dword;
+
+        dword = *(unsigned_32 *)ReadRecPtr;
+        CONV_LE_32( dword );
+        ReadRecPtr += sizeof( unsigned_32 );
+        return( dword );
+    } else {
+        unsigned_16 word;
+
+        word = *(unsigned_16 *)ReadRecPtr;
+        CONV_LE_16( word );
+        ReadRecPtr += sizeof( unsigned_16 );
+        return( word );
+    }
+}
+
+unsigned_16 GetIndex( void )
+/**************************/
+{
+    unsigned_16 index;
+
+    index = *ReadRecPtr++;
+    if( index & 0x80 ) {
+        index = ( (index & 0x7f) << 8 ) + *ReadRecPtr++;
+    }
+    return( index );
+}
+
+char *GetName( void )
+/*******************/
+{
+    NameLen = *ReadRecPtr++;
+    NamePtr = (char *)ReadRecPtr;
+    ReadRecPtr += NameLen;
+    return( NamePtr );
+}
+
+void NameTerm( void )
+/*******************/
+{
+    *ReadRecPtr = '\0';
+}
+
+byte *GetReadPtr( void )
+/**********************/
+{
+    return( ReadRecPtr );
 }
