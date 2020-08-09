@@ -40,4 +40,3 @@ exetarg_name = objxdef
 exetarg_objs = objxref.obj hashtab.obj misc.obj
 exetarg_name = objxref
 !include exetarg.mif
-

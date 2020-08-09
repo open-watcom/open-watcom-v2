@@ -97,6 +97,8 @@ static bool ProcFileModRef( FILE *fp )
             }
             break;
         case CMD_PUBDEF:
+            if( module_name == NULL )
+                break;
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
