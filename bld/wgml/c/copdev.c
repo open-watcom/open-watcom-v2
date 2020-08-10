@@ -1655,6 +1655,7 @@ cop_device * parse_device( FILE * in_file )
             string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
+                mem_free( raw_functions );
                 raw_functions = NULL;
                 if( cop_functions->code_blocks != NULL ) {
                     mem_free( cop_functions->code_blocks );
@@ -1669,6 +1670,7 @@ cop_device * parse_device( FILE * in_file )
             string_ptr[length] = '\0';
             OUT_DEV_ADD_OFF( length + 1 );
         } else {
+            mem_free( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
                 mem_free( cop_functions->code_blocks );
