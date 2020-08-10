@@ -314,7 +314,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                 new_toolinfo--;
                 GUIMemFree( (void *)new_toolinfo->label );
             }
-            GUIMemFree( (void *)tbar->toolinfo.toolbar );
+            GUIMemFree( new_toolinfo );
             GUIMemFree( tbar );
             wnd->tbar = NULL;
             return( false );
