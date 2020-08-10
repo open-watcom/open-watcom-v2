@@ -85,9 +85,6 @@ static bool ProcFileModRef( FILE *fp )
             strcpy( module_name, NamePtr );
             break;
         case CMD_MODEND:
-            if( module_name != NULL )
-                free( module_name );
-            module_name = NULL;
             if( page_len != 0 ) {
                 offset = ftell( fp );
                 offset = page_len - ( offset % page_len );
@@ -126,6 +123,7 @@ static bool ProcFileModRef( FILE *fp )
             break;
         }
     }
+    free( module_name );
     ReadRecFini();
     return( ok );
 }
