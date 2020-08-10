@@ -205,6 +205,7 @@ static FileList *doFillFileList( const char *path, FileList *list )
         p = path_end + 1;
     }
     HelpMemFree( path_start );
+    return( list );
 }
 
 static FileList *fillFileList( HelpSrchPathItem *srch, FileList *list )
