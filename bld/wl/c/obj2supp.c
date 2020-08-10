@@ -746,6 +746,7 @@ static void MakeWindowsFloatReloc( fix_relo_data *fix )
     os2_reloc_item  *os2item;
 
     InitReloc( &breloc );
+    breloc.fix_off = 0;
     os2item = &breloc.item.os2;
     os2item->addr_type = MapOS2FixType( fix->type );
     os2item->reloc_offset = fix->loc_addr.off - CurrRec.seg->u.leader->group->grp_addr.off;
