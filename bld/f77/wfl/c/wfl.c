@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -273,7 +273,7 @@ int     main( int argc, char *argv[] )
     SwitchChars[2] = '\0';
 
     Word = MemAlloc( MAX_CMD );
-    cmd = MemAlloc( 2*MAX_CMD ); // for "WFL" environment variable and command line
+    cmd = MemAlloc( 2 * MAX_CMD ); // for "WFL" environment variable and command line
 
     // add "WFL" environment variable to "cmd" unless "/y" is specified
     // in "cmd" or the "WFL" environment string
@@ -306,7 +306,6 @@ int     main( int argc, char *argv[] )
             PrintMsg( CL_ERROR_OPENING_TMP_FILE );
             rc = 1;
         } else {
-            ObjName = NULL;
             rc = Parse( argc, argv );
             if( rc == 0 ) {
                 if( !Flags.quiet ) {
@@ -320,8 +319,8 @@ int     main( int argc, char *argv[] )
                 if( fname_cmp( LinkName, TEMPFILE ) != 0 ) {
                     remove( LinkName );
                     rename( TEMPFILE, LinkName );
-                    free( LinkName );
                 }
+                free( LinkName );
                 LinkName = NULL;
             } else {
                 remove( TEMPFILE );
@@ -393,8 +392,10 @@ static  int     Parse( int argc, char **argv )
                 case 'f':       // files option
                     switch( tolower( Word[0] ) ) {
                     case 'd':   // name of linker directive file
+                        if( LinkName != NULL )
+                            free( LinkName );
                         if( Word[1] == '\0' ) {
-                            LinkName = TEMPFILE;
+                            LinkName = strdup( TEMPFILE );
                             cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
                             MakeName( Word, "lnk" );    // add extension
@@ -431,6 +432,8 @@ static  int     Parse( int argc, char **argv )
                         // parse off argument, so we get right filename
                         // in linker command file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
+                            if( ObjName != NULL )
+                                free( ObjName );
                             ObjName = strdup( &Word[2] );
                         }
                         break;

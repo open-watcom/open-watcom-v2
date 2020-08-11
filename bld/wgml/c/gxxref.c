@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -78,6 +78,7 @@ void    gml_hdref( gml_tag gtag )
     withpage = false;
     p = scan_start;
     re = NULL;
+    idp = NULL;
 
     /***********************************************************************/
     /*  Scan attributes  for :HDREF                                        */
@@ -145,6 +146,9 @@ void    gml_hdref( gml_tag gtag )
                 *pe = '\0';
                 re = find_refid( ref_dict, strlwr( pa ) );
                 if( re != NULL ) {      // id found in ref dict
+                    if( idp != NULL ) {
+                        mem_free( idp );
+                    }
                     idp = mem_alloc( 4 + strlen( re->u.info.text_cap ) );
                     *idp = '"';         // decorate with quotes
                     strcpy( idp + 1, re->u.info.text_cap );
@@ -188,12 +192,16 @@ void    gml_hdref( gml_tag gtag )
                 process_text( buf64, g_curr_font );
             }
             mem_free( idp );
+            idp = NULL;
         }
         ProcFlags.concat = concatsave;
     } else {
         g_err( err_att_missing );       // id attribute missing
         file_mac_info();
         err_count++;
+    }
+    if( idp != NULL ) {
+        mem_free( idp );
     }
 
     scan_start = p;
