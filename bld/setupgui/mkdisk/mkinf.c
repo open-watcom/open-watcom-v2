@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -980,8 +980,8 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
     found = false;
     for( ;; ) {
         if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
-            fclose( fp );
             if( file_curr-- > 0 ) {
+                fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
             }
@@ -993,6 +993,10 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
             if( stricmp( SectionBuf, section ) == 0 ) {
                 found = true;
             } else if( found ) {
+                while( file_curr-- > 0 ) {
+                    fclose( fp );
+                    fp = file_stack[file_curr];
+                }
                 break;
             }
         } else if( found ) {
@@ -1003,11 +1007,11 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
                 file_stack[file_curr++] = fp;
                 fp = PathOpen( SectionBuf + sizeof( STRING_include ) - 1 );
             } else if( processLine( SectionBuf, list ) ) {
-                fclose( fp );
                 while( file_curr-- > 0 ) {
-                    fp = file_stack[file_curr];
                     fclose( fp );
+                    fp = file_stack[file_curr];
                 }
+                fclose( fp );
                 printf( "\nOut of memory\n" );
                 exit( 1 );
             }
@@ -1032,6 +1036,7 @@ void ReadInfFile( void )
     }
     sprintf( ver_buf, "[%s]", Product );
     ReadSection( fp, ver_buf, &AppSection );
+    fclose( fp );
 }
 
 
@@ -1459,13 +1464,15 @@ int main( int argc, char *argv[] )
     printf( "Reading Info File...\n" );
     ReadInfFile();
     ok = ReadList( fp );
-    if( !ok )
+    fclose( fp );
+    if( !ok ) {
         return( 1 );
+    }
     printf( "Checking for duplicate files...\n" );
     ok = CheckForDuplicateFiles();
-    if( !ok )
+    if( !ok ) {
         return( 1 );
-    fclose( fp );
+    }
     if( !CreateMissingFiles ) {
         printf( "Making script...\n" );
         MakeScript();
