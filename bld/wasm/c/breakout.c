@@ -222,6 +222,9 @@ bool directive( token_idx i, asm_token direct )
     case T_WARN:
     case T_NOWARN:
         return( RC_OK ); /* Not implemented yet */
+    case T_SMART:
+        AsmWarn( 4, IGNORING_DIRECTIVE );
+        return( RC_OK );
     case T_DOT_ALPHA:
     case T_DOT_SEQ:
     case T_DOT_LIST:

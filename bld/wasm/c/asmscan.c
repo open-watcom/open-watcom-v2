@@ -417,6 +417,7 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_LOCALS:
         case T_MASM:
         case T_NOLOCALS:
+        case T_SMART:
             if( (Options.mode & MODE_TASM) == 0 ) {
                 return( RC_OK );
             }

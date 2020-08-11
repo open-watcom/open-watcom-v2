@@ -1382,6 +1382,7 @@ insa(T_SIZE,            OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,     
 insa(T_SIZEOF,          OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,  0,        OP_UNARY_OPERATOR,        0,           0)
 ins (T_SLDT,            OP_R16,      F_0F,   OP_NONE,       OP3_NONE,0,  0,      0,  0x00,     0x00,                     P_286,       0)
 ins (T_SLDT,            OP_M16,      F_0F,   OP_NONE,       OP3_NONE,0,  0,      0,  0x00,     0x00,                     P_286,       0)
+insa(T_SMART,           OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,  0,        OP_DIRECTIVE,             0,           0)
 ins (T_SMSW,            OP_R16,      F_0F,   OP_NONE,       OP3_NONE,0,  0,      0,  0x01,     0x20,                     P_286,       0)
 ins (T_SMSW,            OP_M16,      F_0F,   OP_NONE,       OP3_NONE,0,  0,      0,  0x01,     0x20,                     P_286,       0)
 ins (T_SP,              OP_SPECIAL,  0,      OP_R16,        0,       0,  0,      0,  4,        OP_REGISTER,              P_86,        0)
