@@ -689,7 +689,7 @@ extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
-extern msg_type     CGetMsgType( msg_codes msgnum );
+//extern msg_type     CGetMsgType( msg_codes msgnum );
 extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern int          GetMsgIndex( msg_codes msgnum );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,6 +142,9 @@ void WPSourceClose( wp_srcfile * wpsrc_file )
         FDoneSource( wpsrc_file->src_file );
         if( wpsrc_file->src_buff != NULL ) {
             ProfFree( wpsrc_file->src_buff );
+        }
+        if( wpsrc_file->src_lines != NULL ) {
+            ProfFree( wpsrc_file->src_lines );
         }
         ProfFree( wpsrc_file );
     }
