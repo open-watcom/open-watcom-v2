@@ -686,7 +686,11 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
         } else if( check_both( token_1, token_2, EXPR_ADDR, EXPR_REG ) ) {
 
             if( token_1->type == EXPR_REG ) {
-                if( token_2->instr != T_NULL ) {
+                switch( token_2->instr ) {
+                case T_OFFSET:
+                case T_NULL:
+                    break;
+                default:
                     if( error_msg )
                         AsmError( LABEL_IS_EXPECTED );
                     token_1->type = EXPR_UNDEF;
