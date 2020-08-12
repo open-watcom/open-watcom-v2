@@ -207,6 +207,9 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     seeidseen = false;
 
     ixewk     = NULL;
+    ixhwk     = NULL;
+    refwk     = NULL;
+    rswk      = NULL;
     pgvalue   = pgnone;
 
     wkpage    = page + 1;
@@ -254,12 +257,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( rewk != NULL ) {
                         if( rewk->lineno != reid.lineno ) {
                             g_err( inf_id_duplicate );
-                            goto err_cleanup
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :IREF
                     g_err( err_refid_not_allowed, hxstring );
-                    goto err_cleanup
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -282,12 +285,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( refwk == NULL ) {   // refid not in dict
                         if( GlobFlags.lastpass ) {// this is an error
                             g_err( inf_id_unknown );// during lastpass
-                            goto err_cleanup
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :I1 and :IHx
                     g_err( err_refid_not_allowed, hxstring );
-                    goto err_cleanup
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -371,7 +374,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     seeseen = true;
                 } else {                // not allowed for :IH3, :Ix
                     g_err( err_refid_not_allowed, hxstring );
-                    goto err_cleanup
+                    goto err_cleanup;
                 }
             }
             continue;
@@ -393,12 +396,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( rswk == NULL ) {// not in dict, this is an error
                         if( GlobFlags.lastpass ) {  // during lastpass
                             g_err( inf_id_unknown );
-                            goto err_cleanup
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :IH3, :Ix :IREF
                     g_err( err_refid_not_allowed, hxstring );
-                    goto err_cleanup
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -441,7 +444,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
 
         if( !refidseen ) {              // refid= missing
             g_err( err_att_missing );
-            goto err_cleanup
+            goto err_cleanup;
         }
         if( GlobFlags.lastpass ) {
             if( refidseen && (refwk != NULL) ) {
