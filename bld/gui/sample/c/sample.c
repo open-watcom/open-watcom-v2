@@ -619,8 +619,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
                 int             i;
 
                 menus = NoMenu;
-                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menus );
-                if( menus.num_items > 0 ) {
+                if( GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menus ) ) {
                     for( i = 0; i < menus.num_items; i++ ) {
                         GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menus.menu[i], false );
                     }
