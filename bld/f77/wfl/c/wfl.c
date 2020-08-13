@@ -469,6 +469,8 @@ static  int     Parse( int argc, char **argv )
                 case 'l':
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
                         Flags.link_for_sys = true;
+                        if( SystemName != NULL )
+                            free( SystemName );
                         SystemName = strdup( &Word[1] );
                         cmp_option = false;
 #if _CPU == 8086
