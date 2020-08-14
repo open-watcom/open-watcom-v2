@@ -27,7 +27,7 @@ Graphical :
 
 Windows
 NT
-PM (16- and 32-bit) (not yet completed)
+PM-OS/2 (16- and 32-bit) (not yet completed)
 
 Operating systems that are intended to be supported are :
 
@@ -269,7 +269,7 @@ GUIDeleteMenuItem	-- delete a menu item from a pull down menu
 GUIResetMenus		-- reset the entire menu structure for a window
 
 GUIInsertMenu		-- insert menu item before given offset (top level)
-GUIInsertMenuByID-- insert menu before given id
+GUIInsertMenuByID	-- insert menu before given id
 GUIAppendMenu		-- append menu to top level menus
 GUIAppendMenuByOffset	-- append menu to submenu indicated by offset
 GUIAppendMenuToPopup	-- append menu to a popup menu indicated by id
@@ -476,27 +476,26 @@ gui/ui - contains libraries to be used for character based platforms
 	Library		OS		Memory Model	Directory 	16/32
 	-------		--		------------	---------	-----
 
-	guidosm.lib  	DOS		medium		objm		16
-	guidosl.lib  	DOS		large		obj		16
-	guidosf.lib	Pharlap/DOS4G	flat		objf		32
-	guios2l.lib	OS2       	large		obj2		16
-	guios2f.lib	OS2V2   	flat		obj2f		32
-	guiqnxl.lib	QNX		large		objq		16
-	guiqnxs.lib	QNX		small		obj32q		32
-	guintf.lib	NT		flat		objnt		32
-	guiwinl.lib	WIN		large		objw		16
+	gui.lib		DOS		large		dosi86		16
+	gui.lib		Pharlap/DOS4G	flat		dos386		32
+	gui.lib		OS2		large		os2i86		16
+	gui.lib		OS2V2		flat		os2386		32
+	gui.lib		QNX		large		qnxi86		16
+	gui.lib		QNX		small		qnx386		32
+	gui.lib		NT		flat		nt386		32
+	gui.lib		Windows		large		wini86		16
 
 gui/win - contains libraries to be used for graphical platforms (Windows, NT)
 	- libraries created are :
 
-	Library		OS		Memory Model	Directory 	16/32
+	Library		OS		Memory Model	Directory	16/32
 	-------		--		------------	---------	-----
 
-	guiwinm.lib	Windows		medium		objm		16
-	guiwinl.lib	Windows		large		obj		16
-	guintf.lib	NT		flat		objnt		32
-	guipmf.lib	PM		flat		objpmf		32
-	guipml.lib	PM		large		objpm		16
+	gui.lib		Windows		large		wini86		16
+	gui.lib		Windows(32-bit)	flat		win386		32
+	gui.lib		NT		flat		nt386		32
+	gui.lib		PM-OS/2		large		os2i86		16
+	gui.lib		PM-OS/2		flat		os2386		32
 
 gui/sample - contains sample code and directories to build it in
 
@@ -504,40 +503,39 @@ gui/sample - contains sample code and directories to build it in
 	  uses a lot of the functionality of the GUI library.  It includes
 	  gui/sample/h/sample.h.
 
-	- gui/sample/obj* directories are set up to compile the sample
+	- gui/sample/<host_os><host_cpu>[.gui] directories are set up to compile the sample
 	  for several operating systems :
 
 	DOS
 	---
-	  obj - DOS large memory model
-	  objm - DOS medium memory model
-	  objf - Pharlap/DOS4G flat memory model
+	  dosi86 - DOS large memory model (16-bit)
+	  dos386 - Pharlap/DOS4G flat memory model (32-bit)
 
 	OS/2
 	----
-	  obj2 - OS2 16-bit large memory model
-	  obj2f - OS2 32-bit flat memory model
+	  os2i86 - OS2 large memory model (16-bit)
+	  os2386 - OS2 flat memory model (32-bit)
 
 	QNX
 	---
-	  objq - QNX large memory model
-	  obj32q - QNX 32 bit small memory model
+	  qnxi86 - QNX large memory model (16-bit)
+	  qnx386 - QNX small memory model (32-bit)
 
 	Windows
 	-------
-	  objw - Windows large memory model
-	  objwm - Windows medium memory model
-	  objwc	- Windows character mode large memory model
+	  wini86.gui - Windows large memory model (16-bit)
+	  win386.gui - Windows flat memory model (32-bit Extender)
+	  wini86     - Windows character mode large memory model (16-bit)
 
 	NT
 	--
-	  objnt - NT flat memory model
-	  objcnt - NT character mode flat memory model
+	  nt386.gui - NT flat memory model
+	  nt386     - NT character mode flat memory model
 
-	PM
+	PM-OS/2
 	--
-	  objpmf - PM flat memory model
-	  objpm - PM large memory model
+	  os2i86.gui - PM large memory model (16-bit)
+	  os2386.gui - PM flat memory model (32-bit)
 
 Notes for compiling :
 
