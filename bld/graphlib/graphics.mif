@@ -179,7 +179,7 @@ eng_nonwin_objs = &
     $(_subdir_)lineutil.obj &
     $(_subdir_)seginit.obj &
     $(_subdir_)transpar.obj &
-    $(_subdir_)visit.obj &
+    $(_subdir_)visit.obj
 
 english_objs = &
     $(_subdir_)cgautils.obj &
@@ -199,7 +199,7 @@ english_objs = &
 
 win_objs = &
     $(_subdir_)gphmain.obj &
-    $(_subdir_)winutil.obj &
+    $(_subdir_)winutil.obj
 
 special_objs = &
     fsmath.obj &
