@@ -141,10 +141,10 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         WndFree( wnd );
         WndNoMemory();
         return( NULL );
-    } else {
-        if( buff[0] != '\0' ) {
-            WndSetTitle( wnd, buff );
-        }
+    }
+    wnd->gui = gui;
+    if( buff[0] != '\0' ) {
+        WndSetTitle( wnd, buff );
     }
     ++NumWindows;
     return( wnd );
