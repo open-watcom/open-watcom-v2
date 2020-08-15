@@ -496,6 +496,25 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
     }
 }
 
+static void DumpSymbol( TYPEPTR typ, const char *symname, STRCHUNK *pch )
+{
+    bool        was_array;
+
+    was_array = ( typ->decl_type == TYPE_POINTER && (typ->u.p.decl_flags & FLAG_WAS_ARRAY) );
+    if( was_array ) {
+        DumpFlags( typ->u.p.decl_flags & ~MASK_QUALIFIERS, typ, pch );
+        DumpFlags( typ->u.p.decl_flags & MASK_QUALIFIERS, typ, pch );
+    }
+    if( symname )
+        ChunkSaveStr( pch, symname );
+    if( was_array ) {
+        typ = Object( typ );
+        if( typ->decl_type != TYPE_ARRAY ) {
+            ChunkSaveStr( pch, "[]" );
+        }
+    }
+}
+
 static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch )
 {
     type_modifiers  pointer_flags;
@@ -504,16 +523,7 @@ static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch )
     realtype = TrueType( realtype );
     DumpBaseType( realtype, pch );
     DumpDecl( realtype, NULL, pch );
-    if( symname )
-        ChunkSaveStr( pch, symname );
-    if( realtype->decl_type == TYPE_POINTER ) {
-        if( realtype->u.p.decl_flags & FLAG_WAS_ARRAY ) {
-            typ = Object( realtype );
-            if( typ->decl_type != TYPE_ARRAY ) {
-                ChunkSaveStr( pch, "[]" );
-            }
-        }
-    }
+    DumpSymbol( realtype, symname, pch );
     for( typ = realtype; typ != NULL; typ = Object( typ ) ) {
         if( typ->decl_type == TYPE_TYPEDEF )
             break;
