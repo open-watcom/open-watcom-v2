@@ -42,14 +42,14 @@
 :cmt    if there is no text associated with the tag.
 
 :title. Usage:   wasm [options] asm_file [options] [@env_var]
-:jtitle. g—p•û–@: wasm [options] file [options] [@env_var]
+:jtitle. Å½gâ€”pâ€¢Å±â€“@: wasm [options] file [options] [@env_var]
 :target. any
 
 :title. Options:
-:jtitle. ƒIƒvƒVƒ‡ƒ“:
+:jtitle. ï¿½Iï¿½vï¿½Vï¿½â€¡ï¿½â€œ:
 :target. any
 :title.  :          ( /option is also accepted )
-:jtitle. :          ( /option‚àg—p‚Å‚«‚Ü‚· )
+:jtitle. :          ( /optionâ€šÅ•Å½gâ€”pâ€šÄ¹â€šÂ«â€šÃœâ€šÂ· )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
@@ -59,20 +59,20 @@
 :option. ? h
 :target. any
 :usage. print this message
-:jusage. ‚±‚ÌƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·
+:jusage. â€šÂ±â€šÄšï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wâ€šÄ‘â€¢\Å½Â¦â€šÂµâ€šÃœâ€šÂ·
 
 :option. 0
 :target. any
 :usage. 8086 instructions
-:jusage. 8086 –½—ß
+:jusage. 8086 â€“Ëâ€”ÃŸ
 
 :option. 1
 :target. any
 :usage. 80186 instructions
-:jusage. 80186 –½—ß
+:jusage. 80186 â€“Ëâ€”ÃŸ
 
 :chain. 2 80286 instructions
-:jusage. 80286 –½—ß
+:jusage. 80286 â€“Ëâ€”ÃŸ
 
 :option. 2p
 :target. any
@@ -80,17 +80,17 @@
 :jusage. protected mode instructions
 
 :chain. 3 80386 instructions
-:jusage. 80386 –½—ß
+:jusage. 80386 â€“Ëâ€”ÃŸ
 
 :option. 3r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Åšï¿½Wï¿½Xï¿½^ÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 3s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Xï¿½^ï¿½bï¿½NÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 3p
 :target. any
@@ -98,17 +98,17 @@
 :jusage. protected mode instructions
 
 :chain. 4 80486 instructions
-:jusage. 80486 –½—ß
+:jusage. 80486 â€“Ëâ€”ÃŸ
 
 :option. 4r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Åšï¿½Wï¿½Xï¿½^ÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 4s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Xï¿½^ï¿½bï¿½NÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 4p
 :target. any
@@ -116,12 +116,12 @@
 :jusage. protected mode instructions
 
 :chain. 5 Pentium instructions
-:jusage. Pentium –½—ß
+:jusage. Pentium â€“Ëâ€”ÃŸ
 
 :option. 5r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Åšï¿½Wï¿½Xï¿½^ÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 5p
 :target. any
@@ -131,20 +131,20 @@
 :option. 5s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Xï¿½^ï¿½bï¿½NÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :chain. 6 Pentium Pro instructions
-:jusage. 6 Pentium Pro –½—ß
+:jusage. 6 Pentium Pro â€“Ëâ€”ÃŸ
 
 :option. 6r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Åšï¿½Wï¿½Xï¿½^ÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 6s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ï¿½Xï¿½^ï¿½bï¿½NÅšÃ„â€šÅƒÅ¹oâ€šÂµâ€¹Kâ€“Å„
 
 :option. 6p
 :target. any
@@ -167,17 +167,17 @@
 :target. any
 :special. scanDefine <name>[=text]
 :usage. define text macro <name>[=text]
-:jusage. ƒeƒLƒXƒgƒ}ƒNƒ‚ğ’è‹`‚µ‚Ü‚· <name>[=text]
+:jusage. ï¿½eï¿½Lï¿½Xï¿½gï¿½}ï¿½Nï¿½Å¤â€šÄ‘â€™Äâ€¹`â€šÂµâ€šÃœâ€šÂ· <name>[=text]
 
 :option. d1
 :target. any
 :usage. line number debugging support
-:jusage. s”Ô†ƒfƒoƒbƒOî•ñ‚ğo—Í‚µ‚Ü‚·
+:jusage. Å¤sâ€Ã”Å¤â€ ï¿½fï¿½oï¿½bï¿½OÅ¹Ã®â€¢Å„â€šÄ‘Å¹oâ€”Ãâ€šÂµâ€šÃœâ€šÂ·
 
 :option. e 
 :target. any
 :usage. stop reading ASM file at END directive
-:jusage. ENDƒfƒBƒŒƒNƒeƒBƒu‚ÅASMƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚ğ~‚ß‚Ü‚·
+:jusage. ENDï¿½fï¿½Bï¿½Åšï¿½Nï¿½eï¿½Bï¿½uâ€šÄ¹ASMï¿½tï¿½@ï¿½Cï¿½â€¹â€šÄšâ€œÃ‡â€šÃÅ¤Å¾â€šÃâ€šÄ‘Å½~â€šÃŸâ€šÃœâ€šÂ·
 
 :option. e
 :target. any
@@ -196,7 +196,7 @@
 :file.
 :optional.
 :usage. set object file name
-:jusage. ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ğİ’è‚µ‚Ü‚·
+:jusage. ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½â€¹â€šÄ‘ï¿½Ãâ€™Äâ€šÂµâ€šÃœâ€šÂ·
 
 :option. fp0 
 :target. any
@@ -243,21 +243,21 @@
 :file.
 :optional.
 :usage. set error file name
-:jusage. ƒGƒ‰[ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚Ü‚·
+:jusage. ï¿½Gï¿½â€°ï¿½[ï¿½tï¿½@ï¿½Cï¿½â€¹â€“Ä½â€šÄ‘Å½wâ€™Äâ€šÂµâ€šÃœâ€šÂ·
 
 :option. i
 :target. any
 :path.
 :usage. add directory to list of include directories
-:jusage. ƒCƒ“ƒNƒ‹[ƒhEƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠƒXƒg‚ğ’Ç‰Á‚µ‚Ü‚·
+:jusage. ï¿½Cï¿½â€œï¿½Nï¿½â€¹ï¿½[ï¿½hï¿½Eï¿½fï¿½Bï¿½Åšï¿½Nï¿½gï¿½Å â€šÄšï¿½Å ï¿½Xï¿½gâ€šÄ‘â€™Ã‡â€°Ãâ€šÂµâ€šÃœâ€šÂ·
 
 :option. j s
 :target. any
 :usage. force signed types to be used for signed values
-:jusage. •„†•t‚«Œ^‚ğ•„†•t‚«’l‚Ì‚½‚ß‚Ég—p‚·‚é‚æ‚¤‚É‚µ‚Ü‚·
+:jusage. â€¢â€Å¤â€ â€¢tâ€šÂ«Åš^â€šÄ‘â€¢â€Å¤â€ â€¢tâ€šÂ«â€™lâ€šÄšâ€šËâ€šÃŸâ€šÃ‰Å½gâ€”pâ€šÂ·â€šÃ©â€šÄ‡â€šÂ¤â€šÃ‰â€šÂµâ€šÃœâ€šÂ·
 
 :chain. m Memory model
-:jusage. ƒƒ‚ƒŠEƒ‚ƒfƒ‹
+:jusage. ï¿½ï¿½ï¿½â€šï¿½Å ï¿½Eï¿½â€šï¿½fï¿½â€¹
 
 :option. mc
 :target. any
@@ -324,6 +324,12 @@
 :usage. allow C form of octal constants
 :jusage. allow C form of octal constants
 
+:option. od
+:target. any
+:internal.
+:usage. disable all optimization
+:jusage. disable all optimization
+
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
@@ -338,7 +344,7 @@
 :option. zq q
 :target. any
 :usage. operate quietly
-:jusage. ƒƒbƒZ[ƒW“™‚Ìo—Í‚ğ‚µ‚Ü‚¹‚ñ
+:jusage. ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wâ€œâ„¢â€šÄšÅ¹oâ€”Ãâ€šÄ‘â€šÂµâ€šÃœâ€šÄ…â€šÅ„
 
 :option. zz
 :target. any
