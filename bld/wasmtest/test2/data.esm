@@ -4,16 +4,16 @@ DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 L$1:
-	xor		ax,ax
+    xor         ax,ax
 L$2:
-	mov		ax,word ptr DGROUP:L$4
-	mov		ax,word ptr DGROUP:L$4
-	mov		eax,dword ptr DGROUP:L$5
-	mov		ax,DGROUP
-	mov		ax,DGROUP
-	mov		eax,DGROUP
-	mov		ax,DGROUP
-	xor		ax,ax
+    mov         ax,word ptr DGROUP:L$4
+    mov         ax,word ptr DGROUP:L$4
+    mov         eax,dword ptr DGROUP:L$5
+    mov         ax,DGROUP
+    mov         ax,DGROUP
+    mov         eax,DGROUP
+    mov         ax,DGROUP
+    xor         ax,ax
 _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$3:

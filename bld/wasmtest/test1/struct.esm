@@ -3,21 +3,21 @@
 DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
-	mov		byte ptr DGROUP:L$6,bl
-	mov		word ptr DGROUP:L$7,bx
-	mov		dword ptr DGROUP:L$8,ebx
-	mov		byte ptr DGROUP:L$9,bl
-	mov		byte ptr DGROUP:L$10,bh
-	mov		byte ptr DGROUP:L$6,7
-	mov		word ptr DGROUP:L$7,7
-	mov		dword ptr DGROUP:L$8,7
-	mov		byte ptr DGROUP:L$9,7
-	mov		byte ptr DGROUP:L$10,7
-	mov		byte ptr DGROUP:L$1,7
-	mov		word ptr DGROUP:L$2,7
-	mov		dword ptr DGROUP:L$3,7
-	mov		byte ptr DGROUP:L$4,7
-	mov		byte ptr DGROUP:L$5,7
+    mov       byte ptr DGROUP:L$6,bl
+    mov       word ptr DGROUP:L$7,bx
+    mov       dword ptr DGROUP:L$8,ebx
+    mov       byte ptr DGROUP:L$9,bl
+    mov       byte ptr DGROUP:L$10,bh
+    mov       byte ptr DGROUP:L$6,7
+    mov       word ptr DGROUP:L$7,7
+    mov       dword ptr DGROUP:L$8,7
+    mov       byte ptr DGROUP:L$9,7
+    mov       byte ptr DGROUP:L$10,7
+    mov       byte ptr DGROUP:L$1,7
+    mov       word ptr DGROUP:L$2,7
+    mov       dword ptr DGROUP:L$3,7
+    mov       byte ptr DGROUP:L$4,7
+    mov       byte ptr DGROUP:L$5,7
 _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$1:

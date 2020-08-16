@@ -6,6 +6,6 @@ pat		SEGMENT	PARA PRIVATE USE16 'data'
 pat		ENDS
 text		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:text, DS:DGROUP, SS:DGROUP
-	mov		ax,0ffffH
+    mov       ax,0ffffH
 text		ENDS
 		END

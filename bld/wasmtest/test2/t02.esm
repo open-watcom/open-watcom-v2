@@ -19,7 +19,7 @@ patrick		SEGMENT	WORD PUBLIC USE16 'data'
 patrick		ENDS
 flora		SEGMENT	WORD PUBLIC USE16 'code'
 		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
-	mov		bx,word ptr ss:cde
+    mov       bx,word ptr ss:cde
 flora		ENDS
 daniel		SEGMENT	WORD PUBLIC USE16 'data'
 daniel		ENDS

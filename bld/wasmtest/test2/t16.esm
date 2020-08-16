@@ -9,8 +9,8 @@ L$1:
 donna		ENDS
 text		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
-	mov		ax,word ptr cs:L$1
-	mov		ax,word ptr cs:cde+7
-	mov		ax,word ptr outside
+    mov         ax,word ptr cs:L$1
+    mov         ax,word ptr cs:cde+7
+    mov         ax,word ptr outside
 text		ENDS
 		END

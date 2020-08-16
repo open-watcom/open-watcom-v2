@@ -6,31 +6,42 @@ wpack_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.c: ../c;$(wtouch_dir);$(clib_dir)/startup/c
-
 inc_dirs = -I. -I"$(wpack_dir)/h" -I"$(wtouch_dir)" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
-!ifneq host_os linux
-exetarg_objs_argv = wildargv.obj
-!endif
-!ifeq host_os nt
+.c: ../c;$(wtouch_dir);$(clib_dir)/startup/c
+
+objs =               &
+        common.obj   &
+        decode.obj   &
+        dtparse.obj  &
+        encode.obj   &
+	wpackio.obj  &
+        lookup.obj   &
+        message.obj  &
+        wqsort.obj   &
+        wpack.obj
+
+wildargv_dos  = 1
+wildargv_win  = 1
+wildargv_os2  = 1
+wildargv_rdos = 1
+wildargv_nt   = 1
+
+!ifdef wildargv_$(host_os)
 !ifeq host_cpu x64
-exetarg_objs_argv = setargv.obj
+wildcards_objs += setargv.obj
+!else
+objs += wildargv.obj
 !endif
 !endif
 
-exetarg_objs = &
-    common.obj   &
-    decode.obj   &
-    dtparse.obj  &
-    encode.obj   &
-    wpackio.obj  &
-    lookup.obj   &
-    message.obj  &
-    wqsort.obj   &
-    wpack.obj    &
-    $(exetarg_objs_argv)
-!include exetarg.mif
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags) $(objs) $(sys_objs) $(wildcards_objs) #$(libs) $(sys_libs) $(ldflags)
+!else
+    $(linker) name $@ $(lflags) file {$(objs) $(wildcards_objs)} #lib { $(libs) $(sys_libs) }
+!endif
 
 dtparse.obj : msg.gh
 

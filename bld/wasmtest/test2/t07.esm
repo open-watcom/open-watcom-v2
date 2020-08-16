@@ -3,6 +3,6 @@
 flora		GROUP	text
 text		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
-	mov		ax,ax
+    mov       ax,ax
 text		ENDS
 		END

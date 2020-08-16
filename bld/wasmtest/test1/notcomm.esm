@@ -11,10 +11,10 @@ foo:
 _DATA		ENDS
 _TEXT		SEGMENT	DWORD PUBLIC USE16 '_OVLCODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
-	mov		word ptr foo,cs
-	mov		bx,word ptr foo
-	add		bx,word ptr _DATA:bar
-	mov		word ptr [bx],cs
-	xor		ax,word ptr _DATA:bar
+    mov         word ptr foo,cs 
+    mov         bx,word ptr foo 
+    add         bx,word ptr _DATA:bar 
+    mov         word ptr [bx],cs 
+    xor         ax,word ptr _DATA:bar 
 _TEXT		ENDS
 		END

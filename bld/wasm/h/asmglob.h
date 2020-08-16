@@ -190,7 +190,6 @@ typedef struct global_options {
     int         locals_len;
     char        locals_prefix[3];
     char        trace_stack;
-    bool        optimization;
 } global_options;
 
 extern global_options Options;

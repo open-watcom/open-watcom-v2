@@ -6,6 +6,6 @@ L$1:
 don		ENDS
 pat		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:pat, DS:DGROUP, SS:DGROUP
-	mov		ax,word ptr L$1+2
+    mov       ax,word ptr L$1+2
 pat		ENDS
 		END

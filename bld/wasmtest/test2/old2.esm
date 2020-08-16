@@ -7,6 +7,6 @@ _data		SEGMENT	BYTE PUBLIC USE16 'data'
 _data		ENDS
 _text		SEGMENT	BYTE PUBLIC USE16 'code'
 		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
-	jmp		word ptr es:[bx]
+    jmp       word ptr es:[bx]
 _text		ENDS
 		END

@@ -205,29 +205,3 @@ char *DupStr( const char *str )
 {
     return( DupStrLen( str, strlen( str ) ) );
 }
-
-char *ReplaceStrLen( char *old, const char *str, size_t len )
-{
-    char        *dup;
-
-    if( old != NULL)
-        DbgFree( old );
-    dup = DbgAlloc( len + 1 );
-    if( dup != NULL ) {
-        memcpy( dup, str, len );
-        dup[len] = NULLCHAR;
-    }
-    return( dup );
-}
-
-
-char *ReplaceStr( char *old, const char *str )
-{
-    if( str == NULL || *str == NULLCHAR ) {
-        if( old != NULL)
-            DbgFree( old );
-        return( NULL );
-    } else {
-        return( ReplaceStrLen( old, str, strlen( str ) ) );
-    }
-}

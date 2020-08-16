@@ -170,7 +170,8 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
         chain->source_line = CopySourceLine( cueh );
     }
     CnvNearestAddr( chain->lc.execution, TxtBuff, TXT_LEN );
-    chain->symbol = ReplaceStr( chain->symbol, TxtBuff );
+    DbgFree( chain->symbol );
+    chain->symbol = DupStr( TxtBuff );
     chain->sym_len = 0;
     curr->current_depth++;
     return( true );

@@ -11,30 +11,30 @@ DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 L$1:
-	jmp		L$1
+    jmp         L$1 
 L$2:
-	jmp		L$3
+    jmp         L$3 
 L$3:
-	jmp		L$4
-	jmp		L$2
+    jmp         L$4 
+    jmp         L$2 
 L$4:
-	jmp		dword ptr DGROUP:kyb
-	jmp		dword ptr DGROUP:bar
-	nop
-	nop
-	nop
+    jmp         dword ptr DGROUP:kyb 
+    jmp         dword ptr DGROUP:bar 
+    nop         
+    nop         
+    nop         
 sam:
-	lea		ax,sam
-	lea		ax,sam
+    lea         ax,sam 
+    lea         ax,sam 
 a:
-	jmp		sam
+    jmp         sam 
 b:
-	jmp		a
+    jmp         a 
 d:
-	jmp		b
-	mov		eax,dword ptr DGROUP:foo
-	mov		eax,dword ptr DGROUP:kyb
-	lea		eax,DGROUP:bar
+    jmp         b 
+    mov         eax,dword ptr DGROUP:foo 
+    mov         eax,dword ptr DGROUP:kyb 
+    lea         eax,DGROUP:bar 
 _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 foo:

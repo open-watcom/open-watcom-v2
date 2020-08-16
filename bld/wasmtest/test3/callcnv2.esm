@@ -15,84 +15,84 @@ DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 _p1:
-	push		bp
-	mov		bp,sp
-	push		es
-	push		di
-	push		bx
-	mov		bl,byte ptr 4[bp]
-	les		di,dword ptr 0cH[bp]
-	mov		ax,word ptr 6[bp]
-	mov		ax,word ptr DGROUP:L$1
-	pop		bx
-	pop		di
-	pop		es
-	pop		bp
-	ret
+    push        bp 
+    mov         bp,sp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 4[bp] 
+    les         di,dword ptr 0cH[bp] 
+    mov         ax,word ptr 6[bp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    pop         bp 
+    ret         
 p2:
-	push		bp
-	mov		bp,sp
-	push		es
-	push		di
-	push		bx
-	mov		bl,byte ptr 4[bp]
-	les		di,dword ptr 0cH[bp]
-	mov		ax,word ptr 6[bp]
-	mov		ax,word ptr DGROUP:L$1
-	pop		bx
-	pop		di
-	pop		es
-	pop		bp
-	ret
+    push        bp 
+    mov         bp,sp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 4[bp] 
+    les         di,dword ptr 0cH[bp] 
+    mov         ax,word ptr 6[bp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    pop         bp 
+    ret         
 `_p3@12`:
-	push		bp
-	mov		bp,sp
-	push		es
-	push		di
-	push		bx
-	mov		bl,byte ptr 4[bp]
-	les		di,dword ptr 0cH[bp]
-	mov		ax,word ptr 6[bp]
-	mov		ax,word ptr DGROUP:L$1
-	pop		bx
-	pop		di
-	pop		es
-	pop		bp
-	ret		0cH
+    push        bp 
+    mov         bp,sp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 4[bp] 
+    les         di,dword ptr 0cH[bp] 
+    mov         ax,word ptr 6[bp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    pop         bp 
+    ret         0cH 
 P4:
-	push		bp
-	mov		bp,sp
-	push		es
-	push		di
-	push		bx
-	mov		bl,byte ptr 0eH[bp]
-	les		di,dword ptr 4[bp]
-	mov		ax,word ptr 0cH[bp]
-	mov		ax,word ptr DGROUP:L$1
-	pop		bx
-	pop		di
-	pop		es
-	pop		bp
-	ret		0cH
+    push        bp 
+    mov         bp,sp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 0eH[bp] 
+    les         di,dword ptr 4[bp] 
+    mov         ax,word ptr 0cH[bp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    pop         bp 
+    ret         0cH 
 _p5:
-	ret
+    ret         
 `_p6@0`:
-	ret
+    ret         
 p7_:
-	push		bp
-	mov		bp,sp
-	push		es
-	push		di
-	push		bx
-	mov		bl,al
-	les		di,dword ptr 4[bp]
-	mov		ax,dx
-	mov		ax,word ptr DGROUP:L$1
-	pop		bx
-	pop		di
-	pop		es
-	pop		bp
-	ret		4
+    push        bp 
+    mov         bp,sp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,al 
+    les         di,dword ptr 4[bp] 
+    mov         ax,dx 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    pop         bp 
+    ret         4 
 _TEXT		ENDS
 _DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
 _d1:

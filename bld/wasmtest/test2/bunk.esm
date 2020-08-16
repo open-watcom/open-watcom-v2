@@ -22,6 +22,6 @@ _data		SEGMENT	PARA PRIVATE USE16 'data'
 _data		ENDS
 _text		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
-	xor		ax,ax
+    xor       ax,ax
 _text		ENDS
 		END

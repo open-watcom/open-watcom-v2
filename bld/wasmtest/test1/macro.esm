@@ -65,2501 +65,2501 @@ L$9:
 L$10:
     DB	23H, 0
 L$11:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,1cH
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,14H
-	mov		word ptr -18H[bp],ax
-	mov		word ptr -16H[bp],dx
-	mov		word ptr -14H[bp],bx
-	mov		word ptr -12H[bp],cx
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr -0cH[bp],ax
-	mov		ax,word ptr -16H[bp]
-	mov		word ptr -0aH[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,1cH
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,14H
+    mov         word ptr -18H[bp],ax
+    mov         word ptr -16H[bp],dx
+    mov         word ptr -14H[bp],bx
+    mov         word ptr -12H[bp],cx
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr -0cH[bp],ax
+    mov         ax,word ptr -16H[bp]
+    mov         word ptr -0aH[bp],ax
 L$12:
-	lds		bx,dword ptr -0cH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -0cH[bp]
-	mov		ax,word ptr 2[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$14
-	cmp		dx,cx
-	jne		L$14
-	jmp		L$15
+    lds         bx,dword ptr -0cH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -0cH[bp]
+    mov         ax,word ptr 2[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$14
+    cmp         dx,cx
+    jne         L$14
+    jmp         L$15
 L$13:
-	lds		bx,dword ptr -0cH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -0cH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -0cH[bp],dx
-	mov		word ptr -0aH[bp],ax
-	jmp		L$12
+    lds         bx,dword ptr -0cH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -0cH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -0cH[bp],dx
+    mov         word ptr -0aH[bp],ax
+    jmp         L$12
 L$14:
-	jmp		L$13
+    jmp         L$13
 L$15:
-	mov		ax,9
-	call		far ptr AsmAlloc_
-	mov		cx,ax
-	mov		bx,dx
-	mov		word ptr -8[bp],cx
-	mov		word ptr -6[bp],bx
-	lds		bx,dword ptr -8[bp]
-	mov		word ptr [bx],0
-	lds		bx,dword ptr -8[bp]
-	mov		word ptr 2[bx],0
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		cx,ax
-	mov		bx,dx
-	lds		si,dword ptr -8[bp]
-	mov		word ptr 4[si],cx
-	lds		si,dword ptr -8[bp]
-	mov		word ptr 6[si],bx
-	lds		bx,dword ptr -8[bp]
-	mov		byte ptr 8[bx],0
-	mov		si,word ptr -14H[bp]
-	mov		cx,word ptr -12H[bp]
-	lds		bx,dword ptr -8[bp]
-	mov		bx,word ptr 4[bx]
-	lds		di,dword ptr -8[bp]
-	mov		dx,word ptr 6[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		bx,word ptr -8[bp]
-	lds		si,dword ptr -0cH[bp]
-	mov		word ptr [si],bx
-	mov		bx,word ptr -6[bp]
-	lds		si,dword ptr -0cH[bp]
-	mov		word ptr 2[si],bx
-	mov		bx,word ptr -8[bp]
-	mov		word ptr -10H[bp],bx
-	mov		bx,word ptr -6[bp]
-	mov		word ptr -0eH[bp],bx
-	mov		ax,word ptr -10H[bp]
-	mov		dx,word ptr -0eH[bp]
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret
+    mov         ax,9
+    call        far ptr AsmAlloc_
+    mov         cx,ax
+    mov         bx,dx
+    mov         word ptr -8[bp],cx
+    mov         word ptr -6[bp],bx
+    lds         bx,dword ptr -8[bp]
+    mov         word ptr [bx],0
+    lds         bx,dword ptr -8[bp]
+    mov         word ptr 2[bx],0
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         cx,ax
+    mov         bx,dx
+    lds         si,dword ptr -8[bp]
+    mov         word ptr 4[si],cx
+    lds         si,dword ptr -8[bp]
+    mov         word ptr 6[si],bx
+    lds         bx,dword ptr -8[bp]
+    mov         byte ptr 8[bx],0
+    mov         si,word ptr -14H[bp]
+    mov         cx,word ptr -12H[bp]
+    lds         bx,dword ptr -8[bp]
+    mov         bx,word ptr 4[bx]
+    lds         di,dword ptr -8[bp]
+    mov         dx,word ptr 6[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         bx,word ptr -8[bp]
+    lds         si,dword ptr -0cH[bp]
+    mov         word ptr [si],bx
+    mov         bx,word ptr -6[bp]
+    lds         si,dword ptr -0cH[bp]
+    mov         word ptr 2[si],bx
+    mov         bx,word ptr -8[bp]
+    mov         word ptr -10H[bp],bx
+    mov         bx,word ptr -6[bp]
+    mov         word ptr -0eH[bp],bx
+    mov         ax,word ptr -10H[bp]
+    mov         dx,word ptr -0eH[bp]
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         
 L$16:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,38H
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,26H
-	mov		word ptr -1cH[bp],ax
-	mov		word ptr -1aH[bp],dx
-	mov		word ptr -20H[bp],bx
-	mov		word ptr -1eH[bp],cx
-	mov		byte ptr -8[bp],0
-	lds		bx,dword ptr 6[bp]
-	mov		ax,word ptr 4[bx]
-	mov		word ptr -18H[bp],ax
-	lds		bx,dword ptr 6[bp]
-	mov		ax,word ptr 6[bx]
-	mov		word ptr -16H[bp],ax
-	mov		ax,word ptr -1cH[bp]
-	mov		word ptr -10H[bp],ax
-	mov		ax,word ptr -1aH[bp]
-	mov		word ptr -0eH[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,38H
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,26H
+    mov         word ptr -1cH[bp],ax
+    mov         word ptr -1aH[bp],dx
+    mov         word ptr -20H[bp],bx
+    mov         word ptr -1eH[bp],cx
+    mov         byte ptr -8[bp],0
+    lds         bx,dword ptr 6[bp]
+    mov         ax,word ptr 4[bx]
+    mov         word ptr -18H[bp],ax
+    lds         bx,dword ptr 6[bp]
+    mov         ax,word ptr 6[bx]
+    mov         word ptr -16H[bp],ax
+    mov         ax,word ptr -1cH[bp]
+    mov         word ptr -10H[bp],ax
+    mov         ax,word ptr -1aH[bp]
+    mov         word ptr -0eH[bp],ax
 L$17:
-	mov		cx,word ptr -10H[bp]
-	mov		bx,word ptr -0eH[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$19
-	cmp		cx,dx
-	jne		L$19
-	jmp		near ptr L$30
+    mov         cx,word ptr -10H[bp]
+    mov         bx,word ptr -0eH[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$19
+    cmp         cx,dx
+    jne         L$19
+    jmp         near ptr L$30
 L$18:
-	lds		bx,dword ptr -10H[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -10H[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -10H[bp],dx
-	mov		word ptr -0eH[bp],ax
-	jmp		L$17
+    lds         bx,dword ptr -10H[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -10H[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -10H[bp],dx
+    mov         word ptr -0eH[bp],ax
+    jmp         L$17
 L$19:
-	lds		bx,dword ptr -10H[bp]
-	mov		dx,word ptr 4[bx]
-	lds		bx,dword ptr -10H[bp]
-	mov		ax,word ptr 6[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$20
-	cmp		dx,cx
-	je		L$21
+    lds         bx,dword ptr -10H[bp]
+    mov         dx,word ptr 4[bx]
+    lds         bx,dword ptr -10H[bp]
+    mov         ax,word ptr 6[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$20
+    cmp         dx,cx
+    je          L$21
 L$20:
-	lds		bx,dword ptr -10H[bp]
-	mov		bx,word ptr 4[bx]
-	lds		si,dword ptr -10H[bp]
-	mov		dx,word ptr 6[si]
-	mov		ax,bx
-	call		far ptr strlen_
-	mov		dl,byte ptr 4[bp]
-	xor		dh,dh
-	cmp		ax,dx
-	je		L$22
+    lds         bx,dword ptr -10H[bp]
+    mov         bx,word ptr 4[bx]
+    lds         si,dword ptr -10H[bp]
+    mov         dx,word ptr 6[si]
+    mov         ax,bx
+    call        far ptr strlen_
+    mov         dl,byte ptr 4[bp]
+    xor         dh,dh
+    cmp         ax,dx
+    je          L$22
 L$21:
-	jmp		L$23
+    jmp         L$23
 L$22:
-	mov		dl,byte ptr 4[bp]
-	xor		dh,dh
-	push		dx
-	lds		si,dword ptr -10H[bp]
-	mov		si,word ptr 4[si]
-	lds		bx,dword ptr -10H[bp]
-	mov		cx,word ptr 6[bx]
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strncmp_
-	test		ax,ax
-	je		L$24
+    mov         dl,byte ptr 4[bp]
+    xor         dh,dh
+    push        dx
+    lds         si,dword ptr -10H[bp]
+    mov         si,word ptr 4[si]
+    lds         bx,dword ptr -10H[bp]
+    mov         cx,word ptr 6[bx]
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strncmp_
+    test        ax,ax
+    je          L$24
 L$23:
-	jmp		near ptr L$29
+    jmp         near ptr L$29
 L$24:
-	mov		bx,word ptr -18H[bp]
-	mov		dx,word ptr -16H[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	mov		dx,ax
-	mov		al,byte ptr 4[bp]
-	xor		ah,ah
-	sub		dx,ax
-	add		dx,4
-	mov		ax,dx
-	call		far ptr AsmAlloc_
-	mov		bx,dx
-	mov		word ptr -14H[bp],ax
-	mov		word ptr -12H[bp],bx
-	mov		dx,word ptr -20H[bp]
-	mov		ax,word ptr -1eH[bp]
-	sub		dx,word ptr -18H[bp]
-	mov		byte ptr -6[bp],dl
-	lds		bx,dword ptr -20H[bp]
-	cmp		byte ptr -1[bx],26H
-	jne		L$25
-	mov		al,byte ptr -6[bp]
-	dec		byte ptr -6[bp]
+    mov         bx,word ptr -18H[bp]
+    mov         dx,word ptr -16H[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    mov         dx,ax
+    mov         al,byte ptr 4[bp]
+    xor         ah,ah
+    sub         dx,ax
+    add         dx,4
+    mov         ax,dx
+    call        far ptr AsmAlloc_
+    mov         bx,dx
+    mov         word ptr -14H[bp],ax
+    mov         word ptr -12H[bp],bx
+    mov         dx,word ptr -20H[bp]
+    mov         ax,word ptr -1eH[bp]
+    sub         dx,word ptr -18H[bp]
+    mov         byte ptr -6[bp],dl
+    lds         bx,dword ptr -20H[bp]
+    cmp         byte ptr -1[bx],26H
+    jne         L$25
+    mov         al,byte ptr -6[bp]
+    dec         byte ptr -6[bp]
 L$25:
-	mov		dl,byte ptr -6[bp]
-	xor		dh,dh
-	push		dx
-	mov		si,word ptr -18H[bp]
-	mov		cx,word ptr -16H[bp]
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strncpy_
-	mov		dl,byte ptr -6[bp]
-	xor		dh,dh
-	lds		bx,dword ptr -14H[bp]
-	add		bx,dx
-	mov		byte ptr [bx],0
-	mov		cx,cs
-	mov		dx,offset L$10
-	mov		si,dx
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
-	mov		dl,byte ptr -8[bp]
-	xor		dh,dh
-	push		dx
-	mov		dx,cs
-	mov		bx,offset L$9
-	push		dx
-	push		bx
-	mov		dx,ss
-	lea		bx,-2aH[bp]
-	push		dx
-	push		bx
-	call		far ptr sprintf_
-	add		sp,0aH
-	cmp		ax,2
-	je		L$26
-	mov		cx,94H
-	mov		dx,cs
-	mov		ax,offset L$2
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,cx
-	jmp		far ptr InternalError_
+    mov         dl,byte ptr -6[bp]
+    xor         dh,dh
+    push        dx
+    mov         si,word ptr -18H[bp]
+    mov         cx,word ptr -16H[bp]
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strncpy_
+    mov         dl,byte ptr -6[bp]
+    xor         dh,dh
+    lds         bx,dword ptr -14H[bp]
+    add         bx,dx
+    mov         byte ptr [bx],0
+    mov         cx,cs
+    mov         dx,offset L$10
+    mov         si,dx
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
+    mov         dl,byte ptr -8[bp]
+    xor         dh,dh
+    push        dx
+    mov         dx,cs
+    mov         bx,offset L$9
+    push        dx
+    push        bx
+    mov         dx,ss
+    lea         bx,-2aH[bp]
+    push        dx
+    push        bx
+    call        far ptr sprintf_
+    add         sp,0aH
+    cmp         ax,2
+    je          L$26
+    mov         cx,94H
+    mov         dx,cs
+    mov         ax,offset L$2
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,cx
+    jmp         far ptr InternalError_
 L$26:
-	cmp		byte ptr -2aH[bp],20H
-	jne		L$27
-	mov		byte ptr -2aH[bp],30H
+    cmp         byte ptr -2aH[bp],20H
+    jne         L$27
+    mov         byte ptr -2aH[bp],30H
 L$27:
-	mov		cx,ss
-	lea		dx,-2aH[bp]
-	mov		si,dx
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
-	mov		dl,byte ptr 4[bp]
-	xor		dh,dh
-	lds		bx,dword ptr -20H[bp]
-	add		bx,dx
-	cmp		byte ptr [bx],26H
-	jne		L$28
-	mov		al,byte ptr 4[bp]
-	inc		byte ptr 4[bp]
+    mov         cx,ss
+    lea         dx,-2aH[bp]
+    mov         si,dx
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
+    mov         dl,byte ptr 4[bp]
+    xor         dh,dh
+    lds         bx,dword ptr -20H[bp]
+    add         bx,dx
+    cmp         byte ptr [bx],26H
+    jne         L$28
+    mov         al,byte ptr 4[bp]
+    inc         byte ptr 4[bp]
 L$28:
-	mov		al,byte ptr 4[bp]
-	xor		ah,ah
-	mov		cx,word ptr -1eH[bp]
-	mov		si,word ptr -20H[bp]
-	add		si,ax
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
-	mov		ax,word ptr -14H[bp]
-	lds		bx,dword ptr 6[bp]
-	mov		word ptr 4[bx],ax
-	mov		ax,word ptr -12H[bp]
-	lds		bx,dword ptr 6[bp]
-	mov		word ptr 6[bx],ax
-	lds		bx,dword ptr 6[bp]
-	inc		byte ptr 8[bx]
-	mov		bx,word ptr -18H[bp]
-	mov		dx,word ptr -16H[bp]
-	mov		ax,bx
-	call		far ptr AsmFree_
-	mov		ax,word ptr -12H[bp]
-	mov		word ptr -0aH[bp],ax
-	mov		ax,word ptr -14H[bp]
-	add		ax,3
-	mov		word ptr -0cH[bp],ax
-	jmp		L$31
+    mov         al,byte ptr 4[bp]
+    xor         ah,ah
+    mov         cx,word ptr -1eH[bp]
+    mov         si,word ptr -20H[bp]
+    add         si,ax
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
+    mov         ax,word ptr -14H[bp]
+    lds         bx,dword ptr 6[bp]
+    mov         word ptr 4[bx],ax
+    mov         ax,word ptr -12H[bp]
+    lds         bx,dword ptr 6[bp]
+    mov         word ptr 6[bx],ax
+    lds         bx,dword ptr 6[bp]
+    inc         byte ptr 8[bx]
+    mov         bx,word ptr -18H[bp]
+    mov         dx,word ptr -16H[bp]
+    mov         ax,bx
+    call        far ptr AsmFree_
+    mov         ax,word ptr -12H[bp]
+    mov         word ptr -0aH[bp],ax
+    mov         ax,word ptr -14H[bp]
+    add         ax,3
+    mov         word ptr -0cH[bp],ax
+    jmp         L$31
 L$29:
-	mov		al,byte ptr -8[bp]
-	inc		byte ptr -8[bp]
-	jmp		near ptr L$18
+    mov         al,byte ptr -8[bp]
+    inc         byte ptr -8[bp]
+    jmp         near ptr L$18
 L$30:
-	mov		al,byte ptr 4[bp]
-	xor		ah,ah
-	mov		dx,ax
-	mov		ax,word ptr -1eH[bp]
-	mov		word ptr -0aH[bp],ax
-	mov		bx,word ptr -20H[bp]
-	add		bx,dx
-	mov		word ptr -0cH[bp],bx
+    mov         al,byte ptr 4[bp]
+    xor         ah,ah
+    mov         dx,ax
+    mov         ax,word ptr -1eH[bp]
+    mov         word ptr -0aH[bp],ax
+    mov         bx,word ptr -20H[bp]
+    add         bx,dx
+    mov         word ptr -0cH[bp],bx
 L$31:
-	mov		ax,word ptr -0cH[bp]
-	mov		dx,word ptr -0aH[bp]
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret		6
+    mov         ax,word ptr -0cH[bp]
+    mov         dx,word ptr -0aH[bp]
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         6
 L$32:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,26H
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,18H
-	mov		word ptr -1cH[bp],ax
-	mov		word ptr -1aH[bp],dx
-	mov		word ptr -18H[bp],bx
-	mov		word ptr -16H[bp],cx
-	mov		byte ptr -6[bp],0
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr 4[bx]
-	mov		word ptr -10H[bp],ax
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr 6[bx]
-	mov		word ptr -0eH[bp],ax
-	mov		ax,word ptr -10H[bp]
-	mov		word ptr -14H[bp],ax
-	mov		ax,word ptr -0eH[bp]
-	mov		word ptr -12H[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,26H
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,18H
+    mov         word ptr -1cH[bp],ax
+    mov         word ptr -1aH[bp],dx
+    mov         word ptr -18H[bp],bx
+    mov         word ptr -16H[bp],cx
+    mov         byte ptr -6[bp],0
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr 4[bx]
+    mov         word ptr -10H[bp],ax
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr 6[bx]
+    mov         word ptr -0eH[bp],ax
+    mov         ax,word ptr -10H[bp]
+    mov         word ptr -14H[bp],ax
+    mov         ax,word ptr -0eH[bp]
+    mov         word ptr -12H[bp],ax
 L$33:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$35
-	jmp		near ptr L$76
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$35
+    jmp         near ptr L$76
 L$34:
-	jmp		L$33
+    jmp         L$33
 L$35:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$37
-	jmp		near ptr L$53
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$37
+    jmp         near ptr L$53
 L$36:
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$35
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$35
 L$37:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],0c0H
-	jne		L$38
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],20H
-	je		L$39
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],0c0H
+    jne         L$38
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],20H
+    je          L$39
 L$38:
-	jmp		L$40
+    jmp         L$40
 L$39:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],5fH
-	jne		L$41
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],5fH
+    jne         L$41
 L$40:
-	jmp		L$42
+    jmp         L$42
 L$41:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],40H
-	jne		L$43
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],40H
+    jne         L$43
 L$42:
-	jmp		L$44
+    jmp         L$44
 L$43:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],24H
-	jne		L$45
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],24H
+    jne         L$45
 L$44:
-	jmp		L$46
+    jmp         L$46
 L$45:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],3fH
-	jne		L$48
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],3fH
+    jne         L$48
 L$46:
-	mov		cx,word ptr -14H[bp]
-	mov		bx,word ptr -12H[bp]
-	mov		dx,word ptr -10H[bp]
-	mov		ax,word ptr -0eH[bp]
-	cmp		bx,ax
-	jne		L$47
-	cmp		cx,dx
-	je		L$53
+    mov         cx,word ptr -14H[bp]
+    mov         bx,word ptr -12H[bp]
+    mov         dx,word ptr -10H[bp]
+    mov         ax,word ptr -0eH[bp]
+    cmp         bx,ax
+    jne         L$47
+    cmp         cx,dx
+    je          L$53
 L$47:
-	jmp		L$36
+    jmp         L$36
 L$48:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	je		L$51
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    je          L$51
 L$49:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	je		L$50
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$49
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    je          L$50
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$49
 L$50:
-	jmp		L$53
+    jmp         L$53
 L$51:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],22H
-	jne		L$52
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	inc		ax
-	mov		bx,2
-	cwd
-	idiv		bx
-	mov		byte ptr -6[bp],dl
-	mov		ax,word ptr -14H[bp]
-	mov		bx,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$53
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],22H
+    jne         L$52
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    inc         ax
+    mov         bx,2
+    cwd         
+    idiv        bx
+    mov         byte ptr -6[bp],dl
+    mov         ax,word ptr -14H[bp]
+    mov         bx,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$53
 L$52:
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
 L$53:
-	mov		bx,word ptr -14H[bp]
-	mov		word ptr -0cH[bp],bx
-	mov		bx,word ptr -12H[bp]
-	mov		word ptr -0aH[bp],bx
+    mov         bx,word ptr -14H[bp]
+    mov         word ptr -0cH[bp],bx
+    mov         bx,word ptr -12H[bp]
+    mov         word ptr -0aH[bp],bx
 L$54:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$56
-	jmp		near ptr L$67
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$56
+    jmp         near ptr L$67
 L$55:
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$54
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$54
 L$56:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],0c0H
-	jne		L$57
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],20H
-	je		L$58
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],0c0H
+    jne         L$57
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],20H
+    je          L$58
 L$57:
-	jmp		L$59
+    jmp         L$59
 L$58:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],5fH
-	jne		L$60
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],5fH
+    jne         L$60
 L$59:
-	jmp		L$61
+    jmp         L$61
 L$60:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],40H
-	jne		L$62
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],40H
+    jne         L$62
 L$61:
-	jmp		L$63
+    jmp         L$63
 L$62:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],24H
-	jne		L$64
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],24H
+    jne         L$64
 L$63:
-	jmp		L$65
+    jmp         L$65
 L$64:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],3fH
-	jne		L$66
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],3fH
+    jne         L$66
 L$65:
-	jmp		L$55
+    jmp         L$55
 L$66:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	jne		L$67
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],22H
-	jne		L$67
-	mov		bl,byte ptr -6[bp]
-	xor		bh,bh
-	lea		ax,1[bx]
-	mov		bx,2
-	cwd
-	idiv		bx
-	mov		byte ptr -6[bp],dl
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    jne         L$67
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],22H
+    jne         L$67
+    mov         bl,byte ptr -6[bp]
+    xor         bh,bh
+    lea         ax,1[bx]
+    mov         bx,2
+    cwd         
+    idiv        bx
+    mov         byte ptr -6[bp],dl
 L$67:
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	sub		dx,word ptr -0cH[bp]
-	mov		byte ptr -8[bp],dl
-	cmp		byte ptr -6[bp],0
-	je		L$68
-	lds		bx,dword ptr -0cH[bp]
-	cmp		byte ptr [bx],26H
-	jne		L$69
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    sub         dx,word ptr -0cH[bp]
+    mov         byte ptr -8[bp],dl
+    cmp         byte ptr -6[bp],0
+    je          L$68
+    lds         bx,dword ptr -0cH[bp]
+    cmp         byte ptr [bx],26H
+    jne         L$69
 L$68:
-	jmp		L$70
+    jmp         L$70
 L$69:
-	lds		bx,dword ptr -0cH[bp]
-	cmp		byte ptr -1[bx],26H
-	jne		L$71
+    lds         bx,dword ptr -0cH[bp]
+    cmp         byte ptr -1[bx],26H
+    jne         L$71
 L$70:
-	jmp		L$72
+    jmp         L$72
 L$71:
-	mov		bl,byte ptr -8[bp]
-	xor		bh,bh
-	mov		ds,word ptr -0aH[bp]
-	add		bx,word ptr -0cH[bp]
-	cmp		byte ptr 1[bx],26H
-	jne		L$75
+    mov         bl,byte ptr -8[bp]
+    xor         bh,bh
+    mov         ds,word ptr -0aH[bp]
+    add         bx,word ptr -0cH[bp]
+    cmp         byte ptr 1[bx],26H
+    jne         L$75
 L$72:
-	lds		bx,dword ptr -0cH[bp]
-	cmp		byte ptr [bx],0
-	je		L$73
-	cmp		byte ptr -8[bp],0
-	ja		L$74
+    lds         bx,dword ptr -0cH[bp]
+    cmp         byte ptr [bx],0
+    je          L$73
+    cmp         byte ptr -8[bp],0
+    ja          L$74
 L$73:
-	jmp		L$75
+    jmp         L$75
 L$74:
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	push		dx
-	push		bx
-	mov		dl,byte ptr -8[bp]
-	xor		dh,dh
-	push		dx
-	mov		si,word ptr -0cH[bp]
-	mov		cx,word ptr -0aH[bp]
-	mov		bx,word ptr -18H[bp]
-	mov		dx,word ptr -16H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$16
-	mov		cx,ax
-	mov		bx,dx
-	mov		word ptr -14H[bp],cx
-	mov		word ptr -12H[bp],bx
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    push        dx
+    push        bx
+    mov         dl,byte ptr -8[bp]
+    xor         dh,dh
+    push        dx
+    mov         si,word ptr -0cH[bp]
+    mov         cx,word ptr -0aH[bp]
+    mov         bx,word ptr -18H[bp]
+    mov         dx,word ptr -16H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$16
+    mov         cx,ax
+    mov         bx,dx
+    mov         word ptr -14H[bp],cx
+    mov         word ptr -12H[bp],bx
 L$75:
-	jmp		near ptr L$34
+    jmp         near ptr L$34
 L$76:
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         
 L$77:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,16H
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,0cH
-	mov		word ptr -10H[bp],ax
-	mov		word ptr -0eH[bp],dx
-	mov		word ptr -0cH[bp],bx
-	mov		word ptr -0aH[bp],cx
-	mov		bx,word ptr -0cH[bp]
-	mov		dx,word ptr -0aH[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	mov		word ptr -8[bp],ax
-	mov		bx,word ptr -10H[bp]
-	mov		dx,word ptr -0eH[bp]
-	mov		ax,bx
-	call		far ptr wipe_space_
-	mov		ax,word ptr -8[bp]
-	push		ax
-	mov		si,word ptr -0cH[bp]
-	mov		cx,word ptr -0aH[bp]
-	mov		bx,word ptr -10H[bp]
-	mov		dx,word ptr -0eH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strnicmp_
-	test		ax,ax
-	je		L$78
-	mov		byte ptr -6[bp],0
-	jmp		L$82
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,16H
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,0cH
+    mov         word ptr -10H[bp],ax
+    mov         word ptr -0eH[bp],dx
+    mov         word ptr -0cH[bp],bx
+    mov         word ptr -0aH[bp],cx
+    mov         bx,word ptr -0cH[bp]
+    mov         dx,word ptr -0aH[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    mov         word ptr -8[bp],ax
+    mov         bx,word ptr -10H[bp]
+    mov         dx,word ptr -0eH[bp]
+    mov         ax,bx
+    call        far ptr wipe_space_
+    mov         ax,word ptr -8[bp]
+    push        ax
+    mov         si,word ptr -0cH[bp]
+    mov         cx,word ptr -0aH[bp]
+    mov         bx,word ptr -10H[bp]
+    mov         dx,word ptr -0eH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strnicmp_
+    test        ax,ax
+    je          L$78
+    mov         byte ptr -6[bp],0
+    jmp         L$82
 L$78:
-	lds		bx,dword ptr -10H[bp]
-	add		bx,word ptr -8[bp]
-	cmp		byte ptr [bx],0
-	je		L$79
-	lds		bx,dword ptr -10H[bp]
-	add		bx,word ptr -8[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	je		L$80
+    lds         bx,dword ptr -10H[bp]
+    add         bx,word ptr -8[bp]
+    cmp         byte ptr [bx],0
+    je          L$79
+    lds         bx,dword ptr -10H[bp]
+    add         bx,word ptr -8[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    je          L$80
 L$79:
-	jmp		L$81
+    jmp         L$81
 L$80:
-	mov		byte ptr -6[bp],0
-	jmp		L$82
+    mov         byte ptr -6[bp],0
+    jmp         L$82
 L$81:
-	mov		byte ptr -6[bp],1
+    mov         byte ptr -6[bp],1
 L$82:
-	mov		al,byte ptr -6[bp]
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret
+    mov         al,byte ptr -6[bp]
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         
 L$83:
-	push		bp
-	mov		bp,sp
-	mov		ax,11cH
-	call		far ptr __STK
-	push		bx
-	push		cx
-	push		dx
-	push		si
-	push		di
-	sub		sp,104H
-	mov		word ptr -0cH[bp],0
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		word ptr 2[bx],0
-	jne		L$84
-	cmp		word ptr [bx],16bH
-	je		L$85
+    push        bp
+    mov         bp,sp
+    mov         ax,11cH
+    call        far ptr __STK
+    push        bx
+    push        cx
+    push        dx
+    push        si
+    push        di
+    sub         sp,104H
+    mov         word ptr -0cH[bp],0
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         word ptr 2[bx],0
+    jne         L$84
+    cmp         word ptr [bx],16bH
+    je          L$85
 L$84:
-	mov		ax,33H
-	call		far ptr AsmError_
-	mov		word ptr -0eH[bp],0ffffH
-	jmp		near ptr L$92
+    mov         ax,33H
+    call        far ptr AsmError_
+    mov         word ptr -0eH[bp],0ffffH
+    jmp         near ptr L$92
 L$85:
-	call		far ptr PushLineQueue_
-	mov		ax,word ptr -0cH[bp]
-	inc		word ptr -0cH[bp]
+    call        far ptr PushLineQueue_
+    mov         ax,word ptr -0cH[bp]
+    inc         word ptr -0cH[bp]
 L$86:
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],0
-	jne		L$88
-	jmp		near ptr L$91
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],0
+    jne         L$88
+    jmp         near ptr L$91
 L$87:
-	mov		ax,word ptr -0cH[bp]
-	inc		word ptr -0cH[bp]
-	jmp		L$86
+    mov         ax,word ptr -0cH[bp]
+    inc         word ptr -0cH[bp]
+    jmp         L$86
 L$88:
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],3
-	je		L$89
-	mov		ax,67H
-	call		far ptr AsmError_
-	mov		word ptr -0eH[bp],0ffffH
-	jmp		near ptr L$92
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],3
+    je          L$89
+    mov         ax,67H
+    call        far ptr AsmError_
+    mov         word ptr -0eH[bp],0ffffH
+    jmp         near ptr L$92
 L$89:
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		di,dword ptr DGROUP:_AsmBuffer[si]
-	mov		si,word ptr 5[di]
-	mov		cx,word ptr 7[di]
-	mov		dx,ss
-	lea		ax,-10eH[bp]
-	mov		di,ax
-	mov		ax,di
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		si,cs
-	mov		ax,offset L$3
-	mov		di,ax
-	mov		dx,ss
-	lea		ax,-10eH[bp]
-	mov		cx,ax
-	mov		ax,cx
-	mov		bx,di
-	mov		cx,si
-	call		far ptr strcat_
-	push		word ptr ss:_MacroLocalVarCounter
-	mov		dx,cs
-	mov		cx,offset L$4
-	push		dx
-	push		cx
-	mov		dx,ss
-	lea		si,-10eH[bp]
-	mov		cx,si
-	mov		ax,cx
-	call		far ptr strlen_
-	mov		cx,ax
-	mov		ax,ss
-	lea		dx,-10eH[bp]
-	add		cx,dx
-	push		ax
-	push		cx
-	call		far ptr sprintf_
-	add		sp,0aH
-	inc		word ptr ss:_MacroLocalVarCounter
-	mov		dx,ss
-	lea		ax,-10eH[bp]
-	mov		cx,ax
-	mov		ax,cx
-	call		far ptr InputQueueLine_
-	mov		ax,word ptr -0cH[bp]
-	inc		word ptr -0cH[bp]
-	mov		di,word ptr -0cH[bp]
-	shl		di,1
-	shl		di,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		si,dword ptr DGROUP:_AsmBuffer[di]
-	cmp		byte ptr 4[si],0
-	je		L$91
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	je		L$90
-	mov		ax,21H
-	call		far ptr AsmError_
-	mov		word ptr -0eH[bp],0ffffH
-	jmp		L$92
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         di,dword ptr DGROUP:_AsmBuffer[si]
+    mov         si,word ptr 5[di]
+    mov         cx,word ptr 7[di]
+    mov         dx,ss
+    lea         ax,-10eH[bp]
+    mov         di,ax
+    mov         ax,di
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         si,cs
+    mov         ax,offset L$3
+    mov         di,ax
+    mov         dx,ss
+    lea         ax,-10eH[bp]
+    mov         cx,ax
+    mov         ax,cx
+    mov         bx,di
+    mov         cx,si
+    call        far ptr strcat_
+    push        word ptr ss:_MacroLocalVarCounter
+    mov         dx,cs
+    mov         cx,offset L$4
+    push        dx
+    push        cx
+    mov         dx,ss
+    lea         si,-10eH[bp]
+    mov         cx,si
+    mov         ax,cx
+    call        far ptr strlen_
+    mov         cx,ax
+    mov         ax,ss
+    lea         dx,-10eH[bp]
+    add         cx,dx
+    push        ax
+    push        cx
+    call        far ptr sprintf_
+    add         sp,0aH
+    inc         word ptr ss:_MacroLocalVarCounter
+    mov         dx,ss
+    lea         ax,-10eH[bp]
+    mov         cx,ax
+    mov         ax,cx
+    call        far ptr InputQueueLine_
+    mov         ax,word ptr -0cH[bp]
+    inc         word ptr -0cH[bp]
+    mov         di,word ptr -0cH[bp]
+    shl         di,1
+    shl         di,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         si,dword ptr DGROUP:_AsmBuffer[di]
+    cmp         byte ptr 4[si],0
+    je          L$91
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    je          L$90
+    mov         ax,21H
+    call        far ptr AsmError_
+    mov         word ptr -0eH[bp],0ffffH
+    jmp         L$92
 L$90:
-	jmp		near ptr L$87
+    jmp         near ptr L$87
 L$91:
-	mov		word ptr -0eH[bp],1
+    mov         word ptr -0eH[bp],1
 L$92:
-	mov		ax,word ptr -0eH[bp]
-	lea		sp,-0aH[bp]
-	pop		di
-	pop		si
-	pop		dx
-	pop		cx
-	pop		bx
-	pop		bp
-	ret
+    mov         ax,word ptr -0eH[bp]
+    lea         sp,-0aH[bp]
+    pop         di
+    pop         si
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         bp
+    ret         
 L$93:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,138H
-	call		far ptr __STK
-	pop		ax
-	push		bx
-	push		cx
-	push		dx
-	push		si
-	push		di
-	sub		sp,12aH
-	mov		word ptr -0eH[bp],ax
-	mov		word ptr -10H[bp],0
-	cmp		byte ptr ss:_Parse_Pass,0
-	jne		L$94
-	mov		si,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		ax,word ptr 5[bx]
-	mov		word ptr -2cH[bp],ax
-	mov		ax,word ptr 7[bx]
-	mov		word ptr -2aH[bp],ax
-	mov		bx,word ptr -2cH[bp]
-	mov		dx,word ptr -2aH[bp]
-	mov		ax,bx
-	call		far ptr AsmGetSymbol_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -28H[bp],bx
-	mov		word ptr -26H[bp],ax
-	lds		bx,dword ptr -28H[bp]
-	mov		ax,word ptr 1aH[bx]
-	mov		word ptr -18H[bp],ax
-	lds		bx,dword ptr -28H[bp]
-	mov		ax,word ptr 1cH[bx]
-	mov		word ptr -16H[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,138H
+    call        far ptr __STK
+    pop         ax
+    push        bx
+    push        cx
+    push        dx
+    push        si
+    push        di
+    sub         sp,12aH
+    mov         word ptr -0eH[bp],ax
+    mov         word ptr -10H[bp],0
+    cmp         byte ptr ss:_Parse_Pass,0
+    jne         L$94
+    mov         si,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         ax,word ptr 5[bx]
+    mov         word ptr -2cH[bp],ax
+    mov         ax,word ptr 7[bx]
+    mov         word ptr -2aH[bp],ax
+    mov         bx,word ptr -2cH[bp]
+    mov         dx,word ptr -2aH[bp]
+    mov         ax,bx
+    call        far ptr AsmGetSymbol_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -28H[bp],bx
+    mov         word ptr -26H[bp],ax
+    lds         bx,dword ptr -28H[bp]
+    mov         ax,word ptr 1aH[bx]
+    mov         word ptr -18H[bp],ax
+    lds         bx,dword ptr -28H[bp]
+    mov         ax,word ptr 1cH[bx]
+    mov         word ptr -16H[bp],ax
 L$94:
-	mov		ax,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	cmp		byte ptr ss:_Parse_Pass,0
-	je		L$95
-	jmp		near ptr L$112
+    mov         ax,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    cmp         byte ptr ss:_Parse_Pass,0
+    je          L$95
+    jmp         near ptr L$112
 L$95:
-	mov		ax,word ptr -0eH[bp]
-	cmp		ax,word ptr ss:_Token_Count
-	jl		L$97
-	jmp		near ptr L$112
+    mov         ax,word ptr -0eH[bp]
+    cmp         ax,word ptr ss:_Token_Count
+    jl          L$97
+    jmp         near ptr L$112
 L$96:
-	jmp		L$95
+    jmp         L$95
 L$97:
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		ax,word ptr 5[bx]
-	mov		word ptr -14H[bp],ax
-	mov		ax,word ptr 7[bx]
-	mov		word ptr -12H[bp],ax
-	mov		ax,11H
-	call		far ptr AsmAlloc_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -30H[bp],bx
-	mov		word ptr -2eH[bp],ax
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 0dH[bx],0
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 0fH[bx],0
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 8[bx],0
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 0aH[bx],0
-	lds		bx,dword ptr -30H[bp]
-	mov		byte ptr 0cH[bx],0
-	mov		cx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,cx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		cx,ax
-	mov		ax,dx
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 4[bx],cx
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 6[bx],ax
-	mov		si,word ptr -14H[bp]
-	mov		cx,word ptr -12H[bp]
-	lds		bx,dword ptr -30H[bp]
-	mov		bx,word ptr 4[bx]
-	lds		di,dword ptr -30H[bp]
-	mov		dx,word ptr 6[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		ax,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],3aH
-	je		L$98
-	jmp		near ptr L$102
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         ax,word ptr 5[bx]
+    mov         word ptr -14H[bp],ax
+    mov         ax,word ptr 7[bx]
+    mov         word ptr -12H[bp],ax
+    mov         ax,11H
+    call        far ptr AsmAlloc_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -30H[bp],bx
+    mov         word ptr -2eH[bp],ax
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 0dH[bx],0
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 0fH[bx],0
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 8[bx],0
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 0aH[bx],0
+    lds         bx,dword ptr -30H[bp]
+    mov         byte ptr 0cH[bx],0
+    mov         cx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,cx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         cx,ax
+    mov         ax,dx
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 4[bx],cx
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 6[bx],ax
+    mov         si,word ptr -14H[bp]
+    mov         cx,word ptr -12H[bp]
+    lds         bx,dword ptr -30H[bp]
+    mov         bx,word ptr 4[bx]
+    lds         di,dword ptr -30H[bp]
+    mov         dx,word ptr 6[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         ax,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],3aH
+    je          L$98
+    jmp         near ptr L$102
 L$98:
-	mov		bx,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	les		si,dword ptr 5[bx]
-	cmp		byte ptr es:[si],3dH
-	je		L$99
-	jmp		near ptr L$101
+    mov         bx,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    les         si,dword ptr 5[bx]
+    cmp         byte ptr es:[si],3dH
+    je          L$99
+    jmp         near ptr L$101
 L$99:
-	mov		bx,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],5
-	je		L$100
-	mov		ax,33H
-	call		far ptr AsmError_
-	mov		word ptr -0cH[bp],0ffffH
-	jmp		near ptr L$128
+    mov         bx,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],5
+    je          L$100
+    mov         ax,33H
+    call        far ptr AsmError_
+    mov         word ptr -0cH[bp],0ffffH
+    jmp         near ptr L$128
 L$100:
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		ax,word ptr 5[bx]
-	mov		word ptr -14H[bp],ax
-	mov		ax,word ptr 7[bx]
-	mov		word ptr -12H[bp],ax
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		bx,ax
-	mov		ax,dx
-	lds		si,dword ptr -30H[bp]
-	mov		word ptr 0dH[si],bx
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 0fH[bx],ax
-	mov		si,word ptr -14H[bp]
-	mov		cx,word ptr -12H[bp]
-	lds		bx,dword ptr -30H[bp]
-	mov		bx,word ptr 0dH[bx]
-	lds		di,dword ptr -30H[bp]
-	mov		dx,word ptr 0fH[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		ax,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	jmp		L$102
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         ax,word ptr 5[bx]
+    mov         word ptr -14H[bp],ax
+    mov         ax,word ptr 7[bx]
+    mov         word ptr -12H[bp],ax
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         bx,ax
+    mov         ax,dx
+    lds         si,dword ptr -30H[bp]
+    mov         word ptr 0dH[si],bx
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 0fH[bx],ax
+    mov         si,word ptr -14H[bp]
+    mov         cx,word ptr -12H[bp]
+    lds         bx,dword ptr -30H[bp]
+    mov         bx,word ptr 0dH[bx]
+    lds         di,dword ptr -30H[bp]
+    mov         dx,word ptr 0fH[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         ax,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    jmp         L$102
 L$101:
-	mov		cx,cs
-	mov		dx,offset L$8
-	mov		si,dx
-	mov		bx,word ptr -0eH[bp]
-	shl		bx,1
-	shl		bx,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		di,dword ptr DGROUP:_AsmBuffer[bx]
-	mov		bx,word ptr 5[di]
-	mov		dx,word ptr 7[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcmp_
-	test		ax,ax
-	jne		L$102
-	lds		bx,dword ptr -30H[bp]
-	mov		byte ptr 0cH[bx],1
-	mov		bx,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
+    mov         cx,cs
+    mov         dx,offset L$8
+    mov         si,dx
+    mov         bx,word ptr -0eH[bp]
+    shl         bx,1
+    shl         bx,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         di,dword ptr DGROUP:_AsmBuffer[bx]
+    mov         bx,word ptr 5[di]
+    mov         dx,word ptr 7[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcmp_
+    test        ax,ax
+    jne         L$102
+    lds         bx,dword ptr -30H[bp]
+    mov         byte ptr 0cH[bx],1
+    mov         bx,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
 L$102:
-	mov		ax,word ptr -0eH[bp]
-	cmp		ax,word ptr ss:_Token_Count
-	jge		L$103
-	mov		si,word ptr -0eH[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	jne		L$104
+    mov         ax,word ptr -0eH[bp]
+    cmp         ax,word ptr ss:_Token_Count
+    jge         L$103
+    mov         si,word ptr -0eH[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    jne         L$104
 L$103:
-	jmp		L$105
+    jmp         L$105
 L$104:
-	mov		ax,21H
-	call		far ptr AsmError_
-	mov		word ptr -0cH[bp],0ffffH
-	jmp		near ptr L$128
+    mov         ax,21H
+    call        far ptr AsmError_
+    mov         word ptr -0cH[bp],0ffffH
+    jmp         near ptr L$128
 L$105:
-	mov		ax,word ptr -0eH[bp]
-	inc		word ptr -0eH[bp]
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr [bx],0
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 2[bx],0
-	lds		bx,dword ptr -18H[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -18H[bp]
-	mov		ax,word ptr 2[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$106
-	cmp		dx,cx
-	jne		L$106
-	mov		bx,word ptr -30H[bp]
-	lds		si,dword ptr -18H[bp]
-	mov		word ptr [si],bx
-	mov		bx,word ptr -2eH[bp]
-	lds		si,dword ptr -18H[bp]
-	mov		word ptr 2[si],bx
-	jmp		L$111
+    mov         ax,word ptr -0eH[bp]
+    inc         word ptr -0eH[bp]
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr [bx],0
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 2[bx],0
+    lds         bx,dword ptr -18H[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -18H[bp]
+    mov         ax,word ptr 2[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$106
+    cmp         dx,cx
+    jne         L$106
+    mov         bx,word ptr -30H[bp]
+    lds         si,dword ptr -18H[bp]
+    mov         word ptr [si],bx
+    mov         bx,word ptr -2eH[bp]
+    lds         si,dword ptr -18H[bp]
+    mov         word ptr 2[si],bx
+    jmp         L$111
 L$106:
-	lds		bx,dword ptr -18H[bp]
-	mov		ax,word ptr [bx]
-	mov		word ptr -24H[bp],ax
-	lds		bx,dword ptr -18H[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -22H[bp],ax
-	jmp		L$108
+    lds         bx,dword ptr -18H[bp]
+    mov         ax,word ptr [bx]
+    mov         word ptr -24H[bp],ax
+    lds         bx,dword ptr -18H[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -22H[bp],ax
+    jmp         L$108
 L$107:
-	lds		bx,dword ptr -24H[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -24H[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -24H[bp],dx
-	mov		word ptr -22H[bp],ax
+    lds         bx,dword ptr -24H[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -24H[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -24H[bp],dx
+    mov         word ptr -22H[bp],ax
 L$108:
-	lds		bx,dword ptr -24H[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -24H[bp]
-	mov		ax,word ptr 2[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$109
-	cmp		dx,cx
-	je		L$110
+    lds         bx,dword ptr -24H[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -24H[bp]
+    mov         ax,word ptr 2[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$109
+    cmp         dx,cx
+    je          L$110
 L$109:
-	jmp		L$107
+    jmp         L$107
 L$110:
-	mov		bx,word ptr -30H[bp]
-	lds		si,dword ptr -24H[bp]
-	mov		word ptr [si],bx
-	mov		bx,word ptr -2eH[bp]
-	lds		si,dword ptr -24H[bp]
-	mov		word ptr 2[si],bx
+    mov         bx,word ptr -30H[bp]
+    lds         si,dword ptr -24H[bp]
+    mov         word ptr [si],bx
+    mov         bx,word ptr -2eH[bp]
+    lds         si,dword ptr -24H[bp]
+    mov         word ptr 2[si],bx
 L$111:
-	jmp		near ptr L$96
+    jmp         near ptr L$96
 L$112:
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	call		far ptr ReadTextLine_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -1cH[bp],bx
-	mov		word ptr -1aH[bp],ax
-	mov		dx,word ptr -1cH[bp]
-	mov		ax,word ptr -1aH[bp]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$113
-	cmp		dx,cx
-	jne		L$113
-	mov		ax,87H
-	call		far ptr AsmError_
-	mov		word ptr -0cH[bp],0ffffH
-	jmp		near ptr L$128
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    call        far ptr ReadTextLine_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -1cH[bp],bx
+    mov         word ptr -1aH[bp],ax
+    mov         dx,word ptr -1cH[bp]
+    mov         ax,word ptr -1aH[bp]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$113
+    cmp         dx,cx
+    jne         L$113
+    mov         ax,87H
+    call        far ptr AsmError_
+    mov         word ptr -0cH[bp],0ffffH
+    jmp         near ptr L$128
 L$113:
-	mov		cx,cs
-	mov		dx,offset L$7
-	mov		si,dx
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$77
-	test		al,al
-	je		L$115
-	cmp		word ptr -10H[bp],0
-	je		L$114
-	mov		ax,word ptr -10H[bp]
-	dec		word ptr -10H[bp]
-	jmp		L$115
+    mov         cx,cs
+    mov         dx,offset L$7
+    mov         si,dx
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$77
+    test        al,al
+    je          L$115
+    cmp         word ptr -10H[bp],0
+    je          L$114
+    mov         ax,word ptr -10H[bp]
+    dec         word ptr -10H[bp]
+    jmp         L$115
 L$114:
-	mov		word ptr -0cH[bp],1
-	jmp		near ptr L$128
+    mov         word ptr -0cH[bp],1
+    jmp         near ptr L$128
 L$115:
-	mov		ax,word ptr -1cH[bp]
-	mov		word ptr -134H[bp],ax
-	mov		ax,word ptr -1aH[bp]
-	mov		word ptr -132H[bp],ax
+    mov         ax,word ptr -1cH[bp]
+    mov         word ptr -134H[bp],ax
+    mov         ax,word ptr -1aH[bp]
+    mov         word ptr -132H[bp],ax
 L$116:
-	lds		bx,dword ptr -134H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	je		L$117
-	mov		dx,word ptr -134H[bp]
-	mov		ax,word ptr -132H[bp]
-	inc		word ptr -134H[bp]
-	jmp		L$116
+    lds         bx,dword ptr -134H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    je          L$117
+    mov         dx,word ptr -134H[bp]
+    mov         ax,word ptr -132H[bp]
+    inc         word ptr -134H[bp]
+    jmp         L$116
 L$117:
-	mov		cx,word ptr -134H[bp]
-	mov		bx,word ptr -132H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$118
-	cmp		cx,dx
-	je		L$119
+    mov         cx,word ptr -134H[bp]
+    mov         bx,word ptr -132H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$118
+    cmp         cx,dx
+    je          L$119
 L$118:
-	lds		bx,dword ptr -134H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	je		L$120
+    lds         bx,dword ptr -134H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    je          L$120
 L$119:
-	jmp		L$121
+    jmp         L$121
 L$120:
-	mov		dx,word ptr -134H[bp]
-	mov		ax,word ptr -132H[bp]
-	inc		word ptr -134H[bp]
-	jmp		L$117
+    mov         dx,word ptr -134H[bp]
+    mov         ax,word ptr -132H[bp]
+    inc         word ptr -134H[bp]
+    jmp         L$117
 L$121:
-	mov		cx,word ptr -134H[bp]
-	mov		bx,word ptr -132H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$122
-	cmp		cx,dx
-	je		L$123
+    mov         cx,word ptr -134H[bp]
+    mov         bx,word ptr -132H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$122
+    cmp         cx,dx
+    je          L$123
 L$122:
-	lds		bx,dword ptr -134H[bp]
-	mov		bl,byte ptr [bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],2
-	jne		L$124
+    lds         bx,dword ptr -134H[bp]
+    mov         bl,byte ptr [bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],2
+    jne         L$124
 L$123:
-	jmp		L$125
+    jmp         L$125
 L$124:
-	mov		dx,word ptr -134H[bp]
-	mov		ax,word ptr -132H[bp]
-	inc		word ptr -134H[bp]
-	jmp		L$121
+    mov         dx,word ptr -134H[bp]
+    mov         ax,word ptr -132H[bp]
+    inc         word ptr -134H[bp]
+    jmp         L$121
 L$125:
-	mov		cx,cs
-	mov		dx,offset L$6
-	mov		si,dx
-	mov		bx,word ptr -134H[bp]
-	mov		dx,word ptr -132H[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$77
-	test		al,al
-	je		L$126
-	mov		ax,word ptr -10H[bp]
-	inc		word ptr -10H[bp]
+    mov         cx,cs
+    mov         dx,offset L$6
+    mov         si,dx
+    mov         bx,word ptr -134H[bp]
+    mov         dx,word ptr -132H[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$77
+    test        al,al
+    je          L$126
+    mov         ax,word ptr -10H[bp]
+    inc         word ptr -10H[bp]
 L$126:
-	cmp		byte ptr ss:_Parse_Pass,0
-	jne		L$127
-	mov		si,word ptr -1cH[bp]
-	mov		cx,word ptr -1aH[bp]
-	mov		dx,word ptr -16H[bp]
-	mov		ax,word ptr -18H[bp]
-	add		ax,4
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$11
-	mov		cx,ax
-	mov		bx,dx
-	mov		word ptr -20H[bp],cx
-	mov		word ptr -1eH[bp],bx
-	lds		si,dword ptr -18H[bp]
-	mov		si,word ptr [si]
-	lds		bx,dword ptr -18H[bp]
-	mov		cx,word ptr 2[bx]
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$32
+    cmp         byte ptr ss:_Parse_Pass,0
+    jne         L$127
+    mov         si,word ptr -1cH[bp]
+    mov         cx,word ptr -1aH[bp]
+    mov         dx,word ptr -16H[bp]
+    mov         ax,word ptr -18H[bp]
+    add         ax,4
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$11
+    mov         cx,ax
+    mov         bx,dx
+    mov         word ptr -20H[bp],cx
+    mov         word ptr -1eH[bp],bx
+    lds         si,dword ptr -18H[bp]
+    mov         si,word ptr [si]
+    lds         bx,dword ptr -18H[bp]
+    mov         cx,word ptr 2[bx]
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$32
 L$127:
-	jmp		near ptr L$112
+    jmp         near ptr L$112
 L$128:
-	mov		ax,word ptr -0cH[bp]
-	lea		sp,-0aH[bp]
-	pop		di
-	pop		si
-	pop		dx
-	pop		cx
-	pop		bx
-	pop		bp
-	ret
+    mov         ax,word ptr -0cH[bp]
+    lea         sp,-0aH[bp]
+    pop         di
+    pop         si
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         bp
+    ret         
 L$129:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,26H
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,1cH
-	mov		word ptr -1cH[bp],ax
-	mov		word ptr -1aH[bp],dx
-	mov		word ptr -18H[bp],bx
-	mov		word ptr -16H[bp],cx
-	mov		byte ptr -6[bp],0
-	lds		bx,dword ptr -1cH[bp]
-	mov		byte ptr [bx],0
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr -10H[bp],ax
-	mov		ax,word ptr -16H[bp]
-	mov		word ptr -0eH[bp],ax
-	mov		ax,word ptr -10H[bp]
-	mov		word ptr -14H[bp],ax
-	mov		ax,word ptr -0eH[bp]
-	mov		word ptr -12H[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,26H
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,1cH
+    mov         word ptr -1cH[bp],ax
+    mov         word ptr -1aH[bp],dx
+    mov         word ptr -18H[bp],bx
+    mov         word ptr -16H[bp],cx
+    mov         byte ptr -6[bp],0
+    lds         bx,dword ptr -1cH[bp]
+    mov         byte ptr [bx],0
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr -10H[bp],ax
+    mov         ax,word ptr -16H[bp]
+    mov         word ptr -0eH[bp],ax
+    mov         ax,word ptr -10H[bp]
+    mov         word ptr -14H[bp],ax
+    mov         ax,word ptr -0eH[bp]
+    mov         word ptr -12H[bp],ax
 L$130:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$132
-	jmp		near ptr L$148
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$132
+    jmp         near ptr L$148
 L$131:
-	mov		ax,word ptr -12H[bp]
-	mov		word ptr -0eH[bp],ax
-	mov		bx,word ptr -14H[bp]
-	add		bx,3
-	mov		word ptr -10H[bp],bx
-	jmp		L$130
+    mov         ax,word ptr -12H[bp]
+    mov         word ptr -0eH[bp],ax
+    mov         bx,word ptr -14H[bp]
+    add         bx,3
+    mov         word ptr -10H[bp],bx
+    jmp         L$130
 L$132:
-	mov		bx,word ptr -10H[bp]
-	mov		word ptr -14H[bp],bx
-	mov		bx,word ptr -0eH[bp]
-	mov		word ptr -12H[bp],bx
+    mov         bx,word ptr -10H[bp]
+    mov         word ptr -14H[bp],bx
+    mov         bx,word ptr -0eH[bp]
+    mov         word ptr -12H[bp],bx
 L$133:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],23H
-	jne		L$134
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr 1[bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],20H
-	jne		L$135
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],23H
+    jne         L$134
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr 1[bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],20H
+    jne         L$135
 L$134:
-	jmp		L$136
+    jmp         L$136
 L$135:
-	lds		bx,dword ptr -14H[bp]
-	mov		bl,byte ptr 2[bx]
-	inc		bl
-	xor		bh,bh
-	test		byte ptr ss:__IsTable[bx],20H
-	jne		L$137
+    lds         bx,dword ptr -14H[bp]
+    mov         bl,byte ptr 2[bx]
+    inc         bl
+    xor         bh,bh
+    test        byte ptr ss:__IsTable[bx],20H
+    jne         L$137
 L$136:
-	mov		word ptr -1eH[bp],1
-	jmp		L$138
+    mov         word ptr -1eH[bp],1
+    jmp         L$138
 L$137:
-	mov		word ptr -1eH[bp],0
+    mov         word ptr -1eH[bp],0
 L$138:
-	cmp		word ptr -1eH[bp],0
-	je		L$139
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$141
+    cmp         word ptr -1eH[bp],0
+    je          L$139
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$141
 L$139:
-	jmp		L$142
+    jmp         L$142
 L$140:
-	mov		dx,word ptr -14H[bp]
-	mov		ax,word ptr -12H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$133
+    mov         dx,word ptr -14H[bp]
+    mov         ax,word ptr -12H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$133
 L$141:
-	jmp		L$140
+    jmp         L$140
 L$142:
-	lds		bx,dword ptr -14H[bp]
-	cmp		byte ptr [bx],0
-	jne		L$143
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	sub		bx,word ptr -10H[bp]
-	mov		ax,bx
-	push		ax
-	mov		si,word ptr -10H[bp]
-	mov		cx,word ptr -0eH[bp]
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strncat_
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	mov		word ptr -8[bp],ax
-	jmp		near ptr L$149
+    lds         bx,dword ptr -14H[bp]
+    cmp         byte ptr [bx],0
+    jne         L$143
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    sub         bx,word ptr -10H[bp]
+    mov         ax,bx
+    push        ax
+    mov         si,word ptr -10H[bp]
+    mov         cx,word ptr -0eH[bp]
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strncat_
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    mov         word ptr -8[bp],ax
+    jmp         near ptr L$149
 L$143:
-	lds		bx,dword ptr -14H[bp]
-	mov		al,byte ptr 1[bx]
-	mov		byte ptr -0cH[bp],al
-	lds		bx,dword ptr -14H[bp]
-	mov		al,byte ptr 2[bx]
-	mov		byte ptr -0bH[bp],al
-	mov		byte ptr -0aH[bp],0
-	mov		dx,ss
-	lea		cx,-0cH[bp]
-	mov		bx,cx
-	mov		ax,bx
-	call		far ptr atoi_
-	mov		byte ptr -6[bp],al
-	mov		bx,word ptr -14H[bp]
-	mov		dx,word ptr -12H[bp]
-	sub		bx,word ptr -10H[bp]
-	push		bx
-	mov		si,word ptr -10H[bp]
-	mov		cx,word ptr -0eH[bp]
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strncat_
-	mov		dl,byte ptr -6[bp]
-	xor		dh,dh
-	cmp		dx,word ptr 4[bp]
-	jg		L$144
-	mov		word ptr -20H[bp],0
-	jmp		L$145
+    lds         bx,dword ptr -14H[bp]
+    mov         al,byte ptr 1[bx]
+    mov         byte ptr -0cH[bp],al
+    lds         bx,dword ptr -14H[bp]
+    mov         al,byte ptr 2[bx]
+    mov         byte ptr -0bH[bp],al
+    mov         byte ptr -0aH[bp],0
+    mov         dx,ss
+    lea         cx,-0cH[bp]
+    mov         bx,cx
+    mov         ax,bx
+    call        far ptr atoi_
+    mov         byte ptr -6[bp],al
+    mov         bx,word ptr -14H[bp]
+    mov         dx,word ptr -12H[bp]
+    sub         bx,word ptr -10H[bp]
+    push        bx
+    mov         si,word ptr -10H[bp]
+    mov         cx,word ptr -0eH[bp]
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strncat_
+    mov         dl,byte ptr -6[bp]
+    xor         dh,dh
+    cmp         dx,word ptr 4[bp]
+    jg          L$144
+    mov         word ptr -20H[bp],0
+    jmp         L$145
 L$144:
-	mov		cx,1a0H
-	mov		dx,cs
-	mov		ax,offset L$2
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,cx
-	jmp		far ptr InternalError_
+    mov         cx,1a0H
+    mov         dx,cs
+    mov         ax,offset L$2
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,cx
+    jmp         far ptr InternalError_
 L$145:
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	shl		ax,1
-	shl		ax,1
-	mov		bx,ax
-	mov		ds,word ptr 8[bp]
-	add		bx,word ptr 6[bp]
-	mov		dx,word ptr [bx]
-	mov		ax,word ptr 2[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$146
-	cmp		dx,cx
-	je		L$147
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    shl         ax,1
+    shl         ax,1
+    mov         bx,ax
+    mov         ds,word ptr 8[bp]
+    add         bx,word ptr 6[bp]
+    mov         dx,word ptr [bx]
+    mov         ax,word ptr 2[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$146
+    cmp         dx,cx
+    je          L$147
 L$146:
-	mov		dl,byte ptr -6[bp]
-	inc		byte ptr -6[bp]
-	xor		dh,dh
-	shl		dx,1
-	shl		dx,1
-	mov		bx,dx
-	mov		ds,word ptr 8[bp]
-	add		bx,word ptr 6[bp]
-	mov		si,word ptr [bx]
-	mov		cx,word ptr 2[bx]
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
+    mov         dl,byte ptr -6[bp]
+    inc         byte ptr -6[bp]
+    xor         dh,dh
+    shl         dx,1
+    shl         dx,1
+    mov         bx,dx
+    mov         ds,word ptr 8[bp]
+    add         bx,word ptr 6[bp]
+    mov         si,word ptr [bx]
+    mov         cx,word ptr 2[bx]
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
 L$147:
-	jmp		near ptr L$131
+    jmp         near ptr L$131
 L$148:
-	mov		bx,word ptr -1cH[bp]
-	mov		dx,word ptr -1aH[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	mov		word ptr -8[bp],ax
+    mov         bx,word ptr -1cH[bp]
+    mov         dx,word ptr -1aH[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    mov         word ptr -8[bp],ax
 L$149:
-	mov		ax,word ptr -8[bp]
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret		6
+    mov         ax,word ptr -8[bp]
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         6
 L$150:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,12cH
-	call		far ptr __STK
-	pop		ax
-	push		si
-	push		di
-	sub		sp,11eH
-	mov		word ptr -16H[bp],ax
-	mov		word ptr -14H[bp],dx
-	mov		word ptr -1eH[bp],bx
-	mov		word ptr -1cH[bp],cx
-	mov		byte ptr -6[bp],0
-	mov		ax,word ptr -1eH[bp]
-	mov		word ptr -0aH[bp],ax
-	mov		ax,word ptr -1cH[bp]
-	mov		word ptr -8[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,12cH
+    call        far ptr __STK
+    pop         ax
+    push        si
+    push        di
+    sub         sp,11eH
+    mov         word ptr -16H[bp],ax
+    mov         word ptr -14H[bp],dx
+    mov         word ptr -1eH[bp],bx
+    mov         word ptr -1cH[bp],cx
+    mov         byte ptr -6[bp],0
+    mov         ax,word ptr -1eH[bp]
+    mov         word ptr -0aH[bp],ax
+    mov         ax,word ptr -1cH[bp]
+    mov         word ptr -8[bp],ax
 L$151:
-	mov		cx,word ptr -0aH[bp]
-	mov		bx,word ptr -8[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$153
-	cmp		cx,dx
-	jne		L$153
-	jmp		L$154
+    mov         cx,word ptr -0aH[bp]
+    mov         bx,word ptr -8[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$153
+    cmp         cx,dx
+    jne         L$153
+    jmp         L$154
 L$152:
-	lds		bx,dword ptr -0aH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -0aH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -0aH[bp],dx
-	mov		word ptr -8[bp],ax
-	jmp		L$151
+    lds         bx,dword ptr -0aH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -0aH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -0aH[bp],dx
+    mov         word ptr -8[bp],ax
+    jmp         L$151
 L$153:
-	mov		al,byte ptr -6[bp]
-	inc		byte ptr -6[bp]
-	jmp		L$152
+    mov         al,byte ptr -6[bp]
+    inc         byte ptr -6[bp]
+    jmp         L$152
 L$154:
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	shl		ax,1
-	shl		ax,1
-	inc		ax
-	and		al,0feH
-	mov		dx,ax
-	call		far ptr stackavail_
-	cmp		dx,ax
-	jae		L$155
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	shl		ax,1
-	shl		ax,1
-	inc		ax
-	and		al,0feH
-	sub		sp,ax
-	mov		ax,sp
-	mov		dx,ss
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -122H[bp],bx
-	mov		word ptr -120H[bp],ax
-	jmp		L$156
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    shl         ax,1
+    shl         ax,1
+    inc         ax
+    and         al,0feH
+    mov         dx,ax
+    call        far ptr stackavail_
+    cmp         dx,ax
+    jae         L$155
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    shl         ax,1
+    shl         ax,1
+    inc         ax
+    and         al,0feH
+    sub         sp,ax
+    mov         ax,sp
+    mov         dx,ss
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -122H[bp],bx
+    mov         word ptr -120H[bp],ax
+    jmp         L$156
 L$155:
-	mov		word ptr -122H[bp],0
-	mov		word ptr -120H[bp],0
+    mov         word ptr -122H[bp],0
+    mov         word ptr -120H[bp],0
 L$156:
-	mov		ax,word ptr -122H[bp]
-	mov		word ptr -12H[bp],ax
-	mov		ax,word ptr -120H[bp]
-	mov		word ptr -10H[bp],ax
-	mov		byte ptr -6[bp],0
-	mov		bx,word ptr -1eH[bp]
-	mov		word ptr -0aH[bp],bx
-	mov		ax,word ptr -1cH[bp]
-	mov		word ptr -8[bp],ax
+    mov         ax,word ptr -122H[bp]
+    mov         word ptr -12H[bp],ax
+    mov         ax,word ptr -120H[bp]
+    mov         word ptr -10H[bp],ax
+    mov         byte ptr -6[bp],0
+    mov         bx,word ptr -1eH[bp]
+    mov         word ptr -0aH[bp],bx
+    mov         ax,word ptr -1cH[bp]
+    mov         word ptr -8[bp],ax
 L$157:
-	mov		cx,word ptr -0aH[bp]
-	mov		bx,word ptr -8[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$159
-	cmp		cx,dx
-	jne		L$159
-	jmp		L$160
+    mov         cx,word ptr -0aH[bp]
+    mov         bx,word ptr -8[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$159
+    cmp         cx,dx
+    jne         L$159
+    jmp         L$160
 L$158:
-	lds		bx,dword ptr -0aH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -0aH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -0aH[bp],dx
-	mov		word ptr -8[bp],ax
-	jmp		L$157
+    lds         bx,dword ptr -0aH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -0aH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -0aH[bp],dx
+    mov         word ptr -8[bp],ax
+    jmp         L$157
 L$159:
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	shl		ax,1
-	shl		ax,1
-	lds		bx,dword ptr -12H[bp]
-	add		bx,ax
-	les		si,dword ptr -0aH[bp]
-	mov		dx,word ptr es:8[si]
-	les		si,dword ptr -0aH[bp]
-	mov		ax,word ptr es:0aH[si]
-	mov		word ptr [bx],dx
-	mov		word ptr 2[bx],ax
-	mov		al,byte ptr -6[bp]
-	inc		byte ptr -6[bp]
-	jmp		L$158
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    shl         ax,1
+    shl         ax,1
+    lds         bx,dword ptr -12H[bp]
+    add         bx,ax
+    les         si,dword ptr -0aH[bp]
+    mov         dx,word ptr es:8[si]
+    les         si,dword ptr -0aH[bp]
+    mov         ax,word ptr es:0aH[si]
+    mov         word ptr [bx],dx
+    mov         word ptr 2[bx],ax
+    mov         al,byte ptr -6[bp]
+    inc         byte ptr -6[bp]
+    jmp         L$158
 L$160:
-	mov		dx,word ptr -12H[bp]
-	mov		ax,word ptr -10H[bp]
-	push		ax
-	push		dx
-	mov		al,byte ptr -6[bp]
-	xor		ah,ah
-	dec		ax
-	push		ax
-	lds		si,dword ptr -16H[bp]
-	mov		si,word ptr 4[si]
-	lds		bx,dword ptr -16H[bp]
-	mov		cx,word ptr 6[bx]
-	mov		dx,ss
-	lea		ax,-11eH[bp]
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$129
-	mov		dx,ss
-	lea		ax,-11eH[bp]
-	mov		cx,ax
-	mov		ax,cx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -0eH[bp],bx
-	mov		word ptr -0cH[bp],ax
-	mov		cx,ss
-	lea		ax,-11eH[bp]
-	mov		si,ax
-	mov		bx,word ptr -0eH[bp]
-	mov		dx,word ptr -0cH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		ax,word ptr -0eH[bp]
-	mov		word ptr -1aH[bp],ax
-	mov		ax,word ptr -0cH[bp]
-	mov		word ptr -18H[bp],ax
-	mov		ax,word ptr -1aH[bp]
-	mov		dx,word ptr -18H[bp]
-	lea		sp,-4[bp]
-	pop		di
-	pop		si
-	pop		bp
-	ret
+    mov         dx,word ptr -12H[bp]
+    mov         ax,word ptr -10H[bp]
+    push        ax
+    push        dx
+    mov         al,byte ptr -6[bp]
+    xor         ah,ah
+    dec         ax
+    push        ax
+    lds         si,dword ptr -16H[bp]
+    mov         si,word ptr 4[si]
+    lds         bx,dword ptr -16H[bp]
+    mov         cx,word ptr 6[bx]
+    mov         dx,ss
+    lea         ax,-11eH[bp]
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$129
+    mov         dx,ss
+    lea         ax,-11eH[bp]
+    mov         cx,ax
+    mov         ax,cx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -0eH[bp],bx
+    mov         word ptr -0cH[bp],ax
+    mov         cx,ss
+    lea         ax,-11eH[bp]
+    mov         si,ax
+    mov         bx,word ptr -0eH[bp]
+    mov         dx,word ptr -0cH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         ax,word ptr -0eH[bp]
+    mov         word ptr -1aH[bp],ax
+    mov         ax,word ptr -0cH[bp]
+    mov         word ptr -18H[bp],ax
+    mov         ax,word ptr -1aH[bp]
+    mov         dx,word ptr -18H[bp]
+    lea         sp,-4[bp]
+    pop         di
+    pop         si
+    pop         bp
+    ret         
 L$161:
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,14H
-	call		far ptr __STK
-	pop		ax
-	push		bx
-	push		cx
-	push		si
-	push		di
-	sub		sp,8
-	mov		word ptr -10H[bp],ax
-	mov		word ptr -0eH[bp],dx
-	mov		ax,word ptr -10H[bp]
-	mov		word ptr -0cH[bp],ax
-	mov		ax,word ptr -0eH[bp]
-	mov		word ptr -0aH[bp],ax
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,14H
+    call        far ptr __STK
+    pop         ax
+    push        bx
+    push        cx
+    push        si
+    push        di
+    sub         sp,8
+    mov         word ptr -10H[bp],ax
+    mov         word ptr -0eH[bp],dx
+    mov         ax,word ptr -10H[bp]
+    mov         word ptr -0cH[bp],ax
+    mov         ax,word ptr -0eH[bp]
+    mov         word ptr -0aH[bp],ax
 L$162:
-	mov		cx,word ptr -0cH[bp]
-	mov		bx,word ptr -0aH[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$164
-	cmp		cx,dx
-	jne		L$164
-	jmp		L$165
+    mov         cx,word ptr -0cH[bp]
+    mov         bx,word ptr -0aH[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$164
+    cmp         cx,dx
+    jne         L$164
+    jmp         L$165
 L$163:
-	lds		bx,dword ptr -0cH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -0cH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -0cH[bp],dx
-	mov		word ptr -0aH[bp],ax
-	jmp		L$162
+    lds         bx,dword ptr -0cH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -0cH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -0cH[bp],dx
+    mov         word ptr -0aH[bp],ax
+    jmp         L$162
 L$164:
-	lds		bx,dword ptr -0cH[bp]
-	mov		bx,word ptr 8[bx]
-	lds		si,dword ptr -0cH[bp]
-	mov		dx,word ptr 0aH[si]
-	mov		ax,bx
-	call		far ptr AsmFree_
-	lds		bx,dword ptr -0cH[bp]
-	mov		word ptr 8[bx],0
-	lds		bx,dword ptr -0cH[bp]
-	mov		word ptr 0aH[bx],0
-	jmp		L$163
+    lds         bx,dword ptr -0cH[bp]
+    mov         bx,word ptr 8[bx]
+    lds         si,dword ptr -0cH[bp]
+    mov         dx,word ptr 0aH[si]
+    mov         ax,bx
+    call        far ptr AsmFree_
+    lds         bx,dword ptr -0cH[bp]
+    mov         word ptr 8[bx],0
+    lds         bx,dword ptr -0cH[bp]
+    mov         word ptr 0aH[bx],0
+    jmp         L$163
 L$165:
-	lea		sp,-8[bp]
-	pop		di
-	pop		si
-	pop		cx
-	pop		bx
-	pop		bp
-	ret
+    lea         sp,-8[bp]
+    pop         di
+    pop         si
+    pop         cx
+    pop         bx
+    pop         bp
+    ret         
 ExpandMacro_:
-	inc		bp
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,140H
-	call		far ptr __STK
-	pop		ax
-	push		bx
-	push		cx
-	push		dx
-	push		si
-	push		di
-	sub		sp,128H
-	mov		word ptr -18H[bp],ax
-	mov		word ptr -28H[bp],0
-	mov		word ptr -26H[bp],0
-	mov		word ptr -14H[bp],0
-	mov		byte ptr -0cH[bp],0
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],0
-	jne		L$166
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr -16H[bp],ax
-	jmp		near ptr L$231
+    inc         bp
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,140H
+    call        far ptr __STK
+    pop         ax
+    push        bx
+    push        cx
+    push        dx
+    push        si
+    push        di
+    sub         sp,128H
+    mov         word ptr -18H[bp],ax
+    mov         word ptr -28H[bp],0
+    mov         word ptr -26H[bp],0
+    mov         word ptr -14H[bp],0
+    mov         byte ptr -0cH[bp],0
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],0
+    jne         L$166
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr -16H[bp],ax
+    jmp         near ptr L$231
 L$166:
-	mov		byte ptr -11H[bp],0
+    mov         byte ptr -11H[bp],0
 L$167:
-	mov		ax,word ptr -14H[bp]
-	cmp		ax,word ptr -18H[bp]
-	jl		L$169
-	jmp		L$175
+    mov         ax,word ptr -14H[bp]
+    cmp         ax,word ptr -18H[bp]
+    jl          L$169
+    jmp         L$175
 L$168:
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$167
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$167
 L$169:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],3
-	jne		L$170
-	mov		bx,word ptr -14H[bp]
-	shl		bx,1
-	shl		bx,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		si,dword ptr DGROUP:_AsmBuffer[bx]
-	mov		bx,word ptr 5[si]
-	mov		dx,word ptr 7[si]
-	mov		ax,bx
-	call		far ptr AsmGetSymbol_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -28H[bp],bx
-	mov		word ptr -26H[bp],ax
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],3
+    jne         L$170
+    mov         bx,word ptr -14H[bp]
+    shl         bx,1
+    shl         bx,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         si,dword ptr DGROUP:_AsmBuffer[bx]
+    mov         bx,word ptr 5[si]
+    mov         dx,word ptr 7[si]
+    mov         ax,bx
+    call        far ptr AsmGetSymbol_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -28H[bp],bx
+    mov         word ptr -26H[bp],ax
 L$170:
-	mov		cx,word ptr -28H[bp]
-	mov		bx,word ptr -26H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$171
-	cmp		cx,dx
-	je		L$172
+    mov         cx,word ptr -28H[bp]
+    mov         bx,word ptr -26H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$171
+    cmp         cx,dx
+    je          L$172
 L$171:
-	lds		bx,dword ptr -28H[bp]
-	cmp		byte ptr 15H[bx],7
-	je		L$173
+    lds         bx,dword ptr -28H[bp]
+    cmp         byte ptr 15H[bx],7
+    je          L$173
 L$172:
-	jmp		L$174
+    jmp         L$174
 L$173:
-	jmp		L$175
+    jmp         L$175
 L$174:
-	jmp		L$168
+    jmp         L$168
 L$175:
-	mov		cx,word ptr -28H[bp]
-	mov		bx,word ptr -26H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$176
-	cmp		cx,dx
-	je		L$177
+    mov         cx,word ptr -28H[bp]
+    mov         bx,word ptr -26H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$176
+    cmp         cx,dx
+    je          L$177
 L$176:
-	lds		bx,dword ptr -28H[bp]
-	cmp		byte ptr 15H[bx],7
-	je		L$178
+    lds         bx,dword ptr -28H[bp]
+    cmp         byte ptr 15H[bx],7
+    je          L$178
 L$177:
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr -16H[bp],ax
-	jmp		near ptr L$231
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr -16H[bp],ax
+    jmp         near ptr L$231
 L$178:
-	mov		ax,word ptr -14H[bp]
-	mov		word ptr -10H[bp],ax
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer+4[si]
-	cmp		byte ptr 4[bx],6
-	jne		L$179
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer+4[si]
-	cmp		word ptr 2[bx],0
-	jne		L$179
-	cmp		word ptr [bx],17dH
-	je		L$180
+    mov         ax,word ptr -14H[bp]
+    mov         word ptr -10H[bp],ax
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer+4[si]
+    cmp         byte ptr 4[bx],6
+    jne         L$179
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer+4[si]
+    cmp         word ptr 2[bx],0
+    jne         L$179
+    cmp         word ptr [bx],17dH
+    je          L$180
 L$179:
-	jmp		L$181
+    jmp         L$181
 L$180:
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr -16H[bp],ax
-	jmp		near ptr L$231
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr -16H[bp],ax
+    jmp         near ptr L$231
 L$181:
-	cmp		word ptr -10H[bp],0
-	je		L$186
-	call		far ptr PushLineQueue_
-	mov		byte ptr -130H[bp],0
-	mov		word ptr -14H[bp],0
+    cmp         word ptr -10H[bp],0
+    je          L$186
+    call        far ptr PushLineQueue_
+    mov         byte ptr -130H[bp],0
+    mov         word ptr -14H[bp],0
 L$182:
-	mov		ax,word ptr -14H[bp]
-	cmp		ax,word ptr -10H[bp]
-	jl		L$184
-	jmp		L$185
+    mov         ax,word ptr -14H[bp]
+    cmp         ax,word ptr -10H[bp]
+    jl          L$184
+    jmp         L$185
 L$183:
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	jmp		L$182
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    jmp         L$182
 L$184:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		si,word ptr 5[bx]
-	mov		cx,word ptr 7[bx]
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
-	jmp		L$183
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         si,word ptr 5[bx]
+    mov         cx,word ptr 7[bx]
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
+    jmp         L$183
 L$185:
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	call		far ptr InputQueueLine_
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    call        far ptr InputQueueLine_
 L$186:
-	mov		ax,word ptr -10H[bp]
-	inc		ax
-	mov		word ptr -14H[bp],ax
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer-4[si]
-	push		word ptr 7[bx]
-	push		word ptr 5[bx]
-	mov		ax,cs
-	mov		bx,offset L$1
-	push		ax
-	push		bx
-	call		far ptr DoDebugMsg_
-	add		sp,8
-	mov		bx,word ptr -28H[bp]
-	mov		word ptr -24H[bp],bx
-	mov		ax,word ptr -26H[bp]
-	mov		word ptr -22H[bp],ax
-	lds		bx,dword ptr -24H[bp]
-	mov		bx,word ptr 1aH[bx]
-	mov		word ptr -1cH[bp],bx
-	lds		bx,dword ptr -24H[bp]
-	mov		ax,word ptr 1cH[bx]
-	mov		word ptr -1aH[bp],ax
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr [bx]
-	mov		word ptr -30H[bp],ax
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -2eH[bp],ax
+    mov         ax,word ptr -10H[bp]
+    inc         ax
+    mov         word ptr -14H[bp],ax
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer-4[si]
+    push        word ptr 7[bx]
+    push        word ptr 5[bx]
+    mov         ax,cs
+    mov         bx,offset L$1
+    push        ax
+    push        bx
+    call        far ptr DoDebugMsg_
+    add         sp,8
+    mov         bx,word ptr -28H[bp]
+    mov         word ptr -24H[bp],bx
+    mov         ax,word ptr -26H[bp]
+    mov         word ptr -22H[bp],ax
+    lds         bx,dword ptr -24H[bp]
+    mov         bx,word ptr 1aH[bx]
+    mov         word ptr -1cH[bp],bx
+    lds         bx,dword ptr -24H[bp]
+    mov         ax,word ptr 1cH[bx]
+    mov         word ptr -1aH[bp],ax
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr [bx]
+    mov         word ptr -30H[bp],ax
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -2eH[bp],ax
 L$187:
-	mov		cx,word ptr -30H[bp]
-	mov		bx,word ptr -2eH[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$189
-	cmp		cx,dx
-	jne		L$189
-	jmp		near ptr L$224
+    mov         cx,word ptr -30H[bp]
+    mov         bx,word ptr -2eH[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$189
+    cmp         cx,dx
+    jne         L$189
+    jmp         near ptr L$224
 L$188:
-	lds		bx,dword ptr -30H[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -30H[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -30H[bp],dx
-	mov		word ptr -2eH[bp],ax
-	jmp		L$187
+    lds         bx,dword ptr -30H[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -30H[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -30H[bp],dx
+    mov         word ptr -2eH[bp],ax
+    jmp         L$187
 L$189:
-	mov		byte ptr -130H[bp],0
-	mov		ax,word ptr -14H[bp]
-	cmp		ax,word ptr -18H[bp]
-	jl		L$190
-	jmp		near ptr L$222
+    mov         byte ptr -130H[bp],0
+    mov         ax,word ptr -14H[bp]
+    cmp         ax,word ptr -18H[bp]
+    jl          L$190
+    jmp         near ptr L$222
 L$190:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	je		L$192
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],5
-	jne		L$191
-	mov		bx,word ptr -14H[bp]
-	shl		bx,1
-	shl		bx,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		si,dword ptr DGROUP:_AsmBuffer[bx]
-	mov		bx,word ptr 5[si]
-	mov		dx,word ptr 7[si]
-	mov		ax,bx
-	call		far ptr strlen_
-	test		ax,ax
-	je		L$192
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    je          L$192
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],5
+    jne         L$191
+    mov         bx,word ptr -14H[bp]
+    shl         bx,1
+    shl         bx,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         si,dword ptr DGROUP:_AsmBuffer[bx]
+    mov         bx,word ptr 5[si]
+    mov         dx,word ptr 7[si]
+    mov         ax,bx
+    call        far ptr strlen_
+    test        ax,ax
+    je          L$192
 L$191:
-	jmp		near ptr L$199
+    jmp         near ptr L$199
 L$192:
-	lds		bx,dword ptr -30H[bp]
-	cmp		byte ptr 0cH[bx],0
-	je		L$193
-	mov		ax,459H
-	call		far ptr AsmError_
-	mov		word ptr -16H[bp],0ffffH
-	jmp		near ptr L$231
+    lds         bx,dword ptr -30H[bp]
+    cmp         byte ptr 0cH[bx],0
+    je          L$193
+    mov         ax,459H
+    call        far ptr AsmError_
+    mov         word ptr -16H[bp],0ffffH
+    jmp         near ptr L$231
 L$193:
-	lds		bx,dword ptr -30H[bp]
-	mov		dx,word ptr 0dH[bx]
-	lds		bx,dword ptr -30H[bp]
-	mov		ax,word ptr 0fH[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$194
-	cmp		dx,cx
-	je		L$195
+    lds         bx,dword ptr -30H[bp]
+    mov         dx,word ptr 0dH[bx]
+    lds         bx,dword ptr -30H[bp]
+    mov         ax,word ptr 0fH[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$194
+    cmp         dx,cx
+    je          L$195
 L$194:
-	lds		bx,dword ptr -30H[bp]
-	mov		bx,word ptr 0dH[bx]
-	lds		si,dword ptr -30H[bp]
-	mov		dx,word ptr 0fH[si]
-	mov		ax,bx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		cx,ax
-	mov		bx,dx
-	lds		si,dword ptr -30H[bp]
-	mov		word ptr 8[si],cx
-	lds		si,dword ptr -30H[bp]
-	mov		word ptr 0aH[si],bx
-	lds		si,dword ptr -30H[bp]
-	mov		si,word ptr 0dH[si]
-	lds		bx,dword ptr -30H[bp]
-	mov		cx,word ptr 0fH[bx]
-	lds		bx,dword ptr -30H[bp]
-	mov		bx,word ptr 8[bx]
-	lds		di,dword ptr -30H[bp]
-	mov		dx,word ptr 0aH[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
+    lds         bx,dword ptr -30H[bp]
+    mov         bx,word ptr 0dH[bx]
+    lds         si,dword ptr -30H[bp]
+    mov         dx,word ptr 0fH[si]
+    mov         ax,bx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         cx,ax
+    mov         bx,dx
+    lds         si,dword ptr -30H[bp]
+    mov         word ptr 8[si],cx
+    lds         si,dword ptr -30H[bp]
+    mov         word ptr 0aH[si],bx
+    lds         si,dword ptr -30H[bp]
+    mov         si,word ptr 0dH[si]
+    lds         bx,dword ptr -30H[bp]
+    mov         cx,word ptr 0fH[bx]
+    lds         bx,dword ptr -30H[bp]
+    mov         bx,word ptr 8[bx]
+    lds         di,dword ptr -30H[bp]
+    mov         dx,word ptr 0aH[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
 L$195:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	je		L$198
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	mov		ax,word ptr -14H[bp]
-	cmp		ax,word ptr -18H[bp]
-	jge		L$196
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	jne		L$197
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    je          L$198
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    mov         ax,word ptr -14H[bp]
+    cmp         ax,word ptr -18H[bp]
+    jge         L$196
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    jne         L$197
 L$196:
-	jmp		L$198
+    jmp         L$198
 L$197:
-	mov		ax,21H
-	call		far ptr AsmError_
-	mov		word ptr -16H[bp],0ffffH
-	jmp		near ptr L$231
+    mov         ax,21H
+    call        far ptr AsmError_
+    mov         word ptr -16H[bp],0ffffH
+    jmp         near ptr L$231
 L$198:
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	jmp		near ptr L$221
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    jmp         near ptr L$221
 L$199:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],0
-	jne		L$200
-	jmp		near ptr L$220
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],0
+    jne         L$200
+    jmp         near ptr L$220
 L$200:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	les		si,dword ptr 5[bx]
-	cmp		byte ptr es:[si],25H
-	jne		L$201
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	les		si,dword ptr 5[bx]
-	mov		byte ptr es:[si],20H
-	mov		byte ptr -0cH[bp],1
-	mov		ax,word ptr -14H[bp]
-	mov		word ptr -0eH[bp],ax
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    les         si,dword ptr 5[bx]
+    cmp         byte ptr es:[si],25H
+    jne         L$201
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    les         si,dword ptr 5[bx]
+    mov         byte ptr es:[si],20H
+    mov         byte ptr -0cH[bp],1
+    mov         ax,word ptr -14H[bp]
+    mov         word ptr -0eH[bp],ax
 L$201:
-	cmp		byte ptr -0cH[bp],0
-	je		L$202
-	jmp		near ptr L$210
+    cmp         byte ptr -0cH[bp],0
+    je          L$202
+    jmp         near ptr L$210
 L$202:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	je		L$203
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		dx,word ptr 5[bx]
-	mov		ax,word ptr 7[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$204
-	cmp		dx,cx
-	jne		L$204
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    je          L$203
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         dx,word ptr 5[bx]
+    mov         ax,word ptr 7[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$204
+    cmp         dx,cx
+    jne         L$204
 L$203:
-	jmp		L$205
+    jmp         L$205
 L$204:
-	mov		ax,word ptr -14H[bp]
-	cmp		ax,word ptr -18H[bp]
-	jne		L$206
+    mov         ax,word ptr -14H[bp]
+    cmp         ax,word ptr -18H[bp]
+    jne         L$206
 L$205:
-	jmp		near ptr L$220
+    jmp         near ptr L$220
 L$206:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],11H
-	jbe		L$207
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	les		si,dword ptr 5[bx]
-	mov		al,byte ptr es:[si]
-	mov		byte ptr -12H[bp],al
-	mov		cx,ss
-	lea		ax,-12H[bp]
-	mov		si,ax
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
-	jmp		L$209
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],11H
+    jbe         L$207
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    les         si,dword ptr 5[bx]
+    mov         al,byte ptr es:[si]
+    mov         byte ptr -12H[bp],al
+    mov         cx,ss
+    lea         ax,-12H[bp]
+    mov         si,ax
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
+    jmp         L$209
 L$207:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],0cH
-	jne		L$208
-	mov		di,0aH
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		cx,ax
-	mov		ax,cx
-	call		far ptr strlen_
-	mov		bx,ax
-	mov		ax,ss
-	lea		dx,-130H[bp]
-	mov		cx,ax
-	add		dx,bx
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		ax,word ptr [bx]
-	mov		bx,dx
-	mov		dx,di
-	call		far ptr itoa_
-	jmp		L$209
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],0cH
+    jne         L$208
+    mov         di,0aH
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         cx,ax
+    mov         ax,cx
+    call        far ptr strlen_
+    mov         bx,ax
+    mov         ax,ss
+    lea         dx,-130H[bp]
+    mov         cx,ax
+    add         dx,bx
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         ax,word ptr [bx]
+    mov         bx,dx
+    mov         dx,di
+    call        far ptr itoa_
+    jmp         L$209
 L$208:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		si,word ptr 5[bx]
-	mov		cx,word ptr 7[bx]
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcat_
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         si,word ptr 5[bx]
+    mov         cx,word ptr 7[bx]
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcat_
 L$209:
-	jmp		near ptr L$219
+    jmp         near ptr L$219
 L$210:
-	xor		dx,dx
-	mov		ax,word ptr -14H[bp]
-	call		far ptr ExpandSymbol_
-	mov		word ptr -132H[bp],ax
-	cmp		word ptr -132H[bp],0ffffH
-	jl		L$211
-	cmp		word ptr -132H[bp],0ffffH
-	jle		L$212
-	cmp		word ptr -132H[bp],2
-	je		L$213
-	jmp		L$214
+    xor         dx,dx
+    mov         ax,word ptr -14H[bp]
+    call        far ptr ExpandSymbol_
+    mov         word ptr -132H[bp],ax
+    cmp         word ptr -132H[bp],0ffffH
+    jl          L$211
+    cmp         word ptr -132H[bp],0ffffH
+    jle         L$212
+    cmp         word ptr -132H[bp],2
+    je          L$213
+    jmp         L$214
 L$211:
-	jmp		L$214
+    jmp         L$214
 L$212:
-	lds		bx,dword ptr -1cH[bp]
-	mov		bx,word ptr [bx]
-	lds		si,dword ptr -1cH[bp]
-	mov		dx,word ptr 2[si]
-	mov		ax,bx
-	call		near ptr L$161
-	mov		word ptr -16H[bp],0ffffH
-	jmp		near ptr L$231
+    lds         bx,dword ptr -1cH[bp]
+    mov         bx,word ptr [bx]
+    lds         si,dword ptr -1cH[bp]
+    mov         dx,word ptr 2[si]
+    mov         ax,bx
+    call        near ptr L$161
+    mov         word ptr -16H[bp],0ffffH
+    jmp         near ptr L$231
 L$213:
-	jmp		near ptr L$199
+    jmp         near ptr L$199
 L$214:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	cmp		byte ptr 4[bx],2cH
-	je		L$215
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		dx,word ptr 5[bx]
-	mov		ax,word ptr 7[bx]
-	xor		cx,cx
-	xor		bx,bx
-	cmp		ax,bx
-	jne		L$216
-	cmp		dx,cx
-	jne		L$216
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    cmp         byte ptr 4[bx],2cH
+    je          L$215
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         dx,word ptr 5[bx]
+    mov         ax,word ptr 7[bx]
+    xor         cx,cx
+    xor         bx,bx
+    cmp         ax,bx
+    jne         L$216
+    cmp         dx,cx
+    jne         L$216
 L$215:
-	jmp		L$217
+    jmp         L$217
 L$216:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer+4[si]
-	cmp		byte ptr 4[bx],0
-	jne		L$219
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer+4[si]
+    cmp         byte ptr 4[bx],0
+    jne         L$219
 L$217:
-	mov		si,word ptr -14H[bp]
-	shl		si,1
-	shl		si,1
-	mov		bx,seg _AsmBuffer
-	mov		ds,bx
-	lds		bx,dword ptr DGROUP:_AsmBuffer+4[si]
-	cmp		byte ptr 4[bx],0
-	jne		L$218
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
+    mov         si,word ptr -14H[bp]
+    shl         si,1
+    shl         si,1
+    mov         bx,seg _AsmBuffer
+    mov         ds,bx
+    lds         bx,dword ptr DGROUP:_AsmBuffer+4[si]
+    cmp         byte ptr 4[bx],0
+    jne         L$218
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
 L$218:
-	mov		bx,word ptr -14H[bp]
-	dec		bx
-	mov		dx,word ptr -0eH[bp]
-	mov		ax,word ptr -18H[bp]
-	call		far ptr EvalExpr_
-	mov		word ptr -18H[bp],ax
-	mov		byte ptr -0cH[bp],0
-	mov		ax,word ptr -18H[bp]
-	mov		word ptr ss:_Token_Count,ax
-	mov		ax,word ptr -0eH[bp]
-	mov		word ptr -14H[bp],ax
+    mov         bx,word ptr -14H[bp]
+    dec         bx
+    mov         dx,word ptr -0eH[bp]
+    mov         ax,word ptr -18H[bp]
+    call        far ptr EvalExpr_
+    mov         word ptr -18H[bp],ax
+    mov         byte ptr -0cH[bp],0
+    mov         ax,word ptr -18H[bp]
+    mov         word ptr ss:_Token_Count,ax
+    mov         ax,word ptr -0eH[bp]
+    mov         word ptr -14H[bp],ax
 L$219:
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	jmp		near ptr L$199
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    jmp         near ptr L$199
 L$220:
-	mov		ax,word ptr -14H[bp]
-	inc		word ptr -14H[bp]
-	mov		dx,ss
-	lea		ax,-130H[bp]
-	mov		bx,ax
-	mov		ax,bx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		bx,ax
-	mov		ax,dx
-	lds		si,dword ptr -30H[bp]
-	mov		word ptr 8[si],bx
-	lds		bx,dword ptr -30H[bp]
-	mov		word ptr 0aH[bx],ax
-	mov		cx,ss
-	lea		ax,-130H[bp]
-	mov		si,ax
-	lds		bx,dword ptr -30H[bp]
-	mov		bx,word ptr 8[bx]
-	lds		di,dword ptr -30H[bp]
-	mov		dx,word ptr 0aH[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
+    mov         ax,word ptr -14H[bp]
+    inc         word ptr -14H[bp]
+    mov         dx,ss
+    lea         ax,-130H[bp]
+    mov         bx,ax
+    mov         ax,bx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         bx,ax
+    mov         ax,dx
+    lds         si,dword ptr -30H[bp]
+    mov         word ptr 8[si],bx
+    lds         bx,dword ptr -30H[bp]
+    mov         word ptr 0aH[bx],ax
+    mov         cx,ss
+    lea         ax,-130H[bp]
+    mov         si,ax
+    lds         bx,dword ptr -30H[bp]
+    mov         bx,word ptr 8[bx]
+    lds         di,dword ptr -30H[bp]
+    mov         dx,word ptr 0aH[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
 L$221:
-	jmp		L$223
+    jmp         L$223
 L$222:
-	lds		bx,dword ptr -30H[bp]
-	cmp		byte ptr 0cH[bx],0
-	je		L$223
-	mov		ax,459H
-	call		far ptr AsmError_
-	mov		word ptr -16H[bp],0ffffH
-	jmp		near ptr L$231
+    lds         bx,dword ptr -30H[bp]
+    cmp         byte ptr 0cH[bx],0
+    je          L$223
+    mov         ax,459H
+    call        far ptr AsmError_
+    mov         word ptr -16H[bp],0ffffH
+    jmp         near ptr L$231
 L$223:
-	jmp		near ptr L$188
+    jmp         near ptr L$188
 L$224:
-	call		far ptr PushLineQueue_
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr 4[bx]
-	mov		word ptr -2cH[bp],ax
-	lds		bx,dword ptr -1cH[bp]
-	mov		ax,word ptr 6[bx]
-	mov		word ptr -2aH[bp],ax
+    call        far ptr PushLineQueue_
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr 4[bx]
+    mov         word ptr -2cH[bp],ax
+    lds         bx,dword ptr -1cH[bp]
+    mov         ax,word ptr 6[bx]
+    mov         word ptr -2aH[bp],ax
 L$225:
-	mov		cx,word ptr -2cH[bp]
-	mov		bx,word ptr -2aH[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$227
-	cmp		cx,dx
-	jne		L$227
-	jmp		near ptr L$230
+    mov         cx,word ptr -2cH[bp]
+    mov         bx,word ptr -2aH[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$227
+    cmp         cx,dx
+    jne         L$227
+    jmp         near ptr L$230
 L$226:
-	lds		bx,dword ptr -2cH[bp]
-	mov		dx,word ptr [bx]
-	lds		bx,dword ptr -2cH[bp]
-	mov		ax,word ptr 2[bx]
-	mov		word ptr -2cH[bp],dx
-	mov		word ptr -2aH[bp],ax
-	jmp		L$225
+    lds         bx,dword ptr -2cH[bp]
+    mov         dx,word ptr [bx]
+    lds         bx,dword ptr -2cH[bp]
+    mov         ax,word ptr 2[bx]
+    mov         word ptr -2cH[bp],dx
+    mov         word ptr -2aH[bp],ax
+    jmp         L$225
 L$227:
-	lds		si,dword ptr -1cH[bp]
-	mov		si,word ptr [si]
-	lds		bx,dword ptr -1cH[bp]
-	mov		cx,word ptr 2[bx]
-	mov		bx,word ptr -2cH[bp]
-	mov		dx,word ptr -2aH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		near ptr L$150
-	mov		si,ax
-	mov		cx,dx
-	mov		word ptr -20H[bp],si
-	mov		word ptr -1eH[bp],cx
-	mov		si,cs
-	mov		dx,offset L$5
-	mov		di,dx
-	mov		cx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,cx
-	mov		bx,di
-	mov		cx,si
-	call		near ptr L$77
-	test		al,al
-	je		L$229
-	mov		cx,seg _StringBuf
-	mov		dx,offset _StringBuf
-	mov		si,dx
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr AsmScan_
-	call		near ptr L$83
-	cmp		ax,0ffffH
-	jne		L$228
-	mov		word ptr -16H[bp],0ffffH
-	jmp		L$231
+    lds         si,dword ptr -1cH[bp]
+    mov         si,word ptr [si]
+    lds         bx,dword ptr -1cH[bp]
+    mov         cx,word ptr 2[bx]
+    mov         bx,word ptr -2cH[bp]
+    mov         dx,word ptr -2aH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        near ptr L$150
+    mov         si,ax
+    mov         cx,dx
+    mov         word ptr -20H[bp],si
+    mov         word ptr -1eH[bp],cx
+    mov         si,cs
+    mov         dx,offset L$5
+    mov         di,dx
+    mov         cx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,cx
+    mov         bx,di
+    mov         cx,si
+    call        near ptr L$77
+    test        al,al
+    je          L$229
+    mov         cx,seg _StringBuf
+    mov         dx,offset _StringBuf
+    mov         si,dx
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr AsmScan_
+    call        near ptr L$83
+    cmp         ax,0ffffH
+    jne         L$228
+    mov         word ptr -16H[bp],0ffffH
+    jmp         L$231
 L$228:
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	call		far ptr AsmFree_
-	jmp		near ptr L$226
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    call        far ptr AsmFree_
+    jmp         near ptr L$226
 L$229:
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	call		far ptr InputQueueLine_
-	mov		bx,word ptr -20H[bp]
-	mov		dx,word ptr -1eH[bp]
-	mov		ax,bx
-	call		far ptr AsmFree_
-	jmp		near ptr L$226
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    call        far ptr InputQueueLine_
+    mov         bx,word ptr -20H[bp]
+    mov         dx,word ptr -1eH[bp]
+    mov         ax,bx
+    call        far ptr AsmFree_
+    jmp         near ptr L$226
 L$230:
-	lds		bx,dword ptr -28H[bp]
-	mov		bx,word ptr 4[bx]
-	lds		si,dword ptr -28H[bp]
-	mov		dx,word ptr 6[si]
-	mov		ax,bx
-	call		far ptr PushMacro_
-	lds		bx,dword ptr -1cH[bp]
-	mov		bx,word ptr [bx]
-	lds		si,dword ptr -1cH[bp]
-	mov		dx,word ptr 2[si]
-	mov		ax,bx
-	call		near ptr L$161
-	mov		word ptr -16H[bp],0
+    lds         bx,dword ptr -28H[bp]
+    mov         bx,word ptr 4[bx]
+    lds         si,dword ptr -28H[bp]
+    mov         dx,word ptr 6[si]
+    mov         ax,bx
+    call        far ptr PushMacro_
+    lds         bx,dword ptr -1cH[bp]
+    mov         bx,word ptr [bx]
+    lds         si,dword ptr -1cH[bp]
+    mov         dx,word ptr 2[si]
+    mov         ax,bx
+    call        near ptr L$161
+    mov         word ptr -16H[bp],0
 L$231:
-	mov		ax,word ptr -16H[bp]
-	lea		sp,-0aH[bp]
-	pop		di
-	pop		si
-	pop		dx
-	pop		cx
-	pop		bx
-	pop		bp
-	dec		bp
-	retf
+    mov         ax,word ptr -16H[bp]
+    lea         sp,-0aH[bp]
+    pop         di
+    pop         si
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         bp
+    dec         bp
+    retf        
 MacroDef_:
-	inc		bp
-	push		bp
-	mov		bp,sp
-	push		ax
-	mov		ax,24H
-	call		far ptr __STK
-	pop		ax
-	push		bx
-	push		cx
-	push		dx
-	push		si
-	push		di
-	sub		sp,14H
-	mov		word ptr -0cH[bp],ax
-	cmp		byte ptr ss:_Parse_Pass,0
-	je		L$232
-	jmp		near ptr L$238
+    inc         bp
+    push        bp
+    mov         bp,sp
+    push        ax
+    mov         ax,24H
+    call        far ptr __STK
+    pop         ax
+    push        bx
+    push        cx
+    push        dx
+    push        si
+    push        di
+    sub         sp,14H
+    mov         word ptr -0cH[bp],ax
+    cmp         byte ptr ss:_Parse_Pass,0
+    je          L$232
+    jmp         near ptr L$238
 L$232:
-	cmp		word ptr -0cH[bp],0
-	jge		L$233
-	mov		ax,41eH
-	call		far ptr AsmError_
-	mov		word ptr -0eH[bp],0ffffH
-	jmp		near ptr L$244
+    cmp         word ptr -0cH[bp],0
+    jge         L$233
+    mov         ax,41eH
+    call        far ptr AsmError_
+    mov         word ptr -0eH[bp],0ffffH
+    jmp         near ptr L$244
 L$233:
-	mov		si,word ptr -0cH[bp]
-	shl		si,1
-	shl		si,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		bx,dword ptr DGROUP:_AsmBuffer[si]
-	mov		ax,word ptr 5[bx]
-	mov		word ptr -16H[bp],ax
-	mov		ax,word ptr 7[bx]
-	mov		word ptr -14H[bp],ax
-	mov		bx,word ptr -16H[bp]
-	mov		dx,word ptr -14H[bp]
-	mov		ax,bx
-	call		far ptr AsmGetSymbol_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -12H[bp],bx
-	mov		word ptr -10H[bp],ax
-	mov		cx,word ptr -12H[bp]
-	mov		bx,word ptr -10H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	je		L$234
-	jmp		near ptr L$236
+    mov         si,word ptr -0cH[bp]
+    shl         si,1
+    shl         si,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         bx,dword ptr DGROUP:_AsmBuffer[si]
+    mov         ax,word ptr 5[bx]
+    mov         word ptr -16H[bp],ax
+    mov         ax,word ptr 7[bx]
+    mov         word ptr -14H[bp],ax
+    mov         bx,word ptr -16H[bp]
+    mov         dx,word ptr -14H[bp]
+    mov         ax,bx
+    call        far ptr AsmGetSymbol_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -12H[bp],bx
+    mov         word ptr -10H[bp],ax
+    mov         cx,word ptr -12H[bp]
+    mov         bx,word ptr -10H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    je          L$234
+    jmp         near ptr L$236
 L$234:
-	cmp		cx,dx
-	je		L$235
-	jmp		near ptr L$236
+    cmp         cx,dx
+    je          L$235
+    jmp         near ptr L$236
 L$235:
-	mov		cx,7
-	mov		bx,word ptr -16H[bp]
-	mov		dx,word ptr -14H[bp]
-	mov		ax,bx
-	mov		bx,cx
-	call		far ptr dir_insert_
-	mov		bx,dx
-	mov		word ptr -1aH[bp],ax
-	mov		word ptr -18H[bp],bx
-	call		far ptr get_curr_filename_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -16H[bp],bx
-	mov		word ptr -14H[bp],ax
-	mov		bx,word ptr -16H[bp]
-	mov		dx,word ptr -14H[bp]
-	mov		ax,bx
-	call		far ptr strlen_
-	inc		ax
-	call		far ptr AsmAlloc_
-	mov		bx,ax
-	mov		ax,dx
-	lds		si,dword ptr -1aH[bp]
-	mov		si,word ptr 1aH[si]
-	lds		di,dword ptr -1aH[bp]
-	mov		ds,word ptr 1cH[di]
-	mov		word ptr 8[si],bx
-	mov		word ptr 0aH[si],ax
-	mov		si,word ptr -16H[bp]
-	mov		cx,word ptr -14H[bp]
-	lds		di,dword ptr -1aH[bp]
-	mov		di,word ptr 1aH[di]
-	lds		bx,dword ptr -1aH[bp]
-	mov		ds,word ptr 1cH[bx]
-	mov		bx,word ptr 8[di]
-	mov		dx,word ptr 0aH[di]
-	mov		ax,bx
-	mov		bx,si
-	call		far ptr strcpy_
-	mov		bx,word ptr -1aH[bp]
-	mov		word ptr -12H[bp],bx
-	mov		bx,word ptr -18H[bp]
-	mov		word ptr -10H[bp],bx
-	jmp		L$237
+    mov         cx,7
+    mov         bx,word ptr -16H[bp]
+    mov         dx,word ptr -14H[bp]
+    mov         ax,bx
+    mov         bx,cx
+    call        far ptr dir_insert_
+    mov         bx,dx
+    mov         word ptr -1aH[bp],ax
+    mov         word ptr -18H[bp],bx
+    call        far ptr get_curr_filename_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -16H[bp],bx
+    mov         word ptr -14H[bp],ax
+    mov         bx,word ptr -16H[bp]
+    mov         dx,word ptr -14H[bp]
+    mov         ax,bx
+    call        far ptr strlen_
+    inc         ax
+    call        far ptr AsmAlloc_
+    mov         bx,ax
+    mov         ax,dx
+    lds         si,dword ptr -1aH[bp]
+    mov         si,word ptr 1aH[si]
+    lds         di,dword ptr -1aH[bp]
+    mov         ds,word ptr 1cH[di]
+    mov         word ptr 8[si],bx
+    mov         word ptr 0aH[si],ax
+    mov         si,word ptr -16H[bp]
+    mov         cx,word ptr -14H[bp]
+    lds         di,dword ptr -1aH[bp]
+    mov         di,word ptr 1aH[di]
+    lds         bx,dword ptr -1aH[bp]
+    mov         ds,word ptr 1cH[bx]
+    mov         bx,word ptr 8[di]
+    mov         dx,word ptr 0aH[di]
+    mov         ax,bx
+    mov         bx,si
+    call        far ptr strcpy_
+    mov         bx,word ptr -1aH[bp]
+    mov         word ptr -12H[bp],bx
+    mov         bx,word ptr -18H[bp]
+    mov         word ptr -10H[bp],bx
+    jmp         L$237
 L$236:
-	mov		ax,41fH
-	call		far ptr AsmError_
-	mov		word ptr -0eH[bp],0ffffH
-	jmp		near ptr L$244
+    mov         ax,41fH
+    call        far ptr AsmError_
+    mov         word ptr -0eH[bp],0ffffH
+    jmp         near ptr L$244
 L$237:
-	lds		bx,dword ptr -12H[bp]
-	mov		byte ptr 15H[bx],7
-	mov		ax,word ptr -0cH[bp]
-	call		near ptr L$93
-	mov		word ptr -0eH[bp],ax
-	jmp		near ptr L$244
+    lds         bx,dword ptr -12H[bp]
+    mov         byte ptr 15H[bx],7
+    mov         ax,word ptr -0cH[bp]
+    call        near ptr L$93
+    mov         word ptr -0eH[bp],ax
+    jmp         near ptr L$244
 L$238:
-	cmp		word ptr -0cH[bp],0
-	jl		L$239
-	mov		word ptr -1cH[bp],0
-	jmp		L$240
+    cmp         word ptr -0cH[bp],0
+    jl          L$239
+    mov         word ptr -1cH[bp],0
+    jmp         L$240
 L$239:
-	mov		cx,28eH
-	mov		dx,cs
-	mov		ax,offset L$2
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,cx
-	jmp		far ptr InternalError_
+    mov         cx,28eH
+    mov         dx,cs
+    mov         ax,offset L$2
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,cx
+    jmp         far ptr InternalError_
 L$240:
-	mov		bx,word ptr -0cH[bp]
-	shl		bx,1
-	shl		bx,1
-	mov		ax,seg _AsmBuffer
-	mov		ds,ax
-	lds		si,dword ptr DGROUP:_AsmBuffer[bx]
-	mov		bx,word ptr 5[si]
-	mov		dx,word ptr 7[si]
-	mov		ax,bx
-	call		far ptr AsmGetSymbol_
-	mov		bx,ax
-	mov		ax,dx
-	mov		word ptr -1aH[bp],bx
-	mov		word ptr -18H[bp],ax
-	mov		si,word ptr -1aH[bp]
-	mov		bx,word ptr -18H[bp]
-	xor		dx,dx
-	xor		ax,ax
-	cmp		bx,ax
-	jne		L$241
-	cmp		si,dx
-	je		L$242
+    mov         bx,word ptr -0cH[bp]
+    shl         bx,1
+    shl         bx,1
+    mov         ax,seg _AsmBuffer
+    mov         ds,ax
+    lds         si,dword ptr DGROUP:_AsmBuffer[bx]
+    mov         bx,word ptr 5[si]
+    mov         dx,word ptr 7[si]
+    mov         ax,bx
+    call        far ptr AsmGetSymbol_
+    mov         bx,ax
+    mov         ax,dx
+    mov         word ptr -1aH[bp],bx
+    mov         word ptr -18H[bp],ax
+    mov         si,word ptr -1aH[bp]
+    mov         bx,word ptr -18H[bp]
+    xor         dx,dx
+    xor         ax,ax
+    cmp         bx,ax
+    jne         L$241
+    cmp         si,dx
+    je          L$242
 L$241:
-	mov		word ptr -1eH[bp],0
-	jmp		L$243
+    mov         word ptr -1eH[bp],0
+    jmp         L$243
 L$242:
-	mov		cx,291H
-	mov		dx,cs
-	mov		ax,offset L$2
-	mov		bx,ax
-	mov		ax,bx
-	mov		bx,cx
-	jmp		far ptr InternalError_
+    mov         cx,291H
+    mov         dx,cs
+    mov         ax,offset L$2
+    mov         bx,ax
+    mov         ax,bx
+    mov         bx,cx
+    jmp         far ptr InternalError_
 L$243:
-	mov		ax,word ptr -0cH[bp]
-	inc		ax
-	call		near ptr L$93
-	mov		word ptr -0eH[bp],ax
+    mov         ax,word ptr -0cH[bp]
+    inc         ax
+    call        near ptr L$93
+    mov         word ptr -0eH[bp],ax
 L$244:
-	mov		ax,word ptr -0eH[bp]
-	lea		sp,-0aH[bp]
-	pop		di
-	pop		si
-	pop		dx
-	pop		cx
-	pop		bx
-	pop		bp
-	dec		bp
-	retf
+    mov         ax,word ptr -0eH[bp]
+    lea         sp,-0aH[bp]
+    pop         di
+    pop         si
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         bp
+    dec         bp
+    retf        
 macro_TEXT		ENDS
 CONST		SEGMENT	WORD PUBLIC USE16 'DATA'
 CONST		ENDS

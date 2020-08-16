@@ -9,6 +9,6 @@ L$1:
 _DATA		ENDS
 _TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
-	cmp		word ptr DGROUP:L$1,0
+    cmp       word ptr DGROUP:L$1,0
 _TEXT		ENDS
 		END

@@ -11,11 +11,11 @@
 _TEXT		SEGMENT	PARA PUBLIC USE16 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 foo:
-	retf
+    retf      
 bar:
-	ret
+    ret       
 kyb:
-	xor		ax,ax
+    xor       ax,ax
 _TEXT		ENDS
 _DATA		SEGMENT	PARA PUBLIC USE16 'DATA'
 hi:

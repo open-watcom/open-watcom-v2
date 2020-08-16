@@ -324,12 +324,6 @@
 :usage. allow C form of octal constants
 :jusage. allow C form of octal constants
 
-:option. od
-:target. any
-:internal.
-:usage. disable all optimization
-:jusage. disable all optimization
-
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
