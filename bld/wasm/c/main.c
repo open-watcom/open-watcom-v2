@@ -549,15 +549,15 @@ static void SetWarningLevel( void ) { Options.warning_level = (char)OptValue; }
 static void Set_ZCM( void )
 {
     if( OptScanPtr == OptParm || strnicmp( OptParm, "MASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_MASM6;
+        Options.mode_init = MODE_MASM6;
     } else if( strnicmp( OptParm, "WATCOM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_WATCOM;
+        Options.mode_init = MODE_WATCOM;
     } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_TASM | MODE_MASM5;
+        Options.mode_init = MODE_TASM | MODE_MASM5;
     } else if( strnicmp( OptParm, "IDEAL", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_TASM | MODE_IDEAL | MODE_MASM5;
+        Options.mode_init = MODE_TASM | MODE_IDEAL | MODE_MASM5;
 //    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
-//        Options.mode = MODE_MASM5;
+//        Options.mode_init = MODE_MASM5;
     }
 }
 
