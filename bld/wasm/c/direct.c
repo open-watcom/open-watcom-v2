@@ -3634,6 +3634,9 @@ bool ProcEnd( token_idx i )
         }
         ProcFini();
         return( RC_OK );
+    } else if( i == 0 && (Options.mode & MODE_TASM) ) {
+        ProcFini();
+        return( RC_OK );
     } else if( i == 0 ) {
         AsmError( PROC_MUST_HAVE_A_NAME );
         ProcFini();
