@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,6 +222,7 @@ bool directive( token_idx i, asm_token direct )
         return( SimSeg(i) );
     case T_WARN:
     case T_NOWARN:
+        AsmWarn( 4, IGNORING_DIRECTIVE );
         return( RC_OK ); /* Not implemented yet */
     case T_SMART:
         AsmWarn( 4, IGNORING_DIRECTIVE );

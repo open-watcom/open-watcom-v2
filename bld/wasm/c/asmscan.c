@@ -417,7 +417,9 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_LOCALS:
         case T_MASM:
         case T_NOLOCALS:
+        case T_NOWARN:
         case T_SMART:
+        case T_WARN:
             if( (Options.mode & MODE_TASM) == 0 ) {
                 return( RC_OK );
             }
@@ -439,7 +441,6 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_EXITCODE:
         case T_FARDATA:
         case T_MODEL:
-        case T_NOWARN:
         case T_P186:
         case T_P286:
         case T_P286N:
@@ -465,7 +466,6 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_STARTUPCODE:
         case T_UDATASEG:
         case T_UFARDATA:
-        case T_WARN:
             if( (Options.mode & MODE_IDEAL) == 0 ) {
                 return( RC_OK );
             }
