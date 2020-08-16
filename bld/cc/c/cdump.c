@@ -41,7 +41,7 @@ typedef struct {
     size_t  maxsize;
 } STRCHUNK;
 
-static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch );
+static void DoDumpType( TYPEPTR realtype, SYMPTR sym, STRCHUNK *pch );
 
 /* matches table of type in ctypes.h */
 static const char   *CTypeNames[] = {
@@ -349,12 +349,12 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
 
 static void DumpParmList( TYPEPTR *parm_types, SYMPTR funcsym, STRCHUNK *pch )
 {
-    TYPEPTR            typ;
-    int                parm_num;
-    SYM_HANDLE         sym_handle;
-    SYM_ENTRY          sym;
-    char               *sym_name;
-    char               temp_name[20];
+    TYPEPTR         typ;
+    int             parm_num;
+    SYM_HANDLE      sym_handle;
+    SYM_ENTRY       sym;
+    SYMPTR          parm_sym;
+    char            temp_name[20];
 
     if( parm_types == NULL ) {
         ChunkSaveStr( pch, "void" );
@@ -372,18 +372,17 @@ static void DumpParmList( TYPEPTR *parm_types, SYMPTR funcsym, STRCHUNK *pch )
                     typ = DefArgPromotion( typ );
                 }
             }
-            sym_name = NULL;
+            parm_sym = &sym;
             if( sym_handle != SYM_NULL ) {
-                SymGet( &sym, sym_handle );
-                sym_handle = sym.handle;
-                sym_name = sym.name;
+                SymGet( parm_sym, sym_handle );
+            } else if( typ->decl_type == TYPE_VOID || typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                parm_sym = NULL;
             } else {
-                if( typ->decl_type != TYPE_VOID && typ->decl_type != TYPE_DOT_DOT_DOT ) {
-                    sym_name = temp_name;
-                    sprintf( temp_name, "__p%d", parm_num );
-                }
+                sym.handle = SYM_INVALID;
+                sym.name = temp_name;
+                sprintf( temp_name, "__p%d", parm_num );
             }
-            DoDumpType( typ, sym_name, pch );
+            DoDumpType( typ, parm_sym, pch );
             if( *(parm_types + 1) != NULL ) {
                 ChunkSaveChar( pch, ',' );
             }
@@ -446,25 +445,16 @@ static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )
     }
 }
 
-
 static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
 {
     TYPEPTR         obj;
-    type_modifiers  flags;
 
     switch( typ->decl_type ) {
     case TYPE_FUNCTION:
         DumpDecl( Object( typ ), NULL, pch );
         if ( funcsym ) {
-            flags = funcsym->mods;
-            if( flags & FLAG_LOADDS )
-                put_keyword( T___LOADDS, pch );
-            if( flags & FLAG_EXPORT )
-                put_keyword( T___EXPORT, pch );
-            if( flags & FLAG_SAVEREGS)
-                put_keyword( T___SAVEREGS, pch );
-            flags &= ~(FLAG_LOADDS | FLAG_EXPORT | FLAG_SAVEREGS);
-            DumpFlags( flags, typ, pch );
+            DumpFlags( funcsym->mods & (FLAG_LOADDS | FLAG_EXPORT | FLAG_SAVEREGS), typ, pch );
+            DumpFlags( funcsym->mods & ~(FLAG_LOADDS | FLAG_EXPORT | FLAG_SAVEREGS), typ, pch );
             ChunkSaveStr( pch, funcsym->name );
         }
         /* fall through */
@@ -496,7 +486,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
     }
 }
 
-static void DumpSymbol( TYPEPTR typ, const char *symname, STRCHUNK *pch )
+static void DumpSymbol( TYPEPTR typ, SYMPTR sym, STRCHUNK *pch )
 {
     bool        was_array;
 
@@ -505,8 +495,8 @@ static void DumpSymbol( TYPEPTR typ, const char *symname, STRCHUNK *pch )
         DumpFlags( typ->u.p.decl_flags & ~MASK_QUALIFIERS, typ, pch );
         DumpFlags( typ->u.p.decl_flags & MASK_QUALIFIERS, typ, pch );
     }
-    if( symname )
-        ChunkSaveStr( pch, symname );
+    if( sym )
+        ChunkSaveStr( pch, sym->name );
     if( was_array ) {
         typ = Object( typ );
         if( typ->decl_type != TYPE_ARRAY ) {
@@ -515,7 +505,7 @@ static void DumpSymbol( TYPEPTR typ, const char *symname, STRCHUNK *pch )
     }
 }
 
-static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch )
+static void DoDumpType( TYPEPTR realtype, SYMPTR sym, STRCHUNK *pch )
 {
     type_modifiers  pointer_flags;
     TYPEPTR         typ;
@@ -523,7 +513,7 @@ static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch )
     realtype = TrueType( realtype );
     DumpBaseType( realtype, pch );
     DumpDecl( realtype, NULL, pch );
-    DumpSymbol( realtype, symname, pch );
+    DumpSymbol( realtype, sym, pch );
     for( typ = realtype; typ != NULL; typ = Object( typ ) ) {
         if( typ->decl_type == TYPE_TYPEDEF )
             break;
