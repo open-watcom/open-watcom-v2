@@ -113,7 +113,8 @@ global_options Options = {
     true,               // mangle stdcall
     false,              // write listing
     true,               // parameters passed by registers
-    MODE_WATCOM,        // assembler mode
+    MODE_WATCOM,        // initial assembler mode from cmdl
+    MODE_WATCOM,        // current assembler mode
     0,                  // locals prefix len
     {'\0','\0','\0'},   // locals prefix
     0                   // trace stack
@@ -553,6 +554,8 @@ static void Set_ZCM( void )
         Options.mode = MODE_WATCOM;
     } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
         Options.mode = MODE_TASM | MODE_MASM5;
+    } else if( strnicmp( OptParm, "IDEAL", OptScanPtr - OptParm ) == 0 ) {
+        Options.mode = MODE_TASM | MODE_IDEAL | MODE_MASM5;
 //    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
 //        Options.mode = MODE_MASM5;
     }
@@ -1090,8 +1093,8 @@ static void set_cpu_parameters( void )
     asm_token   token;
     char        buffer[MAX_KEYWORD_LEN + 1];
 
-    // Start in masm mode
-    Options.mode &= ~MODE_IDEAL;
+    // init assembler mode
+    Options.mode = Options.mode_init;
     switch( SWData.cpu ) {
     case 0:
         token = T_DOT_8086;

@@ -327,8 +327,8 @@
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
-:usage. set compatibility mode - watcom (default), masm or tasm
-:jusage. set compatibility mode - watcom (default), masm or tasm
+:usage. set compatibility mode - watcom (default), masm, tasm or ideal
+:jusage. set compatibility mode - watcom (default), masm, tasm or ideal
 
 :option. zld
 :target. any

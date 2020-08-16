@@ -185,6 +185,7 @@ typedef struct global_options {
     bool        mangle_stdcall;
     bool        write_listing;
     bool        watcom_parms_passed_by_regs;
+    smode       mode_init;
     smode       mode;
     int         locals_len;
     char        locals_prefix[3];
