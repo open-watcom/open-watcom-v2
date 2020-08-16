@@ -38,3 +38,5 @@ extern char *FmtStr( char *buff, const char *fmt, va_list args );
 extern char *Format( char *buff, const char *fmt, ... );
 extern char *DupStr( const char * );
 extern char *DupStrLen( char const *str, size_t len );
+extern char *ReplaceStrLen( char *old, const char *str, size_t len );
+extern char *ReplaceStr( char *old, const char *str );

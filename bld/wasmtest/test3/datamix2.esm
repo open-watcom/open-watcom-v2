@@ -63,55 +63,55 @@ _DATA32		ENDS
 _TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
 		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
 code_proc16:
-    mov         ax,_DATA16
-    mov         ax,_DATA32
-    mov         eax,_DATA16
-    mov         eax,_DATA32
-    mov         dword ptr [bx],_DATA16
-    mov         dword ptr [bx],_DATA32
-    mov         dword ptr [ebx],_DATA16
-    mov         dword ptr [ebx],_DATA32
-    mov         ax,_DATA16
-    mov         eax,_DATA16
-    mov         eax,_TEXT16
-    mov         dword ptr [bx],_DATA16
-    mov         dword ptr [ebx],_DATA16
-    mov         dword ptr [bx],_TEXT16
-    mov         dword ptr [ebx],_TEXT16
-    mov         ax,_DATA32
-    mov         eax,_DATA32
-    mov         eax,_TEXT32
-    mov         dword ptr [bx],_DATA32
-    mov         dword ptr [ebx],_DATA32
-    mov         dword ptr [bx],_TEXT32
-    mov         dword ptr [ebx],_TEXT32
-    ret         
+	mov		ax,_DATA16
+	mov		ax,_DATA32
+	mov		eax,_DATA16
+	mov		eax,_DATA32
+	mov		dword ptr [bx],_DATA16
+	mov		dword ptr [bx],_DATA32
+	mov		dword ptr [ebx],_DATA16
+	mov		dword ptr [ebx],_DATA32
+	mov		ax,_DATA16
+	mov		eax,_DATA16
+	mov		eax,_TEXT16
+	mov		dword ptr [bx],_DATA16
+	mov		dword ptr [ebx],_DATA16
+	mov		dword ptr [bx],_TEXT16
+	mov		dword ptr [ebx],_TEXT16
+	mov		ax,_DATA32
+	mov		eax,_DATA32
+	mov		eax,_TEXT32
+	mov		dword ptr [bx],_DATA32
+	mov		dword ptr [ebx],_DATA32
+	mov		dword ptr [bx],_TEXT32
+	mov		dword ptr [ebx],_TEXT32
+	ret
 _TEXT16		ENDS
 _TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
 		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
 code_proc32:
-    mov         ax,_DATA16
-    mov         ax,_DATA32
-    mov         eax,_DATA16
-    mov         eax,_DATA32
-    mov         dword ptr [bx],_DATA16
-    mov         dword ptr [bx],_DATA32
-    mov         dword ptr [ebx],_DATA16
-    mov         dword ptr [ebx],_DATA32
-    mov         ax,_DATA16
-    mov         eax,_DATA16
-    mov         eax,_TEXT16
-    mov         dword ptr [bx],_DATA16
-    mov         dword ptr [ebx],_DATA16
-    mov         dword ptr [bx],_TEXT16
-    mov         dword ptr [ebx],_TEXT16
-    mov         ax,_DATA32
-    mov         eax,_DATA32
-    mov         eax,_TEXT32
-    mov         dword ptr [bx],_DATA32
-    mov         dword ptr [ebx],_DATA32
-    mov         dword ptr [bx],_TEXT32
-    mov         dword ptr [ebx],_TEXT32
-    ret         
+	mov		ax,_DATA16
+	mov		ax,_DATA32
+	mov		eax,_DATA16
+	mov		eax,_DATA32
+	mov		dword ptr [bx],_DATA16
+	mov		dword ptr [bx],_DATA32
+	mov		dword ptr [ebx],_DATA16
+	mov		dword ptr [ebx],_DATA32
+	mov		ax,_DATA16
+	mov		eax,_DATA16
+	mov		eax,_TEXT16
+	mov		dword ptr [bx],_DATA16
+	mov		dword ptr [ebx],_DATA16
+	mov		dword ptr [bx],_TEXT16
+	mov		dword ptr [ebx],_TEXT16
+	mov		ax,_DATA32
+	mov		eax,_DATA32
+	mov		eax,_TEXT32
+	mov		dword ptr [bx],_DATA32
+	mov		dword ptr [ebx],_DATA32
+	mov		dword ptr [bx],_TEXT32
+	mov		dword ptr [ebx],_TEXT32
+	ret
 _TEXT32		ENDS
 		END

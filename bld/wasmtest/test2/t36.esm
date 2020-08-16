@@ -2,11 +2,11 @@
 _text		SEGMENT	BYTE PUBLIC USE16 'code'
 		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
 L$1:
-    and       ax,ax
-    jne       L$1
-    jmp       L$2
-    xor       bx,bx
+	and		ax,ax
+	jne		L$1
+	jmp		L$2
+	xor		bx,bx
 L$2:
-    nop       
+	nop
 _text		ENDS
 		END

@@ -63,877 +63,877 @@ DGROUP		GROUP	CONST,CONST2,_DATA,_BSS
 _TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 L$1:
-    push        ebp
-    mov         ebp,esp
-    push        2cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,10H
-    mov         dword ptr -24H[ebp],eax
-    mov         eax,dword ptr -24H[ebp]
-    mov         al,byte ptr [eax]
-    inc         al
-    and         eax,0ffH
-    test        byte ptr DGROUP:__IsTable[eax],20H
-    je          L$2
-    mov         dword ptr -20H[ebp],0ffffffffH
-    jmp         near ptr L$20
+	push		ebp
+	mov		ebp,esp
+	push		2cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,10H
+	mov		dword ptr -24H[ebp],eax
+	mov		eax,dword ptr -24H[ebp]
+	mov		al,byte ptr [eax]
+	inc		al
+	and		eax,0ffH
+	test		byte ptr DGROUP:__IsTable[eax],20H
+	je		L$2
+	mov		dword ptr -20H[ebp],0ffffffffH
+	jmp		near ptr L$20
 L$2:
-    mov         eax,dword ptr -24H[ebp]
-    mov         dword ptr -1cH[ebp],eax
+	mov		eax,dword ptr -24H[ebp]
+	mov		dword ptr -1cH[ebp],eax
 L$3:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],0
-    jne         L$5
-    jmp         near ptr L$19
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],0
+	jne		L$5
+	jmp		near ptr L$19
 L$4:
-    mov         eax,dword ptr -1cH[ebp]
-    inc         dword ptr -1cH[ebp]
-    jmp         L$3
+	mov		eax,dword ptr -1cH[ebp]
+	inc		dword ptr -1cH[ebp]
+	jmp		L$3
 L$5:
-    mov         eax,dword ptr -1cH[ebp]
-    mov         al,byte ptr [eax]
-    and         eax,0ffH
-    call        near ptr tolower_
-    mov         byte ptr -18H[ebp],al
-    cmp         byte ptr -18H[ebp],5fH
-    je          L$6
-    cmp         byte ptr -18H[ebp],2eH
-    jne         L$7
+	mov		eax,dword ptr -1cH[ebp]
+	mov		al,byte ptr [eax]
+	and		eax,0ffH
+	call		near ptr tolower_
+	mov		byte ptr -18H[ebp],al
+	cmp		byte ptr -18H[ebp],5fH
+	je		L$6
+	cmp		byte ptr -18H[ebp],2eH
+	jne		L$7
 L$6:
-    jmp         L$8
+	jmp		L$8
 L$7:
-    cmp         byte ptr -18H[ebp],24H
-    jne         L$9
+	cmp		byte ptr -18H[ebp],24H
+	jne		L$9
 L$8:
-    jmp         L$10
+	jmp		L$10
 L$9:
-    cmp         byte ptr -18H[ebp],40H
-    jne         L$11
+	cmp		byte ptr -18H[ebp],40H
+	jne		L$11
 L$10:
-    jmp         L$12
+	jmp		L$12
 L$11:
-    cmp         byte ptr -18H[ebp],3fH
-    jne         L$13
+	cmp		byte ptr -18H[ebp],3fH
+	jne		L$13
 L$12:
-    jmp         L$14
+	jmp		L$14
 L$13:
-    mov         al,byte ptr -18H[ebp]
-    inc         al
-    and         eax,0ffH
-    test        byte ptr DGROUP:__IsTable[eax],20H
-    je          L$15
+	mov		al,byte ptr -18H[ebp]
+	inc		al
+	and		eax,0ffH
+	test		byte ptr DGROUP:__IsTable[eax],20H
+	je		L$15
 L$14:
-    jmp         L$16
+	jmp		L$16
 L$15:
-    mov         al,byte ptr -18H[ebp]
-    inc         al
-    and         eax,0ffH
-    test        byte ptr DGROUP:__IsTable[eax],80H
-    je          L$17
+	mov		al,byte ptr -18H[ebp]
+	inc		al
+	and		eax,0ffH
+	test		byte ptr DGROUP:__IsTable[eax],80H
+	je		L$17
 L$16:
-    jmp         L$18
+	jmp		L$18
 L$17:
-    mov         dword ptr -20H[ebp],0ffffffffH
-    jmp         L$20
+	mov		dword ptr -20H[ebp],0ffffffffH
+	jmp		L$20
 L$18:
-    jmp         L$4
+	jmp		L$4
 L$19:
-    mov         dword ptr -20H[ebp],1
+	mov		dword ptr -20H[ebp],1
 L$20:
-    mov         eax,dword ptr -20H[ebp]
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	mov		eax,dword ptr -20H[ebp]
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 main_:
-    push        ebp
-    mov         ebp,esp
-    push        24H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        esi
-    push        edi
-    sub         esp,0cH
-    mov         dword ptr -1cH[ebp],eax
-    mov         dword ptr -18H[ebp],edx
-    call        near ptr L$29
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    call        near ptr MsgInit_
-    test        eax,eax
-    je          L$21
-    mov         eax,1
-    jmp         near ptr exit_
+	push		ebp
+	mov		ebp,esp
+	push		24H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		esi
+	push		edi
+	sub		esp,0cH
+	mov		dword ptr -1cH[ebp],eax
+	mov		dword ptr -18H[ebp],edx
+	call		near ptr L$29
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	call		near ptr MsgInit_
+	test		eax,eax
+	je		L$21
+	mov		eax,1
+	jmp		near ptr exit_
 L$21:
-    mov         eax,offset DGROUP:L$167
-    call        near ptr L$77
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,dword ptr -1cH[ebp]
-    call        near ptr L$160
-    cmp         byte ptr DGROUP:L$201,0
-    jne         L$22
-    cmp         byte ptr DGROUP:_BannerPrinted,0
-    je          L$23
+	mov		eax,offset DGROUP:L$167
+	call		near ptr L$77
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,dword ptr -1cH[ebp]
+	call		near ptr L$160
+	cmp		byte ptr DGROUP:L$201,0
+	jne		L$22
+	cmp		byte ptr DGROUP:_BannerPrinted,0
+	je		L$23
 L$22:
-    jmp         L$24
+	jmp		L$24
 L$23:
-    mov         byte ptr DGROUP:_BannerPrinted,1
-    call        near ptr trademark_
+	mov		byte ptr DGROUP:_BannerPrinted,1
+	call		near ptr trademark_
 L$24:
-    mov         ebx,0ffffffffH
-    mov         edx,0ffffffffH
-    mov         eax,0ffffffffH
-    call        near ptr AsmInit_
-    call        near ptr L$35
-    call        near ptr WriteObjModule_
-    call        near ptr MsgFini_
-    call        near ptr L$34
-    xor         eax,eax
-    mov         al,byte ptr DGROUP:_ErrorFlag
-    mov         dword ptr -14H[ebp],eax
-    mov         eax,dword ptr -14H[ebp]
-    lea         esp,-10H[ebp]
-    pop         edi
-    pop         esi
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	mov		ebx,0ffffffffH
+	mov		edx,0ffffffffH
+	mov		eax,0ffffffffH
+	call		near ptr AsmInit_
+	call		near ptr L$35
+	call		near ptr WriteObjModule_
+	call		near ptr MsgFini_
+	call		near ptr L$34
+	xor		eax,eax
+	mov		al,byte ptr DGROUP:_ErrorFlag
+	mov		dword ptr -14H[ebp],eax
+	mov		eax,dword ptr -14H[ebp]
+	lea		esp,-10H[ebp]
+	pop		edi
+	pop		esi
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$25:
-    push        ebp
-    mov         ebp,esp
-    push        1cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0
-    mov         edx,7f0H
-    mov         eax,7d0H
-    call        near ptr PrintfUsage_
-    mov         eax,1
-    jmp         near ptr exit_
+	push		ebp
+	mov		ebp,esp
+	push		1cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0
+	mov		edx,7f0H
+	mov		eax,7d0H
+	call		near ptr PrintfUsage_
+	mov		eax,1
+	jmp		near ptr exit_
 trademark_:
-    push        ebp
-    mov         ebp,esp
-    push        28H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,4
-    mov         dword ptr -18H[ebp],0
-    cmp         byte ptr DGROUP:L$201,0
-    jne         L$27
+	push		ebp
+	mov		ebp,esp
+	push		28H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,4
+	mov		dword ptr -18H[ebp],0
+	cmp		byte ptr DGROUP:L$201,0
+	jne		L$27
 L$26:
-    mov         eax,dword ptr -18H[ebp]
-    shl         eax,2
-    cmp         dword ptr DGROUP:L$204[eax],0
-    je          L$27
-    mov         eax,dword ptr -18H[ebp]
-    inc         dword ptr -18H[ebp]
-    shl         eax,2
-    push        dword ptr DGROUP:L$204[eax]
-    mov         eax,offset DGROUP:L$172
-    push        eax
-    call        near ptr printf_
-    add         esp,8
-    jmp         L$26
+	mov		eax,dword ptr -18H[ebp]
+	shl		eax,2
+	cmp		dword ptr DGROUP:L$204[eax],0
+	je		L$27
+	mov		eax,dword ptr -18H[ebp]
+	inc		dword ptr -18H[ebp]
+	shl		eax,2
+	push		dword ptr DGROUP:L$204[eax]
+	mov		eax,offset DGROUP:L$172
+	push		eax
+	call		near ptr printf_
+	add		esp,8
+	jmp		L$26
 L$27:
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$28:
-    push        ebp
-    mov         ebp,esp
-    push        1cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0
-    mov         eax,dword ptr DGROUP:L$205
-    call        near ptr AsmFree_
-    mov         eax,dword ptr DGROUP:L$206
-    call        near ptr AsmFree_
-    mov         eax,dword ptr DGROUP:L$207
-    call        near ptr AsmFree_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		1cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0
+	mov		eax,dword ptr DGROUP:L$205
+	call		near ptr AsmFree_
+	mov		eax,dword ptr DGROUP:L$206
+	call		near ptr AsmFree_
+	mov		eax,dword ptr DGROUP:L$207
+	call		near ptr AsmFree_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$29:
-    push        ebp
-    mov         ebp,esp
-    push        20H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,4
-    call        near ptr MemInit_
-    mov         dword ptr -18H[ebp],0
+	push		ebp
+	mov		ebp,esp
+	push		20H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,4
+	call		near ptr MemInit_
+	mov		dword ptr -18H[ebp],0
 L$30:
-    cmp         dword ptr -18H[ebp],2
-    jle         L$32
-    jmp         L$33
+	cmp		dword ptr -18H[ebp],2
+	jle		L$32
+	jmp		L$33
 L$31:
-    mov         eax,dword ptr -18H[ebp]
-    inc         dword ptr -18H[ebp]
-    jmp         L$30
+	mov		eax,dword ptr -18H[ebp]
+	inc		dword ptr -18H[ebp]
+	jmp		L$30
 L$32:
-    mov         eax,dword ptr -18H[ebp]
-    shl         eax,2
-    mov         dword ptr DGROUP:_AsmFiles[eax],0
-    mov         eax,dword ptr -18H[ebp]
-    shl         eax,2
-    mov         dword ptr DGROUP:L$205[eax],0
-    jmp         L$31
+	mov		eax,dword ptr -18H[ebp]
+	shl		eax,2
+	mov		dword ptr DGROUP:_AsmFiles[eax],0
+	mov		eax,dword ptr -18H[ebp]
+	shl		eax,2
+	mov		dword ptr DGROUP:L$205[eax],0
+	jmp		L$31
 L$33:
-    call        near ptr ObjRecInit_
-    call        near ptr GenMSOmfInit_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	call		near ptr ObjRecInit_
+	call		near ptr GenMSOmfInit_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$34:
-    push        ebp
-    mov         ebp,esp
-    push        1cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0
-    call        near ptr L$28
-    call        near ptr GenMSOmfFini_
-    call        near ptr AsmShutDown_
-    call        near ptr MemFini_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		1cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0
+	call		near ptr L$28
+	call		near ptr GenMSOmfFini_
+	call		near ptr AsmShutDown_
+	call		near ptr MemFini_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$35:
-    push        ebp
-    mov         ebp,esp
-    push        24H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0
-    mov         edx,offset DGROUP:L$173
-    mov         eax,dword ptr DGROUP:L$205
-    call        near ptr fopen_
-    mov         dword ptr DGROUP:_AsmFiles,eax
-    cmp         dword ptr DGROUP:_AsmFiles,0
-    jne         L$36
-    push        dword ptr DGROUP:L$205
-    push        1
-    call        near ptr Fatal_
-    add         esp,8
+	push		ebp
+	mov		ebp,esp
+	push		24H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0
+	mov		edx,offset DGROUP:L$173
+	mov		eax,dword ptr DGROUP:L$205
+	call		near ptr fopen_
+	mov		dword ptr DGROUP:_AsmFiles,eax
+	cmp		dword ptr DGROUP:_AsmFiles,0
+	jne		L$36
+	push		dword ptr DGROUP:L$205
+	push		1
+	call		near ptr Fatal_
+	add		esp,8
 L$36:
-    mov         eax,dword ptr DGROUP:L$207
-    call        near ptr ObjWriteOpen_
-    mov         dword ptr DGROUP:L$208,eax
-    cmp         dword ptr DGROUP:L$208,0
-    jne         L$37
-    push        dword ptr DGROUP:L$207
-    push        1
-    call        near ptr Fatal_
-    add         esp,8
+	mov		eax,dword ptr DGROUP:L$207
+	call		near ptr ObjWriteOpen_
+	mov		dword ptr DGROUP:L$208,eax
+	cmp		dword ptr DGROUP:L$208,0
+	jne		L$37
+	push		dword ptr DGROUP:L$207
+	push		1
+	call		near ptr Fatal_
+	add		esp,8
 L$37:
-    mov         byte ptr DGROUP:_pobjState,2
-    call        near ptr DelErrFile_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	mov		byte ptr DGROUP:_pobjState,2
+	call		near ptr DelErrFile_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$38:
-    push        ebp
-    mov         ebp,esp
-    push        1b0H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        esi
-    push        edi
-    sub         esp,190H
-    mov         dword ptr -24H[ebp],eax
-    mov         dword ptr -28H[ebp],edx
-    cmp         dword ptr -28H[ebp],0
-    jne         L$44
-    cmp         dword ptr -24H[ebp],0
-    jne         L$39
-    lea         edx,-78H[ebp]
-    mov         eax,43fH
-    call        near ptr MsgGet_
-    lea         eax,-78H[ebp]
-    push        eax
-    push        1
-    call        near ptr Fatal_
-    add         esp,8
+	push		ebp
+	mov		ebp,esp
+	push		1b0H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		esi
+	push		edi
+	sub		esp,190H
+	mov		dword ptr -24H[ebp],eax
+	mov		dword ptr -28H[ebp],edx
+	cmp		dword ptr -28H[ebp],0
+	jne		L$44
+	cmp		dword ptr -24H[ebp],0
+	jne		L$39
+	lea		edx,-78H[ebp]
+	mov		eax,43fH
+	call		near ptr MsgGet_
+	lea		eax,-78H[ebp]
+	push		eax
+	push		1
+	call		near ptr Fatal_
+	add		esp,8
 L$39:
-    cmp         dword ptr DGROUP:L$205,0
-    je          L$40
-    push        5
-    call        near ptr Fatal_
-    add         esp,4
+	cmp		dword ptr DGROUP:L$205,0
+	je		L$40
+	push		5
+	call		near ptr Fatal_
+	add		esp,4
 L$40:
-    lea         eax,-20H[ebp]
-    push        eax
-    lea         eax,-1cH[ebp]
-    push        eax
-    lea         ecx,-18H[ebp]
-    lea         ebx,-14H[ebp]
-    lea         edx,-19cH[ebp]
-    mov         eax,dword ptr -24H[ebp]
-    call        near ptr _splitpath2_
-    mov         eax,dword ptr -20H[ebp]
-    cmp         byte ptr [eax],0
-    jne         L$41
-    mov         dword ptr -20H[ebp],offset DGROUP:L$174
+	lea		eax,-20H[ebp]
+	push		eax
+	lea		eax,-1cH[ebp]
+	push		eax
+	lea		ecx,-18H[ebp]
+	lea		ebx,-14H[ebp]
+	lea		edx,-19cH[ebp]
+	mov		eax,dword ptr -24H[ebp]
+	call		near ptr _splitpath2_
+	mov		eax,dword ptr -20H[ebp]
+	cmp		byte ptr [eax],0
+	jne		L$41
+	mov		dword ptr -20H[ebp],offset DGROUP:L$174
 L$41:
-    mov         eax,dword ptr -20H[ebp]
-    push        eax
-    mov         ecx,dword ptr -1cH[ebp]
-    mov         ebx,dword ptr -18H[ebp]
-    mov         edx,dword ptr -14H[ebp]
-    lea         eax,-108H[ebp]
-    call        near ptr _makepath_
-    lea         eax,-108H[ebp]
-    call        near ptr strlen_
-    inc         eax
-    call        near ptr AsmAlloc_
-    mov         dword ptr DGROUP:L$205,eax
-    lea         edx,-108H[ebp]
-    mov         eax,dword ptr DGROUP:L$205
-    call        near ptr strcpy_
-    cmp         dword ptr DGROUP:L$207,0
-    jne         L$42
-    mov         dword ptr -20H[ebp],offset DGROUP:L$175
-    mov         eax,dword ptr -20H[ebp]
-    push        eax
-    mov         ecx,dword ptr -1cH[ebp]
-    xor         ebx,ebx
-    xor         edx,edx
-    lea         eax,-108H[ebp]
-    call        near ptr _makepath_
-    lea         eax,-108H[ebp]
-    call        near ptr strlen_
-    inc         eax
-    call        near ptr AsmAlloc_
-    mov         dword ptr DGROUP:L$207,eax
-    lea         edx,-108H[ebp]
-    mov         eax,dword ptr DGROUP:L$207
-    call        near ptr strcpy_
+	mov		eax,dword ptr -20H[ebp]
+	push		eax
+	mov		ecx,dword ptr -1cH[ebp]
+	mov		ebx,dword ptr -18H[ebp]
+	mov		edx,dword ptr -14H[ebp]
+	lea		eax,-108H[ebp]
+	call		near ptr _makepath_
+	lea		eax,-108H[ebp]
+	call		near ptr strlen_
+	inc		eax
+	call		near ptr AsmAlloc_
+	mov		dword ptr DGROUP:L$205,eax
+	lea		edx,-108H[ebp]
+	mov		eax,dword ptr DGROUP:L$205
+	call		near ptr strcpy_
+	cmp		dword ptr DGROUP:L$207,0
+	jne		L$42
+	mov		dword ptr -20H[ebp],offset DGROUP:L$175
+	mov		eax,dword ptr -20H[ebp]
+	push		eax
+	mov		ecx,dword ptr -1cH[ebp]
+	xor		ebx,ebx
+	xor		edx,edx
+	lea		eax,-108H[ebp]
+	call		near ptr _makepath_
+	lea		eax,-108H[ebp]
+	call		near ptr strlen_
+	inc		eax
+	call		near ptr AsmAlloc_
+	mov		dword ptr DGROUP:L$207,eax
+	lea		edx,-108H[ebp]
+	mov		eax,dword ptr DGROUP:L$207
+	call		near ptr strcpy_
 L$42:
-    cmp         dword ptr DGROUP:L$206,0
-    jne         L$43
-    mov         dword ptr -20H[ebp],offset DGROUP:L$176
-    mov         eax,dword ptr -20H[ebp]
-    push        eax
-    mov         ecx,dword ptr -1cH[ebp]
-    xor         ebx,ebx
-    xor         edx,edx
-    lea         eax,-108H[ebp]
-    call        near ptr _makepath_
-    lea         eax,-108H[ebp]
-    call        near ptr strlen_
-    inc         eax
-    call        near ptr AsmAlloc_
-    mov         dword ptr DGROUP:L$206,eax
-    lea         edx,-108H[ebp]
-    mov         eax,dword ptr DGROUP:L$206
-    call        near ptr strcpy_
+	cmp		dword ptr DGROUP:L$206,0
+	jne		L$43
+	mov		dword ptr -20H[ebp],offset DGROUP:L$176
+	mov		eax,dword ptr -20H[ebp]
+	push		eax
+	mov		ecx,dword ptr -1cH[ebp]
+	xor		ebx,ebx
+	xor		edx,edx
+	lea		eax,-108H[ebp]
+	call		near ptr _makepath_
+	lea		eax,-108H[ebp]
+	call		near ptr strlen_
+	inc		eax
+	call		near ptr AsmAlloc_
+	mov		dword ptr DGROUP:L$206,eax
+	lea		edx,-108H[ebp]
+	mov		eax,dword ptr DGROUP:L$206
+	call		near ptr strcpy_
 L$43:
-    jmp         near ptr L$51
+	jmp		near ptr L$51
 L$44:
-    lea         eax,-20H[ebp]
-    push        eax
-    lea         eax,-1cH[ebp]
-    push        eax
-    lea         ecx,-18H[ebp]
-    lea         ebx,-14H[ebp]
-    lea         edx,-19cH[ebp]
-    mov         eax,dword ptr -24H[ebp]
-    call        near ptr _splitpath2_
-    mov         eax,dword ptr -20H[ebp]
-    cmp         byte ptr [eax],0
-    jne         L$47
-    cmp         dword ptr -28H[ebp],1
-    jne         L$45
-    mov         dword ptr -1a0H[ebp],offset DGROUP:L$176
-    jmp         L$46
+	lea		eax,-20H[ebp]
+	push		eax
+	lea		eax,-1cH[ebp]
+	push		eax
+	lea		ecx,-18H[ebp]
+	lea		ebx,-14H[ebp]
+	lea		edx,-19cH[ebp]
+	mov		eax,dword ptr -24H[ebp]
+	call		near ptr _splitpath2_
+	mov		eax,dword ptr -20H[ebp]
+	cmp		byte ptr [eax],0
+	jne		L$47
+	cmp		dword ptr -28H[ebp],1
+	jne		L$45
+	mov		dword ptr -1a0H[ebp],offset DGROUP:L$176
+	jmp		L$46
 L$45:
-    mov         dword ptr -1a0H[ebp],offset DGROUP:L$175
+	mov		dword ptr -1a0H[ebp],offset DGROUP:L$175
 L$46:
-    mov         eax,dword ptr -1a0H[ebp]
-    mov         dword ptr -20H[ebp],eax
-    jmp         L$48
+	mov		eax,dword ptr -1a0H[ebp]
+	mov		dword ptr -20H[ebp],eax
+	jmp		L$48
 L$47:
-    mov         edx,dword ptr -20H[ebp]
-    lea         eax,-78H[ebp]
-    call        near ptr strcpy_
-    lea         eax,-78H[ebp]
-    mov         dword ptr -20H[ebp],eax
+	mov		edx,dword ptr -20H[ebp]
+	lea		eax,-78H[ebp]
+	call		near ptr strcpy_
+	lea		eax,-78H[ebp]
+	mov		dword ptr -20H[ebp],eax
 L$48:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],0
-    je          L$49
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],2aH
-    jne         L$50
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],0
+	je		L$49
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],2aH
+	jne		L$50
 L$49:
-    push        0
-    lea         eax,-1cH[ebp]
-    push        eax
-    xor         ecx,ecx
-    xor         ebx,ebx
-    lea         edx,-19cH[ebp]
-    mov         eax,dword ptr DGROUP:L$205
-    call        near ptr _splitpath2_
-    mov         dword ptr -14H[ebp],offset DGROUP:L$177
-    mov         dword ptr -18H[ebp],offset DGROUP:L$177
+	push		0
+	lea		eax,-1cH[ebp]
+	push		eax
+	xor		ecx,ecx
+	xor		ebx,ebx
+	lea		edx,-19cH[ebp]
+	mov		eax,dword ptr DGROUP:L$205
+	call		near ptr _splitpath2_
+	mov		dword ptr -14H[ebp],offset DGROUP:L$177
+	mov		dword ptr -18H[ebp],offset DGROUP:L$177
 L$50:
-    mov         eax,dword ptr -20H[ebp]
-    push        eax
-    mov         ecx,dword ptr -1cH[ebp]
-    mov         ebx,dword ptr -18H[ebp]
-    mov         edx,dword ptr -14H[ebp]
-    lea         eax,-108H[ebp]
-    call        near ptr _makepath_
-    lea         eax,-108H[ebp]
-    call        near ptr strlen_
-    inc         eax
-    call        near ptr AsmAlloc_
-    mov         edx,dword ptr -28H[ebp]
-    shl         edx,2
-    mov         dword ptr DGROUP:L$205[edx],eax
-    lea         edx,-108H[ebp]
-    mov         eax,dword ptr -28H[ebp]
-    shl         eax,2
-    mov         eax,dword ptr DGROUP:L$205[eax]
-    call        near ptr strcpy_
+	mov		eax,dword ptr -20H[ebp]
+	push		eax
+	mov		ecx,dword ptr -1cH[ebp]
+	mov		ebx,dword ptr -18H[ebp]
+	mov		edx,dword ptr -14H[ebp]
+	lea		eax,-108H[ebp]
+	call		near ptr _makepath_
+	lea		eax,-108H[ebp]
+	call		near ptr strlen_
+	inc		eax
+	call		near ptr AsmAlloc_
+	mov		edx,dword ptr -28H[ebp]
+	shl		edx,2
+	mov		dword ptr DGROUP:L$205[edx],eax
+	lea		edx,-108H[ebp]
+	mov		eax,dword ptr -28H[ebp]
+	shl		eax,2
+	mov		eax,dword ptr DGROUP:L$205[eax]
+	call		near ptr strcpy_
 L$51:
-    lea         esp,-10H[ebp]
-    pop         edi
-    pop         esi
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-10H[ebp]
+	pop		edi
+	pop		esi
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$52:
-    push        ebp
-    mov         ebp,esp
-    push        2cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        esi
-    push        edi
-    sub         esp,14H
-    mov         dword ptr -24H[ebp],eax
-    mov         dword ptr -20H[ebp],edx
-    cmp         dword ptr -20H[ebp],0aH
-    jge         L$64
-    mov         eax,dword ptr -24H[ebp]
-    call        near ptr getenv_
-    mov         dword ptr -14H[ebp],eax
-    cmp         dword ptr -14H[ebp],0
-    je          L$64
-    mov         eax,dword ptr -14H[ebp]
-    mov         dword ptr -18H[ebp],eax
-    mov         eax,dword ptr -14H[ebp]
-    mov         dword ptr -1cH[ebp],eax
+	push		ebp
+	mov		ebp,esp
+	push		2cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		esi
+	push		edi
+	sub		esp,14H
+	mov		dword ptr -24H[ebp],eax
+	mov		dword ptr -20H[ebp],edx
+	cmp		dword ptr -20H[ebp],0aH
+	jge		L$64
+	mov		eax,dword ptr -24H[ebp]
+	call		near ptr getenv_
+	mov		dword ptr -14H[ebp],eax
+	cmp		dword ptr -14H[ebp],0
+	je		L$64
+	mov		eax,dword ptr -14H[ebp]
+	mov		dword ptr -18H[ebp],eax
+	mov		eax,dword ptr -14H[ebp]
+	mov		dword ptr -1cH[ebp],eax
 L$53:
-    mov         eax,dword ptr -18H[ebp]
-    cmp         byte ptr [eax],0
-    je          L$64
+	mov		eax,dword ptr -18H[ebp]
+	cmp		byte ptr [eax],0
+	je		L$64
 L$54:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],20H
-    je          L$55
-    mov         eax,dword ptr -1cH[ebp]
-    mov         al,byte ptr [eax]
-    and         eax,0ffH
-    cmp         eax,2f74H
-    jne         L$56
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],20H
+	je		L$55
+	mov		eax,dword ptr -1cH[ebp]
+	mov		al,byte ptr [eax]
+	and		eax,0ffH
+	cmp		eax,2f74H
+	jne		L$56
 L$55:
-    jmp         L$57
+	jmp		L$57
 L$56:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],0
-    jne         L$58
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],0
+	jne		L$58
 L$57:
-    jmp         L$59
+	jmp		L$59
 L$58:
-    mov         eax,dword ptr -1cH[ebp]
-    inc         dword ptr -1cH[ebp]
-    jmp         L$54
+	mov		eax,dword ptr -1cH[ebp]
+	inc		dword ptr -1cH[ebp]
+	jmp		L$54
 L$59:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],0
-    jne         L$60
-    mov         edx,dword ptr -20H[ebp]
-    inc         edx
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr L$119
-    jmp         L$64
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],0
+	jne		L$60
+	mov		edx,dword ptr -20H[ebp]
+	inc		edx
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr L$119
+	jmp		L$64
 L$60:
-    mov         eax,dword ptr -1cH[ebp]
-    mov         byte ptr [eax],0
-    mov         eax,dword ptr -1cH[ebp]
-    inc         dword ptr -1cH[ebp]
-    mov         edx,dword ptr -20H[ebp]
-    inc         edx
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr L$119
+	mov		eax,dword ptr -1cH[ebp]
+	mov		byte ptr [eax],0
+	mov		eax,dword ptr -1cH[ebp]
+	inc		dword ptr -1cH[ebp]
+	mov		edx,dword ptr -20H[ebp]
+	inc		edx
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr L$119
 L$61:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],20H
-    je          L$62
-    mov         eax,dword ptr -1cH[ebp]
-    mov         al,byte ptr [eax]
-    and         eax,0ffH
-    cmp         eax,2f74H
-    jne         L$63
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],20H
+	je		L$62
+	mov		eax,dword ptr -1cH[ebp]
+	mov		al,byte ptr [eax]
+	and		eax,0ffH
+	cmp		eax,2f74H
+	jne		L$63
 L$62:
-    mov         eax,dword ptr -1cH[ebp]
-    inc         dword ptr -1cH[ebp]
-    jmp         L$61
+	mov		eax,dword ptr -1cH[ebp]
+	inc		dword ptr -1cH[ebp]
+	jmp		L$61
 L$63:
-    mov         eax,dword ptr -1cH[ebp]
-    cmp         byte ptr [eax],0
-    je          L$64
-    mov         eax,dword ptr -1cH[ebp]
-    mov         dword ptr -18H[ebp],eax
-    jmp         near ptr L$53
+	mov		eax,dword ptr -1cH[ebp]
+	cmp		byte ptr [eax],0
+	je		L$64
+	mov		eax,dword ptr -1cH[ebp]
+	mov		dword ptr -18H[ebp],eax
+	jmp		near ptr L$53
 L$64:
-    lea         esp,-10H[ebp]
-    pop         edi
-    pop         esi
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-10H[ebp]
+	pop		edi
+	pop		esi
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$65:
-    push        ebp
-    mov         ebp,esp
-    push        0f4H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0d8H
-    mov         dword ptr -1cH[ebp],eax
-    mov         byte ptr -18H[ebp],0
+	push		ebp
+	mov		ebp,esp
+	push		0f4H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0d8H
+	mov		dword ptr -1cH[ebp],eax
+	mov		byte ptr -18H[ebp],0
 L$66:
-    cmp         byte ptr -18H[ebp],5
-    jb          L$68
-    jmp         L$69
+	cmp		byte ptr -18H[ebp],5
+	jb		L$68
+	jmp		L$69
 L$67:
-    mov         al,byte ptr -18H[ebp]
-    inc         byte ptr -18H[ebp]
-    jmp         L$66
+	mov		al,byte ptr -18H[ebp]
+	inc		byte ptr -18H[ebp]
+	jmp		L$66
 L$68:
-    xor         eax,eax
-    mov         al,byte ptr -18H[ebp]
-    lea         eax,[eax+eax*8]
-    lea         edx,-4cH[ebp]
-    add         edx,eax
-    xor         eax,eax
-    mov         al,byte ptr -18H[ebp]
-    shl         eax,2
-    mov         dword ptr DGROUP:_AsmBuffer[eax],edx
-    jmp         L$67
+	xor		eax,eax
+	mov		al,byte ptr -18H[ebp]
+	lea		eax,[eax+eax*8]
+	lea		edx,-4cH[ebp]
+	add		edx,eax
+	xor		eax,eax
+	mov		al,byte ptr -18H[ebp]
+	shl		eax,2
+	mov		dword ptr DGROUP:_AsmBuffer[eax],edx
+	jmp		L$67
 L$69:
-    lea         edx,-0ecH[ebp]
-    mov         eax,dword ptr -1cH[ebp]
-    call        near ptr AsmScan_
-    mov         edx,1
-    xor         eax,eax
-    call        near ptr StoreConstant_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		edx,-0ecH[ebp]
+	mov		eax,dword ptr -1cH[ebp]
+	call		near ptr AsmScan_
+	mov		edx,1
+	xor		eax,eax
+	call		near ptr StoreConstant_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 ProcessCmdlineOptions_:
-    push        ebp
-    mov         ebp,esp
-    push        28H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,0cH
-    call        near ptr PushLineQueue_
-    cmp         byte ptr DGROUP:L$202,0
-    je          L$70
-    call        near ptr L$90
+	push		ebp
+	mov		ebp,esp
+	push		28H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,0cH
+	call		near ptr PushLineQueue_
+	cmp		byte ptr DGROUP:L$202,0
+	je		L$70
+	call		near ptr L$90
 L$70:
-    cmp         byte ptr DGROUP:L$203,0
-    je          L$71
-    call        near ptr L$104
+	cmp		byte ptr DGROUP:L$203,0
+	je		L$71
+	call		near ptr L$104
 L$71:
-    mov         eax,dword ptr DGROUP:_CmdlineConstList
-    mov         dword ptr -18H[ebp],eax
+	mov		eax,dword ptr DGROUP:_CmdlineConstList
+	mov		dword ptr -18H[ebp],eax
 L$72:
-    cmp         dword ptr -18H[ebp],0
-    jne         L$74
-    jmp         L$75
+	cmp		dword ptr -18H[ebp],0
+	jne		L$74
+	jmp		L$75
 L$73:
-    mov         eax,dword ptr -1cH[ebp]
-    mov         dword ptr -18H[ebp],eax
-    jmp         L$72
+	mov		eax,dword ptr -1cH[ebp]
+	mov		dword ptr -18H[ebp],eax
+	jmp		L$72
 L$74:
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         dword ptr -1cH[ebp],eax
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr 4[eax]
-    call        near ptr L$65
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr 4[eax]
-    call        near ptr AsmFree_
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr AsmFree_
-    jmp         L$73
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		dword ptr -1cH[ebp],eax
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr 4[eax]
+	call		near ptr L$65
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr 4[eax]
+	call		near ptr AsmFree_
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr AsmFree_
+	jmp		L$73
 L$75:
-    mov         eax,offset DGROUP:L$178
-    call        near ptr getenv_
-    mov         dword ptr -20H[ebp],eax
-    cmp         dword ptr -20H[ebp],0
-    je          L$76
-    mov         eax,dword ptr -20H[ebp]
-    call        near ptr AddStringToIncludePath_
+	mov		eax,offset DGROUP:L$178
+	call		near ptr getenv_
+	mov		dword ptr -20H[ebp],eax
+	cmp		dword ptr -20H[ebp],0
+	je		L$76
+	mov		eax,dword ptr -20H[ebp]
+	call		near ptr AddStringToIncludePath_
 L$76:
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$77:
-    push        ebp
-    mov         ebp,esp
-    push        38H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,1cH
-    mov         dword ptr -28H[ebp],eax
-    mov         edx,offset DGROUP:L$179
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strcspn_
-    mov         ebx,eax
-    mov         edx,offset DGROUP:L$180
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strcspn_
-    cmp         ebx,eax
-    jae         L$78
-    mov         edx,offset DGROUP:L$179
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strcspn_
-    mov         dword ptr -30H[ebp],eax
-    jmp         L$79
+	push		ebp
+	mov		ebp,esp
+	push		38H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,1cH
+	mov		dword ptr -28H[ebp],eax
+	mov		edx,offset DGROUP:L$179
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strcspn_
+	mov		ebx,eax
+	mov		edx,offset DGROUP:L$180
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strcspn_
+	cmp		ebx,eax
+	jae		L$78
+	mov		edx,offset DGROUP:L$179
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strcspn_
+	mov		dword ptr -30H[ebp],eax
+	jmp		L$79
 L$78:
-    mov         edx,offset DGROUP:L$180
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strcspn_
-    mov         dword ptr -30H[ebp],eax
+	mov		edx,offset DGROUP:L$180
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strcspn_
+	mov		dword ptr -30H[ebp],eax
 L$79:
-    mov         eax,dword ptr -30H[ebp]
-    mov         dword ptr -1cH[ebp],eax
-    mov         eax,dword ptr -1cH[ebp]
-    add         eax,4
-    and         al,0fcH
-    mov         edx,eax
-    call        near ptr stackavail_
-    cmp         edx,eax
-    jae         L$80
-    mov         eax,dword ptr -1cH[ebp]
-    add         eax,4
-    and         al,0fcH
-    sub         esp,eax
-    mov         eax,esp
-    mov         dword ptr -2cH[ebp],eax
-    jmp         L$81
+	mov		eax,dword ptr -30H[ebp]
+	mov		dword ptr -1cH[ebp],eax
+	mov		eax,dword ptr -1cH[ebp]
+	add		eax,4
+	and		al,0fcH
+	mov		edx,eax
+	call		near ptr stackavail_
+	cmp		edx,eax
+	jae		L$80
+	mov		eax,dword ptr -1cH[ebp]
+	add		eax,4
+	and		al,0fcH
+	sub		esp,eax
+	mov		eax,esp
+	mov		dword ptr -2cH[ebp],eax
+	jmp		L$81
 L$80:
-    mov         dword ptr -2cH[ebp],0
+	mov		dword ptr -2cH[ebp],0
 L$81:
-    mov         eax,dword ptr -2cH[ebp]
-    mov         dword ptr -20H[ebp],eax
-    mov         ebx,dword ptr -1cH[ebp]
-    mov         edx,dword ptr -28H[ebp]
-    mov         eax,dword ptr -20H[ebp]
-    call        near ptr strncpy_
-    mov         eax,dword ptr -20H[ebp]
-    add         eax,dword ptr -1cH[ebp]
-    mov         byte ptr [eax],0
-    mov         eax,dword ptr -20H[ebp]
-    call        near ptr L$1
-    cmp         eax,0ffffffffH
-    jne         L$82
-    mov         dword ptr -24H[ebp],0ffffffffH
-    jmp         near ptr L$89
+	mov		eax,dword ptr -2cH[ebp]
+	mov		dword ptr -20H[ebp],eax
+	mov		ebx,dword ptr -1cH[ebp]
+	mov		edx,dword ptr -28H[ebp]
+	mov		eax,dword ptr -20H[ebp]
+	call		near ptr strncpy_
+	mov		eax,dword ptr -20H[ebp]
+	add		eax,dword ptr -1cH[ebp]
+	mov		byte ptr [eax],0
+	mov		eax,dword ptr -20H[ebp]
+	call		near ptr L$1
+	cmp		eax,0ffffffffH
+	jne		L$82
+	mov		dword ptr -24H[ebp],0ffffffffH
+	jmp		near ptr L$89
 L$82:
-    mov         dword ptr -18H[ebp],offset DGROUP:_CmdlineConstList
+	mov		dword ptr -18H[ebp],offset DGROUP:_CmdlineConstList
 L$83:
-    mov         eax,dword ptr -18H[ebp]
-    cmp         dword ptr [eax],0
-    jne         L$85
-    jmp         L$86
+	mov		eax,dword ptr -18H[ebp]
+	cmp		dword ptr [eax],0
+	jne		L$85
+	jmp		L$86
 L$84:
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         dword ptr -18H[ebp],eax
-    jmp         L$83
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		dword ptr -18H[ebp],eax
+	jmp		L$83
 L$85:
-    jmp         L$84
+	jmp		L$84
 L$86:
-    mov         eax,8
-    call        near ptr AsmAlloc_
-    mov         edx,eax
-    mov         eax,dword ptr -18H[ebp]
-    mov         dword ptr [eax],edx
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         dword ptr [eax],0
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strlen_
-    add         eax,3
-    call        near ptr AsmAlloc_
-    mov         edx,eax
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         dword ptr 4[eax],edx
-    mov         edx,dword ptr -28H[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         eax,dword ptr 4[eax]
-    call        near ptr strcpy_
-    mov         edx,3dH
-    mov         eax,dword ptr -28H[ebp]
-    call        near ptr strchr_
-    test        eax,eax
-    jne         L$88
-    mov         edx,23H
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         eax,dword ptr 4[eax]
-    call        near ptr strchr_
-    mov         dword ptr -20H[ebp],eax
-    cmp         dword ptr -20H[ebp],0
-    jne         L$87
-    mov         edx,offset DGROUP:L$181
-    mov         eax,dword ptr -18H[ebp]
-    mov         eax,dword ptr [eax]
-    mov         eax,dword ptr 4[eax]
-    call        near ptr strcat_
-    jmp         L$88
+	mov		eax,8
+	call		near ptr AsmAlloc_
+	mov		edx,eax
+	mov		eax,dword ptr -18H[ebp]
+	mov		dword ptr [eax],edx
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		dword ptr [eax],0
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strlen_
+	add		eax,3
+	call		near ptr AsmAlloc_
+	mov		edx,eax
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		dword ptr 4[eax],edx
+	mov		edx,dword ptr -28H[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		eax,dword ptr 4[eax]
+	call		near ptr strcpy_
+	mov		edx,3dH
+	mov		eax,dword ptr -28H[ebp]
+	call		near ptr strchr_
+	test		eax,eax
+	jne		L$88
+	mov		edx,23H
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		eax,dword ptr 4[eax]
+	call		near ptr strchr_
+	mov		dword ptr -20H[ebp],eax
+	cmp		dword ptr -20H[ebp],0
+	jne		L$87
+	mov		edx,offset DGROUP:L$181
+	mov		eax,dword ptr -18H[ebp]
+	mov		eax,dword ptr [eax]
+	mov		eax,dword ptr 4[eax]
+	call		near ptr strcat_
+	jmp		L$88
 L$87:
-    mov         eax,dword ptr -20H[ebp]
-    mov         byte ptr [eax],3dH
+	mov		eax,dword ptr -20H[ebp]
+	mov		byte ptr [eax],3dH
 L$88:
-    mov         dword ptr -24H[ebp],1
+	mov		dword ptr -24H[ebp],1
 L$89:
-    mov         eax,dword ptr -24H[ebp]
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	mov		eax,dword ptr -24H[ebp]
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$90:
-    push        ebp
-    mov         ebp,esp
-    push        2cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,10H
-    call        near ptr stackavail_
-    cmp         eax,0a0H
-    jbe         L$91
-    mov         eax,0a0H
-    sub         esp,eax
-    mov         eax,esp
-    mov         dword ptr -20H[ebp],eax
-    jmp         L$92
+	push		ebp
+	mov		ebp,esp
+	push		2cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,10H
+	call		near ptr stackavail_
+	cmp		eax,0a0H
+	jbe		L$91
+	mov		eax,0a0H
+	sub		esp,eax
+	mov		eax,esp
+	mov		dword ptr -20H[ebp],eax
+	jmp		L$92
 L$91:
-    mov         dword ptr -20H[ebp],0
+	mov		dword ptr -20H[ebp],0
 L$92:
-    mov         eax,dword ptr -20H[ebp]
-    mov         dword ptr -18H[ebp],eax
-    cmp         dword ptr -18H[ebp],0
-    jne         L$94
-    mov         eax,441H
-    call        near ptr AsmError_
-    mov         eax,0ffffffffH
-    jmp         near ptr exit_
-    nop         
+	mov		eax,dword ptr -20H[ebp]
+	mov		dword ptr -18H[ebp],eax
+	cmp		dword ptr -18H[ebp],0
+	jne		L$94
+	mov		eax,441H
+	call		near ptr AsmError_
+	mov		eax,0ffffffffH
+	jmp		near ptr exit_
+	nop
 L$93:
     DD	offset L$95
     DD	offset L$96
@@ -944,548 +944,548 @@ L$93:
     DD	offset L$102
     DD	offset L$101
 L$94:
-    mov         al,byte ptr DGROUP:L$202
-    sub         al,30H
-    mov         byte ptr -24H[ebp],al
-    cmp         byte ptr -24H[ebp],7
-    ja          L$102
-    xor         eax,eax
-    mov         al,byte ptr -24H[ebp]
-    shl         eax,2
-    jmp         dword ptr cs:L$93[eax]
+	mov		al,byte ptr DGROUP:L$202
+	sub		al,30H
+	mov		byte ptr -24H[ebp],al
+	cmp		byte ptr -24H[ebp],7
+	ja		L$102
+	xor		eax,eax
+	mov		al,byte ptr -24H[ebp]
+	shl		eax,2
+	jmp		dword ptr cs:L$93[eax]
 L$95:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$182
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$182
+	jmp		L$102
 L$96:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$183
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$183
+	jmp		L$102
 L$97:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$184
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$184
+	jmp		L$102
 L$98:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$185
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$185
+	jmp		L$102
 L$99:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$186
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$186
+	jmp		L$102
 L$100:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$187
-    jmp         L$102
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$187
+	jmp		L$102
 L$101:
-    jmp         L$103
+	jmp		L$103
 L$102:
-    mov         eax,dword ptr -18H[ebp]
-    mov         byte ptr [eax],0
-    mov         edx,offset DGROUP:L$188
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,dword ptr -1cH[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr InputQueueLine_
-    mov         eax,dword ptr -18H[ebp]
-    mov         byte ptr [eax],0
-    mov         edx,offset DGROUP:L$189
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,dword ptr -1cH[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,offset DGROUP:L$190
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr InputQueueLine_
+	mov		eax,dword ptr -18H[ebp]
+	mov		byte ptr [eax],0
+	mov		edx,offset DGROUP:L$188
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,dword ptr -1cH[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr InputQueueLine_
+	mov		eax,dword ptr -18H[ebp]
+	mov		byte ptr [eax],0
+	mov		edx,offset DGROUP:L$189
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,dword ptr -1cH[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,offset DGROUP:L$190
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr InputQueueLine_
 L$103:
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$104:
-    push        ebp
-    mov         ebp,esp
-    push        2cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,10H
-    call        near ptr stackavail_
-    cmp         eax,0a0H
-    jbe         L$105
-    mov         eax,0a0H
-    sub         esp,eax
-    mov         eax,esp
-    mov         dword ptr -20H[ebp],eax
-    jmp         L$106
+	push		ebp
+	mov		ebp,esp
+	push		2cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,10H
+	call		near ptr stackavail_
+	cmp		eax,0a0H
+	jbe		L$105
+	mov		eax,0a0H
+	sub		esp,eax
+	mov		eax,esp
+	mov		dword ptr -20H[ebp],eax
+	jmp		L$106
 L$105:
-    mov         dword ptr -20H[ebp],0
+	mov		dword ptr -20H[ebp],0
 L$106:
-    mov         eax,dword ptr -20H[ebp]
-    mov         dword ptr -18H[ebp],eax
-    cmp         dword ptr -18H[ebp],0
-    jne         L$107
-    mov         eax,441H
-    call        near ptr AsmError_
-    mov         eax,0ffffffffH
-    jmp         near ptr exit_
+	mov		eax,dword ptr -20H[ebp]
+	mov		dword ptr -18H[ebp],eax
+	cmp		dword ptr -18H[ebp],0
+	jne		L$107
+	mov		eax,441H
+	call		near ptr AsmError_
+	mov		eax,0ffffffffH
+	jmp		near ptr exit_
 L$107:
-    mov         edi,dword ptr -18H[ebp]
-    mov         esi,offset DGROUP:L$191
-    movsd       
-    movsd       
-    mov         al,byte ptr DGROUP:L$203
-    mov         byte ptr -24H[ebp],al
-    cmp         byte ptr -24H[ebp],6cH
-    jb          L$109
-    cmp         byte ptr -24H[ebp],6cH
-    jbe         L$113
-    cmp         byte ptr -24H[ebp],73H
-    jb          L$108
-    cmp         byte ptr -24H[ebp],73H
-    jbe         L$115
-    cmp         byte ptr -24H[ebp],74H
-    je          L$116
-    jmp         near ptr L$117
+	mov		edi,dword ptr -18H[ebp]
+	mov		esi,offset DGROUP:L$191
+	movsd
+	movsd
+	mov		al,byte ptr DGROUP:L$203
+	mov		byte ptr -24H[ebp],al
+	cmp		byte ptr -24H[ebp],6cH
+	jb		L$109
+	cmp		byte ptr -24H[ebp],6cH
+	jbe		L$113
+	cmp		byte ptr -24H[ebp],73H
+	jb		L$108
+	cmp		byte ptr -24H[ebp],73H
+	jbe		L$115
+	cmp		byte ptr -24H[ebp],74H
+	je		L$116
+	jmp		near ptr L$117
 L$108:
-    cmp         byte ptr -24H[ebp],6dH
-    je          L$114
-    jmp         near ptr L$117
+	cmp		byte ptr -24H[ebp],6dH
+	je		L$114
+	jmp		near ptr L$117
 L$109:
-    cmp         byte ptr -24H[ebp],66H
-    jb          L$110
-    cmp         byte ptr -24H[ebp],66H
-    jbe         L$111
-    cmp         byte ptr -24H[ebp],68H
-    je          L$112
-    jmp         L$117
+	cmp		byte ptr -24H[ebp],66H
+	jb		L$110
+	cmp		byte ptr -24H[ebp],66H
+	jbe		L$111
+	cmp		byte ptr -24H[ebp],68H
+	je		L$112
+	jmp		L$117
 L$110:
-    cmp         byte ptr -24H[ebp],63H
-    jne         L$117
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$192
-    jmp         L$118
+	cmp		byte ptr -24H[ebp],63H
+	jne		L$117
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$192
+	jmp		L$118
 L$111:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$193
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$193
+	jmp		L$118
 L$112:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$194
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$194
+	jmp		L$118
 L$113:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$195
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$195
+	jmp		L$118
 L$114:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$196
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$196
+	jmp		L$118
 L$115:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$197
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$197
+	jmp		L$118
 L$116:
-    mov         dword ptr -1cH[ebp],offset DGROUP:L$198
-    jmp         L$118
+	mov		dword ptr -1cH[ebp],offset DGROUP:L$198
+	jmp		L$118
 L$117:
-    mov         edi,dword ptr -18H[ebp]
-    mov         esi,offset DGROUP:L$199
-    movsw       
-    movsb       
-    mov         edx,offset DGROUP:L$203
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,44eH
-    call        near ptr MsgPrintf1_
-    mov         eax,1
-    jmp         near ptr exit_
+	mov		edi,dword ptr -18H[ebp]
+	mov		esi,offset DGROUP:L$199
+	movsw
+	movsb
+	mov		edx,offset DGROUP:L$203
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,44eH
+	call		near ptr MsgPrintf1_
+	mov		eax,1
+	jmp		near ptr exit_
 L$118:
-    mov         edx,dword ptr -1cH[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr InputQueueLine_
-    mov         eax,dword ptr -18H[ebp]
-    mov         byte ptr [eax],0
-    mov         edx,offset DGROUP:L$189
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,dword ptr -1cH[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         edx,offset DGROUP:L$190
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr strcat_
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr InputQueueLine_
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	mov		edx,dword ptr -1cH[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr InputQueueLine_
+	mov		eax,dword ptr -18H[ebp]
+	mov		byte ptr [eax],0
+	mov		edx,offset DGROUP:L$189
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,dword ptr -1cH[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		edx,offset DGROUP:L$190
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr strcat_
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr InputQueueLine_
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$119:
-    push        ebp
-    mov         ebp,esp
-    push        38H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        esi
-    push        edi
-    sub         esp,1cH
-    mov         dword ptr -18H[ebp],eax
-    mov         dword ptr -14H[ebp],edx
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr [eax]
-    mov         byte ptr -1cH[ebp],al
-    cmp         byte ptr -1cH[ebp],2fH
-    jb          L$121
-    cmp         byte ptr -1cH[ebp],2fH
-    jbe         L$125
-    cmp         byte ptr -1cH[ebp],3fH
-    jb          L$120
-    cmp         byte ptr -1cH[ebp],3fH
-    jbe         L$123
-    cmp         byte ptr -1cH[ebp],40H
-    je          L$157
-    jmp         near ptr L$158
+	push		ebp
+	mov		ebp,esp
+	push		38H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		esi
+	push		edi
+	sub		esp,1cH
+	mov		dword ptr -18H[ebp],eax
+	mov		dword ptr -14H[ebp],edx
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr [eax]
+	mov		byte ptr -1cH[ebp],al
+	cmp		byte ptr -1cH[ebp],2fH
+	jb		L$121
+	cmp		byte ptr -1cH[ebp],2fH
+	jbe		L$125
+	cmp		byte ptr -1cH[ebp],3fH
+	jb		L$120
+	cmp		byte ptr -1cH[ebp],3fH
+	jbe		L$123
+	cmp		byte ptr -1cH[ebp],40H
+	je		L$157
+	jmp		near ptr L$158
 L$120:
-    cmp         byte ptr -1cH[ebp],3dH
-    je          L$124
-    jmp         near ptr L$158
+	cmp		byte ptr -1cH[ebp],3dH
+	je		L$124
+	jmp		near ptr L$158
 L$121:
-    cmp         byte ptr -1cH[ebp],23H
-    jb          L$122
-    cmp         byte ptr -1cH[ebp],23H
-    jbe         L$124
-    cmp         byte ptr -1cH[ebp],2dH
-    je          L$125
-    jmp         near ptr L$158
+	cmp		byte ptr -1cH[ebp],23H
+	jb		L$122
+	cmp		byte ptr -1cH[ebp],23H
+	jbe		L$124
+	cmp		byte ptr -1cH[ebp],2dH
+	je		L$125
+	jmp		near ptr L$158
 L$122:
-    jmp         near ptr L$158
+	jmp		near ptr L$158
 L$123:
-    call        near ptr L$25
-    jmp         near ptr L$159
+	call		near ptr L$25
+	jmp		near ptr L$159
 L$124:
-    mov         eax,43dH
-    call        near ptr AsmError_
+	mov		eax,43dH
+	call		near ptr AsmError_
 L$125:
-    mov         eax,dword ptr -18H[ebp]
-    inc         dword ptr -18H[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr [eax]
-    and         eax,0ffH
-    call        near ptr tolower_
-    mov         dword ptr -20H[ebp],eax
-    cmp         dword ptr -20H[ebp],66H
-    jb          L$129
-    cmp         dword ptr -20H[ebp],66H
-    jbe         L$148
-    cmp         dword ptr -20H[ebp],6dH
-    jb          L$127
-    cmp         dword ptr -20H[ebp],6dH
-    jbe         L$137
-    cmp         dword ptr -20H[ebp],73H
-    jb          L$126
-    cmp         dword ptr -20H[ebp],73H
-    jbe         L$141
-    cmp         dword ptr -20H[ebp],7aH
-    je          L$154
-    jmp         near ptr L$155
+	mov		eax,dword ptr -18H[ebp]
+	inc		dword ptr -18H[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr [eax]
+	and		eax,0ffH
+	call		near ptr tolower_
+	mov		dword ptr -20H[ebp],eax
+	cmp		dword ptr -20H[ebp],66H
+	jb		L$129
+	cmp		dword ptr -20H[ebp],66H
+	jbe		L$148
+	cmp		dword ptr -20H[ebp],6dH
+	jb		L$127
+	cmp		dword ptr -20H[ebp],6dH
+	jbe		L$137
+	cmp		dword ptr -20H[ebp],73H
+	jb		L$126
+	cmp		dword ptr -20H[ebp],73H
+	jbe		L$141
+	cmp		dword ptr -20H[ebp],7aH
+	je		L$154
+	jmp		near ptr L$155
 L$126:
-    cmp         dword ptr -20H[ebp],71H
-    je          L$153
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],71H
+	je		L$153
+	jmp		near ptr L$155
 L$127:
-    cmp         dword ptr -20H[ebp],69H
-    jb          L$128
-    cmp         dword ptr -20H[ebp],69H
-    jbe         L$139
-    cmp         dword ptr -20H[ebp],6aH
-    je          L$141
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],69H
+	jb		L$128
+	cmp		dword ptr -20H[ebp],69H
+	jbe		L$139
+	cmp		dword ptr -20H[ebp],6aH
+	je		L$141
+	jmp		near ptr L$155
 L$128:
-    cmp         dword ptr -20H[ebp],68H
-    je          L$138
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],68H
+	je		L$138
+	jmp		near ptr L$155
 L$129:
-    cmp         dword ptr -20H[ebp],37H
-    jb          L$131
-    cmp         dword ptr -20H[ebp],37H
-    jbe         L$136
-    cmp         dword ptr -20H[ebp],64H
-    jb          L$130
-    cmp         dword ptr -20H[ebp],64H
-    jbe         L$142
-    jmp         near ptr L$140
+	cmp		dword ptr -20H[ebp],37H
+	jb		L$131
+	cmp		dword ptr -20H[ebp],37H
+	jbe		L$136
+	cmp		dword ptr -20H[ebp],64H
+	jb		L$130
+	cmp		dword ptr -20H[ebp],64H
+	jbe		L$142
+	jmp		near ptr L$140
 L$130:
-    cmp         dword ptr -20H[ebp],3fH
-    je          L$138
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],3fH
+	je		L$138
+	jmp		near ptr L$155
 L$131:
-    cmp         dword ptr -20H[ebp],33H
-    jb          L$132
-    cmp         dword ptr -20H[ebp],34H
-    jbe         L$133
-    cmp         dword ptr -20H[ebp],35H
-    je          L$136
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],33H
+	jb		L$132
+	cmp		dword ptr -20H[ebp],34H
+	jbe		L$133
+	cmp		dword ptr -20H[ebp],35H
+	je		L$136
+	jmp		near ptr L$155
 L$132:
-    cmp         dword ptr -20H[ebp],30H
-    jae         L$136
-    jmp         near ptr L$155
+	cmp		dword ptr -20H[ebp],30H
+	jae		L$136
+	jmp		near ptr L$155
 L$133:
-    mov         eax,dword ptr -18H[ebp]
-    cmp         byte ptr 1[eax],72H
-    jne         L$134
-    mov         byte ptr DGROUP:_NamingConvention,1
-    jmp         near ptr L$156
+	mov		eax,dword ptr -18H[ebp]
+	cmp		byte ptr 1[eax],72H
+	jne		L$134
+	mov		byte ptr DGROUP:_NamingConvention,1
+	jmp		near ptr L$156
 L$134:
-    mov         eax,dword ptr -18H[ebp]
-    cmp         byte ptr 1[eax],73H
-    jne         L$135
-    mov         byte ptr DGROUP:_NamingConvention,2
-    jmp         near ptr L$156
+	mov		eax,dword ptr -18H[ebp]
+	cmp		byte ptr 1[eax],73H
+	jne		L$135
+	mov		byte ptr DGROUP:_NamingConvention,2
+	jmp		near ptr L$156
 L$135:
-    mov         eax,dword ptr -18H[ebp]
-    cmp         byte ptr 1[eax],0
-    je          L$136
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,44eH
-    call        near ptr MsgPrintf1_
-    mov         eax,1
-    jmp         near ptr exit_
+	mov		eax,dword ptr -18H[ebp]
+	cmp		byte ptr 1[eax],0
+	je		L$136
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,44eH
+	call		near ptr MsgPrintf1_
+	mov		eax,1
+	jmp		near ptr exit_
 L$136:
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr [eax]
-    mov         byte ptr DGROUP:L$202,al
-    jmp         near ptr L$156
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr [eax]
+	mov		byte ptr DGROUP:L$202,al
+	jmp		near ptr L$156
 L$137:
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr 1[eax]
-    mov         byte ptr DGROUP:L$203,al
-    jmp         near ptr L$156
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr 1[eax]
+	mov		byte ptr DGROUP:L$203,al
+	jmp		near ptr L$156
 L$138:
-    call        near ptr L$25
-    jmp         near ptr L$156
+	call		near ptr L$25
+	jmp		near ptr L$156
 L$139:
-    mov         eax,dword ptr -18H[ebp]
-    add         eax,2
-    call        near ptr AddStringToIncludePath_
-    jmp         near ptr L$156
+	mov		eax,dword ptr -18H[ebp]
+	add		eax,2
+	call		near ptr AddStringToIncludePath_
+	jmp		near ptr L$156
 L$140:
-    mov         byte ptr DGROUP:_StopAtEnd,1
-    jmp         near ptr L$156
+	mov		byte ptr DGROUP:_StopAtEnd,1
+	jmp		near ptr L$156
 L$141:
-    mov         byte ptr DGROUP:_SignValue,1
-    jmp         near ptr L$156
+	mov		byte ptr DGROUP:_SignValue,1
+	jmp		near ptr L$156
 L$142:
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr 1[eax]
-    mov         byte ptr -24H[ebp],al
-    cmp         byte ptr -24H[ebp],31H
-    jb          L$143
-    cmp         byte ptr -24H[ebp],32H
-    jbe         L$144
-    cmp         byte ptr -24H[ebp],36H
-    je          L$145
-    jmp         L$146
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr 1[eax]
+	mov		byte ptr -24H[ebp],al
+	cmp		byte ptr -24H[ebp],31H
+	jb		L$143
+	cmp		byte ptr -24H[ebp],32H
+	jbe		L$144
+	cmp		byte ptr -24H[ebp],36H
+	je		L$145
+	jmp		L$146
 L$143:
-    jmp         L$146
+	jmp		L$146
 L$144:
-    mov         byte ptr DGROUP:_DebugFlag,1
-    jmp         near ptr L$159
+	mov		byte ptr DGROUP:_DebugFlag,1
+	jmp		near ptr L$159
 L$145:
-    mov         byte ptr DGROUP:_Debug,1
-    mov         eax,offset DGROUP:L$200
-    push        eax
-    call        near ptr printf_
-    add         esp,4
-    jmp         near ptr L$159
+	mov		byte ptr DGROUP:_Debug,1
+	mov		eax,offset DGROUP:L$200
+	push		eax
+	call		near ptr printf_
+	add		esp,4
+	jmp		near ptr L$159
 L$146:
-    mov         eax,dword ptr -18H[ebp]
-    inc         eax
-    call        near ptr L$77
-    cmp         eax,0ffffffffH
-    jne         L$147
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,44eH
-    call        near ptr MsgPrintf1_
-    mov         eax,1
-    jmp         near ptr exit_
+	mov		eax,dword ptr -18H[ebp]
+	inc		eax
+	call		near ptr L$77
+	cmp		eax,0ffffffffH
+	jne		L$147
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,44eH
+	call		near ptr MsgPrintf1_
+	mov		eax,1
+	jmp		near ptr exit_
 L$147:
-    jmp         near ptr L$156
+	jmp		near ptr L$156
 L$148:
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr 1[eax]
-    mov         byte ptr -28H[ebp],al
-    cmp         byte ptr -28H[ebp],65H
-    jb          L$149
-    cmp         byte ptr -28H[ebp],65H
-    jbe         L$151
-    cmp         byte ptr -28H[ebp],6fH
-    je          L$150
-    jmp         L$152
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr 1[eax]
+	mov		byte ptr -28H[ebp],al
+	cmp		byte ptr -28H[ebp],65H
+	jb		L$149
+	cmp		byte ptr -28H[ebp],65H
+	jbe		L$151
+	cmp		byte ptr -28H[ebp],6fH
+	je		L$150
+	jmp		L$152
 L$149:
-    jmp         L$152
+	jmp		L$152
 L$150:
-    mov         edx,2
-    mov         eax,dword ptr -18H[ebp]
-    add         eax,3
-    call        near ptr L$38
-    jmp         near ptr L$159
+	mov		edx,2
+	mov		eax,dword ptr -18H[ebp]
+	add		eax,3
+	call		near ptr L$38
+	jmp		near ptr L$159
 L$151:
-    mov         edx,1
-    mov         eax,dword ptr -18H[ebp]
-    add         eax,3
-    call        near ptr L$38
-    jmp         L$159
+	mov		edx,1
+	mov		eax,dword ptr -18H[ebp]
+	add		eax,3
+	call		near ptr L$38
+	jmp		L$159
 L$152:
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,44eH
-    call        near ptr MsgPrintf1_
-    mov         eax,1
-    jmp         near ptr exit_
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,44eH
+	call		near ptr MsgPrintf1_
+	mov		eax,1
+	jmp		near ptr exit_
 L$153:
-    mov         byte ptr DGROUP:L$201,1
-    jmp         L$156
+	mov		byte ptr DGROUP:L$201,1
+	jmp		L$156
 L$154:
-    mov         eax,dword ptr -18H[ebp]
-    mov         al,byte ptr 1[eax]
-    mov         byte ptr -2cH[ebp],al
-    cmp         byte ptr -2cH[ebp],71H
-    jne         L$155
-    mov         byte ptr DGROUP:L$201,1
-    jmp         L$159
+	mov		eax,dword ptr -18H[ebp]
+	mov		al,byte ptr 1[eax]
+	mov		byte ptr -2cH[ebp],al
+	cmp		byte ptr -2cH[ebp],71H
+	jne		L$155
+	mov		byte ptr DGROUP:L$201,1
+	jmp		L$159
 L$155:
-    mov         edx,dword ptr -18H[ebp]
-    mov         eax,44eH
-    call        near ptr MsgPrintf1_
-    mov         eax,1
-    jmp         near ptr exit_
+	mov		edx,dword ptr -18H[ebp]
+	mov		eax,44eH
+	call		near ptr MsgPrintf1_
+	mov		eax,1
+	jmp		near ptr exit_
 L$156:
-    jmp         L$159
+	jmp		L$159
 L$157:
-    mov         edx,dword ptr -14H[ebp]
-    mov         eax,dword ptr -18H[ebp]
-    inc         eax
-    call        near ptr L$52
-    jmp         L$159
+	mov		edx,dword ptr -14H[ebp]
+	mov		eax,dword ptr -18H[ebp]
+	inc		eax
+	call		near ptr L$52
+	jmp		L$159
 L$158:
-    xor         edx,edx
-    mov         eax,dword ptr -18H[ebp]
-    call        near ptr L$38
+	xor		edx,edx
+	mov		eax,dword ptr -18H[ebp]
+	call		near ptr L$38
 L$159:
-    lea         esp,-10H[ebp]
-    pop         edi
-    pop         esi
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-10H[ebp]
+	pop		edi
+	pop		esi
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 L$160:
-    push        ebp
-    mov         ebp,esp
-    push        7cH
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        esi
-    push        edi
-    sub         esp,5cH
-    mov         dword ptr -18H[ebp],eax
-    mov         dword ptr -1cH[ebp],edx
-    cmp         dword ptr -18H[ebp],1
-    jne         L$161
-    call        near ptr L$25
+	push		ebp
+	mov		ebp,esp
+	push		7cH
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		esi
+	push		edi
+	sub		esp,5cH
+	mov		dword ptr -18H[ebp],eax
+	mov		dword ptr -1cH[ebp],edx
+	cmp		dword ptr -18H[ebp],1
+	jne		L$161
+	call		near ptr L$25
 L$161:
-    mov         dword ptr -14H[ebp],1
+	mov		dword ptr -14H[ebp],1
 L$162:
-    mov         eax,dword ptr -14H[ebp]
-    cmp         eax,dword ptr -18H[ebp]
-    jl          L$164
-    jmp         L$165
+	mov		eax,dword ptr -14H[ebp]
+	cmp		eax,dword ptr -18H[ebp]
+	jl		L$164
+	jmp		L$165
 L$163:
-    mov         eax,dword ptr -14H[ebp]
-    inc         dword ptr -14H[ebp]
-    jmp         L$162
+	mov		eax,dword ptr -14H[ebp]
+	inc		dword ptr -14H[ebp]
+	jmp		L$162
 L$164:
-    xor         edx,edx
-    mov         eax,dword ptr -14H[ebp]
-    shl         eax,2
-    add         eax,dword ptr -1cH[ebp]
-    mov         eax,dword ptr [eax]
-    call        near ptr L$119
-    jmp         L$163
+	xor		edx,edx
+	mov		eax,dword ptr -14H[ebp]
+	shl		eax,2
+	add		eax,dword ptr -1cH[ebp]
+	mov		eax,dword ptr [eax]
+	call		near ptr L$119
+	jmp		L$163
 L$165:
-    cmp         dword ptr DGROUP:L$205,0
-    jne         L$166
-    lea         edx,-6cH[ebp]
-    mov         eax,440H
-    call        near ptr MsgGet_
-    lea         eax,-6cH[ebp]
-    push        eax
-    push        1
-    call        near ptr Fatal_
-    add         esp,8
+	cmp		dword ptr DGROUP:L$205,0
+	jne		L$166
+	lea		edx,-6cH[ebp]
+	mov		eax,440H
+	call		near ptr MsgGet_
+	lea		eax,-6cH[ebp]
+	push		eax
+	push		1
+	call		near ptr Fatal_
+	add		esp,8
 L$166:
-    lea         esp,-10H[ebp]
-    pop         edi
-    pop         esi
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	lea		esp,-10H[ebp]
+	pop		edi
+	pop		esi
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 AsmQueryExternal_:
-    push        ebp
-    mov         ebp,esp
-    push        24H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,8
-    mov         dword ptr -1cH[ebp],eax
-    mov         byte ptr -18H[ebp],0
-    mov         al,byte ptr -18H[ebp]
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		24H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,8
+	mov		dword ptr -1cH[ebp],eax
+	mov		byte ptr -18H[ebp],0
+	mov		al,byte ptr -18H[ebp]
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 AsmQueryType_:
-    push        ebp
-    mov         ebp,esp
-    push        24H
-    call        near ptr __CHK
-    push        ebx
-    push        ecx
-    push        edx
-    push        esi
-    push        edi
-    sub         esp,8
-    mov         dword ptr -1cH[ebp],eax
-    mov         byte ptr -18H[ebp],0
-    mov         al,byte ptr -18H[ebp]
-    lea         esp,-14H[ebp]
-    pop         edi
-    pop         esi
-    pop         edx
-    pop         ecx
-    pop         ebx
-    pop         ebp
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		24H
+	call		near ptr __CHK
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	sub		esp,8
+	mov		dword ptr -1cH[ebp],eax
+	mov		byte ptr -18H[ebp],0
+	mov		al,byte ptr -18H[ebp]
+	lea		esp,-14H[ebp]
+	pop		edi
+	pop		esi
+	pop		edx
+	pop		ecx
+	pop		ebx
+	pop		ebp
+	ret
 _TEXT		ENDS
 CONST		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$167:

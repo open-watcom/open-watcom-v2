@@ -6,8 +6,8 @@ L$1:
 woo		ENDS
 foo		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:foo, DS:DGROUP, SS:DGROUP
-    mov       ds,word ptr cs:L$1
-    mov       ds,word ptr cs:L$1
-    mov       ds,word ptr cs:L$1
+	mov		ds,word ptr cs:L$1
+	mov		ds,word ptr cs:L$1
+	mov		ds,word ptr cs:L$1
 foo		ENDS
 		END

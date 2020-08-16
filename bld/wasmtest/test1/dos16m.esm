@@ -54,7 +54,7 @@ _TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
 _startup_:
     DD	stackavail_
 _cstart_:
-    jmp         near ptr L$5 
+	jmp		near ptr L$5
     DB	57H, 41H, 54H, 43H, 4fH, 4dH, 20H, 43H
     DB	20H, 52H, 75H, 6eH, 2dH, 54H, 69H, 6dH
     DB	65H, 20H, 73H, 79H, 73H, 74H, 65H, 6dH
@@ -90,215 +90,215 @@ L$4:
     DB	20H, 44H, 4fH, 53H, 2fH, 31H, 36H, 4dH
     DB	0aH, 0dH, 24H
 _Not_Enough_Memory_:
-    mov         bx,1 
-    mov         ax,offset L$2 
-    mov         dx,cs 
-    jmp         near ptr __exit_with_msg_ 
+	mov		bx,1
+	mov		ax,offset L$2
+	mov		dx,cs
+	jmp		near ptr __exit_with_msg_
 L$5:
-    mov         ax,0ff00H 
-    mov         dx,78H 
-    int         21H 
-    inc         ax 
-    je          L$6 
-    mov         ah,9 
-    mov         dx,offset L$4 
-    push        cs 
-    pop         ds 
-    int         21H 
-    mov         ax,4cffH 
-    int         21H 
+	mov		ax,0ff00H
+	mov		dx,78H
+	int		21H
+	inc		ax
+	je		L$6
+	mov		ah,9
+	mov		dx,offset L$4
+	push		cs
+	pop		ds
+	int		21H
+	mov		ax,4cffH
+	int		21H
 L$6:
-    sti         
-    mov         cx,DGROUP 
-    mov         es,cx 
-    mov         bx,offset DGROUP:_end 
-    add         bx,0fH 
-    and         bl,0f0H 
-    mov         word ptr es:__STACKLOW,bx 
-    mov         word ptr es:__psp,ds 
-    mov         bx,offset DGROUP:__end_16M 
-    add         bx,0fH 
-    and         bx,0fff0H 
-    jne         L$7 
-    mov         bx,0fffeH 
+	sti
+	mov		cx,DGROUP
+	mov		es,cx
+	mov		bx,offset DGROUP:_end
+	add		bx,0fH
+	and		bl,0f0H
+	mov		word ptr es:__STACKLOW,bx
+	mov		word ptr es:__psp,ds
+	mov		bx,offset DGROUP:__end_16M
+	add		bx,0fH
+	and		bx,0fff0H
+	jne		L$7
+	mov		bx,0fffeH
 L$7:
-    mov         word ptr es:__curbrk,bx 
-    mov         ss,cx 
-    mov         sp,bx 
-    mov         word ptr es:__STACKTOP,bx 
-    mov         di,ds 
-    mov         es,di 
-    mov         di,81H 
-    mov         cl,byte ptr -1[di] 
-    mov         ch,0 
-    cld         
-    mov         al,20H 
-    repe scasb  
-    lea         si,-1[di] 
-    mov         dx,DGROUP 
-    mov         es,dx 
-    mov         di,word ptr es:__STACKLOW 
-    mov         word ptr es:__LpCmdLine,di 
-    mov         word ptr es:L$24,es 
-    je          L$8 
-    inc         cx 
-    rep movsb   
+	mov		word ptr es:__curbrk,bx
+	mov		ss,cx
+	mov		sp,bx
+	mov		word ptr es:__STACKTOP,bx
+	mov		di,ds
+	mov		es,di
+	mov		di,81H
+	mov		cl,byte ptr -1[di]
+	mov		ch,0
+	cld
+	mov		al,20H
+	repe scasb
+	lea		si,-1[di]
+	mov		dx,DGROUP
+	mov		es,dx
+	mov		di,word ptr es:__STACKLOW
+	mov		word ptr es:__LpCmdLine,di
+	mov		word ptr es:L$24,es
+	je		L$8
+	inc		cx
+	rep movsb
 L$8:
-    sub         al,al 
-    stosb       
-    mov         al,0 
-    stosb       
-    dec         di 
-    mov         ah,30H 
-    int         21H 
-    mov         byte ptr es:__osmajor,al 
-    mov         byte ptr es:__osminor,ah 
-    mov         cx,di 
-    cmp         al,3 
-    jb          L$12 
-    mov         ax,word ptr ds:[2cH] 
-    mov         dx,word ptr es:__psp 
-    mov         ds,ax 
-    sub         si,si 
-    xor         bp,bp 
+	sub		al,al
+	stosb
+	mov		al,0
+	stosb
+	dec		di
+	mov		ah,30H
+	int		21H
+	mov		byte ptr es:__osmajor,al
+	mov		byte ptr es:__osminor,ah
+	mov		cx,di
+	cmp		al,3
+	jb		L$12
+	mov		ax,word ptr ds:[2cH]
+	mov		dx,word ptr es:__psp
+	mov		ds,ax
+	sub		si,si
+	xor		bp,bp
 L$9:
-    mov         ax,word ptr [si] 
-    or          ax,2020H 
-    cmp         ax,6f6eH 
-    jne         L$10 
-    mov         ax,word ptr 2[si] 
-    cmp         ax,3738H 
-    jne         L$10 
-    inc         bp 
+	mov		ax,word ptr [si]
+	or		ax,2020H
+	cmp		ax,6f6eH
+	jne		L$10
+	mov		ax,word ptr 2[si]
+	cmp		ax,3738H
+	jne		L$10
+	inc		bp
 L$10:
-    cmp         byte ptr [si],0 
-    lodsb       
-    jne         L$10 
-    cmp         byte ptr [si],0 
-    jne         L$9 
-    lodsb       
-    inc         si 
-    inc         si 
+	cmp		byte ptr [si],0
+	lodsb
+	jne		L$10
+	cmp		byte ptr [si],0
+	jne		L$9
+	lodsb
+	inc		si
+	inc		si
 L$11:
-    cmp         byte ptr [si],0 
-    movsb       
-    jne         L$11 
+	cmp		byte ptr [si],0
+	movsb
+	jne		L$11
 L$12:
-    mov         si,cx 
-    mov         word ptr es:__LpPgmName,si 
-    mov         word ptr es:L$25,es 
-    mov         dx,DGROUP 
-    mov         ds,dx 
-    mov         es,dx 
-    mov         word ptr DGROUP:__no87,bp 
-    mov         word ptr DGROUP:__STACKLOW,di 
-    mov         cx,offset DGROUP:_end 
-    mov         di,offset DGROUP:_edata 
-    sub         cx,di 
-    mov         al,0 
-    rep stosb   
-    cmp         word ptr DGROUP:__get_ovl_stack,0 
-    jne         L$13 
-    mov         ax,offset __null_ovl_rtn 
-    mov         word ptr DGROUP:__get_ovl_stack,ax 
-    mov         word ptr DGROUP:L$20,cs 
-    mov         word ptr DGROUP:__restore_ovl_stack,ax 
-    mov         word ptr DGROUP:L$21,cs 
-    mov         word ptr DGROUP:__close_ovl_file,ax 
-    mov         word ptr DGROUP:L$22,cs 
+	mov		si,cx
+	mov		word ptr es:__LpPgmName,si
+	mov		word ptr es:L$25,es
+	mov		dx,DGROUP
+	mov		ds,dx
+	mov		es,dx
+	mov		word ptr DGROUP:__no87,bp
+	mov		word ptr DGROUP:__STACKLOW,di
+	mov		cx,offset DGROUP:_end
+	mov		di,offset DGROUP:_edata
+	sub		cx,di
+	mov		al,0
+	rep stosb
+	cmp		word ptr DGROUP:__get_ovl_stack,0
+	jne		L$13
+	mov		ax,offset __null_ovl_rtn
+	mov		word ptr DGROUP:__get_ovl_stack,ax
+	mov		word ptr DGROUP:L$20,cs
+	mov		word ptr DGROUP:__restore_ovl_stack,ax
+	mov		word ptr DGROUP:L$21,cs
+	mov		word ptr DGROUP:__close_ovl_file,ax
+	mov		word ptr DGROUP:L$22,cs
 L$13:
-    xor         bp,bp 
-    push        bp 
-    mov         bp,sp 
-    mov         ax,offset __null_FPE_rtn 
-    mov         word ptr DGROUP:___FPE_handler,ax 
-    mov         word ptr DGROUP:L$23,cs 
-    call        far ptr __FInitRtns 
-    call        far ptr __CMain 
+	xor		bp,bp
+	push		bp
+	mov		bp,sp
+	mov		ax,offset __null_FPE_rtn
+	mov		word ptr DGROUP:___FPE_handler,ax
+	mov		word ptr DGROUP:L$23,cs
+	call		far ptr __FInitRtns
+	call		far ptr __CMain
 __exit_:
-    push        ax 
-    mov         dx,DGROUP 
-    mov         ds,dx 
-    cld         
-    lea         di,DGROUP:__nullarea 
-    mov         es,dx 
-    mov         cx,10H 
-    mov         ax,101H 
-    repe scasw  
-    pop         ax 
-    je          L$15 
-    mov         bx,ax 
-    mov         ax,offset L$1 
-    mov         dx,cs 
+	push		ax
+	mov		dx,DGROUP
+	mov		ds,dx
+	cld
+	lea		di,DGROUP:__nullarea
+	mov		es,dx
+	mov		cx,10H
+	mov		ax,101H
+	repe scasw
+	pop		ax
+	je		L$15
+	mov		bx,ax
+	mov		ax,offset L$1
+	mov		dx,cs
 __exit_with_msg_:
-    mov         sp,offset DGROUP:_end+80H 
-    push        bx 
-    push        ax 
-    push        dx 
-    mov         dx,_TEXT 
-    mov         ds,dx 
-    mov         dx,offset L$3 
-    mov         ax,3d01H 
-    int         21H 
-    mov         bx,ax 
-    pop         ds 
-    pop         dx 
-    mov         si,dx 
-    cld         
+	mov		sp,offset DGROUP:_end+80H
+	push		bx
+	push		ax
+	push		dx
+	mov		dx,_TEXT
+	mov		ds,dx
+	mov		dx,offset L$3
+	mov		ax,3d01H
+	int		21H
+	mov		bx,ax
+	pop		ds
+	pop		dx
+	mov		si,dx
+	cld
 L$14:
-    lodsb       
-    cmp         al,0 
-    jne         L$14 
-    mov         cx,si 
-    sub         cx,dx 
-    dec         cx 
-    mov         ah,40H 
-    int         21H 
-    pop         ax 
+	lodsb
+	cmp		al,0
+	jne		L$14
+	mov		cx,si
+	sub		cx,dx
+	dec		cx
+	mov		ah,40H
+	int		21H
+	pop		ax
 L$15:
-    mov         dx,DGROUP 
-    mov         ds,dx 
-    cmp         byte ptr DGROUP:__ovlflag,0 
-    je          L$16 
-    push        ax 
-    mov         al,byte ptr DGROUP:__intno 
-    mov         ah,25H 
-    lds         dx,dword ptr DGROUP:__ovlvec 
-    int         21H 
-    pop         ax 
+	mov		dx,DGROUP
+	mov		ds,dx
+	cmp		byte ptr DGROUP:__ovlflag,0
+	je		L$16
+	push		ax
+	mov		al,byte ptr DGROUP:__intno
+	mov		ah,25H
+	lds		dx,dword ptr DGROUP:__ovlvec
+	int		21H
+	pop		ax
 L$16:
-    push        ax 
-    call        far ptr __FFiniRtns 
-    pop         ax 
-    mov         ah,4cH 
-    int         21H 
+	push		ax
+	call		far ptr __FFiniRtns
+	pop		ax
+	mov		ah,4cH
+	int		21H
 __GETDS:
-    push        ss 
-    pop         ds 
-    ret         
+	push		ss
+	pop		ds
+	ret
 __null_FPE_rtn:
-    retf        
+	retf
 __null_ovl_rtn:
-    retf        
+	retf
 __DOSseg__:
 _TEXT		ENDS
 C_ETEXT		SEGMENT	PARA PUBLIC USE16 'ENDCODE'
 		ASSUME CS:C_ETEXT, DS:DGROUP, SS:DGROUP
 __first_data_16M:
     DW	seg __first_data_16M
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
-    add         byte ptr [bx+si],al 
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
+	add		byte ptr [bx+si],al
 C_ETEXT		ENDS
 nullseg		SEGMENT	PARA PUBLIC USE16 'CODE'
 		ASSUME CS:nullseg, DS:DGROUP, SS:DGROUP
-    jmp         L$17 
-    nop         
-    nop         
+	jmp		L$17
+	nop
+	nop
 d16_seginfo_struct:
     DB	44H, 4fH, 53H, 2fH, 31H, 36H, 4dH, 0
     DB	3, 0
@@ -321,13 +321,13 @@ d16_seginfo_struct:
     DW	seg __mem16M
     DW	seg __dummy16M
 L$17:
-    mov         dx,offset L$18 
-    mov         ax,cs 
-    mov         ds,ax 
-    mov         ah,9 
-    int         21H 
-    mov         ax,4cffH 
-    int         21H 
+	mov		dx,offset L$18
+	mov		ax,cs
+	mov		ds,ax
+	mov		ah,9
+	int		21H
+	mov		ax,4cffH
+	int		21H
 L$18:
     DB	2eH, 45H, 58H, 45H, 20H, 68H, 61H, 73H
     DB	20H, 6eH, 6fH, 74H, 20H, 62H, 65H, 65H

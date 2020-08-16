@@ -16,84 +16,84 @@ DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 _p1:
-    push        ebp 
-    mov         ebp,esp 
-    push        es 
-    push        di 
-    push        bx 
-    mov         bl,byte ptr 8[ebp] 
-    les         di,dword ptr 18H[ebp] 
-    mov         ax,word ptr 0cH[ebp] 
-    mov         ax,word ptr DGROUP:L$1 
-    pop         bx 
-    pop         di 
-    pop         es 
-    leave       
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		es
+	push		di
+	push		bx
+	mov		bl,byte ptr 8[ebp]
+	les		di,dword ptr 18H[ebp]
+	mov		ax,word ptr 0cH[ebp]
+	mov		ax,word ptr DGROUP:L$1
+	pop		bx
+	pop		di
+	pop		es
+	leave
+	ret
 p2:
-    push        ebp 
-    mov         ebp,esp 
-    push        es 
-    push        di 
-    push        bx 
-    mov         bl,byte ptr 8[ebp] 
-    les         di,dword ptr 18H[ebp] 
-    mov         ax,word ptr 0cH[ebp] 
-    mov         ax,word ptr DGROUP:L$1 
-    pop         bx 
-    pop         di 
-    pop         es 
-    leave       
-    ret         
+	push		ebp
+	mov		ebp,esp
+	push		es
+	push		di
+	push		bx
+	mov		bl,byte ptr 8[ebp]
+	les		di,dword ptr 18H[ebp]
+	mov		ax,word ptr 0cH[ebp]
+	mov		ax,word ptr DGROUP:L$1
+	pop		bx
+	pop		di
+	pop		es
+	leave
+	ret
 `_p3@20`:
-    push        ebp 
-    mov         ebp,esp 
-    push        es 
-    push        di 
-    push        bx 
-    mov         bl,byte ptr 8[ebp] 
-    les         di,dword ptr 18H[ebp] 
-    mov         ax,word ptr 0cH[ebp] 
-    mov         ax,word ptr DGROUP:L$1 
-    pop         bx 
-    pop         di 
-    pop         es 
-    leave       
-    ret         14H 
+	push		ebp
+	mov		ebp,esp
+	push		es
+	push		di
+	push		bx
+	mov		bl,byte ptr 8[ebp]
+	les		di,dword ptr 18H[ebp]
+	mov		ax,word ptr 0cH[ebp]
+	mov		ax,word ptr DGROUP:L$1
+	pop		bx
+	pop		di
+	pop		es
+	leave
+	ret		14H
 P4:
-    push        ebp 
-    mov         ebp,esp 
-    push        es 
-    push        di 
-    push        bx 
-    mov         bl,byte ptr 18H[ebp] 
-    les         di,dword ptr 8[ebp] 
-    mov         ax,word ptr 14H[ebp] 
-    mov         ax,word ptr DGROUP:L$1 
-    pop         bx 
-    pop         di 
-    pop         es 
-    leave       
-    ret         14H 
+	push		ebp
+	mov		ebp,esp
+	push		es
+	push		di
+	push		bx
+	mov		bl,byte ptr 18H[ebp]
+	les		di,dword ptr 8[ebp]
+	mov		ax,word ptr 14H[ebp]
+	mov		ax,word ptr DGROUP:L$1
+	pop		bx
+	pop		di
+	pop		es
+	leave
+	ret		14H
 _p5:
-    ret         
+	ret
 `_p6@0`:
-    ret         
+	ret
 p7_:
-    push        ebp 
-    mov         ebp,esp 
-    push        es 
-    push        di 
-    push        bx 
-    mov         bl,al 
-    les         di,dword ptr 8[ebp] 
-    mov         ax,dx 
-    mov         ax,word ptr DGROUP:L$1 
-    pop         bx 
-    pop         di 
-    pop         es 
-    leave       
-    ret         4 
+	push		ebp
+	mov		ebp,esp
+	push		es
+	push		di
+	push		bx
+	mov		bl,al
+	les		di,dword ptr 8[ebp]
+	mov		ax,dx
+	mov		ax,word ptr DGROUP:L$1
+	pop		bx
+	pop		di
+	pop		es
+	leave
+	ret		4
 _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 _d1:

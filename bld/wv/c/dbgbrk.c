@@ -1096,7 +1096,7 @@ void SetPointAddr( brkp *bp, address addr )
         if( image == NULL )
             return;
         DIPModName( mod, TxtBuff, TXT_LEN );
-        bp->mod_name = DupStr( TxtBuff );
+        bp->mod_name = ReplaceStr( bp->mod_name, TxtBuff );
         if( image->image_name[0] != NULLCHAR ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
             bp->image_name = DupStrLen( start, ExtPointer( start, OP_REMOTE ) - start );
@@ -1107,12 +1107,12 @@ void SetPointAddr( brkp *bp, address addr )
         case SR_EXACT:
             bp->source_line = CopySourceLine( cueh );
             Format( TxtBuff, "%d", DIPCueLine( cueh ) );
-            bp->sym_name = DupStr( TxtBuff );
+            bp->sym_name = ReplaceStr( bp->sym_name, TxtBuff );
             ok = GetBPSymAddr( bp, &addr );
             break;
         case SR_CLOSEST:
             Format( TxtBuff, "%d", DIPCueLine( cueh ) );
-            bp->sym_name = DupStr( TxtBuff );
+            bp->sym_name = ReplaceStr( bp->sym_name, TxtBuff );
             bp->addr_diff = addr.mach.offset - DIPCueAddr( cueh ).mach.offset;
             ok = GetBPSymAddr( bp, &addr );
             break;
@@ -1324,14 +1324,7 @@ void SetBPAutoDestruct( brkp *bp, int autodes )
 
 void SetBPCondition( brkp *bp, const char *condition )
 {
-    if( bp->condition != NULL ) {
-        _Free( bp->condition );
-    }
-    if( condition == NULL || condition[0] == NULLCHAR ) {
-        bp->condition = NULL;
-    } else {
-        bp->condition = DupStr( condition );
-    }
+    bp->condition = ReplaceStr( bp->condition, condition );
     bp->status.b.use_condition = ( bp->condition != NULL );
 }
 
@@ -1438,7 +1431,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_MAPADDRESS:
             mapaddress = true;
             ScanItem( true, &start, &len );
-            image_name = DupStrLen( start, len );
+            image_name = ReplaceStrLen( image_name, start, len );
             loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
             loc.mach.offset = ReqLongExpr();
@@ -1447,11 +1440,11 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_SYMADDRESS:
             symaddress = true;
             ScanItem( true, &start, &len );
-            image_name = DupStrLen( start, len );
+            image_name = ReplaceStrLen( image_name, start, len );
             ScanItem( true, &start, &len );
-            mod_name = DupStrLen( start, len );
+            mod_name = ReplaceStrLen( mod_name, start, len );
             ScanItem( true, &start, &len );
-            sym_name = DupStrLen( start, len );
+            sym_name = ReplaceStrLen( sym_name, start, len );
             cue_diff = ReqLongExpr();
             addr_diff = ReqLongExpr();
             loc = NilAddr;

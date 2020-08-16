@@ -3,9 +3,9 @@
 flora		GROUP	text
 text		SEGMENT	PARA PUBLIC USE16 'code'
 		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
-    mov         ax,ax 
+	mov		ax,ax
 L$1:
-    mov         dx,dx 
+	mov		dx,dx
 text		ENDS
 donna		SEGMENT	PAGE PUBLIC USE16 'data'
     DB	8bH, 0d2H, 0, 0, 0b8H

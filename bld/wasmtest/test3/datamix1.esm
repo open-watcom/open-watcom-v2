@@ -39,42 +39,42 @@ L$2:
 _DATA32		ENDS
 _TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
 		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
-    nop         
-    nop         
-    nop         
+	nop
+	nop
+	nop
 code_proc16:
-    mov         ax,word ptr L$1
-    mov         ax,offset L$1
-    mov         eax,dword ptr L$1
-    mov         eax,offset L$1
-    mov         eax,offset code_proc16
-    mov         eax,offset code_proc16
-    mov         ax,word ptr L$2
-    mov         ax,offset L$2
-    mov         eax,dword ptr L$2
-    mov         eax,offset L$2
-    mov         eax,offset code_proc32
-    mov         eax,offset code_proc32
-    retf        
+	mov		ax,word ptr L$1
+	mov		ax,offset L$1
+	mov		eax,dword ptr L$1
+	mov		eax,offset L$1
+	mov		eax,offset code_proc16
+	mov		eax,offset code_proc16
+	mov		ax,word ptr L$2
+	mov		ax,offset L$2
+	mov		eax,dword ptr L$2
+	mov		eax,offset L$2
+	mov		eax,offset code_proc32
+	mov		eax,offset code_proc32
+	retf
 _TEXT16		ENDS
 _TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
 		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
-    nop         
-    nop         
-    nop         
-    nop         
+	nop
+	nop
+	nop
+	nop
 code_proc32:
-    mov         ax,word ptr L$1
-    mov         ax,offset L$1
-    mov         eax,dword ptr L$1
-    mov         eax,offset L$1
-    mov         eax,offset code_proc16
-    mov         eax,offset code_proc16
-    mov         ax,word ptr L$2
-    mov         eax,dword ptr L$2
-    mov         eax,offset L$2
-    mov         eax,offset code_proc32
-    mov         eax,offset code_proc32
-    retf        
+	mov		ax,word ptr L$1
+	mov		ax,offset L$1
+	mov		eax,dword ptr L$1
+	mov		eax,offset L$1
+	mov		eax,offset code_proc16
+	mov		eax,offset code_proc16
+	mov		ax,word ptr L$2
+	mov		eax,dword ptr L$2
+	mov		eax,offset L$2
+	mov		eax,offset code_proc32
+	mov		eax,offset code_proc32
+	retf
 _TEXT32		ENDS
 		END

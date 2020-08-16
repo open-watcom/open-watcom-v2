@@ -7,8 +7,8 @@ L$1:
 pat		ENDS
 abcd		SEGMENT	PARA PRIVATE USE16 'code'
 		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
-    mov         ax,0ff9fH
-    mov         ax,ax
-    mov         ax,word ptr ss:L$1
+	mov		ax,0ff9fH
+	mov		ax,ax
+	mov		ax,word ptr ss:L$1
 abcd		ENDS
 		END
