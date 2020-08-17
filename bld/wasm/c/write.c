@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1167,10 +1168,6 @@ static void OnePassInit( void )
 {
     CmdlParamsInit();
     AssumeInit();
-
-    Options.locals_prefix[0] = '@';
-    Options.locals_prefix[1] = '@';
-    Options.locals_len = 0;
 
     EndDirectiveFound = false;
     EndDirectiveProc = false;

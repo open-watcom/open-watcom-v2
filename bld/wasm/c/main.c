@@ -558,7 +558,7 @@ static void Set_ZCM( void )
     } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
         Options.mode_init = MODE_TASM | MODE_MASM5;
     } else if( strnicmp( OptParm, "IDEAL", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode_init = MODE_TASM | MODE_IDEAL | MODE_MASM5;
+        Options.mode_init = MODE_TASM | MODE_IDEAL;
 //    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
 //        Options.mode_init = MODE_MASM5;
     }
@@ -1092,13 +1092,14 @@ static void set_fpu_mode( void )
 }
 
 static void set_cpu_parameters( void )
-/************************************/
+/*************************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
 {
     asm_token   token;
     char        buffer[MAX_KEYWORD_LEN + 1];
 
-    // init assembler mode
-    Options.mode = Options.mode_init;
     switch( SWData.cpu ) {
     case 0:
         token = T_DOT_8086;
@@ -1130,7 +1131,10 @@ static void set_cpu_parameters( void )
 }
 
 static void set_fpu_parameters( void )
-/************************************/
+/*************************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
 {
     asm_token   token;
     char        buffer[MAX_KEYWORD_LEN + 1];
@@ -1186,7 +1190,10 @@ static void set_fpu_parameters( void )
 }
 
 static void SetMemoryModel( void )
-/********************************/
+/*********************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
 {
     char buffer[20];
     char *model;
@@ -1217,13 +1224,31 @@ static void SetMemoryModel( void )
         return;
     }
 
-    if( Options.mode & MODE_IDEAL ) {
-        strcpy( buffer, "MODEL " );
-    } else {
-        strcpy( buffer, ".MODEL " );
-    }
+    strcpy( buffer, ".MODEL " );
     strcat( buffer, model );
     InputQueueLine( buffer );
+}
+
+static void set_assembler_mode( void )
+/************************************/
+{
+    // setup MASM compatible mode for initialization
+    // TASM mode is setup after initialization by directives
+    if( Options.mode_init & MODE_TASM ) {
+        // if TASM mode then initialize
+        // by appropriate directive
+        if( Options.mode_init & MODE_IDEAL ) {
+            InputQueueLine( "IDEAL" );
+        } else {
+            InputQueueLine( "MASM" );
+        }
+    }
+    // init assembler mode to MASM mode
+    Options.mode = Options.mode_init & ~(MODE_TASM | MODE_IDEAL);
+    // initialization of TASM local labels prefix
+    Options.locals_prefix[0] = '@';
+    Options.locals_prefix[1] = '@';
+    Options.locals_len = 0;
 }
 
 static void parse_cmdline( char **cmdline )
@@ -1267,10 +1292,8 @@ static void do_init_stuff( char **cmdline )
     open_files();
 
     /*
-     * insert CPU/FPU directives and model directive
-     * for command line parameters if any
-     * add it to input line queue to be processed
-     * before source file
+     * insert appropriate directives for command line parameters
+     * into input line queue to be processed before any source file
      */
     if( memory_model != '\0' ) {
         if( SWData.cpu < 0 ) {
@@ -1282,10 +1305,6 @@ static void do_init_stuff( char **cmdline )
             }
         }
     }
-    PushLineQueue();
-    set_cpu_parameters();
-    set_fpu_parameters();
-    SetMemoryModel();
 }
 
 static void do_fini_stuff( void )
@@ -1346,6 +1365,12 @@ void CmdlParamsInit( void )
     Code->use32 = false;            // default is 16-bit segment
     Code->info.cpu = ModuleInfo.cpu_init;
     ModuleInfo.def_use32 = ModuleInfo.def_use32_init;
+
+    PushLineQueue();
+    set_cpu_parameters();
+    set_fpu_parameters();
+    SetMemoryModel();
+    set_assembler_mode();
 
     if( ForceInclude != NULL ) {
         InputQueueFile( ForceInclude );

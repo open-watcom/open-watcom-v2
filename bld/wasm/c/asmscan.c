@@ -410,12 +410,17 @@ static bool get_id( token_idx idx, const char **input, char **output )
                 return( RC_OK );
             }
             break;
+        // TASM keywords - initialization
+        case T_MASM:
+        case T_IDEAL:
+            if( Options.mode_init & MODE_TASM ) {
+                return( RC_OK );
+            }
+            break;
         // TASM keywords
         case T_ARG:
         case T_ENUM:
-        case T_IDEAL:
         case T_LOCALS:
-        case T_MASM:
         case T_NOLOCALS:
         case T_NOWARN:
         case T_SMART:
