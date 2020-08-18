@@ -11,6 +11,8 @@ cpyright_autodepends = .autodepend
 #
 .c : ../c
 
+inc_dirs = -I"../h"
+
 #
 # lflags
 #
@@ -18,8 +20,15 @@ cpyright_autodepends = .autodepend
 # explicit rules
 #################
 
+all : cpyright.exe sjisutf8.exe
+
 #
 # EXE
 #
 exetarg_objs = cpyright.obj
+exetarg_name = cpyright
+!include exetarg.mif
+
+exetarg_objs = sjisutf8.obj
+exetarg_name = sjisutf8
 !include exetarg.mif
