@@ -459,17 +459,17 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for 386
 !    ifdef __MSDOS__
-!      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(bin_subdir)\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\dos386\wcc386
 !    else ifdef __OS2__
-!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(bin_subdir)\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\wcc386
 !    else ifdef __LINUX386__
-!      define comp_wcc_386 $(src_dir)/cc/386/linux386/$(bin_subdir)/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linux386/wcc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/$(bin_subdir)/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/wcc386.exe
 !    else ifdef __NT386__
-!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\$(bin_subdir)\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\wcc386
 !    else ifdef __NTX64__
-!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\$(bin_subdir)\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\wcc386
 !    endif
 !  else ifdef %CTEST_WCC_386
 !    define comp_wcc_386 $+$(%CTEST_WCC_386)$-
@@ -482,11 +482,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for i86
 !    ifdef __MSDOS__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\$(bin_subdir)\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\wcc
 !    else ifdef __OS2__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(bin_subdir)\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\wcc
 !    else ifdef __NT386__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\nt386.dll\$(bin_subdir)\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\nt386.dll\wcc
 !    endif
 !  else ifdef %CTEST_WCC_I86
 !    define comp_wcc_i86 $+$(%CTEST_WCC_I86)$-
@@ -499,9 +499,9 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for axp
 !    ifdef __OS2__
-!      define comp_wcc_axp $(src_dir)\cc\axp\os2axp\$(bin_subdir)\wccaxp
+!      define comp_wcc_axp $(src_dir)\cc\axp\os2axp\wccaxp
 !    else ifdef __NTAXP__
-!      define comp_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\$(bin_subdir)\wccaxp
+!      define comp_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\wccaxp
 !    endif
 !  else ifdef %CTEST_WCC_AXP
 !    define comp_wcc_axp $+$(%CTEST_WCC_AXP)$-
@@ -514,7 +514,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wcc_ppc $(src_dir)/cc/ppc/linuxppc/$(bin_subdir)/wccppc.exe
+!      define comp_wcc_ppc $(src_dir)/cc/ppc/linuxppc/wccppc.exe
 !    endif
 !  else ifdef %CTEST_WCC_PPC
 !    define comp_wcc_ppc $+$(%CTEST_WCC_PPC)$-
@@ -527,7 +527,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wcc_mps $(src_dir)/cc/mps/linuxmps/$(bin_subdir)/wccmps.exe
+!      define comp_wcc_mps $(src_dir)/cc/mps/linuxmps/wccmps.exe
 !    endif
 !  else ifdef %CTEST_WCC_MPS
 !    define comp_wcc_mps $+$(%CTEST_WCC_MPS)$-
@@ -539,11 +539,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_386
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_386 $(src_dir)\cc\386\os2386.dll\$(bin_subdir)\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\os2386.dll\wccd386.dll
 !    else ifdef __NT386__
-!      define dll_wcc_386 $(src_dir)\cc\386\nt386.dll\$(bin_subdir)\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\nt386.dll\wccd386.dll
 !    else ifdef __NTX64__
-!      define dll_wcc_386 $(src_dir)\cc\386\ntx64.dll\$(bin_subdir)\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\ntx64.dll\wccd386.dll
 !    endif
 !  else ifdef %CTEST_DLL_386
 !    define dll_wcc_386 $+$(%CTEST_DLL_386)$-
@@ -555,9 +555,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_i86
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(bin_subdir)\wccd.dll
+!      define dll_wcc_i86 $(src_dir)\cc\i86\os2386.dll\wccd.dll
 !    else ifdef __NT386__
-!      define dll_wcc_i86 $(src_dir)\cc\i86\nt386.dll\$(bin_subdir)\wccd.dll
+!      define dll_wcc_i86 $(src_dir)\cc\i86\nt386.dll\wccd.dll
 !    endif
 !  else ifdef %CTEST_DLL_I86
 !    define dll_wcc_i86 $+$(%CTEST_DLL_I86)$-
@@ -569,9 +569,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_axp
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_axp $(src_dir)\cc\axp\os2axp.dll\$(bin_subdir)\wccdaxp.dll
+!      define dll_wcc_axp $(src_dir)\cc\axp\os2axp.dll\wccdaxp.dll
 !    else ifdef __NTAXP__
-!      define dll_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\$(bin_subdir)\wccdaxp.dll
+!      define dll_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\wccdaxp.dll
 !    endif
 !  else ifdef %CTEST_DLL_AXP
 !    define dll_wcc_axp $+$(%CTEST_DLL_AXP)$-
