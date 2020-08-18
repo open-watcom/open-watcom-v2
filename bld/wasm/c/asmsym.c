@@ -246,7 +246,7 @@ struct asm_sym *AsmLookup( const char *name )
         return NULL;
     }
 #if defined( _STANDALONE_ )
-    if( Options.mode & MODE_IDEAL ) {
+    if( Options.mode & MODE_TASM ) {
         if( Options.locals_len ) {
             if( memcmp( name, Options.locals_prefix, Options.locals_len ) == 0
                 && name[Options.locals_len] != '\0' ) {
@@ -266,6 +266,8 @@ struct asm_sym *AsmLookup( const char *name )
                 return( sym );
             }
         }
+    }
+    if( Options.mode & MODE_IDEAL ) {
         if( Definition.struct_depth != 0 ) {
             structure = &Definition.curr_struct->sym;
             sym = FindStructureMember( structure, name );

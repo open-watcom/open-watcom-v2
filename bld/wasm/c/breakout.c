@@ -56,13 +56,11 @@ bool directive( token_idx i, asm_token direct )
         // switch to TASM MASM mode
         Options.mode |= MODE_TASM | MODE_MASM5;
         Options.mode &= ~MODE_IDEAL;
-        Options.locals_len = 0;
         return( RC_OK );
     case T_IDEAL:
         // switch to TASM IDEAL mode
         Options.mode |= MODE_TASM | MODE_IDEAL;
         Options.mode &= ~MODE_MASM5;
-        Options.locals_len = 2;
         return( RC_OK );
     case T_DOT_286C:
         direct = T_DOT_286;
