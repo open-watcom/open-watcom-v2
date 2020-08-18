@@ -41,6 +41,7 @@
 
 static char     cpyright[] = ";* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
 static size_t   line = 1;
+static size_t   start_line = 0;
 static size_t   size = 0;
 static int      status = 0;
 static char     *buffer = NULL;
@@ -49,14 +50,17 @@ static FILE     *fo = NULL;
 
 static void output_buffer( void )
 {
-    if( line == 3 ) {
-        if( status == 0 ) {
+    if( status < 2 && line < 30 ) {
+        if( strstr( buffer, "****************************************************************************" ) != NULL ) {
+            start_line = line;
+            status = 1;
+        } else if( status == 1 && line == start_line + 2 ) {
             if( strstr( buffer, "Open Watcom Project" ) != NULL ) {
-                status = 1;
+                status = 2;
             }
         }
-    } else if( line == 5 ) {
-        if( status == 1 ) {
+    } else if( line == start_line + 4 ) {
+        if( status == 2 ) {
             if( strstr( buffer, "-2002 Sybase, Inc. All Rights Reserved." ) != NULL ) {
                 if( IS_ASM( buffer ) ) {
                     cpyright[0] = ';';
@@ -67,14 +71,14 @@ static void output_buffer( void )
                 } else {
                     fputs( cpyright + 1, fo );
                 }
-                status = 2;
+                status = 3;
             } else if( strstr( buffer, cpyright + 26 ) != NULL ) {
                 if( IS_ASM( buffer ) || IS_GML( buffer ) ) {
                     memcpy( buffer + 22, cpyright + 22, 4 );
                 } else {
                     memcpy( buffer + 21, cpyright + 22, 4 );
                 }
-                status = 2;
+                status = 3;
             }
         }
     }
