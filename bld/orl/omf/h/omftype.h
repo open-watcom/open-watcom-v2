@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #define OMF_STATUS_ADD_LIDATA           0x00000008
 #define OMF_STATUS_EASY_OMF             0x00000010
 #define OMF_STATUS_ADD_BAKPAT           0x00000020
+#define OMF_STATUS_WATCOM               0x00000040
 
 #define OMF_STATUS_ADD_MASK             (OMF_STATUS_ADD_LIDATA | OMF_STATUS_ADD_BAKPAT)
 

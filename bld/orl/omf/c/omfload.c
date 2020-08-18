@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -384,7 +385,12 @@ static orl_return       doCOMENT( omf_file_handle ofh )
         return( return_val );
 
     switch( class ) {
+    case( CMT_DISASM_DIRECTIVE ):
+        ofh->status |= OMF_STATUS_WATCOM;
+        break;
     case( CMT_WAT_PROC_MODEL ):
+        ofh->status |= OMF_STATUS_WATCOM;
+        /* fall through */
     case( CMT_MS_PROC_MODEL ):
         /* Determine CPU
          */
