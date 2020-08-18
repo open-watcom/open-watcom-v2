@@ -1263,10 +1263,18 @@ bool GrpDef( token_idx i )
     dir_node    *seg;
     token_idx   n;
 
-    if( Options.mode & MODE_IDEAL ) {
-        n = i + 1;
+    if( Options.mode & MODE_TASM ) {
+        if( i > 0 ) {
+            n = i++ - 1;
+        } else if( AsmBuffer[i + 1].class == TC_ID
+          && ( AsmBuffer[i + 2].class == TC_ID || AsmBuffer[i + 2].class == TC_FINAL ) ) {
+            n = ++i;
+            i++;
+        } else {
+            n = INVALID_IDX;
+        }
     } else if( i > 0 ) {
-        n = --i;
+        n = i++ - 1;
     } else {
         n = INVALID_IDX;
     }
@@ -1279,9 +1287,8 @@ bool GrpDef( token_idx i )
     if( grp == NULL )
         return( RC_ERROR );
 
-    for( i += 2;            // skip over the GROUP directive
-         i < Token_Count;   // stop at the end of the line
-         i += 2 ) {         // skip over commas
+    for( ; i < Token_Count;     // stop at the end of the line
+         i += 2 ) {             // skip over commas
         name = AsmBuffer[i].string_ptr;
         /* Add the segment name */
 
