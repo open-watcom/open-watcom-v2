@@ -1266,8 +1266,7 @@ bool GrpDef( token_idx i )
     if( Options.mode & MODE_TASM ) {
         if( i > 0 ) {
             n = i++ - 1;
-        } else if( AsmBuffer[i + 1].class == TC_ID
-          && ( AsmBuffer[i + 2].class == TC_ID || AsmBuffer[i + 2].class == TC_FINAL ) ) {
+        } else if( AsmBuffer[i + 1].class != TC_FINAL ) {
             n = ++i;
             i++;
         } else {
@@ -1278,7 +1277,7 @@ bool GrpDef( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {    /* name present? */
+    if( n == INVALID_IDX ) {    /* name present? */
         AsmError( GRP_NAME_MISSING );
         return( RC_ERROR );
     }
@@ -1497,15 +1496,12 @@ bool SegDef( token_idx i )
     token_idx           n;
 
     if( Options.mode & MODE_IDEAL ) {
-        n = i + 1;
-        if( ( AsmBuffer[n].class == TC_DIRECTIVE ) &&
-            ( ( AsmBuffer[n].u.token == T_STACK ) ||
-              ( AsmBuffer[n].u.token == T_CONST ) ) )
-            AsmBuffer[n].class = TC_ID;
-        if( ( AsmBuffer[i].u.token == T_SEGMENT ) &&
-            ( AsmBuffer[n].class != TC_ID ) ) {
-            AsmError( SEG_NAME_MISSING );
-            return( RC_ERROR );
+        if( i > 0 ) {
+            n = INVALID_IDX;
+        } else if( AsmBuffer[i].u.token == T_ENDS || AsmBuffer[i + 1].class != TC_FINAL ) {
+            n = i + 1;
+        } else {
+            n = INVALID_IDX;
         }
     } else {
         if( i > 0 ) {
@@ -1513,14 +1509,14 @@ bool SegDef( token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
-            AsmError( SEG_NAME_MISSING );
-            return( RC_ERROR );
-        }
     }
-    name = AsmBuffer[n].string_ptr;
+    if( n == INVALID_IDX ) {
+        AsmError( SEG_NAME_MISSING );
+        return( RC_ERROR );
+    }
     switch( AsmBuffer[i].u.token ) {
     case T_SEGMENT:
+        name = AsmBuffer[n].string_ptr;
         /* Check to see if the segment is already defined */
         seg = (dir_node *)AsmGetSymbol( name );
         if( seg == NULL ) {
@@ -1717,7 +1713,8 @@ bool SegDef( token_idx i )
             AsmError( SEGMENT_NOT_OPENED );
             return( RC_ERROR );
         }
-        if( AsmBuffer[n].class == TC_ID ) {
+        if( AsmBuffer[n].class != TC_FINAL ) {
+            name = AsmBuffer[n].string_ptr;
             seg = (dir_node *)AsmGetSymbol( name );
             if( seg == NULL ) {
                 AsmErr( SEG_NOT_DEFINED, name );
