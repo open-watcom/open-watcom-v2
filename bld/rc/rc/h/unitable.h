@@ -14,4 +14,3 @@
 
 extern RcStatus     SetUTF8toUnicode( void );
 extern RcStatus     SetUTF8toMultiByte( void );
-

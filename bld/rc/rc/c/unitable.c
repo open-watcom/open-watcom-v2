@@ -28,6 +28,7 @@
 
 
 static cvt_chr  **cvt_table = NULL;
+static size_t   cvt_table_len = 0;
 
 static int getcharUTF8( const char **p, uint_32 *c )
 /**************************************************/
@@ -59,10 +60,10 @@ static int getcharUTF8( const char **p, uint_32 *c )
     return( len );
 }
 
-static int compare_utf8( const void *p1, const void *p2 )
-/*******************************************************/
+static int compare_utf8( const cvt_chr *key, const cvt_chr *data )
+/****************************************************************/
 {
-    return( ((cvt_chr *)p1)->u - ((cvt_chr *)p2)->u );
+    return( key->u - data->u );
 }
 
 static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
@@ -97,7 +98,7 @@ static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
                 i += getcharUTF8( &str, &unicode );
                 if( ret < outlen ) {
                     x.u = unicode;
-                    p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), compare_utf8 );
+                    p = bsearch( &x, cvt_table, cvt_table_len, sizeof( cvt_chr ), (int(*)(const void*,const void*))compare_utf8 );
                     if( p == NULL ) {
                         printf( "unknown unicode character: 0x%4X\n", x.u );
                         *buf++ = '?';
@@ -161,7 +162,6 @@ RcStatus SetUTF8toMultiByte( void )
     FILE            *fh;
     RcStatus        ret;
     unsigned short  u16;
-    size_t          numread;
     char            path[_MAX_PATH];
     char            *fname;
 
@@ -172,19 +172,23 @@ RcStatus SetUTF8toMultiByte( void )
         fname = "";
     }
     _searchenv( fname, "PATH", path );
-    if( path[0] == '\0' )
+    if( path[0] == '\0' ) {
+        printf( "%s file not found\n", fname );
         return( RS_FILE_NOT_FOUND );
+    }
     fh = fopen( path, "rb" );
     if( fh == NULL ) {
         ret = RS_OPEN_ERROR;
     } else {
         if( ret == RS_OK ) {
-            numread = fread( &u16, 1, sizeof( u16 ), fh );
-            if( numread != sizeof( u16 ) ) {
+            cvt_table_len = fread( &u16, 1, sizeof( u16 ), fh );
+            if( cvt_table_len != sizeof( u16 ) ) {
+                cvt_table_len = 0;
                 ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
             } else {
-                cvt_table = RcMemMalloc( sizeof( cvt_chr ) * numread );
-                if( numread != fread( cvt_table, sizeof( cvt_chr ), numread , fh ) ) {
+                cvt_table_len = u16;
+                cvt_table = RcMemMalloc( sizeof( cvt_chr ) * cvt_table_len );
+                if( cvt_table_len != fread( cvt_table, sizeof( cvt_chr ), cvt_table_len , fh ) ) {
                     ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
                 }
             }
