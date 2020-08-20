@@ -12,6 +12,6 @@
 ****************************************************************************/
 
 
-extern void     SetUTF8toUnicode( void );
-extern void     SetUTF8toMultiByte( void );
+extern RcStatus     SetUTF8toUnicode( void );
+extern RcStatus     SetUTF8toMultiByte( void );
 

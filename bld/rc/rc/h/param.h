@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,9 +80,9 @@ typedef struct RCParams {
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
     boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
     boolbit     Prepend         : 1;
-    unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
+    char        MBCharSupport;          /* which of the zk switches is set */
     char        *InFileName;
     char        *InExeFileName;
     char        *OutResFileName;

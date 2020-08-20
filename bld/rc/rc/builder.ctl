@@ -21,6 +21,7 @@ set PROJDIR=<CWD>
     <CPCMD> <OWOBJDIR>/bwrc.exe     <OWBINDIR>/bwrc<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwrcd<DYEXT> <OWBINDIR>/bwrcd<DYEXT>
     <CPCMD> <OWOBJDIR>/kanji.uni    <OWBINDIR>/
+    <CPCMD> <OWOBJDIR>/to932.uni    <OWBINDIR>/
 
 [ BLOCK <BINTOOL> clean ]
 #========================
@@ -29,6 +30,8 @@ set PROJDIR=<CWD>
     rm -f <OWBINDIR>/bwrcd<DYEXT>
     echo rm -f <OWBINDIR>/kanji.uni
     rm -f <OWBINDIR>/kanji.uni
+    echo rm -f <OWBINDIR>/to932.uni
+    rm -f <OWBINDIR>/to932.uni
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

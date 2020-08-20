@@ -142,7 +142,8 @@ misc_objs = &
     936.uni &
     949.uni &
     950.uni &
-    kanji.uni
+    kanji.uni &
+    to932.uni
 
 !ifdef trmem_objs
 rc_template = $(common_objs) $(trmem_objs)
@@ -160,9 +161,11 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c &
+    keyword2.gh keywordw.gh
 !else
-prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c &
+    $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
@@ -227,14 +230,13 @@ keyword2.gh : ../hash/rcos2.key
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m $<
 
-rcmsg.gh :  ../h/rc.msg
+rcmsg.gh : ../h/rc.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(misc_objs):
     cat ../$@ >$@
 
-# optencod options and targets for various hosts
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
@@ -251,6 +253,13 @@ usagej.gh : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)optencod -l 1 -q $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+
+./cvttable.exe: ../c/cvttable.c $(src_dir)/git/h/cp932uni.h $(__MAKEFILES__)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -D_STANDALONE_ -I"../h" -I"$(src_dir)/git/h" $(bld_clflags) $(bld_ldflags)
+
+to932.uni : ./cvttable.exe $(__MAKEFILES__)
+    $[@ $@
 
 echo_findhash: .PROCEDURE .EXPLICIT
 !ifeq verbose 0

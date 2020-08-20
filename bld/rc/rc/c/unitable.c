@@ -24,7 +24,10 @@
 #include "unitable.h"
 
 
+static cvt_chr  **cvt_table = NULL;
+
 static int getcharUTF8( const char **p, uint_32 *c )
+/**************************************************/
 {
     int     len;
     int     i;
@@ -53,9 +56,69 @@ static int getcharUTF8( const char **p, uint_32 *c )
     return( len );
 }
 
+static int compare_utf8( const void *p1, const void *p2 )
+/*******************************************************/
+{
+    return( ((cvt_chr *)p1)->u - ((cvt_chr *)p2)->u );
+}
+
+static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
+/****************************************************************************
+ * this function convert UTF-8 buffer to Shift-JIS (CP932) buffer
+ * first read UTF-8 character then convert it to CP932 and put to
+ * output buffer, repeat until consume all input bytes
+ */
+{
+    size_t          ret;
+    size_t          outlen;
+    uint_32         unicode;
+    size_t          i;
+    cvt_chr         x;
+    cvt_chr         *p;
+
+    ret = 0;
+    if( len > 0 ) {
+        if( buf == NULL ) {
+            outlen = 0;
+        } else {
+            outlen = len;
+        }
+        for( i = 0; i < len; i++ ) {
+            unicode = (unsigned char)*str++;
+            if( unicode < 0x80 ) {
+                if( ret < outlen ) {
+                    *buf++ = (char)unicode;
+                    ret++;
+                }
+            } else {
+                i += getcharUTF8( &str, &unicode );
+                if( ret < outlen ) {
+                    x.u = unicode;
+                    p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), compare_utf8 );
+                    if( p == NULL ) {
+                        printf( "unknown unicode character: 0x%4X\n", x.u );
+                        *buf++ = '?';
+                    } else {
+                        if( p->s > 0xFF ) {
+                            *buf++ = (char)( p->s >> 8 );
+                            ret++;
+                        }
+                        *buf++ = (char)p->s;
+                    }
+                    ret++;
+                }
+            }
+        }
+    }
+    return( ret );
+}
 
 static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
-/*************************************************************************/
+/**************************************************************************
+ * this function convert UTF-8 buffer to 16-bit UNICODE buffer
+ * first read UTF-8 character then convert it to UNICODE and put to
+ * output buffer, repeat until consume all input bytes
+ */
 {
     size_t          ret;
     size_t          outlen;
@@ -71,7 +134,9 @@ static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
         }
         for( i = 0; i < len; i++ ) {
             unicode = (unsigned char)*str++;
-            i += getcharUTF8( &str, &unicode );
+            if( unicode > 0x7F ) {
+                i += getcharUTF8( &str, &unicode );
+            }
             if( ret < outlen ) {
                 *buf++ = (char)unicode;
                 *buf++ = (char)( unicode >> 8 );
@@ -82,12 +147,48 @@ static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
     return( ret * 2 );
 }
 
-void SetUTF8toUnicode( void )
+RcStatus SetUTF8toUnicode( void )
 {
     ConvToUnicode = UTF8StringToUnicode;
+    return( RS_OK );
 }
 
-void SetUTF8toMultiByte( void )
+RcStatus SetUTF8toMultiByte( void )
 {
-//    ConvToMultiByte = UTF8StringToMultiByte;
+    FILE            *fh;
+    RcStatus        ret;
+    unsigned short  u16;
+    size_t          numread;
+    char            path[_MAX_PATH];
+    char            *fname;
+
+    ret = RS_OK;
+    if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
+        fname = "tocp932.uni";
+    } else {
+        fname = "";
+    }
+    _searchenv( fname, "PATH", path );
+    if( path[0] == '\0' )
+        return( RS_FILE_NOT_FOUND );
+    fh = fopen( path, "rb" );
+    if( fh == NULL ) {
+        ret = RS_OPEN_ERROR;
+    } else {
+        if( ret == RS_OK ) {
+            numread = fread( &u16, 1, sizeof( u16 ), fh );
+            if( numread != sizeof( u16 ) ) {
+                ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
+            } else {
+                cvt_table = RcMemMalloc( sizeof( cvt_chr ) * numread );
+                if( numread != fread( cvt_table, sizeof( cvt_chr ), numread , fh ) ) {
+                    ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
+                }
+            }
+        }
+        fclose( fh );
+    }
+    ConvToMultiByte = UTF8StringToMultiByte;
+
+    return( ret );
 }

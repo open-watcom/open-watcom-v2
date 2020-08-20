@@ -733,6 +733,7 @@ static void initMBCodePage( void )
         SetMBRange( 0xe0, 0xfc, 1 );
         break;
     case MB_UTF8:
+    case MB_UTF8_KANJI:
         SetMBRange( 0xc0, 0xdf, 1 );
         SetMBRange( 0xe0, 0xef, 2 );
         SetMBRange( 0xf0, 0xf7, 3 );

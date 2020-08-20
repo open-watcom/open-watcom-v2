@@ -25,10 +25,12 @@ static cvt_chr cvt_table[] = {
     #undef pick
 };
 
+#if 0
 static int compare_sjis( const void *p1, const void *p2 )
 {
     return( ((cvt_chr *)p1)->s - ((cvt_chr *)p2)->s );
 }
+#endif
 
 static int compare_utf8( const void *p1, const void *p2 )
 {

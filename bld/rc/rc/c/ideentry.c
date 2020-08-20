@@ -221,27 +221,26 @@ static bool console_tty = false;
 static void RcIoPrintUsage( void )
 /********************************/
 {
-    PGROUP2     pg;
     int         index;
     char        buf[256];
-    char        imageName[_MAX_PATH];
     int         count;
 
     count = RcIoPrintBanner();
-    _cmdname( imageName );
     if( console_tty && count ) {
         ConsoleMessage( "\n" );
         ++count;
     }
-    _splitpath2( imageName, pg.buffer, NULL, NULL, &pg.fname, NULL );
-    strlwr( pg.fname );
-
     index = MSG_USAGE_BASE;
-    GetRcMsg( index, buf, sizeof( buf ) );
-    ConsoleMessage( buf, pg.fname );
+    GetRcMsg( index++, buf, sizeof( buf ) );
+    GetRcMsg( index++, buf, sizeof( buf ) );
+#ifdef BOOTSTRAP
+    ConsoleMessage( buf, "bwrc" );
+#else
+    ConsoleMessage( buf, "wrc" );
+#endif
     ConsoleMessage( "\n" );
     ++count;
-    for( ++index; index <= MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
+    for( ; index <= MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
         if( console_tty ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return() )
