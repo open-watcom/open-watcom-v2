@@ -40,7 +40,7 @@ exetarg_objs = testpp.obj $(common_objs)
 exetarg_name = testpp
 !include exetarg.mif
 
-exetarg_objs = dumpmac.obj $(common_objs)
+exetarg_objs = dumpmac.obj ppdmpmac.obj $(common_objs)
 exetarg_name = dumpmac
 !include exetarg.mif
 

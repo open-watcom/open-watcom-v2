@@ -56,20 +56,22 @@ static int      nofilenames = 0;
 static char     *out_filename = NULL;
 
 static const char * const usageMsg[] = {
-    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-o<file>] [-zk0] [-zk1] [-zk2]\n"
-    "\t\t[-zku8] [input files]\n",
-    "input files\t\tlist of input source file names\n",
-    "-c\t\tpreserve comments\n",
-    "-d<macro>\t\tdefine macro\n",
-    "-i<path>\t\tinclude path\n",
-    "-l\t\tgenerate #line directives\n",
-    "-o<file>\t\toutput file\n",
-    "-zk{0,1,2,u8}\t\tsource file character encoding\n",
-    "-zk0\t\tJapanese (Kanji, CP 932) double-byte encoding\n",
-    "-zk1\t\tChinese (Traditional, CP 950) double-byte encoding\n",
-    "-zk2\t\tKorean (Wansung, CP 949) double-byte encoding\n",
-    "-zku8\t\tUnicode UTF-8 encoding\n",
-    "-h\t\tdisplay usage\n",
+    "Usage: wcpp [options] input files",
+    "",
+    "  options:",
+    "    -c             preserve comments",
+    "    -d<macro>      define macro",
+    "    -i<path>       include path",
+    "    -l             generate #line directives",
+    "    -o<file>       output file",
+    "    -zk{0,1,2,u8}  source file character encoding",
+    "       0           Japanese (Kanji, CP 932) double-byte encoding",
+    "       1           Chinese (Traditional, CP 950) double-byte encoding",
+    "       2           Korean (Wansung, CP 949) double-byte encoding",
+    "       u8          Unicode UTF-8 encoding",
+    "    -h or ?        display usage",
+    "",
+    "    input files    list of input source file names",
     NULL
 };
 
@@ -198,7 +200,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         }
         // fall down
     default:
-        wcpp_quit( usageMsg, "Incorrect option\n" );
+        wcpp_quit( usageMsg, "Incorrect option" );
         break;
     }
     return( contok );
@@ -397,7 +399,7 @@ int main( int argc, char *argv[] )
     pp_flags    ppflags;
 
     if( argc < 2 ) {
-        wcpp_quit( usageMsg, "No filename specified\n" );
+        wcpp_quit( usageMsg, "No filename specified" );
     } else if( argc == 2 ) {
         if( !strcmp( argv[1], "?" ) ) {
             wcpp_quit( usageMsg, NULL );
@@ -433,7 +435,7 @@ int main( int argc, char *argv[] )
         PP_Init( '#' );
         fo = stdout;
         if( out_filename != NULL ) {
-            fo = fopen( out_filename, "wb" );
+            fo = fopen( out_filename, "wt" );
         }
         for( i = 0; i < nofilenames; ++i ) {
             if( PP_FileInit( filenames[i], ppflags, NULL ) != 0 ) {
@@ -448,10 +450,6 @@ int main( int argc, char *argv[] )
                 ch = PP_Char();
                 if( ch == EOF )
                     break;
-#ifndef __UNIX__
-                if( ch == '\n' )
-                    fputc( '\r', fo );
-#endif
                 fputc( ch, fo );
             }
             PP_FileFini();
@@ -479,7 +477,7 @@ int main( int argc, char *argv[] )
     PP_IncludePathFini();
 
     if( rc == 0 && nofilenames == 0 ) {
-        wcpp_quit( usageMsg, "No filename specified\n" );
+        wcpp_quit( usageMsg, "No filename specified" );
     }
 
     return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );

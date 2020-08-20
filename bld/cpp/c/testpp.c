@@ -45,25 +45,25 @@ static void dumpheap( void )
         status = _heapwalk( &h );
         if( status != _HEAPOK )
             break;
-        printf( "%s block at %Fp of size %4.4X\r\n",
+        printf( "%s block at %Fp of size %4.4X\n",
                 (h._useflag == _USEDENTRY ? "USED": "FREE"),
                 h._pentry, h._size );
     }
     switch( status ) {
     case _HEAPEND:
-        printf( "OK - end of heap\r\n" );
+        printf( "OK - end of heap\n" );
         break;
     case _HEAPEMPTY:
-        printf( "OK - heap is empty\r\n" );
+        printf( "OK - heap is empty\n" );
         break;
     case _HEAPBADBEGIN:
-        printf( "ERROR - heap is damaged\r\n" );
+        printf( "ERROR - heap is damaged\n" );
         break;
     case _HEAPBADPTR:
-        printf( "ERROR - bad pointer to heap\r\n" );
+        printf( "ERROR - bad pointer to heap\n" );
         break;
     case _HEAPBADNODE:
-        printf( "ERROR - bad node in heap\r\n" );
+        printf( "ERROR - bad node in heap\n" );
         break;
     }
 #endif
