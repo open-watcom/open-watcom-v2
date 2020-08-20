@@ -110,7 +110,7 @@ exetarg_name = outcheck
 #
 wresui.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk
