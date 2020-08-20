@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +46,8 @@
 
 static _trmem_hdl   RcMemHandle = NULL;
 
-static void RcPrintLine( void *dummy, const char *buf, size_t len )
-/*****************************************************************/
+static void RcPrintMemLine( void *dummy, const char *buf, size_t len )
+/********************************************************************/
 {
     /* unused parameters */ (void)dummy; (void)len;
 
@@ -60,7 +60,7 @@ void RcMemInit( void )
 {
 #ifdef RC_USE_TRMEM
     RcMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_REALLOC,
-                        NULL, RcPrintLine,
+                        NULL, RcPrintMemLine,
                         _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL |
                         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #else
@@ -72,7 +72,7 @@ void RcMemShutdown( void )
 /************************/
 {
 #ifdef RC_USE_TRMEM
-     RcPrintList();
+     RcPrintMemList();
     _trmem_close( RcMemHandle );
 #else
      RCMemLayer1ShutDown();
@@ -126,16 +126,16 @@ void * RcMemRealloc( void * old_ptr, size_t newsize )
 }
 
 #ifdef RC_USE_TRMEM
-void RcPrintUsage( void )
-/***********************/
+void RcPrintMemUsage( void )
+/**************************/
 {
     if( RcMemHandle != NULL ) {
         _trmem_prt_usage( RcMemHandle );
     }
 }
 
-void RcPrintList( void )
-/**********************/
+void RcPrintMemList( void )
+/*************************/
 {
     if( RcMemHandle != NULL ) {
         _trmem_prt_list( RcMemHandle );

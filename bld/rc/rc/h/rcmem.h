@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +42,8 @@ void RcMemFree( void * ptr );
 
 /* these function are only use for debuging and are only available if */
 /* the memory tracker was compiled into memory.c */
-void RcPrintUsage( void );
-void RcPrintList( void );
+void RcPrintMemUsage( void );
+void RcPrintMemList( void );
 int RcMemValidate( void * ptr );
 int RcMemChkRange( void * start, size_t len );
 
