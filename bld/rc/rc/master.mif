@@ -142,8 +142,7 @@ misc_objs = &
     936.uni &
     949.uni &
     950.uni &
-    kanji.uni &
-    to932.uni
+    kanji.uni
 
 !ifdef trmem_objs
 rc_template = $(common_objs) $(trmem_objs)
@@ -162,10 +161,10 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 #
 !ifdef bootstrap
 prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c &
-    keyword2.gh keywordw.gh
+    keyword2.gh keywordw.gh to932.uni
 !else
 prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c &
-    $(win_yacc_file).c keyword2.gh keywordw.gh
+    $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
 !endif
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll

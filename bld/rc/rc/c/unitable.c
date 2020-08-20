@@ -164,7 +164,7 @@ RcStatus SetUTF8toMultiByte( void )
 
     ret = RS_OK;
     if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
-        fname = "tocp932.uni";
+        fname = "to932.uni";
     } else {
         fname = "";
     }
