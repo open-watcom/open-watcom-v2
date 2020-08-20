@@ -42,14 +42,14 @@
 :cmt    if there is no text associated with the tag.
 
 :title. Usage:   wasm [options] asm_file [options] [@env_var]
-:jtitle. g—p•û–@: wasm [options] file [options] [@env_var]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wasm [options] file [options] [@env_var]
 :target. any
 
 :title. Options:
-:jtitle. ƒIƒvƒVƒ‡ƒ“:
+:jtitle. ã‚ªãƒ—ã‚·ãƒ§ãƒ³:
 :target. any
 :title.  :          ( /option is also accepted )
-:jtitle. :          ( /µÌß¼®İ ‚Å‚àw’è‚Å‚«‚Ü‚· )
+:jtitle. :          ( /ï½µï¾Œï¾Ÿï½¼ï½®ï¾ ã§ã‚‚æŒ‡å®šã§ãã¾ã™ )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
@@ -59,20 +59,20 @@
 :option. ? h
 :target. any
 :usage. print this message
-:jusage. ‚±‚ÌƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·
+:jusage. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã™
 
 :option. 0
 :target. any
 :usage. 8086 instructions
-:jusage. 8086 –½—ß
+:jusage. 8086 å‘½ä»¤
 
 :option. 1
 :target. any
 :usage. 80186 instructions
-:jusage. 80186 –½—ß
+:jusage. 80186 å‘½ä»¤
 
 :chain. 2 80286 instructions
-:jusage. 80286 –½—ß
+:jusage. 80286 å‘½ä»¤
 
 :option. 2p
 :target. any
@@ -80,17 +80,17 @@
 :jusage. protected mode instructions
 
 :chain. 3 80386 instructions
-:jusage. 80386 –½—ß
+:jusage. 80386 å‘½ä»¤
 
 :option. 3r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 3s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 3p
 :target. any
@@ -98,17 +98,17 @@
 :jusage. protected mode instructions
 
 :chain. 4 80486 instructions
-:jusage. 80486 –½—ß
+:jusage. 80486 å‘½ä»¤
 
 :option. 4r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4p
 :target. any
@@ -116,12 +116,12 @@
 :jusage. protected mode instructions
 
 :chain. 5 Pentium instructions
-:jusage. Pentium –½—ß
+:jusage. Pentium å‘½ä»¤
 
 :option. 5r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 5p
 :target. any
@@ -131,20 +131,20 @@
 :option. 5s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :chain. 6 Pentium Pro instructions
-:jusage. 6 Pentium Pro –½—ß
+:jusage. 6 Pentium Pro å‘½ä»¤
 
 :option. 6r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6p
 :target. any
@@ -167,17 +167,17 @@
 :target. any
 :special. scanDefine <name>[=text]
 :usage. define text macro <name>[=text]
-:jusage. ƒeƒLƒXƒgƒ}ƒNƒ‚ğ’è‹`‚µ‚Ü‚· <name>[=text]
+:jusage. ãƒ†ã‚­ã‚¹ãƒˆãƒã‚¯ãƒ­ã‚’å®šç¾©ã—ã¾ã™ <name>[=text]
 
 :option. d1
 :target. any
 :usage. line number debugging support
-:jusage. s”Ô†ƒfƒoƒbƒOî•ñ‚ğo—Í‚µ‚Ü‚·
+:jusage. è¡Œç•ªå·ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’å‡ºåŠ›ã—ã¾ã™
 
 :option. e 
 :target. any
 :usage. stop reading ASM file at END directive
-:jusage. ENDƒfƒBƒŒƒNƒeƒBƒu‚ÅASMƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚ğ~‚ß‚Ü‚·
+:jusage. ENDãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã§ASMãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã‚’æ­¢ã‚ã¾ã™
 
 :option. e
 :target. any
@@ -196,7 +196,7 @@
 :file.
 :optional.
 :usage. set object file name
-:jusage. ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¨­å®šã—ã¾ã™
 
 :option. fp0 
 :target. any
@@ -243,21 +243,21 @@
 :file.
 :optional.
 :usage. set error file name
-:jusage. ƒGƒ‰[ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ©ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¾ã™
 
 :option. i
 :target. any
 :path.
 :usage. add directory to list of include directories
-:jusage. ƒCƒ“ƒNƒ‹[ƒhEƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠƒXƒg‚ğ’Ç‰Á‚µ‚Ü‚·
+:jusage. ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ»ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒªã‚¹ãƒˆã‚’è¿½åŠ ã—ã¾ã™
 
 :option. j s
 :target. any
 :usage. force signed types to be used for signed values
-:jusage. •„†•t‚«Œ^‚ğ•„†•t‚«’l‚Ì‚½‚ß‚Ég—p‚·‚é‚æ‚¤‚É‚µ‚Ü‚·
+:jusage. ç¬¦å·ä»˜ãå‹ã‚’ç¬¦å·ä»˜ãå€¤ã®ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã‚ˆã†ã«ã—ã¾ã™
 
 :chain. m Memory model
-:jusage. ƒƒ‚ƒŠEƒ‚ƒfƒ‹
+:jusage. ãƒ¡ãƒ¢ãƒªãƒ»ãƒ¢ãƒ‡ãƒ«
 
 :option. mc
 :target. any
@@ -344,7 +344,7 @@
 :option. zq q
 :target. any
 :usage. operate quietly
-:jusage. ƒƒbƒZ[ƒW“™‚Ìo—Í‚ğ‚µ‚Ü‚¹‚ñ
+:jusage. ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç­‰ã®å‡ºåŠ›ã‚’ã—ã¾ã›ã‚“
 
 :option. zz
 :target. any

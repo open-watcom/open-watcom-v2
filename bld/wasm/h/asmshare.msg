@@ -1,300 +1,300 @@
 pick( SIZE_DOESNT_MATCH_WITH_PREVIOUS_DEFINITION,
                                 "Size doesn't match with previous definition" ,
-                                "�O�̒�`�ƃT�C�Y����v���Ă��܂���" )
+                                "前の定義とサイズが一致していません" )
 pick( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING,
                                 "Invalid instruction with current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ɑ΂��Ė����Ȗ��߂ł�" )
+                                "現在のCPUの設定に対して無効な命令です" )
 pick( LOCK_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION,
                                 "LOCK prefix is not allowed on this instruction" ,
-                                "���̖��߂ɑ΂��� LOCK �v���t�B�b�N�X�͎g�p�ł��܂���" )
+                                "この命令に対して LOCK プレフィックスは使用できません" )
 pick( REP_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION,
                                 "REP prefix is not allowed on this instruction" ,
-                                "���̖��߂ɑ΂��� REP �v���t�B�b�N�X�͎g�p�ł��܂���" )
+                                "この命令に対して REP プレフィックスは使用できません" )
 pick( INVALID_MEMORY_POINTER,
                                 "Invalid memory pointer" ,
-                                "�����ȃ������|�C���^�ł�" )
+                                "無効なメモリポインタです" )
 pick( CANNOT_USE_386_ADDRESSING_MODE_WITH_CURRENT_CPU_SETTING,
                                 "Cannot use 386 addressing mode with current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ł�386�A�h���X���g�p�ł��܂���" )
+                                "現在のCPUの設定では386アドレスを使用できません" )
 pick( TOO_MANY_BASE_REGISTERS,
                                 "Too many base registers" ,
-                                "�x�[�X���W�X�^���������܂�" )
+                                "ベースレジスタが多すぎます" )
 pick( INVALID_INDEX_REGISTER,
                                 "Invalid index register" ,
-                                "�C���f�b�N�X���W�^�������ł�" )
+                                "インデックスレジタが無効です" )
 pick( SCALE_FACTOR_MUST_BE_1_2_4_OR_8,
                                 "Scale factor must be 1, 2, 4 or 8" ,
-                                "�X�P�[���t�@�N�^��1,2,4,8�̂����ꂩ�łȂ���΂Ȃ�܂���" )
+                                "スケールファクタは1,2,4,8のいずれかでなければなりません" )
 pick( INVALID_ADDRESSING_MODE_WITH_CURRENT_CPU_SETTING,
                                 "invalid addressing mode with current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ɑ΂��Ė����ȃA�h���X���[�h�̎w��ł�" )
+                                "現在のCPUの設定に対して無効なアドレスモードの指定です" )
 pick( ESP_CANNOT_BE_USED_AS_INDEX,
                                 "ESP cannot be used as index" ,
-                                "ESP �̓C���f�b�N�X�Ƃ��Ă͎g�p�ł��܂���" )
+                                "ESP はインデックスとしては使用できません" )
 pick( TOO_MANY_BASE_INDEX_REGISTERS,
                                 "Too many base/index registers" ,
-                                "�x�[�X�^�C���f�b�N�X ���W�X�^���������܂�" )
+                                "ベース／インデックス レジスタが多すぎます" )
 pick( MEMORY_OFFSET_CANNOT_REFERENCE_TO_MORE_THAN_ONE_LABEL,
                                 "Memory offset cannot reference to more than one label" ,
-                                "�������I�t�Z�b�g�͂Q�ȏ�̃��x���ւ̎Q�Ƃ��s���܂���" )
+                                "メモリオフセットは２個以上のラベルへの参照を行えません" )
 pick( OFFSET_MUST_BE_RELOCATABLE,
                                 "Offset must be relocatable" ,
-                                "�I�t�Z�b�g�̓����P��^�u���łȂ���΂Ȃ�܂���" )
+                                "オフセットはリロケｰタブルでなければなりません" )
 pick( MEMORY_OFFSET_EXPECTED,
                                 "Memory offset expected" ,
-                                "�������I�t�Z�b�g�łȂ���΂Ȃ�܂���" )
+                                "メモリオフセットでなければなりません" )
 pick( INVALID_INDIRECT_MEMORY_OPERAND,
                                 "Invalid indirect memory operand" ,
-                                "�����ȊԐڃ������I�y�����h�ł�" )
+                                "無効な間接メモリオペランドです" )
 pick( CANNOT_MIX_16_AND_32_BIT_REGISTERS,
                                 "Cannot mix 16 and 32-bit registers" ,
-                                "16�r�b�g���W�X�^��32�r�b�g���W�X�^�͍��݂ł��܂���" )
+                                "16ビットレジスタと32ビットレジスタは混在できません" )
 pick( CPU_TYPE_ALREADY_SET,
                                 "CPU type already set" ,
-                                "CPU�̃^�C�v�͊��ɐݒ肳��Ă��܂�" )
+                                "CPUのタイプは既に設定されています" )
 pick( UNKNOWN_DIRECTIVE,
                                 "Unknown directive" ,
-                                "�����ȃf�B���N�e�B�u�ł�" )
+                                "無効なディレクティブです" )
 pick( EXPECTING_COMMA,
                                 "Expecting comma" ,
-                                "�R���}���K�v�ł�" )
+                                "コンマが必要です" )
 pick( EXPECTING_NUMBER,
                                 "Expecting number" ,
-                                "�������K�v�ł�" )
+                                "数字が必要です" )
 pick( INVALID_LABEL_DEFINITION,
                                 "Invalid label definition" ,
-                                "�����ȃ��x����`�ł�" )
+                                "無効なラベル定義です" )
 pick( INVALID_USE_OF_SHORT_NEAR_FAR_OPERATOR,
                                 "Invalid use of SHORT, NEAR, FAR operator" ,
-                                "SHORT, NEAR, FAR�I�y���[�^�̎g�p���@�������ł�" )
+                                "SHORT, NEAR, FARオペレータの使用方法が無効です" )
 pick( NO_MEMORY,
                                 "No memory" ,
-                                "������������܂���" )
+                                "メモリがありません" )
 pick( CANNOT_USE_386_SEGMENT_REGISTER_WITH_CURRENT_CPU_SETTING,
                                 "Cannot use 386 segment register with current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ł�386�Z�O�����g���W�X�^�͎g�p�ł��܂���" )
+                                "現在のCPUの設定では386セグメントレジスタは使用できません" )
 pick( POP_CS_IS_NOT_ALLOWED,
                                 "POP CS is not allowed" ,
-                                "POP CS�͂ł��܂���" )
+                                "POP CSはできません" )
 pick( CANNOT_USE_386_REGISTER_WITH_CURRENT_CPU_SETTING,
                                 "Cannot use 386 register with current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ł�386���W�X�^�͎g�p�ł��܂���" )
+                                "現在のCPUの設定では386レジスタは使用できません" )
 pick( ONLY_MOV_CAN_USE_SPECIAL_REGISTER,
                                 "Only MOV can use special register" ,
-                                "���ʃ��W�X�^�� MOV ���߂ł̂ݎg�p�ł��܂�" )
+                                "特別レジスタは MOV 命令でのみ使用できます" )
 pick( CANNOT_USE_TR3_TR4_TR5_IN_CURRENT_CPU_SETTING,
                                 "Cannot use TR3, TR4, TR5 in current CPU setting" ,
-                                "���݂�CPU�̐ݒ�ł� TR3, TR4, TR5 �͎g�p�ł��܂���" )
+                                "現在のCPUの設定では TR3, TR4, TR5 は使用できません" )
 pick( CANNOT_USE_SHORT_WITH_CALL,
                                 "Cannot use SHORT with CALL" ,
-                                "CALL���߂Ƌ��� SHORT ���g�����Ƃ͂ł��܂���" )
+                                "CALL命令と共に SHORT を使うことはできません" )
 pick( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED,
                                 "Only SHORT displacement is allowed" ,
-                                "SHORT�f�B�X�v���[�X�����g�̂݉\�ł�" )
+                                "SHORTディスプレースメントのみ可能です" )
 pick( SYNTAX_ERROR,
                                 "Syntax error" ,
-                                "�\���G���[" )
+                                "構文エラー" )
 pick( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION,
                                 "Prefix must be followed by an instruction" ,
-                                "�v���t�B�b�N�X�̌�ɂ͖��߂��Ȃ���΂Ȃ�܂���" )
+                                "プレフィックスの後には命令がなければなりません" )
 pick( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR,
                                 "No size given before 'PTR' operator" ,
-                                "PTR�I�y���[�^�̑O�ɃT�C�Y�w�肪����܂���" )
+                                "PTRオペレータの前にサイズ指定がありません" )
 pick( INVALID_IMUL_FORMAT,
                                 "Invalid IMUL format" ,
-                                "IMUL���߂̎g�p�`�����s�K�؂ł�" )
+                                "IMUL命令の使用形式が不適切です" )
 pick( INVALID_SHLD_SHRD_FORMAT,
                                 "Invalid SHLD/SHRD format" ,
-                                "SHLD/SHRD���߂̎g�p�`�����s�K�؂ł�" )
+                                "SHLD/SHRD命令の使用形式が不適切です" )
 pick( TOO_MANY_COMMAS,
                                 "Too many commas" ,
-                                "�R���}(,)���������܂�" )
+                                "コンマ(,)が多すぎます" )
 pick( SYNTAX_ERROR_UNEXPECTED_COLON,
                                 "Syntax error: Unexpected colon" ,
-                                "�\���G���[: �s�K�؂ȃR����(:)������܂�" )
+                                "構文エラー: 不適切なコロン(:)があります" )
 pick( OPERANDS_MUST_BE_THE_SAME_SIZE,
                                 "Operands must be the same size" ,
-                                "�I�y�����h�͓����T�C�Y�łȂ���΂Ȃ�܂���" )
+                                "オペランドは同じサイズでなければなりません" )
 pick( INVALID_INSTRUCTION_OPERANDS,
                                 "Invalid instruction operands" ,
-                                "�����Ȗ��߃I�y�����h�ł�" )
+                                "無効な命令オペランドです" )
 pick( IMMEDIATE_CONSTANT_TOO_LARGE,
                                 "Immediate constant too large" ,
-                                "���l�萔���傫�����܂�" )
+                                "即値定数が大きすぎます" )
 pick( CANNOT_USE_SHORT_OR_NEAR,
                                 "Can not use short or near modifiers with this instruction" ,
-                                "���̖��߂ƈꏏ��short�܂���near���g�p���邱�Ƃ͂ł��܂���" )
+                                "この命令と一緒にshortまたはnearを使用することはできません" )
 pick( JUMP_OUT_OF_RANGE,
                                 "Jump out of range" ,
-                                "�͈͊O�ւ̃W�����v�ł�" )
+                                "範囲外へのジャンプです" )
 pick( DISPLACEMENT_OUT_OF_RANGE,
                                 "Displacement cannot be larger than 32k" ,
-                                "�f�B�X�v���[�X�����g��32K���z���Ă��܂�" )
+                                "ディスプレースメントが32Kを越えています" )
 pick( INITIALIZER_OUT_OF_RANGE,
                                 "Initializer value too large" ,
-                                "�ݒ肳��Ă��鏉���l���傫�����܂�" )
+                                "設定されている初期値が大きすぎます" )
 pick( SYMBOL_ALREADY_DEFINED,
                                 "Symbol already defined" ,
-                                "���̃V���{���͊��ɒ�`����Ă��܂�" )
+                                "このシンボルは既に定義されています" )
 pick( IMMEDIATE_DATA_TOO_BIG,
                                 "Immediate data too large" ,
-                                "���l�f�[�^���傫�����܂�" )
+                                "即値データが大きすぎます" )
 pick( IMMEDIATE_DATA_OUT_OF_RANGE,
                                 "Immediate data out of range" ,
-                                "���l�f�[�^�̒l���͈͊O�ł�" )
+                                "即値データの値が範囲外です" )
 pick( NO_JUMP_TO_AUTO,
                                 "Can not transfer control to stack symbol" ,
-                                "�X�^�b�N�V���{���֐�����ڂ����Ƃ͂ł��܂���" )
+                                "スタックシンボルへ制御を移すことはできません" )
 pick( OFFSET_TOO_SMALL,
                                 "Offset cannot be smaller than WORD size" ,
-                                "�I�t�Z�b�g�̓��[�h(2�o�C�g)��菬�����ł��܂���" )
+                                "オフセットはワード(2バイト)より小さくできません" )
 pick( CANNOT_OFFSET_AUTO,
                                 "Can not take offset of stack symbol" ,
-                                "�X�^�b�N�V���{���̃I�t�Z�b�g����邱�Ƃ͂ł��܂���" )
+                                "スタックシンボルのオフセットを取ることはできません" )
 pick( CANNOT_SEG_AUTO,
                                 "Can not take segment of stack symbol" ,
-                                "�X�^�b�N�E�V���{���̃Z�O�����g�͎��܂���" )
+                                "スタック・シンボルのセグメントは取れません" )
 pick( SEGMENT_TOO_BIG,
                                 "Segment too large" ,
-                                "�Z�O�����g���傫�����܂�" )
+                                "セグメントが大きすぎます" )
 pick( OFFSET_TOO_BIG,
                                 "Offset cannot be larger than 32k" ,
-                                "�I�t�Z�b�g��32K���傫���ł��܂���" )
+                                "オフセットは32Kより大きくできません" )
 pick( OP_2_TOO_BIG,
                                 "Operand 2 too big" ,
-                                "�I�y�����h2���傫�����܂�" )
+                                "オペランド2が大きすぎます" )
 pick( OP_1_TOO_SMALL,
                                 "Operand 1 too small" ,
-                                "�I�y�����h1�����������܂�" )
+                                "オペランド1が小さすぎます" )
 pick( TOO_MANY_OPERATOR,
                                 "Too many arithmetic operators" ,
-                                "�Z�p�v�Z�̉��Z�q���������܂�" )
+                                "算術計算の演算子が多すぎます" )
 pick( TOO_MANY_OPEN_SQUARE_BRACKETS,
                                 "Too many open square brackets" ,
-                                "���J�M����([)���������܂�" )
+                                "左カギ括弧([)が多すぎます" )
 pick( TOO_MANY_CLOSE_SQUARE_BRACKETS,
                                 "Too many close square brackets" ,
-                                "�E�J�M����(])���������܂�" )
+                                "右カギ括弧(])が多すぎます" )
 pick( TOO_MANY_OPEN_BRACKETS,
                                 "Too many open brackets" ,
-                                "������'('���������܂�" )
+                                "左括弧'('が多すぎます" )
 pick( TOO_MANY_CLOSE_BRACKETS,
                                 "Too many close brackets" ,
-                                "�E����')'���������܂�" )
+                                "右括弧')'が多すぎます" )
 pick( INVALID_NUMBER_DIGIT,
                                 "Invalid number digit" ,
-                                "�s�K�؂Ȑ��l�ł�" )
+                                "不適切な数値です" )
 pick( ASM_CODE_TOO_LONG,
                                 "Assembler Code is too long" ,
-                                "�A�Z���u���R�[�h���������܂�" )
+                                "アセンブラコードが長すぎます" )
 pick( BRACKETS_NOT_BALANCED,
                                 "Brackets are not balanced" ,
-                                "���E�̊��ʂ̐��������܂���" )
+                                "左右の括弧の数が合いません" )
 pick( OPERATOR_EXPECTED,
                                 "Operator is expected" ,
-                                "���Z�q���Ȃ���΂Ȃ�܂���" )
+                                "演算子がなければなりません" )
 pick( OPERAND_EXPECTED,
                                 "Operand is expected" ,
-                                "�I�y�����h�łȂ���΂Ȃ�܂���" )
+                                "オペランドでなければなりません" )
 pick( TOO_MANY_TOKENS,
                                 "Too many tokens in a line" ,
-                                "1�s�ɂ���g�[�N�����������܂�" )
+                                "1行にあるトークンが多すぎます" )
 pick( BRACKET_EXPECTED,
                                 "Bracket is expected" ,
-                                "���ʂ��Ȃ���΂Ȃ�܂���" )
+                                "括弧がなければなりません" )
 pick( ILLEGAL_USE_OF_REGISTER,
                                 "Illegal use of register" ,
-                                "���W�X�^�̎g�p���@���Ԉ���Ă��܂�" )
+                                "レジスタの使用方法が間違っています" )
 pick( ILLEGAL_USE_OF_LABEL,
                                 "Illegal use of label" ,
-                                "���x���̎g�p���@���Ԉ���Ă��܂�" )
+                                "ラベルの使用方法が間違っています" )
 pick( INVALID_OPERAND_IN_ADDITION,
                                 "Invalid operand in addition" ,
-                                "���Z���߂̃I�y�����h�������ł�" )
+                                "加算命令のオペランドが無効です" )
 pick( INVALID_OPERAND_IN_SUBTRACTION,
                                 "Invalid operand in subtraction" ,
-                                "���Z���߂̃I�y�����h�������ł�" )
+                                "減算命令のオペランドが無効です" )
 pick( ONE_OPERAND_MUST_BE_CONSTANT,
                                 "One operand must be constant" ,
-                                "����̃I�y�����h�͒萔�łȂ���΂Ȃ�܂���" )
+                                "一方のオペランドは定数でなければなりません" )
 pick( CONSTANT_EXPECTED,
                                 "Constant operand is expected" ,
-                                "�萔�I�y�����h�łȂ���΂Ȃ�܂���" )
+                                "定数オペランドでなければなりません" )
 pick( ADDITION_CONSTANT_EXPECTED,
                                 "A constant operand is expected in addition" ,
-                                "���Z���߂ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "加算命令には定数オペランドがなければなりません" )
 pick( SUBTRACTION_CONSTANT_EXPECTED,
                                 "A constant operand is expected in subtraction" ,
-                                "���Z���߂ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "減算命令には定数オペランドがなければなりません" )
 pick( MULTIPLICATION_CONSTANT_EXPECTED,
                                 "A constant operand is expected in multiplication" ,
-                                "��Z���߂ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "乗算命令には定数オペランドがなければなりません" )
 pick( DIVISION_CONSTANT_EXPECTED,
                                 "A constant operand is expected in division" ,
-                                "���Z���߂ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "除算命令には定数オペランドがなければなりません" )
 pick( POSITIVE_SIGN_CONSTANT_EXPECTED,
                                 "A constant operand is expected after a positive sign" ,
-                                "���̕���(+)�̌�ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "正の符号(+)の後には定数オペランドがなければなりません" )
 pick( NEGATIVE_SIGN_CONSTANT_EXPECTED,
                                 "A constant operand is expected after a negative sign" ,
-                                "���̕���(-)�̌�ɂ͒萔�I�y�����h���Ȃ���΂Ȃ�܂���" )
+                                "負の符号(-)の後には定数オペランドがなければなりません" )
 pick( LABEL_NOT_DEFINED,
                                 "Label is not defined" ,
-                                "���x���͒�`����Ă��܂���" )
+                                "ラベルは定義されていません" )
 pick( MORE_THAN_ONE_OVERRIDE,
                                 "More than one override" ,
-                                "2�ȏ�̃I�[�o�[���C�h������܂�" )
+                                "2個以上のオーバーライドがあります" )
 pick( LABEL_IS_EXPECTED,
                                 "Label is expected" ,
-                                "���x�����Ȃ���΂Ȃ�܂���" )
+                                "ラベルがなければなりません" )
 pick( ONLY_SEG_OR_GROUP_ALLOWED,
                                 "Only segment or group label is allowed" ,
-                                "�Z�O�����g���邢�̓O���[�v�̃��x���݂̂�������܂�" )
+                                "セグメントあるいはグループのラベルのみが許されます" )
 pick( REG_OR_LABEL_EXPECTED_IN_OVERRIDE,
                                 "Only register or label is expected in override" ,
-                                "�I�[�o�[���C�h�����̂̓��W�X�^�܂��̓��x���݂̂ł�" )
+                                "オーバーライドされるのはレジスタまたはラベルのみです" )
 pick( UNEXPECTED_END_OF_FILE,
                                 "Unexpected end of file" ,
-                                "�r���Ńt�@�C�����I���܂���" )
+                                "途中でファイルが終わりました" )
 pick( LABEL_TOO_LONG,
                                 "Label is too long" ,
-                                "���x�����������܂�" )
+                                "ラベルが長すぎます" )
 pick( NOT_IMPLEMENTED,
                                 "This feature has not been implemented yet" ,
-                                "���̋@�\�͂܂��g�p�ł��܂���" )
+                                "この機能はまだ使用できません" )
 pick( INTERNAL_ERROR_1,
                                 "Internal Error #1" ,
-                                "�����G���[ #1" )
+                                "内部エラー #1" )
 pick( CANNOT_OFFSET_GRP,
                                 "Can not take offset of group" ,
-                                "�O���[�v�̃I�t�Z�b�g�͎��܂���" )
+                                "グループのオフセットは取れません" )
 pick( CANNOT_OFFSET_SEG,
                                 "Can not take offset of segment" ,
-                                "�Z�O�����g�̃I�t�Z�b�g�͎��܂���" )
+                                "セグメントのオフセットは取れません" )
 pick( INVALID_CHARACTER,
                                 "Invalid character found" ,
-                                "�g�p�ł��Ȃ�����������܂�" )
+                                "使用できない文字があります" )
 pick( INVALID_SIZE,
                                 "Invalid operand size for instruction" ,
-                                "���߂ɑ΂��ăI�y�����h�̑傫�����s�K�؂ł�" )
+                                "命令に対してオペランドの大きさが不適切です" )
 pick( NOT_SUPPORTED,
                                 "This instruction is not supported" ,
-                                "���̖��߂̓T�|�[�g����Ă��܂���" )
+                                "この命令はサポートされていません" )
 pick( ASSUMING_BYTE,
                                 "size not specified -- BYTE PTR is assumed" ,
-                                "�傫�����w�肳��Ă��܂��� -- BYTE PTR�����肵�܂�" )
+                                "大きさが指定されていません -- BYTE PTRを仮定します" )
 pick( ASSUMING_WORD,
                                 "size not specified -- WORD PTR is assumed" ,
-                                "�傫�����w�肳��Ă��܂��� -- WORD PTR�����肵�܂�" )
+                                "大きさが指定されていません -- WORD PTRを仮定します" )
 pick( ASSUMING_DWORD,
                                 "size not specified -- DWORD PTR is assumed" ,
-                                "�傫�����w�肳��Ă��܂��� -- DWORD PTR�����肵�܂�" )
+                                "大きさが指定されていません -- DWORD PTRを仮定します" )
 pick( FLOAT_OPERAND,
                                 "Float is used as operand" ,
                                 "Float is used as operand" )
 pick( ONLY_SHORT_AND_NEAR_DISPLACEMENT_IS_ALLOWED,
                                 "Only SHORT and NEAR displacement is allowed" ,
-                                "SHORT,NEAR�f�B�X�v���[�X�����g�̂݉\�ł�" )
+                                "SHORT,NEARディスプレースメントのみ可能です" )
 pick( MISSING_PTR_OPERATOR,
                                 "Missing 'PTR' operator" ,
                                 "Missing 'PTR' operator" )

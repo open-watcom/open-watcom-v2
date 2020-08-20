@@ -1,6 +1,6 @@
 pick( MSG_NO_LRO_PHARLAP,	"No loader resolved fixups allowed in EASY OMF" ,
-                                "EASY OMF�ł̓��[�_�ŉ�������t�B�b�N�X�A�b�v�͋�����Ă��܂���" )
+                                "EASY OMFではローダで解決するフィックスアップは許されていません" )
 pick( MSG_MS386_NO_4KPAGE,	"No 4k Page-aligned segments in MS386 OMF" ,
-				"MS386 OMF�ɂ�4K�y�[�W����Z�O�����g������܂���" )
+				"MS386 OMFには4Kページ整列セグメントがありません" )
 pick( MSG_MS386_NO_ACCESS,	"Access classes (RW, EO, RO, ER) not supported in MS386 OMF" ,
-                                "MS386 OMF�ł̓A�N�Z�X�N���X(RW,EO,RO,ER)�̓T�|�[�g����Ă��܂���" )
+                                "MS386 OMFではアクセスクラス(RW,EO,RO,ER)はサポートされていません" )

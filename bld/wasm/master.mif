@@ -119,7 +119,7 @@ rcui_inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
 
 wresui.res : ../h/wasm.rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -D_STANDALONE_
+    $(rcui8) -D_STANDALONE_
 
 msg.gh : ../h/asmshare.msg $(__MAKEFILES__)
     @%make echo_awk

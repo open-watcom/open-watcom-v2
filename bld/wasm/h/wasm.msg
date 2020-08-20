@@ -1,309 +1,309 @@
 pick( SEGMENT_PARA_DEFINED,
                                 "Segment parameter is defined already" ,
-                                "�Z�O�����g�p�����[�^�͊��ɒ�`����Ă��܂�" )
+                                "セグメントパラメータは既に定義されています" )
 pick( MODEL_PARA_DEFINED,
                                 "Model parameter is defined already" ,
-                                "���f���p�����[�^�͊��ɒ�`����Ă��܂�" )
+                                "モデルパラメータは既に定義されています" )
 pick( SEGMENT_DEF_ERROR,
                                 "Syntax error in segment definition" ,
-                                "�Z�O�����g��`�ō\���G���[���N���Ă��܂�" )
+                                "セグメント定義で構文エラーが起きています" )
 pick( SEGDEF_AT_NOT_SUPPORTED,
                                 "'AT' is not supported in segment definition" ,
-                                "�Z�O�����g��`�ɂ́A�܂� AT �̓T�|�[�g����Ă��܂���" )
+                                "セグメント定義には、まだ AT はサポートされていません" )
 pick( SEGDEF_CHANGED,
                                 "Segment definition is changed" ,
-                                "�Z�O�����g��`���ς�܂���" )
+                                "セグメント定義が変りました" )
 pick( LNAME_TOO_LONG,
                                 "Lname is too long" ,
-                                "Lname���������܂�" )
+                                "Lnameが長すぎます" )
 pick( BLOCK_NESTING_ERROR,
                                 "Block nesting error" ,
-                                "�u���b�N�E�l�X�g�E�G���[" )
+                                "ブロック・ネスト・エラー" )
 pick( SEGMENT_NOT_OPENED,
                                 "Ends a segment which is not opened" ,
-                                "�I�[�v������Ă��Ȃ��Z�O�����g��ends������܂�" )
+                                "オープンされていないセグメントのendsがあります" )
 pick( UNDEFINED_SEGMENT_OPTION,
                                 "Segment option is undefined" ,
-                                "�Z�O�����g�E�I�v�V����������`�ł�" )
+                                "セグメント・オプションが未定義です" )
 pick( UNDEFINED_MODEL_OPTION,
                                 "Model option is undefined" ,
-                                "���f���E�I�v�V����������`�ł�" )
+                                "モデル・オプションが未定義です" )
 pick( NO_SEGMENT_OPENED,
                                 "No segment is currently opened" ,
-                                "���݃I�[�v������Ă���Z�O�����g�͂���܂���" )
+                                "現在オープンされているセグメントはありません" )
 pick( LNAME_USED_ALREADY,
                                 "Lname is used already" ,
-                                "Lname�͊��Ɏg�p����Ă��܂�" )
+                                "Lnameは既に使用されています" )
 pick( SEG_NOT_DEFINED,
                                 "Segment %s is not defined" ,
                                 "Segment %s is not defined" )
 pick( PUBLIC_NOT_DEFINED,
                                 "Public is not defined" ,
-                                "�p�u���b�N������`�ł�" )
+                                "パブリックが未定義です" )
 pick( COLON_EXPECTED,
                                 "Colon is expected" ,
-                                "�R����(:)���K�v�ł�" )
+                                "コロン(:)が必要です" )
 pick( TOKEN_EXPECTED_AFTER_COLON,
                                 "A token is expected after colon" ,
-                                "�R����(:)�̌�ɂ̓g�[�N�����K�v�ł�" )
+                                "コロン(:)の後にはトークンが必要です" )
 pick( INVALID_QUALIFIED_TYPE,
                                 "Invalid qualified type" ,
-                                "�����ȏC���^�C�v�ł�" )
+                                "無効な修飾タイプです" )
 pick( QUALIFIED_TYPE_EXPECTED,
                                 "Qualified type is expected" ,
-                                "�C���^�C�v���K�v�ł�" )
+                                "修飾タイプが必要です" )
 pick( EXT_DEF_DIFF,
                                 "External definition different from previous one" ,
-                                "�O����`���O�̒�`�ƈقȂ�܂�" )
+                                "外部定義が前の定義と異なります" )
 pick( MEMORY_NOT_FOUND,
                                 "Memory model is not found in .MODEL" ,
-                                ".MODEL�̒��Ƀ��������f��������܂���" )
+                                ".MODELの中にメモリモデルがありません" )
 pick( CANNOT_OPEN_INCLUDE_FILE,
                                 "Cannot open include file %s" ,
-                                "�C���N���[�h�E�t�@�C�����I�[�v���ł��܂��� %s" )
+                                "インクルード・ファイルをオープンできません %s" )
 pick( NAME_USED_ALREADY,
                                 "Name is used already" ,
-                                "���O�͊��Ɏg�p����Ă��܂�" )
+                                "名前は既に使用されています" )
 pick( LIBRARY_NAME_MISSING,
                                 "Library name is missing" ,
-                                "���C�u������������܂���" )
+                                "ライブラリ名がありません" )
 pick( SEG_NAME_MISSING,
                                 "Segment name is missing" ,
-                                "�Z�O�����g��������܂���" )
+                                "セグメント名がありません" )
 pick( GRP_NAME_MISSING,
                                 "Group name is missing" ,
-                                "�O���[�v��������܂���" )
+                                "グループ名がありません" )
 pick( DATA_EMITTED_WITH_NO_SEGMENT,
                                 "Data emitted with no segment" ,
-                                "�f�[�^���Z�O�����g�ɑ����Ă��܂���" )
+                                "データがセグメントに属していません" )
 pick( SEGLOCATION_EXPECTED,
                                 "Seglocation is expected" ,
-                                "�Z�O�����g�E���P�[�V�������K�v�ł�" )
+                                "セグメント・ロケーションが必要です" )
 pick( INVALID_REGISTER,
                                 "Invalid register" ,
-                                "�����ȃ��W�X�^�ł�" )
+                                "無効なレジスタです" )
 pick( CANNOT_ADDRESS_WITH_ASSUMED_REGISTER,
                                 "Cannot address with assumed register" ,
-                                "ASSUME���ꂽ���W�X�^�ŃA�h���X���邱�Ƃ͂ł��܂���" )
+                                "ASSUMEされたレジスタでアドレスすることはできません" )
 pick( INVALID_START_ADDRESS,
                                 "Invalid start address" ,
-                                "�����ȃX�^�[�g�A�h���X�ł�" )
+                                "無効なスタートアドレスです" )
 pick( LABEL_ALREADY_DEFINED,
                                 "Label '%s' is already defined" ,
                                 "Label '%s' is already defined" )
 pick( TOKEN_TOO_LONG,
                                 "Token is too long" ,
-                                "�g�[�N�����������܂�" )
+                                "トークンが長すぎます" )
 pick( EXPANDED_LINE_TOO_LONG,
                                 "The line is too long after expansion" ,
-                                "�G�N�X�p���W�����̌�̍s���������܂�" )
+                                "エクスパンジョンの後の行が長すぎます" )
 pick( LABEL_EXPECTED_AFTER_COLON,
                                 "A label is expected after colon" ,
-                                "�R����(:)�̌�ɂ̓��x�����K�v�ł�" )
+                                "コロン(:)の後にはラベルが必要です" )
 pick( MUST_BE_ASSOCIATED_WITH_CODE,
                                 "Must be associated with code" ,
-                                "�R�[�h�Ɗ֌W���Ă��Ȃ���΂Ȃ�܂���" )
+                                "コードと関係していなければなりません" )
 pick( PROC_MUST_HAVE_A_NAME,
                                 "Procedure must have a name" ,
-                                "�v���V�[�W���ɂ͖��O���Ȃ���΂Ȃ�܂���" )
+                                "プロシージャには名前がなければなりません" )
 pick( PROC_ALREADY_DEFINED,
                                 "Procedure is already defined" ,
-                                "�v���V�[�W���͊��ɒ�`����Ă��܂�" )
+                                "プロシージャは既に定義されています" )
 pick( LANG_MUST_BE_SPECIFIED,
                                 "Language type must be specified" ,
-                                "����^�C�v����`����Ă��Ȃ���΂Ȃ�܂���" )
+                                "言語タイプが定義されていなければなりません" )
 pick( END_OF_PROCEDURE_NOT_FOUND,
                                 "End of procedure is not found" ,
-                                "�v���V�[�W���̏I��肪������܂���" )
+                                "プロシージャの終わりが見つかりません" )
 pick( LOCAL_VAR_MUST_FOLLOW_PROC,
                                 "Local variable must immediately follow PROC or MACRO statement" ,
-                                "���[�J���ϐ���PROC���̒���ɂȂ���΂Ȃ�܂���" )
+                                "ローカル変数はPROC文の直後になければなりません" )
 pick( EXTRA_CHARACTER_FOUND,
                                 "Extra character found" ,
-                                "�]���ȕ���������܂�" )
+                                "余分な文字があります" )
 pick( CANNOT_NEST_PROCEDURES,
                                 "Cannot nest procedures" ,
-                                "�v���V�[�W�����l�X�g���邱�Ƃ͂ł��܂���" )
+                                "プロシージャをネストすることはできません" )
 pick( NO_PROC_IS_CURRENTLY_DEFINED,
                                 "No procedure is currently defined" ,
-                                "�v���V�[�W������`����Ă��܂���" )
+                                "プロシージャが定義されていません" )
 pick( PROC_NAME_DOES_NOT_MATCH,
                                 "Procedure name does not match" ,
-                                "�v���V�[�W��������v���܂���" )
+                                "プロシージャ名が一致しません" )
 pick( VARARG_REQUIRES_C_CALLING_CONVENTION,
                                 "Vararg requires C calling convention" ,
-                                "vararg�ɂ�C�̌ďo���K�񂪕K�v�ł�" )
+                                "varargにはCの呼出し規約が必要です" )
 pick( MODEL_DECLARED_ALREADY,
                                 "Model declared already" ,
-                                "���ɐ錾����Ă��郂�f���ł�" )
+                                "既に宣言されているモデルです" )
 pick( MODEL_IS_NOT_DECLARED,
                                 "Model is not declared" ,
-                                "���f���͐錾����Ă��܂�" )
+                                "モデルは宣言されています" )
 pick( BACKQUOTE_EXPECTED,
                                 "Backquote expected" ,
-                                "�t���p��(`)���K�v�ł�" )
+                                "逆引用符(`)が必要です" )
 pick( COMMENT_DELIMITER_EXPECTED,
                                 "COMMENT delimiter expected" ,
-                                "COMMENT��؂蕶�����K�v�ł�" )
+                                "COMMENT区切り文字が必要です" )
 pick( END_DIRECTIVE_REQUIRED,
                                 "End directive required at end of file" ,
-                                "�t�@�C���̏I�[�ɂ́AEND�^�����߂��K�v�ł�" )
+                                "ファイルの終端には、END疑似命令が必要です" )
 pick( NESTING_LEVEL_TOO_DEEP,
                                 "Nesting level too deep" ,
-                                "�l�X�g�E���x�����[�����܂�" )
+                                "ネスト・レベルが深すぎます" )
 pick( SYMBOL_NOT_DEFINED,
                                 "Symbol %s is not defined" ,
                                 "Symbol %s is not defined" )
 pick( INSERT_STUPID_WARNING_1_HERE,
                                 "Insert Stupid warning #1 here" ,
-                                "���Ӗ��Ȍx��#1�������ɑ}�����܂�" )
+                                "無意味な警告#1をここに挿入します" )
 pick( INSERT_STUPID_WARNING_2_HERE,
                                 "Insert Stupid warning #2 here" ,
-                                "���Ӗ��Ȍx��#2�������ɑ}�����܂�" )
+                                "無意味な警告#2をここに挿入します" )
 pick( SPACES_NOT_ALLOWED_IN_COMMAND_LINE_OPTIONS,
                                 "Spaces not allowed in command line options" ,
-                                "�R�}���h���C���I�v�V�����ŋ󔒂͎g�p�ł��܂���" )
+                                "コマンドラインオプションで空白は使用できません" )
 pick( MSG_ERROR,
                                 "Error: " ,
-                                "�G���[: " )
+                                "エラー: " )
 pick( SOURCE_FILE,
                                 "Source File" ,
-                                "�\�[�X�t�@�C��" )
+                                "ソースファイル" )
 pick( NO_FILENAME_SPECIFIED,
                                 "No filename specified." ,
-                                "�t�@�C�������w�肳��Ă��܂���" )
+                                "ファイル名が指定されていません" )
 pick( OUT_OF_MEMORY,
                                 "Out of Memory" ,
-                                "�������s���ł�" )
+                                "メモリ不足です" )
 pick( CANNOT_OPEN_FILE,
                                 "Cannot Open File - " ,
-                                "�t�@�C�����I�[�v���ł��܂��� - " )
+                                "ファイルをオープンできません - " )
 pick( CANNOT_CLOSE_FILE,
                                 "Cannot Close File - " ,
-                                "�t�@�C�����N���[�Y�ł��܂��� - " )
+                                "ファイルをクローズできません - " )
 pick( CANNOT_GET_FILE,
                                 "Cannot Get Start of Source File - " ,
-                                "�\�[�X�t�@�C���̃X�^�[�g�������܂��� - " )
+                                "ソースファイルのスタートが得られません - " )
 pick( CANNOT_SET_FILE,
                                 "Cannot Set to Start of Source File - " ,
-                                "�\�[�X�t�@�C���̃X�^�[�g�ɐݒ�ł��܂��� - " )
+                                "ソースファイルのスタートに設定できません - " )
 pick( TOO_MANY_FILES,
                                 "Command Line Contains More Than 1 File To Assemble " ,
-                                "�R�}���h���C���ɃA�Z���u������t�@�C����2�ȏ�w�肳��Ă��܂� " )
+                                "コマンドラインにアセンブルするファイルが2個以上指定されています " )
 pick( MSG_INCLUDE_PATH,
                                 "include path %s." ,
-                                "�p�X %s ���C���N���[�h���܂�\n" )
+                                "パス %s をインクルードします\n" )
 pick( MSG_UNKNOWN_OPTION,
                                 "Unknown option %s. Use /? for list of options." ,
-                                "%s �͖����ȃI�v�V�����ł��B/?�ŃI�v�V�����̃��X�g��\�����܂�\n" )
+                                "%s は無効なオプションです。/?でオプションのリストを表示します\n" )
 pick( MSG_READ_MORE,
                                 "read more command line from %s." ,
-                                "%s ����ǉ��̃R�}���h���C����ǂ݂܂�\n" )
+                                "%s から追加のコマンドラインを読みます\n" )
 pick( MSG_INTERNAL_ERROR,
                                 "Internal error in %s(%u)" ,
-                                "%s(%u) �œ����G���[���N����܂���\n" )
+                                "%s(%u) で内部エラーが起こりました\n" )
 pick( OBJECT_WRITE_ERROR,
                                 "OBJECT WRITE ERROR !!" ,
-                                "�I�u�W�F�N�g�����݃G���[ !!\n" )
+                                "オブジェクト書込みエラー !!\n" )
 pick( NO_LOR_PHARLAP,
                                 "NO LOR PHARLAP !!" ,
-                                "LOR PHARLAP�ł͂���܂���!!\n" )
+                                "LOR PHARLAPではありません!!\n" )
 pick( PARM_REQUIRED,
                                 "Parameter Required" ,
-                                "�p�����[�^���K�v�ł�" )
+                                "パラメータが必要です" )
 pick( EXPECTED_CL_SQ_BRACKET,
                                 "Expecting closing square bracket" ,
-                                "�E�����ʂ��K�v�ł�" )
+                                "右鍵括弧が必要です" )
 pick( EXPECTED_FILE_NAME,
                                 "Expecting file name" ,
-                                "�t�@�C�������K�v�ł�" )
+                                "ファイル名が必要です" )
 pick( NO_FP_WITH_FPC_SET,
                                 "Floating point instruction not allowed with /fpc" ,
-                                "/fpc�w�莞�ɂ́A���������_���߂͎g�p�ł��܂���" )
+                                "/fpc指定時には、浮動小数点命令は使用できません" )
 pick( ERR_TOO_MANY_ERRORS,
                                 "Too many errors" ,
-                                "�G���[���������܂�" )
+                                "エラーが多すぎます" )
 pick( BT_NOT_RECOG,
                                 "Build target not recognised" ,
-                                "�^�[�Q�b�gOS������܂���" )
+                                "ターゲットOSが判りません" )
 pick( PUBLIC_CONSTANT_NOT_NUMERIC,
                                 "Public constants should be numeric; 0 written" ,
-                                "�p�u���b�N�Ȓ萔�͐��l�łȂ���΂Ȃ�܂���; 0���������݂܂�" )
+                                "パブリックな定数は数値でなければなりません; 0を書き込みます" )
 pick( SYMBOL_EXPECTED,
                                 "Expecting symbol" ,
-                                "�V���{�����K�v�ł�" )
+                                "シンボルが必要です" )
 pick( DONT_MIX_SIM_WITH_REAL_SEGDEFS,
                                 "Do not mix simplified and full segment definitions" ,
-                                "�ȗ�(simplified)�Z�O�����g�Ɗ��S(full)�Z�O�����g�Ƃ́A��������Ɏg�p�ł��܂���" )
+                                "簡略(simplified)セグメントと完全(full)セグメントとは、いっしょに使用できません" )
 pick( CANT_ACCESS_MULTI_REG_PARMS,
                                 "Parms passed in multiple registers must be accessed separately, use %s " ,
-                                "�����̃��W�X�^���g��parm�́A�ʁX�ɃA�N�Z�X����Ȃ���΂Ȃ�܂���, %s ���g�p���Ă�������" )
+                                "複数のレジスタを使うparmは、別々にアクセスされなければなりません, %s を使用してください" )
 pick( TBYTE_NOT_SUPPORTED,
                                 "Ten byte variables not supported in register calling convention" ,
-                                "10�o�C�g�ϐ��̓��W�X�^�ďo�K��ł́A�T�|�[�g����Ă��܂���" )
+                                "10バイト変数はレジスタ呼出規約では、サポートされていません" )
 pick( STRANGE_PARM_TYPE,
                                 "Parameter type not recognised" ,
-                                "�p�����[�^�^������܂���" )
+                                "パラメータ型が判りません" )
 pick( FORCED,
                                 "forced error:" ,
-                                "�����G���[" )
+                                "強制エラー" )
 pick( FORCED_NOT_ZERO,
                                 "forced error: Value not equal to 0 : %d " ,
-                                "�����G���[: �l��0�ł͂���܂��� : %d " )
+                                "強制エラー: 値が0ではありません : %d " )
 pick( FORCED_EQUAL,
                                 "forced error: Value equal to 0: %d " ,
-                                "�����G���[: �l��0�ł�: %d " )
+                                "強制エラー: 値が0です: %d " )
 pick( FORCED_DEF,
                                 "forced error: symbol defined: %s" ,
-                                "�����G���[: �V���{������`����Ă��܂�: %s " )
+                                "強制エラー: シンボルが定義されています: %s " )
 pick( FORCED_NOT_DEF,
                                 "forced error: symbol not defined: %s" ,
-                                "�����G���[: �V���{������`����Ă��܂���: %s " )
+                                "強制エラー: シンボルが定義されていません: %s " )
 pick( FORCED_BLANK,
                                 "forced error: string blank : <%s>" ,
-                                "�����G���[: �����񂪋󔒂ł�: <%s>" )
+                                "強制エラー: 文字列が空白です: <%s>" )
 pick( FORCED_NOT_BLANK,
                                 "forced error: string not blank : <%s>" ,
-                                "�����G���[: �����񂪋󔒂ł͂���܂���: <%s>" )
+                                "強制エラー: 文字列が空白ではありません: <%s>" )
 pick( FORCED_DIF,
                                 "forced error: strings not equal : <%s> : <%s>" ,
-                                "�����G���[: �����񂪓���������܂���: <%s> : <%s>" )
+                                "強制エラー: 文字列が等しくありません: <%s> : <%s>" )
 pick( FORCED_IDN,
                                 "forced error: strings equal : <%s> : <%s> " ,
-                                "�����G���[: �����񂪓�����: <%s> : <%s>" )
+                                "強制エラー: 文字列が等しい: <%s> : <%s>" )
 pick( NOTE_INCLUDED_BY,
                                 "included by file %s(%lu)" ,
-                                "�t�@�C�� %s(%lu) �Ɋ܂܂�܂�" )
+                                "ファイル %s(%lu) に含まれます" )
 pick( NOTE_MACRO_CALLED_FROM,
                                 "macro called from file %s(%lu)" ,
-                                "�t�@�C�� %s(%lu) ����Ă΂��}�N���ł�" )
+                                "ファイル %s(%lu) から呼ばれるマクロです" )
 pick( SYMBOL_S_NOT_DEFINED,
                                 "Symbol %s is not defined" ,
-                                "�V���{������`����Ă��܂��� ( %s )" ) /* fixme */
+                                "シンボルが定義されていません ( %s )" ) /* fixme */
 pick( EXTENDING_JUMP,
                                 "Extending jump" ,
-                                "�͈͊O�ւ̃W�����v�ł�" ) /* fixme - jump out of range */
+                                "範囲外へのジャンプです" ) /* fixme - jump out of range */
 pick( IGNORING_DIRECTIVE,
                                 "Ignoring inapplicable directive" ,
-                                "�s�K�؂ȋ[�����߂𖳎����܂�" )
+                                "不適切な擬似命令を無視します" )
 pick( UNKNOWN_MANGLER,
                                 "Unknown symbol class '%s'" ,
-                                "���m�̃V���{���N���X '%s'" )
+                                "未知のシンボルクラス '%s'" )
 pick( CONFLICTING_MANGLER,
                                 "Symbol class for '%s' already established" ,
-                                "'%s' �̃V���{���N���X�͊��Ɋm�肵�Ă��܂�" )
+                                "'%s' のシンボルクラスは既に確定しています" )
 pick( POWER_OF_2,
                                 "number must be a power of 2",
-                                "���l��2�ׂ̂���łȂ���΂Ȃ�܂���" )
+                                "数値は2のべき乗でなければなりません" )
 pick( ALIGN_TOO_HIGH,
                                 "alignment request greater than segment alignment",
-                                "����(�ײ����)�̎w�肪�Z�O�����g������傫���Ȃ��Ă��܂�" )
+                                "整列(ｱﾗｲﾝﾒﾝﾄ)の指定がセグメント整列より大きくなっています" )
 pick( SYMBOL_PREVIOUSLY_DEFINED,
                                 "'%s' is already defined",
-                                "'%s' �͊��ɒ�`����Ă��܂�" )
+                                "'%s' は既に定義されています" )
 pick( UNCLOSED_CONDITIONALS,
                                 "%u unclosed conditional directive(s) detected" ,
-                                "%u ���Ă��Ȃ������[�����߂����o���܂���" )
+                                "%u 閉じていない条件擬似命令を検出しました" )
 pick( WRONG_CPU_FOR_32BIT_SEGMENT,
                                 "Wrong CPU type for 32-bit segment" ,
                                 "Wrong CPU type for 32-bit segment")
