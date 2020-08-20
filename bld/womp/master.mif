@@ -77,7 +77,7 @@ rcui_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
 wresui.res : ../h/$(proj_name).rc
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 wmpmsg.gh : ../womp.msg
     @%make echo_awk
