@@ -159,7 +159,7 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = usage.gh rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !else
 prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
@@ -226,17 +226,12 @@ keyword2.gh : ../hash/rcos2.key
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m $<
 
-incltext.gh : ../h/incltext.h ../h/rc.msg
-    @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I.. $(rc_defines) -o$@ $[@
-
 msg.gh : ../h/rc.msg
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(rc_defines) -o$@ $[@
 
 rcmsg.gh :  ../h/rc.msg
     @%make echo_awk
-#    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(misc_objs):

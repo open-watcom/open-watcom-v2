@@ -46,8 +46,9 @@
 #if defined( INCL_MSGTEXT )
 
 static const char * const StringTable[] = {
-    "",                             // message ID's start at 1
-    #include "incltext.gh"
+    #define pick(c,e,j) e,
+    #include "rc.msg"
+    #undef pick
 };
 
 bool InitRcMsgs( void )

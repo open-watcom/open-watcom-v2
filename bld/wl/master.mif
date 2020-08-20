@@ -134,13 +134,9 @@ wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg
     @%make echo_rc
     $(rcui)
 
-rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
+rcmsg.gh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
-    @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
