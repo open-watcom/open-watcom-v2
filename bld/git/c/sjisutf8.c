@@ -26,6 +26,8 @@ typedef struct cvt_chr {
     unsigned short  u;
 } cvt_chr;
 
+typedef int (*comp_fn)(const void *,const void *);
+
 static cvt_chr cvt_table[] = {
     #define pick(s,u) {s, u },
     #include "cp932uni.h"
@@ -38,17 +40,17 @@ static cvt_chr cvt_table[] = {
  * 0xE0-0xFC
  */
 
-static int compare_sjis( const void *p1, const void *p2 )
+static int compare_sjis( const cvt_chr *p1, const cvt_chr *p2 )
 {
-    return( ((cvt_chr *)p1)->s - ((cvt_chr *)p2)->s );
+    return( p1->s - p2->s );
 }
 
-static int compare_utf8( const void *p1, const void *p2 )
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
 {
-    return( ((cvt_chr *)p1)->u - ((cvt_chr *)p2)->u );
+    return( p1->u - p2->u );
 }
 
-static size_t sjis_to_utf8( char *src, char *dst )
+static size_t sjis_to_utf8( const char *src, char *dst )
 {
     size_t      i;
     size_t      o;
@@ -66,7 +68,7 @@ static size_t sjis_to_utf8( char *src, char *dst )
             if( x.s > 0x80 && x.s < 0xA0 || x.s > 0xDF && x.s < 0xFD ) {
                 x.s = x.s << 8 | (unsigned char)src[++i];
             }
-            p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), compare_sjis );
+            p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), (comp_fn)compare_sjis );
             if( p == NULL ) {
                 printf( "unknown double-byte character: 0x%4X\n", x.s );
                 dst[o++] = '?';
@@ -85,7 +87,7 @@ static size_t sjis_to_utf8( char *src, char *dst )
     return( o );
 }
 
-static size_t utf8_to_sjis( char *src, char *dst )
+static size_t utf8_to_sjis( const char *src, char *dst )
 {
     size_t      i;
     size_t      o;
@@ -107,7 +109,7 @@ static size_t utf8_to_sjis( char *src, char *dst )
                  x.u &= 0x1F;
             }
             x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
-            p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), compare_utf8 );
+            p = bsearch( &x, cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), (comp_fn)compare_utf8 );
             if( p == NULL ) {
                 printf( "unknown unicode character: 0x%4X\n", x.u );
                 dst[o++] = '?';
@@ -184,7 +186,7 @@ int main( int argc, char *argv[] )
         return( 5 );
     }
     if( cvt_dir == 's' ) {
-        qsort( cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), compare_utf8 );
+        qsort( cvt_table, sizeof( cvt_table ) / sizeof( cvt_table[0] ), sizeof( cvt_table[0] ), (comp_fn)compare_utf8 );
     }
     while( fgets( in_buff, sizeof( in_buff ), fi ) != NULL ) {
         in_len = strlen( in_buff );
