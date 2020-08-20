@@ -30,4 +30,8 @@
 ****************************************************************************/
 
 
-extern void IdleInterrupt( void );
+#define MSG_BASE        10
+#define MSG_RC_BASE     100
+
+#include "wrmsg.gh"
+#include "rcmsg.gh"

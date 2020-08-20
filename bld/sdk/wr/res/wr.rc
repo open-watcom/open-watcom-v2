@@ -5,13 +5,14 @@
 #include "memflags.rh"
 #include "editsym.rh"
 #include "addsym.rh"
-#include "rcmsg.gh"
+#include "wrmsg.rh"
 
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]
 
-    #include "wrmsg.gh"
+    #include "wr.msg"
+    #include "rc.msg"
 
     #undef pick
 END

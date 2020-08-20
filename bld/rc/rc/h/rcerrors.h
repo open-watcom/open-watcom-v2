@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,13 @@
 ****************************************************************************/
 
 
-#include "rcerrors.rh"
+#ifdef INSIDE_WLINK
+#include "wlnkmsg.rh"
+#elif defined( INSIDE_WR )
+#include "wrmsg.rh"
+#else
+#include "rcmsg.rh"
+#endif
 
 enum {
     INTERR_UNKNOWN_RCSTATUS,

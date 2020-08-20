@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,7 +198,7 @@ void RcFatalError( unsigned int errornum, ... )
         ResCloseFile( CurrResFile.fp );
         CurrResFile.fp = NULL;
     }
-#if !defined( WRDLL )
+#if !defined( INSIDE_WRDLL )
     CloseAllFiles();
 #endif
     PP_FileFini();
@@ -205,7 +206,7 @@ void RcFatalError( unsigned int errornum, ... )
     RCSuicide( -1 );
 }
 
-#if !defined( WRDLL )
+#if !defined( INSIDE_WRDLL )
 void ErrorInitStatics( void )
 /***************************/
 {

@@ -48,6 +48,7 @@
 static const char * const StringTable[] = {
     #define pick(c,e,j) e,
     #include "rc.msg"
+    #include "usage.gh"
     #undef pick
 };
 

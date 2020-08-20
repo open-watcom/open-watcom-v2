@@ -41,6 +41,7 @@
 #include "mapio.h"
 #include "loadfile.h"
 #include "demangle.h"
+#include "rcerrors.h"
 #include "msg.h"
 
 #include "clibext.h"

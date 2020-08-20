@@ -34,3 +34,4 @@
 #define MSG_RC_BASE             800
 
 #include "wlmsgs.rh"
+#include "rcmsg.gh"

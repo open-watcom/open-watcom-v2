@@ -226,10 +226,6 @@ keyword2.gh : ../hash/rcos2.key
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m $<
 
-msg.gh : ../h/rc.msg
-    @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_defines) -o$@ $[@
-
 rcmsg.gh :  ../h/rc.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

@@ -1,4 +1,4 @@
-#include "rcerrors.rh"
+#include "rcmsg.rh"
 #include "usage.rh"
 #include "wreslang.rh"
 
