@@ -37,7 +37,7 @@ exetarg_qnx_res       = usage.u
 
 wresui.res : ../wtouch.rc ../wtouch.msg usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 usage.gh : ../usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
