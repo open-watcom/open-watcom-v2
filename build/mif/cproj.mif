@@ -703,6 +703,7 @@ proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
 
 rc_ui_flags     = -zk0 $(rc_cppflags)
+rc_ui8_flags    = -zku0 $(rc_cppflags)
 
 #
 # Include path macros:
@@ -728,6 +729,14 @@ rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@
 rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !else
 rcui            = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
+
+!ifdef bootstrap
+rcui8           = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui8           = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui8           = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
 !endif
 
 rcbnd           = $(rc_bnd) -k
