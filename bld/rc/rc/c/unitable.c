@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #include "global.h"
 #include "rccore.h"
 #include "param.h"
@@ -22,6 +23,8 @@
 #include "rcmem.h"
 #include "cvttable.h"
 #include "unitable.h"
+
+#include "clibext.h"
 
 
 static cvt_chr  **cvt_table = NULL;
