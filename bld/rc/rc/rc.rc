@@ -1,17 +1,20 @@
 #include "rcerrors.rh"
+#include "usage.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-    #include "msg.gh"
+    #include "rcmsg.gh"
+    #include "usage.gh"
 
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-    #include "msg.gh"
+    #include "rcmsg.gh"
+    #include "usage.gh"
 
     #undef pick
 END

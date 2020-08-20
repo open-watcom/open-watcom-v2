@@ -31,14 +31,22 @@
 ****************************************************************************/
 
 
+#include "usage.rh"
+
 #ifdef INCL_MSGTEXT
 
-#define MSG_RC_BASE             0
-
-#else
-
-#define MSG_RC_BASE             100
+enum {
+    MSG_USAGE_BASE = 0
+    #define pick(c,e,j) + 1
+    #include "rc.msg"
+    #undef pick
+};
 
 #endif
 
-#include "rcmsg.gh"
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};

@@ -159,9 +159,9 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+prebuild_objs = usage.gh rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !else
-prebuild_objs = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
@@ -234,14 +234,38 @@ msg.gh : ../h/rc.msg
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(rc_defines) -o$@ $[@
 
-rcmsg.gh : msg.gh
+rcmsg.gh :  ../h/rc.msg
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+#    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(misc_objs):
     cat ../$@ >$@
 
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
+
+usagej.gh : ../h/options.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -l 1 -q $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+
 echo_findhash: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo findhash $@
+!endif
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
 !endif

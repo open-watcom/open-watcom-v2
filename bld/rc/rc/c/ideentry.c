@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"
+#include "usage.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -235,12 +236,12 @@ static void RcIoPrintUsage( void )
     _splitpath2( imageName, pg.buffer, NULL, NULL, &pg.fname, NULL );
     strlwr( pg.fname );
 
-    index = USAGE_MSG_FIRST;
+    index = MSG_USAGE_BASE;
     GetRcMsg( index, buf, sizeof( buf ) );
     ConsoleMessage( buf, pg.fname );
     ConsoleMessage( "\n" );
     ++count;
-    for( ++index; index <= USAGE_MSG_LAST; index++ ) {
+    for( ++index; index <= MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
         if( console_tty ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return() )
