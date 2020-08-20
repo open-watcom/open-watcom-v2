@@ -58,7 +58,7 @@ verrc_exe = $(exename)
 
 wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) -ad
+    $(rcui8) -ad
 
 msg.gh : wstrip.gh $(__MAKEFILES__)
     @%make echo_awk

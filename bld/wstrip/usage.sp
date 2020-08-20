@@ -15,19 +15,19 @@ options:
         info_file:   optional output debugging or resource information file
                      or input debugging or resource information file
 :elsesegment JAPANESE
-g—p•û–@: wstrip [options] input_file [output_file] [info_file]
+ä½¿ç”¨æ–¹æ³•: wstrip [options] input_file [output_file] [info_file]
 :segment !QNX
-ƒIƒvƒVƒ‡ƒ“: (/µÌß¼®İ ‚àó‚¯•t‚¯‚Ü‚·)
+ã‚ªãƒ—ã‚·ãƒ§ãƒ³: (/ï½µï¾Œï¾Ÿï½¼ï½®ï¾ ã‚‚å—ã‘ä»˜ã‘ã¾ã™)
 :elsesegment
-ƒIƒvƒVƒ‡ƒ“:
+ã‚ªãƒ—ã‚·ãƒ§ãƒ³:
 :endsegment
-        -q     ƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ
-        -n     ŒxƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ
-        -r     ƒfƒoƒbƒOî•ñ‚Å‚Í‚È‚­AƒŠƒ\[ƒXî•ñ‚ğˆ—‚µ‚Ü‚·
-        -a     î•ñíœ‚Å‚Í‚È‚­Aî•ñ•t‰Á‚ğ‚µ‚Ü‚·
+        -q     ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã›ã‚“
+        -n     è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã›ã‚“
+        -r     ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã§ã¯ãªãã€ãƒªã‚½ãƒ¼ã‚¹æƒ…å ±ã‚’å‡¦ç†ã—ã¾ã™
+        -a     æƒ…å ±å‰Šé™¤ã§ã¯ãªãã€æƒ…å ±ä»˜åŠ ã‚’ã—ã¾ã™
 
-        input_file:  Às‰Â”\ƒtƒ@ƒCƒ‹
-        output_file: ƒIƒvƒVƒ‡ƒ“‚Åo—ÍÀs‰Â”\ƒtƒ@ƒCƒ‹‚Ü‚½‚Í '.'‚ğw’è‰Â”\
-        info_file:   ƒIƒvƒVƒ‡ƒ“‚ÅƒfƒoƒbƒO‚Ü‚½‚ÍƒŠƒ\[ƒXî•ñƒtƒ@ƒCƒ‹‚Ìo—Í–”‚Í
-                     “ü—Í‚ğw’è‰Â”\
+        input_file:  å®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«
+        output_file: ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§å‡ºåŠ›å®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«ã¾ãŸã¯ '.'ã‚’æŒ‡å®šå¯èƒ½
+        info_file:   ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ãƒ‡ãƒãƒƒã‚°ã¾ãŸã¯ãƒªã‚½ãƒ¼ã‚¹æƒ…å ±ãƒ•ã‚¡ã‚¤ãƒ«ã®å‡ºåŠ›åˆã¯
+                     å…¥åŠ›ã‚’æŒ‡å®šå¯èƒ½
 :endsegment
