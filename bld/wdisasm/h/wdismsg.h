@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,6 @@
 
 #define MSG_RC_BASE     1
 #define MSG_USE_BASE    500
-
-#define MSG_LANG_SPACING        1000
 
 #define MSG_USE_E_BASE  (MSG_USE_BASE + RLE_ENGLISH*MSG_LANG_SPACING)
 #define MSG_USE_J_BASE  (MSG_USE_BASE + RLE_JAPANESE*MSG_LANG_SPACING)

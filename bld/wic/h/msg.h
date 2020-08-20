@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +102,5 @@
 typedef int     WicErrors;  // This used to be enum
 
 #define MSG_USAGE_BASE             400
-
-#define MSG_LANG_SPACING           1000
 
 #define MAX_RESOURCE_SIZE          200  // Max size of any string

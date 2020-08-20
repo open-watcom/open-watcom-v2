@@ -78,8 +78,6 @@
 #define ERR_CANT_CREATE                 59
 #define ERR_CANT_CREATE_TMP             60
 
-#define MSG_LANG_SPACING    1000
-
 /* Function prototypes */
 
 /* From msg.c */

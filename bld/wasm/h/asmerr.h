@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ extern void             _AsmNote( int level, unsigned msgnum, ... );
 
 #elif defined( _USE_RESOURCES_ )
 
-    #define MSG_RC_BASE         15000
+    #define MSG_RC_BASE         12000
     #include "msg.gh"
 
 #else
