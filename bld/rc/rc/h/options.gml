@@ -58,7 +58,7 @@
 
 :chain. s segment and resource sorting method
 :jusage.
-:chain. v verbose
+:chain. v verbose output
 :jusage.
 :chain. zk multi-byte characters support
 :jusage.

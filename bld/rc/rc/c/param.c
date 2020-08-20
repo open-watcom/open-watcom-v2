@@ -36,6 +36,7 @@
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"
+#include "unitable.h"
 #include "leadbyte.h"
 #include "rccore.h"
 #include "pathgrp2.h"
@@ -407,25 +408,33 @@ static bool ScanOptionsArg( const char *arg )
     case 'v':
         arg++;
         switch( tolower( *arg ) ) {
-    #if defined( YYDEBUG )
+    #if defined( SCANDEBUG )
         case '1':
+            CmdLineParms.DebugScanner = 1;
+            break;
+    #endif
+    #if defined( YYDEBUG )
+        case '2':
             CmdLineParms.DebugParser = 1;
             break;
     #endif
     #if defined( YYDEBUG ) && defined( SCANDEBUG )
-        case '2':
+        case '3':
             CmdLineParms.DebugParser = 1;
             CmdLineParms.DebugScanner = 1;
             break;
-        case '3':
+        case '4':
             CmdLineParms.DebugScanner = 1;
             break;
     #endif
+        case '\0':
     #if defined( SCANDEBUG )
-        default:
             CmdLineParms.DebugScanner = 1;
-            break;
     #endif
+    #if defined( YYDEBUG )
+            CmdLineParms.DebugParser = 1;
+    #endif
+            break;
         }
         break;
 #endif
@@ -469,6 +478,10 @@ static bool ScanOptionsArg( const char *arg )
                 if( arg[1] == '8' ) {
                     arg++;
                     CmdLineParms.MBCharSupport = MB_UTF8;
+                    break;
+                } else if( arg[1] == '0' ) {
+                    arg++;
+                    CmdLineParms.MBCharSupport = MB_UTF8_KANJI;
                     break;
                 }
                 // fall down
@@ -668,64 +681,6 @@ static void defaultParms( void )
 } /* defaultParms */
 
 
-static int getcharUTF8( const char **p, uint_32 *c )
-{
-    int     len;
-    int     i;
-    uint_32 value;
-
-    value = *c;
-    len = CharSetLen[value];
-    if( len == 1 ) {
-        value &= 0x1F;
-    } else if( len == 2 ) {
-        value &= 0x0F;
-    } else if( len == 3 ) {
-        value &= 0x07;
-    } else if( len == 4 ) {
-        value &= 0x03;
-    } else if( len == 5 ) {
-        value &= 0x01;
-    } else {
-        return( 0 );
-    }
-    for( i = 0; i < len; ++i ) {
-        value = ( value << 6 ) + ( **p & 0x3F );
-        (*p)++;
-    }
-    *c = value;
-    return( len );
-}
-
-
-static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
-/*************************************************************************/
-{
-    size_t          ret;
-    size_t          outlen;
-    uint_32         unicode;
-    size_t          i;
-
-    ret = 0;
-    if( len > 0 ) {
-        if( buf == NULL ) {
-            outlen = 0;
-        } else {
-            outlen = len;
-        }
-        for( i = 0; i < len; i++ ) {
-            unicode = (unsigned char)*str++;
-            i += getcharUTF8( &str, &unicode );
-            if( ret < outlen ) {
-                *buf++ = (char)unicode;
-                *buf++ = (char)( unicode >> 8 );
-                ret++;
-            }
-        }
-    }
-    return( ret * 2 );
-}
-
 static void initMBCodePage( void )
 /********************************/
 {
@@ -802,7 +757,9 @@ static void initMBCodePage( void )
         }
     }
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
-        ConvToUnicode = UTF8StringToUnicode;
+        SetUTF8toUnicode();
+    } else if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
+        SetUTF8toMultiByte();
     } else if( CmdLineParms.CodePageFile != NULL ) {
         ret = LoadCharTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {

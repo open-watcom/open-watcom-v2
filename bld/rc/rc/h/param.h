@@ -41,6 +41,7 @@
 #define DB_WANSUNG_KOREAN       3
 #define DB_SIMPLIFIED_CHINESE   4
 #define MB_UTF8                 5
+#define MB_UTF8_KANJI           6
 
 typedef struct FRStrings {
     struct FRStrings    *next;

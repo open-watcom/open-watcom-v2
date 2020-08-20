@@ -119,6 +119,7 @@ common_objs = &
     $(_subdir_)semsnglw.obj &
     $(_subdir_)semstrw.obj &
     $(_subdir_)dbtable.obj &
+    $(_subdir_)unitable.obj &
     $(_subdir_)preproc.obj &
     $(_subdir_)ppexpr.obj &
     $(_subdir_)ppmacro.obj &
