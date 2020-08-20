@@ -1,332 +1,332 @@
 pick(    MSG_INTERNAL,          "** internal ** - %s"  ,
-                    "**  “à•”  ** - %s" )
+                    "**  å†…éƒ¨  ** - %s" )
 pick(    MSG_LOADING_OBJECT,        "loading object files" ,
-                    "ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ð“Çž‚Ý’†" )
+                    "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­è¾¼ã¿ä¸­" )
 pick(    MSG_SEARCHING_LIBS,        "searching libraries" ,
-                    "ƒ‰ƒCƒuƒ‰ƒŠ‚ðŒŸõ’†" )
+                    "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’æ¤œç´¢ä¸­" )
 pick(    MSG_CREATE_MAP,        "creating map file" ,
-                    "ƒ}ƒbƒvƒtƒ@ƒCƒ‹‚ðì¬’†" )
+                    "ãƒžãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆä¸­" )
 pick(    MSG_CREATE_EXE,        "creating %f" ,
-                    "%f ‚ðì¬’†" )
+                    "%f ã‚’ä½œæˆä¸­" )
 pick(    MSG_USING_SPILL,       "using spill file" ,
-                    "ƒXƒsƒ‹ƒtƒ@ƒCƒ‹‚ðŽg—p’†" )
+                    "ã‚¹ãƒ”ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½¿ç”¨ä¸­" )
 pick(    MSG_CANT_OPEN,         "cannot open %1 : %2" ,
-                    "%1 ‚ðƒI[ƒvƒ“o—ˆ‚Ü‚¹‚ñ : %2" )
+                    "%1 ã‚’ã‚ªãƒ¼ãƒ—ãƒ³å‡ºæ¥ã¾ã›ã‚“ : %2" )
 pick(    MSG_NO_DYN_MEM,        "dynamic memory exhausted" ,
-                    "ƒ_ƒCƒiƒ~ƒbƒNƒƒ‚ƒŠ‚ÌŽc—Ê‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ãƒ¡ãƒ¢ãƒªã®æ®‹é‡ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_IO_PROBLEM,        "I/O error processing %1 : %2" ,
-                    "%1 ˆ—’†‚ÉI/OƒGƒ‰[ : %2" )
+                    "%1 å‡¦ç†ä¸­ã«I/Oã‚¨ãƒ©ãƒ¼ : %2" )
 pick(    MSG_OBJ_FILE_ATTR,     "invalid object file attribute" ,
-                    "–³Œø‚ÈƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‘®«" )
+                    "ç„¡åŠ¹ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«å±žæ€§" )
 pick(    MSG_LIB_FILE_ATTR,     "invalid library file attribute" ,
-                    "–³Œø‚Èƒ‰ƒCƒuƒ‰ƒŠƒtƒ@ƒCƒ‹‘®«" )
+                    "ç„¡åŠ¹ãªãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«å±žæ€§" )
 pick(    MSG_BREAK_HIT,         "break key detected" ,
-                    "ƒuƒŒ[ƒNƒL[‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½" )
+                    "ãƒ–ãƒ¬ãƒ¼ã‚¯ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¾ã—ãŸ" )
 pick(    MSG_STACK_NOT_FOUND,       "stack segment not found" ,
-                    "ƒXƒ^ƒbƒNƒZƒOƒƒ“ƒg‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ã‚¹ã‚¿ãƒƒã‚¯ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_BAD_RELOC_TYPE,        "bad relocation type specified" ,
-                    "ŠÔˆá‚Á‚½—˜ƒƒP[ƒVƒ‡ƒ“Œ^‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "é–“é•ã£ãŸåˆ©ãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³åž‹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_BAD_ABS_FIXUP,     "%a: absolute target invalid for self-relative relocation" ,
-                    "%a: Ž©ŒÈ‘Š‘ÎƒŠƒƒP[ƒVƒ‡ƒ“‚Åâ‘Îƒ^[ƒQƒbƒg‚Í–³Œø‚Å‚·" )
+                    "%a: è‡ªå·±ç›¸å¯¾ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§çµ¶å¯¾ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ç„¡åŠ¹ã§ã™" )
 pick(    MSG_BAD_REL_FIXUP,     "bad location specified for self-relative relocation at %a" ,
-                    "Ž©ŒÈ‘Š‘ÎƒŠƒƒP[ƒVƒ‡ƒ“‚Å %a ‚ÌƒƒP[ƒVƒ‡ƒ“‚Í•s³‚Å‚·" )
+                    "è‡ªå·±ç›¸å¯¾ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ %a ã®ãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã¯ä¸æ­£ã§ã™" )
 pick(    MSG_FIXUP_OFF_RANGE,       "relocation offset at %a is out of range" ,
-                    "%a ‚ÌƒŠƒƒP[ƒVƒ‡ƒ“ƒIƒtƒZƒbƒg‚ª”ÍˆÍŠO‚Å‚·" )
+                    "%a ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚ªãƒ•ã‚»ãƒƒãƒˆãŒç¯„å›²å¤–ã§ã™" )
 pick(    MSG_SEG_RELOC_OUT,     "segment relocation at %a" ,
-                    "%a ‚ÉƒZƒOƒƒ“ƒgEƒŠƒƒP[ƒVƒ‡ƒ“‚ª‚ ‚è‚Ü‚·" )
+                    "%a ã«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_GROUP_TOO_BIG,     "size of group %s exceeds 64k by %l bytes" ,
-                    "%s ƒOƒ‹[ƒv ‚ÌƒTƒCƒY‚ª %lƒoƒCƒg•ª‚U‚S‚j‚ð’´‚¦‚Ä‚¢‚Ü‚·" )
+                    "%s ã‚°ãƒ«ãƒ¼ãƒ— ã®ã‚µã‚¤ã‚ºãŒ %lãƒã‚¤ãƒˆåˆ†ï¼–ï¼”ï¼«ã‚’è¶…ãˆã¦ã„ã¾ã™" )
 pick(    MSG_SEG_TOO_BIG,       "size of segment %s exceeds 64k by %l bytes" ,
-                    "%s ƒZƒOƒƒ“ƒg‚ÌƒTƒCƒY‚ª %lƒoƒCƒg•ª‚U‚S‚j‚ð’´‚¦‚Ä‚¢‚Ü‚·" )
+                    "%s ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ã‚µã‚¤ã‚ºãŒ %lãƒã‚¤ãƒˆåˆ†ï¼–ï¼”ï¼«ã‚’è¶…ãˆã¦ã„ã¾ã™" )
 pick(    MSG_CANT_HAVE_START,       "cannot have a starting address with an imported symbol" ,
-                    "ƒCƒ“ƒ|[ƒgEƒVƒ“ƒ{ƒ‹‚ðŠJŽnƒAƒhƒŒƒX‚É‚Í‚Å‚«‚Ü‚¹‚ñ" )
+                    "ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ã‚·ãƒ³ãƒœãƒ«ã‚’é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã«ã¯ã§ãã¾ã›ã‚“" )
 pick(    MSG_NO_START_ADDR,     "no starting address found, using %a" ,
-                    "ŠJŽnƒAƒhƒŒƒX‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ.%a‚ðŠJŽnƒAƒhƒŒƒX‚Æ‚µ‚Ü‚·" )
+                    "é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“.%aã‚’é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã—ã¾ã™" )
 pick(    MSG_NO_OVERLAY_LOADER,     "missing overlay loader" ,
-                    "ƒI[ƒoƒŒƒCEƒ[ƒ_‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ã‚ªãƒ¼ãƒãƒ¬ã‚¤ãƒ»ãƒ­ãƒ¼ãƒ€ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_VECT_RANGE,      "%s vector %d is out of range" ,
                     "%s vector %d is out of range" )
 pick(    MSG_RESERVED_SYM_DEFINED,      "redefinition of reserved symbol %s" ,
-                    "—\–ñƒVƒ“ƒ{ƒ‹ %s ‚ðÄ’è‹`‚µ‚Ü‚µ‚½" )
+                    "äºˆç´„ã‚·ãƒ³ãƒœãƒ« %s ã‚’å†å®šç¾©ã—ã¾ã—ãŸ" )
 pick(    MSG_MULT_DEF,          "redefinition of %S ignored" ,
-                    "%S ‚ÌÄ’è‹`‚ð–³Ž‹‚µ‚Ü‚µ‚½" )
+                    "%S ã®å†å®šç¾©ã‚’ç„¡è¦–ã—ã¾ã—ãŸ" )
 pick(    MSG_UNDEF_REF,         "%S is an undefined reference" ,
-                    "%S ‚Í–¢’è‹`ŽQÆ‚Å‚·" )
+                    "%S ã¯æœªå®šç¾©å‚ç…§ã§ã™" )
 pick(    MSG_EARLY_EOF,         "premature end of file encountered" ,
-                    "“r’†‚Å‚d‚n‚e‚ðŒŸo‚µ‚Ü‚µ‚½" )
+                    "é€”ä¸­ã§ï¼¥ï¼¯ï¼¦ã‚’æ¤œå‡ºã—ã¾ã—ãŸ" )
 pick(    MSG_MULT_START_ADDRS,      "multiple starting addresses found, already defined in %1(%2)" ,
                     "multiple starting addresses found, already defined in %1(%2)" )
 pick(    MSG_SEG_IN_TWO_GROUPS,     "segment %1 is in group %2 and group %3" ,
-                    "ƒZƒOƒƒ“ƒg %1 ‚ª %2 ƒOƒ‹[ƒv‚Æ %3 ƒOƒ‹[ƒv‚Ì—¼•û‚É‘¶Ý‚µ‚Ü‚·" )
+                    "ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ %1 ãŒ %2 ã‚°ãƒ«ãƒ¼ãƒ—ã¨ %3 ã‚°ãƒ«ãƒ¼ãƒ—ã®ä¸¡æ–¹ã«å­˜åœ¨ã—ã¾ã™" )
 pick(    MSG_REC_NOT_DONE,      "record (type 0x%x) not processed" ,
-                    "ƒŒƒR[ƒh (À²Ìß0x%x) ‚Íˆ—‚³‚ê‚Ü‚¹‚ñ" )
+                    "ãƒ¬ã‚³ãƒ¼ãƒ‰ (ï¾€ï½²ï¾Œï¾Ÿ0x%x) ã¯å‡¦ç†ã•ã‚Œã¾ã›ã‚“" )
 pick(    MSG_DIRECTIVE_ERR,     "directive error near '%s'" ,
-                    "'%s'•t‹ß‚ÉƒfƒBƒŒƒNƒeƒBƒuƒGƒ‰[‚ª‚ ‚è‚Ü‚·" )
+                    "'%s'ä»˜è¿‘ã«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_NO_OFFSET_WITH_DLL,        "%a: cannot have an offset with an imported symbol" ,
-                    "%a: ƒCƒ“ƒ|[ƒgEƒVƒ“ƒ{ƒ‹‚ðƒIƒtƒZƒbƒg‚É‚ÍŽw’èo—ˆ‚Ü‚¹‚ñ" )
+                    "%a: ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ã‚·ãƒ³ãƒœãƒ«ã‚’ã‚ªãƒ•ã‚»ãƒƒãƒˆã«ã¯æŒ‡å®šå‡ºæ¥ã¾ã›ã‚“" )
 pick(    MSG_EXE_NAME,          "Executable Image: %s" ,
-                    "ŽÀs‰Â”\ƒCƒ[ƒW: %s" )
+                    "å®Ÿè¡Œå¯èƒ½ã‚¤ãƒ¡ãƒ¼ã‚¸: %s" )
 pick(    MSG_CREATED_ON,        "Created on:       %1 %2" ,
-                    "V‹Kì¬:       %1 %2" )
+                    "æ–°è¦ä½œæˆ:       %1 %2" )
 pick(    MSG_UNDEF_SYM,         "file %1(%2): undefined symbol %S" ,
-                    "ƒtƒ@ƒCƒ‹ %1(%2):@–¢’è‹`ƒVƒ“ƒ{ƒ‹ %S" )
+                    "ãƒ•ã‚¡ã‚¤ãƒ« %1(%2):ã€€æœªå®šç¾©ã‚·ãƒ³ãƒœãƒ« %S" )
 pick(    MSG_DEBUG_AFTER_FILES,     "DEBUG directive appears after object files" ,
-                    "ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹Žw’è‚ÌŒã‚ÉDEBUGƒfƒBƒŒƒNƒeƒBƒu‚ª‚ ‚è‚Ü‚·" )
+                    "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«æŒ‡å®šã®å¾Œã«DEBUGãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_ALIGN_TOO_SMALL,       "ALIGNMENT value too small" ,
-                    "ALIGNMENT’l‚ª¬‚³‚·‚¬‚Ü‚·" )
+                    "ALIGNMENTå€¤ãŒå°ã•ã™ãŽã¾ã™" )
 pick(    MSG_IMPORT_ORD_INVALID,        "ordinal in IMPORT directive not valid" ,
-                    "IMPORTƒfƒBƒŒƒNƒeƒBƒu‚Ì˜”‚ª•s³‚Å‚·" )
+                    "IMPORTãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã®åºæ•°ãŒä¸æ­£ã§ã™" )
 pick(    MSG_EXPORT_ORD_INVALID,        "ordinal in EXPORT directive not valid" ,
-                    "EXPORTƒfƒBƒŒƒNƒeƒBƒu‚Ì˜”‚ª•s³‚Å‚·" )
+                    "EXPORTãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã®åºæ•°ãŒä¸æ­£ã§ã™" )
 pick(    MSG_TOO_MANY_IOPL_WORDS,   "too many IOPL words in EXPORT directive" ,
-                    "EXPORTƒfƒBƒŒƒNƒeƒBƒu‚ÌIOPLƒ[ƒh‚ª‘½‚·‚¬‚Ü‚·" )
+                    "EXPORTãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã®IOPLãƒ¯ãƒ¼ãƒ‰ãŒå¤šã™ãŽã¾ã™" )
 pick(    MSG_DUP_EXP_ORDINAL,       "duplicate exported ordinal" ,
-                    "ƒGƒNƒXƒ|[ƒg˜”‚ªd•¡‚µ‚Ä‚¢‚Ü‚·" )
+                    "ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆåºæ•°ãŒé‡è¤‡ã—ã¦ã„ã¾ã™" )
 pick(    MSG_EXP_SYM_NOT_FOUND,     "exported symbol %s not found" ,
-                    "ƒGƒNƒXƒ|[ƒgEƒVƒ“ƒ{ƒ‹ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆãƒ»ã‚·ãƒ³ãƒœãƒ« %s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_SEG_FLAG_MULT_DEFD,        "segment attribute defined more than once" ,
-                    "ƒZƒOƒƒ“ƒg‘®«‚ª‚Q‰ñˆÈã’è‹`‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå±žæ€§ãŒï¼’å›žä»¥ä¸Šå®šç¾©ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_SEG_NAME_NOT_FOUND,        "segment name %s not found" ,
-                    "ƒZƒOƒƒ“ƒg–¼ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå %s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_CLASS_NAME_NOT_FOUND,      "class name %s not found" ,
-                    "ƒNƒ‰ƒX–¼ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ã‚¯ãƒ©ã‚¹å %s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_AUTO_SEG_MULT_DEFD,        "inconsistent attributes for automatic data segment" ,
-                    "ƒI[ƒgƒ}ƒeƒBƒbƒNEƒf[ƒ^ƒZƒOƒƒ“ƒg‚Ì‘®«‚ª–µ‚‚µ‚Ä‚¢‚Ü‚·" )
+                    "ã‚ªãƒ¼ãƒˆãƒžãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ‡ãƒ¼ã‚¿ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®å±žæ€§ãŒçŸ›ç›¾ã—ã¦ã„ã¾ã™" )
 pick(    MSG_INV_STUB_FILE,     "invalid STUB file" ,
-                    "–³Œø‚ÈSTUBƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "ç„¡åŠ¹ãªSTUBãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_INV_OLD_DLL,       "invalid DLL specified in OLDLIBRARY option" ,
-                    "OLDLIBRARYƒIƒvƒVƒ‡ƒ“‚Å–³Œø‚ÈDLL‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "OLDLIBRARYã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ç„¡åŠ¹ãªDLLãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_STUB_SAME_AS_LOAD,     "STUB file name same as executable file name" ,
-                    "STUBƒtƒ@ƒCƒ‹–¼‚ªŽÀs‰Â”\ƒtƒ@ƒCƒ‹–¼‚Æ“¯‚¶‚Å‚·" )
+                    "STUBãƒ•ã‚¡ã‚¤ãƒ«åãŒå®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«åã¨åŒã˜ã§ã™" )
 pick(    MSG_REL_NOT_SAME_SEG,      "relocation at %a not in the same segment" ,
-                    "%a ‚ÌƒŠƒƒP[ƒVƒ‡ƒ“‚ª“¯ˆêƒZƒOƒƒ“ƒg‚Å‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                    "%a ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒåŒä¸€ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã§ã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_DLL_IN_REL_RELOC,      "%a: cannot reach a DLL with a relative relocation" ,
-                    "%a: relativeƒŠƒƒP[ƒVƒ‡ƒ“‚ÅDLL‚Æ‚Â‚È‚ª‚è‚Ü‚¹‚ñ" )
+                    "%a: relativeãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§DLLã¨ã¤ãªãŒã‚Šã¾ã›ã‚“" )
 pick(    MSG_CANT_USE_LOCALS,       "debugging information incompatible: using line numbers only" ,
-                    "ƒfƒoƒbƒOî•ñ‚ÉŒÝŠ·«‚ª‚ ‚è‚Ü‚¹‚ñ: s”Ô†‚Ì‚Ý‚ðŽg—p‚µ‚Ä‰º‚³‚¢" )
+                    "ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã«äº’æ›æ€§ãŒã‚ã‚Šã¾ã›ã‚“: è¡Œç•ªå·ã®ã¿ã‚’ä½¿ç”¨ã—ã¦ä¸‹ã•ã„" )
 pick(    MSG_FRAME_EQ_TARGET,       "%a: frame must be the same as the target in protect mode" ,
-                    "%a: ƒvƒƒeƒNƒgƒ‚[ƒh‚Å‚Íƒ^[ƒQƒbƒg‚ÆƒtƒŒ[ƒ€‚ª“¯ˆê‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ" )
+                    "%a: ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãƒ•ãƒ¬ãƒ¼ãƒ ãŒåŒä¸€ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“" )
 pick(    MSG_CANT_FIND_MEMBER,      "cannot find library member %1(%2)" ,
-                    "ƒ‰ƒCƒuƒ‰ƒŠƒƒ“ƒo %1(%2)‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¡ãƒ³ãƒ %1(%2)ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_MULTIPLE_MODES_FOUND,      "executable format has been established" ,
-                    "ŽÀs‰Â”\ƒtƒH[ƒ}ƒbƒg‚ÍŠù‚ÉÝ’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "å®Ÿè¡Œå¯èƒ½ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã¯æ—¢ã«è¨­å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_FORMAT_BAD_OPTION,     "%s option not valid for %f" ,
-                    "%sƒIƒvƒVƒ‡ƒ“‚ª%f‚É‘Î‚µ‚Ä–³Œø‚Å‚·" )
+                    "%sã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒ%fã«å¯¾ã—ã¦ç„¡åŠ¹ã§ã™" )
 pick(    MSG_VALUE_TOO_LARGE,       "value for %s too large" ,
-                    "%s ‚Ì’l‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "%s ã®å€¤ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_VALUE_INCORRECT,       "value for %s incorrect" ,
-                    "%s ‚Ì’l‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·" )
+                    "%s ã®å€¤ãŒé–“é•ã£ã¦ã„ã¾ã™" )
 pick(    MSG_MULT_REALBREAKS,       "multiple values specified for REALBREAK" ,
-                    "REALBREAK‚É•¡”‚Ì’l‚ªÝ’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "REALBREAKã«è¤‡æ•°ã®å€¤ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_DLL_WITH_386,      "export and import records not valid for %f" ,
-                    "DLL COMENTƒŒƒR[ƒh‚ÍOS2ˆÈŠO‚Å‚Í–³Œø‚Å‚·" )
+                    "DLL COMENTãƒ¬ã‚³ãƒ¼ãƒ‰ã¯OS2ä»¥å¤–ã§ã¯ç„¡åŠ¹ã§ã™" )
 pick(    MSG_INVALID_FLAT_RELOC,        "invalid relocation for flat memory model at %a" ,
-                    "%a‚Íƒtƒ‰ƒbƒgEƒƒ‚ƒŠƒ‚ƒfƒ‹‚É‘Î‚µ‚Ä–³Œø‚ÈƒŠƒƒP[ƒVƒ‡ƒ“‚Å‚·" )
+                    "%aã¯ãƒ•ãƒ©ãƒƒãƒˆãƒ»ãƒ¡ãƒ¢ãƒªãƒ¢ãƒ‡ãƒ«ã«å¯¾ã—ã¦ç„¡åŠ¹ãªãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ã™" )
 pick(    MSG_CANT_COMBINE_32_AND_16,    "cannot combine 32-bit segments (%1) with 16-bit segments (%2)",
-                    "32ƒrƒbƒgEƒZƒOƒƒ“ƒg‚Æ16ƒrƒbƒgEƒZƒOƒƒ“ƒg‚ðŒ‹‡‚³‚¹‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ %1, %2" )
+                    "32ãƒ“ãƒƒãƒˆãƒ»ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã¨16ãƒ“ãƒƒãƒˆãƒ»ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’çµåˆã•ã›ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ %1, %2" )
 pick(    MSG_BREAKSYM_NOT_FOUND,    "REALBREAK symbol %s not found" ,
-                    "REALBREAKƒVƒ“ƒ{ƒ‹ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "REALBREAKã‚·ãƒ³ãƒœãƒ« %s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_BAD_IMP_REL_RELOC,     "invalid relative relocation type for an import at %a" ,
-                    "%a ƒCƒ“ƒ|[ƒg‚Ì relativeƒŠƒƒP[ƒVƒ‡ƒ“Eƒ^ƒCƒv‚ª–³Œø‚Å‚·" )
+                    "%a ã‚¤ãƒ³ãƒãƒ¼ãƒˆã® relativeãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ã‚¿ã‚¤ãƒ—ãŒç„¡åŠ¹ã§ã™" )
 pick(    MSG_NOV_NO_CODE_DATA_RELOC,    "%a: cannot relocate between code and data in Novell formats" ,
-                    "%a: ƒmƒxƒ‹EƒtƒH[ƒ}ƒbƒg‚Å‚ÍƒR[ƒh‚Æƒf[ƒ^ŠÔ‚ÌƒŠƒƒP[ƒVƒ‡ƒ“‚ªo—ˆ‚Ü‚¹‚ñ" )
+                    "%a: ãƒŽãƒ™ãƒ«ãƒ»ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã§ã¯ã‚³ãƒ¼ãƒ‰ã¨ãƒ‡ãƒ¼ã‚¿é–“ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå‡ºæ¥ã¾ã›ã‚“" )
 pick(    MSG_ABS_SEG_FIXUP_BAD,     "absolute segment fixup not valid in protect mode" ,
-                    "absoluteƒZƒOƒƒ“ƒg‚ÌƒtƒBƒbƒNƒXƒAƒbƒv‚ÍƒvƒƒeƒNƒgƒ‚[ƒh‚Å‚Í–³Œø‚Å‚·" )
+                    "absoluteã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚¢ãƒƒãƒ—ã¯ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ¢ãƒ¼ãƒ‰ã§ã¯ç„¡åŠ¹ã§ã™" )
 pick(    MSG_CHECK_NOT_FOUND,       "unload CHECK procedure not found" ,
-                    "CHECKƒvƒƒV[ƒWƒƒ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "CHECKãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_START_PROC_NOT_FOUND,      "START procedure not found" ,
-                    "STARTƒvƒƒV[ƒWƒƒ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "STARTãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_EXIT_PROC_NOT_FOUND,       "EXIT procedure not found" ,
-                    "EXITƒvƒƒV[ƒWƒƒ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "EXITãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_NO_SECTION_IN_ROOT,        "SECTION directive not allowed in root" ,
-                    "ƒ‹[ƒg‚ÉSECTIONƒfƒBƒŒƒNƒeƒBƒu‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "ãƒ«ãƒ¼ãƒˆã«SECTIONãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_BAD_NOV_FILE_TYPE,     "bad Novell file format specified" ,
-                    "•s³‚Èƒmƒxƒ‹‚Ìƒtƒ@ƒCƒ‹EƒtƒH[ƒ}ƒbƒg‚ðŽw’è‚µ‚Ü‚µ‚½" )
+                    "ä¸æ­£ãªãƒŽãƒ™ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick(    MSG_CIRCULAR_ALIAS_FOUND,      "circular alias found for %s",
-                    "%s‚ÉzŠÂ‚·‚éƒGƒCƒŠƒAƒX‚ª‚ ‚è‚Ü‚·" )
+                    "%sã«å¾ªç’°ã™ã‚‹ã‚¨ã‚¤ãƒªã‚¢ã‚¹ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_EXPECTING_END,     "expecting an END directive" ,
-                    "ENDƒfƒBƒŒƒNƒeƒBƒu‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ENDãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_OPTION_MULTIPLY_DEFD,      "%s option multiply specified" ,
-                    "%s ƒIƒvƒVƒ‡ƒ“‚ª•¡”Žw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "%s ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒè¤‡æ•°æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_NOT_MULTIPLE_OF_8,     "%s is not a multiple of 8" ,
-                    "%s ‚Í8‚Ì”{”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                    "%s ã¯8ã®å€æ•°ã§ã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_BOTH_RELOC_OPTIONS,        "both relocation options specified" ,
-                    "—¼•û‚ÌƒŠƒƒP[ƒVƒ‡ƒ“EƒIƒvƒVƒ‡ƒ“‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "ä¸¡æ–¹ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_TRANS_RELOCS_NEEDED,       "relocations needed for transparent data" ,
-                    "ƒgƒ‰ƒ“ƒXƒyƒAƒŒƒ“ƒgEƒf[ƒ^‚ÌƒŠƒƒP[ƒVƒ‡ƒ“‚ª•K—v‚Æ‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "ãƒˆãƒ©ãƒ³ã‚¹ãƒšã‚¢ãƒ¬ãƒ³ãƒˆãƒ»ãƒ‡ãƒ¼ã‚¿ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå¿…è¦ã¨ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_FOUND_XXBIT_OBJ,       "file %s is a %d-bit object file" ,
-                    "%s ƒtƒ@ƒCƒ‹‚Í32ƒrƒbƒg‚ÌƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "%s ãƒ•ã‚¡ã‚¤ãƒ«ã¯32ãƒ“ãƒƒãƒˆã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_TOO_MANY_SELECTORS,        "too many selectors needed" ,
-                    "ƒZƒŒƒNƒ^‚ª‘½‚·‚¬‚Ü‚·" )
+                    "ã‚»ãƒ¬ã‚¯ã‚¿ãŒå¤šã™ãŽã¾ã™" )
 pick(    MSG_BAD_REC_TYPE,      "invalid record type 0x%x" ,
-                    "ƒŒƒR[ƒhƒ^ƒCƒv0x%x ‚ª–³Œø‚Å‚·" )
+                    "ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—0x%x ãŒç„¡åŠ¹ã§ã™" )
 pick(    MSG_FRAME_INVALID,     "cannot reference address %A from frame %x" ,
-                    "%A ƒAƒhƒŒƒX‚Ö‚Ì %x ƒtƒŒ[ƒ€‚©‚ç‚ÌŽQÆ‚Ío—ˆ‚Ü‚¹‚ñ" )
+                    "%A ã‚¢ãƒ‰ãƒ¬ã‚¹ã¸ã® %x ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®å‚ç…§ã¯å‡ºæ¥ã¾ã›ã‚“" )
 pick(    MSG_BAD_TARG_OFF,      "target offset exceeds 64K at %a" ,
-                    "%a ‚Ìƒ^[ƒQƒbƒgƒIƒtƒZƒbƒg‚ª64K‚ð‰z‚¦‚Ä‚¢‚Ü‚·" )
+                    "%a ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚ªãƒ•ã‚»ãƒƒãƒˆãŒ64Kã‚’è¶Šãˆã¦ã„ã¾ã™" )
 #ifdef __UNIX__
 pick(    MSG_PRESS_CTRL_Z,      "Press CTRL/D to finish" ,
-                    "I—¹‚ÍCTRL/D‚ð‰Ÿ‚µ‚Ä‰º‚³‚¢" )
+                    "çµ‚äº†ã¯CTRL/Dã‚’æŠ¼ã—ã¦ä¸‹ã•ã„" )
 #else
 pick(    MSG_PRESS_CTRL_Z,      "Press CTRL/Z and then RETURN to finish" ,
-                        "I—¹‚ÍCTRL/Z‚ÆØÀ°Ý¥·°‚ð‰Ÿ‚µ‚Ä‰º‚³‚¢" )
+                        "çµ‚äº†ã¯CTRL/Zã¨ï¾˜ï¾€ï½°ï¾ï½¥ï½·ï½°ã‚’æŠ¼ã—ã¦ä¸‹ã•ã„" )
 #endif
 pick(    MSG_INV_COM_START_ADDR,        "invalid starting address for .COM file" ,
-                    ".COMƒtƒ@ƒCƒ‹‚É‘Î‚µ‚Ä–³Œø‚ÈŠJŽnƒAƒhƒŒƒX‚Å‚·" )
+                    ".COMãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã—ã¦ç„¡åŠ¹ãªé–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã§ã™" )
 pick(    MSG_STACK_SEG_IGNORED,     "stack segment ignored in .COM file" ,
-                    ".COMƒtƒ@ƒCƒ‹‚ÌƒXƒ^ƒbƒNƒZƒOƒƒ“ƒg‚ð–³Ž‹‚µ‚Ü‚·" )
+                    ".COMãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¹ã‚¿ãƒƒã‚¯ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’ç„¡è¦–ã—ã¾ã™" )
 pick(    MSG_NO_VIRT_MEM,       "virtual memory exhausted" ,
-                    "‰¼‘zƒƒ‚ƒŠŽc—Ê‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ä»®æƒ³ãƒ¡ãƒ¢ãƒªæ®‹é‡ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_COM_TOO_LARGE,     "program too large for a .COM file" ,
-                    ".COMƒtƒ@ƒCƒ‹‚É‘Î‚µ‚ÄƒvƒƒOƒ‰ƒ€‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    ".COMãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã—ã¦ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_MULT_DEF_BY,       "redefinition of %1 by %2 ignored" ,
-                    "%1‚Ì%2‚É‚æ‚éÄ’è‹`‚ð–³Ž‹‚µ‚Ü‚·" )
+                    "%1ã®%2ã«ã‚ˆã‚‹å†å®šç¾©ã‚’ç„¡è¦–ã—ã¾ã™" )
 pick(    MSG_OVL_GROUP_SPLIT,       "group %s is in more than one overlay" ,
-                    "%sƒOƒ‹[ƒv‚ª•¡”‚ÌƒI[ƒoƒŒƒC‚É‚Ü‚½‚ª‚Á‚Ä‚¢‚Ü‚·" )
+                    "%sã‚°ãƒ«ãƒ¼ãƒ—ãŒè¤‡æ•°ã®ã‚ªãƒ¼ãƒãƒ¬ã‚¤ã«ã¾ãŸãŒã£ã¦ã„ã¾ã™" )
 pick(    MSG_NEWSEG_BEFORE_OBJ,     "NEWSEGMENT directive appears before object files" ,
-                    "NEWSEGMENTƒfƒBƒŒƒNƒeƒBƒu‚ªƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚Ì‘O‚ÉŽw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "NEWSEGMENTãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãŒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®å‰ã«æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_CANT_OPEN_NO_REASON,       "cannot open %s" ,
-                    "%s‚ðƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ" )
+                    "%sã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“" )
 pick(    MSG_IO_PROBLEM_NO_REASON,      "I/O error processing %s" ,
-                    "%s ˆ—’†‚ÉI/OƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½" )
+                    "%s å‡¦ç†ä¸­ã«I/Oã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ" )
 pick(    MSG_DEBUG_TOO_LARGE,       "%s debugging information too large" ,
-                    "%s ƒfƒoƒbƒOî•ñ‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "%s ãƒ‡ãƒãƒƒã‚°æƒ…å ±ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_INCOMPATIBLE_DBI_FOUND,    "incompatible types of debugging information found" ,
-                    "ŒÝŠ·«‚Ì‚È‚¢ƒ^ƒCƒv‚ÌƒfƒoƒbƒOî•ñ‚ª‚ ‚è‚Ü‚·" )
+                    "äº’æ›æ€§ã®ãªã„ã‚¿ã‚¤ãƒ—ã®ãƒ‡ãƒãƒƒã‚°æƒ…å ±ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_TOO_MANY_LIB_MODS,     "too many library modules" ,
-                    "ƒ‰ƒCƒuƒ‰ƒŠƒ‚ƒWƒ…[ƒ‹‚ª‘½‚·‚¬‚Ü‚·" )
+                    "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒå¤šã™ãŽã¾ã™" )
 pick(    MSG_OFFSET_MUST_BE_ALIGNED,    "Offset option must be a multiple of %l" ,
-                    "ƒIƒtƒZƒbƒgƒIƒvƒVƒ‡ƒ“‚Í%l‚Ì”{”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ" )
+                    "ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¯%lã®å€æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“" )
 pick(    MSG_SYMBOL_NAME_TOO_LONG,      "symbol name too long: %s" ,
-                    "ƒVƒ“ƒ{ƒ‹–¼‚ª’·‚·‚¬‚Ü‚·: %s" )
+                    "ã‚·ãƒ³ãƒœãƒ«åãŒé•·ã™ãŽã¾ã™: %s" )
 pick(    MSG_MOD_TRACE,                 "%S referenced by module %s" ,
-                    "%S ‚ª %sƒ‚ƒWƒ…[ƒ‹‚ÅŽQÆ‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "%S ãŒ %sãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã§å‚ç…§ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_INV_INC_FILE,      "invalid incremental information file",
-                    "•s“KØ‚ÈƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹î•ñƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "ä¸é©åˆ‡ãªã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«æƒ…å ±ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_TRACE_OBJ_NOT_FOUND,       "object file %s not found for tracing" ,
-                    "ƒgƒŒ[ƒX‚·‚éƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹%s‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ãƒˆãƒ¬ãƒ¼ã‚¹ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«%sãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_TRACE_LIB_NOT_FOUND,       "library module %1(%2) not found for tracing" ,
-                    "ƒgƒŒ[ƒX‚·‚éƒ‰ƒCƒuƒ‰ƒŠƒ‚ƒWƒ…[ƒ‹ %1(%2)‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ãƒˆãƒ¬ãƒ¼ã‚¹ã™ã‚‹ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« %1(%2)ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_MOD_IND_TRACE,     "%S referenced indirectly by module %s" ,
-                    "%S ‚ªƒ‚ƒWƒ…[ƒ‹ %s ‚ÅŠÔÚŽQÆ‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "%S ãŒãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« %s ã§é–“æŽ¥å‚ç…§ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_CANT_RESERVE_SPACE,        "cannot reserve %l bytes of extra overlay space" ,
-                    "%l ƒoƒCƒg‚ÌƒGƒNƒXƒgƒ‰EƒI[ƒoƒŒƒCEƒXƒy[ƒX‚ªŠm•Û‚Å‚«‚Ü‚¹‚ñ" )
+                    "%l ãƒã‚¤ãƒˆã®ã‚¨ã‚¯ã‚¹ãƒˆãƒ©ãƒ»ã‚ªãƒ¼ãƒãƒ¬ã‚¤ãƒ»ã‚¹ãƒšãƒ¼ã‚¹ãŒç¢ºä¿ã§ãã¾ã›ã‚“" )
 pick(    MSG_SYSTEM_UNDEFINED,      "undefined system name: %s" ,
-                    "ƒVƒXƒeƒ€–¼‚ª–¢’è‹`‚Å‚·: %s" )
+                    "ã‚·ã‚¹ãƒ†ãƒ åãŒæœªå®šç¾©ã§ã™: %s" )
 pick(    MSG_SYSTEM_ALREADY_DEFINED,    "system %s defined more than once" ,
-                    "ƒVƒXƒeƒ€ %s ‚ª‚Q‰ñˆÈã’è‹`‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "ã‚·ã‚¹ãƒ†ãƒ  %s ãŒï¼’å›žä»¥ä¸Šå®šç¾©ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_QNX_BASE_LT_STACK,     "OFFSET option is less than the stack size" ,
-                    "OFFSETƒIƒvƒVƒ‡ƒ“‚ÍƒXƒ^ƒbƒNƒTƒCƒY‚æ‚è¬‚³‚¢‚Å‚·" )
+                    "OFFSETã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¯ã‚¹ã‚¿ãƒƒã‚¯ã‚µã‚¤ã‚ºã‚ˆã‚Šå°ã•ã„ã§ã™" )
 pick(    MSG_NO_MEMB_IN_LIBFILE,        "library members not allowed in libfile" ,
-                    "LIBFILE‚Éƒ‰ƒCƒuƒ‰ƒŠƒƒ“ƒo‚ÍŽw’è‚Å‚«‚Ü‚¹‚ñ" )
+                    "LIBFILEã«ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ¡ãƒ³ãƒã¯æŒ‡å®šã§ãã¾ã›ã‚“" )
 pick(    MSG_ERROR_IN_SYSTEM_BLOCK,     "error in default system block" ,
-                    "ƒfƒtƒHƒ‹ƒg‚ÌƒVƒXƒeƒ€ƒuƒƒbƒN‚ÉƒGƒ‰[‚ª‚ ‚è‚Ü‚·" )
+                    "ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚·ã‚¹ãƒ†ãƒ ãƒ–ãƒ­ãƒƒã‚¯ã«ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_NO_PREVIOUS_INPUT,     "no previous input source" ,
-                    "“ü—Íƒ\[ƒX‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "å…¥åŠ›ã‚½ãƒ¼ã‚¹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_NO_INPUT_LEFT,     "no more input found for ^ command" ,
-                    "^ ƒRƒ}ƒ“ƒh‚ÌŽw’è‚ª•sŠ®‘S‚Å‚·" )
+                    "^ ã‚³ãƒžãƒ³ãƒ‰ã®æŒ‡å®šãŒä¸å®Œå…¨ã§ã™" )
 pick(    MSG_ENV_NAME_INCORRECT,        "environment name specified incorrectly" ,
-                    "ŠÂ‹«–¼‚ÌŽw’è‚ª•s³Šm‚Å‚·" )
+                    "ç’°å¢ƒåã®æŒ‡å®šãŒä¸æ­£ç¢ºã§ã™" )
 pick(    MSG_ENV_NOT_FOUND,     "environment name %s not found" ,
-                    "ŠÂ‹«–¼ %s ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "ç’°å¢ƒå %s ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_AREA_TOO_SMALL,        "overlay area must be at least %l bytes" ,
-                    "ƒI[ƒoƒŒƒCEƒGƒŠƒA‚ª­‚È‚­‚Æ‚à%lƒoƒCƒg•K—v‚Å‚·" )
+                    "ã‚ªãƒ¼ãƒãƒ¬ã‚¤ãƒ»ã‚¨ãƒªã‚¢ãŒå°‘ãªãã¨ã‚‚%lãƒã‚¤ãƒˆå¿…è¦ã§ã™" )
 pick(    MSG_BAD_MOVABLE_SEG_NUM,       "segment number too high for a movable entry point" ,
-                    "movableƒGƒ“ƒgƒŠEƒ|ƒCƒ“ƒg‚ÌƒZƒOƒƒ“ƒg”Ô†‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "movableã‚¨ãƒ³ãƒˆãƒªãƒ»ãƒã‚¤ãƒ³ãƒˆã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå·ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_HEAP_TOO_BIG,      "heap size too large" ,
-                    "ƒq[ƒvƒTƒCƒY‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "ãƒ’ãƒ¼ãƒ—ã‚µã‚¤ã‚ºãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_BAD_WLIB_IMPORT,       "wlib import statement incorrect" ,
-                    "wlib‚ÌƒCƒ“ƒ|[ƒgEƒXƒe[ƒgƒƒ“ƒg‚ª•s³Šm‚Å‚·" )
+                    "wlibã®ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ã‚¹ãƒ†ãƒ¼ãƒˆãƒ¡ãƒ³ãƒˆãŒä¸æ­£ç¢ºã§ã™" )
 pick(    MSG_APP_TOO_BIG_FOR_DOS,       "application too large to run under DOS" ,
-                    "DOSã‚Å“®ì‚³‚¹‚é‚É‚ÍƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "DOSä¸Šã§å‹•ä½œã•ã›ã‚‹ã«ã¯ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_DUP_EXP_NAME,      "'%s' has already been exported" ,
-                    "'%s' ‚ÍŠù‚ÉƒGƒNƒXƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "'%s' ã¯æ—¢ã«ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_NO_FILES_FOUND,        "no FILE directives found" ,
-                    "FILEƒfƒBƒŒƒNƒeƒBƒu‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "FILEãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_OVERLAYS_NOT_SUPPORTED,    "overlays are not supported in this version of WLINK" ,
-                    "ƒI[ƒo[ƒŒƒC‚Í‚±‚Ìƒo[ƒWƒ‡ƒ“‚ÌWLINK‚Å‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ã¯ã“ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®WLINKã§ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_LAZY_EXTDEF_MISMATCH,      "lazy reference for %S has different default resolutions" ,
-                    "%S‚ÌŽQÆ‚ªƒfƒtƒHƒ‹ƒg‚Ì‰ðŒˆ‚ÆˆÙ‚È‚è‚Ü‚·" )
+                    "%Sã®å‚ç…§ãŒãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è§£æ±ºã¨ç•°ãªã‚Šã¾ã™" )
 pick(    MSG_MULTIPLE_ALIASES,      "multiple aliases found for %S" ,
-                    "%S‚É•¡”‚ÌƒGƒŠƒAƒX‚ª‚ ‚è‚Ü‚·" )
+                    "%Sã«è¤‡æ•°ã®ã‚¨ãƒªã‚¢ã‚¹ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_EXE_DATE_CHANGED,      "%s has been modified: doing full relink" ,
-                    "%s‚ªC³‚³‚ê‚Ü‚µ‚½: Š®‘S‚ÈÄƒŠƒ“ƒN‚ð‚µ‚Ü‚·" )
+                    "%sãŒä¿®æ­£ã•ã‚Œã¾ã—ãŸ: å®Œå…¨ãªå†ãƒªãƒ³ã‚¯ã‚’ã—ã¾ã™" )
 pick(    MSG_CANT_EXPORT_ABSOLUTE,  "cannot export symbol %S" ,
-                    "ƒVƒ“ƒ{ƒ‹%S‚ðƒGƒNƒXƒ|[ƒg‚Å‚«‚Ü‚¹‚ñ" )
+                    "ã‚·ãƒ³ãƒœãƒ«%Sã‚’ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã§ãã¾ã›ã‚“" )
 pick(    MSG_DIRECTIVE_ERR_BEGINNING,   "directive error near beginning of input" ,
-                    "“ü—ÍŠJŽn•t‹ß‚ÉƒfƒBƒŒƒNƒeƒBƒuEƒGƒ‰[‚ª‚ ‚è‚Ü‚·" )
+                    "å…¥åŠ›é–‹å§‹ä»˜è¿‘ã«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ãƒ»ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_ADDR_INFO_TOO_LARGE,   "address information too large" ,
-                    "ƒAƒhƒŒƒXî•ñ‚ª‘å‚«‚·‚¬‚Ü‚·" )
+                    "ã‚¢ãƒ‰ãƒ¬ã‚¹æƒ…å ±ãŒå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_INV_SHARED_NLM_FILE,   "%s is an invalid shared NLM file" ,
-                    "%s ‚Í–³Œø‚È‹¤—L‚m‚k‚lƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "%s ã¯ç„¡åŠ¹ãªå…±æœ‰ï¼®ï¼¬ï¼­ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_CANT_OPEN_SPILL,       "cannot open temporary file: file already exists" ,
-                    "ƒXƒsƒ‹Eƒtƒ@ƒCƒ‹‚ðƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ: Šù‚É‘¶Ý‚µ‚Ä‚¢‚Ü‚·" )
+                    "ã‚¹ãƒ”ãƒ«ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“: æ—¢ã«å­˜åœ¨ã—ã¦ã„ã¾ã™" )
 pick(    MSG_BAD_CURLY_LIST,        "curly brace delimited list incorrect" ,
-                    "‘åŠ‡ŒÊ‚Å•Â‚¶‚ç‚ê‚½ƒŠƒXƒg‚ª•s³Šm‚Å‚·" )
+                    "å¤§æ‹¬å¼§ã§é–‰ã˜ã‚‰ã‚ŒãŸãƒªã‚¹ãƒˆãŒä¸æ­£ç¢ºã§ã™" )
 pick(    MSG_NO_REALBREAK_WITH_16BIT,   "no realbreak specified for 16-bit code" ,
-                    "16ƒrƒbƒgEƒR[ƒh‚ÌƒŠƒAƒ‹ƒuƒŒƒCƒN‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "16ãƒ“ãƒƒãƒˆãƒ»ã‚³ãƒ¼ãƒ‰ã®ãƒªã‚¢ãƒ«ãƒ–ãƒ¬ã‚¤ã‚¯ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_INV_MESSAGE_FILE,      "%s is an invalid message file" ,
-                    "%s ‚Í–³Œø‚ÈƒƒbƒZ[ƒWEƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "%s ã¯ç„¡åŠ¹ãªãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_INCORRECT_NUM_AREAS,   "need exactly 1 overlay area with dynamic overlay manager" ,
-                    "ƒ_ƒCƒiƒ~ƒbƒNEƒI[ƒoƒŒƒCEƒ}ƒl[ƒWƒƒ‚ÌƒI[ƒoƒŒƒC—Ìˆæ‚ª•K—v‚Å‚·" )
+                    "ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ãƒ»ã‚ªãƒ¼ãƒãƒ¬ã‚¤ãƒ»ãƒžãƒãƒ¼ã‚¸ãƒ£ã®ã‚ªãƒ¼ãƒãƒ¬ã‚¤é ˜åŸŸãŒå¿…è¦ã§ã™" )
 pick(    MSG_RELOC_TO_RWDATA_SEG,   "segment relocation to a read/write data segment found at %a(%S)" ,
-                    "%a(%S) ‚É READ/WRITE ƒf[ƒ^ƒZƒOƒƒ“ƒg‚Ö‚ÌƒŠƒƒP[ƒVƒ‡ƒ“‚ª‚ ‚è‚Ü‚·" )
+                    "%a(%S) ã« READ/WRITE ãƒ‡ãƒ¼ã‚¿ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã¸ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_TOO_MANY_ERRORS,       "too many errors encountered" ,
-                    "ƒGƒ‰[‚ª‘½‚·‚¬‚Ü‚·" )
+                    "ã‚¨ãƒ©ãƒ¼ãŒå¤šã™ãŽã¾ã™" )
 pick(    MSG_INV_FILENAME,      "invalid filename '%s'" ,
-                    "–³Œø‚Èƒtƒ@ƒCƒ‹–¼ '%s'" )
+                    "ç„¡åŠ¹ãªãƒ•ã‚¡ã‚¤ãƒ«å '%s'" )
 pick(    MSG_CANNOT_HAVE_16_AND_32, "cannot have both 16-bit and 32-bit object files" ,
-                    "16ƒrƒbƒg‚Æ32ƒrƒbƒg‚Ì—¼•û‚ÌƒIƒuƒWƒFƒNƒgEƒtƒ@ƒCƒ‹‚ÍŽ‚Ä‚Ü‚¹‚ñ" )
+                    "16ãƒ“ãƒƒãƒˆã¨32ãƒ“ãƒƒãƒˆã®ä¸¡æ–¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã¯æŒã¦ã¾ã›ã‚“" )
 pick(    MSG_INVALID_MSG_NUM,       "invalid message number" ,
-                    "•s“KØ‚ÈƒƒbƒZ[ƒW”Ô†‚Å‚·" )
+                    "ä¸é©åˆ‡ãªãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç•ªå·ã§ã™" )
 pick(    MSG_VF_TABLE_MISMATCH,     "virtual function table record for %S mismatched" ,
-                    "%S ‚Ì‰¼‘zŠÖ”ƒe[ƒuƒ‹ƒŒƒR[ƒh‚ªˆê’v‚µ‚Ü‚¹‚ñ" )
+                    "%S ã®ä»®æƒ³é–¢æ•°ãƒ†ãƒ¼ãƒ–ãƒ«ãƒ¬ã‚³ãƒ¼ãƒ‰ãŒä¸€è‡´ã—ã¾ã›ã‚“" )
 pick(    MSG_CANT_SORT_SYMBOLS,     "not enough memory to sort map file symbols" ,
-                    "ƒ}ƒbƒvƒtƒ@ƒCƒ‹‚ÌƒVƒ“ƒ{ƒ‹‚ðƒ\[ƒg‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ãƒžãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚·ãƒ³ãƒœãƒ«ã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_SYMBOL_DEAD,       "symbol %S removed" ,
-                    "ƒVƒ“ƒ{ƒ‹ %S ‚Ííœ‚³‚ê‚Ü‚µ‚½" )
+                    "ã‚·ãƒ³ãƒœãƒ« %S ã¯å‰Šé™¤ã•ã‚Œã¾ã—ãŸ" )
 pick(    MSG_VF_PURE_MISMATCH,      "%S is both pure virtual and non-pure virtual" ,
-                    "%S ‚Í pure virtual ‚Æ non-pure virtual ‚Ì—¼•û‚Å‚·" )
+                    "%S ã¯ pure virtual ã¨ non-pure virtual ã®ä¸¡æ–¹ã§ã™" )
 pick(    MSG_BAD_OBJECT,        "%s is an invalid object file" ,
-                    "%s ‚Í³‚µ‚­‚È‚¢ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚Å‚·" )
+                    "%s ã¯æ­£ã—ããªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick(    MSG_AMBIG_FORMAT,      "ambiguous format specified" ,
-                    "Œ`Ž®‚ÌŽw’è‚ªžB–†‚Å‚·" )
+                    "å½¢å¼ã®æŒ‡å®šãŒæ›–æ˜§ã§ã™" )
 pick(    MSG_INVALID_TYPE_DESC,     "invalid segment type specified" ,
-                    "•s“KØ‚ÈƒZƒOƒƒ“ƒgEƒ^ƒCƒv‚ÌŽw’è‚Å‚·" )
+                    "ä¸é©åˆ‡ãªã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚¿ã‚¤ãƒ—ã®æŒ‡å®šã§ã™" )
 pick(    MSG_MULT_DBI_FORMATS,      "only one debugging format can be specified" ,
-                    "•¡”‚ÌƒfƒoƒbƒOŒ`Ž®‚ÌŽw’è‚Í‚Å‚«‚Ü‚¹‚ñ" )
+                    "è¤‡æ•°ã®ãƒ‡ãƒãƒƒã‚°å½¢å¼ã®æŒ‡å®šã¯ã§ãã¾ã›ã‚“" )
 pick(    MSG_MACHTYPE_DIFFERENT,    "file %s has code for a different processor",
-                    "ƒtƒ@ƒCƒ‹ %s ‚É‚ÍˆÙ‚È‚éƒvƒƒZƒbƒT—p‚ÌƒR[ƒh‚ª“ü‚Á‚Ä‚¢‚Ü‚·" )
+                    "ãƒ•ã‚¡ã‚¤ãƒ« %s ã«ã¯ç•°ãªã‚‹ãƒ—ãƒ­ã‚»ãƒƒã‚µç”¨ã®ã‚³ãƒ¼ãƒ‰ãŒå…¥ã£ã¦ã„ã¾ã™" )
 pick(    MSG_NO_BIG_ENDIAN,     "big endian code not supported",
-                    "ƒrƒbƒOEƒGƒ“ƒfƒBƒAƒ“EƒR[ƒh‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "ãƒ“ãƒƒã‚°ãƒ»ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ãƒ»ã‚³ãƒ¼ãƒ‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_NO_DICT_FOUND,     "no dictionary found",
-                    "Ž«‘(ÃÞ¨¸¼®ÅØ)‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                    "è¾žæ›¸(ï¾ƒï¾žï½¨ï½¸ï½¼ï½®ï¾…ï¾˜)ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick(    MSG_CANT_EXECUTE,      "cannot execute %1 : %2" ,
-                    "ŽÀs‚Å‚«‚Ü‚¹‚ñ %1 : %2" )
+                    "å®Ÿè¡Œã§ãã¾ã›ã‚“ %1 : %2" )
 pick(    MSG_REL_NOT_ALIGNED,       "relocation at %a to an improperly aligned target" ,
-                    "%a ‚É‚¨‚¢‚Ä•s“KØ‚È®—ñ(±×²ÝÒÝÄ)‚Ìƒ^[ƒQƒbƒg‚Ö‚ÌƒŠƒƒP[ƒVƒ‡ƒ“‚ª‚ ‚è‚Ü‚·" )
+                    "%a ã«ãŠã„ã¦ä¸é©åˆ‡ãªæ•´åˆ—(ï½±ï¾—ï½²ï¾ï¾’ï¾ï¾„)ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_INC_NEAR_START,        "OPTION INCREMENTAL must be one of the first commands specified " ,
-                    "OPTION INCREMENTAL‚ðÅ‰‚ÌƒRƒ}ƒ“ƒh‚Æ‚µ‚ÄŽw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ" )
+                    "OPTION INCREMENTALã‚’æœ€åˆã®ã‚³ãƒžãƒ³ãƒ‰ã¨ã—ã¦æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“" )
 pick(    MSG_NO_CODE_OR_DATA,       "no code or data present" ,
-                    "ƒR[ƒh‚Ü‚½‚Íƒf[ƒ^‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                    "ã‚³ãƒ¼ãƒ‰ã¾ãŸã¯ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(    MSG_PROBLEM_IN_RESOURCE,       "problem adding resource information" ,
-                    "ƒŠƒ\[ƒXî•ñ‚Ì’Ç‰Á‚É–â‘è‚ª‚ ‚è‚Ü‚·" )
+                    "ãƒªã‚½ãƒ¼ã‚¹æƒ…å ±ã®è¿½åŠ ã«å•é¡ŒãŒã‚ã‚Šã¾ã™" )
 pick(    MSG_INC_ONLY_SUPPORTS_DWARF,   "incremental linking only supports DWARF debugging information" ,
-                    "ƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹¥ƒŠƒ“ƒN‚ÍDWARFƒfƒoƒbƒOî•ñ‚Ì‚Ý‚ðƒTƒ|[ƒg‚µ‚Ü‚·" )
+                    "ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«ï½¥ãƒªãƒ³ã‚¯ã¯DWARFãƒ‡ãƒãƒƒã‚°æƒ…å ±ã®ã¿ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã™" )
 pick(    MSG_INC_AND_DCE_NOT_ALLOWED,   "incremental linking does not support dead code elimination" ,
-                    "ƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹¥ƒŠƒ“ƒN‚Íƒfƒbƒh¥ƒR[ƒh‚Ìíœ‚ðƒTƒ|[ƒg‚µ‚Ü‚¹‚ñ" )
+                    "ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«ï½¥ãƒªãƒ³ã‚¯ã¯ãƒ‡ãƒƒãƒ‰ï½¥ã‚³ãƒ¼ãƒ‰ã®å‰Šé™¤ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¾ã›ã‚“" )
 pick(    MSG_TOC_TOO_BIG,               "Table of Contents too big to fit into 64K",
-                    "ƒRƒ“ƒeƒ“ƒc‚Ìƒe[ƒuƒ‹‚Í64K‚æ‚è‘å‚«‚·‚¬‚Ü‚·" )
+                    "ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ãƒ†ãƒ¼ãƒ–ãƒ«ã¯64Kã‚ˆã‚Šå¤§ãã™ãŽã¾ã™" )
 pick(    MSG_REL_IN_LIDATA,             "relocations on iterated data not supported",
-                    "ŒJ‚è•Ô‚µƒf[ƒ^‚ÌÄ”z’u‚ÍƒTƒ|[ƒg‚µ‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "ç¹°ã‚Šè¿”ã—ãƒ‡ãƒ¼ã‚¿ã®å†é…ç½®ã¯ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_NOT_COMPILED_VF_ELIM,      "module has not been compiled with -zv",
-                    "ƒ‚ƒWƒ…[ƒ‹‚Í-zvƒIƒvƒVƒ‡ƒ“‚ð‚Â‚¯‚ÄƒRƒ“ƒpƒCƒ‹‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã¯-zvã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ã¤ã‘ã¦ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_INC_AND_VFR_NOT_ALLOWED,   "incremental linking does not support virtual function removal",
-                    "ƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹¥ƒŠƒ“ƒN‚Í‰¼‘zŠÖ”‚Ìíœ‚ðƒTƒ|[ƒg‚µ‚Ä‚¢‚Ü‚¹‚ñ" )
+                    "ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«ï½¥ãƒªãƒ³ã‚¯ã¯ä»®æƒ³é–¢æ•°ã®å‰Šé™¤ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã¾ã›ã‚“" )
 pick(    MSG_RESOURCE_TOO_BIG,      "resource file %s too big",
-                    "ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹ %s ‚Í‘å‚«‚·‚¬‚Ü‚·" )
+                    "ãƒªã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ« %s ã¯å¤§ãã™ãŽã¾ã™" )
 pick(    MSG_MULT_START_ADDRS_BY,   "both %1 and %2 marked as starting symbols" ,
-                    "%1‚Æ%2‚Ì—¼•û‚ÍŠJŽnƒVƒ“ƒ{ƒ‹‚Æ‚µ‚Äƒ}[ƒN‚³‚ê‚Ä‚¢‚Ü‚·" )
+                    "%1ã¨%2ã®ä¸¡æ–¹ã¯é–‹å§‹ã‚·ãƒ³ãƒœãƒ«ã¨ã—ã¦ãƒžãƒ¼ã‚¯ã•ã‚Œã¦ã„ã¾ã™" )
 pick(    MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE,  "NLM internal name (%s) truncated" ,
                     "NLM internal name (%s) truncated" )
 pick(    MSG_VXD_INCORRECT_EXPORT,  "exactly one export must exist for VxD format" ,

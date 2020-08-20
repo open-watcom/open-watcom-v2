@@ -127,9 +127,9 @@ rcui_inc_dirs = -I. -I"$(wrc_dir)/h" -I"../h"
 
 wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
-rcmsg.gh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
+rcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

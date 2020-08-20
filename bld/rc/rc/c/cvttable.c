@@ -19,6 +19,8 @@
 #include "cvttable.h"
 
 
+typedef int (*comp_fn)(const void *,const void *);
+
 static cvt_chr cvt_table[] = {
     #define pick(s,u) {s, u },
     #include "cp932uni.h"
@@ -26,15 +28,15 @@ static cvt_chr cvt_table[] = {
 };
 
 #if 0
-static int compare_sjis( const void *p1, const void *p2 )
+static int compare_sjis( const cvt_chr *p1, const cvt_chr *p2 )
 {
-    return( ((cvt_chr *)p1)->s - ((cvt_chr *)p2)->s );
+    return( p1->s - p2->s );
 }
 #endif
 
-static int compare_utf8( const void *p1, const void *p2 )
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
 {
-    return( ((cvt_chr *)p1)->u - ((cvt_chr *)p2)->u );
+    return( p1->u - p2->u );
 }
 
 static void usage( void )
@@ -61,7 +63,7 @@ int main( int argc, char *argv[] )
         return( 5 );
     }
     tablen = sizeof( cvt_table ) / sizeof( cvt_table[0] );
-    qsort( cvt_table, tablen, sizeof( cvt_table[0] ), compare_utf8 );
+    qsort( cvt_table, tablen, sizeof( cvt_table[0] ), (comp_fn)compare_utf8 );
     fwrite( &tablen, sizeof( tablen ), 1, fo );
     fwrite( cvt_table, sizeof( cvt_chr ), tablen, fo );
     fclose( fo );

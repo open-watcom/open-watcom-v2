@@ -1,230 +1,230 @@
 pick(   STR_WARNING,
         "Warning!",
-        "Œx!" )
+        "è­¦å‘Š!" )
 pick(   STR_ERROR,
         "Error!",
-        "ƒGƒ‰|!" )
+        "ã‚¨ãƒ©ï¼!" )
 pick(   STR_FATAL_ERROR,
         "Fatal Error!",
-        "’v–½“IƒGƒ‰|!" )
+        "è‡´å‘½çš„ã‚¨ãƒ©ï¼!" )
 pick(   STR_END_OF_FILE,
         "Unexpected end of file",
-        "ƒtƒ@ƒCƒ‹‚ÌI‚í‚è‚ðŒŸo‚µ‚Ü‚µ‚½" )
+        "ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ‚ã‚ã‚Šã‚’æ¤œå‡ºã—ã¾ã—ãŸ" )
 pick(   STR_APP_NAME,
         "Open Watcom Resource Compiler Version 1.0\n",
-        "Open Watcom ƒEƒBƒ“ƒhƒEƒY ƒŠƒ\|ƒX ƒRƒ“ƒpƒCƒ‰ ƒo|ƒWƒ‡ƒ“ 1.0\n" )
+        "Open Watcom ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚º ãƒªã‚½ï¼ã‚¹ ã‚³ãƒ³ãƒ‘ã‚¤ãƒ© ãƒï¼ã‚¸ãƒ§ãƒ³ 1.0\n" )
 pick(   ERR_CANT_OPEN_FILE,
         "Unable to open file \"%s\": %s.",
-        "ƒtƒ@ƒCƒ‹‚ðƒI|ƒvƒ“o—ˆ‚Ü‚¹‚ñ \"%s\": %s." )
+        "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªï¼ãƒ—ãƒ³å‡ºæ¥ã¾ã›ã‚“ \"%s\": %s." )
 pick(   ERR_RENAMING_TMP_FILE,
         "Error renaming temporary file \"%s\" to \"%s\": %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\" ‚Ì \"%s\"‚Ö‚Ì•ÏXƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã® \"%s\"ã¸ã®å¤‰æ›´ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_NOT_ICON_FILE,
         "\"%s\" is not a valid icon file.",
-        "\"%s\" ‚Í–³Œø‚ÈƒAƒCƒRƒ“ƒtƒ@ƒCƒ‹‚Å‚·." )
+        "\"%s\" ã¯ç„¡åŠ¹ãªã‚¢ã‚¤ã‚³ãƒ³ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™." )
 pick(   ERR_NOT_CURSOR_FILE,
         "\"%s\" is not a valid cursor file.",
-        "\"%s\" ‚Í–³Œø‚ÈƒJ|ƒ\ƒ‹ƒtƒ@ƒCƒ‹‚Å‚·." )
+        "\"%s\" ã¯ç„¡åŠ¹ãªã‚«ï¼ã‚½ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™." )
 pick(   ERR_NOT_BITMAP_FILE,
         "\"%s\" is not a valid bitmap file.",
-        "\"%s\" ‚Í–³Œø‚Èƒrƒbƒgƒ}ƒbƒvƒtƒ@ƒCƒ‹‚Å‚·." )
+        "\"%s\" ã¯ç„¡åŠ¹ãªãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™." )
 pick(   ERR_NONNT_RES_TO_NT_EXE,
         "Trying to add a Win16 or OS/2 RES file \"%s\" to a Win32 executable \"%s\".",
-        "ƒEƒBƒ“ƒhƒEƒY—p RESƒtƒ@ƒCƒ‹ \"%s\" ‚ðNTŽÀsƒtƒ@ƒCƒ‹ \"%s\" ‚É’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·." )
+        "ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚ºç”¨ RESãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã‚’NTå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã«è¿½åŠ ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™." )
 pick(   ERR_NONWIN_RES_TO_WIN_EXE,
         "Trying to add a Win32 or OS/2 RES file \"%s\" to a Win16 executable \"%s\".",
-        "Win32—p RESƒtƒ@ƒCƒ‹ \"%s\" ‚ðƒEƒBƒ“ƒhƒEƒYŽÀsƒtƒ@ƒCƒ‹ \"%s\" ‚É’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·." )
+        "Win32ç”¨ RESãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚ºå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã«è¿½åŠ ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™." )
 pick(   ERR_PE_HEADER_SIZE_CHANGE,
         "Object alignment increase required.  Relink with larger object alignment.",
-        "‚æ‚è‘å‚«‚ÈƒIƒuƒWƒFƒNƒg ƒAƒ‰ƒCƒ“ƒƒ“ƒg‚ª•K—v‚Å‚·. ‚æ‚è‘å‚«‚ÈƒIƒuƒWƒFƒNƒg ƒAƒ‰ƒCƒ“ƒƒ“ƒg‚ðŽw’è‚µ‚ÄÄƒŠƒ“ƒN‚µ‚Ä‚­‚¾‚³‚¢." )
+        "ã‚ˆã‚Šå¤§ããªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆãŒå¿…è¦ã§ã™. ã‚ˆã‚Šå¤§ããªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’æŒ‡å®šã—ã¦å†ãƒªãƒ³ã‚¯ã—ã¦ãã ã•ã„." )
 pick(   ERR_OLD_RESOURCE_OBJECT,
         "EXE contains old resources that cannot be removed.",
-        "EXE ‚Éíœo—ˆ‚È‚¢ŒÃ‚¢ƒŠƒ\|ƒX‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·.")
+        "EXE ã«å‰Šé™¤å‡ºæ¥ãªã„å¤ã„ãƒªã‚½ï¼ã‚¹ãŒå«ã¾ã‚Œã¦ã„ã¾ã™.")
 pick(   ERR_READING_EXE,
         "Error reading EXE file \"%s\": %s.",
-        "EXE ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "EXE ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_UNEXPECTED_EOF,
         "Error reading file \"%s\": Unexpected end of file.",
-        "ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: ƒtƒ@ƒCƒ‹‚ÌI‚í‚è‚ðŒŸo‚µ‚Ü‚µ‚½." )
+        "ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ‚ã‚ã‚Šã‚’æ¤œå‡ºã—ã¾ã—ãŸ." )
 pick(   ERR_WRITTING_FILE,
         "Error writing to \"%s\": %s.",
-        "\"%s\"‚Ö‚Ì‘‚«ž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "\"%s\"ã¸ã®æ›¸ãè¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_ICON,
         "Error reading icon file \"%s\": %s.",
-        "ƒAƒCƒRƒ“ ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ã‚¢ã‚¤ã‚³ãƒ³ ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_CURSOR,
         "Error reading cursor file \"%s\": %s.",
-        "ƒJ|ƒ\ƒ‹ ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ã‚«ï¼ã‚½ãƒ« ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_BITMAP,
         "Error reading bitmap file \"%s\": %s.",
-        "ƒrƒbƒgƒ}ƒbƒv ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ— ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_FONT,
         "Error reading font file \"%s\": %s.",
-        "ƒtƒHƒ“ƒg ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ•ã‚©ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_DATA,
         "Error reading data file \"%s\": %s.",
-        "ƒf|ƒ^ ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ‡ï¼ã‚¿ ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_RES,
         "Error reading RES file \"%s\": %s.",
-        "RESƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "RESãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_TMP,
         "Error reading temporary file \"%s\": %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_WRITTING_TMP,
         "Error writing to temporary file \"%s\": %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\"‚Ì‘‚«ž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®æ›¸ãè¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_OPENING_TMP,
         "Unable to open temporary file \"%s\": %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\"‚ðƒI|ƒvƒ“o—ˆ‚Ü‚¹‚ñ: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã‚’ã‚ªï¼ãƒ—ãƒ³å‡ºæ¥ã¾ã›ã‚“: %s." )
 pick(   ERR_READING_FILE,
         "Error reading from file \"%s\": %s.",
-        "ƒtƒ@ƒCƒ‹ \"%s\"‚©‚ç‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã‹ã‚‰ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_BAD_RES_VER,
         "Unable to read RES file \"%s\": wrong version.",
-        "RES ƒtƒ@ƒCƒ‹ \"%s\"‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: ƒo|ƒWƒ‡ƒ“‚ªˆÙ‚È‚è‚Ü‚·." )
+        "RES ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: ãƒï¼ã‚¸ãƒ§ãƒ³ãŒç•°ãªã‚Šã¾ã™." )
 pick(   ERR_INVALID_RES,
         "\"%s\" is not a valid RES file.",
-        "\"%s\" ‚Í–³Œø‚È RES ƒtƒ@ƒCƒ‹‚Å‚·." )
+        "\"%s\" ã¯ç„¡åŠ¹ãª RES ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™." )
 pick(   ERR_INTERNAL,
         "Internal compiler error %d.",
-        "ƒRƒ“ƒpƒCƒ‰“à•”ƒGƒ‰| %d." )
+        "ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©å†…éƒ¨ã‚¨ãƒ©ï¼ %d." )
 pick(   ERR_WRITTING_RES_FILE,
         "Error writing resources to temporary file \"%s\": %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\"‚Ö‚ÌƒŠƒ\|ƒX‚Ì‘‚«ž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã¸ã®ãƒªã‚½ï¼ã‚¹ã®æ›¸ãè¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_CLOSING_FILE,
         "Error while closing file \"%s\" or flushing buffers to it: %s.",
-        "ƒtƒ@ƒCƒ‹ \"%s\" ‚ÌƒNƒ|ƒY–”‚Í ƒoƒbƒtƒ@ƒtƒ‰ƒbƒVƒ…Žž‚ÌƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã®ã‚¯ãƒ­ï¼ã‚ºåˆã¯ ãƒãƒƒãƒ•ã‚¡ãƒ•ãƒ©ãƒƒã‚·ãƒ¥æ™‚ã®ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_CLOSING_TMP,
         "Error while closing temporary file \"%s\" or flushing buffers to it: %s.",
-        "ƒeƒ“ƒ|ƒ‰ƒŠ ƒtƒ@ƒCƒ‹ \"%s\" ‚ÌƒNƒ|ƒY–”‚Í ƒoƒbƒtƒ@ƒtƒ‰ƒbƒVƒ…Žž‚ÌƒGƒ‰|‚Å‚·: %s." )
+        "ãƒ†ãƒ³ãƒãƒ©ãƒª ãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã®ã‚¯ãƒ­ï¼ã‚ºåˆã¯ ãƒãƒƒãƒ•ã‚¡ãƒ•ãƒ©ãƒƒã‚·ãƒ¥æ™‚ã®ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_NO_MSG,
         "",
         "" )
 pick(   ERR_NO_RCINCLUDES,
         "RCINCLUDE keyword not currently supported. Use #include.",
-        "RCINCLUDE ƒL|ƒ|ƒh‚ÍŒ»ÝƒTƒ||ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ. #include‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢." )
+        "RCINCLUDE ã‚­ï¼ãƒ¯ï¼ãƒ‰ã¯ç¾åœ¨ã‚µãƒï¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“. #includeã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„." )
 pick(   ERR_UNKNOWN_CHAR,
         "'%c' is not valid at this point",
-        "'%c' ‚ÍŒ»Žž“_‚Å‚Í–³ˆÓ–¡‚Å‚·" )
+        "'%c' ã¯ç¾æ™‚ç‚¹ã§ã¯ç„¡æ„å‘³ã§ã™" )
 pick(   ERR_RUNAWAY_STRING,
         "String may not cross newline boundary",
-        "•¶Žš—ñ‚É‰üs‚ðŠÜ‚ÞŽ–‚Í‹–‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+        "æ–‡å­—åˆ—ã«æ”¹è¡Œã‚’å«ã‚€äº‹ã¯è¨±ã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick(   ERR_EXPECTING_CHAR,
         "Expecting '%s' but found '%c'",
-        "'%s' ‚Å‚Í‚È‚­ '%c'‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½" )
+        "'%s' ã§ã¯ãªã '%c'ãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸ" )
 pick(   ERR_TOO_MANY_ARGS,
         "Too many arguments: %s",
-        "ˆø”‚ª‘½‰ß‚¬‚Ü‚·: %s" )
+        "å¼•æ•°ãŒå¤šéŽãŽã¾ã™: %s" )
 pick(   ERR_FILENAME_NEEDED,
         "Filename required on command line.",
-        "ƒRƒ}ƒ“ƒhs‚Åƒtƒ@ƒCƒ‹–¼‚ª•K—v‚Å‚·." )
+        "ã‚³ãƒžãƒ³ãƒ‰è¡Œã§ãƒ•ã‚¡ã‚¤ãƒ«åãŒå¿…è¦ã§ã™." )
 pick(   ERR_UNKNOWN_OPTION,
         "Unknown option '%c'",
-        "'%c' ‚Í–³ˆÓ–¡‚ÈƒIƒvƒVƒ‡ƒ“‚Å‚·" )
+        "'%c' ã¯ç„¡æ„å‘³ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ã™" )
 pick(   ERR_NO_OPT_SPECIFIED,
         "No options specified after options character.",
-        "ƒIƒvƒVƒ‡ƒ“•¶Žš‚ÌŒã‚ÉƒIƒvƒVƒ‡ƒ“‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ." )
+        "ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—ã®å¾Œã«ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“." )
 pick(   ERR_OUT_OF_MEMORY,
         "Out of memory",
-        "ƒƒ‚ƒŠ”ÍˆÍŠO‚Å‚·" )
+        "ãƒ¡ãƒ¢ãƒªç¯„å›²å¤–ã§ã™" )
 pick(   ERR_ACCEL_NO_TYPE,
         "No type given for accelerator %ld",
-        "ƒAƒNƒZƒ‰ƒŒ|ƒ^ %ld‚ÌŒ^‚ª‚ ‚è‚Ü‚¹‚ñ" )
+        "ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ï¼ã‚¿ %ldã®åž‹ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick(   ERR_ACCEL_KEYWORD_IGNORED,
         "Keyword %s ignored for type ASCII accelerator %ld",
-        "ASCIIŒ^ƒAƒNƒZƒ‰ƒŒ|ƒ^ %ld ‚Ì %s ƒL|ƒ|ƒh‚ð–³Ž‹‚µ‚Ü‚·" )
+        "ASCIIåž‹ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ï¼ã‚¿ %ld ã® %s ã‚­ï¼ãƒ¯ï¼ãƒ‰ã‚’ç„¡è¦–ã—ã¾ã™" )
 pick(   ERR_DUPLICATE_RESOURCE,
         "Duplicate resource: %s",
-        "ƒŠƒ\|ƒX‚ªd•¡‚µ‚Ä‚¢‚Ü‚·: %s" )
+        "ãƒªã‚½ï¼ã‚¹ãŒé‡è¤‡ã—ã¦ã„ã¾ã™: %s" )
 pick(   ERR_PARSER_INTERNAL,
         "Internal parser error.",
-        "“à•”‰ðÍƒGƒ‰|." )
+        "å†…éƒ¨è§£æžã‚¨ãƒ©ï¼." )
 /* this message is unused */
 pick(   ERR_SYNTAX_INT,
         "",
         "" )
 pick(   ERR_SYNTAX_STR,
         "Syntax error near \"%s\"",
-        "\"%s\"•t‹ß‚É•¶–@ƒGƒ‰|‚ª‚ ‚è‚Ü‚·" )
+        "\"%s\"ä»˜è¿‘ã«æ–‡æ³•ã‚¨ãƒ©ï¼ãŒã‚ã‚Šã¾ã™" )
 pick(   ERR_DUPLICATE_STRING_CONST,
         "%d is a duplicate string identifier.",
-        "%d •¶Žš—ñŽ¯•ÊŽq‚ªd•¡‚µ‚Ä‚¢‚Ü‚·." )
+        "%d æ–‡å­—åˆ—è­˜åˆ¥å­ãŒé‡è¤‡ã—ã¦ã„ã¾ã™." )
 pick(   ERR_RAW_DATA_TOO_BIG,
         "Raw data item %lu is too big. Max %u",
-        "ƒoƒCƒiƒŠ ƒf|ƒ^€–Ú %lu ‚ªÅ‘å’l‚ð‰z‚¦‚Ä‚¢‚Ü‚·. Å‘å %u" )
+        "ãƒã‚¤ãƒŠãƒª ãƒ‡ï¼ã‚¿é …ç›® %lu ãŒæœ€å¤§å€¤ã‚’è¶Šãˆã¦ã„ã¾ã™. æœ€å¤§ %u" )
 pick(   ERR_RAW_DATA_TOO_SMALL,
         "Raw data item %ld is too small. Min %d",
-        "ƒoƒCƒiƒŠ ƒf|ƒ^€–Ú %ld ‚ª¬‚³‰ß‚¬‚Ü‚·. Å¬ %d" )
+        "ãƒã‚¤ãƒŠãƒª ãƒ‡ï¼ã‚¿é …ç›® %ld ãŒå°ã•éŽãŽã¾ã™. æœ€å° %d" )
 pick(   ERR_FONT_NAME,
         "Font name must be a number.",
-        "ƒtƒHƒ“ƒg–¼‚Í”Ô†‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ." )
+        "ãƒ•ã‚©ãƒ³ãƒˆåã¯ç•ªå·ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“." )
 pick(   ERR_RCINCLUDE_TOO_DEEP,
         "Can't #include more than %d levels.",
-        "#include ‚ÌƒlƒXƒg‚ª %d ƒŒƒxƒ‹ˆÈã‚É’B‚µ‚Ä‚¢‚Ü‚·." )
+        "#include ã®ãƒã‚¹ãƒˆãŒ %d ãƒ¬ãƒ™ãƒ«ä»¥ä¸Šã«é”ã—ã¦ã„ã¾ã™." )
 pick(   ERR_INVALID_CPP,
         "Unknown preprocessor directive",
-        "–¢’m‚ÌƒvƒŠƒvƒƒZƒbƒT‹^Ž—–½—ß‚Å‚·" )
+        "æœªçŸ¥ã®ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µç–‘ä¼¼å‘½ä»¤ã§ã™" )
 pick(   ERR_INVALID_CPP_LINE,
         "Invalid #line directive",
-        "–³Œø‚È#line ‹^Ž—–½—ß‚Å‚·" )
+        "ç„¡åŠ¹ãª#line ç–‘ä¼¼å‘½ä»¤ã§ã™" )
 pick(   ERR_UNKNOWN_MULT_OPTION,
         "Unknown option '%s'",
-        "–¢’m‚ÌƒIƒvƒVƒ‡ƒ“ '%s'" )
+        "æœªçŸ¥ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%s'" )
 pick(   ERR_NOT_VALID_EXE,
         "\"%s\" is not a valid EXE file.",
-        "\"%s\" ‚Í—LŒø‚È EXE ƒtƒ@ƒCƒ‹‚Å‚Í‚ ‚è‚Ü‚¹‚ñ." )
+        "\"%s\" ã¯æœ‰åŠ¹ãª EXE ãƒ•ã‚¡ã‚¤ãƒ«ã§ã¯ã‚ã‚Šã¾ã›ã‚“." )
 pick(   ERR_NO_GANGLOAD,
         "Unable to produce fastload section.",
-        "ƒtƒ@ƒXƒgƒ|ƒh ƒZƒNƒVƒ‡ƒ“‚ªì¬‚Å‚«‚Ü‚¹‚ñ." )
+        "ãƒ•ã‚¡ã‚¹ãƒˆãƒ­ï¼ãƒ‰ ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒä½œæˆã§ãã¾ã›ã‚“." )
 pick(   ERR_CANT_FIND_FILE,
         "Can't find file \"%s\".",
-        "ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ \"%s\"." )
+        "ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ \"%s\"." )
 pick(   ERR_UNKNOWN_TARGET_OS,
         "Unknown target OS: '%s'.",
-        "–¢’m‚Ìƒ^|ƒQƒbƒg OS: '%s'." )
+        "æœªçŸ¥ã®ã‚¿ï¼ã‚²ãƒƒãƒˆ OS: '%s'." )
 pick(   ERR_TEXT_FROM_CPP,
         "%s",
         "%s" )
 pick(   ERR_NT_KEYWORD,
         "Keyword \"%s\" is only valid for Win32",
-        "\"%s\" ‚ÍWin32‚Å‚Ì‚ÝˆÓ–¡‚Ì‚ ‚éƒL|ƒ|ƒh‚Å‚·" )
+        "\"%s\" ã¯Win32ã§ã®ã¿æ„å‘³ã®ã‚ã‚‹ã‚­ï¼ãƒ¯ï¼ãƒ‰ã§ã™" )
 pick(   ERR_UNSUPPORTED,
         "Keyword \"%s\" not currently supported",
-        " \"%s\" ‚ÍŒ»ÝƒTƒ||ƒg‚³‚ê‚Ä‚¢‚È‚¢ƒL|ƒ|ƒh‚Å‚·" )
+        " \"%s\" ã¯ç¾åœ¨ã‚µãƒï¼ãƒˆã•ã‚Œã¦ã„ãªã„ã‚­ï¼ãƒ¯ï¼ãƒ‰ã§ã™" )
 /* this is a place holder message, its text is embedded in the cannot be found */
 pick(   ERR_RCSTR_NOT_FOUND,
         "",
         "" )
 pick(   ERR_CANT_FIND_CHAR_FILE,
         "Error can't find character translation file \"%s\".",
-        "•¶Žš•ÏŠ·ƒtƒ@ƒCƒ‹ \"%s\" ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ." )
+        "æ–‡å­—å¤‰æ›ãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“." )
 pick(   ERR_CANT_OPEN_CHAR_FILE,
         "Error opening character translation file \"%s\": %s.",
-        "•¶Žš•ÏŠ·ƒtƒ@ƒCƒ‹ \"%s\"‚ÌƒI|ƒvƒ“ƒGƒ‰|‚Å‚·: %s." )
+        "æ–‡å­—å¤‰æ›ãƒ•ã‚¡ã‚¤ãƒ« \"%s\"ã®ã‚ªï¼ãƒ—ãƒ³ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_READING_CHAR_FILE,
         "Error reading character translation file \"%s\": %s.",
-        "•¶Žš•ÏŠ·ƒtƒ@ƒCƒ‹ \"%s\" ‚Ì“Ç‚Ýž‚ÝƒGƒ‰|‚Å‚·: %s." )
+        "æ–‡å­—å¤‰æ›ãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ï¼ã§ã™: %s." )
 pick(   ERR_BAD_CHAR_FILE,
         "\"%s\" is not a valid character translation file.",
-        "\"%s\" ‚Í–³Œø‚È•¶Žš•ÏŠ·ƒtƒ@ƒCƒ‹‚Å‚·." )
+        "\"%s\" ã¯ç„¡åŠ¹ãªæ–‡å­—å¤‰æ›ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™." )
 pick(   ERR_WRONG_CHAR_FILE_VER,
         "Unable to read character translation file \"%s\": wrong version.",
-        "\"%s\" •¶Žš•ÏŠ·ƒtƒ@ƒCƒ‹‚ð“Ç‚Ýž‚ß‚Ü‚¹‚ñ: ƒo|ƒWƒ‡ƒ“‚ªˆÙ‚È‚è‚Ü‚·." )
+        "\"%s\" æ–‡å­—å¤‰æ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚ã¾ã›ã‚“: ãƒï¼ã‚¸ãƒ§ãƒ³ãŒç•°ãªã‚Šã¾ã™." )
 pick(   ERR_OPT_NOT_VALID_FOR_NT,
         "Option '%s' not valid for a Win32 .res file.",
-        "'%s' ƒIƒvƒVƒ‡ƒ“‚Í Win32—pƒŠƒ\|ƒXƒtƒ@ƒCƒ‹‚É‚Í–³ˆÓ–¡‚Å‚·." )
+        "'%s' ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¯ Win32ç”¨ãƒªã‚½ï¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã«ã¯ç„¡æ„å‘³ã§ã™." )
 pick(   ERR_LSTRING_IGNORED_FOR_WINDOWS,
         "L\"...\" construct is not valid for Windows.",
-        "L\"...\" \¬‚ÍWindows‚Å‚Í–³ˆÓ–¡‚Å‚·." )
+        "L\"...\" æ§‹æˆã¯Windowsã§ã¯ç„¡æ„å‘³ã§ã™." )
 pick(   ERR_OPT_NOT_VALID_TOGETHER,
         "Options '%s' and '%s' may not be specified together.",
-        "'%s' ‚Æ '%s' ƒIƒvƒVƒ‡ƒ“‚ð“¯Žž‚ÉŽw’è‚·‚×‚«‚Å‚Í‚ ‚è‚Ü‚¹‚ñ." )
+        "'%s' ã¨ '%s' ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’åŒæ™‚ã«æŒ‡å®šã™ã¹ãã§ã¯ã‚ã‚Šã¾ã›ã‚“." )
 pick(   ERR_ENV_VAR_NOT_FOUND,
         "Environment variable '%s' is not set.",
-        "ŠÂ‹«•Ï” '%s' ‚ªÝ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ." )
+        "ç’°å¢ƒå¤‰æ•° '%s' ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“." )
 pick(   ERR_OPT_NOT_VALID_FOR_WINDOWS,
         "Option '%s' not valid for a Windows .res file.",
-        "ƒIƒvƒVƒ‡ƒ“ '%s' ‚ÍWindows—p .res ƒtƒ@ƒCƒ‹‚É‚ÍŽg—p‚Å‚«‚Ü‚¹‚ñ." )
+        "ã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%s' ã¯Windowsç”¨ .res ãƒ•ã‚¡ã‚¤ãƒ«ã«ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“." )
 pick(   ERR_MISSING_MENUITEM_ID,
        "MENUITEM must have ID value.",
        "MENUITEM must have ID value." )
@@ -260,7 +260,7 @@ pick(   ERR_DATA_ELEMENTS,
        "Data Elements not valid for DIALOG controls." )
 pick(   ERR_BAD_RES_ID,
        "%ld is not a valid resource id.",
-       "%ld ‚Í³‚µ‚¢ƒŠƒ\[ƒXID‚Å‚Í‚ ‚è‚Ü‚¹‚ñ." )
+       "%ld ã¯æ­£ã—ã„ãƒªã‚½ãƒ¼ã‚¹IDã§ã¯ã‚ã‚Šã¾ã›ã‚“." )
 pick(   ERR_STOP_REQUESTED,
         "User interrupt detected.",
         "User interrupt detected." )
@@ -302,10 +302,10 @@ pick(   ERR_RCVARIABLE_RECURSIVE,
         "Can't expand environment variable '%s' recursively." )
 pick(   ERR_NONOS2_RES_TO_OS2_EXE,
         "Trying to add a Win16 or Win32 RES file \"%s\" to an OS/2 executable \"%s\".",
-        "Win32—p RESƒtƒ@ƒCƒ‹ \"%s\" ‚ðƒEƒBƒ“ƒhƒEƒYŽÀsƒtƒ@ƒCƒ‹ \"%s\" ‚É’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·." )
+        "Win32ç”¨ RESãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚ºå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ« \"%s\" ã«è¿½åŠ ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™." )
 pick(   ERR_BAD_RES_TYPE,
        "%ld is not a valid type id.",
-       "%ld ‚Í³‚µ‚¢ƒŠƒ\[ƒXID‚Å‚Í‚ ‚è‚Ü‚¹‚ñ." )
+       "%ld ã¯æ­£ã—ã„ãƒªã‚½ãƒ¼ã‚¹IDã§ã¯ã‚ã‚Šã¾ã›ã‚“." )
 pick(   ERR_WIN16_TOO_MANY_CONTROLS,
         "Too many controls for Win16 resource '%d' > 255.",
         "Too many controls for Win16 resource '%d' > 255." )

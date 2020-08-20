@@ -175,6 +175,7 @@ exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
 exetarg_objs          = $(objs_exe)
 exetarg_libs          = $(wres_lib)
 !ifndef bootstrap
+exetarg_qnx_res       = usage.u
 exetarg_res_wresui    = wresui.res
 !endif
 !endif
@@ -208,7 +209,7 @@ rc_defines    = -D_STANDALONE_ $(parser_defines)
 
 wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
     @%make echo_rc
-    $(rcui) -ad $(rc_defines)
+    $(rcui8) -ad $(rc_defines)
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
