@@ -44,7 +44,7 @@ inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
 !endif
 
-extra_cpp_flags = -D__WLIB__
+extra_cpp_flags = -DINSIDE_WLIB
 !ifdef bootstrap
 extra_cpp_flags += -DINCL_MSGTEXT
 !endif

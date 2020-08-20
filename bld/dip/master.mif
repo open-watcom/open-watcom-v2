@@ -37,7 +37,7 @@ fpu_flags_rdos_386  = -fpc
 
 inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
 
-extra_cpp_flags = -D__DIP__ $(extra_cppflags)
+extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif

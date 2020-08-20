@@ -23,7 +23,7 @@ wdis_trmem = 1
 inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
     -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
-extra_cpp_flags = -D__DISASM__
+extra_cpp_flags = -DINSIDE_WDIS
 
 extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
 

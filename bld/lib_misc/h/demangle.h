@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ size_t __is_mangled(                            // IS NAME MANGLED ?
     size_t len )                                // - length of name
 ;
 
-#if !defined( __WLIB__ ) && !defined( __DISASM__ )
+#if !defined( INSIDE_WLIB ) && !defined( INSIDE_WDIS )
 
 typedef enum {
     __NOT_MANGLED,                              // not mangled name
@@ -86,9 +87,9 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
     size_t *base_sizep )                        // - size of C++ base name
 ;                                               // return TRUE if name mangled
 
-#if !defined( __WLINK__ )
+#if !defined( INSIDE_WLINK )
 
-#if !defined( __DIP__ )
+#if !defined( INSIDE_DIP )
 
 #if defined( __WATCOMC__ )
 _WCRTLINK
@@ -108,7 +109,7 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     void *(*realloc)( void *, size_t ) )        // - size adjuster for output
 ;
 
-#endif // !__DIP__
+#endif // !INSIDE_DIP
 
 bool __scope_name(                              // EXTRACT A C++ SCOPE NAME
     char const *input,                          // - mangled C++ name
@@ -132,9 +133,9 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
 ;                                               // return len of mangled operator name
                                                 // ZERO if not found
 
-#endif // !__WLINK__
+#endif // !INSIDE_WLINK
 
-#endif // !__WLIB__ && !__DISASM__
+#endif // !INSIDE_WLIB && !INSIDE_WDIS
 
 #ifdef __cplusplus
 };

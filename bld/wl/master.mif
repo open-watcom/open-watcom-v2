@@ -48,7 +48,7 @@ suppress_zc = 1
 inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" &
     $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
-extra_cpp_flags = -D__WLINK__ $(debug_cpp_flags)
+extra_cpp_flags = -DINSIDE_WLINK $(debug_cpp_flags)
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
@@ -62,11 +62,6 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags_idedrv      = -DCHAIN_CALLBACK
 extra_cpp_flags_ideentry    = -DCHAIN_CALLBACK
 extra_cpp_flags_maindrv     = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_rcstr       = -DINSIDE_WLINK
-extra_cpp_flags_exereslx    = -DINSIDE_WLINK
-extra_cpp_flags_exerespe    = -DINSIDE_WLINK
-extra_cpp_flags_mergedir    = -DINSIDE_WLINK
-extra_cpp_flags_sharedio    = -DINSIDE_WLINK
 extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
 extra_cpp_flags_wlmem       = $(trmem_cpp_flags)
 

@@ -32,7 +32,7 @@
 
 #define ZZ_LEN_3
 
-#ifdef __DIP__
+#ifdef INSIDE_DIP
 #define __NO_STACK_CHECKING__
 #endif
 
@@ -1796,7 +1796,7 @@ size_t __is_mangled( char const *name, size_t len )
     return( 0 );
 }
 
-#if !defined( __WLIB__ ) && !defined( __DISASM__ )
+#if !defined( INSIDE_WLIB ) && !defined( INSIDE_WDIS )
 
 static mangled_type checkInternal( char const *p, size_t len )
 {
@@ -1879,9 +1879,9 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
     return( true );
 }
 
-#if !defined( __WLINK__ )
+#if !defined( INSIDE_WLINK )
 
-#if !defined( __DIP__ )
+#if !defined( INSIDE_DIP )
 
 #if defined( __WATCOMC__ )
 _WCRTLINK
@@ -1941,7 +1941,7 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     return( outlen );
 }
 
-#endif // !__DIP__
+#endif // !INSIDE_DIP
 
 bool __scope_name(                              // EXTRACT A C++ SCOPE
     char const *input,                          // - mangled C++ name
@@ -2042,9 +2042,9 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     return( 0 );
 }
 
-#endif // !__WLINK__
+#endif // !INSIDE_WLINK
 
-#endif // !__WLIB__ && !__DISASM__
+#endif // !INSIDE_WLIB && !INSIDE_WDIS
 
 #if defined( TEST )
 
