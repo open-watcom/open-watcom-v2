@@ -11,7 +11,7 @@
 Open Watcom v2 Fork
 ===================
 
-Welcome to the Open Watom v2 Project! 
+Welcome to the Open Watcom v2 Project! 
 
 For more information about the project and build instructions see the GitHub wiki.
 
