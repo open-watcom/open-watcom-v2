@@ -23,6 +23,8 @@ cdsay .
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
 [ ENDIF ]
+# Build wsplice and genverrc
+[ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
 # Build our version of yacc
 [ INCLUDE <OWSRCDIR>/yacc/builder.ctl ]
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
@@ -35,8 +37,6 @@ cdsay .
 # Start with the ORL and librarian - boot build has no other dependencies
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
-# Build wsplice and genverrc
-[ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
 # Next build wres and the resource compiler
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rc/rc/builder.ctl ]
