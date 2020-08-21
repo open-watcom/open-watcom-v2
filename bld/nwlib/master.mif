@@ -115,9 +115,9 @@ _subdir_ =
 exe_objs = $+$(wlib_template)$- $(drv_objs)
 
 !ifdef bootstrap
-prebuild_objs = msg.gh incltext.gh
+prebuild_objs = usagew.gh usagea.gh msg.gh
 !else
-prebuild_objs = msg.gh
+prebuild_objs = usagew.gh usagewj.gh usagea.gh usageaj.gh msg.gh
 !endif
 
 #
@@ -175,19 +175,42 @@ verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
 !include verrc.mif
 
-wresui.res : ../wlib.rc ../wlib.msg msg.gh
+wresui.res : ../wlib.rc ../wlib.msg msg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
-msg.gh : wlibmsg.gh
+msg.gh :  ../wlib.msg $(__MAKEFILES__)
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-incltext.gh : ../h/incltext.h ../wlib.msg
-    @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -I.. -o$@ $[@
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
 
-wlibmsg.gh : ../wlib.msg
-    @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -o$@ $[@
+usagew.gh usage.u : ../optionsw.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp targ1 $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_WLIB_BASE+%$#%+), %s, \"\")" $^&.tmp $@
 
+usagewj.gh : ../optionsw.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -l 1 -q $[@ . . $^&.tmp targ1 $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_WLIB_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+
+usagea.gh : ../optionsa.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q $[@ . . $^&.tmp targ1 $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_AR_BASE+%$#%+), %s, \"\")" $^&.tmp $@
+
+usageaj.gh : ../optionsa.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -l 1 -q $[@ . . $^&.tmp targ1 $(host_os) $(optencod_targ_dbg)
+    $(wsplice) -t8 -f "pick((MSG_USAGE_AR_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif

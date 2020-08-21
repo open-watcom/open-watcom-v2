@@ -25,54 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  Master include for librarian.
+* Description:  Message constants definition for librarian.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <limits.h>
-#include "orl.h"
-#include "lib.h"
-#include "demangle.h"
+#if defined( INCL_MSGTEXT )
 
-#include "wlibio.h"
-#include "types.h"
-#include "optdef.h"
-#include "ops.h"
-#include "memfuncs.h"
-#include "objfile.h"
-#include "inlib.h"
 
-#include "exeelf.h"
-#include "wlibutil.h"
-#include "libwalk.h"
-#include "liblist.h"
-#include "cmdline.h"
-#include "orlrtns.h"
-#include "error.h"
-#include "wlibmsg.rh"
-#include "ext.h"
-#include "proclib.h"
-#include "filetab.h"
-#include "implib.h"
-#include "symlist.h"
-#include "writelib.h"
-#include "pcobj.h"
-#include "omfutil.h"
-#include "omfproc.h"
-#include "exedos.h"
-#include "exeos2.h"
-#include "exeflat.h"
-#include "exepe.h"
-#include "exenov.h"
+#define MSG_RC_BASE             0
 
-#define Round(x,s)      (((x) + (s) - 1) & ~((s) - 1))
-#define Round2(x)       Round((x),2)
-#define Round2var(x)    if((x) & 1) ++(x)
+#else
+
+#define MSG_RC_BASE             10
+
+#endif
+
+#include "msg.gh"

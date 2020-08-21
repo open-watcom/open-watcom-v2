@@ -25,9 +25,43 @@
 *
 *  ========================================================================
 *
-* Description:  Message constants definition for librarian.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "msg.gh"
+#include "usage.rh"
+
+
+enum {
+    MSG_USAGE_WLIB_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usagew.gh"
+    #undef pick
+};
+
+enum {
+    MSG_USAGE_AR_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usagea.gh"
+    #undef pick
+};
+
+#ifdef INCL_MSGTEXT
+
+enum {
+    MSG_USAGE_WLIB_BASE = 0
+    #define pick(c,e,j) + 1
+    #include "wlib.msg"
+    #undef pick
+};
+
+enum {
+    MSG_USAGE_AR_BASE = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT
+    #define pick(c,e,j) + 1
+    #include "usagew.gh"
+    #undef pick
+};
+
+#endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,11 @@
 #if defined( INCL_MSGTEXT )
 
 static char *msg_text_array[] = {
-    "",
-    #include "incltext.gh"
+    #define pick(c,e,j) e,
+    #include "wlib.msg"
+    #include "usagew.gh"
+    #include "usagea.gh"
+    #undef pick
 };
 
 void InitMsg( void ) {}
