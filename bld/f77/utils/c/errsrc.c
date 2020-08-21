@@ -86,7 +86,7 @@ static  word_list       *SortPtr;
 static  word_list       *SortHead;
 static  int             RecNum;
 
-#define BUFF_LEN        133
+#define BUFF_LEN        256
 
 // Error messages contain a 5-character field with the following information:
 //      1. language of the message
