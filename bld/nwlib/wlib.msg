@@ -1,194 +1,194 @@
 pick( ERR_BAD_LIBRARY,      "'%s' is an invalid library",
-                "'%s'�͕s�K�؂ȃ��C�u�����ł�" )
+                "'%s'は不適切なライブラリです" )
 pick( ERR_BAD_OBJECT,       "'%s' is an invalid object file",
-                "'%s'�͕s�K�؂ȃI�u�W�F�N�g�E�t�@�C���ł�" )
+                "'%s'は不適切なオブジェクト・ファイルです" )
 pick( ERR_BAD_DLL,      "'%s' is an invalid dll",
-                "'%s'�s�K�؂�DLL�ł�" )
+                "'%s'不適切なDLLです" )
 pick( ERR_CANT_FIND,        "Cannot find file '%s'",
-                "�t�@�C��'%s'��������܂���" )
+                "ファイル'%s'が見つかりません" )
 pick( ERR_CREATING_LIBRARY, "Cannot open '%s' - library will be created",
-                "'%s'���I�[�v���ł��܂��� - ���C�u�������쐬���܂�" )
+                "'%s'をオープンできません - ライブラリを作成します" )
 pick( ERR_DIR_NOT_EXIST,    "Directory '%s' does not exist",
-                "�f�B���N�g��'%s'�͑��݂��܂���" )
+                "ディレクトリ'%s'は存在しません" )
 pick( ERR_DUPLICATE_OPTION, "Duplicate option near '%s'",
-                "'%s'�̕t�߂̃I�v�V������2�x�w�肳��Ă��܂�" )
+                "'%s'の付近のオプションは2度指定されています" )
 pick( ERR_DUPLICATE_SYMBOL, "Duplicate symbol '%s' ignored.",
-                "�Q�d�̃V���{��'%s'�𖳎����܂�" )
+                "２重のシンボル'%s'を無視します" )
 pick( ERR_CANT_READ,        "Error reading '%s'. %s.",
-                "�ǂݍ��݃G���[ '%s'. %s." )
+                "読み込みエラー '%s'. %s." )
 pick( ERR_CANT_WRITE,       "Error writing '%s'. %s.",
-                "�������݃G���[ '%s'. %s." )
+                "書き込みエラー '%s'. %s." )
 pick( ERR_DELETE_AND_CREATE,    "Files can not be extracted using the -n option",
-                "-n�I�v�V�������w�肷��ƃt�@�C�������o�����Ƃ͂ł��܂���" )
+                "-nオプションを指定するとファイルを取り出すことはできません" )
 pick( ERR_BAD_CMDLINE,      "Invalid command line near '%s'",
-                "'%s'�̕t�߂̃R�}���h���C���̎w�肪�s�K�؂ł�" )
+                "'%s'の付近のコマンドラインの指定が不適切です" )
 pick( ERR_BAD_OPTION,       "Invalid option '-%c'",
-                "�s�K�؂ȃI�v�V���� '-%c'" )
+                "不適切なオプション '-%c'" )
 pick( ERR_NO_LIBNAME,       "Library name required on command line",
-                "�R�}���h���C���Ń��C�u���������w�肵�Ă�������" )
+                "コマンドラインでライブラリ名を指定してください" )
 pick( ERR_TWO_LIBNAMES,     "Library name specified twice near '%s'",
-                "���C�u��������'%s'�̕t�߂łQ�x�w�肳��Ă��܂�" )
+                "ライブラリ名が'%s'の付近で２度指定されています" )
 pick( ERR_NO_MEMORY,        "Out of memory",
-                "�������s���ł�" )
+                "メモリ不足です" )
 pick( ERR_CANT_DELETE,      "Unable to find module '%s' for deletion",
-                "�폜���郂�W���[��'%s'��������܂���" )
+                "削除するモジュール'%s'が見つかりません" )
 pick( ERR_CANT_EXTRACT,     "Unable to find module '%s' for extraction",
-                "���o�����W���[��'%s'��������܂���" )
+                "取り出すモジュール'%s'が見つかりません" )
 pick( ERR_CANT_OPEN,        "Unable to open file '%s'. %s.",
-                "�t�@�C�����I�[�v���ł��܂��� '%s'. %s." )
+                "ファイルをオープンできません '%s'. %s." )
 pick( ERR_CANT_REMOVE,      "Unable to remove file '%s'",
-                "�t�@�C��'%s'���폜�ł��܂���" )
+                "ファイル'%s'を削除できません" )
 pick( ERR_CANT_REPLACE,     "Unable to replace contents of file '%s'. %s",
-                "�t�@�C���̓��e��u���������܂��� '%s'. %s" )
+                "ファイルの内容を置き換えられません '%s'. %s" )
 pick( ERR_NO_SYMBOLS,       "Library contains no external symbols",
-                "���C�u�����̒��ɂ͊O���V���{���������Ă��܂���" )
+                "ライブラリの中には外部シンボルが入っていません" )
 pick( ERR_NOT_LIB,      "Cannot add %s object to %s library",
-                "%s �I�u�W�F�N�g��LIB���C�u�����ɒǉ��ł��܂���" )
+                "%s オブジェクトをLIBライブラリに追加できません" )
 pick( ERR_CANT_DO_IMPORT,   "Unable to create %s import library from '%s'",
-                "%s�C���|�[�g�E���C�u������'%s'������܂���" )
+                "%sインポート・ライブラリを'%s'から作れません" )
 pick( ERR_NO_PROCESSOR,     "No processor specified.  Using %s",
-                "�v���Z�b�T���w�肳��Ă��܂���B%s�Ƃ��Ĉ����܂�" )
+                "プロセッサが指定されていません。%sとして扱います" )
 pick( ERR_NO_TYPE,      "No import type specified.  Using %s",
-                "�C���|�[�g�̕����w�肳��Ă��܂���B%s�Ƃ��Ĉ����܂�" )
+                "インポートの方が指定されていません。%sとして扱います" )
 pick( ERR_NO_EXPORTS,       "No exports in '%s'",
-                "'%s'�ɃG�N�X�|�[�g�͂���܂���" )
+                "'%s'にエクスポートはありません" )
 pick( ERR_PAGE_RANGE,       "Page size out of range",
-                "�y�[�W�̑傫���͔͈͂𒴂��Ă��܂�" )
+                "ページの大きさは範囲を超えています" )
 pick( ERR_MIXED_OBJ,        "Can not put %s and %s objects in same library",
-                "�I�u�W�F�N�g%s��%s�𓯂����C�u�����ɓ�����܂���" )
+                "オブジェクト%sと%sを同じライブラリに入れられません" )
 pick( ERR_LIB_TOO_LARGE,    "Library too large.  Recommend splitting the library into two or trying a page_bound larger than %s.",
-                "���C�u�������傫�����܂��B���C�u�������Q�ɕ������邩�A%s���page_bound�������Ƒ傫�����邱�Ƃ𐄏����܂��B" )
+                "ライブラリが大きすぎます。ライブラリを２つに分割するか、%sよりpage_boundをもっと大きくすることを推奨します。" )
 pick( USAGE_WLIB_FIRST,     "wlib  { <option> } <library_name> [ <commands> ]" ,
                 "wlib  { <option> } <library_name> [ <commands> ]" )
 pick( USAGE_WLIB_01,        "Where:" ,
-                "�e�t�B�[���h�͈ȉ��̒ʂ�ł�:" )
+                "各フィールドは以下の通りです:" )
 pick( USAGE_WLIB_02,        "  <option>    ::= -b                       (don't create .bak file)" ,
-                "  <option>    ::= -b                       (.bak�t�@�C�����쐬���܂���)" )
+                "  <option>    ::= -b                       (.bakファイルを作成しません)" )
 pick( USAGE_WLIB_03,        "                | -c                       (case sensitive)" ,
-                "                | -c                       (�啶������������ʂ��܂�)" )
+                "                | -c                       (大文字小文字を区別します)" )
 pick( USAGE_WLIB_04,        "                | -d = <object_output_directory>" ,
                 "                | -d = <object_output_directory>" )
 pick( USAGE_WLIB_05,        "                | -l [ = <list_file_name> ]" ,
                 "                | -l [ = <list_file_name> ]" )
 pick( USAGE_WLIB_06,        "                | -m                       (display C++ mangled names)" ,
-                "                | -m                       (C++�̃}���O���h����\�����܂�)" )
+                "                | -m                       (C++のマングルド名を表示します)" )
 pick( USAGE_WLIB_07,        "                | -n                       (always create a new library)" ,
-                "                | -n                       (��ɐV�������C�u�������쐬���܂�)" )
+                "                | -n                       (常に新しいライブラリを作成します)" )
 pick( USAGE_WLIB_08,        "                | -o = <out_library_name>" ,
                 "                | -o = <out_library_name>" )
 pick( USAGE_WLIB_09,        "                | -p = <record_size>       (set OMF library page size)" ,
                 "                | -p = <record_size>       (set OMF library page size)" )
 pick( USAGE_WLIB_10,        "                | -q                       (don't print header)" ,
-                "                | -q                       (�N�����b�Z�[�W��\�����܂���)" )
+                "                | -q                       (起動メッセージを表示しません)" )
 pick( USAGE_WLIB_11,        "                | -s                       (strip line number debug info)" ,
                 "                | -s                       (strip line number debug info)" )
 pick( USAGE_WLIB_12,        "                | -t                       (trim THEADR pathnames)" ,
-                "                | -t                       (THEADR �p�X�����폜���܂�)" )
+                "                | -t                       (THEADR パス名を削除します)" )
 pick( USAGE_WLIB_13,        "                | -v                       (print header)" ,
                 "                | -v                       (print header)" )
 pick( USAGE_WLIB_14,        "                | -x                       (explode all objects in library)" ,
-                "                | -x                       (���C�u�������炷�ׂẴI�u�W�F�N�g�����o���܂�)" )
+                "                | -x                       (ライブラリからすべてのオブジェクトを取り出します)" )
 pick( USAGE_WLIB_15,        "                | -zld                     (strip file dependency info)" ,
                 "                | -zld                     (strip file dependency info)" )
 pick( USAGE_WLIB_16,        "                | -h                       (display this screen)" ,
-                "                | -h                       (���̉�ʂ�\�����܂�)" )
+                "                | -h                       (この画面を表示します)" )
 pick( USAGE_WLIB_17,        "                | -?                       (display this screen)" ,
-                "                | -?                       (���̉�ʂ�\�����܂�)" )
+                "                | -?                       (この画面を表示します)" )
 pick( USAGE_WLIB_18,        "" ,
                 "" )
 pick( USAGE_WLIB_19,        "                | -fa                      (output AR format library)" ,
-                "                | -fa                      (AR�`��ײ���؂��o�͂��܂�)" )
+                "                | -fa                      (AR形式ﾗｲﾌﾞﾗﾘを出力します)" )
 pick( USAGE_WLIB_20,        "                | -fab                     (output AR format (BSD) library)" ,
-                "                | -fab                     (AR�`��ײ���؂��o�͂��܂�)" )
+                "                | -fab                     (AR形式ﾗｲﾌﾞﾗﾘを出力します)" )
 pick( USAGE_WLIB_21,        "                | -fac                     (output AR format (COFF) library)" ,
-                "                | -fac                     (AR�`��ײ���؂��o�͂��܂�)" )
+                "                | -fac                     (AR形式ﾗｲﾌﾞﾗﾘを出力します)" )
 pick( USAGE_WLIB_22,        "                | -fag                     (output AR format (GNU) library)" ,
-                "                | -fag                     (AR�`��ײ���؂��o�͂��܂�)" )
+                "                | -fag                     (AR形式ﾗｲﾌﾞﾗﾘを出力します)" )
 pick( USAGE_WLIB_23,        "                | -fm                      (output MLIB format library)" ,
-                "                | -fm                      (MLIB�`�����C�u�������o�͂��܂�)" )
+                "                | -fm                      (MLIB形式ライブラリを出力します)" )
 pick( USAGE_WLIB_24,        "                | -fo                      (output OMF format library)" ,
-                "                | -fo                      (OMF�`�����C�u�������o�͂��܂�)" )
+                "                | -fo                      (OMF形式ライブラリを出力します)" )
 pick( USAGE_WLIB_25,        "                | -i<r|n><o|n>      (resident|non-resident table)(ordinal|name)" ,
-                "                | -i<r|n><o|n>      (r:ڼ�����|n:��ڼ�����ð���)(o:����|n:���O)" )
+                "                | -i<r|n><o|n>      (r:ﾚｼﾞﾃﾞﾝﾄ|n:非ﾚｼﾞﾃﾞﾝﾄﾃｰﾌﾞﾙ)(o:序数|n:名前)" )
 pick( USAGE_WLIB_26,        "                | -i6                      (generate X64 import records)" ,
-                "                | -i6                      (X64C���|�[�g����R�[�h�𐶐����܂�)" )
+                "                | -i6                      (X64Cンポート･レコードを生成します)" )
 pick( USAGE_WLIB_27,        "                | -ia                      (generate AXP import records)" ,
-                "                | -ia                      (AXP���߰ĥں��ނ𐶐����܂�)" )
+                "                | -ia                      (AXPｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します)" )
 pick( USAGE_WLIB_28,        "                | -ii                      (generate X86 import records)" ,
-                "                | -ii                      (X86�C���|�[�g����R�[�h�𐶐����܂�)" )
+                "                | -ii                      (X86インポート･レコードを生成します)" )
 pick( USAGE_WLIB_29,        "                | -ip                      (generate PPC import records)" ,
-                "                | -ip                      (PPC�C���|�[�g����R�[�h�𐶐����܂�)" )
+                "                | -ip                      (PPCインポート･レコードを生成します)" )
 pick( USAGE_WLIB_30,        "                | -ie                      (generate ELF import records)" ,
-                "                | -ie                      (ELF�C���|�[�g����R�[�h�𐶐����܂�)" )
+                "                | -ie                      (ELFインポート･レコードを生成します)" )
 pick( USAGE_WLIB_31,        "                | -ic                      (generate COFF import records)" ,
-                "                | -ic                      (COFF���߰ĥں��ނ𐶐����܂�)" )
+                "                | -ic                      (COFFｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します)" )
 pick( USAGE_WLIB_32,        "                | -icl                     (generate 'long' COFF imp. records)" ,
-                "                | -icl                     (COFF���߰ĥں��ނ𐶐����܂�)" )
+                "                | -icl                     (COFFｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します)" )
 pick( USAGE_WLIB_33,        "                | -io                      (generate OMF import records)" ,
-                "                | -io                      (OMF�C���|�[�g����R�[�h�𐶐����܂�)" )
+                "                | -io                      (OMFインポート･レコードを生成します)" )
 pick( USAGE_WLIB_34,        "" ,
                 "" )
 pick( USAGE_WLIB_35,        "  <commands>  ::= <cmd> <commands>" ,
                 "  <commands>  ::= <cmd> <commands>" )
 pick( USAGE_WLIB_36,        "                | @<env_var> <commands>" ,
-                "                | @<���ϐ�> <commands>" )
+                "                | @<環境変数> <commands>" )
 pick( USAGE_WLIB_37,        "                | @<cmd_file> <commands>" ,
                 "                | @<cmd_file> <commands>" )
 pick( USAGE_WLIB_38,        "" ,
                 "" )
 pick( USAGE_WLIB_39,        "  <cmd_file>  ::= file which contains { <cmd> }" ,
-                "  <cmd_file>  ::= { <cmd> }���܂ރt�@�C��" )
+                "  <cmd_file>  ::= { <cmd> }を含むファイル" )
 pick( USAGE_WLIB_40,        "" ,
                 "" )
 pick( USAGE_WLIB_41,        "  <cmd>       ::= +<object_file_name>      (add file)" ,
-                "  <cmd>       ::= +<��޼ު�ḩ̂�ٖ�>       (�t�@�C���̒ǉ�)" )
+                "  <cmd>       ::= +<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>       (ファイルの追加)" )
 pick( USAGE_WLIB_42,        "                | +<library_file_name>.lib (add library)" ,
-                "                | +<ײ���إ̧�ٖ�>.lib     (���C�u�����̒ǉ�)" )
+                "                | +<ﾗｲﾌﾞﾗﾘ･ﾌｧｲﾙ名>.lib     (ライブラリの追加)" )
 pick( USAGE_WLIB_43,        "                | ++<symbol_name>.<DLL_name>[.<export_name>][.<ordinal>]",
-                "                | ++<�V���{����>.<DLL��>[.<�G�N�X�|�[�g��>][.<����>]" )
+                "                | ++<シンボル名>.<DLL名>[.<エクスポート名>][.<序数>]" )
 pick( USAGE_WLIB_44,        "                | -<module_name>           (delete)" ,
-                "                | -<���W���[����>          (�폜)" )
+                "                | -<モジュール名>          (削除)" )
 pick( USAGE_WLIB_45,        "                | -+<object_file_name>     (replace)" ,
-                "                | -+<��޼ު�ḩ̂�ٖ�>      (����ւ�)" )
+                "                | -+<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (入れ替え)" )
 pick( USAGE_WLIB_46,        "                | +-<object_file_name>     (replace)" ,
-                "                | +-<��޼ު�ḩ̂�ٖ�>      (����ւ�)" )
+                "                | +-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (入れ替え)" )
 #ifdef __UNIX__
 pick( USAGE_WLIB_47,        "                | :<module_name>[=<object_file_name>]  (extract)" ,
-                "                | *<��޼ު�ḩ̂�ٖ�>       (���o��)" )
+                "                | *<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>       (取り出し)" )
 #else
 pick( USAGE_WLIB_47,        "                | *<module_name>[=<object_file_name>]  (extract)" ,
-                "                | *<��޼ު�ḩ̂�ٖ�>       (���o��)" )
+                "                | *<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>       (取り出し)" )
 #endif
 #ifdef __UNIX__
 pick( USAGE_WLIB_48,        "                | -:<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | -*<��޼ު�ḩ̂�ٖ�>      (���o���ƍ폜)" )
+                "                | -*<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #else
 pick( USAGE_WLIB_48,        "                | -*<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | -*<��޼ު�ḩ̂�ٖ�>      (���o���ƍ폜)" )
+                "                | -*<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #endif
 #ifdef __UNIX__
 pick( USAGE_WLIB_49,        "                | :-<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | *-<��޼ު�ḩ̂�ٖ�>      (���o���ƍ폜)" )
+                "                | *-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #else
 pick( USAGE_WLIB_49,        "                | *-<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | *-<��޼ު�ḩ̂�ٖ�>      (���o���ƍ폜)" )
+                "                | *-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #endif
 pick( USAGE_WLIB_50,        "" ,
                 "" )
 #ifdef __UNIX__
 pick( USAGE_WLIB_51,        "The default filename extensions are lib, bak, lst, o and lbc." ,
-                "�f�t�H���g�̃t�@�C���g���q�́Alib, bak, lst, obj, lbc�ł��B" )
+                "デフォルトのファイル拡張子は、lib, bak, lst, obj, lbcです。" )
 #else
 pick( USAGE_WLIB_51,        "The default filename extensions are lib, bak, lst, obj and lbc." ,
-                "�f�t�H���g�̃t�@�C���g���q�́Alib, bak, lst, obj, lbc�ł��B" )
+                "デフォルトのファイル拡張子は、lib, bak, lst, obj, lbcです。" )
 #endif
 pick( USAGE_WLIB_LAST,      "Enclose a file name with quotes, i.e. 'filename', if it contains '-' or '@'.",
-                "̧�ٖ���'-'��'@'���܂܂��Ƃ��́A'filename'�̂悤�Ɉ��p����̧�ٖ����݂͂܂�" )
+                "ﾌｧｲﾙ名に'-'や'@'が含まれるときは、'filename'のように引用符でﾌｧｲﾙ名を囲みます" )
 pick( USAGE_AR_FIRST,       "ar  -d [-v] archive file..." ,
-                "ar  -d [-v] �A�[�J�C�u�� �t�@�C����..." )
+                "ar  -d [-v] アーカイブ名 ファイル名..." )
 pick( USAGE_AR_1,       "ar  -r [-cuv] archive file..." ,
-                "ar  -r [-cuv] �A�[�J�C�u�� �t�@�C����..." )
+                "ar  -r [-cuv] アーカイブ名 ファイル名..." )
 pick( USAGE_AR_2,       "ar  -t [-v] archive [file...]" ,
-                "ar  -t [-v] �A�[�J�C�u�� [�t�@�C����...]" )
+                "ar  -t [-v] アーカイブ名 [ファイル名...]" )
 pick( USAGE_AR_LAST,        "ar  -x [-v] archive [file...]" ,
-                "ar  -x [-v] �A�[�J�C�u�� [�t�@�C����...]" )
+                "ar  -x [-v] アーカイブ名 [ファイル名...]" )

@@ -177,7 +177,7 @@ verrc_dll = $(dlltarg_name)
 
 wresui.res : ../wlib.rc ../wlib.msg msg.gh
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 msg.gh : wlibmsg.gh
     @%make echo_awk
