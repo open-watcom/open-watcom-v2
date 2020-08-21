@@ -83,7 +83,7 @@ rcui_inc_dirs = -I"../stand/h" -I"../stand"
 
 wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_execute

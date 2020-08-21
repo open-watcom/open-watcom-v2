@@ -1,78 +1,78 @@
 pick( INVALID_OPTION,           "Invalid option:",
-                                "•s“KØ‚ÈƒIƒvƒVƒ‡ƒ“:" )
+                                "ä¸é©åˆ‡ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³:" )
 pick( INVALID_I,                "Invalid use of -i option.",
-                                "-iƒIƒvƒVƒ‡ƒ“‚ÌŽg—p•û–@‚ª•s“KØ‚Å‚·" )
+                                "-iã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ä½¿ç”¨æ–¹æ³•ãŒä¸é©åˆ‡ã§ã™" )
 pick( ONLY_ONE_LISTING,         "Only one listing file should be specified.",
-                                "ƒŠƒXƒgƒtƒ@ƒCƒ‹‚Í1‚Â‚¾‚¯Žw’è‚Å‚«‚Ü‚·" )
+                                "ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã¯1ã¤ã ã‘æŒ‡å®šã§ãã¾ã™" )
 pick( ONLY_ONE_SOURCE,          "Only one source file should be specified.",
-                                "ƒ\[ƒXƒtƒ@ƒCƒ‹‚Í1‚Â‚¾‚¯Žw’è‚Å‚«‚Ü‚·" )
+                                "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã¯1ã¤ã ã‘æŒ‡å®šã§ãã¾ã™" )
 pick( ONLY_ONE_OBJECT,          "Only one object file should be specified.",
-                                "ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚Í1‚Â‚¾‚¯Žw’è‚Å‚«‚Ü‚·" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã¯1ã¤ã ã‘æŒ‡å®šã§ãã¾ã™" )
 pick( NO_OBJECT,                "No object file specified.",
-                                "ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick( CANT_OPEN_SOURCE,         "Unable to open source file: ",
-                                "ƒ\[ƒXƒtƒ@ƒCƒ‹‚ðƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ" )
+                                "ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“" )
 pick( NO_LINE_NUMS,             "File contains no line numbers.",
-                                "ƒtƒ@ƒCƒ‹‚És”Ô†‚ª‚ ‚è‚Ü‚¹‚ñ" )
+                                "ãƒ•ã‚¡ã‚¤ãƒ«ã«è¡Œç•ªå·ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick( EXTERNAL_REFS,            "List of external references",
-                                "ŠO•”ŽQÆ‚ÌƒŠƒXƒg" )
+                                "å¤–éƒ¨å‚ç…§ã®ãƒªã‚¹ãƒˆ" )
 pick( LIST_OF_PUBLICS,          "List of public symbols",
-                                "ƒpƒuƒŠƒbƒNƒVƒ“ƒ{ƒ‹‚ÌƒŠƒXƒg" )
+                                "ãƒ‘ãƒ–ãƒªãƒƒã‚¯ã‚·ãƒ³ãƒœãƒ«ã®ãƒªã‚¹ãƒˆ" )
 pick( SYMBOL,                   "SYMBOL",
-                                "ƒVƒ“ƒ{ƒ‹" )
+                                "ã‚·ãƒ³ãƒœãƒ«" )
 pick( SECTION,                  "SECTION",
-                                "ƒZƒNƒVƒ‡ƒ“" )
+                                "ã‚»ã‚¯ã‚·ãƒ§ãƒ³" )
 pick( OFFSET,                   "OFFSET",
-                                "ƒIƒtƒZƒbƒg" )
+                                "ã‚ªãƒ•ã‚»ãƒƒãƒˆ" )
 pick( BSS_SIZE,                 "BSS Size:",
-                                "BBS‚Ì‘å‚«‚³:" )
+                                "BBSã®å¤§ãã•:" )
 pick( BYTES,                    "bytes",
-                                "ƒoƒCƒg" )
+                                "ãƒã‚¤ãƒˆ" )
 pick( ROUTINE_SIZE,             "Routine Size:",
-                                "ƒ‹[ƒ`ƒ“‚Ì‘å‚«‚³:" )
+                                "ãƒ«ãƒ¼ãƒãƒ³ã®å¤§ãã•:" )
 pick( ROUTINE_BASE,             "Routine Base:",
-                                "ƒ‹[ƒ`ƒ“‚Ìƒx[ƒX:" )
+                                "ãƒ«ãƒ¼ãƒãƒ³ã®ãƒ™ãƒ¼ã‚¹:" )
 pick( PROCEDURE_DESCRIPTOR,     "Procedure descriptor for ",
-                                "ƒvƒƒV[ƒWƒƒEƒfƒBƒXƒNƒŠƒvƒ^:" )
+                                "ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ»ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿:" )
 pick( BEGIN_ADDRESS,            "BeginAddress      ",
-                                "ŠJŽnƒAƒhƒŒƒX      " )
+                                "é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹      " )
 pick( END_ADDRESS,              "EndAddress        ",
-                                "ÅIƒAƒhƒŒƒX      " )
+                                "æœ€çµ‚ã‚¢ãƒ‰ãƒ¬ã‚¹      " )
 pick( EXCEPTION_HANDLER,        "ExceptionHandler  ",
-                                "—áŠOƒnƒ“ƒhƒ‰      " )
+                                "ä¾‹å¤–ãƒãƒ³ãƒ‰ãƒ©      " )
 pick( HANDLER_DATA,             "HandlerData       ",
-                                "ƒnƒ“ƒhƒ‰Eƒf[ƒ^  " )
+                                "ãƒãƒ³ãƒ‰ãƒ©ãƒ»ãƒ‡ãƒ¼ã‚¿  " )
 pick( PROLOG_END,               "PrologEnd         ",
-                                "ƒvƒƒƒOEƒGƒ“ƒh  " )
+                                "ãƒ—ãƒ­ãƒ­ã‚°ãƒ»ã‚¨ãƒ³ãƒ‰  " )
 pick( DIS_ERRORS,               "disassembly errors",
-                                "‹tƒAƒZƒ“ƒuƒ‹EƒGƒ‰[" )
+                                "é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ãƒ»ã‚¨ãƒ©ãƒ¼" )
 pick( NO_DIS_ERRORS,            "No disassembly errors",
-                                "‹tƒAƒZƒ“ƒuƒ‹EƒGƒ‰[‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                                "é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ãƒ»ã‚¨ãƒ©ãƒ¼ã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick( LABEL_BEYOND_SECTION,     "The label referred to here is an undefined location",
-                                "‚±‚±‚ÅŽQÆ‚³‚ê‚Ä‚¢‚éƒ‰ƒxƒ‹‚ÍˆÊ’u‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+                                "ã“ã“ã§å‚ç…§ã•ã‚Œã¦ã„ã‚‹ãƒ©ãƒ™ãƒ«ã¯ä½ç½®ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick( OUT_OF_MEMORY,            "Ran out of memory in ",
-                                "ƒƒ‚ƒŠ•s‘«‚Å‚·:" )
+                                "ãƒ¡ãƒ¢ãƒªä¸è¶³ã§ã™:" )
 pick( ERROR_OCCURRED,           "An error occured in ",
-                                "ƒGƒ‰[‚ª‹N‚±‚è‚Ü‚µ‚½:" )
+                                "ã‚¨ãƒ©ãƒ¼ãŒèµ·ã“ã‚Šã¾ã—ãŸ:" )
 pick( WHERE_OPENING_ORL,        "during initial reading of the object file or bad object file record",
-                                "ƒIƒuƒWƒFƒNƒgEƒtƒ@ƒCƒ‹‚ÌORL‚ð‰Šú‰»‚µ‚Ü‚·" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®ORLã‚’åˆæœŸåŒ–ã—ã¾ã™" )
 pick( WHERE_CLOSING_ORL,        "while closing the object file",
-                                "ORL‚ðƒNƒ[ƒYƒAƒbƒv‚µ‚Ü‚·" )
+                                "ORLã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã‚¢ãƒƒãƒ—ã—ã¾ã™" )
 pick( WHERE_PRINT_SECTION,      "in printing the section",
-                                "ƒZƒNƒVƒ‡ƒ“‚ðƒvƒŠƒ“ƒg‚µ‚Ü‚·" )
+                                "ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ãƒ—ãƒªãƒ³ãƒˆã—ã¾ã™" )
 pick( WHERE_CREATE_SEC_TABLES,  "creating section tables",
-                                "ƒZƒNƒVƒ‡ƒ“Eƒe[ƒuƒ‹‚ðì¬‚µ‚Ü‚·" )
+                                "ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ä½œæˆã—ã¾ã™" )
 pick( WHERE_INIT_HASH_TABLES,   "initializing hash tables",
-                                "ƒnƒbƒVƒ…Eƒe[ƒuƒ‹‚ð‰Šú‰»‚µ‚Ü‚·" )
+                                "ãƒãƒƒã‚·ãƒ¥ãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’åˆæœŸåŒ–ã—ã¾ã™" )
 pick( WHERE_OBJ_ZERO_LEN,       "The object is zero length",
-                                "ƒIƒuƒWƒFƒNƒg‚Ì’·‚³‚ª0‚Å‚·" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é•·ã•ãŒ0ã§ã™" )
 pick( WHERE_NOT_COFF_ELF,       "The object file is not in OMF, ELF or COFF format",
-                                "ƒIƒuƒWƒFƒNƒgEƒtƒ@ƒCƒ‹‚ÍAOMF, ELF, COFFŒ`Ž®‚Å‚Í‚ ‚è‚Ü‚¹‚ñ:" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã¯ã€OMF, ELF, COFFå½¢å¼ã§ã¯ã‚ã‚Šã¾ã›ã‚“:" )
 pick( WHERE_UNSUPPORTED_PROC,   "Unsupported processor type.",
-                                "ƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢ƒvƒƒZƒbƒT‚Å‚·B" )
+                                "ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„ãƒ—ãƒ­ã‚»ãƒƒã‚µã§ã™ã€‚" )
 pick( WHERE_BIG_ENDIAN,         "The object file is not in little-endian byte format.",
-                                "ƒIƒuƒWƒFƒNƒgEƒtƒ@ƒCƒ‹‚ÍƒŠƒgƒ‹EƒGƒ“ƒfƒBƒAƒ“E”{‚ÆŒ`Ž®‚Å‚Í‚ ‚è‚Ü‚¹‚ñB" )
+                                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã¯ãƒªãƒˆãƒ«ãƒ»ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ãƒ»å€ã¨å½¢å¼ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚" )
 pick( WHERE_GEN_EXTERNS,        "generating externs",
-                                "extern‚ð¶¬‚µ‚Ü‚·" )
+                                "externã‚’ç”Ÿæˆã—ã¾ã™" )
 pick( WHERE_PASS_ONE,           "pass 1",
-                                "ƒpƒX1" )
+                                "ãƒ‘ã‚¹1" )
