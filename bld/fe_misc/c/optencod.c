@@ -717,11 +717,6 @@ static char *pickUpRest( const char *p )
     char    *dst;
 
     len = strlen( p );
-    if( len > 0 ) {
-        if( p[len - 1] == '\n' ) {
-            --len;
-        }
-    }
     dst = malloc( len + 1 );
     dst[len] = '\0';
     return( memcpy( dst, p, len ) );
@@ -1260,12 +1255,26 @@ static void checkForGMLEscapeSequences( void )
     }
 }
 
+static char *my_fgets( char *buff, size_t buff_len, FILE *fp )
+{
+    char    *p;
+    size_t  len;
+
+    p = fgets( buff, buff_len, fp );
+    if( p != NULL ) {
+        for( len = strlen( p ); len > 0 && ( p[len - 1] == '\n' || p[len - 1] == '\r' ); len-- )
+            ;
+        p[len] = '\0';
+    }
+    return( p );
+}
+
 static void readInputFile( void )
 {
     const char  *eot;
     tag_id      tag;
 
-    for( ; fgets( ibuff, sizeof( ibuff ), gfp ) != NULL; ) {
+    for( ; my_fgets( ibuff, sizeof( ibuff ), gfp ) != NULL; ) {
         ++line;
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
