@@ -174,7 +174,7 @@ static void SetCharacterEncoding( void )
         break;
     case ENC_ZKL:
         CompFlags.use_unicode = false;
-        SetDBChar( -1 );                    /* set double-byte char type to defualt */
+        SetDBChar( -1 );                    /* set double-byte char type to default */
         break;
     }
 }
