@@ -41,210 +41,210 @@
 :cmt    Translations are required for the :jtitle. and :jusage. tags
 :cmt    if there is no text associated with the tag.
 
-:title. Usage: %s {options} input-filename {options} [output-filename] {options}
+:title.  Usage: %s {options} input-filename {options} [output-filename] {options}
 :jtitle. 使用方法: %s {options} input-filename {options} [output-filename] {options}
 :target. any
 
-:title. Options:
+:title.  Options:
 :jtitle. オプション:
 :target. any
-:title.  :          ( /option is also accepted )
-:jtitle. :          ( /ｵﾌﾟｼｮﾝ でも指定できます )
+:title.  .         ( /option is also accepted )
+:jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
-:page. (Press return to continue)
+:page.   (Press return to continue)
 :jusage. (Press return to continue)
 
-:chain. s segment and resource sorting method
+:chain. s Segment and resource sorting method
 :jusage.
-:chain. v verbose output
+:chain. v Verbose output
 :jusage.
-:chain. zk multi-byte characters support
+:chain. zk Multi-byte characters support
 :jusage.
 
 :option. ? h
 :target. any
-:usage. print this message
+:usage.  print this message
 :jusage. このメッセージを表示します
 
 :option. q
 :target. any
-:usage. operate quietly
+:usage.  operate quietly
 :jusage.
 
 :option. 30
 :target. any
-:usage. stamp file as requiring Windows 3.0
+:usage.  stamp file as requiring Windows 3.0
 :jusage.
 
 :option. 31
 :target. any
-:usage. (*) stamp file as requiring Windows 3.1
+:usage.  (*) stamp file as requiring Windows 3.1
 :jusage.
 
 :option. d
 :target. any
 :special. scanDefine <name>[=text]
-:usage. define text macro <name>[=text]
+:usage.  define text macro <name>[=text]
 :jusage. テキストマクロを定義します <name>[=text]
 
 :option. ad
 :target. any
-:usage. generate auto dependency information for use by wmake
+:usage.  generate auto dependency information for use by wmake
 :jusage.
 
 :option. bt
 :target. any
 :id.
 :enumerate. x windows nt os2
-:usage. set the build target to <windows|nt|os2>
+:usage.  set the build target to <windows|nt|os2>
 :jusage.
 
 :option. c
 :target. any
 :file.
-:usage. set code page conversion file
+:usage.  set code page conversion file
 :jusage.
 
 :option. e
 :target. any
-:usage. for a DLL, global memory above EMS line
+:usage.  for a DLL, global memory above EMS line
 :jusage.
 
 :option. fo
 :target. any
 :file.
-:usage. set the output resource file to name
+:usage.  set the output resource file to name
 :jusage.
 
 :option. fe
 :target. any
 :file.
-:usage. set the output executable file to name
+:usage.  set the output executable file to name
 :jusage.
 
 :option. i
 :target. any
 :path.
-:usage. look in path for include files
+:usage.  look in path for include files
 :jusage.
 
 :option. k
 :target. any
-:usage. don't sort segments (same as -s0)
+:usage.  don't sort segments (same as -s0)
 :jusage.
 
 :option. l
 :target. any
-:usage. program uses LIM 3.2 EMS directly
+:usage.  program uses LIM 3.2 EMS directly
 :jusage.
 
 :option. m
 :target. any
-:usage. each instance of program has its own EMS bank
+:usage.  each instance of program has its own EMS bank
 :jusage.
 
 :option. o
 :target. any
-:usage. preprocess only
+:usage.  preprocess only
 :jusage.
 
 :option. p
 :target. any
-:usage. private DLL
+:usage.  private DLL
 :jusage.
 
 :option. r
 :target. any
-:usage. only build the resource file
+:usage.  only build the resource file
 :jusage.
 
 :option. s0
 :target. any
-:usage. no sorting, leave segments in the linker order
+:usage.  no sorting, leave segments in the linker order
 :jusage.
 
 :option. s1
 :target. any
-:usage. move preload segments to front and mark for fast load
+:usage.  move preload segments to front and mark for fast load
 :jusage.
 
 :option. s2
 :target. any
-:usage. (*) move preload, data, non-discard. segments to front
+:usage.  (*) move preload, data, non-discard. segments to front
 :jusage.
 
 :option. t
 :target. any
-:usage. protected mode only
+:usage.  protected mode only
 :jusage.
 
 :option. v1
 :target. any
 :internal.
-:usage. print tokens as they are scanned
+:usage.  print tokens as they are scanned
 :jusage.
 
 :option. v2
 :target. any
 :internal.
-:usage. print grammar rules as they are reduced
+:usage.  print grammar rules as they are reduced
 :jusage.
 
 :option. v3
 :target. any
 :internal.
-:usage. print both tokens and grammar rules
+:usage.  print both tokens and grammar rules
 :jusage.
 
 :option. v4
 :target. any
 :internal.
-:usage. print tokens as they are scanned
+:usage.  print tokens as they are scanned
 :jusage.
 
 :option. x
 :target. any
-:usage. ignore the INCLUDE environment variable
+:usage.  ignore the INCLUDE environment variable
 :jusage.
 
 :option. zk0
 :target. any
-:usage. (*) Japanese (Kanji, CP 932)
+:usage.  (*) Japanese (Kanji, CP 932)
 :jusage.
 
 :option. zk1
 :target. any
-:usage. Chinese (Traditional, CP 950)
+:usage.  Chinese (Traditional, CP 950)
 :jusage.
 
 :option. zk2
 :target. any
-:usage. Korean (Wansung, CP 949)
+:usage.  Korean (Wansung, CP 949)
 :jusage.
 
 :option. zk3
 :target. any
-:usage. Chinese (Simplified, CP 936)
+:usage.  Chinese (Simplified, CP 936)
 :jusage.
 
 :option. zku8
 :target. any
-:usage. Unicode UTF-8
+:usage.  Unicode UTF-8
 :jusage.
 
 :option. zku0
 :target. any
-:usage. Japanese (Kanji, CP 932), UTF-8 source
+:usage.  Japanese (Kanji, CP 932), UTF-8 source
 :jusage.
 
 :option. zm
 :target. any
-:usage. output Microsoft/IBM format .res files
+:usage.  output Microsoft/IBM format .res files
 :jusage.
 
 :option. zn
 :target. any
-:usage. don't preprocess the file
+:usage.  don't preprocess the file
 :jusage.

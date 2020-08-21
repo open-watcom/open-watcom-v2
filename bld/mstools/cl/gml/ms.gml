@@ -36,7 +36,7 @@
 :target. any
 :title. Options:
 :target. any
-:title.  :          ( /option is also accepted )
+:title.  .         ( /option is also accepted )
 :target. any
 :ntarget. qnx linux osx bsd haiku
 

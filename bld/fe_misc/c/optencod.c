@@ -717,16 +717,16 @@ static char *pickUpRest( const char *p )
     char    *dst;
     char    *out;
 
-    // replace leading ':' character by space
+    // replace leading '.' character by space
     // it is used to specify spaces on the beginning of text
-    // if only ':' character than it is as blank text
+    // if only '.' character than it is as blank text
     len = strlen( p );
-    if( p[0] == ':' ) {
+    if( p[0] == '.' ) {
         len--;
     }
     out = dst = malloc( len + 1 );
     if( len > 0 ) {
-        if( p[0] == ':' ) {
+        if( p[0] == '.' ) {
             *dst++ = ' ';
             p++;
         }

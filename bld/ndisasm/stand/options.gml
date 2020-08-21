@@ -51,8 +51,8 @@
 :title. Options:
 :jtitle. オプション:
 :target. any
-:title.  :          ( /option is also accepted )
-:jtitle. :          ( /optionも使用できます )
+:title.  .         ( /option is also accepted )
+:jtitle. .         ( /optionも使用できます )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 

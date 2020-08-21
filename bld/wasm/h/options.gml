@@ -41,15 +41,15 @@
 :cmt    Translations are required for the :jtitle. and :jusage. tags
 :cmt    if there is no text associated with the tag.
 
-:title. Usage:   wasm [options] asm_file [options] [@env_var]
+:title.  Usage:   wasm [options] asm_file [options] [@env_var]
 :jtitle. 使用方法: wasm [options] file [options] [@env_var]
 :target. any
 
-:title. Options:
+:title.  Options:
 :jtitle. オプション:
 :target. any
-:title.  :          ( /option is also accepted )
-:jtitle. :          ( /ｵﾌﾟｼｮﾝ でも指定できます )
+:title.  .         ( /option is also accepted )
+:jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
