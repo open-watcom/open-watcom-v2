@@ -79,8 +79,6 @@
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 
-#define SKIP_BEG_MARK(s)        if(*s==':')++s
-
 #define mytolower(c)            (char)tolower( (unsigned char)c )
 
 #define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
@@ -252,6 +250,8 @@ static const char *validTargets[] = {
     "qnx",
     "haiku",
     "rdos",
+    "targ1",
+    "targ2",
     NULL
 };
 
@@ -715,11 +715,25 @@ static char *pickUpRest( const char *p )
 {
     size_t  len;
     char    *dst;
+    char    *out;
 
+    // replace leading ':' character by space
+    // it is used to specify spaces on the beginning of text
+    // if only ':' character than it is as blank text
     len = strlen( p );
-    dst = malloc( len + 1 );
+    if( p[0] == ':' ) {
+        len--;
+    }
+    out = dst = malloc( len + 1 );
+    if( len > 0 ) {
+        if( p[0] == ':' ) {
+            *dst++ = ' ';
+            p++;
+        }
+        memcpy( dst, p, len )
+    }
     dst[len] = '\0';
-    return( memcpy( dst, p, len ) );
+    return( out );
 }
 
 // :argequal. <char>
@@ -993,8 +1007,6 @@ static void doNOEQUAL( const char *p )
 // :page. <text>
 static void doPAGE( const char *p )
 {
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     pageUsage[LANG_English] = pickUpRest( p );
     getsUsage = TAG_PAGE;
 }
@@ -1027,8 +1039,6 @@ static void doCHAIN( const char *p )
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
     cn = addChain( tokbuff, true );
     p += skipSpace( p );
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     cn->Usage[LANG_English] = pickUpRest( p );
     lastChain = cn;
     getsUsage = TAG_CHAIN;
@@ -1111,8 +1121,6 @@ static void doUSAGE( const char *p )
 {
     OPTION *o;
 
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->lang_usage[LANG_English] = pickUpRest( p );
     }
@@ -1124,8 +1132,6 @@ static void doJUSAGE( const char *p )
     char *usage;
     OPTION *o;
 
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     switch( getsUsage ) {
     case TAG_PAGE:
         pageUsage[LANG_Japanese] = pickUpRest( p );
@@ -1163,8 +1169,6 @@ static void doTITLE( const char *p )
     *i = t;
     t->target = 0;
     t->ntarget = 0;
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     t->lang_title[LANG_English] = pickUpRest( p );
     targetTitle = t;
 }
@@ -1178,8 +1182,6 @@ static void doJTITLE( const char *p )
     if( t == NULL ) {
         fail( ":jtitle. must follow a :title.\n" );
     }
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     t->lang_title[LANG_Japanese] = pickUpRest( p );
 }
 
@@ -1214,8 +1216,6 @@ static void doUSAGEGRP( const char *p )
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
     cn = addChain( tokbuff, false );
     p += skipSpace( p );
-    // skip leading ':' character used to specify spaces on the beginning
-    SKIP_BEG_MARK( p );
     cn->Usage[LANG_English] = pickUpRest( p );
     lastChain = cn;
     getsUsage = TAG_CHAIN;
