@@ -730,7 +730,7 @@ static char *pickUpRest( const char *p )
             *dst++ = ' ';
             p++;
         }
-        memcpy( dst, p, len )
+        memcpy( dst, p, len );
     }
     dst[len] = '\0';
     return( out );
@@ -1255,7 +1255,7 @@ static void checkForGMLEscapeSequences( void )
     }
 }
 
-static char *my_fgets( char *buff, size_t buff_len, FILE *fp )
+static char *my_fgets( char *buff, int buff_len, FILE *fp )
 {
     char    *p;
     size_t  len;
