@@ -45,21 +45,21 @@
 :jusage. (Press return to continue)
 
 :title. Usage:  wdis [options] obj_file [options]
-:jtitle. g—p•û–@:  wdis [options] obj_file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•:  wdis [options] obj_file [options]
 :target. any
 
 :title. Options:
-:jtitle. ƒIƒvƒVƒ‡ƒ“:
+:jtitle. ã‚ªãƒ—ã‚·ãƒ§ãƒ³:
 :target. any
 :title.  :          ( /option is also accepted )
-:jtitle. :          ( /option‚àg—p‚Å‚«‚Ü‚· )
+:jtitle. :          ( /optionã‚‚ä½¿ç”¨ã§ãã¾ã™ )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
 :option. ? h
 :target. any
 :usage. print this message
-:jusage. ‚±‚ÌƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·
+:jusage. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã™
 
 :chain. f Instruction format
 :jusage.
@@ -67,12 +67,12 @@
 :option. a
 :target. any
 :usage. generate assembleable output
-:jusage. ƒƒAƒZƒ“ƒuƒ‹‚Å‚«‚éo—Í‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒ£Aã‚»ãƒ³ãƒ–ãƒ«ã§ãã‚‹å‡ºåŠ›ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. e
 :target. any
 :usage. generate lists of externs
-:jusage. ƒextern‚ÌƒŠƒXƒg‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒ†xternã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. ff
 :target. any
@@ -82,50 +82,50 @@
 :option. fi
 :target. any
 :usage. use alternate indexing format [80(x)86 only]
-:jusage. •Ê‚ÌƒCƒ“ƒfƒNƒVƒ“ƒOŒ`®‚ğg—p‚·‚é[80(x)86‚Ì‚İ]
+:jusage. åˆ¥ã®ã‚¤ãƒ³ãƒ‡ã‚¯ã‚·ãƒ³ã‚°å½¢å¼ã‚’ä½¿ç”¨ã™ã‚‹[80(x)86ã®ã¿]
 
 :option. fp
 :target. any
 :usage. do not use instruction name pseudonyms
-:jusage. –½—ß–¼‚Æ‚µ‚Ä‹[—ƒj[ƒ‚ƒjƒbƒN‚ğg—p‚µ‚È‚¢
+:jusage. å‘½ä»¤åã¨ã—ã¦æ“¬ä¼¼ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ã‚’ä½¿ç”¨ã—ãªã„
 
 :option. fr
 :target. any
 :usage. do not use register name pseudonyms [RISC only]
-:jusage. ƒŒƒWƒXƒ^–¼‚Æ‚µ‚Ä‹[—ƒj[ƒ‚ƒjƒbƒN‚ğg—p‚µ‚È‚¢[RISC‚Ì‚İ]
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿åã¨ã—ã¦æ“¬ä¼¼ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ã‚’ä½¿ç”¨ã—ãªã„[RISCã®ã¿]
 
 :option. fu
 :target. any
 :usage. instructions/registers in upper case
-:jusage. –½—ß/ƒŒƒWƒXƒ^‚ğ‘å•¶š‚É‚·‚é
+:jusage. å‘½ä»¤/ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å¤§æ–‡å­—ã«ã™ã‚‹
 
 :option. i
 :target. any
 :char.
 :usage. initial character of internal labels
-:jusage. “à•”ƒ‰ƒxƒ‹‚Ìæ“ª•¶š
+:jusage. å†…éƒ¨ãƒ©ãƒ™ãƒ«ã®å…ˆé ­æ–‡å­—
 
 :option. l
 :target. any
 :file.
 :optional.
 :usage. generate listing file
-:jusage. ƒŠƒXƒg¥ƒtƒ@ƒCƒ‹‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒªã‚¹ãƒˆï½¥ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. m
 :target. any
 :usage. leave C++ names mangled
-:jusage. C++‚Ìƒ}ƒ“ƒOƒ‹ƒh–¼‚ğc‚·
+:jusage. C++ã®ãƒãƒ³ã‚°ãƒ«ãƒ‰åã‚’æ®‹ã™
 
 :option. p
 :target. any
 :usage. generate list of publics
-:jusage. ƒpƒuƒŠƒbƒN‚ÌƒŠƒXƒg‚ğ¶¬‚·‚é
+:jusage. ãƒ‘ãƒ–ãƒªãƒƒã‚¯ã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã™ã‚‹
 
 :option. s
 :target. any
 :file.
 :optional.
 :usage. include source lines
-:jusage. ƒ\[ƒXs‚ğŠÜ‚ß‚Ä•\¦‚·‚é
+:jusage. ã‚½ãƒ¼ã‚¹è¡Œã‚’å«ã‚ã¦è¡¨ç¤ºã™ã‚‹
 
