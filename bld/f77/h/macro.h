@@ -44,4 +44,6 @@
 // Define multi-language constants:
 // ================================
 
+#define MSG_LANG_SPACING	13000
+
 #include "wreslang.rh"

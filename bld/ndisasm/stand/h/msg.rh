@@ -33,5 +33,7 @@
 
 #include "msg.gh"
 
+#define MSG_LANG_SPACING    13000
+
 #define MSG_USAGE_BASE      101
 #define WDIS_LITERAL_BASE   1

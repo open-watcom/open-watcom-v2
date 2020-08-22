@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define MSG_LANG_SPACING        13000
+
 /*
  * Adding new messages: if the new message has two parameters (not including
  * %Z and %L), the parameters of this message must be added to the para_table

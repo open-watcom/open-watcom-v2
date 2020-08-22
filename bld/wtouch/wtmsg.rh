@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define MSG_LANG_SPACING    13000
+
 /* wtouch error messages */
 
 #define MSG_RC_BASE         0
