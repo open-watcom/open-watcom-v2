@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ enum {
     #undef pick
 };
 
-#if defined( USE_TEXT_MSGS )
+#if defined( INCL_MSGTEXT )
 
 static const char *txtmsgs[] = {
     #define pick(num,etext,jtext) {etext},
@@ -151,7 +151,7 @@ void MsgPrintf1( unsigned resourceid, const char *token )
 
 bool MsgInit( void )
 {
-#if !defined( USE_TEXT_MSGS )
+#if !defined( INCL_MSGTEXT )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -171,7 +171,7 @@ bool MsgInit( void )
 
 void MsgFini( void )
 {
-#if !defined( USE_TEXT_MSGS )
+#if !defined( INCL_MSGTEXT )
     CloseResFile( &hInstance );
 #endif
 }
@@ -183,7 +183,7 @@ void MsgFini( void )
 
 bool MsgGet( unsigned id, char *buffer )
 {
-#if defined( USE_TEXT_MSGS )
+#if defined( INCL_MSGTEXT )
     unsigned    index;
 
     if( id >= MSG_SHARE_BASE && id < MSG_SHARE_LAST ) {

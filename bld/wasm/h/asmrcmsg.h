@@ -40,7 +40,7 @@
     #define MSG_WASM_BASE       500
     #define MSG_USAGE_BASE      900
 
-#if defined( USE_TEXT_MSGS )
+#if defined( INCL_MSGTEXT )
 
 enum {
 #define pick(c,e,j) c,

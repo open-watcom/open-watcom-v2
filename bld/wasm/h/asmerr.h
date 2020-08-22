@@ -78,7 +78,7 @@ extern void             _AsmNote( int level, unsigned msgnum, ... );
     extern int  PrintBanner( void );
 
 
-#if !defined( USE_TEXT_MSGS )
+#if !defined( INCL_MSGTEXT )
 
     extern void MsgPutUsage( void );
     extern void MsgSubStr( char *, char *, char );
