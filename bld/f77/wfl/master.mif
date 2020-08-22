@@ -57,7 +57,7 @@ rcui_inc_dirs = -I. -I.. -I"../.." -I"../../../h" -I"$(comp_cfg_dir)/h"
 
 wresui.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 errsrc_opt_i86 = elic
 errsrc_opt_386 = el3c

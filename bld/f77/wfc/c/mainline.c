@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,7 @@
 #include "fcgbls.h"
 #include "boot77.h"
 #include "errrtns.h"
-#if defined( __INCL_ERRMSGS__ )
-#include "errincl.h"
-#else
 #include "errrsrc.h"
-#endif
 #include "filescan.h"
 #include "sdcline.h"
 #include "fmacros.h"
@@ -73,9 +70,7 @@ int     main( int argc, char *argv[] ) {
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
     char        *p;
-#if !defined( __INCL_ERRMSGS__ )
     char        imageName[_MAX_PATH];
-#endif
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -84,14 +79,9 @@ int     main( int argc, char *argv[] ) {
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-#if defined( __INCL_ERRMSGS__ )
-    __InitError();
-    __ErrorInit( NULL );
-#else
     _cmdname( imageName );
     __InitResource();
     __ErrorInit( imageName );
-#endif
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif

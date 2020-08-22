@@ -69,4 +69,4 @@ rcui_inc_dirs = -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(c
 
 errmsg.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
