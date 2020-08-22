@@ -32,14 +32,20 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
+:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
 :cmt    :title.                                 English usage text
 :cmt    :timestamp.                             kludge to record "when" an option
 :cmt                                            is set so that dependencies
 :cmt                                            between options can be simulated
-:cmt    :noequal.                               usage message contains /op<value>,
-                                                not /op=<value>
+:cmt
+:cmt Global macros
+:cmt
+:cmt    :noequal.                               args can't have option '='
+:cmt    :argequal. <char>                       args use <char> instead of '='
+:cmt
 
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx

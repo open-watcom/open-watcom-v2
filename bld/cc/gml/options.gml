@@ -17,8 +17,6 @@
 :cmt    :path.                                  =<path> req'd
 :cmt    :special. <fn> [<arg_usage_text>]       call <fn> to parse option
 :cmt    :optional.                              value is optional
-:cmt    :noequal.                               args can't have option '='
-:cmt    :argequal. <char>                       args use <char> instead of '='
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
 :cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
