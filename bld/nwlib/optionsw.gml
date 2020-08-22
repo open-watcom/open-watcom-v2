@@ -19,7 +19,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usagegrp. <option> <usage_text>        group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
@@ -80,11 +80,11 @@
 :target. any
 
 :title.  . <cmd>       ::= +<object_file_name>                  (add file)
-:jtitle. . <cmd>       ::= +<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                    (ファイルの追加)
+:jtitle. . <cmd>       ::= +<オブジェクトファイル名>                   (ファイルの追加)
 :target. any
 
 :title.  .               | +<library_file_name>.lib             (add library)
-:jtitle. .               | +<ﾗｲﾌﾞﾗﾘ･ﾌｧｲﾙ名>.lib                  (ライブラリの追加)
+:jtitle. .               | +<ライブラリファイル名>.lib                 (ライブラリの追加)
 :target. any
 
 :title.  .               | ++<symbol_name>.<DLL_name>[.<export_name>][.<ordinal>]
@@ -92,41 +92,41 @@
 :target. any
 
 :title.  .               | -<module_name>                       (delete)
-:jtitle. .               | -<モジュール名>                         (削除)
+:jtitle. .               | -<モジュール名>                          (削除)
 :target. any
 
 :title.  .               | -+<object_file_name>                 (replace)
-:jtitle. .               | -+<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (入れ替え)
+:jtitle. .               | -+<オブジェクトファイル名>                  (入れ替え)
 :target. any
 
 :title.  .               | +-<object_file_name>                 (replace)
-:jtitle. .               | +-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (入れ替え)
+:jtitle. .               | +-<オブジェクトファイル名>                  (入れ替え)
 :target. any
 
 :title.  .               | :<module_name>[=<object_file_name>]  (extract)
-:jtitle. .               | :<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                    (取り出し)
+:jtitle. .               | :<モジュール名>[=<オブジェクトファイル名>]   (取り出し)
 :target. bsd linux osx qnx haiku
 
 :title.  .               | *<module_name>[=<object_file_name>]  (extract)
-:jtitle. .               | *<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                    (取り出し)
+:jtitle. .               | *<モジュール名>[=<オブジェクトファイル名>]   (取り出し)
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
 :title.  .               | -:<module_name>[=<object_file_name>] (extract and delete)
-:jtitle. .               | -:<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (取り出しと削除)
+:jtitle. .               | -:<モジュール名>[=<オブジェクトファイル名>]  (取り出しと削除)
 :target. bsd linux osx qnx haiku
 
 :title.  .               | -*<module_name>[=<object_file_name>] (extract and delete)
-:jtitle. .               | -*<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (取り出しと削除)
+:jtitle. .               | -*<モジュール名>[=<オブジェクトファイル名>]  (取り出しと削除)
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
 :title.  .               | :-<module_name>[=<object_file_name>] (extract and delete)
-:jtitle. .               | :-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (取り出しと削除)
+:jtitle. .               | :-<モジュール名>[=<オブジェクトファイル名>]  (取り出しと削除)
 :target. bsd linux osx qnx haiku
 
 :title.  .               | *-<module_name>[=<object_file_name>] (extract and delete)
-:jtitle. .               | *-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>                   (取り出しと削除)
+:jtitle. .               | *-<モジュール名>[=<オブジェクトファイル名>]  (取り出しと削除)
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
