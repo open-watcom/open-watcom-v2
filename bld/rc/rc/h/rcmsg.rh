@@ -33,11 +33,13 @@
 
 #ifdef INCL_MSGTEXT
 
-#define MSG_RC_BASE             0
+#define MSG_RC_BASE         0
 
 #else
 
-#define MSG_RC_BASE             100
+#define MSG_LANG_SPACING    13000
+
+#define MSG_RC_BASE         100
 
 #endif
 

@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define MSG_LANG_SPACING    13000
+
 #define ERR_DISK_FULL                   16
 #define ERR_SAMPLES_LOST                17
 #define ERR_SAMPLE_TRUNCATE             18
