@@ -31,6 +31,10 @@
 ****************************************************************************/
 
 
+#define MSG_LANG_SPACING    13000
+
+#define MSG_USAGE_BASE             400
+
 #define ERR_NONE                   0 // No error occured
 
 /*----------- RERR_ -- These errors occur during when file is read -------*/
@@ -98,9 +102,3 @@
 #define FATAL_INTERNAL_ASSERTION_FAILED 306 // Assertion failed
 #define FATAL_DIE                  307 // Could not recover
 #define FATAL_MAX                  308
-
-typedef int     WicErrors;  // This used to be enum
-
-#define MSG_USAGE_BASE             400
-
-#define MAX_RESOURCE_SIZE          200  // Max size of any string
