@@ -33,6 +33,8 @@
 #ifndef _ASMRCMSG_H_INCLUDED
 #define _ASMRCMSG_H_INCLUDED
 
+#define MSG_LANG_SPACING        13000
+
     #define MAX_MESSAGE_SIZE    128
 
     #define MSG_SHARE_BASE      1
