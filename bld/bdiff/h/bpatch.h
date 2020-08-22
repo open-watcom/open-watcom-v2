@@ -33,50 +33,7 @@
 #ifndef __BPATCH_H_
 #define __BPATCH_H_
 
-/* Usage message codes start value. */
-
-#define MSG_USAGE_FIRST                 16
-
-/* messages issued by BDIFF only */
-
-#define MSG_IO_ERR                      32
-#define MSG_DEBUG_INFO                  33
-#define MSG_OVERLAYS                    34
-#define MSG_IO_ERROR                    35
-#define ERR_NO_MEMORY                   36
-#define ERR_PATCH_BUNGLED               37
-
-/* messages issued by BPATCH, BPATCHP, BDUMP only */
-
-#define MSG_NOT_PATCHED                 32
-#define MSG_PATCHED_TO_LEVEL            33
-#define MSG_ALREADY_PATCHED             34
-#define MSG_MODIFY                      35
-#define ERR_TWO_NAMES                   36
-#define ERR_NO_NAME                     37
-#define ERR_WRONG_SIZE                  38
-#define ERR_CANT_RENAME                 39
-#define ERR_PATCH_ABORTED               40
-#define ERR_WRONG_CHECKSUM              41
-#define ERR_USE_REAL                    42
-#define ERR_CANT_GET_ATTRIBUTES         43
-#define MSG_SUCCESSFULLY_PATCHED        44
-
-/* messages common to all */
-
-#define ERR_NOT_PATCHFILE               48
-#define ERR_BAD_PATCHFILE               49
-#define ERR_CANT_FIND                   50
-#define ERR_CANT_OPEN                   51
-#define ERR_CANT_READ                   52
-#define ERR_CANT_WRITE                  53
-#define ERR_IO_ERROR                    54
-#define ERR_MEMORY_OUT                  55
-#define MSG_ERROR                       56
-#define ERR_NO_SYNCSTRING               57
-#define ERR_CANT_DELETE                 58
-#define ERR_CANT_CREATE                 59
-#define ERR_CANT_CREATE_TMP             60
+#include "bpatch.rh"
 
 /* Function prototypes */
 

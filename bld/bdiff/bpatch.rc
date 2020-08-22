@@ -1,4 +1,4 @@
-#include "bpatch.h"
+#include "bpatch.rh"
 #include "wreslang.rh"
 
 STRINGTABLE

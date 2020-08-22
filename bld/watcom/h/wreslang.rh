@@ -36,8 +36,6 @@
 
 /* must be done as #defines so WRC has access to them */
 
-#define MSG_LANG_SPACING    13000
-
 #define RLE_ENGLISH         0
 #define RLE_JAPANESE        1
 
