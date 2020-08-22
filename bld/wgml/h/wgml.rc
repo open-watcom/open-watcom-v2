@@ -1,6 +1,4 @@
-#define         MSG_BASE        0
-
-#include "wgmlmsgs.gh"
+#include "wgmlmsg.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
