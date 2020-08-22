@@ -31,13 +31,14 @@
 ****************************************************************************/
 
 
-#include "wdismsg.rh"
+#define MSG_LANG_SPACING    13000
 
-#define MAX_RESOURCE_SIZE       128
+#define MSG_SHARE_BASE      1
+#define MSG_WOMP_BASE       200
+#define MSG_WASM_BASE       500
+#define MSG_USAGE_BASE      900
 
-extern bool MsgInit( void );
-extern bool MsgGet( int, char * );
-extern void MsgPutUsage( void );
-extern void MsgFini( void );
-extern void MsgSubStr( char *, char *, char );
-extern void MsgChgeSpec( char *strptr, char specifier );
+#define MSG_RC_BASE     1
+#define MSG_USE_BASE    500
+
+#include "msg.gh"
