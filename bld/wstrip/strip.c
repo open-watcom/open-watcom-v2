@@ -421,6 +421,10 @@ int main( int argc, char *argv[] )
             argvlen = strlen( argv[j] );
             for( k = 1; k < argvlen; k++ ) {
                 switch( argv[j][k] ) {
+                case '?':
+                case 'h':
+                    Usage();
+                    break;
                 case 'q': quiet = true; break;
                 case 'n': nodebug_ok = true; break;
                 case 'a': add_file = true; break;

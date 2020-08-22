@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
+#include "usage.h"
 
 #include "clibext.h"
 
@@ -48,8 +49,10 @@
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
-    "",                             // message ID's start at 1
-    #include "incltext.gh"
+    #define pick(c,e,j) e,
+    #include "wstrip.msg"
+    #include "usage.gh"
+    #undef pick
 };
 
 #else
@@ -86,7 +89,7 @@ bool Msg_Init( void )
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
+        if( Msg_Get( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
     }
@@ -120,7 +123,7 @@ void Usage( void )
     char        msg_buffer[RESOURCE_MAX_SIZE];
     int         i;
 
-    for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
+    for( i = MSG_USAGE_BASE + 1; i <= MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         Msg_Get( i, msg_buffer );
         printf( "%s\n", msg_buffer );
     }

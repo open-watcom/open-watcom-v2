@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 
-#include "bool.h"
-#include "wstrip.rh"
+#if defined( INCL_MSGTEXT )
+#define MSG_RC_BASE         0
+#else
+#define MSG_LANG_SPACING    13000
+#define MSG_RC_BASE         10
+#endif
 
-extern void    Fatal( int, const char * );
-extern void    Usage( void );
-extern void    Banner( void );
-extern bool    Msg_Init( void );
-extern bool    Msg_Fini( void );
+#include "msg.gh"

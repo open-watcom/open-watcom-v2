@@ -1,0 +1,6 @@
+#if !defined( INCL_MSGTEXT )
+
+#define MSG_USAGE_BASE     100
+
+#endif
+

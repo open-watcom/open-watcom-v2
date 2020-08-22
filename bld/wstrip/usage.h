@@ -31,4 +31,24 @@
 ****************************************************************************/
 
 
-#include "msg.gh"
+#include "usage.rh"
+
+
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
+#ifdef INCL_MSGTEXT
+
+enum {
+    MSG_USAGE_BASE = 0
+    #define pick(c,e,j) + 1
+    #include "wstrip.msg"
+    #undef pick
+};
+
+#endif
+
