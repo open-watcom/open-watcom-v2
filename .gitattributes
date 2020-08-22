@@ -118,15 +118,6 @@ unicode*.* binary
 /bld/wipfc/helper/enti*.txt binary
 /bld/wipfc/helper/*.nls binary
 
-# japanese files (double-byte encoding CP932)
-/bld/cc/gml/cerrs.gml binary
-/bld/cc/gml/options.gml binary
-/bld/ndisasm/stand/options.gml binary
-/bld/plusplus/gml/messages.gml binary
-/bld/plusplus/gml/options.gml binary
-/bld/wasm/h/options.gml binary
-/bld/wstrip/options.gml binary
-
 # ow nt executables
 ci/nt386/*.exe binary
 ci/nt386/*.dll binary
