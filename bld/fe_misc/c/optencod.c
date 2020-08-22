@@ -79,7 +79,8 @@
 
 #define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 
-#define mytolower(c)            (char)tolower( (unsigned char)c )
+#define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
+#define myisspace(c)            (c == ' ' || c == '\t')
 
 #define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
 
@@ -105,88 +106,83 @@ typedef enum cvt_name {
 
 typedef void process_line_fn( const char *, bool );
 
-typedef struct target TARGET;
-struct target {
-    TARGET      *next;
-    unsigned    mask;
-    char        name[1];
-};
+typedef struct target {
+    struct target   *next;
+    unsigned        mask;
+    char            name[1];
+} TARGET;
 
-typedef struct name NAME;
-struct name {
-    NAME        *next;
+typedef struct name {
+    struct name *next;
     boolbit     is_timestamp : 1;
     char        name[1];
-};
+} NAME;
 
-typedef struct title TITLE;
-struct title {
-    TITLE       *next;
-    unsigned    target;
-    unsigned    ntarget;
-    char        *lang_title[LANG_MAX];
-};
+typedef struct title {
+    struct title    *next;
+    unsigned        target;
+    unsigned        ntarget;
+    char            *lang_title[LANG_MAX];
+} TITLE;
 
-typedef struct chain CHAIN;
-struct chain {
-    CHAIN       *next;
-    char        *Usage[LANG_MAX];
-    size_t      clen;
-    size_t      len;
-    boolbit     usage_used : 1;
-    boolbit     code_used  : 1;
-    char        name[1];
-};
+typedef struct chain {
+    struct chain    *next;
+    char            *Usage[LANG_MAX];
+    size_t          clen;
+    size_t          len;
+    boolbit         usage_used : 1;
+    boolbit         code_used  : 1;
+    char            name[1];
+} CHAIN;
 
-typedef struct option OPTION;
-struct option {
-    OPTION      *next;
-    OPTION      *synonym;
-    char        *lang_usage[LANG_MAX];
-    char        *check;
-    char        *special;
-    char        *special_arg_usage;
-    char        *field_name;
-    char        *value_field_name;
-    NAME        *enumerate;
-    char        *immediate;
-    char        *code;
-    unsigned    number_default;
-    unsigned    target;
-    unsigned    ntarget;
-    boolbit     default_specified : 1;
-    boolbit     is_simple         : 1;
-    boolbit     is_immediate      : 1;
-    boolbit     is_code           : 1;
-    boolbit     is_internal       : 1;
-    boolbit     is_multiple       : 1;
-    boolbit     is_number         : 1;
-    boolbit     is_id             : 1;
-    boolbit     is_char           : 1;
-    boolbit     is_file           : 1;
-    boolbit     is_optional       : 1;
-    boolbit     is_path           : 1;
-    boolbit     is_special        : 1;
-    boolbit     is_prefix         : 1;
-    boolbit     is_timestamp      : 1;
-    boolbit     is_negate         : 1;
-    CHAIN       *chain;
-    size_t      slen;
-    char        *sname;
-    char        name[1];
-};
 
-typedef struct codeseq CODESEQ;
-struct codeseq {
-    CODESEQ     *sibling;
-    CODESEQ     *children;
-    OPTION      *option;
-    char        c;
-    boolbit     sensitive  : 1;
-    boolbit     accept     : 1;
-    boolbit     chain      : 1;
-    boolbit     chain_root : 1;
-};
+typedef struct option {
+    struct option   *next;
+    struct option   *synonym;
+    char            *lang_usage[LANG_MAX];
+    char            *check;
+    char            *special;
+    char            *special_arg_usage;
+    char            *field_name;
+    char            *value_field_name;
+    NAME            *enumerate;
+    char            *immediate;
+    char            *code;
+    unsigned        number_default;
+    unsigned        target;
+    unsigned        ntarget;
+    boolbit         default_specified : 1;
+    boolbit         is_simple         : 1;
+    boolbit         is_immediate      : 1;
+    boolbit         is_code           : 1;
+    boolbit         is_internal       : 1;
+    boolbit         is_multiple       : 1;
+    boolbit         is_number         : 1;
+    boolbit         is_id             : 1;
+    boolbit         is_char           : 1;
+    boolbit         is_file           : 1;
+    boolbit         is_optional       : 1;
+    boolbit         is_path           : 1;
+    boolbit         is_special        : 1;
+    boolbit         is_prefix         : 1;
+    boolbit         is_timestamp      : 1;
+    boolbit         is_negate         : 1;
+    CHAIN           *chain;
+    size_t          slen;
+    char            *sname;
+    char            name[1];
+} OPTION;
+
+typedef struct codeseq {
+    struct codeseq  *sibling;
+    struct codeseq  *children;
+    OPTION          *option;
+    char            c;
+    boolbit         sensitive  : 1;
+    boolbit         accept     : 1;
+    boolbit         chain      : 1;
+    boolbit         chain_root : 1;
+} CODESEQ;
 
 static unsigned     line;
 static FILE         *gfp;
@@ -304,6 +300,17 @@ static CHAIN    *chainList;
 static TITLE    *targetTitle;
 
 static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
+
+static int mystricmp( const char *p1, const char *p2 )
+{
+    while( mytolower( *p1 ) == mytolower( *p2 ) ) {
+        if( *p1 == '\0') {
+            return( 0 );
+        }
+        p1++; p2++;
+    }
+    return( mytolower( *p1 ) - mytolower( *p2 ) );
+}
 
 #if defined( __WATCOMC__ )
 #pragma abort   fail
@@ -636,7 +643,7 @@ static size_t skipSpace( const char *start )
     const char  *p;
 
     for( p = start; *p != '\0'; ++p ) {
-        if( !isspace( *p ) ) {
+        if( !myisspace( *p ) ) {
             break;
         }
     }
@@ -648,7 +655,7 @@ static size_t copyNonSpaceUntil( const char *start, char *o, char t )
     const char  *i;
 
     for( i = start; *i != '\0'; ++i ) {
-        if( isspace( *i ) )
+        if( myisspace( *i ) )
             break;
         if( *i == t ) {
             ++i;
@@ -666,7 +673,7 @@ static tag_id findTag( char const *t )
     const char **c;
 
     for( c = tagNames; *c != NULL; ++c ) {
-        if( stricmp( t, *c ) == 0 ) {
+        if( mystricmp( t, *c ) == 0 ) {
             return( c - tagNames );
         }
     }
@@ -1956,7 +1963,7 @@ static int usageCmp( const void *v1, const void *v2 )
         }
     }
     if( res == 0 ) {
-        res = stricmp( n1, n2 );
+        res = mystricmp( n1, n2 );
         if( res == 0 ) {
             return( strcmp( n1, n2 ) );
         }
