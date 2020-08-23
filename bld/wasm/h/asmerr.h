@@ -45,8 +45,6 @@
 #endif
 // use DebugMsg((....)) to call it
 
-#define AsmWarning( errno )     AsmWarn( 0,errno )
-
 extern void             AsmErr( unsigned msgnum, ... );
 extern void             AsmWarn( int level, unsigned msgnum, ... );
 extern void             AsmNote( int level, unsigned msgnum, ... );

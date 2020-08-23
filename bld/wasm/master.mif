@@ -68,6 +68,7 @@ exetarg_objs = &
     asmeval.obj &
     asmalloc.obj &
     asmmsg.obj &
+    asmerr.obj &
     wasmmsg.obj &
     macro.obj &
     condasm.obj &

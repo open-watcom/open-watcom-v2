@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,5 +178,6 @@ extern void                 AsmRestoreCPUInfo( void );
 
 extern void                 AsmSymFini( void );
 extern void                 AsmError( unsigned msgnum );
+extern void                 AsmWarning( unsigned msgnum );
 
 #endif
