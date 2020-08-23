@@ -1,14 +1,14 @@
-#include "wasmmsg.h"
+#include "wasmmsg.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-    #include "../h/asmshare.msg"
+    #include "../h/wasmc.msg"
   #if defined( _STANDALONE_ )
     #include "../h/womp.msg"
-    #include "../h/wasm.msg"
+    #include "../h/wasms.msg"
 
     #include "usage.gh"
   #endif
@@ -17,10 +17,10 @@ BEGIN
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-    #include "../h/asmshare.msg"
+    #include "../h/wasmc.msg"
   #if defined( _STANDALONE_ )
     #include "../h/womp.msg"
-    #include "../h/wasm.msg"
+    #include "../h/wasms.msg"
 
     #include "usagej.gh"
   #endif

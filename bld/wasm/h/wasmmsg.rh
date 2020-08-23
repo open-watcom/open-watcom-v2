@@ -61,8 +61,8 @@
     #define MSG_SHARE_BASE      12000
 #endif
 
-#include "msg.gh"
+#include "wasmcmsg.gh"
 #if defined( _STANDALONE_ )
-#include "wmpmsg.gh"
-#include "wasmmsg.gh"
+#include "wompmsg.gh"
+#include "wasmsmsg.gh"
 #endif
