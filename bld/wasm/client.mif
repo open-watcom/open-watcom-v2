@@ -13,13 +13,26 @@ asminline_objs = &
     $(_subdir_)asmjump.obj &
     $(_subdir_)asmexpnd.obj &
     $(_subdir_)asmeval.obj
-
-!ifeq proj_name wfc
-asminline_deps = asmops.gh asmopsd.gh msg.gh
-!else ifeq proj_name F03
-asminline_deps = asmops.gh asmopsd.gh msg.gh
-!else
-asminline_deps = asmops.gh asmopsd.gh
-!endif
-
 asminline_lib =
+asminline_deps = asmops.gh asmopsd.gh msg.gh
+
+msg.gh : $(wasm_dir)/h/asmshare.msg $(__MAKEFILES__) .EXPLICIT
+    @%make echo_awk
+    $(awk) -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+
+./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(__MAKEFILES__) .EXPLICIT
+    @%make echo_bldcl
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+
+asmops.gh: ./mkopcod1.exe $(wasm_dir)/fullops.tok $(wasm_dir)/inlnops.tok .EXPLICIT
+    @%make echo_execute
+    $(noecho)$< $@
+
+./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(__MAKEFILES__) .EXPLICIT
+    @%make echo_bldcl
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+
+asmopsd.gh: ./mkopcode.exe $(wasm_dir)/fullops.tok $(wasm_dir)/inlnops.tok .EXPLICIT
+    @%make echo_execute
+    $(noecho)$< $@
+

@@ -181,22 +181,6 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@
 
-./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
-
-asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
-    @%make echo_execute
-    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
-
-./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
-
-asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
-    @%make echo_execute
-    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
-
 key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
 
 weights.gh keywords.gh : $(key_objs)

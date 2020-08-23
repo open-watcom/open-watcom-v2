@@ -79,26 +79,6 @@ wresui.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod
     @%make echo_rc
     $(rcui8)
 
-./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
-
-asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
-    @%make echo_execute
-    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
-
-./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-    @%make echo_bldcl
-    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
-
-asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
-    @%make echo_execute
-    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
-
-msg.gh : $(wasm_dir)/h/asmshare.msg
-    @%make echo_awk
-    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
-
 errsrc_opt_i86 = eoic
 errsrc_opt_386 = eo3c
 errsrc_opt_axp = eorc

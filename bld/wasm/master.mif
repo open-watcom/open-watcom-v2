@@ -20,6 +20,7 @@ fpu_flags_qnx_386 = -fpc
 !include deftarg.mif
 !include wres.mif
 !include trmem.mif
+!include $(wasm_dir)/client.mif
 
 #
 # cflags
@@ -122,10 +123,6 @@ wresui.res : ../h/wasm.rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.gh $(__MAK
     @%make echo_rc
     $(rcui8) -D_STANDALONE_
 
-msg.gh : ../h/asmshare.msg $(__MAKEFILES__)
-    @%make echo_awk
-    $(awk) -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
-
 wasmmsg.gh : ../h/wasm.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
@@ -153,22 +150,6 @@ usagej.gh : ../h/options.gml $(__MAKEFILES__)
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
 
 ###################################################################
-
-./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
-
-asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
-    @%make echo_execute
-    $(noecho)$< $@
-
-./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(__MAKEFILES__)
-    @%make echo_bldcl
-    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
-
-asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
-    @%make echo_execute
-    $(noecho)$< $@
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
