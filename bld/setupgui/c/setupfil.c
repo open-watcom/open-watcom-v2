@@ -52,15 +52,13 @@
 #if defined( __UNIX__ )
     #define SETENV          "export "
     #define SETENV_LEN      7
-    #define ENV_NAME        "$%s"
-    #define ENV_NAME1       "$"
-    #define ENV_NAME2       ""
+    #define NAME_PREFIX     "$"
+    #define NAME_SUFFIX     ""
 #else
     #define SETENV          "SET "
     #define SETENV_LEN      4
-    #define ENV_NAME        "%%%s%%"
-    #define ENV_NAME1       "%%"
-    #define ENV_NAME2       "%%"
+    #define NAME_PREFIX     "%"
+    #define NAME_SUFFIX     "%"
 #endif
 
 typedef enum {
@@ -447,14 +445,14 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
                 }
             } else if( append == AM_AFTER ) {
                 VbufPrepChr( &cur_val, PATH_LIST_SEP );
-                VbufPrepStr( &cur_val, ENV_NAME2 );
+                VbufPrepStr( &cur_val, NAME_SUFFIX );
                 VbufPrepVbuf( &cur_val, &cur_var );
-                VbufPrepStr( &cur_val, ENV_NAME1 );
+                VbufPrepStr( &cur_val, NAME_PREFIX );
             } else if( append == AM_BEFORE ) {
                 VbufConcChr( &cur_val, PATH_LIST_SEP );
-                VbufConcStr( &cur_val, ENV_NAME1 );
+                VbufConcStr( &cur_val, NAME_PREFIX );
                 VbufConcVbuf( &cur_val, &cur_var );
-                VbufConcStr( &cur_val, ENV_NAME2 );
+                VbufConcStr( &cur_val, NAME_SUFFIX );
 //            } else {
 //                strcpy( value, cur_val );
             }
