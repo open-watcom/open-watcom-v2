@@ -2233,6 +2233,8 @@ static void processUsage( unsigned language, process_line_fn *process_line )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
+printf(tokbuff);
+printf("\n");
         process_line( tokbuff, true );
     }
     createUsageHeader( language, process_line );
@@ -2242,8 +2244,12 @@ static void processUsage( unsigned language, process_line_fn *process_line )
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
             str = createChainHeader( &t[i], language, max );
+printf(tokbuff);
+printf("\n");
             process_line( tokbuff, false );
             if( str != NULL ) {
+printf(str);
+printf("\n");
                 process_line( str, false );
             }
         }
@@ -2255,11 +2261,13 @@ static void processUsage( unsigned language, process_line_fn *process_line )
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
+printf(tokbuff);
+printf("\n");
         process_line( tokbuff, false );
     }
     free( t );
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
-        fail( "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
+        fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
 }
 
