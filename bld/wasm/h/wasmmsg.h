@@ -32,4 +32,40 @@
 
 #define MAX_MESSAGE_SIZE    128
 
+#if defined( _STANDALONE_ ) && defined( INCL_MSGTEXT )
+    // WASM, must be assigned dynamicaly
+    #define MSG_SHARE_BASE      0
+
+enum {
+    MSG_WOMP_BASE = MSG_SHARE_BASE
+    #define pick(c,e,j) + 1
+    #include "../h/wasmc.msg"
+    #undef pick
+};
+
+enum {
+    MSG_WASM_BASE = MSG_WOMP_BASE
+    #define pick(c,e,j) + 1
+    #include "../h/womp.msg"
+    #undef pick
+};
+
+enum {
+    MSG_USAGE_BASE = MSG_WASM_BASE
+    #define pick(c,e,j) + 1
+    #include "../h/wasms.msg"
+    #undef pick
+};
+#endif
+
 #include "wasmmsg.rh"
+
+#if !defined( _STANDALONE_ ) && defined( INCL_MSGTEXT )
+    // WCC or WPP, must be assigned dynamicaly
+enum {
+    MSG_LANG_SPACING = MSG_SHARE_BASE
+    #define pick(c,e,j) + 1
+    #include "../h/wasmc.msg"
+    #undef pick
+};
+#endif

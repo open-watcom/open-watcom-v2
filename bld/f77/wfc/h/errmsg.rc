@@ -9,20 +9,19 @@
 
 #if _CPU == 8086 || _CPU == 386
 
-#define _USE_RESOURCES_
-#include "asmerr.h"
+#include "wasmmsg.rh"
 
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-    #include "asmshare.msg"
+    #include "wasmc.msg"
 
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-    #include "asmshare.msg"
+    #include "wasmc.msg"
 
     #undef pick
 END

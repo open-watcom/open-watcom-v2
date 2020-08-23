@@ -40,4 +40,3 @@ asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EX
 asmopsd.gh: ./mkopcode.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute
     $(noecho)$< $@
-

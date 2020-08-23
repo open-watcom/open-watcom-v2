@@ -41,7 +41,7 @@ additional_clean = *.int
 
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_cpp_flags =
+extra_cpp_flags = -DINCL_MSGTEXT
 !ifneq cc_dll 1
 extra_cpp_flags += -DIDE_PGM
 !endif

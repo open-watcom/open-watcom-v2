@@ -47,11 +47,6 @@
 #endif
 // use DebugMsg((....)) to call it
 
-extern void             AsmErr( unsigned msgnum, ... );
-extern void             AsmWarn( int level, unsigned msgnum, ... );
-extern void             AsmNote( int level, unsigned msgnum, ... );
-extern void             _AsmNote( int level, unsigned msgnum, ... );
-
 #if !defined( _STANDALONE_ )
     #define DebugCurrLine()
     #define AsmIntErr( x )
@@ -63,27 +58,27 @@ extern void             _AsmNote( int level, unsigned msgnum, ... );
     #define AsmIntErr( x ) printf( "Internal error = %u\n", x )
 #endif
 
-#if defined( _STANDALONE_ )
+#ifdef _STANDALONE_
 
-    extern bool MsgInit( void );
-    extern bool MsgGet( unsigned, char * );
-    extern void MsgFini( void );
-    extern void OpenLstFile( void );
-    extern void LstMsg( const char *format, ... );
-    extern void PrintfUsage( void );
-    extern void MsgPrintf( unsigned resourceid );
-    extern void MsgPrintf1( unsigned resourceid, const char *token );
-    extern int  PrintBanner( void );
-
-
+extern bool MsgInit( void );
+extern bool MsgGet( unsigned, char * );
+extern void MsgFini( void );
+extern void OpenLstFile( void );
+extern void LstMsg( const char *format, ... );
+extern void PrintfUsage( void );
+extern void MsgPrintf( unsigned resourceid );
+extern void MsgPrintf1( unsigned resourceid, const char *token );
+extern int  PrintBanner( void );
+extern void AsmErr( unsigned msgnum, ... );
+extern void AsmWarn( int level, unsigned msgnum, ... );
+extern void AsmNote( int level, unsigned msgnum, ... );
+extern void _AsmNote( int level, unsigned msgnum, ... );
 #if !defined( INCL_MSGTEXT )
-
-    extern void MsgPutUsage( void );
-    extern void MsgSubStr( char *, char *, char );
-    extern void MsgChgeSpec( char *strptr, char specifier );
-
+extern void MsgPutUsage( void );
+extern void MsgSubStr( char *, char *, char );
+extern void MsgChgeSpec( char *strptr, char specifier );
 #endif
 
-#endif
+#endif  /* _STANDALONE_ */
 
-#endif
+#endif  /* _ASMERR_H_INCLUDED */

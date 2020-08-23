@@ -45,7 +45,7 @@ intname     = wpp$(target_cpu)
 inc_dirs = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) &
     -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
 
-extra_cpp_flags =
+extra_cpp_flags = -DINCL_MSGTEXT
 !ifndef plusplus_dll
 extra_cpp_flags += -DIDE_PGM
 !endif

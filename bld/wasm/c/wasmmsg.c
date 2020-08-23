@@ -36,6 +36,7 @@
   #include <process.h>
 #endif
 #include "banner.h"
+//#include "wasmmsg.h"
 
 #include "clibext.h"
 
@@ -51,9 +52,9 @@ enum {
 
 static const char *txtmsgs[] = {
     #define pick(num,etext,jtext) {etext},
-    #include "../h/asmshare.msg"
-    #include "../h/womp.msg"
-    #include "../h/wasm.msg"
+    #include "wasmc.msg"
+    #include "womp.msg"
+    #include "wasms.msg"
     #include "usage.gh"
     #undef pick
 };
@@ -176,29 +177,10 @@ void MsgFini( void )
 #endif
 }
 
-#define TXT_SHARE_BASE  0
-#define TXT_WOMP_BASE   (TXT_SHARE_BASE + MSG_SHARE_LAST - MSG_SHARE_BASE)
-#define TXT_WASM_BASE   (TXT_WOMP_BASE + MSG_WOMP_LAST - MSG_WOMP_BASE)
-#define TXT_USAGE_BASE  (TXT_WASM_BASE + MSG_WASM_LAST - MSG_WASM_BASE)
-
 bool MsgGet( unsigned id, char *buffer )
 {
 #if defined( INCL_MSGTEXT )
-    unsigned    index;
-
-    if( id >= MSG_SHARE_BASE && id < MSG_SHARE_LAST ) {
-        index = id - MSG_SHARE_BASE + TXT_SHARE_BASE;
-    } else if( id >= MSG_WOMP_BASE && id < MSG_WOMP_LAST ) {
-        index = id - MSG_WOMP_BASE + TXT_WOMP_BASE;
-    } else if( id >= MSG_WASM_BASE && id < MSG_WASM_LAST ) {
-        index = id - MSG_WASM_BASE + TXT_WASM_BASE;
-    } else if( id >= MSG_USAGE_BASE ) {
-        index = id - MSG_USAGE_BASE + TXT_USAGE_BASE;
-    } else {
-        buffer[0] = '\0';
-        return( false );
-    }
-    strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
+    strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #else
     if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {

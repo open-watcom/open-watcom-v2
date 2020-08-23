@@ -33,8 +33,7 @@ exetarg_name = $(exename_$(target_cpu))
 inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" &
     -I"$(fe_misc_dir)/h" $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
-# define _USE_RESOURCES_ so that WASM error messages come from resources
-extra_cpp_flags = -D_USE_RESOURCES_
+extra_cpp_flags =
 !ifeq dll_cg 1
 extra_cpp_flags += -D_CGDLL
 !endif
