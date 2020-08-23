@@ -25,65 +25,44 @@
 *
 *  ========================================================================
 *
-* Description:  Assembler message output interface.
+* Description:  Assembler message definitions
 *
 ****************************************************************************/
 
 
-#ifndef _ASMERR_H_INCLUDED
-#define _ASMERR_H_INCLUDED
-
 #if defined( _STANDALONE_ )
-    #include "asminput.h"
-#endif
-
-#include "wasmmsg.h"
-
-#ifdef DEBUG_OUT
-    extern void DoDebugMsg( const char *format, ... );
-    #define DebugMsg( x ) DoDebugMsg x
+#if defined( INCL_MSGTEXT )
+    // WASM, must be assigned dynamicaly
 #else
-    #define DebugMsg( x )
+    // WASM
+    #define MSG_LANG_SPACING    13000
 #endif
-// use DebugMsg((....)) to call it
-
-extern void             AsmErr( unsigned msgnum, ... );
-extern void             AsmWarn( int level, unsigned msgnum, ... );
-extern void             AsmNote( int level, unsigned msgnum, ... );
-extern void             _AsmNote( int level, unsigned msgnum, ... );
-
-#if !defined( _STANDALONE_ )
-    #define DebugCurrLine()
-    #define AsmIntErr( x )
-#elif DEBUG_OUT
-    #define DebugCurrLine() printf( "%s\n", CurrString );
-    #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )
+#elif defined( INCL_MSGTEXT )
+    // WCC or WPP, must be assigned dynamicaly
 #else
-    #define DebugCurrLine()
-    #define AsmIntErr( x ) printf( "Internal error = %u\n", x )
+    // WFC
+    #define MSG_LANG_SPACING    13000
 #endif
-
 #if defined( _STANDALONE_ )
-
-    extern bool MsgInit( void );
-    extern bool MsgGet( unsigned, char * );
-    extern void MsgFini( void );
-    extern void OpenLstFile( void );
-    extern void LstMsg( const char *format, ... );
-    extern void PrintfUsage( void );
-    extern void MsgPrintf( unsigned resourceid );
-    extern void MsgPrintf1( unsigned resourceid, const char *token );
-    extern int  PrintBanner( void );
-
-
-#if !defined( INCL_MSGTEXT )
-
-    extern void MsgPutUsage( void );
-    extern void MsgSubStr( char *, char *, char );
-    extern void MsgChgeSpec( char *strptr, char specifier );
-
+#if defined( INCL_MSGTEXT )
+    // WASM, must be assigned dynamicaly
+#else
+    // WASM
+    #define MSG_SHARE_BASE      1
+    #define MSG_WOMP_BASE       200
+    #define MSG_WASM_BASE       500
+    #define MSG_USAGE_BASE      900
+#endif
+#elif defined( INCL_MSGTEXT )
+    // WCC or WPP
+    #define MSG_SHARE_BASE      0
+#else
+    // WFC
+    #define MSG_SHARE_BASE      12000
 #endif
 
-#endif
-
+#include "msg.gh"
+#if defined( _STANDALONE_ )
+#include "wmpmsg.gh"
+#include "wasmmsg.gh"
 #endif
