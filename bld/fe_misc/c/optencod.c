@@ -2179,6 +2179,8 @@ static void createUsageHeader( unsigned language, process_line_fn *process_line 
                 }
             }
             *d = '\0';
+printf(tokbuff);
+printf("\n");
             process_line( tokbuff, false );
         }
     }
