@@ -29,7 +29,7 @@ extra_c_flags_memory = $(trmem_cover_cflags)
 #
 # EXE
 #
-exetarg_prebuild_objs =  usage.gh wmpmsg.gh
+exetarg_prebuild_objs =  usage.gh wompmsg.gh
 exetarg_objs = &
     array.obj       &
     can2ms0.obj     &
@@ -79,7 +79,7 @@ wresui.res : ../h/$(proj_name).rc
     @%make echo_rc
     $(rcui8)
 
-wmpmsg.gh : ../womp.msg
+wompmsg.gh : ../womp.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
