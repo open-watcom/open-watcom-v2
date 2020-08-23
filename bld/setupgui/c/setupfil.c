@@ -1744,7 +1744,7 @@ bool ModifyRegAssoc( bool uninstall )
             /* process program definition */
             SimGetAssociationProgram( i, &temp );
             if( VbufLen( &temp ) > 0 ) {
-                VbufConcStr( &temp, " %%1" );
+                VbufConcStr( &temp, " %1" );
                 ReplaceVars1( &temp );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             }
