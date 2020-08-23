@@ -139,7 +139,7 @@ optencod_opt_qnx    = -u $(exetarg_qnx_res)
 optencod_targ_dbg   = dbg
 !endif
 
-usage.gh usage.u : ../h/options.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
