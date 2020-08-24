@@ -535,7 +535,7 @@ static CHAIN *addChain( char *n, bool chain )
     memcpy( cn->name, n, len + 1 );
     cvtName( n, n, CVT_STRING );
     cn->clen = strlen( n );
-    cn->code_used = chain;
+    cn->code_used = chain ? true : false;
     for( i = 0; i < LANG_MAX; ++i ) {
         cn->Usage[i] = NULL;
     }
@@ -1515,7 +1515,7 @@ static CODESEQ *newCode( OPTION *o, char c, bool sensitive )
     p = calloc( 1, sizeof( *p ) );
     p->option = o;
     p->c = c;
-    p->sensitive = sensitive;
+    p->sensitive = sensitive ? true : false;
     return( p );
 }
 
