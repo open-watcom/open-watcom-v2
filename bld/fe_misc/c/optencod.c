@@ -100,8 +100,8 @@ typedef enum flow_control {
 } flow_control;
 
 typedef enum cvt_name {
-    CVT_STRING,
-    CVT_NORMALIZE,
+    CVT_NAME,
+    CVT_PATTERN,
     CVT_USAGE
 } cvt_name;
 
@@ -361,13 +361,13 @@ static void emitPrintf( unsigned depth, const char *msg, ... )
     }
 }
 
-static void cvtName( char *dst, const char *src, cvt_name cvt )
+static void cvtOptionSpec( char *dst, const char *src, cvt_name cvt )
 {
     char c;
 
     while( (c = *src++) != '\0' ) {
         if( c == '\\' ) {
-            if( cvt == CVT_NORMALIZE ) {
+            if( cvt == CVT_PATTERN ) {
                 *dst++ = c;
             }
             c = *src++;
@@ -379,20 +379,20 @@ static void cvtName( char *dst, const char *src, cvt_name cvt )
     *dst = c;
 }
 
-static bool cmpOptPattern( const char *n1, const char *n2 )
+static bool cmpOptPattern( const char *pattern1, const char *pattern2 )
 {
     char    c1;
     char    c2;
 
     for( ;; ) {
-        c1 = *n1++;
-        c2 = *n2++;
+        c1 = *pattern1++;
+        c2 = *pattern2++;
         if( c1 == '\\' ) {
             if( c2 != '\\' ) {
                 return( false );
             }
-            c1 = *n1++;
-            c2 = *n2++;
+            c1 = *pattern1++;
+            c2 = *pattern2++;
         } else {
             c1 = mytolower( c1 );
             c2 = mytolower( c2 );
@@ -407,21 +407,21 @@ static bool cmpOptPattern( const char *n1, const char *n2 )
     return( true );
 }
 
-static bool cmpChainPattern( const char *n1, const char *n2, size_t len )
+static bool cmpChainPattern( const char *pattern1, const char *pattern2, size_t pattern_len )
 {
     size_t  i;
     char    c1;
     char    c2;
 
-    for( i = 0; i < len; ++i ) {
-        c1 = *n1++;
-        c2 = *n2++;
+    for( i = 0; i < pattern_len; ++i ) {
+        c1 = *pattern1++;
+        c2 = *pattern2++;
         if( c1 == '\\' ) {
             if( c2 != '\\' ) {
                 return( false );
             }
-            c1 = *n1++;
-            c2 = *n2++;
+            c1 = *pattern1++;
+            c2 = *pattern2++;
         } else {
             c1 = mytolower( c1 );
             c2 = mytolower( c2 );
@@ -502,40 +502,40 @@ static NAME *addEnumerator( const char *enumerate, const char *field_name )
     return( n );
 }
 
-static CHAIN *findChain( const char *n )
+static CHAIN *findChain( const char *pattern )
 {
     CHAIN *cn;
 
     for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( cmpChainPattern( cn->pattern, n, cn->pattern_len ) ) {
+        if( cmpChainPattern( cn->pattern, pattern, cn->pattern_len ) ) {
             return( cn );
         }
     }
     return( NULL );
 }
 
-static CHAIN *addChain( char *n, bool chain )
+static CHAIN *addChain( char *pattern, bool chain )
 {
-    size_t len;
+    size_t pattern_len;
     CHAIN *cn;
     int i;
 
-    cvtName( n, n, CVT_NORMALIZE );
+    cvtOptionSpec( pattern, pattern, CVT_PATTERN );
     for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( strcmp( n, cn->pattern ) == 0 ) {
+        if( strcmp( pattern, cn->pattern ) == 0 ) {
             if( cn->code_used ) {
-                fail( "CHAIN: option '%s' already defined\n", n );
+                fail( "CHAIN: option '%s' already defined\n", pattern );
             } else {
-                fail( "USAGEGRP: option '%s' already defined\n", n );
+                fail( "USAGEGRP: option '%s' already defined\n", pattern );
             }
         }
     }
-    len = strlen( n );
-    cn = malloc( sizeof( *cn ) + len );
-    cn->pattern_len = len;
-    memcpy( cn->pattern, n, len + 1 );
-    cvtName( n, n, CVT_STRING );
-    cn->name_len = strlen( n );
+    pattern_len = strlen( pattern );
+    cn = malloc( sizeof( *cn ) + pattern_len );
+    cn->pattern_len = pattern_len;
+    memcpy( cn->pattern, pattern, pattern_len + 1 );
+    cvtOptionSpec( pattern, pattern, CVT_NAME );
+    cn->name_len = strlen( pattern );
     cn->code_used = chain ? true : false;
     for( i = 0; i < LANG_MAX; ++i ) {
         cn->Usage[i] = NULL;
@@ -699,19 +699,19 @@ static tag_id isTag( const char **eot )
     return( TAG_NULL );
 }
 
-static OPTION *pushNewOption( char *name, OPTION *o )
+static OPTION *pushNewOption( char *pattern, OPTION *o )
 {
     size_t  len;
     OPTION  *newo;
 
-    len = strlen( name );
+    len = strlen( pattern );
     newo = calloc( 1, sizeof( *newo ) + len );
-    memcpy( newo->pattern, name, len + 1 );
-    cvtName( name, name, CVT_STRING );
-    len = strlen( name );
+    memcpy( newo->pattern, pattern, len + 1 );
+    cvtOptionSpec( pattern, pattern, CVT_NAME );
+    len = strlen( pattern );
     newo->name_len = len;
     newo->name = calloc( 1, len + 1 );
-    memcpy( newo->name, name, len + 1 );
+    memcpy( newo->name, pattern, len + 1 );
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
@@ -729,10 +729,10 @@ static char *pickUpRest( const char *p )
     // it is used to specify spaces on the beginning of text
     // if only '.' character than it is as blank text
     len = strlen( p );
+    out = dst = malloc( len + 1 );
     if( p[0] == '.' ) {
         len--;
     }
-    out = dst = malloc( len + 1 );
     if( len > 0 ) {
         if( p[0] == '.' ) {
             *dst++ = ' ';
@@ -1375,15 +1375,15 @@ static char *special_char( char *f, char c )
     return( f );
 }
 
-static void makeFieldName( const char *n, char *f )
+static void makeFieldName( const char *pattern, char *f )
 {
     char c;
     bool sensitive;
     bool special;
 
-    c = *n++;
+    c = *pattern++;
     if( c == '\\' ) {
-        c = *n++;
+        c = *pattern++;
     } else {
         c = mytolower( c );
     }
@@ -1398,7 +1398,7 @@ static void makeFieldName( const char *n, char *f )
             special = true;
         }
         sensitive = false;
-        for( ; (c = *n++) != '\0'; ) {
+        for( ; (c = *pattern++) != '\0'; ) {
             if( c == '\\' ) {
                 sensitive = true;
                 continue;
@@ -1523,17 +1523,17 @@ static CODESEQ *newCode( OPTION *o, char c, bool sensitive )
 static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
 {
     bool    sensitive;
-    char    *n;
+    char    *pattern;
     char    c;
     CODESEQ *head;
     CODESEQ **splice;
 
     head = code;
     splice = &head;
-    for( n = o->pattern; (c = *n++) != '\0'; ) {
+    for( pattern = o->pattern; (c = *pattern++) != '\0'; ) {
         sensitive = false;
         if( c == '\\' ) {
-            c = *n++;
+            c = *pattern++;
             sensitive = true;
         } else {
             c = mytolower( c );
@@ -2012,7 +2012,7 @@ static size_t genOptionUsageStart( OPTION *o )
         strcat( tokbuff, o->name + o->chain->name_len );
     } else {
         strcpy( tokbuff, "-" );
-        cvtName( tokbuff + 1, o->pattern, CVT_USAGE );
+        cvtOptionSpec( tokbuff + 1, o->pattern, CVT_USAGE );
     }
     if( o->is_number ) {
         if( o->default_specified ) {
@@ -2118,7 +2118,7 @@ static char *createChainHeader( OPTION **o, unsigned language, size_t max )
 
     cn = (*o)->chain;
     hdrbuff[0] = '-';
-    cvtName( hdrbuff + 1, cn->pattern, CVT_STRING );
+    cvtOptionSpec( hdrbuff + 1, cn->pattern, CVT_NAME );
     strcat( hdrbuff, "{" );
     len = 0;
     for( ; *o != NULL && (*o)->chain == cn; ++o ) {
