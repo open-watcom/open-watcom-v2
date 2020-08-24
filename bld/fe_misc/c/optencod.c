@@ -114,9 +114,9 @@ typedef struct target {
 } TARGET;
 
 typedef struct name {
-    struct name *next;
-    boolbit     is_timestamp : 1;
-    char        name[1];
+    struct name     *next;
+    boolbit         is_timestamp : 1;
+    char            name[1];
 } NAME;
 
 typedef struct title {
@@ -129,11 +129,11 @@ typedef struct title {
 typedef struct chain {
     struct chain    *next;
     char            *Usage[LANG_MAX];
-    size_t          clen;
-    size_t          len;
+    size_t          name_len;
+    size_t          pattern_len;
     boolbit         usage_used : 1;
     boolbit         code_used  : 1;
-    char            name[1];
+    char            pattern[1];
 } CHAIN;
 
 
@@ -169,9 +169,9 @@ typedef struct option {
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
     CHAIN           *chain;
-    size_t          slen;
-    char            *sname;
-    char            name[1];
+    size_t          name_len;
+    char            *name;
+    char            pattern[1];
 } OPTION;
 
 typedef struct codeseq {
@@ -379,7 +379,7 @@ static void cvtName( char *dst, const char *src, cvt_name cvt )
     *dst = c;
 }
 
-static bool cmpOptName( const char *n1, const char *n2 )
+static bool cmpOptPattern( const char *n1, const char *n2 )
 {
     char    c1;
     char    c2;
@@ -407,7 +407,7 @@ static bool cmpOptName( const char *n1, const char *n2 )
     return( true );
 }
 
-static bool cmpChainName( const char *n1, const char *n2, size_t len )
+static bool cmpChainPattern( const char *n1, const char *n2, size_t len )
 {
     size_t  i;
     char    c1;
@@ -507,7 +507,7 @@ static CHAIN *findChain( const char *n )
     CHAIN *cn;
 
     for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( cmpChainName( cn->name, n, cn->len ) ) {
+        if( cmpChainPattern( cn->pattern, n, cn->pattern_len ) ) {
             return( cn );
         }
     }
@@ -522,7 +522,7 @@ static CHAIN *addChain( char *n, bool chain )
 
     cvtName( n, n, CVT_NORMALIZE );
     for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( strcmp( n, cn->name ) == 0 ) {
+        if( strcmp( n, cn->pattern ) == 0 ) {
             if( cn->code_used ) {
                 fail( "CHAIN: option '%s' already defined\n", n );
             } else {
@@ -532,10 +532,10 @@ static CHAIN *addChain( char *n, bool chain )
     }
     len = strlen( n );
     cn = malloc( sizeof( *cn ) + len );
-    cn->len = len;
-    memcpy( cn->name, n, len + 1 );
+    cn->pattern_len = len;
+    memcpy( cn->pattern, n, len + 1 );
     cvtName( n, n, CVT_STRING );
-    cn->clen = strlen( n );
+    cn->name_len = strlen( n );
     cn->code_used = chain ? true : false;
     for( i = 0; i < LANG_MAX; ++i ) {
         cn->Usage[i] = NULL;
@@ -706,12 +706,12 @@ static OPTION *pushNewOption( char *name, OPTION *o )
 
     len = strlen( name );
     newo = calloc( 1, sizeof( *newo ) + len );
-    memcpy( newo->name, name, len + 1 );
+    memcpy( newo->pattern, name, len + 1 );
     cvtName( name, name, CVT_STRING );
     len = strlen( name );
-    newo->slen = len;
-    newo->sname = calloc( 1, len + 1 );
-    memcpy( newo->sname, name, len + 1 );
+    newo->name_len = len;
+    newo->name = calloc( 1, len + 1 );
+    memcpy( newo->name, name, len + 1 );
     newo->synonym = o;
     newo->is_simple = true;
     newo->next = optionList;
@@ -1270,6 +1270,7 @@ static char *my_fgets( char *buff, int buff_len, FILE *fp )
 
     p = fgets( buff, buff_len, fp );
     if( p != NULL ) {
+printf("%s\n",buff);
         for( len = strlen( p ); len > 0 && ( p[len - 1] == '\n' || p[len - 1] == '\r' ); len-- )
             ;
         p[len] = '\0';
@@ -1308,10 +1309,10 @@ static void checkForMissingUsages( void )
         end_lang = start_lang + 1;
     }
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NULL || cmpOptName( o->name, o->chain->name ) ) {
+        if( o->chain == NULL || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
             for( i = start_lang; i < end_lang; ++i ) {
                 if( o->lang_usage[i] == NULL ) {
-                    fail( "option '%s' has no %s usage\n", o->name, langName[i] );
+                    fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
                 }
             }
         }
@@ -1326,7 +1327,7 @@ static void assignChainToOptions( void )
         if( o->chain == NOCHAIN ) {
             o->chain = NULL;
         } else {
-            o->chain = findChain( o->name );
+            o->chain = findChain( o->pattern );
         }
     }
 }
@@ -1428,7 +1429,7 @@ static void startParserH( void )
     if( ofp == NULL ) {
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
-                makeFieldName( o->name, tokbuff );
+                makeFieldName( o->pattern, tokbuff );
                 if( o->field_name == NULL ) {
                     o->field_name = strdup( tokbuff );
                 }
@@ -1452,7 +1453,7 @@ static void startParserH( void )
         fprintf( ofp, "    unsigned     timestamp;\n" );
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
-                makeFieldName( o->name, tokbuff );
+                makeFieldName( o->pattern, tokbuff );
                 if( o->field_name == NULL ) {
                     o->field_name = strdup( tokbuff );
                 }
@@ -1471,7 +1472,7 @@ static void startParserH( void )
                 }
                 if( o->is_timestamp ) {
                     if( o->enumerate == NULL ) {
-                        makeFieldName( o->name, tokbuff );
+                        makeFieldName( o->pattern, tokbuff );
                         fprintf( ofp, "    unsigned     %s_timestamp;\n", tokbuff );
                     }
                 }
@@ -1485,7 +1486,7 @@ static void startParserH( void )
         }
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
-                makeFieldName( o->name, tokbuff );
+                makeFieldName( o->pattern, tokbuff );
                 if( o->enumerate == NULL ) {
                     fprintf( ofp, "    boolbit      %s : 1;\n", tokbuff );
                 }
@@ -1530,7 +1531,7 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
 
     head = code;
     splice = &head;
-    for( n = o->name; (c = *n++) != '\0'; ) {
+    for( n = o->pattern; (c = *n++) != '\0'; ) {
         sensitive = false;
         if( c == '\\' ) {
             c = *n++;
@@ -1614,12 +1615,12 @@ static bool markChainCode( CODESEQ *h, size_t level )
     for( c = h; c != NULL; c = c->sibling ) {
         if( c->option->chain != NULL && c->option->chain->code_used ) {
             if( c->children != NULL ) {
-                if( level == c->option->chain->clen ) {
+                if( level == c->option->chain->name_len ) {
                     if( markChainCode( c->children, level + 1 ) ) {
                         c->chain_root = true;
                     }
                 }
-            } else if( c->option->slen == c->option->chain->clen + 1 ) {
+            } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
                 c->chain = true;
                 rc = true;
             }
@@ -1931,26 +1932,26 @@ static void outputFN_FINI( void )
 static int usageCmp( const void *v1, const void *v2 )
 {
     int     res;
-    size_t  clen;
+    size_t  name_len;
     OPTION  *o1 = *(OPTION **)v1;
     OPTION  *o2 = *(OPTION **)v2;
-    char    *n1 = o1->sname;
-    char    *n2 = o2->sname;
+    char    *n1 = o1->name;
+    char    *n2 = o2->name;
 
     res = 0;
     if( o1->chain != o2->chain ) {
         if( o1->chain == NULL ) {
-            clen = o2->chain->clen;
+            name_len = o2->chain->name_len;
         } else if( o2->chain == NULL ) {
-            clen = o1->chain->clen;
-        } else if( o1->chain->clen > o2->chain->clen ) {
-            clen = o1->chain->clen;
+            name_len = o1->chain->name_len;
+        } else if( o1->chain->name_len > o2->chain->name_len ) {
+            name_len = o1->chain->name_len;
         } else {
-            clen = o2->chain->clen;
+            name_len = o2->chain->name_len;
         }
-        res = strnicmp( n1, n2, clen );
+        res = strnicmp( n1, n2, name_len );
         if( res == 0 ) {
-            res = strncmp( n1, n2, clen );
+            res = strncmp( n1, n2, name_len );
             if( res == 0 ) {
                 if( o1->chain == NULL ) {
                     return( 1 );
@@ -1958,8 +1959,8 @@ static int usageCmp( const void *v1, const void *v2 )
                 if( o2->chain == NULL ) {
                     return( -1 );
                 }
-                n1 += clen;
-                n2 += clen;
+                n1 += name_len;
+                n2 += name_len;
             }
         }
     }
@@ -2009,10 +2010,10 @@ static size_t genOptionUsageStart( OPTION *o )
         tokbuff[0] = ' ';
         tokbuff[1] = ' ';
         tokbuff[2] = '\0';
-        strcat( tokbuff, o->sname + o->chain->clen );
+        strcat( tokbuff, o->name + o->chain->name_len );
     } else {
         strcpy( tokbuff, "-" );
-        cvtName( tokbuff + 1, o->name, CVT_USAGE );
+        cvtName( tokbuff + 1, o->pattern, CVT_USAGE );
     }
     if( o->is_number ) {
         if( o->default_specified ) {
@@ -2118,7 +2119,7 @@ static char *createChainHeader( OPTION **o, unsigned language, size_t max )
 
     cn = (*o)->chain;
     hdrbuff[0] = '-';
-    cvtName( hdrbuff + 1, cn->name, CVT_STRING );
+    cvtName( hdrbuff + 1, cn->pattern, CVT_STRING );
     strcat( hdrbuff, "{" );
     len = 0;
     for( ; *o != NULL && (*o)->chain == cn; ++o ) {
