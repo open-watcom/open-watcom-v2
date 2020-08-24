@@ -1178,7 +1178,6 @@ static void doTITLE( const char *p )
     t->target = 0;
     t->ntarget = 0;
     t->lang_title[LANG_English] = pickUpRest( p );
-printf("title-%s\n",t->lang_title[LANG_English]);
     targetTitle = t;
 }
 
@@ -1192,7 +1191,6 @@ static void doJTITLE( const char *p )
         fail( ":jtitle. must follow a :title.\n" );
     }
     t->lang_title[LANG_Japanese] = pickUpRest( p );
-printf("jtitle-%s\n",t->lang_title[LANG_Japanese]);
 }
 
 // :timestamp.
@@ -1289,7 +1287,6 @@ static void readInputFile( void )
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
         if( tag != TAG_NULL ) {
-printf("%s\n",ibuff);
             eot += skipSpace( eot );
             (*processTag[tag])( eot );
         }
@@ -2183,7 +2180,6 @@ static void createUsageHeader( unsigned language, process_line_fn *process_line 
                 }
             }
             *d = '\0';
-printf("%s\n",tokbuff);
             process_line( tokbuff, false );
         }
     }
@@ -2238,7 +2234,6 @@ static void processUsage( unsigned language, process_line_fn *process_line )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
-printf("%s\n",tokbuff);
         process_line( tokbuff, true );
     }
     createUsageHeader( language, process_line );
@@ -2248,10 +2243,8 @@ printf("%s\n",tokbuff);
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
             str = createChainHeader( &t[i], language, max );
-printf("%s\n",tokbuff);
             process_line( tokbuff, false );
             if( str != NULL ) {
-printf("%s\n",str);
                 process_line( str, false );
             }
         }
@@ -2263,7 +2256,6 @@ printf("%s\n",str);
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-printf("%s\n",tokbuff);
         process_line( tokbuff, false );
     }
     free( t );
