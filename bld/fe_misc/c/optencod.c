@@ -1178,6 +1178,7 @@ static void doTITLE( const char *p )
     t->target = 0;
     t->ntarget = 0;
     t->lang_title[LANG_English] = pickUpRest( p );
+printf("title-%s\n",t->lang_title[LANG_English]);
     targetTitle = t;
 }
 
@@ -1191,6 +1192,7 @@ static void doJTITLE( const char *p )
         fail( ":jtitle. must follow a :title.\n" );
     }
     t->lang_title[LANG_Japanese] = pickUpRest( p );
+printf("jtitle-%s\n",t->lang_title[LANG_Japanese]);
 }
 
 // :timestamp.
@@ -1270,7 +1272,6 @@ static char *my_fgets( char *buff, int buff_len, FILE *fp )
 
     p = fgets( buff, buff_len, fp );
     if( p != NULL ) {
-printf("%s\n",buff);
         for( len = strlen( p ); len > 0 && ( p[len - 1] == '\n' || p[len - 1] == '\r' ); len-- )
             ;
         p[len] = '\0';
@@ -1288,6 +1289,7 @@ static void readInputFile( void )
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
         if( tag != TAG_NULL ) {
+printf("%s\n",ibuff);
             eot += skipSpace( eot );
             (*processTag[tag])( eot );
         }
