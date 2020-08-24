@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "bool.h"
 
 
@@ -143,6 +144,7 @@ int main( int argc, char *argv[] )
 
     /* unused parameters */ (void)argc;
 
+    setlocale(LC_ALL,"C");
     cvt_dir = '\0';
     ++argv;
     while( *argv != NULL && **argv == '-' ) {

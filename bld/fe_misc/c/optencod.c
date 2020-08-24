@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stddef.h>
+#include <locale.h>
 #include "bool.h"
 #include "lsspec.h"
 #include "encodlng.h"
@@ -2328,6 +2329,7 @@ int main( int argc, char **argv )
 {
     bool    langs_ok;
 
+    setlocale(LC_ALL,"C");
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fail( "language index mismatch\n" );
