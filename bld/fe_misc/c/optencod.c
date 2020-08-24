@@ -2179,8 +2179,7 @@ static void createUsageHeader( unsigned language, process_line_fn *process_line 
                 }
             }
             *d = '\0';
-printf(tokbuff);
-printf("\n");
+printf("%s\n",tokbuff);
             process_line( tokbuff, false );
         }
     }
@@ -2235,8 +2234,7 @@ static void processUsage( unsigned language, process_line_fn *process_line )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
-printf(tokbuff);
-printf("\n");
+printf("%s\n",tokbuff);
         process_line( tokbuff, true );
     }
     createUsageHeader( language, process_line );
@@ -2246,12 +2244,10 @@ printf("\n");
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
             str = createChainHeader( &t[i], language, max );
-printf(tokbuff);
-printf("\n");
+printf("%s\n",tokbuff);
             process_line( tokbuff, false );
             if( str != NULL ) {
-printf(str);
-printf("\n");
+printf("%s\n",str);
                 process_line( str, false );
             }
         }
@@ -2263,8 +2259,7 @@ printf("\n");
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-printf(tokbuff);
-printf("\n");
+printf("%s\n",tokbuff);
         process_line( tokbuff, false );
     }
     free( t );
