@@ -334,7 +334,7 @@ void LangFiniAll( void )
 {
     lang_t  i;
 
-    for( i = VI_LANG_MIN; i < VI_LANG_MAX; i++ ) {
+    for( i = 0; i < VI_LANG_MAX; i++ ) {
         while( langInfo[i].ref_count ) {
             LangFini( i );
         }

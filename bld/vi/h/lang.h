@@ -39,8 +39,6 @@ typedef enum {
     VI_LANG_MAX
 } lang_t;
 
-#define VI_LANG_MIN    VI_LANG_NONE
-
 typedef struct tag_hash_entry {
     char                    *keyword;
     struct tag_hash_entry   *next;
