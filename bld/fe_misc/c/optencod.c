@@ -2450,8 +2450,8 @@ static void emitUsageB( language_id lang, const char *str, const char *stru, boo
 
 static void dumpInternational( void )
 {
-    unsigned lang;
-    char fname[16];
+    language_id lang;
+    char        fname[16];
     LocaleUsage usage_header;
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
