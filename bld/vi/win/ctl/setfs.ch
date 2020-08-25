@@ -1,6 +1,6 @@
 ctl_combo SETFS_LANGUAGESELECT
     fs_get, fs_set
-    0, VI_LANG_FIRST, VI_LANG_LAST
+    0, RC_VI_LANG_FIRST, RC_VI_LANG_LAST
 
 ctl_check SETFS_PPKEYWORDONLY
     fs_get, fs_set

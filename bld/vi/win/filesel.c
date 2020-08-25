@@ -41,7 +41,7 @@
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char filterList[] = {
-    #define LANG_FILTER
+    #define VI_LANG_FILTER
     #define pick(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
     #include "langdef.h"
     #undef pick

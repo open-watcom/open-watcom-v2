@@ -245,7 +245,7 @@ void LangInit( lang_t newLanguage )
     assert( CurrentInfo != NULL );
     CurrentInfo->fsi.Language = newLanguage;
 
-    if( newLanguage == LANG_NONE ) {
+    if( newLanguage == VI_LANG_NONE ) {
         return;
     }
 
@@ -258,7 +258,7 @@ void LangInit( lang_t newLanguage )
             } else {
                 ErrorBox( GetErrorMsg( rc ) );
             }
-            CurrentInfo->fsi.Language = LANG_NONE;
+            CurrentInfo->fsi.Language = VI_LANG_NONE;
             return;
         }
         // build new langInfo entry
@@ -271,7 +271,7 @@ void LangInit( lang_t newLanguage )
     }
     langInfo[newLanguage].ref_count++;
 
-    if( (newLanguage == LANG_C || newLanguage == LANG_CPP) && pragma_table == NULL ) {
+    if( (newLanguage == VI_LANG_C || newLanguage == VI_LANG_CPP) && pragma_table == NULL ) {
         rc = ReadDataFile( PRAGMA_DATFILE, &pragma_read_buf, lang_alloc, lang_save, EditFlags.BoundData );
         if( rc == ERR_FILE_NOT_FOUND ) {
             ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), PRAGMA_DATFILE );
@@ -304,7 +304,7 @@ void LangInit( lang_t newLanguage )
  */
 void LangFini( lang_t language )
 {
-    if( language == LANG_NONE || langInfo[language].ref_count == 0 ) {
+    if( language == VI_LANG_NONE || langInfo[language].ref_count == 0 ) {
         return;
     }
     langInfo[language].ref_count--;
@@ -315,8 +315,8 @@ void LangFini( lang_t language )
         langInfo[language].table_entries = 0;
         langInfo[language].read_buf = NULL;
     }
-    if( language == LANG_C || language == LANG_CPP ) {
-        if( langInfo[LANG_C].ref_count == 0 && langInfo[LANG_CPP].ref_count == 0 ) {
+    if( language == VI_LANG_C || language == VI_LANG_CPP ) {
+        if( langInfo[VI_LANG_C].ref_count == 0 && langInfo[VI_LANG_CPP].ref_count == 0 ) {
             MemFree( pragma_table );
             MemFree( pragma_read_buf );
             pragma_table = NULL;
@@ -334,7 +334,7 @@ void LangFiniAll( void )
 {
     lang_t  i;
 
-    for( i = LANG_MIN; i < LANG_MAX; i++ ) {
+    for( i = VI_LANG_MIN; i < VI_LANG_MAX; i++ ) {
         while( langInfo[i].ref_count ) {
             LangFini( i );
         }

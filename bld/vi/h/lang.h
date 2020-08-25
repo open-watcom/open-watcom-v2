@@ -33,13 +33,13 @@
 #define _LANG_INCLUDED
 
 typedef enum {
-    #define pick(enum,enumrc,name,namej,fname,desc,filter) enum,
+    #define pick(enum,enumrc,name,namej,fname,desc,filter) VI_LANG_ ## enum,
     #include "langdef.h"
     #undef pick
-    LANG_MAX
+    VI_LANG_MAX
 } lang_t;
 
-#define LANG_MIN    LANG_NONE
+#define VI_LANG_MIN    VI_LANG_NONE
 
 typedef struct tag_hash_entry {
     char                    *keyword;

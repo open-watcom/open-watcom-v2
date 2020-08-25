@@ -138,7 +138,7 @@ bool RestoreInfo( info *ci  )
         CurrentLine                     = NULL;
         CurrentFcb                      = NULL;
 
-        ci->fsi.Language                = LANG_NONE;
+        ci->fsi.Language                = VI_LANG_NONE;
         ci->fsi.HardTab                 = EditVars.HardTab;
         ci->fsi.ShiftWidth              = EditVars.ShiftWidth;
         ci->fsi.TabAmount               = EditVars.TabAmount;

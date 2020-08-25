@@ -176,7 +176,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
                 break;
             case SETVAR_T_LANGUAGE:
                 if( CurrentInfo == NULL ) {
-                    j = LANG_NONE;
+                    j = VI_LANG_NONE;
                 } else {
                     j = CurrentInfo->fsi.Language;
                 }
@@ -897,7 +897,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 SetNextAutoSaveTime();
                 break;
             case SETVAR_T_LANGUAGE:
-                if( lval < LANG_MIN || lval >= LANG_MAX ) {
+                if( lval < VI_LANG_MIN || lval >= VI_LANG_MAX ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 if( CurrentInfo != NULL ) {
