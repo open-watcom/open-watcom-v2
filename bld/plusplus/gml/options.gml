@@ -25,6 +25,8 @@
 :cmt    :jusage. <text>                         Japanese usage text
 :cmt    :title.                                 English title usage text
 :cmt    :jtitle.                                Japanese title usage text
+:cmt    :titleu.                                English title usage text for QNX resource file
+:cmt    :jtitleu.                               Japanese title usage text for QNX resource file
 :cmt    :page.                                  text for paging usage message
 :cmt    :nochain.                               option isn't chained with other options
 :cmt    :timestamp.                             kludge to record "when" an option
@@ -45,9 +47,13 @@
 
 :title.  Usage: wpp [options] file [options]
 :jtitle. 使用方法: wpp [options] file [options]
+:titleu.  Usage: %C [options] file [options]
+:jtitleu. 使用方法: %C [options] file [options]
 :target. i86
 :title.  Usage: wpp386 [options] file [options]
 :jtitle. 使用方法: wpp386 [options] file [options]
+:titleu.  Usage: %C [options] file [options]
+:jtitleu. 使用方法: %C [options] file [options]
 :target. 386
 :title.  Usage: wppaxp [options] file [options]
 :jtitle. 使用方法: wppaxp [options] file [options]
