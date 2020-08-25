@@ -759,8 +759,10 @@ static void initMBCodePage( void )
     }
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         SetUTF8toUnicode();
+        SetUTF8toCP1252();
     } else if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
-        SetUTF8toMultiByte();
+        SetUTF8toUnicode();
+        SetUTF8toCP932();
     } else if( CmdLineParms.CodePageFile != NULL ) {
         ret = LoadCharTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {
