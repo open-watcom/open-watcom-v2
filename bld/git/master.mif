@@ -11,8 +11,6 @@ cpyright_autodepends = .autodepend
 #
 .c : ../c
 
-inc_dirs = -I"../h"
-
 #
 # lflags
 #
