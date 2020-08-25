@@ -176,7 +176,7 @@ $(intname)01.int : ./intlbin.exe errors01.int usage01.int
 
 errmsgs1.gh errmsgs2.gh errlevel.gh errors01.int : ../../gml/messages.gml
     @%make echo_msgencod
-    $(noecho)msgencod -s -i -q ../../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
+    $(noecho)msgencod -s -i -q -utf8 ../../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
 
 keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
     @%make echo_findhash
@@ -218,7 +218,7 @@ optencod_targ_dbg   = dbg
 
 cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) -utf8 $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldcl
