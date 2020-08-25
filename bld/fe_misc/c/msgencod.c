@@ -654,7 +654,7 @@ static void do_msgsym( const char *p )
     msg->level = 0;
     msg->style = 0;
     msg->mtype = MSG_TYPE_ERROR;
-    for( i = LANG_MIN; i < LANG_MAX; ++i ) {
+    for( i = 0; i < LANG_MAX; ++i ) {
         msg->lang_txt[i] = NULL;
     }
     msg->words = NULL;
@@ -900,7 +900,7 @@ static void checkMessages( void )
 
     for( m = messageSyms; m != NULL; m = m->next ) {
         if( flags.international ) {
-            start_lang = LANG_MIN;
+            start_lang = 0;
             end_lang = LANG_MAX;
         } else {
             start_lang = LANG_English;

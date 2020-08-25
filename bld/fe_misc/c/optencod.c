@@ -287,7 +287,7 @@ static struct {
     boolbit     no_equal        : 1;
     boolbit     alternate_equal : 1;
     boolbit     zero_term       : 1;
-    unsigned    lang;
+    language_id lang;
 } optFlag;
 
 static TARGET   *targetList;
@@ -1301,7 +1301,7 @@ static void checkForMissingUsages( void )
     int i;
 
     if( optFlag.international ) {
-        start_lang = LANG_MIN;
+        start_lang = 0;
         end_lang = LANG_MAX;
     } else {
         start_lang = LANG_English;
@@ -2068,7 +2068,7 @@ static void fillOutSpaces( char *buff, size_t n )
     *p = '\0';
 }
 
-static bool usageValid( OPTION *o, unsigned language )
+static bool usageValid( OPTION *o, language_id language )
 {
     if( o->synonym != NULL )
         return( false );
@@ -2110,7 +2110,7 @@ static void emitUsageH( const char *str, bool page_flag )
 
 }
 
-static char *createChainHeader( OPTION **o, unsigned language, size_t max )
+static char *createChainHeader( OPTION **o, language_id language, size_t max )
 {
     char    *usage;
     CHAIN   *cn;
@@ -2150,7 +2150,7 @@ static char *createChainHeader( OPTION **o, unsigned language, size_t max )
     }
 }
 
-static void createUsageHeader( unsigned language, process_line_fn *process_line )
+static void createUsageHeader( language_id language, process_line_fn *process_line )
 {
     char *s;
     char *d;
@@ -2194,7 +2194,7 @@ static void clearChainUsage( void )
     }
 }
 
-static void processUsage( unsigned language, process_line_fn *process_line )
+static void processUsage( language_id language, process_line_fn *process_line )
 {
     unsigned    count;
     unsigned    i;

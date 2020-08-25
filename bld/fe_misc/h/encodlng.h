@@ -39,14 +39,14 @@
 LANG_DEF( English, 1 ) \
 LANG_DEF( Japanese, 2 ) \
 
-enum {
-    #define LANG_DEF( id, dbcs )        LANG_##id,
+typedef enum {
+    #define LANG_DEF( id, dbcs )    LANG_##id,
     LANG_DEFS
     #undef LANG_DEF
     LANG_MAX,
-    LANG_MIN                    = LANG_English,
-    LANG_FIRST_INTERNATIONAL    = LANG_English + 1,
-};
+} language_id;
+
+#define LANG_FIRST_INTERNATIONAL    LANG_Japanese,
 
 #define _LANG_DEFS_OK() \
         ( LANG_English == RLE_ENGLISH && LANG_Japanese == RLE_JAPANESE )
