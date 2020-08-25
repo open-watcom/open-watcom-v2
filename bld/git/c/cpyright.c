@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
                 return( 1 );
             }
         }
-        buffer[len++] = c;
+        buffer[len++] = (char)c;
         if( c == '\n' ) {
             buffer[len] = '\0';
             output_buffer();

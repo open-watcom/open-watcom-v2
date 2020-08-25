@@ -20,7 +20,7 @@ inc_dirs = -I"../h"
 # explicit rules
 #################
 
-all : cpyright.exe sjisutf8.exe
+all : cpyright.exe cvtutf8.exe
 
 #
 # EXE
@@ -29,6 +29,6 @@ exetarg_objs = cpyright.obj
 exetarg_name = cpyright
 !include exetarg.mif
 
-exetarg_objs = sjisutf8.obj
-exetarg_name = sjisutf8
+exetarg_objs = cvtutf8.obj
+exetarg_name = cvtutf8
 !include exetarg.mif
