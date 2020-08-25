@@ -182,8 +182,8 @@
 
 :option. adbs
 :target. any
-:usage.  force path separators to '¥¥' in auto-depend file
-:jusage. force path separators to '¥¥' in auto-depend file
+:usage.  force path separators to '\\' in auto-depend file
+:jusage. force path separators to '\\' in auto-depend file
 
 :option. adfs
 :target. any
@@ -1404,13 +1404,13 @@
 :usage.  generate code for Microsoft Windows with smart callbacks
 :jusage. スマート･コールバックをするMicrosoft Windows用コードを生成します
 
-:option. z¥W
+:option. z\W
 :target. i86
 :enumerate. win
 :usage.  more efficient Microsoft Windows entry sequences
 :jusage. より効果的なMicrosoft Windowsエントリコード列を生成します
 
-:option. z¥Ws
+:option. z\Ws
 :target. i86
 :enumerate. win
 :usage.  generate code for Microsoft Windows with smart callbacks

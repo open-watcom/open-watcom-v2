@@ -3408,8 +3408,8 @@ void fn()
 :eerrbad.
 
 :MSGSYM. ERR_INVALID_DESTRUCTOR_NAME
-:MSGTXT. class declaration has not been seen for '‾%s'
-:MSGJTXT. '‾%s'に対するクラス宣言は見つかりません
+:MSGTXT. class declaration has not been seen for '~%s'
+:MSGJTXT. '~%s'に対するクラス宣言は見つかりません
 A destructor has been used in a context where its class is
 not visible.
 :errbad.
@@ -7306,7 +7306,7 @@ or '*' (meaning all warnings) was not found when it was expected.
 
 :MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
 :MSGTXT. warning level must be an integer in range 0 to 9
-:MSGJTXT. 警告レベルは，0〜9の範囲の整数でなければなりません
+:MSGJTXT. 警告レベルは，0-9の範囲の整数でなければなりません
 The new warning level that can be used for the warning can be in the range
 0 to 9.  The level 0 means that the warning will be treated as an error
 (compilation will not succeed).  Levels 1 up to 9 are used to classify
@@ -7463,7 +7463,7 @@ cannot be converted to an object of type "ambiguous".
 
 :MSGSYM. ERR_PRAG_INLINE_DEPTH
 :MSGTXT. form is '#pragma inline_depth level' where 'level' is 0 to 255
-:MSGJTXT. 書式は，'#pragma inline_depth level'です。ここで'level'は0〜255です
+:MSGJTXT. 書式は，'#pragma inline_depth level'です。ここで'level'は0-255です
 This
 .kw pragma
 sets the number of times inline expansion will occur for an inline
