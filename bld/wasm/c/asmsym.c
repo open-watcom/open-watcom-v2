@@ -101,7 +101,7 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
         sym->offset = 0;
         sym->public = false;
         sym->referenced = false;
-        sym->langtype = LANG_NONE;
+        sym->langtype = WASM_LANG_NONE;
         sym->first_size = 0;
         sym->first_length = 0;
         sym->total_size = 0;
@@ -645,19 +645,19 @@ static const char *get_sym_lang( struct asm_sym *sym )
 /****************************************************/
 {
     switch( sym->langtype ) {
-    case LANG_C:
+    case WASM_LANG_C:
         return( "C" );
-    case LANG_BASIC:
+    case WASM_LANG_BASIC:
         return( "BASIC" );
-    case LANG_FORTRAN:
+    case WASM_LANG_FORTRAN:
         return( "FORTRAN" );
-    case LANG_PASCAL:
+    case WASM_LANG_PASCAL:
         return( "PASCAL" );
-    case LANG_WATCOM_C:
+    case WASM_LANG_WATCOM_C:
         return( "WATCOM_C" );
-    case LANG_STDCALL:
+    case WASM_LANG_STDCALL:
         return( "STDCALL" );
-    case LANG_SYSCALL:
+    case WASM_LANG_SYSCALL:
         return( "SYSCALL" );
     default:
         return( "" );

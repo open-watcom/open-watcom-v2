@@ -2150,7 +2150,7 @@ void ModuleInit( void )
 {
     ModuleInfo.model = MOD_NONE;
     ModuleInfo.distance = STACK_NONE;
-    ModuleInfo.langtype = LANG_NONE;
+    ModuleInfo.langtype = WASM_LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
     ModuleInfo.cpu_init = P_86 | P_87;
     ModuleInfo.use32 = false;
@@ -2999,7 +2999,7 @@ bool ArgDef( token_idx i )
 
     info = CurrProc->e.procinfo;
 
-    if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+    if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
         ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
         parameter_on_stack = false;
     }
@@ -3039,13 +3039,13 @@ bool ArgDef( token_idx i )
                 return( RC_ERROR );
             } else {
                 switch( CurrProc->sym.langtype ) {
-                case LANG_NONE:
-                case LANG_BASIC:
-                case LANG_FORTRAN:
-                case LANG_PASCAL:
+                case WASM_LANG_NONE:
+                case WASM_LANG_BASIC:
+                case WASM_LANG_FORTRAN:
+                case WASM_LANG_PASCAL:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
-                case LANG_WATCOM_C:
+                case WASM_LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
                     parameter_on_stack = true;
                     break;
@@ -3103,9 +3103,9 @@ bool ArgDef( token_idx i )
         info->is_vararg |= paranode->u.is_vararg;
 
         switch( CurrProc->sym.langtype ) {
-        case LANG_BASIC:
-        case LANG_FORTRAN:
-        case LANG_PASCAL:
+        case WASM_LANG_BASIC:
+        case WASM_LANG_FORTRAN:
+        case WASM_LANG_PASCAL:
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
             info->paralist = paranode;
@@ -3162,7 +3162,7 @@ bool UsesDef( token_idx i )
 
     /**/myassert( CurrProc != NULL );
 
-    if( CurrProc->sym.langtype == LANG_NONE ) {
+    if( CurrProc->sym.langtype == WASM_LANG_NONE ) {
         AsmError( USES_MEANINGLESS_WITHOUT_LANGUAGE );
         return( RC_ERROR );
     }
@@ -3327,14 +3327,14 @@ static bool proc_exam( dir_node *proc, token_idx i )
     info->export = false;
     info->is_vararg = false;
     info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
-    SetMangler( &proc->sym, NULL, LANG_NONE );
+    SetMangler( &proc->sym, NULL, WASM_LANG_NONE );
 
     /* Parse the definition line, except the parameters */
     for( i++; i < Token_Count && AsmBuffer[i].class != TC_COMMA; i++ ) {
         token = AsmBuffer[i].string_ptr;
         if( AsmBuffer[i].class == TC_STRING ) {
             /* name mangling */
-            SetMangler( &proc->sym, token, LANG_NONE );
+            SetMangler( &proc->sym, token, WASM_LANG_NONE );
             continue;
         }
 
@@ -3414,7 +3414,7 @@ parms:
 
     if( i >= Token_Count ) {
         return( RC_OK );
-    } else if( ( proc->sym.langtype == LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
+    } else if( ( proc->sym.langtype == WASM_LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
         return( RC_ERROR );
     } else if( AsmBuffer[i].class == TC_COMMA ) {
@@ -3449,13 +3449,13 @@ parms:
                 return( RC_ERROR );
             } else {
                 switch( proc->sym.langtype ) {
-                case LANG_NONE:
-                case LANG_BASIC:
-                case LANG_FORTRAN:
-                case LANG_PASCAL:
+                case WASM_LANG_NONE:
+                case WASM_LANG_BASIC:
+                case WASM_LANG_FORTRAN:
+                case WASM_LANG_PASCAL:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
-                case LANG_WATCOM_C:
+                case WASM_LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
                     parameter_on_stack = true;
                     break;
@@ -3508,9 +3508,9 @@ parms:
         info->is_vararg |= paranode->u.is_vararg;
 
         switch( proc->sym.langtype ) {
-        case LANG_BASIC:
-        case LANG_FORTRAN:
-        case LANG_PASCAL:
+        case WASM_LANG_BASIC:
+        case WASM_LANG_FORTRAN:
+        case WASM_LANG_PASCAL:
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
             info->paralist = paranode;
@@ -3758,7 +3758,7 @@ bool WritePrologue( const char *curline )
         }
         if( Use32 )
             offset *= 2;
-        if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+        if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
             ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
             !info->is_vararg ) {
             parameter_on_stack = false;
@@ -3813,7 +3813,7 @@ bool WritePrologue( const char *curline )
             }
         }
     }
-    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == WASM_LANG_NONE ) )
         return( RC_OK );
     in_prologue = true;
     PushLineQueue();
@@ -3889,7 +3889,7 @@ static void write_epilogue( void )
 
     /**/myassert( CurrProc != NULL );
 
-    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == WASM_LANG_NONE ) )
         return;
 
     info = CurrProc->e.procinfo;
@@ -4021,19 +4021,19 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
     if( !flag_iret ) {
         if( count == i + 1 ) {
             switch( CurrProc->sym.langtype ) {
-            case LANG_BASIC:
-            case LANG_FORTRAN:
-            case LANG_PASCAL:
+            case WASM_LANG_BASIC:
+            case WASM_LANG_FORTRAN:
+            case WASM_LANG_PASCAL:
                 if( info->parasize != 0 ) {
                     sprintf( p, "%lu", info->parasize );
                 }
                 break;
-            case LANG_STDCALL:
+            case WASM_LANG_STDCALL:
                 if( !info->is_vararg && info->parasize != 0 ) {
                     sprintf( p, "%lu", info->parasize );
                 }
                 break;
-            case LANG_WATCOM_C:
+            case WASM_LANG_WATCOM_C:
                 if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
                     !info->is_vararg &&
                     ( info->parasize != 0 ) ) {

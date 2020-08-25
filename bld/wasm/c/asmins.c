@@ -1290,26 +1290,26 @@ static bool expand_call( token_idx index, int lang_type )
     argcount = cleanup = reversed = register_count = register_arguments = 0;
     parameter_on_stack = true;
     switch( lang_type ) {
-    case LANG_C:
-    case LANG_SYSCALL:
+    case WASM_LANG_C:
+    case WASM_LANG_SYSCALL:
         cleanup++;
         reversed++;
         break;
-    case LANG_WATCOM_C:
+    case WASM_LANG_WATCOM_C:
         if( Options.watcom_parms_passed_by_regs || !Use32 ) {
             parameter_on_stack = false;
         } else {
             cleanup++;
         }
         /* fall through */
-    case LANG_STDCALL:
+    case WASM_LANG_STDCALL:
         reversed++;
         break;
-    case LANG_PASCAL:
-    case LANG_FORTRAN:
-    case LANG_BASIC:
+    case WASM_LANG_PASCAL:
+    case WASM_LANG_FORTRAN:
+    case WASM_LANG_BASIC:
         break;
-    case LANG_NONE:
+    case WASM_LANG_NONE:
         if( AsmBuffer[index].class == TC_FINAL )
             break;
         AsmError( SYNTAX_ERROR );

@@ -60,14 +60,14 @@ typedef enum {
 
 #if defined( _STANDALONE_ )
 typedef enum {
-    LANG_NONE     = 0,
-    LANG_C        = 1,
-    LANG_SYSCALL  = 2,
-    LANG_STDCALL  = 3,
-    LANG_PASCAL   = 4,
-    LANG_FORTRAN  = 5,
-    LANG_BASIC    = 6,
-    LANG_WATCOM_C = 7
+    WASM_LANG_NONE,
+    WASM_LANG_C,
+    WASM_LANG_SYSCALL,
+    WASM_LANG_STDCALL,
+    WASM_LANG_PASCAL,
+    WASM_LANG_FORTRAN,
+    WASM_LANG_BASIC,
+    WASM_LANG_WATCOM_C
 } lang_type;
 #endif
 
