@@ -46,7 +46,7 @@ typedef enum {
     LANG_MAX,
 } language_id;
 
-#define LANG_FIRST_INTERNATIONAL    LANG_Japanese,
+#define LANG_FIRST_INTERNATIONAL    LANG_Japanese
 
 #define _LANG_DEFS_OK() \
         ( LANG_English == RLE_ENGLISH && LANG_Japanese == RLE_JAPANESE )
