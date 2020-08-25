@@ -199,7 +199,7 @@ usage.gh usage01.int $(exetarg_qnx_res): ../../gml/options.gml
 !ifeq verbose 0
     @echo optencod $@
 !endif
-    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) -utf8 $]@ . . usage.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
 echo_msgencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

@@ -48,6 +48,7 @@
 #include "watcom.h"
 #include "lsspec.h"
 #include "encodlng.h"
+#include "cvttable.h"
 
 #include "clibext.h"
 
@@ -184,6 +185,7 @@ static struct {
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
     boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
+    boolbit     utf8                    : 1;    // - source file uses UTF-8 encoding
 } flags;
 
 typedef enum {
@@ -253,6 +255,31 @@ static void outputNum (FILE *fp, unsigned n);
 
 #define NO_INDEX        (unsigned)(-1)
 
+#define IS_ASCII(c)     (c < 0x80)
+
+typedef int (*comp_fn)(const void *,const void *);
+
+/*
+ * Shift-JIS (CP932) lead byte ranges
+ * 0x81-0x9F
+ * 0xE0-0xFC
+ */
+static cvt_chr cvt_table_932[] = {
+    #define pick(s,u) {s, u },
+    #include "cp932uni.h"
+    #undef pick
+};
+
+static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->s - p2->s );
+}
+
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->u - p2->u );
+}
+
 static void error( const char *f, ... )
 {
     va_list args;
@@ -313,36 +340,66 @@ static void initFILE( FILE **f, const char *n, const char *m )
     }
 }
 
-static void processOptions( char **argv )
+static int processOptions( int argc, char **argv )
 {
     if( strcmp( *argv, "-w" ) == 0 ) {
         flags.warnings_always_rebuild = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-s" ) == 0 ) {
         flags.no_warn = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-i" ) == 0 ) {
         flags.international = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-ip" ) == 0 ) {
         flags.ignore_prefix = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-q" ) == 0 ) {
         flags.quiet = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-p" ) == 0 ) {
         flags.gen_pick = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
     if( strcmp( *argv, "-g" ) == 0 ) {
         flags.gen_gpick = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
     }
+    if( strcmp( *argv, "-utf8" ) == 0 ) {
+        flags.utf8 = true;
+        ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
+    }
+    if( argc != 4 )
+        return( 1 );
     ifname = *argv;
     initFILE( &i_gml, *argv, "rb" );
     ++argv;
@@ -352,9 +409,10 @@ static void processOptions( char **argv )
     ++argv;
     initFILE( &o_levh, *argv, "w" );
     ++argv;
-    if( *argv ) {
-        fatal( "invalid argument" );
+    if( flags.international && flags.utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
+    return( 0 );
 }
 
 static size_t skipSpace( const char *start )
@@ -1529,6 +1587,56 @@ static void closeFiles( void )
     fclose( o_levh );
 }
 
+static size_t utf8_to_cp932( const char *src, char *dst )
+{
+    size_t      i;
+    size_t      o;
+    size_t      src_len;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    src_len = strlen( src );
+    o = 0;
+    for( i = 0; i < src_len && o < LINE_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
+
+
 static void dumpInternational( void )
 {
     char const *text;
@@ -1539,6 +1647,7 @@ static void dumpInternational( void )
     bool dump_warning;
     char err_fname[16];
     LocaleErrors errors_header;
+    char tmp[512];
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
         sprintf( err_fname, "errors%02u." LOCALE_DATA_EXT, lang );
@@ -1564,6 +1673,11 @@ static void dumpInternational( void )
                         langName[lang], m->name );
                 }
                 text = m->lang_txt[LANG_English];
+            }
+            if( lang == LANG_Japanese && flags.utf8 ) {
+                utf8_to_cp932( text, tmp );
+                tmp[sizeof( tmp ) - 1] = '\0';
+                text = tmp;
             }
             len = (unsigned)strlen( text );
             if( len > 127 ) {
@@ -1603,10 +1717,21 @@ int main( int argc, char **argv )
     if( !langs_ok )
         fatal( "language index mismatch\n" );
 
-    if( argc < 5 || argc > 10 ) {
-        fatal( "usage: msgencod [-w] [-s] [-i] [-ip] [-q] [-p] <gml> <msgc> <msgh> <levh>" );
+    if( argc < 4 || processOptions( argc - 1, argv + 1 ) ) {
+        error( "fatal: invalid argument\n\n" );
+        fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
+               "\n"
+               "Options: (must appear in following order)\n"
+               "  -w warnings generate files with old dates to constantly force rebuilds\n"
+               "  -s no warnings\n"
+               "  -i create international file with non-english data\n"
+               "  -ip ignore matching XXX_ prefix with message type\n"
+               "  -q quiet operation\n"
+               "  -p generate pick macros instead of #defines\n"
+               "  -g generate generalized pick macros and tables\n"
+               "  -utf8 source GML file uses UTF-8 encoding"
+             );
     }
-    processOptions( argv + 1 );
     readGML();
     if( flags.gen_gpick ) {
         writeMsgHGP();

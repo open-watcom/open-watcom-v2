@@ -40,9 +40,42 @@
 #include "bool.h"
 #include "lsspec.h"
 #include "encodlng.h"
+#include "cvttable.h"
 
 #include "clibext.h"
 
+#define OPT_TAGS \
+TAG( ARGEQUAL ) \
+TAG( CMT ) \
+TAG( CODE ) \
+TAG( INTERNAL ) \
+TAG( PREFIX ) \
+TAG( OPTION ) \
+TAG( TARGET ) \
+TAG( CHAIN ) \
+TAG( CHAR ) \
+TAG( ENUMERATE ) \
+TAG( FILE ) \
+TAG( ID ) \
+TAG( IMMEDIATE ) \
+TAG( JUSAGE ) \
+TAG( JTITLE ) \
+TAG( JTITLEU ) \
+TAG( MULTIPLE ) \
+TAG( NEGATE ) \
+TAG( NOCHAIN ) \
+TAG( NOEQUAL ) \
+TAG( NTARGET ) \
+TAG( NUMBER ) \
+TAG( OPTIONAL ) \
+TAG( PAGE ) \
+TAG( PATH ) \
+TAG( SPECIAL ) \
+TAG( TIMESTAMP ) \
+TAG( TITLE ) \
+TAG( TITLEU ) \
+TAG( USAGE ) \
+TAG( USAGEGRP )
 
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
@@ -85,10 +118,16 @@
 
 #define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
 
+#define IS_ASCII(c)     (c < 0x80)
+
+typedef int (*comp_fn)(const void *,const void *);
+
+typedef void process_line_fn( language_id, const char *, const char *, bool );
+
 typedef enum tag_id {
-#define TAG( s )        TAG_##s ,
-#include "opttags.h"
-#undef TAG
+    #define TAG( s )        TAG_##s ,
+    OPT_TAGS
+    #undef TAG
     TAG_UNKNOWN,
     TAG_NULL
 } tag_id;
@@ -104,8 +143,6 @@ typedef enum cvt_name {
     CVT_PATTERN,
     CVT_USAGE
 } cvt_name;
-
-typedef void process_line_fn( const char *, bool );
 
 typedef struct target {
     struct target   *next;
@@ -124,6 +161,7 @@ typedef struct title {
     unsigned        target;
     unsigned        ntarget;
     char            *lang_title[LANG_MAX];
+    char            *lang_titleu[LANG_MAX];
 } TITLE;
 
 typedef struct chain {
@@ -212,20 +250,20 @@ static unsigned     nextTargetMask = 1;
 static tag_id getsUsage = TAG_NULL;
 
 static const char *tagNames[] = {
-#define TAG( s )        #s ,
-#include "opttags.h"
-#undef TAG
+    #define TAG( s )        #s ,
+    OPT_TAGS
+    #undef TAG
     NULL
 };
 
 #define TAG( s )        static void do##s( const char * );
-#include "opttags.h"
+OPT_TAGS
 #undef TAG
 
 static void (*processTag[])( const char * ) = {
-#define TAG( s )        do##s ,
-#include "opttags.h"
-#undef TAG
+    #define TAG( s )        do##s ,
+    OPT_TAGS
+    #undef TAG
     NULL
 };
 
@@ -264,14 +302,27 @@ static uint_8 const langMaxChar[] = {
     #undef LANG_DEF
 };
 
+/*
+ * Shift-JIS (CP932) lead byte ranges
+ * 0x81-0x9F
+ * 0xE0-0xFC
+ */
+static cvt_chr cvt_table_932[] = {
+    #define pick(s,u) {s, u },
+    #include "cp932uni.h"
+    #undef pick
+};
+
 static const char *usageMsg[] = {
-    "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
-    "where:",
+    "optencod [options] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
+    "",
+    "Options: (must appear in following order)",
     "  -i create international file with non-english data",
     "  -l <lang-n> is the language(number) used for output data",
     "  -n zero terminated items",
     "  -q quiet operation",
     "  -u <usage-u> is the output file for the QNX usage file",
+    "  -utf8 source GML file is in UTF-8 encoding",
     "",
     "    <gml-file> is the tagged input GML file",
     "    <parser-h> is the output file for the command line parser data declaration",
@@ -287,6 +338,7 @@ static struct {
     boolbit     no_equal        : 1;
     boolbit     alternate_equal : 1;
     boolbit     zero_term       : 1;
+    boolbit     utf8            : 1;
     language_id lang;
 } optFlag;
 
@@ -311,6 +363,16 @@ static int mystricmp( const char *p1, const char *p2 )
         p1++; p2++;
     }
     return( mytolower( *p1 ) - mytolower( *p2 ) );
+}
+
+static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->s - p2->s );
+}
+
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->u - p2->u );
 }
 
 #if defined( __WATCOMC__ )
@@ -582,6 +644,11 @@ static void procCmdLine( int argc, char **argv )
         argc -= 2;
         argv += 2;
     }
+    if( strcmp( argv[1], "-utf8" ) == 0 ) {
+        optFlag.utf8 = true;
+        --argc;
+        ++argv;
+    }
     if( argc < 5 ) {
         dumpUsage();
         exit( EXIT_FAILURE );
@@ -636,6 +703,9 @@ static void procCmdLine( int argc, char **argv )
             fail( "invalid target name '%s'\n", p );
         }
         targetMask |= mask;
+    }
+    if( optFlag.international && optFlag.utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
 }
 
@@ -1181,6 +1251,18 @@ static void doTITLE( const char *p )
     targetTitle = t;
 }
 
+// :titleu. <text>
+static void doTITLEU( const char *p )
+{
+    TITLE *t;
+
+    t = targetTitle;
+    if( t == NULL ) {
+        fail( ":titleu. must follow a :title.\n" );
+    }
+    t->lang_titleu[LANG_English] = pickUpRest( p );
+}
+
 // :jtitle. <text>
 static void doJTITLE( const char *p )
 {
@@ -1191,6 +1273,18 @@ static void doJTITLE( const char *p )
         fail( ":jtitle. must follow a :title.\n" );
     }
     t->lang_title[LANG_Japanese] = pickUpRest( p );
+}
+
+// :jtitleu. <text>
+static void doJTITLEU( const char *p )
+{
+    TITLE *t;
+
+    t = targetTitle;
+    if( t == NULL ) {
+        fail( ":jtitleu. must follow a :title.\n" );
+    }
+    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
 }
 
 // :timestamp.
@@ -2082,11 +2176,13 @@ static bool usageValid( OPTION *o, language_id language )
     return( true );
 }
 
-static void emitUsageH( const char *str, bool page_flag )
+static void emitUsageH( language_id lang, const char *str, const char *stru, bool page_flag )
 {
     size_t len;
     const char *q;
     const char *s;
+
+    /* unused parameters */ (void)lang;
 
     len = strlen( str );
     if( maxUsageLen < len ) {
@@ -2094,7 +2190,7 @@ static void emitUsageH( const char *str, bool page_flag )
         strcpy( maxusgbuff, str );
     }
     if( mfp != NULL && !page_flag ) {
-        fprintf( mfp, "%s\n", str );
+        fprintf( mfp, "%s\n", stru );
     }
     if( ufp != NULL ) {
         fprintf( ufp, "\"" );
@@ -2150,37 +2246,53 @@ static char *createChainHeader( OPTION **o, language_id language, size_t max )
     }
 }
 
+static void expand_tab( const char *s, char *d )
+{
+    for( ; *s != '\0'; ++s ) {
+        if( s[0] == '\\' && s[1] == 't' ) {
+            ++s;
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+            *d++ = ' ';
+        } else {
+            *d++ = *s;
+        }
+    }
+    *d = '\0';
+}
+
 static void createUsageHeader( language_id language, process_line_fn *process_line )
 {
-    char *s;
-    char *d;
     char *title;
+    char *titleu;
     TITLE *t;
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
+            if( process_line == emitUsageH ) {
+                titleu = t->lang_titleu[language];
+                if( titleu == NULL || *titleu == '\0' ) {
+                    titleu = t->lang_titleu[LANG_English];
+                }
+            } else {
+                titleu = NULL;
+            }
             title = t->lang_title[language];
             if( title == NULL || *title == '\0' ) {
                 title = t->lang_title[LANG_English];
             }
-            d = tokbuff;
-            for( s = title; *s != '\0'; ++s ) {
-                if( s[0] == '\\' && s[1] == 't' ) {
-                    ++s;
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                    *d++ = ' ';
-                } else {
-                    *d++ = *s;
-                }
+            expand_tab( title, tokbuff );
+            if( titleu != NULL && *titleu != '\0' ) {
+                expand_tab( titleu, tagbuff );
+                process_line( language, tokbuff, tagbuff, false );
+            } else {
+                process_line( language, tokbuff, tokbuff, false );
             }
-            *d = '\0';
-            process_line( tokbuff, false );
         }
     }
 }
@@ -2234,7 +2346,7 @@ static void processUsage( language_id language, process_line_fn *process_line )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
-        process_line( tokbuff, true );
+        process_line( language, tokbuff, tokbuff, true );
     }
     createUsageHeader( language, process_line );
     clearChainUsage();
@@ -2243,9 +2355,9 @@ static void processUsage( language_id language, process_line_fn *process_line )
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
             str = createChainHeader( &t[i], language, max );
-            process_line( tokbuff, false );
+            process_line( language, tokbuff, tokbuff, false );
             if( str != NULL ) {
-                process_line( str, false );
+                process_line( language, str, str, false );
             }
         }
         tokbuff[0] = '\0';
@@ -2256,7 +2368,7 @@ static void processUsage( language_id language, process_line_fn *process_line )
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-        process_line( tokbuff, false );
+        process_line( language, tokbuff, tokbuff, false );
     }
     free( t );
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
@@ -2269,12 +2381,65 @@ static void outputUsageH( void )
     processUsage( optFlag.lang, emitUsageH );
 }
 
-static void emitUsageB( const char *str, bool page_flag )
+static size_t utf8_to_cp932( const char *src, char *dst )
+{
+    size_t      i;
+    size_t      o;
+    size_t      src_len;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    src_len = strlen( src );
+    o = 0;
+    for( i = 0; i < src_len && o < BUFF_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
+
+static void emitUsageB( language_id lang, const char *str, const char *stru, bool page_flag )
 {
     size_t len;
 
-    /* unused parameters */ (void)page_flag;
+    /* unused parameters */ (void)page_flag; (void)stru;
 
+    if( optFlag.utf8 && lang == LANG_Japanese ) {
+        utf8_to_cp932( str, tmpbuff );
+        str = tmpbuff;
+    }
     len = strlen( str ) + 1;
     fwrite( str, len, 1, bfp );
     if( maxUsageLen < len ) {
