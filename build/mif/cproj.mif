@@ -698,14 +698,9 @@ rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 
-rc8_flags_nt    = -bt=nt $(win32ver) -zku8
-rc8_flags_win   = -bt=windows -zku0
-rc8_flags_os2   = -bt=os2 -zku0
-
 proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
-rc8_flags       = $(rc_flags_all) $(rc8_flags_$(host_os)) $(rc_cppflags) $(proj_rc8_flags)
 
 rc_ui_flags     = -zk0 $(rc_cppflags)
 rc_ui8_flags    = -zku0 $(rc_cppflags)
