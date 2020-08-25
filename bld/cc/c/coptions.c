@@ -32,7 +32,7 @@
 
 /*****************************************************************************
 *                                                                            *
-*       If you add an option, don't forget to change ../usage.sp             *
+*       If you add an option, don't forget to change bld/cc/gml/options.gml  *
 *       Also, don't forget to add a case in MacroDefs                        *
 *       to predefine a __SW_xx macro                                         *
 *                                                                            *

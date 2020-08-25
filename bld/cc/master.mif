@@ -172,7 +172,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_msgencod
-    $(noecho)msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
+    $(noecho)msgencod -s -i -ip -q -g -utf8 ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldcl
