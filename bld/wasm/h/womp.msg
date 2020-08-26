@@ -1,3 +1,8 @@
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * !     This file must be in UTF-8 encoding       !
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
 pick( MSG_NO_LRO_PHARLAP,	"No loader resolved fixups allowed in EASY OMF" ,
                                 "EASY OMFではローダで解決するフィックスアップは許されていません" )
 pick( MSG_MS386_NO_4KPAGE,	"No 4k Page-aligned segments in MS386 OMF" ,
