@@ -1,3 +1,8 @@
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * !     This file must be in UTF-8 encoding       !
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
 pick( ERR_BAD_LIBRARY,      "'%s' is an invalid library",
                 "'%s'は不適切なライブラリです" )
 pick( ERR_BAD_OBJECT,       "'%s' is an invalid object file",

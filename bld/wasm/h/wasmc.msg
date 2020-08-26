@@ -1,3 +1,8 @@
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * !     This file must be in UTF-8 encoding       !
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
 pick( SIZE_DOESNT_MATCH_WITH_PREVIOUS_DEFINITION,
                                 "Size doesn't match with previous definition" ,
                                 "前の定義とサイズが一致していません" )

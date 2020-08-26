@@ -1,3 +1,8 @@
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * !     This file must be in UTF-8 encoding       !
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+
 pick( SEGMENT_PARA_DEFINED,
                                 "Segment parameter is defined already" ,
                                 "セグメントパラメータは既に定義されています" )
