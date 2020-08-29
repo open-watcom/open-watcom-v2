@@ -42,6 +42,9 @@
 #include "ring.h"
 #include "vstk.h"
 #include "initdefs.h"
+#include "preproc.h"
+#include "cmacsupp.h"
+
 
 typedef struct                  // SYM_TRANS -- symbol translation
 {   SYMBOL src;                 // - source SYMBOL

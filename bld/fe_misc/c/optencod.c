@@ -365,10 +365,12 @@ static int mystricmp( const char *p1, const char *p2 )
     return( mytolower( *p1 ) - mytolower( *p2 ) );
 }
 
+#if 0
 static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
 {
     return( p1->s - p2->s );
 }
+#endif
 
 static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
 {
