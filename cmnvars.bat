@@ -59,7 +59,8 @@ goto toolsver
 :no_intel
 :toolsver
 if not exist getversi.bat goto no_toolsver
-call getversi.bat
+if not "%OS%" == "Windows_NT" call getversi.bat
+if "%OS%" == "Windows_NT" for /f "tokens=1,*" %%G in (getversi.bat) do if /i "%%G"=="set" set %%H
 del getversi.*
 :no_toolsver
 
