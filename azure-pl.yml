@@ -84,10 +84,19 @@ stages:
         parameters:
           arch:     lnx
           title:    Build Linux
+  - stage: testbootlnxow
+    displayName: "Test Bootstrap Linux OW"
+    dependsOn:
+      - buildlnx
+    jobs:
+      - template: ci/testboot.yml
+        parameters:
+          arch:     lnxow
+          title:    Test Bootstrap Linux OW
   - stage: testslnx
     displayName: "Tests Linux"
     dependsOn:
-      - buildlnx
+      - testbootlnxow
     jobs:
       - template: ci/tests.yml
         parameters:
@@ -130,10 +139,19 @@ stages:
         parameters:
           arch:     nt
           title:    Build Windows
+  - stage: testbootntow
+    displayName: "Test Bootstrap Windows OW"
+    dependsOn:
+      - buildnt
+    jobs:
+      - template: ci/testboot.yml
+        parameters:
+          arch:     ntow
+          title:    Test Bootstrap Windows OW
   - stage: testsnt
     displayName: "Tests Windows"
     dependsOn:
-      - buildnt
+      - testbootntow
     jobs:
       - template: ci/tests.yml
         parameters:

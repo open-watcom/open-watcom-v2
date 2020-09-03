@@ -1,0 +1,38 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: testboot${{ parameters.arch }}
+    displayName: "${{ parameters.title }}"
+    variables:
+      ${{ if eq(parameters.arch, 'lnxow') }}:
+        owtools:      $(owtools_lnxow)
+        owscript:     $(owscript_lnx)
+        watcom:       rel
+        include:      $(watcom)/lh
+        watcom.path:  $(watcom)/binl
+      ${{ if eq(parameters.arch, 'ntow') }}:
+        owtools:      $(owtools_ntow)
+        owscript:     $(owscript_nt)
+        watcom:       rel
+        include:      $(watcom)\h;$(watcom)\h\nt
+        watcom.path:  $(watcom)\binnt
+      owbuild.stage:    boot
+    pool:
+      ${{ if eq(parameters.arch, 'lnxow') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'ntow') }}:
+        vmImage: $(owimage_nt)
+    steps:
+    - template: artfload.yml
+      parameters:
+        ${{ if eq(parameters.arch, 'ntow') }}:
+          arch:     nt
+          artifname: rel-nt
+        ${{ if eq(parameters.arch, 'lnxow') }}:
+          arch:     lnx
+          artifname: rel-lnx
+        path:       $(watcom)
+    - script: $(owscript)
+      displayName: "Test Bootstrap OW"
