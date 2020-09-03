@@ -9,13 +9,13 @@ jobs:
       ${{ if eq(parameters.arch, 'lnxow') }}:
         owtools:      $(owtools_lnxow)
         owscript:     $(owscript_lnx)
-        watcom:       $(owroot_lnx)/rel
+        watcom:       $(owroot)/rel
         include:      $(watcom)/lh
         watcom.path:  $(watcom)/binl
       ${{ if eq(parameters.arch, 'ntow') }}:
         owtools:      $(owtools_ntow)
         owscript:     $(owscript_nt)
-        watcom:       $(owroot_nt)\rel
+        watcom:       $(owroot)\rel
         include:      $(watcom)\h;$(watcom)\h\nt
         watcom.path:  $(watcom)\binnt
       owbuild.stage:    boot
