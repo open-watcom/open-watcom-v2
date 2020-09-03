@@ -564,7 +564,7 @@ typedef struct comp_flags {
     boolbit non_zero_data                       : 1;
     boolbit quiet_mode                          : 1;
     boolbit useful_side_effect                  : 1;
-    boolbit keep_comments                       : 1;    /* wcpp - output comments */
+    boolbit cpp_keep_comments                   : 1;    /* wcpp - output comments */
     boolbit cpp_line_wanted                     : 1;    /* wcpp - emit #line    */
     boolbit cpp_ignore_line                     : 1;    /* wcpp - ignore #line */
 
@@ -586,7 +586,6 @@ typedef struct comp_flags {
     boolbit exception_filter_expr               : 1;    /* on => parsing _except(expr)*/
     boolbit exception_handler                   : 1;    /* on => inside _except block*/
 
-    boolbit comments_wanted                     : 1;    /* on => comments wanted     */
     boolbit wide_char_string                    : 1;    /* on => T_STRING is L"xxx"  */
     boolbit banner_printed                      : 1;    /* on => banner printed      */
     boolbit undefine_all_macros                 : 1;    /* on => -u all macros       */

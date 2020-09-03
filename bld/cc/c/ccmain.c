@@ -414,7 +414,7 @@ static void CppPutc( int ch )
 
 void CppComment( int ch )
 {
-    if( CompFlags.keep_comments && CppPrinting() ) {
+    if( CompFlags.cpp_keep_comments && CppPrinting() ) {
         if( ch != '\0' ) {
             if( CppColumn + 2 >= CppWidth )
                 CppPutc( '\n' );

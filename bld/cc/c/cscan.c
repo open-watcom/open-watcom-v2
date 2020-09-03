@@ -985,7 +985,7 @@ static TOKEN ScanSlash( void )
             /* some editors don't put linefeeds on end of lines */
             if( CurrChar == '\n' || c == '\r' )
                 break;
-            if( CompFlags.cpp_mode && CompFlags.keep_comments && CurrChar != '\r' ) {
+            if( CompFlags.cpp_mode && CompFlags.cpp_keep_comments && CurrChar != '\r' ) {
                 CppPrtChar( CurrChar );
             }
         }
@@ -1156,7 +1156,7 @@ static void ScanComment( void )
                 c = NextChar();
                 if( c == '/' )
                     break;
-                if( CompFlags.keep_comments ) {
+                if( CompFlags.cpp_keep_comments ) {
                     CppPrtChar( '*' );
                 }
                 continue; //could be **/
@@ -1167,7 +1167,7 @@ static void ScanComment( void )
             }
             if( c == '\n' ) {
                 CppPrtChar( c );
-            } else if( c != '\r' && CompFlags.keep_comments ) {
+            } else if( c != '\r' && CompFlags.cpp_keep_comments ) {
                 CppPrtChar( c );
             }
             c = NextChar();

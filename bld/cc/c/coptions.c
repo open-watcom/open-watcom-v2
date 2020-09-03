@@ -1465,8 +1465,7 @@ static void Set_PIL( void )         { CompFlags.cpp_ignore_line = true; }
 static void Set_PL( void )          { CompFlags.cpp_line_wanted = true; }
 static void Set_PC( void )
 {
-    CompFlags.keep_comments = true;
-    CompFlags.comments_wanted = true;
+    CompFlags.cpp_keep_comments = true;
 }
 static void Set_PW( void )
 {

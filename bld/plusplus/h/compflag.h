@@ -116,9 +116,8 @@ typedef struct comp_flags {
     boolbit     dump_prototypes                 : 1;    // output prototypes into .DEF file
     boolbit     use_base_types                  : 1;    // use base types in .DEF protos
     boolbit     quiet_mode                      : 1;
-    boolbit     keep_comments                   : 1;    // wcpp - output comments
+    boolbit     cpp_keep_comments               : 1;    // wcpp - output comments
     boolbit     emit_library_names              : 1;    // on => put LIB name in obj
-    boolbit     comments_wanted                 : 1;    // on => comments wanted
     boolbit     undefine_all_macros             : 1;    // on => -u all macros
     boolbit     cpp_line_wanted                 : 1;    // wcpp - emit #line
     boolbit     cpp_ignore_line                 : 1;    /* wcpp - ignore #line */
@@ -180,7 +179,7 @@ typedef struct comp_flags {
     boolbit     fhwe_switch_used                : 1;    // display but don't treat as errors
     boolbit     warn_about_padding              : 1;    // warn when padding is added
     boolbit     overload_13332                  : 1;    // implement WP 13.3.3.2 better
-    boolbit     line_comments                   : 1;    // output // #line instead of #line
+    boolbit     cpp_line_comments               : 1;    // output // #line instead of #line
     boolbit     dont_align_segs                 : 1;    // bug fix: don't align segments
     boolbit     fixed_name_mangling             : 1;    // bug fix: name mangling
     boolbit     plain_char_promotion            : 1;    // char -> int rvalue promotion warning

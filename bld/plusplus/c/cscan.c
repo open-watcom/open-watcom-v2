@@ -267,7 +267,7 @@ static void prt_comment_char( int c )
     case LCHR_EOF:
         break;
     default:
-        if( CompFlags.keep_comments ) {
+        if( CompFlags.cpp_keep_comments ) {
             prt_char( c );
         }
     }

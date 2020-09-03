@@ -90,7 +90,7 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
-            if( CompFlags.line_comments ) {
+            if( CompFlags.cpp_line_comments ) {
                 fputc( '/', CppFile );
                 fputc( '/', CppFile );
                 fputc( ' ', CppFile );
@@ -107,7 +107,7 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
-            if( CompFlags.line_comments ) {
+            if( CompFlags.cpp_line_comments ) {
                 if( control & EL_NEW_LINE ) {
                     // do zip: the correct position is immediately after comment
                 } else {

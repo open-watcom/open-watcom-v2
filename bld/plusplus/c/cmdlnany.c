@@ -1014,8 +1014,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->pc ) {
         CompFlags.cpp_mode = true;
-        CompFlags.keep_comments = true;
-        CompFlags.comments_wanted = true;
+        CompFlags.cpp_keep_comments = true;
     }
     if( data->pe ) {
         CompFlags.cpp_mode = true;
@@ -1023,7 +1022,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->pj ) {
         data->pl = true;
-        CompFlags.line_comments = true;
+        CompFlags.cpp_line_comments = true;
     }
     if( data->pl ) {
         CompFlags.cpp_mode = true;

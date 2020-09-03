@@ -273,7 +273,7 @@ void CInclude( void )
     bool        in_macro;
     char        buf[82];
 
-    if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
+    if( PCH_FileName != NULL && !CompFlags.make_precompiled_header ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {
             CompFlags.use_precompiled_header = true;
         }
@@ -767,13 +767,13 @@ static void CLine( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingConstant() ) {
-        if( CompFlags.cpp_ignore_line == 0 ) {
+        if( !CompFlags.cpp_ignore_line ) {
             src_line = Constant; // stash in case of side effects
             SrcFile->src_loc.line = src_line - 1; /* don't count this line */
         }
         PPNextToken();
         if( CurToken == T_NULL ) {
-            if( CompFlags.cpp_ignore_line == 0 ) {
+            if( !CompFlags.cpp_ignore_line ) {
                 if( CompFlags.cpp_mode ) {
                     EmitLine( src_line, SrcFile->src_name );
                 }
@@ -784,7 +784,7 @@ static void CLine( void )
                     /* wide char string not allowed */
                     ExpectString();
                 } else {
-                    if( CompFlags.cpp_ignore_line == 0 ) {
+                    if( !CompFlags.cpp_ignore_line ) {
                         // RemoveEscapes( Buffer );
                         flist = AddFlist( Buffer );
                         flist->rwflag = false;  // not a real file so no autodep
