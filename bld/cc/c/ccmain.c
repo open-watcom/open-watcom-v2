@@ -414,7 +414,7 @@ static void CppPutc( int ch )
 
 void CppComment( int ch )
 {
-    if( CompFlags.cpp_keep_comments && CppPrinting() ) {
+    if( CompFlags.cpp_keep_comments && CppPrinting() && CompFlags.cpp_output ) {
         if( ch != '\0' ) {
             if( CppColumn + 2 >= CppWidth )
                 CppPutc( '\n' );
@@ -504,7 +504,7 @@ char *ErrFileName( void )
 
 void CppPrtChar( int c )
 {
-    if( CppPrinting() ) {
+    if( CppPrinting() && CompFlags.cpp_output ) {
         CppPutc( c );
     }
 }
@@ -1256,7 +1256,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 
 void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
-    if( CompFlags.cpp_line_wanted && CppPrinting() ) {
+    if( CompFlags.cpp_line_wanted && CppPrinting() && CompFlags.cpp_output ) {
         CppPrtf( "#line %u \"", line_num );
         while( *filename != '\0' ) {
             CppPutc( *filename );
@@ -1276,7 +1276,7 @@ bool CppPrinting( void )
 
 void CppPrtToken( void )
 {
-    if( CppPrinting() ) {
+    if( CppPrinting() && CompFlags.cpp_output ) {
         switch( CurToken ) {
         case T_BAD_CHAR:
         case T_BAD_TOKEN:

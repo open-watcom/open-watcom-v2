@@ -1610,7 +1610,9 @@ void CPragma( void )
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_mode ) {
-        CppPrtf( "#pragma " );
+        if( CompFlags.cpp_output ) {
+            CppPrtf( "#pragma " );
+        }
         if( CurToken != T_NULL ) {
             CppPrtToken();
             PPCTL_ENABLE_MACROS();
