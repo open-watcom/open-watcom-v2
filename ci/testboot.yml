@@ -9,7 +9,7 @@ jobs:
       ${{ if eq(parameters.arch, 'lnxow') }}:
         owtools:      $(owtools_lnxow)
         owscript:     $(owscript_lnx)
-        watcom:       $(owroot_nt)/rel
+        watcom:       $(owroot_lnx)/rel
         include:      $(watcom)/lh
         watcom.path:  $(watcom)/binl
       ${{ if eq(parameters.arch, 'ntow') }}:
@@ -27,12 +27,12 @@ jobs:
     steps:
     - template: artfload.yml
       parameters:
-        ${{ if eq(parameters.arch, 'ntow') }}:
-          arch:     nt
-          artifname: rel-nt
         ${{ if eq(parameters.arch, 'lnxow') }}:
           arch:     lnx
           artifname: rel-lnx
+        ${{ if eq(parameters.arch, 'ntow') }}:
+          arch:     nt
+          artifname: rel-nt
         path:       $(watcom)
     - script: $(owscript)
       displayName: "Test Bootstrap OW"
