@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,11 @@
 #define BUF_SIZE                (1<<BUF_SIZE_SHIFT)
 
 #define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
+
+enum {
+    EL_NEW_LINE = 0x01,
+    EL_NULL     = 0
+};
 
 typedef void token_source_fn( void );
 
@@ -179,6 +185,11 @@ unsigned PpVerifyWidth(         // VERIFY WIDTH FOR PREPROCESSING
 void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
     unsigned width )            // - new width
 ;
+void CppEmitPoundLine(          // EMIT #LINE DIRECTIVE, IF REQ'D
+    LINE_NO line_num,           // - line number
+    const char *filename,       // - file name
+    unsigned control )		// - emit control
+;
 void PpStartFile(               // INDICATE START OF A FILE
     void )
 ;
@@ -224,14 +235,6 @@ void DirectiveInit(             // INITIALIZE FOR DIRECTIVE PROCESSING
 ;
 void DoMacroExpansion(          // EXPAND A MACRO
     MEPTR mentry )              // - macro to expand
-;
-void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-;
-void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
 ;
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
     const char *a_token )       // - required token

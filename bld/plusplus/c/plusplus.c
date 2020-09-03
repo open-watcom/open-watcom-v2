@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,7 +309,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 CompFlags.cpp_output = true;
                 if( ForceInclude != NULL ) {
-                    EmitLine( 1, WholeFName );
+                    CppEmitPoundLine( 1, WholeFName, EL_NULL );
                     CtxSetCurrContext( CTX_FORCED_INCS );
                     if( openForceIncludeFile() ) {
                         PpParse();

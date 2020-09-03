@@ -591,7 +591,7 @@ void CloseFCB( FCB *srcfcb )
             }
         }
         if( CompFlags.cpp_mode ) {
-            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
+            CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
         }
     } else {
         SrcLineCount = srcfcb->src_line_cnt;

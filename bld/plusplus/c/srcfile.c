@@ -424,7 +424,7 @@ SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
 
     new_src = srcFileAlloc( fp, FNameAdd( name ), ftime );
     if( CompFlags.cpp_output ) {
-        EmitLine( 1, new_src->name );
+        CppEmitPoundLine( 1, new_src->name, EL_NULL );
     }
     set_srcFile( new_src );
     new_act = activeSrc();
@@ -460,7 +460,7 @@ void SrcFileAlias(              // SET UP ALIAS FOR SOURCE FILE
 
     name = FNameAdd( name );
     if( CompFlags.cpp_output ) {
-        EmitLine( line, name );
+        CppEmitPoundLine( line, name, EL_NULL );
     }
     line += adjust;
     alias = NULL;
@@ -559,7 +559,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
                     PpStartFile();
                     act->line = 0;
                 }
-                EmitLineNL( old_src->parent_locn, srcFile->name );
+                CppEmitPoundLine( old_src->parent_locn, srcFile->name, EL_NEW_LINE );
             }
             ok = true;
         }

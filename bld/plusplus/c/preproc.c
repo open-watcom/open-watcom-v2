@@ -38,10 +38,6 @@
 #include "preproc.h"
 #include "cppexit.h"
 
-enum {
-    EL_NEW_LINE = 0x01,
-    EL_NULL     = 0
-};
 
 static unsigned skipChars;              // how many initial chars to skip
 static unsigned maxLineSize;            // how often to insert newline
@@ -86,7 +82,7 @@ void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
 }
 
 #if 0
-static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
+void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
@@ -103,7 +99,7 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
     }
 }
 #else
-static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
+void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
@@ -135,20 +131,6 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
     }
 }
 #endif
-
-void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-{
-    emitPoundLine( line_num, filename, EL_NULL );
-}
-
-void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-{
-    emitPoundLine( line_num, filename, EL_NEW_LINE );
-}
 
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )

@@ -792,7 +792,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
         }
         if( CompFlags.cpp_output ) {
             if( lines_skipped ) {
-                EmitLine( SrcFileLine(), SrcFileNameCurrent() );
+                CppEmitPoundLine( SrcFileLine(), SrcFileNameCurrent(), EL_NULL );
             }
         }
     }

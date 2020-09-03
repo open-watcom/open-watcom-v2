@@ -447,8 +447,7 @@ extern void         SrcFileIncludeAlias( const char *alias_name, const char *rea
 extern int          SrcFileTime(char const *,time_t *);
 extern void         SetSrcFNameOnce( void );
 extern void         GetNextToken(void);
-extern void         EmitLine(unsigned,const char *);
-extern void         EmitPoundLine(unsigned,const char *,bool);
+extern void         CppEmitPoundLine(unsigned,const char *,bool);
 
 extern void         AddIncFile( INCFILE * );
 extern void         AddIncFileList( const char *filename );

@@ -652,7 +652,7 @@ static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
         if( CompFlags.cpp_mode ) {
             if( CppFile == NULL )
                 OpenCppFile();
-            EmitPoundLine( 1, filename, true );
+            CppEmitPoundLine( 1, filename, true );
             CppFirstChar = true;
         }
         return( true );
@@ -912,7 +912,7 @@ static bool OpenPgmFile( void )
             if( CompFlags.cpp_mode ) {
                 if( CppFile == NULL )
                     OpenCppFile();
-                EmitPoundLine( 1, "stdin", true );
+                CppEmitPoundLine( 1, "stdin", true );
                 CppFirstChar = true;
             }
             MainSrcFile = SrcFile;
@@ -1254,7 +1254,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 }
 
 
-void EmitPoundLine( unsigned line_num, const char *filename, bool newline )
+void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
     if( CompFlags.cpp_line_wanted && CppPrinting() ) {
         CppPrtf( "#line %u \"", line_num );
@@ -1267,11 +1267,6 @@ void EmitPoundLine( unsigned line_num, const char *filename, bool newline )
             CppPutc( '\n' );
         }
     }
-}
-
-void EmitLine( unsigned line_num, const char *filename )
-{
-    EmitPoundLine( line_num, filename, false );
 }
 
 bool CppPrinting( void )

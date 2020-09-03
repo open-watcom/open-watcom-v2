@@ -237,7 +237,7 @@ TOKEN ChkControl( void )
         if( CompFlags.cpp_mode ) {
             if( lines_skipped ) {
                 if( SrcFile != NULL ) {
-                    EmitLine( SrcFile->src_loc.line, SrcFile->src_name );
+                    CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, false );
                 }
             }
         }
@@ -775,7 +775,7 @@ static void CLine( void )
         if( CurToken == T_NULL ) {
             if( !CompFlags.cpp_ignore_line ) {
                 if( CompFlags.cpp_mode ) {
-                    EmitLine( src_line, SrcFile->src_name );
+                    CppEmitPoundLine( src_line, SrcFile->src_name, false );
                 }
             }
         } else {
@@ -791,7 +791,7 @@ static void CLine( void )
                         SrcFile->src_name = flist->name;
                         SrcFile->src_loc.fno = flist->index;
                         if( CompFlags.cpp_mode ) {
-                            EmitLine( src_line, SrcFile->src_name );
+                            CppEmitPoundLine( src_line, SrcFile->src_name, false );
                         }
                     }
                 }
