@@ -33,6 +33,6 @@ jobs:
         ${{ if eq(parameters.arch, 'ntow') }}:
           arch:     nt
           artifname: rel-nt
-        path:       $(watcom)
+        path:       rel
     - script: $(owscript)
       displayName: "Test Bootstrap OW"
