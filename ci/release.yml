@@ -91,6 +91,8 @@ jobs:
             distrib/ow/bin/ow-snapshot.tar.gz
         isPreRelease: true
         addChangeLog: false
+    - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
+      displayName: "Get current timestamp"
     - script: |
         echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' '$OWTAGSTAMP $OWMTAG'`"
       displayName: "Create permanent build tag"
