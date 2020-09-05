@@ -91,10 +91,11 @@ jobs:
             distrib/ow/bin/ow-snapshot.tar.gz
         isPreRelease: true
         addChangeLog: false
-    - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
-      displayName: "Get current timestamp"
+    - bash: echo "##vso[task.setvariable variable=owmtag;]`date +'%Y-%m-%d'`-Build"
+      displayName: "Get current tag"
     - script: |
-        echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' '$OWTAGSTAMP $OWMTAG'`"
+        git tag -a -m "$OWTAGSTAMP Build" $OWMTAG $BUILD_SOURCEVERSION
+        git push $(owgitverbose) origin $OWMTAG
       displayName: "Create permanent build tag"
     - task: GitHubRelease@0
       name: releaseaddperm
@@ -106,8 +107,8 @@ jobs:
         action: 'create'
         target: '$(Build.SourceVersion)'
         tagSource: 'manual'
-        tag: '$(owtagstamp) $(owmtag)'
-        title: '$(owtagstamp) $(owmtag)'
+        tag: '$(owmtag)'
+        title: '$(owtagstamp) Build'
         releaseNotesSource: 'input'
         releaseNotes: 'Created $(owtagstamp)'
         ${{ if eq(parameters.arch, 'nt') }}:
