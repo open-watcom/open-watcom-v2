@@ -93,37 +93,36 @@ jobs:
         addChangeLog: false
     - bash: echo "##vso[task.setvariable variable=owmtagcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/`date +'%Y-%m-'`.*:\1:p\"`"
       displayName: "Get Current Month build tag commit"
-    - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
-      displayName: "Get current date"
-    - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
-      displayName: "Get current tag"
-    - script: |
-        if [ ! -z "$OWMTAGCOMMIT" ]; then
+    - ${{ if eq(variables.owmtagcommit, '') }}:
+      - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
+        displayName: "Get current date"
+      - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
+        displayName: "Get current tag"
+      - script: |
           git tag -a -m "$OWMTAGSTAMP $OWSUBTAG" $OWMTAG $BUILD_SOURCEVERSION
           git push $(owgitverbose) origin $OWMTAG
-        fi
-      displayName: "Create permanent build tag"
-    - task: GitHubRelease@0
-      name: releaseaddperm
-      displayName: "Add Permanent Release"
-      condition: and(succeededOrFailed(), eq(varaibles.owmtagcommit, ''))
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'manual'
-        tag: '$(owmtag)'
-        title: '$(owmtagstamp) $(owsubtag)'
-        releaseNotesSource: 'input'
-        releaseNotes: 'Created $(owtagstamp)'
-        ${{ if eq(parameters.arch, 'nt') }}:
-          assets: |
-            distrib\ow\bin\open-watcom-*
-            distrib\ow\bin\ow-snapshot.tar.gz
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          assets: |
-            distrib/ow/bin/open-watcom-*
-            distrib/ow/bin/ow-snapshot.tar.gz
-        isPreRelease: true
-        addChangeLog: false
+        displayName: "Create permanent build tag"
+      - task: GitHubRelease@0
+        name: releaseaddperm
+        displayName: "Add Permanent Release"
+        condition: succeededOrFailed()
+        inputs:
+          gitHubConnection: 'open-watcom-v2-releases'
+          repositoryName: '$(Build.Repository.Name)'
+          action: 'create'
+          target: '$(Build.SourceVersion)'
+          tagSource: 'manual'
+          tag: '$(owmtag)'
+          title: '$(owmtagstamp) $(owsubtag)'
+          releaseNotesSource: 'input'
+          releaseNotes: 'Created $(owtagstamp)'
+          ${{ if eq(parameters.arch, 'nt') }}:
+            assets: |
+              distrib\ow\bin\open-watcom-*
+              distrib\ow\bin\ow-snapshot.tar.gz
+          ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+            assets: |
+              distrib/ow/bin/open-watcom-*
+              distrib/ow/bin/ow-snapshot.tar.gz
+          isPreRelease: true
+          addChangeLog: false
