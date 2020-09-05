@@ -91,7 +91,11 @@ jobs:
             distrib/ow/bin/ow-snapshot.tar.gz
         isPreRelease: true
         addChangeLog: false
-    - bash: echo "##vso[task.setvariable variable=owmtagcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/`date +'%Y-%m-'`.*:\1:p\"`"
+    - bash: echo "##vso[task.setvariable variable=owmtagmonth;]`date +'%Y-%m-'`"
+      displayName: "Get current month"
+    - script: git fetch -p -P
+      displayName: "Fetch tags info"
+    - bash: echo "##vso[task.setvariable variable=owmtagcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/$(owmtagmonth).*$(owsubtag)$:\1:p\"`"
       displayName: "Get Current Month build tag commit"
     - ${{ if eq(variables.owmtagcommit, '') }}:
       - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
