@@ -11,7 +11,7 @@ jobs:
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:        $(owtools_nt)
       owtag:            Current-build
-      owmtag:           Build
+      owsubtag:         Build
     pool:
       ${{ if eq(parameters.arch, 'lnx') }}:
         vmImage: $(owimage_lnx)
@@ -91,16 +91,22 @@ jobs:
             distrib/ow/bin/ow-snapshot.tar.gz
         isPreRelease: true
         addChangeLog: false
-    - bash: echo "##vso[task.setvariable variable=owmtag;]`date +'%Y-%m-%d'`-Build"
+    - bash: echo "##vso[task.setvariable variable=owmtagcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/`date +'%Y-%m-'`.*:\1:p\"`"
+      displayName: "Get Current Month build tag commit"
+    - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
+      displayName: "Get current date"
+    - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
       displayName: "Get current tag"
     - script: |
-        git tag -a -m "$OWTAGSTAMP Build" $OWMTAG $BUILD_SOURCEVERSION
-        git push $(owgitverbose) origin $OWMTAG
+        if [ ! -z "$OWMTAGCOMMIT" ]; then
+          git tag -a -m "$OWMTAGSTAMP $OWSUBTAG" $OWMTAG $BUILD_SOURCEVERSION
+          git push $(owgitverbose) origin $OWMTAG
+        fi
       displayName: "Create permanent build tag"
     - task: GitHubRelease@0
       name: releaseaddperm
       displayName: "Add Permanent Release"
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), eq(varaibles.owmtagcommit, ''))
       inputs:
         gitHubConnection: 'open-watcom-v2-releases'
         repositoryName: '$(Build.Repository.Name)'
@@ -108,7 +114,7 @@ jobs:
         target: '$(Build.SourceVersion)'
         tagSource: 'manual'
         tag: '$(owmtag)'
-        title: '$(owtagstamp) Build'
+        title: '$(owmtagstamp) $(owsubtag)'
         releaseNotesSource: 'input'
         releaseNotes: 'Created $(owtagstamp)'
         ${{ if eq(parameters.arch, 'nt') }}:
