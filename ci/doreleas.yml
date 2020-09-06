@@ -34,14 +34,18 @@ steps:
           ${{ if eq(parameters.update, 'false') }}:
             releaseNotes: 'Created ${{ parameters.timestamp }}'
           ${{ if eq(parameters.arch, 'nt') }}:
-            assets: |
-              ${{ if eq(parameters.fullset, 'true') }}:
+            ${{ if eq(parameters.fullset, 'true') }}:
+              assets: |
                 distrib\ow\bin\open-watcom-*
-              distrib\ow\bin\ow-snapshot.tar.gz
+                distrib\ow\bin\ow-snapshot.tar.gz
+            ${{ if eq(parameters.fullset, 'false') }}:
+              assets: distrib\ow\bin\ow-snapshot.tar.gz
           ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-            assets: |
-              ${{ if eq(parameters.fullset, 'true') }}:
+            ${{ if eq(parameters.fullset, 'true') }}:
+              assets: |
                 distrib/ow/bin/open-watcom-*
-              distrib/ow/bin/ow-snapshot.tar.gz
+                distrib/ow/bin/ow-snapshot.tar.gz
+            ${{ if eq(parameters.fullset, 'false') }}:
+              assets: distrib\ow\bin\ow-snapshot.tar.gz
           isPreRelease: true
           addChangeLog: false
