@@ -59,38 +59,15 @@ jobs:
           echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
         fi
       displayName: "Recreate 'Current-build' tag"
-    - task: GitHubRelease@0
-      name: releasedel
-      displayName: "Delete Release"
-      continueOnError: true
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        action: 'delete'
-        tag: '$(owtag)'
-    - task: GitHubRelease@0
-      name: releaseadd
-      displayName: "Add Release"
-      condition: succeededOrFailed()
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'manual'
-        tag: '$(owtag)'
-        title: '$(owtag)'
-        releaseNotesSource: 'input'
-        releaseNotes: 'Last updated $(owtagstamp)'
-        ${{ if eq(parameters.arch, 'nt') }}:
-          assets: |
-            distrib\ow\bin\open-watcom-*
-            distrib\ow\bin\ow-snapshot.tar.gz
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          assets: |
-            distrib/ow/bin/open-watcom-*
-            distrib/ow/bin/ow-snapshot.tar.gz
-        isPreRelease: true
-        addChangeLog: false
+    - template: doreleas.yml
+      parameters:
+        arch:      ${{ parameters.arch }}
+        update:    'true'
+        fullset:   'true'
+        disp:      'Update daily Release'
+        title:     '$(owtag)'
+        tag:       '$(owtag)'
+        timestamp: '$(owtagstamp)'
     - bash: echo "##vso[task.setvariable variable=owmtagmonth;]`date +'%Y-%m-'`"
       displayName: "Get current month"
     - bash: echo "Month stamp=$OWMTAGMONTH"
@@ -101,36 +78,22 @@ jobs:
       displayName: "Get Current Month build tag commit"
     - bash: echo "Month commit=$OWMTAGCOMMIT"
       displayName: "Display current month commit"
-    - ${{ if eq(variables.owmtagcommit, '') }}:
-      - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
-        displayName: "Get current date"
-      - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
-        displayName: "Get current tag"
-      - script: |
+    - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
+      displayName: "Get current date"
+    - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
+      displayName: "Get current tag"
+    - script: |
+        if [ -z "$OWMTAGCOMMIT" ]; then
           git tag -a -m "$OWMTAGSTAMP $OWSUBTAG" $OWMTAG $BUILD_SOURCEVERSION
           git push $(owgitverbose) origin $OWMTAG
-        displayName: "Create permanent build tag"
-      - task: GitHubRelease@0
-        name: releaseaddperm
-        displayName: "Add Permanent Release"
-        condition: succeededOrFailed()
-        inputs:
-          gitHubConnection: 'open-watcom-v2-releases'
-          repositoryName: '$(Build.Repository.Name)'
-          action: 'create'
-          target: '$(Build.SourceVersion)'
-          tagSource: 'manual'
-          tag: '$(owmtag)'
-          title: '$(owmtagstamp) $(owsubtag)'
-          releaseNotesSource: 'input'
-          releaseNotes: 'Created $(owtagstamp)'
-          ${{ if eq(parameters.arch, 'nt') }}:
-            assets: |
-              distrib\ow\bin\open-watcom-*
-              distrib\ow\bin\ow-snapshot.tar.gz
-          ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-            assets: |
-              distrib/ow/bin/open-watcom-*
-              distrib/ow/bin/ow-snapshot.tar.gz
-          isPreRelease: true
-          addChangeLog: false
+        fi
+      displayName: "Create new permanent build tag"
+    - template: doreleas.yml
+      parameters:
+        arch:      ${{ parameters.arch }}
+        fullset:   'true'
+        disp:      'Add monthly Release'
+        title:     '$(owmtagstamp) $(owsubtag)'
+        tag:       '$(owmtag)'
+        timestamp: '$(owtagstamp)'
+        cond:      '$(owmtagcommit)'

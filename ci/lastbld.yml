@@ -73,28 +73,11 @@ jobs:
           echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
         fi
       displayName: "Recreate 'Last-CI-build' tag"
-    - task: GitHubRelease@0
-      name: releasedel
-      displayName: "Delete Release"
-      continueOnError: true
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        action: 'delete'
-        tag: '$(owtag)'
-    - task: GitHubRelease@0
-      name: releaseadd
-      displayName: "Add Release"
-      condition: succeededOrFailed()
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'manual'
-        tag: '$(owtag)'
-        title: '$(owtag)'
-        releaseNotesSource: 'input'
-        releaseNotes: 'Last updated $(owtagstamp)'
-        assets: $(owroot)/ow-snapshot.tar.gz
-        isPreRelease: true
-        addChangeLog: false
+    - template: doreleas.yml
+      parameters:
+        arch:      'lnx'
+        update:    'true'
+        disp:      'Update Last-CI-build'
+        title:     '$(owtag)'
+        tag:       '$(owtag)'
+        timestamp: '$(owtagstamp)'
