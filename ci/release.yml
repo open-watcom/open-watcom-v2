@@ -90,4 +90,3 @@ jobs:
         title:     '$(owmtagstamp) $(owsubtag)'
         tag:       '$(owmtag)'
         timestamp: '$(owtagstamp)'
-        cond:      $(owmtagcommit)
