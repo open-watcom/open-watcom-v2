@@ -59,6 +59,8 @@ jobs:
           echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
         fi
       displayName: "Recreate 'Current-build' tag"
+    - bash: echo "##vso[task.setvariable variable=owcommit;]"
+      displayName: "Set owcommit blank"
     - template: doreleas.yml
       parameters:
         arch:      ${{ parameters.arch }}
@@ -70,14 +72,14 @@ jobs:
         timestamp: '$(owtagstamp)'
     - bash: echo "##vso[task.setvariable variable=owmtagmonth;]`date +'%Y-%m-'`"
       displayName: "Get current month stamp"
-    - bash: echo "##vso[task.setvariable variable=owmtagcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/$OWMTAGMONTH.*$(owsubtag)$:\1:p\"`"
+    - bash: echo "##vso[task.setvariable variable=owcommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/$OWMTAGMONTH.*$(owsubtag)$:\1:p\"`"
       displayName: "Get current month build tag commit"
     - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
       displayName: "Get current date"
     - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
       displayName: "Get current tag"
     - script: |
-        if [ -z "$OWMTAGCOMMIT" ]; then
+        if [ -z "$OWCOMMIT" ]; then
           git tag -a -m "$OWMTAGSTAMP $OWSUBTAG" $OWMTAG $BUILD_SOURCEVERSION
           git push $(owgitverbose) origin $OWMTAG
         fi

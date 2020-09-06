@@ -18,6 +18,7 @@ steps:
           tag: '${{ parameters.tag }}'
     - task: GitHubRelease@0
       displayName: "${{ parameters.disp }}"
+      condition: eq(variables.commit, '')
       inputs:
         gitHubConnection: 'open-watcom-v2-releases'
         repositoryName: '$(Build.Repository.Name)'
