@@ -53,6 +53,8 @@
 
 :title.  Usage: %s { <option> } <library_name> [ <commands> ]
 :jtitle. 使用方法: %s { <option> } <library_name> [ <commands> ]
+:titleu.  Usage: %C { <option> } <library_name> [ <commands> ]
+:jtitleu. 使用方法: %C { <option> } <library_name> [ <commands> ]
 :target. any
 
 :title.

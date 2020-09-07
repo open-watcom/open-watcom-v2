@@ -49,6 +49,8 @@
 
 :title.  Usage: %s <command> [<modifiers>] <archive> [modules]
 :jtitle. 使用法： %s <command> [<modifiers>] <archive> [modules]
+:titleu.  Usage: %C <command> [<modifiers>] <archive> [modules]
+:jtitleu. 使用法： %C <command> [<modifiers>] <archive> [modules]
 :target. any
 
 :title.
