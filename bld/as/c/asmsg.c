@@ -80,7 +80,7 @@ bool AsMsgInit( void )
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         msgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
+        if( AsMsgGet( MSG_AS_BASE, AsResBuffer ) ) {
             return( true );
         }
     }

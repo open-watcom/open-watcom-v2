@@ -92,12 +92,19 @@ void Banner( void )
     printed = true;
 }
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 void Usage( void )
 //****************
 {
     int         ctr;
 
-    for( ctr = USAGE_1; ctr <= USAGE_LAST; ++ctr ) {
+    for( ctr = MSG_USAGE_BASE; ctr < MSG_USAGE_BASE + MSG_USAGE_COUNT; ++ctr ) {
         AsMsgGet( ctr, AsResBuffer );
         puts( AsResBuffer );
     }

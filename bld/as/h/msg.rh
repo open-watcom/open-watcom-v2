@@ -34,6 +34,7 @@
 #define MSG_LANG_SPACING    13000
 
 #define MSG_AS_BASE         1
+#define MSG_USAGE_BASE      100
 
 #if defined( _STANDALONE_ )
 #include "msg.gh"
