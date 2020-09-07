@@ -18,7 +18,8 @@ steps:
           tag: '${{ parameters.tag }}'
     - task: GitHubRelease@0
       displayName: "${{ parameters.disp }}"
-      condition: eq(variables.owcommit, '')
+      ${{ if not(eq(parameters.update, 'true')) }}:
+        condition: eq(variables.owreleasecommit, '')
       inputs:
         gitHubConnection: 'open-watcom-v2-releases'
         repositoryName: '$(Build.Repository.Name)'
