@@ -19,9 +19,7 @@ additional_clean = *.c *.h *.re *.y
 
 !include $(owl_dir)/client.mif
 !include $(cpp_dir)/client.mif
-!ifdef test_inline_as
 !include $(as_dir)/client.mif
-!endif
 
 # yacc macros
 #########################
@@ -195,13 +193,13 @@ msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
 asi_msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
-    $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
+    $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. asi_msg.tmp
 
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS

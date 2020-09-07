@@ -44,7 +44,7 @@
 
 #else
 
-#define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - AS_MSG_BASE + 1)
+#define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - MSG_AS_BASE + 1)
 
 // No res file to use. Just compile in the messages...
 static char *asMessages[] = {
@@ -91,7 +91,7 @@ bool AsMsgInit( void )
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
     if( msgShift >= TXT_MSG_SIZE )
         msgShift = 0;
-    msgShift -= AS_MSG_BASE;
+    msgShift -= MSG_AS_BASE;
     return( true );
 #endif
 }
