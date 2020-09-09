@@ -268,7 +268,7 @@ echo_optencod : .PROCEDURE .EXPLICIT
 #################
 
 extra_cpp_stand_flags = -D_STANDALONE_
-extra_cpp_lib_flags =
+extra_cpp_lib_flags = -DINCL_MSGTEXT
 !ifdef __WATCOM_TOOLS__
 extra_cpp_stand_flags += -fh=stand.pch
 extra_cpp_lib_flags += -fh=lib.pch
