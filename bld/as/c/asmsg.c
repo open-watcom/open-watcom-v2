@@ -44,22 +44,25 @@
 
 
 #ifdef INCL_MSGTEXT
-#define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - MSG_AS_BASE + 1)
 
 // No res file to use. Just compile in the messages...
 static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    e_msg,
     #include "as.msg"
+#if defined( _STANDALONE_ )
+    #include "usage.gh"
+#endif
     #undef pick
 #if 0
 //#if defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"
+#if defined( _STANDALONE_ )
+    #include "usagej.gh"
+#endif
     #undef pick
 #endif
 };
-
-#define TXT_MSG_SIZE    ArraySize( asMessages )
 
 #else
 
@@ -70,15 +73,23 @@ static HANDLE_INFO      hInstance = {0};
 
 static unsigned         msgShift = 0;
 
-#ifndef INCL_MSGTEXT
+#if defined( _STANDALONE_ )
 bool AsMsgInit( void )
 //********************
 {
 #ifdef INCL_MSGTEXT
-    msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
-    if( msgShift >= TXT_MSG_SIZE )
-        msgShift = 0;
-    msgShift -= MSG_AS_BASE;
+  #if 0
+    enum {
+        MSG_LANG_SPACING = 0
+        #define pick(c,e,j) + 1
+        #include "as.msg"
+    #if defined( _STANDALONE_ )
+        #include "usage.gh"
+    #endif
+        #undef pick
+    };
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+  #endif
     return( true );
 #else
     char        name[_MAX_PATH];
@@ -111,10 +122,13 @@ bool AsMsgGet( int resourceid, char *buffer )
     return( true );
 }
 
-#ifndef INCL_MSGTEXT
+#if defined( _STANDALONE_ )
 void AsMsgFini( void )
 //********************
 {
+#ifdef INCL_MSGTEXT
+#else
     CloseResFile( &hInstance );
+#endif
 }
 #endif

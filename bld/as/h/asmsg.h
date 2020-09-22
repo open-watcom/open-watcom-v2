@@ -35,7 +35,7 @@
 #include "msg.rh"
 
 extern bool AsMsgGet( int resourceid, char *buffer );
-#ifndef INCL_MSGTEXT
+#if defined( _STANDALONE_ )
 extern bool AsMsgInit( void );
 extern void AsMsgFini( void );
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +51,22 @@
 
 #ifdef _STANDALONE_
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
+#if defined( INCL_MSGTEXT )
+enum {
+    MSG_USAGE_BASE = 0
+    #define pick(c,e,j) + 1
+    #include "as.msg"
+    #undef pick
+};
+#endif
+
 typedef enum {
     MSG_ERROR,
     MSG_WARNING
@@ -91,13 +107,6 @@ void Banner( void )
     puts( banner3a );
     printed = true;
 }
-
-enum {
-    MSG_USAGE_COUNT = 0
-    #define pick(c,e,j) + 1
-    #include "usage.gh"
-    #undef pick
-};
 
 void Usage( void )
 //****************
