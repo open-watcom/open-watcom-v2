@@ -1,3 +1,7 @@
+:cmt
+:cmt !!!!! This file must be in UTF-8 encoding !!!!!!!
+:cmt
+
 :cmt **********************************************************************
 :cmt *       Copyright by WATCOM International Corporation, 1987, 1992.   *
 :cmt *       All rights reserved. No part of this software may be         *

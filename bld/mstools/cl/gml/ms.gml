@@ -1,4 +1,8 @@
 :cmt
+:cmt !!!!! This file must be in UTF-8 encoding !!!!!!!
+:cmt
+
+:cmt
 :cmt GML Macros used:
 :cmt
 :cmt    :chain. <char> <usage>                  options that start with <char>
