@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -407,10 +408,10 @@ void AddLineToSavebuf( char *data, int scol, int ecol )
     }
 #endif
     if( j >= MAX_SAVEBUFS ) {
-        LastSavebuf = (char) j + (char) 'a' - (char) MAX_SAVEBUFS;
+        LastSavebuf = (char)j + (char)'a' - (char)MAX_SAVEBUFS;
         tmp = &SpecialSavebufs[j - MAX_SAVEBUFS];
     } else {
-        LastSavebuf = (char) j + (char) '1';
+        LastSavebuf = (char)j + (char)'1';
         tmp = &Savebufs[j];
         rotateSavebufs( j );
     }
@@ -483,10 +484,10 @@ void AddFcbsToSavebuf( fcb_list *fcblist, bool duplflag )
     }
 #endif
     if( j >= MAX_SAVEBUFS ) {
-        LastSavebuf = (char) j + (char) 'a' - (char) MAX_SAVEBUFS;
+        LastSavebuf = (char)j + (char)'a' - (char)MAX_SAVEBUFS;
         tmp = &SpecialSavebufs[j - MAX_SAVEBUFS];
     } else {
-        LastSavebuf = (char) j + (char) '1';
+        LastSavebuf = (char)j + (char)'1';
         tmp = &Savebufs[j];
         rotateSavebufs( j );
     }
@@ -595,7 +596,7 @@ vi_rc SetSavebufNumber( const char *data )
     data = GetNextWord1( data, st );
     if( st[0] != '\0' ) {
         if( st[1] != '\0' ) {
-            Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
+            Error( GetErrorMsg( ERR_INVALID_SAVEBUF ), st[0] );
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }
 #ifdef __WIN__
@@ -608,7 +609,7 @@ vi_rc SetSavebufNumber( const char *data )
             } else if( st[0] >= 'a' && st[0] <= 'z' ) {
                 SavebufNumber = st[0] - 'a' + MAX_SAVEBUFS;
             } else {
-                Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
+                Error( GetErrorMsg( ERR_INVALID_SAVEBUF ), st[0] );
                 return( DO_NOT_CLEAR_MESSAGE_WINDOW );
             }
 #ifdef __WIN__
