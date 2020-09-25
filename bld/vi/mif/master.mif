@@ -12,7 +12,9 @@ vi_trmem = 1
 
 .EXTENSIONS: .vi .dat
 
-additional_clean = *.rex *.gdh *.gch $(bind_compiled)
+error_dat = ../dat/error.dat
+
+additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 
 !include cproj.mif
 !include defrule.mif
@@ -37,7 +39,7 @@ additional_clean = *.rex *.gdh *.gch $(bind_compiled)
 #
 # bind vi scripts to final vi executable
 #
-vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
+vi.exe: $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
     cp $(name).exe vi.exe
@@ -104,6 +106,10 @@ setgen.gdh : ../win/ctl/setgen.dh
 
 setfs.gdh setgen.gdh: $(__MAKEFILES__)
     parsedyn $[@ $@ Dyn_$^&
+
+$(error_dat) : ../h/_errs1.h ../h/_errs.h
+    @%make echo_awk
+    $(awk) -f ../makedat.awk -v OUTFILE=$(error_dat) $< $<
 
 edbind_data : .PROCEDURE .EXPLICIT
     $(noecho)%create edbind.tmp
