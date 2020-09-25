@@ -25,22 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  vi editor return codes definition with no message (vi_rc < 0)
 *
 ****************************************************************************/
 
 
-#ifndef _ERRS_INCLUDED
-#define _ERRS_INCLUDED
-
-typedef enum vi_rc {
-    #define pick(n,i)  n i,
-    #include "_errs1.h"
-    #undef pick
-    #define pick(n,t,i) n i,
-    #include "_errs.h"
-    #undef pick
-} vi_rc;
-
-#endif
+pick( GOT_RESPONSE, = -100 )
+pick( ALIAS_NOT_FOUND, )
+pick( RANGE_REQUEST_CANCELLED, )
+pick( FGREP_FOUND_STRING, )
+pick( FILE_COMPLETE, )
+pick( NEW_FILE, )
+pick( NO_VALUE_ENTERED, )
+pick( GOT_A_SAVEBUF, )
+pick( MARK_REQUEST_CANCELLED, )
+pick( NO_SPLIT_CREATED_AT_END_LINE, )
+pick( COULD_NOT_MERGE_FCBS, )
+pick( NO_SPLIT_CREATED_AT_START_LINE, )
+pick( DO_NOT_CLEAR_MESSAGE_WINDOW, )
+pick( GOT_A_DIGIT, )
+pick( NO_NUMBER, )
+pick( END_OF_FILE, )
+pick( FILE_COMPLETE_ENTER, )
+pick( NOT_COMPILEABLE_TOKEN, )
+pick( MENU_COMMAND_NOT_HANDLED, )
