@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,28 +34,24 @@
 #include "win.h"
 #include "myprtf.h"
 
-static char     strBuff[25];
-static bool     errorMessagesLoaded = false;
-static int      errCnt;
-static char     *errorList;
+#define ERROR_COUNT (sizeof( errorList ) / sizeof( errorList[0] ))
 
 static char     *errorTokens = NULL;
 static int      *errorValues = NULL;
 static bool     errorTokensLoaded = false;
+static char     strBuff[25];
+static const char   *errorList[] = {
+    #define pick(n,t,i) t,
+    #include "_errs.h"
+    #undef pick
+};
 
 /*
  * StartupError - process fatal startup error
  */
 void StartupError( vi_rc err )
 {
-    const char  *str;
-
-    if( err == ERR_NO_MEMORY ) {
-        str = "Out of memory";
-    } else {
-        str = GetErrorMsg( err );
-    }
-    MyPrintf( "%s (fatal)\n", str );
+    MyPrintf( "%s (fatal)\n", GetErrorMsg( err ) );
 
     FiniMem();
 
@@ -69,15 +65,8 @@ void StartupError( vi_rc err )
  */
 void FatalError( vi_rc err )
 {
-    const char  *str;
-
     SetPosToMessageLine();
-    if( err == ERR_NO_MEMORY ) {
-        str = "Out of memory";
-    } else {
-        str = GetErrorMsg( err );
-    }
-    MyPrintf( "%s (fatal)\n", str );
+    MyPrintf( "%s (fatal)\n", GetErrorMsg( err ) );
     ExitEditor( -1 );
 
 } /* FatalError */
@@ -99,60 +88,22 @@ void Die( const char *str, ... )
 
 } /* Die */
 
-static bool errmsg_alloc( int cnt )
-{
-    errCnt = cnt;
-    return( false );
-}
-
-static bool errmsg_save( int i, const char *buff )
-{
-    /* unused parameters */ (void)i; (void)buff;
-
-    return( true );
-}
-
-/*
- * readErrorMsgData - do just that
- */
-static void readErrorMsgData( void )
-{
-    vi_rc       rc;
-
-    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, true );
-    if( rc != ERR_NO_ERR ) {
-        return;
-    }
-    errorMessagesLoaded = true;
-
-} /* readErrorMsgData */
-
 /*
  * GetErrorMsg - return pointer to message
  */
 const char *GetErrorMsg( vi_rc err )
 {
-    const char  *msg;
-
-    if( !errorMessagesLoaded ) {
-        readErrorMsgData();
-    }
     LastError = err;
     if( EditFlags.InputKeyMapMode ) {
         DoneInputKeyMap();
         EditFlags.NoInputWindow = false;
         EditFlags.Dotable = false;
     }
-    if( err < 0 || err > errCnt ) {
+    if( err < 0 || err >= ERROR_COUNT ) {
         MySprintf( strBuff, "Err no. %d (no msg)", err );
         return( strBuff );
     }
-    msg = GetTokenString( errorList, (int)err );
-    if( msg == NULL ) {
-        MySprintf( strBuff, "Err no. %d (no msg)", err );
-        return( strBuff );
-    }
-    return( msg );
+    return( errorList[err] );
 
 } /* GetErrorMsg */
 
@@ -253,15 +204,12 @@ vi_rc ReadErrorTokens( void )
     }
 
     rc = ReadDataFile( "error.dat", &errorTokens, err_alloc, err_save, true );
-    if( rc != ERR_NO_ERR ) {
-        if( rc == ERR_FILE_NOT_FOUND ) {
-            return( ERR_SRC_NO_ERROR_DATA );
-        }
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        errorTokensLoaded = true;
+    } else if( rc == ERR_FILE_NOT_FOUND ) {
+        rc = ERR_SRC_NO_ERROR_DATA;
     }
-    errorTokensLoaded = true;
-
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* ReadErrorTokens */
 
@@ -288,9 +236,6 @@ vi_rc GetErrorTokenValue( int *value, const char *str )
 
 void ErrorFini( void )
 {
-    MemFree( errorList );
-    errorMessagesLoaded = false;
-
     MemFree( errorTokens );
     MemFree( errorValues );
     errorTokensLoaded = false;
