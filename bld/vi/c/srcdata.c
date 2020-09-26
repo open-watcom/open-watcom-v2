@@ -48,7 +48,5 @@ const char _NEAR StrTokens[] = {
     "STRCHR\0"
 };
 
-char        *ErrorTokens;
-int         *ErrorValues;
 long        CurrentSrcLabel;
 srcline     CurrentSrcLine;

@@ -266,10 +266,11 @@ vi_rc   MoveBottomOfPage( range *, long );
 void    StartupError( vi_rc );
 void    FatalError( vi_rc );
 void    Die( const char *, ... );
-char    *GetErrorMsg( vi_rc );
-void    Error( char *, ... );
-void    ErrorBox( char *, ... );
-void    FreeErrorMsgData( void );
+const char *GetErrorMsg( vi_rc );
+void    Error( const char *, ... );
+void    ErrorBox( const char *, ... );
+vi_rc   GetErrorTokenValue( int *, const char * );
+vi_rc   ReadErrorTokens( void );
 void    ErrorFini( void );
 
 /* expandfn.c */

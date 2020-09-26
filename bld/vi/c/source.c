@@ -191,8 +191,15 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
         } else if( curr->token == SRC_T_RETURN ) {
             if( curr->data != NULL ) {
                 int     ret;
-                GetErrorTokenValue( &ret, curr->data );
-                rc = (vi_rc)ret;
+
+                rc = GetErrorTokenValue( &ret, curr->data );
+                if( rc == ERR_NO_ERR ) {
+                    rc = (vi_rc)ret;
+                } else if( rc == NO_NUMBER ) {
+                    rc = (vi_rc)atoi( curr->data );
+                } else {
+                    rc = ERR_NO_ERR;
+                }
             } else {
                 rc = ERR_NO_ERR;
             }

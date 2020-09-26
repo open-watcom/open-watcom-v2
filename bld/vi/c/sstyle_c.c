@@ -473,7 +473,7 @@ static void getString( ss_block *ss_new, char *start, int skip )
     flags.inDeclspec2 = false;
 }
 
-static void getErrorMsg( ss_block *ss_new, char *start )
+static void getErrorDirMsg( ss_block *ss_new, char *start )
 {
     char    *end = start;
 
@@ -683,7 +683,7 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
         return;
     }
     if( flags.inErrorDir ) {
-        getErrorMsg( ss_new, start );
+        getErrorDirMsg( ss_new, start );
         return;
     }
 

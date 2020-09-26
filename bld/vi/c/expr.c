@@ -376,10 +376,8 @@ static token nextToken( void )
                 constantVal = ddeNums[j];
 #endif
             } else {
-                ReadErrorTokens();
-                j = Tokenize( ErrorTokens, tokenBuff, true );
-                if( j != TOK_INVALID ) {
-                    constantVal = ErrorValues[j];
+                if( GetErrorTokenValue( &j, tokenBuff ) == ERR_NO_ERR ) {
+                    constantVal = j;
                 } else {
                     currToken = T_STRING;
                 }

@@ -200,8 +200,6 @@ typedef struct resident {
  */
 extern const char _NEAR   StrTokens[];
 extern const char _NEAR   SourceTokens[];
-extern char         *ErrorTokens;
-extern int          *ErrorValues;
 extern long         CurrentSrcLabel;
 extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
@@ -267,8 +265,6 @@ extern vi_rc    InvokeMenuHook( int menunum, int line );
 
 /* srcif.c */
 extern vi_rc    SrcIf( sfile **, vars_list *vl );
-extern vi_rc    GetErrorTokenValue( int *, const char * );
-extern vi_rc    ReadErrorTokens( void );
 
 /* srcinp.c */
 extern vi_rc    SrcInput( const char *data, vars_list *vl );

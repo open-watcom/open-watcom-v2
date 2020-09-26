@@ -175,6 +175,7 @@
 /bld/vi/*/*.ini
 /bld/vi/*/*.vi
 !/bld/vi/dat/*
+/bld/vi/dat/error.dat
 #
 /bld/w16api/wini86/*
 #

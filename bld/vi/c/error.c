@@ -34,14 +34,21 @@
 #include "win.h"
 #include "myprtf.h"
 
-static void readErrorMsgData( void );
+static char     strBuff[25];
+static bool     errorMessagesLoaded = false;
+static int      errCnt;
+static char     *errorList;
+
+static char     *errorTokens = NULL;
+static int      *errorValues = NULL;
+static bool     errorTokensLoaded = false;
 
 /*
  * StartupError - process fatal startup error
  */
 void StartupError( vi_rc err )
 {
-    char    *str;
+    const char  *str;
 
     if( err == ERR_NO_MEMORY ) {
         str = "Out of memory";
@@ -62,7 +69,7 @@ void StartupError( vi_rc err )
  */
 void FatalError( vi_rc err )
 {
-    char *str;
+    const char  *str;
 
     SetPosToMessageLine();
     if( err == ERR_NO_MEMORY ) {
@@ -92,19 +99,42 @@ void Die( const char *str, ... )
 
 } /* Die */
 
-static char strBuff[25];
-static bool readMsgData = false;
-static int  errCnt;
-static char *errorList;
+static bool errmsg_alloc( int cnt )
+{
+    errCnt = cnt;
+    return( false );
+}
+
+static bool errmsg_save( int i, const char *buff )
+{
+    /* unused parameters */ (void)i; (void)buff;
+
+    return( true );
+}
+
+/*
+ * readErrorMsgData - do just that
+ */
+static void readErrorMsgData( void )
+{
+    vi_rc       rc;
+
+    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, true );
+    if( rc != ERR_NO_ERR ) {
+        return;
+    }
+    errorMessagesLoaded = true;
+
+} /* readErrorMsgData */
 
 /*
  * GetErrorMsg - return pointer to message
  */
-char *GetErrorMsg( vi_rc err )
+const char *GetErrorMsg( vi_rc err )
 {
-    char        *msg;
+    const char  *msg;
 
-    if( !readMsgData ) {
+    if( !errorMessagesLoaded ) {
         readErrorMsgData();
     }
     LastError = err;
@@ -129,7 +159,7 @@ char *GetErrorMsg( vi_rc err )
 /*
  * Error - print an error message in the message window
  */
-void Error( char *str, ... )
+void Error( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -165,7 +195,7 @@ void Error( char *str, ... )
 /*
  * ErrorBox - show an error message in a dialog box
  */
-void ErrorBox( char *str, ... )
+void ErrorBox( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -198,39 +228,71 @@ void ErrorBox( char *str, ... )
 
 } /* Error */
 
-static bool errmsg_alloc( int cnt )
-{
-    errCnt = cnt;
-    return( false );
-}
 
-static bool errmsg_save( int i, const char *buff )
+static bool err_alloc( int cnt )
 {
-    /* unused parameters */ (void)i; (void)buff;
-
+    errorValues = _MemAllocArray( int, cnt );
     return( true );
 }
 
+static bool err_save( int i, const char *buff )
+{
+    errorValues[i] = atoi( buff );
+    return( true );
+}
 
 /*
- * readErrorMsgData - do just that
+ * ReadErrorTokens - do just that
  */
-static void readErrorMsgData( void )
+vi_rc ReadErrorTokens( void )
 {
     vi_rc       rc;
 
-    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, true );
-    if( rc != ERR_NO_ERR ) {
-        return;
+    if( errorTokensLoaded ) {
+        return( ERR_NO_ERR );
     }
-    readMsgData = true;
 
-} /* readErrorMsgData */
+    rc = ReadDataFile( "error.dat", &errorTokens, err_alloc, err_save, true );
+    if( rc != ERR_NO_ERR ) {
+        if( rc == ERR_FILE_NOT_FOUND ) {
+            return( ERR_SRC_NO_ERROR_DATA );
+        }
+        return( rc );
+    }
+    errorTokensLoaded = true;
+
+    return( ERR_NO_ERR );
+
+} /* ReadErrorTokens */
+
+/*
+ * GetErrorTokenValue
+ */
+vi_rc GetErrorTokenValue( int *value, const char *str )
+{
+    int     i;
+    vi_rc   rc;
+
+    rc = ReadErrorTokens();
+    if( rc == ERR_NO_ERR ) {
+        i = Tokenize( errorTokens, str, true );
+        if( i != TOK_INVALID ) {
+            *value = errorValues[i];
+        } else {
+            rc = NO_NUMBER;
+        }
+    }
+    return( rc );
+
+} /* GetErrorTokenValue */
 
 void ErrorFini( void )
 {
     MemFree( errorList );
-    MemFree( ErrorTokens );
-    MemFree( ErrorValues );
+    errorMessagesLoaded = false;
+
+    MemFree( errorTokens );
+    MemFree( errorValues );
+    errorTokensLoaded = false;
 
 } /* ErrorFini */
