@@ -22,9 +22,11 @@
 typedef int (*comp_fn)(const void *,const void *);
 
 static cvt_chr cvt_table[] = {
-    #define pick(s,u) {s, u },
+    #define pickb(s,u) {s, u},
+    #define picki(s,u)
     #include "cp932uni.h"
-    #undef pick
+    #undef picki
+    #undef pickb
 };
 
 #if 0

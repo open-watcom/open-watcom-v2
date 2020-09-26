@@ -87,10 +87,20 @@ typedef int (*comp_fn)(const void *,const void *);
  * 0x81-0x9F
  * 0xE0-0xFC
  */
-static cvt_chr cvt_table_932[] = {
-    #define pick(s,u) {s, u },
+static cvt_chr cvt_table_from_932[] = {
+    #define pickb(s,u) {s, u},
+    #define picki(s,u) {s, u},
     #include "cp932uni.h"
-    #undef pick
+    #undef picki
+    #undef pickb
+};
+
+static cvt_chr cvt_table_to_932[] = {
+    #define pickb(s,u) {s, u},
+    #define picki(s,u)
+    #include "cp932uni.h"
+    #undef picki
+    #undef pickb
 };
 
 static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
@@ -150,7 +160,7 @@ static size_t enc_to_utf8( encoding enc, const char *src, char *dst )
                 if( x.s > 0x80 && x.s < 0xA0 || x.s > 0xDF && x.s < 0xFD ) {
                     x.s = x.s << 8 | (unsigned char)src[++i];
                 }
-                p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_enc );
+                p = bsearch( &x, cvt_table_from_932, sizeof( cvt_table_from_932 ) / sizeof( cvt_table_from_932[0] ), sizeof( cvt_table_from_932[0] ), (comp_fn)compare_enc );
                 if( p == NULL ) {
                     printf( "unknown double-byte character: 0x%4X\n", x.s );
                     dst[o++] = '?';
@@ -216,7 +226,7 @@ static size_t utf8_to_enc( encoding enc, const char *src, char *dst )
              * UNICODE to selected encoding conversion
              */
             if( enc == CP932 ) {
-                p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+                p = bsearch( &x, cvt_table_to_932, sizeof( cvt_table_to_932 ) / sizeof( cvt_table_to_932[0] ), sizeof( cvt_table_to_932[0] ), (comp_fn)compare_utf8 );
                 if( p == NULL ) {
                     printf( "unknown unicode character: 0x%4X\n", x.u );
                     x.s = '?';
@@ -316,8 +326,12 @@ int main( int argc, char *argv[] )
         fclose( fi );
         return( 5 );
     }
-    if( enc == CP932 && cvt_dir == FROM_UTF8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    if( enc == CP932 ) {
+        if( cvt_dir == FROM_UTF8 ) {
+            qsort( cvt_table_to_932, sizeof( cvt_table_to_932 ) / sizeof( cvt_table_to_932[0] ), sizeof( cvt_table_to_932[0] ), (comp_fn)compare_utf8 );
+        } else {
+            qsort( cvt_table_from_932, sizeof( cvt_table_from_932 ) / sizeof( cvt_table_from_932[0] ), sizeof( cvt_table_from_932[0] ), (comp_fn)compare_enc );
+        }
     }
     while( fgets( in_buff, sizeof( in_buff ), fi ) != NULL ) {
         in_len = strlen( in_buff );

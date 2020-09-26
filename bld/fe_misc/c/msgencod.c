@@ -265,9 +265,11 @@ typedef int (*comp_fn)(const void *,const void *);
  * 0xE0-0xFC
  */
 static cvt_chr cvt_table_932[] = {
-    #define pick(s,u) {s, u },
+    #define pickb(s,u) {s, u},
+    #define picki(s,u)
     #include "cp932uni.h"
-    #undef pick
+    #undef picki
+    #undef pickb
 };
 
 static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
