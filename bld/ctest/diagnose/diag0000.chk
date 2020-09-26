@@ -304,3 +304,7 @@ source\diag0101.c(20): Error! E1151: Parameter count does not agree with previou
 source\diag0101.c(21): Error! E1151: Parameter count does not agree with previous definition
 source\diag0102.c(4): Warning! W303: Parameter 'argv' has been defined, but not referenced
 source\diag0102.c(4): Warning! W303: Parameter 'argc' has been defined, but not referenced
+source\diag0103.c(18): Error! E1011: Symbol 'A2' has not been declared
+source\diag0103.c(18): Error! E1054: Expression must be constant
+source\diag0103.c(20): Warning! W131: No prototype found for function 'A16'
+source\diag0103.c(20): Error! E1054: Expression must be constant

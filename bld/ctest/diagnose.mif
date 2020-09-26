@@ -32,7 +32,7 @@ diags_0099_defn = &
     diag0100$(err_sin) &
     diag0101$(err_sin) &
     diag0102$(err_sin) &
-
+    diag0103$(err_sin) &
     
 err_sin = .err
 err_sys = .ser
