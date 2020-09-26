@@ -142,15 +142,6 @@ typedef enum {
 } gftype;
 
 /*
- * data files
- */
-#define ED_CFG                  0
-#define BIND_DAT                1
-#define ERRMSG_DAT              2
-#define ERROR_DAT               3
-#define DATA_FILE_CNT           4
-
-/*
  * savebuf constants
  */
 #define SAVEBUF_NOP             0
