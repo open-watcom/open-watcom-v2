@@ -339,7 +339,7 @@ static token nextToken( void )
                         break;
                     }
                 }
-           } else if( strcmp( tokenBuff, "config" ) == 0 ) {
+            } else if( strcmp( tokenBuff, "config" ) == 0 ) {
                 constantVal = EditFlags.Color * 100 + EditFlags.BlackAndWhite * 10 +
                     EditFlags.Monocolor;
             } else if( strcmp( tokenBuff, "rdonly" ) == 0 ) {
