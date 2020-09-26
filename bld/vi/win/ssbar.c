@@ -68,7 +68,7 @@ static char *findBlockString( int block )
     i = 0;
     mod = EditVars.StatusString;
     while( i != block ) {
-        while( *mod && *mod != '$' ) {
+        while( *mod != '\0' && *mod != '$' ) {
             mod++;
         }
         assert( *mod != '\0' );
@@ -108,7 +108,7 @@ static void destroyBlock( int i, char *start )
 
     strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
     new_ss[start - EditVars.StatusString] = '\0';
-    while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
+    while( start[0] != '\0' && !(start[0] == '$' && start[1] == '[') ) {
         start++;
     }
     if( start[0] == '$' ) {
