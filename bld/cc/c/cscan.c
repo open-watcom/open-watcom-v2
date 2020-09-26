@@ -469,19 +469,6 @@ static TOKEN ScanPPNumber( void )
         if( c == '+' || c == '-' ) {
             if( prevc == 'e' || prevc == 'E'  ||
               (CompFlags.c99_extensions && (prevc == 'p' || prevc == 'P'))) {
-                if( CompFlags.extensions_enabled ) {
-                    /* concession to existing practice...
-                        #define A2 0x02
-                        #define A3 0xaa0e+A2
-                        // users want: 0xaa0e + 0x02
-                        // not: 0xaa0e + A2 (but, this is what ISO C requires!)
-                    */
-                    prevc = c;  //advance to next
-                    c = SaveNextChar();
-                    if( (CharSet[c] & C_DI) == 0 ) {
-                        break;  //allow e+<digit>
-                    }
-                }
                 continue;
             }
         }
