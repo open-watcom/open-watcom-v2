@@ -48,6 +48,7 @@ double d1[] = {
     12.12e-12l,
     .12e-12l,
     12e-12l,
+    0x1234p1l,
 };
 #define VALS \
     12., \
@@ -91,6 +92,7 @@ double d1[] = {
     12.12e-12l, \
     .12e-12l, \
     12e-12l, \
+    0x1234p1l,\
 
 double d2[] = {
     VALS
@@ -137,6 +139,7 @@ double d3[] = {
 1.212e-011,
 1.2e-013,
 1.2e-011,
+9.3e+03,
 };
 
 #define ARRAY_SIZE( n )	(sizeof(n)/sizeof(n[0]))
