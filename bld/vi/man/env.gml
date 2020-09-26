@@ -31,8 +31,6 @@ symbolic key names used by the &cmdline commands
 and
 :KEYWORD.keyadd
 :PERIOD.
-:DEFITEM.errmsg.dat
-The text strings for &edname's various error messages.
 :DEFITEM.error.dat
 Symbolic names for errors that can occur.  These are used for testing
 return codes in editor scripts.
@@ -98,8 +96,6 @@ mlsel._vi
 lnum._vi
 :bILLUST.
 keys.dat
-:bILLUST.
-errmsg.dat
 :bILLUST.
 error.dat
 :eILLUST.

@@ -186,8 +186,8 @@ You did not code a script "if", "elseif", "quif", "until" or "while"
 statement correctly.
 
 :DEFITEM.Invalid data in file '%s' at line %d
-This error is issued if one of the .dat files (error.dat, errmsg.dat,
-keys.dat) contains invalid data.
+This error is issued if one of the .dat files (error.dat, keys.dat)
+contains invalid data.
 
 :DEFITEM.Invalid delete command
 You did not enter a valid operation after starting the delete ('d')

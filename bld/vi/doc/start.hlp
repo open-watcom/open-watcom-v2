@@ -32,7 +32,6 @@ Along with the executable, there are a number of files that are needed:
  
 ed.cfg     - startup script (contains configuration)
 keys.dat   - key names
-errmsg.dat - text for all error messages
 error.dat  - symbolic names for errors that can occur (for source scripts)
 
 The editor searches for its special files as follows:

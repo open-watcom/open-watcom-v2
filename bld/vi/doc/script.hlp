@@ -344,7 +344,7 @@ Summary
 
   [return] (rc)
     - exit the source script. The option return code may be any value
-      found in errmsg.dat
+      found in error.dat
 
   [until] <expr>
     - end a loop block if <expr> is true
