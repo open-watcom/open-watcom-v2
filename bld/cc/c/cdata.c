@@ -37,6 +37,7 @@
 
 void InitGlobalVars( void )
 {
+    stdc_version            = C99;      /* Default to C99 */
     PCH_Start               = NULL;     /* start of precompiled memory block */
     PCH_End                 = NULL;     /* end of precompiled memory block */
     PCH_Macros              = NULL;     /* macros loaded from pre-compiled header */

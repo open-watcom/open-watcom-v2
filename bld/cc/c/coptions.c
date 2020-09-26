@@ -1231,6 +1231,25 @@ static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
 #endif
 static void Set_S( void )           { Toggles &= ~TOGGLE_CHECK_STACK; }
 
+static void Set_STD( void )
+{
+    CompFlags.unique_functions = true;
+    CompFlags.extensions_enabled = false;
+    CompFlags.non_iso_compliant_names_enabled = false;
+
+    switch (OptValue) {
+    case 94: /* FALLTHRU */
+    case 95: stdc_version = C95; break;
+    case 99: stdc_version = C99; break;
+    case 11: stdc_version = C11; break;
+    case 17: /* FALLTHRU */
+    case 18: stdc_version = C18; break;
+    default:
+        stdc_version = C90;
+        TargetSwitches &= ~I_MATH_INLINE;
+    }
+}
+
 static void Set_TP( void )
 {
     char    *togname;
@@ -1273,23 +1292,10 @@ static void Set_XBSA( void )
 static void Set_XD( void )          { TargetSwitches |= EXCEPT_FILTER_USED; }
 #endif
 
-static void Set_ZA99( void )
-{
-    CompFlags.c99_extensions = true;
-}
-
 static void Set_ZA( void )
 {
-    CompFlags.extensions_enabled = false;
-    CompFlags.non_iso_compliant_names_enabled = false;
-    CompFlags.unique_functions = true;
-    TargetSwitches &= ~I_MATH_INLINE;
-}
-
-static void SetStrictANSI( void )
-{
     CompFlags.strict_ANSI = true;
-    Set_ZA();
+    Set_STD();
 }
 
 static void Set_ZAM( void )
@@ -1738,6 +1744,8 @@ static struct option const CFE_Options[] = {
     { "fpd",    0,              Set_FPD },
 #endif
     { "j",      0,              SetCharType },
+    { "std:c#",   99,           Set_STD },
+    { "std:ansi", 90,           Set_STD },
     { "tp=$",   0,              Set_TP },
     { "u$",     0,              Set_U },
     { "v",      0,              Set_V },
@@ -1757,10 +1765,10 @@ static struct option const CFE_Options[] = {
     { "xd",     0,              Set_XD },
 #endif
     { "xx",     0,              Set_XX },
-    { "za99",   0,              Set_ZA99 },
+    { "za99",   99,             Set_STD },
     { "zam",    0,              Set_ZAM },
-    { "zA",     0,              SetStrictANSI },
-    { "za",     0,              Set_ZA },
+    { "za",     90,             Set_STD },
+    { "zA",     90,             Set_ZA  },
 #if _CPU == 8086 || _CPU == 386
     { "zc",     0,              Set_ZC },
     { "zdf",    0,              Set_ZDF },

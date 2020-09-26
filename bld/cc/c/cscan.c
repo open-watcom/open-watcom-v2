@@ -198,7 +198,7 @@ TOKEN KwLookup( const char *buf, size_t len )
     token = keyword_hash( buf, TokValue, len ) + FIRST_KEYWORD;
 
     /* look up id in keyword table */
-    if( !CompFlags.c99_extensions ) {
+    if( stdc_version < C99 ) {
         switch( token ) {
         case T_INLINE:
             if( !CompFlags.extensions_enabled )
@@ -364,7 +364,7 @@ static TOKEN doScanFloat( int hex )
     }
     CurToken = T_CONSTANT;
     if( c == 'e' || c == 'E' ||
-       (hex && CompFlags.c99_extensions && (c == 'p' || c == 'P')) ) {
+       (stdc_version >= C99 && hex && (c == 'p' || c == 'P')) ) {
         c = SaveNextChar();
         if( c == '+' || c == '-' ) {
             c = SaveNextChar();
@@ -468,7 +468,7 @@ static TOKEN ScanPPNumber( void )
             continue;
         if( c == '+' || c == '-' ) {
             if( prevc == 'e' || prevc == 'E'  ||
-              (CompFlags.c99_extensions && (prevc == 'p' || prevc == 'P'))) {
+              (stdc_version >= C99 && (prevc == 'p' || prevc == 'P'))) {
                 continue;
             }
         }
@@ -697,7 +697,7 @@ static TOKEN ScanNum( void )
                 }
             }
 
-            if (CompFlags.c99_extensions) {
+            if (stdc_version >= C99) {
                 if ( c == '.' || c == 'p' || c == 'P' ) {
                     return doScanFloat(1);
                 }

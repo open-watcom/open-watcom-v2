@@ -39,6 +39,7 @@
 #define GetMacroParmCount(m)    ((m)->parm_count - 1)
 #define MacroWithParenthesis(m) ((m)->parm_count > 0)
 #define MacroIsSpecial(m)       ((m)->macro_defn == 0)
+#define MacroStdCVersion(m)     ((((m)->macro_flags & 0xf00) >> 8) & 7)
 #define MacroHasVarArgs(m)      (((m)->macro_flags & MFLAG_HAS_VAR_ARGS) != 0)
 
 typedef enum special_macros {
@@ -48,9 +49,9 @@ typedef enum special_macros {
 } special_macros;
 
 #define MACRO_FIRST         MACRO_DATE
-#define MACRO_LAST          MACRO_TIME
-#define MACRO_COMP_FIRST    MACRO_FUNCTION
-#define MACRO_COMP_LAST     MACRO_FUNC
+#define MACRO_LAST          MACRO_STDC_VERSION
+#define MACRO_COMP_FIRST    MACRO_FUNC
+#define MACRO_COMP_LAST     MACRO_FUNCTION
 
 typedef unsigned char   mac_parm_count;
 
@@ -69,6 +70,13 @@ typedef enum macro_flags {
     MFLAG_HAS_VAR_ARGS                  =   0x10,   // macro has varargs.
 /* a special macro won't appear as a macro to the program (e.g. ifdef will return false) */
     MFLAG_HIDDEN                        =   0x20,
+    /* Macros included with specific C language revisions */
+    MFLAG_C90                           =   0x100,
+    MFLAG_C95                           =   0x200,
+    MFLAG_C99                           =   0x300,
+    MFLAG_C11                           =   0x400,
+    MFLAG_C18                           =   0x500,
+    MFLAG_EXTENSION                     =   0x600,
 } macro_flags;
 
 typedef struct  macro_entry {

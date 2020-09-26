@@ -18,20 +18,20 @@ no_br_except30 = no
 #
 # special options
 #
-opt_bool01 = -za99
-opt_bool02 = -za99
+opt_bool01 = -std:c99
+opt_bool02 = -std:c99
 opt_cmdln01 = /d+XXX=0+1
 opt_cmdln02 = /d+ /dXXX=0+1
 opt_cmdln03 = /dX /DXX /uXX /DXXX /uXXX /UXXX /dXXX /DXXXX /uXXXX /DXXXX /uXXXX
 opt_cmdln04 = /dCMDMAC -DCMD1= /DCMD2$#
 opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
-opt_cmp02 = -za99
-opt_init21  = -za99
-opt_init22  = -za99
-opt_opt09 = -za
+opt_cmp02 = -std:c99
+opt_init21  = -std:c99
+opt_init22  = -std:c99
+opt_opt09 = -std:ansi
 opt_opt41 = -ot -ol+
-opt_opt45 = -za99
-opt_opt46 = -za99
+opt_opt45 = -std:c99
+opt_opt46 = -std:c99
 opt_opt47 = -ri
 opt_pack04 = -wx
 opt_pch01 = -fhq

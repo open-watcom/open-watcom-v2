@@ -4,7 +4,7 @@ extra_run = -v
 
 srcfile = $(mathlib_dir)/c/mathtest.c
 
-test_flags = -za99-wx-we-oaxt
+test_flags = -wx-we-oaxt
 
 !ifdef test1
 test_type = i

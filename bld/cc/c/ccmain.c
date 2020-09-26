@@ -1002,6 +1002,7 @@ static void DoCCompile( char **cmdline )
             CErr1( ERR_FILENAME_REQUIRED );
             return;
         }
+        MacroAddSpecial();
         MakePgmName();
         DelErrFile();               /* delete old error file */
         MergeInclude();             /* merge INCLUDE= with IncPathList */

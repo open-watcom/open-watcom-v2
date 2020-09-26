@@ -121,13 +121,13 @@ source\diag0007.c(49): Warning! W202: Symbol 'f' has been defined, but not refer
 source\diag0007.c(60): Warning! W202: Symbol 'uu' has been defined, but not referenced
 source\diag0007.c(73): Error! E1018: Label 'la_bel' not defined in function
 source\diag0007.c(74): Error! E1099: Statement must be inside function. Probable cause: missing {
-source\diag0008.c(2): Warning! W140: Definition of macro '__DATE__' not identical to previous definition
-source\diag0008.c(3): Warning! W140: Definition of macro '__FILE__' not identical to previous definition
-source\diag0008.c(4): Warning! W140: Definition of macro '__LINE__' not identical to previous definition
-source\diag0008.c(5): Warning! W140: Definition of macro '__STDC__' not identical to previous definition
-source\diag0008.c(6): Warning! W140: Definition of macro '__STDC_HOSTED__' not identical to previous definition
-source\diag0008.c(7): Warning! W140: Definition of macro '__STDC_VERSION__' not identical to previous definition
-source\diag0008.c(8): Warning! W140: Definition of macro '__TIME__' not identical to previous definition
+source\diag0008.c(2): Warning! W141: Macro '__DATE__' can't be redefined
+source\diag0008.c(3): Warning! W141: Macro '__FILE__' can't be redefined
+source\diag0008.c(4): Warning! W141: Macro '__LINE__' can't be redefined
+source\diag0008.c(5): Warning! W141: Macro '__STDC__' can't be redefined
+source\diag0008.c(6): Warning! W141: Macro '__STDC_HOSTED__' can't be redefined
+source\diag0008.c(7): Warning! W141: Macro '__STDC_VERSION__' can't be redefined
+source\diag0008.c(8): Warning! W141: Macro '__TIME__' can't be redefined
 source\diag0008.c(10): Error! E1101: Cannot #undef '__DATE__'
 source\diag0008.c(11): Error! E1101: Cannot #undef '__FILE__'
 source\diag0008.c(12): Error! E1101: Cannot #undef '__LINE__'
@@ -308,3 +308,23 @@ source\diag0103.c(18): Error! E1011: Symbol 'A2' has not been declared
 source\diag0103.c(18): Error! E1054: Expression must be constant
 source\diag0103.c(20): Warning! W131: No prototype found for function 'A16'
 source\diag0103.c(20): Error! E1054: Expression must be constant
+source\diag0104.c(40): Error! E1011: Symbol '__func__' has not been declared
+source\diag0104.c(40): Warning! W102: Type mismatch (warning)
+source\diag0104.c(40): Note! I2003: source conversion type is 'int'
+source\diag0104.c(40): Note! I2004: target conversion type is 'char const *'
+source\diag0104.c(41): Error! E1011: Symbol '__FUNCTION__' has not been declared
+source\diag0104.c(41): Warning! W102: Type mismatch (warning)
+source\diag0104.c(41): Note! I2003: source conversion type is 'int'
+source\diag0104.c(41): Note! I2004: target conversion type is 'char const *'
+source\diag0105.c(42): Error! E1011: Symbol '__func__' has not been declared
+source\diag0105.c(42): Warning! W102: Type mismatch (warning)
+source\diag0105.c(42): Note! I2003: source conversion type is 'int'
+source\diag0105.c(42): Note! I2004: target conversion type is 'char const *'
+source\diag0105.c(43): Error! E1011: Symbol '__FUNCTION__' has not been declared
+source\diag0105.c(43): Warning! W102: Type mismatch (warning)
+source\diag0105.c(43): Note! I2003: source conversion type is 'int'
+source\diag0105.c(43): Note! I2004: target conversion type is 'char const *'
+source\diag0106.c(40): Error! E1011: Symbol '__FUNCTION__' has not been declared
+source\diag0106.c(40): Warning! W102: Type mismatch (warning)
+source\diag0106.c(40): Note! I2003: source conversion type is 'int'
+source\diag0106.c(40): Note! I2004: target conversion type is 'char const *'

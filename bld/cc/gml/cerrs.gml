@@ -509,6 +509,12 @@ If a macro is defined more than once, the definitions must be identical.
 If you want to redefine a macro to have a different definition, you must
 .id #undef
 it before you can define it with a new definition.
+:MSGSYM. ERR_CANT_REDEFINE_MACRO
+:MSGTXT. Macro '%s' can't be redefined
+:MSGJTXT. マクロ「%s」を再定義することはできません
+:WARNING. 1
+.np
+Predefined macros can't be redefined.
 :MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
 :MSGTXT. message number '%d' is invalid
 :MSGJTXT. メッセージ番号'%d'は不適切です
@@ -1560,13 +1566,13 @@ unused message
 :MSGJTXT. '%s'は#undefできません
 .np
 The special macros
-.id __LINE__, __FILE__, __DATE__, __TIME__, __STDC__, __FUNCTION__
-and
-.id __func__,
+.id __LINE__, __FILE__, __DATE__, __TIME__, __STDC__, __STDC_VERSION__,
+.id __func__, __FUNCTION__
 and the identifier "defined",
 cannot be deleted by the
 .id #undef
-directive.
+directive, when compiling for a C dialect that defines them, or when
+compiling with extensions enabled.
 :MSGSYM. ERR_CANT_DEFINE_DEFINED
 :MSGTXT. Cannot #define the name 'defined'
 :MSGJTXT. 名前'defined'は#defineできません

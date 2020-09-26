@@ -299,8 +299,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 break;
             U64Add( &n, &Inc, &n );
             MustRecog( T_COMMA );
-            if( !CompFlags.extensions_enabled
-              && !CompFlags.c99_extensions
+            if( stdc_version < C99 && !CompFlags.extensions_enabled
               && ( CurToken == T_RIGHT_BRACE )) {
                 ExpectIdentifier();
             }

@@ -37,7 +37,7 @@
 #define PPOPERATOR_PRAGMA           "_Pragma"
 
 #define IS_PPOPERATOR_DEFINED(s)    (CMPLIT(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.c99_extensions) \
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((stdc_version >= C99 || CompFlags.extensions_enabled) \
                                     && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
                                     && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA) - 1) == 0)
 

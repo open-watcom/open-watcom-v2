@@ -77,8 +77,8 @@
 
 mathtest = ../c/mathtest.c
 
-tiny_opts = -za99 -d0 -os -DTINY_MEMORY -s -zq -fo=$^*.obj $(inc_path)
-comp_opts = -za99 -d2 -zq -fo=$^*.obj $(inc_path)
+tiny_opts = -d0 -os -DTINY_MEMORY -s -zq -fo=$^*.obj $(inc_path)
+comp_opts = -d2 -zq -fo=$^*.obj $(inc_path)
 link_opts = NAME $^* OPTION quiet, map, eliminate DEBUG all 
 
 !ifdef __UNIX__

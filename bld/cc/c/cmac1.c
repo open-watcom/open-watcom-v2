@@ -69,7 +69,7 @@ typedef struct nested_macros {
 typedef struct special_macro_names {
     const char      *name;
     special_macros  value;
-    macro_flags     flags;
+    macro_flags     macro_flags;
 } special_macro_names;
 
 extern void         DumpMTokens( MACRO_TOKEN *mtok );
@@ -86,19 +86,23 @@ static struct special_macro_names  SpcMacros[] = {
     #undef pick
 };
 
+/* Macro version flag to C standard version */
+static const long c_ver[8] = {
+    LONG_MAX, C90, C95, C99, C11, C18, LONG_MAX, LONG_MAX
+};
+
 static void SpecialMacroAdd( special_macro_names *mac )
 {
     MEPTR           mentry;
 
     mentry = CreateMEntry( mac->name, 0 );
     mentry->parm_count = (mac_parm_count)mac->value;
-    MacroDefine( mentry->macro_len, mac->flags );
+    MacroDefine( mentry->macro_len, mac->macro_flags );
 }
 
 void MacroInit( void )
 {
-    mac_hash_idx    h;
-    int             i;
+    mac_hash_idx h;
 
     MTokenLen = 0;
     MacroCount = 0;
@@ -112,9 +116,19 @@ void MacroInit( void )
     for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
         MacHash[h] = NULL;
     }
+}
+
+void MacroAddSpecial(void)
+{
+    int i;
+
     for( i = MACRO_FIRST; i <= MACRO_LAST; i++ ) {
+        if (!CompFlags.extensions_enabled
+            && stdc_version < c_ver[MacroStdCVersion(SpcMacros + i)])
+            continue;
         SpecialMacroAdd( &SpcMacros[i] );
     }
+
     /* grab time and date for __TIME__ and __DATE__ */
     TimeInit();
 }
@@ -124,6 +138,9 @@ void MacroAddComp( void )
     int             i;
 
     for( i = MACRO_COMP_FIRST; i <= MACRO_COMP_LAST; i++ ) {
+        if (!CompFlags.extensions_enabled
+            && stdc_version < c_ver[MacroStdCVersion(SpcMacros + i)])
+            continue;
         SpecialMacroAdd( &SpcMacros[i] );
     }
 }
@@ -337,36 +354,30 @@ TOKEN SpecialMacro( MEPTR mentry )
     case MACRO_TIME:
         strcpy( Buffer, __Time );
         break;
+    case MACRO_STDC_HOSTED:
     case MACRO_STDC:
         Buffer[0] = '1';
         Buffer[1] = '\0';
         Constant = 1;
         ConstType = TYPE_INT;
         return( T_CONSTANT );
-    case MACRO_STDC_HOSTED:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        Constant = 1;
-        ConstType = TYPE_INT;
-        return( T_CONSTANT );
     case MACRO_STDC_VERSION:
-        if( CompFlags.c99_extensions ) {
-            CPYLIT( Buffer, "199901L" );
-            Constant = 199901;
-        } else {
-            CPYLIT( Buffer, "199409L" );
-            Constant = 199409;
-        }
+        *Buffer   = '\0';
         ConstType = TYPE_LONG;
-        return( T_CONSTANT );
+        Constant  = stdc_version;
+
+        switch (stdc_version) {
+        default:  CPYLIT(Buffer, "199409L"); break;
+        case C99: CPYLIT(Buffer, "199901L"); break;
+        case C11: CPYLIT(Buffer, "201112L"); break;
+        case C18: CPYLIT(Buffer, "201710L"); break;
+        }
+        return T_CONSTANT;
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         Buffer[0] = '\0';
-        if( CurFunc != NULL ) {
-            if( CurFunc->name != NULL ) {
-                strcpy( Buffer, CurFunc->name );
-            }
-        }
+        if(CurFunc && CurFunc->name)
+            strcpy( Buffer, CurFunc->name );
         break;
     default:
         Buffer[0] = '\0';

@@ -652,7 +652,6 @@ typedef struct comp_flags {
     boolbit unaligned_segs                      : 1;    /* don't align segments */
     boolbit trigraph_alert                      : 1;    /* trigraph char alert */
     boolbit generate_auto_depend                : 1;    /* Generate make auto depend file */
-    boolbit c99_extensions                      : 1;    /* C99 extensions enabled */
     boolbit use_long_double                     : 1;    /* Make CC send long double types to code gen */
     boolbit track_includes                      : 1;    /* report opens of include files */
 

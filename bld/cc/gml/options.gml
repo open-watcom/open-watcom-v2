@@ -939,6 +939,34 @@
 :usage. touch stack through SS first
 :jusage. まず最初にSSを通してスタック・タッチします
 
+:usagegrp. std C Language Dialect
+
+:option. std:ansi
+:target. any
+:enumerate. c_std
+:usage. ANSI C (ISO 9899:1990)
+:jusage. すべての ANSI C 言語機能をサポートしますが、言語拡張機能はサポートしません
+
+:option. std:c99
+:target. any
+:enumerate. c_std
+:usage. ISO C99 (ISO 9899:1999)
+:jusage. すべての C99 言語機能をサポートしますが、言語拡張機能はサポートしません
+
+:option. std:c11
+:target. any
+:internal.
+:enumerate. c_std
+:usage. ISO C11 (ISO 9899:2011)
+:jusage. すべての C11 言語機能をサポートしますが、言語拡張機能はサポートしません
+
+:option. std:c18
+:target. any
+:internal.
+:enumerate. c_std
+:usage. ISO C18 (ISO 9899:2018)
+:jusage. すべての C18 言語機能をサポートしますが、言語拡張機能はサポートしません
+
 :option. tp
 :target. any
 :id.
@@ -1043,6 +1071,7 @@
 :option. z\a
 :target. any
 :enumerate. iso
+:internal.
 :usage. disable extensions (i.e., accept only ISO/ANSI C)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI Cのみ受け付けます)
 

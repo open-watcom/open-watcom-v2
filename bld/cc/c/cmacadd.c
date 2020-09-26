@@ -163,8 +163,8 @@ MEPTR MacroDefine( size_t mlen, macro_flags mflags )
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
-            if( MacroIsSpecial( old_mentry ) ) {
-                CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );
+            if( MacroIsSpecial( old_mentry ) || MacroIsSpecial( mentry )) {
+                CWarn2p( WARN_CANT_REDEFINE_MACRO, ERR_CANT_REDEFINE_MACRO, mname );
             } else {
                 SetDiagMacro( old_mentry );
                 CWarn2p( WARN_MACRO_DEFN_NOT_IDENTICAL, ERR_MACRO_DEFN_NOT_IDENTICAL, mname );

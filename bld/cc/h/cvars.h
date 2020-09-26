@@ -75,6 +75,14 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 
 #define CArraySize(x)   (sizeof( x ) / sizeof( *x ))
 
+/* C Standard Versions */
+#define C90 0
+#define C95 199409L
+#define C99 199901L
+#define C11 201112L
+#define C18 201710L
+
+global long         stdc_version;       /* C Standard Version */
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header
@@ -623,6 +631,7 @@ extern void         MyExit( int ret );
 /* cmac1.c */
 extern void         EnlargeBuffer(size_t);
 extern void         MacroInit(void);
+extern void         MacroAddSpecial(void);
 extern void         MacroAddComp(void);
 extern void         MacroFini(void);
 extern void         MacroPurge(void);

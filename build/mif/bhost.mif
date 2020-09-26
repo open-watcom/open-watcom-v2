@@ -34,9 +34,9 @@ bld_new_cflags  = -xx-zam
 !endif
 
 !ifeq release 0
-bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-d2$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-d2$(bld_new_cflags)-fo=.obj
 !else
-bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(watcom_common_cflags)-w8-j-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations

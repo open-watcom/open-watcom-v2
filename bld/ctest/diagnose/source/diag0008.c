@@ -37,6 +37,21 @@
 #endif
 
 /* The __cplusplus macro must not be predefined, ie. the following must succeed */
+#if defined(__cplusplus)
+#error __cplusplus is defined
+#else
 #define __cplusplus     nonsense
+#endif
 
-int dummy;  /* Satisfy ISO C requirement on at least one external definition */
+/**
+ * __func__ and __FUNCTION__ would only be defined in function scope,
+ * and should be available in the default mode (__FUNCTION__ is an
+ * extension, __func__ is C99.)
+ */
+int f(void)
+{
+	const char *f = __func__;
+	const char *g = __FUNCTION__;
+	return f == g;
+}
+

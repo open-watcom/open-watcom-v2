@@ -36,7 +36,7 @@ clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(proce
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = $(watcom_common_cflags)-w8-we-j-za99-zl-x-xx-zam-wpx
+sw_c_common = $(watcom_common_cflags)-w8-we-j-zl-x-xx-zam-wpx
 !ifeq release 0
 !else
 sw_c_common += -s
