@@ -1,7 +1,8 @@
-:cmt ***************************************************************************
+:cmt *****************************************************************************
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
+:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -26,12 +27,10 @@
 :cmt *
 :cmt * Description:  C++ compiler diagnostic messages.
 :cmt *
-:cmt ***************************************************************************
+:cmt *    Source file uses UTF-8 character encoding
+:cmt *
+:cmt *****************************************************************************
 :cmt
-
-:cmt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-:cmt !     This file must be in UTF-8 encoding       !
-:cmt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 :cmt    Word usage:
 :cmt

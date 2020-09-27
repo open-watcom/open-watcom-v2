@@ -1,5 +1,35 @@
-:cmt
-:cmt !!!!! This file must be in UTF-8 encoding !!!!!!!
+:cmt *****************************************************************************
+:cmt *
+:cmt *                            Open Watcom Project
+:cmt *
+:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+:cmt *
+:cmt *  ========================================================================
+:cmt *
+:cmt *    This file contains Original Code and/or Modifications of Original
+:cmt *    Code as defined in and that are subject to the Sybase Open Watcom
+:cmt *    Public License version 1.0 (the 'License'). You may not use this file
+:cmt *    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+:cmt *    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+:cmt *    provided with the Original Code and Modifications, and is also
+:cmt *    available at www.sybase.com/developer/opensource.
+:cmt *
+:cmt *    The Original Code and all software distributed under the License are
+:cmt *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+:cmt *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+:cmt *    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+:cmt *    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+:cmt *    NON-INFRINGEMENT. Please see the License for the specific language
+:cmt *    governing rights and limitations under the License.
+:cmt *
+:cmt *  ========================================================================
+:cmt *
+:cmt * Description:  C compiler command line options.
+:cmt *
+:cmt *    Source file uses UTF-8 character encoding
+:cmt *
+:cmt *****************************************************************************
 :cmt
 
 :cmt
