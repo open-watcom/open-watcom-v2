@@ -62,7 +62,7 @@ optencod_target_cpu = $(target_cpu)
 optencod_target_cpu = any
 !endif
 
-cmdlnprs.gc cmdlnprs.gh : ../../gml/ms.gml .EXPLICIT
+cmdlnprs.gc cmdlnprs.gh : ../../gml/options.gml .EXPLICIT
 !ifeq verbose 0
     @echo optencod $@
 !endif
