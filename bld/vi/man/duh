@@ -229,7 +229,6 @@ endwindow
 enums
 eq
 errcode
-errmsg
 errno
 escapemessage
 est

@@ -2,6 +2,7 @@
 .*
 .*                            Open Watcom Project
 .*
+.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 .*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 .*
 .*  ========================================================================
@@ -26,12 +27,16 @@
 .*
 .* Description:  Error Messages.
 .*
+.*****************************************************************************
+
+.*****************************************************************************
+.*
 .* Date         By              Reason
 .* ----         --              ------
 .* 18-aug-92    Craig Eisler    initial draft
 .* 03-oct-05    L. Haynes       reformatted for hlp, figures
 .*
-.****************************************************************************/
+.*****************************************************************************
 .chap The &edname Error Messages
 :cmt. .if &e'&dohelp eq 0 .do begin
 :cmt. .   .section 'Introduction'
@@ -218,8 +223,8 @@ command mode command.
 statement correctly.
 
 :DT.Invalid data in file '%s' at line %d
-:DD.This error is issued if one of the .dat files (error.dat, errmsg.dat,
-keys.dat) contains invalid data.
+:DD.This error is issued if one of the .dat files (error.dat, keys.dat)
+contains invalid data.
 
 :DT.Invalid delete command
 :DD.You did not enter a valid operation after starting the delete ('d')

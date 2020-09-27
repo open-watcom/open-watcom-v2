@@ -2,6 +2,7 @@
 .*
 .*                            Open Watcom Project
 .*
+.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 .*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 .*
 .*  ========================================================================
@@ -26,12 +27,16 @@
 .*
 .* Description:  The VI environment.
 .*
+.*****************************************************************************
+
+.*****************************************************************************
+.*
 .* Date         By              Reason
 .* ----         --              ------
 .* 06-aug-92    Craig Eisler    initial draft
 .* 28-sep-05    L. Haynes       reformatted for hlp, figures
 .*
-.****************************************************************************/
+.*****************************************************************************
 .chap 'The &edname Environment'
 :cmt. .if &e'&dohelp eq 0 .do begin
 :cmt. .   .section 'Introduction'
@@ -56,8 +61,6 @@ Along with the &edname executable, there are a number of files that are needed:
 and
 .keyref keyadd
 .period
-:DT.errmsg.dat
-:DD.The text strings for &edvi's various error messages.
 :DT.error.dat
 :DD.Symbolic names for errors that can occur.  These are used for testing
 return codes in editor scripts.
@@ -113,7 +116,6 @@ mcsel._vi
 mlsel._vi
 lnum._vi
 keys.dat
-errmsg.dat
 error.dat
 .millust end
 .np
