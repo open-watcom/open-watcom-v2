@@ -36,8 +36,11 @@
 #include "bool.h"
 
 
+#define GML2        ":cmt"
+
 #define IS_ASM(p)   (p[0] == ';' && p[1] == '*')
-#define IS_GML(p)   (p[0] == '.' && p[1] == '*')
+#define IS_GML1(p)  (p[0] == '.' && p[1] == '*')
+#define IS_GML2(p)  (p[0] == GML2[0] && p[1] == GML2[1] && p[2] == GML2[2] && p[3] == GML2[3])
 
 static char     cpyright[] = ";* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
 static size_t   line = 1;
@@ -65,16 +68,22 @@ static void output_buffer( void )
                 if( IS_ASM( buffer ) ) {
                     cpyright[0] = ';';
                     fputs( cpyright, fo );
-                } else if( IS_GML( buffer ) ) {
+                } else if( IS_GML1( buffer ) ) {
                     cpyright[0] = '.';
+                    fputs( cpyright, fo );
+                } else if( IS_GML2( buffer ) ) {
+                    cpyright[0] = ' ';
+                    fputs( GML2, fo );
                     fputs( cpyright, fo );
                 } else {
                     fputs( cpyright + 1, fo );
                 }
                 status = 3;
             } else if( strstr( buffer, cpyright + 26 ) != NULL ) {
-                if( IS_ASM( buffer ) || IS_GML( buffer ) ) {
+                if( IS_ASM( buffer ) || IS_GML1( buffer ) ) {
                     memcpy( buffer + 22, cpyright + 22, 4 );
+                } else if( IS_GML2( buffer ) ) {
+                    memcpy( buffer + 22 + sizeof( GML2 ) - 1, cpyright + 22, 4 );
                 } else {
                     memcpy( buffer + 21, cpyright + 22, 4 );
                 }
