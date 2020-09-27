@@ -185,7 +185,7 @@ static struct {
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
     boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
-    boolbit     utf8                    : 1;    // - source file uses UTF-8 encoding
+    boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
 } flags;
 
 typedef enum {
@@ -394,7 +394,7 @@ static int processOptions( int argc, char **argv )
         }
     }
     if( strcmp( *argv, "-utf8" ) == 0 ) {
-        flags.utf8 = true;
+        flags.out_utf8 = true;
         ++argv;
         if( --argc < 4 ) {
             return( 1 );
@@ -411,8 +411,10 @@ static int processOptions( int argc, char **argv )
     ++argv;
     initFILE( &o_levh, *argv, "w" );
     ++argv;
-    if( flags.international && flags.utf8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    if( flags.international ) {
+        if( !flags.out_utf8 ) {
+            qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+        }
     }
     return( 0 );
 }
@@ -1676,10 +1678,12 @@ static void dumpInternational( void )
                 }
                 text = m->lang_txt[LANG_English];
             }
-            if( lang == LANG_Japanese && flags.utf8 ) {
-                utf8_to_cp932( text, tmp );
-                tmp[sizeof( tmp ) - 1] = '\0';
-                text = tmp;
+            if( lang == LANG_Japanese ) {
+                if( !flags.out_utf8 ) {
+                    utf8_to_cp932( text, tmp );
+                    tmp[sizeof( tmp ) - 1] = '\0';
+                    text = tmp;
+                }
             }
             len = (unsigned)strlen( text );
             if( len > 127 ) {
@@ -1731,7 +1735,7 @@ int main( int argc, char **argv )
                "  -q quiet operation\n"
                "  -p generate pick macros instead of #defines\n"
                "  -g generate generalized pick macros and tables\n"
-               "  -utf8 source GML file uses UTF-8 encoding"
+               "  -utf8 output texts use UTF-8 encoding"
              );
     }
     readGML();
