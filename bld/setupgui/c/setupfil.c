@@ -1138,8 +1138,12 @@ void ReplaceVars( VBUF *dst, const char *src )
     char                *colon;
     const char          *varval;
     VBUF                tmp;
+    VBUF                var1;
+    VBUF                var2;
 
     VbufInit( &tmp );
+    VbufInit( &var1 );
+    VbufInit( &var2 );
     if( src != NULL ) {
         VbufSetStr( dst, src );
     }
@@ -1162,23 +1166,23 @@ void ReplaceVars( VBUF *dst, const char *src )
         varname = VbufString( &tmp );
         for( ;; ) {     // loop for multiple '?' operators
             quest = strchr( varname, '?' );
-            if( quest != NULL ) {
-                *quest++ = '\0';
-            }
-            if( stricmp( varname, "root" ) == 0 ) { // kludge?
-                varval = GetVariableStrVal( "DstDir" );
-            } else if( varname[0] == '@' ) {
-                varval = getenv( varname + 1 );
-            } else {
-                varval = GetVariableStrVal( varname );
-            }
             if( quest == NULL ) {
+                if( stricmp( varname, "root" ) == 0 ) { // kludge?
+                    varval = GetVariableStrVal( "DstDir" );
+                } else if( varname[0] == '@' ) {
+                    varval = getenv( varname + 1 );
+                } else {
+                    varval = GetVariableStrVal( varname );
+                }
                 break;  // no '?' operator
             }
+            VbufSetBuffer( &var1, varname, quest - varname );
+            quest++;    // skip '?'
             colon = strchr( quest, ':' );
-            *colon++ = '\0';
-            if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
-                varval = GetVariableStrVal( quest );
+            VbufSetBuffer( &var2, quest, colon - quest );
+            colon++;    // skip ':'
+            if( GetOptionVarValue( GetVariableByName( VbufString( &var1 ) ), false ) ) {
+                varval = GetVariableStrVal( VbufString( &var2 ) );
                 break;
             }
             varname = colon;
@@ -1191,6 +1195,8 @@ void ReplaceVars( VBUF *dst, const char *src )
         VbufSetVbufAt( dst, &tmp, len );
         p = VbufString( dst ) + len;
     }
+    VbufFree( &var2 );
+    VbufFree( &var1 );
     VbufFree( &tmp );
 }
 
