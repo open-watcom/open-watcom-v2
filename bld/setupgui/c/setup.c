@@ -162,8 +162,10 @@ static bool DirParamStack( VBUF *inf_name, VBUF *src_path, DIR_PARAM_STACK_OPS f
 static bool DoMainLoop( dlg_state *state )
 /****************************************/
 {
-    const char          *diag_list[MAX_DIAGS + 1];
-    const char          *diags;
+    char                *diag_list[MAX_DIAGS + 1];
+    const char          *p;
+    char                *list;
+    char                *diags;
     bool                got_disk_sizes = false;
     int                 i;
     VBUF                temp;
@@ -173,15 +175,17 @@ static bool DoMainLoop( dlg_state *state )
     SetupTitle();
 
     // display initial dialog
-    diags = GetVariableStrVal( "DialogOrder" );
-    if( stricmp( diags, "" ) == 0 ) {
-        diags = "Welcome";
+    p = GetVariableStrVal( "DialogOrder" );
+    if( p[0] == '\0' ) {
+        p = "Welcome";
     }
     i = 0;
+    diags = list = GUIStrDup( p, NULL );
     for( ;; ) {
         diag_list[i] = diags;
         next = strchr( diags, ',' );
-        if( next == NULL ) break;
+        if( next == NULL )
+            break;
         *next = '\0';
         diags = next + 1;
         ++i;
@@ -193,7 +197,8 @@ static bool DoMainLoop( dlg_state *state )
     *state = DLG_NEXT;
     i = 0;
     for( ;; ) {
-        if( i < 0 ) break;
+        if( i < 0 )
+            break;
         if( diag_list[i] == NULL ) {
             if( GetVariableBoolVal( "DoCopyFiles" ) ) {
                 if( !CheckDrive( true ) ) {
@@ -271,6 +276,7 @@ static bool DoMainLoop( dlg_state *state )
         }
     } /* for */
     VbufFree( &temp );
+    GUIMemFree( list );
 
     return( ret );
 }
