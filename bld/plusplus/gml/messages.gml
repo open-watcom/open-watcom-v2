@@ -12223,3 +12223,15 @@ can no longer appear as a storage specifier.
 :WARNING. 1
 When C++11 is enabled, an implicit conversion from std::nullptr_t
 to bool is suspicious.
+
+:MSGSYM. WARN_USER_MSG
+:MSGTXT. %s
+:MSGJTXT. %s
+:WARNING. 1
+This is a user message generated with the
+.kw #warning
+preprocessing directive.
+:errbad.
+#warning This is a test of the emergency alert system...
+:eerrbad.
+
