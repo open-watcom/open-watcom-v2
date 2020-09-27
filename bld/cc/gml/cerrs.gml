@@ -532,6 +532,17 @@ The new warning level that can be used for the warning can be in the range
 warnings.  The -w option sets an upper limit on the level for warnings.
 By setting the level above the command line limit, you effectively
 ignore all cases where the warning shows up.
+
+:MSGSYM. WARN_USER_MSG
+:MSGTXT. %s
+:MSGJTXT. %s
+:WARNING. 1
+This is a user message generated with the
+.kw #warning
+preprocessing directive.
+:errbad.
+#warning This is a test of the emergency alert system...
+:eerrbad.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2

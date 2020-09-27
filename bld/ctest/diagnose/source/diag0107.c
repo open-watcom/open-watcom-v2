@@ -1,0 +1,3 @@
+/* Test of the #warning directive */
+#warning This is a test of the emergency alert system...
+int a;
