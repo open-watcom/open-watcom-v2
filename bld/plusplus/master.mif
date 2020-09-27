@@ -219,13 +219,14 @@ ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
+#optencod_enc_linux  = -utf8
 !ifeq release 0
 optencod_targ_dbg   = dbg
 !endif
 
 cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) -utf8 $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldcl

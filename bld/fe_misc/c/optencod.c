@@ -324,7 +324,7 @@ static const char *usageMsg[] = {
     "  -n zero terminated items",
     "  -q quiet operation",
     "  -u <usage-u> is the output file for the QNX usage file",
-    "  -utf8 source GML file is in UTF-8 encoding",
+    "  -utf8 output text use UTF-8 encoding",
     "",
     "    <gml-file> is the tagged input GML file",
     "    <parser-h> is the output file for the command line parser data declaration",
@@ -340,7 +340,7 @@ static struct {
     boolbit     no_equal        : 1;
     boolbit     alternate_equal : 1;
     boolbit     zero_term       : 1;
-    boolbit     utf8            : 1;
+    boolbit     out_utf8        : 1;
     language_id lang;
 } optFlag;
 
@@ -649,7 +649,7 @@ static void procCmdLine( int argc, char **argv )
         argv += 2;
     }
     if( strcmp( argv[1], "-utf8" ) == 0 ) {
-        optFlag.utf8 = true;
+        optFlag.out_utf8 = true;
         --argc;
         ++argv;
     }
@@ -708,8 +708,10 @@ static void procCmdLine( int argc, char **argv )
         }
         targetMask |= mask;
     }
-    if( optFlag.international && optFlag.utf8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    if( optFlag.international ) {
+        if( !optFlag.out_utf8 ) {
+            qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+        }
     }
 }
 
@@ -2440,9 +2442,11 @@ static void emitUsageB( language_id lang, const char *str, const char *stru, boo
 
     /* unused parameters */ (void)page_flag; (void)stru;
 
-    if( optFlag.utf8 && lang == LANG_Japanese ) {
-        utf8_to_cp932( str, tmpbuff );
-        str = tmpbuff;
+    if( lang == LANG_Japanese ) {
+        if( !optFlag.out_utf8 ) {
+            utf8_to_cp932( str, tmpbuff );
+            str = tmpbuff;
+        }
     }
     len = strlen( str ) + 1;
     fwrite( str, len, 1, bfp );

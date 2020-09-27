@@ -245,18 +245,19 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
+#optencod_enc_linux  = -utf8
 !ifeq release 0
 optencod_targ_dbg   = dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
 
 usagej.gh : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -l 1 -q -utf8 $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
+    $(noecho)optencod -l 1 -q $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
 
 echo_optencod : .PROCEDURE .EXPLICIT

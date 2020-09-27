@@ -100,19 +100,20 @@ msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
+#optencod_enc_linux  = -utf8
 !ifeq release 0
 optencod_targ_dbg   = dbg
 !endif
 
 usage.gh $(exetarg_qnx_res): ../stand/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . usage.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ . . usage.tmp $(host_os) $(optencod_targ_dbg)
     @%make echo_awk
     $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
 
 usagej.gh : ../stand/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -l 1 -q -utf8 $[@ . . usagej.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -l 1 -q $(optencod_enc_$(host_os)) $[@ . . usagej.tmp $(host_os) $(optencod_targ_dbg)
     @%make echo_awk
     $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
 

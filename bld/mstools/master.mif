@@ -61,9 +61,10 @@ optencod_target_cpu = $(target_cpu)
 !else
 optencod_target_cpu = any
 !endif
+#optencod_enc_linux = -utf8
 
 cmdlnprs.gc cmdlnprs.gh : ../../gml/options.gml .EXPLICIT
 !ifeq verbose 0
     @echo optencod $@
 !endif
-    $(noecho)optencod -n -q -utf8 $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_target_cpu) $(host_os)
+    $(noecho)optencod -n -q $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_target_cpu) $(host_os)
