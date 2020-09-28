@@ -13,35 +13,35 @@
 :CMT. **** This list of characters is supported by WHPCVT. See its
 :CMT. **** project for details.
 :CMT. WGML symbol        value               WHPCVT symbol
-:set symbol='rsxon'     value='&'d2c(195)'. :CMT. CH_EXCLUDE_ON
-:set symbol='rsxoff'    value='&'d2c(180)'. :CMT. CH_EXCLUDE_OFF
-:set symbol='rsctx'     value='&'d2c(247)'. :CMT. CH_CTX_DEF
-:set symbol='rstpc'     value='&'d2c(238)'. :CMT. CH_TOPIC
-:set symbol='rslnk'     value='&'d2c(127)'. :CMT. CH_HLINK
-:set symbol='rsdfn'     value='&'d2c(234)'. :CMT. CH_DFN
-:set symbol='rslsti'    value='&'d2c(211)'. :CMT. CH_LIST_ITEM
-:set symbol='rslsts'    value='&'d2c(210)'. :CMT. CH_LIST_START
-:set symbol='rslste'    value='&'d2c(212)'. :CMT. CH_LIST_END
-:set symbol='rsslsts'   value='&'d2c(213)'. :CMT. CH_SLIST_START
-:set symbol='rsslste'   value='&'d2c(214)'. :CMT. CH_SLIST_END
-:set symbol='rsolsts'   value='&'d2c(200)'. :CMT. CH_OLIST_START
-:set symbol='rsolste'   value='&'d2c(201)'. :CMT. CH_OLIST_END
-:set symbol='rssdl'     value='&'d2c(202)'. :CMT. CH_DLIST_START
-:set symbol='rsedl'     value='&'d2c(203)'. :CMT. CH_DLIST_END
-:set symbol='rsdt'      value='&'d2c(204)'. :CMT. CH_DLIST_TERM
-:set symbol='rskw'      value='&'d2c(236)'. :CMT. CH_CTX_KW
-:set symbol='rshln'     value='&'d2c(167)'. :CMT. CH_TOPIC_LN
-:set symbol='rshnln'    value='&'d2c(248)'. :CMT. CH_TOPIC_NOLN
-:set symbol='rspar'     value='&'d2c(158)'. :CMT. CH_PAR_RESET
-:set symbol='rsxoffb'   value='&'d2c(159)'. :CMT. CH_EXCLUDE_OFF_BLANK
-:set symbol='rsup'      value='&'d2c(160)'. :CMT. CH_UP_TOPIC
-:set symbol='rsbmp'     value='&'d2c(176)'. :CMT. CH_BMP
-:set symbol='rsbxon'    value='&'d2c(219)'. :CMT. CH_BOX_ON
-:set symbol='rsbxof'    value='&'d2c(254)'. :CMT. CH_BOX_OFF
-:set symbol='rsddesc'   value='&'d2c(185)'. :CMT. CH_DLIST_DESC
-:set symbol='rsspace'   value='&'d2c(255)'. :CMT. CH_SPACE_NOBREAK
-:set symbol='rstbxmp'   value='&'d2c(170)'. :CMT. CH_TABXMP
-:set symbol='rsflnk'    value='&'d2c(232)'. :CMT. CH_FLINK
+:set symbol='rsxon'     value='&'d2c(195)'. :CMT. WHP_EXCLUDE_ON
+:set symbol='rsxoff'    value='&'d2c(180)'. :CMT. WHP_EXCLUDE_OFF
+:set symbol='rsctx'     value='&'d2c(247)'. :CMT. WHP_CTX_DEF
+:set symbol='rstpc'     value='&'d2c(238)'. :CMT. WHP_TOPIC
+:set symbol='rslnk'     value='&'d2c(127)'. :CMT. WHP_HLINK
+:set symbol='rsdfn'     value='&'d2c(234)'. :CMT. WHP_DFN
+:set symbol='rslsti'    value='&'d2c(211)'. :CMT. WHP_LIST_ITEM
+:set symbol='rslsts'    value='&'d2c(210)'. :CMT. WHP_LIST_START
+:set symbol='rslste'    value='&'d2c(212)'. :CMT. WHP_LIST_END
+:set symbol='rsslsts'   value='&'d2c(213)'. :CMT. WHP_SLIST_START
+:set symbol='rsslste'   value='&'d2c(214)'. :CMT. WHP_SLIST_END
+:set symbol='rsolsts'   value='&'d2c(200)'. :CMT. WHP_OLIST_START
+:set symbol='rsolste'   value='&'d2c(201)'. :CMT. WHP_OLIST_END
+:set symbol='rssdl'     value='&'d2c(202)'. :CMT. WHP_DLIST_START
+:set symbol='rsedl'     value='&'d2c(203)'. :CMT. WHP_DLIST_END
+:set symbol='rsdt'      value='&'d2c(204)'. :CMT. WHP_DLIST_TERM
+:set symbol='rskw'      value='&'d2c(236)'. :CMT. WHP_CTX_KW
+:set symbol='rshln'     value='&'d2c(167)'. :CMT. WHP_TOPIC_LN
+:set symbol='rshnln'    value='&'d2c(248)'. :CMT. WHP_TOPIC_NOLN
+:set symbol='rspar'     value='&'d2c(158)'. :CMT. WHP_PAR_RESET
+:set symbol='rsxoffb'   value='&'d2c(159)'. :CMT. WHP_EXCLUDE_OFF_BLANK
+:set symbol='rsup'      value='&'d2c(160)'. :CMT. WHP_UP_TOPIC
+:set symbol='rsbmp'     value='&'d2c(176)'. :CMT. WHP_BMP
+:set symbol='rsbxon'    value='&'d2c(219)'. :CMT. WHP_BOX_ON
+:set symbol='rsbxof'    value='&'d2c(254)'. :CMT. WHP_BOX_OFF
+:set symbol='rsddesc'   value='&'d2c(185)'. :CMT. WHP_DLIST_DESC
+:set symbol='rsspace'   value='&'d2c(255)'. :CMT. WHP_SPACE_NOBREAK
+:set symbol='rstbxmp'   value='&'d2c(170)'. :CMT. WHP_TABXMP
+:set symbol='rsflnk'    value='&'d2c(232)'. :CMT. WHP_FLINK
 
 :set symbol='hlptype'   value=''.
 :set symbol='hlvl'      value='0'.
