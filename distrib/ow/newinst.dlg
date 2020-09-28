@@ -2,7 +2,7 @@ name=NewInstall
 condition=PreviousInstall !
 dynamic_text=targ_1,\
         //1"%AppName% will be installed in '%DstDir%'"\
-        //2"%AppName% ‚Í '%DstDir%' ‚ÉƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ü‚·"\
+        //2"%AppName% ã¯ '%DstDir%' ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¾ã™"\
         //0
 static_text=
 include=full.dlg

@@ -1,12 +1,12 @@
 static_text=\
         //1"Target operating systems are the systems for which you want"\
-        //2"ƒ^[ƒQƒbƒgOS‚Æ‚ÍAì¬‚µ‚½ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª"\
+        //2"ã‚¿ãƒ¼ã‚²ãƒƒãƒˆOSã¨ã¯ã€ä½œæˆã—ãŸã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒ"\
         //0
 static_text=\
         //1"to generate applications. Host operating systems"\
-        //2"“®ì‚·‚éƒVƒXƒeƒ€‚Å‚·BƒzƒXƒgOS‚Æ‚ÍAƒRƒ“ƒpƒCƒ‰‚ğ"\
+        //2"å‹•ä½œã™ã‚‹ã‚·ã‚¹ãƒ†ãƒ ã§ã™ã€‚ãƒ›ã‚¹ãƒˆOSã¨ã¯ã€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã‚’"\
         //0
 static_text=\
         //1"are the systems on which you want to run the compiler."\
-        //2"Às‚·‚éƒVƒXƒeƒ€‚Å‚·."\
+        //2"å®Ÿè¡Œã™ã‚‹ã‚·ã‚¹ãƒ†ãƒ ã§ã™."\
         //0

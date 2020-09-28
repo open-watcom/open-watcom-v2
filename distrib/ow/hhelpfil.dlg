@@ -9,15 +9,15 @@ static_text=\
 static_text=
 static_text=\
         //1"Copy on-line help files to hard disk"\
-        //2"�I�����C���E�w���v�t�@�C�����n�[�h�f�B�X�N�ɃR�s�[���܂�"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします"\
         //0,SrcIsCD
 static_text=\
         //1"	- copies help files to the hard disk."\
-        //2"	- �w���v�t�@�C�����n�[�h�f�B�X�N�ɃR�s�[���܂�."\
+        //2"	- ヘルプファイルをハードディスクにコピーします."\
         //0,SrcIsCD
 static_text=\
         //1"	- if you do not choose this option, help will be loaded from the CD-ROM"\
-        //2"	- ���̵�߼�݂�I�����Ȃ��ƁA�w���v�t�@�C����CD-ROM���烍�[�h����܂�"\
+        //2"	- このｵﾌﾟｼｮﾝを選択しないと、ヘルプファイルはCD-ROMからロードされます"\
         //0,SrcIsCD
 static_text=
 include=ok.dlg

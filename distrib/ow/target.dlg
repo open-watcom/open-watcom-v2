@@ -1,7 +1,7 @@
 name=Target
 static_text=\
         //1"Select the target operating systems:"\
-        //2"ターゲットOSを選択してください:"\
+        //2"繧ｿ繝ｼ繧ｲ繝�繝�OS繧帝∈謚槭＠縺ｦ縺上□縺輔＞:"\
         //0
 static_text=
 check_box=dostarg,,"&DOS"

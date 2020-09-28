@@ -2,11 +2,11 @@ name=Help_Other
 include=hother1.dlg
 static_text=\
         //1"Click on the Helpfiles button to select options related"\
-        //2"ƒIƒ“ƒ‰ƒCƒ“Eƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğƒn[ƒhƒfƒBƒXƒN‚ÉƒRƒs[‚µ‚Ü‚·"\
+        //2"ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒ¼ãƒ‰ãƒ‡ã‚£ã‚¹ã‚¯ã«ã‚³ãƒ”ãƒ¼ã—ã¾ã™"\
         //0,SrcIsCD
 static_text=\
         //1"to installation of online help files."\
-        //2"	- ƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğƒn[ƒhƒfƒBƒXƒN‚ÉƒRƒs[‚µ‚Ü‚·."\
+        //2"	- ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒ¼ãƒ‰ãƒ‡ã‚£ã‚¹ã‚¯ã«ã‚³ãƒ”ãƒ¼ã—ã¾ã™."\
         //0,SrcIsCD
 static_text=
 include=ok.dlg

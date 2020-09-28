@@ -2,7 +2,7 @@ name=UnInstallFinal
 condition=PreviousInstall UnInstall
 static_text=\
         //1"@ will now remove all components"\
-        //2"@ ‚Í‚·‚×‚Ä‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚ğíœ‚µ‚Ü‚·"\
+        //2"@ ã¯ã™ã¹ã¦ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å‰Šé™¤ã—ã¾ã™"\
         //0
 static_text=
 include=poc.dlg

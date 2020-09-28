@@ -1,7 +1,7 @@
 name=Host
 static_text=\
         //1"Select the host operating systems:"\
-        //2"ホストOSを選択してください:"\
+        //2"繝帙せ繝�OS繧帝∈謚槭＠縺ｦ縺上□縺輔＞:"\
         //0
 static_text=
 check_box=doshost,,"&DOS"

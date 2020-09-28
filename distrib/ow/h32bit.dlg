@@ -1,16 +1,16 @@
 name=Help_32Bit
 static_text=\
         //1"You can select which calling conventions you want to use. They are:"\
-        //2"g—p‚µ‚½‚¢ƒƒ‚ƒŠƒ‚ƒfƒ‹‚Ì‘I‘ğ‚à‚Å‚«‚Ü‚·. ˆÈ‰º‚Ì‚¢‚¸‚ê‚©‚Å‚·:"\
+        //2"ä½¿ç”¨ã—ãŸã„ãƒ¡ãƒ¢ãƒªãƒ¢ãƒ‡ãƒ«ã®é¸æŠã‚‚ã§ãã¾ã™. ä»¥ä¸‹ã®ã„ãšã‚Œã‹ã§ã™:"\
         //0
 static_text=
 static_text=\
         //1"Register - some parameters are passed in registers"\
-        //2"ƒŒƒWƒXƒ^ - ˆø”‚Ìˆê•”‚ÍƒŒƒWƒXƒ^‚É“ü‚ê‚Ä“n‚³‚ê‚é"\
+        //2"ãƒ¬ã‚¸ã‚¹ã‚¿ - å¼•æ•°ã®ä¸€éƒ¨ã¯ãƒ¬ã‚¸ã‚¹ã‚¿ã«å…¥ã‚Œã¦æ¸¡ã•ã‚Œã‚‹"\
         //0
 static_text=\
         //1"Stack    - all parameters are passed on the stack"\
-        //2"ƒXƒ^ƒbƒN - ˆø”‚Í‚·‚×‚ÄƒXƒ^ƒbƒN‚É“ü‚ê‚Ä“n‚³‚ê‚é"\
+        //2"ã‚¹ã‚¿ãƒƒã‚¯ - å¼•æ•°ã¯ã™ã¹ã¦ã‚¹ã‚¿ãƒƒã‚¯ã«å…¥ã‚Œã¦æ¸¡ã•ã‚Œã‚‹"\
         //0
 static_text=
 include=ok.dlg

@@ -1,11 +1,11 @@
 name=Help_HiThere
 static_text=\
         //1"Choose whether you want to create installation diskettes"\
-        //2"ƒCƒ“ƒXƒg[ƒ‹—pƒfƒBƒXƒPƒbƒg‚ğì¬‚·‚é‚©, ƒn[ƒhƒfƒBƒXƒN‚É"\
+        //2"ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ç”¨ãƒ‡ã‚£ã‚¹ã‚±ãƒƒãƒˆã‚’ä½œæˆã™ã‚‹ã‹, ãƒãƒ¼ãƒ‰ãƒ‡ã‚£ã‚¹ã‚¯ã«"\
         //0
 dynamic_text=hhi_1,\
         //1"or install %AppName% on a hard disk."\
-        //2"%AppName% ‚ğƒCƒ“ƒXƒg[ƒ‹‚·‚é‚©‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢."\
+        //2"%AppName% ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ã‹ã‚’é¸æŠã—ã¦ãã ã•ã„."\
         //0
 static_text=
 include=ok.dlg

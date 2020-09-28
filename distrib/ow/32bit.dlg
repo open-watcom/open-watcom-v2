@@ -1,16 +1,16 @@
 name=32Bit
 static_text=\
         //1"Select the 32-bit calling conventions you wish to use:"\
-        //2"g—p‚·‚é32ƒrƒbƒgŒÄo‹K–ñ‚Ì‘I‘ğ:"\
+        //2"ä½¿ç”¨ã™ã‚‹32ãƒ“ãƒƒãƒˆå‘¼å‡ºè¦ç´„ã®é¸æŠ:"\
         //0
 static_text=
 check_box=3r,,\
         //1"&Register based calling"\
-        //2"ƒŒƒWƒXƒ^Eƒx[ƒXŒÄ‚Ño‚µ(&R)"\
+        //2"ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ»ãƒ™ãƒ¼ã‚¹å‘¼ã³å‡ºã—(&R)"\
         //0
 check_box=3s,,\
         //1"&Stack based calling"\
-        //2"ƒXƒ^ƒbƒNƒx[ƒXŒÄ‚Ño‚µ(&S)"\
+        //2"ã‚¹ã‚¿ãƒƒã‚¯ãƒ™ãƒ¼ã‚¹å‘¼ã³å‡ºã—(&S)"\
         //0
 static_text=
 include=space.dlg

@@ -1,16 +1,16 @@
 name=Helpfile
 static_text=\
         //1"Select the types of online help files:"\
-        //2"ƒIƒ“ƒ‰ƒCƒ“ƒwƒ‹ƒvEƒtƒ@ƒCƒ‹‚Ìƒ^ƒCƒv‚Ì‘I‘ğ:"\
+        //2"ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ˜ãƒ«ãƒ—ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ—ã®é¸æŠ:"\
         //0
 static_text=
 check_box=win16_helpfiles,,\
         //1"Win1&6 Hosted Help Files"\
-        //2"Win1&6 ƒzƒXƒgEƒwƒ‹ƒvƒtƒ@ƒCƒ‹"\
+        //2"Win1&6 ãƒ›ã‚¹ãƒˆãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«"\
         //0
 check_box=win32_helpfiles,,\
         //1"Win&32 Hosted Help Files"\
-        //2"Win&32 ƒzƒXƒgEƒwƒ‹ƒvƒtƒ@ƒCƒ‹"\
+        //2"Win&32 ãƒ›ã‚¹ãƒˆãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«"\
         //0
 check_box=whtml_helpfiles,,\
         //1"Win32 Hosted &HTML Help Files"\
@@ -18,11 +18,11 @@ check_box=whtml_helpfiles,,\
         //0
 check_box=os2_helpfiles,,\
         //1"&OS/2 Hosted Help Files"\
-        //2"&OS/2 ƒzƒXƒgEƒwƒ‹ƒvƒtƒ@ƒCƒ‹"\
+        //2"&OS/2 ãƒ›ã‚¹ãƒˆãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«"\
         //0
 check_box=whelp_helpfiles,,\
         //1"&DOS Hosted Help Files"\
-        //2"&DOS ƒzƒXƒgEƒwƒ‹ƒvƒtƒ@ƒCƒ‹"\
+        //2"&DOS ãƒ›ã‚¹ãƒˆãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«"\
         //0
 check_box=pdf_helpfiles,,\
         //1"&PDF Help Files"\
@@ -32,11 +32,11 @@ static_text=
 static_text=,SrcIsCD
 radio_button=helpfiles,,\
         //1"Copy on-line help files to hard &disk"\
-        //2"ƒIƒ“ƒ‰ƒCƒ“Eƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğƒn[ƒhƒfƒBƒXƒN‚ÉƒRƒs[‚µ‚Ü‚· (&d)"\
+        //2"ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒ¼ãƒ‰ãƒ‡ã‚£ã‚¹ã‚¯ã«ã‚³ãƒ”ãƒ¼ã—ã¾ã™ (&d)"\
         //0,SrcIsCD
 radio_button=other_dummy_1,helpfiles !,\
         //1"&Leave on-line help files on CD-ROM"\
-        //2"ƒIƒ“ƒ‰ƒCƒ“Eƒwƒ‹ƒvƒtƒ@ƒCƒ‹‚ğ CD-ROM ‚Éc‚µ‚Ü‚· (&L)"\
+        //2"ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ»ãƒ˜ãƒ«ãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ CD-ROM ã«æ®‹ã—ã¾ã™ (&L)"\
         //0,SrcIsCD
 static_text=
 include=space.dlg

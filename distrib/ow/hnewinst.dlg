@@ -1,12 +1,12 @@
 name=Help_NewInstall
 dynamic_text=hnewinst_1,\
         //1"A new version of %AppName% will be installed."\
-        //2"Vƒo[ƒWƒ‡ƒ“‚Ì %AppName% ‚Í %DstDir% ‚ÉƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ü‚·."\
+        //2"æ–°ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã® %AppName% ã¯ %DstDir% ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¾ã™."\
         //0
 static_text=
 static_text=\
         //1"You may choose the following options:"\
-        //2"ˆÈ‰º‚ÌƒIƒvƒVƒ‡ƒ“‚ğ‘I‘ğ‚Å‚«‚Ü‚·:"\
+        //2"ä»¥ä¸‹ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é¸æŠã§ãã¾ã™:"\
         //0
 static_text=
 include=hfull.dlg
