@@ -1,3 +1,4 @@
+# UTF-8 encoding, ¥
 name=Help_Maintain
 dynamic_text=hmaint_1,\
         //1"%AppName% has been found in %DstDir%."\

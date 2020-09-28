@@ -1,3 +1,4 @@
+# UTF-8 encoding, ¥
 name=UnInstallFinal
 condition=PreviousInstall UnInstall
 static_text=\
