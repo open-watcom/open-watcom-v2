@@ -60,6 +60,8 @@ langdat_keys = $(langdat_keys_$(bld_os)$(bld_cpu))
 langdat_keys += -k newdbg
 !endif
 
+#mkinf_opt_linux = -utf8
+
 !ifdef __UNIX__
 nulldevice = /dev/null
 !else
@@ -84,9 +86,9 @@ skip_build: .symbolic
 
 all: .SYMBOLIC
     langdat -l filelist $(langdat_keys) -r $(bld_ver) c
-    mkinf -x -i../include c filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
     langdat -l filelist $(langdat_keys) -r $(bld_ver) f77
-    mkinf -x -i../include f77 filelist $(%OWRELROOT)
+    mkinf -x -i../include $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
     @rm -rf filelist
 
 !else
@@ -98,7 +100,7 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf
@@ -118,7 +120,7 @@ $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77)
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
+    mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
     @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf
