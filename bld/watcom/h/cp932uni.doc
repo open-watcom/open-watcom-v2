@@ -8016,9 +8016,33 @@ Microsoft KB Archive/170559
 
 PRB: Conversion Problem Between Shift-JIS and Unicode (Q170559)
 
-Here is a list of characters that cannot be round trip mapped to Unicode. 
-This is a well-known problem that does not have a clean and easy solution. 
-This list provides a case-by-case workaround. 
+The information in this article applies to:
+    Microsoft Win32 Software Development Kit (SDK)
+
+SYMPTOMS
+    There are some codes that are not matched one-to-one between Shift-JIS
+    (Japanese character set supported by MS) and Unicode. When an application
+    calls MultiByteToWideChar() and WideCharToMultiByte() to perform code
+    conversion between Shift-JIS and Unicode, the function returns the wrong
+    code value in some cases.
+
+CAUSE
+    The Code Page 932 table contains duplicates that do not round trip map.
+    These duplicates are due to NEC encoding needs.
+
+RESOLUTION
+    A complete list of the characters that are not matched between Shift-JIS
+    and Unicode is provided in the MORE INFORMATION section of this article
+    so that the developers can avoid these characters or use different
+    characters. 
+
+STATUS
+    This behavior is by design. 
+
+MORE INFORMATION
+    Here is a list of characters that cannot be round trip mapped to Unicode.
+    This is a well-known problem that does not have a clean and easy solution.
+    This list provides a case-by-case workaround.
 
 CodePage 932 : 398 non-round-trip mappings
 
@@ -8420,3 +8444,4 @@ CodePage 932 : 398 non-round-trip mappings
 0xfa59   -> U+2116   -> 0x8782   Numero Sign
 0xfa5a   -> U+2121   -> 0x8784   Telephone Sign
 0xfa5b   -> U+2235   -> 0x81e6   Because 
+
