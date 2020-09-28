@@ -186,6 +186,7 @@ static struct {
     boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
     boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
+    unsigned    max_len;
 } flags;
 
 typedef enum {
@@ -329,6 +330,12 @@ static void fatal( const char *m )
     exit( EXIT_FAILURE );
 }
 
+static void fatal1( const char *m, const char *p )
+{
+    error( "fatal: %s (%s)\n", m, p );
+    exit( EXIT_FAILURE );
+}
+
 static void initFILE( FILE **f, const char *n, const char *m )
 {
     *f = fopen( n, m );
@@ -396,6 +403,23 @@ static int processOptions( int argc, char **argv )
     if( strcmp( *argv, "-utf8" ) == 0 ) {
         flags.out_utf8 = true;
         ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
+    }
+    flags.max_len = 127;
+    if( strcmp( *argv, "-len" ) == 0 ) {
+        long    val;
+
+        ++argv;
+        if( --argc < 4 ) {
+            return( 1 );
+        }
+        val = atol( *argv );
+        ++argv;
+        if( val > 0 ) {
+            flags.max_len = (unsigned)val;
+        }
         if( --argc < 4 ) {
             return( 1 );
         }
@@ -1686,8 +1710,8 @@ static void dumpInternational( void )
                 }
             }
             len = (unsigned)strlen( text );
-            if( len > 127 ) {
-                fatal( "length of a international message is too long" );
+            if( len > flags.max_len ) {
+                fatal1( "length of a international message is too long", text );
             }
             fputc( len, fp );
             fwrite( text, len, 1, fp );

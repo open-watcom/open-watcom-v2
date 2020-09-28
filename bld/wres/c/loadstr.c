@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include "layer2.h"
 
 
-#define GET_STR_BUF_LEN 128
+#define READ_STRING_BUFLEN  128
 
 WResDir    MainDir;
 
@@ -55,7 +56,7 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, unsigned int idReso
     size_t              numread;
     size_t              ix1;
     int                 ix2;
-    char                stringbuff[GET_STR_BUF_LEN];
+    char                stringbuff[READ_STRING_BUFLEN];
 
     if( WRESSEEK( hinfo->fp, res->Offset, SEEK_SET ) )
         return( -1 );
@@ -68,9 +69,9 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, unsigned int idReso
     ix1 = 0;
     do {
         if( numread == 0 ) {
-            if( length > GET_STR_BUF_LEN ) {
-                numread = GET_STR_BUF_LEN;
-                length -= GET_STR_BUF_LEN;
+            if( length > READ_STRING_BUFLEN ) {
+                numread = READ_STRING_BUFLEN;
+                length -= READ_STRING_BUFLEN;
             } else {
                 numread = length;
                 length = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,11 +93,9 @@ void PrintMsg( const char *fmt, ... )
     int         i;
     char        *p;
     va_list     args;
-    int         len;
-    char        buf[128];
+    char        buf[22];
 
     va_start( args, fmt );
-    len = 0;
     while( (c = *fmt++) != '\0' ) {
         if( c == '%' ) {
             c = *fmt++;
@@ -107,9 +105,9 @@ void PrintMsg( const char *fmt, ... )
                 }
             } else if( c == 'd' ) {
                 i = va_arg( args, int );
-                itoa( i, buf, 10 );
-                for( len = 0; buf[len] != '\0'; ++len ) {
-                    putchar(buf[len]);
+                sprintf( buf, "%d", i );
+                for( p = buf; (c = *p++) != '\0'; ) {
+                    putchar(c);
                 }
             }
         } else {
