@@ -131,10 +131,10 @@ of a pointer cast to such a base class will not function properly
 in all circumstances.
 :errbad.
 struct Base {
-    ‾Base();
+    ~Base();
 };
 struct Derived : Base {
-    virtual ‾Derived();
+    virtual ~Derived();
 };
 :eerrbad.
 It is considered good programming practice to declare virtual
@@ -243,7 +243,7 @@ contents of the class because all accesses will be flagged as erroneous
 class Private {
     int a;
     Private();
-    ‾Private();
+    ~Private();
     Private( const Private& );
 };
 :eerrbad.
@@ -1351,7 +1351,7 @@ int k = sizeof( v.b );
 :MSGTXT. option requires a path
 :MSGJTXT. オプションにはパスが必要です
 The specified option is not recognized by the compiler
-since there was no path after it (i.e., "-i=d:¥include;d:¥path" ).
+since there was no path after it (i.e., "-i=d:\include;d:\path" ).
 
 :MSGSYM. ERR_MUST_BE_VAR_PARM_FUNC
 :MSGTXT. must use 'va_start' macro inside function with variable arguments
@@ -2128,7 +2128,7 @@ when the default memory model for data is near.
 :errbad.
 struct Obj
 {   char *p;
-    ‾Obj();
+    ~Obj();
 };
 
 Obj far obj;
@@ -2817,7 +2817,7 @@ class C
     char *p;
 public:
     C();
-    ‾C();
+    ~C();
 };
 
 C& foo()
@@ -3146,18 +3146,18 @@ This allows different
 implementations to have different uses for any return values.
 :errbad.
 struct S {
-    void* ‾S();
+    void* ~S();
 };
 :eerrbad.
 
 :MSGSYM. ERR_DESTRUCTOR_BAD_DECL
 :MSGTXT. destructor must be a function
 :MSGJTXT. デストラクタは関数でなければなりません
-The tilde ('‾') style of name is reserved for declaring destructor functions.
+The tilde ('~') style of name is reserved for declaring destructor functions.
 Variable names cannot make use of the destructor style of names.
 :errbad.
 struct S {
-    int ‾S; // illegal
+    int ~S; // illegal
 };
 :eerrbad.
 
@@ -3171,7 +3171,7 @@ functions, they have an implicit
 argument.
 :errbad.
 struct S {
-    ‾S( S& );
+    ~S( S& );
 };
 :eerrbad.
 
@@ -3420,7 +3420,7 @@ class C;
 
 void fun( C* p )
 {
-    p->‾S();
+    p->~S();
 }
 :eerrbad.
 
@@ -3670,7 +3670,7 @@ restricted to being a non-static member function.
 :errbad.
 struct S
 {
-    static ‾S();
+    static ~S();
 };
 :eerrbad.
 
@@ -3693,14 +3693,14 @@ public:
 :MSGJTXT. '%N'は1個の引数を持たなければなりません
 The operator function in the message is only allowed to have one
 argument.  An operator like
-.kw operator ‾
+.kw operator ~
 is one such example because it represents a unary operator.
 :errbad.
 class C
 {
 public: int c;
 };
-C& operator‾( const C&, int );
+C& operator~( const C&, int );
 :eerrbad.
 
 :MSGSYM. ERR_OPERATOR_MUST_HAVE_2_ARGS
@@ -4077,7 +4077,7 @@ must be identical, for the destructor to have meaning.
 :errbad.
 void foo( int *p )
 {
-    p->int::‾double();
+    p->int::~double();
 }
 :eerrbad.
 
@@ -4439,7 +4439,7 @@ struct S {
     int sv1, sv2, sv3;
 };
 struct T {
-    ‾T();
+    ~T();
 };
 static union
 {
@@ -5416,13 +5416,13 @@ struct B {
     int b;
     void operator delete( void *, size_t );
     virtual void fn();
-    ‾B();
+    ~B();
 };
 struct D : B {
     int d;
     void operator delete( void *, size_t );
     virtual void fn();
-    ‾D();
+    ~D();
 };
 
 void dfn( B *p )
@@ -7309,7 +7309,7 @@ or '*' (meaning all warnings) was not found when it was expected.
 
 :MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
 :MSGTXT. warning level must be an integer in range 0 to 9
-:MSGJTXT. 警告レベルは，0-9の範囲の整数でなければなりません
+:MSGJTXT. 警告レベルは，0～9の範囲の整数でなければなりません
 The new warning level that can be used for the warning can be in the range
 0 to 9.  The level 0 means that the warning will be treated as an error
 (compilation will not succeed).  Levels 1 up to 9 are used to classify
@@ -7466,7 +7466,7 @@ cannot be converted to an object of type "ambiguous".
 
 :MSGSYM. ERR_PRAG_INLINE_DEPTH
 :MSGTXT. form is '#pragma inline_depth level' where 'level' is 0 to 255
-:MSGJTXT. 書式は，'#pragma inline_depth level'です。ここで'level'は0-255です
+:MSGJTXT. 書式は，'#pragma inline_depth level'です。ここで'level'は0～255です
 This
 .kw pragma
 sets the number of times inline expansion will occur for an inline
@@ -8485,10 +8485,10 @@ defining the function inside its class definition,
 the compiler may be able to perform some important optimizations.
 :errgood.
 struct S {
-    ‾S();
+    ~S();
 };
 
-S::‾S() {
+S::~S() {
 }
 :eerrgood.
 
@@ -8506,13 +8506,13 @@ opportunity in previous code but it found out too late that the
 constructor or destructor had an empty function body.
 :errgood.
 struct S {
-    ‾S();
+    ~S();
 };
 struct T : S {
-    ‾T() {}
+    ~T() {}
 };
 
-S::‾S() {
+S::~S() {
 }
 :eerrgood.
 
@@ -8604,11 +8604,11 @@ int foo()
 A member pointer value cannot reference a destructor.
 :errbad.
 class C {
-    ‾C();
+    ~C();
 };
 int foo()
 {
-    return 0 == &C::‾C;
+    return 0 == &C::~C;
 }
 :eerrbad.
 
@@ -9691,11 +9691,11 @@ a C style comment ("/**/").  If you require the comment to be terminated
 at the end of the line, make sure that the backslash character is not
 the last character in the line.
 :errbad.
-#define XX 23 // comment start ¥
-comment ¥
+#define XX 23 // comment start \
+comment \
 end
 
-int x = XX; // comment start ...¥
+int x = XX; // comment start ...\
 comment end
 :eerrbad.
 
@@ -9895,7 +9895,7 @@ struct C {
     C();
 };
 struct D {
-    ‾D();
+    ~D();
 };
 
 C __declspec(thread) c;
@@ -9984,7 +9984,7 @@ the object file.
 This message indicates that the octal escape sequence
 produces an integer that cannot fit into the required character type.
 :errbad.
-char *p = "¥406";
+char *p = "\406";
 :eerrbad.
 
 :MSGSYM. ERR_BINARY_MISSING_RIGHT_OPERAND
@@ -11644,11 +11644,11 @@ via the command line or
 .kw #pragma warning
 directive.
 :errbad.
-// string expands to "(?]?‾????"!
+// string expands to "(?]?~????"!
 char *e = "(???)???-????";
 // possible work-arounds
 char *f = "(" "???" ")" "???" "-" "????";
-char *g = "(¥?¥?¥?)¥?¥?¥?-¥?¥?¥?¥?";
+char *g = "(\?\?\?)\?\?\?-\?\?\?\?";
 :eerrbad.
 
 :MSGSYM. ANSI_INVALID_HEX_ESCAPE
@@ -11658,7 +11658,7 @@ char *g = "(¥?¥?¥?)¥?¥?¥?-¥?¥?¥?¥?";
 This message indicates that the hexadecimal escape sequence
 produces an integer that cannot fit into the required character type.
 :errbad.
-char *p = "¥x0aCache Timings¥x0a";
+char *p = "\x0aCache Timings\x0a";
 :eerrbad.
 
 :MSGSYM. WARN_UNDEFD_MACRO_IS_ZERO
@@ -11687,8 +11687,8 @@ value.
 This default behaviour can often mask incorrectly
 specified character constants.
 :errbad.
-int x = '¥0x1a'; // warning
-int y = '¥x1a';
+int x = '\0x1a'; // warning
+int y = '\x1a';
 :eerrbad.
 
 :MSGSYM. WARN_CHAR_PROMOTION
@@ -11739,7 +11739,7 @@ source file that is not in the allowable set of
 input characters.  The decimal representation of the
 character byte is output for diagnostic purposes.
 :errbad.
-// invalid char '¥0'
+// invalid char '\0'
 :eerrbad.
 
 :MSGSYM. WARN_WHITE_AFTER_SPLICE
@@ -11751,7 +11751,7 @@ that occur after the line splice.  This warning
 is useful when the source code must be compiled
 with other compilers that do not allow this extension.
 :errbad.
-#define XXXX int ¥
+#define XXXX int  \
 x;
 
 XXXX

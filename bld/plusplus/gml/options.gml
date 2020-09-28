@@ -338,7 +338,7 @@
 :usage.  -d2 and debug inlines; emit inlines as statics
 :jusage. インライン関数の展開なしの-d2;インライン関数はstaticとして出力
 
-:option. d2t d2‾
+:option. d2t d2~
 :target. any
 :enumerate. debug_info
 :timestamp.
