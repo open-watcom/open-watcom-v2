@@ -248,8 +248,10 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
     for( ;; ) {
         if( fgets( p, max_len, fp ) == NULL ) {
             if( feof( fp ) ) {
-                p[0] = '\0';
-                break;
+                if( p != lines_buffer ) {
+                    p[0] = '\0';
+                    break;
+                }
             }
             return( NULL );
         }
@@ -282,28 +284,26 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
         if( p[0] == '/' && p[1] == '/' && isdigit( p[2] ) ) {
             start = p;
             last_lang = p[2] - '0';
+            p += 3;
             if( last_lang != MKINF_LANG_NULL ) {
-                p += 3;
                 /* search next end */
-                while( p[0] != '\0' && ( p[0] != '/' || p[1] != '/' ) ) {
+                while( p[0] != '/' || p[1] != '/' || !isdigit( p[2] ) ) {
                     ++p;
                 }
-                if( last_lang != Lang ) {
-                    continue;
-                }
-                if( !Utf8 && Lang == MKINF_LANG_Japanese ) {
-                    utf8_to_cp932( start + 3, p - start + 3, d );
-                    d += strlen( d );
-                    continue;
+                if( last_lang == Lang ) {
+                    if( !Utf8 && last_lang == MKINF_LANG_Japanese ) {
+                        utf8_to_cp932( start + 3, p - ( start + 3 ), d );
+                        d += strlen( d );
+                    } else {
+                        len = p - ( start + 3 );
+                        memcpy( d, start + 3, len );
+                        d += len;
+                    }
                 }
             }
         } else {
             *d++ = *p++;
-            continue;
         }
-        len = strlen( start + 3 );
-        memcpy( d, start + 3, len );
-        d += len;
     }
     *d = '\0';
     return( buf );
