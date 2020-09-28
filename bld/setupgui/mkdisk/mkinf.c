@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Utility to create setup.inf files for Watcom installer.
+* Description:  Utility to create setup.inf file for Watcom installers.
 *
 ****************************************************************************/
 
