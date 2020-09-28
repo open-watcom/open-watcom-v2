@@ -12,7 +12,7 @@ mkdisk_trmem = 1
 ziplib = $(setupgui_dir)/ziplib/$(objs_subdir)/ziplib.lib
 zlib   = $(setupgui_dir)/zlib/$(objs_subdir)/zlib.lib
 
-bld_extra_incs = -I"../../h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h"
+bld_extra_incs = -I"../../h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags_utils = $(trmem_cpp_flags)
 
