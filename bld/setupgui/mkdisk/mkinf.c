@@ -1238,7 +1238,7 @@ static void DumpFile( FILE *out, const char *fname )
             for( ; mygets( buf, SECTION_BUF_SIZE, in ) != NULL; ) {
                 if( strnicmp( buf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
                     DumpFile( out, buf + sizeof( STRING_include ) - 1 );
-                } else {
+                } else if( buf[0] != '#' ) {
                     fputs( buf, out );
                     fputc( '\n', out );
                 }
