@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( MSG_INV_OPT,              "Invalid option '%s'" ,
                                 "無効なオプション '%s'" )
 pick( MSG_LOW_MEM,              "Too low on memory" ,

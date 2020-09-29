@@ -48,7 +48,6 @@ extra_cpp_flags = -DINSIDE_WLIB
 !ifdef bootstrap
 extra_cpp_flags += -DINCL_MSGTEXT
 !endif
-#optencod_enc_linux  = -utf8
 !ifndef wlib_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
@@ -193,22 +192,22 @@ optencod_targ_dbg   = dbg
 
 usagew.gh usage.u : ../optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_WLIB_BASE+%$#%+), %s, \"\")" $^&.tmp $@
 
 usagewj.gh : ../optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -l 1 -q $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -l 1 -q -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_WLIB_BASE+%$#%+), \"\", %s)" $^&.tmp $@
 
 usagea.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -q -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_AR_BASE+%$#%+), %s, \"\")" $^&.tmp $@
 
 usageaj.gh : ../optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -l 1 -q $(optencod_enc_$(host_os)) $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
+    $(noecho)optencod -l 1 -q -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
     $(wsplice) -t8 -f "pick((MSG_USAGE_AR_BASE+%$#%+), \"\", %s)" $^&.tmp $@
 
 echo_optencod : .PROCEDURE .EXPLICIT

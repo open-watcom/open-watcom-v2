@@ -1,3 +1,5 @@
+:: UTF-8 encoding, ¥
+::
 :segment ENGLISH
 Usage:   wtouch [<options>] <file_names>
 Options: ('/' may be used instead of '-' to specify options)

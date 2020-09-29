@@ -1,7 +1,4 @@
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !     This file must be in UTF-8 encoding       !
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- */
+/* UTF-8 encoding, ¥ */
 
 pick( SEGMENT_PARA_DEFINED,
                                 "Segment parameter is defined already" ,

@@ -1,7 +1,4 @@
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !     This file must be in UTF-8 encoding       !
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- */
+/* UTF-8 encoding, ¥ */
 
 pick( ERR_BAD_LIBRARY,      "'%s' is an invalid library",
                 "'%s'は不適切なライブラリです" )

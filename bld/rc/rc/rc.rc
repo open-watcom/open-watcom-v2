@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "rcmsg.rh"
 #include "usage.rh"
 #include "wreslang.rh"

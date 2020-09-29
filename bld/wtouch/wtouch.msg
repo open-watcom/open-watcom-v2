@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( MSG_NO_TIME_STAMP,	"no time-stamp for (%s) -- will use current time",
 				"(%s)のタイム・スタンプがありません -- 現在の時間を使用します" )
 pick( MSG_NO_DATE,		"no date specified for 'd' option",

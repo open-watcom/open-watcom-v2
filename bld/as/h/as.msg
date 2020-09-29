@@ -1,4 +1,7 @@
+/* UTF-8 encoding, Y */
+
 /**** Common messages ****/
+
 pick( AS_MSG_ERROR,     "Error: ",
                 "(J)Error: " )
 pick( AS_MSG_WARNING,       "Warning: ",

@@ -1,10 +1,4 @@
-/************************************************************************/
-/*                         WTOUCH RESOURCE FILE                         */
-/************************************************************************/
-/*
- *  %s  : string
- *  %Z  : message from 'system error' (see below)
- */
+/* UTF-8 encoding, ¥ */
 
 #include "wtmsg.rh"
 #include "wreslang.rh"
