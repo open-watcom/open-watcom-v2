@@ -27,7 +27,7 @@
 :cmt *
 :cmt * Description:  MSTOOLS link command line options.
 :cmt *
-:cmt *    Source file uses UTF-8 character encoding
+:cmt *     UTF-8 encoding, ¥
 :cmt *
 :cmt *****************************************************************************
 :cmt
