@@ -354,74 +354,62 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
     return( leaf );
 }
 
+static TREEPTR CheckSym(id_hash_idx h, const char *id,
+                        SYM_ENTRY *sym_out, SYM_HANDLE *symh)
+{
+    SYM_HANDLE sym_handle, sym_handle0;
+    ENUMPTR    ep;
+    SYM_ENTRY  sym;
+
+    ep = EnumLookup(h, id);
+    sym_handle = SymLook(h, id);
+    if (sym_handle == SYM_NULL) {
+        if (ep) return EnumLeaf(ep);
+        SymCreate(&sym, id);
+    } else {
+        SymGet(&sym, sym_handle);
+        if (ep && ep->parent->level > sym.level)
+            return EnumLeaf(ep);
+
+        if (sym.attribs.stg_class == SC_EXTERN && sym.level > 0) {
+            sym_handle0 = Sym0Look(h, id);
+            if (sym_handle0 != SYM_NULL) {
+                SymGet(&sym, sym_handle0);
+                sym_handle = sym_handle0;
+            }
+        }
+
+        if (sym.attribs.stg_class == SC_TYPEDEF) {
+            CErr2p(ERR_CANT_USE_TYPEDEF_AS_VAR, id);
+            return IntLeaf(0);
+        }
+    }
+
+    *symh = sym_handle;
+    memcpy(sym_out, &sym, sizeof sym);
+    return NULL;
+}
 
 static TREEPTR SymLeaf( void )
 {
-    SYM_HANDLE      sym_handle;
-    SYM_HANDLE      sym0_handle;
-    id_hash_idx     h;
-    TREEPTR         tree;
-    SYM_ENTRY       sym;
-    ENUMPTR         ep;
+    SYM_HANDLE  sym_handle;
+    id_hash_idx h;
+    TREEPTR     tree;
+    SYM_ENTRY   sym;
 
-    if( CurToken == T_SAVED_ID ) {
-        CurToken = LAToken;
+    if (CurToken == T_SAVED_ID) {
         h = SavedHash;
-        ep = EnumLookup( h, SavedId );
-        sym_handle = SymLook( h, SavedId );
-        if( sym_handle == SYM_NULL ) {
-            if( ep != NULL ) {               /* if enum was found */
-                return( EnumLeaf( ep ) );
-            }
-            SymCreate( &sym, SavedId );
-        } else {
-            SymGet( &sym, sym_handle );
-            if( ep != NULL && ep->parent->level > sym.level )
-                return( EnumLeaf( ep ) );
-            if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
-                sym0_handle = Sym0Look( h, SavedId );
-                if( sym0_handle != SYM_NULL ) {
-                    sym_handle = sym0_handle;
-                    SymGet( &sym, sym_handle );
-                }
-            }
-            if( sym.attribs.stg_class == SC_TYPEDEF ) {
-                CErr2p( ERR_CANT_USE_TYPEDEF_AS_VAR, SavedId );
-                NextToken();
-                return( IntLeaf( 0 ) );
-            }
-        }
+        CurToken = LAToken;
+        tree = CheckSym(h, SavedId, &sym, &sym_handle);
     } else {
         h = HashValue;
-        ep = EnumLookup( h, Buffer );
-        sym_handle = SymLook( h, Buffer );
-        if( sym_handle == SYM_NULL ) {
-            if( ep != NULL ) {               /* if enum was found */
-                NextToken();
-                return( EnumLeaf( ep ) );
-            }
-            SymCreate( &sym, Buffer );
-        } else {
-            SymGet( &sym, sym_handle );
-            if( ep != NULL && ep->parent->level > sym.level ) {
-                NextToken();
-                return( EnumLeaf( ep ) );
-            }
-            if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
-                sym0_handle = Sym0Look( h, Buffer );
-                if( sym0_handle != SYM_NULL ) {
-                    sym_handle = sym0_handle;
-                    SymGet( &sym, sym_handle );
-                }
-            }
-            if( sym.attribs.stg_class == SC_TYPEDEF ) {
-                CErr2p( ERR_CANT_USE_TYPEDEF_AS_VAR, Buffer );
-                NextToken();
-                return( IntLeaf( 0 ) );
-            }
-        }
+        tree = CheckSym(h, Buffer, &sym, &sym_handle);
         NextToken();
     }
+
+    if (tree)
+        return tree;
+
     /* if( SizeOfCount == 0 ) */ /* causes defined but not referenced */
     /* always turning it on can cause referenced but not assigned */
     /* for the case:  int i;  j = sizeof(i);  */
