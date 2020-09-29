@@ -224,7 +224,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
         return( ERR_INVALID_SUBS_CMD );
     }
     data = GetNextWord( data, rstr, SingleSlash );
-    if( *rstr == '\0' ) {
+    if( *sstr == '\0' && *data == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
     if( *data == '/' )
