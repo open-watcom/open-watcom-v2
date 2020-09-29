@@ -387,6 +387,7 @@ static TREEPTR SymLeaf( void )
             }
             if( sym.attribs.stg_class == SC_TYPEDEF ) {
                 CErr2p( ERR_CANT_USE_TYPEDEF_AS_VAR, SavedId );
+                NextToken();
                 return( IntLeaf( 0 ) );
             }
         }
@@ -415,6 +416,7 @@ static TREEPTR SymLeaf( void )
             }
             if( sym.attribs.stg_class == SC_TYPEDEF ) {
                 CErr2p( ERR_CANT_USE_TYPEDEF_AS_VAR, Buffer );
+                NextToken();
                 return( IntLeaf( 0 ) );
             }
         }
