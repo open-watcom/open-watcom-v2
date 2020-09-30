@@ -102,7 +102,7 @@ bool ResWritePadDWord( FILE *fp )
     curr_pos = WRESTELL( fp );
     if( curr_pos == -1L )
         return( WRES_ERROR( WRS_TELL_FAILED ) );
-    padding = RES_PADDING( curr_pos, sizeof( zero ) );
+    padding = RES_PADDING_DWORD( curr_pos );
     if( padding != 0 ) {
         if( WRESWRITE( fp, &zero, padding ) != padding ) {
             return( WRES_ERROR( WRS_WRITE_FAILED ) );
@@ -335,7 +335,7 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
     typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
     headersize += ( namesize + typesize );
-    padding = RES_PADDING( typesize + namesize, sizeof( uint_32 ) );
+    padding = RES_PADDING_DWORD( typesize + namesize );
 
     return( headersize + padding );
 }
