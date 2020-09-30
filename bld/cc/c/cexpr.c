@@ -1617,6 +1617,11 @@ static TREEPTR ExprOpnd( void )
             }
             NextToken();
             break;
+        case T_RIGHT_PAREN:
+            /* Misplaced ')' in a unary-expression */
+            tree = ErrorNode(NULL);
+            NextToken();
+            break;
         default:
             if( Pre_processing != PPCTL_NORMAL && IS_KEYWORD( CurToken ) ) {
                 tree = ExprId();
@@ -2083,6 +2088,16 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
     SYM_NAMEPTR     sym_name;
     SYM_ENTRY       sym;
     size_t          sym_len;
+
+    /**
+     * If we encounter a syntax error inside of an parameter list, the
+     * current token might not be T_RIGHT_PAREN as we expect. Thus, we
+     * need to consume tokens until we get T_RIGHT_PAREN, terminating
+     * the list, T_SEMI_COLON which would terminate the statement, or
+     * T_EOF which would terminate the token stream.
+     */
+    while (CurToken != T_RIGHT_PAREN && CurToken != T_SEMI_COLON && CurToken != T_EOF)
+        NextToken();
 
     flags = 0;
     parm_count = 1;
