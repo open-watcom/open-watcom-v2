@@ -19,5 +19,7 @@ int main(void)
 	x(sizeof(unsigned int));
 	x(sizeof sizeof sizeof sizeof ++*b);
 	x(sizeof char);
+	x(sizeof &x);
+	x(sizeof main);
 }
 
