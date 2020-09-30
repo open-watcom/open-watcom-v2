@@ -759,7 +759,7 @@ static void initMBCodePage( void )
     }
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         SetUTF8toUnicode();
-        SetUTF8toCP1252();
+        SetUTF8toUTF8();
     } else if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
         SetUTF8toUnicode();
         SetUTF8toCP932();

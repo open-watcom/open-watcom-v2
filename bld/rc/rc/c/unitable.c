@@ -200,6 +200,19 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
     return( ret );
 }
 
+static size_t UTF8StringToUTF8( size_t len, const char *str, char *buf )
+/***********************************************************************
+ * this function copy UTF-8 buffer to UTF-8 buffer
+ */
+{
+    if( len > 0 ) {
+        if( buf != NULL ) {
+            memcpy( buf, str, len );
+        }
+    }
+    return( len );
+}
+
 static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
 /**************************************************************************
  * this function convert UTF-8 buffer to 16-bit UNICODE buffer
@@ -277,5 +290,12 @@ RcStatus SetUTF8toCP932( void )
 RcStatus SetUTF8toCP1252( void )
 {
     ConvToMultiByte = UTF8StringToCP1252;
+    return( RS_OK );
+}
+
+
+RcStatus SetUTF8toUTF8( void )
+{
+    ConvToMultiByte = UTF8StringToUTF8;
     return( RS_OK );
 }
