@@ -200,16 +200,15 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
                 /*
                  * UNICODE to CP1252
                  */
-                if( u > 0x9F && u < 0x100 ) {        /* 0xA0-0xFF */
-                    *buf++ = (char)u;
-                } else {
+                if( u > 0x7F && u < 0xA0 ) {    /* 0x80-0x9F */
                     c = (char)unicode_to_latin1( u );
                     if( c == 0 ) {
                         printf( "unknown unicode character: 0x%4X\n", u );
                         c = '?';
                     }
-                    *buf++ = c;
+                    u = c;
                 }
+                *buf++ = (char)u;
                 ret++;
             }
         }
