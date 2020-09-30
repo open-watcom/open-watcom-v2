@@ -128,44 +128,38 @@ static size_t UTF8StringToMultiByte( size_t len, const char *str, char *buf )
  */
 {
     size_t          ret;
-    size_t          outlen;
     unsigned short  u;
     size_t          i;
     cvt_chr         x;
     cvt_chr         *p;
 
     ret = 0;
-    if( len > 0 ) {
-        if( buf == NULL ) {
-            outlen = 0;
-        } else {
-            outlen = len;
-        }
-        for( i = 0; i < len; i++ ) {
-            u = (unsigned char)*str++;
-            if( IS_ASCII( u ) ) {
-                if( ret < outlen ) {
-                    *buf++ = (char)u;
-                    ret++;
-                }
+    for( i = 0; i < len; i++ ) {
+        u = (unsigned char)*str++;
+        if( !IS_ASCII( u ) ) {
+            i += getcharUTF8( &str, &u );
+            x.u = u;
+            p = bsearch( &x, cvt_table, cvt_table_len, sizeof( cvt_chr ), (int(*)(const void*,const void*))compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4X\n", x.u );
+                u = '?';
             } else {
-                i += getcharUTF8( &str, &u );
-                if( ret < outlen ) {
-                    x.u = u;
-                    p = bsearch( &x, cvt_table, cvt_table_len, sizeof( cvt_chr ), (int(*)(const void*,const void*))compare_utf8 );
-                    if( p == NULL ) {
-                        printf( "unknown unicode character: 0x%4X\n", x.u );
-                        *buf++ = '?';
-                    } else {
-                        if( p->s > 0xFF ) {
+                if( p->s > 0xFF ) {
+                    if( ret < len ) {
+                        if( buf != NULL ) {
                             *buf++ = (char)( p->s >> 8 );
-                            ret++;
                         }
-                        *buf++ = (char)p->s;
+                        ret++;
                     }
-                    ret++;
                 }
+                u = (char)p->s;
             }
+        }
+        if( ret < len ) {
+            if( buf != NULL ) {
+                *buf++ = (char)u;
+            }
+            ret++;
         }
     }
     return( ret );
@@ -179,38 +173,28 @@ static size_t UTF8StringToCP1252( size_t len, const char *str, char *buf )
  */
 {
     size_t          ret;
-    size_t          outlen;
     unsigned short  u;
     size_t          i;
     char            c;
 
     ret = 0;
-    if( len > 0 ) {
-        if( buf == NULL ) {
-            outlen = 0;
-        } else {
-            outlen = len;
+    for( i = 0; i < len; i++ ) {
+        u = (unsigned char)*str++;
+        if( !IS_ASCII( u ) ) {
+            i += getcharUTF8( &str, &u );
+            /*
+             * UNICODE to CP1252
+             */
+            c = (char)unicode_to_latin1( u );
+            if( c != 0 ) {
+                u = c;
+            }
         }
-        for( i = 0; i < len; i++ ) {
-            u = (unsigned char)*str++;
-            if( !IS_ASCII( u ) ) {
-                i += getcharUTF8( &str, &u );
-            }
-            if( ret < outlen ) {
-                /*
-                 * UNICODE to CP1252
-                 */
-                if( u > 0x7F && u < 0xA0 ) {    /* 0x80-0x9F */
-                    c = (char)unicode_to_latin1( u );
-                    if( c == 0 ) {
-                        printf( "unknown unicode character: 0x%4X\n", u );
-                        c = '?';
-                    }
-                    u = c;
-                }
+        if( ret < len ) {
+            if( buf != NULL ) {
                 *buf++ = (char)u;
-                ret++;
             }
+            ret++;
         }
     }
     return( ret );
@@ -224,27 +208,21 @@ static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
  */
 {
     size_t          ret;
-    size_t          outlen;
     unsigned short  u;
     size_t          i;
 
     ret = 0;
-    if( len > 0 ) {
-        if( buf == NULL ) {
-            outlen = 0;
-        } else {
-            outlen = len;
+    for( i = 0; i < len; i++ ) {
+        u = (unsigned char)*str++;
+        if( !IS_ASCII( u ) ) {
+            i += getcharUTF8( &str, &u );
         }
-        for( i = 0; i < len; i++ ) {
-            u = (unsigned char)*str++;
-            if( !IS_ASCII( u ) ) {
-                i += getcharUTF8( &str, &u );
-            }
-            if( ret < outlen ) {
+        if( ret < len ) {
+            if( buf != NULL ) {
                 *buf++ = (char)u;
                 *buf++ = (char)( u >> 8 );
-                ret++;
             }
+            ret++;
         }
     }
     return( ret * 2 );
