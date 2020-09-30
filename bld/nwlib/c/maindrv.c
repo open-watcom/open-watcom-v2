@@ -44,8 +44,8 @@
 #include "clibext.h"
 #include "clibint.h"
 
-
-#define AR_MODE_ENV "WLIB$AR"
+/* Needed for environment variable def'n */
+#include "wlibar.h"
 
 #ifndef DLL_NAME
   #error DLL_NAME must be given with -d switch when DLL Driver
@@ -86,8 +86,8 @@ int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
     } else {
         ++p;
     }
-    if( stricmp( p, "ar.exe" ) == 0 ) {
-        putenv( AR_MODE_ENV "=ON" );
+    if( stricmp( p, WLIB_AR_MODE_FN ".exe" ) == 0 ) {
+        putenv( AR_MODE_ENV2 "=ON" );
     }
     retcode = IdeDrvExecDLL( &info, cmd_line );
     free( cmd_line );

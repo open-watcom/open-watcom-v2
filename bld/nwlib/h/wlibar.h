@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,14 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Library manager command line processing.
+* Description:  Librarian constants for enabling POSIX ar compatability.
 *
 ****************************************************************************/
 
-extern void InitCmdLine( void );
-extern void ProcessCmdLine( char *argv[] );
-extern void FiniCmdLine( void );
+#define AR_MODE_ENV  "WLIB$AR"
+#define AR_MODE_ENV2 "WLIB_AR"
 
-extern lib_cmd      *CmdList;
-extern options_def  Options;
-
+#define WLIB_AR_MODE_FN "owar"

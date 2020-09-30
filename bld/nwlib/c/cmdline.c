@@ -41,10 +41,6 @@
 #include "clibint.h"
 #endif
 
-
-#define AR_MODE_ENV  "WLIB$AR"
-#define AR_MODE_ENV2 "WLIB_AR"
-
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 
@@ -695,12 +691,12 @@ void ProcessCmdLine( char *argv[] )
     operation   ar_mode;
 
     fname = MakeFName( _cmdname( buffer ) );
-    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
+    if( FNCMP( fname, WLIB_AR_MODE_FN ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
         WlibGetEnv( AR_MODE_ENV2 ) != NULL ) {
         Options.ar = true;
     }
     if( Options.ar ) {
-        env = WlibGetEnv( "AR" );
+        env = WlibGetEnv( "OWAR" );
     } else {
         env = WlibGetEnv( "WLIB" );
     }
