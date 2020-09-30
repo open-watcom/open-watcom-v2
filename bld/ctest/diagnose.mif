@@ -41,6 +41,7 @@ diags_0099_defn = &
     diag0106$(err_sin) &
     diag0107$(err_sin) &
     diag0108$(err_sin) &
+    diag0109$(err_sin) &
 
 err_sin = .err
 err_sys = .ser

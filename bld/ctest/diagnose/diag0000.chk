@@ -332,3 +332,9 @@ source\diag0107.c(2): Warning! W144: This is a test of the emergency alert syste
 source\diag0108.c(15): Error! E1058: Cannot use typedef 's' as a variable
 source\diag0108.c(16): Error! E1058: Cannot use typedef 's' as a variable
 source\diag0108.c(17): Error! E1058: Cannot use typedef 's' as a variable
+source\diag0109.c(16): Error! E1063: Missing operand
+source\diag0109.c(16): Error! E1009: Expecting ';' but found 'char'
+source\diag0109.c(16): Error! E1026: Invalid declarator
+source\diag0109.c(21): Error! E1063: Missing operand
+source\diag0109.c(10): Warning! W200: 'b' has been referenced but never assigned a value
+source\diag0109.c(11): Warning! W200: 'a' has been referenced but never assigned a value
