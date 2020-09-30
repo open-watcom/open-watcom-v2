@@ -700,7 +700,7 @@ void ProcessCmdLine( char *argv[] )
         Options.ar = true;
     }
     if( Options.ar ) {
-        env = WlibGetEnv( "AR" );
+        env = NULL;
     } else {
         env = WlibGetEnv( "WLIB" );
     }
