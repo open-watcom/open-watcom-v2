@@ -31,15 +31,16 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <limits.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
 #ifdef IDE_PGM
-#include <stdio.h>
-#include <limits.h>
 #include "main.h"
 #endif
 #include "idedrv.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 #include "clibint.h"
@@ -55,9 +56,26 @@
   #define DLL_NAME_STR _str(DLL_NAME)
 #endif
 
+#ifdef __UNIX__
+#define FNCMP strcmp
+#else
+#define FNCMP stricmp
+#endif
+
 static IDEDRV info =
 {   DLL_NAME_STR
 };
+
+static void setWlibModeInfo( void )
+{
+    char    buffer[PATH_MAX];
+    PGROUP2 pg1;
+
+    _splitpath2( _cmdname( buffer ), pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    if( FNCMP( pg1.fname, "ar" ) == 0 ) {
+        putenv( AR_MODE_ENV "=ON" );
+    }
+}
 
 int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
 {
@@ -65,30 +83,21 @@ int main( int argc, char *argv[] )  // MAIN-LINE FOR DLL DRIVER
 #ifndef __UNIX__
     int len;
     char *cmd_line;
-    char *p;
 #endif
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
 #elif !defined( __UNIX__ )
-    /* unused parameters */ (void)argc;
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
+
+    setWlibModeInfo();
 
 #ifndef __UNIX__
     len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = malloc( len );
     _bgetcmd( cmd_line, len );
-    /* Turn on 'ar' mode by setting WLIB$AR env var */
-    p = strrchr( argv[0], '\\' );
-    if( p == NULL ) {
-        p = argv[0];
-    } else {
-        ++p;
-    }
-    if( stricmp( p, "ar.exe" ) == 0 ) {
-        putenv( AR_MODE_ENV "=ON" );
-    }
     retcode = IdeDrvExecDLL( &info, cmd_line );
     free( cmd_line );
 #else

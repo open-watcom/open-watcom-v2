@@ -685,26 +685,37 @@ static void ParseOneArLine( const char *c, operation *ar_mode )
     }
 }
 
+static const char *getWlibModeInfo( void )
+{
+    const char  *env;
+
+    env = WlibGetEnv( AR_MODE_ENV );
+    if( env != NULL ) {
+        Options.ar = true;
+        Options.ar_name = "ar";
+        env = WlibGetEnv( "AR" );
+    } else {
+        env = WlibGetEnv( AR_MODE_ENV2 );
+        if( env != NULL ) {
+            Options.ar = true;
+            Options.ar_name = "ar";
+            env = WlibGetEnv( "AR" );
+        } else {
+            env = WlibGetEnv( "WLIB" );
+        }
+    }
+    return( env );
+}
+
 void ProcessCmdLine( char *argv[] )
 {
     char        *parse;
     const char  *env;
     lib_cmd     *cmd;
-    char        *fname;
-    char        buffer[PATH_MAX];
     operation   ar_mode;
 
-    fname = MakeFName( _cmdname( buffer ) );
-    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
-        WlibGetEnv( AR_MODE_ENV2 ) != NULL ) {
-        Options.ar = true;
-        Options.ar_name = "ar";
-    }
-    if( Options.ar ) {
-        env = WlibGetEnv( "AR" );
-    } else {
-        env = WlibGetEnv( "WLIB" );
-    }
+    env = getWlibModeInfo();
+
     if( ( env == NULL || *env == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
         Usage();
     }
