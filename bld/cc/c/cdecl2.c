@@ -816,7 +816,7 @@ bool LoopDecl( SYM_HANDLE *sym_head )
 }
 
 
-TYPEPTR TypeName( void )
+TYPEPTR TypeName(type_modifiers *mods_out)
 {
     TYPEPTR     typ;
     decl_info   info;
@@ -830,6 +830,8 @@ TYPEPTR TypeName( void )
          AbsDecl( &abs_sym, info.mod, info.typ  );
          typ = abs_sym.sym_type;
     }
+
+    if (mods_out) *mods_out = info.mod;
     return( typ );
 }
 
@@ -1120,7 +1122,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         if( state & DECL_STATE_ISPARM ) {
-            parm_type = TypeName();
+            parm_type = TypeName(NULL);
         } else {
             parm_type = NULL;
         }

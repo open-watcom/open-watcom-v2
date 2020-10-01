@@ -451,6 +451,29 @@ static void IncSymWeight( SYMPTR sym )
     }
 }
 
+/**
+ * Parse a C99 compound literal, constructing an anonymous object with
+ * the proper storage duration.
+ */
+static TREEPTR CompoundLiteral(TYPEPTR type, type_modifiers mods)
+{
+    SYM_ENTRY sym;
+    SYM_HANDLE handle;
+
+    if (stdc_version < C99 || CurToken != T_LEFT_BRACE)
+        return NULL;
+
+    handle = MakeNewSym(&sym, 'C', type, SC_AUTO);
+    if (!SymLevel || (mods & FLAG_CONST))
+        sym.attribs.stg_class = SC_STATIC;
+
+    sym.mods = mods;
+    VarDeclEquals(&sym, handle);
+    sym.flags |= SYM_ASSIGNED;
+    SymReplace(&sym, handle);
+    return VarLeaf(&sym, handle);
+}
+
 //-----------------------------CMATH------------------------------------
 
 static bool IsStruct( TYPEPTR typ )
@@ -1466,8 +1489,9 @@ static TREEPTR GetExpr( void )
 
 static TREEPTR ExprOpnd( void )
 {
-    TREEPTR     tree;
-    TYPEPTR     typ;
+    TREEPTR        tree;
+    TYPEPTR        typ;
+    type_modifiers mods;
 
     CompFlags.meaningless_stmt = true;
     for( ;; ) {
@@ -1508,7 +1532,7 @@ static TREEPTR ExprOpnd( void )
             Token[ExprLevel] = CurToken;
             if( CurToken == T_LEFT_PAREN ) {
                 NextToken();
-                typ = TypeName();
+                typ = TypeName(NULL);
                 if( typ != NULL ) {
                     tree = SizeofOp( typ );
                     MustRecog( T_RIGHT_PAREN );
@@ -1523,7 +1547,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
                 NextToken();
-                typ = TypeName();
+                typ = TypeName(NULL);
                 if( typ != NULL ) {
                     SKIP_TYPEDEFS( typ );
                     switch( typ->decl_type ) {
@@ -1552,15 +1576,19 @@ static TREEPTR ExprOpnd( void )
             continue;
         case T_LEFT_PAREN:
             NextToken();
-            typ = TypeName();
+            typ = TypeName(&mods);
             if( typ != NULL ) {
                 if( Pre_processing != PPCTL_NORMAL ) {
                     CErr1( ERR_NO_CAST_DURING_PP );
                 }
                 MustRecog( T_RIGHT_PAREN );
-                Class[ExprLevel] = TC_CAST;
-                tree = LeafNode( OPR_CAST );
-                tree->u.expr_type = typ;
+
+                if (!(tree = CompoundLiteral(typ, mods))) {
+                    Class[ExprLevel] = TC_CAST;
+                    tree = LeafNode( OPR_CAST );
+                    tree->u.expr_type = typ;
+                } else break;
+
                 ValueStack[ExprLevel] = tree;
             } else {
                 Class[ExprLevel] = TC_LEFT_PAREN;

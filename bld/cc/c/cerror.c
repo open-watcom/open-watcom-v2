@@ -483,8 +483,11 @@ void SetDiagSymbol( SYMPTR sym, SYM_HANDLE handle )
 
     np = NewPostList( POSTLIST_SYMBOL );
     np->u.s.sym_name = SymName( sym, handle );
-    if( np->u.s.sym_name == NULL )
+    if(!np->u.s.sym_name)
         np->u.s.sym_name = "???";
+    else if (*np->u.s.sym_name == '.')
+	    np->u.s.sym_name = "(anonymous)";
+
     np->u.s.sym_file = FileIndexToCorrectName( sym->src_loc.fno );
     np->u.s.sym_line = sym->src_loc.line;
 }

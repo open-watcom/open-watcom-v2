@@ -475,7 +475,7 @@ extern void         Chk_Struct_Union_Enum(TYPEPTR);
 extern void         Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
 extern bool         DeclList(SYM_HANDLE *);
 extern FIELDPTR     FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state );
-extern TYPEPTR      TypeName(void);
+extern TYPEPTR      TypeName(type_modifiers *mod_out);
 
 /* cdecl2.c */
 extern void         InvDecl( void );
