@@ -68,10 +68,9 @@ static IDEDRV info =
 
 static void setWlibModeInfo( void )
 {
-    char    buffer[PATH_MAX];
     PGROUP2 pg1;
 
-    _splitpath2( _cmdname( buffer ), pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+    _splitpath2( _argv[0], pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( FNCMP( pg1.fname, "ar" ) == 0 ) {
         putenv( AR_MODE_ENV "=ON" );
     }
