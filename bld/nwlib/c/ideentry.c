@@ -121,11 +121,18 @@ char *WlibGetEnv( const char *name )
 {
     char *env;
 
-    if( !ideInfo->ignore_env && IdeCbs != NULL ) {
-        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
-            return( env );
+#if 0
+    /* don't ignore environment, it is used for internal wlib setup only */
+    if( !ideInfo->ignore_env ) {
+#endif
+        if( IdeCbs != NULL ) {
+            if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
+                return( env );
+            }
         }
+#if 0
     }
+#endif
     return( NULL );
 
 }
