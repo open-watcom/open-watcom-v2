@@ -57,11 +57,6 @@ enum {
     #undef pick
 };
 
-enum {
-    MSG_USAGE_AR_BASE = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT
-    #define pick(c,e,j) + 1
-    #include "usagew.gh"
-    #undef pick
-};
+#define MSG_USAGE_AR_BASE   (MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT)
 
 #endif
