@@ -248,7 +248,7 @@ void Usage( void )
         MsgGet( str++, buff );
         if( Options.ar ) {
             str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-            ConsoleMessage( buff, "ar" );
+            ConsoleMessage( buff, Options.ar_name );
         } else {
             str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
 #ifdef BOOTSTRAP

@@ -698,6 +698,7 @@ void ProcessCmdLine( char *argv[] )
     if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
         WlibGetEnv( AR_MODE_ENV2 ) != NULL ) {
         Options.ar = true;
+        Options.ar_name = "ar";
     }
     if( Options.ar ) {
         env = WlibGetEnv( "AR" );

@@ -101,6 +101,7 @@ typedef struct {
     lib_type        libtype;
     ar_format       ar_libformat;
     int             explode_count;
+    char            *ar_name;
 } options_def;
 
 
