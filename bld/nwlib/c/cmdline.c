@@ -42,8 +42,7 @@
 #endif
 
 
-#define AR_MODE_ENV  "WLIB$AR"
-#define AR_MODE_ENV2 "WLIB_AR"
+#define AR_MODE_ENV "WLIB_AR"
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
@@ -695,14 +694,7 @@ static const char *getWlibModeInfo( void )
         Options.ar_name = "ar";
         env = WlibGetEnv( "AR" );
     } else {
-        env = WlibGetEnv( AR_MODE_ENV2 );
-        if( env != NULL ) {
-            Options.ar = true;
-            Options.ar_name = "ar";
-            env = WlibGetEnv( "AR" );
-        } else {
-            env = WlibGetEnv( "WLIB" );
-        }
+        env = WlibGetEnv( "WLIB" );
     }
     return( env );
 }

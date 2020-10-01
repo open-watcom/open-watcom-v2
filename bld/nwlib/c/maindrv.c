@@ -46,7 +46,7 @@
 #include "clibint.h"
 
 
-#define AR_MODE_ENV "WLIB$AR"
+#define AR_MODE_ENV "WLIB_AR"
 
 #ifndef DLL_NAME
   #error DLL_NAME must be given with -d switch when DLL Driver
