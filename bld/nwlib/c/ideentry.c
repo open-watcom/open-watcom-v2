@@ -136,6 +136,7 @@ char *WlibGetEnv( const char *name )
     return( NULL );
 
 }
+
 void FatalResError( char *msg )
 {
     IDEMsgInfo          msg_info;

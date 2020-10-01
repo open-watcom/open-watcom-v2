@@ -687,12 +687,16 @@ static void ParseOneArLine( const char *c, operation *ar_mode )
 static const char *getWlibModeInfo( void )
 {
     const char  *env;
+    char        *s;
 
     env = WlibGetEnv( AR_MODE_ENV );
     if( env != NULL ) {
         Options.ar = true;
-        Options.ar_name = "ar";
-        env = WlibGetEnv( "AR" );
+        Options.ar_name = DupStr( env );
+        for( s = Options.ar_name; s != '\0'; s++ ) {
+            *s = tolower( *(unsigned char *)s );
+        }
+        env = WlibGetEnv( env );
     } else {
         env = WlibGetEnv( "WLIB" );
     }
@@ -799,6 +803,10 @@ void FiniCmdLine( void )
     if( Options.input_name != NULL ) {
         MemFree( Options.input_name );
         Options.input_name = NULL;
+    }
+    if( Options.ar_name != NULL ) {
+        MemFree( Options.ar_name );
+        Options.ar_name = NULL;
     }
     FreeCommands();
 }

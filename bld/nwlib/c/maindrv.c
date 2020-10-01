@@ -72,7 +72,9 @@ static void setWlibModeInfo( void )
 
     _splitpath2( _argv[0], pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( FNCMP( pg1.fname, "ar" ) == 0 ) {
-        putenv( AR_MODE_ENV "=ON" );
+        putenv( AR_MODE_ENV "=AR" );
+    } else if( FNCMP( pg1.fname, "owar" ) == 0 ) {
+        putenv( AR_MODE_ENV "=OWAR" );
     }
 }
 
