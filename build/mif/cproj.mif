@@ -702,8 +702,16 @@ proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
 
-rc_ui_flags     = -zk0 $(rc_cppflags)
-rc_ui8_flags    = -zku0 $(rc_cppflags)
+rc_ui_encoding  = -zk0
+
+!ifdef rcui8_utf8_$(host_os)
+rc_ui8_encoding = -zku8
+!else
+rc_ui8_encoding = -zku0
+!endif
+
+rc_ui_flags     = $(rc_ui_encoding) $(rc_cppflags)
+rc_ui8_flags    = $(rc_ui8_encoding) $(rc_cppflags)
 
 #
 # Include path macros:
