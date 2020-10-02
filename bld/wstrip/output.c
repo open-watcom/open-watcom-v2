@@ -123,7 +123,7 @@ void Usage( void )
     char        msg_buffer[RESOURCE_MAX_SIZE];
     int         i;
 
-    for( i = MSG_USAGE_BASE + 1; i <= MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
+    for( i = MSG_USAGE_BASE + 1; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         Msg_Get( i, msg_buffer );
         printf( "%s\n", msg_buffer );
     }

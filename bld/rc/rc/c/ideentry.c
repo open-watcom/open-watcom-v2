@@ -240,7 +240,7 @@ static void RcIoPrintUsage( void )
 #endif
     ConsoleMessage( "\n" );
     ++count;
-    for( ; index <= MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
+    for( ; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
         if( console_tty ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return() )

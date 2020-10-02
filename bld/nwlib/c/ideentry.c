@@ -266,7 +266,7 @@ void Usage( void )
 #endif
         }
         ++count;
-        for( ; str <= str_last; ++str ) {
+        for( ; str < str_last; ++str ) {
             if( console_tty ) {
                 if( count == NUM_ROWS - 2 ) {
                     if( Wait_for_return() )
