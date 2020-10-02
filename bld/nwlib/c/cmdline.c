@@ -693,7 +693,7 @@ static const char *getWlibModeInfo( void )
     if( env != NULL ) {
         Options.ar = true;
         Options.ar_name = DupStr( env );
-        for( s = Options.ar_name; s != '\0'; s++ ) {
+        for( s = Options.ar_name; *s != '\0'; s++ ) {
             *s = tolower( *(unsigned char *)s );
         }
         env = WlibGetEnv( env );
