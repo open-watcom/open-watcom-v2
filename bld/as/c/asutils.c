@@ -113,7 +113,7 @@ void Usage( void )
 {
     int         ctr;
 
-    for( ctr = MSG_USAGE_BASE; ctr < MSG_USAGE_BASE + MSG_USAGE_COUNT; ++ctr ) {
+    for( ctr = MSG_USAGE_BASE + 1; ctr < MSG_USAGE_BASE + MSG_USAGE_COUNT; ++ctr ) {
         AsMsgGet( ctr, AsResBuffer );
         puts( AsResBuffer );
     }
