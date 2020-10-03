@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( INVALID_OPTION,           "Invalid option:",
                                 "不適切なオプション:" )
 pick( INVALID_I,                "Invalid use of -i option.",
