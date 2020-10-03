@@ -499,24 +499,20 @@ static MSGSYM *mustBeProceededByMSGSYM( void )
     return( (MSGSYM*)currMSGSYM );
 }
 
-static unsigned pickUpNum( const char *p )
+static unsigned long pickUpNum( const char *p )
 {
-    unsigned num;
+    unsigned long   num;
+    char            *end;
 
-    num = 0;
-    for( p += skipSpace( p ); *p != '\0'; ++p ) {
-        if( !isdigit( *p ) )
-            break;
-        num *= 10;
-        num += *p - '0';
-    }
+    p += skipSpace( p );
+    num = strtoul( p, &end, 0 );
     return( num );
 }
 
 
 static unsigned pickUpLevel( const char *p )
 {
-    unsigned level;
+    unsigned long   level;
 
     level = pickUpNum( p );
     if( level == 0 || level > 15 ) {
