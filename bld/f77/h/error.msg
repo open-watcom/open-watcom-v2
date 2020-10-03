@@ -236,7 +236,7 @@ CP Compiler Errors
 CP_TERMINATE [   r0] program abnormally terminated
 CP_TERMINATE [j  r0] ﾌﾟﾛｸﾞﾗﾑが異常終了しました。
  This message is issued during the execution of the program.
- If you are running WATFOR-77, this message indicates that an internal error
+ If you are running FORTRAN 77, this message indicates that an internal error
  has occurred in the compiler.
  Please report this error and any other helpful information about the program
  being compiled to Watcom so that the problem can be fixed.

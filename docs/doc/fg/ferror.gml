@@ -179,7 +179,7 @@ also cause this message to be issued.
 .errnote CP-01 program abnormally terminated
 .pc
 This message is issued during the execution of the program.
-If you are running WATFOR-77, this message indicates that an internal error
+If you are running FORTRAN 77, this message indicates that an internal error
 has occurred in the compiler.
 Please report this error and any other helpful information about the program
 being compiled to Watcom so that the problem can be fixed.
