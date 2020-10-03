@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -285,8 +286,6 @@ typedef unsigned_32     comp_options;
 #define MAX_OPTIONS     64
 
 
-struct opt_entry;
-
 typedef struct opt_entry {
     char        *option;        // pointer to option name
     uint        description;    // description id
@@ -297,3 +296,5 @@ typedef struct opt_entry {
     void        (*proc_rtnbool)(struct opt_entry *, bool);   // for negatable options
 #endif
 } opt_entry;
+
+extern opt_entry    CompOptns[];

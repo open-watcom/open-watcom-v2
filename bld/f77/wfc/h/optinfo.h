@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,6 @@
 *
 ****************************************************************************/
 
-#include "compcfg.h"
-
-opt_entry       CompOptns[] = {
 #if defined( __WFL__ )
 //                      Compile and Link Options
 opt( "",           0,                CTG,         NULL,         NULL,       CL_CTG_COMPILE_AND_LINK ),
@@ -213,4 +211,3 @@ opt( "LGO",        CGOPT_LOGOWL,      CMD|CG,     NULL,         &CGOption,  0 ),
 #endif
 opt( "LGC",        CGOPT_ECHOAPI,     CMD|CG,     NULL,         &CGOption,  0 ),
 opt( NULL,         0,                0,           NULL,         NULL,       0 )
-};

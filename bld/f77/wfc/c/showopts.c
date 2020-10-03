@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,6 @@
 #include "showopts.h"
 #include "errutil.h"
 
-
-extern  opt_entry       CompOptns[];
 
 #define OPTION_TAB      11
 #define COLUMN_TAB      41

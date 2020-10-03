@@ -59,6 +59,8 @@
 #include "inout.h"
 #include "errutil.h"
 #include "pathgrp2.h"
+#include "compcfg.h"
+#include "cpopt.h"
 
 #include "clibext.h"
 
@@ -945,13 +947,6 @@ void    TOut( const char *msg )
     fputs( msg, stdout );
 }
 
-
-#define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags
-
-#include "cpopt.h"
-#include "optinfo.h"
-
-
 static  void    Usage( void )
 //===========================
 {
@@ -964,3 +959,9 @@ static  void    Usage( void )
     puts( "" );
     ShowOptions( buff );
 }
+
+opt_entry       CompOptns[] = {
+    #define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags
+    #include "optinfo.h"
+    #undef opt
+};

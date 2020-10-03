@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,30 @@
 #include "fmacros.h"
 #include "option.h"
 #include "boot77.h"
+#include "compcfg.h"
 
+
+// Compiler directives defines
+
+#define COMP_DIRS_DEFS \
+COMP_DIR( INCLUDE ) \
+COMP_DIR( EJECT ) \
+COMP_DIR( PRAGMA ) \
+COMP_DIR( IFDEF ) \
+COMP_DIR( IFNDEF ) \
+COMP_DIR( ENDIF ) \
+COMP_DIR( ELSE ) \
+COMP_DIR( ELSEIFDEF ) \
+COMP_DIR( ELSEIFNDEF ) \
+COMP_DIR( DEFINE ) \
+COMP_DIR( UNDEFINE )
+
+enum {
+    CD_NULL = 0,
+    #define COMP_DIR(c) CD_ ## c,
+    COMP_DIRS_DEFS
+    #undef COMP_DIR
+};
 
 extern  void            ProcPragma( char * );
 
@@ -62,32 +85,10 @@ static  int     GetDirective( char *buff );
 static  void    ScanOpts( char *buff );
 static  void    CompoundOptOption( char *buff );
 
-// Compiler directives
-
-#define CD_INCLUDE      1
-#define CD_EJECT        2
-#define CD_PRAGMA       3
-#define CD_IFDEF        4
-#define CD_IFNDEF       5
-#define CD_ENDIF        6
-#define CD_ELSE         7
-#define CD_ELIFDEF      8
-#define CD_ELIFNDEF     9
-#define CD_DEFINE       10
-#define CD_UNDEFINE     11
-
 static const char __FAR * const __FAR CompDrctvs[] = {
-    "INCLUDE",
-    "EJECT",
-    "PRAGMA",
-    "IFDEF",
-    "IFNDEF",
-    "ENDIF",
-    "ELSE",
-    "ELSEIFDEF",
-    "ELSEIFNDEF",
-    "DEFINE",
-    "UNDEFINE",
+    #define COMP_DIR(c) #c ,
+    COMP_DIRS_DEFS
+    #undef COMP_DIR
     NULL
 };
 
@@ -451,12 +452,6 @@ static  void    KorOption( opt_entry *optn, bool negated ) {
     NewOptions |= OPT_KOREAN;
 }
 
-
-#define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags, bit, actionstr, actionneg
-
-#include "optinfo.h"
-
-
 static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
 //=======================================================================
 
@@ -622,13 +617,13 @@ void    SrcOption( void ) {
     } else if( directive == CD_IFDEF ) {
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroIFDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELIFDEF ) {
+    } else if( directive == CD_ELSEIFDEF ) {
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroELIFDEF( buff, SkipToken( buff ) - buff );
     } else if( directive == CD_IFNDEF ) {
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroIFNDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELIFNDEF ) {
+    } else if( directive == CD_ELSEIFNDEF ) {
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroELIFNDEF( buff, SkipToken( buff ) - buff );
     } else if( directive == CD_ELSE ) {
@@ -827,3 +822,9 @@ void    PrtOptions( void ) {
     PrtLstNL( "" );
     LFSkip();
 }
+
+opt_entry       CompOptns[] = {
+    #define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags, bit, actionstr, actionneg
+    #include "optinfo.h"
+    #undef opt
+};
