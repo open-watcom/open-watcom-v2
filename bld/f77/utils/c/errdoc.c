@@ -77,18 +77,18 @@ static char *rtrims( char *s )
     return( s );
 }
 
-static  int     ReadInFile( char *buff, int max_len, FILE *fi )
-/*************************************************************/
+static bool ReadInFile( char *buff, int max_len, FILE *fi )
+/*********************************************************/
 {
     size_t      len;
 
     if( fgets( buff, max_len, fi ) == NULL ) {
-        return( 1 );
+        return( false );
     }
     for( len = strlen( buff ); len > 0 && ( buff[len - 1] == '\r' || buff[len - 1] == '\n' ); len-- )
         ;
     buff[len] = NULLCHAR;
-    return( 0 );
+    return( true );
 }
 
 
@@ -104,6 +104,7 @@ int main( int argc, char **argv )
     bool        include;
     int         msg_num;
     char        *p;
+    bool        ok;
 
     if( argc > 1 ) {
         fi = fopen( argv[1], "rt" );
@@ -118,8 +119,8 @@ int main( int argc, char **argv )
         fo = fopen( "ferror.gml", "wt" );
     }
 
-    ReadInFile( rec, sizeof( rec ), fi );
-    for( ;; ) {
+    ok = ReadInFile( rec, sizeof( rec ), fi );
+    for( ; ok; ) {
         if( rec[0] == 'M' && rec[1] == 'S' )
             break;
         group_name[0] = rec[0];
@@ -128,9 +129,9 @@ int main( int argc, char **argv )
         strncpy( header, rec + 3, sizeof( header ) - 1 );
         header[sizeof( header ) - 1] = NULLCHAR;
         noheader = true;
-        ReadInFile( rec, sizeof( rec ), fi );
         msg_num = 1;
-        for( ;; ) {
+        ok = ReadInFile( rec, sizeof( rec ), fi );
+        for( ; ok; ) {
             if( rec[0] != NULLCHAR && rec[1] != NULLCHAR && rec[2] == ' ' )
                 // Group record
                 break;
@@ -147,14 +148,14 @@ int main( int argc, char **argv )
             }
             do {
                 // skip all language records
-                ReadInFile( rec, sizeof( rec ), fi );
-            } while( rec[0] != ' ' );
-            do {
+                ok = ReadInFile( rec, sizeof( rec ), fi );
+            } while( ok && rec[0] != ' ' );
+            for( ; ok && rec[0] == ' '; ) {
                 if( include ) {
                     fprintf( fo, "%s\n", rtrims( rec + 1 ) );
                 }
-                ReadInFile( rec, sizeof( rec ), fi );
-            } while( rec[0] == ' ' );
+                ok = ReadInFile( rec, sizeof( rec ), fi );
+            }
             msg_num++;
         }
         if( !noheader ) {
