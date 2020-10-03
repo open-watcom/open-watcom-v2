@@ -8,7 +8,9 @@ errsrc_autodepends = .autodepend
 
 .c: ../c
 
-exetarg_objs = errsrc.obj
+all: errsrc.exe errdoc.exe .symbolic
 
-!include exetarg.mif
+.c.exe :
+    @%make echo_link
+    $(bld_cl) $(bld_clflags) $< $(bld_ldflags)
 
