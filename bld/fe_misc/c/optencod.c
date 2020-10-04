@@ -2355,32 +2355,34 @@ static void expand_tab( const char *s, char *d )
     *d = '\0';
 }
 
-static void createUsageHeader( language_id language, process_line_fn *process_line )
+static void createUsageHeader( char *usage[], language_id lang, process_line_fn *process_line, bool center )
 {
     char *title;
     char *titleu;
     TITLE *t;
 
+    outputTitle( usage, lang, process_line, center );
+
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
             if( process_line == emitUsageH ) {
-                titleu = t->lang_titleu[language];
+                titleu = t->lang_titleu[lang];
                 if( titleu == NULL || *titleu == '\0' ) {
                     titleu = t->lang_titleu[LANG_English];
                 }
             } else {
                 titleu = NULL;
             }
-            title = t->lang_title[language];
+            title = t->lang_title[lang];
             if( title == NULL || *title == '\0' ) {
                 title = t->lang_title[LANG_English];
             }
             expand_tab( title, tokbuff );
             if( titleu != NULL && *titleu != '\0' ) {
                 expand_tab( titleu, tagbuff );
-                process_line( language, tokbuff, tagbuff, false );
+                process_line( lang, tokbuff, tagbuff, false );
             } else {
-                process_line( language, tokbuff, tokbuff, false );
+                process_line( lang, tokbuff, tokbuff, false );
             }
         }
     }
@@ -2499,9 +2501,7 @@ static void outputUsageH( void )
 {
     GROUP       *gr;
 
-    outputTitle( pageUsage, optFlag.lang, emitUsageH, false );
-
-    createUsageHeader( optFlag.lang, emitUsageH );
+    createUsageHeader( pageUsage, optFlag.lang, emitUsageH, false );
 
     gr = NULL;
     processUsage( optFlag.lang, emitUsageH, gr );
@@ -2600,9 +2600,7 @@ static void dumpInternational( void )
         usage_header.header.signature = LS_Usage_SIG;
         fwrite( &usage_header, offsetof( LocaleUsage, data ), 1, bfp );
 
-        outputTitle( pageUsage, lang, emitUsageB, false );
-
-        createUsageHeader( lang, emitUsageB );
+        createUsageHeader( pageUsage, lang, emitUsageB, false );
 
         gr = NULL;
         processUsage( lang, emitUsageB, gr );
