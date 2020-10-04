@@ -273,10 +273,12 @@ static cvt_chr cvt_table_932[] = {
     #undef pickb
 };
 
+#if 0
 static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
 {
     return( p1->s - p2->s );
 }
+#endif
 
 static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
 {

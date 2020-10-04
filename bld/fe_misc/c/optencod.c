@@ -56,6 +56,7 @@ TAG( CHAIN ) \
 TAG( CHAR ) \
 TAG( ENUMERATE ) \
 TAG( FILE ) \
+TAG( GROUP ) \
 TAG( ID ) \
 TAG( IMMEDIATE ) \
 TAG( JUSAGE ) \
@@ -75,6 +76,7 @@ TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
 TAG( USAGE ) \
+TAG( USAGEGRP ) \
 TAG( USAGEOGRP )
 
 // functions that are supplied by the host environment
@@ -174,6 +176,12 @@ typedef struct chain {
     char            pattern[1];
 } CHAIN;
 
+typedef struct group {
+    struct group    *next;
+    char            *Usage[LANG_MAX];
+    char            pattern[1];
+} GROUP;
+
 
 typedef struct option {
     struct option   *next;
@@ -207,6 +215,7 @@ typedef struct option {
     boolbit         is_timestamp      : 1;
     boolbit         is_negate         : 1;
     CHAIN           *chain;
+    GROUP           *group;
     size_t          name_len;
     char            *name;
     char            pattern[1];
@@ -240,6 +249,7 @@ static char         maxusgbuff[BUFF_SIZE];
 
 static char         alternateEqual;
 static CHAIN        *lastChain;
+static GROUP        *lastGroup;
 static size_t       maxUsageLen;
 static char         *pageUsage[LANG_MAX];
 static unsigned     targetMask;
@@ -351,6 +361,7 @@ static OPTION   *optionList;
 static OPTION   *uselessOptionList;
 static TITLE    *titleList;
 static CHAIN    *chainList;
+static GROUP    *groupList = NULL;
 
 static TITLE    *targetTitle;
 
@@ -568,6 +579,38 @@ static NAME *addEnumerator( const char *enumerate, const char *field_name )
     return( n );
 }
 
+static GROUP *findGroup( const char *pattern )
+{
+    GROUP *gr;
+
+    for( gr = groupList; gr != NULL; gr = gr->next ) {
+        if( strcmp( gr->pattern, pattern ) == 0 ) {
+            break;
+        }
+    }
+    return( gr );
+}
+
+static GROUP *addGroup( const char *pattern )
+{
+    size_t  pattern_len;
+    GROUP   *gr;
+
+    if( findGroup( pattern ) != NULL ) {
+        fail( "USAGEGRP: option '%s' already defined\n", pattern );
+    }
+    pattern_len = strlen( pattern );
+    gr = calloc( 1, sizeof( *gr ) + pattern_len );
+    memcpy( gr->pattern, pattern, pattern_len + 1 );
+    if( groupList == NULL ) {
+        groupList = gr;
+    } else {
+        lastGroup->next = gr;
+    }
+    lastGroup = gr;
+    return( gr );
+}
+
 static CHAIN *findChain( const char *pattern )
 {
     CHAIN *cn;
@@ -584,7 +627,6 @@ static CHAIN *addChain( char *pattern, bool chain )
 {
     size_t pattern_len;
     CHAIN *cn;
-    int i;
 
     cvtOptionSpec( pattern, pattern, CVT_PATTERN );
     for( cn = chainList; cn != NULL; cn = cn->next ) {
@@ -597,15 +639,12 @@ static CHAIN *addChain( char *pattern, bool chain )
         }
     }
     pattern_len = strlen( pattern );
-    cn = malloc( sizeof( *cn ) + pattern_len );
+    cn = calloc( 1, sizeof( *cn ) + pattern_len );
     cn->pattern_len = pattern_len;
     memcpy( cn->pattern, pattern, pattern_len + 1 );
     cvtOptionSpec( pattern, pattern, CVT_NAME );
     cn->name_len = strlen( pattern );
     cn->code_used = chain ? true : false;
-    for( i = 0; i < LANG_MAX; ++i ) {
-        cn->Usage[i] = NULL;
-    }
     cn->next = chainList;
     chainList = cn;
     return( cn );
@@ -1223,6 +1262,9 @@ static void doJUSAGE( const char *p )
     case TAG_CHAIN:
         lastChain->Usage[LANG_Japanese] = pickUpRest( p );
         break;
+    case TAG_GROUP:
+        lastGroup->Usage[LANG_Japanese] = pickUpRest( p );
+        break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
             usage = pickUpRest( p );
@@ -1234,7 +1276,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        fail( ":jusage. must follow :chain., :option., or :page.\n" );
+        fail( ":jusage. must follow :chain., :group., :option., or :page.\n" );
     }
 }
 
@@ -1248,7 +1290,7 @@ static void doTITLE( const char *p )
     for( t = *i; t != NULL; t = *i ) {
         i = &(t->next);
     }
-    t = calloc( sizeof( *t ), 1 );
+    t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
     t->target = 0;
@@ -1293,6 +1335,25 @@ static void doJTITLEU( const char *p )
     t->lang_titleu[LANG_Japanese] = pickUpRest( p );
 }
 
+// :group. <usagegrp>
+static void doGROUP( const char *p )
+{
+    OPTION *o;
+    GROUP  *gr;
+
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        gr = findGroup( tokbuff );
+        if( gr != NULL ) {
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                 o->group = gr;
+            }
+        }
+    }
+}
+
+
 // :timestamp.
 static void doTIMESTAMP( const char *p )
 {
@@ -1327,6 +1388,26 @@ static void doUSAGEOGRP( const char *p )
     cn->Usage[LANG_English] = pickUpRest( p );
     lastChain = cn;
     getsUsage = TAG_CHAIN;
+}
+
+// :usagegrp. <number> <usage>
+//
+// define group <number> with usage text for block of options
+//
+static void doUSAGEGRP( const char *p )
+{
+    GROUP *gr;
+
+    p += skipSpace( p );
+    if( *p == '\0' ) {
+        fail( "missing <number> in :usagegrp. tag\n" );
+    }
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    gr = addGroup( tokbuff );
+    p += skipSpace( p );
+    gr->Usage[LANG_English] = pickUpRest( p );
+    lastGroup = gr;
+    getsUsage = TAG_GROUP;
 }
 
 static void checkForGMLEscape( const char *p )
@@ -2168,8 +2249,10 @@ static void fillOutSpaces( char *buff, size_t n )
     *p = '\0';
 }
 
-static bool usageValid( OPTION *o, language_id language )
+static bool usageValid( OPTION *o, language_id language, GROUP *gr )
 {
+    if( o->group != gr )
+        return( false );
     if( o->synonym != NULL )
         return( false );
     if( o->lang_usage[language] == NULL )
@@ -2312,7 +2395,7 @@ static void clearChainUsage( void )
     }
 }
 
-static void processUsage( language_id language, process_line_fn *process_line )
+static void processUsage( language_id language, process_line_fn *process_line, GROUP *gr )
 {
     unsigned    count;
     unsigned    i;
@@ -2321,14 +2404,13 @@ static void processUsage( language_id language, process_line_fn *process_line )
     OPTION      *o;
     OPTION      **t;
     OPTION      **c;
-    const char  *page;
     char        *str;
 
     maxUsageLen = 0;
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, language ) ) {
+        if( usageValid( o, language, gr ) ) {
             ++count;
             len = genOptionUsageStart( o );
             if( max < len ) {
@@ -2340,21 +2422,13 @@ static void processUsage( language_id language, process_line_fn *process_line )
     t = calloc( count + 1, sizeof( OPTION * ) );
     c = t;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, language ) ) {
+        if( usageValid( o, language, gr ) ) {
             *c++ = o;
         }
     }
     *c = NULL;
     qsort( t, count, sizeof( OPTION * ), usageCmp );
-    page = pageUsage[language];
-    if( page == NULL || *page == '\0' ) {
-        page = pageUsage[LANG_English];
-    }
-    if( page != NULL && *page != '\0' ) {
-        strcpy( tokbuff, page );
-        process_line( language, tokbuff, tokbuff, true );
-    }
-    createUsageHeader( language, process_line );
+
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
         o = t[i];
@@ -2382,9 +2456,61 @@ static void processUsage( language_id language, process_line_fn *process_line )
     }
 }
 
+#define TITLE_LEFT_MARGIN   8
+
+static void outputTitle( char *usage[], language_id lang, process_line_fn *process_line, bool center )
+{
+    const char  *p;
+    size_t      len;
+
+    p = usage[lang];
+    if( p == NULL || *p == '\0' ) {
+        p = usage[LANG_English];
+    }
+    if( p != NULL && *p != '\0' ) {
+        len = strlen( p );
+        if( center && len < 80 ) {
+            len = ( 80 - len ) / 2;
+            if( len > TITLE_LEFT_MARGIN )
+                len = TITLE_LEFT_MARGIN;
+            tokbuff[0] = '\0';
+            fillOutSpaces( tokbuff, len );
+            strcat( tokbuff, p );
+        } else {
+            strcpy( tokbuff, p );
+        }
+        process_line( lang, tokbuff, tokbuff, true );
+    }
+}
+
+static bool checkGroupUsed( language_id lang, GROUP *gr )
+{
+    OPTION  *o;
+
+    for( o = optionList; o != NULL; o = o->next ) {
+        if( usageValid( o, lang, gr ) ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static void outputUsageH( void )
 {
-    processUsage( optFlag.lang, emitUsageH );
+    GROUP       *gr;
+
+    outputTitle( pageUsage, optFlag.lang, emitUsageH, false );
+
+    createUsageHeader( optFlag.lang, emitUsageH );
+
+    gr = NULL;
+    processUsage( optFlag.lang, emitUsageH, gr );
+    for( gr = groupList; gr != NULL; gr = gr->next ) {
+        if( checkGroupUsed( optFlag.lang, gr ) ) {
+            outputTitle( gr->Usage, optFlag.lang, emitUsageH, true );
+            processUsage( optFlag.lang, emitUsageH, gr );
+        }
+    }
 }
 
 static size_t utf8_to_cp932( const char *src, char *dst )
@@ -2461,6 +2587,7 @@ static void dumpInternational( void )
     language_id lang;
     char        fname[16];
     LocaleUsage usage_header;
+    GROUP       *gr;
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
         sprintf( fname, "usage%02u." LOCALE_DATA_EXT, lang );
@@ -2472,7 +2599,19 @@ static void dumpInternational( void )
         usage_header.header.code = LS_Usage;
         usage_header.header.signature = LS_Usage_SIG;
         fwrite( &usage_header, offsetof( LocaleUsage, data ), 1, bfp );
-        processUsage( lang, emitUsageB );
+
+        outputTitle( pageUsage, lang, emitUsageB, false );
+
+        createUsageHeader( lang, emitUsageB );
+
+        gr = NULL;
+        processUsage( lang, emitUsageB, gr );
+        for( gr = groupList; gr != NULL; gr = gr->next ) {
+            if( checkGroupUsed( lang, gr ) ) {
+                outputTitle( gr->Usage, lang, emitUsageB, true );
+                processUsage( lang, emitUsageB, gr );
+            }
+        }
         fputc( 0, bfp );
         fclose( bfp );
         bfp = NULL;
