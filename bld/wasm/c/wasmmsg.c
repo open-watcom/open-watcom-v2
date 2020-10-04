@@ -118,8 +118,16 @@ void PrintfUsage( void )
     unsigned    line_id;
 
     count = PrintBanner();
+    printf( "\n" );
     line_id = MSG_USAGE_BASE;
     MsgGet( line_id++, page_text );
+    MsgGet( line_id++, msg_buff );
+#ifdef BOOTSTRAP
+    printf( msg_buff, "bwasm" );
+#else
+    printf( msg_buff, "wasm" );
+#endif
+    printf( "\n" );
     while( line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
         if( ++count >= 23 ) {
             if( Wait_for_return( page_text ) ) {

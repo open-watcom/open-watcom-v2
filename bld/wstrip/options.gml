@@ -88,20 +88,20 @@
 :jtitle.
 :target. any
 
-:title.  .       input_file:  executable file
-:jtitle. .       input_file:  実行可能ファイル
+:title.  .   input_file:  executable file
+:jtitle. .   input_file:  実行可能ファイル
 :target. any
 
-:title.  .       output_file: optional output executable or '.'
-:jtitle. .       output_file: オプションで出力実行可能ファイルまたは '.'を指定可能
+:title.  .   output_file: optional output executable or '.'
+:jtitle. .   output_file: オプションで出力実行可能ファイルまたは '.'を指定可能
 :target. any
 
-:title.  .       info_file:   optional output debugging or resource information file
-:jtitle. .       info_file:   オプションでデバッグまたはリソース情報ファイルの出力又は
+:title.  .   info_file:   optional output debugging or resource information file
+:jtitle. .   info_file:   オプションでデバッグまたはリソース情報ファイルの出力又は
 :target. any
 
-:title.  .                    or input debugging or resource information file
-:jtitle. .                    入力を指定可能
+:title.  .                or input debugging or resource information file
+:jtitle. .                入力を指定可能
 :target. any
 
 :title.
