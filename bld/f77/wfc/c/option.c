@@ -825,6 +825,6 @@ void    PrtOptions( void ) {
 
 opt_entry       CompOptns[] = {
     #define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags, bit, actionstr, actionneg
-    #include "optinfo.h"
+    #include "wfcopts.h"
     #undef opt
 };

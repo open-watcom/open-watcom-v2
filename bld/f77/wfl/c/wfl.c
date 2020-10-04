@@ -962,6 +962,7 @@ static  void    Usage( void )
 
 opt_entry       CompOptns[] = {
     #define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags
-    #include "optinfo.h"
+    #include "wflopts.h"
+    #include "wfcopts.h"
     #undef opt
 };

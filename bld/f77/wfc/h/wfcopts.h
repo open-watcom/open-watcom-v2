@@ -25,29 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WFC and WFL common options definition data
 *
 ****************************************************************************/
 
-#if defined( __WFL__ )
-//                      Compile and Link Options
-opt( "",           0,                CTG,         NULL,         NULL,       CL_CTG_COMPILE_AND_LINK ),
-opt( "C",          0,                0,           NULL,         NULL,       CL_COMPILE_ONLY ),
-opt( "Y",          0,                0,           NULL,         NULL,       CL_IGNORE_WFL ),
-opt( "P",          0,                0,           NULL,         NULL,       CL_RUN_PROTECT ),
-opt( "FM[=<fn>]",  0,                0,           NULL,         NULL,       CL_GENERATE_MAP ),
-opt( "FE=<fn>",    0,                0,           NULL,         NULL,       CL_NAME_EXECUTABLE ),
-opt( "FD[=<fn>]",  0,                0,           NULL,         NULL,       CL_KEEP_DIRECTIVE ),
-opt( "FI=<fn>",    0,                0,           NULL,         NULL,       CL_INCLUDE_DIRECTIVE ),
-#if _CPU == 8086
-opt( "LP",         0,                0,           NULL,         NULL,       CL_LINK_FOR_OS2 ),
-opt( "LR",         0,                0,           NULL,         NULL,       CL_LINK_FOR_DOS ),
-#endif
-opt( "L=<system>", 0,                0,           NULL,         NULL,       CL_LINK_FOR_SYSTEM ),
-opt( "K=<n>",      0,                0,           NULL,         NULL,       CL_STACK_SIZE ),
-opt( "\"<drctvs>\"", 0,              0,           NULL,         NULL,       CL_LINKER_DIRECTIVES ),
-#endif
+
 //                      File Management Options
 opt( "",           0,                CTG,         NULL,         NULL,       MS_CTG_FILE_MANAGEMENT ),
 opt( "LISt",       OPT_LIST,         CMD|SRC,     NULL,         &BitOption, MS_OPT_LIST ),
