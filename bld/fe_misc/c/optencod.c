@@ -75,7 +75,7 @@ TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
 TAG( USAGE ) \
-TAG( USAGEGRP )
+TAG( USAGEOGRP )
 
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
@@ -592,7 +592,7 @@ static CHAIN *addChain( char *pattern, bool chain )
             if( cn->code_used ) {
                 fail( "CHAIN: option '%s' already defined\n", pattern );
             } else {
-                fail( "USAGEGRP: option '%s' already defined\n", pattern );
+                fail( "USAGEOGRP: option '%s' already defined\n", pattern );
             }
         }
     }
@@ -1309,17 +1309,17 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usagegrp. <option> <usage>
+// :usageogrp. <option> <usage>
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
-static void doUSAGEGRP( const char *p )
+static void doUSAGEOGRP( const char *p )
 {
     CHAIN *cn;
 
     p += skipSpace( p );
     if( *p == '\0' ) {
-        fail( "missing <option> in :usagegrp. tag\n" );
+        fail( "missing <option> in :usageogrp. tag\n" );
     }
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
     cn = addChain( tokbuff, false );

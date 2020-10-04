@@ -53,7 +53,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usageogrp. <option> <usage text>       group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
@@ -221,7 +221,7 @@
 :usage. allow non const initializers for local aggregates or unions
 :jusage.
 
-:usagegrp. ad Make Dependency Information
+:usageogrp. ad Make Dependency Information
 
 :option. ad
 :target. any
@@ -276,7 +276,7 @@
 :usage. assume short integers are aligned
 :jusage. short 整数が整列していると仮定します
 
-:usagegrp. b Application type
+:usageogrp. b Application type
 
 :option. bc
 :target. any
@@ -316,7 +316,7 @@
 :usage. build target is a default windowing application
 :jusage. 構築ターゲットはデフォルト･ウィンドウ･アプリケーションです
 
-:usagegrp. d Debugging Information
+:usageogrp. d Debugging Information
 
 :option. d0
 :target. any
@@ -396,7 +396,7 @@
 :usage. emit code coverage gear
 :jusage.
 
-:usagegrp. ec Default calling convention
+:usageogrp. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -585,7 +585,7 @@
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
-:usagegrp. fp Generate Floating-point code
+:usageogrp. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -650,7 +650,7 @@
 :usage. set code group name
 :jusage. コード･グループ名を設定します
 
-:usagegrp. h Debugging Information format
+:usageogrp. h Debugging Information format
 
 :option. hw
 :target. i86 386 
@@ -681,7 +681,7 @@
 :usage. change char default from unsigned to signed
 :jusage. char型のデフォルトをunsignedからsignedに変更します
 
-:usagegrp. m Memory model
+:usageogrp. m Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -956,7 +956,7 @@
 :usage. VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usagegrp. w Warning control
+:usageogrp. w Warning control
 
 :option. w
 :target. any
@@ -1132,7 +1132,7 @@
 :usage. generate function prototypes using base types
 :jusage. 基本型を使用した関数プロトタイプを生成します
 
-:usagegrp. zk Multi-byte/Unicode character support
+:usageogrp. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

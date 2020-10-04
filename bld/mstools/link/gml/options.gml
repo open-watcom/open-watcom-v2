@@ -46,10 +46,10 @@
 :cmt    --------    --              ------
 :cmt    21-nov-95   M. Hildebrand   Initial implementation.
 :cmt    05-feb-96   T. Schiller     Modified BASE option.
-:cmt	14-feb-96   T. Schiller	    Added /nowopts and /passwopts options.
-:cmt	27-feb-96   Greg Bentz	    Added /nowwarn option.
-:cmt	07-jun-96   M. Hildebrand   Added /nofuzzy option.
-:cmt	10-jul-96   Greg Bentz	    Added /noinvoke option.
+:cmt    14-feb-96   T. Schiller     Added /nowopts and /passwopts options.
+:cmt    27-feb-96   Greg Bentz      Added /nowwarn option.
+:cmt    07-jun-96   M. Hildebrand   Added /nofuzzy option.
+:cmt    10-jul-96   Greg Bentz      Added /noinvoke option.
 :cmt
 :cmt GML Macros used:
 :cmt
@@ -70,7 +70,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usageogrp. <option> <usage text>       group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text

@@ -45,7 +45,7 @@
 :cmt    Modified    By              Reason
 :cmt    --------    --              ------
 :cmt    01-mar-96   A. Kucharczyk   Initial implementation.
-:cmt	10-jul-96   Greg Bentz	    Added /noinvoke option.
+:cmt    10-jul-96   Greg Bentz      Added /noinvoke option.
 :cmt
 :cmt GML Macros used:
 :cmt
@@ -66,7 +66,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usageogrp. <option> <usage text>       group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
@@ -103,7 +103,7 @@
 :special. parse_t010101010101
 :usage. a way to reserve storage space for filenames in OPT_STORAGE
 
-:cmt    /nopp	
+:cmt    /nopp
 :option. nopp
 :target. any
 :internal.
@@ -135,8 +135,8 @@
 :special. parse_I <directory>
 :usage. specifies path for include files
 
-:cmt    /O0	     
-:option. O0	
+:cmt    /O0     
+:option. O0
 :target. any
 :internal.
 :usage. turn off code scheduling optimization
@@ -147,26 +147,26 @@
 :internal.
 :usage. turn on code scheduling optimization (default)
 
-:cmt    /resumption_safe	          
-:option. resumption_safe	     
+:cmt    /resumption_safe          
+:option. resumption_safe     
 :target. any
 :internal.
 :usage. prevent the scheduler from moving floating point operating instructions
 
-:cmt    /symbols_aligned_0mod4	                  
-:option. symbols_aligned_0mod4	             
+:cmt    /symbols_aligned_0mod4                  
+:option. symbols_aligned_0mod4             
 :target. any
 :internal.
 :usage. symbols are longword granular (default)
 
-:cmt    /symbols_not_aligned	                    
-:option. symbols_not_aligned	               
+:cmt    /symbols_not_aligned                    
+:option. symbols_not_aligned               
 :target. any
 :internal.
 :usage. no attempt is made to align symbols
 
-:cmt    /stack_aligned_0mod8	                        
-:option. stack_aligned_0mod8	                   
+:cmt    /stack_aligned_0mod8                        
+:option. stack_aligned_0mod8                   
 :target. any
 :internal.
 :usage. lign stack on a quadword boundary(default)
@@ -177,39 +177,39 @@
 :internal.
 :usage. no attempt is made to align stack
 
-:cmt    /eflag flags	                            
-:option. eflag	                       
+:cmt    /eflag flags                            
+:option. eflag                       
 :target. any
 :number.
 :internal.
 :usage. encode the exception-related flags
 
-:cmt    /QApdst	                               
-:option. QApdst	                        
+:cmt    /QApdst                               
+:option. QApdst                        
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SILENT(default)
 
-:cmt    /QApdsg	                                
-:option. QApdsg	                         
+:cmt    /QApdsg                                
+:option. QApdsg                         
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SIGNAL
 
-:cmt    /QApdsa	                                 
-:option. QApdsa	                          
+:cmt    /QApdsa                                 
+:option. QApdsa                          
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SIGNAL_ALL
 
-:cmt    /QApdie	                                  
-:option. QApdie	                           
+:cmt    /QApdie                                  
+:option. QApdie                           
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_IEEE
 
-:cmt    /QApdca	                                   
-:option. QApdca	                            
+:cmt    /QApdca                                   
+:option. QApdca                            
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_CALLER 
@@ -221,7 +221,7 @@
 :special. parse_U <sym>
 :usage. undefine constants and macros
 
-:cmt    /Zd	
+:cmt    /Zd
 :option. Zd
 :target. any
 :internal.

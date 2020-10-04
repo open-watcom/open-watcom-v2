@@ -53,7 +53,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usageogrp. <option> <usage text>       group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
@@ -205,7 +205,7 @@
 :usage.  Pentium Pro stack calling conventions
 :jusage. Pentium Pro スタック呼び出し規約
 
-:usagegrp. ad Make Dependency info
+:usageogrp. ad Make Dependency info
 
 :option. ad
 :target. any
@@ -257,7 +257,7 @@
 :usage.  build target is operating system <id>
 :jusage. 構築ターゲットはオペレーティング･システム <id>
 
-:usagegrp. b Application type
+:usageogrp. b Application type
 
 :option. bc
 :target. any
@@ -301,7 +301,7 @@
 :usage.  allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
 
-:usagegrp. d Debugging information
+:usageogrp. d Debugging information
 
 :option. d0
 :target. any
@@ -372,7 +372,7 @@
 :usage.  generate browsing information
 :jusage. ブラウズ情報を生成します
 
-:usagegrp. ec Default calling convention
+:usageogrp. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -626,7 +626,7 @@
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
 
-:usagegrp. fp Generate Floating-point code
+:usageogrp. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -686,7 +686,7 @@
 :usage.  set code group name
 :jusage. コード･グループ名を設定します
 
-:usagegrp. h Debugging Information Format
+:usageogrp. h Debugging Information Format
 
 :option. hw
 :target. i86 386 
@@ -747,7 +747,7 @@
 :jusage. OWLリストを出力します
 :internal.
 
-:usagegrp. m Memory model
+:usageogrp. m Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -1061,7 +1061,7 @@
 :usage.  VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usagegrp. w Warning control
+:usageogrp. w Warning control
 
 :option. w
 :target. any
@@ -1300,7 +1300,7 @@
 :usage.  dump informational statistics to stdout
 :jusage. 情報として統計値をstdoutに出力します
 
-:usagegrp. zk Multi-byte/Unicode character support
+:usageogrp. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

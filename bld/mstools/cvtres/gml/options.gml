@@ -42,10 +42,10 @@
 :cmt *       WATCOM International Corporation.                            *
 :cmt **********************************************************************
 :cmt
-:cmt	Modified    By		    Reason
-:cmt	--------    --		    ------
-:cmt	22-may-96   Greg Bentz	    Adapted from rc ms.gml
-:cmt	10-jul-96   Greg Bentz	    Added /noinvoke option.
+:cmt    Modified    By              Reason
+:cmt    --------    --              ------
+:cmt    22-may-96   Greg Bentz      Adapted from rc ms.gml
+:cmt    10-jul-96   Greg Bentz      Added /noinvoke option.
 :cmt
 :cmt GML Macros used:
 :cmt
@@ -55,7 +55,7 @@
 :cmt    :option. <option> <synonym> ...         define an option
 :cmt    :target. <arch1> <arch2> ...            valid for these architectures
 :cmt    :ntarget. <arch1> <arch2> ...           not valid for these architectures
-:cmt	:immediate. <fn>			<fn> is called when option parsed
+:cmt    :immediate. <fn>                        <fn> is called when option parsed
 :cmt    :enumerate. <field> [<value>]           option is one value in <name> enumeration
 :cmt    :number. [<fn>] [<default>]             =<n> allowed; call <fn> to check
 :cmt    :id. [<fn>]                             =<id> req'd; call <fn> to check
@@ -66,7 +66,7 @@
 :cmt    :optional.                              value is optional
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt    :usageogrp. <option> <usage text>       group of options that start with <option>
 :cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
