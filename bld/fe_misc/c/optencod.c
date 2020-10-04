@@ -2355,6 +2355,33 @@ static void expand_tab( const char *s, char *d )
     *d = '\0';
 }
 
+#define TITLE_LEFT_MARGIN   8
+
+static void outputTitle( char *usage[], language_id lang, process_line_fn *process_line, bool center )
+{
+    const char  *p;
+    size_t      len;
+
+    p = usage[lang];
+    if( p == NULL || *p == '\0' ) {
+        p = usage[LANG_English];
+    }
+    if( p != NULL && *p != '\0' ) {
+        len = strlen( p );
+        if( center && len < 80 ) {
+            len = ( 80 - len ) / 2;
+            if( len > TITLE_LEFT_MARGIN )
+                len = TITLE_LEFT_MARGIN;
+            tokbuff[0] = '\0';
+            fillOutSpaces( tokbuff, len );
+            strcat( tokbuff, p );
+        } else {
+            strcpy( tokbuff, p );
+        }
+        process_line( lang, tokbuff, tokbuff, true );
+    }
+}
+
 static void createUsageHeader( char *usage[], language_id lang, process_line_fn *process_line, bool center )
 {
     char *title;
@@ -2455,33 +2482,6 @@ static void processUsage( language_id language, process_line_fn *process_line, G
     free( t );
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
         fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
-    }
-}
-
-#define TITLE_LEFT_MARGIN   8
-
-static void outputTitle( char *usage[], language_id lang, process_line_fn *process_line, bool center )
-{
-    const char  *p;
-    size_t      len;
-
-    p = usage[lang];
-    if( p == NULL || *p == '\0' ) {
-        p = usage[LANG_English];
-    }
-    if( p != NULL && *p != '\0' ) {
-        len = strlen( p );
-        if( center && len < 80 ) {
-            len = ( 80 - len ) / 2;
-            if( len > TITLE_LEFT_MARGIN )
-                len = TITLE_LEFT_MARGIN;
-            tokbuff[0] = '\0';
-            fillOutSpaces( tokbuff, len );
-            strcat( tokbuff, p );
-        } else {
-            strcpy( tokbuff, p );
-        }
-        process_line( lang, tokbuff, tokbuff, true );
     }
 }
 
