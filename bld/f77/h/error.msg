@@ -2141,8 +2141,6 @@ VA_BAD_SYM_IN_NAMELIST [j  c0] NAMELIST %s2の中の%s1は不正です。
 MS Additional Messages
 MS_USAGE_LINE [ o c0] Usage: %s1 {- or /<option>} <file-spec> {- or /<option>}
 MS_USAGE_LINE [jo c0] 使用方法: %s1 {- or /<option>} <file-spec> {- or /<option>}
-MS_USAGE_LINE [ w c0] Usage: %s1 {- or /<option>} <file-spec> {- or /<option>} {<prog-parm>}
-MS_USAGE_LINE [jw c0] 使用方法: %s1 {- or /<option>} <file-spec> {- or /<option>} {<prog-parm>}
 MS_OPT_LIST [ . c0] generate a listing file
 MS_OPT_LIST [j. c0] ﾘｽﾄﾌｧｲﾙの生成
 MS_OPT_PRINT [ . c0] listing file to printer
@@ -2169,8 +2167,6 @@ MS_OPT_EXPLICIT [ . c0] explicit typing required
 MS_OPT_EXPLICIT [j. c0] 明示的な型が必要
 MS_OPT_XLINE [ . c0] extend line length
 MS_OPT_XLINE [j. c0] 行の長さを拡張
-MS_OPT_DEBUG [ w c0] invoke run-time debugger
-MS_OPT_DEBUG [jw c0] ﾗﾝﾀｲﾑﾃﾞﾊﾞｯｶﾞの起動
 MS_OPT_DEBUG [ c c0] /trace /bounds
 MS_OPT_DEBUG [jc c0] /trace /bounds
 MS_OPT_DEFINE [ . c0] define macro
@@ -2179,38 +2175,6 @@ MS_OPT_EXTEND_FORMAT [ . c0] relax FORMAT type checking
 MS_OPT_EXTEND_FORMAT [j. c0] FORMAT ﾀｲﾌﾟﾁｪｯｸの緩和
 MS_OPT_WILD [ . c0] relax wild branch checking
 MS_OPT_WILD [j. c0] ﾜｲﾙﾄﾞﾌﾞﾗﾝﾁﾁｪｯｸの緩和
-MS_OPT_OBJECT [ w c0] generate object code
-MS_OPT_OBJECT [jw c0] ｵﾌﾞｼﾞｪｸﾄｺｰﾄﾞの生成
-MS_OPT_EDIT [ w c0] use editor interface
-MS_OPT_EDIT [jw c0] ｴﾃﾞｨﾀｰｲﾝﾀｰﾌｪｰｽの使用
-MS_OPT_LINK [ w c0] generate an executable
-MS_OPT_LINK [jw c0] 実行ﾌｧｲﾙの生成
-MS_OPT_RUN [ w c0] run the executable file
-MS_OPT_RUN [jw c0] 実行ﾌｧｲﾙの起動
-MS_OPT_XTYPE [ w c0] unit 6 output to terminal
-MS_OPT_XTYPE [jw c0] 装置6 は端末に接続
-MS_OPT_LOG_IO [ w c0] log unit *
-MS_OPT_LOG_IO [jw c0] log unit *
-MS_OPT_CHECK [ w c0] undefined variable checking
-MS_OPT_CHECK [jw c0] 未定義変数のﾁｪｯｸ
-MS_OPT_ARRCHECK [ w c0] array type checking
-MS_OPT_ARRCHECK [jw c0] 配列ﾀｲﾌﾟのﾁｪｯｸ
-MS_OPT_ST_LIM [ w c0] statement limit
-MS_OPT_ST_LIM [jw c0] 文ﾘﾐｯﾄ
-MS_OPT_PG_LIM [ w c0] page limit
-MS_OPT_PG_LIM [jw c0] ﾍﾟｰｼﾞﾘﾐｯﾄ
-MS_OPT_TM_LIM [ w c0] time limit
-MS_OPT_TM_LIM [jw c0] ﾀｲﾑﾘﾐｯﾄ
-MS_OPT_MM_LIM [ w c0] code size limit
-MS_OPT_MM_LIM [jw c0] ｺｰﾄﾞｻｲｽﾞﾘﾐｯﾄ
-MS_OPT_PAGE_SIZE [ w c0] number of lines per page
-MS_OPT_PAGE_SIZE [jw c0] 1ﾍﾟｰｼﾞあたりの行数
-MS_OPT_MATH_INT_OVER [ w c0] report integer overflows
-MS_OPT_MATH_INT_OVER [jw c0] 整数ｵｰﾊﾞｰﾌﾛｰの報告
-MS_OPT_MATH_FLT_OVER [ w c0] report float-pt. overflows
-MS_OPT_MATH_FLT_OVER [jw c0] 浮動小数点ｵｰﾊﾞｰﾌﾛｰの報告
-MS_OPT_MATH_FLT_UNDER [ w c0] report float-pt. underflows
-MS_OPT_MATH_FLT_UNDER [jw c0] 浮動小数点ｱﾝﾀﾞｰﾌﾛｰの報告
 MS_OPT_SYNTAX [ c c0] syntax check only
 MS_OPT_SYNTAX [jc c0] 文法ﾁｪｯｸのみ
 MS_OPT_DFLT_LIB [ c c0] generate default libraries
@@ -2359,8 +2323,6 @@ MS_INTR_FUNC [   c0] intrinsic function
 MS_INTR_FUNC [j  c0] 組み込み関数
 MS_EXT_PROC [ o c0] external subprogram
 MS_EXT_PROC [jo c0] 外部副ﾌﾟﾛｸﾞﾗﾑ
-MS_EXT_PROC [ w  0] external subprogram
-MS_EXT_PROC [jw  0] 外部副ﾌﾟﾛｸﾞﾗﾑ
 MS_ASSIGN [   c0] assignment
 MS_ASSIGN [j  c0] 代入
 MS_ARITH_IF [   c0] arithmetic if
@@ -2375,12 +2337,6 @@ MS_COLUMN [   c0] column %d1,
 MS_COLUMN [j  c0] ｶﾗﾑ %d1,
 MS_IN [   c0] in %s1,
 MS_IN [j  c0] in %s1,
-MS_NO_EDITOR [ w c0] Unable to start editor
-MS_NO_EDITOR [jw c0] ｴﾃﾞｨﾀｰが起動できません
-MS_WATFOR_EXIT [ w c0] To exit, press Ctrl/Z and then press Enter
-MS_WATFOR_EXIT [jw c0] Ctrl/Zを押して改行すると終了します。
-MS_CANT_EXEC [ w c0] unable to execute command
-MS_CANT_EXEC [jw c0] ｺﾏﾝﾄﾞが実行できません。
 MS_STATISTICS [   c0] %d1 statements, %i2 bytes, %d3 extensions, %d4 warnings, %d5 errors
 MS_STATISTICS [j  c0] %d1 ｽﾃｰﾄﾒﾝﾄ, %i2 ﾊﾞｲﾄ, %d3 拡張ﾒｯｾｰｼﾞ, %d4 警告ｴﾗｰ, %d5 ｴﾗｰ
 MS_CODE_SIZE [   c0] Code size (in bytes):
@@ -2399,68 +2355,6 @@ MS_TRACE_INFO [   r0] - Executing line %u1 in file %s2
 MS_TRACE_INFO [j  r0] - 実行ﾗｲﾝ %u1 ﾌｧｲﾙ %s2
 MS_CALLED_FROM [   r0] - Called from line %u1 in file %s2
 MS_CALLED_FROM [j  r0] - %s2 ﾌｧｲﾙ, %u1 行からの呼び出し
-MS_ERR_WRT_LST [ w r0] error writing to listing file - %s1
-MS_ERR_WRT_LST [jw r0] ﾘｽﾄﾌｧｲﾙへの書き込みｴﾗｰ - %s1
-MS_EXEC_IN [ w r0] - Executing in
-MS_EXEC_IN [jw r0] - 実行中 
-MS_CALLED_FROM_LG [ w r0] - Called from
-MS_CALLED_FROM_LG [jw r0] - 呼び出し 
-MS_TB_LIBRARY [ w r0] %s1, statement %u2 in library member %s3
-MS_TB_LIBRARY [jw r0] %s1, ｽﾃｰﾄﾒﾝﾄ %u2 ﾗｲﾌﾞﾗﾘ番号 %s3
-MS_TB_FILE [ w r0] %s1, statement %u2 in file %s3
-MS_TB_FILE [jw r0] %s1, ｽﾃｰﾄﾒﾝﾄ %u2 ﾌｧｲﾙ %s3
-MS_INTERRUPT_PROMPT [ w r0] Do you really want to stop (y/n)?
-MS_INTERRUPT_PROMPT [jw r0] 中止しますか (y/n)?
-MS_NO_8087 [ w r0] *ERR* math coprocessor is not present\r\n
-MS_NO_8087 [jw r0] *ERR* 数値演算ｺﾌﾟﾛｾｯｻがありません。\r\n
-MS_DB_BAD_ISN [ w r0] invalid ISN
-MS_DB_BAD_ISN [jw r0] ISNが無効です。
-MS_DB_ENTERED [ w r0] Debugger entered at %s1
-MS_DB_ENTERED [jw r0] %s1でﾃﾞﾊﾞｯｶﾞに入りました。
-MS_DB_BREAK [ w r0] Breakpoint set at %d1
-MS_DB_BREAK [jw r0] %d1にﾌﾞﾚｰｸﾎﾟｲﾝﾄを設定します。
-MS_DB_RET_FROM [ w r0] Returned from %s1
-MS_DB_RET_FROM [jw r0] %s1から戻りました。
-MS_DB_TRACE_INSTR [ w r0] Into[I key] Over[space bar] Next[N key] Exit[Enter key]
-MS_DB_TRACE_INSTR [jw r0] ｽﾃｯﾌﾟｲﾝ[I key] ｽﾃｯﾌﾟｵｰﾊﾞｰ[space bar] 次行[N key] 終了[Enter key]
-MS_DB_VAR_NOT_FOUND [ w r0] variable not found
-MS_DB_VAR_NOT_FOUND [jw r0] 変数が見つかりません。
-MS_DB_ARR_NOT_DIMMED [ w r0] array dimensions not yet established
-MS_DB_ARR_NOT_DIMMED [jw r0] 配列の次元が設定されていません。
-MS_DB_SYNTAX_ERR [ w r0] not understood
-MS_DB_SYNTAX_ERR [jw r0] ｼﾝﾀｯｸｽｴﾗｰです。
-MS_DB_SSTR_BAD [ w r0] invalid substring list
-MS_DB_SSTR_BAD [jw r0] 部分文字列が無効です。
-MS_DB_SSCR_BAD [ w r0] invalid subscript list
-MS_DB_SSCR_BAD [jw r0] 添え字が無効です。
-MS_DB_BAD_UNIT [ w r0] unit not found
-MS_DB_BAD_UNIT [jw r0] 装置が見つかりません。
-MS_DB_NO_LISTING_FILE [ w r0] unable to open listing file
-MS_DB_NO_LISTING_FILE [jw r0] ﾘｽﾄﾌｧｲﾙがｵｰﾌﾟﾝできません。
-MS_DB_HELP_1 [ w r0] Breakpoint[/c] [<isn>].....show/set/clear breakpoint
-MS_DB_HELP_1 [jw r0] Breakpoint[/c] [<isn>].....show/set/clear ﾌﾞﾚｰｸﾎﾟｲﾝﾄ
-MS_DB_HELP_2 [ w r0] Display [*|<isn>[:<isn>]]..display source
-MS_DB_HELP_2 [jw r0] Display [*|<isn>[:<isn>]]..ｿｰｽｺｰﾄﾞの表示
-MS_DB_HELP_3 [ w r0] Go [<isn>].................go [until <isn> reached]
-MS_DB_HELP_3 [jw r0] Go [<isn>].................実行 [<isn> まで]
-MS_DB_HELP_4 [ w r0] Help.......................display this help screen
-MS_DB_HELP_4 [jw r0] Help.......................ﾍﾙﾌﾟ画面の表示
-MS_DB_HELP_5 [ w r0] Logio [<unit>].............list logged units or toggle logging of unit
-MS_DB_HELP_5 [jw r0] Logio [<unit>].............指定装置の入出力記録の表示または記録のON/OFF指定
-MS_DB_HELP_6 [ w r0] Quit.......................quit debugger
-MS_DB_HELP_6 [jw r0] Quit.......................ﾃﾞﾊﾞｯｶﾞの終了
-MS_DB_HELP_7 [ w r0] Trace......................enter trace mode
-MS_DB_HELP_7 [jw r0] Trace......................ﾄﾚｰｽﾓｰﾄﾞの入力
-MS_DB_HELP_8 [ w r0] Unit [<unit>]..............list information for connected unit(s)
-MS_DB_HELP_8 [jw r0] Unit [<unit>]..............接続装置に関する情報の表示
-MS_DB_HELP_9 [ w r0] Where......................display current traceback information
-MS_DB_HELP_9 [jw r0] Where......................現在の実行経過情報の表示
-MS_DB_HELP_10 [ w r0] ! [<cmd>]..................system services
-MS_DB_HELP_10 [jw r0] ! [<cmd>]..................ｼｽﾃﾑｻｰﾋﾞｽ
-MS_DB_HELP_11 [ w r0] / <x> <y>..................assign <y> to <x>
-MS_DB_HELP_11 [jw r0] / <x> <y>..................<y> を <x>に割り当てる
-MS_DB_HELP_12 [ w r0] ? [(z|a)] [<x>[,<x>]...]...print variables using specified format
-MS_DB_HELP_12 [jw r0] ? [(z|a)] [<x>[,<x>]...]...書式仕様に従った変数情報の表示
 MS_CTG_FILE_MANAGEMENT [ . c0] *File Management Options*
 MS_CTG_FILE_MANAGEMENT [j. c0] *ﾌｧｲﾙﾏﾈｰｼﾞﾒﾝﾄｵﾌﾟｼｮﾝ*
 MS_CTG_DIAGNOSTIC [ . c0] *Diagnostic Options*
@@ -2543,16 +2437,6 @@ MS_OPT_UNIT_6_CC [ . c0] devices are carriage control
 MS_OPT_UNIT_6_CC [j. c0] 装置はｷｬﾘｯｼﾞ制御されます
 MS_OPT_QUIET [ . c0] operate quietly
 MS_OPT_QUIET [j. c0] 起動ﾒｯｾｰｼﾞを表示しない
-MS_EXECUTION_TIME [ w c0] Execution time (in seconds):
-MS_EXECUTION_TIME [jw c0] 実行時間 (秒):
-MS_LOCAL_DATA_SIZE [ w c0] Local data size (in bytes):
-MS_LOCAL_DATA_SIZE [jw c0] ﾛｰｶﾙﾃﾞｰﾀの大きさ (ﾊﾞｲﾄ):
-MS_GLOBAL_DATA_SIZE [ w c0] Global data size (in bytes):
-MS_GLOBAL_DATA_SIZE [jw c0] ｸﾞﾛｰﾊﾞﾙﾃﾞｰﾀの大きさ (ﾊﾞｲﾄ):
-MS_BYTES_FREE [ w c0] Object bytes free:
-MS_BYTES_FREE [jw c0] ｵﾌﾞｼﾞｪｸﾄ･ﾊﾞｲﾄ･ﾌﾘｰ:
-MS_STATEMENTS_EXECUTED [ w c0] Number of statements executed:
-MS_STATEMENTS_EXECUTED [jw c0] 実行される文の数:
 MS_OPT_BROWSE [ . c0] generate browse information
 MS_OPT_BROWSE [j. c0] ﾌﾞﾗｳｽﾞ情報の生成
 MS_OPT_EXTEND_REAL [ . c0] extend float-pt. precision
