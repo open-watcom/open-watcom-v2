@@ -77,6 +77,9 @@ def_tag( errbreak ) \
 def_tag( style ) \
 def_tag( jck ) \
 
+#define NEXT_ARG_CHECK() \
+        --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( 1 ); }
+
 typedef enum {
 #define def_tag( e ) TAG_##e,
     ALL_TAGS
@@ -351,98 +354,73 @@ static void initFILE( FILE **f, const char *n, const char *m )
     }
 }
 
-static int processOptions( int argc, char **argv )
+#define NUM_FILES   4
+
+static bool processOptions( int argc1, char **argv1 )
 {
-    if( strcmp( *argv, "-w" ) == 0 ) {
+    if( argc1 < NUM_FILES ) {
+        return( true );
+    }
+    if( strcmp( *argv1, "-w" ) == 0 ) {
         flags.warnings_always_rebuild = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-s" ) == 0 ) {
+    if( strcmp( *argv1, "-s" ) == 0 ) {
         flags.no_warn = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-i" ) == 0 ) {
+    if( strcmp( *argv1, "-i" ) == 0 ) {
         flags.international = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-ip" ) == 0 ) {
+    if( strcmp( *argv1, "-ip" ) == 0 ) {
         flags.ignore_prefix = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-q" ) == 0 ) {
+    if( strcmp( *argv1, "-q" ) == 0 ) {
         flags.quiet = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-p" ) == 0 ) {
+    if( strcmp( *argv1, "-p" ) == 0 ) {
         flags.gen_pick = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-g" ) == 0 ) {
+    if( strcmp( *argv1, "-g" ) == 0 ) {
         flags.gen_gpick = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( *argv, "-utf8" ) == 0 ) {
+    if( strcmp( *argv1, "-utf8" ) == 0 ) {
         flags.out_utf8 = true;
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
     flags.max_len = 127;
-    if( strcmp( *argv, "-len" ) == 0 ) {
+    if( strcmp( *argv1, "-len" ) == 0 ) {
         long    val;
 
-        ++argv;
-        if( --argc < 4 ) {
-            return( 1 );
-        }
-        val = atol( *argv );
-        ++argv;
+        NEXT_ARG_CHECK();
+        val = atol( *argv1 );
         if( val > 0 ) {
             flags.max_len = (unsigned)val;
         }
-        if( --argc < 4 ) {
-            return( 1 );
-        }
+        NEXT_ARG_CHECK();
     }
-    if( argc != 4 )
-        return( 1 );
-    ifname = *argv;
-    initFILE( &i_gml, *argv, "rb" );
-    ++argv;
-    initFILE( &o_msgc, *argv, "w" );
-    ++argv;
-    initFILE( &o_msgh, *argv, "w" );
-    ++argv;
-    initFILE( &o_levh, *argv, "w" );
-    ++argv;
-    if( flags.international ) {
-        if( !flags.out_utf8 ) {
-            qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-        }
+    if( argc1 != NUM_FILES )
+        return( true );
+    ifname = *argv1;
+    initFILE( &i_gml, *argv1, "rb" );
+    --argc1;
+    ++argv1;
+    initFILE( &o_msgc, *argv1, "w" );
+    --argc1;
+    ++argv1;
+    initFILE( &o_msgh, *argv1, "w" );
+    --argc1;
+    ++argv1;
+    initFILE( &o_levh, *argv1, "w" );
+    if( !flags.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
-    return( 0 );
+    return( false );
 }
 
 static size_t skipSpace( const char *start )
@@ -1745,7 +1723,7 @@ int main( int argc, char **argv )
     if( !langs_ok )
         fatal( "language index mismatch\n" );
 
-    if( argc < 4 || processOptions( argc - 1, argv + 1 ) ) {
+    if( processOptions( argc - 1, argv + 1 ) ) {
         error( "fatal: invalid argument\n\n" );
         fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
                "\n"

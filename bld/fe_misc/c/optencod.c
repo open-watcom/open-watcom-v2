@@ -79,6 +79,9 @@ TAG( USAGE ) \
 TAG( USAGEGRP ) \
 TAG( USAGEOGRP )
 
+#define NEXT_ARG_CHECK() \
+        --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( true ); }
+
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
 #define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
@@ -650,84 +653,80 @@ static CHAIN *addChain( char *pattern, bool chain )
     return( cn );
 }
 
-static void procCmdLine( int argc, char **argv )
+#define NUM_FILES   4
+
+static bool procCmdLine( int argc1, char **argv1 )
 {
     const char  **t;
     unsigned    mask;
     char const  *p;
 
-    if( argc < 5 ) {
-        dumpUsage();
-        exit( EXIT_FAILURE );
+    if( argc1 < NUM_FILES ) {
+        return( true );
     }
-    if( strcmp( argv[1], "-i" ) == 0 ) {
+    if( strcmp( *argv1, "-i" ) == 0 ) {
         optFlag.international = true;
-        --argc;
-        ++argv;
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( argv[1], "-l" ) == 0 ) {
-        optFlag.lang = atoi( argv[2] );
-        argc -= 2;
-        argv += 2;
+    if( strcmp( *argv1, "-l" ) == 0 ) {
+        NEXT_ARG_CHECK();
+        optFlag.lang = atoi( *argv1 );
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( argv[1], "-n" ) == 0 ) {
+    if( strcmp( *argv1, "-n" ) == 0 ) {
         optFlag.zero_term = true;
-        --argc;
-        ++argv;
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( argv[1], "-q" ) == 0 ) {
+    if( strcmp( *argv1, "-q" ) == 0 ) {
         optFlag.quiet = true;
-        --argc;
-        ++argv;
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( argv[1], "-u" ) == 0 ) {
-        mfp = fopen( argv[2], "wb" );
+    if( strcmp( *argv1, "-u" ) == 0 ) {
+        NEXT_ARG_CHECK();
+        mfp = fopen( *argv1, "wb" );
         if( mfp == NULL )
-            fail( "cannot open '%s' for output", argv[2] );
-        argc -= 2;
-        argv += 2;
+            fail( "cannot open '%s' for output", *argv1 );
+        NEXT_ARG_CHECK();
     }
-    if( strcmp( argv[1], "-utf8" ) == 0 ) {
+    if( strcmp( *argv1, "-utf8" ) == 0 ) {
         optFlag.out_utf8 = true;
-        --argc;
-        ++argv;
+        NEXT_ARG_CHECK();
     }
-    if( argc < 5 ) {
-        dumpUsage();
-        exit( EXIT_FAILURE );
-    }
-    ++argv;
-    gfp = fopen( argv[0], "r" );
+    gfp = fopen( *argv1, "r" );
     if( gfp == NULL )
-        fail( "cannot open '%s' for input", argv[0] );
-    ++argv;
-    if( strcmp( argv[0], "." ) == 0 ) {
+        fail( "cannot open '%s' for input", *argv1 );
+    --argc1;
+    ++argv1;
+    if( strcmp( *argv1, "." ) == 0 ) {
         ofp = NULL;
     } else {
-        ofp = fopen( argv[0], "w+" );
+        ofp = fopen( *argv1, "w+" );
         if( ofp == NULL ) {
-            fail( "cannot open '%s' for output", argv[0] );
+            fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    ++argv;
-    if( strcmp( argv[0], "." ) == 0 ) {
+    --argc1;
+    ++argv1;
+    if( strcmp( *argv1, "." ) == 0 ) {
         pfp = NULL;
     } else {
-        pfp = fopen( argv[0], "w+" );
+        pfp = fopen( *argv1, "w+" );
         if( pfp == NULL ) {
-            fail( "cannot open '%s' for output", argv[0] );
+            fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    ++argv;
-    if( strcmp( argv[0], "." ) == 0 ) {
+    --argc1;
+    ++argv1;
+    if( strcmp( *argv1, "." ) == 0 ) {
         ufp = NULL;
     } else {
-        ufp = fopen( argv[0], "w+" );
+        ufp = fopen( *argv1, "w+" );
         if( ufp == NULL ) {
-            fail( "cannot open '%s' for output", argv[0] );
+            fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    ++argv;
+    --argc1;
+    ++argv1;
     for( t = validTargets; *t != NULL; ++t ) {
         addTarget( *t );
     }
@@ -740,18 +739,16 @@ static void procCmdLine( int argc, char **argv )
         fail( "invalid target name '%s'\n", p );
     }
     targetMask |= targetAnyMask;
-    for( ; *argv != NULL; ++argv ) {
-        p = *argv;
+    for( ; (p = *argv1) != NULL; --argc1, ++argv1 ) {
         if( (mask = findTarget( p )) == 0 ) {
             fail( "invalid target name '%s'\n", p );
         }
         targetMask |= mask;
     }
-    if( optFlag.international ) {
-        if( !optFlag.out_utf8 ) {
-            qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-        }
+    if( !optFlag.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
+    return( false );
 }
 
 static size_t skipSpace( const char *start )
@@ -2637,7 +2634,10 @@ int main( int argc, char **argv )
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fail( "language index mismatch\n" );
-    procCmdLine( argc, argv );
+    if( procCmdLine( argc - 1, argv + 1 ) ) {
+        dumpUsage();
+        exit( EXIT_FAILURE );
+    }
     readInputFile();
     assignChainToOptions();
     checkForMissingUsages();
