@@ -162,13 +162,13 @@ typedef struct title {
     struct title    *next;
     unsigned        target;
     unsigned        ntarget;
-    char            *lang_title[LANG_MAX];
-    char            *lang_titleu[LANG_MAX];
+    const char      *lang_title[LANG_MAX];
+    const char      *lang_titleu[LANG_MAX];
 } TITLE;
 
 typedef struct chain {
     struct chain    *next;
-    char            *Usage[LANG_MAX];
+    const char      *Usage[LANG_MAX];
     size_t          name_len;
     size_t          pattern_len;
     boolbit         usage_used : 1;
@@ -178,7 +178,7 @@ typedef struct chain {
 
 typedef struct group {
     struct group    *next;
-    char            *Usage[LANG_MAX];
+    const char      *Usage[LANG_MAX];
     char            pattern[1];
 } GROUP;
 
@@ -186,7 +186,7 @@ typedef struct group {
 typedef struct option {
     struct option   *next;
     struct option   *synonym;
-    char            *lang_usage[LANG_MAX];
+    const char      *lang_usage[LANG_MAX];
     char            *check;
     char            *special;
     char            *special_arg_usage;
@@ -251,7 +251,7 @@ static char         alternateEqual;
 static CHAIN        *lastChain;
 static GROUP        *lastGroup;
 static size_t       maxUsageLen;
-static char         *pageUsage[LANG_MAX];
+static const char   *pageUsage[LANG_MAX];
 static unsigned     targetMask;
 static unsigned     targetAnyMask;
 static unsigned     targetDbgMask;
@@ -2249,20 +2249,19 @@ static void fillOutSpaces( char *buff, size_t n )
     *p = '\0';
 }
 
-static bool usageValid( OPTION *o, language_id language, GROUP *gr )
+static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
 {
+    const char  *usage;
+
     if( o->group != gr )
         return( false );
     if( o->synonym != NULL )
         return( false );
-    if( o->lang_usage[language] == NULL )
-        return( false );
-    if( o->lang_usage[language][0] == '\0' )
-        return( false );
     if( o->is_internal && ( targetMask & targetDbgMask ) == 0 ) {
         return( false );
     }
-    return( true );
+    usage = o->lang_usage[lang];
+    return( usage != NULL && usage[0] != '\0' );
 }
 
 static void emitUsageH( language_id lang, const char *str, const char *stru, bool page_flag )
@@ -2295,11 +2294,11 @@ static void emitUsageH( language_id lang, const char *str, const char *stru, boo
 
 }
 
-static char *createChainHeader( OPTION **o, language_id language, size_t max )
+static char *createChainHeader( OPTION **o, language_id lang, size_t max )
 {
-    char    *usage;
-    CHAIN   *cn;
-    size_t  len;
+    const char  *usage;
+    CHAIN       *cn;
+    size_t      len;
 
     cn = (*o)->chain;
     hdrbuff[0] = '-';
@@ -2316,7 +2315,7 @@ static char *createChainHeader( OPTION **o, language_id language, size_t max )
             ++len;
         }
     }
-    usage = cn->Usage[language];
+    usage = cn->Usage[lang];
     if( usage == NULL || *usage == '\0' ) {
         usage = cn->Usage[LANG_English];
     }
@@ -2357,7 +2356,7 @@ static void expand_tab( const char *s, char *d )
 
 #define TITLE_LEFT_MARGIN   8
 
-static void outputTitle( char *usage[], language_id lang, process_line_fn *process_line, bool center )
+static void outputTitle( const char *usage[], language_id lang, process_line_fn *process_line, bool center )
 {
     const char  *p;
     size_t      len;
@@ -2382,11 +2381,11 @@ static void outputTitle( char *usage[], language_id lang, process_line_fn *proce
     }
 }
 
-static void createUsageHeader( char *usage[], language_id lang, process_line_fn *process_line, bool center )
+static void createUsageHeader( const char *usage[], language_id lang, process_line_fn *process_line, bool center )
 {
-    char *title;
-    char *titleu;
-    TITLE *t;
+    const char  *title;
+    const char  *titleu;
+    TITLE       *t;
 
     outputTitle( usage, lang, process_line, center );
 
@@ -2424,7 +2423,7 @@ static void clearChainUsage( void )
     }
 }
 
-static void processUsage( language_id language, process_line_fn *process_line, GROUP *gr )
+static void processUsage( language_id lang, process_line_fn *process_line, GROUP *gr )
 {
     unsigned    count;
     unsigned    i;
@@ -2439,7 +2438,7 @@ static void processUsage( language_id language, process_line_fn *process_line, G
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, language, gr ) ) {
+        if( usageValid( o, lang, gr ) ) {
             ++count;
             len = genOptionUsageStart( o );
             if( max < len ) {
@@ -2451,7 +2450,7 @@ static void processUsage( language_id language, process_line_fn *process_line, G
     t = calloc( count + 1, sizeof( OPTION * ) );
     c = t;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, language, gr ) ) {
+        if( usageValid( o, lang, gr ) ) {
             *c++ = o;
         }
     }
@@ -2463,10 +2462,10 @@ static void processUsage( language_id language, process_line_fn *process_line, G
         o = t[i];
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
-            str = createChainHeader( &t[i], language, max );
-            process_line( language, tokbuff, tokbuff, false );
+            str = createChainHeader( &t[i], lang, max );
+            process_line( lang, tokbuff, tokbuff, false );
             if( str != NULL ) {
-                process_line( language, str, str, false );
+                process_line( lang, str, str, false );
             }
         }
         tokbuff[0] = '\0';
@@ -2476,11 +2475,11 @@ static void processUsage( language_id language, process_line_fn *process_line, G
         if( o->chain != NULL ) {
             strcat( tokbuff, "- " );
         }
-        strcat( tokbuff, o->lang_usage[language] );
-        process_line( language, tokbuff, tokbuff, false );
+        strcat( tokbuff, o->lang_usage[lang] );
+        process_line( lang, tokbuff, tokbuff, false );
     }
     free( t );
-    if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
+    if( ( maxUsageLen / langMaxChar[lang] ) > CONSOLE_WIDTH ) {
         fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
 }
