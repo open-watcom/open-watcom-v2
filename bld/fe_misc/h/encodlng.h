@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,10 @@
 
 #define LANG_DEFS \
 LANG_DEF( English, 1 ) \
-LANG_DEF( Japanese, 2 ) \
+LANG_DEF( Japanese, 2 )
 
 typedef enum {
+    LANG_NONE = -1,
     #define LANG_DEF( id, dbcs )    LANG_##id,
     LANG_DEFS
     #undef LANG_DEF
