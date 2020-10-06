@@ -1601,23 +1601,31 @@ static void makeFieldName( const char *pattern, char *f )
     *f = '\0';
 }
 
+static void initOptionFields( void )
+{
+    OPTION *o;
+
+    for( o = optionList; o != NULL; o = o->next ) {
+        if( o->synonym == NULL ) {
+            if( o->field_name == NULL ) {
+                makeFieldName( o->pattern, tokbuff );
+                o->field_name = strdup( tokbuff );
+            }
+            if( o->value_field_name == NULL ) {
+                strcpy( tokbuff, o->field_name );
+                strcat( tokbuff, "_value" );
+                o->value_field_name = strdup( tokbuff );
+            }
+        }
+    }
+}
+
 static void startParserH( void )
 {
     OPTION *o;
     NAME *e;
 
-    if( ofp == NULL ) {
-        for( o = optionList; o != NULL; o = o->next ) {
-            if( o->synonym == NULL ) {
-                makeFieldName( o->pattern, tokbuff );
-                if( o->field_name == NULL ) {
-                    o->field_name = strdup( tokbuff );
-                }
-                strcat( tokbuff, "_value" );
-                o->value_field_name = strdup( tokbuff );
-            }
-        }
-    } else {
+    if( ofp != NULL ) {
         fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
         fprintf( ofp, "struct opt_string {\n" );
         fprintf( ofp, "    OPT_STRING *next;\n" );
@@ -1633,27 +1641,20 @@ static void startParserH( void )
         fprintf( ofp, "    unsigned     timestamp;\n" );
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
-                makeFieldName( o->pattern, tokbuff );
-                if( o->field_name == NULL ) {
-                    o->field_name = strdup( tokbuff );
-                }
-                strcat( tokbuff, "_value" );
-                o->value_field_name = strdup( tokbuff );
                 if( o->is_number ) {
                     if( HAS_OPT_NUMBER( o ) ) {
-                        fprintf( ofp, "    OPT_NUMBER   *%s;\n", tokbuff );
+                        fprintf( ofp, "    OPT_NUMBER   *%s;\n", o->value_field_name );
                     } else {
-                        fprintf( ofp, "    unsigned     %s;\n", tokbuff );
+                        fprintf( ofp, "    unsigned     %s;\n", o->value_field_name );
                     }
                 } else if( o->is_char ) {
-                    fprintf( ofp, "    int          %s;\n", tokbuff );
+                    fprintf( ofp, "    int          %s;\n", o->value_field_name );
                 } else if( HAS_OPT_STRING( o ) ) {
-                    fprintf( ofp, "    OPT_STRING   *%s;\n", tokbuff );
+                    fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
                 }
                 if( o->is_timestamp ) {
                     if( o->enumerate == NULL ) {
-                        makeFieldName( o->pattern, tokbuff );
-                        fprintf( ofp, "    unsigned     %s_timestamp;\n", tokbuff );
+                        fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
                     }
                 }
             }
@@ -1666,9 +1667,8 @@ static void startParserH( void )
         }
         for( o = optionList; o != NULL; o = o->next ) {
             if( o->synonym == NULL ) {
-                makeFieldName( o->pattern, tokbuff );
                 if( o->enumerate == NULL ) {
-                    fprintf( ofp, "    boolbit      %s : 1;\n", tokbuff );
+                    fprintf( ofp, "    boolbit      %s : 1;\n", o->field_name );
                 }
             }
         }
@@ -2642,6 +2642,8 @@ int main( int argc, char **argv )
     assignChainToOptions();
     checkForMissingUsages();
     stripUselessOptions();
+    initOptionFields();
+
     startParserH();
     outputFN_PROCESS();
     outputFN_INIT();
