@@ -83,20 +83,6 @@ def_tag( jck ) \
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( 1 ); }
 
-typedef enum {
-#define def_tag( e ) TAG_##e,
-    ALL_TAGS
-#undef def_tag
-    TAG_MAX
-} tag_id;
-
-static const char *tagNames[] = {
-#define def_tag( e ) #e "." ,
-    ALL_TAGS
-#undef def_tag
-    NULL
-};
-
 #define ALL_MSG_TYPES \
 def_msg_type( ERROR, "ERR_" ) \
 def_msg_type( WARNING, "WARN_" ) \
@@ -107,12 +93,101 @@ def_msg_type( ANSIWARN, "ANSIWARN_" ) \
 def_msg_type( STYLE, "WARN_" ) \
 def_msg_type( JCK, "JCK_" ) \
 
+// encoding
+#define MAX_MSGWORD_LEN 31
+#define ENC_BIT         0x80
+#define LARGE_BIT       0x40
+#define USE_SMALL_ENC   0x3f
+
+#define NO_INDEX        (unsigned)(-1)
+
+#define IS_ASCII(c)     (c < 0x80)
+
+#define LINE_SIZE       (512)
+
+typedef enum {
+#define def_tag( e ) TAG_##e,
+    ALL_TAGS
+#undef def_tag
+    TAG_MAX
+} tag_id;
+
 typedef enum {
 #define def_msg_type( e, p )    MSG_TYPE_##e,
     ALL_MSG_TYPES
     def_msg_type( END, "" )
 #undef def_msg_type
 } msg_type;
+
+typedef enum {
+    EK_NULL,
+    EK_BAD,
+    EK_GOOD,
+} err_type;
+
+typedef struct msggroup {
+    struct msggroup *next;
+    char        prefix[3];
+    unsigned    msgIndex;    //first msg in group
+    unsigned    emsgIndex;   //last message + 1
+    unsigned    num;
+    char        name[1];
+} msggroup, MSGGROUP;
+
+typedef struct msgword {
+    struct msgword *sortedByName[2];
+    struct msgword *sortedByRef[2];
+    struct msgword *all;
+    unsigned    len;
+    unsigned    index;
+    unsigned    references;
+    char        name[1];
+} msgword, MSGWORD;
+
+typedef struct msgwordref {
+    struct msgwordref *next;
+    MSGWORD     *word;
+} msgwordref, MSGWORDREF;
+
+typedef struct msgsym {
+    struct msgsym *next;
+    struct msgsym *sortedByName[2];
+    char        *lang_txt[LANG_MAX];
+    char        *fname;
+    unsigned    line;
+    unsigned    index;
+    unsigned    grpIndex;  //msg index in group
+    msg_type    mtype;
+    unsigned    level;
+    unsigned    style : 1;
+    MSGGROUP    *grp;
+    MSGWORDREF  *words;
+    char        name[1];
+} msgsym, MSGSYM;
+
+typedef struct data_word_tables {
+    unsigned    current_base;
+    unsigned    *word_base;
+    MSGWORD     **keep_base;
+    unsigned    current_text;
+} data_word_tables;
+
+typedef int (*comp_fn)(const void *,const void *);
+
+const char *langName[] = {
+    #define LANG_DEF( id, dbcs )        #id ,
+    LANG_DEFS
+    #undef LANG_DEF
+};
+
+unsigned langTextCount[LANG_MAX];
+
+static const char *tagNames[] = {
+#define def_tag( e ) #e "." ,
+    ALL_TAGS
+#undef def_tag
+    NULL
+};
 
 static const char *msgTypeNames[] = {
 #define def_msg_type( e, p )    "MSG_TYPE_" #e ,
@@ -125,61 +200,6 @@ static const char *msgTypeNamesGP[] = {
     ALL_MSG_TYPES
 #undef def_msg_type
 };
-
-const char *langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
-};
-
-unsigned langTextCount[LANG_MAX];
-
-typedef struct msggroup MSGGROUP;
-typedef struct msgsym MSGSYM;
-typedef struct word MSGWORD;
-typedef struct wordref MSGWORDREF;
-
-struct msggroup {
-    MSGGROUP    *next;
-    char        prefix[3];
-    unsigned    msgIndex;    //first msg in group
-    unsigned    emsgIndex;   //last message + 1
-    unsigned    num;
-    char        name[1];
-};
-
-struct msgsym {
-    MSGSYM      *next;
-    MSGSYM      *sortedByName[2];
-    char        *lang_txt[LANG_MAX];
-    char        *fname;
-    unsigned    line;
-    unsigned    index;
-    unsigned    grpIndex;  //msg index in group
-    msg_type    mtype;
-    unsigned    level;
-    unsigned    style : 1;
-    MSGGROUP    *grp;
-    MSGWORDREF  *words;
-    char        name[1];
-};
-
-struct word {
-    MSGWORD     *sortedByName[2];
-    MSGWORD     *sortedByRef[2];
-    MSGWORD     *all;
-    unsigned    len;
-    unsigned    index;
-    unsigned    references;
-    char        name[1];
-};
-
-struct wordref {
-    MSGWORDREF  *next;
-    MSGWORD     *word;
-};
-
-#define LINE_SIZE       (512)
 
 static struct {
     boolbit     international           : 1;    // - dump internationalized data
@@ -194,12 +214,6 @@ static struct {
     boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
     unsigned    max_len;
 } flags;
-
-typedef enum {
-    EK_NULL,
-    EK_BAD,
-    EK_GOOD,
-} err_type;
 
 static struct {
     unsigned    line;
@@ -253,18 +267,6 @@ static size_t totalBytes;
 
 // some local functions which need predefining
 static void outputNum (FILE *fp, unsigned n);
-
-// encoding
-#define MAX_MSGWORD_LEN 31
-#define ENC_BIT         0x80
-#define LARGE_BIT       0x40
-#define USE_SMALL_ENC   0x3f
-
-#define NO_INDEX        (unsigned)(-1)
-
-#define IS_ASCII(c)     (c < 0x80)
-
-typedef int (*comp_fn)(const void *,const void *);
 
 /*
  * Shift-JIS (CP932) lead byte ranges
@@ -699,31 +701,22 @@ static void do_msggrp( const char *p )
 static void do_msgsym( const char *p )
 {
     MSGSYM  *msg;
-    int     i;
     size_t  len;
 
     ++messageCounter;
     flags.have_msg = true;
     p += skipNonSpace( sym, p );
     len = strlen( sym );
-    msg = malloc( sizeof( *msg ) + len );
+    msg = calloc( 1, sizeof( *msg ) + len );
     msg->next = *currMSGSYM;
     *currMSGSYM = msg;
     currMSGSYM = &(msg->next);
-    msg->sortedByName[0] = NULL;
-    msg->sortedByName[1] = NULL;
     msg->fname = ifname;
     msg->line = line;
     msg->grpIndex =  messageIndex;
     msg->index = groupIndex + messageIndex;
     ++messageIndex;
-    msg->level = 0;
-    msg->style = 0;
     msg->mtype = MSG_TYPE_ERROR;
-    for( i = 0; i < LANG_MAX; ++i ) {
-        msg->lang_txt[i] = NULL;
-    }
-    msg->words = NULL;
     strcpy( msg->name, sym );
     if( addToSorted( msg ) != NULL ) {
         error( "message name has been used before '%s'\n", sym );
@@ -917,9 +910,11 @@ static int percentPresent( char c, const char *p )
         return( 1 );
     }
     for( ; *p != '\0'; ++p ) {
-        if( *p != '%' ) continue;
+        if( *p != '%' )
+            continue;
         f = *++p;
-        if( f == '\0' ) break;
+        if( f == '\0' )
+            break;
         if( f == c ) {
             return( 1 );
         }
@@ -943,12 +938,15 @@ static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
             continue;
         }
         c = *++p;
-        if( c == '\0' ) break;
+        if( c == '\0' )
+            break;
         for( i = start_lang; i < end_lang; ++i ) {
             char *intl_text;
-            if( i == LANG_English ) continue;
+            if( i == LANG_English )
+                continue;
             intl_text = m->lang_txt[i];
-            if( intl_text == NULL ) continue;
+            if( intl_text == NULL )
+                continue;
             if( ! percentPresent( c, intl_text ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name,
                 langName[i], c );
@@ -1021,7 +1019,7 @@ static void readGML( void )
             process( p );
         }
     }
-    messageIndex=0;
+    messageIndex = 0;
     checkMessages();
     if( errors > 0 ) {
         fatal( "cannot continue due to errors" );
@@ -1041,7 +1039,8 @@ static MSGWORD *addWord( MSGSYM *m )
     h = &nameWords;
     for( ;; ) {
         c = *h;
-        if( c == NULL ) break;
+        if( c == NULL )
+            break;
         s = strcmp( c->name, word );
         if( s < 0 ) {
             h = &(c->sortedByName[0]);
@@ -1107,7 +1106,8 @@ static void addRef( MSGWORD *w )
     h = &refWords;
     for( ;; ) {
         c = *h;
-        if( c == NULL ) break;
+        if( c == NULL )
+            break;
         s = cmpRef( w, c );
         if( s < 0 ) {
             h = &(c->sortedByRef[0]);
@@ -1357,17 +1357,20 @@ static void outputChar( FILE *fp, char c )
     fputc( ',', fp );
 }
 
-static void outputTableName( FILE *fp, const char *type, const char *name )
+static void outputTableStart1( FILE *fp, const char *type, const char *name, int dim )
+{
+    fprintf( fp, "MSG_SCOPE %s MSG_MEM %s[][%d] = {\n", type, name, dim );
+}
+
+static void outputTableStart( FILE *fp, const char *type, const char *name )
 {
     fprintf( fp, "MSG_SCOPE %s MSG_MEM %s[] = {\n", type, name );
 }
 
-typedef struct {
-    unsigned    current_base;
-    unsigned    *word_base;
-    MSGWORD     **keep_base;
-    unsigned    current_text;
-} data_word_tables;
+static void outputTableEnd( FILE *fp )
+{
+    fputs( "};\n", fp );
+}
 
 static void doEncodeWORD( MSGWORD *w, void *d )
 {
@@ -1397,15 +1400,15 @@ static void writeWordTable( void )
     data_w.word_base = malloc( ( multiRefWords + 1 ) * sizeof( unsigned ) );
     data_w.keep_base = malloc( ( multiRefWords + 1 ) * sizeof( MSGWORD * ) );
     data_w.current_text = 0;
-    outputTableName( o_msgc, "char const", "word_text" );
+    outputTableStart( o_msgc, "char const", "word_text" );
     traverseHiToLoRefs( refWords, doEncodeWORD, &data_w );
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     totalBytes += data_w.current_text;
     data_w.word_base[data_w.current_base] = data_w.current_text;
     data_w.keep_base[data_w.current_base] = NULL;
     data_w.current_base++;
     totalBytes += data_w.current_base * sizeof( short );
-    outputTableName( o_msgc, "unsigned short const", "word_base" );
+    outputTableStart( o_msgc, "unsigned short const", "word_base" );
     for( i = 0; i < data_w.current_base; ++i ) {
         w = data_w.keep_base[i];
         outputNumJ( o_msgc, data_w.word_base[i], 6 );
@@ -1423,7 +1426,7 @@ static void writeWordTable( void )
         }
         fputc( '\n', o_msgc );
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     free( data_w.word_base );
     free( data_w.keep_base );
 }
@@ -1442,7 +1445,7 @@ static void writeMsgTable( void )
     current_text = 0;
     current_base = 0;
     msg_base = malloc( ( messageCounter + 1 ) * sizeof( unsigned ) );
-    outputTableName( o_msgc, "uint_8 const", "msg_text" );
+    outputTableStart( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[current_base++] = current_text;
         fputs( "\n/* ", o_msgc );
@@ -1478,30 +1481,32 @@ static void writeMsgTable( void )
             }
         }
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     totalBytes += current_text;
     msg_base[current_base++] = current_text;
     totalBytes += current_base * sizeof( short );
-    outputTableName( o_msgc, "unsigned short const", "msg_base" );
+    outputTableStart( o_msgc, "unsigned short const", "msg_base" );
     for( i = 0; i < current_base; ++i ) {
         outputNum( o_msgc, msg_base[i] );
         fputc( ',', o_msgc );
         fputc( '\n', o_msgc );
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     if( allGroups != NULL ) {
         MSGGROUP *g;
-        outputTableName( o_msgc, "unsigned short const", "msg_group_base" );
+
+        assert( messageIndex == 0 );
+
+        outputTableStart( o_msgc, "unsigned short const", "msg_group_base" );
         for( g = allGroups; g != NULL; g = g->next ) {
             outputNum( o_msgc, g->msgIndex );
             fputc( ',', o_msgc );
             fputc( '\n', o_msgc );
         }
-        assert( messageIndex == 0 );
         outputNum( o_msgc, messageCounter );
-        fputs( ",\n};\n", o_msgc );
-        fputs( "MSG_SCOPE char const MSG_MEM msg_group_name[][2] = {\n"
-             , o_msgc );
+        fputs( ",\n", o_msgc );
+        outputTableEnd( o_msgc );
+        outputTableStart1( o_msgc, "char const", "msg_group_name", 2 );
         for( g = allGroups; g != NULL; g = g->next ) {
             char buf[10];
             buf[0] = '\'';
@@ -1516,7 +1521,7 @@ static void writeMsgTable( void )
             buf[9] = '\0';
             fputs( buf, o_msgc );
         }
-        fputs( "};\n", o_msgc );
+        outputTableEnd( o_msgc );
         fputs( "#define MSGS_GROUPED\n", o_msgc );
     }
     free( msg_base );
@@ -1553,7 +1558,7 @@ static void writeLevH( void )
     ALL_MSG_TYPES
 #undef def_msg_type
     fprintf( o_levh, "} MSG_TYPE;\n" );
-    outputTableName( o_levh, "msg_level_info MSG_CONST", "msg_level" );
+    outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         fputc( '{', o_levh );
         fputc( ' ', o_levh );
@@ -1569,7 +1574,7 @@ static void writeLevH( void )
         fputs( " */\n", o_levh );
     }
     totalBytes += messageIndex;
-    fputs( "};\n", o_levh );
+    outputTableEnd( o_levh );
 }
 
 static void dumpStats( void )
