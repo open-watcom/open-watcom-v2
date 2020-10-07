@@ -208,6 +208,7 @@ static struct {
     boolbit     grouped                 : 1;    // - groups detected
     boolbit     have_msg                : 1;    // - have first message
     boolbit     gen_gpick               : 1;    // - generate generalized pick macros and tables
+    boolbit     rc                      : 1;    // - generate #define for resource compiler
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
     boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
@@ -396,6 +397,10 @@ static bool processOptions( int argc1, char **argv1 )
     }
     if( strcmp( *argv1, "-g" ) == 0 ) {
         flags.gen_gpick = true;
+        NEXT_ARG_CHECK();
+    }
+    if( strcmp( *argv1, "-rc" ) == 0 ) {
+        flags.rc = true;
         NEXT_ARG_CHECK();
     }
     if( strcmp( *argv1, "-utf8" ) == 0 ) {
@@ -658,7 +663,7 @@ static void do_msggrp( const char *p )
     flags.grouped = true;
     p += skipNonSpace( group, p );
     len = strlen( group );
-    if( !flags.gen_gpick && len != 2 ) {
+    if( !flags.rc && !flags.gen_gpick && len != 2 ) {
         error( ":msggroup code '%s' not two characters\n", group );
         switch( len ) {
         case 0 :
@@ -706,22 +711,24 @@ static void do_msgsym( const char *p )
     ++messageCounter;
     flags.have_msg = true;
     p += skipNonSpace( sym, p );
-    len = strlen( sym );
-    msg = calloc( 1, sizeof( *msg ) + len );
-    msg->next = *currMSGSYM;
-    *currMSGSYM = msg;
-    currMSGSYM = &(msg->next);
-    msg->fname = ifname;
-    msg->line = line;
-    msg->grpIndex = messageIndex;
-    msg->index = groupIndex + messageIndex;
-    ++messageIndex;
-    msg->mtype = MSG_TYPE_ERROR;
-    strcpy( msg->name, sym );
-    if( addToSorted( msg ) != NULL ) {
-        error( "message name has been used before '%s'\n", sym );
+    if( strcmp( sym, "UNUSED" ) != 0 ) {
+        len = strlen( sym );
+        msg = calloc( 1, sizeof( *msg ) + len );
+        msg->next = *currMSGSYM;
+        *currMSGSYM = msg;
+        currMSGSYM = &(msg->next);
+        msg->fname = ifname;
+        msg->line = line;
+        msg->grpIndex = messageIndex;
+        msg->index = groupIndex + messageIndex;
+        msg->mtype = MSG_TYPE_ERROR;
+        strcpy( msg->name, sym );
+        if( addToSorted( msg ) != NULL ) {
+            error( "message name has been used before '%s'\n", sym );
+        }
+        msg->grp = currGroup;
     }
-    msg->grp = currGroup;
+    ++messageIndex;
 }
 
 static size_t commonTxt( const char *p )
@@ -1207,72 +1214,49 @@ static void writeMsgH( void )
 {
     MSGSYM *m;
 
-    if( flags.gen_pick ) {
-        fputs( "#define MSG_DEFS \\\n", o_msgh );
-        for( m = messageSyms; m != NULL; m = m->next ) {
-            fprintf( o_msgh, "MSG_DEF( %s, %u ) \\\n", m->name, m->index );
-        }
-        fputs( "\n\n", o_msgh );
-    } else {
-        for( m = messageSyms; m != NULL; m = m->next ) {
-            fprintf( o_msgh, "#define %s %u\n", m->name, m->index );
-        }
-        fputs( "\n"
-               "typedef struct msg_level_info {\n"
-               "  unsigned    type : 4;\n"
-               "  unsigned    level : 4;\n"
-               "  unsigned    enabled : 1;\n"
-               "} msg_level_info;\n", o_msgh );
-    }
-    writeExtraDefs( o_msgh );
-}
-
-static void writeMsgHGP( void )
-{
-    MSGSYM *m;
-
-    fputs(  "//MSG_DEF( name, group, kind, level, group_index )\n"
-            "\n"
-            "#define MSG_DEFS \\\n", o_msgh );
-    for( m = messageSyms; m != NULL; m = m->next ) {
-        if( m->grp != NULL ) {
-            fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u ) \\\n",
-                m->name, m->grp->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+    if( o_msgh != NULL ) {
+        if( flags.rc ) {
+            fputs( "\n", o_msgh );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgh, "#define %s (MSG_LANG_BASE+%d)\n",
+                    m->name, m->grp->num + m->grpIndex  );
+            }
+            fputs( "\n", o_msgh );
+        } else if( flags.gen_gpick ) {
+            fputs(  "//MSG_DEF( name, group, kind, level, group_index )\n"
+                    "\n"
+                    "#define MSG_DEFS \\\n", o_msgh );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                if( m->grp != NULL ) {
+                    fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u ) \\\n",
+                        m->name, m->grp->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+                } else {
+                    fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u ) \\\n",
+                        m->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+                }
+            }
+            fputs( "\n\n", o_msgh );
         } else {
-            fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u ) \\\n",
-                m->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+            if( flags.gen_pick ) {
+                fputs( "#define MSG_DEFS \\\n", o_msgh );
+                for( m = messageSyms; m != NULL; m = m->next ) {
+                    fprintf( o_msgh, "MSG_DEF( %s, %u ) \\\n", m->name, m->index );
+                }
+                fputs( "\n\n", o_msgh );
+            } else {
+                for( m = messageSyms; m != NULL; m = m->next ) {
+                    fprintf( o_msgh, "#define %s %u\n", m->name, m->index );
+                }
+                fputs( "\n"
+                       "typedef struct msg_level_info {\n"
+                       "  unsigned    type : 4;\n"
+                       "  unsigned    level : 4;\n"
+                       "  unsigned    enabled : 1;\n"
+                       "} msg_level_info;\n", o_msgh );
+            }
+            writeExtraDefs( o_msgh );
         }
     }
-    fputs( "\n\n", o_msgh );
-}
-
-static void writeMsgCGP( void )
-{
-    MSGSYM *m;
-
-    for( m = messageSyms; m != NULL; m = m->next ) {
-        fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_English] );
-    }
-}
-
-static void writeLevHGP( void )
-{
-    MSGGROUP *grp;
-    int     index;
-
-    fputs( "\n\n"
-        "#define MSGTYPES_DEFS \\\n", o_levh );
-    for( index = 0; index < MSG_TYPE_END; ++index ) {
-        fprintf( o_levh, "MSGTYPES_DEF( %s ) \\\n", msgTypeNamesGP[index] );
-    }
-    fputs( "\n\n"
-        "//define GRP_DEF( name,prefix,num,index,eindex )\n"
-        "#define GRP_DEFS \\\n", o_levh );
-    for( grp = allGroups; grp != NULL; grp = grp->next ) {
-        fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u ) \\\n",
-            grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
-    }
-    fputs( "\n\n", o_levh );
 }
 
 static void outputChar( FILE *fp, char c )
@@ -1432,37 +1416,75 @@ static void writeMSGIfndefs( void )
 
 static void writeMsgC( void )
 {
-    writeMSGIfndefs();
-    writeExtraDefs( o_msgc );
-    writeWordTable();
-    writeMsgTable();
+    MSGSYM *m;
+
+    if( o_msgc != NULL ) {
+        if( flags.rc ) {
+            fputs( "\n", o_msgc );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgc, "pick( %s, \"%s\", \"%s\" )\n",
+                    m->name, m->lang_txt[LANG_English], m->lang_txt[LANG_Japanese] );
+            }
+            fputs( "\n", o_msgc );
+        } else if( flags.gen_gpick ) {
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_English] );
+            }
+        } else {
+            writeMSGIfndefs();
+            writeExtraDefs( o_msgc );
+            writeWordTable();
+            writeMsgTable();
+        }
+    }
 }
 
 static void writeLevH( void )
 {
-    MSGSYM *m;
+    MSGSYM      *m;
+    MSGGROUP    *grp;
+    int         index;
 
-    fputs(  "#ifndef MSG_CONST\n"
-            "#define MSG_CONST const\n"
-            "#endif\n"
-            "typedef enum {\n"
-#define def_msg_type( e,p ) "  MSG_TYPE_" #e ",\n"
-             ALL_MSG_TYPES
-#undef def_msg_type
-            "} MSG_TYPE;\n", o_levh );
-    outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
-    for( m = messageSyms; m != NULL; m = m->next ) {
-        fprintf( o_levh, "  { %s, %u, true }, /* %s */\n",
-            msgTypeNames[m->mtype], m->level, m->name );
+    if( o_levh != NULL ) {
+        if( flags.rc ) {
+        } else if( flags.gen_gpick ) {
+            fputs( "\n\n"
+                "#define MSGTYPES_DEFS \\\n", o_levh );
+            for( index = 0; index < MSG_TYPE_END; ++index ) {
+                fprintf( o_levh, "MSGTYPES_DEF( %s ) \\\n", msgTypeNamesGP[index] );
+            }
+            fputs( "\n\n"
+                "//define GRP_DEF( name,prefix,num,index,eindex )\n"
+                "#define GRP_DEFS \\\n", o_levh );
+            for( grp = allGroups; grp != NULL; grp = grp->next ) {
+                fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u ) \\\n",
+                    grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
+            }
+            fputs( "\n\n", o_levh );
+        } else {
+            fputs(  "#ifndef MSG_CONST\n"
+                    "#define MSG_CONST const\n"
+                    "#endif\n"
+                    "typedef enum {\n"
+                    #define def_msg_type( e,p ) "  MSG_TYPE_" #e ",\n"
+                        ALL_MSG_TYPES
+                    #undef def_msg_type
+                    "} MSG_TYPE;\n", o_levh );
+            outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_levh, "  { %s, %u, true }, /* %s */\n",
+                    msgTypeNames[m->mtype], m->level, m->name );
+            }
+            outputTableEnd( o_levh );
+            totalBytes += messageIndex;
+        }
     }
-    outputTableEnd( o_levh );
-    totalBytes += messageIndex;
 }
 
 static void dumpStats( void )
 {
     if( allGroups != NULL ) {
-    printf( "# of groups                          %u\n", groupCounter );
+        printf( "# of groups                          %u\n", groupCounter );
     }
     printf( "# of messages                        %u\n", messageCounter );
     printf( "# of unique words                    %u\n", uniqueWords );
@@ -1477,9 +1499,13 @@ static void dumpStats( void )
 static void closeFiles( void )
 {
     fclose( i_gml );
-    fclose( o_msgh );
-    fclose( o_msgc );
-    fclose( o_levh );
+    if( o_msgh != NULL )
+        fclose( o_msgh );
+    if( o_msgc != NULL )
+        fclose( o_msgc );
+    if( o_levh != NULL ) {
+        fclose( o_levh );
+    }
 }
 
 static size_t utf8_to_cp932( const char *src, char *dst )
@@ -1630,16 +1656,12 @@ int main( int argc, char **argv )
              );
     }
     readGML();
-    if( flags.gen_gpick ) {
-        writeMsgHGP();
-        writeMsgCGP();
-        writeLevHGP();
-    } else {
+    if( !flags.rc && !flags.gen_gpick ) {
         compressMsgs();
-        writeMsgH();
-        writeMsgC();
-        writeLevH();
     }
+    writeMsgH();
+    writeMsgC();
+    writeLevH();
     closeFiles();
     if( flags.international ) {
         dumpInternational();
