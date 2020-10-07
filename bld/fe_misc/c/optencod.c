@@ -79,6 +79,9 @@ TAG( USAGE ) \
 TAG( USAGEGRP ) \
 TAG( USAGEOGRP )
 
+#define NEXT_ARG() \
+        --argc1; ++argv1
+
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( true ); }
 
@@ -695,8 +698,7 @@ static bool procCmdLine( int argc1, char **argv1 )
     gfp = fopen( *argv1, "r" );
     if( gfp == NULL )
         fail( "cannot open '%s' for input", *argv1 );
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     if( strcmp( *argv1, "." ) == 0 ) {
         ofp = NULL;
     } else {
@@ -705,8 +707,7 @@ static bool procCmdLine( int argc1, char **argv1 )
             fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     if( strcmp( *argv1, "." ) == 0 ) {
         pfp = NULL;
     } else {
@@ -715,8 +716,7 @@ static bool procCmdLine( int argc1, char **argv1 )
             fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     if( strcmp( *argv1, "." ) == 0 ) {
         ufp = NULL;
     } else {
@@ -725,8 +725,7 @@ static bool procCmdLine( int argc1, char **argv1 )
             fail( "cannot open '%s' for output", *argv1 );
         }
     }
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     for( t = validTargets; *t != NULL; ++t ) {
         addTarget( *t );
     }
@@ -739,11 +738,12 @@ static bool procCmdLine( int argc1, char **argv1 )
         fail( "invalid target name '%s'\n", p );
     }
     targetMask |= targetAnyMask;
-    for( ; (p = *argv1) != NULL; --argc1, ++argv1 ) {
+    while( (p = *argv1) != NULL ) {
         if( (mask = findTarget( p )) == 0 ) {
             fail( "invalid target name '%s'\n", p );
         }
         targetMask |= mask;
+        NEXT_ARG();
     }
     if( !optFlag.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );

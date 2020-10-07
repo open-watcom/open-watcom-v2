@@ -77,6 +77,9 @@ def_tag( errbreak ) \
 def_tag( style ) \
 def_tag( jck ) \
 
+#define NEXT_ARG() \
+        --argc1; ++argv1
+
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( 1 ); }
 
@@ -408,14 +411,11 @@ static bool processOptions( int argc1, char **argv1 )
         return( true );
     ifname = *argv1;
     initFILE( &i_gml, *argv1, "rb" );
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     initFILE( &o_msgc, *argv1, "w" );
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     initFILE( &o_msgh, *argv1, "w" );
-    --argc1;
-    ++argv1;
+    NEXT_ARG();
     initFILE( &o_levh, *argv1, "w" );
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
