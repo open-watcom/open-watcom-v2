@@ -265,9 +265,6 @@ static size_t maxMsgLen;
 static size_t totalMsgLen;
 static size_t totalBytes;
 
-// some local functions which need predefining
-static void outputNum (FILE *fp, unsigned n);
-
 /*
  * Shift-JIS (CP932) lead byte ranges
  * 0x81-0x9F
@@ -358,6 +355,9 @@ static FILE *initFILE( const char *fnam, const char *fmod )
         if( fp == NULL ) {
             printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
             exit( EXIT_FAILURE );
+        }
+        if( !open_read ) {
+            outputFNames[nextOutputFName++] = fnam;
         }
     }
     return( fp );
@@ -713,7 +713,7 @@ static void do_msgsym( const char *p )
     currMSGSYM = &(msg->next);
     msg->fname = ifname;
     msg->line = line;
-    msg->grpIndex =  messageIndex;
+    msg->grpIndex = messageIndex;
     msg->index = groupIndex + messageIndex;
     ++messageIndex;
     msg->mtype = MSG_TYPE_ERROR;
@@ -1193,44 +1193,36 @@ static void compressMsgs( void )
 
 static void writeExtraDefs( FILE *fp )
 {
-    fputc( '\n', fp );
-    fputs(
+    fprintf( fp,
+        "\n"
         "#define ENC_BIT 0x80\n"
         "#define LARGE_BIT 0x40\n"
-        "#define MAX_MSG ", fp );
-    outputNum( fp, (unsigned)maxMsgLen );
-    fputc( '\n', fp );
-    fputc( '\n', fp );
+        "#define MAX_MSG %u\n"
+        "\n",
+        (unsigned)maxMsgLen
+    );
 }
 
 static void writeMsgH( void )
 {
     MSGSYM *m;
 
-    if( !flags.gen_pick ) {
-        for( m = messageSyms; m != NULL; m = m->next ) {
-            fputs( "#define ", o_msgh );
-            fputs( m->name, o_msgh );
-            fputc( ' ', o_msgh );
-            outputNum( o_msgh, m->index );
-            fputc( '\n', o_msgh );
-        }
-        fputs(
-            "\ntypedef struct msg_level_info {\n"
-            "    unsigned    type : 4;\n"
-            "    unsigned    level : 4;\n"
-            "    unsigned    enabled : 1;\n"
-            "} msg_level_info;\n", o_msgh );
-    } else {
+    if( flags.gen_pick ) {
         fputs( "#define MSG_DEFS \\\n", o_msgh );
         for( m = messageSyms; m != NULL; m = m->next ) {
-            fputs( "MSG_DEF( ", o_msgh );
-            fputs( m->name, o_msgh );
-            fputs( " , ", o_msgh );
-            outputNum( o_msgh, m->index );
-            fputs( " )\\\n", o_msgh );
+            fprintf( o_msgh, "MSG_DEF( %s, %u ) \\\n", m->name, m->index );
         }
         fputs( "\n\n", o_msgh );
+    } else {
+        for( m = messageSyms; m != NULL; m = m->next ) {
+            fprintf( o_msgh, "#define %s %u\n", m->name, m->index );
+        }
+        fputs( "\n"
+               "typedef struct msg_level_info {\n"
+               "  unsigned    type : 4;\n"
+               "  unsigned    level : 4;\n"
+               "  unsigned    enabled : 1;\n"
+               "} msg_level_info;\n", o_msgh );
     }
     writeExtraDefs( o_msgh );
 }
@@ -1238,28 +1230,18 @@ static void writeMsgH( void )
 static void writeMsgHGP( void )
 {
     MSGSYM *m;
-    MSGGROUP *grp;
-    int     index;
 
-    fputs( "//MSG_DEF( name, group, kind, level, group_index )\n",o_msgh );
-    fputs( "\n\n", o_msgh );
-    fputs( "#define MSG_DEFS \\\n", o_msgh );
-    index = 0;
-    for( m = messageSyms; m != NULL; m = m->next,++index ) {
-        fputs( "MSG_DEF( ", o_msgh );
-        fputs( m->name, o_msgh );
-        fputs( " , ", o_msgh );
-        grp = m->grp;
-        if( grp != NULL ) {
-            fputs( grp->name, o_msgh );
-            fputs( " , ", o_msgh );
+    fputs(  "//MSG_DEF( name, group, kind, level, group_index )\n"
+            "\n"
+            "#define MSG_DEFS \\\n", o_msgh );
+    for( m = messageSyms; m != NULL; m = m->next ) {
+        if( m->grp != NULL ) {
+            fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u )\\\n",
+                m->name, m->grp->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+        } else {
+            fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u )\\\n",
+                m->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
         }
-        fputs( msgTypeNamesGP[m->mtype], o_msgh );
-        fputs( " , ", o_msgh );
-        outputNum( o_msgh, m->level );
-        fputs( " , ", o_msgh );
-        outputNum( o_msgh, m->grpIndex );
-        fputs( " )\\\n", o_msgh );
     }
     fputs( "\n\n", o_msgh );
 }
@@ -1267,10 +1249,9 @@ static void writeMsgHGP( void )
 static void writeMsgCGP( void )
 {
     MSGSYM *m;
+
     for( m = messageSyms; m != NULL; m = m->next ) {
-        fputs( "\"", o_msgc );
-        fputs( m->lang_txt[LANG_English], o_msgc );
-        fputs( "\",\n", o_msgc );
+        fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_English] );
     }
 }
 
@@ -1279,82 +1260,32 @@ static void writeLevHGP( void )
     MSGGROUP *grp;
     int     index;
 
-    fputs( "\n\n", o_levh );
-    fputs( "#define MSGTYPES_DEFS \\\n", o_levh );
+    fputs( "\n\n"
+        "#define MSGTYPES_DEFS \\\n", o_levh );
     for( index = 0; index < MSG_TYPE_END; ++index ) {
-        fputs( "MSGTYPES_DEF( ", o_levh );
-        fputs( msgTypeNamesGP[index], o_levh );
-        fputs( " )\\\n", o_levh );
+        fprintf( o_levh, "MSGTYPES_DEF( %s )\\\n", msgTypeNamesGP[index] );
     }
-    fputs( "\n\n", o_levh );
-    fputs( "//define GRP_DEF( name,prefix,num,index,eindex )\n", o_levh );
-    fputs( "#define GRP_DEFS \\\n", o_levh );
+    fputs( "\n\n"
+        "//define GRP_DEF( name,prefix,num,index,eindex )\n"
+        "#define GRP_DEFS \\\n", o_levh );
     for( grp = allGroups; grp != NULL; grp = grp->next ) {
-        fputs( "GRP_DEF( ", o_levh );
-        fputs( grp->name, o_levh );
-        fputc( ',', o_levh );
-        fputs( grp->prefix, o_levh );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->num );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->msgIndex );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->emsgIndex );
-        fputs( " )\\\n", o_levh );
+        fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u )\\\n",
+            grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
     }
     fputs( "\n\n", o_levh );
-}
-
-static void outputNum( FILE *fp, unsigned n )
-{
-    char buff[16];
-
-    sprintf( buff, "%u", n );
-    fputs( buff, fp );
-}
-
-static void outputNumJ( FILE *fp, unsigned n, int width )
-{
-    char buff[16];
-    char *p;
-
-    sprintf( buff, "%u", n );
-    for( p = buff; *p; ++p ) {
-        --width;
-    }
-    while( width > 0 ) {
-        --width;
-        fputc( ' ', fp );
-    }
-    fputs( buff, fp );
 }
 
 static void outputChar( FILE *fp, char c )
 {
-    fputc( '\'', fp );
-    switch( c ) {
-    case '\'':
-        fputc( '\\', fp );
-        fputc( '\'', fp );
-        break;
-    case '\\':
-        fputc( '\\', fp );
-        fputc( '\\', fp );
-        break;
-    default:
-        if( isprint( c ) ) {
-            fputc( c, fp );
-        } else {
-            char buff[16];
-
-            fputc( '\\', fp );
-            fputc( 'x', fp );
-            sprintf( buff, "%x", c );
-            fputs( buff, fp );
-        }
+    if( c == '\'' ) {
+        fprintf( fp, "'\\''," );
+    } else if( c == '\\' ) {
+        fprintf( fp, "'\\\\'," );
+    } else if( isprint( c ) ) {
+        fprintf( fp, "'%c',", c );
+    } else {
+        fprintf( fp, "'\\x%x',", (unsigned char)c );
     }
-    fputc( '\'', fp );
-    fputc( ',', fp );
 }
 
 static void outputTableStart1( FILE *fp, const char *type, const char *name, int dim )
@@ -1411,20 +1342,12 @@ static void writeWordTable( void )
     outputTableStart( o_msgc, "unsigned short const", "word_base" );
     for( i = 0; i < data_w.current_base; ++i ) {
         w = data_w.keep_base[i];
-        outputNumJ( o_msgc, data_w.word_base[i], 6 );
-        fputc( ',', o_msgc );
         if( w != NULL ) {
-            fputs( " /* ", o_msgc );
-            outputNumJ( o_msgc, w->references, 6 );
-            fputc( ' ', o_msgc );
-            fputc( '(', o_msgc );
-            outputNum( o_msgc, i );
-            fputc( ')', o_msgc );
-            fputc( ' ', o_msgc );
-            fputs( w->name, o_msgc );
-            fputs( " */", o_msgc );
+            fprintf( o_msgc, "%6u, /* %6u (%u) %s */\n",
+                data_w.word_base[i], w->references, i, w->name );
+        } else {
+            fprintf( o_msgc, "%6u,\n", data_w.word_base[i] );
         }
-        fputc( '\n', o_msgc );
     }
     outputTableEnd( o_msgc );
     free( data_w.word_base );
@@ -1448,36 +1371,22 @@ static void writeMsgTable( void )
     outputTableStart( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[current_base++] = current_text;
-        fputs( "\n/* ", o_msgc );
-        outputNumJ( o_msgc, m->index, 4 );
-        fputc( ' ', o_msgc );
-        fputs( m->lang_txt[LANG_English], o_msgc );
-        fputs( " */\n", o_msgc );
+        fprintf( o_msgc, "\n/* %4u %s */\n", m->index, m->lang_txt[LANG_English] );
         for( r = m->words; r != NULL; r = r->next ) {
             w = r->word;
             if( w->index == NO_INDEX ) {
-                outputNum( o_msgc, w->len );
-                fputs( ", ", o_msgc );
+                fprintf( o_msgc, "%u,", w->len );
                 for( p = w->name; *p; ++p ) {
                     outputChar( o_msgc, *p );
                 }
                 fputc( '\n', o_msgc );
                 current_text += 1 + w->len;
+            } else if( w->index <= USE_SMALL_ENC ) {
+                fprintf( o_msgc, "ENC_BIT | %u, /* %s */\n", w->index, w->name );
+                ++current_text;
             } else {
-                if( w->index <= USE_SMALL_ENC ) {
-                    fputs( "ENC_BIT | ", o_msgc );
-                    outputNum( o_msgc, w->index );
-                    ++current_text;
-                } else {
-                    fputs( "ENC_BIT | LARGE_BIT | ", o_msgc );
-                    outputNum( o_msgc, ( w->index >> 8 ) );
-                    fputs( ", ", o_msgc );
-                    outputNum( o_msgc, ( w->index & 0x0ff ) );
-                    current_text += 2;
-                }
-                fputs( ", /* ", o_msgc );
-                fputs( w->name, o_msgc );
-                fputs( " */\n", o_msgc );
+                fprintf( o_msgc, "ENC_BIT | LARGE_BIT | %u, %u, /* %s */\n", w->index >> 8, w->index & 0x0ff, w->name );
+                current_text += 2;
             }
         }
     }
@@ -1487,9 +1396,7 @@ static void writeMsgTable( void )
     totalBytes += current_base * sizeof( short );
     outputTableStart( o_msgc, "unsigned short const", "msg_base" );
     for( i = 0; i < current_base; ++i ) {
-        outputNum( o_msgc, msg_base[i] );
-        fputc( ',', o_msgc );
-        fputc( '\n', o_msgc );
+        fprintf( o_msgc, "%u,\n", msg_base[i] );
     }
     outputTableEnd( o_msgc );
     if( allGroups != NULL ) {
@@ -1499,27 +1406,13 @@ static void writeMsgTable( void )
 
         outputTableStart( o_msgc, "unsigned short const", "msg_group_base" );
         for( g = allGroups; g != NULL; g = g->next ) {
-            outputNum( o_msgc, g->msgIndex );
-            fputc( ',', o_msgc );
-            fputc( '\n', o_msgc );
+            fprintf( o_msgc, "%u,\n", g->msgIndex );
         }
-        outputNum( o_msgc, messageCounter );
-        fputs( ",\n", o_msgc );
+        fprintf( o_msgc, "%u,\n", messageCounter );
         outputTableEnd( o_msgc );
         outputTableStart1( o_msgc, "char const", "msg_group_name", 2 );
         for( g = allGroups; g != NULL; g = g->next ) {
-            char buf[10];
-            buf[0] = '\'';
-            buf[1] = g->name[0];
-            buf[2] = '\'';
-            buf[3] = ',';
-            buf[4] = '\'';
-            buf[5] = g->name[1];
-            buf[6] = '\'';
-            buf[7] = ',';
-            buf[8] = '\n';
-            buf[9] = '\0';
-            fputs( buf, o_msgc );
+            fprintf( o_msgc, "'%c','%c',\n", g->name[0], g->name[1] );
         }
         outputTableEnd( o_msgc );
         fputs( "#define MSGS_GROUPED\n", o_msgc );
@@ -1550,31 +1443,22 @@ static void writeLevH( void )
 {
     MSGSYM *m;
 
-    fputs( "#ifndef MSG_CONST\n", o_levh );
-    fputs( "#define MSG_CONST const\n", o_levh );
-    fputs( "#endif\n", o_levh );
-    fprintf( o_levh, "typedef enum {\n" );
-#define def_msg_type( e,p )     fprintf( o_levh, "   MSG_TYPE_" #e ",\n" );
+    fputs(  "#ifndef MSG_CONST\n"
+            "#define MSG_CONST const\n"
+            "#endif\n"
+            "typedef enum {\n"
+#define def_msg_type( e,p ) "  MSG_TYPE_" #e ",\n"
     ALL_MSG_TYPES
 #undef def_msg_type
-    fprintf( o_levh, "} MSG_TYPE;\n" );
+            "} MSG_TYPE;\n",
+        o_levh );
     outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
     for( m = messageSyms; m != NULL; m = m->next ) {
-        fputc( '{', o_levh );
-        fputc( ' ', o_levh );
-        fputs( msgTypeNames[m->mtype], o_levh );
-        if( m->level == 0 ) {
-            fputs( ", 0, true }, /* ", o_levh );
-        } else {
-            fputs( ", ", o_levh );
-            outputNum( o_levh, m->level );
-            fputs( ", true }, /* ", o_levh );
-        }
-        fputs( m->name, o_levh );
-        fputs( " */\n", o_levh );
+        fprintf( o_levh, "  { %s, %u, true }, /* %s */\n",
+            msgTypeNames[m->mtype], m->level, m->name );
     }
-    totalBytes += messageIndex;
     outputTableEnd( o_levh );
+    totalBytes += messageIndex;
 }
 
 static void dumpStats( void )
