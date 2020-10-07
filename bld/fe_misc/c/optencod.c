@@ -396,6 +396,66 @@ static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
     return( p1->u - p2->u );
 }
 
+static size_t utf8_to_cp932( const char *src, char *dst )
+{
+    size_t      i;
+    size_t      o;
+    size_t      src_len;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    src_len = strlen( src );
+    o = 0;
+    for( i = 0; i < src_len && o < BUFF_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
+
+static const char *getLangUsage( const char *usage[], language_id lang )
+{
+    const char *p;
+
+    p = usage[lang];
+    if( p == NULL || *p == '\0' ) {
+        p = usage[LANG_English];
+    }
+    return( p );
+}
+
 #if defined( __WATCOMC__ )
 #pragma abort   fail
 #endif
@@ -2305,10 +2365,7 @@ static char *createChainHeader( OPTION **o, language_id lang, size_t max )
             ++len;
         }
     }
-    usage = cn->Usage[lang];
-    if( usage == NULL || *usage == '\0' ) {
-        usage = cn->Usage[LANG_English];
-    }
+    usage = getLangUsage( cn->Usage, lang );
     strcat( hdrbuff, "} " );
     len = strlen( hdrbuff );
     if( len >= max ) {
@@ -2351,10 +2408,7 @@ static void outputTitle( const char *usage[], language_id lang, process_line_fn 
     const char  *p;
     size_t      len;
 
-    p = usage[lang];
-    if( p == NULL || *p == '\0' ) {
-        p = usage[LANG_English];
-    }
+    p = getLangUsage( usage, lang );
     if( p != NULL && *p != '\0' ) {
         len = strlen( p );
         if( center && len < 80 ) {
@@ -2382,17 +2436,11 @@ static void createUsageHeader( const char *usage[], language_id lang, process_li
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
             if( process_line == emitUsageH ) {
-                titleu = t->lang_titleu[lang];
-                if( titleu == NULL || *titleu == '\0' ) {
-                    titleu = t->lang_titleu[LANG_English];
-                }
+                titleu = getLangUsage( t->lang_titleu, lang );
             } else {
                 titleu = NULL;
             }
-            title = t->lang_title[lang];
-            if( title == NULL || *title == '\0' ) {
-                title = t->lang_title[LANG_English];
-            }
+            title = getLangUsage( t->lang_title, lang );
             expand_tab( title, tokbuff );
             if( titleu != NULL && *titleu != '\0' ) {
                 expand_tab( titleu, tagbuff );
@@ -2500,55 +2548,6 @@ static void outputUsageH( void )
             processUsage( optFlag.lang, emitUsageH, gr );
         }
     }
-}
-
-static size_t utf8_to_cp932( const char *src, char *dst )
-{
-    size_t      i;
-    size_t      o;
-    size_t      src_len;
-    cvt_chr     x;
-    cvt_chr     *p;
-
-    src_len = strlen( src );
-    o = 0;
-    for( i = 0; i < src_len && o < BUFF_SIZE - 6; i++ ) {
-        x.u = (unsigned char)src[i];
-        if( IS_ASCII( x.u ) ) {
-            /*
-             * ASCII (0x00-0x7F), no conversion
-             */
-            dst[o++] = (char)x.u;
-        } else {
-            /*
-             * UTF-8 to UNICODE conversion
-             */
-            if( (x.u & 0xF0) == 0xE0 ) {
-                x.u &= 0x0F;
-                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
-            } else {
-                x.u &= 0x1F;
-            }
-            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
-            /*
-             * UNICODE to CP932 encoding conversion
-             */
-            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-            if( p == NULL ) {
-                printf( "unknown unicode character: 0x%4.4X\n", x.u );
-                x.s = '?';
-            } else {
-                x.s = p->s;
-            }
-            if( x.s > 0xFF ) {
-                /* write lead byte first */
-                dst[o++] = (char)(x.s >> 8);
-            }
-            dst[o++] = (char)x.s;
-        }
-    }
-    dst[o] = '\0';
-    return( o );
 }
 
 static void emitUsageB( language_id lang, const char *str, const char *stru, bool page_flag )
