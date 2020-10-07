@@ -1236,10 +1236,10 @@ static void writeMsgHGP( void )
             "#define MSG_DEFS \\\n", o_msgh );
     for( m = messageSyms; m != NULL; m = m->next ) {
         if( m->grp != NULL ) {
-            fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u )\\\n",
+            fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u ) \\\n",
                 m->name, m->grp->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
         } else {
-            fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u )\\\n",
+            fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u ) \\\n",
                 m->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
         }
     }
@@ -1263,13 +1263,13 @@ static void writeLevHGP( void )
     fputs( "\n\n"
         "#define MSGTYPES_DEFS \\\n", o_levh );
     for( index = 0; index < MSG_TYPE_END; ++index ) {
-        fprintf( o_levh, "MSGTYPES_DEF( %s )\\\n", msgTypeNamesGP[index] );
+        fprintf( o_levh, "MSGTYPES_DEF( %s ) \\\n", msgTypeNamesGP[index] );
     }
     fputs( "\n\n"
         "//define GRP_DEF( name,prefix,num,index,eindex )\n"
         "#define GRP_DEFS \\\n", o_levh );
     for( grp = allGroups; grp != NULL; grp = grp->next ) {
-        fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u )\\\n",
+        fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u ) \\\n",
             grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
     }
     fputs( "\n\n", o_levh );
@@ -1376,7 +1376,7 @@ static void writeMsgTable( void )
             w = r->word;
             if( w->index == NO_INDEX ) {
                 fprintf( o_msgc, "%u,", w->len );
-                for( p = w->name; *p; ++p ) {
+                for( p = w->name; *p != '\0'; ++p ) {
                     outputChar( o_msgc, *p );
                 }
                 fputc( '\n', o_msgc );
@@ -1422,13 +1422,12 @@ static void writeMsgTable( void )
 
 static void writeMSGIfndefs( void )
 {
-    fputs(
-        "#ifndef MSG_SCOPE\n"
-        "#define MSG_SCOPE\n"
-        "#endif\n"
-        "#ifndef MSG_MEM\n"
-        "#define MSG_MEM\n"
-        "#endif\n", o_msgc );
+    fputs(  "#ifndef MSG_SCOPE\n"
+            "#define MSG_SCOPE\n"
+            "#endif\n"
+            "#ifndef MSG_MEM\n"
+            "#define MSG_MEM\n"
+            "#endif\n", o_msgc );
 }
 
 static void writeMsgC( void )
@@ -1448,10 +1447,9 @@ static void writeLevH( void )
             "#endif\n"
             "typedef enum {\n"
 #define def_msg_type( e,p ) "  MSG_TYPE_" #e ",\n"
-    ALL_MSG_TYPES
+             ALL_MSG_TYPES
 #undef def_msg_type
-            "} MSG_TYPE;\n",
-        o_levh );
+            "} MSG_TYPE;\n", o_levh );
     outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         fprintf( o_levh, "  { %s, %u, true }, /* %s */\n",
