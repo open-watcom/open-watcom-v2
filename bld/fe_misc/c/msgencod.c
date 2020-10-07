@@ -344,17 +344,21 @@ static void fatal1( const char *m, const char *p )
     exit( EXIT_FAILURE );
 }
 
-static void initFILE( FILE **f, const char *n, const char *m )
+static FILE *initFILE( const char *fnam, const char *fmod )
 {
-    *f = fopen( n, m );
-    if( *f == NULL ) {
-        fatal( "cannot open file" );
+    FILE        *fp;
+    bool        open_read;
+
+    fp = NULL;
+    open_read = ( strchr( fmod, 'r' ) != NULL );
+    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+        fp = fopen( fnam, fmod );
+        if( fp == NULL ) {
+            printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
+            exit( EXIT_FAILURE );
+        }
     }
-    if( m[0] == 'r' ) {
-    } else {
-        // write access
-        outputFNames[nextOutputFName++] = n;
-    }
+    return( fp );
 }
 
 #define NUM_FILES   4
@@ -410,13 +414,13 @@ static bool processOptions( int argc1, char **argv1 )
     if( argc1 != NUM_FILES )
         return( true );
     ifname = *argv1;
-    initFILE( &i_gml, *argv1, "rb" );
+    i_gml = initFILE( *argv1, "rb" );
     NEXT_ARG();
-    initFILE( &o_msgc, *argv1, "w" );
+    o_msgc = initFILE( *argv1, "w" );
     NEXT_ARG();
-    initFILE( &o_msgh, *argv1, "w" );
+    o_msgh = initFILE( *argv1, "w" );
     NEXT_ARG();
-    initFILE( &o_levh, *argv1, "w" );
+    o_levh = initFILE( *argv1, "w" );
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }

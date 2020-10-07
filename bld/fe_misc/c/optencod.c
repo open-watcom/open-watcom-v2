@@ -656,6 +656,22 @@ static CHAIN *addChain( char *pattern, bool chain )
     return( cn );
 }
 
+static FILE *initFILE( const char *fnam, const char *fmod )
+{
+    FILE        *fp;
+    bool        open_read;
+
+    fp = NULL;
+    open_read = ( strchr( fmod, 'r' ) != NULL );
+    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+        fp = fopen( fnam, fmod );
+        if( fp == NULL ) {
+            fail( "cannot open '%s' for %s", fnam, ( open_read ) ? "input" : "output" );
+        }
+    }
+    return( fp );
+}
+
 #define NUM_FILES   4
 
 static bool procCmdLine( int argc1, char **argv1 )
@@ -695,36 +711,13 @@ static bool procCmdLine( int argc1, char **argv1 )
         optFlag.out_utf8 = true;
         NEXT_ARG_CHECK();
     }
-    gfp = fopen( *argv1, "r" );
-    if( gfp == NULL )
-        fail( "cannot open '%s' for input", *argv1 );
+    gfp = initFILE( *argv1, "r" );
     NEXT_ARG();
-    if( strcmp( *argv1, "." ) == 0 ) {
-        ofp = NULL;
-    } else {
-        ofp = fopen( *argv1, "w+" );
-        if( ofp == NULL ) {
-            fail( "cannot open '%s' for output", *argv1 );
-        }
-    }
+    ofp = initFILE( *argv1, "w+" );
     NEXT_ARG();
-    if( strcmp( *argv1, "." ) == 0 ) {
-        pfp = NULL;
-    } else {
-        pfp = fopen( *argv1, "w+" );
-        if( pfp == NULL ) {
-            fail( "cannot open '%s' for output", *argv1 );
-        }
-    }
+    pfp = initFILE( *argv1, "w+" );
     NEXT_ARG();
-    if( strcmp( *argv1, "." ) == 0 ) {
-        ufp = NULL;
-    } else {
-        ufp = fopen( *argv1, "w+" );
-        if( ufp == NULL ) {
-            fail( "cannot open '%s' for output", *argv1 );
-        }
-    }
+    ufp = initFILE( *argv1, "w+" );
     NEXT_ARG();
     for( t = validTargets; *t != NULL; ++t ) {
         addTarget( *t );
@@ -2636,7 +2629,7 @@ int main( int argc, char **argv )
         fail( "language index mismatch\n" );
     if( procCmdLine( argc - 1, argv + 1 ) ) {
         dumpUsage();
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
     readInputFile();
     assignChainToOptions();
