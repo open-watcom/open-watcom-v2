@@ -287,14 +287,18 @@ static void (*processTag[])( const char * ) = {
 };
 
 static const char *validTargets[] = {
+/* default targets */
     "any",
     "dbg",
+/* architecture targets */
     "i86",
     "386",
+    "x64",
     "axp",
     "ppc",
     "mps",
     "sparc",
+/* host OS targets */
     "bsd",
     "dos",
     "linux",
@@ -304,6 +308,8 @@ static const char *validTargets[] = {
     "qnx",
     "haiku",
     "rdos",
+    "win",
+/* extra targets */
     "targ1",
     "targ2",
     NULL
@@ -342,6 +348,7 @@ static const char *usageMsg[] = {
     "  -l <lang-n> is the language(number) used for output data",
     "  -n zero terminated items",
     "  -q quiet operation",
+    "  -rc <macro-name> generate files for resource compiler",
     "  -u <usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
     "",
@@ -359,7 +366,9 @@ static struct {
     boolbit     no_equal        : 1;
     boolbit     alternate_equal : 1;
     boolbit     zero_term       : 1;
+    boolbit     rc              : 1;
     boolbit     out_utf8        : 1;
+    char        *rc_macro;
     language_id lang;
 } optFlag;
 
@@ -371,7 +380,6 @@ static OPTION   *uselessOptionList;
 static TITLE    *titleList;
 static CHAIN    *chainList;
 static GROUP    *groupList = NULL;
-
 static TITLE    *targetTitle;
 
 static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
@@ -448,7 +456,7 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     return( o );
 }
 
-static const char *getLangUsage( lang_data usage, language_id lang )
+static const char *getLangData( lang_data usage, language_id lang )
 {
     const char *p;
 
@@ -760,6 +768,12 @@ static bool procCmdLine( int argc1, char **argv1 )
     }
     if( strcmp( *argv1, "-q" ) == 0 ) {
         optFlag.quiet = true;
+        NEXT_ARG_CHECK();
+    }
+    if( strcmp( *argv1, "-rc" ) == 0 ) {
+        optFlag.rc = true;
+        NEXT_ARG_CHECK();
+        optFlag.rc_macro = *argv1;
         NEXT_ARG_CHECK();
     }
     if( strcmp( *argv1, "-u" ) == 0 ) {
@@ -1344,8 +1358,6 @@ static void doTITLE( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->target = 0;
-    t->ntarget = 0;
     t->lang_title[LANG_English] = pickUpRest( p );
     targetTitle = t;
 }
@@ -2401,7 +2413,7 @@ static void outputTitle( lang_data usage, language_id lang, process_line_fn *pro
     const char  *p;
     size_t      len;
 
-    p = getLangUsage( usage, lang );
+    p = getLangData( usage, lang );
     if( p != NULL && *p != '\0' ) {
         len = strlen( p );
         if( center && len < 80 ) {
@@ -2432,11 +2444,11 @@ static void createUsageHeader( language_id lang, process_line_fn *process_line, 
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            title = getLangUsage( t->lang_title, lang );
+            title = getLangData( t->lang_title, lang );
             expand_tab( title, tokbuff );
             process_line( lang, tokbuff );
             if( process_line == emitUsageH ) {
-                title = getLangUsage( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang );
+                title = getLangData( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang );
                 expand_tab( title, tokbuff );
                 emitUsageHQNX( lang, tokbuff );
             }
@@ -2457,7 +2469,7 @@ static void outputChainHeader( language_id lang, lang_data langdata, process_lin
 {
     if( p1 != NULL ) {
         strcpy( tmpbuff, p1 );
-        strcat( tmpbuff, getLangUsage( langdata, lang ) );
+        strcat( tmpbuff, getLangData( langdata, lang ) );
         process_line( lang, tmpbuff );
         if( process_line == emitUsageH ) {
             emitUsageHQNX( lang, tmpbuff );
@@ -2468,7 +2480,7 @@ static void outputChainHeader( language_id lang, lang_data langdata, process_lin
         }
     } else {
         strcpy( tmpbuff, p2 );
-        strcat( tmpbuff, getLangUsage( langdata, lang ) );
+        strcat( tmpbuff, getLangData( langdata, lang ) );
         process_line( lang, tmpbuff );
         if( process_line == emitUsageH ) {
             emitUsageHQNX( lang, tmpbuff );
@@ -2479,7 +2491,7 @@ static void outputChainHeader( language_id lang, lang_data langdata, process_lin
 static void outputOption( language_id lang, lang_data langdata, process_line_fn *process_line, const char *p )
 {
     strcpy( tmpbuff, p );
-    strcat( tmpbuff, getLangUsage( langdata, lang ) );
+    strcat( tmpbuff, getLangData( langdata, lang ) );
     process_line( lang, tmpbuff );
     if( process_line == emitUsageH ) {
         emitUsageHQNX( lang, tmpbuff );
