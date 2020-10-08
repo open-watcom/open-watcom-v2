@@ -130,7 +130,7 @@ TAG( USAGEOGRP )
 
 typedef int (*comp_fn)(const void *,const void *);
 
-typedef void process_line_fn( language_id, const char *, const char *, bool );
+typedef void process_line_fn( language_id, const char *, bool );
 
 typedef enum tag_id {
     #define TAG( s )        TAG_##s ,
@@ -168,6 +168,7 @@ typedef struct title {
     struct title    *next;
     unsigned        target;
     unsigned        ntarget;
+    boolbit         is_titleu   : 1;
     const char      *lang_title[LANG_MAX];
     const char      *lang_titleu[LANG_MAX];
 } TITLE;
@@ -1359,6 +1360,7 @@ static void doTITLEU( const char *p )
         fail( ":titleu. must follow a :title.\n" );
     }
     t->lang_titleu[LANG_English] = pickUpRest( p );
+    t->is_titleu = true;
 }
 
 // :jtitle. <text>
@@ -1383,6 +1385,7 @@ static void doJTITLEU( const char *p )
         fail( ":jtitleu. must follow a :title.\n" );
     }
     t->lang_titleu[LANG_Japanese] = pickUpRest( p );
+    t->is_titleu = true;
 }
 
 // :group. <usagegrp>
@@ -2314,7 +2317,7 @@ static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
     return( usage != NULL && usage[0] != '\0' );
 }
 
-static void emitUsageH( language_id lang, const char *str, const char *stru, bool page_flag )
+static void emitUsageH( language_id lang, const char *str, bool page_flag )
 {
     size_t len;
     const char *q;
@@ -2327,9 +2330,6 @@ static void emitUsageH( language_id lang, const char *str, const char *stru, boo
         maxUsageLen = len;
         strcpy( maxusgbuff, str );
     }
-    if( mfp != NULL && !page_flag ) {
-        fprintf( mfp, "%s\n", stru );
-    }
     if( ufp != NULL ) {
         fprintf( ufp, "\"" );
         for( s = str; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
@@ -2340,6 +2340,17 @@ static void emitUsageH( language_id lang, const char *str, const char *stru, boo
             fprintf( ufp, "%s\\\"", tmpbuff );
         }
         fprintf( ufp, "%s%s\"\n", s, ( optFlag.zero_term ) ? "\\0" : "" );
+    }
+
+}
+
+static void emitUsageHQNX( language_id lang, const char *str, bool page_flag )
+{
+
+    /* unused parameters */ (void)lang;
+
+    if( mfp != NULL && !page_flag ) {
+        fprintf( mfp, "%s\n", str );
     }
 
 }
@@ -2421,32 +2432,26 @@ static void outputTitle( const char *usage[], language_id lang, process_line_fn 
         } else {
             strcpy( tokbuff, p );
         }
-        process_line( lang, tokbuff, tokbuff, true );
+        process_line( lang, tokbuff, true );
     }
 }
 
 static void createUsageHeader( const char *usage[], language_id lang, process_line_fn *process_line, bool center )
 {
     const char  *title;
-    const char  *titleu;
     TITLE       *t;
 
     outputTitle( usage, lang, process_line, center );
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            if( process_line == emitUsageH ) {
-                titleu = getLangUsage( t->lang_titleu, lang );
-            } else {
-                titleu = NULL;
-            }
             title = getLangUsage( t->lang_title, lang );
             expand_tab( title, tokbuff );
-            if( titleu != NULL && *titleu != '\0' ) {
-                expand_tab( titleu, tagbuff );
-                process_line( lang, tokbuff, tagbuff, false );
-            } else {
-                process_line( lang, tokbuff, tokbuff, false );
+            process_line( lang, tokbuff, false );
+            if( process_line == emitUsageH ) {
+                title = getLangUsage( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang );
+                expand_tab( title, tokbuff );
+                emitUsageHQNX( lang, tokbuff, false );
             }
         }
     }
@@ -2501,9 +2506,9 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
             str = createChainHeader( &t[i], lang, max );
-            process_line( lang, tokbuff, tokbuff, false );
+            process_line( lang, tokbuff, false );
             if( str != NULL ) {
-                process_line( lang, str, str, false );
+                process_line( lang, str, false );
             }
         }
         tokbuff[0] = '\0';
@@ -2514,7 +2519,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[lang] );
-        process_line( lang, tokbuff, tokbuff, false );
+        process_line( lang, tokbuff, false );
     }
     free( t );
     if( ( maxUsageLen / langMaxChar[lang] ) > CONSOLE_WIDTH ) {
@@ -2550,11 +2555,11 @@ static void outputUsageH( void )
     }
 }
 
-static void emitUsageB( language_id lang, const char *str, const char *stru, bool page_flag )
+static void emitUsageB( language_id lang, const char *str, bool page_flag )
 {
     size_t len;
 
-    /* unused parameters */ (void)page_flag; (void)stru;
+    /* unused parameters */ (void)page_flag;
 
     if( lang == LANG_Japanese ) {
         if( !optFlag.out_utf8 ) {
