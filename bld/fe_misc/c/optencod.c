@@ -456,13 +456,13 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     return( o );
 }
 
-static const char *getLangData( lang_data usage, language_id lang )
+static const char *getLangData( lang_data langdata, language_id lang )
 {
     const char *p;
 
-    p = usage[lang];
+    p = langdata[lang];
     if( p == NULL || *p == '\0' ) {
-        p = usage[LANG_English];
+        p = langdata[LANG_English];
     }
     return( p );
 }
@@ -2408,12 +2408,12 @@ static void expand_tab( const char *s, char *d )
 
 #define TITLE_LEFT_MARGIN   8
 
-static void outputTitle( lang_data usage, language_id lang, process_line_fn *process_line, bool center )
+static void outputTitle( lang_data langdata, language_id lang, process_line_fn *process_line, bool center )
 {
     const char  *p;
     size_t      len;
 
-    p = getLangData( usage, lang );
+    p = getLangData( langdata, lang );
     if( p != NULL && *p != '\0' ) {
         len = strlen( p );
         if( center && len < 80 ) {
@@ -2428,7 +2428,7 @@ static void outputTitle( lang_data usage, language_id lang, process_line_fn *pro
         }
         process_line( lang, tokbuff );
         if( process_line == emitUsageH ) {
-            if( usage != pageUsage ) {
+            if( langdata != pageUsage ) {
                 emitUsageHQNX( lang, tokbuff );
             }
         }
