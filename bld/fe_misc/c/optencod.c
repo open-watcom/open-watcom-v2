@@ -505,7 +505,7 @@ static void emitPrintf( unsigned depth, const char *msg, ... )
     }
 }
 
-static void cvtOptionSpec( char *dst, const char *src, cvt_name cvt )
+static char *cvtOptionSpec( char *dst, const char *src, cvt_name cvt )
 {
     char c;
 
@@ -520,7 +520,8 @@ static void cvtOptionSpec( char *dst, const char *src, cvt_name cvt )
         }
         *dst++ = c;
     }
-    *dst = c;
+    *dst = '\0';
+    return( dst );
 }
 
 static bool cmpOptPattern( const char *pattern1, const char *pattern2 )
@@ -695,7 +696,7 @@ static CHAIN *addChain( char *pattern, bool chain )
     size_t pattern_len;
     CHAIN *cn;
 
-    cvtOptionSpec( pattern, pattern, CVT_PATTERN );
+    pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( strcmp( pattern, cn->pattern ) == 0 ) {
             if( cn->code_used ) {
@@ -705,12 +706,10 @@ static CHAIN *addChain( char *pattern, bool chain )
             }
         }
     }
-    pattern_len = strlen( pattern );
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
     cn->pattern_len = pattern_len;
     memcpy( cn->pattern, pattern, pattern_len + 1 );
-    cvtOptionSpec( pattern, pattern, CVT_NAME );
-    cn->name_len = strlen( pattern );
+    cn->name_len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     cn->code_used = chain ? true : false;
     cn->next = chainList;
     chainList = cn;
@@ -873,8 +872,7 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     len = strlen( pattern );
     newo = calloc( 1, sizeof( *newo ) + len );
     memcpy( newo->pattern, pattern, len + 1 );
-    cvtOptionSpec( pattern, pattern, CVT_NAME );
-    len = strlen( pattern );
+    len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     newo->name_len = len;
     newo->name = calloc( 1, len + 1 );
     memcpy( newo->name, pattern, len + 1 );
@@ -2210,84 +2208,78 @@ static int usageCmp( const void *v1, const void *v2 )
     }
 }
 
-static void catArg( char *arg )
+static char *catArg( char *arg, char *buf )
 {
-    char *p;
-    size_t len;
-
-    len = strlen( tokbuff );
-    p = &tokbuff[len];
     for( ; *arg != '\0'; ++arg ) {
         if( optFlag.no_equal ) {
             if( *arg != '=' ) {
-                *p++ = *arg;
+                *buf++ = *arg;
             }
         } else if( optFlag.alternate_equal ) {
             if( *arg != '=' ) {
-                *p++ = *arg;
+                *buf++ = *arg;
             } else {
-                *p++ = alternateEqual;
+                *buf++ = alternateEqual;
             }
         } else {
-            *p++ = *arg;
+            *buf++ = *arg;
         }
     }
-    *p = '\0';
+    *buf = '\0';
+    return( buf );
 }
 
-static size_t genOptionUsageStart( OPTION *o )
+static char *genOptionUsageStart( OPTION *o, char *buf )
 {
-    size_t  len;
-
     if( o->chain != NULL ) {
-        tokbuff[0] = ' ';
-        tokbuff[1] = ' ';
-        tokbuff[2] = '\0';
-        strcat( tokbuff, o->name + o->chain->name_len );
+        *buf++ = ' ';
+        *buf++ = ' ';
+        strcpy( buf, o->name + o->chain->name_len );
+        buf += strlen( buf );
     } else {
-        strcpy( tokbuff, "-" );
-        cvtOptionSpec( tokbuff + 1, o->pattern, CVT_USAGE );
+        *buf++ = '-';
+        buf = cvtOptionSpec( buf, o->pattern, CVT_USAGE );
     }
     if( o->is_number ) {
         if( o->default_specified ) {
-            catArg( "[=<num>]" );
+            buf = catArg( "[=<num>]", buf );
         } else {
-            catArg( "=<num>" );
+            buf = catArg( "=<num>", buf );
         }
     } else if( o->is_char ) {
         if( o->is_optional ) {
-            catArg( "[=<char>]" );
+            buf = catArg( "[=<char>]", buf );
         } else {
-            catArg( "=<char>" );
+            buf = catArg( "=<char>", buf );
         }
     } else if( o->is_id ) {
         if( o->is_optional ) {
-            catArg( "[=<id>]" );
+            buf = catArg( "[=<id>]", buf );
         } else {
-            catArg( "=<id>" );
+            buf = catArg( "=<id>", buf );
         }
     } else if( o->is_file ) {
         if( o->is_optional ) {
-            catArg( "[=<file>]" );
+            buf = catArg( "[=<file>]", buf );
         } else {
-            catArg( "=<file>" );
+            buf = catArg( "=<file>", buf );
         }
     } else if( o->is_path ) {
         if( o->is_optional ) {
-            catArg( "[=<path>]" );
+            buf = catArg( "[=<path>]", buf );
         } else {
-            catArg( "=<path>" );
+            buf = catArg( "=<path>", buf );
         }
     } else if( o->is_negate ) {
-        catArg( "[-]" );
+        buf = catArg( "[-]", buf );
     } else if( o->is_special ) {
         if( o->special_arg_usage != NULL ) {
             // we don't want special processing done
-            strcat( tokbuff, o->special_arg_usage );
+            strcpy( buf, o->special_arg_usage );
+            buf += strlen( buf );
         }
     }
-    len = strlen( tokbuff );
-    return( len );
+    return( buf );
 }
 
 static void fillOutSpaces( char *buff, size_t n )
@@ -2323,7 +2315,7 @@ static void emitUsageH( language_id lang, const char *str, bool page_flag )
     const char *q;
     const char *s;
 
-    /* unused parameters */ (void)lang;
+    /* unused parameters */ (void)lang; (void)page_flag;
 
     len = strlen( str );
     if( maxUsageLen < len ) {
@@ -2355,41 +2347,29 @@ static void emitUsageHQNX( language_id lang, const char *str, bool page_flag )
 
 }
 
-static char *createChainHeader( OPTION **o, language_id lang, size_t max )
+static char *createChainHeader( OPTION **o, CHAIN *cn, char *buf )
 {
-    const char  *usage;
-    CHAIN       *cn;
     size_t      len;
 
-    cn = (*o)->chain;
-    hdrbuff[0] = '-';
-    cvtOptionSpec( hdrbuff + 1, cn->pattern, CVT_NAME );
-    strcat( hdrbuff, "{" );
+    *buf++ = '-';
+    buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
+    *buf++ = '{';
     len = 0;
     for( ; *o != NULL && (*o)->chain == cn; ++o ) {
         if( (*o)->chain != NULL ) {
             if( len > 0 ) {
-                strcat( hdrbuff, "," );
+                *buf++ = ',';
             }
-            genOptionUsageStart( *o );
-            strcat( hdrbuff, &tokbuff[2] );
+            genOptionUsageStart( *o, tmpbuff );
+            strcpy( buf, &tmpbuff[2] );
+            buf += strlen( buf );
             ++len;
         }
     }
-    usage = getLangUsage( cn->Usage, lang );
-    strcat( hdrbuff, "} " );
-    len = strlen( hdrbuff );
-    if( len >= max ) {
-        tokbuff[0] = '\0';
-        fillOutSpaces( tokbuff, max/2 );
-        strcat( tokbuff, usage );
-        return( hdrbuff );
-    } else {
-        fillOutSpaces( hdrbuff, max - len );
-        strcat( hdrbuff, usage );
-        strcpy( tokbuff, hdrbuff );
-        return( NULL );
-    }
+    *buf++ = '}';
+    *buf++ = ' ';
+    *buf = '\0';
+    return( buf );
 }
 
 static void expand_tab( const char *s, char *d )
@@ -2475,7 +2455,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     OPTION      *o;
     OPTION      **t;
     OPTION      **c;
-    char        *str;
+    CHAIN       *cn;
 
     maxUsageLen = 0;
     max = 0;
@@ -2483,7 +2463,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     for( o = optionList; o != NULL; o = o->next ) {
         if( usageValid( o, lang, gr ) ) {
             ++count;
-            len = genOptionUsageStart( o );
+            len = genOptionUsageStart( o, tmpbuff ) - tmpbuff;
             if( max < len ) {
                 max = len;
             }
@@ -2503,19 +2483,27 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
         o = t[i];
-        if( o->chain != NULL && !o->chain->usage_used ) {
-            o->chain->usage_used = true;
-            str = createChainHeader( &t[i], lang, max );
-            process_line( lang, tokbuff, false );
-            if( str != NULL ) {
-                process_line( lang, str, false );
+        cn = o->chain;
+        if( cn != NULL && !cn->usage_used ) {
+            cn->usage_used = true;
+            len = createChainHeader( &t[i], cn, hdrbuff ) - hdrbuff;
+            if( len >= max ) {
+                tokbuff[0] = '\0';
+                fillOutSpaces( tokbuff, max/2 );
+                strcat( tokbuff, getLangUsage( cn->Usage, lang ) );
+                process_line( lang, tokbuff, false );
+                process_line( lang, hdrbuff, false );
+            } else {
+                fillOutSpaces( hdrbuff, max - len );
+                strcat( hdrbuff, getLangUsage( cn->Usage, lang ) );
+                process_line( lang, hdrbuff, false );
             }
         }
         tokbuff[0] = '\0';
-        len = genOptionUsageStart( o );
+        len = genOptionUsageStart( o, tokbuff ) - tokbuff;
         if( len < max )
             fillOutSpaces( tokbuff, max - len );
-        if( o->chain != NULL ) {
+        if( cn != NULL ) {
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[lang] );
