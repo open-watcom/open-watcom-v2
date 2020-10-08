@@ -208,12 +208,13 @@ static struct {
     boolbit     grouped                 : 1;    // - groups detected
     boolbit     have_msg                : 1;    // - have first message
     boolbit     gen_gpick               : 1;    // - generate generalized pick macros and tables
-    boolbit     rc                      : 1;    // - generate #define for resource compiler
+    boolbit     rc                      : 1;    // - generate files for resource compiler
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
     boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
     boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
-    unsigned    max_len;
+    unsigned    max_len;                        //...max length of message
+    char        *rc_macro;                      //...macro used for resource compiler files
 } flags;
 
 static struct {
@@ -401,6 +402,8 @@ static bool processOptions( int argc1, char **argv1 )
     }
     if( strcmp( *argv1, "-rc" ) == 0 ) {
         flags.rc = true;
+        NEXT_ARG_CHECK();
+        flags.rc_macro = *argv1;
         NEXT_ARG_CHECK();
     }
     if( strcmp( *argv1, "-utf8" ) == 0 ) {
@@ -1218,8 +1221,8 @@ static void writeMsgH( void )
         if( flags.rc ) {
             fputs( "\n", o_msgh );
             for( m = messageSyms; m != NULL; m = m->next ) {
-                fprintf( o_msgh, "#define %s (MSG_LANG_BASE+%d)\n",
-                    m->name, m->grp->num + m->grpIndex  );
+                fprintf( o_msgh, "#define %s (%s+%d)\n",
+                    m->name, flags.rc_macro, m->grp->num + m->grpIndex  );
             }
             fputs( "\n", o_msgh );
         } else if( flags.gen_gpick ) {
@@ -1650,6 +1653,7 @@ int main( int argc, char **argv )
                "  -i create international file with non-english data\n"
                "  -ip ignore matching XXX_ prefix with message type\n"
                "  -q quiet operation\n"
+               "  -rc <macro_name> generate files for resource compiler\n"
                "  -p generate pick macros instead of #defines\n"
                "  -g generate generalized pick macros and tables\n"
                "  -utf8 output texts use UTF-8 encoding"
