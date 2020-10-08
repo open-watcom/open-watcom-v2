@@ -126,7 +126,9 @@ TAG( USAGEOGRP )
 
 #define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
 
-#define IS_ASCII(c)     (c < 0x80)
+#define IS_ASCII(c)             (c < 0x80)
+
+typedef const char              *lang_data[LANG_MAX];
 
 typedef int (*comp_fn)(const void *,const void *);
 
@@ -169,13 +171,13 @@ typedef struct title {
     unsigned        target;
     unsigned        ntarget;
     boolbit         is_titleu   : 1;
-    const char      *lang_title[LANG_MAX];
-    const char      *lang_titleu[LANG_MAX];
+    lang_data       lang_title;
+    lang_data       lang_titleu;
 } TITLE;
 
 typedef struct chain {
     struct chain    *next;
-    const char      *Usage[LANG_MAX];
+    lang_data       Usage;
     size_t          name_len;
     size_t          pattern_len;
     boolbit         usage_used : 1;
@@ -185,7 +187,7 @@ typedef struct chain {
 
 typedef struct group {
     struct group    *next;
-    const char      *Usage[LANG_MAX];
+    lang_data       Usage;
     char            pattern[1];
 } GROUP;
 
@@ -193,7 +195,7 @@ typedef struct group {
 typedef struct option {
     struct option   *next;
     struct option   *synonym;
-    const char      *lang_usage[LANG_MAX];
+    lang_data       lang_usage;
     char            *check;
     char            *special;
     char            *special_arg_usage;
@@ -258,7 +260,7 @@ static char         alternateEqual;
 static CHAIN        *lastChain;
 static GROUP        *lastGroup;
 static size_t       maxUsageLen;
-static const char   *pageUsage[LANG_MAX];
+static lang_data    pageUsage;
 static unsigned     targetMask;
 static unsigned     targetAnyMask;
 static unsigned     targetDbgMask;
@@ -446,7 +448,7 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     return( o );
 }
 
-static const char *getLangUsage( const char *usage[], language_id lang )
+static const char *getLangUsage( lang_data usage, language_id lang )
 {
     const char *p;
 
@@ -2394,7 +2396,7 @@ static void expand_tab( const char *s, char *d )
 
 #define TITLE_LEFT_MARGIN   8
 
-static void outputTitle( const char *usage[], language_id lang, process_line_fn *process_line, bool center )
+static void outputTitle( lang_data usage, language_id lang, process_line_fn *process_line, bool center )
 {
     const char  *p;
     size_t      len;
@@ -2416,7 +2418,7 @@ static void outputTitle( const char *usage[], language_id lang, process_line_fn 
     }
 }
 
-static void createUsageHeader( const char *usage[], language_id lang, process_line_fn *process_line, bool center )
+static void createUsageHeader( lang_data usage, language_id lang, process_line_fn *process_line, bool center )
 {
     const char  *title;
     TITLE       *t;
