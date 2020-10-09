@@ -2353,6 +2353,7 @@ static void emitUsageH( language_id lang, const char *str )
     }
     if( ufp != NULL ) {
         emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
+        fprintf( ufp, "\n" );
     }
 
 }
