@@ -110,6 +110,8 @@
 :page.   (Press return to continue)
 :jusage. (続行するために何かキーを押して下さい)
 
+:chain. fh Precompiled Header Files (PCH)
+:jusage. プリコンパイル済みヘッダーファイル（PCH）
 :chain. p Preprocess source file
 :jusage. p ソースファイルを前処理します
 :chain. o Optimization
@@ -291,12 +293,14 @@
 
 :option. d
 :target. any
+:nochain.
 :special. scanDefine <name>[=text]
 :usage.  same as #define name [text] before compilation
 :jusage. コンパイル前の #define name [text] と同じ
 
 :option. d+
 :target. any
+:nochain.
 :special. scanDefinePlus
 :usage.  allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
