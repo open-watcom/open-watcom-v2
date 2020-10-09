@@ -489,14 +489,6 @@ static void outputFini( void )
     free( outputbuff );
 }
 
-static void process_output( process_line_fn *process_line, language_id lang )
-《
-    process_line( lang );
-    if( process_line == emitUsageH ) {
-        emitUsageHQNQ( lang );
-    }
-》
-
 #if defined( __WATCOMC__ )
 #pragma abort   fail
 #endif
@@ -2399,6 +2391,22 @@ static void emitUsageHQNX( language_id lang )
 
 }
 
+static void process_output( process_line_fn *process_line, language_id lang )
+{
+    process_line( lang );
+    if( process_line == emitUsageH ) {
+        emitUsageHQNX( lang );
+    }
+}
+
+static void process_output1( process_line_fn *process_line, language_id lang, bool flag )
+{
+    process_line( lang );
+    if( process_line == emitUsageH && flag ) {
+        emitUsageHQNX( lang );
+    }
+}
+
 static char *createChainHeader( OPTION **o, CHAIN *cn, char *buf )
 {
     size_t      len;
@@ -2453,26 +2461,19 @@ static void outputTitle( lang_data langdata, language_id lang, process_line_fn *
     char        *buf;
 
     p = getLangData( langdata, lang );
-    if( p != NULL && *p != '\0' ) {
-        buf = GET_OUTPUT_BUF( lang );
-        len = strlen( p );
-        if( center && len < 80 ) {
-            len = ( 80 - len ) / 2;
-            if( len > TITLE_LEFT_MARGIN )
-                len = TITLE_LEFT_MARGIN;
-            buf[0] = '\0';
-            fillOutSpaces( buf, len );
-            strcat( buf, p );
-        } else {
-            strcpy( buf, p );
-        }
-        process_line( lang );
-        if( process_line == emitUsageH ) {
-            if( langdata != pageUsage ) {
-                emitUsageHQNX( lang );
-            }
-        }
+    buf = GET_OUTPUT_BUF( lang );
+    len = strlen( p );
+    if( center && len < 80 ) {
+        len = ( 80 - len ) / 2;
+        if( len > TITLE_LEFT_MARGIN )
+            len = TITLE_LEFT_MARGIN;
+        buf[0] = '\0';
+        fillOutSpaces( buf, len );
+        strcat( buf, p );
+    } else {
+        strcpy( buf, p );
     }
+    process_output1( process_line, lang, ( langdata != pageUsage ) );
 }
 
 static void createUsageHeader( language_id lang, process_line_fn *process_line, bool center )
@@ -2532,10 +2533,7 @@ static void outputOption( language_id lang, lang_data langdata, process_line_fn 
     buf = GET_OUTPUT_BUF( lang );
     strcpy( buf, p );
     strcat( buf, getLangData( langdata, lang ) );
-    process_line( lang );
-    if( process_line == emitUsageH ) {
-        emitUsageHQNX( lang );
-    }
+    process_output( process_line, lang );
 }
 
 static void processUsage( language_id lang, process_line_fn *process_line, GROUP *gr )
