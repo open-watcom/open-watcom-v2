@@ -2323,11 +2323,26 @@ static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
     return( usage != NULL && usage[0] != '\0' );
 }
 
+static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
+{
+    size_t      len;
+    const char  *q;
+    const char  *s;
+
+    fprintf( fp, "\"" );
+    for( s = str; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
+        // replace " with \"
+        len = q - s;
+        memcpy( tmpbuff, s, len );
+        tmpbuff[len] = '\0';
+        fprintf( fp, "%s\\\"", tmpbuff );
+    }
+    fprintf( fp, "%s%s\"", s, ( zero_term ) ? "\\0" : "" );
+}
+
 static void emitUsageH( language_id lang, const char *str )
 {
     size_t len;
-    const char *q;
-    const char *s;
 
     /* unused parameters */ (void)lang;
 
@@ -2337,15 +2352,7 @@ static void emitUsageH( language_id lang, const char *str )
         strcpy( maxusgbuff, str );
     }
     if( ufp != NULL ) {
-        fprintf( ufp, "\"" );
-        for( s = str; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
-            // replace " with \"
-            len = q - s;
-            memcpy( tmpbuff, s, len );
-            tmpbuff[len] = '\0';
-            fprintf( ufp, "%s\\\"", tmpbuff );
-        }
-        fprintf( ufp, "%s%s\"\n", s, ( optFlag.zero_term ) ? "\\0" : "" );
+        emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
     }
 
 }
