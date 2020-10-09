@@ -2445,32 +2445,33 @@ static void outputTitle( lang_data langdata, language_id lang, process_line_fn *
     process_output( process_line, lang );
 }
 
-static void outputPageUsage( language_id lang, process_line_fn *process_line, bool center )
+static void outputPageUsage( language_id lang, process_line_fn *process_line )
 {
     if( pageUsage[LANG_English] != NULL ) {
-        procOutputTitle( pageUsage, lang, center );
+        procOutputTitle( pageUsage, lang, false );
         process_line( lang );
     }
 }
 
-static void createUsageHeader( language_id lang, process_line_fn *process_line, bool center )
+static void outputLineExpandTab( lang_data langdata, language_id lang, process_line_fn *process_line )
 {
-    const char  *title;
+    expand_tab( getLangData( langdata, lang ), GET_OUTPUT_BUF( lang ) );
+    process_line( lang );
+}
+
+static void outputUsageHeader( language_id lang, process_line_fn *process_line )
+{
     TITLE       *t;
     char        *buf;
 
-    outputPageUsage( lang, process_line, center );
+    outputPageUsage( lang, process_line );
 
     buf = GET_OUTPUT_BUF( lang );
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
-            title = getLangData( t->lang_title, lang );
-            expand_tab( title, buf );
-            process_line( lang );
+            outputLineExpandTab( t->lang_title, lang, process_line );
             if( process_line == emitUsageH ) {
-                title = getLangData( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang );
-                expand_tab( title, buf );
-                emitUsageHQNX( lang );
+                outputLineExpandTab( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang, emitUsageHQNX );
             }
         }
     }
@@ -2620,20 +2621,25 @@ static bool checkGroupUsed( language_id lang, GROUP *gr )
     return( false );
 }
 
-static void outputUsageH( void )
+static void outputUsage( language_id lang, process_line_fn *process_line )
 {
     GROUP       *gr;
 
-    createUsageHeader( optFlag.lang, emitUsageH, false );
+    outputUsageHeader( lang, process_line );
 
     gr = NULL;
-    processUsage( optFlag.lang, emitUsageH, gr );
+    processUsage( lang, process_line, gr );
     for( gr = groupList; gr != NULL; gr = gr->next ) {
-        if( checkGroupUsed( optFlag.lang, gr ) ) {
-            outputTitle( gr->Usage, optFlag.lang, emitUsageH, true );
-            processUsage( optFlag.lang, emitUsageH, gr );
+        if( checkGroupUsed( lang, gr ) ) {
+            outputTitle( gr->Usage, lang, process_line, true );
+            processUsage( lang, process_line, gr );
         }
     }
+}
+
+static void outputUsageH( void )
+{
+    outputUsage( optFlag.lang, emitUsageH );
 }
 
 static void emitUsageB( language_id lang )
@@ -2661,7 +2667,6 @@ static void dumpInternational( void )
     language_id lang;
     char        fname[16];
     LocaleUsage usage_header;
-    GROUP       *gr;
 
     if( optFlag.international ) {
         for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
@@ -2675,16 +2680,8 @@ static void dumpInternational( void )
             usage_header.header.signature = LS_Usage_SIG;
             fwrite( &usage_header, offsetof( LocaleUsage, data ), 1, bfp );
 
-            createUsageHeader( lang, emitUsageB, false );
+            outputUsage( lang, emitUsageB );
 
-            gr = NULL;
-            processUsage( lang, emitUsageB, gr );
-            for( gr = groupList; gr != NULL; gr = gr->next ) {
-                if( checkGroupUsed( lang, gr ) ) {
-                    outputTitle( gr->Usage, lang, emitUsageB, true );
-                    processUsage( lang, emitUsageB, gr );
-                }
-            }
             fputc( 0, bfp );
             fclose( bfp );
             bfp = NULL;
