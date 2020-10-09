@@ -128,11 +128,13 @@ TAG( USAGEOGRP )
 
 #define IS_ASCII(c)             (c < 0x80)
 
+#define GET_OUTPUT_BUF(l)       (outputbuff + l * BUFF_SIZE)
+
 typedef const char              *lang_data[LANG_MAX];
 
 typedef int (*comp_fn)(const void *,const void *);
 
-typedef void process_line_fn( language_id, const char * );
+typedef void process_line_fn( language_id );
 
 typedef enum tag_id {
     #define TAG( s )        TAG_##s ,
@@ -267,6 +269,9 @@ static unsigned     targetDbgMask;
 static unsigned     nextTargetMask = 1;
 
 static tag_id getsUsage = TAG_NULL;
+
+static char         *outputbuff = NULL;
+static lang_data    outputdata;
 
 static const char *tagNames[] = {
     #define TAG( s )        #s ,
@@ -465,6 +470,23 @@ static const char *getLangData( lang_data langdata, language_id lang )
         p = langdata[LANG_English];
     }
     return( p );
+}
+
+static void outputInit( void )
+{
+    int i;
+    char *p;
+
+    p = outputbuff = calloc( LANG_MAX, BUFF_SIZE );
+    for( i = 0; i < LANG_MAX; i++ ) {
+        outputdata[i] = p;
+        p += BUFF_SIZE;
+    }
+}
+
+static void outputFini( void )
+{
+    free( outputbuff );
 }
 
 #if defined( __WATCOMC__ )
@@ -2340,12 +2362,12 @@ static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
     fprintf( fp, "%s%s\"", s, ( zero_term ) ? "\\0" : "" );
 }
 
-static void emitUsageH( language_id lang, const char *str )
+static void emitUsageH( language_id lang )
 {
     size_t len;
+    const char *str;
 
-    /* unused parameters */ (void)lang;
-
+    str = getLangData( outputdata, lang );
     len = strlen( str );
     if( maxUsageLen < len ) {
         maxUsageLen = len;
@@ -2358,11 +2380,11 @@ static void emitUsageH( language_id lang, const char *str )
 
 }
 
-static void emitUsageHQNX( language_id lang, const char *str )
+static void emitUsageHQNX( language_id lang )
 {
+    const char *str;
 
-    /* unused parameters */ (void)lang;
-
+    str = getLangData( outputdata, lang );
     if( mfp != NULL ) {
         fprintf( mfp, "%s\n", str );
     }
@@ -2420,24 +2442,26 @@ static void outputTitle( lang_data langdata, language_id lang, process_line_fn *
 {
     const char  *p;
     size_t      len;
+    char        *buf;
 
     p = getLangData( langdata, lang );
     if( p != NULL && *p != '\0' ) {
+        buf = GET_OUTPUT_BUF( lang );
         len = strlen( p );
         if( center && len < 80 ) {
             len = ( 80 - len ) / 2;
             if( len > TITLE_LEFT_MARGIN )
                 len = TITLE_LEFT_MARGIN;
-            tokbuff[0] = '\0';
-            fillOutSpaces( tokbuff, len );
-            strcat( tokbuff, p );
+            buf[0] = '\0';
+            fillOutSpaces( buf, len );
+            strcat( buf, p );
         } else {
-            strcpy( tokbuff, p );
+            strcpy( buf, p );
         }
-        process_line( lang, tokbuff );
+        process_line( lang );
         if( process_line == emitUsageH ) {
             if( langdata != pageUsage ) {
-                emitUsageHQNX( lang, tokbuff );
+                emitUsageHQNX( lang );
             }
         }
     }
@@ -2447,18 +2471,20 @@ static void createUsageHeader( language_id lang, process_line_fn *process_line, 
 {
     const char  *title;
     TITLE       *t;
+    char        *buf;
 
     outputTitle( pageUsage, lang, process_line, center );
 
+    buf = GET_OUTPUT_BUF( lang );
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
             title = getLangData( t->lang_title, lang );
-            expand_tab( title, tokbuff );
-            process_line( lang, tokbuff );
+            expand_tab( title, buf );
+            process_line( lang );
             if( process_line == emitUsageH ) {
                 title = getLangData( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, lang );
-                expand_tab( title, tokbuff );
-                emitUsageHQNX( lang, tokbuff );
+                expand_tab( title, buf );
+                emitUsageHQNX( lang );
             }
         }
     }
@@ -2475,34 +2501,41 @@ static void clearChainUsage( void )
 
 static void outputChainHeader( language_id lang, lang_data langdata, process_line_fn *process_line, const char *p1, const char *p2 )
 {
+    char    *buf;
+
+    buf = GET_OUTPUT_BUF( lang );
     if( p1 != NULL ) {
-        strcpy( tmpbuff, p1 );
-        strcat( tmpbuff, getLangData( langdata, lang ) );
-        process_line( lang, tmpbuff );
+        strcpy( buf, p1 );
+        strcat( buf, getLangData( langdata, lang ) );
+        process_line( lang );
         if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang, tmpbuff );
+            emitUsageHQNX( lang );
         }
-        process_line( lang, p2 );
+        strcpy( buf, p2 );
+        process_line( lang );
         if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang, p2 );
+            emitUsageHQNX( lang );
         }
     } else {
-        strcpy( tmpbuff, p2 );
-        strcat( tmpbuff, getLangData( langdata, lang ) );
-        process_line( lang, tmpbuff );
+        strcpy( buf, p2 );
+        strcat( buf, getLangData( langdata, lang ) );
+        process_line( lang );
         if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang, tmpbuff );
+            emitUsageHQNX( lang );
         }
     }
 }
 
 static void outputOption( language_id lang, lang_data langdata, process_line_fn *process_line, const char *p )
 {
-    strcpy( tmpbuff, p );
-    strcat( tmpbuff, getLangData( langdata, lang ) );
-    process_line( lang, tmpbuff );
+    char    *buf;
+
+    buf = GET_OUTPUT_BUF( lang );
+    strcpy( buf, p );
+    strcat( buf, getLangData( langdata, lang ) );
+    process_line( lang );
     if( process_line == emitUsageH ) {
-        emitUsageHQNX( lang, tmpbuff );
+        emitUsageHQNX( lang );
     }
 }
 
@@ -2601,10 +2634,12 @@ static void outputUsageH( void )
     }
 }
 
-static void emitUsageB( language_id lang, const char *str )
+static void emitUsageB( language_id lang )
 {
     size_t len;
+    const char *str;
 
+    str = getLangData( outputdata, lang );
     if( lang == LANG_Japanese ) {
         if( !optFlag.out_utf8 ) {
             utf8_to_cp932( str, tmpbuff );
@@ -2687,6 +2722,7 @@ int main( int argc, char **argv )
     stripUselessOptions();
     initOptionFields();
 
+    outputInit();
     startParserH();
     outputFN_PROCESS();
     outputFN_INIT();
@@ -2694,6 +2730,7 @@ int main( int argc, char **argv )
     finishParserH();
     outputUsageH();
     dumpInternational();
+    outputFini();
 
     closeFiles();
     return( EXIT_SUCCESS );
