@@ -489,6 +489,14 @@ static void outputFini( void )
     free( outputbuff );
 }
 
+static void process_output( process_line_fn *process_line, language_id lang )
+《
+    process_line( lang );
+    if( process_line == emitUsageH ) {
+        emitUsageHQNQ( lang );
+    }
+》
+
 #if defined( __WATCOMC__ )
 #pragma abort   fail
 #endif
@@ -2507,22 +2515,13 @@ static void outputChainHeader( language_id lang, lang_data langdata, process_lin
     if( p1 != NULL ) {
         strcpy( buf, p1 );
         strcat( buf, getLangData( langdata, lang ) );
-        process_line( lang );
-        if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang );
-        }
+        process_output( process_line, lang );
         strcpy( buf, p2 );
-        process_line( lang );
-        if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang );
-        }
+        process_output( process_line, lang );
     } else {
         strcpy( buf, p2 );
         strcat( buf, getLangData( langdata, lang ) );
-        process_line( lang );
-        if( process_line == emitUsageH ) {
-            emitUsageHQNX( lang );
-        }
+        process_output( process_line, lang );
     }
 }
 
