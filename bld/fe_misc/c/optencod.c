@@ -2399,14 +2399,6 @@ static void process_output( process_line_fn *process_line, language_id lang )
     }
 }
 
-static void process_output1( process_line_fn *process_line, language_id lang, bool flag )
-{
-    process_line( lang );
-    if( process_line == emitUsageH && flag ) {
-        emitUsageHQNX( lang );
-    }
-}
-
 static char *createChainHeader( OPTION **o, CHAIN *cn, char *buf )
 {
     size_t      len;
@@ -2454,7 +2446,7 @@ static void expand_tab( const char *s, char *d )
 
 #define TITLE_LEFT_MARGIN   8
 
-static void outputTitle( lang_data langdata, language_id lang, process_line_fn *process_line, bool center )
+static void procOutputTitle( lang_data langdata, language_id lang, bool center )
 {
     const char  *p;
     size_t      len;
@@ -2473,7 +2465,20 @@ static void outputTitle( lang_data langdata, language_id lang, process_line_fn *
     } else {
         strcpy( buf, p );
     }
-    process_output1( process_line, lang, ( langdata != pageUsage ) );
+}
+
+static void outputTitle( lang_data langdata, language_id lang, process_line_fn *process_line, bool center )
+{
+    procOutputTitle( langdata, lang, center );
+    process_output( process_line, lang );
+}
+
+static void outputPageUsage( language_id lang, process_line_fn *process_line, bool center )
+{
+    if( pageUsage[LANG_English] != NULL ) {
+        procOutputTitle( pageUsage, lang, center );
+        process_line( lang );
+    }
 }
 
 static void createUsageHeader( language_id lang, process_line_fn *process_line, bool center )
@@ -2482,7 +2487,7 @@ static void createUsageHeader( language_id lang, process_line_fn *process_line, 
     TITLE       *t;
     char        *buf;
 
-    outputTitle( pageUsage, lang, process_line, center );
+    outputPageUsage( lang, process_line, center );
 
     buf = GET_OUTPUT_BUF( lang );
     for( t = titleList; t != NULL; t = t->next ) {
