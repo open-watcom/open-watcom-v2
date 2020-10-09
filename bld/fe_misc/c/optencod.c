@@ -2265,11 +2265,13 @@ static char *catArg( char *arg, char *buf )
     return( buf );
 }
 
-static char *genOptionUsageStart( OPTION *o, char *buf )
+static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
 {
     if( o->chain != NULL ) {
-        *buf++ = ' ';
-        *buf++ = ' ';
+        if( !no_prefix ) {
+            *buf++ = ' ';
+            *buf++ = ' ';
+        }
         strcpy( buf, o->name + o->chain->name_len );
         buf += strlen( buf );
     } else {
@@ -2318,16 +2320,14 @@ static char *genOptionUsageStart( OPTION *o, char *buf )
     return( buf );
 }
 
-static void fillOutSpaces( char *buff, size_t n )
+static char *fillOutSpaces( char *buf, size_t n )
 {
-    char *p;
-
-    p = &buff[strlen( buff )];
     while( n > 0 ) {
-        *p++ = ' ';
+        *buf++ = ' ';
         --n;
     }
-    *p = '\0';
+    *buf = '\0';
+    return( buf );
 }
 
 static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
@@ -2399,31 +2399,6 @@ static void process_output( process_line_fn *process_line, language_id lang )
     }
 }
 
-static char *createChainHeader( OPTION **o, CHAIN *cn, char *buf )
-{
-    size_t      len;
-
-    *buf++ = '-';
-    buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
-    *buf++ = '{';
-    len = 0;
-    for( ; *o != NULL && (*o)->chain == cn; ++o ) {
-        if( (*o)->chain != NULL ) {
-            if( len > 0 ) {
-                *buf++ = ',';
-            }
-            genOptionUsageStart( *o, tmpbuff );
-            strcpy( buf, &tmpbuff[2] );
-            buf += strlen( buf );
-            ++len;
-        }
-    }
-    *buf++ = '}';
-    *buf++ = ' ';
-    *buf = '\0';
-    return( buf );
-}
-
 static void expand_tab( const char *s, char *d )
 {
     for( ; *s != '\0'; ++s ) {
@@ -2459,12 +2434,9 @@ static void procOutputTitle( lang_data langdata, language_id lang, bool center )
         len = ( 80 - len ) / 2;
         if( len > TITLE_LEFT_MARGIN )
             len = TITLE_LEFT_MARGIN;
-        buf[0] = '\0';
-        fillOutSpaces( buf, len );
-        strcat( buf, p );
-    } else {
-        strcpy( buf, p );
+        buf = fillOutSpaces( buf, len );
     }
+    strcpy( buf, p );
 }
 
 static void outputTitle( lang_data langdata, language_id lang, process_line_fn *process_line, bool center )
@@ -2513,31 +2485,79 @@ static void clearChainUsage( void )
     }
 }
 
-static void outputChainHeader( language_id lang, lang_data langdata, process_line_fn *process_line, const char *p1, const char *p2 )
+static char *createChainHeaderPrefix( OPTION **t, char *buf )
+{
+    size_t      len;
+    CHAIN       *cn;
+
+    cn = (*t)->chain;
+    *buf++ = '-';
+    buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
+    *buf++ = '{';
+    len = 0;
+    for( ; *t != NULL && (*t)->chain == cn; ++t ) {
+        if( (*t)->chain != NULL ) {
+            if( len > 0 ) {
+                *buf++ = ',';
+            }
+            buf = genOptionUsageStart( *t, buf, true );
+            ++len;
+        }
+    }
+    *buf++ = '}';
+    *buf++ = ' ';
+    *buf = '\0';
+    return( buf );
+}
+
+static void outputChainHeader( OPTION **t, language_id lang, process_line_fn *process_line, size_t max )
 {
     char    *buf;
+    size_t  len;
 
     buf = GET_OUTPUT_BUF( lang );
-    if( p1 != NULL ) {
-        strcpy( buf, p1 );
-        strcat( buf, getLangData( langdata, lang ) );
+    len = createChainHeaderPrefix( t, hdrbuff ) - hdrbuff;
+    if( len >= max ) {
+        buf = fillOutSpaces( buf, max/2 );
+        strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
         process_output( process_line, lang );
-        strcpy( buf, p2 );
+        buf = GET_OUTPUT_BUF( lang );
+        strcpy( buf, hdrbuff );
         process_output( process_line, lang );
     } else {
-        strcpy( buf, p2 );
-        strcat( buf, getLangData( langdata, lang ) );
+        strcpy( buf, hdrbuff );
+        buf += strlen( buf );
+        buf = fillOutSpaces( buf, max - len );
+        strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
         process_output( process_line, lang );
     }
 }
 
-static void outputOption( language_id lang, lang_data langdata, process_line_fn *process_line, const char *p )
+static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
+{
+    size_t  len;
+    char    *start;
+
+    start = buf;
+    buf = genOptionUsageStart( o, buf, false );
+    len = buf - start;
+    if( len < max )
+        buf = fillOutSpaces( buf, max - len );
+    if( o->chain != NULL ) {
+        *buf++ = '-';
+        *buf++ = ' ';
+        *buf = '\0';
+    }
+    return( buf );
+}
+
+static void outputOption( OPTION *o, language_id lang, process_line_fn *process_line, size_t max )
 {
     char    *buf;
 
     buf = GET_OUTPUT_BUF( lang );
-    strcpy( buf, p );
-    strcat( buf, getLangData( langdata, lang ) );
+    buf = createOptionPrefix( o, buf, max );
+    strcpy( buf, getLangData( o->lang_usage, lang ) );
     process_output( process_line, lang );
 }
 
@@ -2550,8 +2570,6 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     OPTION      *o;
     OPTION      **t;
     OPTION      **c;
-    CHAIN       *cn;
-    char        *p;
 
     maxUsageLen = 0;
     max = 0;
@@ -2559,7 +2577,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     for( o = optionList; o != NULL; o = o->next ) {
         if( usageValid( o, lang, gr ) ) {
             ++count;
-            len = genOptionUsageStart( o, tmpbuff ) - tmpbuff;
+            len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
             if( max < len ) {
                 max = len;
             }
@@ -2578,29 +2596,11 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
 
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
-        o = t[i];
-        cn = o->chain;
-        if( cn != NULL && !cn->usage_used ) {
-            cn->usage_used = true;
-            len = createChainHeader( &t[i], cn, hdrbuff ) - hdrbuff;
-            if( len >= max ) {
-                tokbuff[0] = '\0';
-                fillOutSpaces( tokbuff, max/2 );
-                p = tokbuff;
-            } else {
-                fillOutSpaces( hdrbuff, max - len );
-                p = NULL;
-            }
-            outputChainHeader( lang, cn->Usage, process_line, p, hdrbuff );
+        if( t[i]->chain != NULL && !t[i]->chain->usage_used ) {
+            t[i]->chain->usage_used = true;
+            outputChainHeader( &t[i], lang, process_line, max );
         }
-        tokbuff[0] = '\0';
-        len = genOptionUsageStart( o, tokbuff ) - tokbuff;
-        if( len < max )
-            fillOutSpaces( tokbuff, max - len );
-        if( cn != NULL ) {
-            strcat( tokbuff, "- " );
-        }
-        outputOption( lang, o->lang_usage, process_line, tokbuff );
+        outputOption( t[i], lang, process_line, max );
     }
     free( t );
     if( ( maxUsageLen / langMaxChar[lang] ) > CONSOLE_WIDTH ) {
