@@ -2483,11 +2483,13 @@ static void clearChainUsage( void )
     }
 }
 
-static char *createChainHeaderPrefix( OPTION **t, char *buf )
+static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
 {
     size_t      len;
     CHAIN       *cn;
+    char        *stop;
 
+    stop = buf + max;
     cn = (*t)->chain;
     *buf++ = '-';
     buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
@@ -2504,8 +2506,10 @@ static char *createChainHeaderPrefix( OPTION **t, char *buf )
     }
     *buf++ = '}';
     *buf++ = ' ';
+    while( buf < stop )
+        *buf++ = ' ';
     *buf = '\0';
-    return( buf );
+    return( buf == stop );
 }
 
 static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t max )
@@ -2513,9 +2517,12 @@ static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t
     char    *buf;
     size_t  len;
 
-    buf = GET_OUTPUT_BUF( optFlag.lang );
-    len = createChainHeaderPrefix( t, hdrbuff ) - hdrbuff;
-    if( len >= max ) {
+    if( createChainHeaderPrefix( t, hdrbuff, max ) ) {
+        buf = GET_OUTPUT_BUF( optFlag.lang );
+        strcpy( buf, hdrbuff );
+        strcpy( buf + max, getLangData( (*t)->chain->Usage, optFlag.lang ) );
+    } else {
+        buf = GET_OUTPUT_BUF( optFlag.lang );
         for( len = max / 2; len-- > 0; ) {
             *buf++ = ' ';
         }
@@ -2523,16 +2530,8 @@ static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t
         process_output( process_line );
         buf = GET_OUTPUT_BUF( optFlag.lang );
         strcpy( buf, hdrbuff );
-        process_output( process_line );
-    } else {
-        strcpy( buf, hdrbuff );
-        buf += strlen( buf );
-        for( len = max - len; len-- > 0; ) {
-            *buf++ = ' ';
-        }
-        strcpy( buf, getLangData( (*t)->chain->Usage, optFlag.lang ) );
-        process_output( process_line );
     }
+    process_output( process_line );
 }
 
 static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
@@ -2547,18 +2546,20 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
     if( o->chain != NULL ) {
         *buf++ = '-';
         *buf++ = ' ';
-        *buf = '\0';
     }
+    *buf = '\0';
     return( buf );
 }
 
 static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
 {
     char    *buf;
+    size_t  len;
 
+    len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
     buf = GET_OUTPUT_BUF( optFlag.lang );
-    buf = createOptionPrefix( o, buf, max );
-    strcpy( buf, getLangData( o->lang_usage, optFlag.lang ) );
+    strcpy( buf, hdrbuff );
+    strcpy( buf + len, getLangData( o->lang_usage, optFlag.lang ) );
     process_output( process_line );
 }
 
