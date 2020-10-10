@@ -952,8 +952,8 @@
 
 :option. p
 :target. any
-:usage.
-:jusage.
+:usage. preprocess source file
+:jusage. ソースファイルの前処理
 
 :option. pe
 :target. any

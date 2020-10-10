@@ -878,6 +878,11 @@
 
 :option. p
 :target. any
+:usage. preprocess source file
+:jusage. ソースファイルの前処理
+
+:option. p#
+:target. any
 :char.
 :internal.
 :usage. set preprocessor delimiter to something other than '#'
