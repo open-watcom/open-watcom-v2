@@ -817,7 +817,7 @@ static bool procCmdLine( int argc1, char **argv1 )
     NEXT_ARG();
     ufp = initFILE( *argv1, "w+" );
     NEXT_ARG();
-    for( t = validTargets; *t != NULL; ++t ) {
+    for( t = validTargets; *t != NULL; t++ ) {
         addTarget( *t );
     }
     p = "any";
@@ -2330,10 +2330,8 @@ static char *fillOutSpaces( char *buf, size_t n )
     return( buf );
 }
 
-static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
+static bool usageValid( OPTION *o, GROUP *gr )
 {
-    const char  *usage;
-
     if( o->group != gr )
         return( false );
     if( o->synonym != NULL )
@@ -2341,8 +2339,7 @@ static bool usageValid( OPTION *o, language_id lang, GROUP *gr )
     if( o->is_internal && ( targetMask & targetDbgMask ) == 0 ) {
         return( false );
     }
-    usage = o->lang_usage[lang];
-    return( usage != NULL && usage[0] != '\0' );
+    return( true );
 }
 
 static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
@@ -2399,24 +2396,24 @@ static void process_output( process_line_fn *process_line, language_id lang )
     }
 }
 
-static void expand_tab( const char *s, char *d )
+static void expand_tab( const char *s, char *buf )
 {
     for( ; *s != '\0'; ++s ) {
         if( s[0] == '\\' && s[1] == 't' ) {
             ++s;
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
-            *d++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
+            *buf++ = ' ';
         } else {
-            *d++ = *s;
+            *buf++ = *s;
         }
     }
-    *d = '\0';
+    *buf = '\0';
 }
 
 #define TITLE_LEFT_MARGIN   8
@@ -2427,8 +2424,8 @@ static void procOutputTitle( lang_data langdata, language_id lang, bool center )
     size_t      len;
     char        *buf;
 
-    p = getLangData( langdata, lang );
     buf = GET_OUTPUT_BUF( lang );
+    p = getLangData( langdata, lang );
     len = strlen( p );
     if( center && len < 80 ) {
         len = ( 80 - len ) / 2;
@@ -2496,7 +2493,7 @@ static char *createChainHeaderPrefix( OPTION **t, char *buf )
     buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *t != NULL && (*t)->chain == cn; ++t ) {
+    for( ; *t != NULL && (*t)->chain == cn; t++ ) {
         if( (*t)->chain != NULL ) {
             if( len > 0 ) {
                 *buf++ = ',';
@@ -2576,7 +2573,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, lang, gr ) ) {
+        if( usageValid( o, gr ) ) {
             ++count;
             len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
             if( max < len ) {
@@ -2588,7 +2585,7 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     t = calloc( count + 1, sizeof( OPTION * ) );
     c = t;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, lang, gr ) ) {
+        if( usageValid( o, gr ) ) {
             *c++ = o;
         }
     }
@@ -2609,12 +2606,12 @@ static void processUsage( language_id lang, process_line_fn *process_line, GROUP
     }
 }
 
-static bool checkGroupUsed( language_id lang, GROUP *gr )
+static bool checkGroupUsed( GROUP *gr )
 {
     OPTION  *o;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, lang, gr ) ) {
+        if( usageValid( o, gr ) ) {
             return( true );
         }
     }
@@ -2630,7 +2627,7 @@ static void outputUsage( language_id lang, process_line_fn *process_line )
     gr = NULL;
     processUsage( lang, process_line, gr );
     for( gr = groupList; gr != NULL; gr = gr->next ) {
-        if( checkGroupUsed( lang, gr ) ) {
+        if( checkGroupUsed( gr ) ) {
             outputTitle( gr->Usage, lang, process_line, true );
             processUsage( lang, process_line, gr );
         }
