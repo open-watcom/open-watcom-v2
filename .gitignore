@@ -36,6 +36,8 @@
 *.gpp
 # generated .rc source file
 *.grc
+# generated .rh source file
+*.grh
 *.i
 *.i0
 *.i1
