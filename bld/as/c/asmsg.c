@@ -58,7 +58,7 @@ static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"
 #if defined( _STANDALONE_ )
-    #include "usagej.gh"
+    #include "usage.gh"
 #endif
     #undef pick
 #endif

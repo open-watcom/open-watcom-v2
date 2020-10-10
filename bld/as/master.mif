@@ -163,7 +163,7 @@ all : $(all_as) .symbolic
 #
 # EXE
 #
-exetarg_prebuild_objs = $(subdir_stand) msg.gh usage.gh usagej.gh
+exetarg_prebuild_objs = $(subdir_stand) msg.gh usage.gh
 exetarg_objs = $(as_objs)
 exetarg_libs = $(owl_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -185,7 +185,7 @@ libtarg_name = asinline
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-wresui.res : $(as_dir)/h/as.rc msg.gh usage.gh usagej.gh $(__MAKEFILES__)
+wresui.res : $(as_dir)/h/as.rc msg.gh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui) $(cppflags) -D_STANDALONE_
 
@@ -251,13 +251,7 @@ optencod_targ_dbg   = dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
-
-usagej.gh : ../../h/options.gml $(__MAKEFILES__)
-    @%make echo_optencod
-    $(noecho)optencod -l 1 -q -utf8 $[@ . . $^&.tmp $(host_os) $(target_cpu) $(optencod_targ_dbg)
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(target_cpu) $(optencod_targ_dbg)
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

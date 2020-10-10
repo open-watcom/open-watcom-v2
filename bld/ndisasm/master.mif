@@ -81,7 +81,7 @@ exetarg_qnx_res       = usage.u
 
 rcui_inc_dirs = -I"../stand/h" -I"../stand"
 
-wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
+wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
@@ -104,17 +104,9 @@ optencod_opt_qnx    = -u $(exetarg_qnx_res)
 optencod_targ_dbg   = dbg
 !endif
 
-usage.gh $(exetarg_qnx_res): ../stand/options.gml $(__MAKEFILES__)
+usage.gh $(exetarg_$(host_os)_res): ../stand/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . usage.tmp $(host_os) $(optencod_targ_dbg)
-    @%make echo_awk
-    $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
-
-usagej.gh : ../stand/options.gml $(__MAKEFILES__)
-    @%make echo_optencod
-    $(noecho)optencod -l 1 -q -utf8 $[@ . . usagej.tmp $(host_os) $(optencod_targ_dbg)
-    @%make echo_awk
-    $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

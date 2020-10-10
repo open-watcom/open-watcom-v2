@@ -163,7 +163,7 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c &
     keyword2.gh keywordw.gh to932.uni
 !else
-prebuild_objs = usage.gh usagej.gh rcmsg.gh $(os2_yacc_file).c &
+prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c &
     $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
 !endif
 !ifdef wrc_dll
@@ -246,13 +246,7 @@ optencod_targ_dbg   = dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q $(optencod_opt_$(host_os)) -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $@
-
-usagej.gh : ../h/options.gml $(__MAKEFILES__)
-    @%make echo_optencod
-    $(noecho)optencod -l 1 -q -utf8 $[@ . . $^&.tmp $(host_os) $(optencod_targ_dbg)
-    $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $@
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
 
 ./cvttable.exe: ../c/cvttable.c $(watcom_dir)/h/cp932uni.h $(__MAKEFILES__)
     @%make echo_bldcl

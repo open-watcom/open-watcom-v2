@@ -24,7 +24,7 @@ BEGIN
     #include "../h/womp.msg"
     #include "../h/wasms.msg"
 
-    #include "usagej.gh"
+    #include "usage.gh"
   #endif
 
     #undef pick

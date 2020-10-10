@@ -16,7 +16,7 @@ BEGIN
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
     #include "wstrip.msg"
-    #include "usagej.gh"
+    #include "usage.gh"
 
     #undef pick
 END
