@@ -2418,13 +2418,13 @@ static void expand_tab( const char *s, char *buf )
 
 static void procBlockHeader( lang_data langdata, language_id lang )
 {
-    const char  *p;
+    const char  *s;
     size_t      len;
     char        *buf;
 
     buf = GET_OUTPUT_BUF( lang );
-    p = getLangData( langdata, lang );
-    len = strlen( p );
+    s = getLangData( langdata, lang );
+    len = strlen( s );
     if( len < 80 ) {
         len = ( 80 - len ) / 2;
         if( len > HEADER_LEFT_MARGIN )
@@ -2433,7 +2433,7 @@ static void procBlockHeader( lang_data langdata, language_id lang )
             *buf++ = ' ';
         }
     }
-    strcpy( buf, p );
+    strcpy( buf, s );
 }
 
 static void outputBlockHeader( lang_data langdata, process_line_fn *process_line )
@@ -2537,15 +2537,13 @@ static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t
     } else {
         for( lang = 0; lang < LANG_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
-            for( len = max / 2; len-- > 0; ) {
+            for( len = max / 2; len-- > 0; )
                 *buf++ = ' ';
-            }
             strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
         }
         process_output( process_line );
         for( lang = 0; lang < LANG_MAX; lang++ ) {
-            buf = GET_OUTPUT_BUF( lang );
-            strcpy( buf, hdrbuff );
+            strcpy( GET_OUTPUT_BUF( lang ), hdrbuff );
         }
     }
     process_output( process_line );
@@ -2557,9 +2555,8 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
 
     stop = buf + max;
     buf = genOptionUsageStart( o, buf, false );
-    while( buf < stop ) {
+    while( buf < stop )
         *buf++ = ' ';
-    }
     if( o->chain != NULL ) {
         *buf++ = '-';
         *buf++ = ' ';
