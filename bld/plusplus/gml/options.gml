@@ -256,6 +256,7 @@
 :target. any
 :id.
 :optional.
+:nochain.
 :usage.  build target is operating system <id>
 :jusage. 構築ターゲットはオペレーティング･システム <id>
 
@@ -332,21 +333,21 @@
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage.  -d2 and debug inlines; emit inlines as COMDATs
-:jusage. インライン関数の展開なしの-d2;インライン関数はCOMDATとして出力
+:usage.  d2 and debug inlines; emit inlines as COMDATs
+:jusage. インライン関数の展開なしのd2;インライン関数はCOMDATとして出力
 
 :option. d2s
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage.  -d2 and debug inlines; emit inlines as statics
-:jusage. インライン関数の展開なしの-d2;インライン関数はstaticとして出力
+:usage.  d2 and debug inlines; emit inlines as statics
+:jusage. インライン関数の展開なしのd2;インライン関数はstaticとして出力
 
 :option. d2t d2~
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage.  -d2 but without type names
+:usage.  d2 but without type names
 :jusage. 型名なしの完全シンボルデバッグ情報
 
 :option. d3
@@ -360,15 +361,15 @@
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage.  -d3 and debug inlines; emit inlines as COMDATs
-:jusage. インライン関数の展開なしの-d3;インライン関数はCOMDATとして出力
+:usage.  d3 and debug inlines; emit inlines as COMDATs
+:jusage. インライン関数の展開なしのd3;インライン関数はCOMDATとして出力
 
 :option. d3s
 :target. any
 :enumerate. debug_info
 :timestamp.
-:usage.  -d3 and debug inlines; emit inlines as statics
-:jusage. インライン関数の展開なしの-d3;インライン関数はstaticとして出力
+:usage.  d3 and debug inlines; emit inlines as statics
+:jusage. インライン関数の展開なしのd3;インライン関数はstaticとして出力
 
 :option. db
 :target. any
