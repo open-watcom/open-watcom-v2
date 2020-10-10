@@ -445,7 +445,7 @@ static size_t utf8_to_cp932( const char *src, char *dst )
              */
             p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
             if( p == NULL ) {
-                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                fprintf( stderr, "unknown unicode character: 0x%4.4X\n", x.u );
                 x.s = '?';
             } else {
                 x.s = p->s;
@@ -2354,15 +2354,28 @@ static void emitUsageH( void )
     size_t len;
     const char *str;
 
-    str = getLangData( outputdata, optFlag.lang );
-    len = strlen( str );
-    if( maxUsageLen < len ) {
-        maxUsageLen = len;
-        strcpy( maxusgbuff, str );
-    }
-    if( ufp != NULL ) {
-        emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
-        fprintf( ufp, "\n" );
+    if( optFlag.rc ) {
+        str = getLangData( outputdata, optFlag.lang );
+        len = strlen( str );
+        if( maxUsageLen < len ) {
+            maxUsageLen = len;
+            strcpy( maxusgbuff, str );
+        }
+        if( ufp != NULL ) {
+            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
+            fprintf( ufp, "\n" );
+        }
+    } else {
+        str = getLangData( outputdata, optFlag.lang );
+        len = strlen( str );
+        if( maxUsageLen < len ) {
+            maxUsageLen = len;
+            strcpy( maxusgbuff, str );
+        }
+        if( ufp != NULL ) {
+            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
+            fprintf( ufp, "\n" );
+        }
     }
 
 }
@@ -2371,8 +2384,8 @@ static void emitUsageHQNX( void )
 {
     const char *str;
 
-    str = getLangData( outputdata, optFlag.lang );
     if( mfp != NULL ) {
+        str = getLangData( outputdata, optFlag.lang );
         fprintf( mfp, "%s\n", str );
     }
 
@@ -2549,6 +2562,11 @@ static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
     process_output( process_line );
 }
 
+static bool checkUsageLength( size_t len )
+{
+    return( ( len / langMaxChar[optFlag.lang] ) > CONSOLE_WIDTH );
+}
+
 static void processUsage( process_line_fn *process_line, GROUP *gr )
 {
     unsigned    count;
@@ -2591,7 +2609,7 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
         outputOption( t[i], process_line, max );
     }
     free( t );
-    if( ( maxUsageLen / langMaxChar[optFlag.lang] ) > CONSOLE_WIDTH ) {
+    if( checkUsageLength( maxUsageLen ) ) {
         fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
 }
