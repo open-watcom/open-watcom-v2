@@ -52,7 +52,7 @@
     // DLLs implemented only for:
     //      DOS (386 Causeway Extender)
     //      OS/2 (386, PowerPC)
-    //      NT (386, Alpha AXP, PowerPC)
+    //      NT (386, x64, Alpha AXP, PowerPC)
 
     // you can use link in the dll objects into the stub in other os's
     //(eg dos--if you consider that an os) by defining STATIC_LINKAGE
