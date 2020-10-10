@@ -2351,19 +2351,17 @@ static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
 
 static void emitUsageH( void )
 {
-    size_t len;
-    const char *str;
+    static int  line_offs = 0;
+    size_t      len;
+    const char  *str;
 
     if( optFlag.rc ) {
-        str = getLangData( outputdata, optFlag.lang );
-        len = strlen( str );
-        if( maxUsageLen < len ) {
-            maxUsageLen = len;
-            strcpy( maxusgbuff, str );
-        }
         if( ufp != NULL ) {
-            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
-            fprintf( ufp, "\n" );
+            fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
+            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false );
+            fprintf( ufp, ", " );
+            emitQuotedString( ufp, getLangData( outputdata, LANG_Japanese ), false );
+            fprintf( ufp, ")\n" );
         }
     } else {
         str = getLangData( outputdata, optFlag.lang );
@@ -2440,21 +2438,33 @@ static void procBlockHeader( lang_data langdata, language_id lang )
 
 static void outputBlockHeader( lang_data langdata, process_line_fn *process_line )
 {
-    procBlockHeader( langdata, optFlag.lang );
+    language_id lang;
+
+    for( lang = 0; lang < LANG_MAX; lang++ ) {
+        procBlockHeader( langdata, lang );
+    }
     process_output( process_line );
 }
 
 static void outputPageUsage( process_line_fn *process_line )
 {
+    language_id lang;
+
     if( pageUsage[LANG_English] != NULL ) {
-        strcpy( GET_OUTPUT_BUF( optFlag.lang ), getLangData( pageUsage, optFlag.lang ) );
+        for( lang = 0; lang < LANG_MAX; lang++ ) {
+            strcpy( GET_OUTPUT_BUF( lang ), getLangData( pageUsage, lang ) );
+        }
         process_line();
     }
 }
 
 static void outputTitle( lang_data langdata, process_line_fn *process_line )
 {
-    expand_tab( getLangData( langdata, optFlag.lang ), GET_OUTPUT_BUF( optFlag.lang ) );
+    language_id lang;
+
+    for( lang = 0; lang < LANG_MAX; lang++ ) {
+        expand_tab( getLangData( langdata, lang ), GET_OUTPUT_BUF( lang ) );
+    }
     process_line();
 }
 
@@ -2514,22 +2524,29 @@ static bool createChainHeaderPrefix( OPTION **t, char *buf, size_t max )
 
 static void outputChainHeader( OPTION **t, process_line_fn *process_line, size_t max )
 {
-    char    *buf;
-    size_t  len;
+    char        *buf;
+    size_t      len;
+    language_id lang;
 
     if( createChainHeaderPrefix( t, hdrbuff, max ) ) {
-        buf = GET_OUTPUT_BUF( optFlag.lang );
-        strcpy( buf, hdrbuff );
-        strcpy( buf + max, getLangData( (*t)->chain->Usage, optFlag.lang ) );
-    } else {
-        buf = GET_OUTPUT_BUF( optFlag.lang );
-        for( len = max / 2; len-- > 0; ) {
-            *buf++ = ' ';
+        for( lang = 0; lang < LANG_MAX; lang++ ) {
+            buf = GET_OUTPUT_BUF( lang );
+            strcpy( buf, hdrbuff );
+            strcpy( buf + max, getLangData( (*t)->chain->Usage, lang ) );
         }
-        strcpy( buf, getLangData( (*t)->chain->Usage, optFlag.lang ) );
+    } else {
+        for( lang = 0; lang < LANG_MAX; lang++ ) {
+            buf = GET_OUTPUT_BUF( lang );
+            for( len = max / 2; len-- > 0; ) {
+                *buf++ = ' ';
+            }
+            strcpy( buf, getLangData( (*t)->chain->Usage, lang ) );
+        }
         process_output( process_line );
-        buf = GET_OUTPUT_BUF( optFlag.lang );
-        strcpy( buf, hdrbuff );
+        for( lang = 0; lang < LANG_MAX; lang++ ) {
+            buf = GET_OUTPUT_BUF( lang );
+            strcpy( buf, hdrbuff );
+        }
     }
     process_output( process_line );
 }
@@ -2553,13 +2570,16 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
 
 static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
 {
-    char    *buf;
-    size_t  len;
+    char        *buf;
+    size_t      len;
+    language_id lang;
 
     len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
-    buf = GET_OUTPUT_BUF( optFlag.lang );
-    strcpy( buf, hdrbuff );
-    strcpy( buf + len, getLangData( o->lang_usage, optFlag.lang ) );
+    for( lang = 0; lang < LANG_MAX; lang++ ) {
+        buf = GET_OUTPUT_BUF( lang );
+        strcpy( buf, hdrbuff );
+        strcpy( buf + len, getLangData( o->lang_usage, lang ) );
+    }
     process_output( process_line );
 }
 
