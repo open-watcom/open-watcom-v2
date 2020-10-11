@@ -2051,7 +2051,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
 {
     if( c->children ) {
         if( c->chain ) {
-            emitCode( c->children, depth, ( control & ~EC_CHAIN ) | EC_CONTINUE );
+            emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
             } else {
@@ -2326,9 +2326,8 @@ static bool usageValid( OPTION *o, GROUP *gr )
         return( false );
     if( o->synonym != NULL )
         return( false );
-    if( o->is_internal && ( targetMask & targetDbgMask ) == 0 ) {
+    if( o->is_internal && (targetMask & targetDbgMask) == 0 )
         return( false );
-    }
     return( true );
 }
 
