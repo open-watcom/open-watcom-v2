@@ -127,7 +127,7 @@ typedef enum {
 
 typedef struct msggroup {
     struct msggroup *next;
-    char        prefix[3];
+    char        *prefix;
     unsigned    msgIndex;    //first msg in group
     unsigned    emsgIndex;   //last message + 1
     unsigned    num;
@@ -604,18 +604,13 @@ static void do_msggrptxt( const char *p )
 static void do_msggrpstr( const char *p )
 {
     MSGGROUP *grp;
-    size_t len;
 
     grp = currGroup;
     p += skipNonSpace( group, p );
-    len = strlen( group );
-    if( len > 2 ) {
-        error( ":msggrpstr value '%s' is too long\n", group );
-        len = 2;
-    }
     if( grp != NULL ) {
-        strncpy( grp->prefix, group, len ); //default
-        grp->prefix[len] = '\0';
+        if( grp->prefix != grp->name )
+            free( grp->prefix );
+        grp->prefix = strdup( group );  //default
     }
 }
 
@@ -685,9 +680,8 @@ static void do_msggrp( const char *p )
     strcpy( grp->name, group );
     messageIndex = 0;
     grp->msgIndex = messageCounter;
-    grp->num = groupIndex; //set with default
-    strncpy( grp->prefix, group, 2 ); //default
-    grp->prefix[2] = '\0';
+    grp->num = groupIndex;      //set with default
+    grp->prefix = grp->name;    //default
     currGroup = grp;
     end = &allGroups;
     saw_dup = false;
@@ -1450,6 +1444,14 @@ static void writeLevH( void )
 
     if( o_levh != NULL ) {
         if( flags.rc ) {
+            fputs( "\n\n"
+                "//define GRP_DEF( name,prefix,num )\n"
+                "#define GRP_DEFS \\\n", o_levh );
+            for( grp = allGroups; grp != NULL; grp = grp->next ) {
+                fprintf( o_levh, "GRP_DEF( %s, \"%s\", %u ) \\\n",
+                    grp->name, grp->prefix, grp->num );
+            }
+            fputs( "\n\n", o_levh );
         } else if( flags.gen_gpick ) {
             fputs( "\n\n"
                 "#define MSGTYPES_DEFS \\\n", o_levh );
