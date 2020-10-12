@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include <sys/types.h>
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #ifdef __UNIX__
@@ -46,21 +46,17 @@
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <fnmatch.h>
 #endif
+#include "switch.h"
+#include "bool.h"
 #include "wio.h"
-#include "watcom.h"
-#include "errcod.h"
-#include "optflags.h"
-#include "cioconst.h"
 #include "banner.h"
-#include "errrtns.h"
 #include "swchar.h"
-#include "errrsrc.h"
-#include "showopts.h"
-#include "inout.h"
-#include "errutil.h"
 #include "pathgrp2.h"
 #include "compcfg.h"
-#include "cpopt.h"
+#include "wressetr.h"
+#include "wresset2.h"
+#include "wreslang.h"
+#include "wfl.rh"
 
 #include "clibext.h"
 
@@ -88,6 +84,11 @@
 #else
     #error Unknown Target CPU
 #endif
+
+#define ERR_BUFF_SIZE   256     // error file buffer size
+
+#define MAX_SUBSTITUTABLE_ARGS  8
+#define MAX_INT_SIZE    11              //  buffer for 32-bit integer strings
 
 #define LINK            "wlink"         // linker name
 #define PACK            "cvpack"        // packer name
@@ -125,10 +126,32 @@
 
 #define IS_OBJ(x)       (x[0] == '.' && fname_cmp(x + 1, OBJ_EXT) == 0)
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 typedef struct list {
     char        *filename;
     struct list *next;
 } list;
+
+typedef enum tool_type {
+    TYPE_FOR,
+    TYPE_LINK,
+    TYPE_PACK,
+    TYPE_MAX
+} tool_type;
+
+typedef union msg_arg {
+    char                *s;
+    int                 d;
+    unsigned int        u;
+    long int            i;
+} msg_arg;
+
 
 static const char *DebugOptions[] = {
     "",
@@ -152,13 +175,6 @@ static  struct flags {
 #endif
     boolbit     do_cvpack    : 1;  // do codeview cvpack
 } Flags;
-
-typedef enum tool_type {
-    TYPE_FOR,
-    TYPE_LINK,
-    TYPE_PACK,
-    TYPE_MAX
-} tool_type;
 
 static struct {
     char *name;
@@ -185,7 +201,6 @@ static  char    *SystemName = NULL;     // system name
 static  int     DebugFlag;              // debugging flag
 
 /* forward declarations */
-static  void    Usage( void );
 static  int     Parse( int, char ** );
 static  int     CompLink( void );
 static  void    MakeName( char *name, const char *ext );
@@ -194,28 +209,175 @@ static  int     IsOption( const char *cmd, size_t cmd_len, const char *opt );
 static  void    AddName( const char *name, FILE *link_fp );
 
 
-static  void    wfl_exit( int rc ) {
-//==================================
+static  HANDLE_INFO     hInstance = { 0 };
+static  unsigned        MsgShift;
 
-    __ErrorFini();
-    exit( rc );
+static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
+// Load a message into the specified buffer.  This function is called
+// by WLINK when linked with 16-bit version of WATFOR-77.
+{
+    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
+}
+
+static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
+//===========================================================================
+
+    char        chr;
+    unsigned    idx;
+    unsigned    arg_count;
+
+    arg_count = 0;
+    for(;;) {
+        for(;;) {
+            chr = *msg;
+            if( chr == '%' )
+                break;
+            if( chr == '\0' )
+                return;
+            ++msg;
+        }
+        ++arg_count;
+        ++msg;                  // skip over '%'
+        chr = *msg;
+        if( isdigit( chr ) ) {  // only support a 1 digit field width
+            ++msg;              // skip over width specifier
+            chr = *msg;
+        }
+        ++msg;                  // skip over format specifier
+        idx = *msg - '0' - 1;   // get positional information
+        ++msg;
+        if( arg_count > MAX_SUBSTITUTABLE_ARGS )
+            continue;
+        if( chr == 's' ) {
+            ordered_args[idx].s = va_arg( args, char * );
+        } else if( chr == 'd' ) {
+            ordered_args[idx].d = va_arg( args, int );
+        } else if( chr == 'u' ) {
+            ordered_args[idx].u = va_arg( args, unsigned int );
+        } else {   // assume -->  fflag == 'i'
+            ordered_args[idx].i = va_arg( args, long int );
+        }
+    }
 }
 
 
-static  void    PrintMsg( uint msg, ... ) {
+static void Substitute( char *msg, char *buffer, va_list args ) {
+//===========================================================
+
+// Do the necessary "%" substitutions.
+
+    char        *subs_ptr;
+    size_t      subs_len;
+    size_t      width;
+    char        chr;
+    char        temp_buff[MAX_INT_SIZE];
+    int         arg_count;
+    int         idx;
+    msg_arg     ordered_args[MAX_SUBSTITUTABLE_ARGS];
+    bool        same_buff;
+
+    same_buff = ( msg == buffer );
+    OrderArgs( msg, ordered_args, args );
+    arg_count = 0;
+    for(;;) {
+        for(;;) {
+            chr = *msg;
+            if( chr == '%' )
+                break;
+            if( chr == '\0' )
+                break;
+            *buffer = chr;
+            ++buffer;
+            ++msg;
+        }
+        if( chr == '\0' )
+            break;
+        ++arg_count;
+        ++msg;                  // skip over '%'
+        chr = *msg;
+        width = 0;
+        if( isdigit( chr ) ) {  // only support a 1 digit field width
+            width = chr - '0';
+            ++msg;              // skip over width specifier
+            chr = *msg;
+        }
+        ++msg;                  // skip over format specifier
+        idx = *msg - '0' - 1;   // get positional information
+        ++msg;
+        subs_ptr = temp_buff;
+        if( arg_count > MAX_SUBSTITUTABLE_ARGS ) {
+            temp_buff[0] = '?';
+            temp_buff[1] = '\0';
+        } else if( chr == 's' ) {
+            subs_ptr = ordered_args[idx].s;
+        } else if( chr == 'd' ) {
+            sprintf( temp_buff, "%d", ordered_args[idx].d );
+        } else if( chr == 'u' ) {
+            sprintf( temp_buff, "%u", ordered_args[idx].u );
+        } else {   // assume -->  fflag == 'i'
+            sprintf( temp_buff, "%lu", ordered_args[idx].i );
+        }
+        subs_len = strlen( subs_ptr );
+        if( width < subs_len ) {
+            width = subs_len;
+        }
+        if( same_buff ) {
+            memmove( buffer + width, msg, strlen( msg ) + sizeof( char ) );
+            msg = buffer + width;
+        }
+        if( subs_len < width ) {
+            if( chr == 's' ) {
+                memset( buffer, ' ', width - subs_len );
+            } else {
+                memset( buffer, '0', width - subs_len );
+            }
+            buffer += width - subs_len;
+        }
+        memcpy( buffer, subs_ptr, subs_len );
+        buffer += subs_len;
+    }
+    *buffer = '\0';
+}
+
+static void BldErrMsg( unsigned int err, char *buffer, va_list args )
+// Build error message.
+{
+    *buffer = '\0';
+    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
+        buffer[0] = ' ';
+        Substitute( buffer, buffer, args );
+    }
+}
+
+static void ErrorInit( const char *pgm_name )
+{
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, pgm_name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        return;
+    }
+    CloseResFile( &hInstance );
+}
+
+static void ErrorFini( void )
+{
+    CloseResFile( &hInstance );
+}
+
+static  void    PrintMsg( unsigned msg, ... ) {
 //=========================================
 
     va_list     args;
-    char        buff[LIST_BUFF_SIZE+1];
+    char        buff[ERR_BUFF_SIZE+1];
 
     va_start( args, msg );
-    __BldErrMsg( msg, buff, args );
+    BldErrMsg( msg, buff, args );
     va_end( args );
     puts( &buff[1] ); // skip leading blank
 }
 
 
-void    PrtBanner( void ) {
+static void PrtBanner( void ) {
 //===========================
 
 #if defined( _BETAVER )
@@ -231,6 +393,21 @@ void    PrtBanner( void ) {
 }
 
 
+static  void    Usage( void )
+//===========================
+{
+    int         i;
+
+    PrtBanner();
+    puts( "" );
+    i = MSG_USAGE_BASE + 1;
+    PrintMsg( i++, _NAME_ );
+    for( ; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
+        PrintMsg( i );
+    }
+}
+
+
 static  void    *MemAlloc( size_t size ) {
 //=====================================
 
@@ -239,7 +416,8 @@ static  void    *MemAlloc( size_t size ) {
     ptr = malloc( size );
     if( ptr == NULL ) {
         PrintMsg( CL_OUT_OF_MEMORY );
-        wfl_exit( 1 );
+        ErrorFini();
+        exit( 1 );
     }
     return( ptr );
 }
@@ -265,8 +443,7 @@ int     main( int argc, char *argv[] )
 
     /* unused parameters */ (void)argc;
 
-    __InitResource();
-    __ErrorInit( argv[0] );
+    ErrorInit( argv[0] );
 
     CmpOpts[0] = NULL;
 
@@ -331,8 +508,8 @@ int     main( int argc, char *argv[] )
     }
     free( Word );
     free( cmd );
-    wfl_exit( rc == 0 ? 0 : 1 );
-    return( 0 );
+    ErrorFini();
+    return( rc );
 }
 
 static  int     Parse( int argc, char **argv )
@@ -675,7 +852,8 @@ static char *FindToolPath( tool_type utl )
         _searchenv( tools[utl].exename, "PATH", PathBuffer );
         if( PathBuffer[0] == '\0' ) {
             PrintMsg( CL_UNABLE_TO_FIND, tools[utl].exename );
-            wfl_exit( 1 );
+            ErrorFini();
+            exit( 1 );
         }
         tools[utl].path = strdup( PathBuffer );
     }
@@ -932,37 +1110,3 @@ static  void    AddName( const char *name, FILE *link_fp )
     fputs( name, link_fp );
     Fputnl( "'", link_fp );
 }
-
-
-void    TOutNL( const char *msg )
-//===============================
-{
-    puts( msg );
-}
-
-
-void    TOut( const char *msg )
-//=============================
-{
-    fputs( msg, stdout );
-}
-
-static  void    Usage( void )
-//===========================
-{
-    char        buff[LIST_BUFF_SIZE+1];
-
-    PrtBanner();
-    puts( "" );
-    MsgBuffer( CL_USAGE_LINE, buff, _NAME_ );
-    puts( buff );
-    puts( "" );
-    ShowOptions( buff );
-}
-
-opt_entry       CompOptns[] = {
-    #define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags
-    #include "wflopts.h"
-    #include "wfcopts.h"
-    #undef opt
-};

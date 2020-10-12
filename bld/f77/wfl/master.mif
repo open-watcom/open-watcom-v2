@@ -17,11 +17,9 @@ additional_clean = *.gc
 #
 # cflags
 #
-.c: ../../c;../../../wfc/c;../../../c;$(trmem_dir)
+.c: ../../c;$(trmem_dir)
 
-inc_dirs = -I. -I.. -I"../../h" -I"../../../wfc/h" -I"../../../h" -I"$(comp_cfg_dir)/h"
-
-extra_cpp_flags = -D__WFL__
+inc_dirs = -I. -I.. -I"../../h" -I"$(comp_cfg_dir)/h"
 
 #
 # lflags
@@ -38,9 +36,8 @@ exetarg_name = $(exename_$(target_cpu))
 #
 # EXE
 #
-exetarg_prebuild_objs = errgrp.gc
-exetarg_objs = blderr.obj errgrp.obj errutil.obj errrsrc.obj &
-    errrtns.obj showopts.obj wfl.obj $(trmem_objs)
+exetarg_prebuild_objs = wflmsgs.grh usage.gh
+exetarg_objs = wfl.obj $(trmem_objs)
 exetarg_libs          = $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
@@ -55,20 +52,39 @@ verrc_exe = $(exetarg_name)
 
 rcui_inc_dirs = -I. -I.. -I"../.." -I"../../../h" -I"$(comp_cfg_dir)/h"
 
-wresui.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+wresui.res : ../../h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
     $(rcui8)
 
-errsrc_opt_i86 = elic
-errsrc_opt_386 = el3c
-errsrc_opt_axp = elrc
+#msgencod_enc_linux = -utf8
 
-jerrsrc_opt_i86 = jlic
-jerrsrc_opt_386 = jl3c
-jerrsrc_opt_axp = jlrc
+wflmsgs.gh wflmsgs.grh : ../../gml/wflmsgs.gml
+    @%make echo_msgencod
+    $(noecho)msgencod -s -ip -q -rc MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh .
 
-errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
-    errsrc $[@ $(errsrc_opt_$(target_cpu))
 
-jerrmsg.grc:  ../../../h/error.msg
-    errsrc $[@ $(jerrsrc_opt_$(target_cpu))
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+#optencod_enc_linux  = -utf8
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+optencod_targ_i86   = targ2
+
+opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) targ1 $(optencod_targ_$(target_cpu))
+
+usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
