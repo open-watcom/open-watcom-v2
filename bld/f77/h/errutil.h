@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 extern void    BldErrCode( unsigned int error_num, char *buffer );
-#if !defined( __RT__ ) && !defined( __WFL__ )
+#if !defined( __RT__ )
 extern uint    CarrotType( uint error_num );
 #endif
 extern void    MsgFormat( char *msg, char *buff, ... );

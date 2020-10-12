@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <stddef.h>
 #include "watcom.h"
 #include "bool.h"
-#if !defined( __RT__ ) && !defined( __WFL__ )
+#if !defined( __RT__ )
   #include "cgstd.h"
 #endif
 
