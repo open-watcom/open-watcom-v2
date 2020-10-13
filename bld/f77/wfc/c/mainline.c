@@ -111,7 +111,7 @@ int     main( int argc, char *argv[] ) {
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( WFC_NAME );
+    p = getenv( ENV_NAME );
     if( p != NULL && *p != '\0' ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];
