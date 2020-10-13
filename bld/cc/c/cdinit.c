@@ -29,29 +29,16 @@
 *
 ****************************************************************************/
 
-
 #include "cvars.h"
 #include <limits.h>
 #include "i64.h"
+#include "cfeinfo.h"
+#include "cgswitch.h"
 
 #define DATA_QUAD_SEG_SIZE      (32 * 1024)
 #define DATA_QUADS_PER_SEG      (DATA_QUAD_SEG_SIZE / sizeof( DATA_QUAD_LIST ))
 
 #define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
-
-typedef enum { IS_VALUE, IS_ADDR } fold_state;
-
-typedef struct {
-    target_ssize        offset;
-    union {
-        STR_HANDLE      str_h;
-        SYM_HANDLE      sym_h;
-    } u;
-    bool                is_str;
-    bool                addr_set;
-    bool                is_error;
-    fold_state          state;
-} addrfold_info;
 
 /* use a double-linked list of dataquads to facilitate insertions */
 typedef struct data_quad_list {
@@ -60,53 +47,13 @@ typedef struct data_quad_list {
     struct data_quad_list   *prev, *next;
 } DATA_QUAD_LIST;
 
-static unsigned BitMask[] = {
-    0x00000001,
-    0x00000003,
-    0x00000007,
-    0x0000000F,
-    0x0000001F,
-    0x0000003F,
-    0x0000007F,
-    0x000000FF,
-    0x000001FF,
-    0x000003FF,
-    0x000007FF,
-    0x00000FFF,
-    0x00001FFF,
-    0x00003FFF,
-    0x00007FFF,
-    0x0000FFFF,
-    0x0001FFFF,
-    0x0003FFFF,
-    0x0007FFFF,
-    0x000FFFFF,
-    0x001FFFFF,
-    0x003FFFFF,
-    0x007FFFFF,
-    0x00FFFFFF,
-    0x01FFFFFF,
-    0x03FFFFFF,
-    0x07FFFFFF,
-    0x0FFFFFFF,
-    0x1FFFFFFF,
-    0x3FFFFFFF,
-    0x7FFFFFFF,
-    0xFFFFFFFF
-};
-
 static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
 static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
 static int              DataQuadIndex;
-
 static DATA_QUAD_LIST   *NewDataQuad( void );
-static bool             CharArray( TYPEPTR typ );
-static bool             WCharArray( TYPEPTR typ );
-static void             InitCharArray( TYPEPTR typ );
-static void             InitWCharArray( TYPEPTR typ );
-static void             StoreFloat( DATA_TYPE dtype, target_size size );
-static void             StoreInt64( TYPEPTR typ );
+static void StaticInitializer(SYMPTR sym, SYM_HANDLE handle, TYPEPTR type,
+                              TREEPTR tree);
 
 bool DataQuadsAvailable( void )
 {
@@ -156,13 +103,14 @@ void EndDataQuadAccess( void *p )
     CurDataQuad = p;
 }
 
-DATA_QUAD *NextDataQuad( void )
+DATA_QUAD *NextDataQuad(target_size *len)
 {
     DATA_QUAD   *dq_ptr;
 
     if( CurDataQuad == NULL )
         return( NULL );
     dq_ptr = &CurDataQuad->dq;
+    if (len) *len = CurDataQuad->size;
     CurDataQuad = CurDataQuad->next;
     return( dq_ptr );
 }
@@ -212,26 +160,11 @@ static void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
     memcpy( ndq, dq, sizeof( *dq ) );
 
     if( dq->flags & Q_DATA ) {
-        if( dq->flags & Q_2_INTS_IN_ONE ) {
-            dq->flags = ndq->flags = Q_DATA;
-            ndq->u_long_value1 = dq->u_long_value2;
-            ndq->u_long_value2 = 0;
-            dq->u_long_value2 = 0;
+        if (dq->type == QDT_CONST) {
+            ndq->u.string.offset = dq->u.string.offset + size;
             size = 0;
-        } else if( dq->flags & Q_REPEATED_DATA ) {
-            dq->u_rpt_count = size / ( oldsize / dq->u_rpt_count );
-            ndq->u_rpt_count -= dq->u_rpt_count;
+        } else if (dq->type == QDT_CONSTANT)
             size = 0;
-        } else if( dq->type == QDT_CONSTANT ) {
-            dq->u_size = size;
-            ndq->u_size -= size;
-            size = 0;
-        } else if( dq->type == QDT_CONST ) {
-            dq->u.string_leaf->length = size;
-            ndq->u.string_leaf->literal += size;
-            ndq->u.string_leaf->length = oldsize - size;
-            size = 0;
-        }
     }
     if( size != 0 ) {
         /* can't happen ! */
@@ -289,7 +222,6 @@ static void ZeroBytes( target_size n )
         return;
     dq.type = QDT_CONSTANT;
     dq.flags = Q_DATA;
-    dq.u_size = n;
     GenDataQuad( &dq, n );
 }
 
@@ -317,1256 +249,1296 @@ static void RelSeekBytes( target_ssize n )
     }
 }
 
-static void ChkConstant( unsigned value, unsigned max_value )
-{
-    if( value > max_value ) {
-        if( (value | (max_value >> 1)) != ~0U ) {
-            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-        }
-    }
-}
-
-static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
-{
-    static DATA_QUAD_LIST   *LastCurDataQuad;
-    DATA_QUAD_LIST          *dql;
-    DATA_QUAD               *dq_ptr;
-    DATA_QUAD               dq;
-
-    dq.flags = 0;
-    dq.type = 0;
-    dq_ptr = &dq;
-    if( LastCurDataQuad == CurDataQuad ) {
-        dq_ptr = &CurDataQuad->dq;
-    }
-    if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)
-      && dq_ptr->u_long_value1 == value ) {
-        dq_ptr->u_rpt_count++;                  /* increment repeat count */
-        CurDataQuad->size += size;
-    } else if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == Q_DATA ) {
-        if( dq_ptr->u_long_value1 == value ) {
-            dq_ptr->flags |= Q_REPEATED_DATA;
-            dq_ptr->u_rpt_count = 2;            /* repeat count */
-        } else {
-            dq_ptr->flags |= Q_2_INTS_IN_ONE;
-            dq_ptr->u_long_value2 = value;
-        }
-        CurDataQuad->size += size;
-    } else {
-        dq.type = (enum quad_type)dtype;
-        dq.flags = Q_DATA;
-        dq.u_long_value1 = value;
-        if( value != 0 )
-            CompFlags.non_zero_data = true;
-        GenDataQuad( &dq, size );
-        LastCurDataQuad = CurDataQuad;
-        return;
-    }
-    /* if the next dataquad is non-empty we'll have to delete it */
-    dql = CurDataQuad->next;
-    if( dql != NULL ) {
-        if( dql->size > size ) {
-            SplitDataQuad( dql, size );
-        }
-        /* no need to "free" the next one, just remove it from the list */
-        DeleteDataQuad( dql );
-    }
-}
-
-static void StoreIValue64( DATA_TYPE dtype, int64 value )
-{
-    DATA_QUAD           dq;
-
-    dq.type = (enum quad_type)dtype;
-    dq.flags = Q_DATA;
-    dq.u.long64 = value;
-    CompFlags.non_zero_data = true;
-    GenDataQuad( &dq, TARGET_LONG64 );
-}
-
-static void AddrFold( TREEPTR tree, addrfold_info *info )
-{
-// Assume tree has been const folded
-    SYM_ENTRY           sym;
-    target_ssize        offset;
-
-    offset = 0;
-    switch( tree->op.opr ) {
-    case OPR_PUSHINT:
-        info->state = IS_ADDR;
-        info->offset = tree->op.u2.long_value;
-        if( info->offset != 0 )
-            CompFlags.non_zero_data = true;
-        break;
-    case OPR_PUSHFLOAT:
-        info->state = IS_ADDR;
-        if( tree->op.u2.float_value->len != 0 ) {
-            info->offset = (target_ssize)atof( tree->op.u2.float_value->string );
-        } else {
-#ifdef _LONG_DOUBLE_
-            long_double ld;
-            double d;
-
-            ld = tree->op.u2.float_value->ld;
-            __iLDFD( &ld, &d );
-            info->offset = (target_ssize)d;
-#else
-            info->offset = (target_ssize)tree->op.u2.float_value->ld.u.value;
+#ifdef max
+#undef max
 #endif
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
+#ifdef min
+#undef min
+#endif
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
+/**
+ * Evaluates to 1 if t is a struct-like object type
+ */
+#define structlike(t) (\
+    (t)->decl_type == TYPE_STRUCT   || \
+    (t)->decl_type == TYPE_UNION    || \
+    (t)->decl_type == TYPE_FCOMPLEX || \
+    (t)->decl_type == TYPE_DCOMPLEX || \
+    (t)->decl_type == TYPE_LDCOMPLEX)
+
+#define aggregate(t) (\
+    (structlike(t)) ||\
+    (t)->decl_type == TYPE_ARRAY)
+
+#define boolean(t) (\
+    (t)->decl_type == TYPE_BOOL    || (\
+    ((t)->decl_type == TYPE_FIELD  ||  \
+    (t)->decl_type == TYPE_UFIELD) &&  \
+    (t)->u.f.field_type == TYPE_BOOL))
+
+/* This should support more than the required 64 levels of nesting */
+#define MAX_OBJ_ITER ((MAX_LEVEL) >> 3)
+
+/**
+ * This struct represents a chain from the base symbol all the way
+ * down to the target object being initialized in an aggregate object.
+ *
+ * In non-aggregates it merely refers to the object being initialized.
+ */
+static struct object_iter {
+    TYPEPTR type;                 /* Object type                      */
+    target_ssize offset;          /* Offset from the base symbol      */
+    unsigned char level;          /* Depth of this iter               */
+    unsigned int  non_const;      /* Number of non-const initializers */
+    bool list_start;              /* Starts an init. list             */
+    union {
+        target_ssize idx;         /* Array index                      */
+        FIELDPTR f;               /* Struct field                     */
+    } u;
+} ObjectIter[MAX_OBJ_ITER];
+
+/**
+ * Initialize an iterator with the given type.
+ *
+ * If the type is an aggregate and has subaggregates, drill down into
+ * the lowest subaggregate if requested.
+ *
+ * Returns the current depth within the object.
+ */
+static unsigned int ObjectIterInit(unsigned int level, TYPEPTR type,
+                                   bool list_start, bool drill_down)
+{
+    TYPEPTR t;
+    FIELDPTR f;
+
+next:
+    type = SkipTypeFluff(type);
+    memset(ObjectIter + level, 0, sizeof *ObjectIter);
+    ObjectIter[level].type  = type;
+    ObjectIter[level].level = level;
+    ObjectIter[level].list_start = list_start;
+    if (level) ObjectIter[level].offset = ObjectIter[level - 1].offset;
+
+    if (structlike(type)) {
+        f = type->u.tag->u.field_list;
+        if (!SizeOfArg(type)) {
+            SetDiagType1(type);
+            CErr1(ERR_INCOMPLETE_EXPR_TYPE);
+            SetDiagPop();
+
+            /* Suppress additional errors */
+            type->u.tag->size = SizeOfArg(f->field_type);
         }
-        if( info->offset != 0 )
-            CompFlags.non_zero_data = true;
-        break;
-    case OPR_PUSHSTRING:
-        info->state = IS_ADDR;
-        if( info->addr_set ) {
-            info->is_error = true;
+
+        while (f && !f->name[0]) {
+            t = SkipTypeFluff(f->field_type);
+            if (structlike(t))
+                break;
+
+            ObjectIter[level].offset += f->offset;
+            f = f->next_field;
         }
-        info->addr_set = true;
-        info->is_str = true;
-        info->u.str_h = tree->op.u2.string_handle;
-        tree->op.u2.string_handle->ref_count++;
-        CompFlags.non_zero_data = true;
-        break;
-    case OPR_PUSHADDR:
-        info->state = IS_ADDR;
-        /* fall through */
-    case OPR_PUSHSYM:
-        if( info->addr_set ) {
-            info->is_error = true;
+
+        ObjectIter[level].u.f = f;
+    }
+
+    /* Drill down into subaggregates if requested */
+    if (drill_down && aggregate(type)) {
+        if (type->decl_type == TYPE_ARRAY)
+            type = SkipTypeFluff(type->object);
+        else type = SkipTypeFluff(ObjectIter[level].u.f->field_type);
+
+        if (!aggregate(type))
+            goto ret;
+
+        if (++level > MAX_OBJ_ITER) {
+            CErr1(ERR_INTERNAL_LIMIT_EXCEEDED);
+            goto err;
         }
-        info->addr_set = true;
-        info->is_str = false;
-        SymGet( &sym, tree->op.u2.sym_handle );
-        info->u.sym_h = tree->op.u2.sym_handle;
-        CompFlags.non_zero_data = true;
-        if( sym.attribs.stg_class == SC_AUTO ) {
-            info->is_error = true;
+
+        list_start = false;
+        goto next;
+    }
+
+ret:
+    return level;
+
+err:
+    return UINT_MAX;
+}
+
+/**
+ * Updates the given iterator inline to refer to the next object to be
+ * initialized, and returns the iterator. If we reach the end of the
+ * object, NULL is returned.
+ */
+static struct object_iter *ObjectIterNext(struct object_iter *target)
+{
+    TYPEPTR t = NULL;
+    struct object_iter *ret = target;
+
+    do {
+        if (target->type->decl_type == TYPE_ARRAY) {
+            ++target->u.idx;
+            target->offset += (target_ssize)SizeOfArg(target->type->object);
+
+            if (target->type->u.array->unspecified_dim ||
+                target->u.idx < target->type->u.array->dimension)
+                break;
         }
-        break;
-    case OPR_INDEX:
-        if( tree->right->op.opr == OPR_PUSHINT ) {
-            AddrFold( tree->left, info );
-            offset = tree->right->op.u2.long_value;
-        } else if( tree->left->op.opr == OPR_PUSHINT ) {
-            AddrFold( tree->right, info );
-            offset = tree->left->op.u2.long_value;
+
+        if (structlike(target->type) && target->u.f &&
+            target->type->decl_type != TYPE_UNION) {
+            target->u.f = target->u.f->next_field;
+            if (target->u.f)
+                t = SkipTypeFluff(target->u.f->field_type);
+
+            /* Skip non-structlike fields without names */
+            while (target->u.f && !target->u.f->name[0] && !structlike(t)) {
+                target->u.f = target->u.f->next_field;
+                if (target->u.f)
+                    t = SkipTypeFluff(target->u.f->field_type);
+            }
+
+            if (target->u.f) {
+                target->offset = 0;
+                if (target->level)
+                    target->offset = ObjectIter[target->level - 1].offset;
+                target->offset += (target_ssize)target->u.f->offset;
+                break;
+            }
+        }
+
+        /**
+         * Return NULL to signify that we have reached the end.
+         */
+        if (!target->level) {
+            ret = NULL;
+            break;
         } else {
-            info->is_error = true;
+            ret = ObjectIter + target->level - 1;
+            ret->non_const += target->non_const;
+            target = ret;
         }
-        if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = true;
-        }
-        info->offset += offset * SizeOfArg( tree->u.expr_type );
-        if( tree->op.flags & OPFLAG_RVALUE ) {
-            info->state = IS_VALUE;
-        }
+    } while (1);
+
+    return ret;
+}
+
+/**
+ * Fold a chain of OPR_DOT operations
+ */
+static void DotFold(TREEPTR tree)
+{
+    TREEPTR t = tree->left, tp = tree->left;
+
+    while (t && t->op.opr == OPR_DOT) {
+        tree->right->op.u2.long_value += t->right->op.u2.long_value;
+        tp = t;
+        t  = t->left;
+    }
+
+    if (tree->left != t) {
+        tp->left = NULL;
+        FreeExprTree(tree->left);
+        tree->left = t;
+    }
+}
+
+/**
+ * Returns true if the given tree can be considered a constant expression
+ * for the purpose of initialization.
+ *
+ * This includes:
+ *  - Integral constants
+ *  - Address constants
+ *  - Address constants +/- an Integral constant
+ */
+static bool IsInitConstExpr(TREEPTR opnd)
+{
+    DATA_TYPE type;
+    SYM_ENTRY sym;
+
+again:
+    type = opnd->u.expr_type->decl_type;
+
+    switch (opnd->op.opr) {
+    case OPR_ADDROF:
+    case OPR_CONVERT:
+        if ((opnd = opnd->right))
+            goto again;
+        break;
+    case OPR_DOT:
+        DotFold(opnd);
+        if ((opnd = opnd->left))
+            goto again;
         break;
     case OPR_ADD:
     case OPR_SUB:
-        if( tree->right->op.opr == OPR_PUSHINT ) {
-            AddrFold( tree->left, info );
-            if( tree->op.opr == OPR_ADD ) {
-                info->offset = info->offset + tree->right->op.u2.long_value;
-            } else {
-                info->offset = info->offset - tree->right->op.u2.long_value;
-            }
-        } else if( tree->left->op.opr == OPR_PUSHINT ) {
-            AddrFold( tree->right, info );
-            if( tree->op.opr == OPR_ADD ) {
-                info->offset = tree->left->op.u2.long_value + info->offset;
-            } else {
-                info->offset = tree->left->op.u2.long_value - info->offset;
-            }
-        } else {
-            info->is_error = true;
-        }
-        if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = true;
+        if (IsConstLeaf(opnd->right)) {
+            if ((opnd = opnd->left))
+                goto again;
         }
         break;
-    case OPR_ADDROF:
-        AddrFold( tree->right, info );
-        info->state = IS_ADDR;
-        CompFlags.non_zero_data = true;
+    case OPR_PUSHSYM:
+    case OPR_PUSHADDR:
+        if (type == TYPE_FUNCTION)
+            goto is_const;
+
+        SymGet(&sym, opnd->op.u2.sym_handle);
+        if (sym.attribs.stg_class == SC_STATIC ||
+            sym.attribs.stg_class == SC_EXTERN ||
+            sym.attribs.stg_class == SC_NONE)
+            goto is_const;
         break;
-    case OPR_ARROW:
-        AddrFold( tree->left, info );
-        if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = true;
-        }
-        info->offset += tree->right->op.u2.long_value;
-        if( tree->op.flags & OPFLAG_RVALUE ) {
-            info->state = IS_VALUE;
-        }
-        break;
-    case OPR_POINTS:
-        AddrFold( tree->left, info );
-        if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = true;
-        }
-        if( tree->op.flags & OPFLAG_RVALUE ) {
-            info->state = IS_VALUE;
-        }
-        break;
-    case OPR_DOT:
-        AddrFold( tree->left, info );
-        info->offset += tree->right->op.u2.long_value;
-        CompFlags.non_zero_data = true;
-        if( tree->op.flags & OPFLAG_RVALUE ) {
-            info->state = IS_VALUE;
-        }
-        break;
-    case OPR_CONVERT:  //should check for pointer to smaller
-    case OPR_CONVERT_PTR:
-        AddrFold( tree->right, info );
-        break;
-    case OPR_ERROR:                 // error has already been issued
-        break;
-    default:
-        info->is_error = true;
-        break;
+    case OPR_PUSHINT:
+    case OPR_PUSHFLOAT:
+    case OPR_PUSHSTRING:
+        goto is_const;
     }
+
+    return false;
+
+is_const:
+    return true;
 }
 
-static void StorePointer( TYPEPTR typ, target_size size )
+/**
+ * Parse a struct/union field designator, and look the field up.
+ *
+ * On success, this function returns the new iterator level corresponding
+ * to the field found in Buffer.
+ *
+ * On error, or if the field cannot be found, UINT_MAX is returned.
+ */
+static unsigned int StructUnionDesignator(struct object_iter *target)
 {
-    TREEPTR             tree;
-    TYPEPTR             typ2;
-    DATA_QUAD           dq;
-    addrfold_info       info;
+    FIELDPTR f;
+    TYPEPTR type, ftype;
+    unsigned int level = target->level, ilevel = target->level;
 
-    dq.flags = Q_DATA;
-    if( typ->decl_type == TYPE_POINTER ) {
-        if( typ->u.p.decl_flags & (FLAG_FAR|FLAG_HUGE) ) {
-            dq.flags |= Q_FAR_POINTER;
-        } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
-            dq.flags |= Q_NEAR_POINTER;
-        } else {
-            typ2 = typ->object;
-            SKIP_TYPEDEFS( typ2 );
-            if( typ2->decl_type == TYPE_FUNCTION ) {
-                dq.flags |= Q_CODE_POINTER;
-            } else if( TypeSize( typ ) == TARGET_FAR_POINTER ) {
-                dq.flags |= Q_FAR_POINTER;
-            }
-        }
+    type = SkipTypeFluff(target->type);
+    if (CurToken != T_ID) {
+        CErr1(ERR_EXPECTING_ID);
+        goto err;
     }
 
-    dq.type = QDT_ID;
-    dq.u.var.sym_handle = SYM_NULL;
-    dq.u.var.offset = 0;
-    if( CurToken != T_RIGHT_BRACE) {
-        tree = AddrExpr();
-        tree = InitAsgn( typ, tree ); // as if we are assigning
-        info.offset = 0;
-        info.u.sym_h = SYM_NULL;
-        info.addr_set = false;
-        info.state = IS_VALUE;
-        info.is_str = false;
-        info.is_error = false;
-        AddrFold( tree, &info );
-        FreeExprTree( tree );
-        if( info.state == IS_VALUE ) { // must be foldable  into addr+offset
-            info.is_error = true;
-        }
-        if( info.is_str ) { // need to fix cgen an DATAQUADS to handle str+off
-            if( info.offset != 0 ) {
-                info.is_error = true;
+    target->u.f = type->u.tag->u.field_list;
+
+next:
+    for (f = target->u.f; f; f = f->next_field) {
+        target->u.f = f;
+
+        ftype = SkipTypeFluff(f->field_type);
+        if (!*f->name && structlike(ftype)) {
+            if (++level >= MAX_OBJ_ITER) {
+                CErr1(ERR_INTERNAL_LIMIT_EXCEEDED);
+                goto err;
             }
+
+            if (ObjectIterInit(level, ftype, 0, 0) == UINT_MAX)
+                goto err;
+            target = ObjectIter + level;
+            goto next;
         }
-        if( info.is_error ) {
-            CErr1( ERR_NOT_A_CONSTANT_EXPR );
-        } else {
-            if( info.is_str ) {
-                dq.type = QDT_STRING;
-                dq.u.string_leaf = info.u.str_h;
-            } else {
-                dq.u.var.sym_handle = info.u.sym_h;
-                dq.u.var.offset = info.offset;
-            }
+
+        if (*f->name && !strcmp(f->name, Buffer)) {
+            target->u.f    = f;
+            target->offset = 0;
+            if (level)
+                target->offset = ObjectIter[level - 1].offset;
+            target->offset += (target_ssize)f->offset;
+            goto ret;
         }
     }
-    if( typ->decl_type == TYPE_POINTER ) {
-        GenDataQuad( &dq, size );
-    } else if( dq.type == QDT_STRING ) {
-        if( TypeSize( typ ) != DataPtrSize || CompFlags.strict_ANSI ) {
-            CErr1( ERR_INVALID_INITIALIZER );
-        }
-        GenDataQuad( &dq, size );
-    } else { /* dq.type == QDT_ID */
-        if( dq.u.var.sym_handle != SYM_NULL ) {
-            if( TypeSize( typ ) != DataPtrSize ) {
-                CErr1( ERR_INVALID_INITIALIZER );
-            }
-            GenDataQuad( &dq, size );
-        } else {
-            StoreIValue( typ->decl_type, dq.u.var.offset, size );
-        }
+
+    if (level > ilevel) {
+        --level;
+        target = ObjectIter + level;
+        goto next;
     }
+
+    CErr3p(ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, type->u.tag->name);
+
+err:
+    return UINT_MAX;
+
+ret:
+    NextToken();
+    return level;
 }
 
-static void StoreInt64( TYPEPTR typ )
+/**
+ * Parse an array member designator.
+ *
+ * Returns true on success and the index of the designated
+ * member in idx.
+ */
+static bool ArrayDesignator(target_ssize *idx)
 {
-    TREEPTR     tree;
-    DATA_QUAD   dq;
+    TREEPTR t;
+    bool ret = false;
 
-    dq.type = (enum quad_type)typ->decl_type;
-    dq.flags = Q_DATA;
-    U32ToU64( 0, &dq.u.long64 );
-    if( CurToken != T_RIGHT_BRACE ) {
-        tree = SingleExpr();
-        tree = InitAsgn( typ, tree ); // as if we are assigning
-        if( IsConstLeaf( tree ) ) {
-            CastConstValue( tree, typ->decl_type );
-            dq.u.long64 = tree->op.u2.ulong64_value;
-        } else {
-            CErr1( ERR_NOT_A_CONSTANT_EXPR );
-        }
-        FreeExprTree( tree );
-        CompFlags.non_zero_data = true;
-    }
-    GenDataQuad( &dq, TARGET_LONG64 );
+    t = SingleExpr();
+    FoldExprTree(t);
+    if (IsConstLeaf(t)) {
+        CastConstValue(t, TYPE_INT);
+        *idx = t->op.u2.long_value;
+        ret  = true;
+    } else CErr1(ERR_NOT_A_CONSTANT_EXPR);
+
+    FreeExprTree(t);
+    MustRecog(T_RIGHT_BRACKET);
+    return ret;
 }
 
-static FIELDPTR InitBitField( FIELDPTR field )
+/**
+ * Returns true if the given field referred to by the
+ * given iterator level is an incomplete array type.
+ */
+static bool IsIncompleteArrayMember(struct object_iter *target)
 {
-    TYPEPTR             typ;
-    target_size         size;
-    uint64              value64;
-    uint64              tmp;
-    unsigned            bit_value;
-    target_size         offset;
-    TOKEN               token;
-    bool                is64bit;
-    DATA_TYPE           dtype;
+    FIELDPTR f;
+    bool ret = false;
 
-    token = CurToken;
-    if( CurToken == T_LEFT_BRACE )
-        NextToken();
-    typ = field->field_type;
-    size = SizeOfArg( typ );
-    dtype = typ->u.f.field_type;
-    is64bit = ( dtype == TYPE_LONG64 || dtype == TYPE_ULONG64 );
-    U32ToU64( 0, &value64 );
-    offset = field->offset;
-    while( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
-        bit_value = 0;
-        if( CurToken != T_RIGHT_BRACE )
-            bit_value = ConstExpr();
-        if( typ->u.f.field_type == TYPE_BOOL ) {
-            if( bit_value != 0 ) {
-                bit_value = 1;
-            }
-        } else {
-            ChkConstant( bit_value, BitMask[typ->u.f.field_width - 1] );
-            bit_value &= BitMask[typ->u.f.field_width - 1];
-        }
-        if( is64bit ) {
-            U32ToU64( bit_value, &tmp );
-            U64ShiftL( &tmp, typ->u.f.field_start, &tmp );
-            value64.u._32[I64LO32] |= tmp.u._32[I64LO32];
-            value64.u._32[I64HI32] |= tmp.u._32[I64HI32];
-        } else {
-            value64.u._32[I64LO32] |= bit_value << typ->u.f.field_start;
-        }
-        field = field->next_field;
-        if( field == NULL )
-            break;
-        if( field->offset != offset )
-            break;    /* bit field done */
-        typ = field->field_type;
-        if( CurToken == T_EOF )
-            break;
-        if( CurToken != T_RIGHT_BRACE ) {
-            MustRecog( T_COMMA );
+    f = target->u.f;
+    if (f->field_type->decl_type != TYPE_ARRAY ||
+        !f->field_type->u.array->unspecified_dim)
+        goto ret;
+    ret = true;
+
+    if (target->offset == SizeOfArg(target->type) && !f->next_field) {
+        if (stdc_version >= C99 && target->type->decl_type == TYPE_STRUCT) {
+            if (!CompFlags.extensions_enabled)
+                CErr2p(ERR_CANT_INIT_FLEX_ARRAY_MEMBER, f->name);
+            else ret = false;
+            goto ret;
         }
     }
-    if( is64bit ) {
-        StoreIValue64( dtype, value64 );
-    } else {
-        StoreIValue( dtype, value64.u._32[I64LO32], size );
-    }
-    if( token == T_LEFT_BRACE ) {
-        if( CurToken == T_COMMA )
-            NextToken();
-        MustRecog( T_RIGHT_BRACE );
-    }
-    return( field );
+
+    CErr2p(ERR_INCOMPLETE_TYPE, f->name);
+
+ret:
+    return ret;
 }
 
-
-/* typ is the (perhaps subaggregate) object that is initialized.
-   ctyp refers to the current object which is the object
-   associated with the closest brace pair. It may or may not be
-   equal to typ */
-
-/* Detects a C99 designated initializer */
-static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
+/**
+ * Render any previous assignments to the selected target void, and return
+ * the tail of the updated assignment list.
+ */
+static TREEPTR AssignOverride(struct object_iter *target, TREEPTR head,
+                              TYPEPTR type)
 {
-    TREEPTR         tree;
-    target_size     offs;
-    static bool     new_field = true;
+    int offset = target->offset;
+    TREEPTR t, tp;
 
-    if( stdc_version < C99 && !CompFlags.extensions_enabled ) {
-        return( field );
+    /* Overriding a union member overrides the whole union */
+    if (target->type->decl_type == TYPE_UNION) {
+        type   = target->type;
+        offset = target->offset - target->u.f->offset;
     }
 
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
-        new_field = true;
-        return( field );
-    }
-
-    /* if designator refers to outer type: back out */
-    if(typ != ctyp && new_field)
-        return( NULL );
-
-    new_field = false;
-    if( typ->decl_type == TYPE_ARRAY ) {
-        if( CurToken != T_LEFT_BRACKET )
-            return( NULL );
-        NextToken();
-        tree = SingleExpr();
-        if( IsConstLeaf( tree ) ) {
-            CastConstValue( tree, typ->decl_type );
-            *(target_size *)field = tree->op.u2.ulong_value;
-        } else {
-            CErr1( ERR_NOT_A_CONSTANT_EXPR );
-        }
-        FreeExprTree( tree );
-        MustRecog( T_RIGHT_BRACKET );
-    } else {
-        if( CurToken != T_DOT )
-            return( NULL );
-        NextToken();
-        if( CurToken != T_ID ) {
-            CErr1( ERR_EXPECTING_ID );
-        }
-        offs = 0;
-        field = SearchFields( &typ, &offs, Buffer );
-        if( field == NULL ) {
-            CErr3p( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
-        }
-        NextToken();
-    }
-
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
-        new_field = true;
-        MustRecog( T_EQUAL );
-    }
-    return( field );
-}
-
-static bool DesignatedInSubAggregate( DATA_TYPE decl_type )
-{
-    switch( decl_type ) {
-    case TYPE_ARRAY:
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-    case TYPE_FCOMPLEX:
-    case TYPE_DCOMPLEX:
-    case TYPE_LDCOMPLEX:
-        /* A subaggregate can be stopped by a designated initializer.
-           in that case the comma was already eaten... */
-        return( CurToken == T_DOT || CurToken == T_LEFT_BRACKET );
-    default:
-        return( false );
-    }
-}
-
-static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
-{
-    target_size n;
-    target_size m;
-    target_size *pm;
-    target_size array_size;
-    target_size elem_size;
-
-    array_size = TypeSize( typ );
-    n = 0;
-    pm = &m;
-    for( ;; ) {
-        m = n;
-        pm = DesignatedInit( typ, ctyp, pm );
-        if( pm == NULL )
-            break;
-        if( m != n ) {
-            elem_size = SizeOfArg( typ->object );
-            if( typ->u.array->unspecified_dim && m > array_size ) {
-                RelSeekBytes( ( array_size - n ) * elem_size );
-                ZeroBytes( ( m - array_size ) * elem_size );
-            } else {
-                RelSeekBytes( ( m - n ) * elem_size );
-            }
-            n = m;
-        }
-        n++;
-        if( n > array_size ) {
-            if( !typ->u.array->unspecified_dim )
-                break;
-            array_size = n;
-            /* clear out the new element just in case */
-            elem_size = SizeOfArg( typ->object );
-            ZeroBytes( elem_size );
-            RelSeekBytes( -(target_ssize)elem_size );
-        }
-        InitSymData( typ->object, ctyp, 1 );
-        if( CurToken == T_EOF )
-            break;
-        if( CurToken == T_RIGHT_BRACE )
-            break;
-        if( DesignatedInSubAggregate( typ->object->decl_type ) )
+    for (t = head->left, tp = head; t; tp = t, t = t->left) {
+        if (!t->right || !t->right->right)
             continue;
-        if( n < array_size || typ == ctyp || typ->u.array->unspecified_dim ) {
-            MustRecog( T_COMMA );
-        }
-        if( CurToken == T_RIGHT_BRACE ) {
-            break;
-        }
-    }
-    if( typ->u.array->unspecified_dim ) {
-        typ->u.array->dimension = array_size;
-    }
-    if( array_size > n ) {
-        RelSeekBytes( ( array_size - n ) * SizeOfArg( typ->object ) );
-    }
-}
 
-/* Detects a C99 designated initializer for fields */
-/* Initialize struct or union fields */
-static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
-{
-    TYPEPTR         ftyp;
-    target_size     n;
-    target_size     offset;
-
-    n = typ->u.tag->size;      /* get full size of the struct or union */
-    offset = 0;
-    for( ;; ) {
-        field = DesignatedInit( typ, ctyp, field );
-        if( field == NULL )
-            break;
-        /* The first field might not start at offset 0 */
-        if( field->offset != offset ) {
-            RelSeekBytes( field->offset - offset );
-        }
-        ftyp = field->field_type;
-        offset = field->offset + SizeOfArg( ftyp );
-        if( ftyp->decl_type == TYPE_FIELD || ftyp->decl_type == TYPE_UFIELD ) {
-            field = InitBitField( field );
-        } else {
-            InitSymData( ftyp, ctyp, 1 );
-            field = field->next_field;
-        }
-        if( typ->decl_type == TYPE_UNION ) {
-            if( offset < n ) {
-                ZeroBytes( n - offset );    /* pad the rest */
-            }
-            offset = n;
-            /* designated initializers may still override this field */
-            field = NULL;
-        }
-        if( CurToken == T_EOF )
-            break;
-        if( CurToken == T_RIGHT_BRACE )
-            break;
-        if( DesignatedInSubAggregate( ftyp->decl_type ) )
+        if (t->op.u2.long_value < offset ||
+            t->op.u2.long_value >= offset + SizeOfArg(type))
             continue;
-        if( field != NULL || typ == ctyp ) {
-            MustRecog( T_COMMA );
+
+        if (!aggregate(type)) {
+            if (t->op.u2.long_value != offset ||
+                type->decl_type != t->right->u.expr_type->decl_type ||
+                type->object    != t->right->u.expr_type->object)
+                continue;
+
+            if ((type->decl_type == TYPE_FIELD || type->decl_type == TYPE_UFIELD) &&
+                memcmp(&type->u.f, &t->right->u.expr_type->u.f, sizeof type->u.f))
+                continue;
         }
-        if( CurToken == T_RIGHT_BRACE ) {
-            break;
+
+        CWarn1(WARN_INITIALIZER_OVERRIDDEN, ERR_INITIALIZER_OVERRIDDEN);
+        tp->left = t->left;
+        t->left  = NULL;
+        FreeExprTree(t);
+        t = tp;
+    }
+
+    return t ? t : tp;
+}
+
+/**
+ * Parse a designator list
+ *
+ * This takes tokens all the way up to T_EQUALS, and handles initializer
+ * overrides. The ahead and atail parameters should be the head and tail
+ * of the assignment list, which is automatically updated when overrides
+ * to whole aggregates occur.
+ *
+ * Returns an status integer: -1 on error, 0 if no designator was present,
+ * and 1 if a designator was parsed successfully. The updated iterator
+ * is returned in *out.
+ */
+static int DesignatorList(struct object_iter **out, TREEPTR ahead, TREEPTR *atail)
+{
+    int ret = 0;
+    target_ssize idx;
+    struct object_iter *tmp, *base = *out, *target = *out;
+    TYPEPTR type = SkipTypeFluff(base->type);
+    unsigned int level = base->level;
+
+    if (stdc_version < C99 || (CurToken != T_DOT && CurToken != T_LEFT_BRACKET))
+        goto ret;
+
+    /* Start from the current object being initialized */
+    while (level && !target->list_start) {
+        tmp = ObjectIter + --level;
+        tmp->non_const += target->non_const;
+        target = tmp;
+        type = target->type;
+    }
+
+    while (CurToken == T_DOT || CurToken == T_LEFT_BRACKET) {
+        if (CurToken == T_LEFT_BRACKET) {
+            NextToken();
+            if (!ArrayDesignator(&idx))
+                goto err;
+
+            if (type->decl_type != TYPE_ARRAY) {
+                CErr1(ERR_EXPR_MUST_BE_ARRAY);
+                goto err;
+            }
+
+            if (!type->u.array->unspecified_dim &&
+                idx >= type->u.array->dimension) {
+                CErr1(ERR_INIT_INDEX_EXCEEDS_ARRAY_BOUNDS);
+                goto err;
+            }
+
+            if (type->u.array->unspecified_dim && idx < 0) {
+                CErr1(ERR_INVALID_DIMENSION);
+                goto err;
+            }
+
+            base = target;
+            type = SkipTypeFluff(type->object);
+            target->offset = 0;
+            target->u.idx  = idx;
+            if (level) target->offset  = ObjectIter[level - 1].offset;
+            if (idx)   target->offset += idx * SizeOfArg(type);
+        } else if (CurToken == T_DOT) {
+            NextToken();
+            if (!structlike(type)) {
+                CErr1(ERR_MUST_BE_STRUCT_OR_UNION);
+                goto err;
+            }
+
+            if ((level = StructUnionDesignator(target)) == UINT_MAX)
+                goto err;
+
+            target = ObjectIter + level;
+            if (IsIncompleteArrayMember(target))
+                goto err;
+
+            base = target;
+            type = SkipTypeFluff(target->u.f->field_type);
+        }
+
+        if (aggregate(type)) {
+            if (++level >= MAX_OBJ_ITER) {
+                CErr1(ERR_INTERNAL_LIMIT_EXCEEDED);
+                goto err;
+            }
+
+            if ((level = ObjectIterInit(level, type, 0, 0)) == UINT_MAX)
+                goto err;
+
+            target = ObjectIter + level;
+            base = target;
         }
     }
-    RelSeekBytes( n - offset );
-}
 
-static void InitStruct( TYPEPTR typ, TYPEPTR ctyp )
-{
-    InitStructUnion( typ, ctyp, typ->u.tag->u.field_list );
-}
-
-static void InitUnion( TYPEPTR typ, TYPEPTR ctyp )
-{
-    FIELDPTR            field;
-    TYPEPTR             ftyp;
-
-    // skip unnamed bit fields
-    for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
-        ftyp = field->field_type;
-        SKIP_TYPEDEFS( ftyp );
-        if( field->name[0] != '\0' )
-            break;
-        if( ftyp->decl_type == TYPE_STRUCT )
-            break;
-        if( ftyp->decl_type == TYPE_UNION ) {
-            break;
-        }
+    ret = 1;
+    MustRecog(T_EQUAL);
+    if (aggregate(type) && CurToken == T_LEFT_BRACE) {
+        target->list_start = true;
+        *atail = AssignOverride(target, ahead, target->type);
     }
-    InitStructUnion( typ, ctyp, field );
-}
 
-void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
-{
-    TOKEN           token;
-    target_size     size;
+ret:
+    *out = target;
+    return ret;
 
-    token = CurToken;
-    if( CurToken == T_LEFT_BRACE ) {
+err:
+    while (CurToken != T_EQUAL      && CurToken != T_RIGHT_BRACE &&
+           CurToken != T_SEMI_COLON && CurToken != T_EOF)
         NextToken();
-        if( CurToken == T_RIGHT_BRACE || CurToken == T_COMMA ) {
-            CErr1( ERR_EMPTY_INITIALIZER_LIST );
-        }
+    MustRecog(T_EQUAL);
+    return -1;
+}
+
+/**
+ * Create an expression assigning the given value to the target.
+ * This is analagous to: *(type *)((char *)&sym + offset) = value
+ */
+static TREEPTR Assign(SYMPTR sym, SYM_HANDLE handle,
+                      struct object_iter *target, TREEPTR value,
+                      TYPEPTR type, TYPEPTR value_type)
+{
+    TYPEPTR tmp;
+    TREEPTR t = NULL, t2;
+    target_ssize idx = 0;
+    bool is_ua = false;
+    unsigned int e;
+
+    /* Take the rvalue */
+    value = RValue(value);
+    if (value->op.opr == OPR_ERROR)
+        goto err;
+
+    type = SkipTypeFluff(type);
+    if (boolean(type) && !boolean(value_type)) {
+        value      = BoolConv(value);
+        value_type = value->u.expr_type;
     }
-    // skip typedefs, go into enum base
-    typ = SkipTypeFluff( typ );
-    size = SizeOfArg( typ );
-    switch( typ->decl_type ) {
-    case TYPE_ARRAY:
-        if( CharArray( typ->object ) ) {
-            InitCharArray( typ );
-        } else if( WCharArray( typ->object ) ) {
-            InitWCharArray( typ );
-        } else {
-            if( token == T_LEFT_BRACE ) {
-                ctyp = typ;
-            } else if( level == 0 ) {
-                CErr1( ERR_NEED_BRACES );
+
+    /* String literal */
+    if (value->op.opr == OPR_PUSHSTRING) {
+        value->op.u2.string_handle->ref_count++;
+        if (target->type->decl_type == TYPE_ARRAY &&
+            type->decl_type != TYPE_POINTER)
+            type = target->type;
+
+        if (type->decl_type == TYPE_ARRAY)
+            value->u.expr_type = value_type;
+    }
+
+    /* Ensure types are compatible */
+    e = ErrCount;
+    ParmAsgnCheck(type, value, 0, true);
+    if (e < ErrCount)
+        goto err;
+
+    /* Fixup targets with incomplete array types */
+    if (target->type->decl_type == TYPE_ARRAY) {
+        idx = target->u.idx;
+        if (type->decl_type == TYPE_ARRAY)
+            idx = type->u.array->dimension;
+
+        if (target->type->u.array->unspecified_dim) {
+            if (!target->type->u.array->dimension) {
+                tmp          = target->type;
+                target->type = ArrayNode(type);
+                target->type->u.array->unspecified_dim = 1;
+
+                if (tmp == sym->sym_type) {
+                    sym->sym_type = target->type;
+                    SymReplace(sym, handle);
+                }
             }
-            if( typ == ctyp ) { /* initialize new current type */
-                /* first zero out the whole array; otherwise
-                   overlapping fields caused by designated
-                   initializers will make life very difficult */
-                ZeroBytes( size );
-                RelSeekBytes( -(target_ssize)size );
+
+            target->type->u.array->dimension = max(
+                target->type->u.array->dimension,
+                idx + 1
+            );
+
+            is_ua = true;
+        } else target->u.idx = idx;
+    }
+
+    /* Assign the rvalue to the symbol */
+    t = VarLeaf(sym, handle);
+    t->u.expr_type = sym->sym_type;
+
+    if (target->offset) {
+        /* Make a pointer to target + offset */
+        t = ExprNode(t, OPR_ADD, IntLeaf(target->offset));
+        t->u.expr_type         = GetType(TYPE_POINTER);
+        t->u.expr_type->object = type;
+        t->op.u2.result_type   = t->u.expr_type;
+    }
+
+    if (target->offset ||
+        (aggregate(target->type) && !aggregate(value->u.expr_type))) {
+        /* Dereference it */
+        t = ExprNode(t, OPR_POINTS, NULL);
+        t->u.expr_type       = type;
+        t->op.u2.result_type = type;
+    }
+
+    t = ExprNode(t, OPR_EQUALS, value);
+    t->u.expr_type = type;
+    t->op.u2.result_type = type;
+
+    /* Retain the offset for static storage */
+    t2 = IntLeaf(target->offset);
+    t2->right = t;
+    t = t2;
+
+    /* If target has undefined dimensions, update target's index */
+    if (is_ua) target->u.idx = idx;
+    return t;
+
+err:
+    if (t) FreeExprTree(t);
+    return NULL;
+}
+
+static TREEPTR AssignTarget(SYMPTR sym, SYM_HANDLE handle,
+                            struct object_iter *target,
+                            TREEPTR value)
+{
+    target_size len;
+    TREEPTR t;
+    TYPEPTR type, vtype, tmp;
+
+    if (value->op.opr == OPR_ERROR)
+        goto err;
+
+    /* Get the type of field being assigned, and the type of value */
+    type  = target->type;
+    vtype = SkipTypeFluff(value->u.expr_type);
+
+    if (type->decl_type == TYPE_ARRAY)
+        type = SkipTypeFluff(type->object);
+    else if (structlike(type) && target->u.f)
+        type = SkipTypeFluff(target->u.f->field_type);
+
+    if (target->type->decl_type == TYPE_ARRAY && value->op.opr == OPR_PUSHSTRING) {
+        if (type->decl_type != TYPE_POINTER) {
+            /* Truncate string literals, complete char arrays */
+            len = value->u.expr_type->u.array->dimension;
+
+            if (target->type->u.array->unspecified_dim) {
+                tmp = target->type;
+                target->type = ArrayNode(target->type->object);
+                target->type->u.array->dimension = len;
+                target->type->u.array->unspecified_dim = 0;
+                if (sym->sym_type == tmp) {
+                    sym->sym_type = target->type;
+                    SymReplace(sym, handle);
+                }
             }
-            InitArray( typ, ctyp );
-        }
-        break;
-    case TYPE_FCOMPLEX:
-    case TYPE_DCOMPLEX:
-    case TYPE_LDCOMPLEX:
-    case TYPE_STRUCT:
-        if( token == T_LEFT_BRACE ) {
-            ctyp = typ;
-        } else if( level == 0 ) {
-            CErr1( ERR_NEED_BRACES );
-        }
-        if( typ == ctyp ) { /* initialize new current type */
-            /* zero out all fields; otherwise overlapping fields caused
-               by designated initializers will make life very difficult */
-            ZeroBytes( size );
-            RelSeekBytes( -(target_ssize)size );
-        }
-        InitStruct( typ, ctyp );
-        break;
-    case TYPE_UNION:
-        if( token == T_LEFT_BRACE ) {
-            ctyp = typ;
-        } else if( level == 0 ) {
-            CErr1( ERR_NEED_BRACES );
-        }
-        InitUnion( typ, ctyp );
-        break;
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_BOOL:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_INT:
-    case TYPE_UINT:
-    case TYPE_LONG:
-    case TYPE_ULONG:
-    case TYPE_POINTER:
-        StorePointer( typ, size );
-        break;
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
-        StoreInt64( typ );
-        break;
-    case TYPE_FLOAT:
-    case TYPE_DOUBLE:
-    case TYPE_FIMAGINARY:
-    case TYPE_DIMAGINARY:
-        StoreFloat( typ->decl_type, size );
-        break;
-    case TYPE_LONG_DOUBLE:
-    case TYPE_LDIMAGINARY:
-        //StoreFloat( typ->decl_type, size );
-        StoreFloat( TYPE_DOUBLE, size );
-        break;
-    default:
-        break;
-    }
-    if( token == T_LEFT_BRACE ) {
-        if( CurToken == T_COMMA ) {
-            NextToken();
-        }
-        if( CurToken != T_RIGHT_BRACE ) {
-            CErr1( ERR_TOO_MANY_INITS );
-        }
-        while( CurToken != T_RIGHT_BRACE ) {
-            if( CurToken == T_EOF )
-                break;
-            if( CurToken == T_SEMI_COLON )
-                break;
-            if( CurToken == T_LEFT_BRACE )
-                break;
-            NextToken();
-        }
-        MustRecog( T_RIGHT_BRACE );
-    }
-}
 
-
-static bool CharArray( TYPEPTR typ )
-{
-    if( CurToken == T_STRING ) {
-        SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_CHAR || typ->decl_type == TYPE_UCHAR ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
-
-static bool WCharArray( TYPEPTR typ )
-{
-    if( CurToken == T_STRING ) {
-        SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_SHORT || typ->decl_type == TYPE_USHORT ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
-static void InitCharArray( TYPEPTR typ )
-{
-    target_size         len;
-    STR_HANDLE          str_lit;
-    target_size         size;
-    DATA_QUAD           dq;
-
-/*      This function handles the initialization of statements like:  */
-/*              char  name[4] = "abcd";  */
-
-    str_lit = GetLiteral();
-    if( CompFlags.wide_char_string )
-        CErr1( ERR_TYPE_MISMATCH );
-    len = str_lit->length;
-    if( typ->u.array->unspecified_dim )
-        typ->u.array->dimension = len;
-    size = typ->u.array->dimension;
-    if( len > size ) {
-        if( ( len - size ) > 1 ) {
-            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
-        }
-        /* chop the string */
-        len = size;
-        str_lit->length = size;
-    }
-    dq.type = QDT_CONST;
-    dq.flags = Q_DATA;
-    dq.u.string_leaf = str_lit;
-    GenDataQuad( &dq, len );
-    if( size > len ) {                  /* if array > len of literal */
-        ZeroBytes( size - len );
-    }
-    CompFlags.non_zero_data = true;
-}
-
-
-static void InitWCharArray( TYPEPTR typ )
-{
-    target_size         len;
-    target_size         i;
-    STR_HANDLE          str_lit;
-    unsigned short      value;
-    unsigned short      *pwc;
-    target_size         size;
-    DATA_QUAD           dq;
-
-    dq.type = QDT_SHORT;
-    dq.flags = Q_DATA;
-
-/*      This function handles the initialization of statements like:  */
-/*              wchar_t  name[5] = L"abcd";  */
-
-    str_lit = GetLiteral();
-    if( !CompFlags.wide_char_string )
-        CErr1( ERR_TYPE_MISMATCH );
-    len = str_lit->length / sizeof( unsigned short );
-    if( typ->u.array->unspecified_dim ) {
-        typ->u.array->dimension = len;
-    }
-    size = typ->u.array->dimension;
-    if( len > size ) {
-        if( ( len - size ) > 1 ) {
-            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
-        }
-        len = size;
-    }
-    pwc = (unsigned short *)str_lit->literal;
-    for( i = 0; i < len; ++i ) {
-        value = *pwc++;
-        if( value != 0 )
-            CompFlags.non_zero_data = true;
-        dq.u_long_value1 = value;
-        GenDataQuad( &dq, TARGET_WCHAR );
-    }
-    if( i < size ) {
-        ZeroBytes( ( size - i ) * sizeof( unsigned short ) );
-    }
-    FreeLiteral( str_lit );
-}
-
-
-static void StoreFloat( DATA_TYPE dtype, target_size size )
-{
-    TREEPTR     tree;
-    DATA_QUAD   dq;
-
-    dq.type = (enum quad_type)dtype;
-    dq.flags = Q_DATA;
-    dq.u.double_value = 0.0;
-    if( CurToken != T_RIGHT_BRACE ) {
-        tree = SingleExpr();
-        if( IsConstLeaf( tree ) ) {
-            CastConstValue( tree, dtype );
-#ifdef _LONG_DOUBLE_
-            {
-                long_double ld;
-
-                ld = tree->op.u2.float_value->ld;
-                __iLDFD( &ld, &dq.u.double_value );
+            if (len && len - 1 > target->type->u.array->dimension) {
+                CWarn1(WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG);
+                len = target->type->u.array->dimension;
+                value->u.expr_type->u.array->dimension = len;
             }
-#else
-            dq.u.double_value = tree->op.u2.float_value->ld.u.value;
-#endif
-        } else {
-            CErr1( ERR_NOT_A_CONSTANT_EXPR );
-        }
-        FreeExprTree( tree );
-        if( dq.u.double_value != 0.0 ) {
-            CompFlags.non_zero_data = true;
         }
     }
-    GenDataQuad( &dq, size );
-}
 
-static void GenStaticDataQuad( SYM_HANDLE sym_handle )
-{
-    DATA_QUAD       dq;
-
-    dq.type = QDT_STATIC;
-    dq.flags = Q_DATA;
-    dq.u.var.sym_handle = sym_handle;
-    dq.u.var.offset = 0;
-    GenDataQuad( &dq, 0 );
-}
-
-void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
-{
-    TYPEPTR             typ;
-    TYPEPTR             struct_typ;
-    TYPEPTR             last_array;
-
-    GenStaticDataQuad( sym_handle );
-    CompFlags.non_zero_data = false;
-    struct_typ = NULL;
-    last_array = NULL;
-    typ = sym->sym_type;
-    /* Follow chain of typedefs/structs/arrays */
-    for( ;; ) {
-        SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_ARRAY ) {
-            /* Remember innermost array type */
-            last_array = typ;
-            typ = typ->object;
-        } else if( typ->decl_type == TYPE_STRUCT ) {
-            FIELDPTR    field;
-
-            /* Remember outermost structure type */
-            if( struct_typ == NULL ) {
-                /* last_array cannot to be outside this struct! */
-                last_array = NULL;
-                struct_typ = typ;
-            }
-            /* Determine the type of the last field in the struct */
-            field = typ->u.tag->u.field_list;
-            if( field == NULL )
-                break;
-            while( field->next_field != NULL )
-                field = field->next_field;
-            typ = field->field_type;
-        } else {
-            break;
+    /* Initializers for static objects must be constant */
+    FoldExprTree(value);
+    if (!IsInitConstExpr(value)) {
+        target->non_const++;
+        if (!SymLevel || sym->attribs.stg_class == SC_STATIC) {
+            CErr1(ERR_NOT_A_CONSTANT_EXPR);
+            goto err;
         }
     }
-    typ = last_array;
-    /* If innermost array had unspecified dimension, create new types whose
-     * dimensions will be determined by number of initializers
+
+    if ((t = Assign(sym, handle, target, value, type, vtype)))
+        return t;
+
+err:
+    FreeExprTree(value);
+    return NULL;
+}
+
+/**
+ * Parse an initializer list for a scalar type.
+ *
+ * Returns a scalar expression representing the initializer value
+ */
+static TREEPTR InitializerListScalar(void)
+{
+    TREEPTR t;
+    unsigned int braces = 0;
+
+    /**
+     * initializer-list contains initializer which may contain
+     * an initializer-list in braces. Since scalars have no
+     * sub-objects, this implies that so long as there is only
+     * one effective expression, and the braces are balanced, the
+     * expression can be enclosed in a theoretically infinite set
+     * of braces. Odd, but it fits the grammar.
      */
-    if( (typ != NULL) && typ->u.array->unspecified_dim ) {
-        if( struct_typ == NULL ) {
-            /* Array was not inside struct */
-            sym->sym_type = ArrayNode( typ->object );
-            sym->sym_type->u.array->unspecified_dim = true;
-        } else {
-            typ = sym->sym_type;
-            /* Create new structure type */
-            sym->sym_type = TypeNode( TYPE_STRUCT, ArrayNode( last_array->object ) );
-            sym->sym_type->u.tag = struct_typ->u.tag;
-            struct_typ = sym->sym_type;
-            /* Create new array types as necessary */
-            for( ;; ) {
-                SKIP_TYPEDEFS( typ );
-                if( typ->decl_type != TYPE_ARRAY )
-                    break;
-                sym->sym_type = ArrayNode( sym->sym_type );
-                sym->sym_type->u.array->unspecified_dim = true;
-                typ = typ->object;
-            }
-            typ = last_array;
+    CWarn1(WARN_BRACES_AROUND_SCALAR_INIT, ERR_BRACES_AROUND_SCALAR_INIT);
+    while (CurToken == T_LEFT_BRACE) {
+        ++braces;
+        NextToken();
+    }
+
+    t = ScalarExpr(SingleExpr());
+    if (CurToken == T_COMMA)
+        NextToken();
+
+    if (CurToken != T_RIGHT_BRACE && CurToken != T_SEMI_COLON &&
+        CurToken != T_EOF)
+        CErr1(ERR_TOO_MANY_INITS);
+
+    MustRecog(T_RIGHT_BRACE);
+    while (--braces < UINT_MAX && CurToken == T_RIGHT_BRACE)
+        MustRecog(T_RIGHT_BRACE);
+
+    return t;
+}
+
+/**
+ * Parse an initializer list, filling in the assignments tree with
+ * assignment expressions from the initializer list.
+ *
+ * Returns the number of non-constant initializers found in the list,
+ * or UINT_MAX on error.
+ */
+static unsigned int InitializerList(SYMPTR sym, SYM_HANDLE handle,
+                                    TREEPTR assignments)
+{
+    bool brace;
+    int designator;
+    TYPEPTR type;
+    TREEPTR t, head = assignments;
+    unsigned int non_const = 0, level;
+    struct object_iter *target, *tmp;
+
+    /* Initialize the root iterator */
+    type   = SkipTypeFluff(sym->sym_type);
+    level  = ObjectIterInit(0, type, 1,
+                            CurToken != T_LEFT_BRACE &&
+                            CurToken != T_DOT        &&
+                            CurToken != T_LEFT_BRACKET);
+    target = ObjectIter + level;
+    if (level == UINT_MAX)
+        goto err;
+
+    while (CurToken != T_RIGHT_BRACE && CurToken != T_SEMI_COLON &&
+           CurToken != T_EOF) {
+
+        /* Bail if we'd go off the end of the object */
+        if (!target) {
+            CErr1(ERR_TOO_MANY_INITS);
+            goto err;
         }
-    } else {
-        struct_typ = NULL;
+
+        if ((designator = DesignatorList(&target, head, &assignments)) < 0)
+            goto err;
+
+        if (structlike(target->type)) {
+            if (IsIncompleteArrayMember(target))
+                goto err;
+        }
+
+        type  = target->type;
+        level = target->level;
+        brace = false;
+
+        if (CurToken == T_LEFT_BRACE) {
+            brace = true;
+            NextToken();
+
+            if (CurToken == T_RIGHT_BRACE || CurToken == T_COMMA) {
+                CErr1(ERR_EMPTY_INITIALIZER_LIST);
+                goto err;
+            }
+        }
+
+        /* Delve deeper into aggregates */
+        if (aggregate(type)) {
+            if (type->decl_type == TYPE_ARRAY)
+                type = SkipTypeFluff(type->object);
+            else type = SkipTypeFluff(ObjectIter[level].u.f->field_type);
+
+            if (aggregate(type)) {
+                level = ObjectIterInit(level + 1, type,
+                                       brace && !designator, !brace);
+
+                if (level == UINT_MAX)
+                    goto err;
+                target = ObjectIter + level;
+                if (brace) continue;
+            } else brace = false;
+        }
+
+        /**
+         * Backup our iterator in case the expression contains an
+         * initializer.
+         */
+        tmp = CMemAlloc((level + 1) * sizeof *target);
+        memcpy(tmp, ObjectIter, (level + 1) * sizeof *target);
+        t = brace ? InitializerListScalar() : SingleExpr();
+        memcpy(ObjectIter, tmp, (level + 1) * sizeof *target);
+        CMemFree(tmp);
+
+        if (t && (t = AssignTarget(sym, handle, target, t))) {
+            if (stdc_version >= C99)
+                assignments = AssignOverride(target, head, t->right->u.expr_type);
+            assignments->left = t;
+            assignments = t;
+        }
+
+        if (CurToken == T_COMMA)
+            NextToken();
+
+        /**
+         * If we hit the end of the list, unwind to the start of the
+         * previous list, or the root, depending on how many right
+         * braces we encounter.
+         */
+        while (CurToken == T_RIGHT_BRACE && level) {
+            while (level && !target->list_start) {
+                non_const += target->non_const;
+                target     = ObjectIter + --level;
+            }
+
+            if (level) {
+                NextToken();
+                if (CurToken == T_COMMA)
+                    NextToken();
+
+                non_const += target->non_const;
+                target     = ObjectIter + --level;
+            } else break;
+        }
+
+        /* Advance to the next field/object unless we have a designator */
+        if (CurToken != T_DOT && CurToken != T_LEFT_BRACKET)
+            target = ObjectIterNext(target);
     }
-    SymReplace( sym, sym_handle );
-    InitSymData( sym->sym_type, sym->sym_type, 0 );
-    SymGet( sym, sym_handle );
-    if( struct_typ != NULL ) {
-        /* Structure contains an unspecified length array as last field */
-        struct_typ->object->u.array->dimension = typ->u.array->dimension;
-        typ->u.array->unspecified_dim = true;
-        typ->u.array->dimension = 0;    /* Reset back to 0 */
+
+done:
+    if (non_const != UINT_MAX)
+        non_const += ObjectIter->non_const;
+
+    /* Fixup arrays */
+    type = SkipTypeFluff(sym->sym_type);
+    if (type->decl_type == TYPE_ARRAY && type->u.array->unspecified_dim) {
+        type = ArrayNode(type->object);
+        type->u.array->dimension       = ObjectIter->u.idx;
+        type->u.array->unspecified_dim = false;
+
+        if (sym->sym_type->decl_type == TYPE_TYPEDEF) {
+            type = TypeNode(TYPE_TYPEDEF, type);
+            type->u.typedefn = sym->sym_type->u.typedefn;
+        }
+
+        sym->sym_type = type;
+        SymReplace(sym, handle);
     }
-    if( sym->u.var.segid == SEG_NULL ) {
-        SetFarHuge( sym, false );
-        SetSegment( sym );
-        SetSegAlign( sym );
-    }
+
+    while (CurToken != T_SEMI_COLON && CurToken != T_EOF &&
+          (non_const != UINT_MAX ? CurToken != T_RIGHT_BRACE : 1))
+        NextToken();
+    return non_const;
+
+err:
+    non_const = UINT_MAX;
+    goto done;
 }
 
-static void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
+/**
+ * Initialize an object with a static initializer.
+ *
+ * If the target object has static storage, initialize the object directly.
+ * If the target has auto storage, create a static initializer object and
+ * assign it to the target.
+ */
+static void StaticInitializer(SYMPTR sym, SYM_HANDLE handle, TYPEPTR type,
+                              TREEPTR tree)
 {
-    TREEPTR tree;
+    SYM_ENTRY isym;
+    SYM_HANDLE ihandle = 0;
+    TREEPTR t, value;
+    TYPEPTR vtype;
+    DATA_QUAD dq, *pdq;
+    DATA_QUAD_LIST *cdq;
+    target_ssize size, offset;
+#ifdef _LONG_DOUBLE_
+    long_double ld;
+#endif
 
-    tree = ExprNode( lvalue, OPR_EQUALS, rvalue );
-    tree->right->op.opr = OPR_PUSHSYM;
-    tree->u.expr_type = typ;
-    tree->op.u2.result_type = typ;
-    AddStmt( tree );
-}
-
-static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
-{
-    SYM_HANDLE  sym2_handle;
-    SYM_ENTRY   sym2;
-
-    sym2_handle = MakeNewSym( &sym2, 'X', sym->sym_type, SC_STATIC );
-    sym2.flags |= SYM_INITIALIZED;
     CompFlags.initializing_data = true;
-    StaticInit( &sym2, sym2_handle );
-    CompFlags.initializing_data = false;
-    SymReplace( &sym2, sym2_handle );
-    /* StaticInit will change sym2.sym_type if it is an incomplete array type */
-    sym->sym_type = sym2.sym_type;
-    AssignAggregate( VarLeaf( sym, sym_handle ),
-                     VarLeaf( &sym2, sym2_handle ), sym->sym_type );
-}
 
-static void InitStructVar( target_size base, SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ)
-{
-    TYPEPTR     typ2;
-    TREEPTR     opnd;
-    TREEPTR     value;
-    FIELDPTR    field;
-    TOKEN       token;
+    /* Create a symbol for our target */
+    size = (target_ssize)SizeOfArg(type);
+    dq.type             = QDT_STATIC;
+    dq.flags            = Q_DATA;
+    dq.u.var.sym_handle = handle;
+    dq.u.var.offset     = 0;
 
-    for( field = typ->u.tag->u.field_list; field != NULL; ) {
-        token = CurToken;
-        if( token == T_LEFT_BRACE ) // allow {}, and extra {expr}..}
-            NextToken();
-        typ2 = field->field_type;
-        SKIP_TYPEDEFS( typ2 );
-        if( CurToken == T_RIGHT_BRACE ) {
-            value = IntLeaf( 0 );
-        } else {
-            value = CommaExpr();
+    /* For non-static targets, create a static initializer object */
+    if (SymLevel && sym->attribs.stg_class != SC_STATIC) {
+        ihandle = MakeNewSym(&isym, 'X', type, SC_STATIC);
+        isym.mods = FLAG_CONST;
+        isym.flags |= SYM_INITIALIZED | SYM_ASSIGNED | SYM_TEMP;
+        SetSegment(&isym);
+        SetSegAlign(&isym);
+        SymReplace(&isym, ihandle);
+        dq.u.var.sym_handle = ihandle;
+    }
+
+    /**
+     * Add a 'zero' data quad the size of our target object. The
+     * initializer data quads will split this quad appropriately.
+     */
+    GenDataQuad(&dq, 0);
+    ZeroBytes(size);
+    RelSeekBytes(-size);
+
+    for (t = (tree && tree->left) ? tree->left : tree; t; t = t->left, pdq = NULL) {
+        if (!t->right || !t->right->right)
+            continue;
+
+        value   = t->right->right;
+        vtype   = SkipTypeFluff(t->right->op.u2.result_type);
+        offset  = t->op.u2.long_value;
+        size    = (target_ssize)TypeSize(vtype);
+        RelSeekBytes(offset);
+
+        memset(&dq, 0, sizeof dq);
+        dq.type  = (enum quad_type)vtype->decl_type;
+        dq.flags = Q_DATA;
+        pdq      = NULL;
+
+        while (value && value->op.opr == OPR_CONVERT) value = value->right;
+        if (value && value->op.opr == OPR_ADDROF)     value = value->right;
+        if (!value) continue;
+
+        if (value->op.opr == OPR_PUSHSTRING)
+            dq.type = QDT_STRING;
+
+        if (value->op.opr == OPR_PUSHSYM || value->op.opr == OPR_PUSHADDR) {
+            if (dq.type == QDT_ARRAY) {
+                if (t->u.expr_type->decl_type == TYPE_POINTER)
+                    dq.type = QDT_POINTER;
+            } else if (vtype->object && vtype->object->decl_type == TYPE_FUNCTION)
+                dq.type = QDT_FUNCTION;
+            else if (dq.type != QDT_FUNCTION)
+                dq.type = QDT_POINTER;
         }
-        opnd = VarLeaf( sym, sym_handle );
-        if( typ2->decl_type == TYPE_UNION ) {
-            FIELDPTR    ufield;
 
-            ufield = typ2->u.tag->u.field_list;
-            typ2 = ufield->field_type;
-            SKIP_TYPEDEFS( typ2 );
-        }
-        opnd = ExprNode( opnd, OPR_DOT, UIntLeaf( base + field->offset ) );
-        opnd->u.expr_type = typ2;
-        opnd->op.u2.result_type = typ2;
-        AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
-        if( token == T_LEFT_BRACE )
-            MustRecog( T_RIGHT_BRACE );
-        if( CurToken == T_EOF )
+        switch (dq.type) {
+        case QDT_LONG64:
+        case QDT_ULONG64:
+            CastConstValue(value, dq.type);
+            dq.u.ulong64 = value->op.u2.ulong64_value;
             break;
-        field = field->next_field;
-        if( field == NULL )
-            break;
-        if( CurToken != T_RIGHT_BRACE ) {
-            MustRecog( T_COMMA );
-        }
-    }
-}
-
-static bool SimpleUnion( TYPEPTR typ )
-{
-    FIELDPTR    field;
-
-    field = typ->u.tag->u.field_list;
-    typ = field->field_type;
-    SKIP_TYPEDEFS( typ );
-    switch( typ->decl_type ) {
-    case TYPE_ARRAY:
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-    case TYPE_FIELD:
-    case TYPE_UFIELD:
-        return( false );        // give up on these
-    default:
-        break;
-    }
-    return( true );
-}
-
-static bool SimpleStruct( TYPEPTR typ )
-{
-    FIELDPTR    field;
-
-    if( typ->decl_type == TYPE_UNION ) {
-        return( false );
-    }
-    for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
-        typ = field->field_type;
-        SKIP_TYPEDEFS( typ );
-        switch( typ->decl_type ) {
-        case TYPE_UNION:
-            if( SimpleUnion( typ ) ) {
-                break;              // go 1 deep to get by MFC examples
+        case QDT_FLOAT:
+        case QDT_FIMAGINARY:
+        case QDT_DOUBLE:
+        case QDT_DIMAGINARY:
+        case QDT_LONG_DOUBLE:
+        case QDT_LDIMAGINARY:
+            switch (dq.type) {
+            case QDT_DOUBLE:
+            case QDT_DIMAGINARY:
+                CastConstValue(value, TYPE_DOUBLE);
+                break;
+            case QDT_LONG_DOUBLE:
+            case QDT_LDIMAGINARY:
+                CastConstValue(value, TYPE_LONG_DOUBLE);
+                break;
+            default:
+                CastConstValue(value, TYPE_FLOAT);
+                break;
             }
-            /* fall through */
-        case TYPE_ARRAY:
-        case TYPE_STRUCT:
-        case TYPE_FIELD:
-        case TYPE_UFIELD:
-            return( false );        // give up on these
+
+#ifdef _LONG_DOUBLE_
+            ld = value->op.u2.float_value->ld;
+            __iLDFD( &ld, &dq.u.double_value );
+#else
+            dq.u.double_value = value->op.u2.float_value->ld.u.value;
+#endif
+            break;
+        case QDT_FIELD:
+        case QDT_UFIELD:
+            dq.type = (enum quad_type)vtype->u.f.field_type;
+            size    = (target_ssize)TypeSize(GetType(vtype->u.f.field_type));
+
+            /* Look for a previous data quad for this field */
+            cdq = CurDataQuad;
+            if (cdq && cdq->next && cdq->next->dq.type != QDT_CONSTANT) {
+                if (cdq->next->size == size)
+                    pdq = &cdq->next->dq;
+            }
+
+            CastConstValue(value, vtype->u.f.field_type);
+            if (vtype->u.f.field_type == TYPE_LONG64 ||
+                vtype->u.f.field_type == TYPE_ULONG64) {
+                dq.u.ulong64 = value->op.u2.ulong64_value;
+
+                if (vtype->u.f.field_width < 32) {
+                    dq.u.ulong64.u._32[I64LO32] &= (1 << vtype->u.f.field_width) - 1;
+                    dq.u.ulong64.u._32[I64HI32] = 0;
+                } else if (vtype->u.f.field_width == 32) {
+                    dq.u.ulong64.u._32[I64HI32] = 0;
+                } else if (vtype->u.f.field_width > 32) {
+                    dq.u.ulong64.u._32[I64HI32] &= (1 << (vtype->u.f.field_width - 32)) - 1;
+                }
+
+                U64ShiftL(&dq.u.ulong64, vtype->u.f.field_start, &dq.u.ulong64);
+                if (pdq) {
+                    pdq->u.ulong64.u._32[I64LO32] &= ~dq.u.ulong64.u._32[I64LO32];
+                    pdq->u.ulong64.u._32[I64HI32] &= ~dq.u.ulong64.u._32[I64HI32];
+                    pdq->u.ulong64.u._32[I64LO32] |= dq.u.ulong64.u._32[I64LO32];
+                    pdq->u.ulong64.u._32[I64HI32] |= dq.u.ulong64.u._32[I64HI32];
+                }
+            } else {
+                dq.u.ulong_values[0] = value->op.u2.ulong_value;
+                dq.u.ulong_values[0] &= (1 << vtype->u.f.field_width) - 1;
+                dq.u.ulong_values[0] <<= vtype->u.f.field_start;
+
+                if (pdq) {
+                    pdq->u.ulong_values[0] &= ~dq.u.ulong_values[0];
+                    pdq->u.ulong_values[0] |= dq.u.ulong_values[0];
+                }
+            }
+            break;
+        case QDT_STRING:
+            size = TARGET_POINTER;
+            if (t->right->right->u.expr_type->decl_type == TYPE_ARRAY) {
+                size = SizeOfArg(t->right->right->u.expr_type);
+                dq.type = QDT_CONST;
+            }
+
+            dq.u.string.offset = 0;
+            dq.u.string.handle = value->op.u2.string_handle;
+            break;
+        case QDT_FUNCTION:
+            dq.flags |= Q_CODE_POINTER;
+            dq.u.var.sym_handle = value->op.u2.func.sym_handle;
+        case QDT_POINTER:
+            dq.type = QDT_POINTER;
+            size    = TARGET_POINTER;
+
+            if (vtype->u.p.decl_flags & (FLAG_FAR | FLAG_HUGE) ||
+                TypeSize(vtype) == TARGET_FAR_POINTER) {
+                dq.flags |= Q_FAR_POINTER;
+                size = TARGET_FAR_POINTER;
+            } else if (vtype->u.p.decl_flags & FLAG_NEAR) {
+                dq.flags |= Q_NEAR_POINTER;
+                size = TARGET_NEAR_POINTER;
+            }
+
+            switch (value->op.opr) {
+            case OPR_DOT:
+                dq.u.var.sym_handle = value->left->op.u2.sym_handle;
+                dq.u.var.offset     = value->right->op.u2.long_value;
+                break;
+            case OPR_ADD:
+                dq.u.var.offset     = value->right->op.u2.long_value;
+                dq.u.var.sym_handle = value->left->op.u2.sym_handle;
+                break;
+            case OPR_SUB:
+                dq.u.var.offset     = -value->right->op.u2.long_value;
+                dq.u.var.sym_handle = value->left->op.u2.sym_handle;
+                break;
+            default:
+                if (value->op.opr != OPR_PUSHINT) {
+                    if (!dq.u.var.sym_handle)
+                        dq.u.var.sym_handle = value->op.u2.sym_handle;
+
+                    if (value->left && value->left->op.opr == OPR_PUSHINT)
+                        dq.u.var.offset = value->left->op.u2.long_value;
+                } else dq.u.ulong64 = value->op.u2.ulong64_value;
+            }
+            break;
         default:
-            break;
+            CastConstValue(value, dq.type);
+            dq.u.ulong64 = value->op.u2.ulong64_value;
         }
+
+        if (!pdq) {
+            GenDataQuad(&dq, size);
+            RelSeekBytes(-size);
+        }
+
+        RelSeekBytes(-offset);
     }
-    return( true );
+
+    /* Seek to the end of the data quad list */
+    while (CurDataQuad->next)
+        CurDataQuad = CurDataQuad->next;
+
+    /* Assign the static initializer to the target object */
+    if (SymLevel && sym->attribs.stg_class != SC_STATIC) {
+        t = ExprNode(VarLeaf(sym, handle), OPR_EQUALS, VarLeaf(&isym, ihandle));
+        t->right->op.opr     = OPR_PUSHSYM;
+        t->u.expr_type       = isym.sym_type;
+        t->op.u2.result_type = isym.sym_type;
+        AddStmt(t);
+    }
+
+    CompFlags.initializing_data = false;
 }
 
-
-static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
+/**
+ * Ensure aggregates in auto storage are implicitly initialized to 0.
+ */
+static void InitializeAutoVar(SYMPTR sym, SYM_HANDLE handle, TYPEPTR type,
+                              TREEPTR tree)
 {
-    target_size i;
-    target_size n;
-    TYPEPTR     typ2;
-    SYM_HANDLE  sym2_handle;
-    SYM_ENTRY   sym2;
-    TREEPTR     opnd;
-    TREEPTR     value;
-    TOKEN       token;
+    TREEPTR t;
+    target_ssize offset;
+    target_size  size;
+    unsigned char *state;
+    unsigned int assigned = 0, mask, i;
 
-    typ2 = typ->object;
-    SKIP_TYPEDEFS( typ2 );
-    switch( typ2->decl_type ) {
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_INT:
-    case TYPE_UINT:
-    case TYPE_LONG:
-    case TYPE_ULONG:
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
-    case TYPE_FLOAT:
-    case TYPE_DOUBLE:
-    case TYPE_POINTER:
-    case TYPE_LONG_DOUBLE:
-    case TYPE_FIMAGINARY:
-    case TYPE_DIMAGINARY:
-    case TYPE_LDIMAGINARY:
-    case TYPE_BOOL:
-        NextToken();                    // skip over T_LEFT_BRACE
-        if( CharArray( typ->object ) ) {
-            sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
-            sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segid == SEG_NULL ) {
-                SetFarHuge( &sym2, false );
-                SetSegment( &sym2 );
-                SetSegAlign( &sym2 );
-            }
-            SymReplace( &sym2, sym2_handle );
-            GenStaticDataQuad( sym2_handle );
-            InitCharArray( typ );
-            AssignAggregate( VarLeaf( sym, sym_handle ),
-                             VarLeaf( &sym2, sym2_handle ), typ );
-        } else if( WCharArray( typ->object ) ) {
-            sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
-            sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segid == SEG_NULL ) {
-                SetFarHuge( &sym2, false );
-                SetSegment( &sym2 );
-                SetSegAlign( &sym2 );
-            }
-            SymReplace( &sym2, sym2_handle );
-            GenStaticDataQuad( sym2_handle );
-            InitWCharArray( typ );
-            AssignAggregate( VarLeaf( sym, sym_handle ),
-                             VarLeaf( &sym2, sym2_handle ), typ );
-        } else {
-            n = typ->u.array->dimension;
-            i = 0;
-            for( ;; ) {     // accept some C++ { {1},.. }
-                token = CurToken;
-                if( token == T_LEFT_BRACE )
-                    NextToken();
-                opnd = VarLeaf( sym, sym_handle );
-                value = CommaExpr();
-                opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                opnd->u.expr_type = typ2;
-                opnd->op.u2.result_type = typ2;
-                AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
-                if( token == T_LEFT_BRACE )
-                    MustRecog( T_RIGHT_BRACE );
-                ++i;
-                if( CurToken == T_EOF )
-                    break;
-                if( CurToken == T_RIGHT_BRACE )
-                    break;
-                MustRecog( T_COMMA );
-                if( CurToken == T_RIGHT_BRACE )
-                    break;
-                if( i == n ) {
-                    CErr1( ERR_TOO_MANY_INITS );
-                }
-            }
-            if( typ->u.array->unspecified_dim ) {
-                typ->u.array->dimension = i;
-            } else {
-                while( i < n ) {
-                    value = IntLeaf( 0 );
-                    opnd = VarLeaf( sym, sym_handle );
-                    opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                    opnd->u.expr_type = typ2;
-                    opnd->op.u2.result_type = typ2;
-                    AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
-                    ++i;
-                }
+    if (!(state = CMemAlloc(1 + SizeOfArg(type) / CHAR_BIT)))
+        goto ret;
+
+    for (t = tree->left; t; t = t->left) {
+        if (!t->right || !t->right->right)
+            continue;
+
+        if ((offset = t->op.u2.long_value) < 0)
+            continue;
+
+        size = min(SizeOfArg(t->right->left->u.expr_type), SizeOfArg(type));
+        for (i = 0; i < size; i++, offset++) {
+            mask = 1 << (offset % CHAR_BIT);
+            if (!(state[offset / CHAR_BIT] & mask)) {
+                state[offset / CHAR_BIT] |= mask;
+                assigned++;
             }
         }
-        MustRecog( T_RIGHT_BRACE );
-        break;
-    case TYPE_FCOMPLEX:
-    case TYPE_DCOMPLEX:
-    case TYPE_LDCOMPLEX:
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-        if( SimpleStruct( typ2 ) ) {
-            target_size base;
-            target_size size;
-
-            NextToken();                    // skip over T_LEFT_BRACE
-            n = typ->u.array->dimension;
-            i = 0;
-            base = 0;
-            size = SizeOfArg( typ2 );
-            for( ;; ) {
-                token = CurToken;
-                if( token == T_LEFT_BRACE ) {
-                    NextToken();
-                }
-                InitStructVar( base, sym, sym_handle, typ2 );
-                if( token == T_LEFT_BRACE ) {
-                    MustRecog( T_RIGHT_BRACE );
-                }
-                ++i;
-                if( CurToken == T_EOF )
-                    break;
-                if( CurToken == T_RIGHT_BRACE )
-                    break;
-                MustRecog( T_COMMA );
-                if( CurToken == T_RIGHT_BRACE )
-                    break;
-                if( i == n ) {
-                    CErr1( ERR_TOO_MANY_INITS );
-                }
-                base += size;
-            }
-            if( typ->u.array->unspecified_dim ) {
-                typ->u.array->dimension = i;
-            } else {
-                while( i < n ) { // mop up
-                    base += size;
-                    InitStructVar( base, sym, sym_handle, typ2 );
-                    ++i;
-                }
-            }
-            NextToken();                    // skip over T_RIGHT_BRACE
-            break;
-        }
-        /* fall through */
-    default:
-        AggregateVarDeclEquals( sym, sym_handle );
-        break;
     }
+
+    CMemFree(state);
+    if (assigned < SizeOfArg(type))
+        StaticInitializer(sym, handle, type, NULL);
+
+ret:
+    return;
 }
 
-void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
+/**
+ * Parse an initializer list, or assignment expression
+ */
+void Initializer(SYMPTR sym, SYM_HANDLE handle)
 {
-    TYPEPTR     typ;
+    TYPEPTR type;
+    TREEPTR t, t2, tree = NULL;
+    SYM_ENTRY isym;
+    SYM_HANDLE ihandle;
+    unsigned int non_const = 0;
 
-    if( SymLevel == 0 || sym->attribs.stg_class == SC_STATIC ) {
-        if( sym->flags & SYM_INITIALIZED ) {
-            CErrSymName( ERR_VAR_ALREADY_INITIALIZED, sym, sym_handle );
+    if (sym->flags & SYM_INITIALIZED) {
+        CErrSymName(ERR_VAR_ALREADY_INITIALIZED, sym, handle);
+        goto err;
+    }
+
+    /* Objects defined at file scope have static storage */
+    if ((sym->attribs.stg_class == SC_AUTO ||
+         sym->attribs.stg_class == SC_REGISTER) && !SymLevel)
+        CErr1(ERR_INV_STG_CLASS_FOR_GLOBAL);
+
+    /* Don't warn about unreferenced syms with extern linkage */
+    if (!SymLevel && sym->attribs.stg_class == SC_NONE)
+        sym->flags |= SYM_IGNORE_UNREFERENCE;
+
+    /* Block scope identifiers with linkage can't have initializers */
+    if (sym->attribs.stg_class != SC_NONE     &&
+        sym->attribs.stg_class != SC_AUTO     &&
+        sym->attribs.stg_class != SC_STATIC   &&
+        sym->attribs.stg_class != SC_REGISTER && SymLevel) {
+        CErr1(ERR_CANT_INITIALIZE_EXTERN_VAR);
+        goto err;
+    }
+
+    if (CurToken == T_LEFT_BRACE) {
+        NextToken();
+        if (CurToken == T_RIGHT_BRACE || CurToken == T_COMMA) {
+            CErr1(ERR_EMPTY_INITIALIZER_LIST);
+            goto err;
         }
-        sym->flags |= SYM_INITIALIZED;
-        CompFlags.initializing_data = true;
-        StaticInit( sym, sym_handle );
-        CompFlags.initializing_data = false;
+
+        tree = LeafNode(OPR_NOP);
+        if ((non_const = InitializerList(sym, handle, tree)) == UINT_MAX)
+            goto err;
+        MustRecog(T_RIGHT_BRACE);
+
+        type = SkipTypeFluff(sym->sym_type);
+        if (stdc_version >= C99 && aggregate(type) &&
+            sym->attribs.stg_class == SC_AUTO)
+            InitializeAutoVar(sym, handle, type, tree);
     } else {
-        SymReplace( sym, sym_handle );
-        SrcLoc = TokenLoc;
-        typ = sym->sym_type;
-        SKIP_TYPEDEFS( typ );
-        /* check for { before checking for array, struct or union  */
-        if( CurToken != T_LEFT_BRACE && typ->decl_type != TYPE_ARRAY ) {
-            AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
-        } else if( typ->decl_type == TYPE_ARRAY ) {
-            if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits ) {
-                InitArrayVar( sym, sym_handle, typ );
-            } else {
-                AggregateVarDeclEquals( sym, sym_handle );
+        /**
+         * Aggregate types must have had a list, unless we've got auto
+         * storage. Char arrays may be initialized from a compatible
+         * literal string with or without braces.
+         */
+        tree = CommaExpr();
+        type = SkipTypeFluff(sym->sym_type);
+
+        if (aggregate(type) && sym->attribs.stg_class != SC_AUTO) {
+            if (type->decl_type != TYPE_ARRAY ||
+                (type->decl_type == TYPE_ARRAY &&
+                 tree->op.opr != OPR_PUSHSTRING)) {
+                CErr1(ERR_NEED_BRACES);
+                goto err;
             }
-        } else if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
-            if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits && SimpleStruct( typ ) ) {
-                NextToken();  //T_LEFT_BRACE
-                InitStructVar( 0, sym, sym_handle, typ );
-                NextToken(); //T_RIGHT_BRACE
-            } else {
-                AggregateVarDeclEquals( sym, sym_handle );
-            }
-        } else {
-            NextToken();
-            AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
-            MustRecog( T_RIGHT_BRACE );
         }
+
+        (void)ObjectIterInit(0, type, 0, 0);
+        ObjectIter->u.f = NULL;
+        if (!(tree = AssignTarget(sym, handle, ObjectIter, tree)))
+            goto ret;
+        tree = ExprNode(tree, OPR_NOP, NULL);
     }
+
+    if (SymLevel && sym->attribs.stg_class != SC_STATIC) {
+        /* Add and unlink assignment statement(s) */
+        for (t = tree->left; t; t = t->left) {
+            if (!t->right || !t->right->right) continue;
+
+            type = t->right->left->u.expr_type;
+            if (aggregate(type) && t->right->right->op.opr == OPR_PUSHSTRING) {
+                t2 = t->left;
+                t->left = NULL;
+                t->op.u2.long_value = 0;
+
+                /* Create storage for the string literal */
+                ihandle = MakeNewSym(&isym, 'S', type, SC_STATIC);
+                isym.mods = FLAG_CONST;
+                isym.flags |= SYM_INITIALIZED | SYM_ASSIGNED | SYM_TEMP;
+                SetSegment(&isym);
+                SetSegAlign(&isym);
+                SymReplace(&isym, ihandle);
+                StaticInitializer(&isym, ihandle, type, t);
+                t->left = t2;
+
+                /* Copy it to the target */
+                t2 = ExprNode(t->right->left, OPR_EQUALS, VarLeaf(&isym, ihandle));
+                t2->right->op.opr     = OPR_PUSHSYM;
+                t2->u.expr_type       = isym.sym_type;
+                t2->op.u2.result_type = isym.sym_type;
+                AddStmt(t2);
+            } else AddStmt(t->right);
+
+            t->right = NULL;
+        }
+    } else StaticInitializer(sym, handle, type, tree);
+
+    /* Enure we set the segment, etc. */
+    sym->flags |= SYM_ASSIGNED | SYM_INITIALIZED;
+    if (sym->u.var.segid == SEG_NULL) {
+        SetFarHuge(sym, false);
+        SetSegment(sym);
+        SetSegAlign(sym);
+    }
+    SymReplace(sym, handle);
+
+ret:
+    FreeExprTree(tree);
+    return;
+
+err:
+    while (CurToken != T_COMMA && CurToken != T_SEMI_COLON && CurToken != T_EOF)
+        NextToken();
+    goto ret;
 }
+

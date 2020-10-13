@@ -447,12 +447,10 @@ SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
 
 static SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 {
-    char            name[3];
+    char            name[7];
     SYM_HANDLE      sym_handle;
 
-    name[0] = '.';
-    name[1] = id;
-    name[2] = '\0';
+    sprintf(name, ".%c%u%u", id, rand() % 100, rand() % 100);
     SymCreate( sym, name );
     sym_handle = SymAdd( 0, sym );
     sym->sym_type = typ;

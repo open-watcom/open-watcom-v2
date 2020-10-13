@@ -490,10 +490,8 @@ extern void         FreeDataQuads(void);
 extern bool         DataQuadsAvailable(void);
 extern void         *StartDataQuadAccess( void );
 extern void         EndDataQuadAccess( void * );
-extern DATA_QUAD    *NextDataQuad(void);
-extern void         InitSymData(TYPEPTR,TYPEPTR,int);
-extern void         StaticInit(SYMPTR,SYM_HANDLE);
-extern void         VarDeclEquals(SYMPTR,SYM_HANDLE);
+extern DATA_QUAD    *NextDataQuad(target_size *);
+extern void         Initializer(SYMPTR, SYM_HANDLE);
 
 /* cdump */
 extern void         DumpFuncDefn(void);
@@ -561,6 +559,7 @@ extern bool         IsLValue(TREEPTR);
 extern op_flags     OpFlags( type_modifiers  flags );
 extern type_modifiers FlagOps( op_flags ops );
 extern FIELDPTR     SearchFields( TYPEPTR *class_typ, target_size *field_offset, const char *name );
+extern TREEPTR ScalarExpr( TREEPTR tree );
 
 /* cfold.c */
 extern int64        LongValue64( TREEPTR leaf );
@@ -575,13 +574,13 @@ extern bool         BoolConstExpr( void );
 extern void         DoCompile(void);
 extern void         EmitInit(void);
 extern void         EmitAbort(void);
-extern target_size  EmitBytes(STR_HANDLE);
+extern void         EmitBytes(STR_HANDLE, target_size, target_size);
 extern void         GenInLineFunc( SYM_HANDLE sym_handle );
 extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
 
 /* cgendata */
 extern void         EmitDataQuads(void);
-extern void         EmitZeros(target_size);
+extern void         EmitZeroes(target_size);
 extern void         AlignIt(TYPEPTR);
 
 /* cgetch */
@@ -661,8 +660,8 @@ extern MEPTR        MacroLookup(const char *);
 extern void         MacroReallocOverflow(size_t,size_t);
 
 /* cmath.c */
+extern TREEPTR      BoolConv(TREEPTR);
 extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);
-extern TREEPTR      InitAsgn( TYPEPTR,TREEPTR );
 extern TREEPTR      AsgnOp(TREEPTR,TOKEN,TREEPTR);
 extern TREEPTR      BinOp(TREEPTR,TOKEN,TREEPTR);
 extern bool         IsPtrConvSafe( TREEPTR, TYPEPTR, TYPEPTR );

@@ -286,7 +286,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
         if( typ1->decl_type != typ2->decl_type )
             break;
         if( typ1->decl_type == TYPE_ARRAY ) {
-            /* See C99, 6.7.5.2p5 */
+            /* See C99, 6.7.5.2p6 */
             if( typ1->u.array->dimension && typ2->u.array->dimension ) {
                 if( typ1->u.array->dimension != typ2->u.array->dimension ) {
                     ret_val = PM;
@@ -768,6 +768,12 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     // pointers or out of range constants
     FoldExprTree( opnd2 );
     typ2 = opnd2->u.expr_type;
+
+	/* string literal -> char [] */
+    if (opnd2->op.opr == OPR_PUSHSTRING && typ1->decl_type == TYPE_ARRAY) {
+        typ2 = typ2->object;
+        typ1 = typ1->object;
+    }
 
     SetDiagType2( typ1, typ2 );
     switch( CompatibleType( typ1, typ2, true, IsNullConst( opnd2 ) ) ) {

@@ -46,12 +46,6 @@ void EmitQuads( void )
     }
 }
 
-
-void StaticInit( SYMPTR sym )
-{
-    InitSymData( sym->sym_type, sym->sym_type );
-}
-
 void EmitStrPtr( TREEPTR str )
 {
     ;

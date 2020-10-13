@@ -8,6 +8,7 @@ opt_diag0022  = -std:c99
 opt_diag0104  = -std:ansi
 opt_diag0105  = -std:c95
 opt_diag0106  = -std:c99
+opt_diag0110  = -std:c99
 
 diags_0099_defn = &
     diag0001$(err_sin) &
@@ -42,6 +43,7 @@ diags_0099_defn = &
     diag0107$(err_sin) &
     diag0108$(err_sin) &
     diag0109$(err_sin) &
+    diag0110$(err_sin) &
 
 err_sin = .err
 err_sys = .ser

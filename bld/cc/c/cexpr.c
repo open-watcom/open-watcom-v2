@@ -65,7 +65,6 @@ static TREEPTR      GetExpr(void);
 static TREEPTR      ExprId(void);
 static TREEPTR      ExprOpnd(void);
 static TREEPTR      SizeofOp(TYPEPTR);
-static TREEPTR      ScalarExpr(TREEPTR);
 static TREEPTR      UnaryPlus(TREEPTR);
 static TREEPTR      TernOp(TREEPTR,TREEPTR,TREEPTR);
 static TREEPTR      ColonOp(TREEPTR);
@@ -468,9 +467,9 @@ static TREEPTR CompoundLiteral(TYPEPTR type, type_modifiers mods)
         sym.attribs.stg_class = SC_STATIC;
 
     sym.mods = mods;
-    VarDeclEquals(&sym, handle);
-    sym.flags |= SYM_ASSIGNED;
+    sym.flags |= SYM_TEMP;
     SymReplace(&sym, handle);
+    Initializer(&sym, handle);
     return VarLeaf(&sym, handle);
 }
 

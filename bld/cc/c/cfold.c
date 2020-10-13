@@ -40,7 +40,6 @@
 #define U64_DOUBLE_CORRECTION   (2.0 * ( (double)9223372036854775807LL + 1.0 ))
 #endif
 
-
 static bool IsConstantZero( TREEPTR tree );
 
 static uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )

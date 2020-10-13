@@ -40,8 +40,11 @@
 
 #define ZEROS_BLOCK_SIZE    (8 * 1024)
 
-void EmitZeros( target_size amount )
+void EmitZeroes( target_size amount )
 {
+    if (!amount)
+        return;
+
     for( ; amount > ZEROS_BLOCK_SIZE; amount -= ZEROS_BLOCK_SIZE ) {
         DGIBytes( ZEROS_BLOCK_SIZE, 0 );
     }
@@ -64,11 +67,10 @@ void AlignIt( TYPEPTR typ )
 #endif
 }
 
-static void EmitDQuad( DATA_QUAD *dq )
+static void EmitDQuad(DATA_QUAD *dq, target_size len)
 {
     cg_type             data_type;
     target_size         size_of_item;
-    target_size         amount;
     SYM_ENTRY           sym;
 
     static segment_id   segid = SEG_NULL;
@@ -118,39 +120,23 @@ static void EmitDQuad( DATA_QUAD *dq )
     case QDT_CHAR:
     case QDT_UCHAR:
     case QDT_BOOL:
-        DGInteger( dq->u_long_value1, TY_UINT_1 );
+        DGInteger( dq->u.long_values[0], TY_UINT_1 );
         size += sizeof( char );
-        if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u_long_value2, TY_UINT_1 );
-            size += sizeof( char );
-        }
         break;
     case QDT_SHORT:
     case QDT_USHORT:
-        DGInteger( dq->u_long_value1, TY_UINT_2 );
+        DGInteger( dq->u.long_values[0], TY_UINT_2 );
         size += TARGET_SHORT;
-        if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u_long_value2, TY_UINT_2 );
-            size += TARGET_SHORT;
-        }
         break;
     case QDT_INT:
     case QDT_UINT:
-        DGInteger( dq->u_long_value1, TY_INTEGER );
+        DGInteger( dq->u.long_values[0], TY_INTEGER );
         size += TARGET_INT;
-        if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u_long_value2, TY_INTEGER );
-            size += TARGET_INT;
-        }
         break;
     case QDT_LONG:
     case QDT_ULONG:
-        DGInteger( dq->u_long_value1, TY_UINT_4 );
+        DGInteger( dq->u.long_values[0], TY_UINT_4 );
         size += TARGET_LONG;
-        if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u_long_value2, TY_UINT_4 );
-            size += TARGET_LONG;
-        }
         break;
     case QDT_LONG64:
     case QDT_ULONG64:
@@ -169,8 +155,8 @@ static void EmitDQuad( DATA_QUAD *dq )
             // dq->u.double_value may not have proper alignment on Alpha
             // so copy pieces to local copy on stack which will have
             // proper alignment
-            local_dq.u_long_value1 = dq->u_long_value1;
-            local_dq.u_long_value2 = dq->u_long_value2;
+            local_dq.u.long_values[0] = dq->u.long_values[0];
+            local_dq.u.long_values[1] = dq->u.long_values[1];
             float_value = (float)local_dq.u.double_value;
             DGBytes( TARGET_FLOAT, (char *)&float_value );
         }
@@ -189,7 +175,7 @@ static void EmitDQuad( DATA_QUAD *dq )
         size += TARGET_LDOUBLE;
         break;
     case QDT_STRING:
-        EmitStrPtr( dq->u.string_leaf, data_type );
+        EmitStrPtr( dq->u.string.handle, data_type );
         size += size_of_item;
         break;
     case QDT_POINTER:
@@ -202,44 +188,45 @@ static void EmitDQuad( DATA_QUAD *dq )
         size += size_of_item;
         break;
     case QDT_CONST:                       /* array of characters */
-        size += EmitBytes( dq->u.string_leaf );
+        EmitBytes(dq->u.string.handle, dq->u.string.offset, len);
+        size += len;
         break;
     case QDT_CONSTANT:
 #if _CPU == 8086
-        for( amount = dq->u_size; amount != 0; ) {
-            if( amount + size >= 0x00010000 ) {
-                EmitZeros( 0x10000 - size );
-                amount -= ( 0x10000 - size );
+		while (len) {
+            if (len + size >= 0x10000) {
+                EmitZeroes(0x10000 - size);
+                len -= (0x10000 - size);
                 size = 0;
                 if( segid != SEG_CONST && segid != SEG_DATA ) {
                     ++segid;
                     BESetSeg( segid );
                 }
             } else {
-                EmitZeros( amount );
-                size += amount;
-                amount = 0;
+                EmitZeroes(len);
+                size += len;
+                len = 0;
             }
         }
 #else
-        amount = dq->u_size;
-        EmitZeros( amount );
-        size += amount;
+        EmitZeroes(len);
+        size += len;
 #endif
         break;
     }
 }
 
 
-void EmitDataQuads( void )
+void EmitDataQuads(void)
 {
-    DATA_QUAD   *dq;
+    void *handle;
+    DATA_QUAD *dq;
+    target_size size;
 
-    if( StartDataQuadAccess() != NULL ) {
-        for( ; (dq = NextDataQuad()) != NULL; ) {
-            do {
-                EmitDQuad( dq );
-            } while( (dq->flags & Q_REPEATED_DATA) && (dq->u_rpt_count)-- > 1 );
-        }
+    if ((handle = StartDataQuadAccess())) {
+        while ((dq = NextDataQuad(&size)))
+            EmitDQuad(dq, size);
+        EndDataQuadAccess(handle);
     }
 }
+

@@ -588,6 +588,13 @@ may be required for the symbol, or you may have forgotten
 to include the file which contains a
 .id #define
 for the symbol.
+:MSGSYM. ERR_INITIALIZER_OVERRIDDEN
+:MSGTXT. Initialized field overridden
+:MSGJTXT. 初期化されたフィールドが副作用で上書きされます
+:WARNING. 2
+.np
+A previously initialized field was overriden with a new initializer. The
+previous initializer won't be evaluated.
 :eMSGGRP. Warn2
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn3
@@ -607,11 +614,12 @@ Nested comments are not allowed in ISO C.
 You may be missing the
 .id */
 for the previous comment.
-:MSGSYM. ERR_UNUSED_2
-:MSGTXT. not used
-:MSGJTXT. このメッセージは使用されません
+:MSGSYM. ERR_BRACES_AROUND_SCALAR_INIT
+:MSGTXT. Braces are unnecessary around a scalar initializer
+:MSGJTXT. スカラー初期化子は不要な中括弧で囲まれています
 :WARNING. 3
-unused message
+.np
+Braces are useless around a scalar initializer.
 :MSGSYM. ERR_USEFUL_SIDE_EFFECT
 :MSGTXT. Expression is only useful for its side effects
 :MSGJTXT. この式は副作用のみを起こします
@@ -2093,6 +2101,19 @@ The token sequence does not represent a valid numeric constant.
 There are more initializers than objects to initialize.
 For example  int X[2] = { 0, 1, 2 };
 The variable "X" requires two initializers not three.
+:MSGSYM. ERR_INIT_INDEX_EXCEEDS_ARRAY_BOUNDS
+:MSGTXT. Initializer index exceeds array bounds
+:MSGJTXT. 初期化子内の配列インデックスが配列の境界を超えました
+.np
+An array index was designated to be initialized that exceeds
+the bounds of the array being intialized.
+For example: int x[2] = { [3] = 0 };
+The designated index, 3, exceeds the bounds of "x."
+:MSGSYM. ERR_CANT_INIT_FLEX_ARRAY_MEMBER
+:MSGTXT. The flexible array member '%s' can't be initialized
+:MSGJTXT. 可変配列メンバー「%s」を初期化できません
+.np
+Flexible array members can't be initialized.
 :MSGSYM. ERR_PARM_POINTER_TYPE_MISMATCH
 :MSGTXT. Parameter %d, pointer type mismatch
 :MSGJTXT. パラメータ%d, ポインタの型が違います
@@ -2212,6 +2233,11 @@ void foo( int a )
 }
 .eerrbad
 .
+:MSGSYM. ERR_ANONYMOUS_STRUCT_OR_UNION
+:MSGTXT. Anonymous structs/unions aren't supported in ISO C89/C99
+:MSGJTXT. ISO C89/C99 では無名構造体や共用体を受け付けません
+.np
+ISO C89/C99 doesn't support the use of anonymous structures or unions.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info

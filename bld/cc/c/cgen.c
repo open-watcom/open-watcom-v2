@@ -1461,7 +1461,7 @@ static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
                 } else {
 #if _CPU == 8086
                     while( size >= 0x10000 ) {
-                        EmitZeros( 0x10000 );
+                        EmitZeroes(0x10000);
                         size -= 0x10000;
                         if( size == 0 )
                             break;
@@ -1471,9 +1471,7 @@ static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
                         }
                     }
 #endif
-                    if( size != 0 ) {
-                        EmitZeros( size );
-                    }
+                    EmitZeroes(size);
                 }
             }
         }
@@ -1912,10 +1910,10 @@ static void Emit1String( STR_HANDLE str_handle )
 }
 
 
-target_size EmitBytes( STR_HANDLE strlit )
+void EmitBytes(STR_HANDLE strlit, target_size offset, target_size len)
 {
-    DGBytes( strlit->length, strlit->literal );
-    return( strlit->length );
+	assert(offset + len < strlit->length);
+    DGBytes(len, strlit->literal + offset);
 }
 
 
@@ -1928,7 +1926,7 @@ static void EmitLiteral( STR_HANDLE strlit )
         DGAlign( TARGET_SHORT );    /* NT requires word aligned wide strings */
     }
     DGLabel( strlit->back_handle );
-    EmitBytes( strlit );
+    EmitBytes(strlit, 0, strlit->length);
     BESetSeg( old_segid );
 }
 

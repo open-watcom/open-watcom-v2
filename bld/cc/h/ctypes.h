@@ -422,12 +422,10 @@ typedef struct tag_entry {
 /* flags for QUAD.flags field */
 
 enum quad_flags {           /* code data */
-    Q_2_INTS_IN_ONE = 0x02, /*       Y02   two integral values */
-    Q_DATA          = 0x04, /*  Y04  Y04   DATA_QUAD */
-    Q_NEAR_POINTER  = 0x08, /*       Y08   near T_ID */
-    Q_FAR_POINTER   = 0x10, /*       Y10   far T_ID */
-    Q_CODE_POINTER  = 0x20, /*       Y20   function name */
-    Q_REPEATED_DATA = 0x80, /*       Y80   repeated data item */
+    Q_DATA          = 0x02, /*  Y02  Y02   DATA_QUAD */
+    Q_NEAR_POINTER  = 0x04, /*       Y04   near T_ID */
+    Q_FAR_POINTER   = 0x08, /*       Y08   far T_ID */
+    Q_CODE_POINTER  = 0x10, /*       Y10   function name */
     Q_NULL          = 0x00
 };
 
@@ -447,9 +445,13 @@ typedef struct {
         int             long_values[2];
         unsigned        ulong_values[2];
         int64           long64;
+        uint64          ulong64;
         double          double_value;
         long_double     long_double_value;
-        STR_HANDLE      string_leaf;
+        struct {
+            STR_HANDLE  handle;
+            target_size offset;
+        } string;
         struct {
             target_ssize offset;
             SYM_HANDLE  sym_handle;
@@ -458,11 +460,6 @@ typedef struct {
     enum quad_type      type;
     enum quad_flags     flags;
 } DATA_QUAD;
-/* macros to accessing data in data quad structure */
-#define u_size          u.ulong_values[0]
-#define u_rpt_count     u.ulong_values[1]
-#define u_long_value1   u.long_values[0]
-#define u_long_value2   u.long_values[1]
 
 typedef struct {
     TYPEPTR             typ;        // type seen

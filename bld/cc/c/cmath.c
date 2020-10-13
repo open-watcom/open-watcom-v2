@@ -754,9 +754,19 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
     return( op2 );
 }
 
-
 /* Convert a scalar to boolean */
-static TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
+TREEPTR BoolConv(TREEPTR tree)
+{
+    TREEPTR t;
+
+    t = ExprNode(tree, OPR_QUESTION, ExprNode(IntLeaf(1), OPR_COLON, IntLeaf(0)));
+    t->u.expr_type       = GetType(TYPE_BOOL);
+    t->op.u2.result_type = t->u.expr_type;
+    FoldExprTree(t);
+    return t;
+}
+
+static TREEPTR TryBoolConv(TYPEPTR typ, TREEPTR tree)
 {
     if( tree->op.opr == OPR_ERROR ) {
         return( ErrorNode( tree ) );
@@ -765,16 +775,10 @@ static TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
     /* Non-boolean types need to be converted to _Bool; _Bool expressions
      * also need to be converted unless they're constants.
      */
-    if( DataTypeOf( typ ) == TYPE_BOOL && TypeOf( tree ) != typ ) {
-        tree = ExprNode( tree, OPR_QUESTION, ExprNode( IntLeaf( 1 ), OPR_COLON, IntLeaf( 0 ) ) );
-        typ = GetType( TYPE_BOOL );
-        tree->op.u2.result_type = typ;
-        tree->u.expr_type = typ;
-        FoldExprTree( tree );
-    }
+    if( DataTypeOf( typ ) == TYPE_BOOL && TypeOf( tree ) != typ )
+        tree = BoolConv(tree);
     return( tree );
 }
-
 
 /*
  * what's target compatible between default int as ret type
@@ -1406,21 +1410,6 @@ static void SetSymAssigned( TREEPTR opnd )
     }
 }
 
-
-TREEPTR InitAsgn( TYPEPTR typ, TREEPTR op2 )
-{
-    if( op2->op.opr == OPR_ERROR ) {
-        return( op2 );
-    }
-    op2 = RValue( op2 );
-    op2 = BoolConv( typ, op2 );
-    if( !CompFlags.no_check_inits ) {   // else fuck em
-        ParmAsgnCheck( typ, op2, 0, true );
-    }
-    return( op2 );
-}
-
-
 TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
 {
     TYPEPTR         typ;
@@ -1470,7 +1459,7 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op2 = RValue( op2 );
         ParmAsgnCheck( typ, op2, 0, true );
         op2 = BaseConv( typ, op2 );
-        op2 = BoolConv( typ, op2 );
+        op2 = TryBoolConv( typ, op2 );
         if( opr == T_ASSIGN_LAST )
             opr = T_EQUAL;
         op1_class = ExprTypeClass( typ );
@@ -1794,7 +1783,7 @@ convert:                                /* moved here */
             }
             if( cnv == S2B ) {
                 // Conversion to _Bool needs special treatment
-                opnd = BoolConv( newtyp, opnd );
+                opnd = TryBoolConv( newtyp, opnd );
             }
             if( cast_op || cnv != P2P ) {
 /* convert: moved */
@@ -1858,7 +1847,7 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
     // skip typedefs, go into enum base
     typ = SkipTypeFluff( opnd->u.expr_type );
     opnd = BaseConv( newtyp, opnd );
-    opnd = BoolConv( newtyp, opnd );
+    opnd = TryBoolConv( newtyp, opnd );
     // skip typedefs, go into enum base
     newtyp = SkipTypeFluff( newtyp );
     decl1 = DataTypeOf( typ );

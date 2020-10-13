@@ -538,10 +538,12 @@ new_var:
                 CErr1( ERR_CANT_INITIALIZE_EXTERN_VAR );
             }
         }
-        sym->attribs.stg_class = stg_class;
+
         NextToken();
-        VarDeclEquals( sym, sym_handle );
-        sym->flags |=  SYM_ASSIGNED;
+        sym->attribs.stg_class = stg_class;
+        SymReplace(sym, sym_handle);
+        Initializer(sym, sym_handle);
+        sym->flags |= SYM_ASSIGNED;
     }
     SymReplace( sym, sym_handle );
     if( old_sym_handle != SYM_NULL ) {

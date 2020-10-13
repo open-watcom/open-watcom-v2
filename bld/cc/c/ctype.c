@@ -833,20 +833,22 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         SKIP_TYPEDEFS( typ );
     }
     if( new_field->name[0] == '\0' ) {
-        /* allow nameless structs and unions */
-        if( (typ->decl_type != TYPE_STRUCT && typ->decl_type != TYPE_UNION)
-          || !CompFlags.extensions_enabled ) {
-            CErr1( ERR_INVALID_DECLARATOR );
-        }
+        /* Allow anonymous structs/unions in C11 mode, or with extensions */
+        if (typ->decl_type != TYPE_STRUCT && typ->decl_type != TYPE_UNION)
+            CErr1(ERR_INVALID_DECLARATOR);
+        else if (stdc_version < C11 && !CompFlags.extensions_enabled)
+            CErr1(ERR_ANONYMOUS_STRUCT_OR_UNION);
     }
     if( typ == decl ) {
         CErr1( ERR_STRUCT_OR_UNION_INSIDE_ITSELF );
-    } else if( SizeOfArg( typ ) == 0 ) {   /* was TypeSize(typ) */
-        /* can't have an array of incomplete type */
-        if( typ->decl_type == TYPE_ARRAY
-          && ( SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled )
-          || typ->decl_type != TYPE_ARRAY ) {
-            CErr2p( ERR_INCOMPLETE_TYPE, new_field->name );
+    } else if (!SizeOfArg(typ)) {
+        /* Flexible array members are allowed from C99 onwards */
+        if (typ->decl_type == TYPE_ARRAY && typ->u.array->unspecified_dim) {
+            if (stdc_version < C99)
+                CErr2p(ERR_INCOMPLETE_TYPE, new_field->name);
+        } else if ((typ->decl_type == TYPE_ARRAY && !SizeOfArg(typ->object)) ||
+		           (typ->decl_type != TYPE_ARRAY && !SizeOfArg(typ))) {
+            CErr2p(ERR_INCOMPLETE_TYPE, new_field->name);
         }
     }
     tag = decl->u.tag;

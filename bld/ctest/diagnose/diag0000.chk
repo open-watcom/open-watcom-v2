@@ -100,20 +100,20 @@ source\diag0006.c(39): Note! I2004: target conversion type is 'int (__watcall *)
 source\diag0006.c(40): Error! E1010: Type mismatch
 source\diag0006.c(40): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
 source\diag0006.c(40): Note! I2004: target conversion type is 'int (__watcall *)(int __p1)'
-source\diag0007.c(39): Error! E1186: Storage class of 'for' statement declaration not register or auto
-source\diag0007.c(40): Error! E1186: Storage class of 'for' statement declaration not register or auto
-source\diag0007.c(41): Error! E1186: Storage class of 'for' statement declaration not register or auto
-source\diag0007.c(42): Error! E1187: No type specified in declaration
-source\diag0007.c(43): Error! E1188: Symbol 'j' declared in 'for' statement must be object
-source\diag0007.c(47): Error! E1189: Unexpected declaration
-source\diag0007.c(49): Error! E1189: Unexpected declaration
-source\diag0007.c(57): Error! E1189: Unexpected declaration
+source\diag0007.c(39): Error! E1188: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(40): Error! E1188: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(41): Error! E1188: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(42): Error! E1189: No type specified in declaration
+source\diag0007.c(43): Error! E1190: Symbol 'j' declared in 'for' statement must be object
+source\diag0007.c(47): Error! E1191: Unexpected declaration
+source\diag0007.c(49): Error! E1191: Unexpected declaration
+source\diag0007.c(57): Error! E1191: Unexpected declaration
 source\diag0007.c(57): Error! E1009: Expecting 'while' but found 'unsigned'
 source\diag0007.c(57): Error! E1009: Expecting '(' but found 'u'
 source\diag0007.c(57): Error! E1063: Missing operand
 source\diag0007.c(57): Error! E1009: Expecting ')' but found ';'
-source\diag0007.c(63): Error! E1189: Unexpected declaration
-source\diag0007.c(71): Error! E1189: Unexpected declaration
+source\diag0007.c(63): Error! E1191: Unexpected declaration
+source\diag0007.c(71): Error! E1191: Unexpected declaration
 source\diag0007.c(47): Warning! W202: Symbol 'j' has been defined, but not referenced
 source\diag0007.c(63): Warning! W202: Symbol 'i' has been defined, but not referenced
 source\diag0007.c(54): Warning! W202: Symbol 'g' has been defined, but not referenced
@@ -136,7 +136,11 @@ source\diag0008.c(14): Error! E1101: Cannot #undef '__STDC_HOSTED__'
 source\diag0008.c(15): Error! E1101: Cannot #undef '__STDC_VERSION__'
 source\diag0008.c(16): Error! E1101: Cannot #undef '__TIME__'
 source\diag0009.c(11): Warning! W106: Constant out of range - truncated
+source\diag0009.c(11): Note! I2003: source conversion type is 'int'
+source\diag0009.c(11): Note! I2004: target conversion type is '<ufield>'
 source\diag0009.c(13): Warning! W106: Constant out of range - truncated
+source\diag0009.c(13): Note! I2003: source conversion type is 'int'
+source\diag0009.c(13): Note! I2004: target conversion type is '<field>'
 source\diag0009.c(19): Warning! W106: Constant out of range - truncated
 source\diag0009.c(19): Note! I2003: source conversion type is 'int'
 source\diag0009.c(19): Note! I2004: target conversion type is '<ufield>'
@@ -152,7 +156,6 @@ source\diag0009.c(34): Warning! W124: Comparison result always 1
 source\diag0009.c(36): Warning! W124: Comparison result always 1
 source\diag0010.c(6): Warning! E1069: String literal not terminated before end of line
 source\diag0010.c(9): Error! E1069: String literal not terminated before end of line
-source\diag0010.c(11): Error! E1054: Expression must be constant
 source\diag0010.c(11): Error! E1009: Expecting ';' but found 'int'
 source\diag0011.c(6): Error! E1069: String literal not terminated before end of line
 source\diag0012.c(44): Warning! W112: Pointer truncated
@@ -338,3 +341,11 @@ source\diag0109.c(16): Error! E1026: Invalid declarator
 source\diag0109.c(21): Error! E1063: Missing operand
 source\diag0109.c(10): Warning! W200: 'b' has been referenced but never assigned a value
 source\diag0109.c(11): Warning! W200: 'a' has been referenced but never assigned a value
+source\diag0110.c(2): Warning! W301: Braces are unnecessary around a scalar initializer
+source\diag0110.c(5): Error! E1176: Initializer index exceeds array bounds
+source\diag0110.c(11): Warning! W204: Initialized field overridden
+source\diag0110.c(20): Warning! W204: Initialized field overridden
+source\diag0110.c(20): Warning! W204: Initialized field overridden
+source\diag0110.c(26): Error! E1177: The flexible array member 'fam' can't be initialized
+source\diag0110.c(32): Error! E1192: Anonymous structs/unions aren't supported in ISO C89/C99
+source\diag0110.c(40): Error! E1192: Anonymous structs/unions aren't supported in ISO C89/C99
