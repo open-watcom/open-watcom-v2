@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+extern void    ErrorInit( const char *image );
+extern void    ErrorFini( void );
+extern void    BldErrMsg( uint msg, char *buff, va_list );
 extern void    BldErrCode( unsigned int error_num, char *buffer );
 extern uint    CarrotType( uint error_num );
 extern void    MsgFormat( char *msg, char *buff, ... );

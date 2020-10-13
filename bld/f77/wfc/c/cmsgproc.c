@@ -37,8 +37,8 @@
 #include "ftnstd.h"
 #include "cioconst.h"
 #include "inout.h"
+#include "errutil.h"
 #include "cmsgproc.h"
-#include "errrtns.h"
 
 
 void    MsgPrtLstNL( uint msg, ... ) {
@@ -50,7 +50,7 @@ void    MsgPrtLstNL( uint msg, ... ) {
     va_list     args;
 
     va_start( args, msg );
-    __BldErrMsg( msg, msgbuff, args );
+    BldErrMsg( msg, msgbuff, args );
     va_end( args );
     PrtLstNL( msgbuff );
 }
@@ -65,7 +65,7 @@ void    MsgPrintErr( uint msg, ...  ) {
     va_list     args;
 
     va_start( args, msg );
-    __BldErrMsg( msg, msgbuff, args );
+    BldErrMsg( msg, msgbuff, args );
     va_end( args );
     PrintErr( msgbuff );
 }
@@ -80,7 +80,7 @@ void    MsgJustErr( uint msg, ...  ) {
     va_list     args;
 
     va_start( args, msg );
-    __BldErrMsg( msg, msgbuff, args );
+    BldErrMsg( msg, msgbuff, args );
     va_end( args );
     JustErr( msgbuff );
 }

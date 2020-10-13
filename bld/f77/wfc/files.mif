@@ -122,18 +122,11 @@ tdovl1 = &
 comroot += &
     errgrp.obj
 
-!ifdef incl_errmsgs
-comroot += &
-    errmsg.obj
-!endif
-
 comovl1 += &
-    blderr.obj &
     chinese.obj &
     csetinfo.obj &
     dbcsutil.obj &
     english.obj &
-    errrtns.obj &
     errutil.obj &
     fmtboth.obj &
     fmtcnvt.obj &
@@ -143,12 +136,6 @@ comovl1 += &
     korean.obj &
     lexstcmp.obj &
     sbcsutil.obj
-
-!ifdef incl_errmsgs
-comovl1 += errincl.obj
-!else
-comovl1 += errrsrc.obj
-!endif
 
 # system dependent compile-time files
 

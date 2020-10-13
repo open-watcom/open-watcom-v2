@@ -43,7 +43,6 @@
 #include "inout.h"
 #include "cmsgproc.h"
 #include "rstutils.h"
-#include "errrtns.h"
 #include "errutil.h"
 
 
@@ -162,7 +161,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             }
         }
     }
-    __BldErrMsg( error, buffer, args );
+    BldErrMsg( error, buffer, args );
     PrintErr( buffer );
     PrtErrNL();
     SetLst( save_list );

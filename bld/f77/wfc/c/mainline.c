@@ -39,8 +39,7 @@
 #include "cpopt.h"
 #include "fcgbls.h"
 #include "boot77.h"
-#include "errrtns.h"
-#include "errrsrc.h"
+#include "errutil.h"
 #include "filescan.h"
 #include "sdcline.h"
 #include "fmacros.h"
@@ -80,8 +79,7 @@ int     main( int argc, char *argv[] ) {
 #endif
 
     _cmdname( imageName );
-    __InitResource();
-    __ErrorInit( imageName );
+    ErrorInit( imageName );
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
@@ -106,6 +104,6 @@ int     main( int argc, char *argv[] ) {
         ShowUsage();
     }
     FiniCompMain();
-    __ErrorFini();
+    ErrorFini();
     return( ret_code );
 }
