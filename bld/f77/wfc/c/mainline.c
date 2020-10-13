@@ -43,22 +43,50 @@
 #include "filescan.h"
 #include "sdcline.h"
 #include "fmacros.h"
+#include "cioconst.h"
+#include "inout.h"
+#include "showopts.h"
+#include "errcod.h"
 
 #include "clibext.h"
 
 
-static  char            CmdBuff[2*128];
-
-#if _CPU == 386
-    #define _WFC "wfc386"
+#if _CPU == 8086
+#define WFC_NAME  "wfc"
+#define ENV_NAME  "WFC"
+#elif _CPU == 386
+#define WFC_NAME  "wfc386"
+#define ENV_NAME  "WFC386"
+#elif _CPU == _AXP
+#define WFC_NAME  "wfcaxp"
+#define ENV_NAME  "WFCAXP"
+#elif _CPU == _PPC
+#define WFC_NAME  "wfcppc"
+#define ENV_NAME  "WFCPPC"
 #else
-    #define _WFC "wfc"
+#error Unknown System
 #endif
+
+static char     CmdBuff[2*128];
 
 #if defined( _M_IX86 )
     unsigned char   _8087   = 0;
     unsigned char   _real87 = 0;
 #endif
+
+
+void    ShowUsage( void ) {
+//===================
+
+    char        buff[LIST_BUFF_SIZE+1];
+
+    TOutBanner();
+    TOutNL( "" );
+    MsgBuffer( MS_USAGE_LINE, buff, WFC_NAME );
+    TOutNL( buff );
+    TOutNL( "" );
+    ShowOptions( buff );
+}
 
 
 int     main( int argc, char *argv[] ) {
@@ -83,7 +111,7 @@ int     main( int argc, char *argv[] ) {
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( _WFC );
+    p = getenv( WFC_NAME );
     if( p != NULL && *p != '\0' ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];

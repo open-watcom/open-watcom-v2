@@ -34,32 +34,16 @@
 #include "global.h"
 #include "cpopt.h"
 #include "progsw.h"
-#include "errcod.h"
 #include "fmemmgr.h"
-#include "cioconst.h"
 #include "inout.h"
 #include "boot77.h"
 #include "cle.h"
 #include "sdcio.h"
-#include "showopts.h"
 #include "sdcline.h"
 #include "fmacros.h"
 #include "option.h"
 #include "initopt.h"
 #include "errutil.h"
-
-
-#if _CPU == 8086
-#define _NAME_  "wfc"
-#elif _CPU == 386
-#define _NAME_  "wfc386"
-#elif _CPU == _AXP
-#define _NAME_  "wfcaxp"
-#elif _CPU == _PPC
-#define _NAME_  "wfcppc"
-#else
-#error Unknown System
-#endif
 
 
 void    InitCompMain( void ) {
@@ -151,20 +135,6 @@ void    Compile( char *buffer ) {
     FiniComIO();
     FiniProcCmd();
     FiniCompile();
-}
-
-
-void    ShowUsage( void ) {
-//===================
-
-    char        buff[LIST_BUFF_SIZE+1];
-
-    TOutBanner();
-    TOutNL( "" );
-    MsgBuffer( MS_USAGE_LINE, buff, _NAME_ );
-    TOutNL( buff );
-    TOutNL( "" );
-    ShowOptions( buff );
 }
 
 

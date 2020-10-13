@@ -38,6 +38,7 @@
 #include "wresset2.h"
 #include "wreslang.h"
 #include "cioconst.h"
+#include "wfc.rh"
 #include "errutil.h"
 
 
@@ -54,10 +55,8 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
-// Load a message into the specified buffer.  This function is called
-// by WLINK when linked with 16-bit version of WATFOR-77.
 {
-    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
+    return( hInstance.status && ( WResLoadString( &hInstance, MSG_RC_BASE + msg + MsgShift, buffer, buff_size ) > 0 ) );
 }
 
 void ErrorInit( const char *pgm_name )
@@ -227,11 +226,11 @@ static void    Substitute( char *msg, char *buffer, va_list args ) {
     *buffer = NULLCHAR;
 }
 
-void BldErrMsg( unsigned int err, char *buffer, va_list args )
+void BldErrMsg( unsigned int msg, char *buffer, va_list args )
 // Build error message.
 {
     *buffer = NULLCHAR;
-    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
+    if( LoadMsg( msg, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
         buffer[0] = ' ';
         Substitute( buffer, buffer, args );
     }
