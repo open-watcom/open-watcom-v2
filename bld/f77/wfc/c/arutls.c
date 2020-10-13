@@ -113,7 +113,7 @@ void    AdvError( int code ) {
 //============================
 
 // Advance CITNode, call error routine, reset CITNode.
-// Use this routine to get error-pointer ( "carrot" ) in proper place
+// Use this routine to get error-pointer ( "caret" ) in proper place
 
     MoveDown();
     Error( code );
