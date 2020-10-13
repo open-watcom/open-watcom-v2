@@ -1,7 +1,8 @@
-#define MSG_RC_BASE	    10
+#define MSG_RC_BASE         10
 
 #define MSG_LANG_SPACING    13000
 #define MSG_SHARE_BASE      12000
+#define MSG_USAGE_BASE      12500
 
 #include "errcod.gh"
 #if _CPU == 8086 || _CPU == 386

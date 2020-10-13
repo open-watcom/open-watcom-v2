@@ -30,10 +30,13 @@
 ****************************************************************************/
 
 
-extern void    ErrorInit( const char *image );
-extern void    ErrorFini( void );
-extern void    BldErrMsg( uint msg, char *buff, va_list );
-extern void    BldErrCode( unsigned int error_num, char *buffer );
-extern uint    CarrotType( uint error_num );
-extern void    MsgFormat( char *msg, char *buff, ... );
-extern void    MsgBuffer( uint msg, char *buff, ...  );
+#include "caret.h"
+
+
+extern void         ErrorInit( const char *image );
+extern void         ErrorFini( void );
+extern void         BldErrMsg( uint msg, char *buff, va_list );
+extern void         BldErrCode( unsigned int error_num, char *buffer );
+extern caret_type   CaretType( uint error_num );
+extern void         MsgFormat( char *msg, char *buff, ... );
+extern void         MsgBuffer( uint msg, char *buff, ...  );

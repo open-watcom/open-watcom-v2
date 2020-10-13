@@ -40,6 +40,7 @@
 #include "cioconst.h"
 #include "wfc.rh"
 #include "errutil.h"
+#include "errcar.gh"
 
 
 #define MAX_SUBSTITUTABLE_ARGS  8
@@ -50,6 +51,8 @@ typedef union msg_arg {
     unsigned int        u;
     long int            i;
 } msg_arg;
+
+extern const caret_type     __FAR CaretTable[];
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
@@ -93,9 +96,9 @@ void    BldErrCode( unsigned int error_num, char *buffer )
     buffer[6] = NULLCHAR;
 }
 
-static const unsigned char __FAR    *PCaretTable = CaretTable;
+static const caret_type __FAR    *PCaretTable = CaretTable;
 
-uint    CarrotType( uint error_num )
+caret_type CaretType( uint error_num )
 // Return the type of caret.
 {
     const unsigned char __FAR *group;

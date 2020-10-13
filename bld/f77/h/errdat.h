@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,4 +32,3 @@
 extern const char                           __FAR ErrWord[];
 extern const unsigned char                  __FAR GrpCodes[];
 extern const unsigned char __FAR * const    __FAR GroupTable[];
-extern const unsigned char                  __FAR CaretTable[];

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "cmsgproc.h"
 #include "rstutils.h"
 #include "errutil.h"
+#include "caret.h"
 
 
 static  void    ExtIssued( void )
@@ -74,7 +75,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
 {
     int         column;
     int         contline;
-    byte        caret;
+    caret_type  caret;
     bool        was_listed;
     bool        save_list;
     char        buffer[ERR_BUFF_SIZE+1];
@@ -83,7 +84,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
     ChkErrFile();
     save_list = SetLst( true );
     was_listed = WasStmtListed();
-    caret = CarrotType( error );
+    caret = CaretType( error );
     column = 0;
     contline = 0;
     if( (SrcRecNum != 0) && // consider error opening source file
@@ -104,8 +105,8 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             // c$notime=10       "oprpos/opnpos" fields are meaningless
             //      & + 4.2
             //       end
-            if( ( caret != NO_CARROT ) && ( CITNode->link != NULL ) ) {
-                if( caret == OPR_CARROT ) {
+            if( ( caret != NO_CARET ) && ( CITNode->link != NULL ) ) {
+                if( caret == OPR_CARET ) {
                     column = CITNode->oprpos & 0xff;
                     contline = CITNode->oprpos >> 8;
                 } else {
@@ -114,7 +115,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
                 }
             }
         }
-        if( was_listed && ( caret != NO_CARROT ) && ( column != 0 ) ) {
+        if( was_listed && ( caret != NO_CARET ) && ( column != 0 ) ) {
             memset( buffer, ' ', column + 7 );
             buffer[ column + 7 ] = '$';
             buffer[ column + 8 ] = NULLCHAR;
@@ -147,7 +148,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
                     MsgPrintErr( MS_IN, buff );
                 }
             }
-        } else if( caret != NO_CARROT ) {
+        } else if( caret != NO_CARET ) {
             if( column == 0 ) {
                 // regardless of whether statement was listed or not we want
                 // to display "at end of statement"

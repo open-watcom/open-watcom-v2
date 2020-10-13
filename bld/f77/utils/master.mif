@@ -8,6 +8,8 @@ errsrc_autodepends = .autodepend
 
 .c: ../c
 
+bld_extra_incs = -I"../../wfc/h"
+
 all: errsrc.exe errdoc.exe .symbolic
 
 .c.exe :
