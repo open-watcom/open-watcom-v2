@@ -55,9 +55,6 @@ void    BldErrCode( unsigned int error_num, char *buffer )
     buffer[6] = NULLCHAR;
 }
 
-
-#if !defined( __RT__ )
-
 static const unsigned char __FAR    *PCaretTable = CaretTable;
 
 uint    CarrotType( uint error_num )
@@ -74,8 +71,6 @@ uint    CarrotType( uint error_num )
     }
     return( PCaretTable[idx] );
 }
-
-#endif
 
 void    MsgFormat( char *msg, char *buff, ... ) {
 // Format a message.

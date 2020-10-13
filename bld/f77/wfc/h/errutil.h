@@ -31,8 +31,6 @@
 
 
 extern void    BldErrCode( unsigned int error_num, char *buffer );
-#if !defined( __RT__ )
 extern uint    CarrotType( uint error_num );
-#endif
 extern void    MsgFormat( char *msg, char *buff, ... );
 extern void    MsgBuffer( uint msg, char *buff, ...  );

@@ -55,28 +55,6 @@ void    BldErrCode( unsigned int error_num, char *buffer )
     buffer[6] = NULLCHAR;
 }
 
-
-#if !defined( __RT__ )
-
-static const unsigned char __FAR    *PCaretTable = CaretTable;
-
-uint    CarrotType( uint error_num )
-// Return the type of caret.
-{
-    const unsigned char __FAR *group;
-    const unsigned char __FAR *grp;
-    uint                idx;
-
-    idx = error_num % 256;
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    for( grp = PGrpCodes; grp != group; grp += 3 ) {
-        idx += *(grp + 2);
-    }
-    return( PCaretTable[idx] );
-}
-
-#endif
-
 void    MsgFormat( char *msg, char *buff, ... ) {
 // Format a message.
     va_list     args;
