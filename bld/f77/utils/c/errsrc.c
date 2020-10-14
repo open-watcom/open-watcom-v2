@@ -199,6 +199,7 @@ static  int     Initialize( void )
     if( ErrCaret == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
+        fclose( ErrGrp );
         return( 1 );
     }
     sprintf( output_file, "%serrcod.gh", file_prefix );
