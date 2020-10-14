@@ -32,6 +32,7 @@
 
 #include "caret.h"
 
+extern const caret_type     __FAR CaretTable[];
 
 extern void         ErrorInit( const char *image );
 extern void         ErrorFini( void );

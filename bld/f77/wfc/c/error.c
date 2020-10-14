@@ -44,7 +44,6 @@
 #include "cmsgproc.h"
 #include "rstutils.h"
 #include "errutil.h"
-#include "caret.h"
 
 
 static  void    ExtIssued( void )
