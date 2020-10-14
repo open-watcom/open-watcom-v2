@@ -232,6 +232,16 @@ caret_type CaretType( uint error_num )
     return( PCaretTable[idx] );
 }
 
+const char *GetMsg( unsigned msg )
+{
+    static char     msg_str[ERR_BUFF_SIZE];
+
+    if( !LoadMsg( msg, msg_str, sizeof( msg_str ) ) ) {
+        *msg_str = NULLCHAR;
+    }
+    return( msg_str );
+}
+
 void BldErrMsg( unsigned int msg, char *buffer, va_list args )
 // Build error message.
 {

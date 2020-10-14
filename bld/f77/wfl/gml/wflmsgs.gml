@@ -88,14 +88,14 @@
 :MSGTXT. Error: Unable to open temporary file
 :MSGJTXT. ｴﾗｰ  : ﾃﾝﾎﾟﾗﾘﾌｧｲﾙがｵｰﾌﾟﾝできない
 :MSGSYM. CL_UNABLE_TO_OPEN
-:MSGTXT. Unable to open '%s1'
-:MSGJTXT. '%s1'がｵｰﾌﾟﾝできない
+:MSGTXT. Unable to open '%s'
+:MSGJTXT. '%s'がｵｰﾌﾟﾝできない
 :MSGSYM. CL_UNABLE_TO_INVOKE_COMPILER
 :MSGTXT. Error: Unable to invoke compiler
 :MSGJTXT. ｴﾗｰ  : ｺﾝﾊﾟｲﾗｰが起動できない
 :MSGSYM. CL_BAD_COMPILE
-:MSGTXT. Error: Compiler returned a bad status compiling '%s1'
-:MSGJTXT. ｴﾗｰ  : '%s1'ｺﾝﾊﾟｲﾙ中にｺﾝﾊﾟｲﾗが不正なｽﾃｰﾀｽを返した
+:MSGTXT. Error: Compiler returned a bad status compiling '%s'
+:MSGJTXT. ｴﾗｰ  : '%s'ｺﾝﾊﾟｲﾙ中にｺﾝﾊﾟｲﾗが不正なｽﾃｰﾀｽを返した
 :MSGSYM. CL_UNABLE_TO_INVOKE_LINKER
 :MSGTXT. Error: Unable to invoke linker
 :MSGJTXT. ｴﾗｰ  : ﾘﾝｶｰが起動できない
@@ -103,8 +103,8 @@
 :MSGTXT. Error: Linker returned a bad status
 :MSGJTXT. ｴﾗｰ  : ﾘﾝｶｰが不正なｽﾃｰﾀｽを返した
 :MSGSYM. CL_UNABLE_TO_FIND
-:MSGTXT. Error: Unable to find '%s1'
-:MSGJTXT. ｴﾗｰ  : '%s1'が見つからない
+:MSGTXT. Error: Unable to find '%s'
+:MSGJTXT. ｴﾗｰ  : '%s'が見つからない
 :MSGSYM. CL_UNABLE_TO_INVOKE_CVPACK
 :MSGTXT. Error: Unable to invoke CVPACK
 :MSGJTXT. ｴﾗｰ: CVPACKを起動できません

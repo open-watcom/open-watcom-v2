@@ -64,23 +64,23 @@
 #if _CPU == 8086
     #define _TARGET_    "x86 16-bit"
     #define WFC         "wfc"           // copmiler name
-    #define WFLENV      "WFL"           // "WFL" environment variable
-    #define _NAME_      "wfl"
+    #define WFL_ENV     "WFL"           // "WFL" environment variable
+    #define WFL_NAME    "wfl"
 #elif _CPU == 386
     #define _TARGET_    "x86 32-bit"
     #define WFC         "wfc386"        // compiler name
-    #define WFLENV      "WFL386"        // "WFL" environment variable
-    #define _NAME_      "wfl386"
+    #define WFL_ENV     "WFL386"        // "WFL" environment variable
+    #define WFL_NAME    "wfl386"
 #elif _CPU == _AXP
     #define _TARGET_    "Alpha AXP"
     #define WFC         "wfcaxp"        // copmiler name
-    #define WFLENV      "WFLAXP"        // "WFL" environment variable
-    #define _NAME_      "wflaxp"
+    #define WFL_ENV     "WFLAXP"        // "WFL" environment variable
+    #define WFL_NAME    "wflaxp"
 #elif _CPU == _PPC
     #define _TARGET_    "PowerPC"
     #define WFC         "wfcppc"        // copmiler name
-    #define WFLENV      "WFLPPC"        // "WFL" environment variable
-    #define _NAME_      "wflppc"
+    #define WFL_ENV     "WFLPPC"        // "WFL" environment variable
+    #define WFL_NAME    "wflppc"
 #else
     #error Unknown Target CPU
 #endif
@@ -212,141 +212,22 @@ static  void    AddName( const char *name, FILE *link_fp );
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
-static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
+static bool LoadMsg( unsigned msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
 {
     return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
 }
 
-static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
-//===========================================================================
-
-    char        chr;
-    unsigned    idx;
-    unsigned    arg_count;
-
-    arg_count = 0;
-    for(;;) {
-        for(;;) {
-            chr = *msg;
-            if( chr == '%' )
-                break;
-            if( chr == '\0' )
-                return;
-            ++msg;
-        }
-        ++arg_count;
-        ++msg;                  // skip over '%'
-        chr = *msg;
-        if( isdigit( chr ) ) {  // only support a 1 digit field width
-            ++msg;              // skip over width specifier
-            chr = *msg;
-        }
-        ++msg;                  // skip over format specifier
-        idx = *msg - '0' - 1;   // get positional information
-        ++msg;
-        if( arg_count > MAX_SUBSTITUTABLE_ARGS )
-            continue;
-        if( chr == 's' ) {
-            ordered_args[idx].s = va_arg( args, char * );
-        } else if( chr == 'd' ) {
-            ordered_args[idx].d = va_arg( args, int );
-        } else if( chr == 'u' ) {
-            ordered_args[idx].u = va_arg( args, unsigned int );
-        } else {   // assume -->  fflag == 'i'
-            ordered_args[idx].i = va_arg( args, long int );
-        }
-    }
-}
-
-
-static void Substitute( char *msg, char *buffer, va_list args ) {
-//===========================================================
-
-// Do the necessary "%" substitutions.
-
-    char        *subs_ptr;
-    size_t      subs_len;
-    size_t      width;
-    char        chr;
-    char        temp_buff[MAX_INT_SIZE];
-    int         arg_count;
-    int         idx;
-    msg_arg     ordered_args[MAX_SUBSTITUTABLE_ARGS];
-    bool        same_buff;
-
-    same_buff = ( msg == buffer );
-    OrderArgs( msg, ordered_args, args );
-    arg_count = 0;
-    for(;;) {
-        for(;;) {
-            chr = *msg;
-            if( chr == '%' )
-                break;
-            if( chr == '\0' )
-                break;
-            *buffer = chr;
-            ++buffer;
-            ++msg;
-        }
-        if( chr == '\0' )
-            break;
-        ++arg_count;
-        ++msg;                  // skip over '%'
-        chr = *msg;
-        width = 0;
-        if( isdigit( chr ) ) {  // only support a 1 digit field width
-            width = chr - '0';
-            ++msg;              // skip over width specifier
-            chr = *msg;
-        }
-        ++msg;                  // skip over format specifier
-        idx = *msg - '0' - 1;   // get positional information
-        ++msg;
-        subs_ptr = temp_buff;
-        if( arg_count > MAX_SUBSTITUTABLE_ARGS ) {
-            temp_buff[0] = '?';
-            temp_buff[1] = '\0';
-        } else if( chr == 's' ) {
-            subs_ptr = ordered_args[idx].s;
-        } else if( chr == 'd' ) {
-            sprintf( temp_buff, "%d", ordered_args[idx].d );
-        } else if( chr == 'u' ) {
-            sprintf( temp_buff, "%u", ordered_args[idx].u );
-        } else {   // assume -->  fflag == 'i'
-            sprintf( temp_buff, "%lu", ordered_args[idx].i );
-        }
-        subs_len = strlen( subs_ptr );
-        if( width < subs_len ) {
-            width = subs_len;
-        }
-        if( same_buff ) {
-            memmove( buffer + width, msg, strlen( msg ) + sizeof( char ) );
-            msg = buffer + width;
-        }
-        if( subs_len < width ) {
-            if( chr == 's' ) {
-                memset( buffer, ' ', width - subs_len );
-            } else {
-                memset( buffer, '0', width - subs_len );
-            }
-            buffer += width - subs_len;
-        }
-        memcpy( buffer, subs_ptr, subs_len );
-        buffer += subs_len;
-    }
-    *buffer = '\0';
-}
-
-static void BldErrMsg( unsigned int err, char *buffer, va_list args )
+static char *GetMsg( unsigned msg )
 // Build error message.
 {
-    *buffer = '\0';
-    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
-        buffer[0] = ' ';
-        Substitute( buffer, buffer, args );
+    static char    msg_buf[ERR_BUFF_SIZE];
+
+    if( !LoadMsg( msg, msg_buf, ERR_BUFF_SIZE - 1 ) ) {
+        msg_buf[0] = '\0';
     }
+    return( msg_buf );
 }
 
 static void ErrorInit( const char *pgm_name )
@@ -364,16 +245,16 @@ static void ErrorFini( void )
     CloseResFile( &hInstance );
 }
 
-static  void    PrintMsg( unsigned msg, ... ) {
+static  void    printfMsg( unsigned msg, ... ) {
 //=========================================
 
     va_list     args;
     char        buff[ERR_BUFF_SIZE+1];
 
     va_start( args, msg );
-    BldErrMsg( msg, buff, args );
+    vsprintf( buff, GetMsg( msg ), args );
     va_end( args );
-    puts( &buff[1] ); // skip leading blank
+    puts( buff ); // skip leading blank
 }
 
 
@@ -396,14 +277,15 @@ static void PrtBanner( void ) {
 static  void    Usage( void )
 //===========================
 {
-    int         i;
+    unsigned    msg;
 
     PrtBanner();
     puts( "" );
-    i = MSG_USAGE_BASE + 1;
-    PrintMsg( i++, _NAME_ );
-    for( ; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
-        PrintMsg( i );
+    msg = MSG_USAGE_BASE + 1;
+    printfMsg( msg++, WFL_NAME );
+    puts( "" );
+    while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
+        printfMsg( msg++ );
     }
 }
 
@@ -415,7 +297,7 @@ static  void    *MemAlloc( size_t size ) {
 
     ptr = malloc( size );
     if( ptr == NULL ) {
-        PrintMsg( CL_OUT_OF_MEMORY );
+        printfMsg( CL_OUT_OF_MEMORY );
         ErrorFini();
         exit( 1 );
     }
@@ -457,7 +339,7 @@ int     main( int argc, char *argv[] )
     // add "WFL" environment variable to "cmd" unless "/y" is specified
     // in "cmd" or the "WFL" environment string
 
-    wfl_env = getenv( WFLENV );
+    wfl_env = getenv( WFL_ENV );
     if( wfl_env != NULL ) {
         strcpy( cmd, wfl_env );
         strcat( cmd, " " );
@@ -482,7 +364,7 @@ int     main( int argc, char *argv[] )
     } else {
         Fp = fopen( TEMPFILE, "w" );
         if( Fp == NULL ) {
-            PrintMsg( CL_ERROR_OPENING_TMP_FILE );
+            printfMsg( CL_ERROR_OPENING_TMP_FILE );
             rc = 1;
         } else {
             rc = Parse( argc, argv );
@@ -851,7 +733,7 @@ static char *FindToolPath( tool_type utl )
     if( tools[utl].path == NULL ) {
         _searchenv( tools[utl].exename, "PATH", PathBuffer );
         if( PathBuffer[0] == '\0' ) {
-            PrintMsg( CL_UNABLE_TO_FIND, tools[utl].exename );
+            printfMsg( CL_UNABLE_TO_FIND, tools[utl].exename );
             ErrorFini();
             exit( 1 );
         }
@@ -894,19 +776,19 @@ static int tool_exec( tool_type utl, char *target, char **options )
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
             if( utl == TYPE_LINK ) {
-                PrintMsg( CL_UNABLE_TO_INVOKE_LINKER );
+                printfMsg( CL_UNABLE_TO_INVOKE_LINKER );
             } else if( utl == TYPE_PACK ) {
-                PrintMsg( CL_UNABLE_TO_INVOKE_CVPACK );
+                printfMsg( CL_UNABLE_TO_INVOKE_CVPACK );
             } else {
-                PrintMsg( CL_UNABLE_TO_INVOKE_COMPILER );
+                printfMsg( CL_UNABLE_TO_INVOKE_COMPILER );
             }
         } else {
             if( utl == TYPE_LINK ) {
-                PrintMsg( CL_BAD_LINK );
+                printfMsg( CL_BAD_LINK );
             } else if( utl == TYPE_PACK ) {
-                PrintMsg( CL_BAD_LINK );
+                printfMsg( CL_BAD_LINK );
             } else {
-                PrintMsg( CL_BAD_COMPILE, target );
+                printfMsg( CL_BAD_COMPILE, target );
             }
         }
     }

@@ -31,10 +31,11 @@
 
 
 #include "ftnstd.h"
+#include <stdio.h>
+#include <string.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include <string.h>
 #include "global.h"
 #include "cpopt.h"
 #include "fcgbls.h"
@@ -52,16 +53,16 @@
 
 #if _CPU == 8086
 #define WFC_NAME  "wfc"
-#define ENV_NAME  "WFC"
+#define WFC_ENV   "WFC"
 #elif _CPU == 386
 #define WFC_NAME  "wfc386"
-#define ENV_NAME  "WFC386"
+#define WFC_ENV   "WFC386"
 #elif _CPU == _AXP
 #define WFC_NAME  "wfcaxp"
-#define ENV_NAME  "WFCAXP"
+#define WFC_ENV   "WFCAXP"
 #elif _CPU == _PPC
 #define WFC_NAME  "wfcppc"
-#define ENV_NAME  "WFCPPC"
+#define WFC_ENV   "WFCPPC"
 #else
 #error Unknown System
 #endif
@@ -80,22 +81,29 @@ static char     CmdBuff[2*128];
     unsigned char   _real87 = 0;
 #endif
 
+static void printfMsg( unsigned msg, ... )
+{
+    va_list     args;
+    char        buff[ERR_BUFF_SIZE];
+
+    va_start( args, msg );
+    vsprintf( buff, GetMsg( msg ), args );
+    va_end( args );
+    TOutNL( buff );
+}
 
 void    ShowUsage( void ) {
 //===================
 
-    char        buff[LIST_BUFF_SIZE+1];
     unsigned    msg;
 
     TOutBanner();
     TOutNL( "" );
     msg = MSG_USAGE_BASE + 1;
-    MsgBuffer( msg++, buff, WFC_NAME );
-    TOutNL( buff );
+    printfMsg( msg++, WFC_NAME );
     TOutNL( "" );
     while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
-        MsgBuffer( msg++, buff );
-        TOutNL( buff );
+        printfMsg( msg++ );
     }
 }
 
@@ -122,7 +130,7 @@ int     main( int argc, char *argv[] ) {
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( ENV_NAME );
+    p = getenv( WFC_ENV );
     if( p != NULL && *p != '\0' ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];

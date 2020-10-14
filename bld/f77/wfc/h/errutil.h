@@ -36,6 +36,7 @@ extern const caret_type     __FAR CaretTable[];
 
 extern void         ErrorInit( const char *image );
 extern void         ErrorFini( void );
+extern const char   *GetMsg( unsigned msg );
 extern void         BldErrMsg( uint msg, char *buff, va_list );
 extern void         BldErrCode( unsigned int error_num, char *buffer );
 extern caret_type   CaretType( uint error_num );

@@ -83,13 +83,13 @@
 :cmt    if there is no text associated with the tag.
 
 
-:title. Usage:   %s1 [options] <file-spec> [options]
-:jtitle. 使用方法: %s1 [options] <file-spec> [options]
+:title. Usage:   %s [options] <file-spec> [options]
+:jtitle. 使用方法: %s [options] <file-spec> [options]
 :target. any
 :ntarget. targ1
 
-:title. Usage:   %s1 [options] <file>
-:jtitle. 使用方法: %s1 [options] <file>
+:title. Usage:   %s [options] <file>
+:jtitle. 使用方法: %s [options] <file>
 :target. targ1
 
 :title. Options:
