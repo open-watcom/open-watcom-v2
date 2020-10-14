@@ -288,7 +288,6 @@ typedef unsigned_32     comp_options;
 
 typedef struct opt_entry {
     char        *option;        // pointer to option name
-    uint        description;    // description id
     unsigned_8  flags;          // option flags
     unsigned_32 value;          // value of option
     void        (*proc_rtnstr)(struct opt_entry *, char *);  // option processing for strin options

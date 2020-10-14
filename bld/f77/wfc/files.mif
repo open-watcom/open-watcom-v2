@@ -86,7 +86,6 @@ comovl1 = &
     save.obj &
     scan.obj &
     setopn.obj &
-    showopts.obj &
     stmtfunc.obj &
     stmtno.obj &
     stresolv.obj &

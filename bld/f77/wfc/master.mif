@@ -58,7 +58,7 @@ extra_a_flags_axp = -oc
 #
 # EXE
 #
-exetarg_prebuild_objs = $(asminline_deps) errgrp.gc errcod.gh wasmcmsg.gh
+exetarg_prebuild_objs = $(asminline_deps) errgrp.gc errcod.gh wasmcmsg.gh usage.gh #wfcmsgs.gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs          = $(asminline_lib) $(cg_libs) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -91,3 +91,35 @@ errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
 
 jerrmsg.grc:  ../../../h/error.msg
     $(noecho)errsrc $[@ $(jerrsrc_opt_$(target_cpu)) >$(nulldevice)
+
+#msgencod_enc_linux = -utf8
+
+wfcmsgs.gh wfcmsgs.grh wfcgrps.gh : ../../gml/wfcmsgs.gml
+    @%make echo_msgencod
+    $(noecho)msgencod -s -ip -q -rc MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh
+
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+#optencod_enc_linux  = -utf8
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) $(optencod_targ_$(target_cpu))
+
+usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+

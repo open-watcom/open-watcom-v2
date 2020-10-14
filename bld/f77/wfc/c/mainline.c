@@ -45,7 +45,6 @@
 #include "fmacros.h"
 #include "cioconst.h"
 #include "inout.h"
-#include "showopts.h"
 #include "errcod.h"
 
 #include "clibext.h"
@@ -67,6 +66,13 @@
 #error Unknown System
 #endif
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 static char     CmdBuff[2*128];
 
 #if defined( _M_IX86 )
@@ -79,13 +85,18 @@ void    ShowUsage( void ) {
 //===================
 
     char        buff[LIST_BUFF_SIZE+1];
+    unsigned    msg;
 
     TOutBanner();
     TOutNL( "" );
-    MsgBuffer( MS_USAGE_LINE, buff, WFC_NAME );
+    msg = MSG_USAGE_BASE + 1;
+    MsgBuffer( msg++, buff, WFC_NAME );
     TOutNL( buff );
     TOutNL( "" );
-    ShowOptions( buff );
+    while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
+        MsgBuffer( msg++, buff );
+        TOutNL( buff );
+    }
 }
 
 
