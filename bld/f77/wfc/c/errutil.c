@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include <stdio.h>
 #include <string.h>
@@ -77,42 +78,6 @@ void ErrorFini( void )
     CloseResFile( &hInstance );
 }
 
-static const unsigned char __FAR    *PGrpCodes = GrpCodes;
-
-void    BldErrCode( unsigned int error_num, char *buffer )
-// Build error code.
-{
-    const unsigned char __FAR *group;
-    unsigned int        num;
-
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    num = ( error_num % 256 ) + 1;
-    buffer[0] = ' ';
-    buffer[1] = group[0];
-    buffer[2] = group[1];
-    buffer[3] = '-';
-    buffer[4] = num / 10 + '0';
-    buffer[5] = num % 10 + '0';
-    buffer[6] = NULLCHAR;
-}
-
-static const caret_type __FAR    *PCaretTable = CaretTable;
-
-caret_type CaretType( uint error_num )
-// Return the type of caret.
-{
-    const unsigned char __FAR *group;
-    const unsigned char __FAR *grp;
-    uint                idx;
-
-    idx = error_num % 256;
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    for( grp = PGrpCodes; grp != group; grp += 3 ) {
-        idx += *(grp + 2);
-    }
-    return( PCaretTable[idx] );
-}
-
 static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
 //===========================================================================
 
@@ -124,8 +89,10 @@ static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
     for(;;) {
         for(;;) {
             chr = *msg;
-            if( chr == '%' ) break;
-            if( chr == NULLCHAR ) return;
+            if( chr == '%' )
+                break;
+            if( chr == NULLCHAR )
+                return;
             ++msg;
         }
         ++arg_count;
@@ -138,7 +105,8 @@ static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
         ++msg;                  // skip over format specifier
         idx = *msg - '0' - 1;   // get positional information
         ++msg;
-        if( arg_count > MAX_SUBSTITUTABLE_ARGS ) continue;
+        if( arg_count > MAX_SUBSTITUTABLE_ARGS )
+            continue;
         if( chr == 's' ) {
             ordered_args[idx].s = va_arg( args, char * );
         } else if( chr == 'd' ) {
@@ -227,6 +195,42 @@ static void    Substitute( char *msg, char *buffer, va_list args ) {
         buffer += subs_len;
     }
     *buffer = NULLCHAR;
+}
+
+static const unsigned char __FAR    *PGrpCodes = GrpCodes;
+
+void    BldErrCode( unsigned int error_num, char *buffer )
+// Build error code.
+{
+    const unsigned char __FAR *group;
+    unsigned int        num;
+
+    group = &PGrpCodes[( error_num / 256 ) * 3];
+    num = ( error_num % 256 ) + 1;
+    buffer[0] = ' ';
+    buffer[1] = group[0];
+    buffer[2] = group[1];
+    buffer[3] = '-';
+    buffer[4] = num / 10 + '0';
+    buffer[5] = num % 10 + '0';
+    buffer[6] = NULLCHAR;
+}
+
+static const unsigned char __FAR    *PCaretTable = CaretTable;
+
+uint    CarrotType( uint error_num )
+// Return the type of caret.
+{
+    const unsigned char __FAR *group;
+    const unsigned char __FAR *grp;
+    uint                idx;
+
+    idx = error_num % 256;
+    group = &PGrpCodes[( error_num / 256 ) * 3];
+    for( grp = PGrpCodes; grp != group; grp += 3 ) {
+        idx += *(grp + 2);
+    }
+    return( PCaretTable[idx] );
 }
 
 void BldErrMsg( unsigned int msg, char *buffer, va_list args )
