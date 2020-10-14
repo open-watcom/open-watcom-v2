@@ -40,8 +40,6 @@
 #include "blderr.h"
 #include "errrtns.h"
 
-#include "clibext.h"
-
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
