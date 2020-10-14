@@ -98,6 +98,11 @@
 .dm msgjtxt end
 .gt msgjtxt add msgjtxt att
 .*
+:cmt. :MSGATTR. attribute value
+.dm msgattr begin
+.dm msgattr end
+.gt msgattr add msgattr att
+.*
 :cmt. :ANSI
 .dm ansi begin
 .dm ansi end

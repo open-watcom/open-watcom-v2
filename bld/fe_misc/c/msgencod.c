@@ -63,6 +63,7 @@ def_tag( msggrpstr ) \
 def_tag( msgsym ) \
 def_tag( msgtxt ) \
 def_tag( msgjtxt ) \
+def_tag( msgattr ) \
 def_tag( ansi ) \
 def_tag( ansierr ) \
 def_tag( ansiwarn ) \
@@ -154,6 +155,7 @@ typedef struct msgsym {
     struct msgsym *sortedByName[2];
     char        *lang_txt[LANG_MAX];
     char        *fname;
+    char        *attr;
     unsigned    line;
     unsigned    index;
     unsigned    grpIndex;  //msg index in group
@@ -228,6 +230,7 @@ static FILE *i_gml;
 static FILE *o_msgc;
 static FILE *o_msgh;
 static FILE *o_levh;
+static FILE *o_attrh;
 
 static MSGWORD *allWords;
 static MSGWORD *nameWords;
@@ -365,7 +368,7 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     return( fp );
 }
 
-#define NUM_FILES   4
+#define NUM_FILES   5
 
 static bool processOptions( int argc1, char **argv1 )
 {
@@ -431,6 +434,8 @@ static bool processOptions( int argc1, char **argv1 )
     o_msgh = initFILE( *argv1, "w" );
     NEXT_ARG();
     o_levh = initFILE( *argv1, "w" );
+    NEXT_ARG();
+    o_attrh = initFILE( *argv1, "w" );
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
@@ -756,6 +761,13 @@ static void do_msgjtxt( const char *p )
     if( p[0] ) {
         langTextCount[LANG_Japanese]++;
     }
+}
+
+static void do_msgattr( const char *p )
+{
+    MSGSYM *m = mustBeProceededByMSGSYM();
+
+    m->attr = strdup( p );
 }
 
 static void do_info( const char *p )
@@ -1445,11 +1457,11 @@ static void writeLevH( void )
     if( o_levh != NULL ) {
         if( flags.rc ) {
             fputs( "\n\n"
-                "//define GRP_DEF( name,prefix,num )\n"
+                "//define GRP_DEF( name,prefix,num,index,eindex )\n"
                 "#define GRP_DEFS \\\n", o_levh );
             for( grp = allGroups; grp != NULL; grp = grp->next ) {
-                fprintf( o_levh, "GRP_DEF( %s, \"%s\", %u ) \\\n",
-                    grp->name, grp->prefix, grp->num );
+                fprintf( o_levh, "GRP_DEF( %s, \"%s\", %u, %u, %u ) \\\n",
+                    grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
             }
             fputs( "\n\n", o_levh );
         } else if( flags.gen_gpick ) {
@@ -1486,6 +1498,37 @@ static void writeLevH( void )
     }
 }
 
+static void writeAttrH( void )
+{
+    MSGSYM      *m;
+    MSGGROUP    *grp;
+    int         grp_index;
+
+    if( o_attrh != NULL ) {
+        fputs( "\n\n"
+            "//define MSGATTR_DEF( attr )\n"
+            "#define MSGATTR_DEFS \\\n", o_attrh );
+        grp = NULL;
+        for( m = messageSyms; m != NULL; m = m->next ) {
+            if( grp != m->grp ) {
+                grp_index = 0;
+                grp = m->grp;
+            }
+            while( grp_index < m->grpIndex ) {
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) \\\n" );
+                grp_index++;
+            }
+            if( m->attr == NULL ) {
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) \\\n" );
+            } else {
+                fprintf( o_attrh, "MSGATTR_DEF( %s ) \\\n", m->attr );
+            }
+            grp_index++;
+        }
+        fputs( "\n\n", o_attrh );
+    }
+}
+
 static void dumpStats( void )
 {
     if( allGroups != NULL ) {
@@ -1508,8 +1551,10 @@ static void closeFiles( void )
         fclose( o_msgh );
     if( o_msgc != NULL )
         fclose( o_msgc );
-    if( o_levh != NULL ) {
+    if( o_levh != NULL )
         fclose( o_levh );
+    if( o_attrh != NULL ) {
+        fclose( o_attrh );
     }
 }
 
@@ -1668,6 +1713,7 @@ int main( int argc, char **argv )
     writeMsgH();
     writeMsgC();
     writeLevH();
+    writeAttrH();
     closeFiles();
     if( flags.international ) {
         dumpInternational();
