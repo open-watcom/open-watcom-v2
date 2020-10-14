@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +59,10 @@ void    CpQuit(void) {
     csblock = CSHead;
     if( block_label->opnd_size != 0 ) {
         for(;;) {
-            if( CmpNode2Str( block_label, &csblock->label ) ) break;
-            if( csblock->link == NULL ) break;
+            if( CmpNode2Str( block_label, &csblock->label ) )
+                break;
+            if( csblock->link == NULL )
+                break;
             csblock = csblock->link;
         }
     }

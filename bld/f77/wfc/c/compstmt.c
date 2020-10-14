@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,9 +431,13 @@ static void CheckDoEnd( void )
 
     for(;;) {
         if( CSHead->typ == CS_DO ) {
-            if( CSHead->cs_info.do_parms->do_term != StmtNo ) break;
+            if( CSHead->cs_info.do_parms->do_term != StmtNo ) {
+                break;
+            }
         } else if( CSHead->typ == CS_DO_WHILE ) {
-            if( CSHead->cs_info.do_term != StmtNo ) break;
+            if( CSHead->cs_info.do_term != StmtNo ) {
+                break;
+            }
         } else {
             break;
         }
@@ -494,8 +498,10 @@ void RemKeyword( itnode *itptr, uint remove_len )
         curr_char = itptr->opnd;
         curr_size = itptr->opnd_size;
         for(;;) {
-            if( curr_char == itptr->opnd + curr_size ) break;
-            if( isdigit( *curr_char ) == 0 ) break;
+            if( curr_char == itptr->opnd + curr_size )
+                break;
+            if( isdigit( *curr_char ) == 0 )
+                break;
             curr_char++;
         }
         if( curr_char != itptr->opnd ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,8 @@ void    FiniLabels( int label_type ) {
     owner = (label_entry **)&LabelList;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( (curr->label & FORMAT_LABEL) == label_type ) {
             if( (CGFlags & CG_FATAL) == 0 ) {
                 if( curr->label & FORMAT_LABEL ) {
@@ -118,8 +119,10 @@ static  label_entry     *FindLabel( int label ) {
 
     le = LabelList;
     for(;;) {
-        if( le == NULL ) break;
-        if( (le->label & ~FORMAT_LABEL) == label ) break;
+        if( le == NULL )
+            break;
+        if( (le->label & ~FORMAT_LABEL) == label )
+            break;
         le = le->link;
     }
     if( le == NULL ) {
@@ -307,7 +310,8 @@ void    FCAssignedGOTOList( void ) {
     s = CGSelInit();
     for(;;) {
         sn = GetPtr();
-        if( sn == NULL ) break;
+        if( sn == NULL )
+            break;
         if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
@@ -322,7 +326,8 @@ void    FCAssignedGOTOList( void ) {
     FCodeSeek( curr_obj );
     for(;;) {
         sn = GetPtr();
-        if( sn == NULL ) break;
+        if( sn == NULL )
+            break;
         sn->u.st.flags &= ~SN_IN_GOTO_LIST;
         RefStmtLabel( sn );
     }
@@ -428,7 +433,8 @@ void    FCSFCall( void ) {
     sf_type = 0;
     for(;;) {
         sf_arg = GetPtr();
-        if( sf_arg == NULL ) break;
+        if( sf_arg == NULL )
+            break;
         if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
@@ -547,7 +553,8 @@ void            FCSFReferenced( void ) {
 
     sf = SFSymId;
     for(;;) {
-        if( sf == NULL ) break;
+        if( sf == NULL )
+            break;
         if( sf->u.ns.si.sf.header->ref_count == 0 ) {
             if( sf->u.ns.si.sf.u.location != 0 ) {
                 DoneLabel( sf->u.ns.si.sf.u.location );
@@ -579,7 +586,8 @@ void    DoneLabel( label_id label ) {
     owner = (label_entry **)&LabelList;
     for(;;) {
         curr = *owner;
-        if( curr->label == label ) break;
+        if( curr->label == label )
+            break;
         owner = &curr->link;
     }
     *owner = curr->link;

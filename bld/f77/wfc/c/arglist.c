@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,8 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
 
     // when we compile ENTRY statement, we make sure that its class
     // matches the class of the main entry
-    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) return;
+    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE )
+        return;
     if( (entry->u.ns.u1.s.typ == FT_CHAR) || (entry->u.ns.u1.s.typ == FT_STRUCTURE) ) {
         if( sym->u.ns.u1.s.typ != entry->u.ns.u1.s.typ ) {
             NamNamErr( EY_TYPE_MISMATCH, entry, sym );

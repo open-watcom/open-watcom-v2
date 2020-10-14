@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +45,17 @@ static  unsigned char   CharIndex( char chr ) {
 // This will work for both EBCDIC and ASCII character set. It's
 // complicated because EBCDIC character set is not contiguous.
 
-    if( chr == '$' ) return( 26 );
-    if( chr == '_' ) return( 27 );
+    if( chr == '$' )
+        return( 26 );
+    if( chr == '_' )
+        return( 27 );
 #if _CSET == _EBCDIC
-    if( chr <= 'I' ) return( chr - 'A' );
-    if( chr <= 'R' ) return( chr - 'J' + 9 );
-    if( chr <= 'Z' ) return( chr - 'S' + 18 );
+    if( chr <= 'I' )
+        return( chr - 'A' );
+    if( chr <= 'R' )
+        return( chr - 'J' + 9 );
+    if( chr <= 'Z' )
+        return( chr - 'S' + 18 );
 #else
     return( chr - 'A' );
 #endif

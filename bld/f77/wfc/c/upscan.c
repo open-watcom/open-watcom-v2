@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +195,7 @@ static  const unsigned_16     __FAR LegalOprsB[] = { /*                         
                                                                                        |
 log1 log4  int1   int2   int4   real   dble   xtnd   cmplx  dcmplx xcmplex char struct |
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-                                                                                               
+
 LOG,  LOG,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE, FLDOP, // log*1
 LOG,  LOG,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE, FLDOP, // log*4
 NONE, NONE, INUMOP,INUMOP,INUMOP,NUMOP, NUMOP, NUMOP, NUMOP, NUMOP, NUMOP, NONE, FLDOP, // int*1
@@ -247,7 +248,8 @@ static  bool    SimpleScript( itnode *op ) {
 static  int     SameScripts( itnode *op1, itnode *op2 ) {
 //=======================================================
 
-    if( !SimpleScript( op1 ) ) return( 0 );
+    if( !SimpleScript( op1 ) )
+        return( 0 );
     if( (op1->opn.us & USOPN_WHAT) == USOPN_NONE ) {
         if( (op2->opn.us & USOPN_WHAT) == USOPN_CON ) {
             return( ITIntValue( op2 ) );
@@ -590,7 +592,8 @@ static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
     if( CITNode->link->opr == OPR_EQU ) {
         ResultType = typ1;
         *res_size = CITNode->size;
-        if( (ASType & AST_ASF) || CkAssignOk() ) return( true );
+        if( (ASType & AST_ASF) || CkAssignOk() )
+            return( true );
         return( false );
     } else {
         if( ( ( typ1 == FT_DOUBLE ) && ( typ2 == FT_COMPLEX ) ) ||

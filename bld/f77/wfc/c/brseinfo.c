@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,8 @@ void    BIInit( void ) {
     dw_cu_info          cu;
 
     BrInitialized = true;
-    if( !_GenerateBrInfo() ) return;
+    if( !_GenerateBrInfo() )
+        return;
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = DWARF_PRODUCER_ID " V1";
@@ -163,7 +164,8 @@ void    BIEnd( void ) {
 
     char        fn[_MAX_PATH];
 
-    if( !_GenerateBrInfo() ) return;
+    if( !_GenerateBrInfo() )
+        return;
     MakeName( SDFName( SrcName ), BrowseExtn, fn );
     DWEndCompileUnit( cBIId );
     DWLocTrash( cBIId, justJunk );
@@ -349,7 +351,8 @@ void    BIOutSymbol( sym_id ste_ptr ) {
 
     dw_handle   temp;
 
-    if( !_GenerateBrInfo() ) return;
+    if( !_GenerateBrInfo() )
+        return;
     if( (currState & BI_STATE_IN_SCOPE) == 0 ) {
         BISetHandle( ste_ptr, 0 );
         return;
@@ -481,12 +484,12 @@ static void BIRefSymbol( dw_handle handle ) {
 static dw_handle BILateRefSym( sym_id ste_ptr, dw_handle handle ) {
 //=================================================================
 
-        unsigned_32     temp = SrcRecNum;
+    unsigned_32     temp = SrcRecNum;
 
-        SrcRecNum = handle;
-        BIRefSymbol( BIGetHandle( ste_ptr ) );
-        SrcRecNum = temp;
-        return( 0 );
+    SrcRecNum = handle;
+    BIRefSymbol( BIGetHandle( ste_ptr ) );
+    SrcRecNum = temp;
+    return( 0 );
 }
 
 
@@ -625,7 +628,8 @@ static void BIOutDeclareSP( sym_id ste_ptr, long flags ) {
     char                name[MAX_SYMLEN+1];
     dw_handle           handle;
 
-    if( ste_ptr == SubProgId ) return;
+    if( ste_ptr == SubProgId )
+        return;
     flags |= DW_FLAG_DECLARATION;
 
     memset( name, 0, sizeof( name ) );
@@ -977,7 +981,7 @@ static void BIWalkList( sym_list **list, func action, int nuke_list ) {
 static char *BIMKFullPath( const char *path ) {
 //=============================================
 
-        return( _fullpath( fullPathName, path, PATH_MAX ) );
+    return( _fullpath( fullPathName, path, PATH_MAX ) );
 }
 
 

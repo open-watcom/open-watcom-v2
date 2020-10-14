@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,23 +74,33 @@ static  uint    SymClass( sym_id sym ) {
 
     flags = sym->u.ns.flags;
     class = flags & SY_CLASS;
-    if( class == SY_PARAMETER ) return( NAME_PARAMETER );
-    if( class == SY_COMMON ) return( NAME_COMMON );
+    if( class == SY_PARAMETER )
+        return( NAME_PARAMETER );
+    if( class == SY_COMMON )
+        return( NAME_COMMON );
     if( class == SY_SUBPROGRAM ) {
-        if( flags & SY_INTRINSIC ) return( NAME_INTRINSIC );
+        if( flags & SY_INTRINSIC )
+            return( NAME_INTRINSIC );
         flags &= SY_SUBPROG_TYPE;
-        if( flags == SY_FN_OR_SUB ) return( NAME_EXT_PROC );
+        if( flags == SY_FN_OR_SUB )
+            return( NAME_EXT_PROC );
         return( flags >> SY_SUBPROG_IDX );
     }
-    if( flags & SY_SUB_PARM ) return( NAME_ARGUMENT );
-    if( (flags & SY_SPECIAL_PARM) && (StmtSw & SS_DATA_INIT) == 0 ) return( NAME_SF_DUMMY );
-    if( flags & SY_IN_COMMON ) return( NAME_COMMON_VAR );
+    if( flags & SY_SUB_PARM )
+        return( NAME_ARGUMENT );
+    if( (flags & SY_SPECIAL_PARM) && (StmtSw & SS_DATA_INIT) == 0 )
+        return( NAME_SF_DUMMY );
+    if( flags & SY_IN_COMMON )
+        return( NAME_COMMON_VAR );
     if( flags & SY_SUBSCRIPTED ) {
-        if( _Allocatable( sym ) ) return( NAME_ALLOCATED_ARRAY );
+        if( _Allocatable( sym ) )
+            return( NAME_ALLOCATED_ARRAY );
         return( NAME_ARRAY );
     }
-    if( flags & SY_PS_ENTRY ) return( NAME_FUNCTION );
-    if( flags & SY_IN_EQUIV ) return( NAME_EQUIV_VAR );
+    if( flags & SY_PS_ENTRY )
+        return( NAME_FUNCTION );
+    if( flags & SY_IN_EQUIV )
+        return( NAME_EQUIV_VAR );
     return( NAME_VARIABLE );
 }
 
@@ -98,7 +108,8 @@ static  uint    SymClass( sym_id sym ) {
 static  char    *GetClass( uint idx, char *buff ) {
 //=================================================
 
-    if( ClassMsg[idx].class != NULL ) return( ClassMsg[idx].class );
+    if( ClassMsg[idx].class != NULL )
+        return( ClassMsg[idx].class );
     MsgBuffer( ClassMsg[idx].id, buff );
     return( &buff[1] ); // skip the leading blank
 }

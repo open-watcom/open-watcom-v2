@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +119,8 @@ cg_type SymPtrType( sym_id sym ) {
         offset = 0;
         for(;;) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             leader = ce_ext->link_eqv;
         }
@@ -308,7 +310,8 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         leader = sym;
         offset = 0;
         for(;;) {
-            if( leader->u.ns.si.va.vi.ec_ext->ec_flags & LEADER ) break;
+            if( leader->u.ns.si.va.vi.ec_ext->ec_flags & LEADER )
+                break;
             offset += leader->u.ns.si.va.vi.ec_ext->offset;
             leader = leader->u.ns.si.va.vi.ec_ext->link_eqv;
         }

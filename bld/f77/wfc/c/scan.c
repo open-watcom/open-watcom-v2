@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -520,8 +521,11 @@ static  void    LkUpLog( void ) {
     ptr = LexToken.start + sizeof( char ); // skip over "."
     *TkCrsr = NULLCHAR;
     for(;;) {
-        if( strcmp( LogTab[ index ], ptr ) == 0 ) break;
-        if( LogTab[ ++index ] == NULL ) break;
+        if( strcmp( LogTab[ index ], ptr ) == 0 )
+            break;
+        if( LogTab[ ++index ] == NULL ) {
+            break;
+        }
     }
     LexToken.log = index;
 }

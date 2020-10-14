@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,13 +253,19 @@ void            InitAuxInfo( void ) {
 
     cpu = 0;
   #if _CPU == 8086
-    if( CPUOpts & CPUOPT_80186 ) cpu = 1;
-    if( CPUOpts & CPUOPT_80286 ) cpu = 2;
+    if( CPUOpts & CPUOPT_80186 )
+        cpu = 1;
+    if( CPUOpts & CPUOPT_80286 )
+        cpu = 2;
   #endif
-    if( CPUOpts & CPUOPT_80386 ) cpu = 3;
-    if( CPUOpts & CPUOPT_80486 ) cpu = 4;
-    if( CPUOpts & CPUOPT_80586 ) cpu = 5;
-    if( CPUOpts & CPUOPT_80686 ) cpu = 6;
+    if( CPUOpts & CPUOPT_80386 )
+        cpu = 3;
+    if( CPUOpts & CPUOPT_80486 )
+        cpu = 4;
+    if( CPUOpts & CPUOPT_80586 )
+        cpu = 5;
+    if( CPUOpts & CPUOPT_80686 )
+        cpu = 6;
 
     if( CPUOpts & CPUOPT_FP287 ) {
         fpu = 2;

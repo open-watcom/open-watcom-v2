@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -756,7 +756,9 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
                 Mul[ typ - FT_INTEGER_1 ]( base, base );
                 odd = ( ( exponent & 1 ) != 0 );
                 exponent /= 2;
-                if( odd ) break;
+                if( odd ) {
+                    break;
+                }
             }
             Mul[ typ - FT_INTEGER_1 ]( &result, base );
         }

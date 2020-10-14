@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,7 +170,9 @@ void    EquivResolve( void ) {
                 next_eq_entry = eqv_entry->next_eq_entry;
                 FMemFree( eqv_entry );
                 eqv_entry = next_eq_entry;
-                if( eqv_entry == NULL ) break;
+                if( eqv_entry == NULL ) {
+                    break;
+                }
             }
         }
         eq_set = eq_head->next_eq_set;
@@ -244,7 +246,8 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             SetHigh( q );
             break;
         }
-        if( q_ext->ec_flags & LEADER ) break;
+        if( q_ext->ec_flags & LEADER )
+            break;
         d += q_ext->offset;
         q = q_ext->link_eqv;
     }
@@ -259,7 +262,8 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             SetHigh( p );
             break;
         }
-        if( p_ext->ec_flags & LEADER ) break;
+        if( p_ext->ec_flags & LEADER )
+            break;
         c += p_ext->offset;
         p = p_ext->link_eqv;
     }

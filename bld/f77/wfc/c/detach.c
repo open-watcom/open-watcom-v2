@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,8 @@ void    DetCallList(void) {
                 Detach( cit );
                 return;
             }
-            if( RecNOpn() ) break;
+            if( RecNOpn() )
+                break;
             SetDefinedStatus();
             AdvanceITPtr();
         }
@@ -193,7 +195,8 @@ static  void    SubStrArgs( itnode *cit ) {
         }
         CkScrStr();
         AdvanceITPtr();
-        if( !RecColon() ) break;
+        if( !RecColon() )
+            break;
         ++count;
     }
 }
@@ -206,7 +209,8 @@ static  void    CkScrStr( void ) {
 
     ChkType( FT_INTEGER );
     opn = CITNode->opn.us;
-    if( (opn & USOPN_WHAT) != USOPN_ARR ) return;
+    if( (opn & USOPN_WHAT) != USOPN_ARR )
+        return;
     ClassErr( SV_NO_LIST, CITNode->sym_ptr );
 }
 

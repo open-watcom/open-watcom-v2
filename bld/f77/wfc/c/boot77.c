@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,8 @@ int     CompMain( char *parm ) {
     num = 0;
     for(;;) {
         parm = Batch( parm, num );
-        if( parm == NULL ) break;
+        if( parm == NULL )
+            break;
         Compile( parm );
         ++num;
     }
@@ -166,7 +167,8 @@ void    InitCompile( void ) {
 // issue errors to the error file. i/o buffers are temporary until memory
 // has been initialized.
 
-    if( ProgSw & PS_FIRST_COMPILE ) return; // done in InitCompMain() 1st time
+    if( ProgSw & PS_FIRST_COMPILE )
+        return; // done in InitCompMain() 1st time
     InitComIO();
     InitComVars();
 }
@@ -185,7 +187,8 @@ void    ProcOpts( char **opt_array ) {
     InitOptions();
     NewOptions = Options;
     for(;;) {
-        if( *opt_array == NULL ) break;
+        if( *opt_array == NULL )
+            break;
         CmdOption( *opt_array );
         ++opt_array;
     }

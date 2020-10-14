@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +147,8 @@ static  void    FreeMacros( bool free_perm ) {
 
     while( MacroList != NULL ) {
         link = MacroList->link;
-        if( !free_perm && ( MacroList->status == MACRO_PERMANENT ) ) break;
+        if( !free_perm && ( MacroList->status == MACRO_PERMANENT ) )
+            break;
         FMemFree( MacroList );
         MacroList = link;
     }
@@ -161,8 +163,11 @@ static  macro_entry     *FindMacroEntry( char *macro, uint macro_len ) {
     macro_entry *me;
 
     for( me = MacroList; me != NULL; me = me->link ) {
-        if( me->name_len != macro_len ) continue;
-        if( memicmp( me->name, macro, macro_len ) == 0 ) return( me );
+        if( me->name_len != macro_len )
+            continue;
+        if( memicmp( me->name, macro, macro_len ) == 0 ) {
+            return( me );
+        }
     }
     return( NULL );
 }
@@ -205,7 +210,8 @@ void    MacroUNDEFINE( char *macro, uint macro_len ) {
     macro_entry         *free_me;
 
     for( me = &MacroList; *me != NULL; me = &(*me)->link ) {
-        if( (*me)->name_len != macro_len ) continue;
+        if( (*me)->name_len != macro_len )
+            continue;
         if( memicmp( (*me)->name, macro, macro_len ) == 0 ) {
             free_me = *me;
             *me = free_me->link;

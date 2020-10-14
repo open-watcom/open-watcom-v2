@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,10 +86,13 @@ cg_type SPType( sym_id sym ) {
 
 // Return subprogram cg type.
 
-    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) return( TY_INTEGER );
-    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) return( TY_INTEGER );
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM )
+        return( TY_INTEGER );
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE )
+        return( TY_INTEGER );
     // must be a function
-    if( sym->u.ns.u1.s.typ == FT_CHAR ) return( TY_INTEGER );
+    if( sym->u.ns.u1.s.typ == FT_CHAR )
+        return( TY_INTEGER );
     return( F77ToCGType( sym ) );
 }
 
@@ -220,8 +224,10 @@ bool    ChkForAltRets( entry_pt *ep ) {
 
     args = ep->parms;
     for(;;) {
-        if( args == NULL ) break;
-        if( args->flags & ARG_STMTNO ) return( true );
+        if( args == NULL )
+            break;
+        if( args->flags & ARG_STMTNO )
+            return( true );
         args = args->link;
     }
     return( false );
@@ -237,7 +243,8 @@ bool    EntryWithAltRets( void ) {
 
     ep = Entries;
     while( ep != NULL ) {
-        if( ChkForAltRets( ep ) ) return( true );
+        if( ChkForAltRets( ep ) )
+            return( true );
         ep = ep->link;
     }
     return( false );
@@ -346,9 +353,12 @@ static  void    DefineEntries( void ) {
 static  bool    NeedShadowArg( pass_by *arg_aux ) {
 //=================================================
 
-    if( Options & OPT_DESCRIPTOR ) return( false );
-    if( arg_aux == NULL ) return( true );
-    if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) return( false );
+    if( Options & OPT_DESCRIPTOR )
+        return( false );
+    if( arg_aux == NULL )
+        return( true );
+    if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) )
+        return( false );
     return( true );
 }
 
@@ -836,11 +846,16 @@ void    FCDArgInit( void ) {
     }
     for(;;) {
         sym = GetPtr();
-        if( sym == NULL ) break;
-        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE ) continue;
-        if( sym->u.ns.u1.s.typ != FT_CHAR ) continue;
-        if( sym->u.ns.flags & SY_SUBSCRIPTED ) continue;
-        if( !SCBRequired( sym ) ) continue;
+        if( sym == NULL )
+            break;
+        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
+            continue;
+        if( sym->u.ns.u1.s.typ != FT_CHAR )
+            continue;
+        if( sym->u.ns.flags & SY_SUBSCRIPTED )
+            continue;
+        if( !SCBRequired( sym ) )
+            continue;
         // character variable
         arg = CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ), TY_POINTER );
         dst = SCBPtrAddr( VarAltSCB( sym ) );

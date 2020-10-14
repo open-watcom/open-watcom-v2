@@ -184,7 +184,8 @@ void    Warning( int code, ... )
 {
     va_list     args;
 
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     if( Options & OPT_WARN ) {
         va_start( args, code );
         ErrHandler( "*WRN*", code, args );
@@ -198,7 +199,8 @@ void    Extension( int code, ... )
 {
     va_list     args;
 
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     if( Options & OPT_EXT ) {
         va_start( args, code );
         ErrHandler( "*EXT*", code, args );

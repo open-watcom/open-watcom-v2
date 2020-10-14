@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,16 +143,21 @@ static  bool    Scan4ListOprs( void ) {
     level = 0;
     cit = CITNode;
     for(;;) {
-        if( cit == SPtr1 ) return( false );
+        if( cit == SPtr1 )
+            return( false );
         if( cit->opr == OPR_LBR ) {
             ++level;
         } else if( cit->opr == OPR_RBR ) {
             --level;
         }
         if( level == 1 ) {
-            if( cit->opr == OPR_COM ) break;
-            if( cit->opr == OPR_EQU ) break;
-            if( cit->opr == OPR_MUL ) break;
+            if( cit->opr == OPR_COM )
+                break;
+            if( cit->opr == OPR_EQU )
+                break;
+            if( cit->opr == OPR_MUL ) {
+                break;
+            }
         }
         cit = cit->link;
     }

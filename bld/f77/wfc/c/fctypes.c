@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +115,8 @@ cg_type         F77ToCGType( sym_id sym ) {
 
 // Map a WATFOR-77 type to a CG type.
 
-    if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) return( sym->u.ns.xt.record->cg_typ );
+    if( sym->u.ns.u1.s.typ == FT_STRUCTURE )
+        return( sym->u.ns.xt.record->cg_typ );
     return( MkCGType( ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) ) );
 }
 
@@ -124,17 +126,28 @@ static  int     CGIndex( cg_type typ ) {
 
 // Return index for a CG-type.
 
-    if( typ == TY_UINT_1 ) return( 0 );
-    if( typ == TY_UINT_2 ) return( 1 );
-    if( typ == TY_INT_1 ) return( 2 );
-    if( typ == TY_INT_2 ) return( 3 );
-    if( typ == TY_INT_4 ) return( 4 );
-    if( typ == TY_SINGLE ) return( 5 );
-    if( typ == TY_DOUBLE ) return( 6 );
-    if( typ == TY_LONGDOUBLE ) return( 7 );
-    if( typ == TY_COMPLEX ) return( 8 );
-    if( typ == TY_DCOMPLEX ) return( 9 );
-    if( typ == TY_XCOMPLEX ) return( 10 );
+    if( typ == TY_UINT_1 )
+        return( 0 );
+    if( typ == TY_UINT_2 )
+        return( 1 );
+    if( typ == TY_INT_1 )
+        return( 2 );
+    if( typ == TY_INT_2 )
+        return( 3 );
+    if( typ == TY_INT_4 )
+        return( 4 );
+    if( typ == TY_SINGLE )
+        return( 5 );
+    if( typ == TY_DOUBLE )
+        return( 6 );
+    if( typ == TY_LONGDOUBLE )
+        return( 7 );
+    if( typ == TY_COMPLEX )
+        return( 8 );
+    if( typ == TY_DCOMPLEX )
+        return( 9 );
+    if( typ == TY_XCOMPLEX )
+        return( 10 );
     return( 11 ); // typ == TY_CHAR
 }
 

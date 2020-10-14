@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,10 +65,14 @@ void    CpExit(void) {
             ( csblock->typ == CS_GUESS ) ||
             ( csblock->typ == CS_ADMIT ) ||
             ( csblock->typ == CS_REMOTEBLOCK ) ) {
-            if( block_label->opnd_size == 0 ) break;
-            if( CmpNode2Str( block_label, &csblock->label ) ) break;
+            if( block_label->opnd_size == 0 )
+                break;
+            if( CmpNode2Str( block_label, &csblock->label ) ) {
+                break;
+            }
         }
-        if( csblock->link == NULL ) break;
+        if( csblock->link == NULL )
+            break;
         csblock = csblock->link;
     }
     if( csblock->typ == CS_EMPTY_LIST ) {

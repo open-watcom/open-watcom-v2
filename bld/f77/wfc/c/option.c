@@ -177,9 +177,12 @@ static  char    *SkipToken( char *buff ) {
 //========================================
 
     for(;;) {
-        if( *buff == NULLCHAR ) break;
-        if( *buff == ' ' ) break;
-        if( *buff == '\t' ) break;
+        if( *buff == NULLCHAR )
+            break;
+        if( *buff == ' ' )
+            break;
+        if( *buff == '\t' )
+            break;
         buff++;
     }
     return( buff );
@@ -287,7 +290,9 @@ static  unsigned_32     OptV( opt_entry *optn, char *ptr ) {
     for(;;) {
         number = 10 * number + ( *ptr - '0' );
         ptr++;
-        if( isdigit( *ptr ) == 0 ) break;
+        if( isdigit( *ptr ) == 0 ) {
+            break;
+        }
     }
     return( number );
 }
@@ -595,22 +600,27 @@ void    SrcOption( void ) {
     buff = &SrcBuff[ 2 ];
     directive = GetDirective( buff );
     if( directive == CD_INCLUDE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         CurrFile->flags |= INC_PENDING;
     } else if( directive == CD_EJECT ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         LFNewPage();
     } else if( directive == CD_PRAGMA ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         ComPrint();
         ProcPragma( SkipOpt( buff ) );
     } else if( directive == CD_DEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         ComPrint();
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroDEFINE( buff, SkipToken( buff ) - buff );
     } else if( directive == CD_UNDEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         ComPrint();
         buff = SkipBlanks( SkipOpt( buff ) );
         MacroUNDEFINE( buff, SkipToken( buff ) - buff );
@@ -631,7 +641,8 @@ void    SrcOption( void ) {
     } else if( directive == CD_ENDIF ) {
         MacroENDIF();
     } else {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
         ComPrint();
         ScanOpts( buff );
         // consider:
@@ -759,7 +770,8 @@ void    PrtOptions( void ) {
         if( optn->flags & VAL ) {
             // the following check will only work if
             // OPT_DEFINE is a "VAL" option
-            if( optn->value == OPT_DEFINE ) continue;
+            if( optn->value == OPT_DEFINE )
+                continue;
             if( optn->value == CGOPT_DATA_THRESH ) {
                 number = DataThreshold;
             }
@@ -767,7 +779,8 @@ void    PrtOptions( void ) {
             *buff = '=';
             ++buff;
             if( optn->value == OPT_INCPATH ) {
-                if( IncludePath == NULL ) continue;
+                if( IncludePath == NULL )
+                    continue;
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( IncludePath );
@@ -775,7 +788,8 @@ void    PrtOptions( void ) {
                 continue;
             }
             if( optn->value == CGOPT_OBJ_NAME ) {
-                if( ObjName == NULL ) continue;
+                if( ObjName == NULL )
+                    continue;
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( ObjName );
@@ -788,30 +802,48 @@ void    PrtOptions( void ) {
         } else {
             if( optn->flags & CG ) {
                 if( optn->flags & NEG ) {
-                    if( CGOpts & optn->value ) continue;
+                    if( CGOpts & optn->value ) {
+                        continue;
+                    }
                 } else {
-                    if( ( CGOpts & optn->value ) == 0 ) continue;
+                    if( ( CGOpts & optn->value ) == 0 ) {
+                        continue;
+                    }
                 }
             } else if( optn->flags & CPU ) {
                 if( optn->flags & NEG ) {
-                    if( CPUOpts & optn->value ) continue;
+                    if( CPUOpts & optn->value ) {
+                        continue;
+                    }
                 } else {
-                    if( ( CPUOpts & optn->value ) == 0 ) continue;
+                    if( ( CPUOpts & optn->value ) == 0 ) {
+                        continue;
+                    }
                 }
             } else if( optn->flags & OZ ) {
                 if( optn->flags & NEG ) {
-                    if( _BitsMatched( OZOpts, optn->value ) ) continue;
+                    if( _BitsMatched( OZOpts, optn->value ) ) {
+                        continue;
+                    }
                 } else {
-                    if( !_BitsMatched( OZOpts, optn->value ) ) continue;
+                    if( !_BitsMatched( OZOpts, optn->value ) ) {
+                        continue;
+                    }
                 }
             } else
             if( optn->value == OPT_XLINE ) {
-                if( LastColumn == LAST_COL ) continue;
+                if( LastColumn == LAST_COL ) {
+                    continue;
+                }
             } else {
                 if( optn->flags & NEG ) {
-                    if( Options & optn->value ) continue;
+                    if( Options & optn->value ) {
+                        continue;
+                    }
                 } else {
-                    if( ( Options & optn->value ) == 0 ) continue;
+                    if( ( Options & optn->value ) == 0 ) {
+                        continue;
+                    }
                 }
             }
             GetOptName( buffer, optn->option );

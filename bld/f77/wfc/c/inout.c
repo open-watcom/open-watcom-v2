@@ -767,7 +767,8 @@ void    CloseLst( void ) {
 void    LFEndSrc( void ) {
 //==================
 
-    if( ListFile == NULL ) return;
+    if( ListFile == NULL )
+        return;
     ListFlag &= LF_OFF;
     ListCursor = 0;
     SetCtrlSeq();

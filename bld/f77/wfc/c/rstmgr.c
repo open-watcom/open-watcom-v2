@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,8 @@ void    OpenSymTab( void ) {
 
 // Initialize the symbol table.
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    if( ( ProgSw & PS_DONT_GENERATE ) == 0 )
+        return;
     GList = NULL;
     InitHashTable( GHashTable, HASH_PRIME + 1 );
 }
@@ -100,7 +102,8 @@ sym_id  FindShadow( sym_id sym ) {
 
     shadow = MList;
     for(;;) {
-        if( shadow->u.ns.si.ms.sym == sym ) return( shadow );
+        if( shadow->u.ns.si.ms.sym == sym )
+            return( shadow );
         shadow = shadow->u.ns.link;
     }
 }

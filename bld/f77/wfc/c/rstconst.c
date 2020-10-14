@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,8 @@ sym_id  STConst( void *ptr, TYPE typ, uint size ) {
                     return( head );
                 }
             }
-            if( head == tail ) break;
+            if( head == tail )
+                break;
             head = head->u.cn.link;
         }
     }

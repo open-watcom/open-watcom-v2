@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,9 +219,12 @@ static  bool    Number( void ) {
 
     if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
-        if( !RecPlus() && !RecMin() ) return( false );
+        if( !RecPlus() && !RecMin() ) {
+            return( false );
+        }
     }
-    if( CITNode->opn.ds < DSOPN_INT ) return( false );
+    if( CITNode->opn.ds < DSOPN_INT )
+        return( false );
     AdvanceITPtr();
     return( true );
 }

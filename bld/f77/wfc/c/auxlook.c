@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +56,12 @@ aux_info    *AuxLookupName( char *name, uint name_len ) {
 
     aux = AuxInfo;
     for(;;) {
-        if( aux == NULL ) break;
+        if( aux == NULL )
+            break;
         if( aux->sym_len == name_len ) {
-            if( memicmp( name, aux->sym_name, name_len ) == 0 ) break;
+            if( memicmp( name, aux->sym_name, name_len ) == 0 ) {
+                break;
+            }
         }
         aux = aux->link;
     }
@@ -84,7 +88,8 @@ aux_info    *AuxLookup( sym_id sym ) {
 
     aux_info    *info;
 
-    if( sym == NULL ) return( &FortranInfo );
+    if( sym == NULL )
+        return( &FortranInfo );
     if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         if( sym->u.ns.flags & SY_INTRINSIC ) {
             if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
@@ -109,12 +114,14 @@ aux_info    *AuxLookup( sym_id sym ) {
             return( &ProgramInfo );
         } else {
             info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
-            if( info == NULL ) return( &FortranInfo );
+            if( info == NULL )
+                return( &FortranInfo );
             return( info );
         }
     } else {
         info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
-        if( info == NULL ) return( &FortranInfo );
+        if( info == NULL )
+            return( &FortranInfo );
         return( info );
     }
 }

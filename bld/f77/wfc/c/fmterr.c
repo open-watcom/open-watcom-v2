@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,13 +88,20 @@ void    FmtError( int err_code ) {
     Error( err_code );
     if( err_code != FM_DELIM ) {
         for(;;) {
-            if( *Fmt_charptr == ',' ) break;
-            if( *Fmt_charptr == '/' ) break;
-            if( *Fmt_charptr == ':' ) break;
-            if( *Fmt_charptr == ')' ) break;
-            if( *Fmt_charptr == '(' ) break;
+            if( *Fmt_charptr == ',' )
+                break;
+            if( *Fmt_charptr == '/' )
+                break;
+            if( *Fmt_charptr == ':' )
+                break;
+            if( *Fmt_charptr == ')' )
+                break;
+            if( *Fmt_charptr == '(' )
+                break;
             ++Fmt_charptr;
-            if( Fmt_charptr >= Fmt_end ) break;
+            if( Fmt_charptr >= Fmt_end ) {
+                break;
+            }
         }
     }
     CITNode->opnpos = opnpos;

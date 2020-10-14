@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +220,8 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
 
     f_offset = 0;
     for(;;) {
-        if( field == NULL ) return( NULL );
+        if( field == NULL )
+            return( NULL );
         if( field->u.fd.typ == FT_UNION ) {
             size = 0;
             map = field->u.fd.xt.sym_record;
@@ -275,7 +277,8 @@ bool    CalcStructSize( sym_id sd ) {
     intstar4    total_size;
 
     // in case size of structure already calculated
-    if( sd->u.sd.size != 0 ) return( false );
+    if( sd->u.sd.size != 0 )
+        return( false );
     saved_link = sd->u.sd.link;
     if( saved_link == sd ) {
         return( true );         // recursion detected!
@@ -336,7 +339,8 @@ void    STUnion( void ) {
     //                      MAP
     //                          INTEGER I
     //                      ENDMAP
-    if( CurrStruct == NULL ) return;
+    if( CurrStruct == NULL )
+        return;
     un = FMemAlloc( sizeof( funion ) );
     un->u.fd.typ = FT_UNION;
     un->u.fd.link = NULL;
@@ -365,13 +369,15 @@ void    STMap( void ) {
     // make sure that a STRUCTURE was defined
     // Consider:        MAP
     //                      INTEGER I
-    if( CurrStruct == NULL ) return;
+    if( CurrStruct == NULL )
+        return;
     field = CurrStruct->u.sd.fl.sym_fields;
     // make sure that a UNION was defined
     // Consider:      STRUCTURE /STRUCT/
     //                    MAP
     //                        INTEGER I
-    if( field == NULL ) return;
+    if( field == NULL )
+        return;
     md = FMemAlloc( sizeof( fmap ) );
     md->u.sd.link = NULL;
     md->u.sd.fl.fields = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,8 @@ void    STComDump( void )
                     offset = 0;
                     for(;;) {
                         eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                        if( eq_ext->ec_flags & LEADER ) break;
+                        if( eq_ext->ec_flags & LEADER )
+                            break;
                         offset += eq_ext->offset;
                         sym = eq_ext->link_eqv;
                     }
@@ -134,7 +135,8 @@ void    STComDump( void )
                 }
                 BIOutComSymbol( name_in_com );
                 eq_ext = name_in_com->u.ns.si.va.vi.ec_ext;
-                if( eq_ext->ec_flags & LAST_IN_COMMON ) break;
+                if( eq_ext->ec_flags & LAST_IN_COMMON )
+                    break;
                 name_in_com = eq_ext->link_com;
             }
             BIEndComBlock();

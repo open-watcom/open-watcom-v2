@@ -465,7 +465,8 @@ void    FreeInlinePragmas( void ) {
     int         index;
     sym_id      sym;
 
-    if( !CreatedPragmas ) return;
+    if( !CreatedPragmas )
+        return;
     for( index = 0; index < MAX_IN_INDEX; index++ ) {
         sym = InlineTab[ index ].sym_ptr;
         if( sym != NULL ) {

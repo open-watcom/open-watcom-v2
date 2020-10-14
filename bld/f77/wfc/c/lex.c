@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,8 @@ void    MakeITList( void ) {
     }
     CITNode = ITHead;
     for(;;) {
-        if( LexToken.flags & TK_EOL ) break;
+        if( LexToken.flags & TK_EOL )
+            break;
         GetOpr();
         GetOpnd();
         // Consider what happens when NewITNode() calls FrlAlloc() who
@@ -176,8 +177,10 @@ static  void FlushStatement( void ) {
 
     for(;;) {
         ComRead();
-        if( ProgSw & PS_SOURCE_EOF ) break;
-        if( StmtType != STMT_CONT ) break;
+        if( ProgSw & PS_SOURCE_EOF )
+            break;
+        if( StmtType != STMT_CONT )
+            break;
         ComPrint();
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,7 +221,8 @@ void            CatBack( void ) {
 
     itptr = CITNode->link->link; // point one operator past "//"
     for(;;) {
-        if( itptr->opr == OPR_TRM ) break;
+        if( itptr->opr == OPR_TRM )
+            break;
         if( itptr->opr != OPR_CAT ) {
             FiniCat();
             return;
@@ -294,9 +296,12 @@ static  itnode  *findMatch( bool *ok_to_axe, bool *all_const_opns ) {
             //      a(5)(2:3)//'def'
             *ok_to_axe = false;
         }
-        if( num == 0 ) break;
+        if( num == 0 )
+            break;
         cit = cit->link;
-        if( cit == NULL ) break;
+        if( cit == NULL ) {
+            break;
+        }
     }
     return( cit );
 }

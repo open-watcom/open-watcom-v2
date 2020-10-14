@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +83,8 @@ void    STDump( void ) {
         NList = IFList;
         IFList = NULL;
     }
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     ProgSw |= PS_SYMTAB_PROCESS;
     DumpStmtNos();              // must be before DumpMagSyms()
     DumpNameLists();            // dump the namelist data structures
@@ -110,7 +112,8 @@ static  bool    CkInCommon( sym_id sym ) {
         leader = sym;
         for(;;) {
             eq_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( eq_ext->ec_flags & LEADER ) break;
+            if( eq_ext->ec_flags & LEADER )
+                break;
             offset += eq_ext->offset;
             leader = eq_ext->link_eqv;
         }
@@ -309,7 +312,8 @@ static  void    CkDataOk( sym_id sym ) {
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
-    if( (flags & SY_DATA_INIT) == 0 ) return;
+    if( (flags & SY_DATA_INIT) == 0 )
+        return;
     name = sym;
     if( flags & SY_IN_EC ) {
         if( flags & SY_IN_COMMON ) {
@@ -317,7 +321,8 @@ static  void    CkDataOk( sym_id sym ) {
         } else { // if( flags & SY_IN_EQUIV ) {
             for(;;) {
                 eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                if( (eq_ext->ec_flags & LEADER) != 0 ) break;
+                if( (eq_ext->ec_flags & LEADER) != 0 )
+                    break;
                 sym = eq_ext->link_eqv;
             }
             if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
@@ -350,9 +355,12 @@ bool    StmtNoRef( sym_id sn ) {
 
 // Check if statement number has been referenced.
 
-    if( StNumbers.wild_goto ) return( true );
-    if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 ) return( true );
-    if( sn->u.st.flags & (SN_ASSIGNED | SN_BRANCHED_TO) ) return( true );
+    if( StNumbers.wild_goto )
+        return( true );
+    if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 )
+        return( true );
+    if( sn->u.st.flags & (SN_ASSIGNED | SN_BRANCHED_TO) )
+        return( true );
     return( false );
 }
 
@@ -406,7 +414,8 @@ static  void    DumpStrings( void ) {
     }
     for( ; MList != NULL; MList = STFree( MList ) ) {
         // check if shadow for function return value
-        if( MList->u.ns.flags & SY_PS_ENTRY ) continue;
+        if( MList->u.ns.flags & SY_PS_ENTRY )
+            continue;
         if( MList->u.ns.u1.s.typ == FT_CHAR ) {
             if( ( MList->u.ns.xt.size != 0 ) && (Options & OPT_AUTOMATIC) == 0 ) {
                 AllocGlobal( MList->u.ns.xt.size, false );

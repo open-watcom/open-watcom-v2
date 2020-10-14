@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,7 +138,9 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
                 num_stmts--;
             }
             arg = arg->link;
-            if( num_stmts == 0 ) break;
+            if( num_stmts == 0 ) {
+                break;
+            }
         }
     } else if( (itptr->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         EmitOp( FC_EXPR_DONE );
@@ -195,7 +198,9 @@ int     GParms( itnode *sp ) {
             }
         }
         AdvanceITPtr();
-        if( RecCloseParen() || RecColon() ) break;
+        if( RecCloseParen() || RecColon() ) {
+            break;
+        }
     }
     return( num_stmts );
 }

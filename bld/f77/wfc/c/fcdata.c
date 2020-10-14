@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1111,8 +1111,10 @@ void    DtInpCHAR( void ) {
 static  intstar4        IntegerValue( sym_id sym ) {
 //==================================================
 
-    if( sym->u.cn.size == sizeof( intstar1 ) ) return( sym->u.cn.value.intstar1 );
-    if( sym->u.cn.size == sizeof( intstar2 ) ) return( sym->u.cn.value.intstar2 );
+    if( sym->u.cn.size == sizeof( intstar1 ) )
+        return( sym->u.cn.value.intstar1 );
+    if( sym->u.cn.size == sizeof( intstar2 ) )
+        return( sym->u.cn.value.intstar2 );
     return( sym->u.cn.value.intstar4 ); // sym->u.cn.size == sizeof( intstar4 )
 }
 

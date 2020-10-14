@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,9 +332,12 @@ static  void    DumpGlobalSCB( sym_id sym, unsigned_32 g_offset ) {
 bool    SCBRequired( sym_id sym ) {
 //=================================
 
-    if( (Options & OPT_DESCRIPTOR) == 0 ) return( true );
-    if( sym->u.ns.flags & SY_VALUE_PARM ) return( true );
-    if( sym->u.ns.xt.size != 0 ) return( true );
+    if( (Options & OPT_DESCRIPTOR) == 0 )
+        return( true );
+    if( sym->u.ns.flags & SY_VALUE_PARM )
+        return( true );
+    if( sym->u.ns.xt.size != 0 )
+        return( true );
     return( false );
 }
 
@@ -360,7 +364,8 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
         offset = 0;
         for(;;) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             leader = ce_ext->link_eqv;
         }
@@ -607,9 +612,11 @@ void    GenLocalSyms( void ) {
     if( sp_class != SY_BLOCK_DATA ) {
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
             // check for shadow symbol of leader of equivalence set
-            if( sym->u.ns.flags & SY_IN_EQUIV ) continue;
+            if( sym->u.ns.flags & SY_IN_EQUIV )
+                continue;
             // check for shadow symbol of ADV
-            if( sym->u.ns.flags & SY_SUBSCRIPTED ) continue;
+            if( sym->u.ns.flags & SY_SUBSCRIPTED )
+                continue;
             // check for shadow symbol for function return value
             if( sym->u.ns.flags & SY_PS_ENTRY ) {
                 // shadow symbol for function return value
@@ -777,7 +784,8 @@ static  void    MergeCommonInfo( void ) {
 
     for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
         for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
-            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON ) continue;
+            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON )
+                continue;
             len = sym->u.ns.u2.name_len;
             if( len == g_sym->u.ns.u2.name_len ) {
                 if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) {
@@ -822,7 +830,8 @@ static  void    DbgVarInfo( sym_id sym ) {
         leader = sym;
         for(;;) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             leader = ce_ext->link_eqv;
         }
@@ -1161,7 +1170,8 @@ static  void    DumpLitSCBs( void ) {
     back_handle data;
 
     for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
-        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 ) continue;
+        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 )
+            continue;
         if( (sym->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE)) == 0 ) {
             continue;
         }
@@ -1328,7 +1338,8 @@ void    FreeGlobalBacks( void ) {
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
-        if( ( flags & SY_CLASS ) != SY_SUBPROGRAM ) continue;
+        if( ( flags & SY_CLASS ) != SY_SUBPROGRAM )
+            continue;
         if( ( ( flags & SY_SUBPROG_TYPE ) != SY_STMT_FUNC ) &&
             ( ( flags & SY_SUBPROG_TYPE ) != SY_REMOTE_BLOCK ) ) {
             if( sym->u.ns.u3.address != NULL ) {

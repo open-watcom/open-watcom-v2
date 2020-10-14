@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,8 @@ uint    AllocName( uint length ) {
 
 // Determine how much space to allocate for the name of a symbol.
 
-    if( length <= STD_SYMLEN ) return( 0 );
+    if( length <= STD_SYMLEN )
+        return( 0 );
     return( length - STD_SYMLEN );
 }
 
