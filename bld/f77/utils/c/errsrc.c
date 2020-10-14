@@ -36,9 +36,9 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include "caret.h"
 
 #include "clibext.h"
+
 
 #define NULLCHAR        '\0'
 
@@ -57,7 +57,7 @@ typedef struct msg_word {
 
 typedef struct msg_list {
     struct msg_word     *msg;
-    caret_type          caret;
+    unsigned            caret;
     int                 count;
     struct msg_list     *link;
 } msg_list;
@@ -809,7 +809,7 @@ static  void    BuildLists( void )
     msg_list    *last_non_null_msg;
     msg_list    **p_null_msg;
     msg_word    *word;
-    caret_type  caret;
+    unsigned    caret;
     char        rec[BUFF_LEN+1];
     char        msg_used_at;
     char        msg_compiler;
