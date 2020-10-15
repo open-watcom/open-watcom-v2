@@ -46,6 +46,53 @@
 #include "errutil.h"
 
 
+typedef enum caret_type {
+    NO_CARET,
+    OPR_CARET,
+    OPN_CARET
+} caret_type;
+
+extern const unsigned char          __FAR GrpCodes[];
+extern const caret_type __FAR       CaretTable[];
+
+static const unsigned char __FAR    *PGrpCodes = GrpCodes;
+
+static void    BldErrCode( unsigned int error_num, char *buffer )
+// Build error code.
+{
+    const unsigned char __FAR *group;
+    unsigned int        num;
+
+    group = &PGrpCodes[( error_num / 256 ) * 3];
+    num = ( error_num % 256 ) + 1;
+    buffer[0] = ' ';
+    buffer[1] = group[0];
+    buffer[2] = group[1];
+    buffer[3] = '-';
+    buffer[4] = num / 10 + '0';
+    buffer[5] = num % 10 + '0';
+    buffer[6] = NULLCHAR;
+}
+
+#include "errcar.gh"
+
+static const caret_type __FAR   *PCaretTable = CaretTable;
+
+static caret_type CaretType( uint error_num )
+// Return the type of caret.
+{
+    const unsigned char __FAR *group;
+    const unsigned char __FAR *grp;
+    uint                idx;
+
+    idx = error_num % 256;
+    group = &PGrpCodes[( error_num / 256 ) * 3];
+    for( grp = PGrpCodes; grp != group; grp += 3 ) {
+        idx += *(grp + 2);
+    }
+    return( PCaretTable[idx] );
+}
+
 static  void    ExtIssued( void )
 // An extension message has just been issued.
 {
