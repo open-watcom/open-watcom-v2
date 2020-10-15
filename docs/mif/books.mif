@@ -356,8 +356,8 @@ book_multi_chapter=1
 !else ifeq hbook fuguide
 # fuguide
 book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
-book_objs=$(objs_fg) $(objs_lg) $(objs_cmn)
-book_incs=$(incs_fg);$(incs_lg);$(incs_cmn)
+book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
+book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
 book_bmroot=$(bmroot_fg)
 book_src=fuguide
 book_multi_chapter=1
@@ -526,8 +526,8 @@ book_multi_chapter=1
 !else ifeq hbook wfcerrs
 # wfcerrs
 book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
-book_objs=$(objs_fg)
-book_incs=$(incs_fg)
+book_objs=$(objs_fg) $(objs_wfc)
+book_incs=$(incs_fg);$(incs_wfc)
 book_bmroot=$(bmroot_fg)
 book_src=wfcerrs
 !define book_os2_help

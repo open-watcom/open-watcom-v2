@@ -69,8 +69,8 @@
 :INCLUDE file='ENVIRON'.
 .if &e'&dohelp eq 0 .do begin
 :INCLUDE file='FERRMSG'.
-:INCLUDE file='FERRMAC'.
-:INCLUDE file='FERROR'.
+:INCLUDE file='MSGMACS'.
+:INCLUDE file='WFCMSGS'.
 .do end
 .*
 .if &e'&dohelp eq 0 .do begin

@@ -310,9 +310,7 @@ objs_fg = &
 ../doc/fg/fcond.gml &
 ../doc/fg/fdata.gml &
 ../doc/fg/fdosfile.gml &
-../doc/fg/ferrmac.gml &
 ../doc/fg/ferrmsg.gml &
-../doc/fg/ferror.gml &
 ../doc/fg/fgkslib.old &
 ../doc/fg/fguide.bmp &
 ../doc/fg/flib.gml &
@@ -2785,6 +2783,12 @@ vi028.ps &
 vi029.ps &
 vi030.ps &
 vi031.ps
+
+# wfc sub-directory
+incs_wfc = ../../bld/f77/wfc/gml
+objs_wfc = &
+../../bld/f77/wfc/gml/wfcmsgs.gml &
+../../bld/f77/wfc/gml/msgmacs.gml &
 
 # wgmlref sub-directory
 incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
