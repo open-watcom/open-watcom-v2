@@ -1508,6 +1508,7 @@ static void writeAttrH( void )
         fputs( "\n\n"
             "//define MSGATTR_DEF( attr )\n"
             "#define MSGATTR_DEFS \\\n", o_attrh );
+        grp_index = 0;
         grp = NULL;
         for( m = messageSyms; m != NULL; m = m->next ) {
             if( grp != m->grp ) {
