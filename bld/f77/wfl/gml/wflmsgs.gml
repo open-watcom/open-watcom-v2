@@ -45,8 +45,9 @@
 :cmt        :warning <n>    message is a warning with a specific level
 :cmt        :info       informational message
 :cmt
-:cmt        :msgsym <sym>   internal symbolic name for message
-:cmt        :msgtxt <text>  text for message
+:cmt        :msgsym <sym>    internal symbolic name for message
+:cmt        :msgtxt <text>   text for message
+:cmt        :msgattr <value> attribute value for message
 :cmt
 :cmt        :msglvl     start of header title for a group of messages
 :cmt        :emsglvl    end of header title for a group of messages
