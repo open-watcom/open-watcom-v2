@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "errdat.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
@@ -51,6 +50,11 @@ typedef union msg_arg {
     unsigned int        u;
     long int            i;
 } msg_arg;
+
+extern const char                           __FAR ErrWord[];
+extern const unsigned char                  __FAR GrpCodes[];
+extern const unsigned char __FAR * const    __FAR GroupTable[];
+extern const caret_type __FAR               CaretTable[];
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;

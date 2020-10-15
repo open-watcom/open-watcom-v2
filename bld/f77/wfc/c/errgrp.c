@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,18 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  message processing utilities
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "caret.h"
+#include "ftnstd.h"
 
-extern void         ErrorInit( const char *image );
-extern void         ErrorFini( void );
-extern const char   *GetMsg( unsigned msg );
-extern void         BldErrMsg( uint msg, char *buff, va_list );
-extern void         BldErrCode( unsigned int error_num, char *buffer );
-extern caret_type   CaretType( uint error_num );
-extern void         MsgFormat( char *msg, char *buff, ... );
-extern void         MsgBuffer( uint msg, char *buff, ...  );
+#include "errgrp.gc"
