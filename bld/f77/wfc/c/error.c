@@ -31,7 +31,7 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
+#include <stdio.h>
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
@@ -44,7 +44,11 @@
 #include "cmsgproc.h"
 #include "rstutils.h"
 #include "errutil.h"
+#include "wfcgrps.gh"
+#include "wfcattrs.gh"
 
+
+#define MSGATTR_NULL    0
 
 typedef enum caret_type {
     NO_CARET,
@@ -52,45 +56,44 @@ typedef enum caret_type {
     OPN_CARET
 } caret_type;
 
-extern const unsigned char          __FAR GrpCodes[];
-extern const caret_type __FAR       CaretTable[];
+static const char *GroupPrefix[] = {
+#define GRP_DEF(name,prefix,num,index,eindex) prefix,
+    GRP_DEFS
+#undef GRP_DEF
+};
 
-static const unsigned char __FAR    *PGrpCodes = GrpCodes;
+static const int GroupOffset[] = {
+#define GRP_DEF(name,prefix,num,index,eindex) index,
+    GRP_DEFS
+#undef GRP_DEF
+};
+
+static caret_type  CaretTable[] = {
+#define MSGATTR_DEF(attr)   attr,
+    MSGATTR_DEFS
+#undef MSGATTR_DEF
+};
 
 static void    BldErrCode( unsigned int error_num, char *buffer )
 // Build error code.
 {
-    const unsigned char __FAR *group;
-    unsigned int        num;
+    unsigned    num;
+    unsigned    grp;
 
-    group = &PGrpCodes[( error_num / 256 ) * 3];
+    grp = error_num / 256;
     num = ( error_num % 256 ) + 1;
-    buffer[0] = ' ';
-    buffer[1] = group[0];
-    buffer[2] = group[1];
-    buffer[3] = '-';
-    buffer[4] = num / 10 + '0';
-    buffer[5] = num % 10 + '0';
-    buffer[6] = NULLCHAR;
+    sprintf( buffer, " %s%2.2d", GroupPrefix[grp], num );
 }
-
-#include "errcar.gh"
-
-static const caret_type __FAR   *PCaretTable = CaretTable;
 
 static caret_type CaretType( uint error_num )
 // Return the type of caret.
 {
-    const unsigned char __FAR *group;
-    const unsigned char __FAR *grp;
-    uint                idx;
+    unsigned    num;
+    unsigned    grp;
 
-    idx = error_num % 256;
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    for( grp = PGrpCodes; grp != group; grp += 3 ) {
-        idx += *(grp + 2);
-    }
-    return( PCaretTable[idx] );
+    grp = error_num / 256;
+    num = error_num % 256;
+    return( CaretTable[GroupOffset[grp] + num] );
 }
 
 static  void    ExtIssued( void )

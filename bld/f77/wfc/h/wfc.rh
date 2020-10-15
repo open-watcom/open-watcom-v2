@@ -5,8 +5,7 @@
 #define MSG_SHARE_BASE      12000
 #define MSG_USAGE_BASE      12500
 
-#include "errcod.gh"
-//#include "wfcmsgs.grh"
+#include "wfcmsgs.grh"
 
 #if _CPU == 8086 || _CPU == 386
 #include "wasmcmsg.gh"

@@ -4,17 +4,11 @@
 #include "wreslang.rh"
 #include "wfc.rh"
 
-#define MSG_LANG_BASE   MSG_RC_BASE
-#include "errmsg.grc"
-#undef MSG_LANG_BASE
-#define MSG_LANG_BASE   (MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING)
-#include "jerrmsg.grc"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-//    #include "wfcmsgs.gh"
+    #include "wfcmsgs.gh"
 #if _CPU == 8086 || _CPU == 386
     #include "wasmc.msg"
 #endif
@@ -24,7 +18,7 @@ BEGIN
 
     #define pick(c,e,j) (c + MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-//    #include "wfcmsgs.gh"
+    #include "wfcmsgs.gh"
 #if _CPU == 8086 || _CPU == 386
     #include "wasmc.msg"
 #endif

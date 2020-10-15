@@ -58,7 +58,7 @@ extra_a_flags_axp = -oc
 #
 # EXE
 #
-exetarg_prebuild_objs = $(asminline_deps) errgrp.gc errcod.gh wasmcmsg.gh usage.gh #wfcmsgs.gh
+exetarg_prebuild_objs = $(asminline_deps) wasmcmsg.gh usage.gh wfcmsgs.gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs          = $(asminline_lib) $(cg_libs) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -74,29 +74,15 @@ verrc_exe = $(exetarg_name)
 
 rcui_inc_dirs = -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-wresui.res : ../../h/wfc.rc errmsg.grc jerrmsg.grc errcod.gh wasmcmsg.gh ../../h/wfc.rh
+wresui.res : ../../h/wfc.rc wasmcmsg.gh ../../h/wfc.rh
     @%make echo_rc
     $(rcui8)
 
-errsrc_opt_i86 = eoic
-errsrc_opt_386 = eo3c
-errsrc_opt_axp = eorc
-
-jerrsrc_opt_i86 = joic
-jerrsrc_opt_386 = jo3c
-jerrsrc_opt_axp = jorc
-
-errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
-    $(noecho)errsrc $[@ $(errsrc_opt_$(target_cpu)) >$(nulldevice)
-
-jerrmsg.grc:  ../../../h/error.msg
-    $(noecho)errsrc $[@ $(jerrsrc_opt_$(target_cpu)) >$(nulldevice)
-
 #msgencod_enc_linux = -utf8
 
-wfcmsgs.gh wfcmsgs.grh wfcgrps.gh : ../../gml/wfcmsgs.gml
+wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : ../../gml/wfcmsgs.gml
     @%make echo_msgencod
-    $(noecho)msgencod -s -ip -q -rc MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh
+    $(noecho)msgencod -s -ip -q -rc MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
 # optencod options and targets for various hosts
 !ifdef exetarg_qnx_res

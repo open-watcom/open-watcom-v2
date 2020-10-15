@@ -115,12 +115,6 @@ tdovl1 = &
 
 # system independent compile-time and run-time files
 
-# "errgrp" and "errmsg" contain data that gets placed in
-# the code segment so they must be in the root
-
-comroot += &
-    errgrp.obj
-
 comovl1 += &
     chinese.obj &
     csetinfo.obj &
