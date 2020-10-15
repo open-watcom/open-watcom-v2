@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include "wio.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "units.h"
-#include "posio.h"
 #include "fapptype.h"
 #include "rmemmgr.h"
 #include "posopen.h"
@@ -355,7 +355,7 @@ bool    Scrtched( ftnfile *fcb ) {
 // Erase specified file.
 
     Scratchf( fcb->filename );
-    return( Errorf( NULL ) == IO_OK );
+    return( IOOk( NULL ) );
 }
 
 
@@ -386,14 +386,11 @@ bool    Errf( ftnfile *fcb ) {
 
 // Determine if an i/o error exists.
 
-    int     err;
-
-    err = Errorf( fcb->fileptr );
-    if( err == IO_EOF ) {
+    if( EOFile( fcb->fileptr ) ) {
         SetEOF();
-        err = IO_OK;
+        return( false );
     }
-    return( err != IO_OK );
+    return( !IOOk( fcb->fileptr ) );
 }
 
 
@@ -559,7 +556,7 @@ static  void    ChkDisk( ftnfile *fcb ) {
 // Make sure that the file is a disk file.
 
     if( IsDevice( fcb ) ) {
-        FSetErr( IO_BAD_OPERATION, fcb->fileptr );
+        FSetBadOpr( fcb->fileptr );
     }
 }
 

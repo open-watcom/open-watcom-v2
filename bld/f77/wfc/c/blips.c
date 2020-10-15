@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,9 @@
 
 #include "ftnstd.h"
 #include <string.h>
+#include "wio.h"
 #include "fcgbls.h"
 #include "cgflags.h"
-#include "posio.h"
 #include "blips.h"
 #include "fcgmain.h"
 
