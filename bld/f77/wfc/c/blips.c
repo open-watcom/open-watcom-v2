@@ -37,9 +37,9 @@
 
 #include "ftnstd.h"
 #include <string.h>
+#include "wio.h"
 #include "fcgbls.h"
 #include "cgflags.h"
-#include "posio.h"
 #include "blips.h"
 #include "fcgmain.h"
 
