@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ static  char    * const __FAR ErrMsgs[] = {
 };
 
 
-bool    IOOk( b_file *io ) {
+int     Errorf( b_file *io ) {
 // Check for i/o error condition.
 
     int         err;
@@ -65,7 +65,7 @@ bool    IOOk( b_file *io ) {
     if( err == IO_EOR ) {
         err = IO_OK;
     }
-    return( err == IO_OK );
+    return( err );
 }
 
 
@@ -135,21 +135,11 @@ void    FSetEof( b_file *io ) {
 }
 
 
-void    FSetIOOk( b_file *io ) {
+void    IOOk( b_file *io ) {
 // Clear i/o error conditions.
 
     if( io != NULL ) {
         io->stat = IO_OK;
     }
     Stat = IO_OK;
-}
-
-
-void    FSetBadOpr( b_file *io ) {
-// Clear i/o error conditions.
-
-    if( io != NULL ) {
-        io->stat = IO_BAD_OPERATION;
-    }
-    Stat = IO_BAD_OPERATION;
 }

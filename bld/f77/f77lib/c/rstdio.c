@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #if defined( __OS2__ ) && defined( __386__ )
@@ -40,8 +39,8 @@
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
   #include <windows.h>
 #endif
-#include "wio.h"
 #include "fapptype.h"
+#include "posio.h"
 #include "rstdio.h"
 
 
