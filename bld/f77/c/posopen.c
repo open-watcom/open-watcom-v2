@@ -61,6 +61,7 @@
 
 #include "clibext.h"
 
+
 /* Forward declarations */
 #if defined( __RT__ )
 static  void    ChkRedirection( b_file *fp );

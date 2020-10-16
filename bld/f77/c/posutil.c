@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  File I/O support routines
+* Description:  POSIX level I/O support routines
 *
 ****************************************************************************/
 
@@ -59,4 +59,3 @@ void FDelFileAttrs( b_file *io, f_attrs attrs )
 {
     io->attrs &= ~attrs;
 }
-

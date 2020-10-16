@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  File I/O support routines
+* Description:  POSIX level I/O support routines
 *
 ****************************************************************************/
 
@@ -38,4 +38,3 @@ extern f_attrs  FGetFileAttrs( file_handle fp );
 extern void     FSetFileAttrs( file_handle fp, f_attrs attrs );
 extern void     FAddFileAttrs( file_handle fp, f_attrs attrs );
 extern void     FDelFileAttrs( file_handle fp, f_attrs attrs );
-

@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+/*    id                text             */
 pick( OK,               NULL )
 pick( DISK_FULL,        "disk full" )
 pick( BAD_RECORD,       "invalid record" )
