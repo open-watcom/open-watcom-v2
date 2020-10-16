@@ -6,7 +6,7 @@ wfl_autodepends = .AUTODEPEND
 
 wfl_trmem = 1
 
-additional_clean = *.gc
+additional_clean = *.grh
 
 !include cproj.mif
 !include defrule.mif

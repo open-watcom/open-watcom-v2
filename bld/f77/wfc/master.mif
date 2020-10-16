@@ -4,7 +4,7 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
-additional_clean = *.gc
+additional_clean = *.grh
 
 wfc_trmem = 1
 
