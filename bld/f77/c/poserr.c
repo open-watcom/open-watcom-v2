@@ -79,10 +79,12 @@ bool    EOFile( b_file *io ) {
 }
 
 
-char    *ErrorMsg( b_file *io ) {
+void ErrorMsg( b_file *io, char *buf, size_t max_len )
+{
 // Get i/o error message.
 
     io_status   err;
+    char        *msg;
 
     if( io == NULL ) {
         err = Stat;
@@ -90,10 +92,12 @@ char    *ErrorMsg( b_file *io ) {
         err = io->stat;
     }
     if( err == POSIO_SYS_ERROR ) {
-        return( strerror( errno ) );
+        msg = strerror( errno );
     } else {
-        return( ErrMsgs[ err ] );
+        msg = ErrMsgs[err];
     }
+    strncpy( buf, msg, max_len - 1 );
+    buf[max_len - 1] = '\0';
 }
 
 

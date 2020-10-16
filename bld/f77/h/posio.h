@@ -31,11 +31,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "sopen.h"
 #include "wio.h"
 #include "fio.h"
+
 
 typedef enum { // must map onto error message table in POSERR.C
     POSIO_OK,
@@ -62,4 +60,3 @@ typedef struct b_file {                 // file common
 } b_file;                               // bigger buffer may be allocated)
 
 extern void    FSetErr( io_status error, file_handle fp );
-

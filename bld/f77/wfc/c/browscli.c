@@ -179,7 +179,7 @@ static void mywrite( file_handle fp, const void *data, size_t len, const char *f
     char            err_msg[ERR_BUFF_SIZE+1];
 
     SDWrite( fp, data, len );
-    if( SDError( fp, err_msg ) ) {
+    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( SM_IO_WRITE_ERR, filename, err_msg );
         CSuicide();
     }
@@ -190,7 +190,7 @@ static void chkIOErr( file_handle fp, int error, const char *filename )
 {
     char            err_msg[ERR_BUFF_SIZE+1];
 
-    if( SDError( fp, err_msg ) ) {
+    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( error, filename, err_msg );
         CSuicide();
     }

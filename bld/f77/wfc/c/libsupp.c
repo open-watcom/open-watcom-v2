@@ -130,12 +130,12 @@ bool    LibEof( file_handle fp )
 }
 
 
-bool    LibError( file_handle fp, char *buff ) {
+bool    LibError( file_handle fp, char *buff, size_t max_len ) {
 //=============================================
 
 // Check for error on library read (source only).
 
-    return( SDError( fp, buff ) );
+    return( SDError( fp, buff, max_len ) );
 }
 
 

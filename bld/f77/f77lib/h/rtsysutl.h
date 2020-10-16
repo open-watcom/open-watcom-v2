@@ -53,7 +53,7 @@ extern bool    CheckLogicalRecord( ftnfile *fcb );
 extern void    SkipLogicalRecord( ftnfile *fcb );
 extern void    BackSpacef( ftnfile *fcb );
 extern void    EndFilef( ftnfile *fcb );
-extern void    GetIOErrMsg( ftnfile *fcb, char *buff );
+extern void    GetIOErrMsg( ftnfile *fcb, char *buff, size_t max_len );
 extern void    ReportNExist( ftnfile *fcb );
 extern void    ReportEOF( ftnfile *fcb );
 extern void    WaitForEnter( void );

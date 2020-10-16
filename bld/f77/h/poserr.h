@@ -32,7 +32,7 @@
 
 extern bool    IOOk( file_handle fp );
 extern bool    EOFile( file_handle fp );
-extern char    *ErrorMsg( file_handle fp );
+extern void    ErrorMsg( file_handle fp, char *buff, size_t max_len );
 extern void    FSetTrunc( file_handle fp );
 extern void    FSetSysErr( file_handle fp );
 extern void    FSetEof( file_handle fp );

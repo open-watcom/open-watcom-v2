@@ -562,7 +562,7 @@ static  void    ChkDisk( ftnfile *fcb ) {
 }
 
 
-void    GetIOErrMsg( ftnfile *fcb, char *buff ) {
+void    GetIOErrMsg( ftnfile *fcb, char *buff, size_t max_len ) {
 //===============================================
 
 // Get i/o error message.
@@ -574,7 +574,7 @@ void    GetIOErrMsg( ftnfile *fcb, char *buff ) {
     } else {
         fp = fcb->fileptr;
     }
-    strcpy( buff, ErrorMsg( fp ) );
+    ErrorMsg( fp, buff, max_len );
 }
 
 

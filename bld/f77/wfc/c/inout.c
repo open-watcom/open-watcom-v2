@@ -185,7 +185,7 @@ void    OpenSrc( void ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
     } else {
-        SDError( NULL, err_msg );
+        SDError( NULL, err_msg, sizeof( err_msg ) );
         InfoError( SM_OPENING_FILE, bld_name, err_msg );
     }
     if( erase_err ) {
@@ -218,7 +218,7 @@ static  uint    SrcRead( void ) {
         len = LibRead( fp );
         if( LibEof( fp ) ) {
             ProgSw |= PS_INC_EOF;
-        } else if( LibError( fp, msg ) ) {
+        } else if( LibError( fp, msg, sizeof( msg ) ) ) {
             InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
             ProgSw |= PS_INC_EOF;
         }
@@ -226,7 +226,7 @@ static  uint    SrcRead( void ) {
         len = SDRead( fp, SrcBuff, SRCLEN );
         if( SDEof( fp ) ) {
             ProgSw |= PS_INC_EOF;
-        } else if( SDError( fp, msg ) ) {
+        } else if( SDError( fp, msg, sizeof( msg ) ) ) {
             InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
             ProgSw |= PS_INC_EOF;
         }
@@ -301,7 +301,7 @@ void    Include( const char *inc_name )
         CurrFile->fileptr = fp;
     } else {
         // get error message before next i/o
-        SDError( NULL, err_msg );
+        SDError( NULL, err_msg, sizeof( err_msg ) );
         // try library
         fp = IncSearch( inc_name );
         if( fp != NULL ) {
@@ -407,7 +407,7 @@ static  file_handle Open( char *fn, char *extn, int mode ) {
 
     MakeName( fn, extn, buffer );
     ptr = SDOpen( buffer, mode );
-    if( SDError( ptr, errmsg ) ) {
+    if( SDError( ptr, errmsg, sizeof( errmsg ) ) ) {
         InfoError( SM_OPENING_FILE, &buffer, &errmsg );
     }
     return( ptr );
@@ -500,7 +500,7 @@ static  void    ChkErrErr( void ) {
     char        msg[81];
     char        fnbuff[_MAX_PATH];
 
-    if( SDError( ErrFile, msg ) ) {
+    if( SDError( ErrFile, msg, sizeof( msg ) ) ) {
         CloseErr();
         Options |= OPT_TERM;
         TermCursor = 0;
@@ -622,7 +622,7 @@ static  void    OpenListingFile( bool reopen ) {
             SDSetAttr( DskAttr );
         }
         ListFile = SDOpen( name, WRITE_FILE );
-        if( SDError( ListFile, errmsg ) ) {
+        if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
             ListBuff = FMemAlloc( LIST_BUFF_SIZE + 1 );
@@ -862,7 +862,7 @@ static  void    ChkLstErr( void ) {
     char        msg[81];
     char        fnbuff[_MAX_PATH];
 
-    if( SDError( ListFile, msg ) ) {
+    if( SDError( ListFile, msg, sizeof( msg ) ) ) {
         CloseLst();
         Options |= OPT_TERM;
         TermCursor = 0;

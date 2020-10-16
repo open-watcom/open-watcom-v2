@@ -136,11 +136,11 @@ bool    SDEof( file_handle fp )
 }
 
 
-bool    SDError( file_handle fp, char *buff )
-//===========================================
+bool    SDError( file_handle fp, char *buff, size_t max_len )
+//===========================================================
 {
     if( !IOOk( fp ) ) {
-        strcpy( buff, ErrorMsg( fp ) );
+        ErrorMsg( fp, buff, max_len );
         return( true );
     }
     return( false );

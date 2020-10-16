@@ -44,4 +44,4 @@ extern void         SDWrite( file_handle fp, const void *buff, size_t len );
 extern void         SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size );
 extern void         SDRewind( file_handle fp );
 extern bool         SDEof( file_handle fp );
-extern bool         SDError( file_handle fp, char *buff );
+extern bool         SDError( file_handle fp, char *buff, size_t max_len );

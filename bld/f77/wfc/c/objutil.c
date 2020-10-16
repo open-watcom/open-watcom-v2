@@ -85,7 +85,7 @@ static  void    chkIOErr( file_handle fp, int error ) {
 
     char        err_msg[ERR_BUFF_SIZE+1];
 
-    if( SDError( fp, err_msg ) ) {
+    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( error, PageFileName, err_msg );
     }
 }
