@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "fio.h"
 #include "posio.h"
 #include "posdat.h"
 
@@ -48,7 +47,7 @@
 
 static  b_file          _FStdIn = { RDONLY | REC_TEXT,
                                     STDIN,
-                                    0,
+                                    POSIO_OK,
                                     0,
                                     0,
                                     0,
@@ -56,7 +55,7 @@ static  b_file          _FStdIn = { RDONLY | REC_TEXT,
                                     MIN_BUFFER };
 static  b_file          _FStdOut = { WRONLY | REC_TEXT,
                                      STDOUT,
-                                     0,
+                                     POSIO_OK,
                                      0,
                                      0,
                                      0,
@@ -64,7 +63,7 @@ static  b_file          _FStdOut = { WRONLY | REC_TEXT,
                                      MIN_BUFFER };
 static  b_file          _FStdErr = { WRONLY | REC_TEXT,
                                      STDERR,
-                                     0,
+                                     POSIO_OK,
                                      0,
                                      0,
                                      0,

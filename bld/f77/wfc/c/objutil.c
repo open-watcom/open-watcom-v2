@@ -48,7 +48,6 @@
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
-#include "posio.h"
 #include "poserr.h"
 #include "posseek.h"
 #include "sdcio.h"
@@ -126,7 +125,7 @@ void    InitObj( void ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
                 PageFile = SDOpen( PageFileBuff, UPDATE_FILE );
-                if( Errorf( PageFile ) == IO_OK ) {
+                if( IOOk( PageFile ) ) {
                     break;
                 }
             }

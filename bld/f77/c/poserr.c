@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +33,11 @@
 #include "ftnstd.h"
 #include <string.h>
 #include <errno.h>
-#include "fio.h"
 #include "posio.h"
 #include "poserr.h"
 
 
-static  byte    Stat = { IO_OK };
+static io_status    Stat = { POSIO_OK };
 
 static  char    * const __FAR ErrMsgs[] = {
     NULL,
@@ -52,20 +51,20 @@ static  char    * const __FAR ErrMsgs[] = {
 };
 
 
-int     Errorf( b_file *io ) {
+bool    IOOk( b_file *io ) {
 // Check for i/o error condition.
 
-    int         err;
+    io_status   err;
 
     if( io == NULL ) {
         err = Stat;
     } else {
         err = io->stat;
     }
-    if( err == IO_EOR ) {
-        err = IO_OK;
+    if( err == POSIO_EOR ) {
+        err = POSIO_OK;
     }
-    return( err );
+    return( err == POSIO_OK );
 }
 
 
@@ -73,9 +72,9 @@ bool    EOFile( b_file *io ) {
 // Check if end-of-file.
 
     if( io == NULL ) {
-        return( Stat == IO_EOF );
+        return( Stat == POSIO_EOF );
     } else {
-        return( io->stat == IO_EOF );
+        return( io->stat == POSIO_EOF );
     }
 }
 
@@ -83,14 +82,14 @@ bool    EOFile( b_file *io ) {
 char    *ErrorMsg( b_file *io ) {
 // Get i/o error message.
 
-    int         err;
+    io_status   err;
 
     if( io == NULL ) {
         err = Stat;
     } else {
         err = io->stat;
     }
-    if( err == IO_SYS_ERROR ) {
+    if( err == POSIO_SYS_ERROR ) {
         return( strerror( errno ) );
     } else {
         return( ErrMsgs[ err ] );
@@ -101,8 +100,8 @@ char    *ErrorMsg( b_file *io ) {
 void    FSetTrunc( b_file *io ) {
 // Set "truncated" condition.
 
-    Stat = IO_EOR;
-    io->stat = IO_EOR;
+    Stat = POSIO_EOR;
+    io->stat = POSIO_EOR;
 }
 
 
@@ -110,13 +109,13 @@ void    FSetSysErr( b_file *io ) {
 // Set system i/o error condition.
 
     if( io != NULL ) {
-        io->stat = IO_SYS_ERROR;
+        io->stat = POSIO_SYS_ERROR;
     }
-    Stat = IO_SYS_ERROR;
+    Stat = POSIO_SYS_ERROR;
 }
 
 
-void    FSetErr( int error, b_file *io ) {
+void    FSetErr( io_status error, b_file *io ) {
 // Set i/o error condition.
 
     if( io != NULL ) {
@@ -129,17 +128,27 @@ void    FSetEof( b_file *io ) {
 // Set end-of-file condition.
 
     if( io != NULL ) {
-        io->stat = IO_EOF;
+        io->stat = POSIO_EOF;
     }
-    Stat = IO_EOF;
+    Stat = POSIO_EOF;
 }
 
 
-void    IOOk( b_file *io ) {
+void    FSetIOOk( b_file *io ) {
 // Clear i/o error conditions.
 
     if( io != NULL ) {
-        io->stat = IO_OK;
+        io->stat = POSIO_OK;
     }
-    Stat = IO_OK;
+    Stat = POSIO_OK;
+}
+
+
+void    FSetBadOpr( b_file *io ) {
+// Set bad operation condition.
+
+    if( io != NULL ) {
+        io->stat = POSIO_BAD_OPERATION;
+    }
+    Stat = POSIO_BAD_OPERATION;
 }

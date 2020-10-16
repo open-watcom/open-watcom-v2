@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "ftnstd.h"
 #include <string.h>
 #include <limits.h>
-#include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
 #include "poscc.h"
@@ -225,7 +224,7 @@ size_t  writebytes( b_file *io, const char *buff, size_t len )
         buff += written;
         len -= written;
         if( written < amt ) {
-            FSetErr( IO_DISK_FULL, io );
+            FSetErr( POSIO_DISK_FULL, io );
             return( 0 );
         }
     }
@@ -265,7 +264,7 @@ int SysWrite( b_file *io, const char *b, size_t len )
                 // write out a multiple of io->buff_size bytes
                 amt = len - len % io->buff_size;
                 writebytes( io, b, amt );
-                if( io->stat != IO_OK )
+                if( io->stat != POSIO_OK )
                     return( -1 );
                 b += amt;
                 len -= amt;
@@ -281,7 +280,7 @@ int SysWrite( b_file *io, const char *b, size_t len )
         }
     } else {
         writebytes( io, b, len );
-        if( io->stat != IO_OK ) {
+        if( io->stat != POSIO_OK ) {
             return( -1 );
         }
     }

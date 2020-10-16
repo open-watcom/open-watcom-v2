@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "omodes.h"
 #include "cpopt.h"
 #include "global.h"
-#include "posio.h"
 #include "blips.h"
 #include "posopen.h"
 #include "posget.h"
@@ -140,11 +139,9 @@ bool    SDEof( file_handle fp )
 bool    SDError( file_handle fp, char *buff )
 //===========================================
 {
-    int         err;
-
-    err = Errorf( fp );
-    if( err != IO_OK ) {
+    if( !IOOk( fp ) ) {
         strcpy( buff, ErrorMsg( fp ) );
+        return( true );
     }
-    return( err != IO_OK );
+    return( false );
 }

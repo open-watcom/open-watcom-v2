@@ -25,16 +25,38 @@
 *
 *  ========================================================================
 *
-* Description:  File I/O error handling routines
+* Description:  File I/O support routines
 *
 ****************************************************************************/
 
 
-extern bool    IOOk( file_handle fp );
-extern bool    EOFile( file_handle fp );
-extern char    *ErrorMsg( file_handle fp );
-extern void    FSetTrunc( file_handle fp );
-extern void    FSetSysErr( file_handle fp );
-extern void    FSetEof( file_handle fp );
-extern void    FSetIOOk( file_handle fp );
-extern void    FSetBadOpr( file_handle fp );
+#include "ftnstd.h"
+#include "posio.h"
+#include "posutil.h"
+
+
+int FGetFileHandle( b_file *io )
+{
+    return( io->handle );
+}
+
+f_attrs FGetFileAttrs( b_file *io )
+{
+    return( io->attrs );
+}
+
+void FSetFileAttrs( b_file *io, f_attrs attrs )
+{
+    io->attrs = attrs;
+}
+
+void FAddFileAttrs( b_file *io, f_attrs attrs )
+{
+    io->attrs |= attrs;
+}
+
+void FDelFileAttrs( b_file *io, f_attrs attrs )
+{
+    io->attrs &= ~attrs;
+}
+

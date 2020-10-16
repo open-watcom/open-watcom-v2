@@ -245,7 +245,8 @@ comroot += &
     posopen.obj &
     posput.obj &
     posrew.obj &
-    posseek.obj
+    posseek.obj &
+    posutil.obj
 
 comovl1 += &
     intarith.obj &

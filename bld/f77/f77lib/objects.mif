@@ -219,6 +219,7 @@ dep_both += &
     posrew.obj &
     posseek.obj &
     postrunc.obj &
+    posutil.obj &
     sdfile.obj
 
 

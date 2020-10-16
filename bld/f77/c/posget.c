@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #if defined( __WINDOWS__ )
     #include <conio.h>
 #endif
-#include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
 #include "posget.h"
@@ -220,7 +219,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             }
         }
 #endif
-        FSetErr( IO_BAD_RECORD, io );
+        FSetErr( POSIO_BAD_RECORD, io );
         return( 0 );
     } else if( io->attrs & BUFFERED ) {
         char            *ptr;
@@ -246,7 +245,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
                     // we have to do this so that io->b_curs is set properly
                     // on end of file
                     ptr = io->buffer + io->b_curs;
-                    if( read > 0 && io->stat == IO_EOF ) {
+                    if( read > 0 && io->stat == POSIO_EOF ) {
                         IOOk( io );
                     }
                     break;
@@ -353,7 +352,7 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
     if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR )
         return( 0 );
     if( tag != save_tag ) {
-        FSetErr( IO_BAD_RECORD, io );
+        FSetErr( POSIO_BAD_RECORD, io );
         return( 0 );
     }
     return( len );
@@ -427,7 +426,7 @@ int     FCheckLogical( b_file *io )
 
     rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
     if( rc == READ_ERROR ) {
-        if( io->stat != IO_EOF )
+        if( io->stat != POSIO_EOF )
             return( -1 );
         // if an EOF occurs we've skipped the record
         IOOk( io );
@@ -453,7 +452,7 @@ int     FSkipLogical( b_file *io )
     for(;;) {
         rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR ) {
-            if( io->stat != IO_EOF )
+            if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
             IOOk( io );
@@ -469,7 +468,7 @@ int     FSkipLogical( b_file *io )
         if( rc == READ_ERROR )
             return( -1 );
         if( tag != save_tag ) {
-            FSetErr( IO_BAD_RECORD, io );
+            FSetErr( POSIO_BAD_RECORD, io );
             return( -1 );
         }
     }
@@ -492,7 +491,7 @@ signed_32       FGetVarRecLen( b_file *io )
     for( ;; ) {
         rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR ) {
-            if( io->stat != IO_EOF )
+            if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
             IOOk( io );
@@ -501,7 +500,7 @@ signed_32       FGetVarRecLen( b_file *io )
         save_tag = tag;
         if( !size ) {
             if( tag & 0x80000000 ) {
-                FSetErr( IO_BAD_RECORD, io );
+                FSetErr( POSIO_BAD_RECORD, io );
                 return( -1 );
             }
         } else {
@@ -518,7 +517,7 @@ signed_32       FGetVarRecLen( b_file *io )
         if( rc == READ_ERROR )
             return( -1 );
         if( tag != save_tag ) {
-            FSetErr( IO_BAD_RECORD, io );
+            FSetErr( POSIO_BAD_RECORD, io );
             return( -1 );
         }
     }

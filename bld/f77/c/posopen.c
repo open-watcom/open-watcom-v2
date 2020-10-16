@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     }
     if( io == NULL ) {
         close( h );
-        FSetErr( IO_NO_MEM, NULL );
+        FSetErr( POSIO_NO_MEM, NULL );
     } else {
         if( attrs & CARRIAGE_CONTROL ) {
             attrs |= CC_NOLF;

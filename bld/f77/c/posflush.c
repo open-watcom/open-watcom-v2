@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "fio.h"
 #include "posio.h"
 #include "posput.h"
 #include "posflush.h"
@@ -63,7 +63,7 @@ int     FlushBuffer( b_file *io )
             }
         } else {
             writebytes( io, io->buffer, io->high_water );
-            if( io->stat != IO_OK ) {
+            if( io->stat != POSIO_OK ) {
                 rc = -1;
             }
         }
