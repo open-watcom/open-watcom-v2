@@ -40,16 +40,10 @@
 static io_status    Stat = { POSIO_OK };
 
 static  char    * const __FAR ErrMsgs[] = {
-    NULL,
-    "disk full",
-    "invalid record",
-    "out of memory",
-    "bad operation",
-    "end of file",
-    "record truncated",
-    NULL
+    #define pick(id,text)  text,
+    #include "_posio.h"
+    #undef pick
 };
-
 
 bool    IOOk( b_file *io ) {
 // Check for i/o error condition.
