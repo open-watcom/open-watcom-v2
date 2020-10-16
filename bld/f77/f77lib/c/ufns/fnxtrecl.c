@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,6 @@ intstar4        __fortran FNEXTRECL( intstar4 *unit ) {
     }
 
     size = FGetVarRecLen( fcb->fileptr );
-    IOOk( fcb->fileptr );
+    FSetIOOk( fcb->fileptr );
     return( size );
 }

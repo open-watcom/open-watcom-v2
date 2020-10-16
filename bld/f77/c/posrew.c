@@ -40,6 +40,6 @@
 void    FRewind( b_file *io ) {
 // Rewind a file.
 
-    IOOk( io );
+    FSetIOOk( io );
     SysSeek( io, 0, SEEK_SET );
 }

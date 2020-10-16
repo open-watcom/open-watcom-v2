@@ -452,7 +452,7 @@ void    SysClearEOF( ftnfile *fcb ) {
 
 // Clear EOF on file with no EOF (SERIAL, TERMINAL).
 
-    IOOk( fcb->fileptr );
+    FSetIOOk( fcb->fileptr );
 #if defined( __DOS__ )
     if( ( fcb->fileptr == FStdIn ) && IsDevice( fcb ) ) {
         // DOS bug: if a read from stdin causes eof, all subsequent reads

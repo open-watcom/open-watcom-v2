@@ -65,7 +65,7 @@ void    FBackspace( b_file *io, int rec_size )
     unsigned_32 u32;
     bool        start_of_logical_record;
 
-    IOOk( io );
+    FSetIOOk( io );
     if( io->attrs & REC_VARIABLE ) {
         for(;;) {
             if( SysSeek( io, -(long)sizeof( u32 ), SEEK_CUR ) < 0 )

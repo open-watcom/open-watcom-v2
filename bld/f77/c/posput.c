@@ -83,7 +83,7 @@ void    FPutRec( b_file *io, const char *b, size_t len )
 //======================================================
 // Put a record to a file.
 {
-    IOOk( io );
+    FSetIOOk( io );
     if( io->attrs & REC_TEXT ) {
         PutTextRec( io, b, len );
     } else if( io->attrs & REC_VARIABLE ) {

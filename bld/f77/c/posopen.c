@@ -155,7 +155,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
             io->high_water = 0;
         }
         io->phys_offset = fpos;
-        IOOk( io );
+        FSetIOOk( io );
     }
     return( io );
 }
@@ -226,5 +226,5 @@ void    Closef( b_file *io )
         return;
     }
     FMEM_FREE( io );
-    IOOk( NULL );
+    FSetIOOk( NULL );
 }

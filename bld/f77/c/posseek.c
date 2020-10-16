@@ -41,7 +41,7 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
 //==========================================================
 // Seek to specified record in file.
 {
-    IOOk( io );
+    FSetIOOk( io );
     if( io->attrs & SEEK ) {
         if( io->attrs & REC_TEXT ) {
 #if defined( __UNIX__ )
@@ -126,7 +126,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         if( bytes_read == READ_ERROR ) {
             if( io->stat != POSIO_EOF )
                 return( -1 );
-            IOOk( io );
+            FSetIOOk( io );
             io->phys_offset -= io->high_water;  // restore offset
             if( lseek( io->handle, -(long)io->high_water, SEEK_CUR ) < 0 ) {
                 FSetSysErr( io );
@@ -157,7 +157,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         if( bytes_read == READ_ERROR ) {
             if( io->stat != POSIO_EOF )
                 return( -1 );
-            IOOk( io );
+            FSetIOOk( io );
             io->attrs |= PAST_EOF;
         } else {
             if( bytes_read < io->buff_size ) {

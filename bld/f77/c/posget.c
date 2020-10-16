@@ -246,7 +246,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
                     // on end of file
                     ptr = io->buffer + io->b_curs;
                     if( read > 0 && io->stat == POSIO_EOF ) {
-                        IOOk( io );
+                        FSetIOOk( io );
                     }
                     break;
                 }
@@ -374,7 +374,7 @@ size_t FGetRec( b_file *io, char *b, size_t len )
 //===============================================
 // Get a record from a file.
 {
-    IOOk( io );
+    FSetIOOk( io );
     if( io->attrs & REC_TEXT )
         return( GetTextRec( io, b, len ) );
     if( io->attrs & REC_VARIABLE )
@@ -429,7 +429,7 @@ int     FCheckLogical( b_file *io )
         if( io->stat != POSIO_EOF )
             return( -1 );
         // if an EOF occurs we've skipped the record
-        IOOk( io );
+        FSetIOOk( io );
         return( 0 );
     }
     rc = 0;
@@ -455,7 +455,7 @@ int     FSkipLogical( b_file *io )
             if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
-            IOOk( io );
+            FSetIOOk( io );
             return( 0 );
         }
         if( (tag & 0x80000000) == 0 )
@@ -494,7 +494,7 @@ signed_32       FGetVarRecLen( b_file *io )
             if( io->stat != POSIO_EOF )
                 return( -1 );
             // if an EOF occurs we've skipped the record
-            IOOk( io );
+            FSetIOOk( io );
             break;
         }
         save_tag = tag;
