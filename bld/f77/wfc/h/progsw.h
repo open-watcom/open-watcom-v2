@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,22 +35,21 @@
 #define _PROGSW_H_INCLUDED
 
 typedef enum {
-    PS_FIRST_COMPILE      = 0x0001,
-    PS_END_OF_SUBPROG     = 0x0002,
-    PS_SOURCE_EOF         = 0x0004,
-    PS_IN_SUBPROGRAM      = 0x0008,
-    PS_BLOCK_DATA         = 0x0010,
-    PS_PROGRAM_DONE       = 0x0020,
-    PS_ERROR              = 0x0040,
-    PS_LIBRARY_PROCESS    = 0x0080,  // processing undefined subprograms
-    PS_ERR_OPEN_TRIED     = 0x0100,
-    PS_DONT_GENERATE      = 0x0200,  // don't generate any code
-    PS_SKIP_SOURCE        = 0x0400,  // skip source line because of macro
-    PS_FATAL_ERROR        = 0x0800,
-    PS_INC_EOF            = 0x1000,
-    PS_LIB_OBJECT         = 0x2000,  // loading object
-    PS_STMT_TOO_BIG       = 0x4000,  // out of memory building i.t list
-    PS_SYMTAB_PROCESS     = 0x8000
+    PS_END_OF_SUBPROG     = 0x0001,
+    PS_SOURCE_EOF         = 0x0002,
+    PS_IN_SUBPROGRAM      = 0x0004,
+    PS_BLOCK_DATA         = 0x0008,
+    PS_PROGRAM_DONE       = 0x0010,
+    PS_ERROR              = 0x0020,
+    PS_LIBRARY_PROCESS    = 0x0040,  // processing undefined subprograms
+    PS_ERR_OPEN_TRIED     = 0x0080,
+    PS_DONT_GENERATE      = 0x0100,  // don't generate any code
+    PS_SKIP_SOURCE        = 0x0200,  // skip source line because of macro
+    PS_FATAL_ERROR        = 0x0400,
+    PS_INC_EOF            = 0x0800,
+    PS_LIB_OBJECT         = 0x1000,  // loading object
+    PS_STMT_TOO_BIG       = 0x2000,  // out of memory building i.t list
+    PS_SYMTAB_PROCESS     = 0x4000
 } PSWT;
 
 #endif

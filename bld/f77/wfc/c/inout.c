@@ -120,10 +120,8 @@ void    InitComIO( void ) {
     TermCursor = 0;
     ErrCursor  = 0;
     ListCursor = 0;
-    // Point "terminal" buffer and ".ERR" file buffer to static area
-    // so that we can report an error before memory initialization.
-    TermBuff = TokenBuff;
-    ErrBuff = &TokenBuff[ 256 ];
+    TermBuff = FMemAlloc( TERM_BUFF_SIZE );
+    ErrBuff = NULL;
     ListBuff = NULL;
     CurrFile = NULL;
     ErrFile = NULL;
@@ -136,29 +134,10 @@ void    InitComIO( void ) {
 }
 
 
-void    InitMemIO( void ) {
-//===================
-
-    // We've initialized memory - now we can allocate file buffers.
-    TermBuff = FMemAlloc( TERM_BUFF_SIZE );
-    if( ErrFile == NULL ) {
-        // we haven't opened the error file yet so set ErrBuff to NULL
-        // so that when we do open the error file we can allocate the
-        // buffer at that time
-        ErrBuff = NULL;
-    } else {
-        // the error file has been opened so allocate a buffer for it
-        ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
-    }
-}
-
-
 void    FiniComIO( void ) {
 //===================
 
-    if( TermBuff != TokenBuff ) {
-        FMemFree( TermBuff );
-    }
+    FMemFree( TermBuff );
 }
 
 

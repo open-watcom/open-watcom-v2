@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,4 @@
 ****************************************************************************/
 
 
-extern bool     ParseCmdLine( char **fname, char **rest, char **opt_array, char *p );
 extern bool     MainCmdLine( char **fn, char **rest, char **opts, char *ptr );
-extern char     *Batch( char *buffer, uint num );

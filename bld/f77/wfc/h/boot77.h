@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,16 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Mainline for WATFOR-77 
+* Description:  Mainline for WATFOR-77
 *
 ****************************************************************************/
 
 extern  void    InitCompMain( void );
 extern  void    FiniCompMain( void );
-extern  int     CompMain( char *parm );
-extern  void    Compile( char *buffer );
+extern  int     CompMain( void );
 extern  void    ShowUsage( void );
 extern  char    *SkipBlanks( char *ptr );
-extern  void    InitCompile( void );
-extern  void    FiniCompile( void );
 extern  void    ProcOpts( char **opt_array );

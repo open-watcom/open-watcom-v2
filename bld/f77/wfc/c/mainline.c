@@ -47,6 +47,7 @@
 #include "cioconst.h"
 #include "inout.h"
 #include "errcod.h"
+#include "fmemmgr.h"
 
 #include "clibext.h"
 
@@ -107,6 +108,21 @@ void    ShowUsage( void ) {
     }
 }
 
+static void FInit( void )
+{
+    char        imageName[_MAX_PATH];
+
+    _cmdname( imageName );
+    ErrorInit( imageName );
+    FMemInit();
+}
+
+static void FFini( void )
+{
+    FMemErrors();
+    FMemFini();
+    ErrorFini();
+}
 
 int     main( int argc, char *argv[] ) {
 //======================================
@@ -116,7 +132,6 @@ int     main( int argc, char *argv[] ) {
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
     char        *p;
-    char        imageName[_MAX_PATH];
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -125,8 +140,7 @@ int     main( int argc, char *argv[] ) {
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-    _cmdname( imageName );
-    ErrorInit( imageName );
+    FInit();
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
@@ -146,11 +160,11 @@ int     main( int argc, char *argv[] ) {
         SrcExtn = SDSrcExtn( SrcName ); // parse the file name in case we get
         ProcOpts( opts );               // an error in ProcOpts() so error
         InitPredefinedMacros();         // file can be created
-        ret_code = CompMain( CmdBuff );
+        ret_code = CompMain();
     } else {
         ShowUsage();
     }
     FiniCompMain();
-    ErrorFini();
+    FFini();
     return( ret_code );
 }

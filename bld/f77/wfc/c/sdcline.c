@@ -49,16 +49,6 @@
 #endif
 
 
-bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
-//============================================================================
-
-    /* unused parameters */ (void)fname; (void)rest; (void)p;
-
-    *opt_array = NULL;
-    return( true );
-}
-
-
 bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
 //=====================================================================
 
@@ -118,14 +108,4 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
     }
     *opts = NULL;
     return( (*fn != NULL) && (opt_num <= MAX_OPTIONS) && (*rest == NULL) );
-}
-
-
-char    *Batch( char *buffer, uint num ) {
-//========================================
-
-    if( num > 0 ) {
-        buffer = NULL;
-    }
-    return( buffer );
 }

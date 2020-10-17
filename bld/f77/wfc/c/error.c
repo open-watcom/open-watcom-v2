@@ -48,12 +48,12 @@
 #include "wfcattrs.gh"
 
 
-#define MSGATTR_NULL    0
+#define MSGATTR_NULL    0   /* NO_CARET */
 
 typedef enum caret_type {
-    NO_CARET,
-    OPR_CARET,
-    OPN_CARET
+    NO_CARET,   /* 0 */
+    OPR_CARET,  /* 1 */
+    OPN_CARET   /* 2 */
 } caret_type;
 
 static const char *GroupPrefix[] = {

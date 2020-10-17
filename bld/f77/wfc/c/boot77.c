@@ -32,27 +32,31 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "cpopt.h"
-#include "progsw.h"
-#include "fmemmgr.h"
 #include "inout.h"
 #include "boot77.h"
 #include "cle.h"
-#include "sdcio.h"
-#include "sdcline.h"
 #include "fmacros.h"
 #include "option.h"
 #include "initopt.h"
-#include "errutil.h"
+
+
+static  void    InitComVars( void ) {
+//=============================
+
+    ProgSw    = PS_DONT_GENERATE; // so we get command line errors
+    NumErrors = 0;
+    NumWarns  = 0;
+    NumExtens = 0;
+    SrcRecNum = 0;
+}
 
 
 void    InitCompMain( void ) {
 //======================
 
-    FMemInit();
+    InitComIO();
+    InitComVars();
     FIncludePathInit();
-    InitCompile();
-    ProgSw |= PS_FIRST_COMPILE;
     InitMacroProcessor();
     SetDefaultOpts();
     LastColumn = LAST_COL;
@@ -64,25 +68,10 @@ void    FiniCompMain( void ) {
 
     FiniMacroProcessor();
     FIncludePathFini();
-    FMemFini();
+    FiniProcCmd();
+    FiniComIO();
 }
 
-
-int     CompMain( char *parm ) {
-//==============================
-
-    int         num;
-
-    num = 0;
-    for(;;) {
-        parm = Batch( parm, num );
-        if( parm == NULL )
-            break;
-        Compile( parm );
-        ++num;
-    }
-    return( RetCode );
-}
 
 static  int     ProcName( void ) {
 //==========================
@@ -98,30 +87,24 @@ static  int     ProcName( void ) {
     return( code );
 }
 
-static  bool    ProcCmd( char *buffer ) {
-//=======================================
+static void    InitCompile( void ) {
+//=====================
 
-    char        *opt_array[MAX_OPTIONS+1];
-
-    RetCode = _BADCMDLINE;
-    if( ParseCmdLine( &SrcName, &CmdPtr, opt_array, buffer ) ) {
-        RetCode = ProcName();
-        if( RetCode == _SUCCESSFUL ) {
-            ProcOpts( opt_array );
-        }
-    }
-    return( RetCode == _SUCCESSFUL );
 }
 
 
-void    Compile( char *buffer ) {
+static void    FiniCompile( void ) {
+//=====================
+
+}
+
+
+int     CompMain( void ) {
 //===============================
 
     InitCompile();
-    if( ProcCmd( buffer ) ) {
-        // initialize permanent i/o buffers after memory has been
-        // initialized
-        InitMemIO();
+    RetCode = ProcName();
+    if( RetCode == _SUCCESSFUL ) {
         CLE();
         if( ( NumErrors != 0 ) && ( RetCode == _SUCCESSFUL ) ) {
             RetCode = _SYSRETCOD( NumErrors );
@@ -133,9 +116,8 @@ void    Compile( char *buffer ) {
             RetCode = _SUCCESSFUL;
         }
     }
-    FiniComIO();
-    FiniProcCmd();
     FiniCompile();
+    return( RetCode );
 }
 
 
@@ -146,38 +128,6 @@ char    *SkipBlanks( char *ptr ) {
         ptr++;
     }
     return( ptr );
-}
-
-
-static  void    InitComVars( void ) {
-//=============================
-
-    ProgSw    = PS_DONT_GENERATE; // so we get command line errors
-    NumErrors = 0;
-    NumWarns  = 0;
-    NumExtens = 0;
-    SrcRecNum = 0;
-}
-
-
-void    InitCompile( void ) {
-//=====================
-
-// Initialize compiler i/o before we process the command line so we can
-// issue errors to the error file. i/o buffers are temporary until memory
-// has been initialized.
-
-    if( ProgSw & PS_FIRST_COMPILE )
-        return; // done in InitCompMain() 1st time
-    InitComIO();
-    InitComVars();
-}
-
-
-void    FiniCompile( void ) {
-//=====================
-
-    ProgSw &= ~PS_FIRST_COMPILE;
 }
 
 
