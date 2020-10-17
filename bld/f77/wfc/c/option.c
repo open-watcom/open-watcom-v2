@@ -513,8 +513,6 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
         buff += 2 * sizeof( char );
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
-        if( optn->flags & CTG )
-            continue;
         if( OptMatch( buff, optn->option, optn->flags & VAL ) ) {
             return( optn );
         }
@@ -830,19 +828,20 @@ void    PrtOptions( void ) {
                         continue;
                     }
                 }
-            } else
-            if( optn->value == OPT_XLINE ) {
-                if( LastColumn == LAST_COL ) {
-                    continue;
-                }
             } else {
-                if( optn->flags & NEG ) {
-                    if( Options & optn->value ) {
+                if( optn->value == OPT_XLINE ) {
+                    if( LastColumn == LAST_COL ) {
                         continue;
                     }
                 } else {
-                    if( ( Options & optn->value ) == 0 ) {
-                        continue;
+                    if( optn->flags & NEG ) {
+                        if( Options & optn->value ) {
+                            continue;
+                        }
+                    } else {
+                        if( ( Options & optn->value ) == 0 ) {
+                            continue;
+                        }
                     }
                 }
             }
@@ -856,7 +855,7 @@ void    PrtOptions( void ) {
 }
 
 opt_entry       CompOptns[] = {
-    #define opt( name, bit, flags, actionstr, actionneg, desc ) name, flags, bit, actionstr, actionneg
+    #define opt( name, bit, flags, actionstr, actionneg ) { name, flags, bit, actionstr, actionneg },
     #include "wfcopts.h"
     #undef opt
 };
