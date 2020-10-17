@@ -57,8 +57,7 @@ void    FMemInit( void ) {
 #endif
 }
 
-
-void    FMemFini( void ) {
+void    FMemErrors( void ) {
 //========================
 
     ProgSw &= ~PS_ERROR; // we always want to report memory problems
@@ -67,6 +66,12 @@ void    FMemFini( void ) {
     } else if( UnFreeMem < 0 ) {
         CompErr( CP_FREEING_UNOWNED_MEMORY );
     }
+}
+
+
+void    FMemFini( void ) {
+//========================
+
 #if defined( TRMEM )
     TRMemClose();
 #else
