@@ -170,6 +170,7 @@ static option_mapping mappings[] = {
     { "fpmath=87",                      "fp0" },
     { "fpmath=287",                     "fp2" },
     { "fpmath=387",                     "fp3" },
+    { "fpmath=emu",                     "fpi" },
     { "fptune=586",                     "fp5" },
     { "fptune=686",                     "fp6" },
     { "fno-short-enum",                 "ei" },

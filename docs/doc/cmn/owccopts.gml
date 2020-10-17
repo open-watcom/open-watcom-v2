@@ -140,6 +140,10 @@ generate in-line 80x87 instructions
 &x86only.
 generate in-line 387 instructions
 .*
+.note fpmath=emu
+&x86only.
+generate in-line emulated floating-point instructions
+.*
 .note fptune=586&optdag.
 &x86only.
 generate in-line 80x87 instructions optimized for Pentium processor

@@ -21,6 +21,7 @@ Usage:  owcc [options] file ...
 
                 [x86 Floating-point processor options]
 -fpmath={,2,3}87                hardware floating-point code
+-fpmath=emu                     emulated floating-point code
 -fptune={5,6}86                 optimize f-p for CPU type
 -msoft-float                    calls to floating-point library
 
