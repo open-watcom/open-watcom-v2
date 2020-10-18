@@ -441,7 +441,7 @@ void    SubAuxFini( void ) {
 
     while( ArrayInfo != NULL ) {
         next = ArrayInfo->link;
-        arr = SymFind( ArrayInfo->arr, strlen( ArrayInfo->arr ) );
+        arr = SymFind( ArrayInfo->arr, ArrayInfo->len );
         if( ( arr != NULL ) && ( arr->u.ns.flags & SY_SUBSCRIPTED ) &&
             ( arr->u.ns.u1.s.typ != FT_CHAR ) &&
             ( ( arr->u.ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
@@ -476,7 +476,7 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
     uint        i;
 
     for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
-        if( strlen( (*arr)->arr ) != arr_len )
+        if( (*arr)->len != arr_len )
             continue;
         if( cmp_ucased( (*arr)->arr, arr_name, arr_len ) ) {
             return;
@@ -488,6 +488,7 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
         new_arr->arr[i] = toupper( arr_name[i] );
     }
     new_arr->arr[arr_len] = NULLCHAR;
+    new_arr->len = arr_len;
     *arr = new_arr;
 }
 #endif

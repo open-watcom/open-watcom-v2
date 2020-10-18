@@ -59,32 +59,24 @@ uint    HSToB( const char *src, uint src_len, char *dst ) {
 
     length = 0;
     if( ( src_len % 2 ) != 0 ) {
-        if( isxdigit( *src ) == 0 )
+        if( isxdigit( (unsigned char)src[0] ) == 0 )
             return( 0 );
         if( dst != NULL ) {
             *dst++ = Hex( *src );
         }
-        ++length;
-        ++src;
-        --src_len;
+        length++;
+        src++;
+        src_len--;
     }
     while( src_len != 0 ) {
-        if( isxdigit( *src ) == 0 )
+        if( isxdigit( (unsigned char)src[0] ) == 0 || isxdigit( (unsigned char)src[1] ) == 0 )
             return( length );
         if( dst != NULL ) {
-            *dst = Hex( *src ) * 0x10;
+            *dst++ = Hex( src[0] ) * 0x10 + Hex( src[1] );
         }
-        ++src;
-        --src_len;
-        if( isxdigit( *src ) == 0 )
-            return( length );
-        if( dst != NULL ) {
-            *dst += Hex( *src );
-            dst++;
-        }
-        ++length;
-        ++src;
-        --src_len;
+        length++;
+        src += 2;
+        src_len -= 2;
     }
     return( length );
 }
