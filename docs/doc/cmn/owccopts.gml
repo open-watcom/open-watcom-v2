@@ -128,6 +128,14 @@ force file_name to be included in front of the source file text
 .note fo=<file_name>
 set object or preprocessor output file specification
 .*
+.note mhard-emu-float
+&x86only.
+generate inline 80x87 instructions with emulation
+.*
+.note mhard-float
+&x86only.
+generate inline 80x87 instructions
+.*
 .note msoft-float
 &x86only.
 generate calls to floating-point library
@@ -139,10 +147,6 @@ generate in-line 80x87 instructions
 .note fpmath=387
 &x86only.
 generate in-line 387 instructions
-.*
-.note fpmath=emu
-&x86only.
-generate in-line emulated floating-point instructions
 .*
 .note fptune=586&optdag.
 &x86only.
