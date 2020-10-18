@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,5 @@
 
 
 extern char    Hex( char data );
-extern uint    HSToB( char *src, uint src_len, char *dst );
+extern uint    HSToB( const char *src, uint src_len, char *dst );
 extern char    *BToHS( char *mem, int length, char *fmt_buf );

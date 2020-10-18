@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +52,8 @@ char    Hex( char data ) {
 }
 
 
-uint    HSToB( char *src, uint src_len, char *dst ) {
-//===================================================
+uint    HSToB( const char *src, uint src_len, char *dst ) {
+//=========================================================
 
     uint        length;
 
@@ -60,8 +61,9 @@ uint    HSToB( char *src, uint src_len, char *dst ) {
     if( ( src_len % 2 ) != 0 ) {
         if( isxdigit( *src ) == 0 )
             return( 0 );
-        *dst = Hex( *src );
-        ++dst;
+        if( dst != NULL ) {
+            *dst++ = Hex( *src );
+        }
         ++length;
         ++src;
         --src_len;
@@ -69,16 +71,20 @@ uint    HSToB( char *src, uint src_len, char *dst ) {
     while( src_len != 0 ) {
         if( isxdigit( *src ) == 0 )
             return( length );
-        *dst = Hex( *src ) * 0x10;
+        if( dst != NULL ) {
+            *dst = Hex( *src ) * 0x10;
+        }
         ++src;
         --src_len;
         if( isxdigit( *src ) == 0 )
             return( length );
-        *dst += Hex( *src );
+        if( dst != NULL ) {
+            *dst += Hex( *src );
+            dst++;
+        }
+        ++length;
         ++src;
         --src_len;
-        ++dst;
-        ++length;
     }
     return( length );
 }

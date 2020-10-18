@@ -224,7 +224,6 @@ static  void    FreeArgList( aux_info *aux );
 static  void    ScanToken( void );
 static  void    ScanFnToken( void );
 static  void    SymbolId( void );
-static  void    TokUpper( void );
 static  void    ReqToken( char *tok );
 static  void    AliasName( void );
 static  void    SymbolName( void );
@@ -455,6 +454,18 @@ void    SubAuxFini( void ) {
 }
 
 #if _INTEL_CPU
+static bool cmp_ucased( const char *p1, const char *p2, uint len )
+{
+    uint    i;
+
+    for( i = 0; i < len; i++ ) {
+        if( *p1++ != toupper( *p2++ ) ) {
+            return( false );
+        }
+    }
+    return( true );
+}
+
 static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
 //============================================================
 
@@ -462,17 +473,20 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
 
     arr_info    **arr;
     arr_info    *new_arr;
+    uint        i;
 
     for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
         if( strlen( (*arr)->arr ) != arr_len )
             continue;
-        if( memcmp( (*arr)->arr, arr_name, arr_len ) == 0 ) {
+        if( cmp_ucased( (*arr)->arr, arr_name, arr_len ) ) {
             return;
         }
     }
     new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
     new_arr->link = NULL;
-    memcpy( new_arr->arr, arr_name, arr_len );
+    for( i = 0; i < arr_len; i++ ) {
+        new_arr->arr[i] = toupper( arr_name[i] );
+    }
     new_arr->arr[arr_len] = NULLCHAR;
     *arr = new_arr;
 }
@@ -745,7 +759,6 @@ static void     Pragma( void ) {
 #if _INTEL_CPU
     } else if( RecToken( "ARRAY" ) ) {
         SymbolId();
-        TokUpper();
         arr = TokStart;
         arr_len = TokEnd - TokStart;
         ScanToken();
@@ -979,21 +992,6 @@ static  void    ScanFnToken( void ) {
     }
     TokEnd = ptr;
 }
-
-#if _INTEL_CPU
-static  void    TokUpper( void ) {
-//==========================
-
-    char        *ptr;
-
-    ptr = TokStart;
-    while( ptr != TokEnd ) {
-        *ptr = toupper( *ptr );
-        ++ptr;
-    }
-}
-
-#endif
 
 
 static  void    ReqToken( char *tok ) {
@@ -1480,18 +1478,17 @@ static  void    GetByteSeq( void ) {
             if( ( *ptr != 'Z' ) && ( *ptr != 'z' ) )
                 break;
             ++ptr;
-            len = MkHexConst( ptr, ptr, TokEnd - TokStart - 1 );
+            len = MkHexConst( ptr, NULL, TokEnd - TokStart - 1 );
             if( len == 0 ) {
                 Error( PR_BAD_BYTE_SEQ );
                 CSuicide();
             }
-            if( seq_len + len <= MAXIMUM_BYTESEQ ) {
-                memcpy( buff + seq_len, ptr, len );
-                seq_len += len;
-            } else {
+            if( seq_len + len > MAXIMUM_BYTESEQ ) {
                 Error( PR_BYTE_SEQ_LIMIT );
                 CSuicide();
             }
+            MkHexConst( ptr, (char *)( buff + seq_len ), TokEnd - TokStart - 1 );
+            seq_len += len;
             ScanToken();
         }
     }
@@ -1504,16 +1501,24 @@ static  void    GetByteSeq( void ) {
 
 
 #if _INTEL_CPU
+#define REGNAME_MAX_LEN     4
+
 static  hw_reg_set      RegSet( void ) {
 //================================
 
     hw_reg_set  reg_set;
     int         reg;
+    char        regname_buf[REGNAME_MAX_LEN];
+    int         i;
 
     HW_CAsgn( reg_set, HW_EMPTY );
     for(;;) {
-        TokUpper();
-        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd - TokStart, true );
+        if( TokEnd - TokStart > REGNAME_MAX_LEN )
+            break;
+        for( i = 0; i < TokEnd - TokStart; i++ ) {
+            regname_buf[i] = toupper( TokStart[i] );
+        }
+        reg = KwLookUp( RegNames, MaxReg, regname_buf, TokEnd - TokStart, true );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );

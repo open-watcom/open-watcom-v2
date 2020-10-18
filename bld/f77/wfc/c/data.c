@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -413,7 +414,7 @@ static  void    GetSConst( void ) {
 }
 
 
-uint MkHexConst( char *hex_data, char *dst, uint hex_len ) {
+uint MkHexConst( const char *hex_data, char *dst, uint hex_len ) {
 //====================================================================
 
     uint        len;
