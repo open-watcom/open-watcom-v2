@@ -132,10 +132,6 @@ set object or preprocessor output file specification
 &x86only.
 generate inline 80x87 instructions with emulation
 .*
-.note mhard-float
-&x86only.
-generate inline 80x87 instructions
-.*
 .note msoft-float
 &x86only.
 generate calls to floating-point library

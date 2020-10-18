@@ -232,7 +232,6 @@ static option_mapping mappings[] = {
     { "mrtdll",                         "br" },
     { "mdefault-windowing",             "bw" },
     { "mhard-emu-float",                "fpi" },
-    { "mhard-float",                    "fpi87" },
     { "msoft-float",                    "fpc" },
     { "w",                              "w0" },
     { "Wlevel:",                        "w" },
