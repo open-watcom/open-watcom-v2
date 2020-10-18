@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc.
-*    Portions Copyright (c) 2017 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -49,7 +48,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "getopt.h"
-//#include "misc.h"
 #include "bool.h"
 #include "swchar.h"
 #include "diskos.h"
@@ -129,7 +127,6 @@ typedef enum {
 
 char *OptEnvVar = WCLENV;                   /* Data interface for GetOpt()        */
 
-static  char        *Word;                  /* one parameter                      */
 static  char        *SystemName;            /* system to link for                 */
 static  list        *Files_List;            /* list of filenames from Cmd         */
 static  char        *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
@@ -667,6 +664,7 @@ static  int  ParseArgs( int argc, char **argv )
     int         i;
     list        *new_item;
     char        pelc[5];
+    char        *Word;
 
     initialize_Flags();
     DebugFlag          = DBG_LINES;
@@ -695,8 +693,6 @@ static  int  ParseArgs( int argc, char **argv )
                         "O::o:P::QSs::U:vW::wx::yz::",
 #endif
                         EnglishHelp )) != -1 ) {
-
-        char    *Word;
 
         c = (char)i;
         if( find_mapping( c ) )
@@ -1437,6 +1433,7 @@ static  int  CompLink( void )
     char        errors_found;
     tool_type   utl;
     int         i;
+    char        *Word;
 
     Word = MemAlloc( MAX_CMD );
     errors_found = 0;
