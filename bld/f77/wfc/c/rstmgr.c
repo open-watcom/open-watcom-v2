@@ -270,11 +270,10 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
 }
 
 
-sym_id  STName( char *name, uint length ) {
-//========================================
-
+sym_id STName( const char *name, uint length )
+//============================================
 // Lookup the specified name in the symbol table.
-
+{
     sym_id    sym;
 
     if( length > MAX_SYMLEN ) {
@@ -294,11 +293,10 @@ sym_id  STName( char *name, uint length ) {
 }
 
 
-sym_id  STCommon( char *name, uint length ) {
-//==========================================
-
+sym_id STCommon( const char *name, uint length )
+//==============================================
 // Lookup the specified name in the common list.
-
+{
     sym_id      sym_ptr;
 
     if( length > MAX_SYMLEN ) {

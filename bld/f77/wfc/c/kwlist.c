@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 // Note: The keyword DO is contained in DOUBLEPRECISION; any time this is
 //       the case, the smaller keyword must come first to enforce a match.
 
-char    *StmtKeywords[] = {
+const char      *StmtKeywords[] = {
     #define pick(id,text,proc,flags) text,
     #include "stmtdefn.h"
     #undef pick

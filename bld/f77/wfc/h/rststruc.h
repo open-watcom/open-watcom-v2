@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,12 @@
 ****************************************************************************/
 
 
-extern sym_id  FindStruct( char *name, uint len );
-extern sym_id  STStruct( char *name, uint length );
+extern sym_id  FindStruct( const char *name, uint len );
+extern sym_id  STStruct( const char *name, uint length );
 extern char    *STStructName( sym_id sym, char *buff );
 extern char    *STFieldName( sym_id sym, char *buff );
-extern sym_id  STField( char *name, uint len );
-extern sym_id  FieldLookup( sym_id prev, char *name, uint len, intstar4 *offset );
+extern sym_id  STField( const char *name, uint len );
+extern sym_id  FieldLookup( sym_id prev, const char *name, uint len, intstar4 *offset );
 extern bool    CalcStructSize( sym_id sd );
 extern void    STUnion( void );
 extern void    STMap( void );

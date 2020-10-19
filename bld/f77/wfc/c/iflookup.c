@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ typedef struct iff_data {
 #define IF_GENERIC      0x20
 #define IF_NOT_GEN      0x00
 
-static char __FAR *IFNames[] = {
+static const char __FAR *IFNames[] = {
     #define pick(id,text,next,res,arg,flags) text,
     #include "ifdefn.h"
     #undef pick
@@ -76,9 +77,9 @@ static iff_data __FAR IFFlags[] = {
     #undef pick
 };
 
-int     IFIndex( char *name ) {
+int IFIndex( const char *name )
 //=============================
-
+{
     return( KwLookUp( IFNames, IF_MAX_NAME, name, strlen( name ), true ) );
 }
 
@@ -90,9 +91,9 @@ IFF     IFLookUp( void ) {
 }
 
 
-static  sym_id  IFSymLookup( char *name, uint len ) {
-//===================================================
-
+static sym_id IFSymLookup( const char *name, uint len )
+//=====================================================
+{
     sym_id      sym;
 
     sym = STNameSearch( name, len );
@@ -273,8 +274,8 @@ TYPE    IFArgType( IFF func ) {
     return( IFFlags[ func ].arg_typ );
 }
 
-char    *IFName( IFF func ) {
-//==============================
-
+const char *IFName( IFF func )
+//============================
+{
     return( IFNames[ func ] );
 }

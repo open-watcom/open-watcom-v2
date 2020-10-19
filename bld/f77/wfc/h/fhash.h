@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,10 @@ typedef struct hash_entry {
     sym_id      h_tail;
 } hash_entry;
 
-extern unsigned     CalcHash( char *, unsigned );
+extern unsigned     CalcHash( const char *, unsigned );
 extern void         HashInsert( hash_entry *, unsigned, sym_id *, sym_id );
-  
+
 extern unsigned     HashValue;
 extern hash_entry   HashTable[];
 extern hash_entry   GHashTable[];
 extern hash_entry   ConstHashTable[];
-
-

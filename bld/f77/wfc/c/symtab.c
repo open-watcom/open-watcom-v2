@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,11 +67,10 @@ void    STInit( void ) {
 }
 
 
-sym_id  SymLookup( char *name, uint length ) {
-//===========================================
-
+sym_id SymLookup( const char *name, uint length )
+//===============================================
 // Lookup a symbol in the symbol table.
-
+{
     sym_id    sym;
 
     sym = STName( name, length );
@@ -131,20 +131,18 @@ sym_id  LkBlkData( void ) {
 }
 
 
-sym_id  SymFind( char *name, uint length ) {
-//=========================================
-
+sym_id SymFind( const char *name, uint length )
+//=============================================
 // Determine if a symbol exists in the symbol table.
-
+{
     return( STNameSearch( name, length ) );
 }
 
 
-static  sym_id  ComLookup( char *name, uint length ) {
-//===================================================
-
+static sym_id ComLookup( const char *name, uint length )
+//======================================================
 // Lookup a common block name.
-
+{
     sym_id      sym;
 
     sym = STCommon( name, length );

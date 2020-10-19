@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 extern char    *STExtractName( sym_id sym, char *buff );
 extern char    *STGetName( sym_id sym, char *buff );
 extern uint    AllocName( uint length );
-extern sym_id  STAdd( char *name, int length );
+extern sym_id  STAdd( const char *name, int length );
 extern sym_id  STFree( sym_id sym );
 extern void    FreeSFHeader( sym_id sym );
 extern void    CkSymDeclared( sym_id sym );

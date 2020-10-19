@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +44,11 @@
 #include "kwlookup.h"
 
 
-int     KwLookUp( char **table, int high, char *id, uint id_len, bool exact ) {
-//============================================================================
-
-    char        *key;
-    char        *ident;
+int KwLookUp( const char **table, int high, const char *id, uint id_len, bool exact )
+//===================================================================================
+{
+    const char  *key;
+    const char  *ident;
     int         mid;
     int         low;
     uint        kw_len;

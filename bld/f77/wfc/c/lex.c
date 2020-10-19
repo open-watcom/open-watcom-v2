@@ -287,7 +287,7 @@ static  void    GetOpnd( void ) {
 
 // Scan off an operand.
 
-    char        *kw;
+    const char      *kw;
 
     Lex.ptr = LexToken.start;
     Lex.opnpos = ( LexToken.line << 8 ) + LexToken.col + 1;

@@ -69,7 +69,7 @@ static  uint            SymLen;
 static  arr_info        *ArrayInfo;
 #endif
 
-extern  char            *RegNames[];
+extern  const char      *RegNames[];
 extern  hw_reg_set      RegValue[];
 extern  byte            MaxReg;
 #if _INTEL_CPU

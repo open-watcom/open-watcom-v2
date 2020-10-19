@@ -42,8 +42,8 @@
 #include "rststruc.h"
 
 
-static  sym_id  AddStruct( char *name, uint length )
-//==================================================
+static sym_id AddStruct( const char *name, uint length )
+//======================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
@@ -57,8 +57,8 @@ static  sym_id  AddStruct( char *name, uint length )
 }
 
 
-sym_id  FindStruct( char *name, uint len )
-//========================================
+sym_id FindStruct( const char *name, uint len )
+//=============================================
 // Search symbol table for given name.
 {
     sym_id      head;
@@ -77,8 +77,8 @@ sym_id  FindStruct( char *name, uint len )
 }
 
 
-sym_id  STStruct( char *name, uint length )
-//=========================================
+sym_id STStruct( const char *name, uint length )
+//==============================================
 // Lookup the specified structure name in the symbol table.
 {
     sym_id      sym;
@@ -142,8 +142,8 @@ char    *STFieldName( sym_id sym, char *buff ) {
 }
 
 
-static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
-//=============================================================s
+static sym_id *Strut( sym_id *p_field, const char *name, uint len )
+//=================================================================
 {
     sym_id      map;
     sym_id      field;
@@ -176,8 +176,8 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
 }
 
 
-static  sym_id  AddField( char *name, uint length )
-//=================================================
+static sym_id AddField( const char *name, uint length )
+//=====================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
@@ -190,11 +190,10 @@ static  sym_id  AddField( char *name, uint length )
 }
 
 
-sym_id  STField( char *name, uint len ) {
-//=======================================
-
+sym_id STField( const char *name, uint len )
+//==========================================
 // Allocate a field name.
-
+{
     sym_id      *p_field;
 
     if( len > MAX_SYMLEN ) {
@@ -208,7 +207,7 @@ sym_id  STField( char *name, uint len ) {
 }
 
 
-static  sym_id  LookupField( sym_id field, char *name, uint len,
+static sym_id LookupField( sym_id field, const char *name, uint len,
                              intstar4 *offset ) {
 //==============================================================
 
@@ -254,11 +253,10 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
 }
 
 
-sym_id  FieldLookup( sym_id prev, char *name, uint len, intstar4 *offset ) {
-//==========================================================================
-
+sym_id FieldLookup( sym_id prev, const char *name, uint len, intstar4 *offset )
+//=============================================================================
 // Search for a field name.
-
+{
     *offset = 0;
     return( LookupField( prev, name, len, offset ) );
 }

@@ -135,7 +135,7 @@ static  char    *StmtName( char *buff ) {
         MsgBuffer( MS_STMT_FUNC_DEFN, buff );
         return( &buff[1] );     // skip leading blank
     default:
-        return( StmtKeywords[ stmt ] );
+        return( strcpy( buff, StmtKeywords[ stmt ] ) );
     }
 }
 
@@ -167,9 +167,9 @@ void    StmtIntErr( int errcode, int num ) {
 }
 
 
-void    StmtPtrErr( int errcode, void *ptr ) {
-//============================================
-
+void StmtPtrErr( int errcode, const char *ptr )
+//=============================================
+{
     char        stmt[MAX_MSGLEN+1];
 
     Error( errcode, StmtName( stmt ), ptr );

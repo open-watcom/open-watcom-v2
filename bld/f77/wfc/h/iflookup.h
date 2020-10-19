@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  declaration for intrinsic function info routines 
+* Description:  declaration for intrinsic function info routines
 *
 ****************************************************************************/
 
@@ -32,19 +33,19 @@
 #include "symtypes.h"
 #include "ifdefs.h"
 
-int     IFIndex( char *name );
-IFF     IFLookUp( void );
-bool    IFIsGeneric( IFF func );
-bool    IFIsMagic( IFF func );
-TYPE    IFType( IFF func );
-IFF     IFSpecific( TYPE typ );
-bool    IsIFMax( IFF func );
-bool    IsIFMin( IFF func );
-bool    IsIntrinsic( unsigned_16 flags );
-bool    IFAsArg( IFF func );
-bool    IFVarArgs( IFF func );
-void    IFChkExtension( IFF func );
-void    IFCntPrms( IFF func, int actual_cnt );
-bool    IFGenInLine( IFF func );
-TYPE    IFArgType( IFF func );
-char    *IFName( IFF func );
+extern int          IFIndex( const char *name );
+extern IFF          IFLookUp( void );
+extern bool         IFIsGeneric( IFF func );
+extern bool         IFIsMagic( IFF func );
+extern TYPE         IFType( IFF func );
+extern IFF          IFSpecific( TYPE typ );
+extern bool         IsIFMax( IFF func );
+extern bool         IsIFMin( IFF func );
+extern bool         IsIntrinsic( unsigned_16 flags );
+extern bool         IFAsArg( IFF func );
+extern bool         IFVarArgs( IFF func );
+extern void         IFChkExtension( IFF func );
+extern void         IFCntPrms( IFF func, int actual_cnt );
+extern bool         IFGenInLine( IFF func );
+extern TYPE         IFArgType( IFF func );
+extern const char   *IFName( IFF func );
