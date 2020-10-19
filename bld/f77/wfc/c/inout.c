@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,7 +268,7 @@ void    Include( const char *inc_name )
 
     SDInitAttr();
     CopyMaxStr( inc_name, bld_name, _MAX_PATH - 1 );
-    MakeName( bld_name, SDSrcExtn( bld_name ), bld_name );
+    MakeName( bld_name, SDSplitSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) )
         return;
     if( AlreadyOpen( bld_name ) )

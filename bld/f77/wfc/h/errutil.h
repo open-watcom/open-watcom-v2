@@ -34,5 +34,5 @@ extern void         ErrorInit( const char *image );
 extern void         ErrorFini( void );
 extern const char   *GetMsg( unsigned msg );
 extern void         BldErrMsg( uint msg, char *buff, va_list );
-extern void         MsgFormat( char *msg, char *buff, ... );
+extern void         MsgFormat( const char *msg, char *buff, ... );
 extern void         MsgBuffer( uint msg, char *buff, ...  );

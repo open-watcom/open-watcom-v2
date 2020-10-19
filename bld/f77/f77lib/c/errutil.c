@@ -55,8 +55,9 @@ void    BldErrCode( unsigned int error_num, char *buffer )
     buffer[6] = NULLCHAR;
 }
 
-void    MsgFormat( char *msg, char *buff, ... ) {
+void    MsgFormat( const char *msg, char *buff, ... )
 // Format a message.
+{
     va_list     args;
 
     va_start( args, buff );
@@ -64,8 +65,9 @@ void    MsgFormat( char *msg, char *buff, ... ) {
     va_end( args );
 }
 
-void    MsgBuffer( uint msg, char *buff, ...  ) {
+void    MsgBuffer( uint msg, char *buff, ...  )
 // Format message to buffer.
+{
     va_list     args;
 
     va_start( args, buff );

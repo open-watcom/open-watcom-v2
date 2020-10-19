@@ -31,5 +31,5 @@
 
 
 extern void    BldErrCode( unsigned int error_num, char *buffer );
-extern void    MsgFormat( char *msg, char *buff, ... );
+extern void    MsgFormat( const char *msg, char *buff, ... );
 extern void    MsgBuffer( uint msg, char *buff, ...  );

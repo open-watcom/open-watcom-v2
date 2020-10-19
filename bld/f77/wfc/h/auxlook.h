@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,6 @@
 ****************************************************************************/
 
 
-extern aux_info     *AuxLookupName( char *name, uint name_len );
-extern aux_info     *AuxLookupAdd( char *name, uint name_len );
+extern aux_info     *AuxLookupName( const char *name, uint name_len );
+extern aux_info     *AuxLookupAdd( const char *name, uint name_len );
 extern aux_info     *AuxLookup( sym_id sym );

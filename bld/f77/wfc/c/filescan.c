@@ -71,9 +71,9 @@ char    *SDFName( char *fn ) {
 }
 
 
-char    *SDExtn( char *fn, char *default_extn ) {
+char *SDSplitExtn( char *fn, char *default_extn )
 //===============================================
-
+{
     char        *src_extn;
     char        chr;
 
@@ -96,8 +96,8 @@ char    *SDExtn( char *fn, char *default_extn ) {
 }
 
 
-char    *SDSrcExtn( char *fn ) {
+char *SDSplitSrcExtn( char *fn )
 //==============================
-
-    return( SDExtn( fn, ForExtn ) );
+{
+    return( SDSplitExtn( fn, ForExtn ) );
 }

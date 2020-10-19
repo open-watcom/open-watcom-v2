@@ -73,9 +73,9 @@ void ErrorFini( void )
     CloseResFile( &hInstance );
 }
 
-static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
+static void OrderArgs( const char *msg, msg_arg *ordered_args, va_list args )
 //===========================================================================
-
+{
     char        chr;
     uint        idx;
     uint        arg_count;
@@ -114,11 +114,10 @@ static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
     }
 }
 
-static void    Substitute( char *msg, char *buffer, va_list args ) {
-//===========================================================
-
+static void Substitute( const char *msg, char *buffer, va_list args )
+//===================================================================
 // Do the necessary "%" substitutions.
-
+{
     char        *subs_ptr;
     size_t      subs_len;
     size_t      width;
@@ -212,8 +211,9 @@ void BldErrMsg( unsigned int msg, char *buffer, va_list args )
     }
 }
 
-void    MsgFormat( char *msg, char *buff, ... ) {
+void    MsgFormat( const char *msg, char *buff, ... )
 // Format a message.
+{
     va_list     args;
 
     va_start( args, buff );
@@ -221,8 +221,9 @@ void    MsgFormat( char *msg, char *buff, ... ) {
     va_end( args );
 }
 
-void    MsgBuffer( uint msg, char *buff, ...  ) {
+void    MsgBuffer( uint msg, char *buff, ...  )
 // Format message to buffer.
+{
     va_list     args;
 
     va_start( args, buff );

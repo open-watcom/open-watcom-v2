@@ -667,8 +667,8 @@ static  void    FreeArgList( aux_info *aux ) {
 }
 
 
-aux_info        *NewAuxEntry( char *name, uint name_len )
-//=======================================================
+aux_info *NewAuxEntry( const char *name, uint name_len )
+//======================================================
 {
     aux_info    *aux;
 

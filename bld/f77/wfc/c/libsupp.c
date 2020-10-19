@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ static  file_handle FindSrcFile( char *fname ) {
 
     file_handle  fp;
 
-    MakeName( fname, SDSrcExtn( fname ), fname );
+    MakeName( fname, SDSplitSrcExtn( fname ), fname );
     fp = SDOpen( fname, READ_FILE );
     if( fp != NULL ) {
         SrcInclude( fname );

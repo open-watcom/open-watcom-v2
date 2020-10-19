@@ -52,6 +52,9 @@
 #include "option.h"
 #include "boot77.h"
 #include "compcfg.h"
+#include "wf77auxd.h"
+#include "wf77aux.h"
+#include "fcdatad.h"
 
 
 // Compiler directives defines
@@ -75,10 +78,6 @@ enum {
     COMP_DIRS_DEFS
     #undef COMP_DIR
 };
-
-extern  void            ProcPragma( char * );
-
-extern  uint            DataThreshold;
 
 /* Forward declarations */
 static  int     GetDirective( char *buff );

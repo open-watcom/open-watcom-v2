@@ -157,9 +157,9 @@ int     main( int argc, char *argv[] ) {
     ret_code = 0;
     InitCompMain();
     if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
-        SrcExtn = SDSrcExtn( SrcName ); // parse the file name in case we get
-        ProcOpts( opts );               // an error in ProcOpts() so error
-        InitPredefinedMacros();         // file can be created
+        SrcExtn = SDSplitSrcExtn( SrcName );    // parse the file name in case we get
+        ProcOpts( opts );                       // an error in ProcOpts() so error
+        InitPredefinedMacros();                 // file can be created
         ret_code = CompMain();
     } else {
         ShowUsage();

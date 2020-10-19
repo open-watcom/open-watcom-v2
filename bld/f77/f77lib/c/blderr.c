@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@ typedef union msg_arg {
 } msg_arg;
 
 
-static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
+static void OrderArgs( const char *msg, msg_arg *ordered_args, va_list args )
 //===========================================================================
-
+{
     char        chr;
     uint        idx;
     uint        arg_count;
@@ -85,11 +86,10 @@ static  void    OrderArgs( char *msg, msg_arg *ordered_args, va_list args ) {
 }
 
 
-void    Substitute( char *msg, char *buffer, va_list args ) {
-//===========================================================
-
+void Substitute( const char *msg, char *buffer, va_list args )
+//============================================================
 // Do the necessary "%" substitutions.
-
+{
     char        *subs_ptr;
     size_t      subs_len;
     size_t      width;

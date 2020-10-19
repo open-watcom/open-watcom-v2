@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,8 @@
 #include "rstmgr.h"
 #include "fcstack.h"
 #include "fcgmain.h"
+#include "mkname.h"
+#include "rstutils.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -88,9 +90,6 @@
 
 #include "clibext.h"
 
-
-extern  int             MakeName(char *,char *,char *);
-extern  char            *STGetName(sym_id,char *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
@@ -2051,7 +2050,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 memcpy( ptr, ObjName, fn - ObjName );
                 ptr += fn - ObjName;
             }
-            fe = SDExtn( fn, ObjExtn );
+            fe = SDSplitExtn( fn, ObjExtn );
             if(( *fn == NULLCHAR )
               || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
                 fn = SDFName( SrcName );
