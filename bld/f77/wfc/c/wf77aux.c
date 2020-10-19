@@ -217,29 +217,6 @@ aux_info                FortranInfo;
 aux_info                ProgramInfo;
 dep_info                *DependencyInfo;
 
-/* Forward declarations */
-static  void    FreeAuxEntry( aux_info *aux );
-static  void    FreeAuxElements( aux_info *aux );
-static  void    FreeArgList( aux_info *aux );
-static  void    ScanToken( void );
-static  void    ScanFnToken( void );
-static  void    SymbolId( void );
-static  void    ReqToken( char *tok );
-static  void    AliasName( void );
-static  void    SymbolName( void );
-static  void    ProcessAlias( void );
-static  void    DupCallBytes( aux_info *dst, aux_info *src );
-static  void    ObjectName( void );
-static  void    GetParmInfo( void );
-static  void    GetByteSeq( void );
-static  void    GetRetInfo( void );
-static  void    GetSaveInfo( void );
-static  void    GetArgList( void );
-static  void    GetSTRetInfo( void );
-static  void    DupParmInfo( aux_info *dst, aux_info *src );
-static  void    DupObjectName( aux_info *dst, aux_info *src );
-static  void    DupArgInfo( aux_info *dst, aux_info *src );
-
 void            InitAuxInfo( void ) {
 //=============================
 
@@ -394,6 +371,40 @@ void            InitAuxInfo( void ) {
     DoPragma( __Pascal );
     DoPragma( __Cdecl );
 #endif
+}
+
+
+static  void    FreeArgList( aux_info *aux ) {
+//============================================
+
+    FreeChain( &aux->arg_info );
+}
+
+
+static  void    FreeAuxElements( aux_info *aux ) {
+//================================================
+
+    FreeArgList( aux );
+    if( aux->parms != DefaultInfo.parms ) {
+        FMemFree( aux->parms );
+        aux->parms = DefaultInfo.parms;
+    }
+    if( aux->code != DefaultInfo.code ) {
+        FMemFree( aux->code );
+        aux->code = DefaultInfo.code;
+    }
+    if( aux->objname != DefaultInfo.objname ) {
+        FMemFree( aux->objname );
+        aux->objname = DefaultInfo.objname;
+    }
+}
+
+
+static  void    FreeAuxEntry( aux_info *aux ) {
+//=============================================
+
+    FreeAuxElements( aux );
+    FMemFree( aux );
 }
 
 
@@ -633,40 +644,6 @@ void    DefaultLibInfo( void ) {
 }
 
 
-static  void    FreeAuxEntry( aux_info *aux ) {
-//=============================================
-
-    FreeAuxElements( aux );
-    FMemFree( aux );
-}
-
-
-static  void    FreeAuxElements( aux_info *aux ) {
-//================================================
-
-    FreeArgList( aux );
-    if( aux->parms != DefaultInfo.parms ) {
-        FMemFree( aux->parms );
-        aux->parms = DefaultInfo.parms;
-    }
-    if( aux->code != DefaultInfo.code ) {
-        FMemFree( aux->code );
-        aux->code = DefaultInfo.code;
-    }
-    if( aux->objname != DefaultInfo.objname ) {
-        FMemFree( aux->objname );
-        aux->objname = DefaultInfo.objname;
-    }
-}
-
-
-static  void    FreeArgList( aux_info *aux ) {
-//============================================
-
-    FreeChain( &aux->arg_info );
-}
-
-
 aux_info *NewAuxEntry( const char *name, uint name_len )
 //======================================================
 {
@@ -703,182 +680,6 @@ static  bool    CurrToken( char *tok ) {
     if( ( ptr == TokEnd ) && ( *tok == '\0' ) )
         return( true );
     return( false );
-}
-
-
-static  bool    RecToken( char *tok ) {
-//=====================================
-
-    if( CurrToken( tok ) ) {
-        ScanToken();
-        return( true );
-    }
-    return( false );
-}
-
-static  bool    RecFnToken( char *tok ) {
-//=======================================
-
-    if( CurrToken( tok ) ) {
-        ScanFnToken();
-        return( true );
-    }
-    return( false );
-}
-
-
-
-static void     Pragma( void ) {
-//========================
-
-// Process a pragma.
-
-#if _INTEL_CPU
-    char        *arr;
-    uint        arr_len;
-#endif
-
-    struct {
-        boolbit f_far    : 1;
-        boolbit f_far16  : 1;
-        boolbit f_loadds : 1;
-        boolbit f_export : 1;
-        boolbit f_parm   : 1;
-        boolbit f_value  : 1;
-        boolbit f_modify : 1;
-    } have;
-
-    if( RecFnToken( "LIBRARY" ) ) {
-        if( RecFnToken( "\0" ) ) {
-            DefaultLibInfo();
-        } else {
-            while( !RecFnToken( "\0" ) ) {
-                AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
-                ScanFnToken();
-            }
-        }
-#if _INTEL_CPU
-    } else if( RecToken( "ARRAY" ) ) {
-        SymbolId();
-        arr = TokStart;
-        arr_len = TokEnd - TokStart;
-        ScanToken();
-        if( RecToken( "FAR" ) ) {
-            if( _SmallDataModel( CGOpts ) ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #if _CPU == 8086
-        } else if( RecToken( "HUGE" ) ) {
-            if( CGOpts & CGOPT_M_LARGE ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #endif
-        }
-#endif
-    } else {
-        AliasInfo = &FortranInfo;
-        if( RecToken( "LINKAGE" ) ) {
-            ReqToken( "(" );
-            SymbolName();
-            ReqToken( "," );
-            AliasName();
-            ProcessAlias();
-            ReqToken( ")" );
-        } else {
-            ReqToken( "AUX" );
-            if( RecToken( "(" ) ) {
-                AliasName();
-                ReqToken( ")" );
-            }
-            SymbolName();
-            ProcessAlias();
-            ObjectName();
-
-            have.f_far    = false;
-            have.f_loadds = false;
-            have.f_export = false;
-            have.f_value  = false;
-            have.f_modify = false;
-            have.f_parm   = false;
-            for( ;; ) {
-                if( !have.f_parm && RecToken( "PARM" ) ) {
-                    GetParmInfo();
-                    have.f_parm = true;
-                } else if( !have.f_far && RecToken( "=" ) ) {
-                    GetByteSeq();
-#if _INTEL_CPU
-                    have.f_far = true;
-                } else if( !have.f_far && RecToken( "FAR" ) ) {
-                    CurrAux->cclass |= FAR_CALL;
-                    have.f_far = true;
-#if _CPU == 386
-                } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
-                    CurrAux->cclass |= FAR16_CALL;
-                    have.f_far16 = true;
-#endif
-                } else if( !have.f_far && RecToken( "NEAR" ) ) {
-                    CurrAux->cclass &= ~FAR_CALL;
-                    have.f_far = true;
-                } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-                    CurrAux->cclass |= LOAD_DS_ON_ENTRY;
-                    have.f_loadds = true;
-#endif
-                } else if( !have.f_export && RecToken( "EXPORT" ) ) {
-                    CurrAux->cclass |= DLL_EXPORT;
-                    have.f_export = true;
-#if _INTEL_CPU
-                } else if( !have.f_value && RecToken( "VALUE" ) ) {
-                    GetRetInfo();
-                    have.f_value = true;
-#endif
-                } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-                    CurrAux->cclass |= SUICIDAL;
-                    have.f_value = true;
-#if _INTEL_CPU
-                } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
-                    GetSaveInfo();
-                    have.f_modify = true;
-#endif
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-}
-
-
-void    DoPragma( char *ptr ) {
-//=============================
-
-    int         status;
-
-    TokStart = ptr;
-    TokEnd = ptr;
-    ScanToken();
-    for(;;) {
-        status = CSpawn( &Pragma );
-        if( status != 0 ) {
-            if( ProgSw & PS_FATAL_ERROR ) {
-                CSuicide();
-            }
-            AsmSymFini();
-            break;
-        }
-        if( RecToken( "\0" ) ) {
-            break;
-        }
-    }
-}
-
-
-void    ProcPragma( char *ptr ) {
-//===============================
-
-    // don't process auxiliary pragma's until pass 2
-    if( ProgSw & PS_DONT_GENERATE )
-        return;
-    DoPragma( ptr );
 }
 
 
@@ -954,6 +755,27 @@ static  void    ScanToken( void ) {
     TokEnd = ptr;
 }
 
+static  bool    RecToken( char *tok ) {
+//=====================================
+
+    if( CurrToken( tok ) ) {
+        ScanToken();
+        return( true );
+    }
+    return( false );
+}
+
+static  void    ReqToken( char *tok ) {
+//=====================================
+
+    if( !RecToken( tok ) ) {
+        *TokEnd = NULLCHAR;
+        Error( PR_BAD_SYNTAX, tok, TokStart );
+        CSuicide();
+    }
+}
+
+
 static  void    ScanFnToken( void ) {
 //===========================
 
@@ -995,13 +817,36 @@ static  void    ScanFnToken( void ) {
 }
 
 
-static  void    ReqToken( char *tok ) {
-//=====================================
+static  bool    RecFnToken( char *tok ) {
+//=======================================
 
-    if( !RecToken( tok ) ) {
-        *TokEnd = NULLCHAR;
-        Error( PR_BAD_SYNTAX, tok, TokStart );
+    if( CurrToken( tok ) ) {
+        ScanFnToken();
+        return( true );
+    }
+    return( false );
+}
+
+
+
+static  void            SymbolId( void ) {
+//==================================
+
+    char        *ptr;
+
+    ptr = TokStart;
+    if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
+        Error( PR_SYMBOL_NAME );
         CSuicide();
+    }
+    for(;;) {
+        ptr++;
+        if( ptr == TokEnd )
+            break;
+        if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
+            Error( PR_SYMBOL_NAME );
+            CSuicide();
+        }
     }
 }
 
@@ -1037,44 +882,46 @@ static  void            SymbolName( void ) {
 }
 
 
-static  void            ProcessAlias( void ) {
-//======================================
+static  void            ObjectName( void ) {
+//====================================
 
-    if( SymLen == 0 ) { // "DEFAULT"
-        CurrAux = AliasInfo;
-    } else {
-        CurrAux = AuxLookupName( SymName, SymLen );
-        if( CurrAux != AliasInfo ) { // Consider: c$pragma aux (sp) sp
-            if( CurrAux == NULL ) {
-                CurrAux = NewAuxEntry( SymName, SymLen );
-            } else {
-                FreeAuxElements( CurrAux );
-            }
-        }
-        CopyAuxInfo( CurrAux, AliasInfo );
+    int         obj_len;
+    char        *name;
+
+    if( *TokStart != '"' )
+        return;
+    if( TokStart == TokEnd - 1 )
+        CSuicide();
+    if( *(TokEnd - 1) != '"' )
+        CSuicide();
+    obj_len = TokEnd - TokStart - 2;
+    name = FMemAlloc( obj_len + 1 );
+    if( CurrAux->objname != DefaultInfo.objname ) {
+        FMemFree( CurrAux->objname );
     }
+    memcpy( name, TokStart + 1, obj_len );
+    name[obj_len] = NULLCHAR;
+    CurrAux->objname = name;
+    ScanToken();
 }
 
 
-void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
+static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
 //===========================================================
 
-    if( dst != src ) {
-        dst->cclass = src->cclass;
-        dst->save = src->save;
-        dst->returns = src->returns;
-        dst->streturn = src->streturn;
-        if( src->parms != DefaultInfo.parms ) {
-            DupParmInfo( dst, src );
-        }
-        if( src->code != DefaultInfo.code ) {
-            DupCallBytes( dst, src );
-        }
-        if( src->objname != DefaultInfo.objname ) {
-            DupObjectName( dst, src );
-        }
-        DupArgInfo( dst, src );
+    hw_reg_set  *new_reg_set;
+    hw_reg_set  *reg_set;
+    int         size;
+
+    reg_set = src->parms;
+    size = 0;
+    while( !HW_CEqual( reg_set[size], HW_EMPTY ) ) {
+        ++size;
     }
+    ++size;
+    new_reg_set = FMemAlloc( size * sizeof( hw_reg_set ) );
+    memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
+    dst->parms = new_reg_set;
 }
 
 
@@ -1118,25 +965,6 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
-//===========================================================
-
-    hw_reg_set  *new_reg_set;
-    hw_reg_set  *reg_set;
-    int         size;
-
-    reg_set = src->parms;
-    size = 0;
-    while( !HW_CEqual( reg_set[size], HW_EMPTY ) ) {
-        ++size;
-    }
-    ++size;
-    new_reg_set = FMemAlloc( size * sizeof( hw_reg_set ) );
-    memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
-    dst->parms = new_reg_set;
-}
-
-
 static  void    DupObjectName( aux_info *dst, aux_info *src ) {
 //=============================================================
 
@@ -1168,49 +996,44 @@ static  void    DupArgInfo( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void            SymbolId( void ) {
-//==================================
+void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
+//===========================================================
 
-    char        *ptr;
-
-    ptr = TokStart;
-    if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-        Error( PR_SYMBOL_NAME );
-        CSuicide();
-    }
-    for(;;) {
-        ptr++;
-        if( ptr == TokEnd )
-            break;
-        if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-            Error( PR_SYMBOL_NAME );
-            CSuicide();
+    if( dst != src ) {
+        dst->cclass = src->cclass;
+        dst->save = src->save;
+        dst->returns = src->returns;
+        dst->streturn = src->streturn;
+        if( src->parms != DefaultInfo.parms ) {
+            DupParmInfo( dst, src );
         }
+        if( src->code != DefaultInfo.code ) {
+            DupCallBytes( dst, src );
+        }
+        if( src->objname != DefaultInfo.objname ) {
+            DupObjectName( dst, src );
+        }
+        DupArgInfo( dst, src );
     }
 }
 
 
-static  void            ObjectName( void ) {
-//====================================
+static  void            ProcessAlias( void ) {
+//======================================
 
-    int         obj_len;
-    char        *name;
-
-    if( *TokStart != '"' )
-        return;
-    if( TokStart == TokEnd - 1 )
-        CSuicide();
-    if( *(TokEnd - 1) != '"' )
-        CSuicide();
-    obj_len = TokEnd - TokStart - 2;
-    name = FMemAlloc( obj_len + 1 );
-    if( CurrAux->objname != DefaultInfo.objname ) {
-        FMemFree( CurrAux->objname );
+    if( SymLen == 0 ) { // "DEFAULT"
+        CurrAux = AliasInfo;
+    } else {
+        CurrAux = AuxLookupName( SymName, SymLen );
+        if( CurrAux != AliasInfo ) { // Consider: c$pragma aux (sp) sp
+            if( CurrAux == NULL ) {
+                CurrAux = NewAuxEntry( SymName, SymLen );
+            } else {
+                FreeAuxElements( CurrAux );
+            }
+        }
+        CopyAuxInfo( CurrAux, AliasInfo );
     }
-    memcpy( name, TokStart + 1, obj_len );
-    name[obj_len] = NULLCHAR;
-    CurrAux->objname = name;
-    ScanToken();
 }
 
 
@@ -1553,65 +1376,6 @@ static  hw_reg_set      *RegSets( void ) {
 #endif
 
 
-static  void            GetParmInfo( void ) {
-//=====================================
-
-// Collect argument information.
-
-    struct {
-#if _INTEL_CPU
-        boolbit f_pop           : 1;
-        boolbit f_reverse       : 1;
-        boolbit f_loadds        : 1;
-        boolbit f_nomemory      : 1;
-        boolbit f_list          : 1;
-#endif
-        boolbit f_args          : 1;
-    } have;
-
-#if _INTEL_CPU
-    have.f_pop           = false;
-    have.f_reverse       = false;
-    have.f_loadds        = false;
-    have.f_nomemory      = false;
-    have.f_list          = false;
-#endif
-    have.f_args          = false;
-    for(;;) {
-        if( !have.f_args && RecToken( "(" ) ) {
-            GetArgList();
-            have.f_args = true;
-#if _INTEL_CPU
-        } else if( !have.f_pop && RecToken( "CALLER" ) ) {
-            CurrAux->cclass |= CALLER_POPS;
-            have.f_pop = true;
-        } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
-            CurrAux->cclass &= ~CALLER_POPS;
-            have.f_pop = true;
-        } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
-            // arguments are processed in reverse order by default
-            CurrAux->cclass |= REVERSE_PARMS;
-            have.f_reverse = true;
-        } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->cclass |= NO_MEMORY_READ;
-            have.f_nomemory = true;
-        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-            CurrAux->cclass |= LOAD_DS_ON_CALL;
-            have.f_loadds = true;
-        } else if( !have.f_list && CurrToken( "[" ) ) {
-            if( CurrAux->parms != DefaultInfo.parms ) {
-                FMemFree( CurrAux->parms );
-            }
-            CurrAux->parms = RegSets();
-            have.f_list = true;
-#endif
-        } else {
-            break;
-        }
-    }
-}
-
-
 static  void    GetArgList( void ) {
 //============================
 
@@ -1704,40 +1468,6 @@ static  void    GetArgList( void ) {
 
 
 #if _INTEL_CPU
-static  void            GetRetInfo( void ) {
-//====================================
-
-    struct {
-        boolbit f_no8087        : 1;
-        boolbit f_list          : 1;
-        boolbit f_struct        : 1;
-    } have;
-
-    have.f_no8087  = false;
-    have.f_list    = false;
-    have.f_struct  = false;
-    // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
-    // flag so that "3s" model programs can use 387 pragmas
-    CurrAux->cclass &= ~NO_8087_RETURNS;
-    for(;;) {
-        if( !have.f_no8087 && RecToken( "NO8087" ) ) {
-            CurrAux->cclass |= NO_8087_RETURNS;
-            HW_CTurnOff( CurrAux->returns, HW_FLTS );
-            have.f_no8087 = true;
-        } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->cclass |= SPECIAL_RETURN;
-            CurrAux->returns = RegSet();
-            have.f_list = true;
-        } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
-            GetSTRetInfo();
-            have.f_struct = true;
-        } else {
-            break;
-        }
-    }
-}
-
-
 static  void    GetSTRetInfo( void ) {
 //==============================
 
@@ -1769,6 +1499,40 @@ static  void    GetSTRetInfo( void ) {
             CurrAux->cclass |= SPECIAL_STRUCT_RETURN;
             CurrAux->streturn = RegSet();
             have.f_list = true;
+        } else {
+            break;
+        }
+    }
+}
+
+
+static  void            GetRetInfo( void ) {
+//====================================
+
+    struct {
+        boolbit f_no8087        : 1;
+        boolbit f_list          : 1;
+        boolbit f_struct        : 1;
+    } have;
+
+    have.f_no8087  = false;
+    have.f_list    = false;
+    have.f_struct  = false;
+    // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
+    // flag so that "3s" model programs can use 387 pragmas
+    CurrAux->cclass &= ~NO_8087_RETURNS;
+    for(;;) {
+        if( !have.f_no8087 && RecToken( "NO8087" ) ) {
+            CurrAux->cclass |= NO_8087_RETURNS;
+            HW_CTurnOff( CurrAux->returns, HW_FLTS );
+            have.f_no8087 = true;
+        } else if( !have.f_list && RecToken( "[" ) ) {
+            CurrAux->cclass |= SPECIAL_RETURN;
+            CurrAux->returns = RegSet();
+            have.f_list = true;
+        } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
+            GetSTRetInfo();
+            have.f_struct = true;
         } else {
             break;
         }
@@ -1820,3 +1584,217 @@ static  void            GetSaveInfo( void ) {
     }
 }
 #endif
+
+
+static  void            GetParmInfo( void ) {
+//=====================================
+
+// Collect argument information.
+
+    struct {
+#if _INTEL_CPU
+        boolbit f_pop           : 1;
+        boolbit f_reverse       : 1;
+        boolbit f_loadds        : 1;
+        boolbit f_nomemory      : 1;
+        boolbit f_list          : 1;
+#endif
+        boolbit f_args          : 1;
+    } have;
+
+#if _INTEL_CPU
+    have.f_pop           = false;
+    have.f_reverse       = false;
+    have.f_loadds        = false;
+    have.f_nomemory      = false;
+    have.f_list          = false;
+#endif
+    have.f_args          = false;
+    for(;;) {
+        if( !have.f_args && RecToken( "(" ) ) {
+            GetArgList();
+            have.f_args = true;
+#if _INTEL_CPU
+        } else if( !have.f_pop && RecToken( "CALLER" ) ) {
+            CurrAux->cclass |= CALLER_POPS;
+            have.f_pop = true;
+        } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
+            CurrAux->cclass &= ~CALLER_POPS;
+            have.f_pop = true;
+        } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
+            // arguments are processed in reverse order by default
+            CurrAux->cclass |= REVERSE_PARMS;
+            have.f_reverse = true;
+        } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
+            CurrAux->cclass |= NO_MEMORY_READ;
+            have.f_nomemory = true;
+        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
+            CurrAux->cclass |= LOAD_DS_ON_CALL;
+            have.f_loadds = true;
+        } else if( !have.f_list && CurrToken( "[" ) ) {
+            if( CurrAux->parms != DefaultInfo.parms ) {
+                FMemFree( CurrAux->parms );
+            }
+            CurrAux->parms = RegSets();
+            have.f_list = true;
+#endif
+        } else {
+            break;
+        }
+    }
+}
+
+
+static void     Pragma( void ) {
+//========================
+
+// Process a pragma.
+
+#if _INTEL_CPU
+    char        *arr;
+    uint        arr_len;
+#endif
+
+    struct {
+        boolbit f_far    : 1;
+        boolbit f_far16  : 1;
+        boolbit f_loadds : 1;
+        boolbit f_export : 1;
+        boolbit f_parm   : 1;
+        boolbit f_value  : 1;
+        boolbit f_modify : 1;
+    } have;
+
+    if( RecFnToken( "LIBRARY" ) ) {
+        if( RecFnToken( "\0" ) ) {
+            DefaultLibInfo();
+        } else {
+            while( !RecFnToken( "\0" ) ) {
+                AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
+                ScanFnToken();
+            }
+        }
+#if _INTEL_CPU
+    } else if( RecToken( "ARRAY" ) ) {
+        SymbolId();
+        arr = TokStart;
+        arr_len = TokEnd - TokStart;
+        ScanToken();
+        if( RecToken( "FAR" ) ) {
+            if( _SmallDataModel( CGOpts ) ) {
+                AddArrayInfo( arr, arr_len );
+            }
+  #if _CPU == 8086
+        } else if( RecToken( "HUGE" ) ) {
+            if( CGOpts & CGOPT_M_LARGE ) {
+                AddArrayInfo( arr, arr_len );
+            }
+  #endif
+        }
+#endif
+    } else {
+        AliasInfo = &FortranInfo;
+        if( RecToken( "LINKAGE" ) ) {
+            ReqToken( "(" );
+            SymbolName();
+            ReqToken( "," );
+            AliasName();
+            ProcessAlias();
+            ReqToken( ")" );
+        } else {
+            ReqToken( "AUX" );
+            if( RecToken( "(" ) ) {
+                AliasName();
+                ReqToken( ")" );
+            }
+            SymbolName();
+            ProcessAlias();
+
+            ();
+
+            have.f_far    = false;
+            have.f_loadds = false;
+            have.f_export = false;
+            have.f_value  = false;
+            have.f_modify = false;
+            have.f_parm   = false;
+            for( ;; ) {
+                if( !have.f_parm && RecToken( "PARM" ) ) {
+                    GetParmInfo();
+                    have.f_parm = true;
+                } else if( !have.f_far && RecToken( "=" ) ) {
+                    GetByteSeq();
+#if _INTEL_CPU
+                    have.f_far = true;
+                } else if( !have.f_far && RecToken( "FAR" ) ) {
+                    CurrAux->cclass |= FAR_CALL;
+                    have.f_far = true;
+#if _CPU == 386
+                } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
+                    CurrAux->cclass |= FAR16_CALL;
+                    have.f_far16 = true;
+#endif
+                } else if( !have.f_far && RecToken( "NEAR" ) ) {
+                    CurrAux->cclass &= ~FAR_CALL;
+                    have.f_far = true;
+                } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
+                    CurrAux->cclass |= LOAD_DS_ON_ENTRY;
+                    have.f_loadds = true;
+#endif
+                } else if( !have.f_export && RecToken( "EXPORT" ) ) {
+                    CurrAux->cclass |= DLL_EXPORT;
+                    have.f_export = true;
+#if _INTEL_CPU
+                } else if( !have.f_value && RecToken( "VALUE" ) ) {
+                    GetRetInfo();
+                    have.f_value = true;
+#endif
+                } else if( !have.f_value && RecToken( "ABORTS" ) ) {
+                    CurrAux->cclass |= SUICIDAL;
+                    have.f_value = true;
+#if _INTEL_CPU
+                } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
+                    GetSaveInfo();
+                    have.f_modify = true;
+#endif
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+void    DoPragma( char *ptr ) {
+//=============================
+
+    int         status;
+
+    TokStart = ptr;
+    TokEnd = ptr;
+    ScanToken();
+    for(;;) {
+        status = CSpawn( &Pragma );
+        if( status != 0 ) {
+            if( ProgSw & PS_FATAL_ERROR ) {
+                CSuicide();
+            }
+            AsmSymFini();
+            break;
+        }
+        if( RecToken( "\0" ) ) {
+            break;
+        }
+    }
+}
+
+
+void    ProcPragma( char *ptr ) {
+//===============================
+
+    // don't process auxiliary pragma's until pass 2
+    if( ProgSw & PS_DONT_GENERATE )
+        return;
+    DoPragma( ptr );
+}
