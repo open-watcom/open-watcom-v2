@@ -1709,8 +1709,7 @@ static void     Pragma( void ) {
             }
             SymbolName();
             ProcessAlias();
-
-            ();
+            ObjectName();
 
             have.f_far    = false;
             have.f_loadds = false;
