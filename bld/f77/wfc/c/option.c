@@ -79,11 +79,6 @@ enum {
     #undef COMP_DIR
 };
 
-/* Forward declarations */
-static  int     GetDirective( char *buff );
-static  void    ScanOpts( char *buff );
-static  void    CompoundOptOption( char *buff );
-
 static const char __FAR * const __FAR CompDrctvs[] = {
     #define COMP_DIR(c) #c ,
     COMP_DIRS_DEFS
@@ -519,36 +514,6 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
     return( NULL );
 }
 
-void    CmdOption( char *buff ) {
-//===============================
-
-// Process an option that can appear on the command line.
-
-    opt_entry   *optn;
-    bool        negated;
-    char        *value;
-
-    optn = GetOptn( buff, &negated );
-    if( optn == NULL ) {
-        // Check if we've encountered a compound optimization option
-        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
-            CompoundOptOption( buff );
-        else
-            Warning( CO_NOT_RECOG, buff );
-    } else {
-        if( optn->flags & VAL ) {
-            if( negated ) {
-                Warning( CO_BAD_NO, optn->option );
-            }
-            if( GetValue( optn, SkipOpt( buff ), &value ) ) {
-                optn->proc_rtnstr( optn, value );
-            }
-        } else {
-            optn->proc_rtnbool( optn, negated );
-        }
-    }
-}
-
 
 static  void  CompoundOptOption( char *buff ) {
 //===============================
@@ -582,72 +547,6 @@ static  void  CompoundOptOption( char *buff ) {
 
         single_opt[opt_i] = '\0';
         CmdOption( single_opt );
-    }
-}
-
-
-void    SrcOption( void ) {
-//===================
-
-// Process an option that can appear only in the source input stream.
-
-    int         directive;
-    char        *buff;
-
-    buff = &SrcBuff[ 2 ];
-    directive = GetDirective( buff );
-    if( directive == CD_INCLUDE ) {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        CurrFile->flags |= INC_PENDING;
-    } else if( directive == CD_EJECT ) {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        LFNewPage();
-    } else if( directive == CD_PRAGMA ) {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        ComPrint();
-        ProcPragma( SkipOpt( buff ) );
-    } else if( directive == CD_DEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        ComPrint();
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroDEFINE( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_UNDEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        ComPrint();
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroUNDEFINE( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_IFDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroIFDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELSEIFDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroELIFDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_IFNDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroIFNDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELSEIFNDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroELIFNDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELSE ) {
-        MacroELSE();
-    } else if( directive == CD_ENDIF ) {
-        MacroENDIF();
-    } else {
-        if( ProgSw & PS_SKIP_SOURCE )
-            return;
-        ComPrint();
-        ScanOpts( buff );
-        // consider:
-        //      c$warn
-        //      c$notime=5
-        // CO-04 will not be issued unless /warn or c$warn is done.  But
-        // in the above case isn't updated unless we do this.
-        Options = NewOptions;
     }
 }
 
@@ -745,6 +644,102 @@ static  char    *GetOptName( char *buffer, char *opt_name ) {
     }
     *buff = NULLCHAR;
     return( buff );
+}
+
+void    CmdOption( char *buff ) {
+//===============================
+
+// Process an option that can appear on the command line.
+
+    opt_entry   *optn;
+    bool        negated;
+    char        *value;
+
+    optn = GetOptn( buff, &negated );
+    if( optn == NULL ) {
+        // Check if we've encountered a compound optimization option
+        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
+            CompoundOptOption( buff );
+        else
+            Warning( CO_NOT_RECOG, buff );
+    } else {
+        if( optn->flags & VAL ) {
+            if( negated ) {
+                Warning( CO_BAD_NO, optn->option );
+            }
+            if( GetValue( optn, SkipOpt( buff ), &value ) ) {
+                optn->proc_rtnstr( optn, value );
+            }
+        } else {
+            optn->proc_rtnbool( optn, negated );
+        }
+    }
+}
+
+
+void    SrcOption( void ) {
+//===================
+
+// Process an option that can appear only in the source input stream.
+
+    int         directive;
+    char        *buff;
+
+    buff = &SrcBuff[ 2 ];
+    directive = GetDirective( buff );
+    if( directive == CD_INCLUDE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        CurrFile->flags |= INC_PENDING;
+    } else if( directive == CD_EJECT ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        LFNewPage();
+    } else if( directive == CD_PRAGMA ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        ProcPragma( SkipOpt( buff ) );
+    } else if( directive == CD_DEFINE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroDEFINE( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_UNDEFINE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroUNDEFINE( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_IFDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroIFDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSEIFDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroELIFDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_IFNDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroIFNDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSEIFNDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroELIFNDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSE ) {
+        MacroELSE();
+    } else if( directive == CD_ENDIF ) {
+        MacroENDIF();
+    } else {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        ScanOpts( buff );
+        // consider:
+        //      c$warn
+        //      c$notime=5
+        // CO-04 will not be issued unless /warn or c$warn is done.  But
+        // in the above case isn't updated unless we do this.
+        Options = NewOptions;
+    }
 }
 
 
