@@ -41,9 +41,9 @@
 
 static char         ForExtn[] = { "for" };
 
-char    *SDFName( char *fn ) {
-//============================
-
+char *SDFName( const char *fn )
+//=============================
+{
     char        *start;
     char        chr;
 
@@ -53,7 +53,7 @@ char    *SDFName( char *fn ) {
     }
 #endif
     for(;;) {
-        start = fn;
+        start = (char *)fn;
         for(;;) {
             chr = *fn;
             if( chr == NULLCHAR )

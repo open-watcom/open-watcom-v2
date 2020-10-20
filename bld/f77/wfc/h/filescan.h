@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern char    *SDFName( char *fn );
-extern char    *SDSplitExtn( char *fn, char *default_extn );
-extern char    *SDSplitSrcExtn( char *fn );
+extern char     *SDFName( const char *fn );
+extern char     *SDSplitExtn( char *fn, char *default_extn );
+extern char     *SDSplitSrcExtn( char *fn );

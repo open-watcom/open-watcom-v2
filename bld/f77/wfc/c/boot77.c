@@ -112,7 +112,7 @@ int     CompMain( void ) {
     } else {
         ShowUsage();
         if( RetCode == _REQSYNTAX ) {
-            // A specific request for syntax (WATFOR77 ?) should return 0.
+            // A specific request for syntax (wfc... ?) should return 0.
             RetCode = _SUCCESSFUL;
         }
     }
