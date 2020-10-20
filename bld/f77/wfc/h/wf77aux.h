@@ -52,6 +52,6 @@ extern void            SubAuxFini( void );
 extern void            AddDependencyInfo( source_t *fi );
 extern void            DefaultLibInfo( void );
 extern aux_info        *NewAuxEntry( const char *name, uint name_len );
-extern void            DoPragma( char *ptr );
-extern void            ProcPragma( char *ptr );
+extern void            DoPragma( const char *ptr );
+extern void            ProcPragma( const char *ptr );
 extern void            CopyAuxInfo( aux_info *dst, aux_info *src );

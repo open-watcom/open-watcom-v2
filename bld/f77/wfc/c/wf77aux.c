@@ -54,13 +54,14 @@
 #include "auxlook.h"
 #include "option.h"
 #include "posutil.h"
+#include "cioconst.h"
 
 #include "clibext.h"
 
 
 static  aux_info        *CurrAux;
-static  char            *TokStart;
-static  char            *TokEnd;
+static  const char      *TokStart;
+static  const char      *TokEnd;
 static  aux_info        *AliasInfo;
 static  char            SymName[MAX_SYMLEN];
 static  uint            SymLen;
@@ -477,8 +478,8 @@ static bool cmp_ucased( const char *p1, const char *p2, uint len )
     return( true );
 }
 
-static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
-//============================================================
+static  void    AddArrayInfo( const char *arr_name, uint arr_len ) {
+//==================================================================
 
 // Process aux information for an array.
 
@@ -533,7 +534,7 @@ void    AddDependencyInfo( source_t *fi ) {
 }
 
 
-static  void    AddDefaultLib( char *lib_ptr, int lib_len, char priority ) {
+static  void    AddDefaultLib( const char *lib_ptr, int lib_len, char priority ) {
 //==========================================================================
 
     default_lib         **lib;
@@ -663,10 +664,10 @@ aux_info *NewAuxEntry( const char *name, uint name_len )
 }
 
 
-static  bool    CurrToken( char *tok ) {
+static  bool    CurrToken( const char *tok ) {
 //======================================
 
-    char    *ptr;
+    const char    *ptr;
 
     ptr = TokStart;
     for(;;) {
@@ -686,7 +687,7 @@ static  bool    CurrToken( char *tok ) {
 static  void    ScanToken( void ) {
 //===========================
 
-    char    *ptr;
+    const char    *ptr;
     bool    found_token;
     bool    first;
 
@@ -755,7 +756,7 @@ static  void    ScanToken( void ) {
     TokEnd = ptr;
 }
 
-static  bool    RecToken( char *tok ) {
+static  bool    RecToken( const char *tok ) {
 //=====================================
 
     if( CurrToken( tok ) ) {
@@ -768,9 +769,14 @@ static  bool    RecToken( char *tok ) {
 static  void    ReqToken( char *tok ) {
 //=====================================
 
+    size_t      len;
+    char        buffer[ERR_BUFF_SIZE + 1];
+
     if( !RecToken( tok ) ) {
-        *TokEnd = NULLCHAR;
-        Error( PR_BAD_SYNTAX, tok, TokStart );
+        len = TokEnd - TokStart;
+        memcpy( buffer, TokStart, len );
+        buffer[len] = NULLCHAR;
+        Error( PR_BAD_SYNTAX, tok, buffer );
         CSuicide();
     }
 }
@@ -779,9 +785,9 @@ static  void    ReqToken( char *tok ) {
 static  void    ScanFnToken( void ) {
 //===========================
 
-    char    *ptr;
-    bool    found_token;
-    bool    first;
+    const char  *ptr;
+    bool        found_token;
+    bool        first;
 
     ptr = TokEnd;
     ptr = SkipBlanks( ptr );
@@ -817,7 +823,7 @@ static  void    ScanFnToken( void ) {
 }
 
 
-static  bool    RecFnToken( char *tok ) {
+static  bool    RecFnToken( const char *tok ) {
 //=======================================
 
     if( CurrToken( tok ) ) {
@@ -832,7 +838,7 @@ static  bool    RecFnToken( char *tok ) {
 static  void            SymbolId( void ) {
 //==================================
 
-    char        *ptr;
+    const char        *ptr;
 
     ptr = TokStart;
     if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
@@ -1248,7 +1254,7 @@ static  void    GetByteSeq( void ) {
 
     byte_seq_len    seq_len;
     byte_seq_len    len;
-    char            *ptr;
+    const char      *ptr;
     byte            buff[MAXIMUM_BYTESEQ + 32]; // extra for assembler
 #if _CPU == 8086
     bool            use_fpu_emu = false;
@@ -1325,6 +1331,7 @@ static  void    GetByteSeq( void ) {
 
 
 #if _INTEL_CPU
+
 #define REGNAME_MAX_LEN     4
 
 static  hw_reg_set      RegSet( void ) {
@@ -1651,7 +1658,7 @@ static void     Pragma( void ) {
 // Process a pragma.
 
 #if _INTEL_CPU
-    char        *arr;
+    const char  *arr;
     uint        arr_len;
 #endif
 
@@ -1765,7 +1772,7 @@ static void     Pragma( void ) {
 }
 
 
-void    DoPragma( char *ptr ) {
+void    DoPragma( const char *ptr ) {
 //=============================
 
     int         status;
@@ -1789,7 +1796,7 @@ void    DoPragma( char *ptr ) {
 }
 
 
-void    ProcPragma( char *ptr ) {
+void    ProcPragma( const char *ptr ) {
 //===============================
 
     // don't process auxiliary pragma's until pass 2

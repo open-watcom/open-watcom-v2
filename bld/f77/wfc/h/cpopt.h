@@ -290,8 +290,8 @@ typedef struct opt_entry {
     char        *option;        // pointer to option name
     unsigned_8  flags;          // option flags
     unsigned_32 value;          // value of option
-    void        (*proc_rtnstr)(struct opt_entry *, char *);  // option processing for strin options
-    void        (*proc_rtnbool)(struct opt_entry *, bool);   // for negatable options
+    void        (*proc_rtnstr)(struct opt_entry *, const char *);   // option processing for string options
+    void        (*proc_rtnbool)(struct opt_entry *, bool);          // for negatable options
 } opt_entry;
 
 extern opt_entry    CompOptns[];

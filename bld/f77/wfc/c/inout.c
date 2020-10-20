@@ -377,19 +377,19 @@ void    Conclude( void ) {
 //========================================================================
 
 
-static  file_handle Open( char *fn, char *extn, int mode ) {
-//==========================================================
-
-    file_handle ptr;
+static file_handle Open( const char *fn, const char *extn, int mode )
+//===================================================================
+{
+    file_handle fp;
     char        buffer[_MAX_PATH];
     char        errmsg[81];
 
     MakeName( fn, extn, buffer );
-    ptr = SDOpen( buffer, mode );
-    if( SDError( ptr, errmsg, sizeof( errmsg ) ) ) {
+    fp = SDOpen( buffer, mode );
+    if( SDError( fp, errmsg, sizeof( errmsg ) ) ) {
         InfoError( SM_OPENING_FILE, &buffer, &errmsg );
     }
-    return( ptr );
+    return( fp );
 }
 
 
@@ -404,9 +404,6 @@ void    OpenErr( void ) {
         if( ErrFile != NULL ) {
             SDInitAttr();
             ErrCursor = 0;
-            // ErrBuff will be non-NULL iff we have opened the error file
-            // before initializing memory (i.e. a warning message during
-            // options processing).
             if( ErrBuff == NULL ) {
                 ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
             }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ gbl_defn TYPE           ResultType;     // result type of operation in upscan
 gbl_defn STMTSW         StmtSw;         // statement switches
 gbl_defn rememb         Remember;       // info about the last executable stmt
 gbl_defn char           *SrcName;       // name of source file
-gbl_defn char           *ObjName;       // name of object output file
+gbl_defn const char     *ObjName;       // name of object output file
 gbl_defn source_t       *CurrFile;      // linked list of open FOR77 files
 gbl_defn char           *IncludePath;   // path for INCLUDE files
 gbl_defn char           *FIncludePath;  // path for FINCLUDE files
@@ -91,7 +92,7 @@ gbl_defn unsigned_16    ISNNumber;      // ISN # only for FORTRAN statements;
 gbl_defn char           *CmdPtr;        // pointer to command line
 gbl_defn uint           NumExtens;      // number of extens. during compilation
 gbl_defn uint           NumWarns;       // number of warnings during compilation
-gbl_defn char           *SrcExtn;       // pointer to source file extension
+gbl_defn const char     *SrcExtn;       // pointer to source file extension
 gbl_defn int            RetCode;        // return code for Main()
 
 

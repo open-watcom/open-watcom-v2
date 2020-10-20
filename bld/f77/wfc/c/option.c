@@ -120,8 +120,8 @@ char *SkipBlanks( const char *buff )
 }
 
 
-static  bool    GetValue( opt_entry *optn, char *ptr, char **val )
-//================================================================
+static bool GetValue( opt_entry *optn, const char *ptr, const char **val )
+//========================================================================
 // Get pointer to option value.
 {
     bool    ok;
@@ -138,11 +138,10 @@ static  bool    GetValue( opt_entry *optn, char *ptr, char **val )
 }
 
 
-static  void    BitOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    BitOption( opt_entry *optn, bool negated )
+//========================================================
 // Process an option that has a bit value.
-
+{
     ftnoption   opt_bit;
 
     opt_bit = optn->value;
@@ -171,11 +170,10 @@ static  void    BitOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    XLOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static  void    XLOption( opt_entry *optn, bool negated )
+//=======================================================
 // Extend source line beyond column 72.
-
+{
     /* unused parameters */ (void)optn;
 
     if( negated ) {
@@ -186,26 +184,25 @@ static  void    XLOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    DefOption( opt_entry *optn, char *ptr ) {
-//=======================================================
-
+static  void    DefOption( opt_entry *optn, const char *ptr )
+//===========================================================
 // Define a macro.
-
+{
     /* unused parameters */ (void)optn;
 
     MacroDEFINE( ptr, SkipToken( ptr ) - ptr );
 }
 
 
-static  void    PathOption( opt_entry *optn, char *ptr )
-//======================================================
+static  void    PathOption( opt_entry *optn, const char *ptr )
+//============================================================
 // Process "INCPATH=" option.
 {
     char        *p;
     char        *old_list;
     int         old_len;
     int         len;
-    char        *end;
+    const char  *end;
 
     /* unused parameters */ (void)optn;
 
@@ -265,20 +262,19 @@ void    FIncludePathFini( void )
     }
 }
 
-void    FiniProcCmd( void ) {
-//===========================
-
+void    FiniProcCmd( void )
+//=========================
+{
     if( IncludePath != NULL ) {
         FMemFree( IncludePath );
     }
 }
 
 
-static  unsigned_32     OptV( opt_entry *optn, char *ptr ) {
-//==========================================================
-
+static  unsigned_32     OptV( opt_entry *optn, const char *ptr )
+//==============================================================
 // Process an option that requires a value.
-
+{
     unsigned_32 number;
 
     if( !isdigit( *ptr ) ) {
@@ -389,20 +385,19 @@ static  void    CPUOption( opt_entry *optn, bool negated ) {
 #endif
 
 
-static  void    DTOption( opt_entry *optn, char *ptr ) {
-//======================================================
-
+static  void    DTOption( opt_entry *optn, const char *ptr )
+//==========================================================
 // Process "DT=" option.
+{
 
     DataThreshold = OptV( optn, ptr );
 }
 
 
-static  void    FOOption( opt_entry *optn, char *ptr ) {
-//======================================================
-
+static  void    FOOption( opt_entry *optn, const char *ptr )
+//==========================================================
 // Process "FO=" option.
-
+{
     /* unused parameters */ (void)optn;
 
     ObjName = ptr;
@@ -455,11 +450,10 @@ static  void    KorOption( opt_entry *optn, bool negated ) {
     NewOptions |= OPT_KOREAN;
 }
 
-static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
-//=======================================================================
-
+static bool OptMatch( const char *buff, const char __FAR *list, bool value )
+//==========================================================================
 // Determine if option matches.
-
+{
     for(;;) {
         if( *buff == NULLCHAR )
             break;
@@ -497,11 +491,10 @@ static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
 }
 
 
-static  opt_entry       *GetOptn( char *buff, bool *negated ) {
-//=============================================================
-
+static opt_entry *GetOptn( const char *buff, bool *negated )
+//==========================================================
 // Parse an option.
-
+{
     opt_entry   *optn;
 
     optn = CompOptns;
@@ -534,18 +527,18 @@ static void CompoundOptOption( const char *buff )
         single_opt[opt_i++] = buff[i];
 
         switch( tolower( buff[i] ) ) {
-            case 'l':
-                if( buff[i+1] == '+' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
-            case 'b':
-                if( tolower( buff[i+1] ) == 'p' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
-            case 'd':
-                if( tolower( buff[i+1] ) == 'o' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
+        case 'l':
+            if( buff[i+1] == '+' )
+                single_opt[opt_i++] = buff[++i];
+            break;
+        case 'b':
+            if( tolower( buff[i+1] ) == 'p' )
+                single_opt[opt_i++] = buff[++i];
+            break;
+        case 'd':
+            if( tolower( buff[i+1] ) == 'o' )
+                single_opt[opt_i++] = buff[++i];
+            break;
         }
 
         single_opt[opt_i] = '\0';
@@ -570,12 +563,12 @@ static void OptWarning( int warn, const char *opt )
 }
 
 
-static  void    ScanOpts( char *buff ) {
-//======================================
-
+static  void    ScanOpts( const char *buff )
+//==========================================
+{
     opt_entry   *optn;
     bool        negated;
-    char        *value;
+    const char  *value;
     bool        first_opt;
 
     if( strlen( SrcBuff ) > LastColumn ) {
@@ -615,11 +608,10 @@ static  void    ScanOpts( char *buff ) {
 }
 
 
-static  int     GetDirective( char *buff ) {
-//==========================================
-
+static int GetDirective( const char *buff )
+//=========================================
 // Parse a compiler directive.
-
+{
     int         offset;
     const char  __FAR * const __FAR *drctv;
 
@@ -635,11 +627,10 @@ static  int     GetDirective( char *buff ) {
 }
 
 
-static  char    *GetOptName( char *buffer, char *opt_name ) {
+static char *GetOptName( char *buffer, const char *opt_name )
 //===========================================================
-
 // Print option name.
-
+{
     char        *buff;
 
     buff = buffer + sizeof( char );
@@ -653,14 +644,13 @@ static  char    *GetOptName( char *buffer, char *opt_name ) {
 }
 
 
-void    CmdOption( char *buff ) {
-//===============================
-
+void    CmdOption( char *buff )
+//=============================
 // Process an option that can appear on the command line.
-
+{
     opt_entry   *optn;
     bool        negated;
-    char        *value;
+    const char  *value;
 
     optn = GetOptn( buff, &negated );
     if( optn == NULL ) {
@@ -685,13 +675,12 @@ void    CmdOption( char *buff ) {
 }
 
 
-void    SrcOption( void ) {
-//===================
-
+void    SrcOption( void )
+//=======================
 // Process an option that can appear only in the source input stream.
-
+{
     int         directive;
-    char        *buff;
+    const char  *buff;
 
     buff = &SrcBuff[ 2 ];
     directive = GetDirective( buff );
