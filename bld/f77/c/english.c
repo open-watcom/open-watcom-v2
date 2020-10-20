@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -240,7 +240,7 @@ static  bool    IsDoubleByteChar( char ch )
 }
 
 
-static  int     CharacterWidth( const char PGM *ptr )
+static size_t   CharacterWidth( const char PGM *ptr )
 // Determine character width.
 {
     /* unused parameters */ (void)ptr;
@@ -260,11 +260,11 @@ static  bool    IsForeign( char ch )
 
 void    __UseEnglishCharSet( void )
 {
-    CharSetInfo.extract_text = &ExtractTextSBCS;
-    CharSetInfo.is_double_byte_blank = &IsDoubleByteBlank;
-    CharSetInfo.is_double_byte_char = &IsDoubleByteChar;
-    CharSetInfo.character_width = &CharacterWidth;
-    CharSetInfo.is_foreign = &IsForeign;
+    CharSetInfo.extract_text = ExtractTextSBCS;
+    CharSetInfo.is_double_byte_blank = IsDoubleByteBlank;
+    CharSetInfo.is_double_byte_char = IsDoubleByteChar;
+    CharSetInfo.character_width = CharacterWidth;
+    CharSetInfo.is_foreign = IsForeign;
 #if !defined( __RT__ )
     CharSetInfo.character_set = CharSet;
     CharSetInfo.initializer = "__init_english";

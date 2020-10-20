@@ -83,18 +83,18 @@ static char             LstExtn[] = { "lst" };
 
 static char             *ListBuff;      // listing file buffer
 static file_handle      ListFile;       // file pointer for the listing file
-static int              ListCursor;     // offset into "ListBuff"
+static size_t           ListCursor;     // offset into "ListBuff"
 
 static byte             ListCount;      // # of lines printed to listing file
 static byte             ListFlag;       // flag for listing file
 
 static char             *ErrBuff;       // error file buffer
 static file_handle      ErrFile;        // file pointer for the error file
-static int              ErrCursor;      // offset into "ErrBuff"
+static size_t           ErrCursor;      // offset into "ErrBuff"
 
 static char             *TermBuff;      // terminal file buffer
 static file_handle      TermFile;       // file pointer for terminal
-static int              TermCursor;     // offset into "TermBuff"
+static size_t           TermCursor;     // offset into "TermBuff"
 
 /* Forward declarations */
 static  void    SendRec( void );
@@ -127,7 +127,6 @@ void    InitComIO( void ) {
     ErrFile = NULL;
     ListFile = NULL;
     ListFlag = 0;
-    ListCursor = 0;
     ListCount = 0;
     SDInitIO();
     TermFile = FStdOut;
@@ -496,11 +495,11 @@ void    ChkErrFile( void ) {
 }
 
 
-static  void    SendBuff( const char *str, char *buff, int buff_size, int *cursor,
+static  void    SendBuff( const char *str, char *buff, size_t buff_size, size_t *cursor,
                           file_handle fp, void (*err_rtn)( void ) ) {
 //==========================================================================
 
-    int         len;
+    size_t  len;
 
     for( ; fp != NULL; ) {
         len = buff_size - 1 - *cursor;
@@ -772,7 +771,7 @@ void    LFSkip( void ) {
 static  void    PutLst( const char *string )
 //==========================================
 {
-    int         len;
+    size_t      len;
     bool        newline;
 
     newline = ( ListFlag & LF_NEW_LINE );

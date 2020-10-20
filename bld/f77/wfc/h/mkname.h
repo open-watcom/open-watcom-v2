@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern int     CopyMaxStr( const char *str, char *buff, int max_len );
-extern int     MakeName( const char *fn, const char *extn, char *buff );
+extern size_t   CopyMaxStr( const char *str, char *buff, size_t max_len );
+extern size_t   MakeName( const char *fn, const char *extn, char *buff );

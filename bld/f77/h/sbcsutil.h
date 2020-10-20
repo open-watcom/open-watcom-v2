@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int      ExtractTextSBCS( const char *string, int len );
+extern size_t   ExtractTextSBCS( const char *string, size_t len );

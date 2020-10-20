@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,9 @@
 #define _F77_CSETINFO_H 1
 
 typedef struct character_set {
-    int         (* extract_text)(const char *,int);
+    size_t      (* extract_text)(const char *,size_t);
     bool        (* is_double_byte_blank)(const char *);
-    int         (* character_width)(const char PGM *);
+    size_t      (* character_width)(const char PGM *);
     bool        (* is_foreign)(char);
     bool        (* is_double_byte_char)(char);
 #if !defined( __RT__ )
