@@ -39,7 +39,7 @@
 #include "global.h"
 #include "cpopt.h"
 #include "sdcline.h"
-#include "boot77.h"
+#include "option.h"
 
 
 #if defined( __UNIX__ )

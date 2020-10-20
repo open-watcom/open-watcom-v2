@@ -47,7 +47,6 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
-#include "boot77.h"
 
 
 static void Comment( void )

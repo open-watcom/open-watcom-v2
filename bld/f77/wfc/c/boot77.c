@@ -121,16 +121,6 @@ int     CompMain( void ) {
 }
 
 
-char    *SkipBlanks( char *ptr ) {
-//================================
-
-    while( ( *ptr == ' ' ) || ( *ptr == '\f' ) || ( *ptr == '\t' ) ) {
-        ptr++;
-    }
-    return( ptr );
-}
-
-
 void    ProcOpts( char **opt_array ) {
 //====================================
 

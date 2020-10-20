@@ -33,5 +33,4 @@ extern  void    InitCompMain( void );
 extern  void    FiniCompMain( void );
 extern  int     CompMain( void );
 extern  void    ShowUsage( void );
-extern  char    *SkipBlanks( char *ptr );
 extern  void    ProcOpts( char **opt_array );

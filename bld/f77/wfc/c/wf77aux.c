@@ -52,7 +52,7 @@
 #include "kwlookup.h"
 #include "symtab.h"
 #include "auxlook.h"
-#include "boot77.h"
+#include "option.h"
 #include "posutil.h"
 
 #include "clibext.h"

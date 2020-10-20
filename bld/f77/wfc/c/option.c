@@ -50,11 +50,11 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
-#include "boot77.h"
 #include "compcfg.h"
 #include "wf77auxd.h"
 #include "wf77aux.h"
 #include "fcdatad.h"
+#include "cioconst.h"
 
 
 // Compiler directives defines
@@ -91,31 +91,50 @@ static const char __FAR * const __FAR CompDrctvs[] = {
 // Used for matching OZOpts bits
 #define _BitsMatched( bits, ptrn )      (((bits & ptrn) ^ ptrn) == 0)
 
-static  char    *SkipOpt( char *buff ) {
+
+static char *SkipOpt( const char *buff )
 //======================================
-
 // Skip over an option.
-
-    while( isalnum( *buff ) ) {
+{
+    while( isalnum( *buff ) )
         buff++;
-    }
-    return( buff );
+    return( (char *)buff );
 }
 
 
-static  bool    GetValue( opt_entry *optn, char *ptr, char **val ) {
-//==================================================================
+static char *SkipToken( const char *buff )
+//========================================
+{
+    while( *buff != NULLCHAR && *buff != ' ' && *buff != '\t' )
+        buff++;
+    return( (char *)buff );
+}
 
+
+char *SkipBlanks( const char *buff )
+//==================================
+{
+    while( ( *buff == ' ' ) || ( *buff == '\f' ) || ( *buff == '\t' ) )
+        buff++;
+    return( (char *)buff );
+}
+
+
+static  bool    GetValue( opt_entry *optn, char *ptr, char **val )
+//================================================================
 // Get pointer to option value.
+{
+    bool    ok;
 
-    *val = SkipBlanks( ptr );
-    if( ( **val != '=' ) && ( **val != '#' ) ) {
-        Warning( CO_NEED_EQUALS, optn->option );
-        return( false );
+    ptr = SkipBlanks( ptr );
+    ok = ( *ptr == '=' || *ptr == '#' );
+    if( ok ) {
+        ptr = SkipBlanks( ptr + 1 );
     } else {
-        *val = SkipBlanks( *val + sizeof( char ) );
-        return( true );
+        Warning( CO_NEED_EQUALS, optn->option );
     }
+    *val = ptr;
+    return( ok );
 }
 
 
@@ -167,22 +186,6 @@ static  void    XLOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  char    *SkipToken( char *buff ) {
-//========================================
-
-    for(;;) {
-        if( *buff == NULLCHAR )
-            break;
-        if( *buff == ' ' )
-            break;
-        if( *buff == '\t' )
-            break;
-        buff++;
-    }
-    return( buff );
-}
-
-
 static  void    DefOption( opt_entry *optn, char *ptr ) {
 //=======================================================
 
@@ -195,13 +198,14 @@ static  void    DefOption( opt_entry *optn, char *ptr ) {
 
 
 static  void    PathOption( opt_entry *optn, char *ptr )
-//============================================================
+//======================================================
 // Process "INCPATH=" option.
 {
     char        *p;
     char        *old_list;
     int         old_len;
     int         len;
+    char        *end;
 
     /* unused parameters */ (void)optn;
 
@@ -210,10 +214,10 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     if( ptr[0] == '"' && ptr[len - 1] == '"' ) {
         len -= 2;
         ++ptr;
-        ptr[len] = NULLCHAR;
     }
     if( len == 0 )
         return;
+    end = ptr + len;
     if( IncludePath == NULL ) {
         p = IncludePath = FMemAlloc( len + 1 );
     } else {
@@ -227,7 +231,7 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     while( *ptr != NULLCHAR ) {
         if( p != IncludePath )
             *p++ = PATH_LIST_SEP;
-        ptr = GetPathElement( ptr, NULL, &p );
+        ptr = GetPathElement( ptr, end, &p );
     }
     *p = NULLCHAR;
 }
@@ -514,11 +518,10 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
     return( NULL );
 }
 
-
-static  void  CompoundOptOption( char *buff ) {
-//===============================
-
+static void CompoundOptOption( const char *buff )
+//===============================================
 // Process a "compound" optimization option - multiple in one option
+{
     char        single_opt[4];
     int         i;
     int         opt_i;
@@ -551,16 +554,19 @@ static  void  CompoundOptOption( char *buff ) {
 }
 
 
-static  void    OptWarning( int warn, char *opt ) {
+static void OptWarning( int warn, const char *opt )
 //=================================================
-
 // Issue an option warning message.
+{
+    size_t      len;
+    char        buffer[ERR_BUFF_SIZE + 1];
 
-    char        *ptr;
-
-    ptr = SkipToken( opt );
-    *ptr = NULLCHAR;
-    Warning( warn, opt );
+    len = SkipToken( opt ) - opt;
+    if( len > ERR_BUFF_SIZE )
+        len = ERR_BUFF_SIZE;
+    memcpy( buffer, opt, len );
+    buffer[len] = NULLCHAR;
+    Warning( warn, buffer );
 }
 
 
@@ -646,6 +652,7 @@ static  char    *GetOptName( char *buffer, char *opt_name ) {
     return( buff );
 }
 
+
 void    CmdOption( char *buff ) {
 //===============================
 
@@ -658,10 +665,11 @@ void    CmdOption( char *buff ) {
     optn = GetOptn( buff, &negated );
     if( optn == NULL ) {
         // Check if we've encountered a compound optimization option
-        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
+        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 ) {
             CompoundOptOption( buff );
-        else
+        } else {
             Warning( CO_NOT_RECOG, buff );
+        }
     } else {
         if( optn->flags & VAL ) {
             if( negated ) {
