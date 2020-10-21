@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +43,11 @@
 #include "insert.h"
 #include "ioperm.h"
 #include "ioutls.h"
+#include "iokwlist.h"
 
 
 #define NO      0
 #define YES     1
-
-extern  char            *IOKeywords[];
 
 // This table is used to determine if a control list item is permissible in
 // a particular i/o statement.

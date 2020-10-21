@@ -31,16 +31,5 @@
 ****************************************************************************/
 
 
-//
-// IOKWLIST  : table of input/output control list keywords
-//
+extern const char   *IOKeywords[];
 
-#include "ftnstd.h"
-#include "iokwlist.h"
-
-
-const char  *IOKeywords[] = {
-    #define pick(id,text) text,
-    #include "iodefn.h"
-    #undef pick
-};

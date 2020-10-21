@@ -36,9 +36,7 @@
 #include "kwlook.h"
 #include "kwlookup.h"
 #include "kwlist.h"
-
-
-extern const char   *IOKeywords[];
+#include "iokwlist.h"
 
 
 STMT    RecStmtKW( void ) {
