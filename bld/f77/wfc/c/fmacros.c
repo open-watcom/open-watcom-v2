@@ -43,10 +43,15 @@
 #include "clibext.h"
 
 
+typedef enum macro_flags {
+    MACFLAG_NONE,
+    MACFLAG_PERMANENT
+} macro_flags;
+
 typedef struct macro_entry {
     struct macro_entry  *link;
-    byte                name_len;
-    byte                status;
+    size_t              name_len;
+    macro_flags         flags;
     char                name[1];
 } macro_entry;
 
@@ -54,10 +59,9 @@ static  macro_entry     *MacroList;
 static  unsigned char   NestingLevel;
 static  unsigned_16     NestingFlags;
 static  unsigned_16     NestingStack;
-static  unsigned_8      MacroFlags;
+static  macro_flags     MacroFlags;
 
 #define MAX_NESTING     16
-#define MACRO_PERMANENT 0x01
 
 #define DEBUG_MACRO_LEN 9
 static  char            DebugMacro[] = { "__debug__" };
@@ -73,7 +77,7 @@ void    InitMacroProcessor( void ) {
 
 // Initialize macro processor in case macros defined on command line.
 
-    MacroFlags = MACRO_PERMANENT;
+    MacroFlags = MACFLAG_PERMANENT;
 }
 
 
@@ -111,7 +115,7 @@ void    InitPredefinedMacros( void ) {
         MacroDEFINE( "__FPI__", 7 );
     }
 #endif
-    MacroFlags = 0;
+    MacroFlags = MACFLAG_NONE;
 }
 
 
@@ -147,7 +151,7 @@ static  void    FreeMacros( bool free_perm ) {
 
     while( MacroList != NULL ) {
         link = MacroList->link;
-        if( !free_perm && ( MacroList->status == MACRO_PERMANENT ) )
+        if( !free_perm && ( MacroList->flags == MACFLAG_PERMANENT ) )
             break;
         FMemFree( MacroList );
         MacroList = link;
@@ -192,7 +196,7 @@ void MacroDEFINE( const char *macro, uint macro_len )
         me = FMemAlloc( sizeof( macro_entry ) + macro_len - sizeof( char ) );
         me->link = MacroList;
         me->name_len = macro_len;
-        me->status = MacroFlags;
+        me->flags = MacroFlags;
         memcpy( &me->name, macro, macro_len );
         MacroList = me;
     }
